@@ -16,7 +16,7 @@ Add this to your ~/.homebridge/config.json file
 {
     "platform": "homebridge-config-ui",
     "name": "Config",
-    "port": 8080
+    "port": 8080,
     "log": "[/var/log/homebridge.stdout.log]",
     "restart": "[/usr/local/bin/supervisorctl restart homebridge]"
 }
