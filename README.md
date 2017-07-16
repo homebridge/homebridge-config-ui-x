@@ -22,7 +22,7 @@ Add this to your ~/.homebridge/config.json file
 }
 ```
 
-Note: This example uses (supervisor)[http://supervisord.org/] to control homebridge.
+Note: This example uses [supervisor](http://supervisord.org/) to control homebridge.
 
 Example /usr/local/etc/suoervisord.conf entry
 ```Bash
