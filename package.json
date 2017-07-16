@@ -2,6 +2,7 @@
     "name": "homebridge-config-ui",
     "version": "1.0.0",
     "description": "Configuration UI plugin for Homebridge",
+    "license": "ISC",
     "keywords": [
         "homebridge-plugin"
     ],
