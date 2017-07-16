@@ -61,7 +61,7 @@ Add users to the auth.json file.
 ]
 ```
 
-# Useage
+# Usage
 
 Most of your platform configs have usernames and passwords in them. To keep these seceret, this plugin has basic authentication. The users are stored in the ~/.homebridge/auth.json file.
 
