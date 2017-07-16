@@ -14,7 +14,7 @@ sudo npm i -g homebridge-config-ui
 Add this to your ~/.homebridge/config.json file
 ```JSON
 {
-    "platform": "homebridge-config-ui",
+    "platform": "config",
     "name": "Config",
     "port": 8080,
     "log": "[/var/log/homebridge.stdout.log]",
