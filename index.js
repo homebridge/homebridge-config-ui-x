@@ -77,7 +77,6 @@ function HttpServer(log, config) {
         var msg = "Console is listening on " + bind + ".";
 
         app.get("log")(msg);
-        console.log(chalk.green("[OK]") + " " + msg);
     }
 }
 

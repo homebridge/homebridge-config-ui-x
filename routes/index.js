@@ -77,7 +77,7 @@ router.get("/restart", function (req, res, next) {
 }, function (req, res, next) {
     var exec = require("child_process").exec;
 
-    exec(config.restart, function () {
+    exec(hb.restart, function () {
         setTimeout(function () {
             res.redirect(302, "/");
         }, 5000);
