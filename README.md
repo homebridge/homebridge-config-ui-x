@@ -60,3 +60,27 @@ Add users to the auth.json file.
     }
 ]
 ```
+
+# Useage
+
+Most of your platform configs have usernames and passwords in them. To keep these seceret, this plugin has basic authentication. The users are stored in the ~/.homebridge/auth.json file.
+
+![Login](login.png)
+
+Status Screen
+
+This shows you that the services are running. It also has you HomeKit pin.
+
+![Status](status.png)
+
+Log Screen
+
+This shows you the rolling log. This is helpful for troubleshooting.
+
+![Log](log.png)
+
+Configuration Screen
+
+And finally the configuration screen allows you to modify your Homebridge settings and your platforms and accessories.
+
+![Config](config.png)
