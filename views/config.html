@@ -1,0 +1,124 @@
+<link rel="stylesheet" href="/styles/codemirror.css" />
+<script src="/scripts/codemirror.js"></script>
+<script src="/scripts/codemirror.javascript.js"></script>
+
+<div class="server-menu mdc-simple-menu" tabindex="-1">
+    <ul class="mdc-simple-menu__items mdc-list" role="menu" aria-hidden="true">
+        <li class="backup-config mdc-list-item" role="menuitem" tabindex="0">Backup Configuration</li>
+        <li class="logout-button mdc-list-item" role="menuitem" tabindex="0">Logout</li>
+    </ul>
+</div>
+<form id="server-config" action="/config" method="post">
+    <table cellpadding="0" cellspacing="0" border="0">
+        <tbody>
+            <tr>
+                <td>
+                    <div class="server-form">
+                        <h1 class="form-label">Server</h1>
+                        <div class="mdc-form-field">
+                            <div class="mdc-textfield" data-mdc-auto-init="MDCTextfield">
+                                <input id="name" name="name" type="text" class="mdc-textfield__input" value="{{server.name}}">
+                                <label for="name" class="mdc-textfield__label">Server Name</label>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="mdc-form-field">
+                            <div class="mdc-textfield" data-mdc-auto-init="MDCTextfield">
+                                <input id="mac" name="mac" type="text" class="mdc-textfield__input" value="{{server.mac}}">
+                                <label for="mac" class="mdc-textfield__label">Server MAC</label>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="mdc-form-field">
+                            <div class="mdc-textfield" data-mdc-auto-init="MDCTextfield">
+                                <input id="port" name="port" type="text" class="mdc-textfield__input" value="{{server.port}}">
+                                <label for="port" class="mdc-textfield__label">Server Port</label>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="mdc-form-field">
+                            <div class="mdc-textfield" data-mdc-auto-init="MDCTextfield">
+                                <input id="pin" name="pin" type="text" class="mdc-textfield__input" value="{{server.pin}}">
+                                <label for="pin" class="mdc-textfield__label">Home PIN</label>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="mdc-form-field">
+                            <div class="mdc-textfield" data-mdc-auto-init="MDCTextfield">
+                                <input id="ssdp" name="ssdp" type="text" class="mdc-textfield__input" value="{{server.ssdp}}">
+                                <label for="ssdp" class="mdc-textfield__label">SSDP</label>
+                            </div>
+                        </div>
+                        <br />
+                        <br />
+                        <button type="button" class="save-button mdc-button mdc-button--raised mdc-button--primary mdc-ripple-surface" data-mdc-auto-init="MDCRipple">Save</button>
+                    </div>
+                </td>
+                <td id="platforms">
+                    <div class="platform-panel">
+                        <div class="platform-form">
+                            <h1 class="form-label">Platforms</h1>
+                            {{#platforms}}
+                            <div class="platform mdc-elevation--z4" platform="{{id}}">
+                                <input type="hidden" name="platform" value="{{id}}">
+                                <input type="hidden" id="{{id}}-type" name="{{id}}-type" value="platform">
+                                <input type="hidden" id="{{id}}-delete" name="{{id}}-delete" value="false">
+                                <table cellpadding="0" cellspacing="0" border="0">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="mdc-form-field">
+                                                    <div class="mdc-textfield" data-mdc-auto-init="MDCTextfield">
+                                                        <input id="{{id}}-name" name="{{id}}-name" type="text" class="mdc-textfield__input" value="{{name}}">
+                                                        <label for="{{id}}-name" class="mdc-textfield__label">Name</label>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <textarea id="{{id}}-code" name="{{id}}-code" platform="{{id}}">{{json}}</textarea>
+                                            </td>
+                                            <td>
+                                                <i id="{{id}}-more" class="platform-delete material-icons" role="button" platform="{{id}}">delete</i>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            {{/platforms}}
+                        </div>
+                        <div class="platform-form">
+                            <h1 class="form-label">Accessories</h1>
+                            {{#accessories}}
+                            <div class="platform mdc-elevation--z4" platform="{{id}}">
+                                <input type="hidden" name="platform" value="{{id}}">
+                                <input type="hidden" id="{{id}}-type" name="{{id}}-type" value="bridge">
+                                <input type="hidden" id="{{id}}-delete" name="{{id}}-delete" value="false">
+                                <table cellpadding="0" cellspacing="0" border="0">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="mdc-form-field">
+                                                    <div class="mdc-textfield" data-mdc-auto-init="MDCTextfield">
+                                                        <input id="{{id}}-name" name="{{id}}-name" type="text" class="mdc-textfield__input" value="{{name}}">
+                                                        <label for="{{id}}-name" class="mdc-textfield__label">Name</label>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <textarea id="{{id}}-code" name="{{id}}-code" platform="{{id}}">{{json}}</textarea>
+                                            </td>
+                                            <td>
+                                                <i id="{{id}}-more" class="platform-delete material-icons" role="button" platform="{{id}}">delete</i>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            {{/accessories}}
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</form>

@@ -1,0 +1,5 @@
+{
+    "platform": "homebridge-config-ui",
+    "name": "Config",
+    "port": 8080
+}
