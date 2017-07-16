@@ -4,7 +4,7 @@ This is a plugin for [Homebridge](https://github.com/nfarina/homebridge)
 
 This plugin allows you to monitor, backup and configure your Homebridge server from a browser.
 
-![Status](status.png?raw=true)
+![Status](status.png)
 
 # Instaliation Instructions
 
