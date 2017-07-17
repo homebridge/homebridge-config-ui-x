@@ -260,6 +260,7 @@ content {
 .config .platform-form {
     padding: 20px;
     box-sizing: border-box;
+    display: none;
 }
 
     .config .platform-form .platform {
