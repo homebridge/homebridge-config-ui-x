@@ -2,6 +2,16 @@ $(document).ready(function() {
     var platforms = [];
     var menus = new Array();
 
+    $.each($(".platform-form"), function () {
+        var container = $(this);
+
+        if (container.children() > 1) {
+            container.show();
+        } else {
+            container.hide();
+        }
+    });
+
     $("#platforms").on("click", ".platform-delete", function () {
         var platform = $(this).attr("platform");
 
