@@ -5,7 +5,7 @@ $(document).ready(function() {
     $.each($(".platform-form"), function () {
         var container = $(this);
 
-        if (container.children() > 1) {
+        if (container.children().length > 1) {
             container.show();
         } else {
             container.hide();
