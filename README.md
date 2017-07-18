@@ -24,7 +24,7 @@ Add this to your ~/.homebridge/config.json file
 }
 ```
 
-Note: This example uses [supervisor](http://supervisord.org/) to control homebridge.
+This example uses [supervisor](http://supervisord.org/) to control homebridge.
 
 Replace /var/log/homebridge.stdout.log with your path to your Homebridge output log.
 
