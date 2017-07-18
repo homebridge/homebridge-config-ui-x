@@ -43,7 +43,7 @@ stderr_logfile=/var/log/homebridge.stderr.log
 ```
 
 This is a good supervisor how to.
-[Running Supervisoe on OSX](https://nicksergeant.com/running-supervisor-on-os-x/)
+[Running Supervisor on OSX](https://nicksergeant.com/running-supervisor-on-os-x/)
 
 Then you will need to create the ~/.homebridge/auth.json
 ```Bash
