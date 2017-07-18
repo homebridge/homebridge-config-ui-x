@@ -27,7 +27,6 @@ Add this to your ~/.homebridge/config.json file
 This example uses [supervisor](http://supervisord.org/) to control homebridge.
 
 Replace /var/log/homebridge.stdout.log with your path to your Homebridge output log.
-
 Replace /usr/local/bin/supervisorctl restart homebridge with the command you use to restart Homebridge.
 
 Example /usr/local/etc/suoervisord.conf entry
