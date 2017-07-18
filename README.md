@@ -19,12 +19,16 @@ Add this to your ~/.homebridge/config.json file
     "platform": "config",
     "name": "Config",
     "port": 8080,
-    "log": "[/var/log/homebridge.stdout.log]",
-    "restart": "[/usr/local/bin/supervisorctl restart homebridge]"
+    "log": "/var/log/homebridge.stdout.log",
+    "restart": "/usr/local/bin/supervisorctl restart homebridge"
 }
 ```
 
 Note: This example uses [supervisor](http://supervisord.org/) to control homebridge.
+
+Replace /var/log/homebridge.stdout.log with your path to your Homebridge output log.
+
+Replace /usr/local/bin/supervisorctl restart homebridge with the command you use to restart Homebridge.
 
 Example /usr/local/etc/suoervisord.conf entry
 ```Bash
@@ -37,6 +41,9 @@ autorestart=true
 stdout_logfile=/var/log/homebridge.stdout.log
 stderr_logfile=/var/log/homebridge.stderr.log
 ```
+
+This is a good supervisor how to.
+[Running Supervisoe on OSX](https://nicksergeant.com/running-supervisor-on-os-x/)
 
 Then you will need to create the ~/.homebridge/auth.json
 ```Bash
@@ -63,13 +70,15 @@ Add users to the auth.json file.
 
 # Usage
 
+Login Screen
+
 Most of your platform configs have usernames and passwords in them. To keep these seceret, this plugin has basic authentication. The users are stored in the ~/.homebridge/auth.json file.
 
 ![Login](login.png)
 
 Status Screen
 
-This shows you that the services are running. It also has you HomeKit pin.
+This shows you that the services are running. It also has your HomeKit pin.
 
 ![Status](status.png)
 
