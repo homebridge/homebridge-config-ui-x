@@ -29,7 +29,7 @@ This example uses [supervisor](http://supervisord.org/) to control homebridge.
 Replace /var/log/homebridge.stdout.log with your path to your Homebridge output log.<br />
 Replace /usr/local/bin/supervisorctl restart homebridge with the command you use to restart Homebridge.
 
-Example /usr/local/etc/suoervisord.conf entry
+Example /usr/local/etc/supervisord.conf entry
 ```Bash
 [program:homebridge]
 command=/usr/local/bin/node /usr/local/lib/node_modules/homebridge/bin/homebridge
