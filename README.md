@@ -6,7 +6,7 @@ This plugin allows you to monitor, backup and configure your Homebridge server f
 
 ![Status](status.png)
 
-# Instaliation Instructions
+# Installation Instructions
 
 First install the plugin
 ```Bash
