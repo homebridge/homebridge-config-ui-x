@@ -28,6 +28,7 @@
         "passport": "~0.3.2",
         "passport-local": "~1.0.0",
         "serve-favicon": "~2.4.2",
-        "jsonpath": "~0.2.12"
+        "request": "~2.81.0",
+        "async": "~2.5.0"
     }
 }
