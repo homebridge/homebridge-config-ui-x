@@ -302,10 +302,8 @@ content {
 }
 
     .plugins .plugin-card .media {
-        background-image: url(/images/card.jpg);
-        background-size: cover;
-        background-repeat: no-repeat;
-        height: 3.313rem;
+        background-color: #0fbf67;
+        height: 2.5rem;
     }
 
     .plugins .plugin-card .actions {
