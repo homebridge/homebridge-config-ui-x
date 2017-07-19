@@ -10,7 +10,7 @@
 
     var plugins = {
         installed: function (callback) {
-            var base = path.resolve(".");
+            var base;
 
             if (process.platform === "win32") {
                 base = path.join(process.env.APPDATA, "npm/node_modules");
@@ -22,37 +22,41 @@
                 }
             }
 
-            async.map(fs.readdirSync(base).filter(function (dr) {
-                if (fs.lstatSync(path.join(base, dr)).isDirectory()) {
-                    if (fs.existsSync(path.join(base, dr + "/package.json"))) {
-                        var package = require(path.join(base, dr + "/package.json"));
+            if (base) {
+                async.map(fs.readdirSync(base).filter(function (dr) {
+                    if (fs.lstatSync(path.join(base, dr)).isDirectory()) {
+                        if (fs.existsSync(path.join(base, dr + "/package.json"))) {
+                            var package = require(path.join(base, dr + "/package.json"));
 
-                        if (Array.isArray(package.keywords) && package.keywords.indexOf("homebridge-plugin") >= 0) {
-                            return true;
+                            if (Array.isArray(package.keywords) && package.keywords.indexOf("homebridge-plugin") >= 0) {
+                                return true;
+                            }
                         }
                     }
-                }
 
-                return false;
-            }), function (dr, callback) {
-                var package = require(path.join(base, dr + "/package.json"));
+                    return false;
+                }), function (dr, callback) {
+                    var package = require(path.join(base, dr + "/package.json"));
 
-                request({
-                    url: "https://api.npms.io/v2/package/" + package.name,
-                    json: true
-                }, function (err, res, body) {
-                    callback(err, {
-                        name: body.collected.metadata.name,
-                        installed: package.version,
-                        version: body.collected.metadata.version,
-                        update: (body.collected.metadata.version > package.version),
-                        description: body.collected.metadata.description,
-                        links: body.collected.metadata.links
+                    request({
+                        url: "https://api.npms.io/v2/package/" + package.name,
+                        json: true
+                    }, function (err, res, body) {
+                        callback(err, {
+                            name: body.collected.metadata.name,
+                            installed: package.version,
+                            version: body.collected.metadata.version,
+                            update: (body.collected.metadata.version > package.version),
+                            description: body.collected.metadata.description,
+                            links: body.collected.metadata.links
+                        });
                     });
+                }, function (err, res) {
+                    callback(err, res);
                 });
-            }, function (err, res) {
-                callback(err, res);
-            });
+            } else {
+                callback("Unable to find global modules", []);
+            }
         }
     }
 

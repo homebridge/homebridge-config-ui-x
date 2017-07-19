@@ -124,7 +124,6 @@ router.get("/installed", function (req, res, next) {
     }
 }, function (req, res, next) {
     plugins.installed(function (err, pkgs) {
-        console.log(JSON.stringify(pkgs, null, 4));
         res.render("installed", {
             controller: "plugins",
             title: "Configuration",
