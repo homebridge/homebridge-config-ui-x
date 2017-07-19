@@ -10,7 +10,17 @@
 
     var plugins = {
         installed: function (callback) {
-            var base = path.resolve("../../");
+            var base = path.resolve(".");
+
+            if (process.platform === "win32") {
+                base = path.join(process.env.APPDATA, "npm/node_modules");
+            } else {
+                if (fs.existsSync("/usr/lib/node_modules")) {
+                    base = "/usr/lib/node_modules";
+                } else {
+                    base = "/usr/local/lib/node_modules";
+                }
+            }
 
             async.map(fs.readdirSync(base).filter(function (dr) {
                 if (fs.lstatSync(path.join(base, dr)).isDirectory()) {
