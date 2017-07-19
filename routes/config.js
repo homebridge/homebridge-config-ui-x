@@ -1,6 +1,5 @@
 var fs = require("fs");
 var path = require("path");
-var https = require("https");
 var plugins = require("../plugins");
 var express = require("express");
 var router = express.Router();
@@ -124,6 +123,7 @@ router.get("/installed", function (req, res, next) {
         res.redirect("/login");
     }
 }, function (req, res, next) {
+    console.log(path.resolve("../../"));
     plugins.installed(function (err, pkgs) {
         console.log(JSON.stringify(pkgs, null, 4));
         res.render("installed", {

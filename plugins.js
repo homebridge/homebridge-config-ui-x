@@ -11,7 +11,7 @@
     var plugins = {
         installed: function (callback) {
             var base = path.resolve("../../");
-            console.log(base)
+
             async.map(fs.readdirSync(base).filter(function (dr) {
                 if (fs.lstatSync(path.join(base, dr)).isDirectory()) {
                     if (fs.existsSync(path.join(base, dr + "/package.json"))) {
