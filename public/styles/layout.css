@@ -294,14 +294,16 @@ content {
 
 .plugins .plugin-card {
     margin: 10px;
-    min-width: 320px;
+    width: 510px;
+    word-wrap: break-word;
+    display: inline-block;
 }
 
     .plugins .plugin-card .media {
         background-image: url(/images/card.jpg);
         background-size: cover;
         background-repeat: no-repeat;
-        height: 10.313rem;
+        height: 3.313rem;
     }
 
 .title {
