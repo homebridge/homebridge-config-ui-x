@@ -1,6 +1,4 @@
 var fs = require("fs");
-var path = require("path");
-var plugins = require("../plugins");
 var express = require("express");
 var router = express.Router();
 
@@ -113,35 +111,6 @@ router.get("/backup", function (req, res, next) {
 
     res.write(JSON.stringify(config, null, 4), function (err) {
         res.end();
-    });
-});
-
-router.get("/installed", function (req, res, next) {
-    if (req.user) {
-        next();
-    } else {
-        res.redirect("/login");
-    }
-}, function (req, res, next) {
-    plugins.installed(function (err, pkgs) {
-        res.render("installed", {
-            controller: "plugins",
-            title: "Plugins",
-            packages: pkgs
-        });
-    });
-});
-
-router.get("/plugins", function (req, res, next) {
-    if (req.user) {
-        next();
-    } else {
-        res.redirect("/login");
-    }
-}, function (req, res, next) {
-    res.render("plugins", {
-        controller: "plugins",
-        title: "Plugins"
     });
 });
 

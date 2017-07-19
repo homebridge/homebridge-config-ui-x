@@ -5,11 +5,25 @@
 </div>
 
 <nav id="plugin-tabs" class="plugin-tabs mdc-tab-bar">
-    <a class="mdc-tab" href="/config/installed">Installed</a>
-    <a class="mdc-tab mdc-tab--active" href="/config/plugins">Online</a>
+    <a class="mdc-tab mdc-tab--active" href="/config/installed">Installed</a>
+    <a class="mdc-tab" href="/config/plugins">Online</a>
     <span class="mdc-tab-bar__indicator"></span>
 </nav>
 
-<div id="online-plugins" class="plugin-cards">
-    
+<div id="installed-plugins" class="plugin-cards">
+    {{#packages}}
+    <div>
+        <b>{{name}}</b>
+        <br />
+        {{installed}}
+        <br />
+        {{links.npm}}
+        {{#update}}
+            <br />
+            Update Available
+        {{/update}}
+        <br />
+        <br />
+    </div>
+    {{/packages}}
 </div>

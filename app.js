@@ -66,10 +66,12 @@ app.use(passport.session());
 
 var index = require("./routes/index");
 var log = require("./routes/log");
+var plugins = require("./routes/plugins");
 var config = require("./routes/config");
 
 app.use("/", index);
 app.use("/log", log);
+app.use("/plugins", plugins);
 app.use("/config", config);
 
 app.use(function (req, res, next) {
