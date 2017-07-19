@@ -284,18 +284,9 @@ content {
         cursor: pointer;
     }
 
-.plugins .plugin-tabs {
-    position: absolute;
-    width: 320px;
-    height: 48px;
-    top: 64px;
-    left: 57px;
-}
-
 .plugins .plugin-cards {
     width: 100%;
     height: 100%;
-    border-top: 48px transparent solid;
     overflow: auto;
     box-sizing: border-box;
     padding: 10px;
