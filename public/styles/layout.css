@@ -298,6 +298,7 @@ content {
     height: 220px;
     word-wrap: break-word;
     display: inline-block;
+    position: relative;
 }
 
     .plugins .plugin-card .media {
@@ -305,6 +306,12 @@ content {
         background-size: cover;
         background-repeat: no-repeat;
         height: 3.313rem;
+    }
+
+    .plugins .plugin-card .actions {
+        position: absolute;
+        bottom: 0;
+        left: 0;
     }
 
 .title {
