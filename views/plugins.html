@@ -12,7 +12,7 @@
             <h2 class="mdc-card__subtitle">{{name}} {{installed}}</h2>
         </section>
         <section class="mdc-card__actions actions">
-            <button class="mdc-button mdc-button--compact mdc-card__action" href="{{links.npm}}" target="blank">NPM</button>
+            <button class="mdc-button mdc-button--compact mdc-card__action" onclick="window.open('{{links.npm}}', '_blank');">NPM</button>
             {{#update}}
             <button class="mdc-button mdc-button--compact mdc-card__action">Update</button>
             {{/update}}
@@ -25,7 +25,7 @@
             <h2 class="mdc-card__subtitle">{{name}} {{version}}</h2>
         </section>
         <section class="mdc-card__actions actions">
-            <button class="mdc-button mdc-button--compact mdc-card__action" href="{{links.npm}}" target="blank">NPM</button>
+            <button class="mdc-button mdc-button--compact mdc-card__action" onclick="window.open('{{links.npm}}', '_blank');">NPM</button>
             <button class="mdc-button mdc-button--compact mdc-card__action">Install</button>
         </section>
         {{/installed}}
