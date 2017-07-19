@@ -317,6 +317,14 @@ content {
         left: 0;
     }
 
+    .plugins .plugin-card  a {
+        color: #00b9f1 !important;
+    }
+
+        .plugins .plugin-card  a:hover {
+            color: #00b9f1 !important;
+        }
+
 .title {
     cursor: default;
 }
