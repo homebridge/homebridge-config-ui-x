@@ -298,7 +298,7 @@ content {
 }
 
     .plugins .plugin-card .media {
-        background-image: url(images/16-9.jpg);
+        background-image: url(/images/card.jpg);
         background-size: cover;
         background-repeat: no-repeat;
         height: 10.313rem;
