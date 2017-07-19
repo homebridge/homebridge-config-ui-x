@@ -47,7 +47,7 @@
                             installed: package.version,
                             version: body.collected.metadata.version,
                             update: (body.collected.metadata.version > package.version),
-                            description: body.collected.metadata.description,
+                            description: body.collected.metadata.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, "").trim(),
                             links: body.collected.metadata.links
                         });
                     });
