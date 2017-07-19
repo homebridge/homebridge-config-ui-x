@@ -253,7 +253,7 @@ content {
 
         .config .platform-panel table tbody tr td:last-child {
             width: 24px;
-            text-align: right;x
+            text-align: right;
             padding: 0;
         }
 
@@ -283,6 +283,23 @@ content {
         color: #afafaf;
         cursor: pointer;
     }
+
+.plugins .plugin-tabs {
+    position: absolute;
+    width: 320px;
+    height: 48px;
+    top: 64px;
+    right: 0;
+}
+
+.plugins .plugin-cards {
+    width: 100%;
+    height: 100%;
+    border-top: 48px transparent solid;
+    overflow: auto;
+    box-sizing: border-box;
+    padding: 10px;
+}
 
 .title {
     cursor: default;
@@ -332,6 +349,14 @@ content {
 }
 
     .config .menu a.controller-config:hover {
+        color: #00b9f1 !important;
+    }
+
+.plugins .menu a.controller-plugins {
+    color: #00b9f1 !important;
+}
+
+    .plugins .menu a.controller-plugins:hover {
         color: #00b9f1 !important;
     }
 

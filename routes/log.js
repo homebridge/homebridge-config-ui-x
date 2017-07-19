@@ -17,13 +17,7 @@ router.get("/", function (req, res, next) {
     });
 });
 
-router.get("/raw", function (req, res, next) {
-    if (req.user) {
-        next();
-    } else {
-        res.redirect("/login");
-    }
-}, function(req, res, next) {
+router.get("/raw", function(req, res, next) {
     fs.readFile(hb.log, function (err, data) {
         res.send(convert(data));
     });

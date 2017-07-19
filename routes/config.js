@@ -1,6 +1,87 @@
 var fs = require("fs");
+var path = require("path");
+var https = require("https");
+var jp = require("jsonpath");
 var express = require("express");
 var router = express.Router();
+
+var base = path.resolve("../../");
+var modules = fs.readdirSync(base).filter(file => fs.lstatSync(path.join(base, file)).isDirectory());
+var installed = {};
+var plugins = [];
+
+for (var i = 0; i < modules.length; i++) {
+    var plugin = path.join(base, modules[i])
+
+    if (fs.existsSync(path.join(plugin, "package.json"))) {
+        var data = require(path.join(plugin, "package.json"));
+
+        if (Array.isArray(data.keywords) && data.keywords.indexOf("homebridge-plugin") >= 0) {
+            installed[data.name] = data.version;
+        }
+    }
+}
+
+var raw = {};
+
+var req = https.request({
+    host: "api.npms.io",
+    port: 443,
+    path: "/v2/search?q=keywords:homebridge-plugin+not:deprecated+not:insecure&size=250",
+    method: "GET",
+    headers: {
+        "Content-Type": "application/json"
+    }
+}, function (res) {
+    var output = "";
+
+    res.setEncoding("utf8");
+
+    res.on("data", function (chunk) {
+        output += chunk;
+    });
+
+    res.on("end", function () {
+        var data = JSON.parse(output);
+
+        for (var i = 0; i < data.results.length; i++) {
+            raw[data.results[i].package.name] = {
+                name: data.results[i].package.name,
+                version: data.results[i].package.version,
+                description: (data.results[i].package.description) ? data.results[i].package.description : "",
+                installed: (data.results[i].package.name in installed) ? installed[data.results[i].package.name] : "",
+                links: data.results[i].package.links
+            }
+        }
+
+        var keys = [];
+
+        for (var key in raw) {
+            if (raw.hasOwnProperty(key)) {
+                keys.push(key);
+            }
+        }
+
+        keys = keys.sort();
+
+        for (var i = 0; i < keys.length; i++) {
+            plugins.push(raw[keys[i]]);
+        }
+
+        installed = jp.query(plugins, "$[?(@.installed!='')]");
+        plugins = jp.query(plugins, "$[?(@.installed=='')]");
+
+        for (var i = 0; i < installed.length; i++) {
+            if (installed[i].version > installed[i].installed) {
+                installed[i].update = true;
+            } else {
+                installed[i].update = false;
+            }
+        }
+    });
+});
+
+req.end();
 
 router.get("/", function (req, res, next) {
     if (req.user) {
@@ -111,6 +192,33 @@ router.get("/backup", function (req, res, next) {
 
     res.write(JSON.stringify(config, null, 4), function (err) {
         res.end();
+    });
+});
+
+router.get("/installed", function (req, res, next) {
+    if (req.user) {
+        next();
+    } else {
+        res.redirect("/login");
+    }
+}, function (req, res, next) {
+    res.render("installed", {
+        controller: "plugins",
+        title: "Configuration",
+        plugins: installed
+    });
+});
+
+router.get("/plugins", function (req, res, next) {
+    if (req.user) {
+        next();
+    } else {
+        res.redirect("/login");
+    }
+}, function (req, res, next) {
+    res.render("plugins", {
+        controller: "plugins",
+        title: "Configuration"
     });
 });
 

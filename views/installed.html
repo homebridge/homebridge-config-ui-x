@@ -1,0 +1,29 @@
+<div class="server-menu mdc-simple-menu" tabindex="-1">
+    <ul class="mdc-simple-menu__items mdc-list" role="menu" aria-hidden="true">
+        <li class="logout-button mdc-list-item" role="menuitem" tabindex="0">Logout</li>
+    </ul>
+</div>
+
+<nav id="plugin-tabs" class="plugin-tabs mdc-tab-bar">
+    <a class="mdc-tab mdc-tab--active" href="/config/installed">Installed</a>
+    <a class="mdc-tab" href="/config/plugins">Online</a>
+    <span class="mdc-tab-bar__indicator"></span>
+</nav>
+
+<div id="installed-plugins" class="plugin-cards">
+    {{#plugins}}
+    <div>
+        <b>{{name}}</b>
+        <br />
+        {{installed}}
+        <br />
+        {{links.npm}}
+        {{#update}}
+            <br />
+            Update Available
+        {{/update}}
+        <br />
+        <br />
+    </div>
+    {{/plugins}}
+</div>

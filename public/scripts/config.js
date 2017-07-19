@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function () {
     var platforms = [];
     var menus = new Array();
 
@@ -24,7 +24,7 @@ $(document).ready(function() {
         }
     });
 
-    $.each($("textarea"), function() {
+    $.each($("textarea"), function () {
         var textarea = $(this);
 
         platforms.push({
@@ -39,7 +39,7 @@ $(document).ready(function() {
     });
 
     $(".save-button").click(function () {
-        $.each(platforms, function() {
+        $.each(platforms, function () {
             var input = $("#" + this.id);
             var current = input.val;
             var updated = this.editor.getValue();

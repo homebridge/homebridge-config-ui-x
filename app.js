@@ -65,12 +65,12 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 var index = require("./routes/index");
-var config = require("./routes/config");
 var log = require("./routes/log");
+var config = require("./routes/config");
 
 app.use("/", index);
-app.use("/config", config);
 app.use("/log", log);
+app.use("/config", config);
 
 app.use(function (req, res, next) {
     var err = new Error("Not Found");

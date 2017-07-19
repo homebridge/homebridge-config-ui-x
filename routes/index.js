@@ -19,12 +19,6 @@ router.get("/", function (req, res, next) {
 });
 
 router.get("/status", function (req, res, next) {
-    if (req.user) {
-        next();
-    } else {
-        res.redirect("/login");
-    }
-}, function (req, res, next) {
     var mem = {
         total: parseFloat(((os.totalmem() / 1024) / 1024) / 1024).toFixed(2),
         used: parseFloat((((os.totalmem() - os.freemem()) / 1024) / 1024) / 1024).toFixed(2),

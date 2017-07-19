@@ -1,6 +1,6 @@
 {
     "name": "homebridge-config-ui",
-    "version": "1.0.4",
+    "version": "1.1.0",
     "description": "Configuration UI plugin for Homebridge",
     "license": "MIT",
     "keywords": [
@@ -27,6 +27,7 @@
         "hogan-express": "~0.5.2",
         "passport": "~0.3.2",
         "passport-local": "~1.0.0",
-        "serve-favicon": "~2.4.2"
+        "serve-favicon": "~2.4.2",
+        "jsonpath": "~0.2.12"
     }
 }
