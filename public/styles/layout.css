@@ -292,6 +292,18 @@ content {
     padding: 10px;
 }
 
+.plugins .plugin-card {
+    margin: 10px;
+    min-width: 320px;
+}
+
+    .plugins .plugin-card .media {
+        background-image: url(images/16-9.jpg);
+        background-size: cover;
+        background-repeat: no-repeat;
+        height: 10.313rem;
+    }
+
 .title {
     cursor: default;
 }

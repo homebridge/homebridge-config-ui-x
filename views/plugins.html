@@ -6,17 +6,19 @@
 <div id="installed-plugins" class="plugin-cards">
     {{#packages}}
     <div>
-        <b>{{name}}</b>
-        <br />
-        {{installed}}
-        <br />
-        {{links.npm}}
-        {{#update}}
-            <br />
-            Update Available
-        {{/update}}
-        <br />
-        <br />
+        <div class="mdc-card plugin-card">
+            <section class="mdc-card__media media"></section>
+            <section class="mdc-card__primary">
+                <h1 class="mdc-card__title mdc-card__title--large">{{description}}</h1>
+                <h2 class="mdc-card__subtitle">{{name}} {{installed}}</h2>
+                <h2 class="mdc-card__subtitle"><a href="{{links.npm}}" target="_blank">NPM Package</a></h2>
+            </section>
+            {{#update}}
+            <section class="mdc-card__actions">
+                <button class="mdc-button mdc-button--compact mdc-card__action">pdate Available</button>
+            </section>
+            {{/update}}
+        </div>
     </div>
     {{/packages}}
 </div>
