@@ -7,7 +7,6 @@
     {{#packages}}
     <div class="mdc-card plugin-card">
         {{#installed}}
-        <section class="mdc-card__media media-installed"></section>
         <section class="mdc-card__primary">
             <h1 class="mdc-card__title mdc-card__title--large">{{description}}</h1>
             <h2 class="mdc-card__subtitle">{{name}} {{installed}}</h2>
@@ -21,7 +20,6 @@
         </section>
         {{/installed}}
         {{^installed}}
-        <section class="mdc-card__media media-available"></section>
         <section class="mdc-card__primary">
             <h1 class="mdc-card__title mdc-card__title--large">{{description}}</h1>
             <h2 class="mdc-card__subtitle">{{name}} {{version}}</h2>

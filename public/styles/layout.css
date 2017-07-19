@@ -296,20 +296,11 @@ content {
     margin: 10px;
     width: 496px;
     height: 260px;
+    background-color: #fff;
     word-wrap: break-word;
     display: inline-block;
     position: relative;
 }
-
-    .plugins .plugin-card .media-installed {
-        background-color: #0fbf67;
-        height: 2.5rem;
-    }
-
-    .plugins .plugin-card .media-available {
-        background-color:#9b9b9b;
-        height: 2.5rem;
-    }
 
     .plugins .plugin-card .actions {
         position: absolute;
