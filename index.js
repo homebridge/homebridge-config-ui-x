@@ -1,15 +1,25 @@
+var fs = require("fs");
 var path = require("path");
 var chalk = require("chalk");
 
 var Service;
 var Characteristic;
 
-module.exports = function(service) {
+module.exports = function (service) {
     hb = {
         service: service,
         config: service.user.configPath(),
         auth: path.join(service.user.storagePath(), "auth.json")
     };
+
+    if (!fs.existsSync(hb.auth)) {
+        fs.appendFileSync(hb.auth, JSON.stringify([{
+            "id": 1,
+            "username": "admin",
+            "password": "admin",
+            "name": "Administrator"
+        }], null, 4));
+    }
 
     Service = service.hap.Service;
     Characteristic = service.hap.Characteristic;
@@ -80,7 +90,7 @@ function HttpServer(log, config) {
     }
 }
 
-HttpServer.prototype.accessories = function(callback) {
+HttpServer.prototype.accessories = function (callback) {
     this.accessories = [];
 
     callback(this.accessories);
