@@ -126,7 +126,7 @@ router.get("/installed", function (req, res, next) {
     plugins.installed(function (err, pkgs) {
         res.render("installed", {
             controller: "plugins",
-            title: "Configuration",
+            title: "Plugins",
             packages: pkgs
         });
     });
@@ -141,7 +141,7 @@ router.get("/plugins", function (req, res, next) {
 }, function (req, res, next) {
     res.render("plugins", {
         controller: "plugins",
-        title: "Configuration"
+        title: "Plugins"
     });
 });
 
