@@ -289,7 +289,7 @@ content {
     width: 320px;
     height: 48px;
     top: 64px;
-    right: 0;
+    left: 0;
 }
 
 .plugins .plugin-cards {
