@@ -301,8 +301,13 @@ content {
     position: relative;
 }
 
-    .plugins .plugin-card .media {
+    .plugins .plugin-card .media-installed {
         background-color: #0fbf67;
+        height: 2.5rem;
+    }
+
+    .plugins .plugin-card .media-available {
+        background-color:#9b9b9b;
         height: 2.5rem;
     }
 
