@@ -83,6 +83,16 @@ content {
         margin: 0;
     }
 
+.restart-progress {
+    margin-top: 35%;
+}
+
+    .restart-progress figcaption {
+        font-size: 1.8em;
+        font-weight: bold;
+        color: #353535;
+    }
+
 .login table {
     width: 100%;
     height: 60%;

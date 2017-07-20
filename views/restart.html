@@ -1,4 +1,5 @@
-<figure class="linear-progress-demo">
+<figure class="restart-progress">
+    <figcaption>Restarting Server</figcaption>
     <div role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">
         <div class="mdc-linear-progress__buffering-dots"></div>
         <div class="mdc-linear-progress__buffer"></div>
@@ -9,14 +10,13 @@
             <span class="mdc-linear-progress__bar-inner"></span>
         </div>
     </div>
-    <figcaption>Restarting Server</figcaption>
 </figure>
 <script>
     var bar = mdc.linearProgress.MDCLinearProgress.attachTo($(".mdc-linear-progress")[0]);
 
     bar.progress = 0.5;
 
-    if (determinate.dataset.buffer) {
+    if (bar.dataset.buffer) {
         bar.buffer = 0.75;
     }
 
