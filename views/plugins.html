@@ -54,7 +54,12 @@
     <div class="mdc-card plugin-card">
         {{#installed}}
         <section class="mdc-card__primary">
+            {{#update}}
+            <h2 class="installed-tag mdc-card__subtitle">Update Available</h2>
+            {{/update}}
+            {{^update}}
             <h2 class="installed-tag mdc-card__subtitle">Installed</h2>
+            {{/update}}
             <h1 class="mdc-card__title mdc-card__title--large">{{description}}</h1>
             <h2 class="mdc-card__subtitle">{{name}} {{installed}}</h2>
         </section>
