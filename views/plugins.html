@@ -4,11 +4,14 @@
     </ul>
 </div>
 <div class="plugin-search-form">
-    <div class="mdc-form-field mdc-form-field--align-end">
-        <div class="mdc-textfield" data-demo-no-auto-js="">
-            <input type="text" class="mdc-textfield__input" id="search" name="search" placeholder="Search" value="{{search}}">
+    <form id="search-form">
+        <div class="mdc-form-field mdc-form-field--align-end">
+            <div class="mdc-textfield" data-demo-no-auto-js="">
+                <input type="text" class="mdc-textfield__input" id="search" name="search" placeholder="Search" value="{{search}}">
+            </div>
         </div>
-    </div>
+        <button type="submit" class="mdc-button mdc-button--raised mdc-button--primary mdc-ripple-surface" data-mdc-auto-init="MDCRipple">Search</button>
+    </form>
 </div>
 <div id="installed-plugins" class="plugin-cards">
     {{#packages}}
