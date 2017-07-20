@@ -12,16 +12,9 @@
     </div>
 </figure>
 <script>
-    var bar = mdc.linearProgress.MDCLinearProgress.attachTo($(".mdc-linear-progress")[0]);
-
-    bar.progress = 0.5;
-
-    if (bar.dataset.buffer) {
-        bar.buffer = 0.75;
-    }
+    mdc.linearProgress.MDCLinearProgress.attachTo($(".mdc-linear-progress")[0]);
 
     setTimeout(function () {
         window.location.href = "{{redirect}}";
     }, 5000);
-
 </script>
