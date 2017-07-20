@@ -23,7 +23,7 @@ router.get("/", function (req, res, next) {
     }
 });
 
-router.get("/", function (req, res, next) {
+router.get("/password", function (req, res, next) {
     if (req.user) {
         next();
     } else {

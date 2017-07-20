@@ -411,6 +411,10 @@ content {
     cursor: pointer;
 }
 
+.server-menu-divider {
+    margin: 10px 0 10px 0;    
+}
+
 @media (max-width: 959px) and (orientation: landscape) {
     content {
         border-top: 48px transparent solid;
