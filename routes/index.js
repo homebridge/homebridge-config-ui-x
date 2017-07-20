@@ -84,6 +84,20 @@ router.get("/restart", function (req, res, next) {
     require("child_process").exec(hb.restart);
 });
 
+router.get("/upgrade", function (req, res, next) {
+    if (req.user) {
+        next();
+    } else {
+        req.session.referer = "/";
+        res.redirect("/login");
+    }
+}, function (req, res, next) {
+    res.render("upgrade", {
+        controller: "index",
+        title: "Status"
+    });
+});
+
 router.get("/logout", function (req, res) {
     req.logout();
     res.redirect("/");

@@ -15,8 +15,20 @@ $(document).ready(function () {
         });
     }, 3000);
 
+    var upgdg = new mdc.dialog.MDCDialog($("#upgrade-server-dialog")[0]);
+
+    upgdg.listen("MDCDialog:accept", function () {
+        window.location.href = "/upgrade";
+    });
+
     $(".restart-server").click(function () {
         window.location.href = "/restart";
+    });
+
+    $(".upgrade-server-button").click(function () {
+        $("#upgrade-server-dialog").find("#server-version").html(btn.attr("version"));
+
+        upgdg.show()
     });
 });
 
