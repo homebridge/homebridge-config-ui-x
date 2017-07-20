@@ -31,6 +31,13 @@ router.get("/", function (req, res, next) {
 });
 
 router.get("/upgrade", function (req, res, next) {
+    if (req.user) {
+        next();
+    } else {
+        req.session.referer = "/plugins";
+        res.redirect("/login");
+    }
+}, function (req, res, next) {
     res.render("upgrade", {
         controller: "plugins",
         title: "Plugins"
@@ -38,6 +45,13 @@ router.get("/upgrade", function (req, res, next) {
 });
 
 router.get("/uninstall", function (req, res, next) {
+    if (req.user) {
+        next();
+    } else {
+        req.session.referer = "/plugins";
+        res.redirect("/login");
+    }
+}, function (req, res, next) {
     res.render("uninstall", {
         controller: "plugins",
         title: "Plugins"
@@ -45,6 +59,13 @@ router.get("/uninstall", function (req, res, next) {
 });
 
 router.get("/install", function (req, res, next) {
+    if (req.user) {
+        next();
+    } else {
+        req.session.referer = "/plugins";
+        res.redirect("/login");
+    }
+}, function (req, res, next) {
     res.render("install", {
         controller: "plugins",
         title: "Plugins"
