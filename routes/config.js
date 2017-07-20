@@ -42,6 +42,7 @@ router.get("/", function (req, res, next) {
     res.render("config", {
         controller: "config",
         title: "Configuration",
+        user: req.user,
         server: server,
         platforms: platforms,
         accrssories: accessories
@@ -93,6 +94,7 @@ router.post("/", function (req, res, next) {
     res.render("restart", {
         controller: "restart",
         title: "Configuration",
+        user: req.user,
         redirect: "/config"
     });
 

@@ -1,9 +1,10 @@
 [
     {
         "id": 1,
-        "username": "[USERNAME]",
-        "password": "[PASSWORD]",
-        "name": "[FULL NAME]"
+        "username": "admin",
+        "password": "admin",
+        "name": "Administrator",
+        "admin": true
     },
     {
         "id": 2,

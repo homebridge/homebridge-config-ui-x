@@ -6,6 +6,10 @@ $(document).ready(function () {
             menu.open = !menu.open;
         });
 
+        $(".change-password").click(function () {
+            window.location.href = "/accounts/password";
+        });
+
         $(".logout-button").click(function () {
             window.location.href = "/logout";
         });

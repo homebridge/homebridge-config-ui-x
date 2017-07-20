@@ -15,6 +15,7 @@ router.get("/", function (req, res, next) {
             res.render("plugins", {
                 controller: "plugins",
                 title: "Plugins",
+                user: req.user,
                 search: (req.query.search) ? req.query.search : "",
                 packages: pkgs
             });
@@ -24,6 +25,7 @@ router.get("/", function (req, res, next) {
             res.render("plugins", {
                 controller: "plugins",
                 title: "Plugins",
+                user: req.user,
                 packages: pkgs
             });
         });
@@ -40,7 +42,8 @@ router.get("/upgrade", function (req, res, next) {
 }, function (req, res, next) {
     res.render("upgrade", {
         controller: "plugins",
-        title: "Plugins"
+        title: "Plugins",
+        user: req.user
     });
 });
 
@@ -54,7 +57,8 @@ router.get("/uninstall", function (req, res, next) {
 }, function (req, res, next) {
     res.render("uninstall", {
         controller: "plugins",
-        title: "Plugins"
+        title: "Plugins",
+        user: req.user
     });
 });
 
@@ -68,7 +72,8 @@ router.get("/install", function (req, res, next) {
 }, function (req, res, next) {
     res.render("install", {
         controller: "plugins",
-        title: "Plugins"
+        title: "Plugins",
+        user: req.user
     });
 });
 

@@ -18,6 +18,7 @@ router.get("/", function (req, res, next) {
         res.render("index", {
             controller: "index",
             title: "Status",
+            user: req.user,
             server: server
         });
     });
@@ -78,6 +79,7 @@ router.get("/restart", function (req, res, next) {
 }, function (req, res, next) {
     res.render("restart", {
         title: "Status",
+        user: req.user,
         redirect: "/"
     });
 
@@ -94,7 +96,8 @@ router.get("/upgrade", function (req, res, next) {
 }, function (req, res, next) {
     res.render("upgrade", {
         controller: "index",
-        title: "Status"
+        title: "Status",
+        user: req.user
     });
 });
 

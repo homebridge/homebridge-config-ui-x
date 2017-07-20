@@ -14,6 +14,7 @@ router.get("/", function (req, res, next) {
     res.render("log", {
         controller: "log",
         title: "Log",
+        user: req.user
     });
 });
 

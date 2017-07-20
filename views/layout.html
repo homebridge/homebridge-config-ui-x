@@ -33,6 +33,9 @@
             <nav class="mdc-list">
                 <a href="/" class="material-icons controller-index" aria-hidden="true" title="Status">&#xE1B1;</a>
                 <a href="/log" class="material-icons controller-log" aria-hidden="true" title="Logs">&#xE86D;</a>
+                {{#user.admin}}
+                <a href="/accounts" class="material-icons controller-accounts" aria-hidden="true" title="Accounts">&#xE8D3;</a>
+                {{/user.admin}}
                 <a href="/plugins" class="material-icons controller-plugins" aria-hidden="true" title="Plugins">&#xE87B;</a>
                 <a href="/config" class="material-icons controller-config" aria-hidden="true" title="Configuration">&#xE8B8;</a>
             </nav>
