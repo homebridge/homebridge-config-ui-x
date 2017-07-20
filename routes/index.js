@@ -73,7 +73,10 @@ router.get("/restart", function (req, res, next) {
     }
 }, function (req, res, next) {
     require("child_process").exec(hb.restart);
-    res.redirect(302, "/");
+
+    setTimeout(function () {
+        res.redirect(302, "/");
+    }, 500);
 });
 
 router.get("/logout", function (req, res) {
