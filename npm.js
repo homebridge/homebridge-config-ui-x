@@ -10,6 +10,7 @@
 
     var npm = {
         installed: function (callback) {
+            var me = this;
             var base = this.getBase();
 
             if (process.platform === "win32") {
@@ -52,7 +53,7 @@
                             name: body.collected.metadata.name,
                             installed: pkg.version,
                             version: body.collected.metadata.version,
-                            update: (body.collected.metadata.version > pkg.version),
+                            update: !(me.versionCompare(pkg.version, body.collected.metadata.version)),
                             description: desc,
                             links: body.collected.metadata.links
                         });
@@ -65,6 +66,7 @@
             }
         },
         search: function (search, callback) {
+            var me = this;
             var base = this.getBase();
 
             if (base && search && search != "") {
@@ -99,7 +101,7 @@
                                 name: body.results[i].package.name,
                                 installed: cur[body.results[i].package.name],
                                 version: body.results[i].package.version,
-                                update: (body.results[i].package.version > cur[body.results[i].package.name]),
+                                update: !(me.versionCompare(cur[body.results[i].package.name], body.results[i].package.version)),
                                 description: desc,
                                 links: body.results[i].package.links
                             });
@@ -120,6 +122,7 @@
             }
         },
         package: function (name, callback) {
+            var me = this;
             var base = this.getBase();
 
             if (base && name && name != "") {
@@ -140,7 +143,7 @@
                             name: body.collected.metadata.name,
                             installed: version,
                             version: body.collected.metadata.version,
-                            update: (body.collected.metadata.version > version),
+                            update: !(me.versionCompare(version, body.collected.metadata.version)),
                             description: desc,
                             links: body.collected.metadata.links
                         });
@@ -162,6 +165,40 @@
             }
 
             return base;
+        },
+        versionCompare: function (local, remote) {
+            if (!local || !remote || local.length === 0 || remote.length === 0)
+                return false;
+            if (local == remote)
+                return true;
+            if (VPAT.test(local) && VPAT.test(remote)) {
+                var lparts = local.split('.');
+
+                while (lparts.length < 3) {
+                    lparts.push("0");
+                }
+
+                var rparts = remote.split('.');
+
+                while (rparts.length < 3) {
+                    rparts.push("0");
+                }
+
+                for (var i = 0; i < 3; i++) {
+                    var l = parseInt(lparts[i], 10);
+                    var r = parseInt(rparts[i], 10);
+
+                    if (l === r) {
+                        continue;
+                    }
+
+                    return l > r;
+                }
+
+                return true;
+            } else {
+                return local >= remote;
+            }
         }
     }
 
