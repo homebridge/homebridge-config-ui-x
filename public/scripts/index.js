@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    var status = $(".status");
+    var status = $("#dynamic-status");
 
     status.load("/status", function (res, stat) {
         if (stat == "error") {

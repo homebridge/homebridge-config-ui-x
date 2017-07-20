@@ -8,7 +8,7 @@
         module.exports = exports;
     }
 
-    var plugins = {
+    var npm = {
         installed: function (callback) {
             var base = this.getBase();
 
@@ -72,10 +72,12 @@
                 var cur = {};
 
                 for (var i = 0; i < dr.length; i++) {
-                    var pkg = require(path.join(base, dr[i] + "/package.json"));
+                    if (fs.existsSync(path.join(base, dr[i] + "/package.json"))) {
+                        var pkg = require(path.join(base, dr[i] + "/package.json"));
 
-                    if (Array.isArray(pkg.keywords) && pkg.keywords.indexOf("homebridge-plugin") >= 0) {
-                        cur[pkg.name] = pkg.version;
+                        if (Array.isArray(pkg.keywords) && pkg.keywords.indexOf("homebridge-plugin") >= 0) {
+                            cur[pkg.name] = pkg.version;
+                        }
                     }
                 }
 
@@ -117,6 +119,35 @@
                 callback(null, []);
             }
         },
+        package: function (name, callback) {
+            var base = this.getBase();
+
+            if (base && name && name != "") {
+                if (fs.existsSync(path.join(base, name + "/package.json"))) {
+                    var version = require(path.join(base, name + "/package.json")).version;
+
+                    request({
+                        url: "https://api.npms.io/v2/package/" + name,
+                        json: true
+                    }, function (err, res, body) {
+                        var desc = body.collected.metadata.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, "").trim();
+
+                        if (desc.length > 80) {
+                            desc = desc.substring(0, 77) + "...";
+                        }
+
+                        callback(err, {
+                            name: body.collected.metadata.name,
+                            installed: version,
+                            version: body.collected.metadata.version,
+                            update: (body.collected.metadata.version > version),
+                            description: desc,
+                            links: body.collected.metadata.links
+                        });
+                    });
+                }
+            }
+        },
         getBase: function () {
             var base;
 
@@ -134,5 +165,5 @@
         }
     }
 
-    declare("plugins", plugins)
+    declare("npm", npm)
 })();

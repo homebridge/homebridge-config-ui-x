@@ -1,8 +1,7 @@
 var fs = require("fs");
-
+var convert = require("../ansi");
 var express = require("express");
 var router = express.Router();
-var convert = require("../ansi");
 
 router.get("/", function (req, res, next) {
     if (req.user) {

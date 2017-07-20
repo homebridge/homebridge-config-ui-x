@@ -1,4 +1,5 @@
 var os = require("os");
+var npm = require("../npm");
 var express = require("express");
 var passport = require("passport");
 var router = express.Router();
@@ -13,9 +14,12 @@ router.get("/", function (req, res, next) {
         res.redirect("/login");
     }
 }, function (req, res, next) {
-    res.render("index", {
-        controller: "index",
-        title: "Status"
+    npm.package("homebridge", function (err, server) {
+        res.render("index", {
+            controller: "index",
+            title: "Status",
+            server: server
+        });
     });
 });
 

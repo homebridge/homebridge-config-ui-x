@@ -1,4 +1,4 @@
-var plugins = require("../plugins");
+var npm = require("../npm");
 var express = require("express");
 var router = express.Router();
 
@@ -11,7 +11,7 @@ router.get("/", function (req, res, next) {
     }
 }, function (req, res, next) {
     if (req.query.search && req.query.search != "") {
-        plugins.search(req.query.search, function (err, pkgs) {
+        npm.search(req.query.search, function (err, pkgs) {
             res.render("plugins", {
                 controller: "plugins",
                 title: "Plugins",
@@ -20,7 +20,7 @@ router.get("/", function (req, res, next) {
             });
         });
     } else {
-        plugins.installed(function (err, pkgs) {
+        npm.installed(function (err, pkgs) {
             res.render("plugins", {
                 controller: "plugins",
                 title: "Plugins",
