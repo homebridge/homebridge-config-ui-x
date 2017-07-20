@@ -21,6 +21,7 @@
                 </div>
             </td>
             <td class="status">
+                <h1>Server Status</h1>
                 <section class="mdc-elevation--z4">
                     <h3>Homebridge</h3>
                     <ul class="mdc-list mdc-list--two-line mdc-list--avatar-list status-icon">
@@ -32,7 +33,7 @@
                             </span>
                             <span class="mdc-list-item__text">
                                 {{server.version}} Update Available
-                                <span class="mdc-list-item__text__secondary">{{server.installed}}</span>
+                                <span class="mdc-list-item__text__secondary">Version {{server.installed}}</span>
                             </span>
                             <section class="mdc-card__actions">
                                 <button class="upgrade-server-button mdc-button mdc-button--compact mdc-card__action">Upgrade</button>
@@ -43,14 +44,14 @@
                             </span>
                             <span class="mdc-list-item__text">
                                 Up to Date
-                                <span class="mdc-list-item__text__secondary">{{server.installed}}</span>
+                                <span class="mdc-list-item__text__secondary">Version {{server.installed}}</span>
                             </span>
                             {{/update}}
                         </li>
                         {{/server}}
                     </ul>
                 </section>
-                <section id="dynamic-status"></section>
+                <div id="dynamic-status"></div>
             </td>
         </tr>
     </tbody>
