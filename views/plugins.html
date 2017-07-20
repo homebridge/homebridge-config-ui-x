@@ -54,12 +54,15 @@
     <div class="mdc-card plugin-card">
         {{#installed}}
         <section class="mdc-card__primary">
+            <h2 class="installed-tag mdc-card__subtitle">Installed</h2>
             <h1 class="mdc-card__title mdc-card__title--large">{{description}}</h1>
             <h2 class="mdc-card__subtitle">{{name}} {{installed}}</h2>
         </section>
         <section class="mdc-card__actions actions">
             <button class="mdc-button mdc-button--compact mdc-card__action" onclick="window.open('{{links.npm}}', '_blank');">NPM</button>
+            {{#update}}
             <button class="plugin-action-button mdc-button mdc-button--compact mdc-card__action" action="upgrade" package="{{name}}" version="{{version}}">Upgrade</button>
+            {{/update}}
             <button class="plugin-action-button mdc-button mdc-button--compact mdc-card__action" action="uninstall" package="{{name}}">Uninstall</button>
         </section>
         {{/installed}}

@@ -309,6 +309,11 @@ content {
         left: 0;
     }
 
+    .plugins .plugin-card .installed-tag {
+        color: #00b9f1;
+        font-weight: bold;
+    }
+
     .plugins .plugin-card  a {
         color: #00b9f1 !important;
     }
