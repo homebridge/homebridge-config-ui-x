@@ -42,12 +42,18 @@
                         url: "https://api.npms.io/v2/package/" + pkg.name,
                         json: true
                     }, function (err, res, body) {
+                        var desc = body.collected.metadata.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, "").trim();
+
+                        if (desc.length > 100) {
+                            desc = desc.substring(0, 97) + "...";
+                        }
+
                         callback(err, {
                             name: body.collected.metadata.name,
                             installed: pkg.version,
                             version: body.collected.metadata.version,
                             update: (body.collected.metadata.version > pkg.version),
-                            description: body.collected.metadata.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, "").trim(),
+                            description: desc,
                             links: body.collected.metadata.links
                         });
                     });
@@ -80,20 +86,26 @@
                     var pkgs = [];
 
                     for (var i = 0; i < body.results.length; i++) {
+                        var desc = body.results[i].package.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, "").trim();
+
+                        if (desc.length > 100) {
+                            desc = desc.substring(0, 97) + "...";
+                        }
+
                         if (cur[body.results[i].package.name]) {
                             pkgs.push({
                                 name: body.results[i].package.name,
                                 installed: cur[body.results[i].package.name],
                                 version: body.results[i].package.version,
                                 update: (body.results[i].package.version > cur[body.results[i].package.name]),
-                                description: body.results[i].package.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, "").trim(),
+                                description: desc,
                                 links: body.results[i].package.links
                             });
                         } else {
                             pkgs.push({
                                 name: body.results[i].package.name,
                                 version: body.results[i].package.version,
-                                description: body.results[i].package.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, "").trim(),
+                                description: desc,
                                 links: body.results[i].package.links
                             });
                         }
