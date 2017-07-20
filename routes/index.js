@@ -73,12 +73,11 @@ router.get("/restart", function (req, res, next) {
     }
 }, function (req, res, next) {
     res.render("restart", {
-        controller: "restart",
         title: "Status",
         redirect: "/"
     });
 
-    require("child_process").exec(hb.restart);
+    //require("child_process").exec(hb.restart);
 });
 
 router.get("/logout", function (req, res) {
