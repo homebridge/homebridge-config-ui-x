@@ -88,13 +88,8 @@ router.post("/", function (req, res, next) {
 
     app.get("log")("Configuration Changed.");
 
-    var exec = require("child_process").exec;
-
-    exec(hb.restart, function () {
-        setTimeout(function () {
-            res.redirect(302, "/config");
-        }, 5000);
-    });
+    require("child_process").exec(hb.restart);
+    res.redirect(302, "/config");
 });
 
 router.get("/backup", function (req, res, next) {
