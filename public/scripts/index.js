@@ -26,8 +26,7 @@ $(document).ready(function () {
     });
 
     $(".upgrade-server-button").click(function () {
-        $("#upgrade-server-dialog").find("#server-version").html(btn.attr("version"));
-
+        $("#upgrade-server-dialog").find("#server-version").html($(this).attr("version"));
         upgdg.show()
     });
 });
