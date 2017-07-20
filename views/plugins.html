@@ -12,7 +12,7 @@
             </h2>
         </header>
         <section id="mdc-dialog-default-description" class="mdc-dialog__body">
-            It is a good idea to backup your configuration before upgrading. Also verify that the this version is compatiable with your version of Homebridge.
+            It is a good idea to backup your configuration before upgrading. Also verify that this version is compatiable with your version of Homebridge.
         </section>
         <footer class="mdc-dialog__footer">
             <button type="button" class="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--cancel">Cancel</button>
@@ -59,9 +59,7 @@
         </section>
         <section class="mdc-card__actions actions">
             <button class="mdc-button mdc-button--compact mdc-card__action" onclick="window.open('{{links.npm}}', '_blank');">NPM</button>
-            {{#update}}
             <button class="plugin-action-button mdc-button mdc-button--compact mdc-card__action" action="upgrade" package="{{name}}" version="{{version}}">Upgrade</button>
-            {{/update}}
             <button class="plugin-action-button mdc-button mdc-button--compact mdc-card__action" action="uninstall" package="{{name}}">Uninstall</button>
         </section>
         {{/installed}}

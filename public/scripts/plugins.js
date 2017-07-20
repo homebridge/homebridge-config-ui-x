@@ -9,7 +9,7 @@ $(document).ready(function () {
         var upgdg = new mdc.dialog.MDCDialog($("#upgrade-plugin-dialog")[0]);
 
         upgdg.listen("MDCDialog:accept", function () {
-            window.location.href = "/plugins/upgrade?package=" + undlg.package;
+            window.location.href = "/plugins/upgrade?package=" + upgdg.package;
         });
 
         $("#plugin-list").on("click", ".plugin-action-button", function () {
