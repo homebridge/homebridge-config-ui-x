@@ -40,18 +40,21 @@
             <h2 class="mdc-card__subtitle">{{name}} {{installed}}</h2>
         </section>
         <section class="mdc-card__actions actions">
-            <button class="mdc-button mdc-button--compact mdc-card__action" onclick="window.open('{{links.npm}}', '_blank');">NPM</button>            {{#update}}
-            <button class="mdc-button mdc-button--compact mdc-card__action">Update</button> {{/update}}
-            <button class="mdc-button mdc-button--compact mdc-card__action" onclick="uninstall('{{name}}');">Uninstall</button>
+            <button class="mdc-button mdc-button--compact mdc-card__action" onclick="window.open('{{links.npm}}', '_blank');">NPM</button>
+            {{#update}}
+            <button class="plugin-action-button mdc-button mdc-button--compact mdc-card__action" action="update" package="{{name}}">Update</button>
+            {{/update}}
+            <button class="plugin-action-button mdc-button mdc-button--compact mdc-card__action" action="uninstall" package="{{name}}">Uninstall</button>
         </section>
-        {{/installed}} {{^installed}}
+        {{/installed}}
+        {{^installed}}
         <section class="mdc-card__primary">
             <h1 class="mdc-card__title mdc-card__title--large">{{description}}</h1>
             <h2 class="mdc-card__subtitle">{{name}} {{version}}</h2>
         </section>
         <section class="mdc-card__actions actions">
             <button class="mdc-button mdc-button--compact mdc-card__action" onclick="window.open('{{links.npm}}', '_blank');">NPM</button>
-            <button class="mdc-button mdc-button--compact mdc-card__action">Install</button>
+            <button class="plugin-action-button mdc-button mdc-button--compact mdc-card__action" action="install" package="{{name}}">Install</button>
         </section>
         {{/installed}}
     </div>
