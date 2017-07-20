@@ -294,8 +294,8 @@ content {
 
 .plugins .plugin-card {
     margin: 10px;
-    width: 496px;
-    height: 260px;
+    width: 370px;
+    height: 230px;
     background-color: #fff;
     word-wrap: break-word;
     display: inline-block;
