@@ -24,9 +24,9 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.use(require("express-session")({
-    secret: "keyboard cat",
-    resave: false,
-    saveUninitialized: true
+    store: new MemoryStore({
+        reapInterval: 60000 * 10
+    })
 }));
 
 passport.use(new strategy(function (username, password, callback) {
