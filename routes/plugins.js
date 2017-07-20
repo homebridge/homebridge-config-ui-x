@@ -14,6 +14,7 @@ router.get("/", function (req, res, next) {
             res.render("plugins", {
                 controller: "plugins",
                 title: "Plugins",
+                search: (req.query.search) ? req.query.search : "",
                 packages: pkgs
             });
         });
