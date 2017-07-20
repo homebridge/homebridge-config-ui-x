@@ -90,11 +90,13 @@ router.post("/", function (req, res, next) {
 
     app.get("log")("Configuration Changed.");
 
-    require("child_process").exec(hb.restart);
+    res.render("restart", {
+        controller: "restart",
+        title: "Configuration",
+        redirect: "/config"
+    });
 
-    setTimeout(function () {
-        res.redirect(302, "/config");
-    }, 500);
+    require("child_process").exec(hb.restart);
 });
 
 router.get("/backup", function (req, res, next) {
