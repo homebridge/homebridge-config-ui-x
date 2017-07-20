@@ -3,6 +3,24 @@
         <li class="logout-button mdc-list-item" role="menuitem" tabindex="0">Logout</li>
     </ul>
 </div>
+<aside id="uninstall-plugin-dialog" class="mdc-dialog" role="alertdialog" aria-hidden="true" aria-labelledby="mdc-dialog-default-label"
+    aria-describedby="mdc-dialog-default-description">
+    <div class="mdc-dialog__surface">
+        <header class="mdc-dialog__header">
+            <h2 id="mdc-dialog-default-label" class="mdc-dialog__header__title">
+                Are you sure you want to uninstall this plugin?
+            </h2>
+        </header>
+        <section id="mdc-dialog-default-description" class="mdc-dialog__body">
+            Once you install this plugin you may have to modify your configuration before restarting.
+        </section>
+        <footer class="mdc-dialog__footer">
+            <button type="button" class="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--cancel">Cancel</button>
+            <button type="button" class="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--accept">Ininstall</button>
+        </footer>
+    </div>
+    <div class="mdc-dialog__backdrop"></div>
+</aside>
 <div class="plugin-search-form">
     <form id="search-form">
         <div class="mdc-form-field mdc-form-field--align-end">
@@ -24,7 +42,7 @@
         <section class="mdc-card__actions actions">
             <button class="mdc-button mdc-button--compact mdc-card__action" onclick="window.open('{{links.npm}}', '_blank');">NPM</button>            {{#update}}
             <button class="mdc-button mdc-button--compact mdc-card__action">Update</button> {{/update}}
-            <button class="mdc-button mdc-button--compact mdc-card__action">Uninstall</button>
+            <button class="mdc-button mdc-button--compact mdc-card__action" onclick="uninstall('{{name}}');">Uninstall</button>
         </section>
         {{/installed}} {{^installed}}
         <section class="mdc-card__primary">
