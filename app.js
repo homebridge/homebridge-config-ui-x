@@ -23,8 +23,6 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-app.set("trust proxy", 1);
-
 app.use(require("express-session")({
     secret: 'keyboard cat',
     resave: false,
