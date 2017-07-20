@@ -3,6 +3,12 @@
         <li class="logout-button mdc-list-item" role="menuitem" tabindex="0">Logout</li>
     </ul>
 </div>
+<div class="mdc-form-field mdc-form-field--align-end">
+    <div class="mdc-textfield" data-demo-no-auto-js="">
+        <input type="text" class="mdc-textfield__input" id="search" name="search" placeholder="" value="{{search}}">
+    </div>
+    <label for="css-only-textfield">Search</label>
+</div>
 <div id="installed-plugins" class="plugin-cards">
     {{#packages}}
     <div class="mdc-card plugin-card">
@@ -12,14 +18,11 @@
             <h2 class="mdc-card__subtitle">{{name}} {{installed}}</h2>
         </section>
         <section class="mdc-card__actions actions">
-            <button class="mdc-button mdc-button--compact mdc-card__action" onclick="window.open('{{links.npm}}', '_blank');">NPM</button>
-            {{#update}}
-            <button class="mdc-button mdc-button--compact mdc-card__action">Update</button>
-            {{/update}}
+            <button class="mdc-button mdc-button--compact mdc-card__action" onclick="window.open('{{links.npm}}', '_blank');">NPM</button>            {{#update}}
+            <button class="mdc-button mdc-button--compact mdc-card__action">Update</button> {{/update}}
             <button class="mdc-button mdc-button--compact mdc-card__action">Uninstall</button>
         </section>
-        {{/installed}}
-        {{^installed}}
+        {{/installed}} {{^installed}}
         <section class="mdc-card__primary">
             <h1 class="mdc-card__title mdc-card__title--large">{{description}}</h1>
             <h2 class="mdc-card__subtitle">{{name}} {{version}}</h2>
