@@ -329,6 +329,9 @@ content {
 
     .plugins .plugin-search-form input {
         background-color: #fff;
+        width: 370px;
+        height: 27px;
+        padding: 4px 10px 5px 10px;
     }
 
 .title {
