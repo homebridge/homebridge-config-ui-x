@@ -44,8 +44,8 @@
                     }, function (err, res, body) {
                         var desc = body.collected.metadata.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, "").trim();
 
-                        if (desc.length > 100) {
-                            desc = desc.substring(0, 97) + "...";
+                        if (desc.length > 90) {
+                            desc = desc.substring(0, 87) + "...";
                         }
 
                         callback(err, {
@@ -88,8 +88,8 @@
                     for (var i = 0; i < body.results.length; i++) {
                         var desc = body.results[i].package.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, "").trim();
 
-                        if (desc.length > 100) {
-                            desc = desc.substring(0, 97) + "...";
+                        if (desc.length > 90) {
+                            desc = desc.substring(0, 87) + "...";
                         }
 
                         if (cur[body.results[i].package.name]) {
