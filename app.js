@@ -23,7 +23,7 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-app.use(express.session({
+app.use(require("express-session")({
     secret: "keyboard cat",
     resave: false,
     saveUninitialized: false
