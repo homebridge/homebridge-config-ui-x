@@ -319,10 +319,16 @@ content {
 .plugins .plugin-search-form {
     width: 100%;
     height: 35px;
+    padding: 20px;
+    box-sizing: border-box;
     position: absolute;
     top: 64px;
     left: 57px;
 }
+
+    .plugins .plugin-search-form input {
+        background-color: #fff;
+    }
 
 .title {
     cursor: default;
