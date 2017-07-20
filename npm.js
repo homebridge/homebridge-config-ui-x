@@ -167,11 +167,13 @@
             return base;
         },
         versionCompare: function (local, remote) {
+            var pattern = /^\d+(\.\d+){0,2}$/;
+
             if (!local || !remote || local.length === 0 || remote.length === 0)
                 return false;
             if (local == remote)
                 return true;
-            if (VPAT.test(local) && VPAT.test(remote)) {
+            if (pattern.test(local) && pattern.test(remote)) {
                 var lparts = local.split('.');
 
                 while (lparts.length < 3) {
