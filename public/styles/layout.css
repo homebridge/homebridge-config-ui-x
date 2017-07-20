@@ -334,6 +334,11 @@ content {
         padding: 4px 10px 5px 10px;
     }
 
+    .plugins .search-button {
+        margin-top: -9px;
+        margin-left: -6px;
+    }
+
 .title {
     cursor: default;
 }
