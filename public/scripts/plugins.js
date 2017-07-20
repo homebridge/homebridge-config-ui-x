@@ -17,10 +17,10 @@ $(document).ready(function () {
 
             switch (btn.attr("action")) {
                 case "upgrade":
-                    $("#uninstall-plugin-dialog").find("#plugin-version").html(btn.attr("version"));
+                    $("#upgrade-plugin-dialog").find("#plugin-version").html(btn.attr("version"));
 
-                    undlg.package = btn.attr("package");
-                    undlg.show()
+                    upgdg.package = btn.attr("package");
+                    upgdg.show()
                     break;
 
                 case "uninstall":
