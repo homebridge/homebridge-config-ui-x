@@ -33,24 +33,21 @@ router.get("/", function (req, res, next) {
 router.get("/upgrade", function (req, res, next) {
     res.render("upgrade", {
         controller: "plugins",
-        title: "Plugins",
-        packages: pkgs
+        title: "Plugins"
     });
 });
 
 router.get("/uninstall", function (req, res, next) {
     res.render("uninstall", {
         controller: "plugins",
-        title: "Plugins",
-        packages: pkgs
+        title: "Plugins"
     });
 });
 
 router.get("/install", function (req, res, next) {
     res.render("install", {
         controller: "plugins",
-        title: "Plugins",
-        packages: pkgs
+        title: "Plugins"
     });
 });
 
