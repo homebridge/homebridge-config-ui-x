@@ -6,6 +6,7 @@ router.get("/", function (req, res, next) {
     if (req.user) {
         next();
     } else {
+        req.session.referer = "/plugins";
         res.redirect("/login");
     }
 }, function (req, res, next) {

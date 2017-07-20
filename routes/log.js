@@ -8,6 +8,7 @@ router.get("/", function (req, res, next) {
     if (req.user) {
         next();
     } else {
+        req.session.referer = "/log";
         res.redirect("/login");
     }
 }, function(req, res, next) {
@@ -27,6 +28,7 @@ router.get("/clear", function (req, res, next) {
     if (req.user) {
         next();
     } else {
+        req.session.referer = "/log";
         res.redirect("/login");
     }
 }, function(req, res, next) {

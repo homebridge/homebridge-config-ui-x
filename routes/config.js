@@ -6,6 +6,7 @@ router.get("/", function (req, res, next) {
     if (req.user) {
         next();
     } else {
+        req.session.referer = "/config";
         res.redirect("/login");
     }
 }, function (req, res, next) {
@@ -51,6 +52,7 @@ router.post("/", function (req, res, next) {
     if (req.user) {
         next();
     } else {
+        req.session.referer = "/config";
         res.redirect("/login");
     }
 }, function (req, res, next) {
@@ -96,6 +98,7 @@ router.get("/backup", function (req, res, next) {
     if (req.user) {
         next();
     } else {
+        req.session.referer = "/config";
         res.redirect("/login");
     }
 }, function (req, res, next) {

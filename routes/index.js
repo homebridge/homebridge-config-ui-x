@@ -9,6 +9,7 @@ router.get("/", function (req, res, next) {
     if (req.user) {
         next();
     } else {
+        req.session.referer = "/";
         res.redirect("/login");
     }
 }, function (req, res, next) {
@@ -51,6 +52,7 @@ router.get("/pin", function (req, res, next) {
     if (req.user) {
         next();
     } else {
+        req.session.referer = "/";
         res.redirect("/login");
     }
 }, function (req, res, next) {
@@ -66,6 +68,7 @@ router.get("/restart", function (req, res, next) {
     if (req.user) {
         next();
     } else {
+        req.session.referer = "/";
         res.redirect("/login");
     }
 }, function (req, res, next) {
@@ -81,14 +84,17 @@ router.get("/logout", function (req, res) {
 router.get("/login", function (req, res) {
     res.render("login", {
         layout: false,
-        controller: "login",
-        referer: req.originalUrl
+        controller: "login"
     });
 });
 
 router.post("/login", function (req, res) {
+    var referer = req.session.referer ? req.session.referer : "/";
+
+    delete req.session.referer;
+
     passport.authenticate("local", {
-        successRedirect: (req.body.referer && req.body.referer != "") ? req.body.referer : "/",
+        successRedirect: referer,
         failureRedirect: "/login",
         failureFlash: true
     })(req, res);
