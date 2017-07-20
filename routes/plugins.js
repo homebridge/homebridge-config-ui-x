@@ -9,8 +9,8 @@ router.get("/", function (req, res, next) {
         res.redirect("/login");
     }
 }, function (req, res, next) {
-    if (req.body.search && req.body.search != "") {
-        plugins.search(req.body.search, function (err, pkgs) {
+    if (req.query.search && req.query.search != "") {
+        plugins.search(req.query.search, function (err, pkgs) {
             res.render("plugins", {
                 controller: "plugins",
                 title: "Plugins",
