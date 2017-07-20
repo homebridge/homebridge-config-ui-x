@@ -82,7 +82,7 @@ router.get("/login", function (req, res) {
     res.render("login", {
         layout: false,
         controller: "login",
-        referer: req.header("Referer")
+        referer: req.originalUrl
     });
 });
 
