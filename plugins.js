@@ -10,7 +10,7 @@
 
     var plugins = {
         installed: function (callback) {
-            var base;
+            var base = this.getBase();
 
             if (process.platform === "win32") {
                 base = path.join(process.env.APPDATA, "npm/node_modules");
@@ -36,17 +36,17 @@
 
                     return false;
                 }), function (dr, callback) {
-                    var package = require(path.join(base, dr + "/package.json"));
+                    var pkg = require(path.join(base, dr + "/package.json"));
 
                     request({
-                        url: "https://api.npms.io/v2/package/" + package.name,
+                        url: "https://api.npms.io/v2/package/" + pkg.name,
                         json: true
                     }, function (err, res, body) {
                         callback(err, {
                             name: body.collected.metadata.name,
-                            installed: package.version,
+                            installed: pkg.version,
                             version: body.collected.metadata.version,
-                            update: (body.collected.metadata.version > package.version),
+                            update: (body.collected.metadata.version > pkg.version),
                             description: body.collected.metadata.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, "").trim(),
                             links: body.collected.metadata.links
                         });
@@ -57,6 +57,68 @@
             } else {
                 callback("Unable to find global modules", []);
             }
+        },
+        search: function (search, callback) {
+            var base = this.getBase();
+
+            if (base && search && search != "") {
+                var dr = fs.readdirSync(base).filter(file => fs.lstatSync(path.join(base, file)).isDirectory());
+                var cur = {};
+
+                for (var i = 0; i < dr.length; i++) {
+                    var pkg = require(path.join(base, dr[i] + "/package.json"));
+
+                    if (Array.isArray(pkg.keywords) && package.keywords.indexOf("homebridge-plugin") >= 0) {
+                        cur[pkg.name] = pkg.version;
+                    }
+                }
+
+                request({
+                    url: "https://api.npms.io/v2/search?q=" + (!search || 0 === search.length ? "" : search + "+") + "keywords:homebridge-plugin+not:deprecated+not:insecure&size=250",
+                    json: true
+                }, function (err, res, body) {
+                    var pkgs = [];
+
+                    for (var i = 0; i < body.results.length; i++) {
+                        if (cur[body.results[i].package.name]) {
+                            pkgs.push({
+                                name: body.results[i].package.name,
+                                installed: cur[body.results[i].package.name],
+                                version: body.results[i].package.version,
+                                update: (body.results[i].package.version > cur[body.results[i].package.name]),
+                                description: body.results[i].package.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, "").trim(),
+                                links: body.results[i].package.links
+                            });
+                        } else {
+                            pkgs.push({
+                                name: body.results[i].package.name,
+                                version: body.results[i].package.version,
+                                description: body.results[i].package.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, "").trim(),
+                                links: body.results[i].package.links
+                            });
+                        }
+                    }
+
+                    callback(err, pkgs);
+                });
+            } else {
+                callback(null, []);
+            }
+        },
+        getBase: function () {
+            var base;
+
+            if (process.platform === "win32") {
+                base = path.join(process.env.APPDATA, "npm/node_modules");
+            } else {
+                if (fs.existsSync("/usr/lib/node_modules")) {
+                    base = "/usr/lib/node_modules";
+                } else {
+                    base = "/usr/local/lib/node_modules";
+                }
+            }
+
+            return base;
         }
     }
 

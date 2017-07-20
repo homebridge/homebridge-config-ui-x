@@ -9,13 +9,23 @@ router.get("/", function (req, res, next) {
         res.redirect("/login");
     }
 }, function (req, res, next) {
-    plugins.installed(function (err, pkgs) {
-        res.render("plugins", {
-            controller: "plugins",
-            title: "Plugins",
-            packages: pkgs
+    if (req.body.search && req.body.search != "") {
+        plugins.search(req.body.search, function (err, pkgs) {
+            res.render("plugins", {
+                controller: "plugins",
+                title: "Plugins",
+                packages: pkgs
+            });
         });
-    });
+    } else {
+        plugins.installed(function (err, pkgs) {
+            res.render("plugins", {
+                controller: "plugins",
+                title: "Plugins",
+                packages: pkgs
+            });
+        });
+    }
 });
 
 module.exports = router;
