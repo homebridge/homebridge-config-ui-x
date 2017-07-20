@@ -21,9 +21,11 @@
             <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
                 <span class="title mdc-toolbar__title">HB | {{title}}</span>
             </section>
+            {{#controller}}
             <section class="mdc-toolbar__section mdc-toolbar__section--align-end" role="toolbar">
                 <button class="server-menu-button material-icons mdc-toolbar__icon">more_vert</button>
             </section>
+            {{/controller}}
         </div>
     </header>
     <main class="{{controller}}">
