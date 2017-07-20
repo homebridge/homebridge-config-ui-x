@@ -23,7 +23,7 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-app.use(require("express-session")({
+app.use(express.session({
     store: new MemoryStore({
         reapInterval: 60000 * 10
     })
