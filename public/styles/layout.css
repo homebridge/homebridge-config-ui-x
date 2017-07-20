@@ -390,35 +390,11 @@ content {
             text-decoration: none;
         }
 
-.index .menu a.controller-index {
+.index .menu a.controller-index, .log .menu a.controller-log, .accounts .menu a.controller-accounts, .config .menu a.controller-config, .plugins .menu a.controller-plugins {
     color: #00b9f1 !important;
 }
 
-    .index .menu a.controller-index:hover {
-        color: #00b9f1 !important;
-    }
-
-.log .menu a.controller-log {
-    color: #00b9f1 !important;
-}
-
-    .log .menu a.controller-log:hover {
-        color: #00b9f1 !important;
-    }
-
-.config .menu a.controller-config {
-    color: #00b9f1 !important;
-}
-
-    .config .menu a.controller-config:hover {
-        color: #00b9f1 !important;
-    }
-
-.plugins .menu a.controller-plugins {
-    color: #00b9f1 !important;
-}
-
-    .plugins .menu a.controller-plugins:hover {
+    .index .menu a.controller-index:hover, .log .menu a.controller-log:hover, .accounts .menu a.controller-accounts:hover, .config .menu a.controller-config:hover, .plugins .menu a.controller-plugins:hover {
         color: #00b9f1 !important;
     }
 
