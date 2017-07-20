@@ -84,7 +84,7 @@ content {
     }
 
 .restart-progress {
-    margin-top: 180px;
+    margin: 180px 50px 0 50px;
 }
 
     .restart-progress figcaption {
