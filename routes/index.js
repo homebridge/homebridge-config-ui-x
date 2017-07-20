@@ -81,13 +81,14 @@ router.get("/logout", function (req, res) {
 router.get("/login", function (req, res) {
     res.render("login", {
         layout: false,
-        controller: "login"
+        controller: "login",
+        referer: req.header("Referer")
     });
 });
 
 router.post("/login", function (req, res) {
     passport.authenticate("local", {
-        successRedirect: "/",
+        successRedirect: (req.body.referer && req.body.referer != "") ? req.body.referer : "/",
         failureRedirect: "/login",
         failureFlash: true
     })(req, res);
