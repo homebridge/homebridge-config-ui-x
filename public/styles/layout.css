@@ -201,6 +201,10 @@ content {
     background-color: #b20808;
 }
 
+.index .upgrade-server-button {
+    margin-left: 20px;
+}
+
 .index .status-icon .status-item {
     display: inline-flex;
     align-items: center;
