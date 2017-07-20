@@ -26,9 +26,9 @@
                 async.map(fs.readdirSync(base).filter(function (dr) {
                     if (fs.lstatSync(path.join(base, dr)).isDirectory()) {
                         if (fs.existsSync(path.join(base, dr + "/package.json"))) {
-                            var package = require(path.join(base, dr + "/package.json"));
+                            var pkg = require(path.join(base, dr + "/package.json"));
 
-                            if (Array.isArray(package.keywords) && package.keywords.indexOf("homebridge-plugin") >= 0) {
+                            if (Array.isArray(pkg.keywords) && pkg.keywords.indexOf("homebridge-plugin") >= 0) {
                                 return true;
                             }
                         }
@@ -68,7 +68,7 @@
                 for (var i = 0; i < dr.length; i++) {
                     var pkg = require(path.join(base, dr[i] + "/package.json"));
 
-                    if (Array.isArray(pkg.keywords) && package.keywords.indexOf("homebridge-plugin") >= 0) {
+                    if (Array.isArray(pkg.keywords) && pkg.keywords.indexOf("homebridge-plugin") >= 0) {
                         cur[pkg.name] = pkg.version;
                     }
                 }
