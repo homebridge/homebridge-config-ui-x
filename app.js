@@ -23,10 +23,15 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
+app.set("trust proxy", 1);
+
 app.use(require("express-session")({
-    secret: "keyboard cat",
+    secret: 'keyboard cat',
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: true,
+    cookie: {
+        secure: true
+    }
 }));
 
 passport.use(new strategy(function (username, password, callback) {
