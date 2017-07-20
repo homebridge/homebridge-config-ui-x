@@ -1,24 +1,37 @@
 $(document).ready(function () {
-    var undlg = new mdc.dialog.MDCDialog($("#uninstall-plugin-dialog")[0]);
+    if ($("#plugin-list").length > 0) {
+        var undlg = new mdc.dialog.MDCDialog($("#uninstall-plugin-dialog")[0]);
 
-    undlg.listen("MDCDialog:accept", function () {
-        alert(undlg.package);
-    });
+        undlg.listen("MDCDialog:accept", function () {
+            window.location.href = "/plugins/uninstall?package=" + undlg.package;
+        });
 
-    $("#installed-plugins").on("click", ".plugin-action-button", function () {
-        var btn = $(this);
+        var upgdg = new mdc.dialog.MDCDialog($("#upgrade-plugin-dialog")[0]);
 
-        switch (btn.attr("action")) {
-            case "update":
-                break;
+        upgdg.listen("MDCDialog:accept", function () {
+            window.location.href = "/plugins/upgrade?package=" + undlg.package;
+        });
 
-            case "uninstall":
-                undlg.package = btn.attr("package");
-                undlg.show();
-                break;
+        $("#plugin-list").on("click", ".plugin-action-button", function () {
+            var btn = $(this);
 
-            case "install":
-                break;
-        }
-    });
+            switch (btn.attr("action")) {
+                case "upgrade":
+                    $("#uninstall-plugin-dialog").find("#plugin-version").html(btn.attr("version"));
+
+                    undlg.package = btn.attr("package");
+                    undlg.show()
+                    break;
+
+                case "uninstall":
+                    undlg.package = btn.attr("package");
+                    undlg.show();
+                    break;
+
+                case "install":
+                    window.location.href = "/plugins/install?package=" + btn.attr("package");
+                    break;
+            }
+        });
+    }
 });

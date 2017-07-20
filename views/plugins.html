@@ -3,6 +3,24 @@
         <li class="logout-button mdc-list-item" role="menuitem" tabindex="0">Logout</li>
     </ul>
 </div>
+<aside id="upgrade-plugin-dialog" class="mdc-dialog" role="alertdialog" aria-hidden="true" aria-labelledby="mdc-dialog-default-label"
+    aria-describedby="mdc-dialog-default-description">
+    <div class="mdc-dialog__surface">
+        <header class="mdc-dialog__header">
+            <h2 id="mdc-dialog-default-label" class="mdc-dialog__header__title">
+                Version <span id="plugin-version"></span> is available. Do you want to upgrade?
+            </h2>
+        </header>
+        <section id="mdc-dialog-default-description" class="mdc-dialog__body">
+            It is a good idea to backup your configuration before upgrading. Also verify that the this version is compatiable with your version of Homebridge.
+        </section>
+        <footer class="mdc-dialog__footer">
+            <button type="button" class="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--cancel">Cancel</button>
+            <button type="button" class="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--accept">Upgrade</button>
+        </footer>
+    </div>
+    <div class="mdc-dialog__backdrop"></div>
+</aside>
 <aside id="uninstall-plugin-dialog" class="mdc-dialog" role="alertdialog" aria-hidden="true" aria-labelledby="mdc-dialog-default-label"
     aria-describedby="mdc-dialog-default-description">
     <div class="mdc-dialog__surface">
@@ -16,7 +34,7 @@
         </section>
         <footer class="mdc-dialog__footer">
             <button type="button" class="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--cancel">Cancel</button>
-            <button type="button" class="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--accept">Ininstall</button>
+            <button type="button" class="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--accept">Uninstall</button>
         </footer>
     </div>
     <div class="mdc-dialog__backdrop"></div>
@@ -31,7 +49,7 @@
         <button type="submit" class="search-button mdc-button mdc-button--raised mdc-button--primary mdc-ripple-surface" data-mdc-auto-init="MDCRipple">Search</button>
     </form>
 </div>
-<div id="installed-plugins" class="plugin-cards">
+<div id="plugin-list" class="plugin-cards">
     {{#packages}}
     <div class="mdc-card plugin-card">
         {{#installed}}
@@ -42,7 +60,7 @@
         <section class="mdc-card__actions actions">
             <button class="mdc-button mdc-button--compact mdc-card__action" onclick="window.open('{{links.npm}}', '_blank');">NPM</button>
             {{#update}}
-            <button class="plugin-action-button mdc-button mdc-button--compact mdc-card__action" action="update" package="{{name}}">Update</button>
+            <button class="plugin-action-button mdc-button mdc-button--compact mdc-card__action" action="upgrade" package="{{name}}" version="{{version}}">Upgrade</button>
             {{/update}}
             <button class="plugin-action-button mdc-button mdc-button--compact mdc-card__action" action="uninstall" package="{{name}}">Uninstall</button>
         </section>
