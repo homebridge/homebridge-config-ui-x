@@ -35,10 +35,9 @@
                                 {{server.version}} Update Available
                                 <span class="mdc-list-item__text__secondary">Version {{server.installed}}</span>
                             </span>
-                            <section class="mdc-card__actions">
-                                <button class="upgrade-server-button mdc-button mdc-button--compact mdc-card__action">Upgrade</button>
-                            </section>
-                            {{/update}} {{^update}}
+                            <button type="button" class="upgrade-server-button mdc-button mdc-button--raised mdc-button--primary mdc-ripple-surface" data-mdc-auto-init="MDCRipple">Upgrade</button>
+                            {{/update}}
+                            {{^update}}
                             <span class="mdc-list-item__start-detail status-item green-bg" role="presentation">
                                 <i class="material-icons" aria-hidden="true">&#xE627;</i>
                             </span>
