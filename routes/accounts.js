@@ -37,17 +37,37 @@ router.post("/", function (req, res, next) {
         if (!isNaN(parseInt(req.body.id)) && req.body.username != "" && req.body.name != "") {
             var data = require(hb.auth);
 
-            for (var i = 0; i < data.length; i++) {
-                if (data[i].id == parseInt(req.body.id)) {
-                    data[i].username = req.body.username;
-                    data[i].name = req.body.name;
-                    data[i].admin = (req.body.admin == "true") ? true : false;
+            if (parseInt(req.body.id) > 0) {
+                if (req.body.password != "") {
+                    var id = 0;
 
-                    if (req.body.password != "") {
-                        data[i].password = req.body.password;
+                    for (var i = 0; i < data.length; i++) {
+                        if (data[i].id > id) {
+                            id = data[i].id;
+                        }
                     }
 
-                    break;
+                    data.push({
+                        id: (id + 1),
+                        username: req.body.username,
+                        password: req.body.password,
+                        name: req.body.name,
+                        admin: ((req.body.admin == "true") ? true : false)
+                    });
+                }
+            } else {
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i].id == parseInt(req.body.id)) {
+                        data[i].username = req.body.username;
+                        data[i].name = req.body.name;
+                        data[i].admin = ((req.body.admin == "true") ? true : false);
+
+                        if (req.body.password != "") {
+                            data[i].password = req.body.password;
+                        }
+
+                        break;
+                    }
                 }
             }
 
