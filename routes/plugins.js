@@ -40,11 +40,10 @@ router.get("/upgrade", function (req, res, next) {
         res.redirect("/login");
     }
 }, function (req, res, next) {
-    res.render("upgrade", {
-        controller: "plugins",
-        title: "Plugins",
-        user: req.user
-    });
+
+    //EXECUTE NPM UPDATE
+
+    res.redirect("/plugins");
 });
 
 router.get("/uninstall", function (req, res, next) {
@@ -55,11 +54,10 @@ router.get("/uninstall", function (req, res, next) {
         res.redirect("/login");
     }
 }, function (req, res, next) {
-    res.render("uninstall", {
-        controller: "plugins",
-        title: "Plugins",
-        user: req.user
-    });
+
+    //EXECUTE NPM REMOVE
+
+    res.redirect("/plugins");
 });
 
 router.get("/install", function (req, res, next) {
@@ -70,11 +68,28 @@ router.get("/install", function (req, res, next) {
         res.redirect("/login");
     }
 }, function (req, res, next) {
+
+    //BUILD VIEW TO ADD CONFIG JSON
+
     res.render("install", {
         controller: "plugins",
         title: "Plugins",
         user: req.user
     });
+});
+
+router.post("/install", function (req, res, next) {
+    if (req.user) {
+        next();
+    } else {
+        req.session.referer = "/plugins";
+        res.redirect("/login");
+    }
+}, function (req, res, next) {
+
+    //SAVE CONFIGS AND EXECUTE NPM INSTALL
+
+    res.redirect("/plugins");
 });
 
 module.exports = router;

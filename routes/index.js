@@ -93,11 +93,10 @@ router.get("/upgrade", function (req, res, next) {
         res.redirect("/login");
     }
 }, function (req, res, next) {
-    res.render("upgrade", {
-        controller: "index",
-        title: "Status",
-        user: req.user
-    });
+
+    //EXECUTE NPM UPDATE AND RESTART
+
+    res.redirect("/");
 });
 
 router.get("/logout", function (req, res, next) {
