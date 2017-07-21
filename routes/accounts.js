@@ -32,11 +32,53 @@ router.post("/", function (req, res, next) {
         res.redirect("/login");
     }
 }, function (req, res, next) {
+    if (req.user.admin) {
+        if (req.body.username != "" && req.body.name != "") {
+            if (req.body.password != "") {
 
-    //CHANGE AUTHS FILE
+                //EDIT AUTHS FILE WITH PASSWORD
 
-    app.set("auths", require(hb.auth));
-    res.redirect("/accounts")
+            } else {
+
+                //EDIT CHANGE AUTHS FILE WITHOUT PASSWORD
+
+            }
+
+            app.set("auths", require(hb.auth));
+        }
+
+        res.redirect("/accounts")
+    } else {
+        var err = new Error("Forbidden");
+
+        err.status = 403;
+        next(err);
+    }
+});
+
+router.get("/delete", function (req, res, next) {
+    if (req.user) {
+        next();
+    } else {
+        req.session.referer = "/accounts";
+        res.redirect("/login");
+    }
+}, function (req, res, next) {
+    if (req.user.admin) {
+        if (!isNaN(parseInt(req.query.id)) && parseInt(req.query.id) > 1) {
+
+            //REMOVE FROM AUTH FILE
+
+            app.set("auths", require(hb.auth));
+        }
+
+        res.redirect("/accounts")
+    } else {
+        var err = new Error("Forbidden");
+
+        err.status = 403;
+        next(err);
+    }
 });
 
 router.post("/password", function (req, res, next) {
@@ -48,10 +90,13 @@ router.post("/password", function (req, res, next) {
     }
 }, function (req, res, next) {
     if (req.body.id == req.user.id || req.user.admin) {
+        if (req.body.password != "") {
 
-        //CHANGE AUTHS FILE
+            //CHANGE AUTHS FILE
 
-        app.set("auths", require(hb.auth));
+            app.set("auths", require(hb.auth));
+        }
+
         res.redirect(req.session.referer ? req.session.referer : "/")
     } else {
         var err = new Error("Forbidden");

@@ -36,7 +36,7 @@ $(document).ready(function () {
         });
 
         $(".change-password").click(function () {
-            pwddlg.show()
+            pwddlg.show();
         });
 
         $(".logout-button").click(function () {
