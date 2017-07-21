@@ -1,3 +1,4 @@
+var fs = require("fs");
 var express = require("express");
 var router = express.Router();
 
@@ -33,17 +34,24 @@ router.post("/", function (req, res, next) {
     }
 }, function (req, res, next) {
     if (req.user.admin) {
-        if (req.body.username != "" && req.body.name != "") {
-            if (req.body.password != "") {
+        if (!isNaN(parseInt(req.body.id)) && req.body.username != "" && req.body.name != "") {
+            var data = require(hb.auth);
 
-                //EDIT AUTHS FILE WITH PASSWORD
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].id == parseInt(req.body.id)) {
+                    data[i].username = req.body.username;
+                    data[i].name = req.body.name;
+                    data[i].admin = (req.body.admin == "true") ? true : false;
 
-            } else {
+                    if (req.body.password != "") {
+                        data[i].password = req.body.password;
+                    }
 
-                //EDIT CHANGE AUTHS FILE WITHOUT PASSWORD
-
+                    break;
+                }
             }
 
+            fs.writeFileSync(hb.auth, JSON.stringify(data, null, 4));
             app.set("auths", require(hb.auth));
         }
 
@@ -66,9 +74,16 @@ router.get("/delete", function (req, res, next) {
 }, function (req, res, next) {
     if (req.user.admin) {
         if (!isNaN(parseInt(req.query.id)) && parseInt(req.query.id) > 1) {
+            var current = require(hb.auth);
+            var data = [];
 
-            //REMOVE FROM AUTH FILE
+            for (var i = 0; i < current.length; i++) {
+                if (current[i].id != parseInt(req.query.id)) {
+                    data.push(current[i]);
+                }
+            }
 
+            fs.writeFileSync(hb.auth, JSON.stringify(data, null, 4));
             app.set("auths", require(hb.auth));
         }
 
@@ -89,11 +104,18 @@ router.post("/password", function (req, res, next) {
         res.redirect("/login");
     }
 }, function (req, res, next) {
-    if (req.body.id == req.user.id || req.user.admin) {
+    if (!isNaN(parseInt(req.body.id)) && (parseInt(req.body.id) == req.user.id || req.user.admin)) {
         if (req.body.password != "") {
+            var data = require(hb.auth);
 
-            //CHANGE AUTHS FILE
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].id == parseInt(req.body.id)) {
+                    data[i].password = req.body.password;
+                    break;
+                }
+            }
 
+            fs.writeFileSync(hb.auth, JSON.stringify(data, null, 4));
             app.set("auths", require(hb.auth));
         }
 
