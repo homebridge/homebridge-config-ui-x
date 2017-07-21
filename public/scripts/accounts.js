@@ -52,6 +52,8 @@ $(document).ready(function () {
         form.find("#auth-username").val(btn.attr("authusername")).focus();
         form.find("#auth-admin").val(btn.attr("authadmin"));
 
+        $("#edit-auth-dialog").find("#auth-name-title").html(btn.attr("authname"));
+
         if (!isNaN(parseInt(btn.attr("authid"))) && parseInt(btn.attr("authid")) == 1) {
             $(".delete-auth-button").hide();
             form.find("#auth-admin-check").prop("checked", true).prop("disabled", true);

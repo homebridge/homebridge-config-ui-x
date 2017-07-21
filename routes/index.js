@@ -100,7 +100,16 @@ router.get("/upgrade", function (req, res, next) {
     });
 });
 
-router.get("/logout", function (req, res) {
+router.get("/logout", function (req, res, next) {
+    if (req.user) {
+        next();
+    } else {
+        req.session.referer = "/";
+        res.redirect("/login");
+    }
+}, function (req, res) {
+    app.get("log")(req.user.name + " logged out.");
+
     req.logout();
     res.redirect("/");
 });
@@ -113,14 +122,29 @@ router.get("/login", function (req, res) {
 });
 
 router.post("/login", function (req, res) {
-    var referer = req.session.referer ? req.session.referer : "/";
+    passport.authenticate("local", function (err, user, info) {
+        if (err) {
+            return next(err);
+        }
 
-    delete req.session.referer;
+        if (!user) {
+            app.get("log")("Failed login attempt.");
 
-    passport.authenticate("local", {
-        successRedirect: referer,
-        failureRedirect: "/login",
-        failureFlash: true
+            return res.redirect("/login");
+        }
+
+        req.logIn(user, function (err) {
+            if (err) {
+                return next(err);
+            }
+
+            var referer = req.session.referer ? req.session.referer : "/";
+            delete req.session.referer;
+
+            app.get("log")(user.name + " successfully logged in.");
+
+            return res.redirect(referer);
+        });
     })(req, res);
 });
 
