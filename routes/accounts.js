@@ -10,6 +10,8 @@ router.get("/", function (req, res, next) {
         res.redirect("/login");
     }
 }, function (req, res, next) {
+    app.set("auths", require(hb.auth));
+
     if (req.user.admin) {
         res.render("accounts", {
             controller: "accounts",
