@@ -94,7 +94,7 @@ router.get("/uninstall", function (req, res, next) {
 
     config.accessories = [];
 
-    for (var i = 0; i < accessories.length; i ++) {
+    for (var i = 0; i < accessories.length; i++) {
         config.accessories.push(accessories);
     }
 
@@ -124,14 +124,25 @@ router.get("/install", function (req, res, next) {
         res.redirect("/login");
     }
 }, function (req, res, next) {
+    var platform = {
+        "platform": "[ENTER PLATFORM]",
+        "npm_package": req.query.package,
+        "name": "[ENTER NAME]"
+    }
 
-    //BUILD VIEW TO ADD CONFIG JSON
+    var accessories = [{
+        "accessory": "[ENTER ACCESSORY]",
+        "npm_package": req.query.package,
+        "name": "[ENTER NAME]"
+    }];
 
     res.render("install", {
         controller: "plugins",
         title: "Plugins",
         user: req.user,
-        package: req.query.package
+        package: req.query.package,
+        platform_json: JSON.stringify(platform, null, 4),
+        accessories_json: JSON.stringify(accessories, null, 4)
     });
 });
 
@@ -143,8 +154,36 @@ router.post("/install", function (req, res, next) {
         res.redirect("/login");
     }
 }, function (req, res, next) {
+    var config = require(hb.config);
+    var platform = JSON.parse(req.body.platform_json);
+    var accessories = JSON.parse(req.body.accessories_json);
 
-    //SAVE CONFIGS
+    if (req.body.use_platform == "true") {
+        if (!config.platforms) {
+            config.platforms = [];
+        }
+
+        config.platforms.push(platform);
+    }
+
+    if (req.body.use_accessories == "true") {
+        if (!config.accessories) {
+            config.accessories = [];
+        }
+
+        if (Object.prototype.toString.call(accessories) === '[object Array]') {
+            for (var i = 0; i < accessories.length; i++) {
+                config.accessories.push(accessories[i]);
+            }
+        } else {
+            config.accessories.push(accessories);
+        }
+    }
+
+    fs.renameSync(hb.config, hb.config + "." + Math.floor(new Date() / 1000));
+    fs.appendFileSync(hb.config, JSON.stringify(config, null, 4));
+
+    delete require.cache[require.resolve(hb.config)];
 
     app.get("log")("Package " + req.query.package + " installed.");
 
