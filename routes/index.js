@@ -93,10 +93,16 @@ router.get("/upgrade", function (req, res, next) {
         res.redirect("/login");
     }
 }, function (req, res, next) {
+    app.get("log")("Homebridge server upgraded.");
 
-    //EXECUTE NPM UPDATE AND RESTART
+    res.render("restart", {
+        layout: false,
+        redirect: "/"
+    });
 
-    res.redirect("/");
+    //EXECUTE NPM UPDATE
+
+    require("child_process").exec(hb.restart);
 });
 
 router.get("/logout", function (req, res, next) {

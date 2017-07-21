@@ -40,10 +40,16 @@ router.get("/upgrade", function (req, res, next) {
         res.redirect("/login");
     }
 }, function (req, res, next) {
+    app.get("log")("Package " + req.query.package + " upgraded.");
+
+    res.render("restart", {
+        layout: false,
+        redirect: "/plugins"
+    });
 
     //EXECUTE NPM UPDATE
 
-    res.redirect("/plugins");
+    require("child_process").exec(hb.restart);
 });
 
 router.get("/uninstall", function (req, res, next) {
@@ -55,9 +61,18 @@ router.get("/uninstall", function (req, res, next) {
     }
 }, function (req, res, next) {
 
+    //REMOVE CONFIGS
+
+    app.get("log")("Package " + req.query.package + " removed.");
+
+    res.render("restart", {
+        layout: false,
+        redirect: "/plugins"
+    });
+
     //EXECUTE NPM REMOVE
 
-    res.redirect("/plugins");
+    require("child_process").exec(hb.restart);
 });
 
 router.get("/install", function (req, res, next) {
@@ -87,9 +102,18 @@ router.post("/install", function (req, res, next) {
     }
 }, function (req, res, next) {
 
-    //SAVE CONFIGS AND EXECUTE NPM INSTALL
+    //SAVE CONFIGS
 
-    res.redirect("/plugins");
+    app.get("log")("Package " + req.query.package + " installed.");
+
+    res.render("restart", {
+        layout: false,
+        redirect: "/plugins"
+    });
+
+    //EXECUTE NPM INSTALL
+
+    require("child_process").exec(hb.restart);
 });
 
 module.exports = router;
