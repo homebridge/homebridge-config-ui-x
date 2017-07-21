@@ -4,3 +4,22 @@
         <li class="logout-button mdc-list-item" role="menuitem" tabindex="0">Logout</li>
     </ul>
 </div>
+<ul class="account-list mdc-list--two-line mdc-list--avatar-list mdc-elevation--z4">
+    {{#auths}}
+    <li class="mdc-list-item">
+        <a href="#" class="material-icons" title="Edit" onclick="event.preventDefault();">&#xE254;</a>
+        <span class="mdc-list-item__start-detail account-item blue-bg" role="presentation">
+            <i class="material-icons" aria-hidden="true">&#xE8A6;</i>
+        </span>
+        <span class="mdc-list-item__text">
+            {{name}}
+            {{#admin}}
+            <span class="mdc-list-item__text__secondary">Administrator</span>
+            {{/admin}}
+            {{^admin}}
+            <span class="mdc-list-item__text__secondary">User</span>
+            {{/admin}}
+        </span>
+    </li>
+    {{/auths}}
+</ul>

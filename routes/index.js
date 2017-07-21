@@ -78,8 +78,7 @@ router.get("/restart", function (req, res, next) {
     }
 }, function (req, res, next) {
     res.render("restart", {
-        title: "Status",
-        user: req.user,
+        layout: false,
         redirect: "/"
     });
 

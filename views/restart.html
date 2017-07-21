@@ -1,20 +1,44 @@
-<figure class="restart-progress">
-    <figcaption>Restarting Server</figcaption>
-    <div role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">
-        <div class="mdc-linear-progress__buffering-dots"></div>
-        <div class="mdc-linear-progress__buffer"></div>
-        <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
-            <span class="mdc-linear-progress__bar-inner"></span>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="/styles/fonts.css" />
+    <link rel="stylesheet" href="/styles/layout.css" />
+    <link rel="stylesheet" href="/styles/material.css" />
+    <script src="/scripts/jquery.min.js"></script>
+    <script src="/scripts/material.web.min.js"></script>
+</head>
+<body class="mdc-typography">
+    <header class="mdc-toolbar mdc-toolbar--fixed">
+        <div class="mdc-toolbar__row">
+            <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
+                <span class="title mdc-toolbar__title">HB</span>
+            </section>
         </div>
-        <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
-            <span class="mdc-linear-progress__bar-inner"></span>
-        </div>
-    </div>
-</figure>
-<script>
-    mdc.linearProgress.MDCLinearProgress.attachTo($(".mdc-linear-progress")[0]);
+    </header>
+    <main>
+        <figure class="restart-progress">
+            <figcaption>Restarting Server</figcaption>
+            <div role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">
+                <div class="mdc-linear-progress__buffering-dots"></div>
+                <div class="mdc-linear-progress__buffer"></div>
+                <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+                    <span class="mdc-linear-progress__bar-inner"></span>
+                </div>
+                <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
+                    <span class="mdc-linear-progress__bar-inner"></span>
+                </div>
+            </div>
+        </figure>
+    </main>
+    <script>
+        mdc.autoInit()
+        mdc.linearProgress.MDCLinearProgress.attachTo($(".mdc-linear-progress")[0]);
 
-    setTimeout(function () {
-        window.location.href = "{{redirect}}";
-    }, 5000);
-</script>
+        setTimeout(function () {
+            window.location.href = "{{redirect}}";
+        }, 10000);
+    </script>
+</body>
+</html>

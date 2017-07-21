@@ -185,7 +185,7 @@ content {
     margin-right: 15px;
 }
 
-.index .blue-bg {
+.index .blue-bg, .accounts .blue-bg {
     background-color: #00b9f1;
 }
 
@@ -221,6 +221,30 @@ content {
     padding: 5px 20px;
     white-space: pre-wrap;
 }
+
+.accounts .account-list {
+    background-color: #fff;
+    min-width: 320px;
+    margin: 20px;
+}
+
+    .accounts .account-list a {
+        font-size: 1.4em;
+        text-decoration: none;
+        color: #353535;
+        margin-right: 10px;
+    }
+
+    .accounts .account-list a:hover {
+        color: #000;
+    }
+
+    .accounts .account-list .account-item {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+    }
 
 .config form {
     height: 100%;

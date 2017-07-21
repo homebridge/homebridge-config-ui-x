@@ -92,9 +92,7 @@ router.post("/", function (req, res, next) {
     app.get("log")("Configuration Changed.");
 
     res.render("restart", {
-        controller: "restart",
-        title: "Configuration",
-        user: req.user,
+        layout: false,
         redirect: "/config"
     });
 

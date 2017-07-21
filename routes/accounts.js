@@ -13,7 +13,8 @@ router.get("/", function (req, res, next) {
         res.render("accounts", {
             controller: "accounts",
             title: "Accounts",
-            user: req.user
+            user: req.user,
+            auths: app.get("auths")
         });
     } else {
         var err = new Error("Forbidden");
@@ -23,7 +24,7 @@ router.get("/", function (req, res, next) {
     }
 });
 
-router.get("/password", function (req, res, next) {
+router.post("/", function (req, res, next) {
     if (req.user) {
         next();
     } else {
@@ -31,11 +32,33 @@ router.get("/password", function (req, res, next) {
         res.redirect("/login");
     }
 }, function (req, res, next) {
-    res.render("password", {
-        controller: "accounts",
-        title: "Accounts",
-        user: req.user
-    });
+
+    //CHANGE AUTHS FILE
+
+    app.set("auths", require(hb.auth));
+    res.redirect("/accounts")
+});
+
+router.post("/password", function (req, res, next) {
+    if (req.user) {
+        next();
+    } else {
+        req.session.referer = "/accounts";
+        res.redirect("/login");
+    }
+}, function (req, res, next) {
+    if (req.body.id == req.user.id || req.user.admin) {
+
+        //CHANGE AUTHS FILE
+
+        app.set("auths", require(hb.auth));
+        res.redirect(req.session.referer ? req.session.referer : "/")
+    } else {
+        var err = new Error("Forbidden");
+
+        err.status = 403;
+        next(err);
+    }
 });
 
 module.exports = router;

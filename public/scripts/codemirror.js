@@ -306,7 +306,7 @@ function Display(place, doc, input) {
   // Will contain the actual code, positioned to cover the viewport.
   d.lineDiv = eltP("div", null, "CodeMirror-code")
   // Elements are added to these to represent selection and cursors.
-  d.selectionDiv = elt("div", null, null, "position: relative; z-index: 1")
+  d.selectionDiv = elt("div", null, null, "position: relative;")
   d.cursorDiv = elt("div", null, "CodeMirror-cursors")
   // A visibility: hidden element used to find the size of things.
   d.measure = elt("div", null, "CodeMirror-measure")
@@ -334,7 +334,6 @@ function Display(place, doc, input) {
   // The element in which the editor lives.
   d.wrapper = elt("div", [d.scrollbarFiller, d.gutterFiller, d.scroller], "CodeMirror")
 
-  // Work around IE7 z-index bug (not perfect, hence IE7 not really being supported)
   if (ie && ie_version < 8) { d.gutters.style.zIndex = -1; d.scroller.style.paddingRight = 0 }
   if (!webkit && !(gecko && mobile)) { d.scroller.draggable = true }
 
@@ -9260,7 +9259,7 @@ TextareaInput.prototype.onContextMenu = function (e) {
   var oldCSS = te.style.cssText, oldWrapperCSS = input.wrapper.style.cssText
   input.wrapper.style.cssText = "position: absolute"
   var wrapperBox = input.wrapper.getBoundingClientRect()
-  te.style.cssText = "position: absolute; width: 30px; height: 30px;\n      top: " + (e.clientY - wrapperBox.top - 5) + "px; left: " + (e.clientX - wrapperBox.left - 5) + "px;\n      z-index: 1000; background: " + (ie ? "rgba(255, 255, 255, .05)" : "transparent") + ";\n      outline: none; border-width: 0; outline: none; overflow: hidden; opacity: .05; filter: alpha(opacity=5);"
+  te.style.cssText = "position: absolute; width: 30px; height: 30px;\n      top: " + (e.clientY - wrapperBox.top - 5) + "px; left: " + (e.clientX - wrapperBox.left - 5) + "px; background: " + (ie ? "rgba(255, 255, 255, .05)" : "transparent") + ";\n      outline: none; border-width: 0; outline: none; overflow: hidden; opacity: .05; filter: alpha(opacity=5);"
   var oldScrollY
   if (webkit) { oldScrollY = window.scrollY } // Work around Chrome issue (#2712)
   display.input.focus()
