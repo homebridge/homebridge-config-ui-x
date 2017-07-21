@@ -8,7 +8,7 @@
     <div class="mdc-dialog__surface" style="width: 640px;">
         <header class="mdc-dialog__header">
             <h2 id="mdc-dialog-with-list-label" class="mdc-dialog__header__title">
-                Edit <span id="auth-name-title"></span>
+                <span id="auth-name-title"></span>
             </h2>
         </header>
         <form id="auth-edit-form" action="/accounts" method="post">
@@ -114,3 +114,6 @@
     </li>
     {{/auths}}
 </ul>
+<div class="auth-actions">
+    <button type="button" class="add-auth-button mdc-button mdc-button--raised mdc-button--primary mdc-ripple-surface" data-mdc-auto-init="MDCRipple">Add User</button>
+</div>

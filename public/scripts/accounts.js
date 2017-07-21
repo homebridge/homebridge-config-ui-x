@@ -52,19 +52,39 @@ $(document).ready(function () {
         form.find("#auth-username").val(btn.attr("authusername")).focus();
         form.find("#auth-admin").val(btn.attr("authadmin"));
 
-        $("#edit-auth-dialog").find("#auth-name-title").html(btn.attr("authname"));
+        $("#edit-auth-dialog").find("#auth-name-title").html("Edit " + btn.attr("authname"));
 
         if (!isNaN(parseInt(btn.attr("authid"))) && parseInt(btn.attr("authid")) == 1) {
             $(".delete-auth-button").hide();
+
             form.find("#auth-admin-check").prop("checked", true).prop("disabled", true);
         } else {
             $(".delete-auth-button").show();
+
             if (btn.attr("authadmin") == "true") {
                 form.find("#auth-admin-check").prop("checked", true).prop("disabled", false);
             } else {
                 form.find("#auth-admin-check").prop("checked", false).prop("disabled", false);
             }
         }
+    });
+
+    $(".add-auth-button").on("click", function (event) {
+        var form = $("#auth-edit-form");
+
+        event.preventDefault();
+
+        audlg.show();
+
+        form.find("#auth-user-id").val("0");
+        form.find("#auth-name").val("");
+        form.find("#auth-username").val("").focus();
+        form.find("#auth-admin").val("false");
+
+        $("#edit-auth-dialog").find("#auth-name-title").html("Add User");
+        $(".delete-auth-button").hide();
+
+        form.find("#auth-admin-check").prop("checked", false).prop("disabled", false);
     });
 
     var deldg = new mdc.dialog.MDCDialog($("#delete-auth-dialog")[0]);

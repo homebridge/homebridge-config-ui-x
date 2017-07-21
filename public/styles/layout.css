@@ -246,6 +246,10 @@ content {
         color: #fff;
     }
 
+.accounts .auth-actions {
+    padding: 10px 20px 20px 20px;
+}
+
 .config form {
     height: 100%;
 }
