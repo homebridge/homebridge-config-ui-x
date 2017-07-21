@@ -37,7 +37,7 @@ router.post("/", function (req, res, next) {
         if (!isNaN(parseInt(req.body.id)) && req.body.username != "" && req.body.name != "") {
             var data = require(hb.auth);
 
-            if (parseInt(req.body.id) > 0) {
+            if (parseInt(req.body.id) == 0) {
                 if (req.body.password != "") {
                     var id = 0;
 
