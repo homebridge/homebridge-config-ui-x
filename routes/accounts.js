@@ -15,7 +15,7 @@ router.get("/", function (req, res, next) {
             controller: "accounts",
             title: "Accounts",
             user: req.user,
-            auths: require(hb.auth)
+            auths: app.get("auths")
         });
     } else {
         var err = new Error("Forbidden");
@@ -72,6 +72,9 @@ router.post("/", function (req, res, next) {
             }
 
             fs.writeFileSync(hb.auth, JSON.stringify(data, null, 4));
+
+            delete require.cache[require.resolve(hb.auth)];
+
             app.set("auths", require(hb.auth));
         }
 
@@ -104,6 +107,9 @@ router.get("/delete", function (req, res, next) {
             }
 
             fs.writeFileSync(hb.auth, JSON.stringify(data, null, 4));
+
+            delete require.cache[require.resolve(hb.auth)];
+
             app.set("auths", require(hb.auth));
         }
 
@@ -136,6 +142,9 @@ router.post("/password", function (req, res, next) {
             }
 
             fs.writeFileSync(hb.auth, JSON.stringify(data, null, 4));
+
+            delete require.cache[require.resolve(hb.auth)];
+
             app.set("auths", require(hb.auth));
         }
 
