@@ -10,14 +10,12 @@ router.get("/", function (req, res, next) {
         res.redirect("/login");
     }
 }, function (req, res, next) {
-    app.set("auths", require(hb.auth));
-
     if (req.user.admin) {
         res.render("accounts", {
             controller: "accounts",
             title: "Accounts",
             user: req.user,
-            auths: app.get("auths")
+            auths: require(hb.auth)
         });
     } else {
         var err = new Error("Forbidden");
