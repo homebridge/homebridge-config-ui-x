@@ -77,8 +77,9 @@ router.get("/restart", function (req, res, next) {
         res.redirect("/login");
     }
 }, function (req, res, next) {
-    res.render("restart", {
+    res.render("progress", {
         layout: false,
+        message: "Restarting Server",
         redirect: "/"
     });
 
@@ -95,8 +96,9 @@ router.get("/upgrade", function (req, res, next) {
 }, function (req, res, next) {
     app.get("log")("Homebridge server upgraded.");
 
-    res.render("restart", {
+    res.render("progress", {
         layout: false,
+        message: "Upgrading Server",
         redirect: "/"
     });
 

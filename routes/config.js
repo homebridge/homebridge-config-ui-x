@@ -89,14 +89,11 @@ router.post("/", function (req, res, next) {
     fs.renameSync(hb.config, hb.config + "." + Math.floor(new Date() / 1000));
     fs.appendFileSync(hb.config, JSON.stringify(config, null, 4));
 
+    delete require.cache[require.resolve(hb.config)];
+
     app.get("log")("Configuration Changed.");
 
-    res.render("restart", {
-        layout: false,
-        redirect: "/config"
-    });
-
-    require("child_process").exec(hb.restart);
+    res.redirect("/config");
 });
 
 router.get("/backup", function (req, res, next) {

@@ -42,8 +42,9 @@ router.get("/upgrade", function (req, res, next) {
 }, function (req, res, next) {
     app.get("log")("Package " + req.query.package + " upgraded.");
 
-    res.render("restart", {
+    res.render("progress", {
         layout: false,
+        message: "Upgrading Package",
         redirect: "/plugins"
     });
 
@@ -65,8 +66,9 @@ router.get("/uninstall", function (req, res, next) {
 
     app.get("log")("Package " + req.query.package + " removed.");
 
-    res.render("restart", {
+    res.render("progress", {
         layout: false,
+        message: "Uninstalling Package",
         redirect: "/plugins"
     });
 
@@ -106,8 +108,9 @@ router.post("/install", function (req, res, next) {
 
     app.get("log")("Package " + req.query.package + " installed.");
 
-    res.render("restart", {
+    res.render("progress", {
         layout: false,
+        message: "Installing Package",
         redirect: "/plugins"
     });
 
