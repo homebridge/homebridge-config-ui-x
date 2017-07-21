@@ -24,6 +24,16 @@ $(document).ready(function () {
         }
     });
 
+    $("#platforms").on("click", ".accessory-delete", function () {
+        var accessory = $(this).attr("accessory");
+
+        $("#" + accessory + "-updated").val("true");
+        $("#" + accessory + "-delete").val("true");
+        $("#" + accessory + "-code").html("");
+
+        $(".accessory[accessory='" + accessory + "']").hide();
+    });
+
     $.each($("textarea"), function () {
         var textarea = $(this);
 

@@ -1,5 +1,6 @@
 {
     "platform": "config",
+    "npm_package": "homebridge-config-ui",
     "name": "Config",
     "port": 8080,
     "log": "[PATH TO OUT LOG FILE]",

@@ -55,7 +55,6 @@
                             {{#platforms}}
                             <div class="platform mdc-elevation--z4" platform="{{id}}">
                                 <input type="hidden" name="platform" value="{{id}}">
-                                <input type="hidden" id="{{id}}-type" name="{{id}}-type" value="platform">
                                 <input type="hidden" id="{{id}}-delete" name="{{id}}-delete" value="false">
                                 <table cellpadding="0" cellspacing="0" border="0">
                                     <tbody>
@@ -72,7 +71,7 @@
                                                 <textarea id="{{id}}-code" name="{{id}}-code" platform="{{id}}">{{json}}</textarea>
                                             </td>
                                             <td>
-                                                <i id="{{id}}-more" class="platform-delete material-icons" role="button" platform="{{id}}">delete</i>
+                                                <i class="platform-delete material-icons" role="button" platform="{{id}}">delete</i>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -83,9 +82,8 @@
                         <div class="platform-form">
                             <h1 class="form-label">Accessories</h1>
                             {{#accessories}}
-                            <div class="platform mdc-elevation--z4" platform="{{id}}">
-                                <input type="hidden" name="platform" value="{{id}}">
-                                <input type="hidden" id="{{id}}-type" name="{{id}}-type" value="bridge">
+                            <div class="platform mdc-elevation--z4" accessory="{{id}}">
+                                <input type="hidden" name="accessory" value="{{id}}">
                                 <input type="hidden" id="{{id}}-delete" name="{{id}}-delete" value="false">
                                 <table cellpadding="0" cellspacing="0" border="0">
                                     <tbody>
@@ -99,10 +97,10 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <textarea id="{{id}}-code" name="{{id}}-code" platform="{{id}}">{{json}}</textarea>
+                                                <textarea id="{{id}}-code" name="{{id}}-code" accessory="{{id}}">{{json}}</textarea>
                                             </td>
                                             <td>
-                                                <i id="{{id}}-more" class="platform-delete material-icons" role="button" platform="{{id}}">delete</i>
+                                                <i class="accessory-delete material-icons" role="button" accessory="{{id}}">delete</i>
                                             </td>
                                         </tr>
                                     </tbody>

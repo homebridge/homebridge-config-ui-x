@@ -21,23 +21,23 @@ router.get("/", function (req, res, next) {
 
     var platforms = [];
 
-    config.platforms.forEach(function (platform) {
+    for (var i = 0; i < config.platforms.length; i++) {
         platforms.push({
-            id: platform.platform,
-            name: platform.name,
-            json: JSON.stringify(platform, null, 4)
+            id: config.platforms[i].platform,
+            name: config.platforms[i].name,
+            json: JSON.stringify(config.platforms[i], null, 4)
         });
-    });
+    }
 
     var accessories = [];
 
-    config.platforms.forEach(function (accessory) {
+    for (var i = 0; i < config.accessories.length; i++) {
         accessories.push({
-            id: accessory.accessory,
-            name: accessory.name,
-            json: JSON.stringify(accessory, null, 4)
+            id: i + "-" + config.accessories[i].accessory,
+            name: config.accessories[i].name,
+            json: JSON.stringify(config.accessories[i], null, 4)
         });
-    });
+    }
 
     res.render("config", {
         controller: "config",
@@ -66,25 +66,25 @@ router.post("/", function (req, res, next) {
 
     config.platforms = [];
 
-    req.body.platform.forEach(function (key) {
-        if (req.body[key + "-delete"] == "false" && req.body[key + "-type"] == "platform") {
-            var platform = JSON.parse(req.body[key + "-code"]);
+    for (var i = 0; i < req.body.platform.length; i++) {
+        if (req.body[eq.body.platform[i] + "-delete"] == "false") {
+            var platform = JSON.parse(req.body[eq.body.platform[i] + "-code"]);
 
-            platform.name = req.body[key + "-name"];
+            platform.name = req.body[eq.body.platform[i] + "-name"];
             config.platforms.push(platform);
         }
-    });
+    }
 
     config.accessories = [];
 
-    req.body.platform.forEach(function (key) {
-        if (req.body[key + "-delete"] == "false" && req.body[key + "-type"] == "accessory") {
-            var accessory = JSON.parse(req.body[key + "-code"]);
+    for (var i = 0; i < req.body.accessory.length; i ++) {
+        if (req.body[i + "-" + req.body.accessory[i] + "-delete"] == "false") {
+            var accessory = JSON.parse(req.body[i + "-" + req.body.accessory[i] + "-code"]);
 
-            accessory.name = req.body[key + "-name"];
+            accessory.name = req.body[i + "-" + req.body.accessory[i] + "-name"];
             config.accessories.push(accessory);
         }
-    });
+    }
 
     fs.renameSync(hb.config, hb.config + "." + Math.floor(new Date() / 1000));
     fs.appendFileSync(hb.config, JSON.stringify(config, null, 4));

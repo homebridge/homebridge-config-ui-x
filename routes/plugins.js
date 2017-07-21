@@ -61,8 +61,47 @@ router.get("/uninstall", function (req, res, next) {
         res.redirect("/login");
     }
 }, function (req, res, next) {
+    var config = require(hb.config);
 
-    //REMOVE CONFIGS
+    var server = {
+        name: (config.bridge.name || "Homebridge"),
+        mac: (config.bridge.username || "CC:22:3D:E3:CE:30"),
+        port: (config.bridge.port || 51826),
+        pin: (config.bridge.pin || "031-45-154")
+    };
+
+    var platforms = [];
+
+    for (var i = 0; i < config.platforms.length; i++) {
+        if (!config.platforms[i].npm_package || config.platforms[i].npm_package != req.query.package) {
+            platforms.push(config.platforms[i]);
+        }
+    }
+
+    config.platforms = [];
+
+    for (var i = 0; i < platforms.length; i++) {
+        config.platforms.push(platforms[i]);
+    }
+
+    var accessories = [];
+
+    for (var i = 0; i < config.accessories.length; i++) {
+        if (!config.accessories[i].npm_package || config.accessories[i].npm_package != req.query.package) {
+            accessories.push(config.accessories[i]);
+        }
+    }
+
+    config.accessories = [];
+
+    for (var i = 0; i < accessories.length; i ++) {
+        config.accessories.push(accessories);
+    }
+
+    fs.renameSync(hb.config, hb.config + "." + Math.floor(new Date() / 1000));
+    fs.appendFileSync(hb.config, JSON.stringify(config, null, 4));
+
+    delete require.cache[require.resolve(hb.config)];
 
     app.get("log")("Package " + req.query.package + " removed.");
 
@@ -91,7 +130,8 @@ router.get("/install", function (req, res, next) {
     res.render("install", {
         controller: "plugins",
         title: "Plugins",
-        user: req.user
+        user: req.user,
+        package: req.query.package
     });
 });
 
