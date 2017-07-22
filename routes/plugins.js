@@ -112,8 +112,7 @@ router.get("/install", function (req, res, next) {
 }, function (req, res, next) {
     var platform = {
         "platform": "[ENTER PLATFORM]",
-        "npm_package": req.query.package,
-        "name": "[ENTER NAME]"
+        "npm_package": req.query.package
     }
 
     res.render("install", {

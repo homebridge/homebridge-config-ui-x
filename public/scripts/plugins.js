@@ -43,7 +43,7 @@ $(document).ready(function () {
             var id = ($("#accessory-container").find(".new-accessory").length + 1) + "-new-accessory";
             var html = "";
 
-            html += "<div class=\"platform new-accessory mdc-elevation--z4\" accessory=\"" + id + "\">";
+            html += "<div class=\"accessory new-accessory mdc-elevation--z4\" accessory=\"" + id + "\">";
             html += "    <input type=\"hidden\" name=\"accessory\" value=\"" + id + "\">";
             html += "    <input type=\"hidden\" id=\"" + id + "-delete\" name=\"" + id + "-delete\" value=\"false\">";
             html += "    <table cellpadding=\"0\" cellspacing=\"0\" border=\"0\">";
@@ -85,10 +85,9 @@ $(document).ready(function () {
             mdc.autoInit();
         });
 
-        $("#platforms").on("click", ".accessory-delete", function () {
+        $("#accessory-container").on("click", ".accessory-delete", function () {
             var accessory = $(this).attr("accessory");
 
-            $("#" + accessory + "-updated").val("true");
             $("#" + accessory + "-delete").val("true");
             $("#" + accessory + "-code").html("");
 

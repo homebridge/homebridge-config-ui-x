@@ -310,7 +310,7 @@ content {
     box-sizing: border-box;
 }
 
-    .config .platform-form .platform, .plugins .platform-form .platform {
+    .config .platform-form .platform, .config .platform-form .accessory, .plugins .platform-form .platform, .plugins .platform-form .accessory {
         margin: 20px 0 0 0;
         padding: 20px;
         background-color: #fff;
@@ -331,7 +331,7 @@ content {
         cursor: pointer;
     }
 
-.config .config-form-actions, .copluginsnfig .config-form-actions {
+.config .config-form-actions, .plugins .config-form-actions {
     padding: 10px 20px 20px 20px;
 }
 
