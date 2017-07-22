@@ -33,6 +33,7 @@ function HttpServer(log, config) {
     var http = require("http");
 
     hb.log = config.log || "/var/log/homebridge.stdout.log";
+    hb.error_log = config.error_log || "/var/log/homebridge.stderr.log";
     hb.restart = config.restart || "/usr/local/bin/supervisorctl restart homebridge";
 
     app.set("port", config.port);

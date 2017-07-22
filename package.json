@@ -29,6 +29,7 @@
         "passport-local": "~1.0.0",
         "serve-favicon": "~2.4.2",
         "request": "~2.81.0",
-        "async": "~2.5.0"
+        "async": "~2.5.0",
+        "read-last-lines": "~1.2.0"
     }
 }
