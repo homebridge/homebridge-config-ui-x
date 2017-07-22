@@ -27,9 +27,9 @@ Add this to your ~/.homebridge/config.json file
 
 This example uses [supervisor](http://supervisord.org/) to control homebridge. This is a good supervisor how to: [Running Supervisor on OSX](https://nicksergeant.com/running-supervisor-on-os-x/)
 
-Replace /var/log/homebridge.stdout.log with your path to your Homebridge output log.<br />
-Replace /var/log/homebridge.stderr.log with your path to your Homebridge error log.<br />
-Replace /usr/local/bin/supervisorctl restart homebridge with the command you use to restart Homebridge.
+Replace <b>/var/log/homebridge.stdout.log</b> with the path to your Homebridge output log.<br />
+Replace <b>/var/log/homebridge.stderr.log</b> with the path to your Homebridge error log.<br />
+Replace <b>/usr/local/bin/supervisorctl restart homebridge</b> with the command you use to restart Homebridge.
 
 Once installed you can open the interface at http://localhost:8080. The default username is <b>admin</b> and the default password is <b>admin</b>.
 
