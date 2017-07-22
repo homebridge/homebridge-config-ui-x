@@ -40,17 +40,10 @@ router.get("/upgrade", function (req, res, next) {
         res.redirect("/login");
     }
 }, function (req, res, next) {
-    app.get("log")("Package " + req.query.package + " upgraded.");
-
-    res.render("progress", {
-        layout: false,
-        message: "Upgrading Package",
-        redirect: "/plugins"
+    npm.update(req.query.package, function (err, stdout, stderr) {
+        app.get("log")("Package " + req.query.package + " upgraded.");
+        res.redirect("/plugins");
     });
-
-    //EXECUTE NPM UPDATE
-
-    require("child_process").exec(hb.restart);
 });
 
 router.get("/uninstall", function (req, res, next) {
@@ -103,17 +96,10 @@ router.get("/uninstall", function (req, res, next) {
 
     delete require.cache[require.resolve(hb.config)];
 
-    app.get("log")("Package " + req.query.package + " removed.");
-
-    res.render("progress", {
-        layout: false,
-        message: "Uninstalling Package",
-        redirect: "/plugins"
+    npm.uninstall(req.query.package, function (err, stdout, stderr) {
+        app.get("log")("Package " + req.query.package + " removed.");
+        res.redirect("/plugins");
     });
-
-    //EXECUTE NPM REMOVE
-
-    require("child_process").exec(hb.restart);
 });
 
 router.get("/install", function (req, res, next) {
@@ -130,19 +116,12 @@ router.get("/install", function (req, res, next) {
         "name": "[ENTER NAME]"
     }
 
-    var accessories = [{
-        "accessory": "[ENTER ACCESSORY]",
-        "npm_package": req.query.package,
-        "name": "[ENTER NAME]"
-    }];
-
     res.render("install", {
         controller: "plugins",
         title: "Plugins",
         user: req.user,
         package: req.query.package,
-        platform_json: JSON.stringify(platform, null, 4),
-        accessories_json: JSON.stringify(accessories, null, 4)
+        platform_json: JSON.stringify(platform, null, 4)
     });
 });
 
@@ -155,10 +134,12 @@ router.post("/install", function (req, res, next) {
     }
 }, function (req, res, next) {
     var config = require(hb.config);
-    var platform = JSON.parse(req.body.platform_json);
-    var accessories = JSON.parse(req.body.accessories_json);
 
-    if (req.body.use_platform == "true") {
+    if (req.body["platform-code"] != "" && req.body["platform-name"] != "") {
+        var platform = JSON.parse(req.body.platform_json);
+
+        platform.name = req.body["platform-name"];
+
         if (!config.platforms) {
             config.platforms = [];
         }
@@ -166,17 +147,12 @@ router.post("/install", function (req, res, next) {
         config.platforms.push(platform);
     }
 
-    if (req.body.use_accessories == "true") {
-        if (!config.accessories) {
-            config.accessories = [];
-        }
+    for (var i = 0; i < req.body.accessory.length; i++) {
+        if (req.body[req.body.accessory[i] + "-delete"] == "false") {
+            var accessory = JSON.parse(req.body[req.body.accessory[i] + "-code"]);
 
-        if (Object.prototype.toString.call(accessories) === '[object Array]') {
-            for (var i = 0; i < accessories.length; i++) {
-                config.accessories.push(accessories[i]);
-            }
-        } else {
-            config.accessories.push(accessories);
+            accessory.name = req.body[req.body.accessory[i] + "-name"];
+            config.accessories.push(accessory);
         }
     }
 
@@ -185,17 +161,10 @@ router.post("/install", function (req, res, next) {
 
     delete require.cache[require.resolve(hb.config)];
 
-    app.get("log")("Package " + req.query.package + " installed.");
-
-    res.render("progress", {
-        layout: false,
-        message: "Installing Package",
-        redirect: "/plugins"
+    npm.uninstall(req.body.package, function (err, stdout, stderr) {
+        app.get("log")("Package " + req.body.package + " installed.");
+        res.redirect("/plugins");
     });
-
-    //EXECUTE NPM INSTALL
-
-    require("child_process").exec(hb.restart);
 });
 
 module.exports = router;

@@ -102,9 +102,9 @@ router.get("/upgrade", function (req, res, next) {
         redirect: "/"
     });
 
-    //EXECUTE NPM UPDATE
-
-    require("child_process").exec(hb.restart);
+    npm.update("homebridge", function (err, stdout, stderr) {
+        require("child_process").exec(hb.restart);
+    });
 });
 
 router.get("/logout", function (req, res, next) {

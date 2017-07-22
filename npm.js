@@ -13,16 +13,6 @@
             var me = this;
             var base = this.getBase();
 
-            if (process.platform === "win32") {
-                base = path.join(process.env.APPDATA, "npm/node_modules");
-            } else {
-                if (fs.existsSync("/usr/lib/node_modules")) {
-                    base = "/usr/lib/node_modules";
-                } else {
-                    base = "/usr/local/lib/node_modules";
-                }
-            }
-
             if (base) {
                 async.map(fs.readdirSync(base).filter(function (dr) {
                     if (fs.lstatSync(path.join(base, dr)).isDirectory()) {
@@ -150,6 +140,33 @@
                     });
                 }
             }
+        },
+        install: function (package, callback) {
+            var me = this;
+            var base = this.getBase();
+            var command = path.join(base, "npm/bin/npm-cli.js");
+
+            require("child_process").exec("\"" + command + "\" install -g " + package, function (err, stdout, stderr) {
+                callback(err, stdout, stderr);
+            });
+        },
+        uninstall: function (package, callback) {
+            var me = this;
+            var base = this.getBase();
+            var command = path.join(base, "npm/bin/npm-cli.js");
+
+            require("child_process").exec("\"" + command + "\" uninstall -g " + package, function (err, stdout, stderr) {
+                callback(err, stdout, stderr);
+            });
+        },
+        update: function (package, callback) {
+            var me = this;
+            var base = this.getBase();
+            var command = path.join(base, "npm/bin/npm-cli.js");
+
+            require("child_process").exec("\"" + command + "\" update -g " + package, function (err, stdout, stderr) {
+                callback(err, stdout, stderr);
+            });
         },
         getBase: function () {
             var base;

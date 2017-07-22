@@ -10,6 +10,40 @@ router.get("/", function (req, res, next) {
         res.redirect("/login");
     }
 }, function (req, res, next) {
+    write(req, res);
+});
+
+router.post("/", function (req, res, next) {
+    if (req.user) {
+        next();
+    } else {
+        req.session.referer = "/config";
+        res.redirect("/login");
+    }
+}, function (req, res, next) {
+    save(req, res);
+    write(req, res);
+});
+
+router.get("/backup", function (req, res, next) {
+    if (req.user) {
+        next();
+    } else {
+        req.session.referer = "/config";
+        res.redirect("/login");
+    }
+}, function (req, res, next) {
+    var config = require(hb.config);
+
+    res.setHeader("Content-disposition", "attachment; filename=config.json");
+    res.setHeader("Content-type", "application/json");
+
+    res.write(JSON.stringify(config, null, 4), function (err) {
+        res.end();
+    });
+});
+
+function write(req, res) {
     var config = require(hb.config);
 
     var server = {
@@ -22,9 +56,12 @@ router.get("/", function (req, res, next) {
     var platforms = [];
 
     for (var i = 0; i < config.platforms.length; i++) {
+        var name = config.platforms[i].name;
+        delete config.platforms[i].name;
+
         platforms.push({
-            id: config.platforms[i].platform,
-            name: config.platforms[i].name,
+            id: config.platforms[i].platform.split(".")[0],
+            name: name,
             json: JSON.stringify(config.platforms[i], null, 4)
         });
     }
@@ -32,12 +69,17 @@ router.get("/", function (req, res, next) {
     var accessories = [];
 
     for (var i = 0; i < config.accessories.length; i++) {
+        var name = config.accessories[i].name;
+        delete config.accessories[i].name;
+
         accessories.push({
-            id: i + "-" + config.accessories[i].accessory,
-            name: config.accessories[i].name,
+            id: i + "-" + config.accessories[i].accessory.split(".")[0],
+            name: name,
             json: JSON.stringify(config.accessories[i], null, 4)
         });
     }
+
+    delete require.cache[require.resolve(hb.config)];
 
     res.render("config", {
         controller: "config",
@@ -47,16 +89,9 @@ router.get("/", function (req, res, next) {
         platforms: platforms,
         accrssories: accessories
     });
-});
+}
 
-router.post("/", function (req, res, next) {
-    if (req.user) {
-        next();
-    } else {
-        req.session.referer = "/config";
-        res.redirect("/login");
-    }
-}, function (req, res, next) {
+function save(req, res) {
     var config = require(hb.config);
 
     config.bridge.name = req.body.name;
@@ -77,11 +112,11 @@ router.post("/", function (req, res, next) {
 
     config.accessories = [];
 
-    for (var i = 0; i < req.body.accessory.length; i ++) {
-        if (req.body[i + "-" + req.body.accessory[i] + "-delete"] == "false") {
-            var accessory = JSON.parse(req.body[i + "-" + req.body.accessory[i] + "-code"]);
+    for (var i = 0; i < req.body.accessory.length; i++) {
+        if (req.body[req.body.accessory[i] + "-delete"] == "false") {
+            var accessory = JSON.parse(req.body[req.body.accessory[i] + "-code"]);
 
-            accessory.name = req.body[i + "-" + req.body.accessory[i] + "-name"];
+            accessory.name = req.body[req.body.accessory[i] + "-name"];
             config.accessories.push(accessory);
         }
     }
@@ -92,26 +127,6 @@ router.post("/", function (req, res, next) {
     delete require.cache[require.resolve(hb.config)];
 
     app.get("log")("Configuration Changed.");
-
-    res.redirect("/config");
-});
-
-router.get("/backup", function (req, res, next) {
-    if (req.user) {
-        next();
-    } else {
-        req.session.referer = "/config";
-        res.redirect("/login");
-    }
-}, function (req, res, next) {
-    var config = require(hb.config);
-
-    res.setHeader("Content-disposition", "attachment; filename=config.json");
-    res.setHeader("Content-type", "application/json");
-
-    res.write(JSON.stringify(config, null, 4), function (err) {
-        res.end();
-    });
-});
+}
 
 module.exports = router;

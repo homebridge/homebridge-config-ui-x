@@ -250,16 +250,16 @@ content {
     padding: 0 20px 20px 20px;
 }
 
-.config form {
+.config form, .plugins form {
     height: 100%;
 }
 
-.config table {
+.config table, .plugins table {
     width: 100%;
     height: 100%;
 }
 
-    .config table tbody tr td {
+    .config table tbody tr td, .plugins table tbody tr td {
         width: 100%;
         height: 100%;
         vertical-align: top;
@@ -277,48 +277,47 @@ content {
     display: inline-block;
 }
 
-.config .platform-panel {
+.config .platform-panel, .plugins .platform-panel {
     width: 100%;
     height: 100%;
     overflow: auto;
 }
 
-    .config .platform-panel table {
+    .config .platform-panel table, .plugins .platform-panel table {
         width: 100%;
         height: auto;
     }
 
-        .config .platform-panel table tbody tr td {
+        .config .platform-panel table tbody tr td, .plugins .platform-panel table tbody tr td {
             width: auto;
             height: auto;
             vertical-align: top;
             padding: 20px;
         }
 
-        .config .platform-panel table tbody tr td:first-child {
+        .config .platform-panel table tbody tr td:first-child, .plugins .platform-panel table tbody tr td:first-child {
             width: 207px;
         }
 
-        .config .platform-panel table tbody tr td:last-child {
+        .config .platform-panel table tbody tr td:last-child, .plugins .platform-panel table tbody tr td:last-child {
             width: 24px;
             text-align: right;
             padding: 0;
         }
 
-.config .platform-form {
-    padding: 20px;
+.config .platform-form, .plugins .platform-form {
+    padding: 20px 20px 0 20px;
     box-sizing: border-box;
-    display: none;
 }
 
-    .config .platform-form .platform {
-        margin: 20px 0;
+    .config .platform-form .platform, .plugins .platform-form .platform {
+        margin: 20px 0 0 0;
         padding: 20px;
         background-color: #fff;
         position: relative;
     }
 
-    .config textarea {
+    .config textarea, .plugins textarea {
         padding: 20px;
         font-size: 0.8em;
         border: 0 none;
@@ -327,10 +326,14 @@ content {
         box-sizing: border-box;
     }
 
-    .config .platform-delete {
+    .config .platform-delete, .config .accessory-delete, .plugins .platform-delete, .plugins .accessory-delete {
         color: #afafaf;
         cursor: pointer;
     }
+
+.config .config-form-actions, .copluginsnfig .config-form-actions {
+    padding: 10px 20px 20px 20px;
+}
 
 .plugins .plugin-cards {
     width: 100%;

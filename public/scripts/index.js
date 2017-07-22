@@ -34,7 +34,6 @@ $(document).ready(function () {
 function down_html() {
     var html = "";
 
-    html += "<h1>Server Status</h1>";
     html += "<section class=\"mdc-elevation--z4\">";
     html += "    <h3>Service</h3>";
     html += "    <ul class=\"mdc-list mdc-list--two-line mdc-list--avatar-list status-icon\">";
