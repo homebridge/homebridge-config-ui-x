@@ -132,7 +132,7 @@ function write(req, res) {
         user: req.user,
         server: server,
         platforms: platforms,
-        accrssories: accessories
+        accessories: accessories
     });
 }
 
