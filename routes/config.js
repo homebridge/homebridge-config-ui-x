@@ -25,6 +25,49 @@ router.post("/", function (req, res, next) {
     write(req, res);
 });
 
+router.get("/advanced", function (req, res, next) {
+    if (req.user) {
+        next();
+    } else {
+        req.session.referer = "/config/advanced";
+        res.redirect("/login");
+    }
+}, function (req, res, next) {
+    delete require.cache[require.resolve(hb.config)];
+
+    res.render("advanced", {
+        controller: "config",
+        title: "Configuration",
+        user: req.user,
+        config: JSON.stringify(require(hb.config), null, 4)
+    });
+});
+
+router.post("/advanced", function (req, res, next) {
+    if (req.user) {
+        next();
+    } else {
+        req.session.referer = "/config/advanced";
+        res.redirect("/login");
+    }
+}, function (req, res, next) {
+    var config = JSON.parse(req.body["config"]);
+
+    fs.renameSync(hb.config, hb.config + "." + Math.floor(new Date() / 1000));
+    fs.appendFileSync(hb.config, JSON.stringify(config, null, 4));
+
+    delete require.cache[require.resolve(hb.config)];
+
+    app.get("log")("Configuration Changed.");
+
+    res.render("advanced", {
+        controller: "config",
+        title: "Configuration",
+        user: req.user,
+        config: JSON.stringify(require(hb.config), null, 4)
+    });
+});
+
 router.get("/backup", function (req, res, next) {
     if (req.user) {
         next();
@@ -57,6 +100,7 @@ function write(req, res) {
 
     for (var i = 0; i < config.platforms.length; i++) {
         var name = config.platforms[i].name;
+
         delete config.platforms[i].name;
 
         platforms.push({
@@ -70,6 +114,7 @@ function write(req, res) {
 
     for (var i = 0; i < config.accessories.length; i++) {
         var name = config.accessories[i].name;
+
         delete config.accessories[i].name;
 
         accessories.push({

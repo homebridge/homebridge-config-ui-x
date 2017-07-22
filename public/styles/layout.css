@@ -335,6 +335,12 @@ content {
     padding: 10px 20px 20px 20px;
 }
 
+.config .config-editor {
+    background-color: #fff;
+    margin: 20px 20px 0 20px;
+    padding: 20px;
+}
+
 .plugins .plugin-cards {
     width: 100%;
     height: 100%;
@@ -346,19 +352,10 @@ content {
 
 .plugins .plugin-card {
     margin: 10px;
-    width: 370px;
-    height: 230px;
     background-color: #fff;
     word-wrap: break-word;
-    display: inline-block;
     position: relative;
 }
-
-    .plugins .plugin-card .actions {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-    }
 
     .plugins .plugin-card .installed-tag {
         color: #00b9f1;
