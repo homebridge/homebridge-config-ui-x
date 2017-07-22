@@ -17,8 +17,23 @@ module.exports = function (service) {
             "id": 1,
             "username": "admin",
             "password": "admin",
-            "name": "Administrator"
+            "name": "Administrator",
+            "admin": true
         }], null, 4));
+    }
+
+    var auth = require(hb.auth);
+    var modified = false;
+
+    for (var i = 0; i < auth.length; i++) {
+        if (auth[i].id == 1 && !auth[i].admin) {
+            auth[i].admin = true;
+            modified = true;
+        }
+    }
+
+    if (modified) {
+        fs.writeFileSync(hb.auth, JSON.stringify(auth, null, 4));
     }
 
     Service = service.hap.Service;
