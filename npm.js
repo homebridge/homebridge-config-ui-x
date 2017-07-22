@@ -152,7 +152,7 @@
             var base = this.getBase();
             var command = path.join(base, "npm/bin/npm-cli.js");
 
-            require("child_process").exec("\"" + command + "\" update -g " + package, function (err, stdout, stderr) {
+            require("child_process").exec("\"" + command + "\" install -g " + package, function (err, stdout, stderr) {
                 callback(err, stdout, stderr);
             });
         },
