@@ -20,51 +20,18 @@ Add this to your ~/.homebridge/config.json file
     "name": "Config",
     "port": 8080,
     "log": "/var/log/homebridge.stdout.log",
+    "error_log": "/var/log/homebridge.stderr.log",
     "restart": "/usr/local/bin/supervisorctl restart homebridge"
 }
 ```
 
-This example uses [supervisor](http://supervisord.org/) to control homebridge.
+This example uses [supervisor](http://supervisord.org/) to control homebridge. This is a good supervisor how to: [Running Supervisor on OSX](https://nicksergeant.com/running-supervisor-on-os-x/)
 
 Replace /var/log/homebridge.stdout.log with your path to your Homebridge output log.<br />
+Replace /var/log/homebridge.stderr.log with your path to your Homebridge error log.<br />
 Replace /usr/local/bin/supervisorctl restart homebridge with the command you use to restart Homebridge.
 
-Example /usr/local/etc/supervisord.conf entry
-```Bash
-[program:homebridge]
-command=/usr/local/bin/node /usr/local/lib/node_modules/homebridge/bin/homebridge
-directory=/usr/local/lib/node_modules/homebridge/bin
-user=root
-autostart=true
-autorestart=true
-stdout_logfile=/var/log/homebridge.stdout.log
-stderr_logfile=/var/log/homebridge.stderr.log
-```
-
-This is a good supervisor how to: [Running Supervisor on OSX](https://nicksergeant.com/running-supervisor-on-os-x/)
-
-Then you will need to create the ~/.homebridge/auth.json
-```Bash
-nano ~/.homebridge/auth.json
-```
-
-Add users to the auth.json file.
-```JSON
-[
-    {
-        "id": 1,
-        "username": "[USERNAME]",
-        "password": "[PASSWORD]",
-        "name": "[FULL NAME]"
-    },
-    {
-        "id": 2,
-        "username": "[USERNAME]",
-        "password": "[PASSWORD]",
-        "name": "[FULL NAME]"
-    }
-]
-```
+Once installed you can open the interface at http://localhost:8080. The default username is <b>admin</b> and the default password is <b>admin</b>.
 
 # Usage
 
