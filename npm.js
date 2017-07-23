@@ -33,13 +33,32 @@
                         url: "https://api.npms.io/v2/package/" + pkg.name,
                         json: true
                     }, function (err, res, body) {
-                        callback(err, {
-                            name: body.collected.metadata.name,
+						var publicPackage = 'code' in body || err ? false : true;
+
+						if (! 'name' in pkg) {
+							pkg.name = dr;
+						}
+						if (! 'version' in pkg) {
+							pkg.version = '0.0.1';
+						}
+						if (! 'description' in pkg) {
+							pkg.description = 'No description.';
+						}
+						
+						var name = publicPackage ? body.collected.metadata.name : pkg.name;
+						var intalled = pkg.version;
+						var version = publicPackage ? body.collected.metadata.version : "N/A";
+						var update = publicPackage ? !(me.versionCompare(pkg.version, body.collected.metadata.version)) : !(me.versionCompare(pkg.version, pkg.version));
+						var description = publicPackage ? body.collected.metadata.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, "").trim() : pkg.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, "").trim();
+						var links = publicPackage ? body.collected.metadata.links : 'https://www.npmjs.com';
+
+						callback(err, {
+                            name: name,
                             installed: pkg.version,
-                            version: body.collected.metadata.version,
-                            update: !(me.versionCompare(pkg.version, body.collected.metadata.version)),
-                            description: body.collected.metadata.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, "").trim(),
-                            links: body.collected.metadata.links
+                            version: version,
+                            update: update,
+                            description: description,
+                            links: links
                         });
                     });
                 }, function (err, res) {
