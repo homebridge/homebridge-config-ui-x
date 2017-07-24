@@ -146,22 +146,40 @@ function save(req, res) {
 
     config.platforms = [];
 
-    for (var i = 0; i < req.body.platform.length; i++) {
-        if (req.body[eq.body.platform[i] + "-delete"] == "false") {
-            var platform = JSON.parse(req.body[eq.body.platform[i] + "-code"]);
+    if(Object.prototype.toString.call(req.body.platform) === "[object Array]") {
+        for (var i = 0; i < req.body.platform.length; i++) {
+            if (req.body[req.body.platform[i] + "-delete"] == "false") {
+                var platform = JSON.parse(req.body[req.body.platform[i] + "-code"]);
 
-            platform.name = req.body[eq.body.platform[i] + "-name"];
+                platform.name = req.body[req.body.platform[i] + "-name"];
+                config.platforms.push(platform);
+            }
+        }
+    } else if (req.body.platform != "") {
+        if (req.body[req.body.platform + "-delete"] == "false") {
+            var platform = JSON.parse(req.body[req.body.platform + "-code"]);
+
+            platform.name = req.body[req.body.platform + "-name"];
             config.platforms.push(platform);
         }
     }
 
     config.accessories = [];
 
-    for (var i = 0; i < req.body.accessory.length; i++) {
-        if (req.body[req.body.accessory[i] + "-delete"] == "false") {
-            var accessory = JSON.parse(req.body[req.body.accessory[i] + "-code"]);
+    if(Object.prototype.toString.call(req.body.accessory) === "[object Array]") {
+        for (var i = 0; i < req.body.accessory.length; i++) {
+            if (req.body[req.body.accessory[i] + "-delete"] == "false") {
+                var accessory = JSON.parse(req.body[req.body.accessory[i] + "-code"]);
 
-            accessory.name = req.body[req.body.accessory[i] + "-name"];
+                accessory.name = req.body[req.body.accessory[i] + "-name"];
+                config.accessories.push(accessory);
+            }
+        }
+    } else if (req.body.accessory != "") {
+        if (req.body[req.body.accessory + "-delete"] == "false") {
+            var accessory = JSON.parse(req.body[req.body.accessory + "-code"]);
+
+            accessory.name = req.body[req.body.accessory + "-name"];
             config.accessories.push(accessory);
         }
     }
