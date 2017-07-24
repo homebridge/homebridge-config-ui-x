@@ -155,7 +155,7 @@ function save(req, res) {
                 config.platforms.push(platform);
             }
         }
-    } else if (req.body.platform != "") {
+    } else if (req.body.platform && req.body.platform != "") {
         if (req.body[req.body.platform + "-delete"] == "false") {
             var platform = JSON.parse(req.body[req.body.platform + "-code"]);
 
@@ -175,7 +175,7 @@ function save(req, res) {
                 config.accessories.push(accessory);
             }
         }
-    } else if (req.body.accessory != "") {
+    } else if (req.body.accessory && req.body.accessory != "") {
         if (req.body[req.body.accessory + "-delete"] == "false") {
             var accessory = JSON.parse(req.body[req.body.accessory + "-code"]);
 
