@@ -33,26 +33,28 @@
                         url: "https://api.npms.io/v2/package/" + pkg.name,
                         json: true
                     }, function (err, res, body) {
-			var publicPackage = 'code' in body || err ? false : true;
+                        var publicPackage = "code" in body || err ? false : true;
+			    
+                        if (! "name" in pkg) {
+                            pkg.name = dr;
+                        }
 
-			if (! 'name' in pkg) {
-				pkg.name = dr;
-			}
-			if (! 'version' in pkg) {
-				pkg.version = '0.0.1';
-			}
-			if (! 'description' in pkg) {
-				pkg.description = 'No description.';
-			}
+                        if (! "version" in pkg) {
+                            pkg.version = "0.0.1";
+                        }
+
+                        if (! "description" in pkg) {
+                            pkg.description = "No description.";
+                        }
 			
-			var name = publicPackage ? body.collected.metadata.name : pkg.name + ' (private)';
-			var intalled = pkg.version;
-			var version = publicPackage ? body.collected.metadata.version : "N/A";
-			var update = publicPackage ? !(me.versionCompare(pkg.version, body.collected.metadata.version)) : !(me.versionCompare(pkg.version, pkg.version));
-			var description = publicPackage ? body.collected.metadata.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, "").trim() : pkg.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, "").trim();
-			var links = publicPackage ? body.collected.metadata.links : 'https://www.npmjs.com';
+                        var name = publicPackage ? body.collected.metadata.name : pkg.name + " (private)";
+                        var intalled = pkg.version;
+                        var version = publicPackage ? body.collected.metadata.version : "N/A";
+                        var update = publicPackage ? !(me.versionCompare(pkg.version, body.collected.metadata.version)) : !(me.versionCompare(pkg.version, pkg.version));
+                        var description = publicPackage ? body.collected.metadata.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, "").trim() : pkg.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, "").trim();
+                        var links = publicPackage ? body.collected.metadata.links : false;
 
-			callback(err, {
+                        callback(err, {
                             name: name,
                             installed: pkg.version,
                             version: version,
