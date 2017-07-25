@@ -31,6 +31,18 @@ Replace <b>/var/log/homebridge.stdout.log</b> with the path to your Homebridge o
 Replace <b>/var/log/homebridge.stderr.log</b> with the path to your Homebridge error log.<br />
 Replace <b>/usr/local/bin/supervisorctl restart homebridge</b> with the command you use to restart Homebridge.
 
+### For Systemd
+
+Add this to your ~/.homebridge/config.json file
+```JSON
+{
+    "platform": "config",
+    "name": "Config",
+    "port": 8080,
+    "log": "/var/log/daemon.log",
+    "restart": "sudo systemctl restart homebridge.service"
+}
+```
 Once installed you can open the interface at http://localhost:8080. The default username is <b>admin</b> and the default password is <b>admin</b>.
 
 # Usage
