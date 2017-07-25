@@ -13,6 +13,8 @@ First install the plugin
 sudo npm i -g homebridge-config-ui
 ```
 
+### For Supervisord
+
 Add this to your ~/.homebridge/config.json file
 ```JSON
 {
@@ -43,6 +45,12 @@ Add this to your ~/.homebridge/config.json file
     "restart": "sudo systemctl restart homebridge.service"
 }
 ```
+
+Replace <b>/var/log/daemon.log</b> with the path to your Homebridge output log.<br />
+Replace <b>sudo systemctl restart homebridge.service</b> with the command you use to restart Homebridge.
+
+# Initial Run
+
 Once installed you can open the interface at http://localhost:8080. The default username is <b>admin</b> and the default password is <b>admin</b>.
 
 # Usage
