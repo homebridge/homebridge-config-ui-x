@@ -35,7 +35,7 @@ Replace <b>/usr/local/bin/supervisorctl restart homebridge</b> with the command 
 
 ### For Systemd
 
-Add this to your ~/.homebridge/config.json file
+Add this to your var/homebridge/config.json file
 ```JSON
 {
     "platform": "config",
