@@ -53,7 +53,7 @@ router.post("/advanced", function (req, res, next) {
 }, function (req, res, next) {
     var config = JSON.parse(req.body["config"]);
 
-    fs.renameSync(hb.config, hb.config + "." + + now.getFullYear() + "-"+ now.getMonth() + "-" + now.getDay() + "-" + ("0" + now.getHours()).slice(-2)   + ":" + 
+    fs.renameSync(hb.config, hb.config + "." + now.getFullYear() + "-"+ now.getMonth() + "-" + now.getDay() + "-" + ("0" + now.getHours()).slice(-2)   + ":" + 
     ("0" + now.getMinutes()).slice(-2) + ":" + 
     ("0" + now.getSeconds()).slice(-2));
     fs.appendFileSync(hb.config, JSON.stringify(config, null, 4));
