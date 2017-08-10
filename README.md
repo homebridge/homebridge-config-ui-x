@@ -32,7 +32,7 @@ This example uses [supervisor](http://supervisord.org/) to control homebridge. T
 
 Replace <b>/var/log/homebridge.stdout.log</b> with the path to your Homebridge output log.<br />
 Replace <b>/var/log/homebridge.stderr.log</b> with the path to your Homebridge error log.<br />
-Replace <b>/usr/local/bin/supervisorctl restart homebridge</b> with the command you use to restart Homebridge.
+Replace <b>/usr/local/bin/supervisorctl restart homebridge</b> with the command you use to restart Homebridge.<br />
 Replace <b>/sys/class/thermal/thermal_zone0/temp</b> with the command you use to check the CPU Temperature.
 
 ### For Systemd
@@ -50,7 +50,7 @@ Add this to your /var/homebridge/config.json file
 ```
 
 Replace <b>/var/log/daemon.log</b> with the path to your Homebridge output log.<br />
-Replace <b>sudo systemctl restart homebridge.service</b> with the command you use to restart Homebridge.
+Replace <b>sudo systemctl restart homebridge.service</b> with the command you use to restart Homebridge.<br />
 Replace <b>/sys/class/thermal/thermal_zone0/temp</b> with the command you use to check the CPU Temperature.
 
 # Initial Run
