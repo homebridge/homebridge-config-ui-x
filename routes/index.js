@@ -38,7 +38,7 @@ router.get("/status", function (req, res, next) {
         delta: Math.floor(os.uptime())
     };
 
-    var temp = fs.readFileSync("/sys/class/thermal/thermal_zone0/temp");
+    var temp = fs.readFileSync(hb.temp);
     var cputemp = ((temp/1000).toPrecision(3)) + "°C";
     
     uptime.days = Math.floor(uptime.delta / 86400);
