@@ -1,6 +1,7 @@
 var fs = require("fs");
 var express = require("express");
 var router = express.Router();
+var now = new Date();
 
 router.get("/", function (req, res, next) {
     if (req.user) {
