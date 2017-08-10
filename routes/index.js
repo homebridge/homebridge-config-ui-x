@@ -1,3 +1,4 @@
+var fs = require("fs");
 var os = require("os");
 var npm = require("../npm");
 var express = require("express");
@@ -37,6 +38,9 @@ router.get("/status", function (req, res, next) {
         delta: Math.floor(os.uptime())
     };
 
+    var temp = fs.readFileSync("/sys/class/thermal/thermal_zone0/temp");
+    var cputemp = ((temp/1000).toPrecision(3)) + "°C";
+    
     uptime.days = Math.floor(uptime.delta / 86400);
     uptime.delta -= uptime.days * 86400;
     uptime.hours = Math.floor(uptime.delta / 3600) % 24;
@@ -49,7 +53,8 @@ router.get("/status", function (req, res, next) {
         console_port: app.get("port"),
         uptime: uptime,
         cpu: load,
-        mem: mem
+        mem: mem,
+        cputemp: cputemp
     });
 });
 
