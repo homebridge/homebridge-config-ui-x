@@ -103,7 +103,7 @@ $(document).ready(function () {
                 $("#" + platform + "-delete").val("true");
                 $("#" + platform + "-code").html("");
 
-                $(".platform[platform='" + platform + "']").hide();
+                $(".platform[platform='" + platform + "']").remove();
             }
         });
 
@@ -114,7 +114,7 @@ $(document).ready(function () {
             $("#" + accessory + "-delete").val("true");
             $("#" + accessory + "-code").html("");
 
-            $(".accessory[accessory='" + accessory + "']").hide();
+            $(".accessory[accessory='" + accessory + "']").remove();
         });
 
         $.each($("textarea"), function () {
