@@ -53,12 +53,14 @@ router.post("/advanced", function (req, res, next) {
 }, function (req, res, next) {
     var config = JSON.parse(req.body["config"]);
 
-    fs.renameSync(hb.config, hb.config + "." + Math.floor(new Date() / 1000));
+    fs.renameSync(hb.config, hb.config + "." + + now.getFullYear() + "-"+ now.getMonth() + "-" + now.getDay() + "-" + ("0" + now.getHours()).slice(-2)   + ":" + 
+    ("0" + now.getMinutes()).slice(-2) + ":" + 
+    ("0" + now.getSeconds()).slice(-2));
     fs.appendFileSync(hb.config, JSON.stringify(config, null, 4));
 
     delete require.cache[require.resolve(hb.config)];
 
-    app.get("log")("Configuration Changed.");
+    app.get("log")("Advanced Configuration Changed.");
 
     res.render("advanced", {
         controller: "config",
@@ -184,7 +186,9 @@ function save(req, res) {
         }
     }
 
-    fs.renameSync(hb.config, hb.config + "." + Math.floor(new Date() / 1000));
+    fs.renameSync(hb.config, hb.config + "." + now.getFullYear() + "-"+ now.getMonth() + "-" + now.getDay() + "-" + ("0" + now.getHours()).slice(-2)   + ":" + 
+    ("0" + now.getMinutes()).slice(-2) + ":" + 
+    ("0" + now.getSeconds()).slice(-2));
     fs.appendFileSync(hb.config, JSON.stringify(config, null, 4));
 
     delete require.cache[require.resolve(hb.config)];
