@@ -50,6 +50,7 @@ function HttpServer(log, config) {
     hb.log = config.log || "/var/log/homebridge.stdout.log";
     hb.error_log = config.error_log || "/var/log/homebridge.stderr.log";
     hb.restart = config.restart || "/usr/local/bin/supervisorctl restart homebridge";
+    hb.temp = config.temp || "/sys/class/thermal/thermal_zone0/temp";
 
     app.set("port", config.port);
     app.set("log", log);
