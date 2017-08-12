@@ -132,20 +132,28 @@
                         url: "https://api.npms.io/v2/package/" + name,
                         json: true
                     }, function (err, res, body) {
-                        var desc = body.collected.metadata.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, "").trim();
+	    		if(!err && res.statusCode==200){
+				var desc = body.collected.metadata.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, "").trim();
 
-                        if (desc.length > 80) {
-                            desc = desc.substring(0, 77) + "...";
-                        }
+				if (desc.length > 80) {
+				    desc = desc.substring(0, 77) + "...";
+				}
 
-                        callback(err, {
-                            name: body.collected.metadata.name,
-                            installed: version,
-                            version: body.collected.metadata.version,
-                            update: !(me.versionCompare(version, body.collected.metadata.version)),
-                            description: desc,
-                            links: body.collected.metadata.links
-                        });
+				callback(err, {
+				    name: body.collected.metadata.name,
+				    installed: version,
+				    version: body.collected.metadata.version,
+				    update: !(me.versionCompare(version, body.collected.metadata.version)),
+				    description: desc,
+				    links: body.collected.metadata.links
+				});
+			} else{
+				callback(err, {
+				name: name,
+				installed: version,
+				description: desc
+				});
+			}	
                     });
                 }
             }
