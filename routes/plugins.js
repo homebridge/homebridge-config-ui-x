@@ -1,6 +1,8 @@
+var fs = require("fs");
 var npm = require("../npm");
 var express = require("express");
 var router = express.Router();
+var now = new Date();
 
 router.get("/", function (req, res, next) {
     if (req.user) {
@@ -91,7 +93,9 @@ router.get("/uninstall", function (req, res, next) {
         config.accessories.push(accessories);
     }
 
-    fs.renameSync(hb.config, hb.config + "." + Math.floor(new Date() / 1000));
+    fs.renameSync(hb.config, hb.config + "." + now.getFullYear() + "-"+ now.getMonth() + "-" + now.getDay() + "-" + ("0" + now.getHours()).slice(-2)   + ":" + 
+    ("0" + now.getMinutes()).slice(-2) + ":" + 
+    ("0" + now.getSeconds()).slice(-2));
     fs.appendFileSync(hb.config, JSON.stringify(config, null, 4));
 
     delete require.cache[require.resolve(hb.config)];
@@ -155,12 +159,14 @@ router.post("/install", function (req, res, next) {
         }
     }
 
-    fs.renameSync(hb.config, hb.config + "." + Math.floor(new Date() / 1000));
+    fs.renameSync(hb.config, hb.config + "." + now.getFullYear() + "-"+ now.getMonth() + "-" + now.getDay() + "-" + ("0" + now.getHours()).slice(-2)   + ":" + 
+    ("0" + now.getMinutes()).slice(-2) + ":" + 
+    ("0" + now.getSeconds()).slice(-2));
     fs.appendFileSync(hb.config, JSON.stringify(config, null, 4));
 
     delete require.cache[require.resolve(hb.config)];
 
-    npm.uninstall(req.body.package, function (err, stdout, stderr) {
+    npm.install(req.body.package, function (err, stdout, stderr) {
         app.get("log")("Package " + req.body.package + " installed.");
         res.redirect("/plugins");
     });
