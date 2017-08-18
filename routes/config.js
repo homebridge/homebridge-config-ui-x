@@ -2,6 +2,8 @@ var fs = require("fs");
 var express = require("express");
 var router = express.Router();
 var now = new Date();
+var userId = 1000;
+var groupId = 1000;
 
 router.get("/", function (req, res, next) {
     if (req.user) {
@@ -58,7 +60,8 @@ router.post("/advanced", function (req, res, next) {
     ("0" + now.getMinutes()).slice(-2) + ":" + 
     ("0" + now.getSeconds()).slice(-2));
     fs.appendFileSync(hb.config, JSON.stringify(config, null, 4));
-
+    fs.chownSync(hb.config, userId,groupId);
+    
     delete require.cache[require.resolve(hb.config)];
 
     app.get("log")("Advanced Configuration Changed.");
@@ -191,7 +194,8 @@ function save(req, res) {
     ("0" + now.getMinutes()).slice(-2) + ":" + 
     ("0" + now.getSeconds()).slice(-2));
     fs.appendFileSync(hb.config, JSON.stringify(config, null, 4));
-
+    fs.chownSync(hb.config, userId,groupId);
+    
     delete require.cache[require.resolve(hb.config)];
 
     app.get("log")("Configuration Changed.");
