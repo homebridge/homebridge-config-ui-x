@@ -150,9 +150,6 @@ router.post("/install", function (req, res, next) {
             accessory.name = req.body[req.body.accessory[i] + "-name"];
             config.accessories.push(accessory);
         }
-    }
-            }
-           
 
     fs.renameSync(hb.config, hb.config + "." + now.getFullYear() + "-"+ now.getMonth() + "-" + now.getDay() + "-" + ("0" + now.getHours()).slice(-2)   + ":" + 
     ("0" + now.getMinutes()).slice(-2) + ":" + 
