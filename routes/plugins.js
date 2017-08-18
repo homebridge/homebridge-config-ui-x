@@ -144,10 +144,10 @@ router.post("/install", function (req, res, next) {
     if (!config.accessories){
         config.accessories = [];
     } else
-        if (req.body[req.body.accessory[i] + "-delete"] == "false") {
-            var accessory = JSON.parse(req.body[req.body.accessory[i] + "-code"]);
+        if (req.body[req.body.accessory + "-delete"] == "false") {
+            var accessory = JSON.parse(req.body[req.body.accessory + "-code"]);
 
-            accessory.name = req.body[req.body.accessory[i] + "-name"];
+            accessory.name = req.body[req.body.accessory + "-name"];
             config.accessories.push(accessory);
         }
 
