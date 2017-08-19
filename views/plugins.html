@@ -40,14 +40,10 @@
 </aside>
 <div class="plugin-search-form">
     <form id="search-form">
-        <div class="mdc-form-field mdc-form-field--align-end">
-            <div class="mdc-textfield" data-demo-no-auto-js="">
-                <input type="text" class="mdc-textfield__input" id="search" name="search" value="{{search}}">
-            </div>
-        </div>
-        <button type="submit" class="search-button mdc-button mdc-button--raised mdc-button--primary mdc-ripple-surface" data-mdc-auto-init="MDCRipple">Search</button>
+        <input type="search" class="mdc-textfield__input" id="search" name="search" value="{{search}}">
     </form>
 </div>
+</br>
 <div id="plugin-list" class="plugin-cards">
     {{#packages}}
     <div class="mdc-card plugin-card">
