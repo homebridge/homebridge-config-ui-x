@@ -235,8 +235,15 @@ content {
 
 .accounts .account-list {
     background-color: #fff;
-    min-width: 320px;
-    margin: 20px;
+    margin: 20px 0px 20px 20px;
+    width:calc(50% - 2px);
+}
+
+    @media screen and (max-width: 600px) {
+.accounts .account-list
+  {
+    width:80%;
+  }
 }
 
     .accounts .account-list a {
@@ -389,18 +396,6 @@ content {
     top: 64px;
     left: 57px;
 }
-
-    .plugins .plugin-search-form input {
-        background-color: #fff;
-        width: 370px;
-        height: 27px;
-        padding: 4px 10px 5px 10px;
-    }
-
-    .plugins .search-button {
-        margin-top: -9px;
-        margin-left: -6px;
-    }
 
 input {
 	outline: none;
