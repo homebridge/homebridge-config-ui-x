@@ -47,7 +47,7 @@
                             pkg.description = "No description.";
                         }
 			
-                        var name = publicPackage ? body.collected.metadata.name : pkg.name + " (private)";
+                        var name = publicPackage ? body.collected.metadata.name : pkg.name;
                         var intalled = pkg.version;
                         var version = publicPackage ? body.collected.metadata.version : "N/A";
                         var update = publicPackage ? !(me.versionCompare(pkg.version, body.collected.metadata.version)) : !(me.versionCompare(pkg.version, pkg.version));
