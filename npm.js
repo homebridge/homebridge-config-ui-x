@@ -191,10 +191,10 @@
             if (process.platform === "win32") {
                 base = path.join(process.env.APPDATA, "npm/node_modules");
             } else {
-                if (fs.existsSync("/usr/lib/node_modules")) {
-                    base = "/usr/lib/node_modules";
-                } else {
+                if (fs.existsSync("/usr/local/lib/node_modules")) {
                     base = "/usr/local/lib/node_modules";
+                } else {
+                    base = "/usr/lib/node_modules";
                 }
             }
 
