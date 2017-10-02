@@ -17,6 +17,7 @@ sudo npm i -g homebridge-config-ui
 
 Add this to your ~/.homebridge/config.json file
 ```JSON
+"platform":[
 {
     "platform": "config",
     "name": "Config",
@@ -26,6 +27,7 @@ Add this to your ~/.homebridge/config.json file
     "restart": "/usr/local/bin/supervisorctl restart homebridge",
     "temp": "/sys/class/thermal/thermal_zone0/temp"
 }
+]
 ```
 
 This example uses [supervisor](http://supervisord.org/) to control homebridge. This is a good supervisor how to: [Running Supervisor on OSX](https://nicksergeant.com/running-supervisor-on-os-x/)
@@ -39,6 +41,7 @@ Replace <b>/sys/class/thermal/thermal_zone0/temp</b> with the command you use to
 
 Add this to your /var/homebridge/config.json file
 ```JSON
+"platform":[
 {
     "platform": "config",
     "name": "Config",
@@ -47,6 +50,7 @@ Add this to your /var/homebridge/config.json file
     "restart": "sudo systemctl restart homebridge.service",
     "temp" : "/sys/class/thermal/thermal_zone0/temp"
 }
+]
 ```
 
 Replace <b>/var/log/daemon.log</b> with the path to your Homebridge output log.<br />
