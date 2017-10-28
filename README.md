@@ -35,7 +35,7 @@ Replace <b>sudo systemctl restart homebridge.service</b> with the command you us
 Replace <b>/sys/class/thermal/thermal_zone0/temp</b> with the command you use to check the CPU Temperature.<br />
 Replace <b>/usr/local/lib/node_modules</b> with the correct base location
 
-<b>Note :</b> If you did not set base location, you won't be able to login.
+<b>Note :</b> If you did not set base path, you won't be able to login.
 
 # Initial Run
 
