@@ -118,8 +118,26 @@ function write(req, res) {
 
     var accessories = [];
 
-    for (var i = 0; i < config.accessories.length; i++) {
-        var name = config.accessories[i].name;
+        if (config.accessories === undefined){
+             console.log("accessories is undefined");
+             for (var i = 0; i < config.accessories; i++) {
+                 console.log("accessories is undefined in Loop");
+        var name = config.accessories.name;
+
+        delete config.accessories.name;
+
+        accessories.push({
+            id: i + "-" + config.accessories.accessory.split(".")[0],
+            name: name,
+            json: JSON.stringify(config.accessories, null, 4)
+        });
+         }
+         }
+    else if(config.accessories.length !== undefined){
+         console.log("accessories is NOT undefined");
+        for (var i = 0; i < config.accessories.length; i++) {
+            console.log("accessories is NOT undefined in loops");
+            var name = config.accessories[i].name;
 
         delete config.accessories[i].name;
 
@@ -128,6 +146,7 @@ function write(req, res) {
             name: name,
             json: JSON.stringify(config.accessories[i], null, 4)
         });
+    }
     }
 
     delete require.cache[require.resolve(hb.config)];

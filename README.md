@@ -39,7 +39,7 @@ Replace <b>/usr/local/bin/supervisorctl restart homebridge</b> with the command 
 Replace <b>/sys/class/thermal/thermal_zone0/temp</b> with the command you use to check the CPU Temperature.<br />
 Replace <b>/usr/local/lib/node_modules</b> with the correct base location. 
 
-<b>Note</b> If you did not set base location, you won't be able to login.
+<b>Note :</b> If you did not set base location, you won't be able to login.
 
 ### For Systemd
 
@@ -62,6 +62,8 @@ Replace <b>/var/log/daemon.log</b> with the path to your Homebridge output log.<
 Replace <b>sudo systemctl restart homebridge.service</b> with the command you use to restart Homebridge.<br />
 Replace <b>/sys/class/thermal/thermal_zone0/temp</b> with the command you use to check the CPU Temperature.<br />
 Replace <b>/usr/local/lib/node_modules</b> with the correct base location
+
+<b>Note :</b> If you did not set base location, you won't be able to login.
 
 # Initial Run
 
