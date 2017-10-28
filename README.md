@@ -37,7 +37,9 @@ Replace <b>/var/log/homebridge.stdout.log</b> with the path to your Homebridge o
 Replace <b>/var/log/homebridge.stderr.log</b> with the path to your Homebridge error log.<br />
 Replace <b>/usr/local/bin/supervisorctl restart homebridge</b> with the command you use to restart Homebridge.<br />
 Replace <b>/sys/class/thermal/thermal_zone0/temp</b> with the command you use to check the CPU Temperature.<br />
-Replace <b>/usr/local/lib/node_modules</b> with the correct base location.
+Replace <b>/usr/local/lib/node_modules</b> with the correct base location. 
+
+<b>Note</b> If you did not set base location, you won't be able to login.
 
 ### For Systemd
 
