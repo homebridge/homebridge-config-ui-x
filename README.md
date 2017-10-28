@@ -13,35 +13,7 @@ First install the plugin
 sudo npm i -g homebridge-config-ui
 ```
 
-### For Supervisord
-
-Add this to your ~/.homebridge/config.json file
-```JSON
-"platform":[
-{
-    "platform": "config",
-    "name": "Config",
-    "port": 8080,
-    "log": "/var/log/homebridge.stdout.log",
-    "error_log": "/var/log/homebridge.stderr.log",
-    "restart": "/usr/local/bin/supervisorctl restart homebridge",
-    "temp": "/sys/class/thermal/thermal_zone0/temp",
-    "base": "/usr/local/lib/node_modules"
-}
-]
-```
-
-This example uses [supervisor](http://supervisord.org/) to control homebridge. This is a good supervisor how to: [Running Supervisor on OSX](https://nicksergeant.com/running-supervisor-on-os-x/)
-
-Replace <b>/var/log/homebridge.stdout.log</b> with the path to your Homebridge output log.<br />
-Replace <b>/var/log/homebridge.stderr.log</b> with the path to your Homebridge error log.<br />
-Replace <b>/usr/local/bin/supervisorctl restart homebridge</b> with the command you use to restart Homebridge.<br />
-Replace <b>/sys/class/thermal/thermal_zone0/temp</b> with the command you use to check the CPU Temperature.<br />
-Replace <b>/usr/local/lib/node_modules</b> with the correct base location. 
-
-<b>Note :</b> If you did not set base location, you won't be able to login.
-
-### For Systemd
+### Systemd
 
 Add this to your /var/homebridge/config.json file
 ```JSON
