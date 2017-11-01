@@ -8,9 +8,14 @@ This plugin allows you to monitor, backup and configure your Homebridge server f
 
 # Installation Instructions
 
-First install the plugin
-```Bash
-sudo npm i -g homebridge-config-ui
+First download the zip or do a git clone
+```git clone
+git clone https://github.com/shidevil/homebridge-config-ui.git
+```
+
+next transfer the file to your raspberry pi or homebridge box. Place it at documents or anywhere you can find, cd into the folder.
+```install
+sudo npm install -g 
 ```
 
 ### Systemd
