@@ -1,115 +1,93 @@
-var fs = require("fs");
-var path = require("path");
-var chalk = require("chalk");
+'use strict'
 
-var Service;
-var Characteristic;
+const fs = require('fs')
+const path = require('path')
+const http = require('http')
+
+const hb = require('./lib/hb')
+
+var homebridge
 
 module.exports = function (service) {
-    hb = {
-        service: service,
-        config: service.user.configPath(),
-        auth: path.join(service.user.storagePath(), "auth.json")
-    };
+  homebridge = service
+  homebridge.registerPlatform('homebridge-config-ui', 'config', HomebridgeConfigUi)
+}
 
-    if (!fs.existsSync(hb.auth)) {
-        fs.appendFileSync(hb.auth, JSON.stringify([{
-            "id": 1,
-            "username": "admin",
-            "password": "admin",
-            "name": "Administrator",
-            "admin": true
-        }], null, 4));
+class HomebridgeConfigUi {
+  constructor (log, config) {
+    hb.logger = log
+    hb.service = homebridge
+    hb.config = homebridge.user.configPath()
+    hb.authfile = path.join(homebridge.user.storagePath(), 'auth.json')
+    hb.log = config.log || '/var/log/homebridge.stdout.log'
+    hb.error_log = config.error_log || '/var/log/homebridge.stderr.log'
+    hb.restart = config.restart || '/usr/local/bin/supervisorctl restart homebridge'
+    hb.temp = config.temp || '/sys/class/thermal/thermal_zone0/temp'
+    hb.base = config.base || '/usr/local/lib/node_modules'
+    hb.port = config.port || 8080
+
+    if (!fs.existsSync(hb.authfile)) {
+      fs.appendFileSync(hb.authfile, JSON.stringify([{
+        'id': 1,
+        'username': 'admin',
+        'password': 'admin',
+        'name': 'Administrator',
+        'admin': true
+      }], null, 4))
     }
 
-    var auth = require(hb.auth);
-    var modified = false;
+    var modified = false
+    hb.auth = require(hb.authfile)
 
-    for (var i = 0; i < auth.length; i++) {
-        if (auth[i].id == 1 && !auth[i].admin) {
-            auth[i].admin = true;
-            modified = true;
-        }
+    for (var i = 0; i < hb.auth.length; i++) {
+      if (hb.auth[i].id === 1 && !hb.auth[i].admin) {
+        hb.auth[i].admin = true
+        modified = true
+      }
     }
 
     if (modified) {
-        fs.writeFileSync(hb.auth, JSON.stringify(auth, null, 4));
+      fs.writeFileSync(hb.authfile, JSON.stringify(hb.auth, null, 4))
     }
 
-    Service = service.hap.Service;
-    Characteristic = service.hap.Characteristic;
+    var app = require('./lib/app')
+    var server = http.createServer(app)
 
-    service.registerPlatform("homebridge-config-ui", "config", HttpServer);
-}
+    const onError = (error) => {
+      if (error.syscall !== 'listen') {
+        throw error
+      }
 
-function HttpServer(log, config) {
-    var app = require("./app");
-    var debug = require("debug")("express:server");
-    var http = require("http");
+      var bind = typeof hb.port === 'string' ? 'Pipe ' + hb.port : 'Port ' + hb.port
 
-    hb.log = config.log || "/var/log/homebridge.stdout.log";
-    hb.error_log = config.error_log || "/var/log/homebridge.stderr.log";
-    hb.restart = config.restart || "/usr/local/bin/supervisorctl restart homebridge";
-    hb.temp = config.temp || "/sys/class/thermal/thermal_zone0/temp";
-    hb.base = config.base || "/usr/local/lib/node_modules";
+      switch (error.code) {
+        case 'EACCES':
+          console.error(bind + ' requires elevated privileges')
+          process.exit(1)
 
-    app.set("port", config.port);
-    app.set("log", log);
+        case 'EADDRINUSE':
+          console.error(bind + ' is already in use')
+          process.exit(1)
 
-    var server = http.createServer(app);
-
-    server.listen(config.port);
-    server.on("error", onError);
-    server.on("listening", onListening);
-
-    function normalizePort(val) {
-        var port = parseInt(val, 10);
-
-        if (isNaN(port)) {
-            return val;
-        }
-
-        if (port >= 0) {
-            return port;
-        }
-
-        return false;
+        default:
+          throw error
+      }
     }
 
-    function onError(error) {
-        if (error.syscall !== "listen") {
-            throw error;
-        }
-
-        var bind = typeof config.port === "string" ? "Pipe " + config.port : "Port " + config.port;
-
-        switch (error.code) {
-            case "EACCES":
-                console.error(bind + " requires elevated privileges");
-                process.exit(1);
-                break;
-
-            case "EADDRINUSE":
-                console.error(bind + " is already in use");
-                process.exit(1);
-                break;
-
-            default:
-                throw error;
-        }
+    const onListening = () => {
+      var addr = server.address()
+      var bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port
+      var msg = 'Console is listening on ' + bind + '.'
+      hb.logger(msg)
     }
 
-    function onListening() {
-        var addr = server.address();
-        var bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
-        var msg = "Console is listening on " + bind + ".";
+    server.listen(hb.port)
+    server.on('error', onError)
+    server.on('listening', onListening)
+  }
 
-        app.get("log")(msg);
-    }
-}
-
-HttpServer.prototype.accessories = function (callback) {
-    this.accessories = [];
-
-    callback(this.accessories);
+  accessories (callback) {
+    let accessories = []
+    callback(accessories)
+  }
 }

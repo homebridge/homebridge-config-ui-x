@@ -1,3 +1,5 @@
+# This fork is a work in progress - currently not working!
+
 # Homebridge Config UI
 
 This is a plugin for [Homebridge](https://github.com/nfarina/homebridge)
@@ -15,7 +17,7 @@ git clone https://github.com/shidevil/homebridge-config-ui.git
 
 next transfer the file to your raspberry pi or homebridge box. Place it at documents or anywhere you can find, cd into the folder.
 ```install
-sudo npm install -g 
+sudo npm install -g
 ```
 
 ### Systemd
