@@ -1,4 +1,4 @@
-# Homebridge Config UI
+# homebridge-config-ui-x
 
 This is a plugin for [Homebridge](https://github.com/nfarina/homebridge)
 
@@ -6,51 +6,47 @@ This plugin allows you to monitor, backup and configure your Homebridge server f
 
 ![Status](status.png)
 
+This is a fork of the work originally done by [mkellsy/homebridge-config-ui](https://github.com/mkellsy/homebridge-config-ui) and provides the following improvements:
+
+* Plugin discovery is improved with support added multiple plugin locations
+* Log display performance improved, now using web sockets to display logs in real time
+* Refactored code with ES6
+
 # Installation Instructions
 
-First download the zip or do a git clone
-```git clone
-git clone https://github.com/shidevil/homebridge-config-ui.git
+```
+npm install -g homebridge-config-ui-x
 ```
 
-next transfer the file to your raspberry pi or homebridge box. Place it at documents or anywhere you can find, cd into the folder.
-```install
-sudo npm install -g 
-```
+### Configuration
 
-### Systemd
+Add this to your homebridge `config.json` file
 
-Add this to your /var/homebridge/config.json file
-```JSON
+```json
 "platform":[
-{
-    "platform": "config",
-    "name": "Config",
-    "port": 8080,
-    "log": "/var/log/daemon.log",
-    "restart": "sudo systemctl restart homebridge.service",
-    "temp" : "/sys/class/thermal/thermal_zone0/temp",
-    "base": "/usr/local/lib/node_modules"
-}
+    {
+      "platform": "config",
+      "name": "Config",
+      "port": 8080
+    }
 ]
 ```
 
-Replace <b>/var/log/daemon.log</b> with the path to your Homebridge output log.<br />
-Replace <b>sudo systemctl restart homebridge.service</b> with the command you use to restart Homebridge.<br />
-Replace <b>/sys/class/thermal/thermal_zone0/temp</b> with the command you use to check the CPU Temperature.<br />
-Replace <b>/usr/local/lib/node_modules</b> with the correct base location
+**Optional Settings**
 
-<b>Note :</b> If you did not set base path, you won't be able to login.
+* `log` - The path to the homebridge log. Required if you want to see the process logs in the browser. eg. `/var/log/daemon.log`
+* `restart` - The command to run when a restart request is sent from the browser. If not populated it will just terminate the homebridge process.
+* `temp` - The path to the file that can display your current CPU temperature. eg. `/sys/class/thermal/thermal_zone0/temp`
 
 # Initial Run
 
-Once installed you can open the interface at http://localhost:8080. The default username is <b>admin</b> and the default password is <b>admin</b>.
+Once installed you can open the interface at http://localhost:8080. The default username is `admin` and the default password is `admin`.
 
 # Usage
 
 Login Screen
 
-Most of your platform configs have usernames and passwords in them. To keep these seceret, this plugin has basic authentication. The users are stored in the ~/.homebridge/auth.json file.
+Most of your platform configs have usernames and passwords in them. To keep these secret, this plugin has basic authentication. The users are stored in the `~/.homebridge/auth.json` file.
 
 ![Login](login.png)
 

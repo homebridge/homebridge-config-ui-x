@@ -1,55 +1,35 @@
-$(document).ready(function () {
-    var inital = true;
-    var content = $("content");
-    var enable = false;
+window.$(document).ready(function () {
+  var autoScrollEnable = true
+  var content = window.$('content')
 
-    var log;
+  const ws = new window.WebSocket(`${(window.location.protocol) === 'http:' ? 'ws://' : 'wss://'}${window.location.host}`)
 
-    content.on("scroll", function () {
-        if (content.scrollTop() + content.innerHeight() >= content[0].scrollHeight) {
-            enable = true;
-        } else {
-            enable = false;
-        }
-    });
+  ws.onopen = () => {
+    console.log('websocket open')
+  }
 
-    if ($("#output-log-contents").length > 0) {
-        log = content.find("#output-log-contents");
+  content.on('scroll', function () {
+    if (content.scrollTop() + content.innerHeight() >= content[0].scrollHeight) {
+      autoScrollEnable = true
+    } else {
+      autoScrollEnable = false
+    }
+  })
 
-        setInterval(function () {
-            if (inital || enable || log.height() <= content.height()) {
-                log.load("/log/raw/out", function () {
-                    content.scrollTop(content.prop("scrollHeight"));
-                    inital = false;
-                });
-            }
-        }, 200);
+  if (window.$('#output-log-contents').length > 0) {
+    var log = content.find('#output-log-contents')
 
-        $("#clear-log").click(function () {
-            $.get("/log/clear");
-        });
-
-        $("#error-log-view").click(function () {
-            window.location.href = "/log/error";
-        });
+    ws.onmessage = (msg) => {
+      let data = JSON.parse(msg.data)
+      log.append(data.data + '<br>')
+      if (autoScrollEnable) {
+        content.scrollTop(content.prop('scrollHeight'))
+      }
     }
 
-    if ($("#error-log-contents").length > 0) {
-        log = content.find("#error-log-contents");
-
-        if (inital || enable || log.height() <= content.height()) {
-                log.load("/log/raw/error", function () {
-                    content.scrollTop(content.prop("scrollHeight"));
-                    inital = false;
-                });
-            }
-
-        $("#clear-log").click(function () {
-            $.get("/log/clear");
-        });
-
-        $("#output-log-view").click(function () {
-            window.location.href = "/log";
-        });
-    }
-});
+    window.$('#clear-log').click(function () {
+      window.$.get('/log/clear')
+      log.html('')
+    })
+  }
+})
