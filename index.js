@@ -12,13 +12,14 @@ var homebridge
 
 module.exports = (service) => {
   homebridge = service
-  homebridge.registerPlatform('homebridge-config-ui', 'config', HomebridgeConfigUi)
+  homebridge.registerPlatform('homebridge-config-ui-x', 'config', HomebridgeConfigUi)
 }
 
 class HomebridgeConfigUi {
   constructor (log, config) {
     // parse plugin path argument from homebridge
     commander
+      .allowUnknownOption()
       .option('-P, --plugin-path [path]', '', (p) => {
         hb.pluginPath = p
       })
