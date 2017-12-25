@@ -4,6 +4,8 @@
 
 /* This file enables homebridge-config-ui-x to be run independently of the main homebridge process */
 
+process.title = 'homebridge-config-ui-x'
+
 const fs = require('fs')
 const path = require('path')
 const commander = require('commander')
