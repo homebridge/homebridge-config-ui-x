@@ -16,7 +16,8 @@ const options = {
 
 // log
 const log = (msg) => {
-  console.log(`[homebridge-config-ui-x] ${msg}`)
+  let date = new Date()
+  console.log(`[${date.toLocaleString()}] [homebridge-config-ui-x] ${msg}`)
 }
 
 commander
