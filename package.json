@@ -1,6 +1,6 @@
 {
   "name": "homebridge-config-ui-x",
-  "version": "1.1.15",
+  "version": "1.1.16",
   "description": "Configuration UI plugin for Homebridge",
   "license": "MIT",
   "keywords": [
