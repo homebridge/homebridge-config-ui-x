@@ -54,7 +54,7 @@ The `log` option can alternatively specify a command to spawn that will stream t
       "name": "Config",
       "port": 8080,
       "log": {
-        "tail": "journalctl -n 100 -f -u homebridge"
+        "tail": "journalctl -o cat -n 100 -f -u homebridge"
       }
     }
 ]
