@@ -1,3 +1,5 @@
+[![npm](https://img.shields.io/npm/v/homebridge-config-ui-x.svg)](https://www.npmjs.com/package/homebridge-config-ui-x)
+
 # homebridge-config-ui-x
 
 This is a plugin for [Homebridge](https://github.com/nfarina/homebridge)
