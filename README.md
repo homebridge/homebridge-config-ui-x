@@ -10,6 +10,7 @@ This is a fork of the work originally done by [mkellsy/homebridge-config-ui](htt
 
 * Plugin discovery is improved with support added multiple plugin locations
 * Log display performance improved, now using web sockets to display logs in real time
+* Added option to display logs from journalctl
 * Refactored code with ES6
 
 # Installation Instructions
@@ -37,6 +38,29 @@ Add this to your homebridge `config.json` file
 * `log` - The path to the homebridge log. Required if you want to see the process logs in the browser. eg. `/var/log/daemon.log`
 * `restart` - The command to run when a restart request is sent from the browser. If not populated it will just terminate the homebridge process.
 * `temp` - The path to the file that can display your current CPU temperature. eg. `/sys/class/thermal/thermal_zone0/temp`
+
+### Log Viewer Configuration
+
+* The path to the log file will vary from system to system, check the guide you used to setup the Homebridge process to find where this is.
+* Make sure the user which is running the Homebridge process has the correct permissions to read the log file.
+* The `stdout` and `stderr` streams should be logged to the same file. This app only supports reading from a single file.
+
+The `log` option can alternatively specify a command to spawn that will stream the logs to the client. For example to stream logs from a setup using `system.d` and `journald` use this config:
+
+```json
+"platform":[
+    {
+      "platform": "config",
+      "name": "Config",
+      "port": 8080,
+      "log": {
+        "tail": "journalctl -n 100 -f -u homebridge"
+      }
+    }
+]
+```
+
+In this case the user which is running the Homebridge process **must** have access to read the logs from `journalctl`.
 
 # Initial Run
 
