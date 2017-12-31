@@ -6,7 +6,7 @@ This is a plugin for [Homebridge](https://github.com/nfarina/homebridge)
 
 This plugin allows you to monitor, backup and configure your Homebridge server from a browser.
 
-![Status](status.png)
+![Status](screenshots/homebridge-config-ui-x-status.png)
 
 This is a fork of the work originally done by [mkellsy/homebridge-config-ui](https://github.com/mkellsy/homebridge-config-ui) and provides the following improvements:
 
@@ -70,26 +70,32 @@ Once installed you can open the interface at http://localhost:8080. The default 
 
 # Usage
 
-Login Screen
+### Login Screen
 
 Most of your platform configs have usernames and passwords in them. To keep these secret, this plugin has basic authentication. The users are stored in the `~/.homebridge/auth.json` file.
 
-![Login](login.png)
+![Login](screenshots/homebridge-config-ui-x-login.png)
 
-Status Screen
+### Status Screen
 
 This shows you that the services are running. It also has your HomeKit pin.
 
-![Status](status.png)
+![Status](screenshots/homebridge-config-ui-x-status.png)
 
-Log Screen
+### Log Screen
 
 This shows you the rolling log. This is helpful for troubleshooting.
 
-![Log](log.png)
+![Log](screenshots/homebridge-config-ui-x-logs.png)
 
-Configuration Screen
+### Plugin Screen
+
+This shows you the currently installed plugins and allows you to install, remove and upgrade plugins.
+
+![Log](screenshots/homebridge-config-ui-x-plugins.png)
+
+### Configuration Screen
 
 And finally the configuration screen allows you to modify your Homebridge settings and your platforms and accessories.
 
-![Config](config.png)
+![Config](screenshots/homebridge-config-ui-x-config.png)
