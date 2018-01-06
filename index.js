@@ -6,7 +6,7 @@ const http = require('http')
 const commander = require('commander')
 
 const hb = require('./lib/hb')
-const wss = require('./lib/wss-logs')
+const wss = require('./lib/wss')
 
 var homebridge
 
@@ -62,7 +62,7 @@ class HomebridgeConfigUi {
     let server = http.createServer(app)
 
     // attach websocker server to the express server
-    wss(server)
+    wss.server(server)
 
     const onError = (error) => {
       if (error.syscall !== 'listen') {
