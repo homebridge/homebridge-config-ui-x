@@ -1,6 +1,6 @@
 {
   "name": "homebridge-config-ui-x",
-  "version": "1.1.16",
+  "version": "2.0.0-beta.1",
   "description": "Configuration UI plugin for Homebridge",
   "license": "MIT",
   "keywords": [
@@ -25,10 +25,8 @@
     "bluebird": "^3.5.1",
     "body-parser": "~1.18.2",
     "commander": "^2.12.2",
-    "cors": "^2.8.4",
     "express": "~4.16.2",
     "fs": "^0.0.1-security",
-    "hogan-express": "~0.5.2",
     "lodash": "^4.17.4",
     "passport": "~0.4.0",
     "passport-http": "^0.3.0",
