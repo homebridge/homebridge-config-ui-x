@@ -10,8 +10,7 @@ import { ApiService } from '../_services/api.service';
 
 @Component({
   selector: 'app-config',
-  templateUrl: './config.component.html',
-  styleUrls: ['./config.component.scss']
+  templateUrl: './config.component.html'
 })
 class ConfigComponent implements OnInit {
   @Input() homebridgeConfig;

@@ -13,6 +13,10 @@ export class ApiService {
     return this.$http.get(`${this.base}/api/server`);
   }
 
+  restartServer() {
+    return this.$http.put(`${this.base}/api/server/restart`, {});
+  }
+
   getHomebridgePlugin() {
     return this.$http.get(`${this.base}/api/plugins/homebridge`);
   }
@@ -51,5 +55,17 @@ export class ApiService {
 
   getUsers() {
     return this.$http.get(`${this.base}/api/users`);
+  }
+
+  addNewUser(user) {
+    return this.$http.post(`${this.base}/api/users`, user);
+  }
+
+  updateUser(userId, user) {
+    return this.$http.put(`${this.base}/api/users/${userId}`, user);
+  }
+
+  deleteUser(userId) {
+    return this.$http.delete(`${this.base}/api/users/${userId}`);
   }
 }

@@ -1,3 +1,4 @@
 export const environment = {
-  production: true
+  production: true,
+  socketUrl: `${(window.location.protocol) === 'http:' ? 'ws://' : 'wss://'}${window.location.host}`
 };

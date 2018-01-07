@@ -9,6 +9,12 @@ import { UIRouterModule, StateService } from '@uirouter/angular';
 import { AceEditorModule } from 'ng2-ace-editor';
 import { ToastModule, ToastOptions } from 'ng2-toastr/ng2-toastr';
 
+import { ToastCustomOptions } from './_class/toast.class';
+
+import { WsService } from './_services/ws.service';
+import { ApiService } from './_services/api.service';
+import { PluginService } from './_services/plugin.service';
+
 import { AppComponent } from './app.component';
 import { StatusComponent, StatusStates } from './status/status.component';
 import { PluginsComponent, PluginStates } from './plugins/plugins.component';
@@ -17,20 +23,13 @@ import { PluginsManageComponent } from './plugins/plugins.manage.component';
 import { ConfigComponent, ConfigStates } from './config/config.component';
 import { LogsComponent, LogsStates } from './logs/logs.component';
 import { UsersComponent, UsersStates } from './users/users.component';
+import { UsersAddComponent } from './users/users.add.component';
+import { UsersEditComponent } from './users/users.edit.component';
+import { RestartComponent, RestartState } from './restart/restart.component';
+
+import { SpinnerComponent } from './spinner/spinner.component';
 import { PinComponent } from './pin/pin.component';
 
-import { WsService } from './_services/ws.service';
-import { ApiService } from './_services/api.service';
-import { PluginService } from './_services/plugin.service';
-import { SpinnerComponent } from './spinner/spinner.component';
-
-class ToastCustomOptions extends ToastOptions {
-  animate = 'flyRight';
-  newestOnTop = false;
-  showCloseButton = true;
-  maxShown = 2;
-  positionClass = 'toast-bottom-right';
-}
 
 @NgModule({
   declarations: [
@@ -43,10 +42,15 @@ class ToastCustomOptions extends ToastOptions {
     PinComponent,
     SpinnerComponent,
     PluginSearchComponent,
-    PluginsManageComponent
+    PluginsManageComponent,
+    UsersAddComponent,
+    UsersEditComponent,
+    RestartComponent
   ],
   entryComponents: [
-    PluginsManageComponent
+    PluginsManageComponent,
+    UsersAddComponent,
+    UsersEditComponent
   ],
   imports: [
     BrowserModule,
@@ -64,6 +68,7 @@ class ToastCustomOptions extends ToastOptions {
       UsersStates,
       PluginStates,
       PluginSearchStates,
+      RestartState
     ], useHash: false }),
   ],
   providers: [

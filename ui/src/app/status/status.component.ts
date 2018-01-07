@@ -8,11 +8,13 @@ import { ApiService } from '../_services/api.service';
   templateUrl: './status.component.html'
 })
 class StatusComponent implements OnInit {
-  private ws;
-
+  private onOpen;
+  private onMessage;
+  private onClose;
   public server: any = {};
-
   public homebridge: any = {};
+  public homebridgeStatus = 'up';
+  public consoleStatus = 'down';
 
   public stats: any = {
     memory: {
@@ -29,28 +31,38 @@ class StatusComponent implements OnInit {
     cputemp: '0.00'
   };
 
-  constructor(private wsService: WsService, private $api: ApiService) {
-    this.ws = wsService.ws;
-  }
+  constructor(
+    private ws: WsService,
+    private $api: ApiService) {}
 
   ngOnInit() {
     // subscribe to status events
-    if (this.ws.readyState) {
+    if (this.ws.socket.readyState) {
       this.ws.send('status-sub');
-    } else {
-      this.ws.onopen = () => {
-        this.ws.send('status-sub');
-      };
+      this.consoleStatus = 'up';
     }
 
-    this.ws.onmessage = (data) => {
+    this.onOpen = this.ws.open.subscribe(() => {
+      this.ws.send('status-sub');
+      this.consoleStatus = 'up';
+    });
+
+    this.onMessage = this.ws.message.subscribe((data) => {
       try {
         data = JSON.parse(data.data);
         if (data.stats) {
           this.stats = data.stats;
         }
+        if (data.status) {
+          this.homebridgeStatus = data.status;
+        }
       } catch (e) { }
-    };
+    });
+
+    this.onClose = this.ws.close.subscribe(() => {
+      this.consoleStatus = 'down';
+      this.homebridgeStatus = 'down';
+    });
 
     // load server information
     this.$api.getServerInfo().subscribe(
@@ -67,6 +79,11 @@ class StatusComponent implements OnInit {
     try {
       // unsubscribe from log events
       this.ws.send('status-unsub');
+
+      // unsubscribe listeners
+      this.onOpen.unsubscribe();
+      this.onClose.unsubscribe();
+      this.onMessage.unsubscribe();
     } catch (e) { }
   }
 

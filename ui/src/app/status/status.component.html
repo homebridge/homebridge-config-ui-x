@@ -46,22 +46,26 @@
       <div class="d-flex flex-row">
         <div class="d-flex p-1">
           <div class="p-3">
-            <i class="material-icons status-circle bg-status-green">&#xE5CA;</i>
+            <i *ngIf="homebridgeStatus==='up'" class="material-icons status-circle bg-status-green">&#xE5CA;</i>
+            <i *ngIf="homebridgeStatus!=='up'" class="material-icons status-circle bg-red">&#xE14B;</i>
           </div>
           <div class="align-self-center">
             <span>Homebridge</span>
             <br>
-            <span class="grey-text">Running on port {{ server.port }}</span>
+            <span class="grey-text" *ngIf="homebridgeStatus==='up'">Running on port {{ server.port }}</span>
+            <span class="grey-text" *ngIf="homebridgeStatus!=='up'">Not running</span>
           </div>
         </div>
         <div class="d-flex p-1">
           <div class="p-3">
-            <i class="material-icons status-circle bg-status-green">&#xE5CA;</i>
+            <i *ngIf="consoleStatus==='up'" class="material-icons status-circle bg-status-green">&#xE5CA;</i>
+            <i *ngIf="consoleStatus!=='up'" class="material-icons status-circle bg-red">&#xE14B;</i>
           </div>
           <div class="align-self-center">
             <span>Console</span>
             <br>
-            <span class="grey-text">Listening on port {{ server.console_port }}</span>
+            <span class="grey-text" *ngIf="consoleStatus==='up'">Listening on port {{ server.console_port }}</span>
+            <span class="grey-text" *ngIf="consoleStatus!=='up'">Not running</span>
           </div>
         </div>
       </div>
@@ -69,7 +73,7 @@
     <!--/.Panel-->
 
     <!--Panel-->
-    <div class="card card-body mb-3">
+    <div class="card card-body mb-3" *ngIf="consoleStatus==='up'">
       <h5 class="mb-0">Uptime</h5>
       <div class="d-flex flex-row">
         <div class="d-flex p-1">
@@ -107,7 +111,7 @@
     <!--/.Panel-->
 
     <!--Panel-->
-    <div class="card card-body mb-3">
+    <div class="card card-body mb-3" *ngIf="consoleStatus==='up'">
       <h5 class="mb-0">CPU</h5>
       <div class="d-flex flex-row">
         <div class="d-flex p-1">
@@ -135,7 +139,7 @@
     <!--/.Panel-->
 
     <!--Panel-->
-    <div class="card card-body mb-3">
+    <div class="card card-body mb-3" *ngIf="consoleStatus==='up'">
       <h5 class="mb-0">Memory</h5>
       <div class="d-flex flex-row">
         <div class="d-flex p-1">
