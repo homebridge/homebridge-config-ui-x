@@ -1,6 +1,6 @@
 [![npm](https://img.shields.io/npm/v/homebridge-config-ui-x.svg)](https://www.npmjs.com/package/homebridge-config-ui-x)
 
-# homebridge-config-ui-x
+# Homebridge Config UI X
 
 This is a plugin for [Homebridge](https://github.com/nfarina/homebridge)
 
@@ -18,7 +18,7 @@ This is a fork of the work originally done by [mkellsy/homebridge-config-ui](htt
 # Installation Instructions
 
 ```
-npm install -g homebridge-config-ui-x
+npm install -g --unsafe-perm homebridge-config-ui-x
 ```
 
 ### Configuration
@@ -70,12 +70,6 @@ Once installed you can open the interface at http://localhost:8080. The default 
 
 # Usage
 
-### Login Screen
-
-Most of your platform configs have usernames and passwords in them. To keep these secret, this plugin has basic authentication. The users are stored in the `~/.homebridge/auth.json` file.
-
-![Login](screenshots/homebridge-config-ui-x-login.png)
-
 ### Status Screen
 
 This shows you that the services are running. It also has your HomeKit pin.
@@ -93,6 +87,11 @@ This shows you the rolling log. This is helpful for troubleshooting.
 This shows you the currently installed plugins and allows you to install, remove and upgrade plugins.
 
 ![Log](screenshots/homebridge-config-ui-x-plugins.png)
+
+When installing, removing or upgrading plugins the output is show in the browser to help troubleshoot any issues.
+
+![Log](screenshots/homebridge-config-ui-x-plugins-install.png)
+
 
 ### Configuration Screen
 
