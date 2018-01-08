@@ -1,0 +1,48 @@
+<app-spinner *ngIf="loading"></app-spinner>
+
+<div class="row">
+  <div class="col-md-12">
+    <form novalidate (ngSubmit)="onSubmit(form)" [formGroup]="form">
+        <input type="text" class="hb-npm-search" tabindex="1" placeholder="Search for plugins to install..." formControlName="query">
+    </form>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12" *ngFor="let plugin of installedPlugins">
+    <!--Panel-->
+    <div class="card card-body mb-3">
+      <div class="row">
+        <div class="col-sm-6">
+          <p class="mb-0 red-text" *ngIf="!plugin.update && plugin.installed">Installed</p>
+          <p class="mb-0 grey-text" *ngIf="!plugin.installed">Not Installed</p>
+          <p class="mb-0 red-text" *ngIf="plugin.update">Update Available</p>
+        </div>
+        <div class="col-sm-6">
+          <p class="mb-0 grey-text text-right" *ngIf="plugin.author">
+            <a class="card-link grey-text" target="_blank" [href]="'https://www.npmjs.com/~' + plugin.author">@{{ plugin.author }}</a>
+          </p>
+        </div>
+      </div>
+      <h4 class="card-title mb-0" [innerHtml]="plugin.description"></h4>
+      <p class="card-text">{{ plugin.name }} v{{ plugin.installed || plugin.version }}</p>
+      <div class="flex-row">
+        <a class="card-link" target="_blank" *ngIf="plugin.publicPackage" [href]="plugin.links.npm">
+          NPM
+        </a>
+        <a class="card-link" *ngIf="plugin.update" href="javascript:void(0);" (click)="$plugin.updatePlugin(plugin.name)"
+          placement="bottom" ngbTooltip="Upgrade plugin to v{{ plugin.version }}" container="body">
+          UPGRADE
+        </a>
+        <a class="card-link" *ngIf="plugin.installed" href="javascript:void(0);" (click)="$plugin.uninstallPlugin(plugin.name)">
+          UNINSTALL
+        </a>
+        <a class="card-link" *ngIf="!plugin.installed" href="javascript:void(0);" (click)="$plugin.installPlugin(plugin.name)">
+          INSTALL
+        </a>
+      </div>
+    </div>
+    <!--/.Panel-->
+  </div>
+</div>
+

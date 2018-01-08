@@ -1,0 +1,21 @@
+<div class="row mb-3">
+  <div class="col-sm-9">
+    <h3 class="red-text m-0">Homebridge Config UI Users</h3>
+  </div>
+  <div class="col-sm-3 text-right">
+    <button class="btn btn-red waves-effect m-0" (click)="openAddNewUser()">Add User</button>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-6 mb-4" *ngFor="let user of homebridgeUsers">
+    <div class="card card-body">
+      <div class="d-flex flex-row align-items-center">
+        <h4 class="mr-auto mt-0 mb-0" [innerText]="user.name"></h4>
+        <button class="btn btn-elegant btn-sml mt-0 mb-0" (click)="deleteUser(user.id)">Delete</button>
+        <button class="btn btn-red btn-sml mt-0 mb-0" (click)="openEditUser(user)">Edit</button>
+      </div>
+    </div>
+  </div>
+</div>
+

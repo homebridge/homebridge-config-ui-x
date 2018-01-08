@@ -1,0 +1,181 @@
+
+<div class="row">
+  <div class="col-md-4 mb-3">
+    <h3 class="red-text">Homebridge</h3>
+    <!--Panel-->
+    <div class="card card-body">
+      <app-pin [pin]="server.pin"></app-pin>
+    </div>
+    <!--/.Panel-->
+    <p class="mt-3">
+      With the camera on your iOS device, scan this eight-digit HomeKit code, or enter it manually, to add to Apple Home.
+    </p>
+  </div>
+
+  <div class="col-md-8">
+    <h3 class="red-text">Server Status</h3>
+
+    <!--Panel-->
+    <div class="card card-body mb-3">
+      <h5 class="mb-0">Homebridge</h5>
+      <div class="d-flex flex-row">
+        <div class="d-flex p-1">
+          <div class="p-3">
+            <i *ngIf="!homebridge.version" class="material-icons status-circle bg-status-green fa-spin">&#xE863;</i>
+            <i *ngIf="homebridge.version && !homebridge.update" class="material-icons status-circle bg-status-green">&#xE5CA;</i>
+            <i *ngIf="homebridge.version && homebridge.update" class="material-icons status-circle bg-yellow">&#xE863;</i>
+          </div>
+          <div class="align-self-center">
+            <span *ngIf="!homebridge.version">Checking for updates...</span>
+            <span *ngIf="homebridge.version && !homebridge.update">Up To Date</span>
+            <span *ngIf="homebridge.version && homebridge.update">{{ homebridge.version }} Update Available</span>
+            <br>
+            <span class="grey-text" *ngIf="homebridge.version">Version {{ homebridge.installed }}</span>
+          </div>
+          <div class="align-self-center p-3" *ngIf="homebridge.update">
+            <button type="button" class="btn btn-red waves-effect waves-light" (click)="$plugin.upgradeHomebridge()">Upgrade</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--/.Panel-->
+
+    <!--Panel-->
+    <div class="card card-body mb-3">
+      <h5 class="mb-0">Services</h5>
+      <div class="d-flex flex-row">
+        <div class="d-flex p-1">
+          <div class="p-3">
+            <i *ngIf="homebridgeStatus==='up'" class="material-icons status-circle bg-status-green">&#xE5CA;</i>
+            <i *ngIf="homebridgeStatus!=='up'" class="material-icons status-circle bg-red">&#xE14B;</i>
+          </div>
+          <div class="align-self-center">
+            <span>Homebridge</span>
+            <br>
+            <span class="grey-text" *ngIf="homebridgeStatus==='up'">Running on port {{ server.port }}</span>
+            <span class="grey-text" *ngIf="homebridgeStatus!=='up'">Not running</span>
+          </div>
+        </div>
+        <div class="d-flex p-1">
+          <div class="p-3">
+            <i *ngIf="consoleStatus==='up'" class="material-icons status-circle bg-status-green">&#xE5CA;</i>
+            <i *ngIf="consoleStatus!=='up'" class="material-icons status-circle bg-red">&#xE14B;</i>
+          </div>
+          <div class="align-self-center">
+            <span>Console</span>
+            <br>
+            <span class="grey-text" *ngIf="consoleStatus==='up'">Listening on port {{ server.console_port }}</span>
+            <span class="grey-text" *ngIf="consoleStatus!=='up'">Not running</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--/.Panel-->
+
+    <!--Panel-->
+    <div class="card card-body mb-3" *ngIf="consoleStatus==='up'">
+      <h5 class="mb-0">Uptime</h5>
+      <div class="d-flex flex-row">
+        <div class="d-flex p-1">
+          <div class="p-3">
+            <i class="material-icons status-circle bg-blue">&#xE88B;</i>
+          </div>
+          <div class="align-self-center">
+            <span [innerText]="stats.uptime.days"></span>
+            <br>
+            <span class="grey-text">Days</span>
+          </div>
+        </div>
+        <div class="d-flex p-1">
+          <div class="p-3">
+            <i class="material-icons status-circle bg-blue">&#xE88B;</i>
+          </div>
+          <div class="align-self-center">
+            <span [innerText]="stats.uptime.hours"></span>
+            <br>
+            <span class="grey-text">Hours</span>
+          </div>
+        </div>
+        <div class="d-flex p-1">
+          <div class="p-3">
+            <i class="material-icons status-circle bg-blue">&#xE88B;</i>
+          </div>
+          <div class="align-self-center">
+            <span [innerText]="stats.uptime.minutes"></span>
+            <br>
+            <span class="grey-text">Minutes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--/.Panel-->
+
+    <!--Panel-->
+    <div class="card card-body mb-3" *ngIf="consoleStatus==='up'">
+      <h5 class="mb-0">CPU</h5>
+      <div class="d-flex flex-row">
+        <div class="d-flex p-1">
+          <div class="p-3">
+            <i class="material-icons status-circle bg-blue">&#xE30D;</i>
+          </div>
+          <div class="align-self-center">
+            <span>{{ stats.cpu }}%</span>
+            <br>
+            <span class="grey-text">Load</span>
+          </div>
+        </div>
+        <div class="d-flex p-1" *ngIf="stats.cputemp !== '0.00'">
+          <div class="p-3">
+            <i class="material-icons status-circle bg-blue">&#xE30D;</i>
+          </div>
+          <div class="align-self-center">
+            <span>{{ stats.cputemp }}&deg;C</span>
+            <br>
+            <span class="grey-text">Temp</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--/.Panel-->
+
+    <!--Panel-->
+    <div class="card card-body mb-3" *ngIf="consoleStatus==='up'">
+      <h5 class="mb-0">Memory</h5>
+      <div class="d-flex flex-row">
+        <div class="d-flex p-1">
+          <div class="p-3">
+            <i class="material-icons status-circle bg-blue">&#xE322;</i>
+          </div>
+          <div class="align-self-center">
+            <span>{{ stats.memory.total }} GB</span>
+            <br>
+            <span class="grey-text">Total</span>
+          </div>
+        </div>
+        <div class="d-flex p-1">
+          <div class="p-3">
+            <i class="material-icons status-circle bg-blue">&#xE322;</i>
+          </div>
+          <div class="align-self-center">
+            <span>{{ stats.memory.used }} GB</span>
+            <br>
+            <span class="grey-text">Used</span>
+          </div>
+        </div>
+        <div class="d-flex p-1">
+          <div class="p-3">
+            <i class="material-icons status-circle bg-blue">&#xE322;</i>
+          </div>
+          <div class="align-self-center">
+            <span>{{ stats.memory.free }} GB</span>
+            <br>
+            <span class="grey-text">Free</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--/.Panel-->
+
+  </div>
+</div>
+

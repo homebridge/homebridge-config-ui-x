@@ -1,14 +1,14 @@
 'use strict'
 
-const fs = require('fs')
 const path = require('path')
 const http = require('http')
 const commander = require('commander')
 
 const hb = require('./lib/hb')
-const wss = require('./lib/wss-logs')
+const wss = require('./lib/wss')
+const users = require('./lib/users')
 
-var homebridge
+let homebridge
 
 module.exports = (service) => {
   homebridge = service
@@ -32,37 +32,17 @@ class HomebridgeConfigUi {
     hb.port = config.port || 8080
     hb.log = config.log || '/var/log/homebridge.log'
     hb.restart = config.restart
+    hb.sudo = config.sudo
     hb.temp = config.temp
 
-    if (!fs.existsSync(hb.authfile)) {
-      fs.appendFileSync(hb.authfile, JSON.stringify([{
-        'id': 1,
-        'username': 'admin',
-        'password': 'admin',
-        'name': 'Administrator',
-        'admin': true
-      }], null, 4))
-    }
-
-    let modified = false
-    hb.auth = require(hb.authfile)
-
-    for (let i = 0; i < hb.auth.length; i++) {
-      if (hb.auth[i].id === 1 && !hb.auth[i].admin) {
-        hb.auth[i].admin = true
-        modified = true
-      }
-    }
-
-    if (modified) {
-      fs.writeFileSync(hb.authfile, JSON.stringify(hb.auth, null, 4))
-    }
+    // ensure auth.json is setup correctly
+    users.setupAuthFile()
 
     let app = require('./lib/app')
     let server = http.createServer(app)
 
     // attach websocker server to the express server
-    wss(server)
+    wss.server(server)
 
     const onError = (error) => {
       if (error.syscall !== 'listen') {

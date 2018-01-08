@@ -1,0 +1,44 @@
+{
+  "name": "ui",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build --prod --env=prod --output-path=../public --sm=false -ec --aot=false",
+    "postinstall": "node ./scripts/postcss-custom-properties.js"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^5.1.0",
+    "@angular/common": "^5.1.0",
+    "@angular/compiler": "^5.1.0",
+    "@angular/core": "^5.1.0",
+    "@angular/forms": "^5.1.0",
+    "@angular/http": "^5.1.0",
+    "@angular/platform-browser": "^5.1.0",
+    "@angular/platform-browser-dynamic": "^5.1.0",
+    "@angular/router": "^5.1.0",
+    "@ng-bootstrap/ng-bootstrap": "^1.0.0-beta.8",
+    "@uirouter/angular": "^1.0.0-rc.2",
+    "bootstrap": "4.0.0-beta.3",
+    "core-js": "^2.4.1",
+    "font-awesome": "^4.7.0",
+    "jquery": "^3.2.1",
+    "mdbootstrap": "^4.4.3",
+    "ng2-ace-editor": "^0.3.4",
+    "ng2-toastr": "^4.1.2",
+    "popper.js": "^1.12.9",
+    "rxjs": "^5.5.2",
+    "xterm": "^2.9.2",
+    "zone.js": "^0.8.14"
+  },
+  "devDependencies": {
+    "@angular/cli": "^1.6.3",
+    "@angular/compiler-cli": "^5.1.0",
+    "@angular/language-service": "^5.1.0",
+    "@types/node": "~6.0.60",
+    "ts-node": "~3.2.0",
+    "typescript": "~2.4.2"
+  }
+}

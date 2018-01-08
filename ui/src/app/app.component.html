@@ -1,0 +1,52 @@
+<!--Main Navigation-->
+<header>
+
+  <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-red scrolling-navbar">
+    <a class="navbar-brand" uiSref="status">
+      <strong>Homebridge</strong>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+      aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item waves-effect waves-light" uiSrefActive="active">
+          <a class="nav-link" uiSref="status">Status</a>
+        </li>
+        <li class="nav-item waves-effect waves-light" uiSrefActive="active">
+          <a class="nav-link" uiSref="plugins">Plugins</a>
+        </li>
+        <li class="nav-item waves-effect waves-light" uiSrefActive="active">
+          <a class="nav-link" uiSref="config">Config</a>
+        </li>
+      </ul>
+
+      <ul class="navbar-nav nav-flex-icons">
+        <li class="nav-item waves-effect waves-light" uiSrefActive="active" placement="bottom" ngbTooltip="View Logs" container="body">
+          <a class="nav-link" uiSref="logs">
+            <i class="material-icons">&#xE86D;</i>
+          </a>
+        </li>
+        <li class="nav-item waves-effect waves-light" uiSrefActive="active" placement="bottom" ngbTooltip="User Accounts" container="body">
+          <a class="nav-link" uiSref="users">
+            <i class="material-icons">&#xE8D3;</i>
+          </a>
+        </li>
+        <li class="nav-item waves-effect waves-light" uiSrefActive="active" placement="bottom" ngbTooltip="Restart" container="body">
+          <a class="nav-link" uiSref="restart">
+            <i class="material-icons">&#xE8AC;</i>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <div class="container-fluid">
+        <ui-view></ui-view>
+    </div>
+  </main>
+
+</header>
+<!--Main Navigation-->

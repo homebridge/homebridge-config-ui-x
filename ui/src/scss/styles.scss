@@ -1,0 +1,93 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import "~font-awesome/css/font-awesome.css";
+@import "~bootstrap/scss/bootstrap.scss";
+@import "~mdbootstrap/css/mdb.css";
+@import "~xterm/dist/xterm.css";
+@import "~ng2-toastr/bundles/ng2-toastr.min.css";
+
+/*
+ * Base structure
+ */
+
+html, body {
+  background-color: #f4f4f4;
+}
+
+/* Move down content because we have a fixed navbar that is 5.5rem tall */
+body {
+  padding-top: 5.5rem;
+}
+
+a {
+  &.card-link {
+    color: #000000;
+
+    &:hover {
+      color: #dc3545;
+    }
+  }
+}
+
+#config-editor {
+  position: absolute;
+  bottom: 30px;
+  top: 140px;
+  right: 15px;
+  left: 15px;
+  width: auto;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+}
+
+#log-output {
+  bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  position: absolute;
+  padding-left: 7px;
+}
+
+#plugin-log-output {
+  min-height: 400px;
+  background-color: #000000;
+  padding: 5px 5px 5px 5px;
+  overflow: hidden;
+}
+
+.bg-status-green {
+  background-color: #1aa531;
+}
+
+.status-circle {
+  color: #ffffff;
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  padding: 7px 0;
+  margin-top: 5px;
+  font-size: 24px;
+  line-height: 1;
+  text-align: center;
+}
+
+.xterm {
+  line-height: 18px;
+}
+
+.hb-npm-search {
+    box-sizing: inherit !important;
+    border: 1px solid #d0d0d0 !important;
+    height: 50px !important;
+    border-width: 0.5px;
+    padding: 10px;
+    margin-bottom: 15px;
+
+    &:focus, &:hover {
+      border: 1px solid #000000 !important;
+    }
+
+    &:focus {
+      box-shadow: 0 1px 0 0 #000000 !important;
+    }
+}
