@@ -14,8 +14,8 @@ import { WsService } from '../_services/ws.service';
 class RestartComponent implements OnInit {
   onOpen;
   onMessage;
-  checkInterval;
   checkTimeout;
+  checkDelay;
   resp: any = {};
   timeout = false;
   error: any = false;
@@ -50,7 +50,7 @@ class RestartComponent implements OnInit {
   }
 
   checkIfServerUp() {
-    TimerObservable.create(3000).subscribe(() => {
+    this.checkDelay = TimerObservable.create(3000).subscribe(() => {
       this.onMessage = this.ws.message.subscribe((data) => {
         try {
           data = JSON.parse(data.data);
@@ -80,8 +80,8 @@ class RestartComponent implements OnInit {
       this.onMessage.unsubscribe();
     }
 
-    if (this.checkInterval) {
-      this.checkInterval.unsubscribe();
+    if (this.checkDelay) {
+      this.checkDelay.unsubscribe();
     }
 
     if (this.checkTimeout) {
