@@ -120,7 +120,7 @@ When `sudo` mode is enabled Homebridge Config UI X will use `sudo` when executin
 
 ### Password-less sudo required
 
-For `sudo` mode to work password-less sudo is required. You can enable password-less sudo be adding this entry to the bottom of your `/etc/sudoers` file (use `visudo` to edit the file!):
+For `sudo` mode to work password-less sudo is required. You can enable password-less sudo by adding this entry to the bottom of your `/etc/sudoers` file (use `visudo` to edit the file!):
 
 ```
 homebridge    ALL=(ALL) NOPASSWD: ALL
