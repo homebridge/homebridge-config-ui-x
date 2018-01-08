@@ -32,7 +32,6 @@ class LogsComponent implements OnInit {
       try {
         data = JSON.parse(data.data);
         if (data.log) {
-          console.log(data.log)
           this.term.write(data.log);
         }
       } catch (e) { }
