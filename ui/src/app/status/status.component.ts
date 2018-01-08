@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { WsService } from '../_services/ws.service';
 import { ApiService } from '../_services/api.service';
+import { PluginService } from '../_services/plugin.service';
 
 @Component({
   selector: 'app-status',
@@ -13,8 +14,8 @@ class StatusComponent implements OnInit {
   private onClose;
   public server: any = {};
   public homebridge: any = {};
-  public homebridgeStatus = 'up';
-  public consoleStatus = 'down';
+  public homebridgeStatus;
+  public consoleStatus;
 
   public stats: any = {
     memory: {
@@ -33,6 +34,7 @@ class StatusComponent implements OnInit {
 
   constructor(
     private ws: WsService,
+    private $plugin: PluginService,
     private $api: ApiService) {}
 
   ngOnInit() {
@@ -69,7 +71,7 @@ class StatusComponent implements OnInit {
       data => this.server = data
     );
 
-    this.$api.getHomebridgePlugin().subscribe(
+    this.$api.getHomebridgePackage().subscribe(
       data => this.homebridge = data
     );
   }

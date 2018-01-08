@@ -33,4 +33,12 @@ export class PluginService {
     ref.componentInstance.pluginName = pluginName;
   }
 
+  upgradeHomebridge() {
+    const ref = this.modalService.open(PluginsManageComponent, {
+      size: 'lg',
+    });
+    ref.componentInstance.action = 'Upgrade';
+    ref.componentInstance.pluginName = 'Homebridge';
+  }
+
 }

@@ -9,7 +9,7 @@ import { UIRouterModule, StateService } from '@uirouter/angular';
 import { AceEditorModule } from 'ng2-ace-editor';
 import { ToastModule, ToastOptions } from 'ng2-toastr/ng2-toastr';
 
-import { ToastCustomOptions } from './_class/toast.class';
+import { ToastCustomOptions } from './_helpers/toast.class';
 
 import { WsService } from './_services/ws.service';
 import { ApiService } from './_services/api.service';

@@ -1,5 +1,6 @@
 import { Injectable, EventEmitter, Output } from '@angular/core';
 import { environment } from '../../environments/environment';
+import { ApiService } from './api.service';
 
 @Injectable()
 export class WsService {
@@ -13,30 +14,35 @@ export class WsService {
   private reconnecting = false;
   private autoReconnectInterval = 2000;
 
-  constructor() {
+  constructor(
+    private $api: ApiService
+  ) {
+    this.socket = { readyState: 0}
     this.listen();
   }
 
   listen() {
-    this.socket = new (<any>window).WebSocket(this.url);
+    this.$api.getToken().subscribe((auth: any) => {
+      this.socket = new (<any>window).WebSocket(`${this.url}/?username=${auth.username}&token=${auth.token}`);
 
-    this.socket.onopen = () => {
-      this.open.emit(null);
-    };
+      this.socket.onopen = () => {
+        this.open.emit(null);
+      };
 
-    this.socket.onmessage = (msg) => {
-      this.message.emit(msg);
-    };
+      this.socket.onmessage = (msg) => {
+        this.message.emit(msg);
+      };
 
-    this.socket.onclose = () => {
-      this.close.emit(null);
-      this.reconnect();
-    };
+      this.socket.onclose = () => {
+        this.close.emit(null);
+        this.reconnect();
+      };
 
-    this.socket.onerror = () => {
-      this.error.emit(null);
-      this.reconnect();
-    };
+      this.socket.onerror = () => {
+        this.error.emit(null);
+        this.reconnect();
+      };
+    }, (err) => this.reconnect())
   }
 
   reconnect() {

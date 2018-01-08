@@ -32,6 +32,7 @@ class HomebridgeConfigUi {
     hb.port = config.port || 8080
     hb.log = config.log || '/var/log/homebridge.log'
     hb.restart = config.restart
+    hb.sudo = config.sudo
     hb.temp = config.temp
 
     // ensure auth.json is setup correctly

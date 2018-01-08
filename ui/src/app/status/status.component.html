@@ -33,7 +33,7 @@
             <span class="grey-text" *ngIf="homebridge.version">Version {{ homebridge.installed }}</span>
           </div>
           <div class="align-self-center p-3" *ngIf="homebridge.update">
-            <button type="button" class="btn btn-red waves-effect waves-light">Upgrade</button>
+            <button type="button" class="btn btn-red waves-effect waves-light" (click)="$plugin.upgradeHomebridge()">Upgrade</button>
           </div>
         </div>
       </div>

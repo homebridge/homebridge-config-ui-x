@@ -8,47 +8,56 @@ import { environment } from '../../environments/environment';
 @Injectable()
 export class ApiService {
   private base = environment.apiBaseUrl;
+  private httpOptions = environment.apiHttpOptions;
 
   constructor(private $http: HttpClient) {}
 
   getServerInfo() {
-    return this.$http.get(`${this.base}/api/server`);
+    return this.$http.get(`${this.base}/api/server`, this.httpOptions);
+  }
+
+  getToken() {
+    return this.$http.get(`${this.base}/api/server/token`, this.httpOptions);
   }
 
   restartServer() {
-    return this.$http.put(`${this.base}/api/server/restart`, {});
+    return this.$http.put(`${this.base}/api/server/restart`, {}, this.httpOptions);
   }
 
-  getHomebridgePlugin() {
-    return this.$http.get(`${this.base}/api/plugins/homebridge`);
+  getHomebridgePackage() {
+    return this.$http.get(`${this.base}/api/packages/homebridge`, this.httpOptions);
+  }
+
+  upgradeHomebridgePackage() {
+    return this.$http.put(`${this.base}/api/packages/homebridge/upgrade`, {}, this.httpOptions);
   }
 
   getInstalledPlugins() {
-    return this.$http.get(`${this.base}/api/plugins`);
+    return this.$http.get(`${this.base}/api/packages`, this.httpOptions);
   }
 
   searchNpmForPlugins(query) {
-    return this.$http.get(`${this.base}/api/plugins`, {params: {search: query}});
+    return this.$http.get(`${this.base}/api/packages`, Object.assign({params: {search: query}}, this.httpOptions), );
   }
 
   installPlugin(pluginName) {
-    return this.$http.post(`${this.base}/api/plugins/install`, {package: pluginName});
+    return this.$http.post(`${this.base}/api/packages/install`, {package: pluginName}, this.httpOptions);
   }
 
   uninstallPlugin(pluginName) {
-    return this.$http.post(`${this.base}/api/plugins/uninstall`, { package: pluginName });
+    return this.$http.post(`${this.base}/api/packages/uninstall`, { package: pluginName }, this.httpOptions);
   }
 
   updatePlugin(pluginName) {
-    return this.$http.put(`${this.base}/api/plugins/update`, { package: pluginName });
+    return this.$http.put(`${this.base}/api/packages/update`, { package: pluginName }, this.httpOptions);
   }
 
   loadConfig() {
-    return this.$http.get(`${this.base}/api/config`, {responseType: 'text'});
+    return this.$http.get(`${this.base}/api/config`, Object.assign({ responseType: 'text' }, this.httpOptions));
   }
 
   saveConfig(config) {
-    return this.$http.post(`${this.base}/api/config`, config);
+    return this.$http.post(`${this.base}/api/config`, config, this.httpOptions);
   }
 
   downloadConfigBackup() {
@@ -56,18 +65,18 @@ export class ApiService {
   }
 
   getUsers() {
-    return this.$http.get(`${this.base}/api/users`);
+    return this.$http.get(`${this.base}/api/users`, this.httpOptions);
   }
 
   addNewUser(user) {
-    return this.$http.post(`${this.base}/api/users`, user);
+    return this.$http.post(`${this.base}/api/users`, user, this.httpOptions);
   }
 
   updateUser(userId, user) {
-    return this.$http.put(`${this.base}/api/users/${userId}`, user);
+    return this.$http.put(`${this.base}/api/users/${userId}`, user, this.httpOptions);
   }
 
   deleteUser(userId) {
-    return this.$http.delete(`${this.base}/api/users/${userId}`);
+    return this.$http.delete(`${this.base}/api/users/${userId}`, this.httpOptions);
   }
 }

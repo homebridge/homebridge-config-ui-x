@@ -65,6 +65,14 @@ export class PluginsManageComponent implements OnInit {
           }
         );
         break;
+      case 'Upgrade':
+        this.$api.upgradeHomebridgePackage().subscribe(
+          (data) => {
+            this.$state.go('restart');
+            this.activeModal.close();
+            this.toastr.success(`Homebridge Upgraded`, 'Success!');
+          }
+        )
     }
   }
 
