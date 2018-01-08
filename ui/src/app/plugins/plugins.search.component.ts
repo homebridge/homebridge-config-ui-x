@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { StateService } from '@uirouter/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ToastsManager } from 'ng2-toastr/src/toast-manager';
 
 import { ApiService } from '../_services/api.service';
 import { PluginService } from '../_services/plugin.service';
@@ -19,7 +20,8 @@ class PluginSearchComponent implements OnInit {
     private $api: ApiService,
     private $plugin: PluginService,
     private $state: StateService,
-    public $fb: FormBuilder
+    public $fb: FormBuilder,
+    private toastr: ToastsManager
   ) { }
 
   ngOnInit() {
@@ -38,7 +40,8 @@ class PluginSearchComponent implements OnInit {
       (data) => {
         this.installedPlugins = data;
         this.loading = false;
-      }
+      },
+      (err) => this.toastr.error(`Failed search npm: ${err.message}`, 'Error')
     );
   }
 

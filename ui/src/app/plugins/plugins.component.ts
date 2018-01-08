@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { StateService } from '@uirouter/angular';
+import { ToastsManager } from 'ng2-toastr/src/toast-manager';
 
 import { ApiService } from '../_services/api.service';
 import { PluginService } from '../_services/plugin.service';
@@ -19,7 +20,8 @@ class PluginsComponent implements OnInit {
     private $api: ApiService,
     private $plugin: PluginService,
     private $state: StateService,
-    public $fb: FormBuilder
+    public $fb: FormBuilder,
+    private toastr: ToastsManager
   ) { }
 
   ngOnInit() {
@@ -29,7 +31,7 @@ class PluginsComponent implements OnInit {
          this.installedPlugins = data;
          this.loading = false;
       },
-      (err) => {}
+      (err) => this.toastr.error(`Failed to load plugins: ${err.message}`, 'Error')
     );
 
     this.form = this.$fb.group({

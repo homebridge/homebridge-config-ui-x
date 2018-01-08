@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
 import { WsService } from '../_services/ws.service';
 import { ApiService } from '../_services/api.service';
@@ -35,7 +36,9 @@ class StatusComponent implements OnInit {
   constructor(
     private ws: WsService,
     private $plugin: PluginService,
-    private $api: ApiService) {}
+    private $api: ApiService,
+    public toastr: ToastsManager,
+    ) {}
 
   ngOnInit() {
     // subscribe to status events
@@ -68,7 +71,8 @@ class StatusComponent implements OnInit {
 
     // load server information
     this.$api.getServerInfo().subscribe(
-      data => this.server = data
+      data => this.server = data,
+      err => this.toastr.error(`Could not load Homebridge status: ${err.message}`, 'Error')
     );
 
     this.$api.getHomebridgePackage().subscribe(

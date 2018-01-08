@@ -44,7 +44,7 @@ class RestartComponent implements OnInit {
       },
       err => {
         this.error = 'An error occured sending the restart command to the server.';
-        this.toastr.error('An error occured sending the restart command to the server.', 'Error');
+        this.toastr.error(`An error occured sending the restart command to the server: ${err.message}`, 'Error');
       }
     );
   }
