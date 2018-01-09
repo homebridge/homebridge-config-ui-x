@@ -46,13 +46,13 @@ if (fs.existsSync(path.resolve(options.homebridgeCorePath, 'package.json'))) {
 }
 
 // import plugin
-const plugin = require('./index.js')
+const plugin = require('../lib/index.js')
 
 // config
 const config = {
   port: process.env.HOMEBRIDGE_CONFIG_UI_PORT || 8080,
   log: process.env.HOMEBRIDGE_CONFIG_UI_LOG || '/homebridge/logs/homebridge.log',
-  restart: process.env.HOMEBRIDGE_CONFIG_UI_RESTART || 'pkill homebridge; pkill homebridge-config-ui-x'
+  restart: process.env.HOMEBRIDGE_CONFIG_UI_RESTART || 'killall -9 homebridge && killall -9 homebridge-config-ui-x'
 }
 
 // emulate homebridge handler

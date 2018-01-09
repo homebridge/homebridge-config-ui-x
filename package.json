@@ -13,8 +13,9 @@
   "bugs": {
     "url": "https://github.com/oznu/homebridge-config-ui-x/issues"
   },
+  "main": "./lib/index.js",
   "bin": {
-    "homebridge-config-ui-x": "./standalone.js"
+    "homebridge-config-ui-x": "./bin/standalone.js"
   },
   "engines": {
     "node": ">=6.9.1",
