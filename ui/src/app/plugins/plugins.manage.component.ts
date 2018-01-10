@@ -2,9 +2,13 @@ import { Component, OnInit, Input } from '@angular/core';
 import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { StateService } from '@uirouter/angular';
 import { ToastsManager } from 'ng2-toastr/ng2-toastr';
+import { Terminal } from 'xterm';
+import * as fit from 'xterm/lib/addons/fit/fit';
 
 import { ApiService } from '../_services/api.service';
 import { WsService } from '../_services/ws.service';
+
+Terminal.applyAddon(fit);
 
 @Component({
   selector: 'app-plugins-manage',
@@ -13,8 +17,11 @@ import { WsService } from '../_services/ws.service';
 export class PluginsManageComponent implements OnInit {
   @Input() pluginName;
   @Input() action;
+
+  private term = new Terminal();
+  private termTarget: HTMLElement;
+
   private onMessage;
-  private term = new (<any>window).Terminal();
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -25,8 +32,9 @@ export class PluginsManageComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.term.open(document.getElementById('plugin-log-output'), { focus: true, cursorBlink: true});
-    this.term.fit();
+    this.termTarget = document.getElementById('plugin-log-output')
+    this.term.open(this.termTarget);
+    (<any>this.term).fit()
 
     this.onMessage = this.ws.message.subscribe((data) => {
       try {

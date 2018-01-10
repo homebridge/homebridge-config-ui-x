@@ -1,6 +1,5 @@
 /* You can add global styles to this file, and also import other style files */
 
-@import "~font-awesome/css/font-awesome.css";
 @import "~bootstrap/scss/bootstrap.scss";
 @import "~mdbootstrap/css/mdb.css";
 @import "~xterm/dist/xterm.css";
@@ -46,6 +45,7 @@ a {
   right: 0;
   position: absolute;
   padding-left: 7px;
+  background-color: #000000;
 }
 
 #plugin-log-output {
@@ -53,6 +53,33 @@ a {
   background-color: #000000;
   padding: 5px 5px 5px 5px;
   overflow: hidden;
+}
+
+/* icon spinner from font-awesome */
+.spin {
+  -webkit-animation: fa-spin 2s infinite linear;
+  animation: fa-spin 2s infinite linear;
+}
+
+@-webkit-keyframes fa-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+@keyframes fa-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
 }
 
 .bg-status-green {
@@ -69,10 +96,6 @@ a {
   font-size: 24px;
   line-height: 1;
   text-align: center;
-}
-
-.xterm {
-  line-height: 18px;
 }
 
 .hb-npm-search {

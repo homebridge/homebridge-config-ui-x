@@ -1,22 +1,30 @@
 import { Component, OnInit } from '@angular/core';
+import { Terminal } from 'xterm';
+import * as fit from 'xterm/lib/addons/fit/fit';
 
 import { WsService } from '../_services/ws.service';
+
+Terminal.applyAddon(fit);
 
 @Component({
   selector: 'app-logs',
   templateUrl: './logs.component.html'
 })
 class LogsComponent implements OnInit {
+  private term = new Terminal();
+  private termTarget: HTMLElement;
+
   private onOpen;
   private onMessage;
   private onError;
-  private term = new (<any>window).Terminal();
 
   constructor(private ws: WsService) {}
 
   ngOnInit() {
-    this.term.open(document.getElementById('log-output'), { focus: false });
-    this.term.fit();
+    this.termTarget = document.getElementById('log-output')
+    this.term.open(this.termTarget);
+    (<any>this.term).fit()
+
     this.term.write('\n\r\n\r\n\r\n\r\n\r');
 
     // subscribe to log events

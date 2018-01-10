@@ -238,10 +238,6 @@ express@~4.16.2:
     utils-merge "1.0.1"
     vary "~1.1.2"
 
-extend@~1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/extend/-/extend-1.2.1.tgz#a0f5fd6cfc83a5fe49ef698d60ec8a624dd4576c"
-
 extend@~3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/extend/-/extend-3.0.1.tgz#a755ea7bc1adfcc5a31ce7e762dbaadc5e636444"
@@ -488,13 +484,19 @@ ms@^2.0.0:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.1.tgz#30a5864eb3ebb0a66f2ebe6d727af06a09d86e0a"
 
-nan@2.3.5:
-  version "2.3.5"
-  resolved "https://registry.yarnpkg.com/nan/-/nan-2.3.5.tgz#822a0dc266290ce4cd3a12282ca3e7e364668a08"
+nan@^2.6.2:
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/nan/-/nan-2.8.0.tgz#ed715f3fe9de02b57a5e6252d90a96675e1f085a"
 
 negotiator@0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/negotiator/-/negotiator-0.6.1.tgz#2b327184e8992101177b28563fb5e7102acd0ca9"
+
+node-pty@^0.7.4:
+  version "0.7.4"
+  resolved "https://registry.yarnpkg.com/node-pty/-/node-pty-0.7.4.tgz#07146b2b40b76e432e57ce6750bda40f0da5c99f"
+  dependencies:
+    nan "^2.6.2"
 
 oauth-sign@~0.8.2:
   version "0.8.2"
@@ -549,13 +551,6 @@ proxy-addr@~2.0.2:
   dependencies:
     forwarded "~0.1.2"
     ipaddr.js "1.5.2"
-
-pty.js@^0.3.1:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/pty.js/-/pty.js-0.3.1.tgz#81f5bed332d6e5e7ab685688d1ba0373410d51b5"
-  dependencies:
-    extend "~1.2.1"
-    nan "2.3.5"
 
 punycode@^1.4.1:
   version "1.4.1"

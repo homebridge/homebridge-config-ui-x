@@ -13,25 +13,11 @@ class StatusComponent implements OnInit {
   private onOpen;
   private onMessage;
   private onClose;
+  public stats: any = {};
   public server: any = {};
   public homebridge: any = {};
   public homebridgeStatus;
   public consoleStatus;
-
-  public stats: any = {
-    memory: {
-      total: 0,
-      used: 0,
-      free: 0
-    },
-    uptime: {
-      days: 0,
-      hours: 0,
-      minutes: 0
-    },
-    cpu: 0,
-    cputemp: '0.00'
-  };
 
   constructor(
     private ws: WsService,
