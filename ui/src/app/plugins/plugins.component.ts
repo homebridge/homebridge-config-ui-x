@@ -27,8 +27,8 @@ class PluginsComponent implements OnInit {
   ngOnInit() {
     // load list of installed plugins
     this.$api.getInstalledPlugins().subscribe(
-      (data) => {
-         this.installedPlugins = data;
+      (data: any) => {
+         this.installedPlugins = data.sort(x => !x.update);
          this.loading = false;
       },
       (err) => this.toastr.error(`Failed to load plugins: ${err.message}`, 'Error')

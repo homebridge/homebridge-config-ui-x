@@ -31,8 +31,8 @@
           NPM
         </a>
         <a class="card-link" *ngIf="plugin.update" href="javascript:void(0);" (click)="$plugin.updatePlugin(plugin.name)"
-          placement="bottom" ngbTooltip="Upgrade plugin to v{{ plugin.version }}" container="body">
-          UPGRADE
+          placement="bottom" ngbTooltip="Update plugin to v{{ plugin.version }}" container="body">
+          UPDATE
         </a>
         <a class="card-link" *ngIf="plugin.installed" href="javascript:void(0);" (click)="$plugin.uninstallPlugin(plugin.name)">
           UNINSTALL
