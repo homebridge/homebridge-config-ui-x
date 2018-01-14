@@ -29,12 +29,12 @@ class StatusComponent implements OnInit {
   ngOnInit() {
     // subscribe to status events
     if (this.ws.socket.readyState) {
-      this.ws.send('status-sub');
+      this.ws.subscribe('status');
       this.consoleStatus = 'up';
     }
 
     this.onOpen = this.ws.open.subscribe(() => {
-      this.ws.send('status-sub');
+      this.ws.subscribe('status');
       this.consoleStatus = 'up';
     });
 
@@ -70,7 +70,7 @@ class StatusComponent implements OnInit {
   ngOnDestroy() {
     try {
       // unsubscribe from log events
-      this.ws.send('status-unsub');
+      this.ws.unsubscribe('status');
 
       // unsubscribe listeners
       this.onOpen.unsubscribe();

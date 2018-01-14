@@ -30,11 +30,11 @@ class RestartComponent implements OnInit {
   ngOnInit() {
     // subscribe to status events
     if (this.ws.socket.readyState) {
-      this.ws.send('status-sub');
+      this.ws.subscribe('status');
     }
 
     this.onOpen = this.ws.open.subscribe(() => {
-      this.ws.send('status-sub');
+      this.ws.subscribe('status');
     });
 
     this.$api.restartServer().subscribe(

@@ -55,8 +55,16 @@ export class WsService {
     }
   }
 
-  send(data) {
-    this.socket.send(data);
+  send(data: object) {
+    this.socket.send(JSON.stringify(data));
+  }
+
+  subscribe(sub: string) {
+    this.send({subscribe: sub})
+  }
+
+  unsubscribe(sub: string) {
+    this.send({ unsubscribe: sub })
   }
 
 }

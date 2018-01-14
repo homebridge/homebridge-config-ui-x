@@ -29,11 +29,11 @@ class LogsComponent implements OnInit {
 
     // subscribe to log events
     if (this.ws.socket.readyState) {
-      this.ws.send('logs-sub');
+      this.ws.subscribe('logs');
     }
 
     this.onOpen = this.ws.open.subscribe(() => {
-      this.ws.send('logs-sub');
+      this.ws.subscribe('logs');
     });
 
     this.onMessage = this.ws.message.subscribe((data) => {
@@ -54,7 +54,7 @@ class LogsComponent implements OnInit {
   ngOnDestroy() {
     try {
       // unsubscribe from log events
-      this.ws.send('logs-unsub');
+      this.ws.unsubscribe('logs');
 
       // unsubscribe listeners
       this.onOpen.unsubscribe();
