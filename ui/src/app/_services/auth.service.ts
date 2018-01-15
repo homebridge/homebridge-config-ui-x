@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
 import { JwtHelper } from 'angular2-jwt';
 
-import { environment } from '../../environments/environment';
+import { ApiService } from './api.service';
 
 interface HomebridgeUser {
   token: string;
@@ -14,16 +12,16 @@ interface HomebridgeUser {
 
 @Injectable()
 export class AuthService {
-  private base = environment.apiBaseUrl;
-  private httpOptions = environment.apiHttpOptions;
   private jwtHelper: JwtHelper = new JwtHelper();
 
+  public formAuth = true;
   public user: HomebridgeUser;
 
   constructor(
-    private $http: HttpClient
+    private $api: ApiService
   ) {
     this.loadToken();
+    this.getformAuthType();
   }
 
   isLoggedIn() {
@@ -31,7 +29,7 @@ export class AuthService {
   }
 
   login(username: string, password: string) {
-    return this.$http.post(`${this.base}/api/login`, {username: username, password: password}, this.httpOptions).toPromise()
+    return this.$api.login(username, password).toPromise()
       .then((user: any) => {
         window.localStorage.setItem('token', user.token);
         return this.parseToken(user.token);
@@ -42,6 +40,14 @@ export class AuthService {
     this.user = null;
     window.localStorage.removeItem('token');
     window.location.reload();
+  }
+
+  refreshToken() {
+    return this.$api.getToken().toPromise()
+      .then((user: any) => {
+        window.localStorage.setItem('token', user.token);
+        return this.parseToken(user.token);
+      });
   }
 
   parseToken(token: string) {
@@ -67,4 +73,10 @@ export class AuthService {
     }
   }
 
+  getformAuthType() {
+    return this.$api.getAppSettings().toPromise()
+      .then((data: any) => {
+        this.formAuth = data.formAuth;
+      });
+  }
 }

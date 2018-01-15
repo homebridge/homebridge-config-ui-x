@@ -32,9 +32,10 @@ export class AuthHttpInterceptor implements HttpInterceptor {
     return next.handle(authReq)
       .catch((error, caught) => {
 
-        if (error.status === 401) {
-          if (this.$state.current.name !== 'login') {
-            this.$auth.logout();
+        if (error.status === 401 && this.$state.current.name !== 'login') {
+          this.$auth.logout();
+          if (this.$auth.formAuth) {
+            window.location.reload();
           }
         }
 

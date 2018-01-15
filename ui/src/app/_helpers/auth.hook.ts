@@ -2,6 +2,7 @@ import { TransitionService, TargetState } from '@uirouter/core';
 import { Transition } from '@uirouter/angular';
 
 import { AuthService } from '../_services/auth.service';
+import { ApiService } from '../_services/api.service';
 
 export function authHook(transitionService: TransitionService) {
   const requiresAuthCriteria = {
@@ -11,19 +12,22 @@ export function authHook(transitionService: TransitionService) {
   };
 
   const redirectToLogin = (transition) => {
-    const authService: AuthService = transition.injector().get(AuthService);
+    const $api: ApiService = transition.injector().get(ApiService);
+    const $auth: AuthService = transition.injector().get(AuthService);
     const $state = transition.router.stateService;
     const targetState: TargetState = transition.targetState();
 
-    const returnTo = {
-      name: targetState.name(),
-      params: targetState.params()
-    };
-
-    if (!authService.isLoggedIn()) {
-      return $state.target('login', { returnTo: targetState }, { location: false });
+    if (!$auth.isLoggedIn()) {
+      return $api.getAppSettings().toPromise()
+        .then((data: any) => {
+          if (data && data.formAuth === false) {
+            return $auth.refreshToken();
+          } else {
+            return $state.target('login', { returnTo: targetState }, { location: false });
+          }
+        });
     }
   };
 
-  transitionService.onBefore(requiresAuthCriteria, redirectToLogin, { priority: 10 });
+  transitionService.onBefore(requiresAuthCriteria, redirectToLogin, { priority: 1000000 });
 }

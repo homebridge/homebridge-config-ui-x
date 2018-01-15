@@ -12,6 +12,7 @@ import { AuthService } from '../_services/auth.service';
 class LoginComponent implements OnInit {
   form: FormGroup;
   returnTo: TargetState;
+  invalidCredentials = false;
 
   constructor(
     public $fb: FormBuilder,
@@ -35,6 +36,9 @@ class LoginComponent implements OnInit {
     this.$auth.login(value.username, value.password)
       .then((user) => {
         this.$state.go(this.returnTo.name(), this.returnTo.params());
+      })
+      .catch((err) => {
+        this.invalidCredentials = true;
       });
   }
 }

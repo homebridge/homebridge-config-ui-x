@@ -12,7 +12,7 @@ import { UsersEditComponent } from './users.edit.component';
   selector: 'app-users',
   templateUrl: './users.component.html'
 })
-class UsersComponent implements OnInit {
+export class UsersComponent implements OnInit {
   @Input() homebridgeUsers: Array<Object>;
 
   constructor(
@@ -52,21 +52,23 @@ class UsersComponent implements OnInit {
 
 }
 
-const UsersStates = {
+export function userStateResolve($api, toastr, $state) {
+  return $api.getUsers().toPromise().catch((err) => {
+    toastr.error(err.message, 'Failed to Load Users');
+    $state.go('status');
+  });
+}
+
+export const UsersStates = {
   name: 'users',
   url: '/users',
   component: UsersComponent,
   resolve: [{
     token: 'homebridgeUsers',
     deps: [ApiService, ToastsManager, StateService],
-    resolveFn: ($api, toastr, $state) => $api.getUsers().toPromise().catch((err) => {
-      toastr.error(err.message, 'Failed to Load Users');
-      $state.go('status');
-    })
+    resolveFn: userStateResolve
   }],
   data: {
     requiresAuth: true
   }
 };
-
-export { UsersComponent, UsersStates };

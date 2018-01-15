@@ -2,20 +2,11 @@
 
 # Homebridge Config UI X
 
-This is a plugin for [Homebridge](https://github.com/nfarina/homebridge)
+This is a plugin for [Homebridge](https://github.com/nfarina/homebridge). This is a fork of the work originally done by [mkellsy](https://github.com/mkellsy/homebridge-config-ui).
 
 This plugin allows you to monitor, backup and configure your Homebridge server from a browser.
 
 ![Status](screenshots/homebridge-config-ui-x-status.png)
-
-This is a fork of the work originally done by [mkellsy/homebridge-config-ui](https://github.com/mkellsy/homebridge-config-ui) and provides the following improvements and more:
-
-* Plugin discovery is improved with support added multiple plugin locations
-* Log display performance improved, now using web sockets to display logs in real time
-* Added option to display logs from journalctl
-* Passwords are no longer stored in plain text
-* Refactored code with ES6
-* Rebuilt user interface using Angular 5
 
 ## Installation Instructions
 
@@ -162,3 +153,14 @@ When installing, removing or upgrading plugins the output is show in the browser
 And finally the configuration screen allows you to modify your Homebridge settings and your platforms and accessories.
 
 ![Config](screenshots/homebridge-config-ui-x-config.png)
+
+# Supported Browsers
+
+The following browsers are supported by this plugin:
+
+* Safari >= 10
+* Chrome >= 55 (including Opera)
+* MS Edge >= 13 on the desktop
+* iOS >=10 and Chrome on mobile
+
+MS Internet Explorer (any version) is not supported!

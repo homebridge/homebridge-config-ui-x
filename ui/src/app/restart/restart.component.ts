@@ -11,7 +11,7 @@ import { WsService } from '../_services/ws.service';
   selector: 'app-restart',
   templateUrl: './restart.component.html'
 })
-class RestartComponent implements OnInit {
+export class RestartComponent implements OnInit {
   onOpen;
   onMessage;
   checkTimeout;
@@ -91,7 +91,7 @@ class RestartComponent implements OnInit {
 
 }
 
-const RestartState = {
+export const RestartState = {
   name: 'restart',
   url: '/restart',
   component: RestartComponent,
@@ -99,5 +99,3 @@ const RestartState = {
     requiresAuth: true
   }
 };
-
-export { RestartComponent, RestartState };

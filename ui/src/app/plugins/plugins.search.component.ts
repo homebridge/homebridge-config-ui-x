@@ -10,7 +10,7 @@ import { PluginService } from '../_services/plugin.service';
   selector: 'app-plugins.search',
   templateUrl: './plugins.component.html',
 })
-class PluginSearchComponent implements OnInit {
+export class PluginSearchComponent implements OnInit {
   form: FormGroup;
   installedPlugins: any = [];
   loading = true;
@@ -53,7 +53,7 @@ class PluginSearchComponent implements OnInit {
 
 }
 
-const PluginSearchStates = {
+export const PluginSearchStates = {
   name: 'plugins.search',
   url: '/:query',
   views: {
@@ -63,5 +63,3 @@ const PluginSearchStates = {
     requiresAuth: true
   }
 };
-
-export { PluginSearchComponent, PluginSearchStates };

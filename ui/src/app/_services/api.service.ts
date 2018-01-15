@@ -11,12 +11,20 @@ export class ApiService {
 
   constructor(private $http: HttpClient) {}
 
-  getServerInfo() {
-    return this.$http.get(`${this.base}/api/server`, this.httpOptions);
+  getAppSettings() {
+    return this.$http.get(`${this.base}/api/settings`, this.httpOptions);
+  }
+
+  login(username, password) {
+    return this.$http.post(`${this.base}/api/login`, { username: username, password: password }, this.httpOptions);
   }
 
   getToken() {
     return this.$http.get(`${this.base}/api/server/token`, this.httpOptions);
+  }
+
+  getServerInfo() {
+    return this.$http.get(`${this.base}/api/server`, this.httpOptions);
   }
 
   restartServer() {
@@ -57,10 +65,6 @@ export class ApiService {
 
   saveConfig(config) {
     return this.$http.post(`${this.base}/api/config`, config, this.httpOptions);
-  }
-
-  downloadConfigBackup() {
-    window.location.href = `${this.base}/api/config/backup`;
   }
 
   getUsers() {

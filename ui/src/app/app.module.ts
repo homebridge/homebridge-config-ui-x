@@ -34,7 +34,6 @@ import { LoginComponent, LoginStates } from './login/login.component';
 import { SpinnerComponent } from './spinner/spinner.component';
 import { PinComponent } from './pin/pin.component';
 
-
 @NgModule({
   declarations: [
     AppComponent,
@@ -82,12 +81,12 @@ import { PinComponent } from './pin/pin.component';
     }),
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: AuthHttpInterceptor, multi: true},
+    { provide: HTTP_INTERCEPTORS, useClass: AuthHttpInterceptor, multi: true },
     { provide: ToastOptions, useClass: ToastCustomOptions },
+    AuthService,
     WsService,
     ApiService,
-    PluginService,
-    AuthService
+    PluginService
   ],
   bootstrap: [AppComponent]
 })

@@ -9,7 +9,7 @@ import { PluginService } from '../_services/plugin.service';
   selector: 'app-status',
   templateUrl: './status.component.html'
 })
-class StatusComponent implements OnInit {
+export class StatusComponent implements OnInit {
   private onOpen;
   private onMessage;
   private onClose;
@@ -81,7 +81,7 @@ class StatusComponent implements OnInit {
 
 }
 
-const StatusStates = {
+export const StatusStates = {
   name: 'status',
   url: '/',
   component: StatusComponent,
@@ -90,4 +90,3 @@ const StatusStates = {
   }
 };
 
-export { StatusStates, StatusComponent };

@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, ViewContainerRef } from '@angular/core';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Observable } from 'rxjs/Observable';
 
 import { StateService, isArray } from '@uirouter/angular';
@@ -12,16 +13,19 @@ import { ApiService } from '../_services/api.service';
   selector: 'app-config',
   templateUrl: './config.component.html'
 })
-class ConfigComponent implements OnInit {
+export class ConfigComponent implements OnInit {
   @Input() homebridgeConfig;
+  backupConfigHref: SafeUrl;
   options: any = { printMargin: false };
 
   constructor(
     private $api: ApiService,
-    public toastr: ToastsManager
+    public toastr: ToastsManager,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit() {
+    this.generateBackupConfigLink();
   }
 
   onSave() {
@@ -46,32 +50,39 @@ class ConfigComponent implements OnInit {
 
   saveConfig(config) {
     this.$api.saveConfig(config).subscribe(
-      data => this.toastr.success('Config saved', 'Success!'),
+      data => {
+        this.toastr.success('Config saved', 'Success!');
+        this.generateBackupConfigLink();
+      },
       err => this.toastr.error('Failed to save config', 'Error')
     );
   }
 
-  downloadConfigBackup() {
-    this.$api.downloadConfigBackup();
+  generateBackupConfigLink() {
+    const theJSON = this.homebridgeConfig;
+    const uri = this.sanitizer.bypassSecurityTrustUrl('data:text/json;charset=UTF-8,' + encodeURIComponent(theJSON));
+    this.backupConfigHref = uri;
   }
 
 }
 
-const ConfigStates = {
+export function configStateResolve ($api, toastr, $state) {
+  return $api.loadConfig().toPromise().catch((err) => {
+    toastr.error(err.message, 'Failed to Load Config');
+    $state.go('status');
+  });
+}
+
+export const ConfigStates = {
   name: 'config',
   url: '/config',
   component: ConfigComponent,
   resolve: [{
     token: 'homebridgeConfig',
     deps: [ApiService, ToastsManager, StateService],
-    resolveFn: ($api, toastr, $state) => $api.loadConfig().toPromise().catch((err) => {
-      toastr.error(err.message, 'Failed to Load Config');
-      $state.go('status');
-    })
+    resolveFn: configStateResolve
   }],
   data: {
     requiresAuth: true
   }
 };
-
-export { ConfigComponent, ConfigStates };

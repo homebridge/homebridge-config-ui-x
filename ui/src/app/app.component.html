@@ -33,12 +33,12 @@
             <i class="material-icons">&#xE8D3;</i>
           </a>
         </li>
-        <li class="nav-item waves-effect waves-light" uiSrefActive="active" placement="bottom" ngbTooltip="Restart Homebridge" container="body">
+        <li class="nav-item waves-effect waves-light" uiSrefActive="active" placement="bottom" ngbTooltip="Restart" container="body">
           <a class="nav-link" uiSref="restart">
             <i class="material-icons">&#xE8AC;</i>
           </a>
         </li>
-        <li class="nav-item waves-effect waves-light" uiSrefActive="active" placement="bottom" ngbTooltip="Logout" container="body">
+        <li class="nav-item waves-effect waves-light" uiSrefActive="active" placement="bottom" ngbTooltip="Logout" container="body" *ngIf="$auth.formAuth">
           <a class="nav-link" (click)="$auth.logout()">
             <i class="material-icons">&#xE879;</i>
           </a>

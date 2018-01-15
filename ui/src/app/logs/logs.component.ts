@@ -10,7 +10,7 @@ Terminal.applyAddon(fit);
   selector: 'app-logs',
   templateUrl: './logs.component.html'
 })
-class LogsComponent implements OnInit {
+export class LogsComponent implements OnInit {
   private term = new Terminal();
   private termTarget: HTMLElement;
 
@@ -21,9 +21,9 @@ class LogsComponent implements OnInit {
   constructor(private ws: WsService) {}
 
   ngOnInit() {
-    this.termTarget = document.getElementById('log-output')
+    this.termTarget = document.getElementById('log-output');
     this.term.open(this.termTarget);
-    (<any>this.term).fit()
+    (<any>this.term).fit();
 
     this.term.write('\n\r\n\r\n\r\n\r\n\r');
 
@@ -65,7 +65,7 @@ class LogsComponent implements OnInit {
 
 }
 
-const LogsStates = {
+export const LogsStates = {
   name: 'logs',
   url: '/logs',
   component: LogsComponent,
@@ -73,5 +73,3 @@ const LogsStates = {
     requiresAuth: true
   }
 };
-
-export { LogsComponent, LogsStates };

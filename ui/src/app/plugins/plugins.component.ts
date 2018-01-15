@@ -10,7 +10,7 @@ import { PluginService } from '../_services/plugin.service';
   selector: 'app-plugins',
   templateUrl: './plugins.component.html'
 })
-class PluginsComponent implements OnInit {
+export class PluginsComponent implements OnInit {
   form: FormGroup;
   installedPlugins: any = [];
   loading = true;
@@ -47,7 +47,7 @@ class PluginsComponent implements OnInit {
 
 }
 
-const PluginStates = {
+export const PluginStates = {
   name: 'plugins',
   url: '/plugins',
   component: PluginsComponent,
@@ -55,5 +55,3 @@ const PluginStates = {
     requiresAuth: true
   }
 };
-
-export { PluginsComponent, PluginStates };

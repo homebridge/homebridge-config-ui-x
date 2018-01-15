@@ -23,6 +23,7 @@
       </div>
     
       <div class="text-center">
+        <p class="red-text" *ngIf="invalidCredentials"><small>Invalid Username and Password</small></p>
         <button tabindex="3" class="btn btn-amber" type="submit" [disabled]="!form.valid">Login</button>
       </div>
   
