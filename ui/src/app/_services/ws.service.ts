@@ -1,6 +1,7 @@
 import { Injectable, EventEmitter, Output } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { ApiService } from './api.service';
+import { AuthService } from './auth.service';
 
 @Injectable()
 export class WsService {
@@ -15,15 +16,16 @@ export class WsService {
   private autoReconnectInterval = 2000;
 
   constructor(
-    private $api: ApiService
+    private $api: ApiService,
+    private $auth: AuthService
   ) {
-    this.socket = { readyState: 0}
+    this.socket = { readyState: 0};
     this.listen();
   }
 
   listen() {
     this.$api.getToken().subscribe((auth: any) => {
-      this.socket = new (<any>window).WebSocket(`${this.url}/?username=${auth.username}&token=${auth.token}`);
+      this.socket = new (<any>window).WebSocket(`${this.url}/?token=${this.$auth.user.token}`);
 
       this.socket.onopen = () => {
         this.open.emit(null);
@@ -42,7 +44,7 @@ export class WsService {
         this.error.emit(null);
         this.reconnect();
       };
-    }, (err) => this.reconnect())
+    }, (err) => this.reconnect());
   }
 
   reconnect() {
@@ -60,11 +62,11 @@ export class WsService {
   }
 
   subscribe(sub: string) {
-    this.send({subscribe: sub})
+    this.send({subscribe: sub});
   }
 
   unsubscribe(sub: string) {
-    this.send({ unsubscribe: sub })
+    this.send({ unsubscribe: sub });
   }
 
 }

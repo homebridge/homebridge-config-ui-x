@@ -68,7 +68,10 @@ const ConfigStates = {
       toastr.error(err.message, 'Failed to Load Config');
       $state.go('status');
     })
-  }]
+  }],
+  data: {
+    requiresAuth: true
+  }
 };
 
 export { ConfigComponent, ConfigStates };

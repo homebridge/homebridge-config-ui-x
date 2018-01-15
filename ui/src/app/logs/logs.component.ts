@@ -68,7 +68,10 @@ class LogsComponent implements OnInit {
 const LogsStates = {
   name: 'logs',
   url: '/logs',
-  component: LogsComponent
+  component: LogsComponent,
+  data: {
+    requiresAuth: true
+  }
 };
 
 export { LogsComponent, LogsStates };

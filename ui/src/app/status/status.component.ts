@@ -84,7 +84,10 @@ class StatusComponent implements OnInit {
 const StatusStates = {
   name: 'status',
   url: '/',
-  component: StatusComponent
+  component: StatusComponent,
+  data: {
+    requiresAuth: true
+  }
 };
 
 export { StatusStates, StatusComponent };

@@ -41,12 +41,13 @@ class PluginSearchComponent implements OnInit {
         this.installedPlugins = data;
         this.loading = false;
       },
-      (err) => this.toastr.error(`Failed search npm: ${err.message}`, 'Error')
+      (err) => {
+        this.toastr.error(`Failed search npm: ${err.message}`, 'Error');
+      }
     );
   }
 
   onSubmit({ value, valid }) {
-    console.log(value);
     this.$state.go('plugins.search', {query: value.query});
   }
 
@@ -57,6 +58,9 @@ const PluginSearchStates = {
   url: '/:query',
   views: {
     '!$default': { component: PluginSearchComponent }
+  },
+  data: {
+    requiresAuth: true
   }
 };
 

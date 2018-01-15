@@ -32,9 +32,9 @@ export class PluginsManageComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.termTarget = document.getElementById('plugin-log-output')
+    this.termTarget = document.getElementById('plugin-log-output');
     this.term.open(this.termTarget);
-    (<any>this.term).fit()
+    (<any>this.term).fit();
 
     this.onMessage = this.ws.message.subscribe((data) => {
       try {
@@ -80,9 +80,10 @@ export class PluginsManageComponent implements OnInit {
             this.activeModal.close();
             this.toastr.success(`Homebridge Upgraded`, 'Success!');
           }
-        )
+        );
     }
   }
+
 
   // tslint:disable-next-line:use-life-cycle-interface
   ngOnDestroy() {

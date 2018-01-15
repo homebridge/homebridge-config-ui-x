@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
-import { Text } from '@angular/compiler/src/i18n/i18n_ast';
 
 import { environment } from '../../environments/environment';
 

@@ -1,0 +1,26 @@
+// background image from https://github.com/cquanu/homebridge-config-ui
+
+.login-container {
+  background-color: #f4f4f4;
+  background: url('/assets/snapshot.jpg') no-repeat center center fixed; 
+  background-size: cover;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: 200;
+}
+
+.login-card {
+  max-width: 500px;
+  background-color: rgba(255, 255, 255, 0.90);
+
+  .form-control:focus {
+    background-color: inherit !important;
+  }
+
+  @media screen and (min-height: 800px){
+    margin-bottom: 12em;
+  }
+}

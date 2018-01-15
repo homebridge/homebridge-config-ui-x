@@ -31,7 +31,9 @@ class PluginsComponent implements OnInit {
          this.installedPlugins = data.sort(x => !x.update);
          this.loading = false;
       },
-      (err) => this.toastr.error(`Failed to load plugins: ${err.message}`, 'Error')
+      (err) => {
+        this.toastr.error(`Failed to load plugins: ${err.message}`, 'Error');
+      }
     );
 
     this.form = this.$fb.group({
@@ -48,7 +50,10 @@ class PluginsComponent implements OnInit {
 const PluginStates = {
   name: 'plugins',
   url: '/plugins',
-  component: PluginsComponent
+  component: PluginsComponent,
+  data: {
+    requiresAuth: true
+  }
 };
 
 export { PluginsComponent, PluginStates };

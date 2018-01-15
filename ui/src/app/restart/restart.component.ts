@@ -95,6 +95,9 @@ const RestartState = {
   name: 'restart',
   url: '/restart',
   component: RestartComponent,
+  data: {
+    requiresAuth: true
+  }
 };
 
 export { RestartComponent, RestartState };

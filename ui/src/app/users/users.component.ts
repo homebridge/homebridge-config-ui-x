@@ -63,7 +63,10 @@ const UsersStates = {
       toastr.error(err.message, 'Failed to Load Users');
       $state.go('status');
     })
-  }]
+  }],
+  data: {
+    requiresAuth: true
+  }
 };
 
 export { UsersComponent, UsersStates };
