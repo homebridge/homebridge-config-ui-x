@@ -5,7 +5,18 @@
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
-  <div id="plugin-log-output" class="modal-body"></div>
+    <div [hidden]="updateSelf" id="plugin-log-output" class="modal-body"></div>
+    <div *ngIf="updateSelf" class="modal-body">
+      <h3 class="text-center red-text">Restart and Refresh Required</h3>
+      <p class="text-center grey-text">Thanks for installing the latest version of Homebridge Config UI X.</p>
+      <p>
+        After installing a new version you will need to restart Homebridge and <strong>refresh this page</strong> to
+        ensure you have the latest version of the client.
+      </p>
+      <div class="text-center">
+        <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="onRestartHomebridgeClick()">Restart Homebridge Now</button>
+      </div>
+    </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-red" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')">Close</button>
   </div>

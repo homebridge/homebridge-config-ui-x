@@ -54,10 +54,16 @@ export class RestartComponent implements OnInit {
       this.onMessage = this.ws.message.subscribe((data) => {
         try {
           data = JSON.parse(data.data);
-          if (data.status && data.status === 'up') {
+
+          if (data.server && data.server.status === 'up') {
+            this.toastr.success('Server Restarted', 'Success');
+            this.$state.go('status');
+          } else if (data.status && data.status === 'up') {
+            // TODO remove this in next major version
             this.toastr.success('Server Restarted', 'Success');
             this.$state.go('status');
           }
+
         } catch (e) { }
       });
     });

@@ -23,6 +23,8 @@ export class PluginsManageComponent implements OnInit {
 
   private onMessage;
 
+  public updateSelf = false;
+
   constructor(
     public activeModal: NgbActiveModal,
     public toastr: ToastsManager,
@@ -67,10 +69,14 @@ export class PluginsManageComponent implements OnInit {
       case 'Update':
         this.$api.updatePlugin(this.pluginName).subscribe(
           (data) => {
-            this.$state.reload();
-            this.activeModal.close();
+            if (this.pluginName === 'homebridge-config-ui-x') {
+              this.updateSelf = true;
+            } else {
+              this.$state.reload();
+              this.activeModal.close();
+            }
             this.toastr.success(`Updated ${this.pluginName}`, 'Success!');
-          }
+         }
         );
         break;
       case 'Upgrade':
@@ -82,6 +88,18 @@ export class PluginsManageComponent implements OnInit {
           }
         );
     }
+  }
+
+  public onRestartHomebridgeClick () {
+    this.$state.go('restart');
+    this.activeModal.close();
+
+    // make sure the page is refreshed after restart
+    setInterval(() => {
+      if (this.$state.current.name !== 'restart') {
+        window.location.reload();
+      }
+    }, 1000);
   }
 
 

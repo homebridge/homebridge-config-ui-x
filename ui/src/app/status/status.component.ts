@@ -1,22 +1,33 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
 import { WsService } from '../_services/ws.service';
 import { ApiService } from '../_services/api.service';
 import { PluginService } from '../_services/plugin.service';
 
+interface HomebridgeStatus {
+  consolePort?: number;
+  port?: number;
+  pin?: string;
+  status?: string;
+  qrcode?: string;
+}
+
 @Component({
   selector: 'app-status',
   templateUrl: './status.component.html'
 })
 export class StatusComponent implements OnInit {
+  @ViewChild('qrcode') qrcode: ElementRef;
+
   private onOpen;
   private onMessage;
   private onClose;
+  public server: HomebridgeStatus = {};
   public stats: any = {};
-  public server: any = {};
   public homebridge: any = {};
-  public homebridgeStatus;
+
+  public loadedQrCode = false;
   public consoleStatus;
 
   constructor(
@@ -31,11 +42,13 @@ export class StatusComponent implements OnInit {
     if (this.ws.socket.readyState) {
       this.ws.subscribe('status');
       this.consoleStatus = 'up';
+      this.checkHomebridgeVersion();
     }
 
     this.onOpen = this.ws.open.subscribe(() => {
       this.ws.subscribe('status');
       this.consoleStatus = 'up';
+      this.checkHomebridgeVersion();
     });
 
     this.onMessage = this.ws.message.subscribe((data) => {
@@ -44,26 +57,40 @@ export class StatusComponent implements OnInit {
         if (data.stats) {
           this.stats = data.stats;
         }
-        if (data.status) {
-          this.homebridgeStatus = data.status;
+        if (data.server) {
+          this.server = data.server;
+          this.getQrCodeImage();
         }
       } catch (e) { }
     });
 
     this.onClose = this.ws.close.subscribe(() => {
       this.consoleStatus = 'down';
-      this.homebridgeStatus = 'down';
+      this.server.status = 'down';
+      this.loadedQrCode = false;
     });
 
-    // load server information
-    this.$api.getServerInfo().subscribe(
-      data => this.server = data,
-      err => this.toastr.error(`Could not load Homebridge status: ${err.message}`, 'Error')
-    );
 
-    this.$api.getHomebridgePackage().subscribe(
-      data => this.homebridge = data
+  }
+
+  checkHomebridgeVersion() {
+    return this.$api.getHomebridgePackage().subscribe(
+      data => this.homebridge = data,
     );
+  }
+
+  getQrCodeImage () {
+    if (!this.loadedQrCode) {
+      return this.$api.getQrCode().subscribe(
+        (svg) => {
+          this.qrcode.nativeElement.innerHTML = svg;
+          this.loadedQrCode = true;
+        },
+        (err) => {
+          this.loadedQrCode = false;
+        }
+      );
+    }
   }
 
   // tslint:disable-next-line:use-life-cycle-interface

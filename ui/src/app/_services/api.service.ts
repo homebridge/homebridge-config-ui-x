@@ -27,6 +27,10 @@ export class ApiService {
     return this.$http.get(`${this.base}/api/server`, this.httpOptions);
   }
 
+  getQrCode() {
+    return this.$http.get(`${this.base}/api/server/qrcode.svg`, Object.assign({ responseType: 'text' as 'text' }, this.httpOptions));
+  }
+
   restartServer() {
     return this.$http.put(`${this.base}/api/server/restart`, {}, this.httpOptions);
   }

@@ -32,7 +32,6 @@ import { RestartComponent, RestartState } from './restart/restart.component';
 import { LoginComponent, LoginStates } from './login/login.component';
 
 import { SpinnerComponent } from './spinner/spinner.component';
-import { PinComponent } from './pin/pin.component';
 
 @NgModule({
   declarations: [
@@ -42,7 +41,6 @@ import { PinComponent } from './pin/pin.component';
     ConfigComponent,
     LogsComponent,
     UsersComponent,
-    PinComponent,
     SpinnerComponent,
     PluginSearchComponent,
     PluginsManageComponent,
@@ -77,7 +75,8 @@ import { PinComponent } from './pin/pin.component';
         LoginStates
       ],
       useHash: false,
-      config: routerConfigFn
+      config: routerConfigFn,
+      otherwise: '/'
     }),
   ],
   providers: [

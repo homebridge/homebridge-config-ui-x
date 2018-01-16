@@ -3,13 +3,15 @@
   <div class="col-md-4 mb-3">
     <h3 class="red-text">Homebridge</h3>
     <!--Panel-->
-    <div class="card card-body">
-      <app-pin [pin]="server.pin"></app-pin>
+    <div class="card card-body text-center">
+      <div #qrcode></div>
+      <p>{{ server.pin }}</p>
+      <p class="mt-1 grey-text">
+        Scan this code with the camera on your iOS device to add to Apple Home.
+      </p>
     </div>
     <!--/.Panel-->
-    <p class="mt-3">
-      With the camera on your iOS device, scan this eight-digit HomeKit code, or enter it manually, to add to Apple Home.
-    </p>
+
   </div>
 
   <div class="col-md-8">
@@ -46,14 +48,14 @@
       <div class="d-flex flex-row">
         <div class="d-flex p-1">
           <div class="p-3">
-            <i *ngIf="homebridgeStatus==='up'" class="material-icons status-circle bg-status-green">&#xE5CA;</i>
-            <i *ngIf="homebridgeStatus!=='up'" class="material-icons status-circle bg-red">&#xE14B;</i>
+            <i *ngIf="this.server.status==='up'" class="material-icons status-circle bg-status-green">&#xE5CA;</i>
+            <i *ngIf="this.server.status!=='up'" class="material-icons status-circle bg-red">&#xE14B;</i>
           </div>
           <div class="align-self-center">
             <span>Homebridge</span>
             <br>
-            <span class="grey-text" *ngIf="homebridgeStatus==='up'">Running on port {{ server.port }}</span>
-            <span class="grey-text" *ngIf="homebridgeStatus!=='up'">Not running</span>
+            <span class="grey-text" *ngIf="this.server.status==='up'">Running on port {{ server.port }}</span>
+            <span class="grey-text" *ngIf="this.server.status!=='up'">Not running</span>
           </div>
         </div>
         <div class="d-flex p-1">
@@ -64,7 +66,7 @@
           <div class="align-self-center">
             <span>Console</span>
             <br>
-            <span class="grey-text" *ngIf="consoleStatus==='up'">Listening on port {{ server.console_port }}</span>
+            <span class="grey-text" *ngIf="consoleStatus==='up'">Listening on port {{ server.consolePort }}</span>
             <span class="grey-text" *ngIf="consoleStatus!=='up'">Not running</span>
           </div>
         </div>
