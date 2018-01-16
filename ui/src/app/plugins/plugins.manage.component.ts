@@ -97,7 +97,7 @@ export class PluginsManageComponent implements OnInit {
     // make sure the page is refreshed after restart
     setInterval(() => {
       if (this.$state.current.name !== 'restart') {
-        window.location.reload();
+        window.location.reload(true);
       }
     }, 1000);
   }
