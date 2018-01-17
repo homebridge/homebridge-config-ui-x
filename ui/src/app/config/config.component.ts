@@ -36,6 +36,8 @@ export class ConfigComponent implements OnInit {
       // basic validation of homebridge config spec
       if (typeof(config.bridge) !== 'object') {
         this.toastr.error('Bridge settings missing', 'Config Error');
+      } else if (!/^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$/.test(config.bridge.username)) {
+        this.toastr.error('Bridge username must be 6 pairs of colon-separated hexadecimal characters (A-F 0-9)', 'Config Error');
       } else if (config.accessories && !isArray(config.accessories)) {
         this.toastr.error('Accessories must be an array []', 'Config Error');
       } else if (config.platforms && !isArray(config.platforms)) {
