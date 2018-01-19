@@ -25,8 +25,7 @@ export class StatusWssHandler {
 
     // clear interval when socket closes
     const onClose = () => {
-      clearInterval(statsInterval);
-      clearInterval(statusInterval);
+      onUnsubscribe('status');
     };
     ws.on('close', onClose);
 

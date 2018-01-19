@@ -24,7 +24,7 @@ export class LogsWssHandler {
 
     // when the client disconnects stop tailing the log file
     const onClose = () => {
-      this.killTerm();
+      onUnsubscribe('logs');
     };
     ws.on('close', onClose);
 
@@ -40,7 +40,9 @@ export class LogsWssHandler {
   }
 
   send (data) {
-    this.ws.send(JSON.stringify({log: data}));
+    if (this.ws.readyState === 1) {
+      this.ws.send(JSON.stringify({log: data}));
+    }
   }
 
   logFromFile () {
