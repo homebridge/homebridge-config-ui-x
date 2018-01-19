@@ -1,6 +1,10 @@
 # Don't publish these folders to npm
 ui
+lib
 screenshots
+tsconfig.json
+tslint.json
+yarn.lock
 
 # Logs
 logs

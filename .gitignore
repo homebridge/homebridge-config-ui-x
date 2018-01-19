@@ -1,5 +1,6 @@
 # Dist
 dist/
+public/
 
 # Logs
 *.log
