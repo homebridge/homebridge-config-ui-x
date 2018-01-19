@@ -15,7 +15,8 @@
   },
   "main": "./dist/index.js",
   "scripts": {
-    "tsc": "tsc"
+    "build-server": "tsc",
+    "build-ui": "npm run build --prefix ui"
   },
   "bin": {
     "homebridge-config-ui-x": "./bin/standalone.js"
