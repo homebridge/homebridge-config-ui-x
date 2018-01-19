@@ -46,7 +46,7 @@ if (fs.existsSync(path.resolve(options.homebridgeCorePath, 'package.json'))) {
 }
 
 // import plugin
-const plugin = require('../lib/index.js')
+const plugin = require('../dist/index.js')
 
 // config
 const config = {
