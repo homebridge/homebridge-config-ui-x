@@ -32,6 +32,7 @@ import { RestartComponent, RestartState } from './restart/restart.component';
 import { LoginComponent, LoginStates } from './login/login.component';
 
 import { SpinnerComponent } from './spinner/spinner.component';
+import { ResetComponent, ResetModalComponent } from './reset/reset.component';
 
 @NgModule({
   declarations: [
@@ -47,12 +48,15 @@ import { SpinnerComponent } from './spinner/spinner.component';
     UsersAddComponent,
     UsersEditComponent,
     RestartComponent,
-    LoginComponent
+    LoginComponent,
+    ResetComponent,
+    ResetModalComponent
   ],
   entryComponents: [
     PluginsManageComponent,
     UsersAddComponent,
-    UsersEditComponent
+    UsersEditComponent,
+    ResetModalComponent
   ],
   imports: [
     BrowserModule,

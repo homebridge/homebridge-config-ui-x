@@ -31,6 +31,10 @@ export class ApiService {
     return this.$http.get(`${this.base}/api/server/qrcode.svg`, Object.assign({ responseType: 'text' as 'text' }, this.httpOptions));
   }
 
+  resetHomebridgeAccessory() {
+    return this.$http.put(`${this.base}/api/server/reset-homebridge`, {}, this.httpOptions);
+  }
+
   restartServer() {
     return this.$http.put(`${this.base}/api/server/restart`, {}, this.httpOptions);
   }

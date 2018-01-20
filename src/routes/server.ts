@@ -14,8 +14,9 @@ export class ServerRouter {
     this.router = Router();
     this.config = require(hb.configPath);
 
-    this.router.get('/', this.getServer);
+    this.router.get('/', this.getServer.bind(this));
     this.router.put('/restart', this.restartServer);
+    this.router.put('/reset-homebridge', this.resetHomebridgeAccessory);
     this.router.get('/qrcode.svg', this.getQrCode);
     this.router.get('/token', this.getToken);
   }
@@ -45,6 +46,14 @@ export class ServerRouter {
         process.exit(1);
       }
     }, 100);
+  }
+
+  resetHomebridgeAccessory (req: Request, res: Response, next: NextFunction) {
+    return hb.resetHomebridgeAccessory()
+      .then(() => {
+        res.json({ok: true});
+      })
+      .catch(next);
   }
 
   getQrCode (req: Request, res: Response, next: NextFunction) {

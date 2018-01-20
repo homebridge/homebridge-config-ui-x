@@ -26,7 +26,7 @@ class HomebridgeUI {
     this.ui = fs.readJSONSync(path.resolve(__dirname, '../package.json'));
   }
 
-  init (log, config) {
+  public init (log, config) {
     this.logger = log;
 
     this.configPath = this.homebridge.user.configPath();
@@ -37,7 +37,7 @@ class HomebridgeUI {
     this.parseConfig(config);
   }
 
-  parseConfig (config) {
+  private parseConfig (config) {
     this.port = config.port || 8080;
     this.logOpts = config.log;
     this.restartCmd = config.restart;
@@ -64,7 +64,7 @@ class HomebridgeUI {
     }
   }
 
-  parseCommandLineArgs () {
+  private parseCommandLineArgs () {
     // parse plugin path argument from homebridge
     commander
       .allowUnknownOption()
@@ -72,8 +72,54 @@ class HomebridgeUI {
       .parse(process.argv);
   }
 
-  log (msg: string) {
+  public log (msg: string) {
     this.logger(msg);
+  }
+
+  public async resetHomebridgeAccessory () {
+    // load config file
+    const config = await fs.readJson(this.configPath);
+
+    // generate new random username and pin
+    if (config.bridge) {
+      config.bridge.pin = this.generatePin();
+      config.bridge.username = this.generateUsername();
+
+      // save config file
+      await fs.writeJson(this.configPath, config, { spaces: 4 });
+
+      this.log(`Homebridge Reset: New Username: ${config.bridge.username}`);
+      this.log(`Homebridge Reset: New Pin: ${config.bridge.pin}`);
+    } else {
+      this.log(color.red('Homebridge Reset: Could not reset homebridge username or pin. Config format invalid.'));
+    }
+
+    // remove accessories and persist directories
+    await fs.remove(path.resolve(this.storagePath, 'accessories'));
+    await fs.remove(path.resolve(this.storagePath, 'persist'));
+
+    this.log(`Homebridge Reset: "persist" directory removed.`);
+    this.log(`Homebridge Reset: "accessories" directory removed.`);
+  }
+
+  private generatePin () {
+    let code: string | Array<any> = Math.floor(10000000 + Math.random() * 90000000) + '';
+    code = code.split('');
+    code.splice(3, 0, '-');
+    code.splice(6, 0, '-');
+    code = code.join('');
+    return code;
+  }
+
+  private generateUsername () {
+    const hexDigits = '0123456789ABCDEF';
+    let username = '0E:';
+    for (let i = 0; i < 5; i++) {
+      username += hexDigits.charAt(Math.round(Math.random() * 15));
+      username += hexDigits.charAt(Math.round(Math.random() * 15));
+      if (i !== 4) { username += ':'; }
+    }
+    return username;
   }
 }
 

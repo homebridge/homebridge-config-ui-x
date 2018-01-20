@@ -71,6 +71,7 @@ export class ExpressServer {
   }
 
   errorHandler (err, req: Request, res: Response, next: NextFunction) {
+    console.error(err);
     res.status(err.status || 500);
     res.json({
       error: err,
