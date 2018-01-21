@@ -3,7 +3,7 @@
     <h3 class="red-text">Homebridge</h3>
     <!--Panel-->
     <div class="card card-body text-center">
-      <div #qrcode></div>
+      <div #qrcode class="qr-code-container"></div>
       <p>{{ server.pin }}</p>
       <p class="mt-1 grey-text">
         Scan this code with the camera on your iOS device to add to Apple Home.
@@ -31,7 +31,7 @@
             <span *ngIf="homebridge.version && !homebridge.update">Up To Date</span>
             <span *ngIf="homebridge.version && homebridge.update">{{ homebridge.version }} Update Available</span>
             <br>
-            <span class="grey-text" *ngIf="homebridge.version">Version {{ homebridge.installed }}</span>
+            <span class="grey-text" *ngIf="homebridge.version"><span class="d-none d-sm-inline">Version</span> {{ homebridge.installed }}</span>
           </div>
           <div class="align-self-center p-3" *ngIf="homebridge.update">
             <button type="button" class="btn btn-red waves-effect waves-light" (click)="$plugin.upgradeHomebridge()">Upgrade</button>
@@ -53,8 +53,8 @@
           <div class="align-self-center">
             <span>Homebridge</span>
             <br>
-            <span class="grey-text" *ngIf="this.server.status==='up'">Running on port {{ server.port }}</span>
-            <span class="grey-text" *ngIf="this.server.status!=='up'">Not running</span>
+            <span class="grey-text d-none d-sm-block" *ngIf="this.server.status==='up'">Running on port {{ server.port }}</span>
+            <span class="grey-text d-none d-sm-block" *ngIf="this.server.status!=='up'">Not running</span>
           </div>
         </div>
         <div class="d-flex p-1">
@@ -65,8 +65,8 @@
           <div class="align-self-center">
             <span>Console</span>
             <br>
-            <span class="grey-text" *ngIf="consoleStatus==='up'">Listening on port {{ server.consolePort }}</span>
-            <span class="grey-text" *ngIf="consoleStatus!=='up'">Not running</span>
+            <span class="grey-text d-none d-sm-block" *ngIf="consoleStatus==='up'">Listening on port {{ server.consolePort }}</span>
+            <span class="grey-text d-none d-sm-block" *ngIf="consoleStatus!=='up'">Not running</span>
           </div>
         </div>
       </div>
@@ -77,7 +77,7 @@
     <div class="card card-body mb-3" *ngIf="consoleStatus==='up' && stats.uptime">
       <h5 class="mb-0">Uptime</h5>
       <div class="d-flex flex-row">
-        <div class="d-flex p-1">
+        <div class="p-1" [ngClass]="{'d-flex': stats.uptime.days, 'd-none d-sm-flex': !stats.uptime.days}">
           <div class="p-3">
             <i class="material-icons status-circle bg-blue">&#xE88B;</i>
           </div>
@@ -97,7 +97,7 @@
             <span class="grey-text">Hours</span>
           </div>
         </div>
-        <div class="d-flex p-1">
+        <div class="p-1" [ngClass]="{'d-flex': !stats.uptime.days, 'd-none d-sm-flex': stats.uptime.days}">
           <div class="p-3">
             <i class="material-icons status-circle bg-blue">&#xE88B;</i>
           </div>
@@ -153,7 +153,7 @@
             <span class="grey-text">Total</span>
           </div>
         </div>
-        <div class="d-flex p-1">
+        <div class="d-none d-sm-flex p-1">
           <div class="p-3">
             <i class="material-icons status-circle bg-blue">&#xE322;</i>
           </div>

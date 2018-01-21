@@ -11,6 +11,7 @@
 
 html, body {
   background-color: #f4f4f4;
+  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 /* Move down content because we have a fixed navbar that is 5.5rem tall */
@@ -113,4 +114,11 @@ a {
     &:focus {
       box-shadow: 0 1px 0 0 #000000 !important;
     }
+}
+
+.qr-code-container {
+  svg {
+    position: inline;
+    width: 100%;
+  }
 }

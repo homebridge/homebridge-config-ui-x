@@ -15,6 +15,7 @@
   },
   "main": "./dist/index.js",
   "scripts": {
+    "build": "npm run build-server && npm run build-ui",
     "build-server": "tsc",
     "build-ui": "npm run build --prefix ui"
   },
