@@ -69,8 +69,12 @@ export class ServerRouter {
   }
 
   getToken (req: Request, res: Response, next: NextFunction) {
-    return res.json({
-      token: users.getJwt(req.user)
-    });
+    return users.getJwt(req.user)
+      .then((token) => {
+        return res.json({
+          token: token
+        });
+      })
+      .catch(next);
   }
 }

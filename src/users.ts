@@ -1,92 +1,122 @@
 import * as fs from 'fs-extra';
-import * as crypto from 'crypto';
-import * as jwt from 'jsonwebtoken';
+import * as cryptoNode from 'crypto';
+import * as Bluebird from 'bluebird';
+import * as jsonwebtoken from 'jsonwebtoken';
+
+const crypto = Bluebird.promisifyAll(cryptoNode);
+const jwt = Bluebird.promisifyAll(jsonwebtoken);
 
 import { hb } from './hb';
 
+interface User {
+  id: number;
+  name: string;
+  username: string;
+  admin: boolean;
+  hashedPassword: string;
+  salt: string;
+  password?: string;
+}
+
 class Users {
-  findById (id, callback) {
-    const authfile = this.getUsers();
+  async getUsers () {
+    const allUsers: User[] = await fs.readJson(hb.authPath);
+    return allUsers;
+  }
 
+  async findById (id: number) {
+    const authfile = await this.getUsers();
     const user = authfile.find(x => x.id === id);
-
-    if (user) {
-      callback(null, user);
-    } else {
-      callback(new Error('User ' + id + ' does not exist'));
-    }
+    return user;
   }
 
-  findByUsername (username, callback) {
-    const authfile = this.getUsers();
-
+  async findByUsername (username: string) {
+    const authfile = await this.getUsers();
     const user = authfile.find(x => x.username === username);
-
-    if (user) {
-      callback(null, user);
-    } else {
-      callback(null, null);
-    }
+    return user;
   }
 
-  getUsers () {
-    return fs.readJsonSync(hb.authPath);
-  }
-
-  hashPassword (password, salt) {
-    // pbkdf2 iterations have been kept low so we don't lock up homebridge when a user logs in on low powered devices
-    // we're using the username as the salt for the sake of keeping the module portable
-    const derivedKey = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512');
+  async hashPassword (password: string, salt: string) {
+    const derivedKey = await crypto.pbkdf2Async(password, salt, 1000, 64, 'sha512');
     return derivedKey.toString('hex');
   }
 
-  addUser (user) {
-    const authfile = this.getUsers();
+  async genSalt () {
+    const salt = await crypto.randomBytesAsync(32);
+    return salt.toString('hex');
+  }
+
+  async login (username: string, password: string) {
+    const user = await this.findByUsername(username);
+
+    if (!user) {
+      return null;
+    }
+
+    // using username as salt if user.salt not set to maintain backwards compatibility with older versions.
+    const hashedPassword = await this.hashPassword(password, user.salt || user.username);
+
+    if (hashedPassword === user.hashedPassword) {
+      return user;
+    } else {
+      return null;
+    }
+  }
+
+  async addUser (user) {
+    const authfile = await this.getUsers();
+
+    const salt = await this.genSalt();
 
     // user object
-    const newuser = {
+    const newUser: User = {
       id: authfile.length ? Math.max.apply(Math, authfile.map(x => x.id)) + 1 : 1,
       username: user.username,
       name: user.name,
-      hashedPassword: this.hashPassword(user.password, user.username),
+      hashedPassword: await this.hashPassword(user.password, salt),
+      salt: salt,
       admin: user.admin
     };
 
     // add the user to the authfile
-    authfile.push(newuser);
+    authfile.push(newUser);
 
     // update the auth.json
-    fs.writeFileSync(hb.authPath, JSON.stringify(authfile, null, 4));
+    await fs.writeJson(hb.authPath, authfile, {spaces: 4});
 
     hb.log(`Added new user: ${user.username}`);
   }
 
-  updateUser (userId, update) {
-    const authfile = this.getUsers();
+  async updateUser (userId, update) {
+    const authfile = await this.getUsers();
 
     const user = authfile.find(x => x.id === userId);
 
     if (!user) {
-      throw new Error('User not gound');
+      throw new Error('User Not Found');
     }
 
     user.name = update.name || user.name;
     user.admin = update.admin || user.admin;
 
     if (update.password) {
-      user.hashedPassword = this.hashPassword(update.password, user.username);
+      const salt = await this.genSalt();
+
+      user.hashedPassword = await this.hashPassword(update.password, salt);
+      user.salt = salt;
     }
 
     // update the auth.json
-    fs.writeFileSync(hb.authPath, JSON.stringify(authfile, null, 4));
+    await fs.writeJson(hb.authPath, authfile, { spaces: 4 });
 
     hb.log(`Updated user: ${user.username}`);
   }
 
-  deleteUser (id) {
-    const authfile = this.getUsers();
+  async deleteUser (id) {
+    const authfile = await this.getUsers();
 
     const index = authfile.findIndex(x => x.id === parseInt(id, 10));
+
     if (index < 0) {
       throw new Error('User not found');
     }
@@ -94,55 +124,65 @@ class Users {
     authfile.splice(index, 1);
 
     // update the auth.json
-    fs.writeFileSync(hb.authPath, JSON.stringify(authfile, null, 4));
+    await fs.writeJson(hb.authPath, authfile, { spaces: 4 });
 
     hb.log(`Deleted user with ID ${id}`);
   }
 
-  getJwt (user) {
-    return jwt.sign({
+  async getJwt (user) {
+    return jwt.signAsync({
       username: user.username,
       name: user.name,
       admin: user.admin
     }, user.hashedPassword, {expiresIn: '8h'});
   }
 
-  verifyJwt (token, callback) {
-    const authfile = this.getUsers();
+  async verifyJwt (token) {
     const decoded = jwt.decode(token);
 
     if (!decoded) {
-      return callback(new Error('User Not Found'));
+      return null;
     }
 
-    const user = authfile.find(x => x.username === decoded.username);
+    const user = await this.findByUsername(decoded.username);
 
     if (user) {
-      jwt.verify(token, user.hashedPassword, (err, res) => {
-        return callback(err, user);
-      });
+      try {
+        await jwt.verifyAsync(token, user.hashedPassword);
+        return user;
+      } catch (e) {
+        hb.log(`Invalid token sent by ${user.username}: ${e.message}`);
+        return null;
+      }
     } else {
-      return callback(new Error('User Not Found'));
+      return null;
     }
   }
 
-  updateOldPasswords () {
-    let authfile = this.getUsers();
+  async updateOldPasswords () {
+    let authfile = await this.getUsers();
 
-    authfile = authfile.map((user) => {
+    authfile = await Bluebird.map(authfile, async (user) => {
       if (user.password && !user.hashedPassword) {
-        user.hashedPassword = this.hashPassword(user.password, user.username);
+        const salt = await this.genSalt();
+
+        user.hashedPassword = await this.hashPassword(user.password, salt);
+        user.salt = salt;
+
         delete user.password;
+
+        hb.log(`Hashed password for "${user.username}" in auth.json`);
         return user;
       } else {
         return user;
       }
     });
 
-    fs.writeFileSync(hb.authPath, JSON.stringify(authfile, null, 4));
+    // update the auth.json
+    await fs.writeJson(hb.authPath, authfile, { spaces: 4 });
   }
 
-  setupDefaultUser () {
+  async setupDefaultUser () {
     return this.addUser({
       'username': 'admin',
       'password': 'admin',
@@ -151,21 +191,21 @@ class Users {
     });
   }
 
-  setupAuthFile () {
-    if (!fs.existsSync(hb.authPath)) {
-      fs.writeFileSync(hb.authPath, '[]');
+  async setupAuthFile () {
+    if (!await fs.pathExists(hb.authPath)) {
+      await fs.writeJson(hb.authPath, []);
     }
 
-    const authfile = this.getUsers();
+    const authfile = await this.getUsers();
 
     // if there are no admin users, add the default user
     if (!authfile.find(x => x.admin === true || x.username === 'admin')) {
-      this.setupDefaultUser();
+      await this.setupDefaultUser();
     }
 
     // update older auth.json files from plain text to hashed passwords
     if (authfile.find(x => x.password && !x.hashedPassword)) {
-      this.updateOldPasswords();
+      await this.updateOldPasswords();
     }
   }
 }

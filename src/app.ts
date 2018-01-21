@@ -72,7 +72,11 @@ export class ExpressServer {
 
   errorHandler (err, req: Request, res: Response, next: NextFunction) {
     console.error(err);
-    res.status(err.status || 500);
+
+    if (res.statusCode === 200) {
+      res.status(500);
+    }
+
     res.json({
       error: err,
       message: err.message

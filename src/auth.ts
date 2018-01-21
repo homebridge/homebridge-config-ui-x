@@ -15,21 +15,15 @@ export class AuthMiddleware {
     this.passport = new Passport();
 
     this.passport.use(new BasicStrategy((username, password, callback) => {
-      users.findByUsername(username, (err, user) => {
-        if (err) {
-          return callback(err);
-        }
+      return users.login(username, password)
+        .then((user) => {
+          if (!user) {
+            return callback(null, false);
+          }
 
-        if (!user) {
-          return callback(null, false);
-        }
-
-        if (user.hashedPassword !== users.hashPassword(password, username)) {
-          return callback(null, false);
-        }
-
-        return callback(null, user);
-      });
+          return callback(null, user);
+        })
+        .catch((err) => callback(err, false));
     }));
 
     this.passport.serializeUser((user, callback) => {
@@ -37,13 +31,15 @@ export class AuthMiddleware {
     });
 
     this.passport.deserializeUser((id, callback) => {
-      users.findById(id, (err, user) => {
-        if (err) {
-          return callback(err);
-        }
+      return users.findById(id)
+        .then((user) => {
+          if (!user) {
+            return callback(null, false);
+          }
 
-        callback(null, user);
-      });
+          return callback(null, user);
+        })
+        .catch((err) => callback(err, false));
     });
 
     this.init = [
@@ -67,19 +63,26 @@ export class AuthMiddleware {
   }
 
   noAuthHandler (req: Request, res: Response, next: NextFunction) {
-    req.user = users.getUsers()[0];
-    next();
+    return users.getUsers()
+      .then((authfile) => {
+        req.user = authfile[0];
+        return next();
+      })
+      .catch(next);
   }
 
   formAuthHandler (req: Request, res: Response, next: NextFunction) {
     if (req.headers['x-jwt']) {
-      users.verifyJwt(req.headers['x-jwt'], (err, user) => {
-        if (err) {
-          return res.sendStatus(401);
-        }
-        req.user = user;
-        next();
-      });
+      return users.verifyJwt(req.headers['x-jwt'])
+        .then((user) => {
+          if (user) {
+            req.user = user;
+            return next();
+          } else {
+            return res.sendStatus(401);
+          }
+        })
+        .catch(() => res.sendStatus(401));
     } else {
       return res.sendStatus(401);
     }

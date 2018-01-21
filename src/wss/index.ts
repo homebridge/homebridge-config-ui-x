@@ -50,18 +50,22 @@ export class WSS {
     const params = qs.parse(url.parse(info.req.url).query);
 
     if (params.token) {
-      users.verifyJwt(params.token, (err) => {
-        if (err) {
-          // invalid token - reject the websocket connection
-          hb.log('Unauthorised WebSocket Connection Closed');
-          callback(false);
-        }
-      });
+      return users.verifyJwt(params.token)
+        .then((user) => {
+          if (user) {
+            return callback(true);
+          } else {
+            // invalid token - reject the websocket connection
+            hb.log('Unauthorised WebSocket Connection Closed');
+            return callback(false);
+          }
+        })
+        .catch(() => callback(false));
     } else {
       // no token provided - reject the websocket connection
-      callback(false);
+      hb.log('Unauthorised WebSocket Connection Closed');
+      return callback(false);
     }
-    callback(true);
   }
 
   subscribeHandler (ws, req, msg) {

@@ -15,37 +15,48 @@ export class UserRouter {
   }
 
   getUser (req: Request, res: Response, next: NextFunction) {
-    let authfile = users.getUsers();
+    return users.getUsers()
+      .then((authfile) => {
+        // remove sensitive data before sending user list to client
+        authfile = authfile.map((user) => {
+          delete user.hashedPassword;
+          return user;
+        });
 
-    // remove user passwords before sending to client
-    authfile = authfile.map((user) => {
-      delete user.password;
-      return user;
-    });
-
-    res.json(authfile);
+        return res.json(authfile);
+      })
+      .catch(next);
   }
 
   createUser (req: Request, res: Response, next: NextFunction) {
-    const authfile = users.getUsers();
-
     // check to see if user already exists
-    if (authfile.find(x => x.username === req.body.username)) {
-      return res.sendStatus(409);
-    }
+    return users.findByUsername(req.body.username)
+      .then((user) => {
+        if (user) {
+          return res.sendStatus(409);
+        }
 
-    users.addUser(req.body);
-
-    res.json({ ok: true });
+        return users.addUser(req.body)
+          .then(() => {
+            return res.json({ ok: true });
+          });
+      })
+      .catch(next);
   }
 
   deleteUser (req: Request, res: Response, next: NextFunction) {
-    users.deleteUser(req.params.id);
-    res.json({ ok: true });
+    return users.deleteUser(req.params.id)
+      .then(() => {
+        return res.json({ ok: true });
+      })
+      .catch(next);
   }
 
   updateUser (req: Request, res: Response, next: NextFunction) {
-    users.updateUser(parseInt(req.params.id, 10), req.body);
-    res.json({ ok: true });
+    return users.updateUser(parseInt(req.params.id, 10), req.body)
+      .then(() => {
+        return res.json({ ok: true });
+      })
+      .catch(next);
   }
 }
