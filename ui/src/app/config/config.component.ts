@@ -55,6 +55,7 @@ export class ConfigComponent implements OnInit {
       data => {
         this.toastr.success('Config saved', 'Success!');
         this.generateBackupConfigLink();
+        this.homebridgeConfig = JSON.stringify(data, null, 4);
       },
       err => this.toastr.error('Failed to save config', 'Error')
     );

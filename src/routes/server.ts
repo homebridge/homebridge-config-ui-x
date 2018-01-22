@@ -8,25 +8,14 @@ import { qrcode } from '../qrcode';
 
 export class ServerRouter {
   public router: Router;
-  private config;
 
   constructor() {
     this.router = Router();
-    this.config = require(hb.configPath);
 
-    this.router.get('/', this.getServer.bind(this));
     this.router.put('/restart', this.restartServer);
     this.router.put('/reset-homebridge', this.resetHomebridgeAccessory);
     this.router.get('/qrcode.svg', this.getQrCode);
     this.router.get('/token', this.getToken);
-  }
-
-  getServer (req: Request, res: Response, next: NextFunction) {
-    return res.json({
-      port: this.config.bridge.port,
-      console_port: hb.port,
-      pin: this.config.bridge.pin
-    });
   }
 
   restartServer (req: Request, res: Response, next: NextFunction) {

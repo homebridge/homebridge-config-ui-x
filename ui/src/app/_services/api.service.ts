@@ -23,10 +23,6 @@ export class ApiService {
     return this.$http.get(`${this.base}/api/server/token`, this.httpOptions);
   }
 
-  getServerInfo() {
-    return this.$http.get(`${this.base}/api/server`, this.httpOptions);
-  }
-
   getQrCode() {
     return this.$http.get(`${this.base}/api/server/qrcode.svg`, Object.assign({ responseType: 'text' as 'text' }, this.httpOptions));
   }

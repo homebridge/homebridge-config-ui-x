@@ -76,6 +76,52 @@ class HomebridgeUI {
     this.logger(msg);
   }
 
+  public async updateConfig (config) {
+    const now = new Date();
+
+    if (!config) {
+      config = {};
+    }
+
+    if (!config.bridge) {
+      config.bridge = {};
+    }
+
+    if (!config.bridge.name) {
+      config.bridge.name = 'Homebridge';
+    }
+
+    if (!config.bridge.port) {
+      config.bridge.port = 51826;
+    }
+
+    if (!config.bridge.username) {
+      config.bridge.username = this.generateUsername();
+    }
+
+    if (!config.bridge.pin) {
+      config.bridge.pin = this.generatePin();
+    }
+
+    if (!config.accessories) {
+      config.accessories = [];
+    }
+
+    if (!config.platforms) {
+      config.platforms = [];
+    }
+
+    // create backup of existing config
+    await fs.rename(hb.configPath, `${hb.configPath}.${now.getTime()}`);
+
+    // save config file
+    await fs.writeJson(this.configPath, config, { spaces: 4 });
+
+    this.log('Changes to config.json saved.');
+
+    return config;
+  }
+
   public async resetHomebridgeAccessory () {
     // load config file
     const config = await fs.readJson(this.configPath);
@@ -85,11 +131,11 @@ class HomebridgeUI {
       config.bridge.pin = this.generatePin();
       config.bridge.username = this.generateUsername();
 
-      // save config file
-      await fs.writeJson(this.configPath, config, { spaces: 4 });
-
       this.log(`Homebridge Reset: New Username: ${config.bridge.username}`);
       this.log(`Homebridge Reset: New Pin: ${config.bridge.pin}`);
+
+      // save config file
+      await this.updateConfig(config);
     } else {
       this.log(color.red('Homebridge Reset: Could not reset homebridge username or pin. Config format invalid.'));
     }
