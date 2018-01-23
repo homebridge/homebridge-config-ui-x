@@ -21,7 +21,7 @@ class PackageManager {
   private rp: any;
   private npm: any;
 
-  constructor () {
+  constructor() {
     // load base paths where plugins might be installed
     this.paths = this.getBasePaths();
 
@@ -36,7 +36,7 @@ class PackageManager {
     this.getInstalled();
   }
 
-  getNpmPath () {
+  getNpmPath() {
     if (os.platform() === 'win32') {
       // if running on windows find the full path to npm
       const windowsNpmPath = [
@@ -58,7 +58,7 @@ class PackageManager {
     }
   }
 
-  getBasePaths () {
+  getBasePaths() {
     // this is the same code used by homebridge to find plugins
     // https://github.com/nfarina/homebridge/blob/c73a2885d62531925ea439b9ad6d149a285f6daa/lib/plugin.js#L105-L134
 
@@ -99,7 +99,7 @@ class PackageManager {
     });
   }
 
-  wssBroadcast (data) {
+  wssBroadcast(data) {
     hb.wss.server.clients.forEach(function each (client) {
       if (client.readyState === 1) {
         client.send(JSON.stringify({npmLog: data}));
@@ -107,7 +107,7 @@ class PackageManager {
     });
   }
 
-  executeCommand (command, cwd) {
+  executeCommand(command, cwd) {
     let timeoutTimer;
     command = command.replace(/\s\s+/g, ' ');
     command = command.split(' ');
@@ -162,7 +162,7 @@ class PackageManager {
     });
   }
 
-  getInstalled () {
+  getInstalled() {
     const staging = [];
     const plugins = [];
 
@@ -230,7 +230,7 @@ class PackageManager {
     });
   }
 
-  searchRegistry (query) {
+  searchRegistry(query) {
     const packages = [];
 
     const q = ((!query || !query.length) ? '' : query + '+') + 'keywords:homebridge-plugin+not:deprecated&size=30';
@@ -269,7 +269,7 @@ class PackageManager {
     .then(x => packages);
   }
 
-  getHomebridge () {
+  getHomebridge() {
     return this.rp.get(`https://api.npms.io/v2/package/homebridge`)
       .then(pkg => {
         return {
@@ -283,7 +283,7 @@ class PackageManager {
       });
   }
 
-  installPlugin (pkg) {
+  installPlugin(pkg) {
     return this.getInstalled()
       .then(plugins => {
         // install new plugins in the same location as this plugin
@@ -308,7 +308,7 @@ class PackageManager {
       });
   }
 
-  removePlugin (pkg) {
+  removePlugin(pkg) {
     return this.getInstalled()
       .then(plugins => {
         // install new plugins in the same location as this plugin
@@ -338,7 +338,7 @@ class PackageManager {
       });
   }
 
-  updatePlugin (pkg) {
+  updatePlugin(pkg) {
     return this.getInstalled()
       .then(plugins => {
         // install new plugins in the same location as this plugin
@@ -368,7 +368,7 @@ class PackageManager {
       });
   }
 
-  updateHomebridge () {
+  updateHomebridge() {
     const paths = this.getBasePaths();
     let yarnDir = null;
     // check if homebridge was installed using yarn

@@ -12,14 +12,14 @@ class QRCode {
   private setupCode: string;
   private _accessoryInfo: any;
 
-  constructor () {
+  constructor() {
     this.accessoryId = config.bridge.username.split(':').join('');
     this.accessoryInfoPath = path.join(hb.storagePath, 'persist', `AccessoryInfo.${this.accessoryId}.json`);
 
     this.getCode();
   }
 
-  getCode () {
+  getCode() {
     if (this.setupCode) {
       return this.setupCode;
     } else {
@@ -28,7 +28,7 @@ class QRCode {
     }
   }
 
-  generateCode () {
+  generateCode() {
     if (!fs.existsSync(this.accessoryInfoPath)) {
       return null;
     }

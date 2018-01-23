@@ -107,7 +107,8 @@
     "space-before-function-paren": [
       true,
       {
-        "method": "always"
+        "method": "never",
+        "constructor": "never"
       }
     ],
     "typeof-compare": true,

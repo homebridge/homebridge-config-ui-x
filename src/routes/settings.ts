@@ -11,7 +11,7 @@ export class SettingsRouter {
     this.router.get('/', this.getSettings);
   }
 
-  getSettings (req: Request, res: Response, next: NextFunction) {
+  getSettings(req: Request, res: Response, next: NextFunction) {
     res.json({
       formAuth: hb.formAuth
     });

@@ -8,7 +8,7 @@ export class StatusWssHandler {
   private ws: any;
   private config: any;
 
-  constructor (ws, req) {
+  constructor(ws, req) {
     this.ws = ws;
     this.config = require(hb.configPath);
 
@@ -41,13 +41,13 @@ export class StatusWssHandler {
     ws.on('unsubscribe', onUnsubscribe);
   }
 
-  sendData () {
+  sendData() {
     if (this.ws.readyState === 1) {
       this.ws.send(JSON.stringify({stats: this.getStats()}));
     }
   }
 
-  sendStatus () {
+  sendStatus() {
     this.ws.send(JSON.stringify({
       server: {
         consolePort: hb.port,
@@ -57,7 +57,7 @@ export class StatusWssHandler {
     }));
   }
 
-  sendServerStatus () {
+  sendServerStatus() {
     return this.checkStatus()
       .then(up => {
         if (this.ws.readyState === 1) {
@@ -75,7 +75,7 @@ export class StatusWssHandler {
       .catch(() => {});
   }
 
-  getStats () {
+  getStats() {
     // core stats
     const stats: any = {
       memory: {
@@ -116,7 +116,7 @@ export class StatusWssHandler {
     return stats;
   }
 
-  checkStatus () {
+  checkStatus() {
     // check if homebridge is running on the port specified in the config.json
     return rp.get(`http://localhost:${this.config.bridge.port}`, {
       resolveWithFullResponse: true,

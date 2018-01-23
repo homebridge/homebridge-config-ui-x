@@ -17,7 +17,7 @@ export class PackageRouter {
     this.router.put('/homebridge/upgrade', this.upgradeHomebridgePackage);
   }
 
-  getPackages (req: Request, res: Response, next: NextFunction) {
+  getPackages(req: Request, res: Response, next: NextFunction) {
     if (req.query.search && req.query.search !== '') {
       return pm.searchRegistry(req.query.search)
         .then(pkgs => {
@@ -33,7 +33,7 @@ export class PackageRouter {
     }
   }
 
-  updatePackage (req: Request, res: Response, next: NextFunction) {
+  updatePackage(req: Request, res: Response, next: NextFunction) {
     return pm.updatePlugin(req.body.package)
       .then(() => {
         hb.log('Package ' + req.body.package + ' upgraded.');
@@ -42,7 +42,7 @@ export class PackageRouter {
       .catch(next);
   }
 
-  uninstallPackage (req: Request, res: Response, next: NextFunction) {
+  uninstallPackage(req: Request, res: Response, next: NextFunction) {
     return pm.removePlugin(req.body.package)
       .then(() => {
         hb.log('Package ' + req.body.package + ' removed.');
@@ -51,7 +51,7 @@ export class PackageRouter {
       .catch(next);
   }
 
-  installPackage (req: Request, res: Response, next: NextFunction) {
+  installPackage(req: Request, res: Response, next: NextFunction) {
     return pm.installPlugin(req.body.package)
       .then(() => {
         hb.log('Package ' + req.body.package + ' installed.');
@@ -60,13 +60,13 @@ export class PackageRouter {
       .catch(next);
   }
 
-  getHomebridgePackage (req: Request, res: Response, next: NextFunction) {
+  getHomebridgePackage(req: Request, res: Response, next: NextFunction) {
     return pm.getHomebridge()
       .then(server => res.json(server))
       .catch(next);
   }
 
-  upgradeHomebridgePackage (req: Request, res: Response, next: NextFunction) {
+  upgradeHomebridgePackage(req: Request, res: Response, next: NextFunction) {
     pm.updateHomebridge()
       .then(() => {
         hb.log('Homebridge server upgraded.');

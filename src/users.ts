@@ -19,34 +19,34 @@ interface User {
 }
 
 class Users {
-  async getUsers () {
+  async getUsers() {
     const allUsers: User[] = await fs.readJson(hb.authPath);
     return allUsers;
   }
 
-  async findById (id: number) {
+  async findById(id: number) {
     const authfile = await this.getUsers();
     const user = authfile.find(x => x.id === id);
     return user;
   }
 
-  async findByUsername (username: string) {
+  async findByUsername(username: string) {
     const authfile = await this.getUsers();
     const user = authfile.find(x => x.username === username);
     return user;
   }
 
-  async hashPassword (password: string, salt: string) {
+  async hashPassword(password: string, salt: string) {
     const derivedKey = await crypto.pbkdf2Async(password, salt, 1000, 64, 'sha512');
     return derivedKey.toString('hex');
   }
 
-  async genSalt () {
+  async genSalt() {
     const salt = await crypto.randomBytesAsync(32);
     return salt.toString('hex');
   }
 
-  async login (username: string, password: string) {
+  async login(username: string, password: string) {
     const user = await this.findByUsername(username);
 
     if (!user) {
@@ -63,7 +63,7 @@ class Users {
     }
   }
 
-  async addUser (user) {
+  async addUser(user) {
     const authfile = await this.getUsers();
 
     const salt = await this.genSalt();
@@ -87,7 +87,7 @@ class Users {
     hb.log(`Added new user: ${user.username}`);
   }
 
-  async updateUser (userId, update) {
+  async updateUser(userId, update) {
     const authfile = await this.getUsers();
 
     const user = authfile.find(x => x.id === userId);
@@ -112,7 +112,7 @@ class Users {
     hb.log(`Updated user: ${user.username}`);
   }
 
-  async deleteUser (id) {
+  async deleteUser(id) {
     const authfile = await this.getUsers();
 
     const index = authfile.findIndex(x => x.id === parseInt(id, 10));
@@ -129,7 +129,7 @@ class Users {
     hb.log(`Deleted user with ID ${id}`);
   }
 
-  async getJwt (user) {
+  async getJwt(user) {
     return jwt.signAsync({
       username: user.username,
       name: user.name,
@@ -137,7 +137,7 @@ class Users {
     }, user.hashedPassword, {expiresIn: '8h'});
   }
 
-  async verifyJwt (token) {
+  async verifyJwt(token) {
     const decoded = jwt.decode(token);
 
     if (!decoded) {
@@ -159,7 +159,7 @@ class Users {
     }
   }
 
-  async updateOldPasswords () {
+  async updateOldPasswords() {
     let authfile = await this.getUsers();
 
     authfile = await Bluebird.map(authfile, async (user) => {
@@ -182,7 +182,7 @@ class Users {
     await fs.writeJson(hb.authPath, authfile, { spaces: 4 });
   }
 
-  async setupDefaultUser () {
+  async setupDefaultUser() {
     return this.addUser({
       'username': 'admin',
       'password': 'admin',
@@ -191,7 +191,7 @@ class Users {
     });
   }
 
-  async setupAuthFile () {
+  async setupAuthFile() {
     if (!await fs.pathExists(hb.authPath)) {
       await fs.writeJson(hb.authPath, []);
     }

@@ -22,11 +22,11 @@ class HomebridgeUI {
   public temperatureFile: string;
   public wss: WSS;
 
-  constructor () {
+  constructor() {
     this.ui = fs.readJSONSync(path.resolve(__dirname, '../package.json'));
   }
 
-  public init (log, config) {
+  public init(log, config) {
     this.logger = log;
 
     this.configPath = this.homebridge.user.configPath();
@@ -37,7 +37,7 @@ class HomebridgeUI {
     this.parseConfig(config);
   }
 
-  private parseConfig (config) {
+  private parseConfig(config) {
     this.port = config.port || 8080;
     this.logOpts = config.log;
     this.restartCmd = config.restart;
@@ -64,7 +64,7 @@ class HomebridgeUI {
     }
   }
 
-  private parseCommandLineArgs () {
+  private parseCommandLineArgs() {
     // parse plugin path argument from homebridge
     commander
       .allowUnknownOption()
@@ -72,11 +72,11 @@ class HomebridgeUI {
       .parse(process.argv);
   }
 
-  public log (msg: string) {
+  public log(msg: string) {
     this.logger(msg);
   }
 
-  public async updateConfig (config) {
+  public async updateConfig(config) {
     const now = new Date();
 
     if (!config) {
@@ -122,7 +122,7 @@ class HomebridgeUI {
     return config;
   }
 
-  public async resetHomebridgeAccessory () {
+  public async resetHomebridgeAccessory() {
     // load config file
     const config = await fs.readJson(this.configPath);
 
@@ -148,7 +148,7 @@ class HomebridgeUI {
     this.log(`Homebridge Reset: "accessories" directory removed.`);
   }
 
-  private generatePin () {
+  private generatePin() {
     let code: string | Array<any> = Math.floor(10000000 + Math.random() * 90000000) + '';
     code = code.split('');
     code.splice(3, 0, '-');
@@ -157,7 +157,7 @@ class HomebridgeUI {
     return code;
   }
 
-  private generateUsername () {
+  private generateUsername() {
     const hexDigits = '0123456789ABCDEF';
     let username = '0E:';
     for (let i = 0; i < 5; i++) {

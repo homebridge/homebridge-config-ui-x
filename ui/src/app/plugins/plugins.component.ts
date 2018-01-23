@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { StateService } from '@uirouter/angular';
 import { ToastsManager } from 'ng2-toastr/src/toast-manager';

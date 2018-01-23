@@ -14,7 +14,7 @@ export class UserRouter {
     this.router.put('/:id', this.updateUser);
   }
 
-  getUser (req: Request, res: Response, next: NextFunction) {
+  getUser(req: Request, res: Response, next: NextFunction) {
     return users.getUsers()
       .then((authfile) => {
         // remove sensitive data before sending user list to client
@@ -28,7 +28,7 @@ export class UserRouter {
       .catch(next);
   }
 
-  createUser (req: Request, res: Response, next: NextFunction) {
+  createUser(req: Request, res: Response, next: NextFunction) {
     // check to see if user already exists
     return users.findByUsername(req.body.username)
       .then((user) => {
@@ -44,7 +44,7 @@ export class UserRouter {
       .catch(next);
   }
 
-  deleteUser (req: Request, res: Response, next: NextFunction) {
+  deleteUser(req: Request, res: Response, next: NextFunction) {
     return users.deleteUser(req.params.id)
       .then(() => {
         return res.json({ ok: true });
@@ -52,7 +52,7 @@ export class UserRouter {
       .catch(next);
   }
 
-  updateUser (req: Request, res: Response, next: NextFunction) {
+  updateUser(req: Request, res: Response, next: NextFunction) {
     return users.updateUser(parseInt(req.params.id, 10), req.body)
       .then(() => {
         return res.json({ ok: true });

@@ -5,7 +5,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { UIRouterModule, StateService, TransitionService } from '@uirouter/angular';
+import { UIRouterModule } from '@uirouter/angular';
 import { AceEditorModule } from 'ng2-ace-editor';
 import { ToastModule, ToastOptions } from 'ng2-toastr/ng2-toastr';
 

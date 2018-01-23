@@ -18,7 +18,7 @@ export class ServerRouter {
     this.router.get('/token', this.getToken);
   }
 
-  restartServer (req: Request, res: Response, next: NextFunction) {
+  restartServer(req: Request, res: Response, next: NextFunction) {
     hb.log('Homebridge restart request received');
     res.status(202).json({ ok: true, command: hb.restartCmd });
 
@@ -37,7 +37,7 @@ export class ServerRouter {
     }, 100);
   }
 
-  resetHomebridgeAccessory (req: Request, res: Response, next: NextFunction) {
+  resetHomebridgeAccessory(req: Request, res: Response, next: NextFunction) {
     return hb.resetHomebridgeAccessory()
       .then(() => {
         res.json({ok: true});
@@ -45,7 +45,7 @@ export class ServerRouter {
       .catch(next);
   }
 
-  getQrCode (req: Request, res: Response, next: NextFunction) {
+  getQrCode(req: Request, res: Response, next: NextFunction) {
     const data = qrcode.getCode();
 
     if (!data) {
@@ -57,7 +57,7 @@ export class ServerRouter {
     qrSvg.pipe(res);
   }
 
-  getToken (req: Request, res: Response, next: NextFunction) {
+  getToken(req: Request, res: Response, next: NextFunction) {
     return users.getJwt(req.user)
       .then((token) => {
         return res.json({

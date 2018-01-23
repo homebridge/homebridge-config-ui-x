@@ -16,7 +16,7 @@ export class ExpressServer {
   public app: Express;
   private auth;
 
-  constructor () {
+  constructor() {
     this.auth = new AuthMiddleware();
 
     this.app = <Express>express();
@@ -62,15 +62,15 @@ export class ExpressServer {
 
   }
 
-  serveSpa (req: Request, res: Response, next: NextFunction) {
+  serveSpa(req: Request, res: Response, next: NextFunction) {
     res.sendFile(path.resolve(__dirname, '../public/index.html'));
   }
 
-  notFound (req: Request, res: Response, next: NextFunction) {
+  notFound(req: Request, res: Response, next: NextFunction) {
     res.sendStatus(404);
   }
 
-  errorHandler (err, req: Request, res: Response, next: NextFunction) {
+  errorHandler(err, req: Request, res: Response, next: NextFunction) {
     console.error(err);
 
     if (res.statusCode === 200) {

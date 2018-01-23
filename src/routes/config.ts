@@ -12,11 +12,11 @@ export class ConfigRouter {
     this.router.post('/', this.updateConfig);
   }
 
-  getConfig (req: Request, res: Response, next: NextFunction) {
+  getConfig(req: Request, res: Response, next: NextFunction) {
     return res.sendFile(hb.configPath);
   }
 
-  updateConfig (req: Request, res: Response, next: NextFunction) {
+  updateConfig(req: Request, res: Response, next: NextFunction) {
     return hb.updateConfig(req.body)
       .then((config) => {
         res.json(config);

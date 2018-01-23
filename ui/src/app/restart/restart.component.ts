@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { IntervalObservable } from 'rxjs/observable/IntervalObservable';
 import { TimerObservable } from 'rxjs/observable/TimerObservable';
 import { StateService } from '@uirouter/angular';
 import { ToastsManager } from 'ng2-toastr/ng2-toastr';

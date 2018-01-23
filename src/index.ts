@@ -13,7 +13,7 @@ module.exports = (homebridge) => {
 class HomebridgeConfigUi {
   private server;
 
-  constructor (log, config) {
+  constructor(log, config) {
     // setup
     hb.init(log, config);
 
@@ -21,7 +21,7 @@ class HomebridgeConfigUi {
     this.bootstrap();
   }
 
-  async bootstrap () {
+  async bootstrap() {
     // ensure auth.json is setup correctly
     await users.setupAuthFile();
 
@@ -41,14 +41,14 @@ class HomebridgeConfigUi {
     this.server.on('listening', this.onServerListening.bind(this));
   }
 
-  onServerListening () {
+  onServerListening() {
     const addr = this.server.address();
     const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
     const msg = 'Console is listening on ' + bind + '.';
     hb.log(msg);
   }
 
-  onServerError (error) {
+  onServerError(error) {
     if (error.syscall !== 'listen') {
       throw error;
     }
@@ -69,7 +69,7 @@ class HomebridgeConfigUi {
     }
   }
 
-  accessories (callback) {
+  accessories(callback) {
     const accessories = [];
     callback(accessories);
   }

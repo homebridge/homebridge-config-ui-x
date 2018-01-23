@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { StateService } from '@uirouter/angular';
 import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 import { Terminal } from 'xterm';
@@ -90,7 +90,7 @@ export class PluginsManageComponent implements OnInit {
     }
   }
 
-  public onRestartHomebridgeClick () {
+  public onRestartHomebridgeClick() {
     this.$state.go('restart');
     this.activeModal.close();
 

@@ -1,6 +1,5 @@
-import { Component, OnInit, Input, ViewContainerRef } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { Observable } from 'rxjs/Observable';
 
 import { StateService, isArray } from '@uirouter/angular';
 import { ToastsManager } from 'ng2-toastr/ng2-toastr';

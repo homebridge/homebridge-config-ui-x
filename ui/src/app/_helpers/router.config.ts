@@ -1,4 +1,4 @@
-import { UIRouter, Category } from '@uirouter/core';
+import { UIRouter } from '@uirouter/core';
 
 import { authHook } from './auth.hook';
 

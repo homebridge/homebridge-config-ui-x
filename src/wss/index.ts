@@ -11,7 +11,7 @@ export class WSS {
   public server: WebSocketServer;
   private subscriptions: any;
 
-  constructor (server) {
+  constructor(server) {
     this.server = new WebSocketServer({
       server: server,
       verifyClient: this.verifyClient
@@ -45,7 +45,7 @@ export class WSS {
     });
   }
 
-  verifyClient (info, callback) {
+  verifyClient(info, callback) {
     // authenticate the websocket connection using a jwt
     const params = qs.parse(url.parse(info.req.url).query);
 
@@ -68,7 +68,7 @@ export class WSS {
     }
   }
 
-  subscribeHandler (ws, req, msg) {
+  subscribeHandler(ws, req, msg) {
     if (this.subscriptions[msg.subscribe]) {
       return new this.subscriptions[msg.subscribe](ws, req);
     } else {
@@ -76,7 +76,7 @@ export class WSS {
     }
   }
 
-  unsubscribeHandler (ws, req, msg) {
+  unsubscribeHandler(ws, req, msg) {
     if (this.subscriptions[msg.unsubscribe]) {
       ws.emit('unsubscribe', msg.unsubscribe);
     } else {

@@ -108,6 +108,13 @@
         "variable-declaration": "nospace"
       }
     ],
+    "space-before-function-paren": [
+      true,
+      {
+        "method": "never",
+        "constructor": "never"
+      }
+    ],
     "typeof-compare": true,
     "unified-signatures": true,
     "variable-name": false,

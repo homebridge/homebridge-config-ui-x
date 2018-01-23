@@ -62,7 +62,7 @@ export class AuthMiddleware {
     }
   }
 
-  noAuthHandler (req: Request, res: Response, next: NextFunction) {
+  noAuthHandler(req: Request, res: Response, next: NextFunction) {
     return users.getUsers()
       .then((authfile) => {
         req.user = authfile[0];
@@ -71,7 +71,7 @@ export class AuthMiddleware {
       .catch(next);
   }
 
-  formAuthHandler (req: Request, res: Response, next: NextFunction) {
+  formAuthHandler(req: Request, res: Response, next: NextFunction) {
     if (req.headers['x-jwt']) {
       return users.verifyJwt(req.headers['x-jwt'])
         .then((user) => {

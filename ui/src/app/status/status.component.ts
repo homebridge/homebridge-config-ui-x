@@ -79,7 +79,7 @@ export class StatusComponent implements OnInit {
     );
   }
 
-  getQrCodeImage () {
+  getQrCodeImage() {
     if (!this.loadedQrCode) {
       return this.$api.getQrCode().subscribe(
         (svg) => {

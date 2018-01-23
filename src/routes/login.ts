@@ -11,7 +11,7 @@ export class LoginRouter {
     this.router.post('/', this.login);
   }
 
-  login (req: Request, res: Response, next: NextFunction) {
+  login(req: Request, res: Response, next: NextFunction) {
     return users.login(req.body.username, req.body.password)
       .then((user) => {
         if (!user) {

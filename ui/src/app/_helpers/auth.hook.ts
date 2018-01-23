@@ -1,5 +1,4 @@
 import { TransitionService, TargetState } from '@uirouter/core';
-import { Transition } from '@uirouter/angular';
 
 import { AuthService } from '../_services/auth.service';
 import { ApiService } from '../_services/api.service';

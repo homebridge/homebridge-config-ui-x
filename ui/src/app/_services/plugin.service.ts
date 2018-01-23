@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { PluginsManageComponent } from '../plugins/plugins.manage.component';
 

@@ -9,7 +9,7 @@ export class LogsWssHandler {
   private ws: any;
   private term: any;
 
-  constructor (ws, req) {
+  constructor(ws, req) {
     this.ws = ws;
 
     if (hb.logOpts && typeof (hb.logOpts) === 'string' && fs.existsSync(hb.logOpts)) {
@@ -39,13 +39,13 @@ export class LogsWssHandler {
     ws.on('unsubscribe', onUnsubscribe);
   }
 
-  send (data) {
+  send(data) {
     if (this.ws.readyState === 1) {
       this.ws.send(JSON.stringify({log: data}));
     }
   }
 
-  logFromFile () {
+  logFromFile() {
     let command;
     if (os.platform() === 'win32') {
       // windows - use powershell to tail log
@@ -65,7 +65,7 @@ export class LogsWssHandler {
     this.tailLog(command);
   }
 
-  logFromSystemd () {
+  logFromSystemd() {
     const command = `journalctl -o cat -n 500 -f -u homebridge`.split(' ');
 
     // sudo mode is requested in plugin config
@@ -78,7 +78,7 @@ export class LogsWssHandler {
     this.tailLog(command);
   }
 
-  logFromCommand () {
+  logFromCommand() {
     const command = Array.isArray(hb.logOpts.tail) ? hb.logOpts.tail.slice() : hb.logOpts.tail.split(' ');
 
     this.send(color.cyan(`Using custom command to tail logs\r\nCMD: ${command.join(' ')}\r\n\r\n`));
@@ -86,7 +86,7 @@ export class LogsWssHandler {
     this.tailLog(command);
   }
 
-  logNotConfigured () {
+  logNotConfigured() {
     if (hb.logOpts) {
       this.send(color.red(`Log file does not exist: ${hb.logOpts}\r\n`));
       this.send(color.red(`Please set the correct path to the logs in your Homebridge config.json file.\r\n\r\n`));
@@ -96,7 +96,7 @@ export class LogsWssHandler {
     this.send(color.cyan(`See https://github.com/oznu/homebridge-config-ui-x#log-viewer-configuration for instructions.\r\n`));
   }
 
-  tailLog (command) {
+  tailLog(command) {
     const cmd = command.join(' ');
 
     // spawn the process that will output the logs
@@ -124,7 +124,7 @@ export class LogsWssHandler {
     });
   }
 
-  killTerm () {
+  killTerm() {
     if (this.term) {
       this.term.kill();
     }
