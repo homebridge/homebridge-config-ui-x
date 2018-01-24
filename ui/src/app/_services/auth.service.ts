@@ -15,13 +15,14 @@ export class AuthService {
   private jwtHelper: JwtHelper = new JwtHelper();
 
   public formAuth = true;
+  public theme: string;
   public user: HomebridgeUser;
 
   constructor(
     private $api: ApiService
   ) {
     this.loadToken();
-    this.getformAuthType();
+    this.getAppSettings();
   }
 
   isLoggedIn() {
@@ -73,10 +74,16 @@ export class AuthService {
     }
   }
 
-  getformAuthType() {
+  getAppSettings() {
     return this.$api.getAppSettings().toPromise()
       .then((data: any) => {
         this.formAuth = data.formAuth;
+        this.setTheme(data.theme || 'red');
       });
+  }
+
+  setTheme(theme: string) {
+    this.theme = theme;
+    window.document.querySelector('body').classList.add(`config-ui-x-${this.theme}`);
   }
 }

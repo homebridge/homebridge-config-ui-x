@@ -12,8 +12,9 @@ export class SettingsRouter {
   }
 
   getSettings(req: Request, res: Response, next: NextFunction) {
-    res.json({
-      formAuth: hb.formAuth
+    return res.json({
+      formAuth: hb.formAuth,
+      theme: hb.theme
     });
   }
 }

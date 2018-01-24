@@ -7,7 +7,7 @@
   </div>
     <div [hidden]="updateSelf" id="plugin-log-output" class="modal-body"></div>
     <div *ngIf="updateSelf" class="modal-body">
-      <h3 class="text-center red-text">Restart and Refresh Required</h3>
+      <h3 class="text-center primary-text">Restart and Refresh Required</h3>
       <p class="text-center grey-text">Thanks for installing the latest version of Homebridge Config UI X.</p>
       <p>
         After installing a new version you will need to restart Homebridge and <strong>refresh this page</strong> to
@@ -18,6 +18,6 @@
       </div>
     </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-red" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')">Close</button>
+    <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')">Close</button>
   </div>
 </div>

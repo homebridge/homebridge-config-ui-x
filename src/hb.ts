@@ -19,11 +19,24 @@ class HomebridgeUI {
   public useSudo: boolean;
   public authMethod: string | boolean;
   public formAuth: boolean;
+  public theme: string;
+  public availableThemes: string[];
   public temperatureFile: string;
   public wss: WSS;
 
   constructor() {
     this.ui = fs.readJSONSync(path.resolve(__dirname, '../package.json'));
+
+    this.availableThemes = [
+      'red',
+      'pink',
+      'purple',
+      'indigo',
+      'blue',
+      'blue-grey',
+      'green',
+      'orange'
+    ];
   }
 
   public init(log, config) {
@@ -50,6 +63,19 @@ class HomebridgeUI {
       this.formAuth = false;
     } else {
       this.formAuth = true;
+    }
+
+    // check theme is valid
+    if (config.theme && this.availableThemes.find(x => x === config.theme)) {
+      this.theme = config.theme;
+    } else if (config.theme) {
+      // delay the output of the warning message so it does not get lost under homebridge setup details
+      setTimeout(() => {
+        this.log(color.yellow(`Invalid theme in config.json. Possible options are: ${this.availableThemes.join(', ')}`));
+      }, 2000);
+      this.theme = 'red';
+    } else {
+      this.theme = 'red';
     }
 
     // check the path to the temp file actually exists

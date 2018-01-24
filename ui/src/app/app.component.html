@@ -1,7 +1,7 @@
 <!--Main Navigation-->
-<header>
+<header *ngIf="$auth.theme">
 
-  <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-red scrolling-navbar">
+  <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary scrolling-navbar">
     <a class="navbar-brand" uiSref="status">
       <strong>Homebridge</strong>
     </a>

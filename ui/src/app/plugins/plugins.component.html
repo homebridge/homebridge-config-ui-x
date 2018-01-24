@@ -14,9 +14,9 @@
     <div class="card card-body mb-3">
       <div class="row">
         <div class="col-sm-6">
-          <p class="mb-0 red-text" *ngIf="!plugin.update && plugin.installed">Installed</p>
+          <p class="mb-0 primary-text" *ngIf="!plugin.update && plugin.installed">Installed</p>
           <p class="mb-0 grey-text" *ngIf="!plugin.installed">Not Installed</p>
-          <p class="mb-0 red-text" *ngIf="plugin.update">Update Available</p>
+          <p class="mb-0 primary-text" *ngIf="plugin.update">Update Available</p>
         </div>
         <div class="col-sm-6">
           <p class="mb-0 grey-text text-right" *ngIf="plugin.author">

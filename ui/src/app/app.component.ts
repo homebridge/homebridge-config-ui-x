@@ -8,8 +8,6 @@ import { AuthService} from './_services/auth.service';
   templateUrl: './app.component.html'
 })
 export class AppComponent {
-  title = 'app';
-
   constructor(
     public $auth: AuthService,
     public toastr: ToastsManager,
