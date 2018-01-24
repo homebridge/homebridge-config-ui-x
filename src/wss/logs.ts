@@ -16,6 +16,8 @@ export class LogsWssHandler {
       this.logFromFile();
     } else if (hb.logOpts && hb.logOpts === 'systemd') {
       this.logFromSystemd();
+    } else if (hb.logOpts && typeof (hb.logOpts) === 'object' && hb.logOpts.systemd) {
+      this.logFromSystemd(hb.logOpts.systemd);
     } else if (hb.logOpts && typeof (hb.logOpts) === 'object' && hb.logOpts.tail) {
       this.logFromCommand();
     } else {
@@ -65,8 +67,8 @@ export class LogsWssHandler {
     this.tailLog(command);
   }
 
-  logFromSystemd() {
-    const command = `journalctl -o cat -n 500 -f -u homebridge`.split(' ');
+  logFromSystemd(service: string = 'homebridge') {
+    const command = `journalctl -o cat -n 500 -f -u ${service}`.split(' ');
 
     // sudo mode is requested in plugin config
     if (hb.useSudo) {
