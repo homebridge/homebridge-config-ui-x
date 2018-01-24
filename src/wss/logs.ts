@@ -16,7 +16,7 @@ export class LogsWssHandler {
       this.logFromFile();
     } else if (hb.logOpts && hb.logOpts === 'systemd') {
       this.logFromSystemd();
-    } else if (hb.logOpts && typeof (hb.logOpts) === 'object' && hb.logOpts.systemd) {
+    } else if (hb.logOpts && typeof (hb.logOpts) === 'object' && hb.logOpts.systemd && hb.logOpts.systemd.length) {
       this.logFromSystemd(hb.logOpts.systemd);
     } else if (hb.logOpts && typeof (hb.logOpts) === 'object' && hb.logOpts.tail) {
       this.logFromCommand();
@@ -89,9 +89,13 @@ export class LogsWssHandler {
   }
 
   logNotConfigured() {
-    if (hb.logOpts) {
+    if (hb.logOpts && typeof(hb.logOpts) === 'string') {
       this.send(color.red(`Log file does not exist: ${hb.logOpts}\r\n`));
       this.send(color.red(`Please set the correct path to the logs in your Homebridge config.json file.\r\n\r\n`));
+    } else if (hb.logOpts) {
+      this.send(color.red(`Cannot show logs. Invalid log configuration in config.json file.\r\n\r\n`));
+      this.send(color.yellow(JSON.stringify({log: hb.logOpts}, null, 4).replace(/\n/g, '\r\n')));
+      this.send('\r\n\r\n');
     } else {
       this.send(color.red(`Cannot show logs. Log option is not configured in your Homebridge config.json file.\r\n\r\n`));
     }
