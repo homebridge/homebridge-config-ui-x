@@ -28,7 +28,7 @@ The demo environment is reset every 15 minutes. You might notice some high laten
 Add this to your homebridge `config.json` file
 
 ```json
-"platform":[
+"platforms": [
     {
       "platform": "config",
       "name": "Config",
@@ -55,7 +55,7 @@ Homebridge Config UI X allows you to view the homebridge process logs in the bro
 Example loading logs from a file, change `/var/log/homebridge.log` to the actual location of your log file:
 
 ```json
-"platform":[
+"platforms": [
     {
       "platform": "config",
       "name": "Config",
@@ -72,7 +72,7 @@ Example loading logs from a file, change `/var/log/homebridge.log` to the actual
 If you are using `systemd` to manage the Homebridge process then you can just set `log` to `systemd`:
 
 ```json
-"platform":[
+"platforms": [
     {
       "platform": "config",
       "name": "Config",
@@ -90,7 +90,7 @@ If you are using `systemd` to manage the Homebridge process then you can just se
 The `log` option can alternatively specify a command to spawn that will stream the logs to the client. This command should stream the logs to `stdout`:
 
 ```json
-"platform":[
+"platforms": [
     {
       "platform": "config",
       "name": "Config",
@@ -107,7 +107,7 @@ The `log` option can alternatively specify a command to spawn that will stream t
 Many operations performed by Homebridge Config UI X, such as installing plugins, upgrading Homebridge and viewing the logs can require root permissions. You can run the Homebridge service as root or you can enable the `sudo` option in the config.
 
 ```json
-"platform":[
+"platforms": [
     {
       "platform": "config",
       "name": "Config",
