@@ -18,7 +18,10 @@
 
     <!--Panel-->
     <div class="card card-body mb-3">
-      <h5 class="mb-0">Homebridge</h5>
+      <div class="d-flex flex-row">
+        <h5 class="mb-0 mr-auto">Homebridge</h5>
+        <p *ngIf="homebridge.fork" class="mb-0 d-none d-sm-inline grey-text" [innerText]="homebridge.fork | lowercase"></p>
+      </div>
       <div class="d-flex flex-row">
         <div class="d-flex p-1">
           <div class="p-3">

@@ -278,7 +278,21 @@ class PackageManager {
           version: pkg.collected.metadata.version,
           update: semver.lt(hb.homebridge.serverVersion, pkg.collected.metadata.version),
           description: pkg.collected.metadata.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim(),
-          links: pkg.collected.metadata.links
+          fork: false
+        };
+      });
+  }
+
+  getHomebridgeFork() {
+    return this.rp.get(`https://raw.githubusercontent.com/${hb.homebridgeFork}/master/package.json`)
+      .then(pkg => {
+        return {
+          name: pkg.name,
+          installed: hb.homebridge.serverVersion,
+          version: pkg.version,
+          update: semver.lt(hb.homebridge.serverVersion, pkg.version),
+          description: pkg.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim(),
+          fork: hb.homebridgeFork
         };
       });
   }
@@ -384,7 +398,8 @@ class PackageManager {
       .filter(requiredPath => fs.statAsync(path.join(requiredPath, 'homebridge', 'package.json')).catch(x => false))
       .map(installPath => {
         hb.log(`Using npm to upgrade homebridge at ${installPath}...`);
-        return this.executeCommand(`install --unsafe-perm homebridge@latest`, installPath)
+        const pkg = hb.homebridgeFork ? hb.homebridgeFork : 'homebridge@latest';
+        return this.executeCommand(`install --unsafe-perm ${pkg}`, installPath)
           .then(() => {
             hb.log(`Upgraded homebridge using npm at ${installPath}`);
           });

@@ -61,9 +61,15 @@ export class PackageRouter {
   }
 
   getHomebridgePackage(req: Request, res: Response, next: NextFunction) {
-    return pm.getHomebridge()
-      .then(server => res.json(server))
-      .catch(next);
+    if (!hb.homebridgeFork) {
+      return pm.getHomebridge()
+        .then(server => res.json(server))
+        .catch(next);
+    } else {
+      return pm.getHomebridgeFork()
+        .then(server => res.json(server))
+        .catch(next);
+    }
   }
 
   upgradeHomebridgePackage(req: Request, res: Response, next: NextFunction) {
