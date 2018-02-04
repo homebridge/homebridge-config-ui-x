@@ -14,15 +14,6 @@ This plugin allows you to monitor, backup and configure your Homebridge server f
 npm install -g --unsafe-perm homebridge-config-ui-x
 ```
 
-## Live Demo
-
-https://homebridge-ui-demo.oz.nu
-
-* Username: `admin`
-* Password: `admin`
-
-The demo environment is reset every 15 minutes. You might notice some high latency when using this demo as it's hosted in Australia.
-
 # Configuration
 
 Add this to your homebridge `config.json` file
