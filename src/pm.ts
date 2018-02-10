@@ -183,7 +183,7 @@ class PackageManager {
             pluginPath: requiredPath
           };
 
-          return this.rp.get(`https://registry.npmjs.org/${pjson.name}`)
+          return this.rp.get(`https://registry.npmjs.org/${encodeURIComponent(pjson.name)}`)
             .then((pkg) => {
               // found on npm, it's a public package
               plugin.publicPackage = true;
@@ -270,7 +270,7 @@ class PackageManager {
   }
 
   getHomebridge() {
-    return this.rp.get(`https://api.npms.io/v2/package/homebridge`)
+    return this.rp.get(`https://api.npms.io/v2/package/${encodeURIComponent(hb.homebridgeNpmPkg)}`)
       .then(pkg => {
         return {
           name: pkg.collected.metadata.name,
@@ -395,10 +395,10 @@ class PackageManager {
       .catch(() => {
         return paths;
       })
-      .filter(requiredPath => fs.statAsync(path.join(requiredPath, 'homebridge', 'package.json')).catch(x => false))
+      .filter(requiredPath => fs.statAsync(path.join(requiredPath, hb.homebridgeNpmPkg, 'package.json')).catch(x => false))
       .map(installPath => {
         hb.log(`Using npm to upgrade homebridge at ${installPath}...`);
-        const pkg = hb.homebridgeFork ? hb.homebridgeFork : 'homebridge@latest';
+        const pkg = hb.homebridgeFork ? hb.homebridgeFork : `${hb.homebridgeNpmPkg}@latest`;
         return this.executeCommand(`install --unsafe-perm ${pkg}`, installPath)
           .then(() => {
             hb.log(`Upgraded homebridge using npm at ${installPath}`);

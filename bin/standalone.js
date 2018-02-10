@@ -53,7 +53,10 @@ const config = {
   port: process.env.HOMEBRIDGE_CONFIG_UI_PORT || 8080,
   log: process.env.HOMEBRIDGE_CONFIG_UI_LOG || '/homebridge/logs/homebridge.log',
   restart: process.env.HOMEBRIDGE_CONFIG_UI_RESTART || 'killall -9 homebridge && killall -9 homebridge-config-ui-x',
-  theme: process.env.HOMEBRIDGE_CONFIG_UI_THEME || 'red'
+  theme: process.env.HOMEBRIDGE_CONFIG_UI_THEME || 'red',
+  auth: process.env.HOMEBRIDGE_CONFIG_UI_AUTH || 'form',
+  homebridgeNpmPkg: process.env.HOMEBRIDGE_CONFIG_UI_NPM_PKG || 'homebridge',
+  homebridgeFork: process.env.HOMEBRIDGE_CONFIG_UI_FORK || undefined
 }
 
 // emulate homebridge handler

@@ -9,6 +9,7 @@ class HomebridgeUI {
   private logger;
   public ui: any;
   public homebridge: any;
+  public homebridgeNpmPkg: string;
   public homebridgeFork: string;
   public configPath: string;
   public authPath: string;
@@ -58,6 +59,7 @@ class HomebridgeUI {
     this.useSudo = config.sudo;
     this.authMethod = config.auth;
     this.homebridgeFork = config.fork;
+    this.homebridgeNpmPkg = config.homebridgeNpmPkg || 'homebridge';
 
     if (config.auth === 'none' || config.auth === false) {
       this.formAuth = false;
