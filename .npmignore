@@ -1,6 +1,7 @@
 # Don't publish these folders to npm
 ui
 lib
+src
 screenshots
 tsconfig.json
 tslint.json
