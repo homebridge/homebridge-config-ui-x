@@ -183,7 +183,7 @@ class PackageManager {
             pluginPath: requiredPath
           };
 
-          return this.rp.get(`https://registry.npmjs.org/${encodeURIComponent(pjson.name)}`)
+          return this.rp.get(`https://registry.npmjs.org/${encodeURIComponent(pjson.name).replace('%40', '@')}`)
             .then((pkg) => {
               // found on npm, it's a public package
               plugin.publicPackage = true;
@@ -234,9 +234,9 @@ class PackageManager {
     const packages = [];
 
     const q = ((!query || !query.length) ? '' : query + '+') + 'keywords:homebridge-plugin+not:deprecated&size=30';
-    return this.rp.get(`https://api.npms.io/v2/search?q=${q}`)
+    return this.rp.get(`https://registry.npmjs.org/-/v1/search?text=${q}`)
     .then((res) => {
-      return res.results;
+      return res.objects;
     })
     .filter(pkg => pkg.package.name && pkg.package.name.indexOf('homebridge-') === 0)
     .map((pkg) => {
@@ -270,14 +270,14 @@ class PackageManager {
   }
 
   getHomebridge() {
-    return this.rp.get(`https://api.npms.io/v2/package/${encodeURIComponent(hb.homebridgeNpmPkg)}`)
+    return this.rp.get(`https://registry.npmjs.org/${encodeURIComponent(hb.homebridgeNpmPkg).replace('%40', '@')}`)
       .then(pkg => {
         return {
-          name: pkg.collected.metadata.name,
+          name: pkg.name,
           installed: hb.homebridge.serverVersion,
-          version: pkg.collected.metadata.version,
-          update: semver.lt(hb.homebridge.serverVersion, pkg.collected.metadata.version),
-          description: pkg.collected.metadata.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim(),
+          version: pkg['dist-tags'].latest,
+          update: semver.lt(hb.homebridge.serverVersion, pkg['dist-tags'].latest),
+          description: pkg.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim(),
           fork: false
         };
       });
