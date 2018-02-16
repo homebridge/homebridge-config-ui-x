@@ -133,6 +133,7 @@ export class LogsWssHandler {
   killTerm() {
     if (this.term) {
       this.term.kill();
+      this.term.destroy();
     }
   }
 
