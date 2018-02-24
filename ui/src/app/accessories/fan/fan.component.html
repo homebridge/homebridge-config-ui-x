@@ -1,0 +1,6 @@
+<div class="accessory-box" [ngClass]="{'switch-on': service.values.On}" (click)="onClick()">
+  <img src="/assets/hap-icons/fan-off.svg" alt="Fan" class="accessory-img" *ngIf="!service.values.On">
+  <img src="/assets/hap-icons/fan-on.svg" alt="Fan" class="accessory-img spin" *ngIf="service.values.On">
+  <div class="accessory-label">{{ service.serviceName }}</div>
+  <div class="accessory-label grey-text" [innerText]="service.values.On ? 'On' : 'Off'"></div>
+</div>

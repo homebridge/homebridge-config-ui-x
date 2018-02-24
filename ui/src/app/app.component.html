@@ -20,6 +20,9 @@
         <li class="nav-item waves-effect waves-light" uiSrefActive="active">
           <a class="nav-link" uiSref="config">Config</a>
         </li>
+        <li class="nav-item waves-effect waves-light" uiSrefActive="active" *ngIf="$auth.enableAccessories">
+          <a class="nav-link" uiSref="accessories">Accessories</a>
+        </li>
       </ul>
 
       <ul class="navbar-nav nav-flex-icons">

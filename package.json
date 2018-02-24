@@ -29,6 +29,7 @@
     "homebridge": ">=0.4.22"
   },
   "dependencies": {
+    "@oznu/hap-client": "^0.0.1",
     "bash-color": "^0.0.4",
     "bluebird": "^3.5.1",
     "body-parser": "~1.18.2",

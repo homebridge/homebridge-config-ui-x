@@ -27,21 +27,22 @@
     "core-js": "^2.4.1",
     "jquery": "^3.3.1",
     "mdbootstrap": "^4.4.4",
+    "ng-inline-svg": "^6.0.0",
     "ng2-ace-editor": "^0.3.4",
     "ng2-toastr": "^4.1.2",
     "popper.js": "^1.12.9",
     "rxjs": "^5.5.2",
-    "xterm": "3.0.1",
+    "xterm": "^3.1.0",
     "zone.js": "^0.8.14"
   },
   "devDependencies": {
     "@angular/cli": "^1.6.3",
     "@angular/compiler-cli": "^5.1.0",
     "@angular/language-service": "^5.1.0",
-    "@types/node": "~6.0.60",
+    "@types/node": "^9.4.6",
     "codelyzer": "^4.0.2",
-    "ts-node": "~3.2.0",
+    "ts-node": "^5.0.0",
     "tslint": "^5.9.1",
-    "typescript": "~2.4.2"
+    "typescript": "^2.7.2"
   }
 }

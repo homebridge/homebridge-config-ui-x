@@ -14,7 +14,8 @@ export class SettingsRouter {
   getSettings(req: Request, res: Response, next: NextFunction) {
     return res.json({
       formAuth: hb.formAuth,
-      theme: hb.theme
+      theme: hb.theme,
+      enableAccessories: hb.homebridgeInsecure || false
     });
   }
 }

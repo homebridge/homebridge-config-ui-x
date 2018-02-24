@@ -15,6 +15,7 @@ export class AuthService {
   private jwtHelper: JwtHelper = new JwtHelper();
 
   public formAuth = true;
+  public enableAccessories = false;
   public theme: string;
   public user: HomebridgeUser;
 
@@ -78,6 +79,7 @@ export class AuthService {
     return this.$api.getAppSettings().toPromise()
       .then((data: any) => {
         this.formAuth = data.formAuth;
+        this.enableAccessories = data.enableAccessories;
         this.setTheme(data.theme || 'red');
       });
   }

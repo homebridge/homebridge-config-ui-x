@@ -1,15 +1,16 @@
 import * as os from 'os';
 import * as fs from 'fs';
+import * as WebSocket from 'ws';
 import * as pty from 'node-pty';
 import * as color from 'bash-color';
 
 import { hb } from '../hb';
 
 export class LogsWssHandler {
-  private ws: any;
+  private ws: WebSocket;
   private term: any;
 
-  constructor(ws, req) {
+  constructor(ws: WebSocket, req) {
     this.ws = ws;
 
     if (hb.logOpts && typeof (hb.logOpts) === 'string' && fs.existsSync(hb.logOpts)) {
@@ -31,7 +32,7 @@ export class LogsWssHandler {
     ws.on('close', onClose);
 
     // when the client leaves the log page, stop tailing the log file
-    const onUnsubscribe = (sub) => {
+    const onUnsubscribe = (sub?) => {
       if (sub === 'logs') {
         this.killTerm();
         ws.removeEventListener('unsubscribe', onUnsubscribe);

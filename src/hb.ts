@@ -1,6 +1,5 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import * as color from 'bash-color';
 import * as commander from 'commander';
 
 import { WSS } from './wss';
@@ -9,6 +8,7 @@ class HomebridgeUI {
   private logger;
   public ui: any;
   public homebridge: any;
+  public homebridgeInsecure: boolean;
   public homebridgeNpmPkg: string;
   public homebridgeFork: string;
   public configPath: string;
@@ -75,7 +75,7 @@ class HomebridgeUI {
     } else if (config.theme) {
       // delay the output of the warning message so it does not get lost under homebridge setup details
       setTimeout(() => {
-        this.log(color.yellow(`Invalid theme in config.json. Possible options are: ${this.availableThemes.join(', ')}`));
+        this.warn(`Invalid theme in config.json. Possible options are: ${this.availableThemes.join(', ')}`);
       }, 2000);
       this.theme = 'red';
     } else {
@@ -88,8 +88,8 @@ class HomebridgeUI {
     } else if (config.temp) {
       // delay the output of the warning message so it does not get lost under homebridge setup details
       setTimeout(() => {
-        this.log(color.yellow(`WARNING: Configured path to temp file does not exist: ${config.temp}`));
-        this.log(color.yellow(`WARNING: CPU Temp will not be displayed`));
+        this.warn(`WARNING: Configured path to temp file does not exist: ${config.temp}`);
+        this.warn(`WARNING: CPU Temp will not be displayed`);
       }, 2000);
     }
   }
@@ -99,11 +99,20 @@ class HomebridgeUI {
     commander
       .allowUnknownOption()
       .option('-P, --plugin-path [path]', '', (p) => this.pluginPath = p)
+      .option('-I, --insecure', '', () => this.homebridgeInsecure = true)
       .parse(process.argv);
   }
 
   public log(msg: string) {
     this.logger(msg);
+  }
+
+  public warn(msg: string) {
+    this.logger.warn(msg);
+  }
+
+  public error(msg: string) {
+    this.logger.error(msg);
   }
 
   public async updateConfig(config) {
@@ -167,7 +176,7 @@ class HomebridgeUI {
       // save config file
       await this.updateConfig(config);
     } else {
-      this.log(color.red('Homebridge Reset: Could not reset homebridge username or pin. Config format invalid.'));
+      this.error('Homebridge Reset: Could not reset homebridge username or pin. Config format invalid.');
     }
 
     // remove accessories and persist directories

@@ -1,14 +1,15 @@
 import * as os from 'os';
 import * as fs from 'fs';
+import * as WebSocket from 'ws';
 import * as rp from 'request-promise';
 
 import { hb } from '../hb';
 
 export class StatusWssHandler {
-  private ws: any;
+  private ws: WebSocket;
   private config: any;
 
-  constructor(ws, req) {
+  constructor(ws: WebSocket, req) {
     this.ws = ws;
     this.config = require(hb.configPath);
 
@@ -30,7 +31,7 @@ export class StatusWssHandler {
     ws.on('close', onClose);
 
     // clear interval when client goes to another page
-    const onUnsubscribe = (sub) => {
+    const onUnsubscribe = (sub?) => {
       if (sub === 'status') {
         clearInterval(statsInterval);
         clearInterval(statusInterval);

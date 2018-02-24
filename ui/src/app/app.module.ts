@@ -34,6 +34,8 @@ import { LoginComponent, LoginStates } from './login/login.component';
 import { SpinnerComponent } from './spinner/spinner.component';
 import { ResetComponent, ResetModalComponent } from './reset/reset.component';
 
+import { AccessoriesModule } from './accessories/accessories.module';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -82,6 +84,7 @@ import { ResetComponent, ResetModalComponent } from './reset/reset.component';
       config: routerConfigFn,
       otherwise: '/'
     }),
+    AccessoriesModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthHttpInterceptor, multi: true },
