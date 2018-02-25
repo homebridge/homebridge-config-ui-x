@@ -12,14 +12,20 @@
       <app-thermostat *ngSwitchCase="'Thermostat'" [service]="service">Thermostat</app-thermostat>
       <app-outlet *ngSwitchCase="'Outlet'" [service]="service">Outlet</app-outlet>
       <app-fan *ngSwitchCase="'Fan'" [service]="service">Fan</app-fan>
-      <div *ngSwitchDefault>{{ service.humanType }}</div>
+      <app-lightbulb *ngSwitchCase="'Lightbulb'" [service]="service">Lightbulb</app-lightbulb>
+      <app-lockmechanism *ngSwitchCase="'LockMechanism'" [service]="service">Lock Mechanism</app-lockmechanism>
+      <app-temperaturesensor *ngSwitchCase="'TemperatureSensor'" [service]="service">Temperature Sensor</app-temperaturesensor>
+      <app-garagedooropener *ngSwitchCase="'GarageDoorOpener'" [service]="service">Garage Door Opener</app-garagedooropener>
+      <app-motionsensor *ngSwitchCase="'MotionSensor'" [service]="service">Motion Sensor</app-motionsensor>
+      <app-occupancysensor *ngSwitchCase="'OccupancySensor'" [service]="service">Occupancy Sensor</app-occupancysensor>
+      <app-unknown *ngSwitchDefault [service]="service">{{ service.humanType }}</app-unknown>
     </div>
   </div>
 </div>
 
-<div class="row">
+<!-- <div class="row">
   <div class="col-md-12">
      <pre>{{ accessories.services | json }}</pre>
   </div>
-</div>
+</div> -->
 

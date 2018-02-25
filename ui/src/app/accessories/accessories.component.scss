@@ -7,7 +7,7 @@
   border-radius: 5px;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
   padding: 15px;
-  overflow: hidden;
+  //overflow: hidden;
   
   @media (max-width: 539px) {
     height: 100px;
@@ -15,11 +15,6 @@
     padding: 8px;
     margin: 7px;
   }
-}
-
-.accessory-box:after {
-  content: "";
-  flex: auto;
 }
 
 ::ng-deep .accessory-svg {

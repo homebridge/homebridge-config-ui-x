@@ -1,0 +1,4 @@
+<div class="accessory-box">
+  <div class="temperature-circle" [innerText]="(service.values.CurrentTemperature | number:'1.0-0') + '°'"></div>
+  <div class="accessory-label">{{ service.serviceName }}</div>
+</div>
