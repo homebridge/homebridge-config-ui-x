@@ -56,7 +56,8 @@ const config = {
   theme: process.env.HOMEBRIDGE_CONFIG_UI_THEME || 'red',
   auth: process.env.HOMEBRIDGE_CONFIG_UI_AUTH || 'form',
   homebridgeNpmPkg: process.env.HOMEBRIDGE_CONFIG_UI_NPM_PKG || 'homebridge',
-  homebridgeFork: process.env.HOMEBRIDGE_CONFIG_UI_FORK || undefined
+  homebridgeFork: process.env.HOMEBRIDGE_CONFIG_UI_FORK || undefined,
+  homebridgeInsecure: (process.env.HOMEBRIDGE_INSECURE === "1")
 }
 
 // emulate homebridge handler

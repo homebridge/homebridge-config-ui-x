@@ -60,6 +60,7 @@ class HomebridgeUI {
     this.authMethod = config.auth;
     this.homebridgeFork = config.fork;
     this.homebridgeNpmPkg = config.homebridgeNpmPkg || 'homebridge';
+    this.homebridgeInsecure = config.homebridgeInsecure;
 
     if (config.auth === 'none' || config.auth === false) {
       this.formAuth = false;
