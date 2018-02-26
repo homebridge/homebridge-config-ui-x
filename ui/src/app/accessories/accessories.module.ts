@@ -15,6 +15,7 @@ import { ThermostatComponent } from './thermostat/thermostat.component';
 import { ThermostatManageComponent } from './thermostat/thermostat.manage.component';
 import { OutletComponent } from './outlet/outlet.component';
 import { FanComponent } from './fan/fan.component';
+import { FanManageComponent } from './fan/fan.manage.component';
 import { UnknownComponent } from './unknown/unknown.component';
 import { LightbulbComponent } from './lightbulb/lightbulb.component';
 import { LightbulbManageComponent } from './lightbulb/lightbulb.manage.component';
@@ -32,6 +33,7 @@ import { OccupancysensorComponent } from './occupancysensor/occupancysensor.comp
     ThermostatManageComponent,
     OutletComponent,
     FanComponent,
+    FanManageComponent,
     UnknownComponent,
     LightbulbComponent,
     LightbulbManageComponent,
@@ -44,7 +46,8 @@ import { OccupancysensorComponent } from './occupancysensor/occupancysensor.comp
   ],
   entryComponents: [
     ThermostatManageComponent,
-    LightbulbManageComponent
+    LightbulbManageComponent,
+    FanManageComponent
   ],
   imports: [
     CommonModule,
