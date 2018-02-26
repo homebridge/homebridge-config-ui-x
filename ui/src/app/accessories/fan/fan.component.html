@@ -2,6 +2,6 @@
   <img src="/assets/hap-icons/fan-off.svg" alt="Fan" class="accessory-img" *ngIf="!service.values.On">
   <img src="/assets/hap-icons/fan-on.svg" alt="Fan" class="accessory-img spin" *ngIf="service.values.On">
   <div class="accessory-label">{{ service.serviceName }}</div>
-  <div class="accessory-label grey-text" *ngIf="!service.values.RotationSpeed" [innerText]="service.values.On ? 'On' : 'Off'"></div>
-  <div class="accessory-label grey-text" *ngIf="service.values.RotationSpeed">{{ service.values.RotationSpeed }}%</div>
+  <div class="accessory-label grey-text" *ngIf="!service.values.RotationSpeed || !service.values.On" [innerText]="service.values.On ? 'On' : 'Off'"></div>
+  <div class="accessory-label grey-text" *ngIf="service.values.RotationSpeed && service.values.On">{{ service.values.RotationSpeed }}%</div>
 </div>
