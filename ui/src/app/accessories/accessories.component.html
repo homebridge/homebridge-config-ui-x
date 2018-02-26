@@ -6,7 +6,7 @@
 </div>
 
 <div class="row">
-  <div class="col-md-12 d-flex flex-wrap">
+  <div class="col-md-12 d-flex flex-wrap noselect">
     <div *ngFor="let service of accessories.services" [ngSwitch]="service.type">
       <app-switch *ngSwitchCase="'Switch'" [service]="service">Switch</app-switch>
       <app-thermostat *ngSwitchCase="'Thermostat'" [service]="service">Thermostat</app-thermostat>
@@ -23,9 +23,9 @@
   </div>
 </div>
 
-<!-- <div class="row">
+<div class="row">
   <div class="col-md-12">
      <pre>{{ accessories.services | json }}</pre>
   </div>
-</div> -->
+</div>
 

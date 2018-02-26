@@ -7,6 +7,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { InlineSVGModule } from 'ng-inline-svg';
 import { NouisliderModule } from 'ng2-nouislider';
 
+import { LongClickDirective } from './longclick.directive';
+
 import { AccessoriesComponent, AccessoriesStates } from './accessories.component';
 import { SwitchComponent } from './switch/switch.component';
 import { ThermostatComponent } from './thermostat/thermostat.component';
@@ -15,6 +17,7 @@ import { OutletComponent } from './outlet/outlet.component';
 import { FanComponent } from './fan/fan.component';
 import { UnknownComponent } from './unknown/unknown.component';
 import { LightbulbComponent } from './lightbulb/lightbulb.component';
+import { LightbulbManageComponent } from './lightbulb/lightbulb.manage.component';
 import { LockmechanismComponent } from './lockmechanism/lockmechanism.component';
 import { TemperaturesensorComponent } from './temperaturesensor/temperaturesensor.component';
 import { GaragedooropenerComponent } from './garagedooropener/garagedooropener.component';
@@ -31,14 +34,17 @@ import { OccupancysensorComponent } from './occupancysensor/occupancysensor.comp
     FanComponent,
     UnknownComponent,
     LightbulbComponent,
+    LightbulbManageComponent,
     LockmechanismComponent,
     TemperaturesensorComponent,
     GaragedooropenerComponent,
     MotionsensorComponent,
-    OccupancysensorComponent
+    OccupancysensorComponent,
+    LongClickDirective
   ],
   entryComponents: [
-    ThermostatManageComponent
+    ThermostatManageComponent,
+    LightbulbManageComponent
   ],
   imports: [
     CommonModule,

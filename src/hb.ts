@@ -48,8 +48,8 @@ class HomebridgeUI {
     this.authPath = path.join(this.homebridge.user.storagePath(), 'auth.json');
     this.storagePath = this.homebridge.user.storagePath();
 
-    this.parseCommandLineArgs();
     this.parseConfig(config);
+    this.parseCommandLineArgs();
   }
 
   private parseConfig(config) {

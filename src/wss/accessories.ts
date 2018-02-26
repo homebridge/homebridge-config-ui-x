@@ -1,5 +1,5 @@
 import * as WebSocket from 'ws';
-import { HapClient } from '@oznu/hap-client';
+import { HapClient, ServiceType } from '@oznu/hap-client';
 
 import { hb } from '../hb';
 
@@ -25,7 +25,7 @@ export class AccessoriesWssHandler {
     // handling incoming requests
     const requestHandler = async (msg?) => {
       if (msg.accessories.set) {
-        const service = this.services.find(x => x.aid === msg.accessories.set.aid && x.iid === msg.accessories.set.siid);
+        const service: ServiceType = this.services.find(x => x.aid === msg.accessories.set.aid && x.iid === msg.accessories.set.siid);
         await service.setCharacteristic(msg.accessories.set.iid, msg.accessories.set.value);
         await this.loadAccessories();
       }

@@ -1,4 +1,4 @@
-<div class="accessory-box" [ngClass]="{'switch-on': service.values.CurrentHeatingCoolingState > 0}" (click)="onClick()">
+<div class="accessory-box" [ngClass]="{'switch-on': service.values.CurrentHeatingCoolingState > 0}" appLongclick (longclick)="onClick()" (shortclick)="onClick()">
   <div class="temperature-circle" [innerText]="(service.values.CurrentTemperature | number:'1.0-0') + '°'" [ngClass]="{
     'cooling': service.values.CurrentHeatingCoolingState === 2,
     'heating': service.values.CurrentHeatingCoolingState === 1

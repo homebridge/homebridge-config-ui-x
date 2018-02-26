@@ -1,5 +1,5 @@
-<div class="accessory-box" [ngClass]="{'switch-on': service.values.On}" (click)="onClick()">
-  <div [inlineSVG]="'/assets/hap-icons/lightbulb.svg'" aria-label="Switch" class="accessory-svg"></div>
+<div class="accessory-box" [ngClass]="{'switch-on': service.values.On}" appLongclick (longclick)="onLongClick()" (shortclick)="onClick()">
+  <div [inlineSVG]="'/assets/hap-icons/lightbulb.svg'" aria-label="Light Bulb" class="accessory-svg"></div>
   <div class="accessory-label">{{ service.serviceName }}</div>
   <div class="accessory-label grey-text" *ngIf="!service.values.Brightness" [innerText]="service.values.On ? 'On' : 'Off'"></div>
   <div class="accessory-label grey-text" *ngIf="service.values.Brightness">{{ service.values.Brightness }}%</div>

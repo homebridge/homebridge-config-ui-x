@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
+import { ServiceType } from '@oznu/hap-client';
 import { WsService } from '../_services/ws.service';
 
 @Component({
@@ -11,7 +11,7 @@ export class AccessoriesComponent implements OnInit {
   private onOpen;
   private onMessage;
   private onClose;
-  public accessories: any = {};
+  public accessories: { services: ServiceType[] } = { services: [] };
 
   constructor(
     private ws: WsService,
@@ -65,16 +65,24 @@ export class AccessoriesComponent implements OnInit {
         service.getCharacteristic = (type: string) => {
 
           const characteristic = service.serviceCharacteristics.find(x => x.type === type);
+
+          if (!characteristic) {
+            return null;
+          }
+
           characteristic.setValue = (value: number | string | boolean) => {
-            this.ws.send({
-              accessories: {
-                set: {
-                  aid: service.aid,
-                  siid: service.iid,
-                  iid: characteristic.iid,
-                  value: value
+            return new Promise((resolve, reject) => {
+              this.ws.send({
+                accessories: {
+                  set: {
+                    aid: service.aid,
+                    siid: service.iid,
+                    iid: characteristic.iid,
+                    value: value
+                  }
                 }
-              }
+              });
+              return resolve();
             });
           };
 

@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { ServiceType } from '@oznu/hap-client';
 
 @Component({
   selector: 'app-outlet',
@@ -6,7 +7,7 @@ import { Component, OnInit, Input } from '@angular/core';
   styleUrls: ['./outlet.component.scss']
 })
 export class OutletComponent implements OnInit {
-  @Input() public service: any;
+  @Input() public service: ServiceType;
 
   constructor() { }
 
