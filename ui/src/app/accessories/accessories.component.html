@@ -10,7 +10,7 @@
 
 <div [dragula]='"rooms-bag"'>
   <div *ngFor="let room of rooms">
-    <div class="row">
+    <div class="row" *ngIf="!isMobile || room.services.length">
       <div class="col-md-12">
         <h5 class="primary-text drag-handle room-title">{{ room.name }}</h5>
       </div>
@@ -31,7 +31,7 @@
           <app-unknown *ngSwitchDefault [service]="service">{{ service.humanType }}</app-unknown>
         </div>
       </div>
-      <div class="col-md-12 d-flex flex-wrap noselect" *ngIf="!room.services.length" [dragula]='"services-bag"' [dragulaModel]='room.services'>
+      <div class="col-md-12 d-flex flex-wrap noselect" *ngIf="!room.services.length && !isMobile" [dragula]='"services-bag"' [dragulaModel]='room.services'>
         <app-drag-here-placeholder class="no-drag"></app-drag-here-placeholder>
       </div>
     </div>

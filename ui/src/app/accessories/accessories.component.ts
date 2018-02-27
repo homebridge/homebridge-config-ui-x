@@ -13,6 +13,7 @@ import { WsService } from '../_services/ws.service';
 export class AccessoriesComponent implements OnInit {
   private onOpen;
   private onMessage;
+  public isMobile: any = false;
   public accessories: { services: ServiceType[] } = { services: [] };
   public rooms: Array<{ name: string, services: ServiceType[] }>;
 
@@ -21,15 +22,16 @@ export class AccessoriesComponent implements OnInit {
     private ws: WsService,
   ) {
     const md = new MobileDetect(window.navigator.userAgent);
+    this.isMobile = md.mobile();
 
     // disable drag and drop for everything except the room title
     dragulaService.setOptions('rooms-bag', {
-      moves: (el, container, handle) => !md.mobile() && handle.classList.contains('drag-handle')
+      moves: (el, container, handle) => !this.isMobile && handle.classList.contains('drag-handle')
     });
 
     // disable drag and drop for the .no-drag class
     dragulaService.setOptions('services-bag', {
-      moves: (el, source, handle, sibling) => !md.mobile() && !el.classList.contains('no-drag')
+      moves: (el, source, handle, sibling) => !this.isMobile && !el.classList.contains('no-drag')
     });
 
     // save the room and service layout
