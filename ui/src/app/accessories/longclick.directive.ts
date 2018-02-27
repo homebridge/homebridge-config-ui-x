@@ -1,10 +1,10 @@
-import { OnDestroy, Directive, EventEmitter, HostListener, Input, Output } from '@angular/core';
+import { OnDestroy, Directive, EventEmitter, HostListener, Input, Output, Host } from '@angular/core';
 
 @Directive({
   selector: '[appLongclick]'
 })
 export class LongClickDirective implements OnDestroy {
-  @Input() public duration = 300;
+  @Input() public duration = 350;
   @Output() public longclick: EventEmitter<MouseEvent> = new EventEmitter();
   @Output() public shortclick: EventEmitter<MouseEvent> = new EventEmitter();
 
@@ -32,10 +32,18 @@ export class LongClickDirective implements OnDestroy {
   @HostListener('touchstart', ['$event'])
   @HostListener('mousedown', ['$event'])
   public onMouseDown(event: MouseEvent): void {
+    if (event.which > 1) {
+      return;
+    }
     this.done = false;
     this.downTimeout = setTimeout(() => {
       this.done = true;
       this.longclick.emit(event);
     }, this.duration);
+  }
+
+  @HostListener('mousemove', ['$event'])
+  public onMouseMove(event: MouseEvent): void {
+    clearInterval(this.downTimeout);
   }
 }

@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ServiceType } from '@oznu/hap-client';
+import { DragulaService } from 'ng2-dragula';
+import * as MobileDetect from 'mobile-detect';
+
 import { WsService } from '../_services/ws.service';
 
 @Component({
@@ -10,14 +13,58 @@ import { WsService } from '../_services/ws.service';
 export class AccessoriesComponent implements OnInit {
   private onOpen;
   private onMessage;
-  private onClose;
   public accessories: { services: ServiceType[] } = { services: [] };
+  public rooms: Array<{ name: string, services: ServiceType[] }>;
 
   constructor(
+    private dragulaService: DragulaService,
     private ws: WsService,
-  ) { }
+  ) {
+    const md = new MobileDetect(window.navigator.userAgent);
+
+    // disable drag and drop for everything except the room title
+    dragulaService.setOptions('rooms-bag', {
+      moves: (el, container, handle) => handle.classList.contains('drag-handle')
+    });
+
+    // disable drag and drop for the .no-drag class
+    dragulaService.setOptions('services-bag', {
+      moves: (el, source, handle, sibling) => !el.classList.contains('no-drag')
+    });
+
+    // save the room and service layout
+    dragulaService.drop.subscribe((value) => {
+      console.log('TODO: Save Room and Service Layout');
+    });
+
+    // disable all drag and drop on mobile
+    if (md.mobile()) {
+      dragulaService.setOptions('services-bag', {
+        moves: (el, source, handle, sibling) => false,
+      });
+      dragulaService.setOptions('rooms-bag', {
+        moves: (el, source, handle, sibling) => false,
+      });
+    }
+  }
 
   ngOnInit() {
+    // placeholder rooms - these need to be loaded from the server
+    this.rooms = [
+      {
+        name: 'Default Room',
+        services: []
+      },
+      {
+        name: 'Lounge Room',
+        services: []
+      },
+      {
+        name: 'Bedroom',
+        services: []
+      }
+    ];
+
     // subscribe to status events
     if (this.ws.socket.readyState) {
       this.ws.subscribe('accessories');
@@ -33,6 +80,8 @@ export class AccessoriesComponent implements OnInit {
         if (data.accessories) {
           if (data.accessories.services) {
             this.parseServices(data.accessories.services);
+            this.generateHelpers();
+            this.sortRooms();
           }
         }
       } catch (e) { }
@@ -40,9 +89,9 @@ export class AccessoriesComponent implements OnInit {
   }
 
   parseServices(services) {
-    if (!this.accessories.services) {
+    if (!this.accessories.services.length) {
       this.accessories.services = services;
-      return this.generateHelpers();
+      return;
     }
 
     // update the existing objects to avoid re-painting the dom element each refresh
@@ -55,8 +104,24 @@ export class AccessoriesComponent implements OnInit {
         this.accessories.services.push(service);
       }
     });
+  }
 
-    return this.generateHelpers();
+  sortRooms() {
+    this.accessories.services.forEach((service) => {
+      const inRoom = this.rooms.find(r => {
+        if (r.services.find(s => s.aid === service.aid && s.iid === service.iid && s.uuid === service.uuid)) {
+          return true;
+        }
+      });
+
+      if (!inRoom) {
+        this.rooms.find(r => r.name === 'Default Room').services.push(service);
+      }
+    });
+  }
+
+  addRoom() {
+    // TODO - Add room modal
   }
 
   generateHelpers() {
@@ -100,9 +165,12 @@ export class AccessoriesComponent implements OnInit {
 
       // unsubscribe listeners
       this.onOpen.unsubscribe();
-      // this.onClose.unsubscribe();
       this.onMessage.unsubscribe();
     } catch (e) { }
+
+    // destroy drag and drop bags
+    this.dragulaService.destroy('rooms-bag');
+    this.dragulaService.destroy('services-bag');
   }
 
 }

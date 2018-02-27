@@ -1,9 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 import { UIRouterModule } from '@uirouter/angular';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-
+import { DragulaModule } from 'ng2-dragula';
 import { InlineSVGModule } from 'ng-inline-svg';
 import { NouisliderModule } from 'ng2-nouislider';
 
@@ -24,6 +25,7 @@ import { TemperaturesensorComponent } from './temperaturesensor/temperaturesenso
 import { GaragedooropenerComponent } from './garagedooropener/garagedooropener.component';
 import { MotionsensorComponent } from './motionsensor/motionsensor.component';
 import { OccupancysensorComponent } from './occupancysensor/occupancysensor.component';
+import { DragHerePlaceholderComponent } from './drag-here-placeholder/drag-here-placeholder.component';
 
 @NgModule({
   declarations: [
@@ -42,7 +44,8 @@ import { OccupancysensorComponent } from './occupancysensor/occupancysensor.comp
     GaragedooropenerComponent,
     MotionsensorComponent,
     OccupancysensorComponent,
-    LongClickDirective
+    LongClickDirective,
+    DragHerePlaceholderComponent
   ],
   entryComponents: [
     ThermostatManageComponent,
@@ -54,6 +57,7 @@ import { OccupancysensorComponent } from './occupancysensor/occupancysensor.comp
     FormsModule,
     InlineSVGModule,
     NouisliderModule,
+    DragulaModule,
     NgbModule,
     UIRouterModule.forChild({
       states: [
