@@ -24,28 +24,18 @@ export class AccessoriesComponent implements OnInit {
 
     // disable drag and drop for everything except the room title
     dragulaService.setOptions('rooms-bag', {
-      moves: (el, container, handle) => handle.classList.contains('drag-handle')
+      moves: (el, container, handle) => !md.mobile() && handle.classList.contains('drag-handle')
     });
 
     // disable drag and drop for the .no-drag class
     dragulaService.setOptions('services-bag', {
-      moves: (el, source, handle, sibling) => !el.classList.contains('no-drag')
+      moves: (el, source, handle, sibling) => !md.mobile() && !el.classList.contains('no-drag')
     });
 
     // save the room and service layout
     dragulaService.drop.subscribe((value) => {
       console.log('TODO: Save Room and Service Layout');
     });
-
-    // disable all drag and drop on mobile
-    if (md.mobile()) {
-      dragulaService.setOptions('services-bag', {
-        moves: (el, source, handle, sibling) => false,
-      });
-      dragulaService.setOptions('rooms-bag', {
-        moves: (el, source, handle, sibling) => false,
-      });
-    }
   }
 
   ngOnInit() {
