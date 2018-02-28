@@ -30,7 +30,7 @@ export class AccessoriesWssHandler {
         await this.loadAccessories();
       }
     };
-    ws.on('accessories', requestHandler.bind(this));
+    ws.on('accessories', requestHandler);
 
     // when the client disconnects stop checking the accessories status
     const onClose = () => {
