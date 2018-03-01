@@ -8,7 +8,7 @@
   </div>
 </div>
 
-<div [dragula]='"rooms-bag"'>
+<div [dragula]='"rooms-bag"' [dragulaModel]='rooms'>
   <div *ngFor="let room of rooms">
     <div class="row" *ngIf="!isMobile || room.services.length">
       <div class="col-md-12">

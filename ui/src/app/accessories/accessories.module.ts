@@ -10,6 +10,9 @@ import { NouisliderModule } from 'ng2-nouislider';
 
 import { LongClickDirective } from './longclick.directive';
 
+import { DragHerePlaceholderComponent } from './drag-here-placeholder/drag-here-placeholder.component';
+import { AddRoomModalComponent } from './add-room-modal/add-room-modal.component';
+
 import { AccessoriesComponent, AccessoriesStates } from './accessories.component';
 import { SwitchComponent } from './switch/switch.component';
 import { ThermostatComponent } from './thermostat/thermostat.component';
@@ -25,7 +28,7 @@ import { TemperaturesensorComponent } from './temperaturesensor/temperaturesenso
 import { GaragedooropenerComponent } from './garagedooropener/garagedooropener.component';
 import { MotionsensorComponent } from './motionsensor/motionsensor.component';
 import { OccupancysensorComponent } from './occupancysensor/occupancysensor.component';
-import { DragHerePlaceholderComponent } from './drag-here-placeholder/drag-here-placeholder.component';
+
 
 @NgModule({
   declarations: [
@@ -45,12 +48,14 @@ import { DragHerePlaceholderComponent } from './drag-here-placeholder/drag-here-
     MotionsensorComponent,
     OccupancysensorComponent,
     LongClickDirective,
-    DragHerePlaceholderComponent
+    DragHerePlaceholderComponent,
+    AddRoomModalComponent
   ],
   entryComponents: [
+    AddRoomModalComponent,
     ThermostatManageComponent,
     LightbulbManageComponent,
-    FanManageComponent
+    FanManageComponent,
   ],
   imports: [
     CommonModule,

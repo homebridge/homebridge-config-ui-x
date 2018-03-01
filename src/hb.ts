@@ -24,6 +24,7 @@ class HomebridgeUI {
   public theme: string;
   public availableThemes: string[];
   public temperatureFile: string;
+  public accessoryLayoutPath: string;
   public wss: WSS;
 
   constructor() {
@@ -47,6 +48,7 @@ class HomebridgeUI {
     this.configPath = this.homebridge.user.configPath();
     this.authPath = path.join(this.homebridge.user.storagePath(), 'auth.json');
     this.storagePath = this.homebridge.user.storagePath();
+    this.accessoryLayoutPath = path.resolve(this.homebridge.user.storagePath(), 'accessories', 'hb-config-ui-x-layout.json');
 
     this.parseConfig(config);
     this.parseCommandLineArgs();
@@ -206,6 +208,25 @@ class HomebridgeUI {
       if (i !== 4) { username += ':'; }
     }
     return username;
+  }
+
+  public async getAccessoryLayout() {
+    if (fs.existsSync(this.accessoryLayoutPath)) {
+      return await fs.readJson(this.accessoryLayoutPath);
+    } else {
+      return [
+        {
+          name: 'Default Room',
+          services: []
+        }
+      ];
+    }
+  }
+
+  public async updateAccessoryLayout(layout) {
+    await fs.writeJson(this.accessoryLayoutPath, layout, { spaces: 4 });
+    this.log('Accessory layout changes saved.');
+    return layout;
   }
 }
 

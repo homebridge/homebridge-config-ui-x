@@ -1,9 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+
+import { StateService } from '@uirouter/angular';
+import { ToastsManager } from 'ng2-toastr/ng2-toastr';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ServiceType } from '@oznu/hap-client';
 import { DragulaService } from 'ng2-dragula';
 import * as MobileDetect from 'mobile-detect';
 
 import { WsService } from '../_services/ws.service';
+import { ApiService } from '../_services/api.service';
+import { AddRoomModalComponent } from './add-room-modal/add-room-modal.component';
 
 @Component({
   selector: 'app-accessories',
@@ -11,15 +17,20 @@ import { WsService } from '../_services/ws.service';
   styleUrls: ['./accessories.component.scss']
 })
 export class AccessoriesComponent implements OnInit {
+  @Input() accessoryLayout: { name: string; services: Array<{ aid: number; iid: number; uuid: string; }>; }[];
+  public accessories: { services: ServiceType[] } = { services: [] };
+  public rooms: Array<{ name: string, services: ServiceType[] }> = [];
+  public isMobile: any = false;
+  private roomsOrdered = false;
   private onOpen;
   private onMessage;
-  public isMobile: any = false;
-  public accessories: { services: ServiceType[] } = { services: [] };
-  public rooms: Array<{ name: string, services: ServiceType[] }>;
 
   constructor(
     private dragulaService: DragulaService,
+    public toastr: ToastsManager,
+    private modalService: NgbModal,
     private ws: WsService,
+    private $api: ApiService
   ) {
     const md = new MobileDetect(window.navigator.userAgent);
     this.isMobile = md.mobile();
@@ -35,27 +46,21 @@ export class AccessoriesComponent implements OnInit {
     });
 
     // save the room and service layout
-    dragulaService.drop.subscribe((value) => {
-      console.log('TODO: Save Room and Service Layout');
+    dragulaService.drop.subscribe(() => {
+      setTimeout(() => {
+        this.saveLayout();
+      });
     });
   }
 
   ngOnInit() {
-    // placeholder rooms - these need to be loaded from the server
-    this.rooms = [
-      {
-        name: 'Default Room',
-        services: []
-      },
-      {
-        name: 'Lounge Room',
-        services: []
-      },
-      {
-        name: 'Bedroom',
-        services: []
-      }
-    ];
+    // build empty room layout
+    this.rooms = this.accessoryLayout.map((room) => {
+      return {
+        name: room.name,
+        services: [],
+      };
+    });
 
     // subscribe to status events
     if (this.ws.socket.readyState) {
@@ -73,7 +78,11 @@ export class AccessoriesComponent implements OnInit {
           if (data.accessories.services) {
             this.parseServices(data.accessories.services);
             this.generateHelpers();
-            this.sortRooms();
+            this.sortIntoRooms();
+
+            if (!this.roomsOrdered) {
+              this.orderRooms();
+            }
           }
         }
       } catch (e) { }
@@ -98,22 +107,105 @@ export class AccessoriesComponent implements OnInit {
     });
   }
 
-  sortRooms() {
+  sortIntoRooms() {
     this.accessories.services.forEach((service) => {
+      // check if the service has already been allocated to an active room
       const inRoom = this.rooms.find(r => {
         if (r.services.find(s => s.aid === service.aid && s.iid === service.iid && s.uuid === service.uuid)) {
           return true;
         }
       });
 
+      // not in an active room, perhaps the service is in the layout cache
       if (!inRoom) {
-        this.rooms.find(r => r.name === 'Default Room').services.push(service);
+        const inCache = this.accessoryLayout.find(r => {
+          if (r.services.find(s => s.aid === service.aid && s.iid === service.iid && s.uuid === service.uuid)) {
+            return true;
+          }
+        });
+
+        if (inCache) {
+          // it's in the cache, add to the correct room
+          this.rooms.find(r => r.name === inCache.name).services.push(service);
+        } else {
+          // new accessory add the default room
+          const defaultRoom = this.rooms.find(r => r.name === 'Default Room');
+
+          // does the default room exist?
+          if (defaultRoom) {
+            defaultRoom.services.push(service);
+          } else {
+            this.rooms.push({
+              name: 'Default Room',
+              services: [service]
+            });
+          }
+        }
       }
     });
   }
 
+  orderRooms() {
+    // order the services within each room
+    this.rooms.forEach((room) => {
+      const roomCache = this.accessoryLayout.find(r => r.name === room.name);
+      room.services.sort((a, b) => {
+        const posA = roomCache.services.findIndex(s => s.aid === a.aid && s.iid === a.iid && s.uuid === a.uuid);
+        const posB = roomCache.services.findIndex(s => s.aid === b.aid && s.iid === b.iid && s.uuid === b.uuid);
+        if (posA < posB) {
+          return -1;
+        } else if (posA > posB) {
+          return 1;
+        }
+        return 0;
+      });
+    });
+  }
+
   addRoom() {
-    // TODO - Add room modal
+    const ref = this.modalService.open(AddRoomModalComponent, {
+      size: 'lg',
+    }).result.then((roomName) => {
+      // no room name provided
+      if (!roomName || !roomName.length) {
+        return;
+      }
+
+      // duplicate room name
+      if (this.rooms.find(r => r.name === roomName)) {
+        return;
+      }
+
+      this.rooms.push({
+        name: roomName,
+        services: []
+      });
+    })
+    .catch(() => { /* modal dismissed */ });
+  }
+
+  saveLayout() {
+    // generate layout schema to save to disk
+    this.accessoryLayout = this.rooms.map((room) => {
+      return {
+        name: room.name,
+        services: room.services.map((service) => {
+          return {
+            aid: service.aid,
+            iid: service.iid,
+            uuid: service.uuid
+          };
+        })
+      };
+    })
+    .filter(room => room.services.length);
+
+    // send update request to server
+    this.$api.updateAccessoryLayout(this.accessoryLayout)
+      .subscribe(
+        data => true,
+        err => this.toastr.error(err.message, 'Failed to save page layout')
+      );
   }
 
   generateHelpers() {
@@ -167,10 +259,22 @@ export class AccessoriesComponent implements OnInit {
 
 }
 
+export function accessoriesStateResolve($api, toastr, $state) {
+  return $api.getAccessoryLayout().toPromise().catch((err) => {
+    toastr.error(err.message, 'Failed to Load Accessories');
+    $state.go('status');
+  });
+}
+
 export const AccessoriesStates = {
   name: 'accessories',
   url: '/accessories',
   component: AccessoriesComponent,
+  resolve: [{
+    token: 'accessoryLayout',
+    deps: [ApiService, ToastsManager, StateService],
+    resolveFn: accessoriesStateResolve
+  }],
   data: {
     requiresAuth: true
   }
