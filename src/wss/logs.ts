@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as WebSocket from 'ws';
 import * as pty from 'node-pty';
 import * as color from 'bash-color';
+import * as child_process from 'child_process';
 
 import { hb } from '../hb';
 
@@ -135,7 +136,14 @@ export class LogsWssHandler {
     if (this.term) {
       this.term.kill();
       this.term.destroy();
+      this.forceKillProcess();
     }
   }
 
+  forceKillProcess() {
+    if (hb.useSudo && this.term && this.term.pid) {
+      // really make sure the log tail command is killed when using sudo mode
+      child_process.exec(`sudo -n kill -9 ${this.term.pid}`);
+    }
+  }
 }
