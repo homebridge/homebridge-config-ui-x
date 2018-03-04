@@ -15,8 +15,13 @@ export class SettingsRouter {
     return res.json({
       formAuth: hb.formAuth,
       theme: hb.theme,
-      enableAccessories: hb.homebridgeInsecure || false,
-      homebridgeInstanceName: hb.homebridgeConfig.bridge.name || 'Homebridge'
+      env: {
+        packageName: hb.ui.name,
+        packageVersion: hb.ui.version,
+        nodeVersion: process.version,
+        enableAccessories: hb.homebridgeInsecure || false,
+        homebridgeInstanceName: hb.homebridgeConfig.bridge.name || 'Homebridge'
+      }
     });
   }
 }

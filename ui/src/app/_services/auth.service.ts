@@ -15,8 +15,8 @@ interface HomebridgeUser {
 export class AuthService {
   private jwtHelper: JwtHelper = new JwtHelper();
 
+  public env: any = {};
   public formAuth = true;
-  public enableAccessories = false;
   public theme: string;
   public user: HomebridgeUser = {};
 
@@ -81,9 +81,9 @@ export class AuthService {
     return this.$api.getAppSettings().toPromise()
       .then((data: any) => {
         this.formAuth = data.formAuth;
-        this.enableAccessories = data.enableAccessories;
+        this.env = data.env;
         this.setTheme(data.theme || 'red');
-        this.setTitle(data.homebridgeInstanceName);
+        this.setTitle(data.env.homebridgeInstanceName);
       });
   }
 
