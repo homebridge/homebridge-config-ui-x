@@ -11,7 +11,7 @@ class HomebridgeUI {
   public homebridgeInsecure: boolean;
   public homebridgeNpmPkg: string;
   public homebridgeFork: string;
-  public homebridgeConfig: HomebridgeConfig;
+  public homebridgeConfig: HomebridgeConfigType;
   public configPath: string;
   public authPath: string;
   public storagePath: string;
@@ -180,7 +180,7 @@ class HomebridgeUI {
 
   public async resetHomebridgeAccessory() {
     // load config file
-    const config: HomebridgeConfig = await fs.readJson(this.configPath);
+    const config: HomebridgeConfigType = await fs.readJson(this.configPath);
 
     // generate new random username and pin
     if (config.bridge) {
@@ -240,7 +240,14 @@ class HomebridgeUI {
   }
 
   public async updateAccessoryLayout(user, layout) {
-    const accessoryLayout = await fs.existsSync(this.accessoryLayoutPath) ? await fs.readJson(this.accessoryLayoutPath) : {};
+    let accessoryLayout;
+
+    try {
+      accessoryLayout = await fs.readJson(this.accessoryLayoutPath);
+    } catch (e) {
+      accessoryLayout = {};
+    }
+
     accessoryLayout[user] = layout;
     await fs.writeJson(this.accessoryLayoutPath, accessoryLayout);
     this.log(`[${user}] Accessory layout changes saved.`);
@@ -248,7 +255,7 @@ class HomebridgeUI {
   }
 }
 
-export interface HomebridgeConfig {
+export interface HomebridgeConfigType {
   bridge: {
     name: string;
     username?: string;
