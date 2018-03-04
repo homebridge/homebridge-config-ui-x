@@ -28,6 +28,8 @@ import { TemperaturesensorComponent } from './temperaturesensor/temperaturesenso
 import { GaragedooropenerComponent } from './garagedooropener/garagedooropener.component';
 import { MotionsensorComponent } from './motionsensor/motionsensor.component';
 import { OccupancysensorComponent } from './occupancysensor/occupancysensor.component';
+import { HumiditysensorComponent } from './humiditysensor/humiditysensor.component';
+import { AirqualitysensorComponent } from './airqualitysensor/airqualitysensor.component';
 
 
 @NgModule({
@@ -49,7 +51,9 @@ import { OccupancysensorComponent } from './occupancysensor/occupancysensor.comp
     OccupancysensorComponent,
     LongClickDirective,
     DragHerePlaceholderComponent,
-    AddRoomModalComponent
+    AddRoomModalComponent,
+    HumiditysensorComponent,
+    AirqualitysensorComponent
   ],
   entryComponents: [
     AddRoomModalComponent,
