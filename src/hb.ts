@@ -249,7 +249,7 @@ class HomebridgeUI {
     }
 
     accessoryLayout[user] = layout;
-    await fs.writeJson(this.accessoryLayoutPath, accessoryLayout);
+    fs.writeJsonSync(this.accessoryLayoutPath, accessoryLayout);
     this.log(`[${user}] Accessory layout changes saved.`);
     return layout;
   }
