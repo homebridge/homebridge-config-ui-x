@@ -8,10 +8,10 @@ export class UserRouter {
   constructor() {
     this.router = Router();
 
-    this.router.get('/', this.getUser);
-    this.router.post('/', this.createUser);
-    this.router.delete('/:id', this.deleteUser);
-    this.router.put('/:id', this.updateUser);
+    this.router.get('/', users.ensureAdmin, this.getUser);
+    this.router.post('/', users.ensureAdmin, this.createUser);
+    this.router.delete('/:id', users.ensureAdmin, this.deleteUser);
+    this.router.put('/:id', users.ensureAdmin, this.updateUser);
   }
 
   getUser(req: Request, res: Response, next: NextFunction) {

@@ -69,6 +69,7 @@ export const UsersStates = {
     resolveFn: userStateResolve
   }],
   data: {
-    requiresAuth: true
+    requiresAuth: true,
+    requiresAdmin: true
   }
 };

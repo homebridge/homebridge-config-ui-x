@@ -52,6 +52,7 @@ export const PluginStates = {
   url: '/plugins',
   component: PluginsComponent,
   data: {
-    requiresAuth: true
+    requiresAuth: true,
+    requiresAdmin: true
   }
 };

@@ -4,7 +4,7 @@ import { JwtHelper } from 'angular2-jwt';
 import { ApiService } from './api.service';
 
 interface HomebridgeUser {
-  token: string;
+  token?: string;
   username?: string;
   name?: string;
   admin?: boolean;
@@ -17,7 +17,7 @@ export class AuthService {
   public formAuth = true;
   public enableAccessories = false;
   public theme: string;
-  public user: HomebridgeUser;
+  public user: HomebridgeUser = {};
 
   constructor(
     private $api: ApiService

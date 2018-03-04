@@ -36,7 +36,7 @@
             <br>
             <span class="grey-text" *ngIf="homebridge.version"><span class="d-none d-sm-inline">Version</span> {{ homebridge.installed }}</span>
           </div>
-          <div class="align-self-center p-3" *ngIf="homebridge.update">
+          <div class="align-self-center p-3" *ngIf="homebridge.update && $auth.user.admin">
             <button type="button" class="btn btn-red waves-effect waves-light" (click)="$plugin.upgradeHomebridge()">Upgrade</button>
           </div>
         </div>
@@ -183,4 +183,4 @@
   </div>
 </div>
 
-<app-reset></app-reset>
+<app-reset *ngIf="$auth.user.admin"></app-reset>

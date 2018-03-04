@@ -1,6 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 
 import { hb } from '../hb';
+import { users } from '../users';
 
 export class ConfigRouter {
   public router: Router;
@@ -8,8 +9,8 @@ export class ConfigRouter {
   constructor() {
     this.router = Router();
 
-    this.router.get('/', this.getConfig);
-    this.router.post('/', this.updateConfig);
+    this.router.get('/', users.ensureAdmin, this.getConfig);
+    this.router.post('/', users.ensureAdmin, this.updateConfig);
   }
 
   getConfig(req: Request, res: Response, next: NextFunction) {

@@ -66,6 +66,7 @@ export class AuthMiddleware {
     return users.getUsers()
       .then((authfile) => {
         req.user = authfile[0];
+        req.user.admin = true;
         return next();
       })
       .catch(next);

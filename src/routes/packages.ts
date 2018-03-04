@@ -2,6 +2,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 
 import { hb } from '../hb';
 import { pm } from '../pm';
+import { users } from '../users';
 
 export class PackageRouter {
   public router: Router;
@@ -10,11 +11,11 @@ export class PackageRouter {
     this.router = Router();
 
     this.router.get('/', this.getPackages);
-    this.router.put('/update', this.updatePackage);
-    this.router.post('/uninstall', this.uninstallPackage);
-    this.router.post('/install', this.installPackage);
+    this.router.put('/update', users.ensureAdmin, this.updatePackage);
+    this.router.post('/uninstall', users.ensureAdmin, this.uninstallPackage);
+    this.router.post('/install', users.ensureAdmin, this.installPackage);
     this.router.get('/homebridge', this.getHomebridgePackage);
-    this.router.put('/homebridge/upgrade', this.upgradeHomebridgePackage);
+    this.router.put('/homebridge/upgrade', users.ensureAdmin, this.upgradeHomebridgePackage);
   }
 
   getPackages(req: Request, res: Response, next: NextFunction) {

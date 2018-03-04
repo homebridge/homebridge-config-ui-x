@@ -86,6 +86,7 @@ export const ConfigStates = {
     resolveFn: configStateResolve
   }],
   data: {
-    requiresAuth: true
+    requiresAuth: true,
+    requiresAdmin: true
   }
 };

@@ -3,6 +3,7 @@ import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
 import { WsService } from '../_services/ws.service';
 import { ApiService } from '../_services/api.service';
+import { AuthService } from '../_services/auth.service';
 import { PluginService } from '../_services/plugin.service';
 
 interface HomebridgeStatus {
@@ -32,6 +33,7 @@ export class StatusComponent implements OnInit {
 
   constructor(
     private ws: WsService,
+    public $auth: AuthService,
     private $plugin: PluginService,
     private $api: ApiService,
     public toastr: ToastsManager,
