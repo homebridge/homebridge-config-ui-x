@@ -11,6 +11,7 @@ class HomebridgeUI {
   public homebridgeInsecure: boolean;
   public homebridgeNpmPkg: string;
   public homebridgeFork: string;
+  public homebridgeConfig: HomebridgeConfig;
   public configPath: string;
   public authPath: string;
   public storagePath: string;
@@ -48,7 +49,7 @@ class HomebridgeUI {
     this.configPath = this.homebridge.user.configPath();
     this.authPath = path.join(this.homebridge.user.storagePath(), 'auth.json');
     this.storagePath = this.homebridge.user.storagePath();
-    this.accessoryLayoutPath = path.resolve(this.homebridge.user.storagePath(), 'accessories', 'hb-config-ui-x-layout.json');
+    this.accessoryLayoutPath = path.resolve(this.homebridge.user.storagePath(), 'accessories', 'uiAccessoriesLayout.json');
 
     this.parseConfig(config);
     this.parseCommandLineArgs();
@@ -104,6 +105,19 @@ class HomebridgeUI {
       .option('-P, --plugin-path [path]', '', (p) => this.pluginPath = p)
       .option('-I, --insecure', '', () => this.homebridgeInsecure = true)
       .parse(process.argv);
+  }
+
+  public async refreshHomebridgeConfig() {
+    try {
+      this.homebridgeConfig = await import(hb.configPath);
+    } catch (e) {
+      this.homebridgeConfig = {
+        bridge: {
+           name: 'Homebridge',
+        }
+      };
+      this.error(`Failed to load ${hb.configPath} - ${e.message}`);
+    }
   }
 
   public log(msg: string) {
@@ -166,7 +180,7 @@ class HomebridgeUI {
 
   public async resetHomebridgeAccessory() {
     // load config file
-    const config = await fs.readJson(this.configPath);
+    const config: HomebridgeConfig = await fs.readJson(this.configPath);
 
     // generate new random username and pin
     if (config.bridge) {
@@ -210,24 +224,45 @@ class HomebridgeUI {
     return username;
   }
 
-  public async getAccessoryLayout() {
+  public async getAccessoryLayout(user) {
     if (fs.existsSync(this.accessoryLayoutPath)) {
-      return await fs.readJson(this.accessoryLayoutPath);
-    } else {
-      return [
-        {
-          name: 'Default Room',
-          services: []
-        }
-      ];
+      const accessoryLayout = await fs.readJson(this.accessoryLayoutPath);
+      if (user in accessoryLayout) {
+        return accessoryLayout[user];
+      }
     }
+    return [
+      {
+        name: 'Default Room',
+        services: []
+      }
+    ];
   }
 
-  public async updateAccessoryLayout(layout) {
-    await fs.writeJson(this.accessoryLayoutPath, layout, { spaces: 4 });
-    this.log('Accessory layout changes saved.');
+  public async updateAccessoryLayout(user, layout) {
+    const accessoryLayout = await fs.existsSync(this.accessoryLayoutPath) ? await fs.readJson(this.accessoryLayoutPath) : {};
+    accessoryLayout[user] = layout;
+    await fs.writeJson(this.accessoryLayoutPath, accessoryLayout);
+    this.log(`[${user}] Accessory layout changes saved.`);
     return layout;
   }
+}
+
+export interface HomebridgeConfig {
+  bridge: {
+    name: string;
+    username?: string;
+    port?: number;
+    pin?: string;
+  };
+  platforms?: {
+    name: string;
+    platform: string;
+  }[];
+  accessories?: {
+    accessory: string;
+    name: string;
+  }[];
 }
 
 export const hb = new HomebridgeUI();

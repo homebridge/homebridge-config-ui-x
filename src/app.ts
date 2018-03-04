@@ -11,6 +11,7 @@ import { SettingsRouter } from './routes/settings';
 import { ServerRouter } from './routes/server';
 import { ConfigRouter } from './routes/config';
 import { PackageRouter } from './routes/packages';
+import { AccessoriesRouter } from './routes/accessories';
 
 export class ExpressServer {
   public app: Express;
@@ -50,6 +51,7 @@ export class ExpressServer {
     this.app.use('/api/users', new UserRouter().router);
     this.app.use('/api/packages', new PackageRouter().router);
     this.app.use('/api/config', new ConfigRouter().router);
+    this.app.use('/api/accessories', new AccessoriesRouter().router);
 
     // serve index.html for anything not on the /api routes
     this.app.get(/^((?!api\/).)*$/, this.auth.staticAuth, this.serveSpa);

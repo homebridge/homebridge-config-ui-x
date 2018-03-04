@@ -25,6 +25,9 @@ class HomebridgeConfigUi {
     // ensure auth.json is setup correctly
     await users.setupAuthFile();
 
+    // load config.json into memory
+    await hb.refreshHomebridgeConfig();
+
     // dynamically load modules so app is only loaded if plugin is enabled
     const { ExpressServer } = await import('./app');
     const { WSS } = await import('./wss');

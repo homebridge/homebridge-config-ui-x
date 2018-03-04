@@ -82,6 +82,7 @@ export class AccessoriesComponent implements OnInit {
 
             if (!this.roomsOrdered) {
               this.orderRooms();
+              this.roomsOrdered = true;
             }
           }
         }
@@ -146,6 +147,7 @@ export class AccessoriesComponent implements OnInit {
   }
 
   orderRooms() {
+    console.log('order room');
     // order the services within each room
     this.rooms.forEach((room) => {
       const roomCache = this.accessoryLayout.find(r => r.name === room.name);

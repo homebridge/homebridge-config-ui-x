@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { JwtHelper } from 'angular2-jwt';
 
 import { ApiService } from './api.service';
@@ -20,7 +21,8 @@ export class AuthService {
   public user: HomebridgeUser = {};
 
   constructor(
-    private $api: ApiService
+    private $api: ApiService,
+    private titleService: Title
   ) {
     this.loadToken();
     this.getAppSettings();
@@ -81,11 +83,16 @@ export class AuthService {
         this.formAuth = data.formAuth;
         this.enableAccessories = data.enableAccessories;
         this.setTheme(data.theme || 'red');
+        this.setTitle(data.homebridgeInstanceName);
       });
   }
 
   setTheme(theme: string) {
     this.theme = theme;
     window.document.querySelector('body').classList.add(`config-ui-x-${this.theme}`);
+  }
+
+  setTitle(title: string) {
+    this.titleService.setTitle(title || 'Homebridge');
   }
 }
