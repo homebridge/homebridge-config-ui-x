@@ -4,8 +4,6 @@ import * as bufferShim from 'buffer-shims';
 
 import { hb } from './hb';
 
-const config = require(hb.configPath);
-
 class QRCode {
   private accessoryId: string;
   private accessoryInfoPath: string;
@@ -13,7 +11,7 @@ class QRCode {
   private _accessoryInfo: any;
 
   constructor() {
-    this.accessoryId = config.bridge.username.split(':').join('');
+    this.accessoryId = hb.homebridgeConfig.bridge.username.split(':').join('');
     this.accessoryInfoPath = path.join(hb.storagePath, 'persist', `AccessoryInfo.${this.accessoryId}.json`);
 
     this.getCode();

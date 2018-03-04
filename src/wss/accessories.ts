@@ -4,17 +4,15 @@ import { HapClient, ServiceType } from '@oznu/hap-client';
 import { hb } from '../hb';
 
 export class AccessoriesWssHandler {
-  private config: any;
   private ws: WebSocket;
   private hapClient: HapClient;
   private services: any;
 
   constructor(ws: WebSocket, req) {
     this.ws = ws;
-    this.config = require(hb.configPath);
 
     // setup hap client
-    this.hapClient = new HapClient(`http://localhost:${this.config.bridge.port}`, this.config.bridge.pin);
+    this.hapClient = new HapClient(`http://localhost:${hb.homebridgeConfig.bridge.port}`, hb.homebridgeConfig.bridge.pin);
 
     // on connect send everything
     this.loadAccessories(true);
