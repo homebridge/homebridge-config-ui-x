@@ -38,6 +38,18 @@ Add this to your homebridge `config.json` file
 * `theme` - The colour scheme to use. Possible values: `red`, `pink`, `purple`, `indigo`, `blue`, `blue-grey`, `green`, `orange`. Defaults to `red`.
 * `fork` - Set only if using a fork of Homebridge. Use username/repo format, eg. `northernman54/homebridge`.
 
+## Accessory Control
+
+The plugin allows you to view and control some types of Homebridge accessories from your web browser. To enable accessory control you must be running Homebridge in insecure mode:
+
+```
+homebridge -I
+```
+
+*Insecure mode, as it's name suggests, is not secure. Anyone with network access to your Homebridge server port and pin will be able to control your accessories. Unless exposing the Homebridge port to the internet, this will generally not be a problem as access will be limited to people already on your local network. Remote access via a home hub (Apple TV, iPad, HomePod etc.) will still be secure. Enable at your own risk.*
+
+Not all accessory types are supported. Pull requests for new accessory types are welcome.
+
 ## Log Viewer Configuration
 
 Homebridge Config UI X allows you to view the homebridge process logs in the browser. These logs can be loaded from a file or from a command.
