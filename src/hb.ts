@@ -122,16 +122,16 @@ class HomebridgeUI {
     }
   }
 
-  public log(msg: string) {
-    this.logger(msg);
+  public log(...params) {
+    this.logger(...params);
   }
 
-  public warn(msg: string) {
-    this.logger.warn(msg);
+  public warn(...params) {
+    this.logger.warn(...params);
   }
 
-  public error(msg: string) {
-    this.logger.error(msg);
+  public error(...params) {
+    this.logger.error(...params);
   }
 
   public async updateConfig(config) {
