@@ -4,6 +4,7 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import { Express, Request, Response, NextFunction } from 'express';
 
+import { hb } from './hb';
 import { AuthMiddleware } from './auth';
 import { UserRouter } from './routes/users';
 import { LoginRouter } from './routes/login';
@@ -73,7 +74,7 @@ export class ExpressServer {
   }
 
   errorHandler(err, req: Request, res: Response, next: NextFunction) {
-    console.error(err);
+    hb.error(err);
 
     if (res.statusCode === 200) {
       res.status(500);

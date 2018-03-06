@@ -53,10 +53,10 @@ export class LogsWssHandler {
     let command;
     if (os.platform() === 'win32') {
       // windows - use powershell to tail log
-      command = ['powershell.exe', '-command', `Get-Content -Path '${hb.logOpts}' -Wait -Tail 100`];
+      command = ['powershell.exe', '-command', `Get-Content -Path '${hb.logOpts}' -Wait -Tail 200`];
     } else {
       // linux / macos etc
-      command = `tail -n 100 -f ${hb.logOpts}`.split(' ');
+      command = ['tail', '-n', '200', '-f', hb.logOpts];
 
       // sudo mode is requested in plugin config
       if (hb.useSudo) {
@@ -70,7 +70,7 @@ export class LogsWssHandler {
   }
 
   logFromSystemd(service: string = 'homebridge') {
-    const command = `journalctl -o cat -n 500 -f -u ${service}`.split(' ');
+    const command = ['journalctl', '-o', 'cat', '-n', '500', '-f', '-u', service];
 
     // sudo mode is requested in plugin config
     if (hb.useSudo) {

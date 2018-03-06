@@ -20,6 +20,7 @@ class HomebridgeUI {
   public logOpts: any;
   public restartCmd;
   public useSudo: boolean;
+  public disableNsp: boolean;
   public authMethod: string | boolean;
   public formAuth: boolean;
   public theme: string;
@@ -64,6 +65,7 @@ class HomebridgeUI {
     this.homebridgeFork = config.fork;
     this.homebridgeNpmPkg = config.homebridgeNpmPkg || 'homebridge';
     this.homebridgeInsecure = config.homebridgeInsecure;
+    this.disableNsp = config.disableNsp;
 
     if (config.auth === 'none' || config.auth === false) {
       this.formAuth = false;

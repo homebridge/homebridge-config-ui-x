@@ -54,6 +54,9 @@ export class PluginsManageComponent implements OnInit {
             this.$state.go('plugins');
             this.activeModal.close();
             this.toastr.success(`Installed ${this.pluginName}`, 'Success!');
+          },
+          (err) => {
+            this.$state.reload();
           }
         );
         break;
@@ -63,6 +66,9 @@ export class PluginsManageComponent implements OnInit {
             this.$state.reload();
             this.activeModal.close();
             this.toastr.success(`Removed ${this.pluginName}`, 'Success!');
+          },
+          (err) => {
+            this.$state.reload();
           }
         );
         break;
@@ -76,7 +82,10 @@ export class PluginsManageComponent implements OnInit {
               this.activeModal.close();
             }
             this.toastr.success(`Updated ${this.pluginName}`, 'Success!');
-         }
+          },
+          (err) => {
+            this.$state.reload();
+          }
         );
         break;
       case 'Upgrade':
@@ -85,6 +94,9 @@ export class PluginsManageComponent implements OnInit {
             this.$state.go('restart');
             this.activeModal.close();
             this.toastr.success(`Homebridge Upgraded`, 'Success!');
+          },
+          (err) => {
+            this.$state.reload();
           }
         );
     }
