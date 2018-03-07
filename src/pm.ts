@@ -169,7 +169,7 @@ class PackageManager {
 
     return new Bluebird((resolve, reject) => {
       let timeoutTimer;
-      const command = ['node', this.nsp, 'check', `${pkgPath}`];
+      const command = ['node', this.nsp, 'check'];
 
       // sudo mode is requested in plugin config
       if (hb.useSudo) {
@@ -183,6 +183,7 @@ class PackageManager {
         name: 'xterm-color',
         cols: 80,
         rows: 30,
+        cwd: pkgPath,
         env: process.env
       });
 
@@ -202,6 +203,8 @@ class PackageManager {
           this.wssBroadcast(color.yellow(`\n\rThe plugin has still been installed. Use at your own risk.`));
           reject(`Security scan returned possible vulnerabilities.`);
         } else {
+          clearTimeout(timeoutTimer);
+          this.wssBroadcast(color.yellow(`\n\rThe plugin has still been installed.`));
           reject(`Security scan failed to run. Error code: ${code}`);
         }
       });
