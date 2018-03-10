@@ -2,7 +2,9 @@
 
 $image-path: '../../node_modules/mdbootstrap/img/';
 $roboto-font-path: '../../node_modules/mdbootstrap/font/roboto/';
+$material-design-icons-font-path: '../../node_modules/material-design-icons-iconfont/dist/fonts/';
 
+@import "~material-design-icons-iconfont/dist/material-design-icons";
 @import "~bootstrap/scss/bootstrap";
 @import "~mdbootstrap/scss/mdb";
 
@@ -96,6 +98,10 @@ body {
 
 .md-form .form-control:disabled, .md-form .form-control[readonly] {
   color: rgba(0,0,0,.46)
+}
+
+.dropdown-toggle::after {
+    display:none
 }
 
 .status-circle {
