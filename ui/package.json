@@ -19,6 +19,7 @@
     "@angular/platform-browser": "^5.2.8",
     "@angular/platform-browser-dynamic": "^5.2.8",
     "@angular/router": "^5.2.8",
+    "@fortawesome/fontawesome-free-webfonts": "^1.0.4",
     "@ng-bootstrap/ng-bootstrap": "^1.0.1",
     "@uirouter/angular": "^1.0.0-rc.2",
     "angular2-jwt": "^0.2.3",

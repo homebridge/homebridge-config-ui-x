@@ -28,24 +28,36 @@
       <ul class="navbar-nav nav-flex-icons">
         <li class="nav-item waves-effect waves-light" uiSrefActive="active" placement="bottom" ngbTooltip="View Logs" container="body">
           <a class="nav-link" uiSref="logs">
-            <i class="material-icons">&#xE86D;</i>
+            <i class="material-icons">chrome_reader_mode</i>
           </a>
         </li>
         <li class="nav-item waves-effect waves-light" uiSrefActive="active" placement="bottom" ngbTooltip="User Accounts" container="body" *ngIf="$auth.user.admin">
           <a class="nav-link" uiSref="users">
-            <i class="material-icons">&#xE8D3;</i>
+            <i class="material-icons">supervisor_account</i>
           </a>
         </li>
         <li class="nav-item waves-effect waves-light" uiSrefActive="active" placement="bottom" ngbTooltip="Restart" container="body">
           <a class="nav-link" uiSref="restart">
-            <i class="material-icons">&#xE8AC;</i>
+            <i class="material-icons">power_settings_new</i>
           </a>
         </li>
         <li class="nav-item waves-effect waves-light" uiSrefActive="active" placement="bottom" ngbTooltip="Logout" container="body" *ngIf="$auth.formAuth">
           <a class="nav-link" (click)="$auth.logout()">
-            <i class="material-icons">&#xE879;</i>
+            <i class="material-icons">exit_to_app</i>
           </a>
         </li>
+
+        <li class="nav-item dropdown" *ngIf="$auth.env.runningInDocker && $auth.user.admin">
+          <a class="nav-link dropdown-toggle waves-effect waves-light" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fab fa-docker"></i>
+          </a>
+          <div class="dropdown-menu dropdown-menu-right dropdown-info">
+            <a class="dropdown-item waves-effect waves-light" uiSref="docker-terminal">Terminal</a>
+            <a class="dropdown-item waves-effect waves-light" uiSref="docker-startup-script" >Startup Script</a>
+            <a class="dropdown-item waves-effect waves-light" uiSref="docker-restart-container">Restart Container</a>
+          </div>
+        </li>
+
       </ul>
     </div>
   </nav>

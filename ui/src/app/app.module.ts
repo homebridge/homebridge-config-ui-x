@@ -18,6 +18,10 @@ import { PluginService } from './_services/plugin.service';
 import { AuthService } from './_services/auth.service';
 import { AuthHttpInterceptor } from './_services/http.service';
 
+import { SpinnerModule } from './spinner/spinner.module';
+import { AccessoriesModule } from './accessories/accessories.module';
+import { DockerToolsModule } from './docker-tools/docker-tools.module';
+
 import { AppComponent } from './app.component';
 import { StatusComponent, StatusStates } from './status/status.component';
 import { PluginsComponent, PluginStates } from './plugins/plugins.component';
@@ -30,11 +34,7 @@ import { UsersAddComponent } from './users/users.add.component';
 import { UsersEditComponent } from './users/users.edit.component';
 import { RestartComponent, RestartState } from './restart/restart.component';
 import { LoginComponent, LoginStates } from './login/login.component';
-
-import { SpinnerComponent } from './spinner/spinner.component';
 import { ResetComponent, ResetModalComponent } from './reset/reset.component';
-
-import { AccessoriesModule } from './accessories/accessories.module';
 
 @NgModule({
   declarations: [
@@ -44,7 +44,6 @@ import { AccessoriesModule } from './accessories/accessories.module';
     ConfigComponent,
     LogsComponent,
     UsersComponent,
-    SpinnerComponent,
     PluginSearchComponent,
     PluginsManageComponent,
     UsersAddComponent,
@@ -67,6 +66,7 @@ import { AccessoriesModule } from './accessories/accessories.module';
     FormsModule,
     ReactiveFormsModule,
     AceEditorModule,
+    SpinnerModule,
     ToastModule.forRoot(),
     NgbModule.forRoot(),
     UIRouterModule.forRoot({
@@ -84,7 +84,8 @@ import { AccessoriesModule } from './accessories/accessories.module';
       config: routerConfigFn,
       otherwise: '/'
     }),
-    AccessoriesModule
+    AccessoriesModule,
+    DockerToolsModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthHttpInterceptor, multi: true },

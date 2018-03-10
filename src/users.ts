@@ -8,7 +8,7 @@ const jwt = Bluebird.promisifyAll(jsonwebtoken);
 
 import { hb } from './hb';
 
-interface User {
+export interface User {
   id: number;
   name: string;
   username: string;

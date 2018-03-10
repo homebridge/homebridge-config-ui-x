@@ -12,6 +12,7 @@ class HomebridgeUI {
   public homebridgeNpmPkg: string;
   public homebridgeFork: string;
   public homebridgeConfig: HomebridgeConfigType;
+  public runningInDocker: boolean;
   public configPath: string;
   public authPath: string;
   public storagePath: string;
@@ -65,6 +66,7 @@ class HomebridgeUI {
     this.homebridgeFork = config.fork;
     this.homebridgeNpmPkg = config.homebridgeNpmPkg || 'homebridge';
     this.homebridgeInsecure = config.homebridgeInsecure;
+    this.runningInDocker = Boolean(process.env.HOMEBRIDGE_CONFIG_UI === '1');
     this.disableNsp = config.disableNsp;
 
     if (config.auth === 'none' || config.auth === false) {

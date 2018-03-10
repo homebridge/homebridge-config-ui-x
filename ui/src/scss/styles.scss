@@ -3,8 +3,11 @@
 $image-path: '../../node_modules/mdbootstrap/img/';
 $roboto-font-path: '../../node_modules/mdbootstrap/font/roboto/';
 $material-design-icons-font-path: '../../node_modules/material-design-icons-iconfont/dist/fonts/';
+$fa-font-path:'../../node_modules/@fortawesome/fontawesome-free-webfonts/webfonts';
 
 @import "~material-design-icons-iconfont/dist/material-design-icons";
+@import "~@fortawesome/fontawesome-free-webfonts/scss/fontawesome.scss";
+@import "~@fortawesome/fontawesome-free-webfonts/scss/fa-brands.scss";
 @import "~bootstrap/scss/bootstrap";
 @import "~mdbootstrap/scss/mdb";
 
@@ -87,7 +90,11 @@ body {
 }
 
 .bg-blue {
-    background-color: #1976d2 !important;
+  background-color: #1976d2 !important;
+}
+
+.bg-black {
+  background-color: #000000 !important;
 }
 
 .card .card-text {
@@ -102,6 +109,10 @@ body {
 
 .dropdown-toggle::after {
     display:none
+}
+
+.hb-ace-text-editor {
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
 }
 
 .status-circle {
