@@ -1,21 +1,29 @@
 <div class="flex-column d-flex align-items-stretch h-100">
 
   <div class="row">
-    <div class="col-sm-6 d-none d-sm-block">
+    <div class="col-sm-8 d-none d-sm-block">
       <h3 class="primary-text m-0">
-        <span class="d-none d-md-inline">Homebridge</span> Config Editor</h3>
+        <span class="d-none d-md-inline">Docker Container</span> startup.sh</h3>
     </div>
-    <div class="col-sm-6 text-right">
-      <a class="btn btn-elegant waves-effect m-0" [href]="backupConfigHref" download="config.json">Backup</a>
+    <div class="col-sm-4 text-right">
       <button class="btn btn-primary waves-effect m-0" (click)="onSave()">Save</button>
+    </div>
+  </div>
+
+  <div class="row mt-3">
+    <div class="col-md-12">
+      <div class="alert alert-warning" role="alert">
+       This script will be executed each time the docker container starts.
+       You can use this to install any extra packages your plugins may need such as ffmpeg or libpcap-dev.
+      </div>
     </div>
   </div>
 
   <ace-editor
     class="hb-ace-text-editor align-self-end h-100 mb-3 mt-3"
-    [(text)]="homebridgeConfig"
+    [(text)]="startupScript"
     theme="xcode"
-    mode="json"
+    mode="sh"
     [options]="options"
     [readOnly]="false"
     [autoUpdateContent]="true"

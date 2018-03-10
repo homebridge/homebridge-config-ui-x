@@ -93,4 +93,16 @@ export class ApiService {
   updateAccessoryLayout(layout) {
     return this.$http.post(`${this.base}/api/accessories/layout`, layout, this.httpOptions);
   }
+
+  dockerGetStartupScript(layout) {
+    return this.$http.get(`${this.base}/api/docker/startup-script`, Object.assign({ responseType: 'text' as 'text' }, this.httpOptions));
+  }
+
+  dockerSaveStartupScript(payload) {
+    return this.$http.post(`${this.base}/api/docker/startup-script`, payload, this.httpOptions);
+  }
+
+  dockerRestartContainer() {
+    return this.$http.put(`${this.base}/api/docker/restart-container`, {}, this.httpOptions);
+  }
 }

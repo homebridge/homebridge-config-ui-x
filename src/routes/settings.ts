@@ -20,7 +20,8 @@ export class SettingsRouter {
         packageVersion: hb.ui.version,
         nodeVersion: process.version,
         enableAccessories: hb.homebridgeInsecure || false,
-        homebridgeInstanceName: hb.homebridgeConfig.bridge.name || 'Homebridge'
+        homebridgeInstanceName: hb.homebridgeConfig.bridge.name || 'Homebridge',
+        runningInDocker: hb.runningInDocker
       }
     });
   }

@@ -7,6 +7,7 @@ import { users } from '../users';
 import { LogsWssHandler } from './logs';
 import { StatusWssHandler } from './status';
 import { AccessoriesWssHandler} from './accessories';
+import { TerminalWssHandler } from './terminal';
 
 export class WSS {
   public server: WebSocket.Server;
@@ -21,7 +22,8 @@ export class WSS {
     this.subscriptions = {
       logs: LogsWssHandler,
       status: StatusWssHandler,
-      accessories: AccessoriesWssHandler
+      accessories: AccessoriesWssHandler,
+      terminal: TerminalWssHandler,
     };
 
     this.server.on('connection', (ws, req) => {
@@ -44,6 +46,10 @@ export class WSS {
         if (msg.accessories) {
           ws.emit('accessories', msg);
         }
+
+        if (msg.terminal) {
+          ws.emit('terminal', msg);
+        }
       });
 
       // absorb websocket errors
@@ -59,6 +65,7 @@ export class WSS {
       return users.verifyJwt(params.token)
         .then((user) => {
           if (user) {
+            info.req.user = user;
             return callback(true);
           } else {
             // invalid token - reject the websocket connection

@@ -34,7 +34,7 @@ export class StatusComponent implements OnInit {
   constructor(
     private ws: WsService,
     public $auth: AuthService,
-    private $plugin: PluginService,
+    public $plugin: PluginService,
     private $api: ApiService,
     public toastr: ToastsManager,
     ) {}
