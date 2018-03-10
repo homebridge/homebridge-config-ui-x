@@ -1,10 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
 
-$image-path: '../../node_modules/angular-bootstrap-md/img/';
-$roboto-font-path: '../../node_modules/angular-bootstrap-md/font/roboto/';
+$image-path: '../../node_modules/mdbootstrap/img/';
+$roboto-font-path: '../../node_modules/mdbootstrap/font/roboto/';
 
-@import "~angular-bootstrap-md/scss/bootstrap/bootstrap";
-@import "~angular-bootstrap-md/scss/mdb-free";
+@import "~bootstrap/scss/bootstrap";
+@import "~mdbootstrap/scss/mdb";
 
 @import "~xterm/dist/xterm.css";
 @import "~ng2-toastr/bundles/ng2-toastr.min.css";
@@ -84,6 +84,10 @@ body {
   background-color: #1aa531;
 }
 
+.bg-blue {
+    background-color: #1976d2 !important;
+}
+
 .status-circle {
   color: #ffffff;
   width: 40px;
@@ -94,23 +98,6 @@ body {
   font-size: 24px;
   line-height: 1;
   text-align: center;
-}
-
-.hb-npm-search {
-    box-sizing: inherit !important;
-    border: 1px solid #d0d0d0 !important;
-    height: 50px !important;
-    border-width: 0.5px;
-    padding: 10px;
-    margin-bottom: 15px;
-
-    &:focus, &:hover {
-      border: 1px solid #000000 !important;
-    }
-
-    &:focus {
-      box-shadow: 0 1px 0 0 #000000 !important;
-    }
 }
 
 .qr-code-container {

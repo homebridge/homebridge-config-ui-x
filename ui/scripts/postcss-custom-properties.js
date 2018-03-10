@@ -17,4 +17,5 @@ let replaceFileWithString = 'warnings: options.warnings === undefined ? false : 
 changeFile(pkg, searchFileForString, replaceFileWithString)
 
 // fix image path in angular-bootstrap-md
-changeFile('./node_modules/angular-bootstrap-md/scss/mdb/free/data/_variables.scss', `$image-path: '../img/';`, `$image-path: '../img/' !default;`)
+changeFile('./node_modules/mdbootstrap/scss/core/_variables.scss', `$image-path: "../img/";`, `$image-path: '../img/' !default;`)
+changeFile('./node_modules/mdbootstrap/scss/core/_masks.scss', `../img`, `#{$image-path}`)

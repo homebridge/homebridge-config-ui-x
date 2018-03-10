@@ -9,6 +9,7 @@ import { PluginService } from '../_services/plugin.service';
 @Component({
   selector: 'app-plugins.search',
   templateUrl: './plugins.component.html',
+  styleUrls: ['./plugins.component.scss']
 })
 export class PluginSearchComponent implements OnInit {
   form: FormGroup;

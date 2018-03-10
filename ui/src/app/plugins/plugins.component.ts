@@ -8,7 +8,8 @@ import { PluginService } from '../_services/plugin.service';
 
 @Component({
   selector: 'app-plugins',
-  templateUrl: './plugins.component.html'
+  templateUrl: './plugins.component.html',
+  styleUrls: ['./plugins.component.scss']
 })
 export class PluginsComponent implements OnInit {
   form: FormGroup;
