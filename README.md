@@ -7,12 +7,12 @@ This is a plugin for [Homebridge](https://github.com/nfarina/homebridge). This i
 
 This plugin allows you to monitor, backup and configure your Homebridge server from a browser.
 
-![Status](screenshots/homebridge-config-ui-x-accessories.png)
+[![Status](screenshots/homebridge-config-ui-x-accessories.png)](#accessory-control)
 
 ## Installation Instructions
 
 ```
-npm install -g --unsafe-perm homebridge-config-ui-x
+sudo npm install -g --unsafe-perm homebridge-config-ui-x
 ```
 
 # Configuration
@@ -175,7 +175,28 @@ The following browsers are supported by this plugin:
 
 * Safari >= 10
 * Chrome >= 55 (including Opera)
+* FireFox >= 58
 * MS Edge >= 13 on the desktop
 * iOS >=10 and Chrome on mobile
 
 MS Internet Explorer (any version) is not supported!
+
+# Troubleshooting
+
+#### 1. Errors during installation
+
+Make sure you installed the package with `sudo` and used the  `--unsafe-perm` flag. Most installation errors can be fixed by removing the plugin and reinstalling:
+
+```shell
+# cleanup
+sudo npm uninstall -g homebridge-config-ui-x
+
+# reinstall
+sudo npm install -g --unsafe-perm homebridge-config-ui-x
+```
+
+#### 2. Ask on Slack
+
+[![Slack Status](https://slackin-znyruquwmv.now.sh/badge.svg)](https://slackin-znyruquwmv.now.sh)
+
+Join the [Homebridge Slack](https://slackin-znyruquwmv.now.sh/) chat and ask in the [#ui](https://homebridgeteam.slack.com/messages/C9NH0CUTY) channel.
