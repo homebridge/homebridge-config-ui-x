@@ -8,8 +8,8 @@ export class AccessoriesRouter {
   constructor() {
     this.router = Router();
 
-    this.router.get('/', this.getAccessoryLayout);
-    this.router.post('/', this.updateAccessoryLayout);
+    this.router.get('/layout', this.getAccessoryLayout);
+    this.router.post('/layout', this.updateAccessoryLayout);
   }
 
   getAccessoryLayout(req: Request, res: Response, next: NextFunction) {

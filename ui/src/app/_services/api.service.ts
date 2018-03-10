@@ -87,10 +87,10 @@ export class ApiService {
   }
 
   getAccessoryLayout() {
-    return this.$http.get(`${this.base}/api/accessories`, this.httpOptions);
+    return this.$http.get(`${this.base}/api/accessories/layout`, this.httpOptions);
   }
 
   updateAccessoryLayout(layout) {
-    return this.$http.post(`${this.base}/api/accessories`, layout, this.httpOptions);
+    return this.$http.post(`${this.base}/api/accessories/layout`, layout, this.httpOptions);
   }
 }
