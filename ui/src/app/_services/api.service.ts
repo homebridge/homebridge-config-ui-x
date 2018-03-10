@@ -85,4 +85,12 @@ export class ApiService {
   deleteUser(userId) {
     return this.$http.delete(`${this.base}/api/users/${userId}`, this.httpOptions);
   }
+
+  getAccessoryLayout() {
+    return this.$http.get(`${this.base}/api/accessories/layout`, this.httpOptions);
+  }
+
+  updateAccessoryLayout(layout) {
+    return this.$http.post(`${this.base}/api/accessories/layout`, layout, this.httpOptions);
+  }
 }

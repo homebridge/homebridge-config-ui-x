@@ -97,7 +97,7 @@ class Users {
     }
 
     user.name = update.name || user.name;
-    user.admin = update.admin || user.admin;
+    user.admin = (update.admin === undefined) ? user.admin : update.admin;
 
     if (update.password) {
       const salt = await this.genSalt();
@@ -156,6 +156,15 @@ class Users {
       }
     } else {
       return null;
+    }
+  }
+
+  ensureAdmin(req, res, next) {
+    if (req.user && req.user.admin) {
+      return next();
+    } else {
+      hb.warn(`403 Forbidden [${req.user.username}] ${req.originalUrl}`);
+      return res.sendStatus(403);
     }
   }
 

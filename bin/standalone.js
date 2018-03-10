@@ -17,9 +17,17 @@ const options = {
 }
 
 // log
-const log = (msg) => {
+const log = (...params) => {
   let date = new Date()
-  console.log(`[${date.toLocaleString()}] [homebridge-config-ui-x] ${msg}`)
+  console.log(`[${date.toLocaleString()}] [homebridge-config-ui-x]`, ...params)
+}
+
+log.error = (...params) => {
+  console.error(...params)
+}
+
+log.warn = (...params) => {
+  console.warn(...params)
 }
 
 commander
@@ -56,7 +64,8 @@ const config = {
   theme: process.env.HOMEBRIDGE_CONFIG_UI_THEME || 'red',
   auth: process.env.HOMEBRIDGE_CONFIG_UI_AUTH || 'form',
   homebridgeNpmPkg: process.env.HOMEBRIDGE_CONFIG_UI_NPM_PKG || 'homebridge',
-  homebridgeFork: process.env.HOMEBRIDGE_CONFIG_UI_FORK || undefined
+  homebridgeFork: process.env.HOMEBRIDGE_CONFIG_UI_FORK || undefined,
+  homebridgeInsecure: (process.env.HOMEBRIDGE_INSECURE === "1")
 }
 
 // emulate homebridge handler

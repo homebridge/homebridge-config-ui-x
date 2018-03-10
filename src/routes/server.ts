@@ -13,7 +13,7 @@ export class ServerRouter {
     this.router = Router();
 
     this.router.put('/restart', this.restartServer);
-    this.router.put('/reset-homebridge', this.resetHomebridgeAccessory);
+    this.router.put('/reset-homebridge', users.ensureAdmin, this.resetHomebridgeAccessory);
     this.router.get('/qrcode.svg', this.getQrCode);
     this.router.get('/token', this.getToken);
   }

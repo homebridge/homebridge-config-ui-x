@@ -14,7 +14,14 @@ export class SettingsRouter {
   getSettings(req: Request, res: Response, next: NextFunction) {
     return res.json({
       formAuth: hb.formAuth,
-      theme: hb.theme
+      theme: hb.theme,
+      env: {
+        packageName: hb.ui.name,
+        packageVersion: hb.ui.version,
+        nodeVersion: process.version,
+        enableAccessories: hb.homebridgeInsecure || false,
+        homebridgeInstanceName: hb.homebridgeConfig.bridge.name || 'Homebridge'
+      }
     });
   }
 }

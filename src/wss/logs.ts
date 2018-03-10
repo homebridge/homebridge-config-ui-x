@@ -1,5 +1,6 @@
 import * as os from 'os';
 import * as fs from 'fs';
+import * as WebSocket from 'ws';
 import * as pty from 'node-pty';
 import * as color from 'bash-color';
 import * as child_process from 'child_process';
@@ -7,10 +8,10 @@ import * as child_process from 'child_process';
 import { hb } from '../hb';
 
 export class LogsWssHandler {
-  private ws: any;
+  private ws: WebSocket;
   private term: any;
 
-  constructor(ws, req) {
+  constructor(ws: WebSocket, req) {
     this.ws = ws;
 
     if (hb.logOpts && typeof (hb.logOpts) === 'string' && fs.existsSync(hb.logOpts)) {
@@ -32,7 +33,7 @@ export class LogsWssHandler {
     ws.on('close', onClose);
 
     // when the client leaves the log page, stop tailing the log file
-    const onUnsubscribe = (sub) => {
+    const onUnsubscribe = (sub?) => {
       if (sub === 'logs') {
         this.killTerm();
         ws.removeEventListener('unsubscribe', onUnsubscribe);
@@ -52,10 +53,10 @@ export class LogsWssHandler {
     let command;
     if (os.platform() === 'win32') {
       // windows - use powershell to tail log
-      command = ['powershell.exe', '-command', `Get-Content -Path '${hb.logOpts}' -Wait -Tail 100`];
+      command = ['powershell.exe', '-command', `Get-Content -Path '${hb.logOpts}' -Wait -Tail 200`];
     } else {
       // linux / macos etc
-      command = `tail -n 100 -f ${hb.logOpts}`.split(' ');
+      command = ['tail', '-n', '200', '-f', hb.logOpts];
 
       // sudo mode is requested in plugin config
       if (hb.useSudo) {
@@ -69,7 +70,7 @@ export class LogsWssHandler {
   }
 
   logFromSystemd(service: string = 'homebridge') {
-    const command = `journalctl -o cat -n 500 -f -u ${service}`.split(' ');
+    const command = ['journalctl', '-o', 'cat', '-n', '500', '-f', '-u', service];
 
     // sudo mode is requested in plugin config
     if (hb.useSudo) {

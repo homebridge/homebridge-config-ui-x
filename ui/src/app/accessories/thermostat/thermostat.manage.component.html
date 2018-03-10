@@ -1,0 +1,37 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title" [innerText]="service.serviceName"></h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body text-center">
+
+     
+    <h5 class="mb-0"><strong>{{ service.values.CurrentTemperature }}&deg;</strong></h5>
+    <p>Set to {{ targetTemperature.value }}&deg;</p>
+
+    <div class="thermostat-mode-control btn-group btn-group-toggle d-flex justify-content-center mb-4"
+      ngbRadioGroup name="radioBasic" [(ngModel)]="targetMode" (change)="onTargetStateChange()">
+      <label ngbButtonLabel class="btn-primary">
+        <input ngbButton type="radio" [value]="0"> Off
+      </label>
+      <label ngbButtonLabel class="btn-primary">
+        <input ngbButton type="radio" [value]="1"> Heat
+      </label>
+      <label ngbButtonLabel class="btn-primary">
+        <input ngbButton type="radio" [value]="2"> Cool
+      </label>
+      <label ngbButtonLabel class="btn-primary">
+        <input ngbButton type="radio" [value]="3"> Auto
+      </label>
+    </div>
+
+    <h5>Target Temperature</h5>
+
+    <nouislider [min]="targetTemperature.min" [max]="targetTemperature.max" [step]="targetTemperature.step" 
+      [(ngModel)]="targetTemperature.value" (ngModelChange)="onTemperatureStateChange()">
+    </nouislider>
+
+  </div>
+</div>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.3.2 (12043) - http://www.bohemiancoding.com/sketch -->
+    <title>lock a</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="flatten" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="z-copy" sketch:type="MSArtboardGroup" transform="translate(-100.000000, -196.000000)" fill="#000000">
+            <g id="accessoryIcon" sketch:type="MSLayerGroup" transform="translate(100.000000, 196.000000)">
+                <path d="M6,19.0058587 L6,24 C6,28.4128883 9.58326452,32 13.9979204,32 L18.0020796,32 C22.4177293,32 26,28.4174727 26,24 L26,19.0058587 C26,17.3462438 24.6605259,16 23.0049107,16 L8.99508929,16 C7.33929222,16 6,17.3468057 6,19.0058587 L6,19.0058587 Z M8,19.0058587 C8,18.4488783 8.44637411,18 8.99508929,18 L23.0049107,18 C23.553693,18 24,18.4485626 24,19.0058587 L24,24 C24,27.3129353 21.3131277,30 18.0020796,30 L13.9979204,30 C10.6883147,30 8,27.3087989 8,24 L8,19.0058587 L8,19.0058587 Z M11,16 L11,6.99706188 C11,4.23987016 13.2427071,2 16,2 C18.7609209,2 21,4.23840787 21,6.99706188 L21,16 L23,16 L23,6.99706188 C23,3.13370412 19.8653562,0 16,0 C12.1387039,0 9,3.13473357 9,6.99706188 L9,16 L11,16 L11,16 Z M16,27 C14.3431458,27 13,25.6568542 13,24 C13,22.3431458 14.3431458,21 16,21 C17.6568542,21 19,22.3431458 19,24 C19,25.6568542 17.6568542,27 16,27 L16,27 Z M16,26 C17.1045695,26 18,25.1045695 18,24 C18,22.8954305 17.1045695,22 16,22 C14.8954305,22 14,22.8954305 14,24 C14,25.1045695 14.8954305,26 16,26 L16,26 Z" sketch:type="MSShapeGroup"></path>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -14,11 +14,14 @@
         <li class="nav-item waves-effect waves-light" uiSrefActive="active">
           <a class="nav-link" uiSref="status">Status</a>
         </li>
-        <li class="nav-item waves-effect waves-light" uiSrefActive="active">
+        <li class="nav-item waves-effect waves-light" uiSrefActive="active" *ngIf="$auth.user.admin">
           <a class="nav-link" uiSref="plugins">Plugins</a>
         </li>
-        <li class="nav-item waves-effect waves-light" uiSrefActive="active">
+        <li class="nav-item waves-effect waves-light" uiSrefActive="active" *ngIf="$auth.user.admin">
           <a class="nav-link" uiSref="config">Config</a>
+        </li>
+        <li class="nav-item waves-effect waves-light" uiSrefActive="active" *ngIf="$auth.env.enableAccessories">
+          <a class="nav-link" uiSref="accessories">Accessories</a>
         </li>
       </ul>
 
@@ -28,7 +31,7 @@
             <i class="material-icons">&#xE86D;</i>
           </a>
         </li>
-        <li class="nav-item waves-effect waves-light" uiSrefActive="active" placement="bottom" ngbTooltip="User Accounts" container="body">
+        <li class="nav-item waves-effect waves-light" uiSrefActive="active" placement="bottom" ngbTooltip="User Accounts" container="body" *ngIf="$auth.user.admin">
           <a class="nav-link" uiSref="users">
             <i class="material-icons">&#xE8D3;</i>
           </a>

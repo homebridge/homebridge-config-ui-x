@@ -1,16 +1,15 @@
 import * as os from 'os';
 import * as fs from 'fs';
+import * as WebSocket from 'ws';
 import * as rp from 'request-promise';
 
 import { hb } from '../hb';
 
 export class StatusWssHandler {
-  private ws: any;
-  private config: any;
+  private ws: WebSocket;
 
-  constructor(ws, req) {
+  constructor(ws: WebSocket, req) {
     this.ws = ws;
-    this.config = require(hb.configPath);
 
     // on connect send everything
     this.sendData();
@@ -30,7 +29,7 @@ export class StatusWssHandler {
     ws.on('close', onClose);
 
     // clear interval when client goes to another page
-    const onUnsubscribe = (sub) => {
+    const onUnsubscribe = (sub?) => {
       if (sub === 'status') {
         clearInterval(statsInterval);
         clearInterval(statusInterval);
@@ -51,8 +50,8 @@ export class StatusWssHandler {
     this.ws.send(JSON.stringify({
       server: {
         consolePort: hb.port,
-        port: this.config.bridge.port,
-        pin: this.config.bridge.pin
+        port: hb.homebridgeConfig.bridge.port,
+        pin: hb.homebridgeConfig.bridge.pin
       }
     }));
   }
@@ -64,8 +63,8 @@ export class StatusWssHandler {
           this.ws.send(JSON.stringify({
             server: {
               consolePort: hb.port,
-              port: this.config.bridge.port,
-              pin: this.config.bridge.pin,
+              port: hb.homebridgeConfig.bridge.port,
+              pin: hb.homebridgeConfig.bridge.pin,
               status: up ? 'up' : 'down'
             },
             status: up ? 'up' : 'down' // TODO remove this in next major version
@@ -118,7 +117,7 @@ export class StatusWssHandler {
 
   checkStatus() {
     // check if homebridge is running on the port specified in the config.json
-    return rp.get(`http://localhost:${this.config.bridge.port}`, {
+    return rp.get(`http://localhost:${hb.homebridgeConfig.bridge.port}`, {
       resolveWithFullResponse: true,
       simple: false // <- This prevents the promise from failing on a 404
     })

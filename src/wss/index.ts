@@ -1,25 +1,27 @@
 import * as url from 'url';
 import * as qs from 'qs';
-import { Server as WebSocketServer } from 'ws';
+import * as WebSocket from 'ws';
 
 import { hb } from '../hb';
 import { users } from '../users';
 import { LogsWssHandler } from './logs';
 import { StatusWssHandler } from './status';
+import { AccessoriesWssHandler} from './accessories';
 
 export class WSS {
-  public server: WebSocketServer;
+  public server: WebSocket.Server;
   private subscriptions: any;
 
   constructor(server) {
-    this.server = new WebSocketServer({
+    this.server = new WebSocket.Server({
       server: server,
       verifyClient: this.verifyClient
     });
 
     this.subscriptions = {
       logs: LogsWssHandler,
-      status: StatusWssHandler
+      status: StatusWssHandler,
+      accessories: AccessoriesWssHandler
     };
 
     this.server.on('connection', (ws, req) => {
@@ -37,6 +39,10 @@ export class WSS {
           this.subscribeHandler(ws, req, msg);
         } else if (msg.unsubscribe) {
           this.unsubscribeHandler(ws, req, msg);
+        }
+
+        if (msg.accessories) {
+          ws.emit('accessories', msg);
         }
       });
 

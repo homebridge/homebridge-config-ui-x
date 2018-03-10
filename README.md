@@ -1,4 +1,5 @@
-[![npm](https://img.shields.io/npm/v/homebridge-config-ui-x.svg)](https://www.npmjs.com/package/homebridge-config-ui-x)
+[![npm](https://img.shields.io/npm/v/homebridge-config-ui-x.svg)](https://www.npmjs.com/package/homebridge-config-ui-x) 
+[![npm](https://img.shields.io/npm/dt/homebridge-config-ui-x.svg)](https://www.npmjs.com/package/homebridge-config-ui-x)
 
 # Homebridge Config UI X
 
@@ -6,12 +7,12 @@ This is a plugin for [Homebridge](https://github.com/nfarina/homebridge). This i
 
 This plugin allows you to monitor, backup and configure your Homebridge server from a browser.
 
-![Status](screenshots/homebridge-config-ui-x-status.png)
+[![Status](screenshots/homebridge-config-ui-x-accessories.png)](#accessory-control)
 
 ## Installation Instructions
 
 ```
-npm install -g --unsafe-perm homebridge-config-ui-x
+sudo npm install -g --unsafe-perm homebridge-config-ui-x
 ```
 
 # Configuration
@@ -37,6 +38,18 @@ Add this to your homebridge `config.json` file
 * `temp` - The path to the file that can display your current CPU temperature. eg. `/sys/class/thermal/thermal_zone0/temp`
 * `theme` - The colour scheme to use. Possible values: `red`, `pink`, `purple`, `indigo`, `blue`, `blue-grey`, `green`, `orange`. Defaults to `red`.
 * `fork` - Set only if using a fork of Homebridge. Use username/repo format, eg. `northernman54/homebridge`.
+
+## Accessory Control
+
+The plugin allows you to view and control some types of Homebridge accessories from your web browser. To enable accessory control you must be running Homebridge in insecure mode:
+
+```
+homebridge -I
+```
+
+*Insecure mode, as it's name suggests, is not secure. Anyone with network access to your Homebridge server port and pin will be able to control your accessories. Unless exposing the Homebridge port to the internet, this will generally not be a problem as access will be limited to people already on your local network. Remote access via a home hub (Apple TV, iPad, HomePod etc.) will still be secure. Enable at your own risk.*
+
+Not all accessory types are supported. Pull requests for new accessory types are welcome. See [this issue](https://github.com/oznu/homebridge-config-ui-x/issues/47) for a full list of supported accessory types.
 
 ## Log Viewer Configuration
 
@@ -162,7 +175,28 @@ The following browsers are supported by this plugin:
 
 * Safari >= 10
 * Chrome >= 55 (including Opera)
+* FireFox >= 58
 * MS Edge >= 13 on the desktop
 * iOS >=10 and Chrome on mobile
 
 MS Internet Explorer (any version) is not supported!
+
+# Troubleshooting
+
+#### 1. Errors during installation
+
+Make sure you installed the package with `sudo` and used the  `--unsafe-perm` flag. Most installation errors can be fixed by removing the plugin and reinstalling:
+
+```shell
+# cleanup
+sudo npm uninstall -g homebridge-config-ui-x
+
+# reinstall
+sudo npm install -g --unsafe-perm homebridge-config-ui-x
+```
+
+#### 2. Ask on Slack
+
+[![Slack Status](https://slackin-znyruquwmv.now.sh/badge.svg)](https://slackin-znyruquwmv.now.sh)
+
+Join the [Homebridge Slack](https://slackin-znyruquwmv.now.sh/) chat and ask in the [#ui](https://homebridgeteam.slack.com/messages/C9NH0CUTY) channel.

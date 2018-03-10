@@ -1,0 +1,10 @@
+<div class="accessory-box" [ngClass]="{'switch-on': service.values.CurrentHeatingCoolingState > 0}" appLongclick (longclick)="onClick()" (shortclick)="onClick()">
+  <div class="temperature-circle" [innerText]="(service.values.CurrentTemperature | number:'1.0-0') + '°'" [ngClass]="{
+    'cooling': service.values.CurrentHeatingCoolingState === 2,
+    'heating': service.values.CurrentHeatingCoolingState === 1
+  }"></div>
+  <div class="accessory-label">{{ service.serviceName }}</div>
+  <div class="accessory-label grey-text" 
+    [innerText]="service.values.CurrentHeatingCoolingState ? 'Set to ' + service.values.TargetTemperature + '°' : 'Off'">
+  </div>
+</div>

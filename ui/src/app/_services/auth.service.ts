@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { JwtHelper } from 'angular2-jwt';
 
 import { ApiService } from './api.service';
 
 interface HomebridgeUser {
-  token: string;
+  token?: string;
   username?: string;
   name?: string;
   admin?: boolean;
@@ -14,12 +15,14 @@ interface HomebridgeUser {
 export class AuthService {
   private jwtHelper: JwtHelper = new JwtHelper();
 
+  public env: any = {};
   public formAuth = true;
   public theme: string;
-  public user: HomebridgeUser;
+  public user: HomebridgeUser = {};
 
   constructor(
-    private $api: ApiService
+    private $api: ApiService,
+    private titleService: Title
   ) {
     this.loadToken();
     this.getAppSettings();
@@ -78,12 +81,18 @@ export class AuthService {
     return this.$api.getAppSettings().toPromise()
       .then((data: any) => {
         this.formAuth = data.formAuth;
+        this.env = data.env;
         this.setTheme(data.theme || 'red');
+        this.setTitle(data.env.homebridgeInstanceName);
       });
   }
 
   setTheme(theme: string) {
     this.theme = theme;
     window.document.querySelector('body').classList.add(`config-ui-x-${this.theme}`);
+  }
+
+  setTitle(title: string) {
+    this.titleService.setTitle(title || 'Homebridge');
   }
 }

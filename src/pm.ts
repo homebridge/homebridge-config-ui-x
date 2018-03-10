@@ -20,6 +20,7 @@ class PackageManager {
   private customPluginPath: string;
   private rp: any;
   private npm: any;
+  private nsp: string;
 
   constructor() {
     // load base paths where plugins might be installed
@@ -30,6 +31,9 @@ class PackageManager {
 
     // get npm path
     this.npm = this.getNpmPath();
+
+    // get nsp path
+    this.nsp = path.resolve(require.resolve('nsp'), '../../bin/nsp');
 
     // pre-load installed plugins
     this.plugins = [];
@@ -109,11 +113,7 @@ class PackageManager {
 
   executeCommand(command, cwd) {
     let timeoutTimer;
-    command = command.replace(/\s\s+/g, ' ');
-    command = command.split(' ');
-
-    // set npm command
-    command.unshift(this.npm);
+    command = command.filter(x => x.length);
 
     // sudo mode is requested in plugin config
     if (hb.useSudo) {
@@ -160,6 +160,61 @@ class PackageManager {
       // update the installed cache
       return this.getInstalled();
     });
+  }
+
+  runNspScan(pkgPath: string) {
+    if (hb.disableNsp) {
+      return;
+    }
+
+    return new Bluebird((resolve, reject) => {
+      let timeoutTimer;
+      const command = ['node', this.nsp, 'check'];
+
+      // sudo mode is requested in plugin config
+      if (hb.useSudo) {
+        command.unshift('sudo', '-E', '-n');
+      }
+
+      this.wssBroadcast(color.cyan(`\n\r[nodesecurity.io] Scanning plugin for vulnerabilities...\n\r\n\r`));
+      hb.log(`Running Command: ${command.join(' ')}`);
+
+      const term = pty.spawn(command.shift(), command, {
+        name: 'xterm-color',
+        cols: 80,
+        rows: 30,
+        cwd: pkgPath,
+        env: process.env
+      });
+
+      // send stdout data from the process to all clients
+      term.on('data', (data) => {
+        this.wssBroadcast(data);
+      });
+
+      // send an error message to the client if the command does not exit with code 0
+      term.on('exit', (code) => {
+        if (code === 0) {
+          this.wssBroadcast(color.green(`\n\rCommand succeeded!.\n\r`));
+          clearTimeout(timeoutTimer);
+          resolve();
+        } else if (code === 1) {
+          clearTimeout(timeoutTimer);
+          this.wssBroadcast(color.yellow(`\n\rThe plugin has still been installed. Use at your own risk.`));
+          reject(`Security scan returned possible vulnerabilities.`);
+        } else {
+          clearTimeout(timeoutTimer);
+          this.wssBroadcast(color.yellow(`\n\rThe plugin has still been installed.`));
+          reject(`Security scan failed to run. Error code: ${code}`);
+        }
+      });
+
+      // if the command spends to long trying to execute kill it after 5 minutes
+      timeoutTimer = setTimeout(() => {
+        term.kill('SIGTERM');
+      }, 60000);
+    })
+    .delay(1000);
   }
 
   getInstalled() {
@@ -301,10 +356,13 @@ class PackageManager {
     return this.getInstalled()
       .then(plugins => {
         // install new plugins in the same location as this plugin
-        let installPath = (hb.homebridge.pluginPath) ? hb.homebridge.pluginPath : plugins.find(x => x.name === hb.ui.name).pluginPath;
+        let installPath = (this.customPluginPath) ? this.customPluginPath : plugins.find(x => x.name === hb.ui.name).pluginPath;
+
+        // the plugin install destination
+        const pkgPath = path.resolve(installPath, pkg);
 
         // prepare flags for npm command
-        let installOptions: any = [];
+        const installOptions: any = [];
 
         // check to see if custom plugin path is using a package.json file
         if (installPath === this.customPluginPath && fs.existsSync(path.resolve(installPath, '../package.json'))) {
@@ -312,9 +370,8 @@ class PackageManager {
           installOptions.push('--save');
         }
 
-        installOptions = installOptions.join(' ');
-
-        return this.executeCommand(`install --unsafe-perm ${installOptions} ${pkg}@latest`, installPath);
+        return this.executeCommand([this.npm, 'install', '--unsafe-perm', ...installOptions, `${pkg}@latest`], installPath)
+          .then(() => this.runNspScan(pkgPath));
       })
       .catch((err) => {
         this.wssBroadcast(color.red(`\n\r${err}\n\r`));
@@ -334,7 +391,7 @@ class PackageManager {
         }
 
         // prepare flags for npm command
-        let installOptions: any = [];
+        const installOptions: any = [];
 
         // check to see if custom plugin path is using a package.json file
         if (installPath === this.customPluginPath && fs.existsSync(path.resolve(installPath, '../package.json'))) {
@@ -342,9 +399,7 @@ class PackageManager {
           installOptions.push('--save');
         }
 
-        installOptions = installOptions.join(' ');
-
-        return this.executeCommand(`uninstall ${installOptions} ${pkg}`, installPath);
+        return this.executeCommand([this.npm, 'uninstall', '--unsafe-perm', ...installOptions, pkg], installPath);
       })
       .catch((err) => {
         this.wssBroadcast(color.red(`\n\r${err}\n\r`));
@@ -363,8 +418,11 @@ class PackageManager {
           throw new Error(`Plugin "${pkg}" Not Found`);
         }
 
+        // the plugin install destination
+        const pkgPath = path.resolve(installPath, pkg);
+
         // prepare flags for npm command
-        let installOptions: any = [];
+        const installOptions: any = [];
 
         // check to see if custom plugin path is using a package.json file
         if (installPath === this.customPluginPath && fs.existsSync(path.resolve(installPath, '../package.json'))) {
@@ -372,9 +430,8 @@ class PackageManager {
           installOptions.push('--save');
         }
 
-        installOptions = installOptions.join(' ');
-
-        return this.executeCommand(`install --unsafe-perm ${installOptions} ${pkg}@latest`, installPath);
+        return this.executeCommand([this.npm, 'install', '--unsafe-perm', ...installOptions, `${pkg}@latest`], installPath)
+          .then(() => this.runNspScan(pkgPath));
       })
       .catch((err) => {
         this.wssBroadcast(color.red(`\n\r${err}\n\r`));
@@ -399,7 +456,7 @@ class PackageManager {
       .map(installPath => {
         hb.log(`Using npm to upgrade homebridge at ${installPath}...`);
         const pkg = hb.homebridgeFork ? hb.homebridgeFork : `${hb.homebridgeNpmPkg}@latest`;
-        return this.executeCommand(`install --unsafe-perm ${pkg}`, installPath)
+        return this.executeCommand([this.npm, 'install', '--unsafe-perm', pkg], installPath)
           .then(() => {
             hb.log(`Upgraded homebridge using npm at ${installPath}`);
           });

@@ -10,6 +10,12 @@ export function authHook(transitionService: TransitionService) {
     }
   };
 
+  const requiresAdminCriteria = {
+    to: (state) => {
+      return state.data && state.data.requiresAdmin;
+    }
+  };
+
   const redirectToLogin = (transition) => {
     const $api: ApiService = transition.injector().get(ApiService);
     const $auth: AuthService = transition.injector().get(AuthService);
@@ -28,5 +34,15 @@ export function authHook(transitionService: TransitionService) {
     }
   };
 
+  const redirectToStatus = (transition) => {
+    const $state = transition.router.stateService;
+    const $auth: AuthService = transition.injector().get(AuthService);
+
+    if ($auth.user && !$auth.user.admin) {
+      return $state.target('status');
+    }
+  };
+
   transitionService.onBefore(requiresAuthCriteria, redirectToLogin, { priority: 1000000 });
+  transitionService.onBefore(requiresAdminCriteria, redirectToStatus, { priority: 2000000 });
 }

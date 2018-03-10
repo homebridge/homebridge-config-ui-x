@@ -1,6 +1,5 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import * as color from 'bash-color';
 import * as commander from 'commander';
 
 import { WSS } from './wss';
@@ -9,8 +8,10 @@ class HomebridgeUI {
   private logger;
   public ui: any;
   public homebridge: any;
+  public homebridgeInsecure: boolean;
   public homebridgeNpmPkg: string;
   public homebridgeFork: string;
+  public homebridgeConfig: HomebridgeConfigType;
   public configPath: string;
   public authPath: string;
   public storagePath: string;
@@ -19,11 +20,13 @@ class HomebridgeUI {
   public logOpts: any;
   public restartCmd;
   public useSudo: boolean;
+  public disableNsp: boolean;
   public authMethod: string | boolean;
   public formAuth: boolean;
   public theme: string;
   public availableThemes: string[];
   public temperatureFile: string;
+  public accessoryLayoutPath: string;
   public wss: WSS;
 
   constructor() {
@@ -47,9 +50,10 @@ class HomebridgeUI {
     this.configPath = this.homebridge.user.configPath();
     this.authPath = path.join(this.homebridge.user.storagePath(), 'auth.json');
     this.storagePath = this.homebridge.user.storagePath();
+    this.accessoryLayoutPath = path.resolve(this.homebridge.user.storagePath(), 'accessories', 'uiAccessoriesLayout.json');
 
-    this.parseCommandLineArgs();
     this.parseConfig(config);
+    this.parseCommandLineArgs();
   }
 
   private parseConfig(config) {
@@ -60,6 +64,8 @@ class HomebridgeUI {
     this.authMethod = config.auth;
     this.homebridgeFork = config.fork;
     this.homebridgeNpmPkg = config.homebridgeNpmPkg || 'homebridge';
+    this.homebridgeInsecure = config.homebridgeInsecure;
+    this.disableNsp = config.disableNsp;
 
     if (config.auth === 'none' || config.auth === false) {
       this.formAuth = false;
@@ -75,7 +81,7 @@ class HomebridgeUI {
     } else if (config.theme) {
       // delay the output of the warning message so it does not get lost under homebridge setup details
       setTimeout(() => {
-        this.log(color.yellow(`Invalid theme in config.json. Possible options are: ${this.availableThemes.join(', ')}`));
+        this.warn(`Invalid theme in config.json. Possible options are: ${this.availableThemes.join(', ')}`);
       }, 2000);
       this.theme = 'red';
     } else {
@@ -88,8 +94,8 @@ class HomebridgeUI {
     } else if (config.temp) {
       // delay the output of the warning message so it does not get lost under homebridge setup details
       setTimeout(() => {
-        this.log(color.yellow(`WARNING: Configured path to temp file does not exist: ${config.temp}`));
-        this.log(color.yellow(`WARNING: CPU Temp will not be displayed`));
+        this.warn(`WARNING: Configured path to temp file does not exist: ${config.temp}`);
+        this.warn(`WARNING: CPU Temp will not be displayed`);
       }, 2000);
     }
   }
@@ -99,11 +105,33 @@ class HomebridgeUI {
     commander
       .allowUnknownOption()
       .option('-P, --plugin-path [path]', '', (p) => this.pluginPath = p)
+      .option('-I, --insecure', '', () => this.homebridgeInsecure = true)
       .parse(process.argv);
   }
 
-  public log(msg: string) {
-    this.logger(msg);
+  public async refreshHomebridgeConfig() {
+    try {
+      this.homebridgeConfig = await import(hb.configPath);
+    } catch (e) {
+      this.homebridgeConfig = {
+        bridge: {
+           name: 'Homebridge',
+        }
+      };
+      this.error(`Failed to load ${hb.configPath} - ${e.message}`);
+    }
+  }
+
+  public log(...params) {
+    this.logger(...params);
+  }
+
+  public warn(...params) {
+    this.logger.warn(...params);
+  }
+
+  public error(...params) {
+    this.logger.error(...params);
   }
 
   public async updateConfig(config) {
@@ -154,7 +182,7 @@ class HomebridgeUI {
 
   public async resetHomebridgeAccessory() {
     // load config file
-    const config = await fs.readJson(this.configPath);
+    const config: HomebridgeConfigType = await fs.readJson(this.configPath);
 
     // generate new random username and pin
     if (config.bridge) {
@@ -167,7 +195,7 @@ class HomebridgeUI {
       // save config file
       await this.updateConfig(config);
     } else {
-      this.log(color.red('Homebridge Reset: Could not reset homebridge username or pin. Config format invalid.'));
+      this.error('Homebridge Reset: Could not reset homebridge username or pin. Config format invalid.');
     }
 
     // remove accessories and persist directories
@@ -197,6 +225,53 @@ class HomebridgeUI {
     }
     return username;
   }
+
+  public async getAccessoryLayout(user) {
+    if (fs.existsSync(this.accessoryLayoutPath)) {
+      const accessoryLayout = await fs.readJson(this.accessoryLayoutPath);
+      if (user in accessoryLayout) {
+        return accessoryLayout[user];
+      }
+    }
+    return [
+      {
+        name: 'Default Room',
+        services: []
+      }
+    ];
+  }
+
+  public async updateAccessoryLayout(user, layout) {
+    let accessoryLayout;
+
+    try {
+      accessoryLayout = await fs.readJson(this.accessoryLayoutPath);
+    } catch (e) {
+      accessoryLayout = {};
+    }
+
+    accessoryLayout[user] = layout;
+    fs.writeJsonSync(this.accessoryLayoutPath, accessoryLayout);
+    this.log(`[${user}] Accessory layout changes saved.`);
+    return layout;
+  }
+}
+
+export interface HomebridgeConfigType {
+  bridge: {
+    name: string;
+    username?: string;
+    port?: number;
+    pin?: string;
+  };
+  platforms?: {
+    name: string;
+    platform: string;
+  }[];
+  accessories?: {
+    accessory: string;
+    name: string;
+  }[];
 }
 
 export const hb = new HomebridgeUI();
