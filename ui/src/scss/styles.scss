@@ -88,6 +88,16 @@ body {
     background-color: #1976d2 !important;
 }
 
+.card .card-text {
+    font-size: .9rem;
+    color: #747373;
+    font-weight: 400;
+}
+
+.md-form .form-control:disabled, .md-form .form-control[readonly] {
+  color: rgba(0,0,0,.46)
+}
+
 .status-circle {
   color: #ffffff;
   width: 40px;
