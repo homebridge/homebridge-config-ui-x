@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Bug Fixes
 
-* Fixed an issue that prevented adding a new room to to the accessories page in Safari ([#47#issuecomment-372101867](https://github.com/oznu/homebridge-config-ui-x/issues/47#issuecomment-372101867))
+* Fixed an issue that prevented adding a new room to the accessories page in Safari ([#47#issuecomment-372101867](https://github.com/oznu/homebridge-config-ui-x/issues/47#issuecomment-372101867))
 
 # 3.1.1 (2018-03-11)
 
