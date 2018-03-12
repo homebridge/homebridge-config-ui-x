@@ -34,7 +34,7 @@
           placement="bottom" ngbTooltip="Update plugin to v{{ plugin.version }}" container="body">
           UPDATE
         </a>
-        <a class="card-link" *ngIf="plugin.installed" href="javascript:void(0);" (click)="$plugin.uninstallPlugin(plugin.name)">
+        <a class="card-link" *ngIf="plugin.installed && plugin.name !== 'homebridge-config-ui-x'" href="javascript:void(0);" (click)="$plugin.uninstallPlugin(plugin.name)">
           UNINSTALL
         </a>
         <a class="card-link" *ngIf="!plugin.installed" href="javascript:void(0);" (click)="$plugin.installPlugin(plugin.name)">

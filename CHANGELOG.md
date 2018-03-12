@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+### Bug Fixes
+
+* Prevent users removing homebridge-config-ui-x from inside the ui
+
 # 3.1.2 (2018-03-11)
 
 ### Bug Fixes

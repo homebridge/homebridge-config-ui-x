@@ -19,7 +19,7 @@ export class PluginsComponent implements OnInit {
 
   constructor(
     private $api: ApiService,
-    private $plugin: PluginService,
+    public $plugin: PluginService,
     private $state: StateService,
     public $fb: FormBuilder,
     private toastr: ToastsManager
