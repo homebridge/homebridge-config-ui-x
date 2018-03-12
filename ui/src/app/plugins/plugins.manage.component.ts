@@ -12,7 +12,8 @@ Terminal.applyAddon(fit);
 
 @Component({
   selector: 'app-plugins-manage',
-  templateUrl: './plugins.manage.component.html'
+  templateUrl: './plugins.manage.component.html',
+  styleUrls: ['./plugins.component.scss']
 })
 export class PluginsManageComponent implements OnInit {
   @Input() pluginName;
@@ -23,7 +24,9 @@ export class PluginsManageComponent implements OnInit {
 
   private onMessage;
 
+  public actionComplete = false;
   public updateSelf = false;
+  public changeLog: string;
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -49,57 +52,90 @@ export class PluginsManageComponent implements OnInit {
 
     switch (this.action) {
       case 'Install':
-        this.$api.installPlugin(this.pluginName).subscribe(
-          (data) => {
-            this.$state.go('plugins');
-            this.activeModal.close();
-            this.toastr.success(`Installed ${this.pluginName}`, 'Success!');
-          },
-          (err) => {
-            this.$state.reload();
-          }
-        );
+        this.install();
         break;
       case 'Uninstall':
-        this.$api.uninstallPlugin(this.pluginName).subscribe(
-          (data) => {
-            this.$state.reload();
-            this.activeModal.close();
-            this.toastr.success(`Removed ${this.pluginName}`, 'Success!');
-          },
-          (err) => {
-            this.$state.reload();
-          }
-        );
+        this.uninstall();
         break;
       case 'Update':
-        this.$api.updatePlugin(this.pluginName).subscribe(
-          (data) => {
-            if (this.pluginName === 'homebridge-config-ui-x') {
-              this.updateSelf = true;
-            } else {
-              this.$state.reload();
-              this.activeModal.close();
-            }
-            this.toastr.success(`Updated ${this.pluginName}`, 'Success!');
-          },
-          (err) => {
-            this.$state.reload();
-          }
-        );
+        this.update();
         break;
       case 'Upgrade':
-        this.$api.upgradeHomebridgePackage().subscribe(
-          (data) => {
-            this.$state.go('restart');
-            this.activeModal.close();
-            this.toastr.success(`Homebridge Upgraded`, 'Success!');
-          },
-          (err) => {
-            this.$state.reload();
-          }
-        );
+        this.upgradeHomebridge();
+        break;
     }
+  }
+
+  install() {
+    this.$api.installPlugin(this.pluginName).subscribe(
+      (data) => {
+        this.$state.go('plugins');
+        this.activeModal.close();
+        this.toastr.success(`Installed ${this.pluginName}`, 'Success!');
+      },
+      (err) => {
+        this.$state.reload();
+      }
+    );
+  }
+
+  uninstall() {
+    this.$api.uninstallPlugin(this.pluginName).subscribe(
+      (data) => {
+        this.$state.reload();
+        this.activeModal.close();
+        this.toastr.success(`Removed ${this.pluginName}`, 'Success!');
+      },
+      (err) => {
+        this.$state.reload();
+      }
+    );
+  }
+
+  update() {
+    this.$api.updatePlugin(this.pluginName).subscribe(
+      (data) => {
+        if (this.pluginName === 'homebridge-config-ui-x') {
+          this.updateSelf = true;
+        } else {
+          this.$state.reload();
+        }
+        this.toastr.success(`Updated ${this.pluginName}`, 'Success!');
+        this.getChangeLog();
+      },
+      (err) => {
+        this.$state.reload();
+      }
+    );
+  }
+
+  upgradeHomebridge() {
+    this.$api.upgradeHomebridgePackage().subscribe(
+      (data) => {
+        this.$state.go('restart');
+        this.activeModal.close();
+        this.toastr.success(`Homebridge Upgraded`, 'Success!');
+      },
+      (err) => {
+        this.$state.reload();
+      }
+    );
+  }
+
+  getChangeLog() {
+    this.$api.getPluginChangeLog(this.pluginName).subscribe(
+      (data: {changelog: string}) => {
+        if (data.changelog) {
+          this.actionComplete = true;
+          this.changeLog = data.changelog;
+        } else {
+          this.activeModal.close();
+        }
+      },
+      (err) => {
+        this.activeModal.close();
+      }
+    );
   }
 
   public onRestartHomebridgeClick() {

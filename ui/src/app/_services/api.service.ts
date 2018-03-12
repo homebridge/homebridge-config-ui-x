@@ -62,6 +62,10 @@ export class ApiService {
     return this.$http.put(`${this.base}/api/packages/update`, { package: pluginName }, this.httpOptions);
   }
 
+  getPluginChangeLog(pluginName) {
+    return this.$http.get(`${this.base}/api/packages/changelog/${pluginName}`, this.httpOptions);
+  }
+
   loadConfig() {
   return this.$http.get(`${this.base}/api/config`, Object.assign({ responseType: 'text' as 'text' }, this.httpOptions));
   }

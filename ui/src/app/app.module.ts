@@ -8,6 +8,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { UIRouterModule } from '@uirouter/angular';
 import { AceEditorModule } from 'ng2-ace-editor';
 import { ToastModule, ToastOptions } from 'ng2-toastr/ng2-toastr';
+import { MarkdownModule } from 'ngx-md';
 
 import { ToastCustomOptions } from './_helpers/toast.class';
 import { routerConfigFn } from './_helpers/router.config';
@@ -67,6 +68,7 @@ import { ResetComponent, ResetModalComponent } from './reset/reset.component';
     ReactiveFormsModule,
     AceEditorModule,
     SpinnerModule,
+    MarkdownModule.forRoot(),
     ToastModule.forRoot(),
     NgbModule.forRoot(),
     UIRouterModule.forRoot({

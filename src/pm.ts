@@ -466,6 +466,38 @@ class PackageManager {
         throw err;
       });
   }
+
+  getChangeLog(pkg) {
+    return this.getInstalled()
+      .then(plugins => {
+        let installPath;
+        if (plugins.find(x => x.name === pkg)) {
+          installPath = plugins.find(x => x.name === pkg).pluginPath;
+        } else {
+          throw new Error(`Plugin "${pkg}" Not Found`);
+        }
+
+        // possible change log file name
+        let changeLogFileNames = [
+          'CHANGELOG.md',
+          'CHANGELOG'
+        ];
+
+        // check to see which ones is used
+        changeLogFileNames = changeLogFileNames.filter((fileName) => fs.existsSync(path.resolve(installPath, pkg, fileName)));
+
+        // no change log found, return null
+        if (!changeLogFileNames.length) {
+          return Promise.resolve(null);
+        }
+
+        // the plugin change log path
+        const changeLogPath = path.resolve(installPath, pkg, changeLogFileNames[0]);
+
+        // return the change log
+        return fs.readFileAsync(changeLogPath, 'utf8');
+      });
+  }
 }
 
 export const pm = new PackageManager();
