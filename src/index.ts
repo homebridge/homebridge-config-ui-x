@@ -5,7 +5,7 @@ import * as http from 'http';
 import { hb } from './hb';
 import { users } from './users';
 
-module.exports = (homebridge) => {
+export = (homebridge) => {
   hb.homebridge = homebridge;
   homebridge.registerPlatform('homebridge-config-ui-x', 'config', HomebridgeConfigUi);
 };

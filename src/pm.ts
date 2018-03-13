@@ -20,6 +20,7 @@ class PackageManager {
   private customPluginPath: string;
   private rp: any;
   private npm: any;
+  private node: string;
   private nsp: string;
 
   constructor() {
@@ -31,6 +32,9 @@ class PackageManager {
 
     // get npm path
     this.npm = this.getNpmPath();
+
+    // get node path
+    this.node = os.platform() === 'win32' ? process.execPath : 'node';
 
     // get nsp path
     this.nsp = path.resolve(require.resolve('nsp'), '../../bin/nsp');
@@ -169,7 +173,7 @@ class PackageManager {
 
     return new Bluebird((resolve, reject) => {
       let timeoutTimer;
-      const command = ['node', this.nsp, 'check'];
+      const command = [this.node, this.nsp, 'check'];
 
       // sudo mode is requested in plugin config
       if (hb.useSudo) {

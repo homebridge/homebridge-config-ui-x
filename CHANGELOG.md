@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 3.2.1 (2018-03-13)
+
+### Bug Fixes
+
+* Fixed issue that prevented plugin scan from working on Windows ([#53](https://github.com/oznu/homebridge-config-ui-x/issues/53))
+* Fixed missing css class `.bg-yellow`
+
 ## 3.2.0 (2018-03-12)
 
 ### Notable Changes
