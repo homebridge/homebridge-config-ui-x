@@ -15,6 +15,10 @@ This plugin allows you to monitor, backup and configure your Homebridge server f
 sudo npm install -g --unsafe-perm homebridge-config-ui-x
 ```
 
+Once you have installed and configured the plugin you can access the interface via http://localhost:8080. 
+
+The default username is `admin` and the default password is `admin`.
+
 # Configuration
 
 Add this to your homebridge `config.json` file
@@ -135,10 +139,6 @@ homebridge    ALL=(ALL) NOPASSWD: ALL
 ```
 
 *Replace `homebridge` with the actual user you are running Homebridge as.*
-
-# Initial Run
-
-Once installed you can open the interface at http://localhost:8080. The default username is `admin` and the default password is `admin`.
 
 # Usage
 
