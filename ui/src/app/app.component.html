@@ -58,6 +58,16 @@
           </div>
         </li>
 
+        <li class="nav-item dropdown" *ngIf="$auth.env.runningInLinux && $auth.user.admin">
+          <a class="nav-link dropdown-toggle waves-effect waves-light" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="material-icons">more_vert</i>
+          </a>
+          <div class="dropdown-menu dropdown-menu-right dropdown-info">
+            <a class="dropdown-item waves-effect waves-light" uiSref="linux.restart-server">Restart Server</a>
+            <a class="dropdown-item waves-effect waves-light" uiSref="linux.shutdown-server">Shutdown Server</a>
+          </div>
+        </li>
+
       </ul>
     </div>
   </nav>

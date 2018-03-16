@@ -1,6 +1,6 @@
 {
   "name": "homebridge-config-ui-x",
-  "version": "3.2.1",
+  "version": "3.3.0-1",
   "description": "Configuration UI plugin for Homebridge",
   "license": "MIT",
   "keywords": [
@@ -36,7 +36,7 @@
     "buffer-shims": "^1.0.0",
     "commander": "^2.15.0",
     "cors": "^2.8.4",
-    "express": "~4.16.2",
+    "express": "^4.16.3",
     "fs-extra": "^5.0.0",
     "jsonwebtoken": "^8.2.0",
     "lodash": "^4.17.4",
@@ -48,7 +48,7 @@
     "request": "^2.83.0",
     "request-promise": "^4.2.2",
     "semver": "^5.5.0",
-    "source-map-support": "^0.5.1",
+    "source-map-support": "^0.5.4",
     "ws": "^5.0.0"
   },
   "devDependencies": {

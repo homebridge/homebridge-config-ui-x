@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 3.3.0 (2018-03-16)
+
+### Notable Changes
+
+* Added ability for Linux users to shutdown and restart the server Homebridge is running on ([#39](https://github.com/oznu/homebridge-config-ui-x/issues/39))
+* Updated npm dependencies
+
 ## 3.2.1 (2018-03-13)
 
 ### Bug Fixes

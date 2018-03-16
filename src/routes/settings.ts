@@ -21,7 +21,8 @@ export class SettingsRouter {
         nodeVersion: process.version,
         enableAccessories: hb.homebridgeInsecure || false,
         homebridgeInstanceName: hb.homebridgeConfig.bridge.name || 'Homebridge',
-        runningInDocker: hb.runningInDocker
+        runningInDocker: hb.runningInDocker,
+        runningInLinux: hb.runningInLinux
       }
     });
   }

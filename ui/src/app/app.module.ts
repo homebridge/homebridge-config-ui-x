@@ -21,7 +21,7 @@ import { AuthHttpInterceptor } from './_services/http.service';
 
 import { SpinnerModule } from './spinner/spinner.module';
 import { AccessoriesModule } from './accessories/accessories.module';
-import { DockerToolsModule } from './docker-tools/docker-tools.module';
+import { PlatformToolsModule } from './platform-tools/platform-tools.module';
 
 import { AppComponent } from './app.component';
 import { StatusComponent, StatusStates } from './status/status.component';
@@ -87,7 +87,7 @@ import { ResetComponent, ResetModalComponent } from './reset/reset.component';
       otherwise: '/'
     }),
     AccessoriesModule,
-    DockerToolsModule
+    PlatformToolsModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthHttpInterceptor, multi: true },

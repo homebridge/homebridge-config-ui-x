@@ -1,3 +1,4 @@
+import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as commander from 'commander';
@@ -13,6 +14,8 @@ class HomebridgeUI {
   public homebridgeFork: string;
   public homebridgeConfig: HomebridgeConfigType;
   public runningInDocker: boolean;
+  public runningInLinux: boolean;
+  public linuxServerOpts: { restart?: string; shutdown?: string; };
   public configPath: string;
   public authPath: string;
   public storagePath: string;
@@ -65,9 +68,11 @@ class HomebridgeUI {
     this.authMethod = config.auth;
     this.homebridgeFork = config.fork;
     this.homebridgeNpmPkg = config.homebridgeNpmPkg || 'homebridge';
+    this.disableNsp = config.disableNsp;
     this.homebridgeInsecure = config.homebridgeInsecure;
     this.runningInDocker = Boolean(process.env.HOMEBRIDGE_CONFIG_UI === '1');
-    this.disableNsp = config.disableNsp;
+    this.runningInLinux = (!this.runningInDocker && os.platform() === 'linux');
+    this.linuxServerOpts = config.linux || {};
 
     if (config.auth === 'none' || config.auth === false) {
       this.formAuth = false;

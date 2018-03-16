@@ -109,4 +109,12 @@ export class ApiService {
   dockerRestartContainer() {
     return this.$http.put(`${this.base}/api/docker/restart-container`, {}, this.httpOptions);
   }
+
+  linuxRestartServer() {
+    return this.$http.put(`${this.base}/api/linux/restart-server`, {}, this.httpOptions);
+  }
+
+  linuxShutdownServer() {
+    return this.$http.put(`${this.base}/api/linux/shutdown-server`, {}, this.httpOptions);
+  }
 }
