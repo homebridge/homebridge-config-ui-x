@@ -93,9 +93,11 @@ export class RestartContainerComponent implements OnInit {
 }
 
 export const RestartContainerState = {
-  name: 'docker-restart-container',
-  url: '/docker/restart',
-  component: RestartContainerComponent,
+  name: 'docker.restart-container',
+  url: '/restart',
+  views: {
+    '!$default': { component: RestartContainerComponent }
+  },
   data: {
     requiresAuth: true,
     requiresAdmin: true

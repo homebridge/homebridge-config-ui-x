@@ -48,9 +48,11 @@ export function startupScriptStateResolve($api, toastr, $state) {
 
 
 export const StartupScriptEditorStates = {
-  name: 'docker-startup-script',
-  url: '/docker/startup-script',
-  component: StartupScriptEditorComponent,
+  name: 'docker.startup-script',
+  url: '/startup-script',
+  views: {
+    '!$default': { component: StartupScriptEditorComponent }
+  },
   resolve: [{
     token: 'startupScript',
     deps: [ApiService, ToastsManager, StateService],

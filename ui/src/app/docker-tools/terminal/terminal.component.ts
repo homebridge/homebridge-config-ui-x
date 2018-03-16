@@ -109,9 +109,11 @@ export class TerminalComponent implements OnInit {
 }
 
 export const TerminalState = {
-  name: 'docker-terminal',
-  url: '/docker/terminal',
-  component: TerminalComponent,
+  name: 'docker.terminal',
+  url: '/terminal',
+  views: {
+    '!$default': { component: TerminalComponent }
+  },
   data: {
     requiresAuth: true,
     requiresAdmin: true

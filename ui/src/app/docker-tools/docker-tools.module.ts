@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { UIRouterModule } from '@uirouter/angular';
+import { UIRouterModule, StateDeclaration } from '@uirouter/angular';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AceEditorModule } from 'ng2-ace-editor';
 
@@ -11,6 +11,16 @@ import { StartupScriptEditorComponent, StartupScriptEditorStates } from './start
 import { RestartContainerComponent, RestartContainerState} from './restart-container/restart-container.component';
 import { TerminalComponent, TerminalState } from './terminal/terminal.component';
 
+export const DockerToolsAbstractStates: StateDeclaration = {
+  name: 'docker',
+  url: '/docker',
+  redirectTo: 'status',
+  data: {
+    requiresAuth: true,
+    requiresAdmin: true
+  },
+};
+
 @NgModule({
   imports: [
     CommonModule,
@@ -19,6 +29,7 @@ import { TerminalComponent, TerminalState } from './terminal/terminal.component'
     SpinnerModule,
     UIRouterModule.forChild({
       states: [
+        DockerToolsAbstractStates,
         StartupScriptEditorStates,
         RestartContainerState,
         TerminalState
