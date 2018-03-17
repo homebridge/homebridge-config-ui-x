@@ -22,8 +22,9 @@ export class StatusComponent implements OnInit {
   @ViewChild('qrcode') qrcode: ElementRef;
 
   private onOpen;
-  private onMessage;
   private onClose;
+  private onMessageStats;
+  private onMessageServer;
   public server: HomebridgeStatus = {};
   public stats: any = {};
   public homebridge: any = {};
@@ -53,17 +54,15 @@ export class StatusComponent implements OnInit {
       this.checkHomebridgeVersion();
     });
 
-    this.onMessage = this.ws.message.subscribe((data) => {
-      try {
-        data = JSON.parse(data.data);
-        if (data.stats) {
-          this.stats = data.stats;
-        }
-        if (data.server) {
-          this.server = data.server;
-          this.getQrCodeImage();
-        }
-      } catch (e) { }
+    // listen for to stats data
+    this.onMessageStats = this.ws.handlers.stats.subscribe((data) => {
+      this.stats = data;
+    });
+
+    // listen for server data
+    this.onMessageServer = this.ws.handlers.server.subscribe((data) => {
+      this.server = data;
+      this.getQrCodeImage();
     });
 
     this.onClose = this.ws.close.subscribe(() => {
@@ -71,8 +70,6 @@ export class StatusComponent implements OnInit {
       this.server.status = 'down';
       this.loadedQrCode = false;
     });
-
-
   }
 
   checkHomebridgeVersion() {
@@ -104,7 +101,8 @@ export class StatusComponent implements OnInit {
       // unsubscribe listeners
       this.onOpen.unsubscribe();
       this.onClose.unsubscribe();
-      this.onMessage.unsubscribe();
+      this.onMessageStats.unsubscribe();
+      this.onMessageServer.unsubscribe();
     } catch (e) { }
   }
 

@@ -50,16 +50,11 @@ export class RestartContainerComponent implements OnInit {
 
   checkIfServerUp() {
     this.checkDelay = TimerObservable.create(10000).subscribe(() => {
-      this.onMessage = this.ws.message.subscribe((data) => {
-        try {
-          data = JSON.parse(data.data);
-
-          if (data.server && data.server.status === 'up') {
-            this.toastr.success('Docker Container Restarted', 'Success');
-            this.$state.go('status');
-          }
-
-        } catch (e) { }
+      this.onMessage = this.ws.handlers.server.subscribe((data) => {
+        if (data.status === 'up') {
+          this.toastr.success('Docker Container Restarted', 'Success');
+          this.$state.go('status');
+        }
       });
     });
 

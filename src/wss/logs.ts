@@ -26,6 +26,13 @@ export class LogsWssHandler {
       this.logNotConfigured();
     }
 
+    // listen for resize events from the client
+    ws.on('logs', (msg) => {
+      if (msg.size) {
+        this.resizeTerminal(msg.size);
+      }
+    });
+
     // when the client disconnects stop tailing the log file
     const onClose = () => {
       onUnsubscribe('logs');
@@ -36,6 +43,7 @@ export class LogsWssHandler {
     const onUnsubscribe = (sub?) => {
       if (sub === 'logs') {
         this.killTerm();
+        ws.removeAllListeners('logs');
         ws.removeEventListener('unsubscribe', onUnsubscribe);
         ws.removeEventListener('close', onClose);
       }
@@ -45,7 +53,7 @@ export class LogsWssHandler {
 
   send(data) {
     if (this.ws.readyState === 1) {
-      this.ws.send(JSON.stringify({log: data}));
+      this.ws.send(JSON.stringify({logs: data}));
     }
   }
 
@@ -130,6 +138,12 @@ export class LogsWssHandler {
         // the client socket probably closed
       }
     });
+  }
+
+  resizeTerminal(size) {
+    if (this.term) {
+      this.term.resize(size.cols, size.rows);
+    }
   }
 
   killTerm() {

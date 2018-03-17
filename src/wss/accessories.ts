@@ -22,9 +22,9 @@ export class AccessoriesWssHandler {
 
     // handling incoming requests
     const requestHandler = async (msg?) => {
-      if (msg.accessories.set) {
-        const service: ServiceType = this.services.find(x => x.aid === msg.accessories.set.aid && x.iid === msg.accessories.set.siid);
-        await service.setCharacteristic(msg.accessories.set.iid, msg.accessories.set.value);
+      if (msg.set) {
+        const service: ServiceType = this.services.find(x => x.aid === msg.set.aid && x.iid === msg.set.siid);
+        await service.setCharacteristic(msg.set.iid, msg.set.value);
         await this.loadAccessories();
       }
     };

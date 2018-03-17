@@ -6,9 +6,19 @@ import { AuthService } from './auth.service';
 @Injectable()
 export class WsService {
   @Output() open: EventEmitter<any> = new EventEmitter();
-  @Output() message: EventEmitter<any> = new EventEmitter();
   @Output() close: EventEmitter<any> = new EventEmitter();
   @Output() error: EventEmitter<any> = new EventEmitter();
+
+  public handlers = {
+    stats: new EventEmitter(),
+    server: new EventEmitter(),
+    logs: new EventEmitter(),
+    accessories: new EventEmitter(),
+    terminal: new EventEmitter(),
+    npmLog: new EventEmitter()
+  };
+
+  private routes = Object.keys(this.handlers);
 
   public socket;
   private url = environment.socketUrl;
@@ -19,7 +29,7 @@ export class WsService {
     private $api: ApiService,
     private $auth: AuthService
   ) {
-    this.socket = { readyState: 0};
+    this.socket = { readyState: 0 };
     this.listen();
   }
 
@@ -32,7 +42,10 @@ export class WsService {
       };
 
       this.socket.onmessage = (msg) => {
-        this.message.emit(msg);
+        try {
+          const json = JSON.parse(msg.data);
+          this.routeMessage(json);
+        } catch (e) { }
       };
 
       this.socket.onclose = () => {
@@ -62,11 +75,19 @@ export class WsService {
   }
 
   subscribe(sub: string) {
-    this.send({subscribe: sub});
+    this.send({ subscribe: sub });
   }
 
   unsubscribe(sub: string) {
     this.send({ unsubscribe: sub });
+  }
+
+  routeMessage(msg: { data: any }) {
+    this.routes.forEach((sub) => {
+      if (sub in msg) {
+        this.handlers[sub].emit(msg[sub]);
+      }
+    });
   }
 
 }

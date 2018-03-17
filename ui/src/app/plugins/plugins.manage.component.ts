@@ -41,13 +41,8 @@ export class PluginsManageComponent implements OnInit {
     this.term.open(this.termTarget);
     (<any>this.term).fit();
 
-    this.onMessage = this.ws.message.subscribe((data) => {
-      try {
-        data = JSON.parse(data.data);
-        if (data.npmLog) {
-          this.term.write(data.npmLog);
-        }
-      } catch (e) { }
+    this.onMessage = this.ws.handlers.npmLog.subscribe((data) => {
+      this.term.write(data);
     });
 
     switch (this.action) {

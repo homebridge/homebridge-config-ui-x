@@ -49,16 +49,11 @@ export class ShutdownServerComponent implements OnInit {
 
   checkIfServerUp() {
     this.checkDelay = TimerObservable.create(60000).subscribe(() => {
-      this.onMessage = this.ws.message.subscribe((data) => {
-        try {
-          data = JSON.parse(data.data);
-
-          if (data.server && data.server.status === 'up') {
-            this.toastr.success('Server Restarted', 'Success');
-            this.$state.go('status');
-          }
-
-        } catch (e) { }
+      this.onMessage = this.ws.handlers.server.subscribe((data) => {
+        if (data.status === 'up') {
+          this.toastr.success('Server Restarted', 'Success');
+          this.$state.go('status');
+        }
       });
     });
   }

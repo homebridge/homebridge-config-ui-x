@@ -12,6 +12,7 @@ import { TerminalWssHandler } from './terminal';
 export class WSS {
   public server: WebSocket.Server;
   private subscriptions: any;
+  private routes: Array<any>;
 
   constructor(server) {
     this.server = new WebSocket.Server({
@@ -25,6 +26,8 @@ export class WSS {
       accessories: AccessoriesWssHandler,
       terminal: TerminalWssHandler,
     };
+
+    this.routes = Object.keys(this.subscriptions);
 
     this.server.on('connection', (ws, req) => {
       // basic ws router
@@ -43,13 +46,11 @@ export class WSS {
           this.unsubscribeHandler(ws, req, msg);
         }
 
-        if (msg.accessories) {
-          ws.emit('accessories', msg);
-        }
-
-        if (msg.terminal) {
-          ws.emit('terminal', msg);
-        }
+        this.routes.forEach((sub) => {
+          if (sub in msg) {
+            ws.emit(sub, msg[sub]);
+          }
+        });
       });
 
       // absorb websocket errors

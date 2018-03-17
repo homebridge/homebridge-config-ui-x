@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## Next
+
+### Bug Fixes
+
+* Log viewer terminal now adjusts the size of the pty shell according to the size of the browser window
+
 ## 3.3.1 (2018-03-17)
 
 ### Bug Fixes

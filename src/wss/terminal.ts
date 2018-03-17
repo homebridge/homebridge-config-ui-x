@@ -28,11 +28,11 @@ export class TerminalWssHandler {
     }
 
     ws.on('terminal', (msg) => {
-      if (msg.terminal.data) {
-        this.term.write(msg.terminal.data);
-      } else if (msg.terminal.size) {
-        this.resizeTerminal(msg.terminal.size);
-      } else if (msg.terminal.start) {
+      if (msg.data) {
+        this.term.write(msg.data);
+      } else if (msg.size) {
+        this.resizeTerminal(msg.size);
+      } else if (msg.start) {
         this.startTerminal();
       }
     });

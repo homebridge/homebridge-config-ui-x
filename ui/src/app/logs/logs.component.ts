@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { Terminal } from 'xterm';
 import * as fit from 'xterm/lib/addons/fit/fit';
 
@@ -30,24 +30,36 @@ export class LogsComponent implements OnInit {
     // subscribe to log events
     if (this.ws.socket.readyState) {
       this.ws.subscribe('logs');
+      this.resizeTerminal({ cols: this.term.cols, rows: this.term.rows });
     }
 
     this.onOpen = this.ws.open.subscribe(() => {
       this.ws.subscribe('logs');
+      this.resizeTerminal({ cols: this.term.cols, rows: this.term.rows });
     });
 
-    this.onMessage = this.ws.message.subscribe((data) => {
-      try {
-        data = JSON.parse(data.data);
-        if (data.log) {
-          this.term.write(data.log);
-        }
-      } catch (e) { }
+    // listen for to log data
+    this.onMessage = this.ws.handlers.logs.subscribe((data) => {
+      this.term.write(data);
+    });
+
+    // handle resize events
+    this.term.on('resize', (size) => {
+      this.resizeTerminal(size);
     });
 
     this.onError = this.ws.error.subscribe((err) => {
       this.term.write('Websocket failed to connect. Is the server running?\n\r');
     });
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onWindowResize(event) {
+    (<any>this.term).fit();
+  }
+
+  resizeTerminal(size) {
+    this.ws.send({ logs: { size: size } });
   }
 
   // tslint:disable-next-line:use-life-cycle-interface
@@ -60,6 +72,9 @@ export class LogsComponent implements OnInit {
       this.onOpen.unsubscribe();
       this.onMessage.unsubscribe();
       this.onError.unsubscribe();
+
+      // destroy the terminal
+      this.term.destroy();
     } catch (e) {}
   }
 

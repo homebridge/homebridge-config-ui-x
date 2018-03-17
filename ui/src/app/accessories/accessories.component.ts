@@ -71,22 +71,18 @@ export class AccessoriesComponent implements OnInit {
       this.ws.subscribe('accessories');
     });
 
-    this.onMessage = this.ws.message.subscribe((data) => {
-      try {
-        data = JSON.parse(data.data);
-        if (data.accessories) {
-          if (data.accessories.services) {
-            this.parseServices(data.accessories.services);
-            this.generateHelpers();
-            this.sortIntoRooms();
+    // listen for accessory data
+    this.onMessage = this.ws.handlers.accessories.subscribe((data) => {
+      if (data.services) {
+        this.parseServices(data.services);
+        this.generateHelpers();
+        this.sortIntoRooms();
 
-            if (!this.roomsOrdered) {
-              this.orderRooms();
-              this.roomsOrdered = true;
-            }
-          }
+        if (!this.roomsOrdered) {
+          this.orderRooms();
+          this.roomsOrdered = true;
         }
-      } catch (e) { }
+      }
     });
   }
 

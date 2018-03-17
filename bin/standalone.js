@@ -23,11 +23,13 @@ const log = (...params) => {
 }
 
 log.error = (...params) => {
-  console.error(...params)
+  let date = new Date()
+  console.error(`[${date.toLocaleString()}] [homebridge-config-ui-x]`, ...params)
 }
 
 log.warn = (...params) => {
-  console.warn(...params)
+  let date = new Date()
+  console.warn(`[${date.toLocaleString()}] [homebridge-config-ui-x]`, ...params)
 }
 
 commander

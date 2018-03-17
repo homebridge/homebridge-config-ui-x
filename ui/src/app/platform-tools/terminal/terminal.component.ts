@@ -41,13 +41,9 @@ export class TerminalComponent implements OnInit {
       this.startTerminal();
     });
 
-    this.onMessage = this.ws.message.subscribe((data) => {
-      try {
-        data = JSON.parse(data.data);
-        if (data.terminal) {
-          this.term.write(data.terminal);
-        }
-      } catch (e) { }
+    // listen for terminal data
+    this.onMessage = this.ws.handlers.terminal.subscribe((data) => {
+      this.term.write(data);
     });
 
     // handle resize events
