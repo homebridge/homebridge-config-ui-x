@@ -3,6 +3,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 import { StateService } from '@uirouter/angular';
 import { ApiService } from '../../../_services/api.service';
+import { MobileDetectService } from '../../../_services/mobile-detect.service';
 
 import 'brace/theme/xcode';
 import 'brace/mode/sh';
@@ -17,8 +18,19 @@ export class StartupScriptEditorComponent implements OnInit {
 
   constructor(
     private $api: ApiService,
+    private $md: MobileDetectService,
     public toastr: ToastsManager,
-  ) { }
+  ) {
+    // remove editor gutter on small screen devices
+    if ($md.detect.phone()) {
+      this.options.showGutter = false;
+    }
+
+    // make font size 16px on mobile devices to prevent zoom
+    if ($md.detect.mobile()) {
+      this.options.fontSize = '16px';
+    }
+  }
 
   ngOnInit() {
   }

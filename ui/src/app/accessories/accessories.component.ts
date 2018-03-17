@@ -5,10 +5,10 @@ import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ServiceType } from '@oznu/hap-client';
 import { DragulaService } from 'ng2-dragula';
-import * as MobileDetect from 'mobile-detect';
 
 import { WsService } from '../_services/ws.service';
 import { ApiService } from '../_services/api.service';
+import { MobileDetectService } from '../_services/mobile-detect.service';
 import { AddRoomModalComponent } from './add-room-modal/add-room-modal.component';
 
 @Component({
@@ -30,10 +30,10 @@ export class AccessoriesComponent implements OnInit {
     public toastr: ToastsManager,
     private modalService: NgbModal,
     private ws: WsService,
-    private $api: ApiService
+    private $api: ApiService,
+    private $md: MobileDetectService
   ) {
-    const md = new MobileDetect(window.navigator.userAgent);
-    this.isMobile = md.mobile();
+    this.isMobile = $md.detect.mobile();
 
     // disable drag and drop for everything except the room title
     dragulaService.setOptions('rooms-bag', {

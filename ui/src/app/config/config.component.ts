@@ -7,6 +7,7 @@ import 'brace/theme/xcode';
 import 'brace/mode/json';
 
 import { ApiService } from '../_services/api.service';
+import { MobileDetectService } from '../_services/mobile-detect.service';
 
 @Component({
   selector: 'app-config',
@@ -19,9 +20,20 @@ export class ConfigComponent implements OnInit {
 
   constructor(
     private $api: ApiService,
+    private $md: MobileDetectService,
     public toastr: ToastsManager,
     private sanitizer: DomSanitizer
-  ) {}
+  ) {
+    // remove editor gutter on small screen devices
+    if ($md.detect.phone()) {
+      this.options.showGutter = false;
+    }
+
+    // make font size 16px on touch devices to prevent zoom
+    if ($md.detect.mobile()) {
+      this.options.fontSize = '16px';
+    }
+  }
 
   ngOnInit() {
     this.generateBackupConfigLink();

@@ -18,6 +18,7 @@ import { ApiService } from './_services/api.service';
 import { PluginService } from './_services/plugin.service';
 import { AuthService } from './_services/auth.service';
 import { AuthHttpInterceptor } from './_services/http.service';
+import { MobileDetectService } from './_services/mobile-detect.service';
 
 import { SpinnerModule } from './spinner/spinner.module';
 import { AccessoriesModule } from './accessories/accessories.module';
@@ -95,7 +96,8 @@ import { ResetComponent, ResetModalComponent } from './reset/reset.component';
     AuthService,
     WsService,
     ApiService,
-    PluginService
+    PluginService,
+    MobileDetectService
   ],
   bootstrap: [AppComponent]
 })
