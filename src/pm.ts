@@ -337,8 +337,8 @@ class PackageManager {
           installed: hb.homebridge.serverVersion,
           version: pkg['dist-tags'].latest,
           update: semver.lt(hb.homebridge.serverVersion, pkg['dist-tags'].latest),
-          description: (pkg.package.description) ?
-            pkg.package.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkg.package.name,
+          description: (pkg.description) ?
+            pkg.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkg.name,
           fork: false
         };
       });
@@ -352,8 +352,8 @@ class PackageManager {
           installed: hb.homebridge.serverVersion,
           version: pkg.version,
           update: semver.lt(hb.homebridge.serverVersion, pkg.version),
-          description: (pkg.package.description) ?
-            pkg.package.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkg.package.name,
+          description: (pkg.description) ?
+            pkg.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkg.name,
           fork: hb.homebridgeFork
         };
       });
