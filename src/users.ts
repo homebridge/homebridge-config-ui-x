@@ -121,6 +121,11 @@ class Users {
       throw new Error('User not found');
     }
 
+    // prevent deleting the only admin user
+    if (authfile[index].admin && authfile.filter(x => x.admin === true).length < 2) {
+      throw new Error('Cannot delete only admin user');
+    }
+
     authfile.splice(index, 1);
 
     // update the auth.json

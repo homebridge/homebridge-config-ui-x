@@ -45,7 +45,7 @@ export class UsersComponent implements OnInit {
         this.$state.reload();
       },
       err => {
-        this.toastr.error(`Failed To Delete User`, 'Error');
+        this.toastr.error(err.error.message || 'Failed to delete user', 'Error');
       }
     );
   }
