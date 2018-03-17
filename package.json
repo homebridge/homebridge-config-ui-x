@@ -19,7 +19,8 @@
     "build:server": "tsc",
     "build:ui": "npm run build --prefix ui",
     "watch:server": "tsc --watch",
-    "watch:ui": "npm run start --prefix ui"
+    "watch:ui": "npm run start --prefix ui",
+    "prepublishOnly": "npm run build"
   },
   "bin": {
     "homebridge-config-ui-x": "./bin/standalone.js"

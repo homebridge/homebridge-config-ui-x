@@ -237,7 +237,8 @@ class PackageManager {
           const plugin: any = {
             name: pjson.name,
             installed: pjson.version || '0.0.1',
-            description: pjson.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim(),
+            description: (pjson.description) ?
+              pjson.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pjson.name,
             globalInstall: (requiredPath !== this.customPluginPath),
             pluginPath: requiredPath
           };
@@ -336,7 +337,8 @@ class PackageManager {
           installed: hb.homebridge.serverVersion,
           version: pkg['dist-tags'].latest,
           update: semver.lt(hb.homebridge.serverVersion, pkg['dist-tags'].latest),
-          description: pkg.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim(),
+          description: (pkg.package.description) ?
+            pkg.package.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkg.package.name,
           fork: false
         };
       });
@@ -350,7 +352,8 @@ class PackageManager {
           installed: hb.homebridge.serverVersion,
           version: pkg.version,
           update: semver.lt(hb.homebridge.serverVersion, pkg.version),
-          description: pkg.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim(),
+          description: (pkg.package.description) ?
+            pkg.package.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkg.package.name,
           fork: hb.homebridgeFork
         };
       });

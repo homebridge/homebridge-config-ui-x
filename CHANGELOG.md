@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file. This projec
 
 * Prevent zoom when using the config editor on iOS (@Yanni via Homebridge Slack)
 * Prevent the deletion of an admin user if there are no other admin users ([docker-homebridge#83](https://github.com/oznu/docker-homebridge/issues/83))
+* Fixed issue that prevented installed plugins from loading if one was missing a description in it's `package.json` ([#59](https://github.com/oznu/homebridge-config-ui-x/issues/59))
 
 ## 3.3.0 (2018-03-16)
 
