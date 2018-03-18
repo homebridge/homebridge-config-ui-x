@@ -88,6 +88,9 @@ export class AuthService {
   }
 
   setTheme(theme: string) {
+    if (this.theme) {
+      window.document.querySelector('body').classList.remove(`config-ui-x-${this.theme}`);
+    }
     this.theme = theme;
     window.document.querySelector('body').classList.add(`config-ui-x-${this.theme}`);
   }

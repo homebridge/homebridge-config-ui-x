@@ -1,0 +1,81 @@
+<div class="row mb-3">
+  <div class="col-sm-12">
+    <h3 class="primary-text m-0">Settings</h3>
+  </div>
+</div>
+
+<div class="row mt-3">
+  <div class="col-md-12">
+    <div class="alert alert-warning" role="alert">
+      Changing these values will override the corresponding environment variables you may have set with the docker run command.
+    </div>
+  </div>
+</div>
+
+<form novalidate [formGroup]="form">
+
+  <h5 class="primary-text">Homebridge</h5>
+
+  <ul class="list-group">
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      Homebridge Debug Mode
+      <div class="material-switch pull-right">
+        <input id="homebridgeDebugMode" formControlName="HOMEBRIDGE_DEBUG" type="checkbox" />
+        <label for="homebridgeDebugMode" class="badge-primary"></label>
+      </div>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      Homebridge Insecure Mode
+      <div class="material-switch pull-right">
+        <input id="homebridgeInsecureMode" formControlName="HOMEBRIDGE_INSECURE" type="checkbox" />
+        <label for="homebridgeInsecureMode" class="badge-primary"></label>
+      </div>
+    </li>
+  </ul>
+
+  <h5 class="primary-text mt-4">Config UI X</h5>
+
+  <ul class="list-group">
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      Config UI X Theme
+      <select class="custom-select custom-select-sm w-25" formControlName="HOMEBRIDGE_CONFIG_UI_THEME">
+        <option value="blue">Blue</option>
+        <option value="blue-grey">Blue-grey</option>
+        <option value="green">Green</option>
+        <option value="indigo">Indigo</option>
+        <option value="orange">Orange</option>
+        <option value="pink">Pink</option>
+        <option value="purple">Purple</option>
+        <option value="red">Red</option>
+      </select>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <div>Config UI X UI Auth Mode</div>
+      <select class="custom-select custom-select-sm w-25" formControlName="HOMEBRIDGE_CONFIG_UI_AUTH">
+        <option value="form">Form</option>
+        <option value="basic">Basic</option>
+        <option value="none">None</option>
+      </select>
+    </li>
+  </ul>
+
+  <h5 class="primary-text mt-4">Third Party Packages</h5>
+
+  <ul class="list-group">
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      ffmpeg
+      <div class="material-switch pull-right">
+        <input id="package-ffmpeg" name="package-ffmpeg" type="checkbox" />
+        <label for="package-ffmpeg" class="badge-primary"></label>
+      </div>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      libpcap-dev
+      <div class="material-switch pull-right">
+        <input id="package-libpcap-dev" name="libpcap-dev" type="checkbox" />
+        <label for="package-libpcap-dev" class="badge-primary"></label>
+      </div>
+    </li>
+  </ul>
+
+</form>

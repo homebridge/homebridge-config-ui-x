@@ -13,7 +13,7 @@ import { UsersEditComponent } from './users.edit.component';
   templateUrl: './users.component.html'
 })
 export class UsersComponent implements OnInit {
-  @Input() homebridgeUsers: Array<Object>;
+  @Input() homebridgeUsers: Array<any>;
 
   constructor(
     public toastr: ToastsManager,
