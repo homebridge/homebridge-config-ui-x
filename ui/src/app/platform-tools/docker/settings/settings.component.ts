@@ -13,7 +13,8 @@ import { AuthService } from '../../../_services/auth.service';
 })
 export class SettingsComponent implements OnInit {
   @Input() env;
-  form: FormGroup;
+  public form: FormGroup;
+  public savedSettings = false;
 
   constructor(
     private $auth: AuthService,
@@ -36,6 +37,8 @@ export class SettingsComponent implements OnInit {
   }
 
   saveSettings(data = this.form.value) {
+    this.savedSettings = true;
+
     // set theme if changed
     if (this.$auth.theme !== data.HOMEBRIDGE_CONFIG_UI_THEME) {
       this.$auth.setTheme(data.HOMEBRIDGE_CONFIG_UI_THEME);

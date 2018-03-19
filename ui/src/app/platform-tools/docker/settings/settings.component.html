@@ -1,8 +1,10 @@
-<div class="row mb-3">
-  <div class="col-sm-12">
-    <h3 class="primary-text m-0">Settings</h3>
+<div class="d-flex justify-content-between">
+  <h3 class="primary-text m-0">Settings</h3>
+  <div class="text-right">
+    <button class="btn btn-primary waves-effect m-0" *ngIf="savedSettings" uiSref="docker.restart-container">Restart Required</button>
   </div>
 </div>
+
 
 <div class="row mt-3">
   <div class="col-md-12">
