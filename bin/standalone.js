@@ -65,6 +65,7 @@ const config = {
   restart: process.env.HOMEBRIDGE_CONFIG_UI_RESTART || 'killall -9 homebridge && killall -9 homebridge-config-ui-x',
   theme: process.env.HOMEBRIDGE_CONFIG_UI_THEME || 'red',
   auth: process.env.HOMEBRIDGE_CONFIG_UI_AUTH || 'form',
+  temp: process.env.HOMEBRIDGE_CONFIG_UI_TEMP || undefined,
   homebridgeNpmPkg: process.env.HOMEBRIDGE_CONFIG_UI_NPM_PKG || 'homebridge',
   homebridgeFork: process.env.HOMEBRIDGE_CONFIG_UI_FORK || undefined,
   homebridgeInsecure: (process.env.HOMEBRIDGE_INSECURE === "1")

@@ -32,20 +32,16 @@ export class SettingsComponent implements OnInit {
     });
 
     this.form.patchValue(this.env);
-
-    this.form.valueChanges.subscribe((data) => {
-      // set theme if changed
-      if (this.$auth.theme !== data.HOMEBRIDGE_CONFIG_UI_THEME) {
-        this.$auth.setTheme(data.HOMEBRIDGE_CONFIG_UI_THEME);
-      }
-
-      // save settings
-      this.saveSettings(data);
-    });
-
+    this.form.valueChanges.subscribe(this.saveSettings.bind(this));
   }
 
-  saveSettings(data) {
+  saveSettings(data = this.form.value) {
+    // set theme if changed
+    if (this.$auth.theme !== data.HOMEBRIDGE_CONFIG_UI_THEME) {
+      this.$auth.setTheme(data.HOMEBRIDGE_CONFIG_UI_THEME);
+    }
+
+    data.packages = this.env.packages;
     this.$api.dockerSaveEnv(data).subscribe(() => {
       this.toastr.success('Container Restart Required', 'Settings Saved');
     });

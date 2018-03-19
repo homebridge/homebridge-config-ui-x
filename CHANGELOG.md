@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file. This projec
 
 ## Next
 
+### Notable Changes
+
+* Added Docker Settings page where users can adjust the following:
+  * Toggle Homebridge Insecure / Debug Mode
+  * UI Theme Color
+  * UI Auth Mode (Form, Basic, None)
+  * Toggle installation for commonly used packages (ffmpeg, libpcap-dev)
+* Added the ability to set the path to the temp file using `HOMEBRIDGE_CONFIG_UI_TEMP` when running in Docker ([#62](https://github.com/oznu/homebridge-config-ui-x/issues/62))
+
 ### Bug Fixes
 
 * Log viewer terminal now adjusts the size of the pty shell according to the size of the browser window
