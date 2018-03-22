@@ -10,7 +10,6 @@ All notable changes to this project will be documented in this file. This projec
   * Toggle Homebridge Insecure / Debug Mode
   * UI Theme Color
   * UI Auth Mode (Form, Basic, None)
-  * Toggle installation for commonly used packages (ffmpeg, libpcap-dev)
 * Added the ability to set the path to the temp file using `HOMEBRIDGE_CONFIG_UI_TEMP` when running in Docker ([#62](https://github.com/oznu/homebridge-config-ui-x/issues/62))
 
 ### Bug Fixes

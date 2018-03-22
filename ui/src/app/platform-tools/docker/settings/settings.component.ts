@@ -44,7 +44,6 @@ export class SettingsComponent implements OnInit {
       this.$auth.setTheme(data.HOMEBRIDGE_CONFIG_UI_THEME);
     }
 
-    data.packages = this.env.packages;
     this.$api.dockerSaveEnv(data).subscribe(() => {
       this.toastr.success('Container Restart Required', 'Settings Saved');
     });

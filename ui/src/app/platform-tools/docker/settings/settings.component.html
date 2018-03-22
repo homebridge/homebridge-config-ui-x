@@ -62,15 +62,3 @@
   </ul>
 
 </form>
-
-<h5 class="primary-text mt-4">Third Party Packages</h5>
-
-<ul class="list-group">
-  <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let pkg of env.packages">
-    {{ pkg.name }}
-    <div class="material-switch pull-right">
-      <input [id]="'package-' + pkg.name" type="checkbox" [(ngModel)]="pkg.installed" (change)="saveSettings()"/>
-      <label [for]="'package-' + pkg.name" class="badge-primary"></label>
-    </div>
-  </li>
-</ul>
