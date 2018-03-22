@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Notable Changes
 
-* Added Docker Settings page where users can adjust the following:
+* Added Docker Settings page where users can adjust the following ([#64](https://github.com/oznu/homebridge-config-ui-x/pull/64)):
   * Toggle Homebridge Insecure / Debug Mode
   * UI Theme Color
   * UI Auth Mode (Form, Basic, None)
