@@ -110,6 +110,14 @@ export class ApiService {
     return this.$http.put(`${this.base}/api/docker/restart-container`, {}, this.httpOptions);
   }
 
+  dockerGetEnv() {
+    return this.$http.get(`${this.base}/api/docker/env`, this.httpOptions);
+  }
+
+  dockerSaveEnv(payload) {
+    return this.$http.put(`${this.base}/api/docker/env`, payload, this.httpOptions);
+  }
+
   linuxRestartServer() {
     return this.$http.put(`${this.base}/api/linux/restart-server`, {}, this.httpOptions);
   }

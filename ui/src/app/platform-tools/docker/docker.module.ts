@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { UIRouterModule, StateDeclaration } from '@uirouter/angular';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -10,6 +11,7 @@ import { SpinnerModule } from '../../spinner/spinner.module';
 import { TerminalComponent } from '../terminal/terminal.component';
 import { StartupScriptEditorComponent, StartupScriptEditorStates } from './startup-script-editor/startup-script-editor.component';
 import { RestartContainerComponent, RestartContainerState} from './restart-container/restart-container.component';
+import { SettingsComponent, SettingsState } from './settings/settings.component';
 
 export const AbstractState: StateDeclaration = {
   name: 'docker',
@@ -36,6 +38,8 @@ export const TerminalState = {
 @NgModule({
   imports: [
     CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
     NgbModule,
     AceEditorModule,
     SpinnerModule,
@@ -44,13 +48,15 @@ export const TerminalState = {
         AbstractState,
         StartupScriptEditorStates,
         RestartContainerState,
-        TerminalState
+        TerminalState,
+        SettingsState
       ]
     })
   ],
   declarations: [
     StartupScriptEditorComponent,
-    RestartContainerComponent
+    RestartContainerComponent,
+    SettingsComponent
   ]
 })
 export class DockerToolsModule { }
