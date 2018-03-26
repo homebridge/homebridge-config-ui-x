@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file. This projec
 
 * Suppress npm update warnings in log output ([#66](https://github.com/oznu/homebridge-config-ui-x/issues/66))
 
-## 3.4.0
+## 3.4.0 (2018-03-22)
 
 ### Notable Changes
 
