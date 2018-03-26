@@ -19,7 +19,7 @@ class PackageManager {
   private plugins: Array<any>;
   private customPluginPath: string;
   private rp: any;
-  private npm: any;
+  private npm: Array<string>;
   private node: string;
   private nsp: string;
 
@@ -54,16 +54,16 @@ class PackageManager {
       .filter(fs.existsSync);
 
       if (windowsNpmPath.length) {
-        return windowsNpmPath[0];
+        return [windowsNpmPath[0], '--no-update-notifier'];
       } else {
-        hb.log(color.red(`ERROR: Cannot find npm binary. You will not be able to manage plugins or update homebridge.`));
-        hb.log(color.red(`ERROR: You might be able to fix this problem by running: npm install -g npm`));
-        return 'npm';
+        hb.error(`ERROR: Cannot find npm binary. You will not be able to manage plugins or update homebridge.`);
+        hb.error(`ERROR: You might be able to fix this problem by running: npm install -g npm`);
       }
-    } else {
-      // Linux and macOS don't require the full path to npm
-      return 'npm';
+
     }
+
+    // Linux and macOS don't require the full path to npm
+    return ['npm', '--no-update-notifier'];
   }
 
   getBasePaths() {
@@ -97,7 +97,7 @@ class PackageManager {
       } else {
         paths.push('/usr/local/lib/node_modules');
         paths.push('/usr/lib/node_modules');
-        paths.push(childProcess.execSync('/bin/echo -n "$(npm -g prefix)/lib/node_modules"').toString('utf8'));
+        paths.push(childProcess.execSync('/bin/echo -n "$(npm --no-update-notifier -g prefix)/lib/node_modules"').toString('utf8'));
       }
     }
 
@@ -377,7 +377,7 @@ class PackageManager {
           installOptions.push('--save');
         }
 
-        return this.executeCommand([this.npm, 'install', '--unsafe-perm', ...installOptions, `${pkg}@latest`], installPath)
+        return this.executeCommand([...this.npm, 'install', '--unsafe-perm', ...installOptions, `${pkg}@latest`], installPath)
           .then(() => this.runNspScan(pkgPath));
       })
       .catch((err) => {
@@ -406,7 +406,7 @@ class PackageManager {
           installOptions.push('--save');
         }
 
-        return this.executeCommand([this.npm, 'uninstall', '--unsafe-perm', ...installOptions, pkg], installPath);
+        return this.executeCommand([...this.npm, 'uninstall', '--unsafe-perm', ...installOptions, pkg], installPath);
       })
       .catch((err) => {
         this.wssBroadcast(color.red(`\n\r${err}\n\r`));
@@ -437,7 +437,7 @@ class PackageManager {
           installOptions.push('--save');
         }
 
-        return this.executeCommand([this.npm, 'install', '--unsafe-perm', ...installOptions, `${pkg}@latest`], installPath)
+        return this.executeCommand([...this.npm, 'install', '--unsafe-perm', ...installOptions, `${pkg}@latest`], installPath)
           .then(() => this.runNspScan(pkgPath));
       })
       .catch((err) => {
@@ -463,7 +463,7 @@ class PackageManager {
       .map(installPath => {
         hb.log(`Using npm to upgrade homebridge at ${installPath}...`);
         const pkg = hb.homebridgeFork ? hb.homebridgeFork : `${hb.homebridgeNpmPkg}@latest`;
-        return this.executeCommand([this.npm, 'install', '--unsafe-perm', pkg], installPath)
+        return this.executeCommand([...this.npm, 'install', '--unsafe-perm', pkg], installPath)
           .then(() => {
             hb.log(`Upgraded homebridge using npm at ${installPath}`);
           });

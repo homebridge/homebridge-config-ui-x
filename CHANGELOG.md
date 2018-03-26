@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## Next
+
+### Bug Fixes
+
+* Suppress npm update warnings in log output ([#66](https://github.com/oznu/homebridge-config-ui-x/issues/66))
+
 ## 3.4.0
 
 ### Notable Changes
