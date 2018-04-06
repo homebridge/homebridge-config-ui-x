@@ -2,7 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## Next
+## 3.4.1 (2018-04-06)
+
+### Notable Changes
+
+* Added link to plugin homepage (GitHub, BitBucket, etc.) ([#74](https://github.com/oznu/homebridge-config-ui-x/issues/74))
+* Updated npm dependencies
 
 ### Bug Fixes
 

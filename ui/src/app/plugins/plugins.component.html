@@ -18,7 +18,7 @@
           <p class="mb-0 grey-text" *ngIf="!plugin.installed">Not Installed</p>
           <p class="mb-0 primary-text" *ngIf="plugin.update">Update Available</p>
         </div>
-        <div class="col-sm-6">
+        <div class="col-sm-6 d-none d-sm-block">
           <p class="mb-0 grey-text text-right" *ngIf="plugin.author">
             <a class="card-link grey-text" target="_blank" [href]="'https://www.npmjs.com/~' + plugin.author">@{{ plugin.author }}</a>
           </p>
@@ -26,7 +26,7 @@
       </div>
       <h4 class="card-title mb-0" [innerHtml]="plugin.description"></h4>
       <p class="card-text">{{ plugin.name }} v{{ plugin.installed || plugin.version }}</p>
-      <div class="flex-row">
+      <div class="d-flex">
         <a class="card-link" target="_blank" *ngIf="plugin.publicPackage" [href]="plugin.links.npm">
           NPM
         </a>
@@ -39,6 +39,9 @@
         </a>
         <a class="card-link" *ngIf="!plugin.installed" href="javascript:void(0);" (click)="$plugin.installPlugin(plugin.name)">
           INSTALL
+        </a>
+        <a class="card-link ml-auto grey-text" target="_blank" [href]="plugin.links.homepage || plugin.links.npm" [ngbTooltip]="plugin.links.homepage || plugin.links.npm" container="body" placement="left">
+          <i class="fas fa-external-link-alt"></i>
         </a>
       </div>
     </div>
