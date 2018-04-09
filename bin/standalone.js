@@ -76,7 +76,9 @@ const service = {
   serverVersion: homebridge.version,
   pluginPath: options.pluginPath,
   registerPlatform: (pluginName, alias, Service) => {
-    return new Service(log, config)
+    if (alias === 'config') {
+      return new Service(log, config)
+    }
   },
   user: {
     configPath: () => {
