@@ -70,6 +70,7 @@ class HomebridgeUI {
     this.homebridgeNpmPkg = config.homebridgeNpmPkg || 'homebridge';
     this.disableNsp = config.disableNsp;
     this.homebridgeInsecure = config.homebridgeInsecure;
+    this.pluginPath = config.pluginPath;
     this.runningInDocker = Boolean(process.env.HOMEBRIDGE_CONFIG_UI === '1');
     this.runningInLinux = (!this.runningInDocker && os.platform() === 'linux');
     this.linuxServerOpts = config.linux || {};

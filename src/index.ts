@@ -1,32 +1,43 @@
 import 'source-map-support/register';
 
 import * as http from 'http';
+import * as path from 'path';
+import * as child_process from 'child_process';
+import * as commander from 'commander';
 
-import { hb } from './hb';
-import { users } from './users';
+let homebridge;
 
-export = (homebridge) => {
-  hb.homebridge = homebridge;
+export = (api) => {
+  homebridge = api;
   homebridge.registerPlatform('homebridge-config-ui-x', 'config', HomebridgeConfigUi);
+  homebridge.registerPlatform('homebridge-config-ui-x', 'config-fork', HomebridgeConfigUiFork);
+  return HomebridgeConfigUi;
 };
 
 class HomebridgeConfigUi {
+  private hb;
   private server;
 
   constructor(log, config) {
-    // setup
-    hb.init(log, config);
-
     // bootstrap the server
-    this.bootstrap();
+    this.bootstrap(log, config);
   }
 
-  async bootstrap() {
+  async bootstrap(log, config) {
+    // import hb
+    const module = await import('./hb');
+    this.hb = module.hb;
+
+    // initial setup
+    this.hb.homebridge = homebridge;
+    this.hb.init(log, config);
+
     // ensure auth.json is setup correctly
+    const { users } = await import('./users');
     await users.setupAuthFile();
 
     // load config.json into memory
-    await hb.refreshHomebridgeConfig();
+    await this.hb.refreshHomebridgeConfig();
 
     // dynamically load modules so app is only loaded if plugin is enabled
     const { ExpressServer } = await import('./app');
@@ -37,9 +48,9 @@ class HomebridgeConfigUi {
     this.server = http.createServer(app);
 
     // attach websocker server to the express server
-    hb.wss = new WSS(this.server);
+    this.hb.wss = new WSS(this.server);
 
-    this.server.listen(hb.port);
+    this.server.listen(this.hb.port);
     this.server.on('error', this.onServerError.bind(this));
     this.server.on('listening', this.onServerListening.bind(this));
   }
@@ -48,7 +59,7 @@ class HomebridgeConfigUi {
     const addr = this.server.address();
     const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
     const msg = 'Console is listening on ' + bind + '.';
-    hb.log(msg);
+    this.hb.log(msg);
   }
 
   onServerError(error) {
@@ -56,7 +67,7 @@ class HomebridgeConfigUi {
       throw error;
     }
 
-    const bind = typeof hb.port === 'string' ? 'Pipe ' + hb.port : 'Port ' + hb.port;
+    const bind = typeof this.hb.port === 'string' ? 'Pipe ' + this.hb.port : 'Port ' + this.hb.port;
 
     switch (error.code) {
       case 'EACCES':
@@ -70,6 +81,46 @@ class HomebridgeConfigUi {
       default:
         throw error;
     }
+  }
+
+  accessories(callback) {
+    const accessories = [];
+    callback(accessories);
+  }
+}
+
+/**
+ * Run plugin as a seperate node.js process
+ */
+class HomebridgeConfigUiFork {
+  constructor(log, config) {
+
+    const setup = {
+      serverVersion: homebridge.serverVersion,
+      homebridge: {
+        configPath: homebridge.user.configPath(),
+        storagePath: homebridge.user.storagePath()
+      },
+      config: config
+    };
+
+    commander
+      .allowUnknownOption()
+      .option('-P, --plugin-path [path]', '', (p) => config.pluginPath = p)
+      .option('-I, --insecure', '', () => config.homebridgeInsecure = true)
+      .parse(process.argv);
+
+    const ui = child_process.fork(path.resolve(__dirname, 'fork'));
+
+    ui.on('message', (message) => {
+      if (message === 'ready') {
+        ui.send(setup);
+      }
+    });
+
+    ui.on('close', () => {
+      process.exit(1);
+    });
   }
 
   accessories(callback) {
