@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 3.5.0
+
+### Notable Changes
+
+* homebridge-config-ui-x now runs in a seperate thread to the main homebridge process ([#75](https://github.com/oznu/homebridge-config-ui-x/issues/75))
+
 ## 3.4.1 (2018-04-06)
 
 ### Notable Changes

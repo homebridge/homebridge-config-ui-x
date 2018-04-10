@@ -334,9 +334,9 @@ class PackageManager {
       .then(pkg => {
         return {
           name: pkg.name,
-          installed: hb.homebridge.serverVersion,
+          installed: hb.homebridgeVersion,
           version: pkg['dist-tags'].latest,
-          update: semver.lt(hb.homebridge.serverVersion, pkg['dist-tags'].latest),
+          update: semver.lt(hb.homebridgeVersion, pkg['dist-tags'].latest),
           description: (pkg.description) ?
             pkg.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkg.name,
           fork: false
@@ -349,9 +349,9 @@ class PackageManager {
       .then(pkg => {
         return {
           name: pkg.name,
-          installed: hb.homebridge.serverVersion,
+          installed: hb.homebridgeVersion,
           version: pkg.version,
-          update: semver.lt(hb.homebridge.serverVersion, pkg.version),
+          update: semver.lt(hb.homebridgeVersion, pkg.version),
           description: (pkg.description) ?
             pkg.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkg.name,
           fork: hb.homebridgeFork

@@ -1,14 +1,15 @@
 import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as color from 'bash-color';
 import * as commander from 'commander';
 
 import { WSS } from './wss';
 
 class HomebridgeUI {
-  private logger;
   public ui: any;
-  public homebridge: any;
+  public pluginName: string;
+  public homebridgeVersion: string;
   public homebridgeInsecure: boolean;
   public homebridgeNpmPkg: string;
   public homebridgeFork: string;
@@ -48,19 +49,19 @@ class HomebridgeUI {
     ];
   }
 
-  public init(log, config) {
-    this.logger = log;
+  public init(setup) {
+    this.configPath = setup.configPath;
+    this.authPath = path.join(setup.storagePath, 'auth.json');
+    this.storagePath = setup.storagePath;
+    this.accessoryLayoutPath = path.resolve(setup.storagePath, 'accessories', 'uiAccessoriesLayout.json');
+    this.homebridgeVersion = setup.homebridgeVersion;
 
-    this.configPath = this.homebridge.user.configPath();
-    this.authPath = path.join(this.homebridge.user.storagePath(), 'auth.json');
-    this.storagePath = this.homebridge.user.storagePath();
-    this.accessoryLayoutPath = path.resolve(this.homebridge.user.storagePath(), 'accessories', 'uiAccessoriesLayout.json');
-
-    this.parseConfig(config);
+    this.parseConfig(setup.config);
     this.parseCommandLineArgs();
   }
 
   private parseConfig(config) {
+    this.pluginName = config.name || this.ui.name;
     this.port = config.port || 8080;
     this.logOpts = config.log;
     this.restartCmd = config.restart;
@@ -128,18 +129,6 @@ class HomebridgeUI {
       };
       this.error(`Failed to load ${hb.configPath} - ${e.message}`);
     }
-  }
-
-  public log(...params) {
-    this.logger(...params);
-  }
-
-  public warn(...params) {
-    this.logger.warn(...params);
-  }
-
-  public error(...params) {
-    this.logger.error(...params);
   }
 
   public async updateConfig(config) {
@@ -262,6 +251,24 @@ class HomebridgeUI {
     fs.writeJsonSync(this.accessoryLayoutPath, accessoryLayout);
     this.log(`[${user}] Accessory layout changes saved.`);
     return layout;
+  }
+
+  public log(...params) {
+    console.log(
+      color.white(`[${new Date().toLocaleString()}]`), color.cyan(`[${this.pluginName}]`), ...params
+    );
+  }
+
+  public warn(...params) {
+    console.warn(
+      color.white(`[${new Date().toLocaleString()}]`), color.cyan(`[${this.pluginName}]`), color.yellow(...params)
+    );
+  }
+
+  public error(...params) {
+    console.error(
+      color.white(`[${new Date().toLocaleString()}]`), color.cyan(`[${this.pluginName}]`), color.red(...params)
+    );
   }
 }
 
