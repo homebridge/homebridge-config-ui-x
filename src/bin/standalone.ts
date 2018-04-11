@@ -55,6 +55,7 @@ const setup = {
     homebridgeNpmPkg: process.env.HOMEBRIDGE_CONFIG_UI_NPM_PKG || 'homebridge',
     homebridgeFork: process.env.HOMEBRIDGE_CONFIG_UI_FORK || undefined,
     homebridgeInsecure: (process.env.HOMEBRIDGE_INSECURE === '1'),
+    loginWallpaper: process.env.HOMEBRIDGE_CONFIG_UI_LOGIN_WALLPAPER || undefined,
     pluginPath: options.pluginPath,
   },
 };
