@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file. This projec
 
 * This plugin now runs in a seperate thread to the main homebridge process ([#75](https://github.com/oznu/homebridge-config-ui-x/issues/75))
 * Added ability to set a custom image for the login screen using the `loginWallpaper` option ([#34](https://github.com/oznu/homebridge-config-ui-x/issues/34))
+* Updated npm dependencies
 
 ## 3.4.1 (2018-04-06)
 
