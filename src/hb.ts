@@ -29,6 +29,7 @@ class HomebridgeUI {
   public authMethod: string | boolean;
   public formAuth: boolean;
   public theme: string;
+  public loginWallpaper: string;
   public availableThemes: string[];
   public temperatureFile: string;
   public accessoryLayoutPath: string;
@@ -75,6 +76,7 @@ class HomebridgeUI {
     this.runningInDocker = Boolean(process.env.HOMEBRIDGE_CONFIG_UI === '1');
     this.runningInLinux = (!this.runningInDocker && os.platform() === 'linux');
     this.linuxServerOpts = config.linux || {};
+    this.loginWallpaper = config.loginWallpaper;
 
     if (config.auth === 'none' || config.auth === false) {
       this.formAuth = false;

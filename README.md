@@ -41,7 +41,7 @@ Add this to your homebridge `config.json` file
 * `restart` - The command to run when a restart request is sent from the browser. If not populated it will just terminate the Homebridge process and let your process manager (like systemd) restart it.
 * `temp` - The path to the file that can display your current CPU temperature. eg. `/sys/class/thermal/thermal_zone0/temp`
 * `theme` - The colour scheme to use. Possible values: `red`, `pink`, `purple`, `indigo`, `blue`, `blue-grey`, `green`, `orange`. Defaults to `red`.
-* `fork` - Set only if using a fork of Homebridge. Use username/repo format, eg. `northernman54/homebridge`.
+* `loginWallpaper` - The full path to background image you want to use for the form login page.
 
 ## Accessory Control
 
@@ -197,7 +197,11 @@ sudo npm uninstall -g homebridge-config-ui-x
 sudo npm install -g --unsafe-perm homebridge-config-ui-x
 ```
 
-#### 2. Ask on Slack
+#### 2. Accessories tab missing
+
+If the Accessories tab is not show then you are not running Homebridge in insecure mode. See the [Accessory Control](#accessory-control) section for details. If you have just enabled insecure mode make sure you have restarted Homebridge and refreshed the page in your browser.
+
+#### 3. Ask on Slack
 
 [![Slack Status](https://slackin-znyruquwmv.now.sh/badge.svg)](https://slackin-znyruquwmv.now.sh)
 
