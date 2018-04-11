@@ -39,8 +39,8 @@
 
   <ul class="list-group">
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      Config UI X Theme
-      <select class="custom-select custom-select-sm w-25" formControlName="HOMEBRIDGE_CONFIG_UI_THEME">
+      Theme
+      <select class="custom-select custom-select-sm w-25" formControlName="HOMEBRIDGE_CONFIG_UI_THEME" (change)="themeChanged()">
         <option value="blue">Blue</option>
         <option value="blue-grey">Blue-grey</option>
         <option value="green">Green</option>
@@ -52,12 +52,16 @@
       </select>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <div>Config UI X UI Auth Mode</div>
+      <div>Auth Mode</div>
       <select class="custom-select custom-select-sm w-25" formControlName="HOMEBRIDGE_CONFIG_UI_AUTH">
         <option value="form">Form</option>
         <option value="basic">Basic</option>
         <option value="none">None</option>
       </select>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <div>Custom Login Wallpaper Image Path</div>
+      <input type="text" class="form-control form-control-sm w-25" formControlName="HOMEBRIDGE_CONFIG_UI_LOGIN_WALLPAPER">
     </li>
   </ul>
 
