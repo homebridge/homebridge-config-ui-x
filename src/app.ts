@@ -30,6 +30,15 @@ export class ExpressServer {
     // load angular spa
     this.app.get('/', this.auth.staticAuth, this.serveSpa);
 
+    // login page image
+    this.app.use('/assets/snapshot.jpg', (req, res, next) => {
+      if (hb.loginWallpaper) {
+        res.sendFile(path.resolve(hb.loginWallpaper));
+      } else {
+        res.sendFile(path.resolve(__dirname, '../public/assets/snapshot.jpg'));
+      }
+    });
+
     // static assets
     this.app.use(express.static(path.resolve(__dirname, '../public')));
 

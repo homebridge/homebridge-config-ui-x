@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 3.5.0 (2018-04-12)
+
+### Notable Changes
+
+* This plugin now runs in a seperate thread to the main homebridge process ([#75](https://github.com/oznu/homebridge-config-ui-x/issues/75))
+  * This can be disabled by setting `noFork` to false in the plugin config.
+* Added ability to set a custom image for the login screen using the `loginWallpaper` option ([#34](https://github.com/oznu/homebridge-config-ui-x/issues/34))
+* Updated npm dependencies
+
 ## 3.4.1 (2018-04-06)
 
 ### Notable Changes

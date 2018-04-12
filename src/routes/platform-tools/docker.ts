@@ -18,7 +18,8 @@ export class DockerRouter {
     'HOMEBRIDGE_DEBUG',
     'HOMEBRIDGE_INSECURE',
     'HOMEBRIDGE_CONFIG_UI_THEME',
-    'HOMEBRIDGE_CONFIG_UI_AUTH'
+    'HOMEBRIDGE_CONFIG_UI_AUTH',
+    'HOMEBRIDGE_CONFIG_UI_LOGIN_WALLPAPER',
   ];
 
   constructor() {
@@ -87,7 +88,11 @@ export class DockerRouter {
           req.body[key] = req.body[key] ? '1' : '0';
         }
 
-        resp.push(`${key}="${String(req.body[key])}"`);
+        if (typeof req.body[key] === 'string' && !req.body[key].trim().length) {
+          return;
+        }
+
+        resp.push(`${key}="${String(req.body[key].trim())}"`);
       }
     });
 

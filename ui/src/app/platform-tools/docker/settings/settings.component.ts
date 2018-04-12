@@ -29,20 +29,23 @@ export class SettingsComponent implements OnInit {
       HOMEBRIDGE_DEBUG: [false],
       HOMEBRIDGE_INSECURE: [false],
       HOMEBRIDGE_CONFIG_UI_THEME: ['red'],
-      HOMEBRIDGE_CONFIG_UI_AUTH: ['form']
+      HOMEBRIDGE_CONFIG_UI_AUTH: ['form'],
+      HOMEBRIDGE_CONFIG_UI_LOGIN_WALLPAPER: [undefined]
     });
 
     this.form.patchValue(this.env);
-    this.form.valueChanges.subscribe(this.saveSettings.bind(this));
+    this.form.valueChanges.debounceTime(1000).subscribe(this.saveSettings.bind(this));
   }
 
-  saveSettings(data = this.form.value) {
-    this.savedSettings = true;
-
+  themeChanged(data = this.form.value) {
     // set theme if changed
     if (this.$auth.theme !== data.HOMEBRIDGE_CONFIG_UI_THEME) {
       this.$auth.setTheme(data.HOMEBRIDGE_CONFIG_UI_THEME);
     }
+  }
+
+  saveSettings(data = this.form.value) {
+    this.savedSettings = true;
 
     this.$api.dockerSaveEnv(data).subscribe(() => {
       this.toastr.success('Container Restart Required', 'Settings Saved');

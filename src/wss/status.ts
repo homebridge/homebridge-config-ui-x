@@ -84,7 +84,7 @@ export class StatusWssHandler {
       }
     };
 
-    stats.cpu = (os.platform() === 'win32') ? null : (parseFloat(os.loadavg() + '') * 100 / os.cpus().length).toFixed(2);
+    stats.cpu = (os.platform() === 'win32') ? null : (os.loadavg()[0] * 100 / os.cpus().length).toFixed(2);
 
     // server uptime
     const uptime: any = {
