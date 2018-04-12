@@ -83,7 +83,7 @@ export class DockerRouter {
     const resp = ['### This will overide environment variables set using the docker run command ###'];
 
     this.dockerEnvVariables.forEach((key) => {
-      if (req.body[key] !== undefined) {
+      if (req.body[key] !== undefined && req.body[key] !== null) {
         if (typeof (req.body[key]) === 'boolean') {
           req.body[key] = req.body[key] ? '1' : '0';
         }
@@ -92,7 +92,7 @@ export class DockerRouter {
           return;
         }
 
-        resp.push(`${key}="${String(req.body[key].trim())}"`);
+        resp.push(`${key}="${String(req.body[key]).trim()}"`);
       }
     });
 
