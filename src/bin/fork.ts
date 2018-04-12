@@ -2,7 +2,7 @@ process.title = 'homebridge-config-ui-x';
 
 import 'source-map-support/register';
 
-import { UiServer } from './server';
+import { UiServer } from '../server';
 
 process.on('message', (setup) => {
   return new UiServer(setup);

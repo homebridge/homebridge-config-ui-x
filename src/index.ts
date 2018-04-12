@@ -8,14 +8,14 @@ let homebridge;
 
 export = (api) => {
   homebridge = api;
-  homebridge.registerPlatform('homebridge-config-ui-x', 'config', HomebridgeConfigUiFork);
+  homebridge.registerPlatform('homebridge-config-ui-x', 'config', HomebridgeConfigUi);
 };
 
-/**
- * Run plugin as a seperate node.js process
- */
-class HomebridgeConfigUiFork {
+class HomebridgeConfigUi {
+  log;
+
   constructor(log, config) {
+    this.log = log;
 
     const setup = {
       homebridgeVersion: homebridge.serverVersion,
@@ -30,9 +30,20 @@ class HomebridgeConfigUiFork {
       .option('-I, --insecure', '', () => config.homebridgeInsecure = true)
       .parse(process.argv);
 
-    const ui = child_process.fork(path.resolve(__dirname, 'fork'));
+    if (config.noFork) {
+      this.noFork(setup);
+    } else {
+      this.fork(setup);
+    }
+  }
 
-    log(`Spawning homebridge-config-ui-x with PID`, ui.pid);
+  /**
+   * Run plugin as a seperate node.js process
+   */
+  fork(setup) {
+    const ui = child_process.fork(path.resolve(__dirname, 'bin/fork'));
+
+    this.log(`Spawning homebridge-config-ui-x with PID`, ui.pid);
 
     ui.on('message', (message) => {
       if (message === 'ready') {
@@ -43,6 +54,14 @@ class HomebridgeConfigUiFork {
     ui.on('close', () => {
       process.exit(1);
     });
+  }
+
+  /**
+   * Run plugin in the main homebridge process
+   */
+  async noFork(setup) {
+    const { UiServer } = await import('./server');
+    return new UiServer(setup);
   }
 
   accessories(callback) {
