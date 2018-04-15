@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 3.5.2 (2018-04-15)
+
+### Notable Changes
+
+* Accessory Control: Added message explaining that accessory control is disabled when navigating to `/accessories` when insecure mode is not enabled
+* Updated README to contain link to the [Enabling Accessory Control](https://github.com/oznu/homebridge-config-ui-x/wiki/Enabling-Accessory-Control) wiki article
+
 ## 3.5.1 (2018-04-12)
 
 ### Bug Fixes
