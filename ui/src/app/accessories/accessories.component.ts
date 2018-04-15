@@ -7,6 +7,7 @@ import { ServiceType } from '@oznu/hap-client';
 import { DragulaService } from 'ng2-dragula';
 
 import { WsService } from '../_services/ws.service';
+import { AuthService } from '../_services/auth.service';
 import { ApiService } from '../_services/api.service';
 import { MobileDetectService } from '../_services/mobile-detect.service';
 import { AddRoomModalComponent } from './add-room-modal/add-room-modal.component';
@@ -30,6 +31,7 @@ export class AccessoriesComponent implements OnInit {
     public toastr: ToastsManager,
     private modalService: NgbModal,
     private ws: WsService,
+    public $auth: AuthService,
     private $api: ApiService,
     private $md: MobileDetectService
   ) {

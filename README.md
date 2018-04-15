@@ -47,7 +47,7 @@ Add this to your homebridge `config.json` file
 
 The plugin allows you to view and control some types of Homebridge accessories from your web browser. 
 
-To enable accessory control you must be running Homebridge in insecure mode:
+To [enable accessory control](https://github.com/oznu/homebridge-config-ui-x/wiki/Enabling-Accessory-Control) you must be running Homebridge in insecure mode:
 
 ```
 homebridge -I
@@ -199,7 +199,7 @@ sudo npm install -g --unsafe-perm homebridge-config-ui-x
 
 #### 2. Accessories tab missing
 
-If the Accessories tab is not show then you are not running Homebridge in insecure mode. See the [Accessory Control](#accessory-control) section for details. If you have just enabled insecure mode make sure you have restarted Homebridge and refreshed the page in your browser.
+If the Accessories tab is not show then you are not running Homebridge in insecure mode. See the [Enabling Accessory Control](https://github.com/oznu/homebridge-config-ui-x/wiki/Enabling-Accessory-Control) for details. If you have just enabled insecure mode make sure you have restarted Homebridge and refreshed the page in your browser.
 
 #### 3. Ask on Slack
 
