@@ -79,7 +79,10 @@ export class ExpressServer {
   }
 
   serveSpa(req: Request, res: Response, next: NextFunction) {
-    res.sendFile(path.resolve(__dirname, '../public/index.html'));
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.sendFile(path.resolve(__dirname, '../public/index.html'), { etag: false });
   }
 
   notFound(req: Request, res: Response, next: NextFunction) {

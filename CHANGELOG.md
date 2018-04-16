@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 3.5.3 (2018-04-16)
+
+### Bug Fixes
+
+* Fixed bug that could prevent the plugin from displaying in the browser after an update unless the cache was cleared ([#82](https://github.com/oznu/homebridge-config-ui-x/issues/82))
+* Ensure forked process is killed if Homebridge is not running ([#83](https://github.com/oznu/homebridge-config-ui-x/issues/83))
+
 ## 3.5.2 (2018-04-15)
 
 ### Notable Changes

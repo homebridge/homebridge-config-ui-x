@@ -47,6 +47,7 @@ class HomebridgeConfigUi {
 
     ui.on('message', (message) => {
       if (message === 'ready') {
+        ui.send('ping');
         ui.send(setup);
       }
     });
@@ -54,6 +55,10 @@ class HomebridgeConfigUi {
     ui.on('close', () => {
       process.exit(1);
     });
+
+    setInterval(() => {
+      ui.send('ping');
+    }, 15000);
   }
 
   /**

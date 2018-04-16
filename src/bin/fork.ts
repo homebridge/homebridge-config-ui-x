@@ -4,8 +4,15 @@ import 'source-map-support/register';
 
 import { UiServer } from '../server';
 
-process.on('message', (setup) => {
-  return new UiServer(setup);
+let healthcheck;
+
+process.on('message', (message) => {
+  if (typeof message === 'object') {
+    return new UiServer(message);
+  } else if (message === 'ping') {
+    clearTimeout(healthcheck);
+    healthcheck = setTimeout(process.exit, 30000);
+  }
 });
 
 process.on('disconnect', () => {
