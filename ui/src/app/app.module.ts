@@ -9,7 +9,16 @@ import { UIRouterModule } from '@uirouter/angular';
 import { AceEditorModule } from 'ng2-ace-editor';
 import { ToastModule, ToastOptions } from 'ng2-toastr/ng2-toastr';
 import { MarkdownModule } from 'ngx-md';
-import { JsonSchemaFormModule, Bootstrap4FrameworkModule } from 'angular2-json-schema-form';
+
+import {
+  JsonSchemaFormModule,
+  Bootstrap4FrameworkModule,
+  Bootstrap4Framework,
+  Framework,
+  WidgetLibraryService,
+  FrameworkLibraryService,
+  JsonSchemaFormService
+} from 'angular2-json-schema-form';
 
 import { ToastCustomOptions } from './_helpers/toast.class';
 import { routerConfigFn } from './_helpers/router.config';
@@ -71,10 +80,18 @@ import { ResetComponent, ResetModalComponent } from './reset/reset.component';
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    Bootstrap4FrameworkModule,
-    JsonSchemaFormModule.forRoot(Bootstrap4FrameworkModule),
     AceEditorModule,
     SpinnerModule,
+    Bootstrap4FrameworkModule,
+    {
+      ngModule: JsonSchemaFormModule,
+      providers: [
+        JsonSchemaFormService,
+        FrameworkLibraryService,
+        WidgetLibraryService,
+        { provide: Framework, useClass: Bootstrap4Framework, multi: true }
+      ]
+    },
     MarkdownModule.forRoot(),
     ToastModule.forRoot(),
     NgbModule.forRoot(),
