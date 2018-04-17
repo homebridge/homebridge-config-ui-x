@@ -66,6 +66,14 @@ export class ApiService {
     return this.$http.get(`${this.base}/api/packages/changelog/${pluginName}`, this.httpOptions);
   }
 
+  getPluginConfigSchema(pluginName) {
+    return this.$http.get(`${this.base}/api/packages/config-schema/${pluginName}`, this.httpOptions);
+  }
+
+  getConfig() {
+    return this.$http.get(`${this.base}/api/config`, this.httpOptions);
+  }
+
   loadConfig() {
   return this.$http.get(`${this.base}/api/config`, Object.assign({ responseType: 'text' as 'text' }, this.httpOptions));
   }

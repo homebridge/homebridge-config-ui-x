@@ -40,6 +40,9 @@
         <a class="card-link" *ngIf="!plugin.installed" href="javascript:void(0);" (click)="$plugin.installPlugin(plugin.name)">
           INSTALL
         </a>
+        <a class="card-link" *ngIf="plugin.settingsSchema && !(plugin.name === 'homebridge-config-ui-x' && $auth.env.runningInDocker)" href="javascript:void(0);" (click)="$plugin.settings(plugin.name)">
+          SETTINGS
+        </a>
         <a class="card-link ml-auto grey-text" target="_blank" [href]="plugin.links.homepage || plugin.links.npm" [ngbTooltip]="plugin.links.homepage || plugin.links.npm" container="body" placement="left">
           <i class="fas fa-external-link-alt"></i>
         </a>

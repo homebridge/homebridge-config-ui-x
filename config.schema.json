@@ -1,0 +1,60 @@
+{
+  "pluginAlias": "config",
+  "pluginType": "platform",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "title": "Name",
+        "type": "string",
+        "default": "Config",
+        "minLength": 1,
+        "required": true
+      },
+      "port": {
+        "title": "Port",
+        "type": "integer",
+        "default": 8080,
+        "maximum": 65535,
+        "required": true
+      },
+      "auth": {
+        "title": "Auth Mode",
+        "type": "string",
+        "default": "form",
+        "oneOf": [
+          { "title": "Form", "enum": ["form"] },
+          { "title": "Basic Auth", "enum": ["basic"] },
+          { "title": "None", "enum": ["none"] }
+        ],
+        "required": true
+      },
+      "theme": {
+        "title": "UI Theme",
+        "type": [
+          "string"
+        ],
+        "default": "red",
+        "oneOf": [
+          { "title": "Red", "enum": ["red"] },
+          { "title": "Pink", "enum": ["pink"] },
+          { "title": "Purple", "enum": ["purple"] },
+          { "title": "Indigo", "enum": ["indigo"] },
+          { "title": "Blue", "enum": ["blue"] },
+          { "title": "Blue-grey", "enum": ["blue-grey"] },
+          { "title": "Green", "enum": ["green"] },
+          { "title": "Orange", "enum": ["orange"] }
+        ],
+        "required": true
+      },
+      "sudo": {
+        "title": "Use Sudo",
+        "type": "boolean"
+      },
+      "disableNsp": {
+        "title": "Disable Vulnerability Scans When Installing and Upgrading Plugins",
+        "type": "boolean"
+      }
+    }
+  }
+}

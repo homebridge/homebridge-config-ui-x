@@ -1,7 +1,7 @@
 import * as os from 'os';
 import * as _ from 'lodash';
 import * as path from 'path';
-import * as nodeFs from 'fs';
+import * as fs from 'fs-extra';
 import * as pty from 'node-pty';
 import * as semver from 'semver';
 import * as color from 'bash-color';
@@ -9,7 +9,6 @@ import * as Bluebird from 'bluebird';
 import * as rp from 'request-promise';
 import * as child_process from 'child_process';
 
-const fs = Bluebird.promisifyAll(nodeFs);
 const childProcess = Bluebird.promisifyAll(child_process);
 
 import { hb } from './hb';
@@ -226,10 +225,10 @@ class PackageManager {
     const plugins = [];
 
     return Bluebird.map(this.paths, (requiredPath) => {
-      return fs.readdirAsync(requiredPath)
+      return Bluebird.resolve(fs.readdir(requiredPath))
         .map(name => path.join(requiredPath, name))
-        .filter(pluginPath => fs.statAsync(path.join(pluginPath, 'package.json')).catch(x => false))
-        .map(pluginPath => fs.readFileAsync(path.join(pluginPath, 'package.json'), 'utf8').then(JSON.parse).catch(x => false))
+        .filter(pluginPath => fs.stat(path.join(pluginPath, 'package.json')).catch(x => false))
+        .map(pluginPath => fs.readFile(path.join(pluginPath, 'package.json'), 'utf8').then(JSON.parse).catch(x => false))
         .filter(pluginPath => pluginPath)
         .filter(pjson => pjson.name && pjson.name.indexOf('homebridge-') === 0)
         .filter(pjson => pjson.keywords && pjson.keywords.includes('homebridge-plugin'))
@@ -240,7 +239,8 @@ class PackageManager {
             description: (pjson.description) ?
               pjson.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pjson.name,
             globalInstall: (requiredPath !== this.customPluginPath),
-            pluginPath: requiredPath
+            pluginPath: requiredPath,
+            settingsSchema: fs.existsSync(path.resolve(requiredPath, pjson.name, 'config.schema.json')),
           };
 
           return this.rp.get(`https://registry.npmjs.org/${encodeURIComponent(pjson.name).replace('%40', '@')}`)
@@ -459,7 +459,7 @@ class PackageManager {
       .catch(() => {
         return paths;
       })
-      .filter(requiredPath => fs.statAsync(path.join(requiredPath, hb.homebridgeNpmPkg, 'package.json')).catch(x => false))
+      .filter(requiredPath => fs.stat(path.join(requiredPath, hb.homebridgeNpmPkg, 'package.json')).catch(x => false))
       .map(installPath => {
         hb.log(`Using npm to upgrade homebridge at ${installPath}...`);
         const pkg = hb.homebridgeFork ? hb.homebridgeFork : `${hb.homebridgeNpmPkg}@latest`;
@@ -502,7 +502,27 @@ class PackageManager {
         const changeLogPath = path.resolve(installPath, pkg, changeLogFileNames[0]);
 
         // return the change log
-        return fs.readFileAsync(changeLogPath, 'utf8');
+        return fs.readFile(changeLogPath, 'utf8');
+      });
+  }
+
+  getConfigSchema(pkg) {
+    return this.getInstalled()
+      .then(plugins => {
+        let installPath;
+        if (plugins.find(x => x.name === pkg)) {
+          installPath = plugins.find(x => x.name === pkg).pluginPath;
+        } else {
+          throw new Error(`Plugin "${pkg}" Not Found`);
+        }
+
+        const schemaPath = path.resolve(installPath, pkg, 'config.schema.json');
+
+        if (!fs.existsSync(schemaPath)) {
+          throw new Error(`Plugin "${pkg}" Does Not Container "config.schema.json"`);
+        }
+
+        return fs.readJson(schemaPath);
       });
   }
 }

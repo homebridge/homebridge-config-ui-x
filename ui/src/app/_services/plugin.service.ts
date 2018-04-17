@@ -2,12 +2,14 @@ import { Injectable } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { PluginsManageComponent } from '../plugins/plugins.manage.component';
+import { PluginSettingsComponent } from '../plugins/plugins.settings.component';
 
 @Injectable()
 export class PluginService {
 
-  constructor(private modalService: NgbModal) {
-  }
+  constructor(
+    private modalService: NgbModal
+  ) {}
 
   installPlugin(pluginName) {
     const ref = this.modalService.open(PluginsManageComponent, {
@@ -39,6 +41,13 @@ export class PluginService {
     });
     ref.componentInstance.action = 'Upgrade';
     ref.componentInstance.pluginName = 'Homebridge';
+  }
+
+  settings(pluginName) {
+    const ref = this.modalService.open(PluginSettingsComponent, {
+      size: 'lg',
+    });
+    ref.componentInstance.pluginName = pluginName;
   }
 
 }

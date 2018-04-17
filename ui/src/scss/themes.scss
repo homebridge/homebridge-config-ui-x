@@ -10,7 +10,7 @@
       color: $primary;
     }
 
-    .btn-primary {
+    .btn-primary, .btn-default {
       @extend .btn-#{$name} !optional;
     }
 
