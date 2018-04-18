@@ -40,6 +40,7 @@ import { PluginsComponent, PluginStates } from './plugins/plugins.component';
 import { PluginSearchComponent, PluginSearchStates } from './plugins/plugins.search.component';
 import { PluginsManageComponent } from './plugins/plugins.manage.component';
 import { PluginSettingsComponent } from './plugins/plugins.settings.component';
+import { PluginsMarkdownDirective } from './plugins/plugins.markdown.directive';
 import { ConfigComponent, ConfigStates } from './config/config.component';
 import { LogsComponent, LogsStates } from './logs/logs.component';
 import { UsersComponent, UsersStates } from './users/users.component';
@@ -60,6 +61,7 @@ import { ResetComponent, ResetModalComponent } from './reset/reset.component';
     PluginSearchComponent,
     PluginsManageComponent,
     PluginSettingsComponent,
+    PluginsMarkdownDirective,
     UsersAddComponent,
     UsersEditComponent,
     RestartComponent,

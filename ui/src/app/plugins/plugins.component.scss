@@ -23,8 +23,12 @@
   overflow: scroll;
 }
 
-::ng-deep .plugin-changelog {
+::ng-deep .plugin-md {
   font-size: 0.95rem;
+
+  img {
+    max-width: 100%;
+  }
 
   h1 {
     font-size: 1.5rem;

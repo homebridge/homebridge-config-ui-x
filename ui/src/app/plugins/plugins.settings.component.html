@@ -6,6 +6,9 @@
     </button>
   </div>
   <div class="modal-body">
+    <div>
+      <markdown class="plugin-md" [data]="configSchema.headerDisplay" *ngIf="configSchema.headerDisplay"></markdown>
+    </div>
 
     <ngb-accordion [closeOthers]="true" [activeIds]="show || pluginConfig[0].__uuid__" *ngIf="pluginConfig.length">
       <ngb-panel [id]="block.__uuid__" [title]="block.name" *ngFor="let block of pluginConfig">
@@ -27,6 +30,9 @@
       </ngb-panel>
     </ngb-accordion>
 
+    <div class="mt-3">
+      <markdown class="plugin-md" [data]="configSchema.footerDisplay" *ngIf="configSchema.footerDisplay"></markdown>
+    </div>
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-elegant mr-auto" data-dismiss="modal" (click)="addBlock()">Add {{ configSchema.pluginType }} Block</button>
