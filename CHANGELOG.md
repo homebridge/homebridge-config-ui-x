@@ -5,8 +5,8 @@ All notable changes to this project will be documented in this file. This projec
 ## 3.6.0
 
 * Beta: Initial implimentation of GUI based config setup
-* Links to external sites now have `rel="noopener noreferrer"` set to increase user privacy
-* Links in plugin-author generated markdown (eg. change logs) are now opened in a new window
+* Links to external sites now have `rel="noopener noreferrer"`
+* Links in plugin-author generated markdown (eg. change logs) are now opened in a new tab
 
 ## 3.5.3 (2018-04-16)
 
