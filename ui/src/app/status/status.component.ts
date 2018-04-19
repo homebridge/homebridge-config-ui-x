@@ -66,7 +66,7 @@ export class StatusComponent implements OnInit {
       this.getQrCodeImage();
 
       // check if client is up-to-date
-      if (this.server.packageVersion !== this.$auth.env.packageVersion) {
+      if (this.server.packageVersion && this.server.packageVersion !== this.$auth.env.packageVersion) {
         window.location.reload(true);
       }
     });

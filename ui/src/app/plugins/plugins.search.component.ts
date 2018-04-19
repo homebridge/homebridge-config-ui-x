@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastsManager } from 'ng2-toastr/src/toast-manager';
 
 import { ApiService } from '../_services/api.service';
+import { AuthService } from '../_services/auth.service';
 import { PluginService } from '../_services/plugin.service';
 
 @Component({
@@ -18,6 +19,7 @@ export class PluginSearchComponent implements OnInit {
   searchQuery: string;
 
   constructor(
+    public $auth: AuthService,
     private $api: ApiService,
     public $plugin: PluginService,
     private $state: StateService,
