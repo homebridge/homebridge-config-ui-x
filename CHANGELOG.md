@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 3.5.4 (2018-04-19)
+
+### Notable Changes
+
+* Added `wsocket` prefix to websocket connection to make reverse proxying easier for some users ([#85](https://github.com/oznu/homebridge-config-ui-x/issues/85))
+
 ## 3.5.3 (2018-04-16)
 
 ### Bug Fixes
