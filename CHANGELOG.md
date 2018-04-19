@@ -9,6 +9,12 @@ All notable changes to this project will be documented in this file. This projec
 * Links in plugin-author generated markdown (eg. change logs) are now opened in a new tab
 * When on the status page, the browser will refresh automatically if the client version does not match the server version
 
+## 3.5.4 (2018-04-19)
+
+### Notable Changes
+
+* Added `wsocket` prefix to websocket connection to make reverse proxying easier for some users ([#85](https://github.com/oznu/homebridge-config-ui-x/issues/85))
+
 ## 3.5.3 (2018-04-16)
 
 ### Bug Fixes

@@ -35,7 +35,7 @@ export class WsService {
 
   listen() {
     this.$api.getToken().subscribe((auth: any) => {
-      this.socket = new (<any>window).WebSocket(`${this.url}/?token=${this.$auth.user.token}`);
+      this.socket = new (<any>window).WebSocket(`${this.url}/wsocket?token=${this.$auth.user.token}`);
 
       this.socket.onopen = () => {
         this.open.emit(null);
