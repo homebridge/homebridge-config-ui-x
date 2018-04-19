@@ -51,7 +51,8 @@ export class StatusWssHandler {
       server: {
         consolePort: hb.port,
         port: hb.homebridgeConfig.bridge.port,
-        pin: hb.homebridgeConfig.bridge.pin
+        pin: hb.homebridgeConfig.bridge.pin,
+        packageVersion: hb.ui.version,
       }
     }));
   }
@@ -65,6 +66,7 @@ export class StatusWssHandler {
               consolePort: hb.port,
               port: hb.homebridgeConfig.bridge.port,
               pin: hb.homebridgeConfig.bridge.pin,
+              packageVersion: hb.ui.version,
               status: up ? 'up' : 'down'
             },
             status: up ? 'up' : 'down' // TODO remove this in next major version
