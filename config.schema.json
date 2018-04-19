@@ -54,7 +54,52 @@
       "disableNsp": {
         "title": "Disable Vulnerability Scans When Installing and Upgrading Plugins",
         "type": "boolean"
+      },
+      "ssl": {
+        "title": "SSL Setup",
+        "type": "object",
+        "properties": {
+          "key": {
+            "title": "Path To Private Key",
+            "type": "string"
+          },
+          "cert": {
+            "title": "Path To Certificate",
+            "type": "string"
+          },
+          "pfx": {
+            "title": "Path To PKCS#12 Certificate",
+            "type": "string"
+          },
+          "passphrase": {
+            "title": "PKCS#12 Certificate Passphrase",
+            "type": "string"
+          }
+        }
       }
     }
-  }
+  },
+  "form": [
+    "name",
+    "port",
+    "auth",
+    "theme",
+    "sudo",
+    "disableNsp",
+    {
+      "type": "fieldset",
+      "expandable": true,
+      "title": "SSL Setup",
+      "items": [
+        {
+          "type": "help",
+          "helpvalue": "<em class='primary-text'>Leave these fields blank to disable SSL.</em>"
+        },
+        "ssl.key",
+        "ssl.cert",
+        "ssl.pfx",
+        "ssl.passphrase"
+      ]
+    }
+  ]
 }

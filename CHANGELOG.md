@@ -4,7 +4,10 @@ All notable changes to this project will be documented in this file. This projec
 
 ## 3.6.0
 
-* Beta: Initial implimentation of GUI based config setup
+### Notable Changes
+
+* Added support for native HTTPS / SSL ([#68](https://github.com/oznu/homebridge-config-ui-x/issues/68), [#35](https://github.com/oznu/homebridge-config-ui-x/issues/35))
+* **Beta**: Initial implimentation of GUI based setup for plugin config
 * Links to external sites now have `rel="noopener noreferrer"`
 * Links in plugin-author generated markdown (eg. change logs) are now opened in a new tab
 * When on the status page, the browser will refresh automatically if the client version does not match the server version

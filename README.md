@@ -42,6 +42,7 @@ Add this to your homebridge `config.json` file
 * `temp` - The path to the file that can display your current CPU temperature. eg. `/sys/class/thermal/thermal_zone0/temp`
 * `theme` - The colour scheme to use. Possible values: `red`, `pink`, `purple`, `indigo`, `blue`, `blue-grey`, `green`, `orange`. Defaults to `red`.
 * `loginWallpaper` - The full path to background image you want to use for the form login page.
+* `ssl` - [See below for details](#enabling-ssl)
 
 ## Accessory Control
 
@@ -139,6 +140,40 @@ homebridge    ALL=(ALL) NOPASSWD: ALL
 ```
 
 *Replace `homebridge` with the actual user you are running Homebridge as.*
+
+## Enabling SSL
+
+You can run this plugin over an encrypted HTTPS connection by configuring the `ssl` options.
+
+```json
+"platforms": [
+    {
+      "platform": "config",
+      "name": "Config",
+      "port": 8080,
+      "ssl": {
+        "key": "/path/to/privkey.pem",
+        "cert": "/path/to/fullchain.pem"
+      }
+    }
+]
+```
+
+Or if using a **PKCS#12** certificate you can setup SSL like this:
+
+```json
+"platforms": [
+    {
+      "platform": "config",
+      "name": "Config",
+      "port": 8080,
+      "ssl": {
+        "pfx": "/path/to/cert.pfx",
+        "passphrase": "sample"
+      }
+    }
+]
+```
 
 # Usage
 
