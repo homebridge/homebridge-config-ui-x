@@ -507,23 +507,20 @@ class PackageManager {
   }
 
   getConfigSchema(pkg) {
-    return this.getInstalled()
-      .then(plugins => {
-        let installPath;
-        if (plugins.find(x => x.name === pkg)) {
-          installPath = plugins.find(x => x.name === pkg).pluginPath;
-        } else {
-          throw new Error(`Plugin "${pkg}" Not Found`);
-        }
+    let installPath;
+    if (this.plugins.find(x => x.name === pkg)) {
+      installPath = this.plugins.find(x => x.name === pkg).pluginPath;
+    } else {
+      throw new Error(`Plugin "${pkg}" Not Found`);
+    }
 
-        const schemaPath = path.resolve(installPath, pkg, 'config.schema.json');
+    const schemaPath = path.resolve(installPath, pkg, 'config.schema.json');
 
-        if (!fs.existsSync(schemaPath)) {
-          throw new Error(`Plugin "${pkg}" Does Not Container "config.schema.json"`);
-        }
+    if (!fs.existsSync(schemaPath)) {
+      throw new Error(`Plugin "${pkg}" Does Not Container "config.schema.json"`);
+    }
 
-        return fs.readJson(schemaPath);
-      });
+    return fs.readJson(schemaPath);
   }
 }
 
