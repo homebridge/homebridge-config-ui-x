@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file. This projec
 * Links in plugin-author generated markdown (eg. change logs) are now opened in a new tab
 * When on the status page, the browser will refresh automatically if the client version does not match the server version
 * The `log` config option is now depreciated and has been replaced by the `logOpts` option, see [README](https://github.com/oznu/homebridge-config-ui-x#log-viewer-configuration) for details
+* Updated npm dependencies
 
 ## 3.5.4 (2018-04-19)
 
