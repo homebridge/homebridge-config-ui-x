@@ -23,6 +23,7 @@ export class PluginSettingsComponent implements OnInit {
     addSubmit: false,
     loadExternalAssets: false,
     returnEmptyFields: false,
+    setSchemaDefaults: true
   };
 
   constructor(
@@ -39,11 +40,17 @@ export class PluginSettingsComponent implements OnInit {
   blockChanged(__uuid__) {
     if (this.configSchema.pluginType === 'platform') {
       return (config) => {
-        Object.assign(this.homebridgeConfig.platforms.find(x => x.__uuid__ === __uuid__), config);
+        config.__uuid__ = __uuid__;
+        config.platform = this.configSchema.pluginAlias;
+        const index = this.homebridgeConfig.platforms.findIndex(x => x.__uuid__ === __uuid__);
+        this.homebridgeConfig.platforms[index] = config;
       };
     } else if (this.configSchema.pluginType === 'accessory') {
       return (config) => {
-        Object.assign(this.homebridgeConfig.accessories.find(x => x.__uuid__ === __uuid__), config);
+        config.__uuid__ = __uuid__;
+        config.accessory = this.configSchema.pluginAlias;
+        const index = this.homebridgeConfig.accessories.findIndex(x => x.__uuid__ === __uuid__);
+        this.homebridgeConfig.accessories[index] = config;
       };
     }
   }

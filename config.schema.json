@@ -55,6 +55,33 @@
         "title": "Disable Vulnerability Scans When Installing and Upgrading Plugins",
         "type": "boolean"
       },
+      "logOpts": {
+        "type": "object",
+        "properties": {
+          "method": {
+            "title": "Log Method",
+            "type": "string",
+            "default": "file",
+            "oneOf": [
+              { "title": "From File", "enum": ["file"] },
+              { "title": "Systemd", "enum": ["systemd"] },
+              { "title": "Custom Command", "enum": ["custom"] }
+            ]
+          },
+          "path": {
+            "title": "Log File Path",
+            "type": "string"
+          },
+          "service": {
+            "title": "Systemd Service",
+            "type": "string"
+          },
+          "command": {
+            "title": "Custom Command",
+            "type": "string"
+          }
+        }
+      },
       "ssl": {
         "title": "SSL Setup",
         "type": "object",
@@ -86,6 +113,36 @@
     "theme",
     "sudo",
     "disableNsp",
+    {
+      "type": "fieldset",
+      "expandable": true,
+      "title": "Log Viewer Setup",
+      "items": [
+        "logOpts.method",
+        {
+          "key": "logOpts.path",
+          "required": true,
+          "condition": {
+            "functionBody": "return (model.logOpts.method==='file')"
+          }
+        },
+        {
+          "key": "logOpts.service",
+          "required": true,
+          "condition": {
+            "functionBody": "return (model.logOpts.method==='systemd')"
+          }
+        },
+        {
+          "key": "logOpts.command",
+          "description": "This command should stream the logs to stdout.",
+          "required": true,
+          "condition": {
+            "functionBody": "return (model.logOpts.method==='custom')"
+          }
+        }
+      ]
+    },
     {
       "type": "fieldset",
       "expandable": true,
