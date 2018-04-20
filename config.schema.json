@@ -121,16 +121,18 @@
         "logOpts.method",
         {
           "key": "logOpts.path",
+          "description": "Enter the full file path to your log file.",
           "required": true,
           "condition": {
-            "functionBody": "return (model.logOpts.method==='file')"
+            "functionBody": "return (model.logOpts && model.logOpts.method==='file')"
           }
         },
         {
           "key": "logOpts.service",
+          "description": "Enter the systemd service name. Defaults to 'homebridge'.",
           "required": true,
           "condition": {
-            "functionBody": "return (model.logOpts.method==='systemd')"
+            "functionBody": "return (model.logOpts && model.logOpts.method==='systemd')"
           }
         },
         {
@@ -138,7 +140,7 @@
           "description": "This command should stream the logs to stdout.",
           "required": true,
           "condition": {
-            "functionBody": "return (model.logOpts.method==='custom')"
+            "functionBody": "return (model.logOpts && model.logOpts.method==='custom')"
           }
         }
       ]

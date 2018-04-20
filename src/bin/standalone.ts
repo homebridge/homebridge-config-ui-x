@@ -41,13 +41,16 @@ if (fs.existsSync(path.resolve(options.homebridgeCorePath, 'package.json'))) {
 }
 
 // config
-const setup = {
+const setup: any = {
   homebridgeVersion: homebridge.version,
   configPath: path.join(options.userStoragePath, 'config.json'),
   storagePath: options.userStoragePath,
   config: {
     port: process.env.HOMEBRIDGE_CONFIG_UI_PORT || 8080,
-    log: process.env.HOMEBRIDGE_CONFIG_UI_LOG || '/homebridge/logs/homebridge.log',
+    logOpts: {
+      method: 'file',
+      path: process.env.HOMEBRIDGE_CONFIG_UI_LOG || '/homebridge/logs/homebridge.log',
+    },
     restart: process.env.HOMEBRIDGE_CONFIG_UI_RESTART || 'killall -9 homebridge && killall -9 homebridge-config-ui-x',
     theme: process.env.HOMEBRIDGE_CONFIG_UI_THEME || 'red',
     auth: process.env.HOMEBRIDGE_CONFIG_UI_AUTH || 'form',
@@ -60,4 +63,15 @@ const setup = {
   },
 };
 
+if (
+  fs.existsSync(path.join(options.userStoragePath, 'certs', 'uix-key.pem'))
+  && fs.existsSync(path.join(options.userStoragePath, 'certs', 'uix-cert.pem'))
+) {
+  setup.config.ssl = {
+    key: path.join(options.userStoragePath, 'certs', 'uix-key.pem'),
+    cert: path.join(options.userStoragePath, 'certs', 'uix-cert.pem')
+  };
+}
+
 export = new UiServer(setup);
+

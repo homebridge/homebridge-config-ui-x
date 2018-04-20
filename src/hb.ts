@@ -22,7 +22,13 @@ class HomebridgeUI {
   public storagePath: string;
   public pluginPath: string;
   public port: number | string;
-  public logOpts: any;
+  public logOpts: {
+    method: 'file' | 'systemd' | 'custom';
+    path?: string;
+    service?: string;
+    command?: string;
+  };
+  public oldLogOpts: any;
   public restartCmd;
   public useSudo: boolean;
   public disableNsp: boolean;
@@ -64,7 +70,8 @@ class HomebridgeUI {
   private parseConfig(config) {
     this.pluginName = config.name || this.ui.name;
     this.port = config.port || 8080;
-    this.logOpts = config.log;
+    this.logOpts = config.logOpts;
+    this.oldLogOpts = config.log;
     this.restartCmd = config.restart;
     this.useSudo = config.sudo;
     this.authMethod = config.auth;
