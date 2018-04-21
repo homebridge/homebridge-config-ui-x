@@ -15,6 +15,12 @@ All notable changes to this project will be documented in this file. This projec
 * The `log` config option is now depreciated and has been replaced by the `logOpts` option, see [README](https://github.com/oznu/homebridge-config-ui-x#log-viewer-configuration) for details
 * Updated npm dependencies
 
+## 3.5.5 (2018-04-21)
+
+### Bug Fixes
+
+* Ensure forked process is killed if Homebridge is not running in a different way (@Damien via Slack & [#86](https://github.com/oznu/homebridge-config-ui-x/issues/86))
+
 ## 3.5.4 (2018-04-19)
 
 ### Notable Changes
