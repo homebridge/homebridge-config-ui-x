@@ -44,7 +44,7 @@ export class UiServer {
   onServerListening() {
     const addr = this.server.address();
     const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
-    const msg = 'Console is listening on ' + bind + '.';
+    const msg = `Console v${hb.ui.version} is listening on ${bind}.`;
     hb.log(msg);
   }
 
