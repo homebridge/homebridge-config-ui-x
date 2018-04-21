@@ -115,7 +115,7 @@ The `log` option can alternatively specify a command to spawn that will stream t
       "port": 8080,
       "log": {
         "method": "custom",
-        "service": "sudo -n tail -n 100 -f /var/log/homebridge.log"
+        "command": "sudo -n tail -n 100 -f /var/log/homebridge.log"
       }
     }
 ]
