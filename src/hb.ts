@@ -27,8 +27,9 @@ class HomebridgeUI {
     path?: string;
     service?: string;
     command?: string;
-  };
-  public oldLogOpts: any;
+    tail?: string; /** @deprecated since 5.6.0 */
+    systemd?: string; /** @deprecated since 5.6.0 */
+  } | string;
   public restartCmd;
   public useSudo: boolean;
   public disableNsp: boolean;
@@ -70,8 +71,7 @@ class HomebridgeUI {
   private parseConfig(config) {
     this.pluginName = config.name || this.ui.name;
     this.port = config.port || 8080;
-    this.logOpts = config.logOpts;
-    this.oldLogOpts = config.log;
+    this.logOpts = config.log;
     this.restartCmd = config.restart;
     this.useSudo = config.sudo;
     this.authMethod = config.auth;

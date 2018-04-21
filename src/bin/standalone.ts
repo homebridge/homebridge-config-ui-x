@@ -47,7 +47,7 @@ const setup: any = {
   storagePath: options.userStoragePath,
   config: {
     port: process.env.HOMEBRIDGE_CONFIG_UI_PORT || 8080,
-    logOpts: {
+    log: {
       method: 'file',
       path: process.env.HOMEBRIDGE_CONFIG_UI_LOG || '/homebridge/logs/homebridge.log',
     },

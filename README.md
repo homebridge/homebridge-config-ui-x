@@ -36,7 +36,7 @@ Add this to your homebridge `config.json` file
 
 **Optional Settings**
 
-* `logOpts` - [See below for details](#log-viewer-configuration).
+* `log` - [See below for details](#log-viewer-configuration).
 * `sudo` - [See below for details](#sudo-mode).
 * `restart` - The command to run when a restart request is sent from the browser. If not populated it will just terminate the Homebridge process and let your process manager (like systemd) restart it.
 * `temp` - The path to the file that can display your current CPU temperature. eg. `/sys/class/thermal/thermal_zone0/temp`
@@ -72,7 +72,7 @@ Example loading logs from a file, change `/var/log/homebridge.log` to the actual
       "platform": "config",
       "name": "Config",
       "port": 8080,
-      "logOpts": {
+      "log": {
         "method": "file",
         "path": "/var/log/homebridge.log"
       }
@@ -93,7 +93,7 @@ If you're using `systemd` to manage the Homebridge process then you can just set
       "name": "Config",
       "port": 8080,
       "restart": "sudo -n systemctl restart homebridge",
-      "logOpts": {
+      "log": {
         "method": "systemd",
         "service": "homebridge"
       }
@@ -105,7 +105,7 @@ If you're using `systemd` to manage the Homebridge process then you can just set
 
 ### Logs From Custom Command
 
-The `logOpts` option can alternatively specify a command to spawn that will stream the logs to the client. This command should stream the logs to `stdout`:
+The `log` option can alternatively specify a command to spawn that will stream the logs to the client. This command should stream the logs to `stdout`:
 
 ```json
 "platforms": [
@@ -113,7 +113,7 @@ The `logOpts` option can alternatively specify a command to spawn that will stre
       "platform": "config",
       "name": "Config",
       "port": 8080,
-      "logOpts": {
+      "log": {
         "method": "custom",
         "service": "sudo -n tail -n 100 -f /var/log/homebridge.log"
       }

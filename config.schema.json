@@ -55,7 +55,7 @@
         "title": "Disable Vulnerability Scans When Installing and Upgrading Plugins",
         "type": "boolean"
       },
-      "logOpts": {
+      "log": {
         "type": "object",
         "properties": {
           "method": {
@@ -79,6 +79,14 @@
           "command": {
             "title": "Custom Command",
             "type": "string"
+          },
+          "tail": {
+            "type": "string",
+            "description": "Depreciated"
+          },
+          "systemd": {
+            "type": "string",
+            "description": "Depreciated"
           }
         }
       },
@@ -118,29 +126,29 @@
       "expandable": true,
       "title": "Log Viewer Setup",
       "items": [
-        "logOpts.method",
+        "log.method",
         {
-          "key": "logOpts.path",
+          "key": "log.path",
           "description": "Enter the full file path to your log file.",
           "required": true,
           "condition": {
-            "functionBody": "return (model.logOpts && model.logOpts.method==='file')"
+            "functionBody": "return (model.log && model.log.method==='file')"
           }
         },
         {
-          "key": "logOpts.service",
+          "key": "log.service",
           "description": "Enter the systemd service name. Defaults to 'homebridge'.",
           "required": true,
           "condition": {
-            "functionBody": "return (model.logOpts && model.logOpts.method==='systemd')"
+            "functionBody": "return (model.log && model.log.method==='systemd')"
           }
         },
         {
-          "key": "logOpts.command",
+          "key": "log.command",
           "description": "This command should stream the logs to stdout.",
           "required": true,
           "condition": {
-            "functionBody": "return (model.logOpts && model.logOpts.method==='custom')"
+            "functionBody": "return (model.log && model.log.method==='custom')"
           }
         }
       ]

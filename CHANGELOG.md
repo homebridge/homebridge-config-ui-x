@@ -7,13 +7,17 @@ All notable changes to this project will be documented in this file. This projec
 ### Notable Changes
 
 * Added support for native HTTPS / SSL ([#68](https://github.com/oznu/homebridge-config-ui-x/issues/68), [#35](https://github.com/oznu/homebridge-config-ui-x/issues/35))
+* The Log Viewer config options have changed, existing options have been have depreciated, see [README](https://github.com/oznu/homebridge-config-ui-x#log-viewer-configuration) for details
 * **Beta**: Initial implimentation of GUI based setup for plugin config
 * Added [Content-Security-Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) headers
 * Links to external sites now have `rel="noopener noreferrer"`
 * Links in plugin-author generated markdown (eg. change logs) are now opened in a new tab
 * When on the status page, the browser will refresh automatically if the client version does not match the server version
-* The `log` config option is now depreciated and has been replaced by the `logOpts` option, see [README](https://github.com/oznu/homebridge-config-ui-x#log-viewer-configuration) for details
 * Updated npm dependencies
+
+### Bug Fixes
+
+* Fixed bug that caused homebridge to crash when using Log Viewer on Windows 10
 
 ## 3.5.5 (2018-04-21)
 
