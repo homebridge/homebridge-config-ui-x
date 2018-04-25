@@ -47,12 +47,28 @@
         ],
         "required": true
       },
+      "restart": {
+        "title": "Restart Command",
+        "type": "string"
+      },
+      "temp": {
+        "title": "Path to OS Temp File",
+        "type": "string"
+      },
+      "loginWallpaper": {
+        "title": "Path to Login Wallpaper Image File",
+        "type": "string"
+      },
       "sudo": {
         "title": "Use Sudo",
         "type": "boolean"
       },
       "disableNsp": {
-        "title": "Disable Vulnerability Scans When Installing and Upgrading Plugins",
+        "title": "Disable vulnerability scans when installing and upgrading plugins",
+        "type": "boolean"
+      },
+      "noFork": {
+        "title": "Do not run the Config UI web server in a seperate process/thread",
         "type": "boolean"
       },
       "log": {
@@ -111,6 +127,28 @@
             "type": "string"
           }
         }
+      },
+      "linux": {
+        "title": "Linux Server Commands",
+        "type": "object",
+        "properties": {
+          "shutdown": {
+            "title": "Shutdown Command",
+            "type": "string"
+          },
+          "restart": {
+            "title": "Restart Command",
+            "type": "string"
+          }
+        }
+      },
+      "homebridgeNpmPkg": {
+        "title": "Custom NPM package for Homebridge updates",
+        "type": "string"
+      },
+      "fork": {
+        "title": "Custom fork in <github username>/<repo> format for Homebridge updates",
+        "type": "string"
       }
     }
   },
@@ -120,7 +158,6 @@
     "auth",
     "theme",
     "sudo",
-    "disableNsp",
     {
       "type": "fieldset",
       "expandable": true,
@@ -138,6 +175,7 @@
         {
           "key": "log.service",
           "description": "Enter the systemd service name. Defaults to 'homebridge'.",
+          "placeholder": "homebridge",
           "required": true,
           "condition": {
             "functionBody": "return (model.log && model.log.method==='systemd')"
@@ -156,11 +194,32 @@
     {
       "type": "fieldset",
       "expandable": true,
+      "title": "Advanced",
+      "items": [
+        {
+          "key": "restart",
+          "description": "If no restart command is set the process will terminate with a non-zero exit code."
+        },
+        {
+          "key": "loginWallpaper",
+          "description": "Leave blank to use default wallpaper."
+        },
+        {
+          "key": "temp",
+          "placeholder": "eg. /sys/class/thermal/thermal_zone0/temp"
+        },
+        "disableNsp",
+        "noFork"
+      ]
+    },
+    {
+      "type": "fieldset",
+      "expandable": true,
       "title": "SSL Setup",
       "items": [
         {
           "type": "help",
-          "helpvalue": "<em class='primary-text'>Leave these fields blank to disable SSL.</em>"
+          "helpvalue": "<em class='primary-text'>Leave these fields blank to disable SSL.</em><br><em class='text-danger'>After enabling SSL you will only be able to access the Config UI using https://</div>"
         },
         "ssl.key",
         "ssl.cert",
