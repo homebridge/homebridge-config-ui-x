@@ -81,7 +81,7 @@ export class UiServer {
   }
 
   async startWithLetsEncrypt(app) {
-    const greenlock = await import('greenlock-express');
+    const greenlock = await import('greenlock');
     const leChallengeFs = await import('le-challenge-fs');
     const leStoreCertbot = await import('le-store-certbot');
 
@@ -90,7 +90,7 @@ export class UiServer {
     /**
      * Configure Let's Encrypt Options
      */
-    const lex = greenlock.create({
+    const lex = await greenlock.create({
       app: app,
       agreeTos: true,
       version: 'draft-11',
@@ -116,6 +116,11 @@ export class UiServer {
         opts.domains = [this.setup.config.letsencrypt.domain];
         return cb(null, { options: opts });
       },
+      log: (debug, ...args) => {
+        if (debug) {
+          hb.log('[ACME]', ...args);
+        }
+      }
     });
 
     /**

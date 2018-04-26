@@ -270,13 +270,13 @@ class HomebridgeUI {
 
   public warn(...params) {
     console.warn(
-      color.white(`[${new Date().toLocaleString()}]`), color.cyan(`[${this.pluginName}]`), color.yellow(...params)
+      color.white(`[${new Date().toLocaleString()}]`), color.cyan(`[${this.pluginName}]`), color.yellow(params.join(' '))
     );
   }
 
   public error(...params) {
     console.error(
-      color.white(`[${new Date().toLocaleString()}]`), color.cyan(`[${this.pluginName}]`), color.red(...params)
+      color.white(`[${new Date().toLocaleString()}]`), color.cyan(`[${this.pluginName}]`), color.red(params.join(' '))
     );
   }
 }

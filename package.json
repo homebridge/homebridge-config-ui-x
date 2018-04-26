@@ -40,7 +40,7 @@
     "dotenv": "^5.0.1",
     "express": "^4.16.3",
     "fs-extra": "^5.0.0",
-    "greenlock-express": "^2.1.1",
+    "greenlock": "^2.2.5",
     "helmet": "^3.12.0",
     "jsonwebtoken": "^8.2.1",
     "le-challenge-fs": "^2.0.8",
