@@ -128,6 +128,43 @@
           }
         }
       },
+      "letsencrypt": {
+        "title": "Let's Encrypt Setup",
+        "type": "object",
+        "properties": {
+          "active": {
+            "title": "Use Let's Encrypt? (Additional Setup Required)",
+            "type": "boolean"
+          },
+          "domain": {
+            "title": "Config UI Domain Name",
+            "type": "string",
+            "format": "hostname",
+            "required": true
+          },
+          "email": {
+            "title": "Valid Email Address",
+            "type": "string",
+            "format": "email",
+            "required": true
+          },
+          "challengePort": {
+            "title": "ACME Challenge Port",
+            "type": "integer",
+            "default": 8081,
+            "maximum": 65535,
+            "required": true
+          },
+          "production": {
+            "title": "Enable Production Mode?",
+            "type": "boolean"
+          },
+          "debug": {
+            "title": "Enable Debug Mode?",
+            "type": "boolean"
+          }
+        }
+      },
       "linux": {
         "title": "Linux Server Commands",
         "type": "object",
@@ -158,6 +195,7 @@
     "auth",
     "theme",
     "sudo",
+    "letsencrypt.active",
     {
       "type": "fieldset",
       "expandable": true,
@@ -216,6 +254,9 @@
       "type": "fieldset",
       "expandable": true,
       "title": "SSL Setup",
+      "condition": {
+        "functionBody": "return (!(model.letsencrypt && model.letsencrypt.active))"
+      },
       "items": [
         {
           "type": "help",
@@ -225,6 +266,33 @@
         "ssl.cert",
         "ssl.pfx",
         "ssl.passphrase"
+      ]
+    },
+    {
+      "type": "fieldset",
+      "expandable": true,
+      "title": "Let's Encrypt Setup",
+      "condition": {
+        "functionBody": "return (model.letsencrypt && model.letsencrypt.active)"
+      },
+      "items": [
+        {
+          "type": "help",
+          "helpvalue": "<em class='primary-text'>To use Let's Encrypt you must provide a valid domain or subdomain that has DNS setup to point to your public IP address.</em>"
+        },
+        "letsencrypt.domain",
+        "letsencrypt.email",
+        {
+          "type": "help",
+          "helpvalue": "<em class='text-primary'>Certificate generation will fail if you do not setup port forwarding on your router to expose the ACME Challenge Port to the internet on port 80. The Config UI is not accessible via this port.</em>"
+        },
+        "letsencrypt.challengePort",
+        {
+          "type": "help",
+          "helpvalue": "<em class='text-primary'>You must enable production mode to generate a valid certificate. You should only do this once you have successfully generated a test certificate to avoid being rate limited.</em>"
+        },
+        "letsencrypt.production",
+        "letsencrypt.debug"
       ]
     }
   ]

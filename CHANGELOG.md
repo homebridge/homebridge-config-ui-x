@@ -6,9 +6,13 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Notable Changes
 
-* Added support for native HTTPS / SSL ([#68](https://github.com/oznu/homebridge-config-ui-x/issues/68), [#35](https://github.com/oznu/homebridge-config-ui-x/issues/35))
+* Added support for optional native HTTPS / SSL ([#68](https://github.com/oznu/homebridge-config-ui-x/issues/68), [#35](https://github.com/oznu/homebridge-config-ui-x/issues/35))
+* **Beta Feature**: Added support for optional automated SSL certificate generation using Let's Encrypt (only the http-01 challege type is supported)
+* **Beta Feature**: Initial implementation of GUI/form based setup for supported plugins
 * The Log Viewer config options have changed, existing options have been have depreciated, see [README](https://github.com/oznu/homebridge-config-ui-x#log-viewer-configuration) for details
-* **Beta**: Initial implementation of GUI based setup for plugin config
+
+### Other Changes
+
 * Added [Content-Security-Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) headers
 * Links to external sites now have `rel="noopener noreferrer"`
 * Links in plugin-author generated markdown (eg. change logs) are now opened in a new tab
