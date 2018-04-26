@@ -77,7 +77,6 @@
           "method": {
             "title": "Log Method",
             "type": "string",
-            "default": "file",
             "oneOf": [
               { "title": "From File", "enum": ["file"] },
               { "title": "Systemd", "enum": ["systemd"] },
@@ -286,7 +285,10 @@
           "type": "help",
           "helpvalue": "<em class='text-primary'>Certificate generation will fail if you do not setup port forwarding on your router to expose the ACME Challenge Port to the internet on port 80. The Config UI is not accessible via this port.</em>"
         },
-        "letsencrypt.challengePort",
+        {
+          "key": "letsencrypt.challengePort",
+          "placeholder": "eg. 8081"
+        },
         {
           "type": "help",
           "helpvalue": "<em class='text-primary'>You must enable production mode to generate a valid certificate. You should only do this once you have successfully generated a test certificate to avoid being rate limited.</em>"
