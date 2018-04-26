@@ -30,7 +30,9 @@ class HomebridgeConfigUi {
       .option('-I, --insecure', '', () => config.homebridgeInsecure = true)
       .parse(process.argv);
 
-    if (config.noFork) {
+    if (process.env.HOMEBRIDGE_CONFIG_UI === '1' && process.env.CONFIG_UI_VERSION) {
+      this.log(`Running in Docker Standalone Mode.`);
+    } else if (config.noFork) {
       this.noFork(setup);
     } else {
       this.fork(setup);

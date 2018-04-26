@@ -5,73 +5,116 @@ process.title = 'homebridge-config-ui-x';
 
 import 'source-map-support/register';
 
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as commander from 'commander';
 
 import { UiServer } from '../server';
 
-const options = {
-  pluginPath: undefined,
-  userStoragePath: undefined,
-  homebridgeCorePath: undefined
-};
-
-commander
-  .option('-P, --plugin-path <path>', '', (p) => { options.pluginPath = p; })
-  .option('-U, --user-storage-path <path>', '', (p) => { options.userStoragePath = p; })
-  .option('-H, --homebridge-core-path <path>', '', (p) => { options.homebridgeCorePath = p; })
-  .parse(process.argv);
-
-// all options are required
-Object.keys(options).forEach(option => {
-  if (!options[option]) {
-    console.log(`The ${option} option is required. See --help`);
-    process.exit(1);
-  }
-});
-
-// load homebridge package.json
-let homebridge;
-if (fs.existsSync(path.resolve(options.homebridgeCorePath, 'package.json'))) {
-  homebridge = require(path.resolve(options.homebridgeCorePath, 'package.json'));
-} else {
-  console.log(`Could not find homebridge at ${options.homebridgeCorePath}`);
-  process.exit(1);
-}
-
-// config
-const setup: any = {
-  homebridgeVersion: homebridge.version,
-  configPath: path.join(options.userStoragePath, 'config.json'),
-  storagePath: options.userStoragePath,
-  config: {
-    port: process.env.HOMEBRIDGE_CONFIG_UI_PORT || 8080,
-    log: {
-      method: 'file',
-      path: process.env.HOMEBRIDGE_CONFIG_UI_LOG || '/homebridge/logs/homebridge.log',
-    },
-    restart: process.env.HOMEBRIDGE_CONFIG_UI_RESTART || 'killall -9 homebridge && killall -9 homebridge-config-ui-x',
-    theme: process.env.HOMEBRIDGE_CONFIG_UI_THEME || 'red',
-    auth: process.env.HOMEBRIDGE_CONFIG_UI_AUTH || 'form',
-    temp: process.env.HOMEBRIDGE_CONFIG_UI_TEMP || undefined,
-    homebridgeNpmPkg: process.env.HOMEBRIDGE_CONFIG_UI_NPM_PKG || 'homebridge',
-    homebridgeFork: process.env.HOMEBRIDGE_CONFIG_UI_FORK || undefined,
-    homebridgeInsecure: (process.env.HOMEBRIDGE_INSECURE === '1'),
-    loginWallpaper: process.env.HOMEBRIDGE_CONFIG_UI_LOGIN_WALLPAPER || undefined,
-    pluginPath: options.pluginPath,
-  },
-};
-
-if (
-  fs.existsSync(path.join(options.userStoragePath, 'certs', 'uix-key.pem'))
-  && fs.existsSync(path.join(options.userStoragePath, 'certs', 'uix-cert.pem'))
-) {
-  setup.config.ssl = {
-    key: path.join(options.userStoragePath, 'certs', 'uix-key.pem'),
-    cert: path.join(options.userStoragePath, 'certs', 'uix-cert.pem')
+class StandaloneUI {
+  private options: {
+    pluginPath: string;
+    userStoragePath: string;
+    homebridgeCorePath: string;
   };
+
+  private setup: {
+    configPath: string;
+    homebridgeVersion: string;
+    storagePath: string;
+    config?: any;
+  };
+
+  constructor() {
+    const options = {
+      pluginPath: undefined,
+      userStoragePath: undefined,
+      homebridgeCorePath: undefined
+    };
+
+    // load argv
+    commander
+      .option('-P, --plugin-path <path>', '', (p) => { options.pluginPath = p; })
+      .option('-U, --user-storage-path <path>', '', (p) => { options.userStoragePath = p; })
+      .option('-H, --homebridge-core-path <path>', '', (p) => { options.homebridgeCorePath = p; })
+      .parse(process.argv);
+
+    // all options are required
+    Object.keys(options).forEach(option => {
+      if (!options[option]) {
+        console.log(`The ${option} option is required. See --help`);
+        process.exit(1);
+      }
+    });
+
+    this.options = options;
+    this.init();
+  }
+
+  async init() {
+    // load homebridge package.json
+    let homebridge: any;
+    if (fs.existsSync(path.resolve(this.options.homebridgeCorePath, 'package.json'))) {
+      homebridge = await fs.readJson(path.resolve(this.options.homebridgeCorePath, 'package.json'));
+    } else {
+      console.log(`Could not find homebridge at ${this.options.homebridgeCorePath}`);
+      process.exit(1);
+    }
+
+    // setup
+    this.setup = {
+      homebridgeVersion: homebridge.version,
+      configPath: path.join(this.options.userStoragePath, 'config.json'),
+      storagePath: this.options.userStoragePath
+    };
+
+    // check and see if config-ui platform is defined in config.json
+    if (fs.existsSync(path.resolve(this.setup.configPath))) {
+      const homebridgeConfig = await fs.readJson(this.setup.configPath);
+      if (homebridgeConfig && homebridgeConfig.platforms) {
+        const config = homebridgeConfig.platforms.find(x => x.platform === 'config');
+        if (config) {
+          this.setup.config = config;
+        }
+      }
+    }
+
+    // if no platform config, load defaults
+    if (!this.setup.config) {
+      this.setDefaultConfig();
+    }
+
+    // enforce certain settings
+    this.setDockerConfig();
+
+    // start config ui server
+    return new UiServer(this.setup);
+  }
+
+  setDefaultConfig() {
+    // these can be overridden using the config.json file
+    this.setup.config = {
+      port: process.env.HOMEBRIDGE_CONFIG_UI_PORT || 8080,
+      theme: process.env.HOMEBRIDGE_CONFIG_UI_THEME || 'red',
+      auth: process.env.HOMEBRIDGE_CONFIG_UI_AUTH || 'form',
+      temp: process.env.HOMEBRIDGE_CONFIG_UI_TEMP || undefined,
+      loginWallpaper: process.env.HOMEBRIDGE_CONFIG_UI_LOGIN_WALLPAPER || undefined,
+    };
+  }
+
+  setDockerConfig() {
+    // these options cannot be overridden using the config.json file
+    this.setup.config.log = {
+      method: 'file',
+      path: '/homebridge/logs/homebridge.log',
+    };
+    this.setup.config.restart = 'killall -9 homebridge && killall -9 homebridge-config-ui-x';
+    this.setup.config.homebridgeNpmPkg = process.env.HOMEBRIDGE_CONFIG_UI_NPM_PKG || 'homebridge';
+    this.setup.config.homebridgeFork = process.env.HOMEBRIDGE_CONFIG_UI_FORK || undefined;
+    this.setup.config.homebridgeInsecure = (process.env.HOMEBRIDGE_INSECURE === '1');
+    this.setup.config.pluginPath = this.options.pluginPath;
+  }
+
 }
 
-export = new UiServer(setup);
-
+export = new StandaloneUI();
