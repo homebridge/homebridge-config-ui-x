@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { StateService, isArray } from '@uirouter/angular';
 import { ToastsManager } from 'ng2-toastr/ng2-toastr';
@@ -8,6 +9,7 @@ import 'brace/mode/json';
 
 import { ApiService } from '../_services/api.service';
 import { MobileDetectService } from '../_services/mobile-detect.service';
+import { ConfigRestoreBackupComponent } from './config.restore-backup.component';
 
 @Component({
   selector: 'app-config',
@@ -22,6 +24,7 @@ export class ConfigComponent implements OnInit {
     private $api: ApiService,
     private $md: MobileDetectService,
     public toastr: ToastsManager,
+    private modalService: NgbModal,
     private sanitizer: DomSanitizer
   ) {
     // remove editor gutter on small screen devices
@@ -65,8 +68,8 @@ export class ConfigComponent implements OnInit {
     this.$api.saveConfig(config).subscribe(
       data => {
         this.toastr.success('Config saved', 'Success!');
-        this.generateBackupConfigLink();
         this.homebridgeConfig = JSON.stringify(data, null, 4);
+        this.generateBackupConfigLink();
       },
       err => this.toastr.error('Failed to save config', 'Error')
     );
@@ -76,6 +79,24 @@ export class ConfigComponent implements OnInit {
     const theJSON = this.homebridgeConfig;
     const uri = this.sanitizer.bypassSecurityTrustUrl('data:text/json;charset=UTF-8,' + encodeURIComponent(theJSON));
     this.backupConfigHref = uri;
+  }
+
+  onRestore() {
+    this.modalService.open(ConfigRestoreBackupComponent, {
+      size: 'lg',
+    })
+    .result
+    .then((backupId) => {
+      this.$api.getConfigBackup(backupId).subscribe(
+        data => {
+          this.toastr.warning('Click Save to confirm you want to restore this backup.', 'Backup Loaded');
+          this.homebridgeConfig = data;
+          this.generateBackupConfigLink();
+        },
+        err => this.toastr.error(err.error.message || 'Failed to load config backup', 'Error')
+      );
+    })
+    .catch(() => { /* modal dismissed */ });
   }
 
 }

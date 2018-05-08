@@ -189,6 +189,49 @@ class HomebridgeUI {
     return config;
   }
 
+  public async listConfigBackups() {
+    const dirContents = await fs.readdir(hb.storagePath);
+
+    const backups = dirContents
+      .filter(x => x.indexOf('config.json.') === 0)
+      .sort()
+      .reverse()
+      .map(x => {
+        const ext = x.split('.');
+        if (ext.length === 3 && !isNaN(ext[2] as any)) {
+          return {
+            id: ext[2],
+            timestamp: new Date(parseInt(ext[2], 10)),
+            file: x
+          };
+        } else {
+          return null;
+        }
+      })
+      .filter((x => x && !isNaN(x.timestamp.getTime())));
+
+    return backups;
+  }
+
+  public async getConfigBackup(backupId: string) {
+    // check backup file exists
+    if (!fs.existsSync(hb.configPath + '.' + parseInt(backupId, 10))) {
+      throw new Error(`Backup ${backupId} Not Found`);
+    }
+
+    // read source backup
+    return await fs.readFile(hb.configPath + '.' + parseInt(backupId, 10));
+  }
+
+  public async deleteAllConfigBackups() {
+    const backups = await this.listConfigBackups();
+
+    // delete each backup file
+    await backups.forEach(async(backupFile) => {
+      await fs.unlink(path.resolve(hb.storagePath, backupFile.file));
+    });
+  }
+
   public async resetHomebridgeAccessory() {
     // load config file
     const config: HomebridgeConfigType = await fs.readJson(this.configPath);

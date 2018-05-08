@@ -7,6 +7,7 @@
     </div>
     <div class="col-sm-6 text-right">
       <a class="btn btn-elegant waves-effect m-0" [href]="backupConfigHref" download="config.json">Backup</a>
+      <button class="btn btn-elegant waves-effect m-0" (click)="onRestore()">Restore</button>
       <button class="btn btn-primary waves-effect m-0" (click)="onSave()">Save</button>
     </div>
   </div>

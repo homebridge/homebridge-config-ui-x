@@ -1,0 +1,27 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title">Restore Homebridge Config Backup</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <table class="table table-borderless table-hover" *ngIf="backupList.length">
+      <tbody>
+        <tr *ngFor="let backup of backupList">
+          <td class="w-100">{{ backup.timestamp | date:'full' }}</td>
+          <td nowrap>
+            <a class="card-link" (click)="restore(backup.id)">Copy To Editor <i class="fas fa-arrow-right"></i></a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div *ngIf="!backupList.length">
+      <h3 class="text-center">No Backups</h3>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-elegant mr-auto" (click)="deleteAllBackups()">Remove All Backups</button>
+    <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')">Cancel</button>
+  </div>
+</div>

@@ -42,6 +42,7 @@ import { PluginsManageComponent } from './plugins/plugins.manage.component';
 import { PluginSettingsComponent } from './plugins/plugins.settings.component';
 import { PluginsMarkdownDirective } from './plugins/plugins.markdown.directive';
 import { ConfigComponent, ConfigStates } from './config/config.component';
+import { ConfigRestoreBackupComponent } from './config/config.restore-backup.component';
 import { LogsComponent, LogsStates } from './logs/logs.component';
 import { UsersComponent, UsersStates } from './users/users.component';
 import { UsersAddComponent } from './users/users.add.component';
@@ -56,6 +57,7 @@ import { ResetComponent, ResetModalComponent } from './reset/reset.component';
     StatusComponent,
     PluginsComponent,
     ConfigComponent,
+    ConfigRestoreBackupComponent,
     LogsComponent,
     UsersComponent,
     PluginSearchComponent,
@@ -67,14 +69,15 @@ import { ResetComponent, ResetModalComponent } from './reset/reset.component';
     RestartComponent,
     LoginComponent,
     ResetComponent,
-    ResetModalComponent
+    ResetModalComponent,
   ],
   entryComponents: [
     PluginsManageComponent,
     PluginSettingsComponent,
     UsersAddComponent,
     UsersEditComponent,
-    ResetModalComponent
+    ResetModalComponent,
+    ConfigRestoreBackupComponent
   ],
   imports: [
     BrowserModule,

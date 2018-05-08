@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file. This projec
 * The Log Viewer config options have changed, existing options have been have depreciated, see [README](https://github.com/oznu/homebridge-config-ui-x#log-viewer-configuration) for details
 * Docker users may now configure this plugin using the `config.json` or the new plugin GUI/form config method
 * Added metadata tag allow using plugin as a full screen web app on iOS ([#88](https://github.com/oznu/homebridge-config-ui-x/issues/88))
+* Added ability to restore and cleanup `config.json` backups ([#77](https://github.com/oznu/homebridge-config-ui-x/issues/77))
 
 ### Other Changes
 
