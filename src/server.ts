@@ -1,4 +1,6 @@
 import * as http from 'http';
+import * as https from 'https';
+import * as fs from 'fs';
 
 import { hb } from './hb';
 import { users } from './users';
@@ -15,7 +17,9 @@ export class UiServer {
 
   constructor(setup) {
     this.setup = setup;
-    this.init();
+    this.init().catch((err) => {
+      hb.error(err);
+    });
   }
 
   async init() {
@@ -30,8 +34,13 @@ export class UiServer {
 
     const app = new ExpressServer().app;
 
-    // start the http server
-    this.server = http.createServer(app);
+    if (this.setup.config.ssl && ((this.setup.config.ssl.key && this.setup.config.ssl.cert) || this.setup.config.ssl.pfx)) {
+      // start the server using https if user has supplied certificates
+      await this.startWithHttps(app);
+    } else {
+      // start the http server
+      await this.startServer(app);
+    }
 
     // attach websocker server to the express server
     hb.wss = new WSS(this.server);
@@ -39,6 +48,21 @@ export class UiServer {
     this.server.listen(hb.port);
     this.server.on('error', this.onServerError.bind(this));
     this.server.on('listening', this.onServerListening.bind(this));
+  }
+
+  async startServer(app) {
+    this.server = http.createServer(app);
+  }
+
+  async startWithHttps(app) {
+    hb.warn('Starting server using HTTPS');
+
+    this.server = https.createServer({
+      key: this.setup.config.ssl.key ? fs.readFileSync(this.setup.config.ssl.key) : undefined,
+      cert: this.setup.config.ssl.cert ? fs.readFileSync(this.setup.config.ssl.cert) : undefined,
+      pfx: this.setup.config.ssl.pfx ? fs.readFileSync(this.setup.config.ssl.pfx) : undefined,
+      passphrase: this.setup.config.ssl.passphrase
+    }, app);
   }
 
   onServerListening() {

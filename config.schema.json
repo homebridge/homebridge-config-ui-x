@@ -1,0 +1,230 @@
+{
+  "pluginAlias": "config",
+  "pluginType": "platform",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "title": "Name",
+        "type": "string",
+        "default": "Config",
+        "minLength": 1,
+        "required": true
+      },
+      "port": {
+        "title": "Port",
+        "type": "integer",
+        "default": 8080,
+        "maximum": 65535,
+        "required": true
+      },
+      "auth": {
+        "title": "Auth Mode",
+        "type": "string",
+        "default": "form",
+        "oneOf": [
+          { "title": "Form", "enum": ["form"] },
+          { "title": "Basic Auth", "enum": ["basic"] },
+          { "title": "None", "enum": ["none"] }
+        ],
+        "required": true
+      },
+      "theme": {
+        "title": "UI Theme",
+        "type": [
+          "string"
+        ],
+        "default": "red",
+        "oneOf": [
+          { "title": "Red", "enum": ["red"] },
+          { "title": "Pink", "enum": ["pink"] },
+          { "title": "Purple", "enum": ["purple"] },
+          { "title": "Indigo", "enum": ["indigo"] },
+          { "title": "Blue", "enum": ["blue"] },
+          { "title": "Blue-grey", "enum": ["blue-grey"] },
+          { "title": "Green", "enum": ["green"] },
+          { "title": "Orange", "enum": ["orange"] }
+        ],
+        "required": true
+      },
+      "restart": {
+        "title": "Restart Command",
+        "type": "string"
+      },
+      "temp": {
+        "title": "Path to OS Temp File",
+        "type": "string"
+      },
+      "loginWallpaper": {
+        "title": "Path to Login Wallpaper Image File",
+        "type": "string"
+      },
+      "sudo": {
+        "title": "Use Sudo",
+        "type": "boolean"
+      },
+      "disableNsp": {
+        "title": "Disable vulnerability scans when installing and upgrading plugins",
+        "type": "boolean"
+      },
+      "noFork": {
+        "title": "Do not run the Config UI web server in a seperate process/thread",
+        "type": "boolean"
+      },
+      "log": {
+        "type": "object",
+        "properties": {
+          "method": {
+            "title": "Log Method",
+            "type": "string",
+            "oneOf": [
+              { "title": "From File", "enum": ["file"] },
+              { "title": "Systemd", "enum": ["systemd"] },
+              { "title": "Custom Command", "enum": ["custom"] }
+            ]
+          },
+          "path": {
+            "title": "Log File Path",
+            "type": "string"
+          },
+          "service": {
+            "title": "Systemd Service",
+            "type": "string"
+          },
+          "command": {
+            "title": "Custom Command",
+            "type": "string"
+          },
+          "tail": {
+            "type": "string",
+            "description": "Depreciated"
+          },
+          "systemd": {
+            "type": "string",
+            "description": "Depreciated"
+          }
+        }
+      },
+      "ssl": {
+        "title": "SSL Setup",
+        "type": "object",
+        "properties": {
+          "key": {
+            "title": "Path To Private Key",
+            "type": "string"
+          },
+          "cert": {
+            "title": "Path To Certificate",
+            "type": "string"
+          },
+          "pfx": {
+            "title": "Path To PKCS#12 Certificate",
+            "type": "string"
+          },
+          "passphrase": {
+            "title": "PKCS#12 Certificate Passphrase",
+            "type": "string"
+          }
+        }
+      },
+      "linux": {
+        "title": "Linux Server Commands",
+        "type": "object",
+        "properties": {
+          "shutdown": {
+            "title": "Shutdown Command",
+            "type": "string"
+          },
+          "restart": {
+            "title": "Restart Command",
+            "type": "string"
+          }
+        }
+      },
+      "homebridgeNpmPkg": {
+        "title": "Custom NPM package for Homebridge updates",
+        "type": "string"
+      },
+      "fork": {
+        "title": "Custom fork in <github username>/<repo> format for Homebridge updates",
+        "type": "string"
+      }
+    }
+  },
+  "form": [
+    "name",
+    "port",
+    "auth",
+    "theme",
+    "sudo",
+    {
+      "type": "fieldset",
+      "expandable": true,
+      "title": "Log Viewer Setup",
+      "items": [
+        "log.method",
+        {
+          "key": "log.path",
+          "description": "Enter the full file path to your log file.",
+          "required": true,
+          "condition": {
+            "functionBody": "return (model.log && model.log.method==='file')"
+          }
+        },
+        {
+          "key": "log.service",
+          "description": "Enter the systemd service name. Defaults to 'homebridge'.",
+          "placeholder": "homebridge",
+          "required": true,
+          "condition": {
+            "functionBody": "return (model.log && model.log.method==='systemd')"
+          }
+        },
+        {
+          "key": "log.command",
+          "description": "This command should stream the logs to stdout.",
+          "required": true,
+          "condition": {
+            "functionBody": "return (model.log && model.log.method==='custom')"
+          }
+        }
+      ]
+    },
+    {
+      "type": "fieldset",
+      "expandable": true,
+      "title": "Advanced",
+      "items": [
+        {
+          "key": "restart",
+          "description": "If no restart command is set the process will terminate with a non-zero exit code."
+        },
+        {
+          "key": "loginWallpaper",
+          "description": "Leave blank to use default wallpaper."
+        },
+        {
+          "key": "temp",
+          "placeholder": "eg. /sys/class/thermal/thermal_zone0/temp"
+        },
+        "disableNsp",
+        "noFork"
+      ]
+    },
+    {
+      "type": "fieldset",
+      "expandable": true,
+      "title": "SSL Setup",
+      "items": [
+        {
+          "type": "help",
+          "helpvalue": "<em class='primary-text'>Leave these fields blank to disable SSL.</em><br><em class='text-danger'>After enabling SSL you will only be able to access the Config UI using https://</div>"
+        },
+        "ssl.key",
+        "ssl.cert",
+        "ssl.pfx",
+        "ssl.passphrase"
+      ]
+    }
+  ]
+}

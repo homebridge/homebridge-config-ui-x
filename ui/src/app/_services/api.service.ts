@@ -66,12 +66,34 @@ export class ApiService {
     return this.$http.get(`${this.base}/api/packages/changelog/${pluginName}`, this.httpOptions);
   }
 
+  getPluginConfigSchema(pluginName) {
+    return this.$http.get(`${this.base}/api/packages/config-schema/${pluginName}`, this.httpOptions);
+  }
+
+  getConfig() {
+    return this.$http.get(`${this.base}/api/config`, this.httpOptions);
+  }
+
   loadConfig() {
-  return this.$http.get(`${this.base}/api/config`, Object.assign({ responseType: 'text' as 'text' }, this.httpOptions));
+  return this.$http.get(`${this.base}/api/config`,
+    Object.assign({ responseType: 'text' as 'text' }, this.httpOptions));
   }
 
   saveConfig(config) {
     return this.$http.post(`${this.base}/api/config`, config, this.httpOptions);
+  }
+
+  getConfigBackupList() {
+    return this.$http.get(`${this.base}/api/config/backups`, this.httpOptions);
+  }
+
+  getConfigBackup(backupId) {
+    return this.$http.get(`${this.base}/api/config/backups/${backupId}`,
+      Object.assign({ responseType: 'text' as 'text' }, this.httpOptions));
+  }
+
+  deleteConfigBackups() {
+    return this.$http.delete(`${this.base}/api/config/backups`, this.httpOptions);
   }
 
   getUsers() {

@@ -42,6 +42,7 @@ Add this to your homebridge `config.json` file
 * `temp` - The path to the file that can display your current CPU temperature. eg. `/sys/class/thermal/thermal_zone0/temp`
 * `theme` - The colour scheme to use. Possible values: `red`, `pink`, `purple`, `indigo`, `blue`, `blue-grey`, `green`, `orange`. Defaults to `red`.
 * `loginWallpaper` - The full path to background image you want to use for the form login page.
+* `ssl` - [See below for details](#enabling-ssl)
 
 ## Accessory Control
 
@@ -71,7 +72,10 @@ Example loading logs from a file, change `/var/log/homebridge.log` to the actual
       "platform": "config",
       "name": "Config",
       "port": 8080,
-      "log": "/var/log/homebridge.log"
+      "log": {
+        "method": "file",
+        "path": "/var/log/homebridge.log"
+      }
     }
 ]
 ```
@@ -80,7 +84,7 @@ Example loading logs from a file, change `/var/log/homebridge.log` to the actual
 
 ### Logs From Systemd
 
-If you are using `systemd` to manage the Homebridge process then you can just set `log` to `systemd`:
+If you're using `systemd` to manage the Homebridge process then you can just set the `method` to `systemd`:
 
 ```json
 "platforms": [
@@ -89,12 +93,15 @@ If you are using `systemd` to manage the Homebridge process then you can just se
       "name": "Config",
       "port": 8080,
       "restart": "sudo -n systemctl restart homebridge",
-      "log": "systemd"
+      "log": {
+        "method": "systemd",
+        "service": "homebridge"
+      }
     }
 ]
 ```
 
-*This will only work if your `systemd` service has the name `homebridge`. You may need to enable the [sudo option](#sudo-mode) to avoid permission errors if you are not running Homebridge as root.*
+*You may need to enable the [sudo option](#sudo-mode) to avoid permission errors if you are not running Homebridge as root.*
 
 ### Logs From Custom Command
 
@@ -107,7 +114,8 @@ The `log` option can alternatively specify a command to spawn that will stream t
       "name": "Config",
       "port": 8080,
       "log": {
-        "tail": "sudo -n tail -n 100 -f /var/log/homebridge.log"
+        "method": "custom",
+        "command": "sudo -n tail -n 100 -f /var/log/homebridge.log"
       }
     }
 ]
@@ -139,6 +147,40 @@ homebridge    ALL=(ALL) NOPASSWD: ALL
 ```
 
 *Replace `homebridge` with the actual user you are running Homebridge as.*
+
+## Enabling SSL
+
+You can run this plugin over an encrypted HTTPS connection by configuring the `ssl` options.
+
+```json
+"platforms": [
+    {
+      "platform": "config",
+      "name": "Config",
+      "port": 8080,
+      "ssl": {
+        "key": "/path/to/privkey.pem",
+        "cert": "/path/to/fullchain.pem"
+      }
+    }
+]
+```
+
+Or if using a **PKCS#12** certificate you can setup SSL like this:
+
+```json
+"platforms": [
+    {
+      "platform": "config",
+      "name": "Config",
+      "port": 8080,
+      "ssl": {
+        "pfx": "/path/to/cert.pfx",
+        "passphrase": "sample"
+      }
+    }
+]
+```
 
 # Usage
 

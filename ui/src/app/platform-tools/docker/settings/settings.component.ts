@@ -17,7 +17,7 @@ export class SettingsComponent implements OnInit {
   public savedSettings = false;
 
   constructor(
-    private $auth: AuthService,
+    public $auth: AuthService,
     private $api: ApiService,
     public $fb: FormBuilder,
     public toastr: ToastsManager,
@@ -28,20 +28,10 @@ export class SettingsComponent implements OnInit {
     this.form = this.$fb.group({
       HOMEBRIDGE_DEBUG: [false],
       HOMEBRIDGE_INSECURE: [false],
-      HOMEBRIDGE_CONFIG_UI_THEME: ['red'],
-      HOMEBRIDGE_CONFIG_UI_AUTH: ['form'],
-      HOMEBRIDGE_CONFIG_UI_LOGIN_WALLPAPER: [undefined]
     });
 
     this.form.patchValue(this.env);
-    this.form.valueChanges.debounceTime(1000).subscribe(this.saveSettings.bind(this));
-  }
-
-  themeChanged(data = this.form.value) {
-    // set theme if changed
-    if (this.$auth.theme !== data.HOMEBRIDGE_CONFIG_UI_THEME) {
-      this.$auth.setTheme(data.HOMEBRIDGE_CONFIG_UI_THEME);
-    }
+    this.form.valueChanges.subscribe(this.saveSettings.bind(this));
   }
 
   saveSettings(data = this.form.value) {

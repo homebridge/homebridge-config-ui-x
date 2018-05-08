@@ -11,16 +11,35 @@ export class LogsWssHandler {
   private ws: WebSocket;
   private term: any;
 
+  private logOpts: {
+    method: 'file' | 'systemd' | 'custom';
+    path?: string;
+    service?: string;
+    command?: string;
+  };
+
   constructor(ws: WebSocket, req) {
     this.ws = ws;
 
-    if (hb.logOpts && typeof (hb.logOpts) === 'string' && fs.existsSync(hb.logOpts)) {
+    if (typeof hb.logOpts === 'object' && hb.logOpts.method) {
+      if (['file', 'systemd', 'custom'].indexOf(hb.logOpts.method) < 0) {
+        this.parseLegacyLogConfig();
+      } else if (hb.logOpts.method === 'file' && !hb.logOpts.path) {
+        this.parseLegacyLogConfig();
+      } else if (hb.logOpts.method === 'custom' && !hb.logOpts.command) {
+        this.parseLegacyLogConfig();
+      } else {
+        this.logOpts = hb.logOpts;
+      }
+    } else {
+      this.parseLegacyLogConfig();
+    }
+
+    if (this.logOpts.method === 'file' && this.logOpts.path) {
       this.logFromFile();
-    } else if (hb.logOpts && hb.logOpts === 'systemd') {
+    } else if (this.logOpts.method === 'systemd') {
       this.logFromSystemd();
-    } else if (hb.logOpts && typeof (hb.logOpts) === 'object' && hb.logOpts.systemd && hb.logOpts.systemd.length) {
-      this.logFromSystemd(hb.logOpts.systemd);
-    } else if (hb.logOpts && typeof (hb.logOpts) === 'object' && hb.logOpts.tail) {
+    } else if (this.logOpts.method === 'custom' && this.logOpts.command) {
       this.logFromCommand();
     } else {
       this.logNotConfigured();
@@ -51,6 +70,46 @@ export class LogsWssHandler {
     ws.on('unsubscribe', onUnsubscribe);
   }
 
+  /**
+   * @deprecated since 5.6.0
+   */
+  parseLegacyLogConfig() {
+    if (hb.logOpts && hb.logOpts === 'systemd') {
+      this.logOpts = {
+        method: 'systemd',
+        service: 'homebridge',
+      };
+      this.legacyConfigWarning();
+    } else if (hb.logOpts && typeof (hb.logOpts) === 'string' && fs.existsSync(hb.logOpts)) {
+      this.logOpts = {
+        method: 'file',
+        path: hb.logOpts,
+      };
+      this.legacyConfigWarning();
+    } else if (hb.logOpts && typeof (hb.logOpts) === 'object' && hb.logOpts.systemd && hb.logOpts.systemd.length) {
+      this.logOpts = {
+        method: 'systemd',
+        service: hb.logOpts.systemd,
+      };
+      this.legacyConfigWarning();
+    } else if (hb.logOpts && typeof (hb.logOpts) === 'object' && hb.logOpts.tail) {
+      this.logOpts = {
+        method: 'custom',
+        command: hb.logOpts.tail,
+      };
+      this.legacyConfigWarning();
+    } else {
+      this.logOpts = {
+        method: null
+      };
+    }
+  }
+
+  legacyConfigWarning() {
+    hb.warn('You are using a depreciated log config format, please update your config.json to use this new format:');
+    hb.warn(JSON.stringify(this.logOpts));
+  }
+
   send(data) {
     if (this.ws.readyState === 1) {
       this.ws.send(JSON.stringify({logs: data}));
@@ -61,10 +120,10 @@ export class LogsWssHandler {
     let command;
     if (os.platform() === 'win32') {
       // windows - use powershell to tail log
-      command = ['powershell.exe', '-command', `Get-Content -Path '${hb.logOpts}' -Wait -Tail 200`];
+      command = ['powershell.exe', '-command', `Get-Content -Path '${this.logOpts.path}' -Wait -Tail 200`];
     } else {
       // linux / macos etc
-      command = ['tail', '-n', '200', '-f', hb.logOpts];
+      command = ['tail', '-n', '200', '-f', this.logOpts.path];
 
       // sudo mode is requested in plugin config
       if (hb.useSudo) {
@@ -77,8 +136,8 @@ export class LogsWssHandler {
     this.tailLog(command);
   }
 
-  logFromSystemd(service: string = 'homebridge') {
-    const command = ['journalctl', '-o', 'cat', '-n', '500', '-f', '-u', service];
+  logFromSystemd() {
+    const command = ['journalctl', '-o', 'cat', '-n', '500', '-f', '-u', this.logOpts.service || 'homebridge'];
 
     // sudo mode is requested in plugin config
     if (hb.useSudo) {
@@ -91,7 +150,7 @@ export class LogsWssHandler {
   }
 
   logFromCommand() {
-    const command = Array.isArray(hb.logOpts.tail) ? hb.logOpts.tail.slice() : hb.logOpts.tail.split(' ');
+    const command = this.logOpts.command.split(' ');
 
     this.send(color.cyan(`Using custom command to tail logs\r\nCMD: ${command.join(' ')}\r\n\r\n`));
 
@@ -99,16 +158,7 @@ export class LogsWssHandler {
   }
 
   logNotConfigured() {
-    if (hb.logOpts && typeof(hb.logOpts) === 'string') {
-      this.send(color.red(`Log file does not exist: ${hb.logOpts}\r\n`));
-      this.send(color.red(`Please set the correct path to the logs in your Homebridge config.json file.\r\n\r\n`));
-    } else if (hb.logOpts) {
-      this.send(color.red(`Cannot show logs. Invalid log configuration in config.json file.\r\n\r\n`));
-      this.send(color.yellow(JSON.stringify({log: hb.logOpts}, null, 4).replace(/\n/g, '\r\n')));
-      this.send('\r\n\r\n');
-    } else {
-      this.send(color.red(`Cannot show logs. Log option is not configured in your Homebridge config.json file.\r\n\r\n`));
-    }
+    this.send(color.red(`Cannot show logs. "log" option is not configured correctly in your Homebridge config.json file.\r\n\r\n`));
     this.send(color.cyan(`See https://github.com/oznu/homebridge-config-ui-x#log-viewer-configuration for instructions.\r\n`));
   }
 
@@ -148,8 +198,10 @@ export class LogsWssHandler {
 
   killTerm() {
     if (this.term) {
-      this.term.kill();
-      this.term.destroy();
+      try {
+        this.term.kill();
+        this.term.destroy();
+      } catch (e) {}
       this.forceKillProcess();
     }
   }

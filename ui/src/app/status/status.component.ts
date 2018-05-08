@@ -12,6 +12,7 @@ interface HomebridgeStatus {
   pin?: string;
   status?: string;
   qrcode?: string;
+  packageVersion?: string;
 }
 
 @Component({
@@ -63,6 +64,11 @@ export class StatusComponent implements OnInit {
     this.onMessageServer = this.ws.handlers.server.subscribe((data) => {
       this.server = data;
       this.getQrCodeImage();
+
+      // check if client is up-to-date
+      if (this.server.packageVersion && this.server.packageVersion !== this.$auth.env.packageVersion) {
+        window.location.reload(true);
+      }
     });
 
     this.onClose = this.ws.close.subscribe(() => {

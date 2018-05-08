@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 3.6.0
+
+### Notable Changes
+
+* **Beta Feature**: Initial implementation of GUI/form based setup for supported plugins
+* Added support for optional native HTTPS / SSL ([#68](https://github.com/oznu/homebridge-config-ui-x/issues/68), [#35](https://github.com/oznu/homebridge-config-ui-x/issues/35))
+* The Log Viewer config options have changed, existing options have been have depreciated, see [README](https://github.com/oznu/homebridge-config-ui-x#log-viewer-configuration) for details
+* Docker users may now configure this plugin using the `config.json` or the new plugin GUI/form config method
+* Added metadata tag allow using plugin as a full screen web app on iOS ([#88](https://github.com/oznu/homebridge-config-ui-x/issues/88))
+* Added ability to restore and cleanup `config.json` backups ([#77](https://github.com/oznu/homebridge-config-ui-x/issues/77))
+
+### Other Changes
+
+* Added [Content-Security-Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) headers
+* Links to external sites now have `rel="noopener noreferrer"`
+* Links in plugin-author generated markdown (eg. change logs, plugin config) are now opened in a new tab
+* When on the status page, the browser will refresh automatically if the client version does not match the server version
+* Updated npm dependencies
+
+### Bug Fixes
+
+* Fixed bug that caused homebridge to crash when using Log Viewer on Windows 10
+
 ## 3.5.5 (2018-04-21)
 
 ### Bug Fixes

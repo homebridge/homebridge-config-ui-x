@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as cors from 'cors';
+import * as helmet from 'helmet';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import { Express, Request, Response, NextFunction } from 'express';
@@ -23,6 +24,25 @@ export class ExpressServer {
     this.auth = new AuthMiddleware();
 
     this.app = <Express>express();
+
+    // set some headers to help secure the app
+    this.app.use(helmet({
+      hsts: false,
+      frameguard: false,
+      referrerPolicy: true,
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ['\'self\''],
+          scriptSrc: ['\'self\'', '\'unsafe-inline\'', '\'unsafe-eval\''],
+          styleSrc: ['\'self\'', '\'unsafe-inline\''],
+          imgSrc: ['\'self\'', 'data:', 'https://raw.githubusercontent.com'],
+          workerSrc: ['blob:'],
+          connectSrc: ['\'self\'', (req: Request) => {
+            return 'wss://' + req.headers.host + ' ws://' + req.headers.host;
+          }],
+        }
+      }
+    }));
 
     // authentication middleware
     this.app.use(this.auth.init);

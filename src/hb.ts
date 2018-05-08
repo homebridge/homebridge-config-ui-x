@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as color from 'bash-color';
 import * as commander from 'commander';
+import * as semver from 'semver';
 
 import { WSS } from './wss';
 
@@ -17,12 +18,20 @@ class HomebridgeUI {
   public runningInDocker: boolean;
   public runningInLinux: boolean;
   public linuxServerOpts: { restart?: string; shutdown?: string; };
+  public ableToConfigureSelf: boolean;
   public configPath: string;
   public authPath: string;
   public storagePath: string;
   public pluginPath: string;
   public port: number | string;
-  public logOpts: any;
+  public logOpts: {
+    method: 'file' | 'systemd' | 'custom';
+    path?: string;
+    service?: string;
+    command?: string;
+    tail?: string; /** @deprecated since 5.6.0 */
+    systemd?: string; /** @deprecated since 5.6.0 */
+  } | string;
   public restartCmd;
   public useSudo: boolean;
   public disableNsp: boolean;
@@ -76,6 +85,7 @@ class HomebridgeUI {
     this.runningInDocker = Boolean(process.env.HOMEBRIDGE_CONFIG_UI === '1');
     this.runningInLinux = (!this.runningInDocker && os.platform() === 'linux');
     this.linuxServerOpts = config.linux || {};
+    this.ableToConfigureSelf = (!this.runningInDocker || semver.satisfies(process.env.CONFIG_UI_VERSION, '>=3.5.5'));
     this.loginWallpaper = config.loginWallpaper;
 
     if (config.auth === 'none' || config.auth === false) {
@@ -179,6 +189,49 @@ class HomebridgeUI {
     return config;
   }
 
+  public async listConfigBackups() {
+    const dirContents = await fs.readdir(hb.storagePath);
+
+    const backups = dirContents
+      .filter(x => x.indexOf('config.json.') === 0)
+      .sort()
+      .reverse()
+      .map(x => {
+        const ext = x.split('.');
+        if (ext.length === 3 && !isNaN(ext[2] as any)) {
+          return {
+            id: ext[2],
+            timestamp: new Date(parseInt(ext[2], 10)),
+            file: x
+          };
+        } else {
+          return null;
+        }
+      })
+      .filter((x => x && !isNaN(x.timestamp.getTime())));
+
+    return backups;
+  }
+
+  public async getConfigBackup(backupId: string) {
+    // check backup file exists
+    if (!fs.existsSync(hb.configPath + '.' + parseInt(backupId, 10))) {
+      throw new Error(`Backup ${backupId} Not Found`);
+    }
+
+    // read source backup
+    return await fs.readFile(hb.configPath + '.' + parseInt(backupId, 10));
+  }
+
+  public async deleteAllConfigBackups() {
+    const backups = await this.listConfigBackups();
+
+    // delete each backup file
+    await backups.forEach(async(backupFile) => {
+      await fs.unlink(path.resolve(hb.storagePath, backupFile.file));
+    });
+  }
+
   public async resetHomebridgeAccessory() {
     // load config file
     const config: HomebridgeConfigType = await fs.readJson(this.configPath);
@@ -263,13 +316,13 @@ class HomebridgeUI {
 
   public warn(...params) {
     console.warn(
-      color.white(`[${new Date().toLocaleString()}]`), color.cyan(`[${this.pluginName}]`), color.yellow(...params)
+      color.white(`[${new Date().toLocaleString()}]`), color.cyan(`[${this.pluginName}]`), color.yellow(params.join(' '))
     );
   }
 
   public error(...params) {
     console.error(
-      color.white(`[${new Date().toLocaleString()}]`), color.cyan(`[${this.pluginName}]`), color.red(...params)
+      color.white(`[${new Date().toLocaleString()}]`), color.cyan(`[${this.pluginName}]`), color.red(params.join(' '))
     );
   }
 }

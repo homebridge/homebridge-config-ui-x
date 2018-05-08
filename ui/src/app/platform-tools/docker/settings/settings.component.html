@@ -5,9 +5,11 @@
   </div>
 </div>
 
-
 <div class="row mt-3">
   <div class="col-md-12">
+    <div class="alert alert-danger" role="alert" *ngIf="!$auth.env.ableToConfigureSelf">
+      Please upgrade the oznu/homebridge docker image to the latest version. <a target="_blank" rel="noopener noreferrer" href="https://github.com/oznu/docker-homebridge">https://github.com/oznu/docker-homebridge</a>
+    </div>
     <div class="alert alert-warning" role="alert">
       Changing these values will override the corresponding environment variables you may have set with the docker run command.
     </div>
@@ -32,36 +34,6 @@
         <input id="homebridgeInsecureMode" formControlName="HOMEBRIDGE_INSECURE" type="checkbox" />
         <label for="homebridgeInsecureMode" class="badge-primary"></label>
       </div>
-    </li>
-  </ul>
-
-  <h5 class="primary-text mt-4">Config UI X</h5>
-
-  <ul class="list-group">
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      Theme
-      <select class="custom-select custom-select-sm w-25" formControlName="HOMEBRIDGE_CONFIG_UI_THEME" (change)="themeChanged()">
-        <option value="blue">Blue</option>
-        <option value="blue-grey">Blue-grey</option>
-        <option value="green">Green</option>
-        <option value="indigo">Indigo</option>
-        <option value="orange">Orange</option>
-        <option value="pink">Pink</option>
-        <option value="purple">Purple</option>
-        <option value="red">Red</option>
-      </select>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <div>Auth Mode</div>
-      <select class="custom-select custom-select-sm w-25" formControlName="HOMEBRIDGE_CONFIG_UI_AUTH">
-        <option value="form">Form</option>
-        <option value="basic">Basic</option>
-        <option value="none">None</option>
-      </select>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <div>Custom Login Wallpaper Image Path</div>
-      <input type="text" class="form-control form-control-sm w-25" formControlName="HOMEBRIDGE_CONFIG_UI_LOGIN_WALLPAPER">
     </li>
   </ul>
 

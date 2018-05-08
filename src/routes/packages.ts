@@ -17,6 +17,7 @@ export class PackageRouter {
     this.router.get('/homebridge', this.getHomebridgePackage);
     this.router.put('/homebridge/upgrade', users.ensureAdmin, this.upgradeHomebridgePackage);
     this.router.get('/changelog/:package', users.ensureAdmin, this.getChangeLog);
+    this.router.get('/config-schema/:package', users.ensureAdmin, this.getConfigSchema);
   }
 
   getPackages(req: Request, res: Response, next: NextFunction) {
@@ -87,6 +88,14 @@ export class PackageRouter {
     return pm.getChangeLog(req.params.package)
       .then((data) => {
         res.json({ changelog: data });
+      })
+      .catch(next);
+  }
+
+  getConfigSchema(req: Request, res: Response, next: NextFunction) {
+    return pm.getConfigSchema(req.params.package)
+      .then((data) => {
+        res.json(data);
       })
       .catch(next);
   }

@@ -16,10 +16,7 @@ export class DockerRouter {
 
   private dockerEnvVariables = [
     'HOMEBRIDGE_DEBUG',
-    'HOMEBRIDGE_INSECURE',
-    'HOMEBRIDGE_CONFIG_UI_THEME',
-    'HOMEBRIDGE_CONFIG_UI_AUTH',
-    'HOMEBRIDGE_CONFIG_UI_LOGIN_WALLPAPER',
+    'HOMEBRIDGE_INSECURE'
   ];
 
   constructor() {

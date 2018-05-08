@@ -10,6 +10,16 @@ import { AceEditorModule } from 'ng2-ace-editor';
 import { ToastModule, ToastOptions } from 'ng2-toastr/ng2-toastr';
 import { MarkdownModule } from 'ngx-md';
 
+import {
+  JsonSchemaFormModule,
+  Bootstrap4FrameworkModule,
+  Bootstrap4Framework,
+  Framework,
+  WidgetLibraryService,
+  FrameworkLibraryService,
+  JsonSchemaFormService
+} from 'angular2-json-schema-form';
+
 import { ToastCustomOptions } from './_helpers/toast.class';
 import { routerConfigFn } from './_helpers/router.config';
 
@@ -29,7 +39,10 @@ import { StatusComponent, StatusStates } from './status/status.component';
 import { PluginsComponent, PluginStates } from './plugins/plugins.component';
 import { PluginSearchComponent, PluginSearchStates } from './plugins/plugins.search.component';
 import { PluginsManageComponent } from './plugins/plugins.manage.component';
+import { PluginSettingsComponent } from './plugins/plugins.settings.component';
+import { PluginsMarkdownDirective } from './plugins/plugins.markdown.directive';
 import { ConfigComponent, ConfigStates } from './config/config.component';
+import { ConfigRestoreBackupComponent } from './config/config.restore-backup.component';
 import { LogsComponent, LogsStates } from './logs/logs.component';
 import { UsersComponent, UsersStates } from './users/users.component';
 import { UsersAddComponent } from './users/users.add.component';
@@ -44,22 +57,27 @@ import { ResetComponent, ResetModalComponent } from './reset/reset.component';
     StatusComponent,
     PluginsComponent,
     ConfigComponent,
+    ConfigRestoreBackupComponent,
     LogsComponent,
     UsersComponent,
     PluginSearchComponent,
     PluginsManageComponent,
+    PluginSettingsComponent,
+    PluginsMarkdownDirective,
     UsersAddComponent,
     UsersEditComponent,
     RestartComponent,
     LoginComponent,
     ResetComponent,
-    ResetModalComponent
+    ResetModalComponent,
   ],
   entryComponents: [
     PluginsManageComponent,
+    PluginSettingsComponent,
     UsersAddComponent,
     UsersEditComponent,
-    ResetModalComponent
+    ResetModalComponent,
+    ConfigRestoreBackupComponent
   ],
   imports: [
     BrowserModule,
@@ -69,6 +87,16 @@ import { ResetComponent, ResetModalComponent } from './reset/reset.component';
     ReactiveFormsModule,
     AceEditorModule,
     SpinnerModule,
+    Bootstrap4FrameworkModule,
+    {
+      ngModule: JsonSchemaFormModule,
+      providers: [
+        JsonSchemaFormService,
+        FrameworkLibraryService,
+        WidgetLibraryService,
+        { provide: Framework, useClass: Bootstrap4Framework, multi: true }
+      ]
+    },
     MarkdownModule.forRoot(),
     ToastModule.forRoot(),
     NgbModule.forRoot(),
