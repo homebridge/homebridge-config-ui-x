@@ -15,7 +15,8 @@ export class WsService {
     logs: new EventEmitter(),
     accessories: new EventEmitter(),
     terminal: new EventEmitter(),
-    npmLog: new EventEmitter()
+    npmLog: new EventEmitter(),
+    npmInstall: new EventEmitter()
   };
 
   private routes = Object.keys(this.handlers);

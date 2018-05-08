@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 3.6.1
+
+### Bug Fixes
+
+* Fixed bug that could cause plugins that take a long time to install or upgrade to fail
+
 ## 3.6.0
 
 ### Notable Changes

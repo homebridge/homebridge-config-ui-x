@@ -23,6 +23,8 @@ export class PluginsManageComponent implements OnInit {
   private termTarget: HTMLElement;
 
   private onMessage;
+  private onDone;
+  private onComplete: Function;
 
   public actionComplete = false;
   public updateSelf = false;
@@ -45,6 +47,14 @@ export class PluginsManageComponent implements OnInit {
       this.term.write(data);
     });
 
+    this.onDone = this.ws.handlers.npmInstall.subscribe((data) => {
+      if (data.succeeded && data.pkg === this.pluginName) {
+        this.onComplete();
+      } else if (data.pkg === this.pluginName) {
+        this.$state.reload();
+      }
+    });
+
     switch (this.action) {
       case 'Install':
         this.install();
@@ -64,9 +74,11 @@ export class PluginsManageComponent implements OnInit {
   install() {
     this.$api.installPlugin(this.pluginName).subscribe(
       (data) => {
-        this.$state.go('plugins');
-        this.activeModal.close();
-        this.toastr.success(`Installed ${this.pluginName}`, 'Success!');
+        this.onComplete = () => {
+          this.$state.go('plugins');
+          this.activeModal.close();
+          this.toastr.success(`Installed ${this.pluginName}`, 'Success!');
+        };
       },
       (err) => {
         this.$state.reload();
@@ -77,9 +89,11 @@ export class PluginsManageComponent implements OnInit {
   uninstall() {
     this.$api.uninstallPlugin(this.pluginName).subscribe(
       (data) => {
-        this.$state.reload();
-        this.activeModal.close();
-        this.toastr.success(`Removed ${this.pluginName}`, 'Success!');
+        this.onComplete = () => {
+          this.$state.reload();
+          this.activeModal.close();
+          this.toastr.success(`Removed ${this.pluginName}`, 'Success!');
+        };
       },
       (err) => {
         this.$state.reload();
@@ -90,13 +104,15 @@ export class PluginsManageComponent implements OnInit {
   update() {
     this.$api.updatePlugin(this.pluginName).subscribe(
       (data) => {
-        if (this.pluginName === 'homebridge-config-ui-x') {
-          this.updateSelf = true;
-        } else {
-          this.$state.reload();
-        }
-        this.toastr.success(`Updated ${this.pluginName}`, 'Success!');
-        this.getChangeLog();
+        this.onComplete = () => {
+          if (this.pluginName === 'homebridge-config-ui-x') {
+            this.updateSelf = true;
+          } else {
+            this.$state.reload();
+          }
+          this.toastr.success(`Updated ${this.pluginName}`, 'Success!');
+          this.getChangeLog();
+        };
       },
       (err) => {
         this.$state.reload();
@@ -107,9 +123,11 @@ export class PluginsManageComponent implements OnInit {
   upgradeHomebridge() {
     this.$api.upgradeHomebridgePackage().subscribe(
       (data) => {
-        this.$state.go('restart');
-        this.activeModal.close();
-        this.toastr.success(`Homebridge Upgraded`, 'Success!');
+        this.onComplete = () => {
+          this.$state.go('restart');
+          this.activeModal.close();
+          this.toastr.success(`Homebridge Upgraded`, 'Success!');
+        };
       },
       (err) => {
         this.$state.reload();
@@ -143,6 +161,7 @@ export class PluginsManageComponent implements OnInit {
   ngOnDestroy() {
     try {
       this.onMessage.unsubscribe();
+      this.onDone.unsubscribe();
     } catch (e) { }
   }
 

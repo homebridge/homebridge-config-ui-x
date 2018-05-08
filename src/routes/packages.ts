@@ -37,30 +37,18 @@ export class PackageRouter {
   }
 
   updatePackage(req: Request, res: Response, next: NextFunction) {
-    return pm.updatePlugin(req.body.package)
-      .then(() => {
-        hb.log('Package ' + req.body.package + ' upgraded.');
-        res.json({ ok: true });
-      })
-      .catch(next);
+    pm.updatePlugin(req.body.package);
+    res.json({ ok: true });
   }
 
   uninstallPackage(req: Request, res: Response, next: NextFunction) {
-    return pm.removePlugin(req.body.package)
-      .then(() => {
-        hb.log('Package ' + req.body.package + ' removed.');
-        res.json({ ok: true });
-      })
-      .catch(next);
+    pm.removePlugin(req.body.package);
+    res.json({ ok: true });
   }
 
   installPackage(req: Request, res: Response, next: NextFunction) {
-    return pm.installPlugin(req.body.package)
-      .then(() => {
-        hb.log('Package ' + req.body.package + ' installed.');
-        res.json({ ok: true });
-      })
-      .catch(next);
+    pm.installPlugin(req.body.package);
+    res.json({ ok: true });
   }
 
   getHomebridgePackage(req: Request, res: Response, next: NextFunction) {
@@ -76,12 +64,8 @@ export class PackageRouter {
   }
 
   upgradeHomebridgePackage(req: Request, res: Response, next: NextFunction) {
-    return pm.updateHomebridge()
-      .then(() => {
-        hb.log('Homebridge server upgraded.');
-        res.json({ ok: true });
-      })
-      .catch(next);
+    pm.updateHomebridge();
+    res.json({ ok: true });
   }
 
   getChangeLog(req: Request, res: Response, next: NextFunction) {

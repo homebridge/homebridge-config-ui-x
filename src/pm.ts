@@ -114,6 +114,19 @@ class PackageManager {
     });
   }
 
+  wssBroadcastComplete(pkg, succeeded) {
+    hb.wss.server.clients.forEach(function each(client) {
+      if (client.readyState === 1) {
+        client.send(JSON.stringify({
+          npmInstall: {
+            pkg: pkg,
+            succeeded: succeeded,
+          }
+        }));
+      }
+    });
+  }
+
   executeCommand(command, cwd) {
     let timeoutTimer;
     command = command.filter(x => x.length);
@@ -310,7 +323,7 @@ class PackageManager {
       return res.objects;
     })
     .filter(pkg => pkg.package.name
-      && ((pkg.package.name.indexOf('homebridge-') === 0))) // || pkg.package.name.indexOf('@homebridge/homebridge-') === 0))
+      && ((pkg.package.name.indexOf('homebridge-') === 0)) || pkg.package.name.indexOf('@homebridge/homebridge-') === 0)
     .map((pkg) => {
       if (this.plugins.find(x => x.name === pkg.package.name)) {
         // a plugin with the same name is already installed
@@ -394,8 +407,12 @@ class PackageManager {
         return this.executeCommand([...this.npm, 'install', '--unsafe-perm', ...installOptions, `${pkg}@latest`], installPath)
           .then(() => this.runNspScan(pkgPath));
       })
+      .then(() => {
+        this.wssBroadcastComplete(pkg, true);
+      })
       .catch((err) => {
         this.wssBroadcast(color.red(`\n\r${err}\n\r`));
+        this.wssBroadcastComplete(pkg, false);
         throw err;
       });
   }
@@ -422,8 +439,12 @@ class PackageManager {
 
         return this.executeCommand([...this.npm, 'uninstall', '--unsafe-perm', ...installOptions, pkg], installPath);
       })
+      .then(() => {
+        this.wssBroadcastComplete(pkg, true);
+      })
       .catch((err) => {
         this.wssBroadcast(color.red(`\n\r${err}\n\r`));
+        this.wssBroadcastComplete(pkg, false);
         throw err;
       });
   }
@@ -454,8 +475,12 @@ class PackageManager {
         return this.executeCommand([...this.npm, 'install', '--unsafe-perm', ...installOptions, `${pkg}@latest`], installPath)
           .then(() => this.runNspScan(pkgPath));
       })
+      .then(() => {
+        this.wssBroadcastComplete(pkg, true);
+      })
       .catch((err) => {
         this.wssBroadcast(color.red(`\n\r${err}\n\r`));
+        this.wssBroadcastComplete(pkg, false);
         throw err;
       });
   }
@@ -482,8 +507,12 @@ class PackageManager {
             hb.log(`Upgraded homebridge using npm at ${installPath}`);
           });
       })
+      .then(() => {
+        this.wssBroadcastComplete('homebridge', true);
+      })
       .catch((err) => {
         this.wssBroadcast(color.red(`\n\r${err}\n\r`));
+        this.wssBroadcastComplete('homebridge', false);
         throw err;
       });
   }

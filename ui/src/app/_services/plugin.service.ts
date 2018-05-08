@@ -40,7 +40,7 @@ export class PluginService {
       size: 'lg',
     });
     ref.componentInstance.action = 'Upgrade';
-    ref.componentInstance.pluginName = 'Homebridge';
+    ref.componentInstance.pluginName = 'homebridge';
   }
 
   settings(pluginName) {
