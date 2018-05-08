@@ -8,6 +8,7 @@ import 'source-map-support/register';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as commander from 'commander';
+import * as semver from 'semver';
 
 import { UiServer } from '../server';
 
@@ -69,7 +70,7 @@ class StandaloneUI {
     };
 
     // check and see if config-ui platform is defined in config.json
-    if (fs.existsSync(path.resolve(this.setup.configPath))) {
+    if (semver.satisfies(process.env.CONFIG_UI_VERSION, '>=3.5.5') && fs.existsSync(path.resolve(this.setup.configPath))) {
       const homebridgeConfig = await fs.readJson(this.setup.configPath);
       if (homebridgeConfig && homebridgeConfig.platforms) {
         const config = homebridgeConfig.platforms.find(x => x.platform === 'config');
@@ -113,6 +114,7 @@ class StandaloneUI {
     this.setup.config.homebridgeFork = process.env.HOMEBRIDGE_CONFIG_UI_FORK || undefined;
     this.setup.config.homebridgeInsecure = (process.env.HOMEBRIDGE_INSECURE === '1');
     this.setup.config.pluginPath = this.options.pluginPath;
+    this.setup.config.sudo = false;
   }
 
 }

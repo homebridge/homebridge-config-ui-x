@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as color from 'bash-color';
 import * as commander from 'commander';
+import * as semver from 'semver';
 
 import { WSS } from './wss';
 
@@ -17,6 +18,7 @@ class HomebridgeUI {
   public runningInDocker: boolean;
   public runningInLinux: boolean;
   public linuxServerOpts: { restart?: string; shutdown?: string; };
+  public ableToConfigureSelf: boolean;
   public configPath: string;
   public authPath: string;
   public storagePath: string;
@@ -83,6 +85,7 @@ class HomebridgeUI {
     this.runningInDocker = Boolean(process.env.HOMEBRIDGE_CONFIG_UI === '1');
     this.runningInLinux = (!this.runningInDocker && os.platform() === 'linux');
     this.linuxServerOpts = config.linux || {};
+    this.ableToConfigureSelf = (!this.runningInDocker || semver.satisfies(process.env.CONFIG_UI_VERSION, '>=3.5.5'));
     this.loginWallpaper = config.loginWallpaper;
 
     if (config.auth === 'none' || config.auth === false) {

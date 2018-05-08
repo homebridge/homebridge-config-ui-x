@@ -5,9 +5,11 @@
   </div>
 </div>
 
-
 <div class="row mt-3">
   <div class="col-md-12">
+    <div class="alert alert-danger" role="alert" *ngIf="!$auth.env.ableToConfigureSelf">
+      Please upgrade the oznu/homebridge docker image to the latest version. <a target="_blank" rel="noopener noreferrer" href="https://github.com/oznu/docker-homebridge">https://github.com/oznu/docker-homebridge</a>
+    </div>
     <div class="alert alert-warning" role="alert">
       Changing these values will override the corresponding environment variables you may have set with the docker run command.
     </div>

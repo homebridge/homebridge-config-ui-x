@@ -17,7 +17,7 @@ export class SettingsComponent implements OnInit {
   public savedSettings = false;
 
   constructor(
-    private $auth: AuthService,
+    public $auth: AuthService,
     private $api: ApiService,
     public $fb: FormBuilder,
     public toastr: ToastsManager,

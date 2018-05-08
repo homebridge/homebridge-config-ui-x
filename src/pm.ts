@@ -226,11 +226,21 @@ class PackageManager {
 
     return Bluebird.map(this.paths, (requiredPath) => {
       return Bluebird.resolve(fs.readdir(requiredPath))
+        .then(async (standardPlugins) => {
+          // check if any certified homebridge plugins are installed and add them to the list
+          if (fs.existsSync(path.resolve(requiredPath, '@homebridge'))) {
+            const certifiedPlugins = await fs.readdir(path.resolve(requiredPath, '@homebridge'));
+            certifiedPlugins.forEach((certifiedPlugin) => {
+              standardPlugins.push(path.join('@homebridge', certifiedPlugin));
+            });
+          }
+          return standardPlugins;
+        })
         .map(name => path.join(requiredPath, name))
         .filter(pluginPath => fs.stat(path.join(pluginPath, 'package.json')).catch(x => false))
         .map(pluginPath => fs.readFile(path.join(pluginPath, 'package.json'), 'utf8').then(JSON.parse).catch(x => false))
         .filter(pluginPath => pluginPath)
-        .filter(pjson => pjson.name && pjson.name.indexOf('homebridge-') === 0)
+        .filter(pjson => pjson.name && ((pjson.name.indexOf('homebridge-') === 0) || pjson.name.indexOf('@homebridge/homebridge-') === 0))
         .filter(pjson => pjson.keywords && pjson.keywords.includes('homebridge-plugin'))
         .map(pjson => {
           const plugin: any = {
@@ -241,6 +251,7 @@ class PackageManager {
             globalInstall: (requiredPath !== this.customPluginPath),
             pluginPath: requiredPath,
             settingsSchema: fs.existsSync(path.resolve(requiredPath, pjson.name, 'config.schema.json')),
+            certifiedPlugin: (pjson.name.indexOf('@homebridge/homebridge-') === 0),
           };
 
           return this.rp.get(`https://registry.npmjs.org/${encodeURIComponent(pjson.name).replace('%40', '@')}`)
@@ -298,7 +309,8 @@ class PackageManager {
     .then((res) => {
       return res.objects;
     })
-    .filter(pkg => pkg.package.name && pkg.package.name.indexOf('homebridge-') === 0)
+    .filter(pkg => pkg.package.name
+      && ((pkg.package.name.indexOf('homebridge-') === 0))) // || pkg.package.name.indexOf('@homebridge/homebridge-') === 0))
     .map((pkg) => {
       if (this.plugins.find(x => x.name === pkg.package.name)) {
         // a plugin with the same name is already installed
@@ -312,7 +324,8 @@ class PackageManager {
           description: (pkg.package.description) ?
             pkg.package.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkg.package.name,
           links: pkg.package.links,
-          author: pkg.package.publisher.username
+          author: (pkg.package.publisher) ? pkg.package.publisher.username : null,
+          certifiedPlugin: (pkg.package.name.indexOf('@homebridge/homebridge-') === 0),
         });
       } else {
         packages.push({
@@ -322,7 +335,8 @@ class PackageManager {
           description: (pkg.package.description) ?
             pkg.package.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkg.package.name,
           links: pkg.package.links,
-          author: pkg.package.publisher.username
+          author: (pkg.package.publisher) ? pkg.package.publisher.username : null,
+          certifiedPlugin: (pkg.package.name.indexOf('@homebridge/homebridge-') === 0),
         });
       }
     })

@@ -6,11 +6,10 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Notable Changes
 
-* Added support for optional native HTTPS / SSL ([#68](https://github.com/oznu/homebridge-config-ui-x/issues/68), [#35](https://github.com/oznu/homebridge-config-ui-x/issues/35))
-* **Beta Feature**: Added support for optional automated SSL certificate generation using Let's Encrypt (only the http-01 challege type is supported)
 * **Beta Feature**: Initial implementation of GUI/form based setup for supported plugins
+* Added support for optional native HTTPS / SSL ([#68](https://github.com/oznu/homebridge-config-ui-x/issues/68), [#35](https://github.com/oznu/homebridge-config-ui-x/issues/35))
 * The Log Viewer config options have changed, existing options have been have depreciated, see [README](https://github.com/oznu/homebridge-config-ui-x#log-viewer-configuration) for details
-* Docker users may now configure this plugin using the `config.json` or the new plugin GUI/form config method.
+* Docker users may now configure this plugin using the `config.json` or the new plugin GUI/form config method
 
 ### Other Changes
 
