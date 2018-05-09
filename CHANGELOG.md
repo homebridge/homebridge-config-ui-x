@@ -2,13 +2,21 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## 3.6.1
+## 3.6.2 (2018-05-09)
+
+### Other Changes
+
+* Added `npm-shrinkwrap.json`
+* Updated npm dependencies
+* Errors will no longer be thrown if a plugin is installed with CVSS alerts lower than 4 (Low Risk)
+
+## 3.6.1 (2018-05-08)
 
 ### Bug Fixes
 
 * Fixed bug that could cause plugins that take a long time to install or upgrade to fail
 
-## 3.6.0
+## 3.6.0 (2018-05-08)
 
 ### Notable Changes
 

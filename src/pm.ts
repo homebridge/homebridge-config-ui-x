@@ -185,7 +185,7 @@ class PackageManager {
 
     return new Bluebird((resolve, reject) => {
       let timeoutTimer;
-      const command = [this.node, this.nsp, 'check'];
+      const command = [this.node, this.nsp, 'check', '--cvss-threshold=4'];
 
       // sudo mode is requested in plugin config
       if (hb.useSudo) {
