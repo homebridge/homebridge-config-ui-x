@@ -2,11 +2,17 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 3.6.3 (2018-05-10)
+
+### Notable Changes
+
+* Removed the `nsp` package as the tool has been discontinued, vulnerability scanning is being added to `npm` natively
+* Updated npm dependencies
+
 ## 3.6.2 (2018-05-09)
 
 ### Other Changes
 
-* Added `npm-shrinkwrap.json`
 * Updated npm dependencies
 * Errors will no longer be thrown if a plugin is installed with CVSS alerts lower than 4 (Low Risk)
 
