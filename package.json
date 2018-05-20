@@ -1,6 +1,6 @@
 {
   "name": "homebridge-config-ui-x",
-  "version": "3.6.4",
+  "version": "3.6.5",
   "description": "Configuration UI plugin for Homebridge",
   "license": "MIT",
   "keywords": [
@@ -47,7 +47,7 @@
     "passport": "~0.4.0",
     "passport-http": "^0.3.0",
     "qr-image": "^3.2.0",
-    "request": "^2.85.0",
+    "request": "^2.86.0",
     "request-promise": "^4.2.2",
     "semver": "^5.5.0",
     "source-map-support": "^0.5.5",
