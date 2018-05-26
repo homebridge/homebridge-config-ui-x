@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { StateService } from '@uirouter/angular';
-import { ToastsManager } from 'ng2-toastr/ng2-toastr';
+import { ToastrService } from 'ngx-toastr';
 import { Terminal } from 'xterm';
 import * as fit from 'xterm/lib/addons/fit/fit';
 
@@ -32,7 +32,7 @@ export class PluginsManageComponent implements OnInit {
 
   constructor(
     public activeModal: NgbActiveModal,
-    public toastr: ToastsManager,
+    public toastr: ToastrService,
     private $api: ApiService,
     private ws: WsService,
     private $state: StateService,

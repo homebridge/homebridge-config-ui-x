@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { StateService } from '@uirouter/angular';
-import { ToastsManager } from 'ng2-toastr/src/toast-manager';
+import { ToastrService } from 'ngx-toastr';
 
 import { ApiService } from '../_services/api.service';
 import { AuthService } from '../_services/auth.service';
@@ -24,7 +24,7 @@ export class PluginsComponent implements OnInit {
     public $plugin: PluginService,
     private $state: StateService,
     public $fb: FormBuilder,
-    private toastr: ToastsManager
+    private toastr: ToastrService
   ) { }
 
   ngOnInit() {

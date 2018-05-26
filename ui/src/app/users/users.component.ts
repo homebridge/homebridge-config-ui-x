@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 
 import { StateService } from '@uirouter/angular';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ToastsManager } from 'ng2-toastr/ng2-toastr';
+import { ToastrService } from 'ngx-toastr';
 
 import { ApiService } from '../_services/api.service';
 import { UsersAddComponent } from './users.add.component';
@@ -16,7 +16,7 @@ export class UsersComponent implements OnInit {
   @Input() homebridgeUsers: Array<any>;
 
   constructor(
-    public toastr: ToastsManager,
+    public toastr: ToastrService,
     private modalService: NgbModal,
     private $api: ApiService,
     private $state: StateService,
@@ -65,7 +65,7 @@ export const UsersStates = {
   component: UsersComponent,
   resolve: [{
     token: 'homebridgeUsers',
-    deps: [ApiService, ToastsManager, StateService],
+    deps: [ApiService, ToastrService, StateService],
     resolveFn: userStateResolve
   }],
   data: {

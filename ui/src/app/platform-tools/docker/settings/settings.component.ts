@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { ToastsManager } from 'ng2-toastr/ng2-toastr';
+import { ToastrService } from 'ngx-toastr';
 import { StateService } from '@uirouter/angular';
 import { ApiService } from '../../../_services/api.service';
 import { AuthService } from '../../../_services/auth.service';
@@ -20,7 +20,7 @@ export class SettingsComponent implements OnInit {
     public $auth: AuthService,
     private $api: ApiService,
     public $fb: FormBuilder,
-    public toastr: ToastsManager,
+    public toastr: ToastrService,
   ) { }
 
   ngOnInit() {
@@ -69,7 +69,7 @@ export const SettingsState = {
   },
   resolve: [{
     token: 'env',
-    deps: [ApiService, ToastsManager, StateService],
+    deps: [ApiService, ToastrService, StateService],
     resolveFn: settingsStateResolve
   }],
   data: {

@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AbstractControl } from '@angular/forms/src/model';
 import { StateService } from '@uirouter/angular';
-import { ToastsManager } from 'ng2-toastr/ng2-toastr';
+import { ToastrService } from 'ngx-toastr';
 
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ApiService } from '../_services/api.service';
@@ -22,7 +22,7 @@ export class UsersEditComponent implements OnInit {
 
   constructor(
     public activeModal: NgbActiveModal,
-    public toastr: ToastsManager,
+    public toastr: ToastrService,
     private $api: ApiService,
     private $state: StateService,
     public $fb: FormBuilder

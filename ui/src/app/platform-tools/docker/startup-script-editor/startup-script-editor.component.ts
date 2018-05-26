@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 
-import { ToastsManager } from 'ng2-toastr/ng2-toastr';
+import { ToastrService } from 'ngx-toastr';
 import { StateService } from '@uirouter/angular';
 import { ApiService } from '../../../_services/api.service';
 import { MobileDetectService } from '../../../_services/mobile-detect.service';
@@ -19,7 +19,7 @@ export class StartupScriptEditorComponent implements OnInit {
   constructor(
     private $api: ApiService,
     private $md: MobileDetectService,
-    public toastr: ToastsManager,
+    public toastr: ToastrService,
   ) {
     // remove editor gutter on small screen devices
     if ($md.detect.phone()) {
@@ -67,7 +67,7 @@ export const StartupScriptEditorStates = {
   },
   resolve: [{
     token: 'startupScript',
-    deps: [ApiService, ToastsManager, StateService],
+    deps: [ApiService, ToastrService, StateService],
     resolveFn: startupScriptStateResolve
   }],
   data: {

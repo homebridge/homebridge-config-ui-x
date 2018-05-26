@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 
 import { StateService } from '@uirouter/angular';
-import { ToastsManager } from 'ng2-toastr/ng2-toastr';
+import { ToastrService } from 'ngx-toastr';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ServiceType } from '@oznu/hap-client';
 import { DragulaService } from 'ng2-dragula';
@@ -28,7 +28,7 @@ export class AccessoriesComponent implements OnInit {
 
   constructor(
     private dragulaService: DragulaService,
-    public toastr: ToastsManager,
+    public toastr: ToastrService,
     private modalService: NgbModal,
     private ws: WsService,
     public $auth: AuthService,
@@ -271,7 +271,7 @@ export const AccessoriesStates = {
   component: AccessoriesComponent,
   resolve: [{
     token: 'accessoryLayout',
-    deps: [ApiService, ToastsManager, StateService],
+    deps: [ApiService, ToastrService, StateService],
     resolveFn: accessoriesStateResolve
   }],
   data: {

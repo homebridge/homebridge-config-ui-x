@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { ToastsManager } from 'ng2-toastr/ng2-toastr';
+import { ToastrService } from 'ngx-toastr';
 
 import { WsService } from '../_services/ws.service';
 import { ApiService } from '../_services/api.service';
@@ -38,7 +38,7 @@ export class StatusComponent implements OnInit {
     public $auth: AuthService,
     public $plugin: PluginService,
     private $api: ApiService,
-    public toastr: ToastsManager,
+    public toastr: ToastrService,
     ) {}
 
   ngOnInit() {

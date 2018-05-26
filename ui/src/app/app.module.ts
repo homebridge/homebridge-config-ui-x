@@ -7,8 +7,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { UIRouterModule } from '@uirouter/angular';
 import { AceEditorModule } from 'ng2-ace-editor';
-import { ToastModule, ToastOptions } from 'ng2-toastr/ng2-toastr';
-import { MarkdownModule } from 'ngx-md';
+import { ToastrModule } from 'ngx-toastr';
+import { NgxMdModule } from 'ngx-md';
 
 import {
   JsonSchemaFormModule,
@@ -18,9 +18,8 @@ import {
   WidgetLibraryService,
   FrameworkLibraryService,
   JsonSchemaFormService
-} from 'angular2-json-schema-form';
+} from 'ngx-json-schema';
 
-import { ToastCustomOptions } from './_helpers/toast.class';
 import { routerConfigFn } from './_helpers/router.config';
 
 import { WsService } from './_services/ws.service';
@@ -97,8 +96,13 @@ import { ResetComponent, ResetModalComponent } from './reset/reset.component';
         { provide: Framework, useClass: Bootstrap4Framework, multi: true }
       ]
     },
-    MarkdownModule.forRoot(),
-    ToastModule.forRoot(),
+    NgxMdModule.forRoot(),
+    ToastrModule.forRoot({
+      newestOnTop: false,
+      closeButton: true,
+      maxOpened: 2,
+      positionClass: 'toast-bottom-right'
+    }),
     NgbModule.forRoot(),
     UIRouterModule.forRoot({
       states: [
@@ -120,7 +124,6 @@ import { ResetComponent, ResetModalComponent } from './reset/reset.component';
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthHttpInterceptor, multi: true },
-    { provide: ToastOptions, useClass: ToastCustomOptions },
     AuthService,
     WsService,
     ApiService,

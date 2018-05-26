@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 3.6.6 (2018-05-26)
+
+### Notable Changes
+
+* **ui**: upgraded from Angular 5.x to 6.x
+* updated npm dependencies
+
 ## 3.6.5 (2018-05-20)
 
 ### Notable Changes

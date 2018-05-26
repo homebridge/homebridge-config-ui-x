@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TimerObservable } from 'rxjs/observable/TimerObservable';
 import { StateService } from '@uirouter/angular';
-import { ToastsManager } from 'ng2-toastr/ng2-toastr';
+import { ToastrService } from 'ngx-toastr';
 
 import { ApiService } from '../../../_services/api.service';
 import { WsService } from '../../../_services/ws.service';
@@ -22,7 +22,7 @@ export class RestartServerComponent implements OnInit {
   constructor(
     private $api: ApiService,
     private ws: WsService,
-    public toastr: ToastsManager,
+    public toastr: ToastrService,
     private $state: StateService,
   ) { }
 
@@ -60,7 +60,7 @@ export class RestartServerComponent implements OnInit {
 
     this.checkTimeout = TimerObservable.create(120000).subscribe(() => {
       this.toastr.warning('The server is taking a long time to come back online', 'Warning', {
-        toastLife: 10000
+        timeOut: 10000
       });
       this.timeout = true;
     });

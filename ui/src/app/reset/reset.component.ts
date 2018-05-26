@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { StateService } from '@uirouter/angular';
-import { ToastsManager } from 'ng2-toastr/ng2-toastr';
+import { ToastrService } from 'ngx-toastr';
 
 import { ApiService } from '../_services/api.service';
 
@@ -31,7 +31,7 @@ export class ResetModalComponent {
 
   constructor(
     public activeModal: NgbActiveModal,
-    public toastr: ToastsManager,
+    public toastr: ToastrService,
     private $state: StateService,
     private $api: ApiService,
   ) { }

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TimerObservable } from 'rxjs/observable/TimerObservable';
 import { StateService } from '@uirouter/angular';
-import { ToastsManager } from 'ng2-toastr/ng2-toastr';
+import { ToastrService } from 'ngx-toastr';
 
 import { ApiService } from '../../../_services/api.service';
 import { WsService } from '../../../_services/ws.service';
@@ -21,7 +21,7 @@ export class ShutdownServerComponent implements OnInit {
   constructor(
     private $api: ApiService,
     private ws: WsService,
-    public toastr: ToastsManager,
+    public toastr: ToastrService,
     private $state: StateService,
   ) { }
 

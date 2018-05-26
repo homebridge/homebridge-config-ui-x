@@ -3,7 +3,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { StateService, isArray } from '@uirouter/angular';
-import { ToastsManager } from 'ng2-toastr/ng2-toastr';
+import { ToastrService } from 'ngx-toastr';
 import 'brace/theme/xcode';
 import 'brace/mode/json';
 
@@ -23,7 +23,7 @@ export class ConfigComponent implements OnInit {
   constructor(
     private $api: ApiService,
     private $md: MobileDetectService,
-    public toastr: ToastsManager,
+    public toastr: ToastrService,
     private modalService: NgbModal,
     private sanitizer: DomSanitizer
   ) {
@@ -114,7 +114,7 @@ export const ConfigStates = {
   component: ConfigComponent,
   resolve: [{
     token: 'homebridgeConfig',
-    deps: [ApiService, ToastsManager, StateService],
+    deps: [ApiService, ToastrService, StateService],
     resolveFn: configStateResolve
   }],
   data: {

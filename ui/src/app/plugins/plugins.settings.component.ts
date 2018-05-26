@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { StateService } from '@uirouter/angular';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { ToastsManager } from 'ng2-toastr/src/toast-manager';
+import { ToastrService } from 'ngx-toastr';
 import * as uuid from 'uuid/v4';
 
 import { ApiService } from '../_services/api.service';
@@ -30,7 +30,7 @@ export class PluginSettingsComponent implements OnInit {
     public activeModal: NgbActiveModal,
     private $api: ApiService,
     private $state: StateService,
-    private toastr: ToastsManager
+    private toastr: ToastrService
   ) { }
 
   ngOnInit() {
