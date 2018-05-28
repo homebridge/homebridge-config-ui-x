@@ -23,7 +23,8 @@ export class SettingsRouter {
         homebridgeInstanceName: hb.homebridgeConfig.bridge.name || 'Homebridge',
         runningInDocker: hb.runningInDocker,
         runningInLinux: hb.runningInLinux,
-        ableToConfigureSelf: hb.ableToConfigureSelf
+        ableToConfigureSelf: hb.ableToConfigureSelf,
+        temperatureUnits: hb.temperatureUnits,
       }
     });
   }
