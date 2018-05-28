@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 3.7.0 (2018-05-28)
+
+### Notable Changes
+
+* Added support for imperial temperature display units ([#96](https://github.com/oznu/homebridge-config-ui-x/issues/96))
+
 ## 3.6.6 (2018-05-26)
 
 ### Notable Changes

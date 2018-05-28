@@ -34,13 +34,13 @@ class HomebridgeUI {
   } | string;
   public restartCmd;
   public useSudo: boolean;
-  public disableNsp: boolean;
   public authMethod: string | boolean;
   public formAuth: boolean;
   public theme: string;
   public loginWallpaper: string;
   public availableThemes: string[];
   public temperatureFile: string;
+  public temperatureUnits: 'c' | 'f';
   public accessoryLayoutPath: string;
   public wss: WSS;
 
@@ -79,7 +79,6 @@ class HomebridgeUI {
     this.authMethod = config.auth;
     this.homebridgeFork = config.fork;
     this.homebridgeNpmPkg = config.homebridgeNpmPkg || 'homebridge';
-    this.disableNsp = config.disableNsp;
     this.homebridgeInsecure = config.homebridgeInsecure;
     this.pluginPath = config.pluginPath;
     this.runningInDocker = Boolean(process.env.HOMEBRIDGE_CONFIG_UI === '1');
@@ -112,6 +111,7 @@ class HomebridgeUI {
     // check the path to the temp file actually exists
     if (config.temp && fs.existsSync(config.temp)) {
       this.temperatureFile = config.temp;
+      this.temperatureUnits = config.tempUnits || 'c';
     } else if (config.temp) {
       // delay the output of the warning message so it does not get lost under homebridge setup details
       setTimeout(() => {

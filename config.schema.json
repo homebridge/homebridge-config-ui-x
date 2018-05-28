@@ -31,9 +31,7 @@
       },
       "theme": {
         "title": "UI Theme",
-        "type": [
-          "string"
-        ],
+        "type":  "string",
         "default": "red",
         "oneOf": [
           { "title": "Red", "enum": ["red"] },
@@ -55,16 +53,22 @@
         "title": "Path to OS Temp File",
         "type": "string"
       },
+      "tempUnits": {
+        "title": "Temperature Display Units",
+        "type": "string",
+        "required": true,
+        "default": "c",
+        "oneOf": [
+          { "title": "Celsius", "enum": ["c"] },
+          { "title": "Fahrenheit", "enum": ["f"] }
+        ]
+      },
       "loginWallpaper": {
         "title": "Path to Login Wallpaper Image File",
         "type": "string"
       },
       "sudo": {
         "title": "Use Sudo",
-        "type": "boolean"
-      },
-      "disableNsp": {
-        "title": "Disable vulnerability scans when installing and upgrading plugins",
         "type": "boolean"
       },
       "noFork": {
@@ -207,7 +211,7 @@
           "key": "temp",
           "placeholder": "eg. /sys/class/thermal/thermal_zone0/temp"
         },
-        "disableNsp",
+        "tempUnits",
         "noFork"
       ]
     },
