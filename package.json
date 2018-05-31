@@ -1,6 +1,6 @@
 {
   "name": "homebridge-config-ui-x",
-  "version": "3.6.6",
+  "version": "3.7.0",
   "description": "Configuration UI plugin for Homebridge",
   "license": "MIT",
   "keywords": [
@@ -20,7 +20,7 @@
     "build:ui": "npm run build --prefix ui",
     "watch:server": "tsc --watch",
     "watch:ui": "npm run start --prefix ui",
-    "prepublishOnly": "npm i --package-lock-only && nsp audit && npm run build",
+    "prepublishOnly": "npm i --package-lock-only && npm audit && npm run build",
     "postinstall": "node dist/bin/fake-nsp.js"
   },
   "bin": {
