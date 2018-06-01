@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 3.8.0 (2018-XX-XX)
+
+### Notable Changes
+
+* Added support for non-english translations ([#102](https://github.com/oznu/homebridge-config-ui-x/issues/102))
+  * German translations added with the assistance of [@razer4908](https://github.com/razer4908)
+  * Language is selected automatically based on browser settings
+* Updated npm dependencies
+
 ## 3.7.0 (2018-05-31)
 
 ### Notable Changes

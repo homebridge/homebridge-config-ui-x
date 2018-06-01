@@ -1,25 +1,25 @@
 <div class="modal-content">
   <div class="modal-header">
-    <h5 class="modal-title">Reset Homebridge Accessory</h5>
+    <h5 class="modal-title" [translate]="'reset.title_reset_homebridge_accessory'">Reset Homebridge Accessory</h5>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body">
-    <h3 class="text-center primary-text">Warning</h3>
-    <p class="text-center grey-text">This action is irreversible. Please read carefully before proceeding.</p>
+    <h3 class="text-center primary-text" [translate]="'reset.title_warning'">Warning</h3>
+    <p class="text-center grey-text" [translate]="'reset.message_action_is_irreversible'">This action is irreversible. Please read carefully before proceeding.</p>
     <ul>
-      <li>A reset will unpair this Homebridge instance from your Apple HomeKit setup.</li>
-      <li>You will need to remove the existing Homebridge accessory from the Home app manually.</li>
-      <li>All automations and will need to be reconfigured after a reset.</li>
-      <li>Your Homebridge username and pin will be changed.</li>
-      <li><strong>The rest of your config will not be changed. If Homebridge is not starting due to a bad config a reset will not fix it.</strong></li>
+      <li [translate]="'reset.message_reset_will_unpair_from_homekit'">A reset will unpair this Homebridge instance from your Apple HomeKit setup.</li>
+      <li [translate]="'reset.message_need_to_remove_homebridge_accessory_from_home_app'">You will need to remove the existing Homebridge accessory from the Home app manually.</li>
+      <li [translate]="'reset.message_all_automations_will_be_reset'">All automations and will need to be reconfigured after a reset.</li>
+      <li [translate]="'reset.message_your_homebridge_username_will_be_changed'">Your Homebridge username and pin will be changed.</li>
+      <li><strong [translate]="'reset.message_accessory_config_will_not_be_changed'">The rest of your config will not be changed. If Homebridge is not starting due to a bad config a reset will not fix it.</strong></li>
     </ul>
     <div class="text-center">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="onResetHomebridgeAccessoryClick()" [disabled]="clicked">Reset Homebridge Now</button>
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="onResetHomebridgeAccessoryClick()" [disabled]="clicked" [translate]="'reset.button_reset_homebridge_now'">Reset Homebridge Now</button>
     </div>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')">Close</button>
+    <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')" [translate]="'form.button_close'">Close</button>
   </div>
 </div>

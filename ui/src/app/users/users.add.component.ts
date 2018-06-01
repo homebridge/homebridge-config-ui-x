@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AbstractControl } from '@angular/forms/src/model';
+import { TranslateService } from '@ngx-translate/core';
 import { StateService } from '@uirouter/angular';
 import { ToastrService } from 'ngx-toastr';
 
@@ -14,14 +15,15 @@ import { ApiService } from '../_services/api.service';
 export class UsersAddComponent implements OnInit {
   form: FormGroup;
   page = {
-    title: 'users.add_user',
-    save: 'users.add_new_user',
-    password: 'users.password'
+    title: 'users.title_add_user',
+    save: 'users.button_add_new_user',
+    password: 'users.label_password'
   };
 
   constructor(
     public activeModal: NgbActiveModal,
     public toastr: ToastrService,
+    private translate: TranslateService,
     private $api: ApiService,
     private $state: StateService,
     public $fb: FormBuilder
@@ -51,13 +53,17 @@ export class UsersAddComponent implements OnInit {
 
   onSubmit({ value, valid }) {
     this.$api.addNewUser(value).subscribe(
-      data => {
+      async data => {
+        const toastSuccess = await this.translate.get('toast.title_success').toPromise();
+        const toastAddedNewUser = await this.translate.get('users.toast_added_new_user').toPromise();
         this.$state.reload();
         this.activeModal.close();
-        this.toastr.success(`Added New User`, 'Success!');
+        this.toastr.success(toastAddedNewUser, toastSuccess);
       },
-      err => {
-        this.toastr.error(`Failed To Add User`, 'Error');
+      async err => {
+        const toastError = await this.translate.get('toast.title_error').toPromise();
+        const toastFailedToAddUser = await this.translate.get('users.toast_failed_to_add_user').toPromise();
+        this.toastr.error(toastFailedToAddUser, toastError);
       }
     );
   }

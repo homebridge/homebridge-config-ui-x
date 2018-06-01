@@ -2,11 +2,11 @@
   <div class="row mb-3">
     <div class="col-sm-6">
       <h3 class="primary-text m-0">
-        <span class="d-none d-md-inline">Homebridge</span> Accessories
+        <span class="d-none d-md-inline">Homebridge</span> {{'accessories.title_accessories' | translate}}
       </h3>
     </div>
     <div class="col-sm-6 text-right d-none d-sm-block">
-      <button class="btn btn-primary waves-effect m-0" (click)="addRoom()">Add Room</button>
+      <button class="btn btn-primary waves-effect m-0" (click)="addRoom()" [translate]="'accessories.button_add_room'">Add Room</button>
     </div>
   </div>
 
@@ -46,10 +46,14 @@
 <div *ngIf="!$auth.env.enableAccessories">
   <div class="row">
     <div class="col-md-12 text-center">
-      <h3 class="primary-text">Homebridge Accessory Control Disabled</h3>
+      <h3 class="primary-text" [translate]="'accessories.title_accessory_control_disabled'">Homebridge Accessory Control Disabled</h3>
       <div>
-        <p>To control your accessories you must be running Homebridge in <strong>insecure</strong> mode.</p>
-        <p>Please see <a target="_blank" href="https://github.com/oznu/homebridge-config-ui-x/wiki/Enabling-Accessory-Control">https://github.com/oznu/homebridge-config-ui-x/wiki/Enabling-Accessory-Control</a> for more information.</p>
+        <p [innerHTML]="'accessories.message_must_use_insecure_mode' | translate">To control your accessories you must be running Homebridge in <strong>insecure</strong> mode.</p>
+        <p>
+          <span [translate]="'accessories.message_please_see'">Please see</span>
+          <a target="_blank" href="https://github.com/oznu/homebridge-config-ui-x/wiki/Enabling-Accessory-Control"> https://github.com/oznu/homebridge-config-ui-x/wiki/Enabling-Accessory-Control </a>
+          <span [translate]="'accessories.message_for_more_information'">for more information.</span>
+        </p>
       </div>
     </div>
   </div>

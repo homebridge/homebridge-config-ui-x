@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { StateService } from '@uirouter/angular';
 import { ToastrService } from 'ngx-toastr';
@@ -32,6 +33,7 @@ export class ResetModalComponent {
   constructor(
     public activeModal: NgbActiveModal,
     public toastr: ToastrService,
+    private translate: TranslateService,
     private $state: StateService,
     private $api: ApiService,
   ) { }
@@ -39,13 +41,17 @@ export class ResetModalComponent {
   onResetHomebridgeAccessoryClick() {
     this.clicked = true;
     return this.$api.resetHomebridgeAccessory().subscribe(
-      data => {
-        this.toastr.success('Homebridge Accessory Reset', 'Success!');
+      async data => {
+        const toastSuccess = await this.translate.get('toast.title_success').toPromise();
+        const toastAccessoryReset = await this.translate.get('reset.toast_accessory_reset').toPromise();
+        this.toastr.success(toastAccessoryReset, toastSuccess);
         this.activeModal.close();
         this.$state.go('restart');
       },
-      err => {
-        this.toastr.error('Failed to reset Homebridge. See Logs.', 'Error');
+      async err => {
+        const toastError = await this.translate.get('toast.title_error').toPromise();
+        const toastFailedToReset = await this.translate.get('reset.toast_failed_to_reset').toPromise();
+        this.toastr.error(toastFailedToReset, toastError);
       }
     );
   }

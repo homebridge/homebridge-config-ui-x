@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { TimerObservable } from 'rxjs/observable/TimerObservable';
 import { StateService } from '@uirouter/angular';
 import { ToastrService } from 'ngx-toastr';
@@ -23,6 +24,7 @@ export class RestartComponent implements OnInit {
     private $api: ApiService,
     private ws: WsService,
     public toastr: ToastrService,
+    private translate: TranslateService,
     private $state: StateService,
   ) { }
 
@@ -41,25 +43,32 @@ export class RestartComponent implements OnInit {
         this.resp = data;
         this.checkIfServerUp();
       },
-      err => {
-        this.error = 'An error occured sending the restart command to the server.';
-        this.toastr.error(`An error occured sending the restart command to the server: ${err.message}`, 'Error');
+      async err => {
+        const toastError = await this.translate.get('toast.title_error').toPromise();
+        const toastRestartError = await this.translate.get('restart.toast_server_restart_error').toPromise();
+        this.error = toastRestartError + '.';
+        this.toastr.error(`${toastRestartError}: ${err.message}`, toastError);
       }
     );
   }
 
-  checkIfServerUp() {
+  async checkIfServerUp() {
+    const toastWarning = await this.translate.get('toast.title_warning').toPromise();
+    const toastSuccess = await this.translate.get('toast.title_success').toPromise();
+    const toastServerRestarted = await this.translate.get('restart.toast_server_restarted').toPromise();
+    const toastServerRestartTimeout = await this.translate.get('restart.toast_sever_restart_timeout').toPromise();
+
     this.checkDelay = TimerObservable.create(3000).subscribe(() => {
       this.onMessage = this.ws.handlers.server.subscribe((data) => {
         if (data.status === 'up') {
-          this.toastr.success('Server Restarted', 'Success');
+          this.toastr.success(toastServerRestarted, toastSuccess);
           this.$state.go('status');
         }
       });
     });
 
     this.checkTimeout = TimerObservable.create(20000).subscribe(() => {
-      this.toastr.warning('The server is taking a long time to come back online', 'Warning', {
+      this.toastr.warning(toastServerRestartTimeout, toastWarning, {
         timeOut: 10000
       });
       this.timeout = true;
