@@ -310,10 +310,10 @@
                 </children>
             </folder_node>
             <folder_node>
-                <name>menu</name>
+                <name>login</name>
                 <children>
                     <concept_node>
-                        <name>label_accessories</name>
+                        <name>button_login</name>
                         <definition_loaded>false</definition_loaded>
                         <description></description>
                         <comment></comment>
@@ -330,7 +330,7 @@
                         </translations>
                     </concept_node>
                     <concept_node>
-                        <name>label_config</name>
+                        <name>title_login</name>
                         <definition_loaded>false</definition_loaded>
                         <description></description>
                         <comment></comment>
@@ -346,6 +346,62 @@
                             </translation>
                         </translations>
                     </concept_node>
+                    <concept_node>
+                        <name>label_password</name>
+                        <definition_loaded>false</definition_loaded>
+                        <description></description>
+                        <comment></comment>
+                        <default_text></default_text>
+                        <translations>
+                            <translation>
+                                <language>de-DE</language>
+                                <approved>false</approved>
+                            </translation>
+                            <translation>
+                                <language>en-AU</language>
+                                <approved>true</approved>
+                            </translation>
+                        </translations>
+                    </concept_node>
+                    <concept_node>
+                        <name>label_username</name>
+                        <definition_loaded>false</definition_loaded>
+                        <description></description>
+                        <comment></comment>
+                        <default_text></default_text>
+                        <translations>
+                            <translation>
+                                <language>de-DE</language>
+                                <approved>false</approved>
+                            </translation>
+                            <translation>
+                                <language>en-AU</language>
+                                <approved>true</approved>
+                            </translation>
+                        </translations>
+                    </concept_node>
+                    <concept_node>
+                        <name>message_invalid_username_or_password</name>
+                        <definition_loaded>false</definition_loaded>
+                        <description></description>
+                        <comment></comment>
+                        <default_text></default_text>
+                        <translations>
+                            <translation>
+                                <language>de-DE</language>
+                                <approved>false</approved>
+                            </translation>
+                            <translation>
+                                <language>en-AU</language>
+                                <approved>true</approved>
+                            </translation>
+                        </translations>
+                    </concept_node>
+                </children>
+            </folder_node>
+            <folder_node>
+                <name>menu</name>
+                <children>
                     <folder_node>
                         <name>docker</name>
                         <children>
@@ -419,6 +475,74 @@
                             </concept_node>
                         </children>
                     </folder_node>
+                    <concept_node>
+                        <name>label_accessories</name>
+                        <definition_loaded>false</definition_loaded>
+                        <description></description>
+                        <comment></comment>
+                        <default_text></default_text>
+                        <translations>
+                            <translation>
+                                <language>de-DE</language>
+                                <approved>false</approved>
+                            </translation>
+                            <translation>
+                                <language>en-AU</language>
+                                <approved>true</approved>
+                            </translation>
+                        </translations>
+                    </concept_node>
+                    <concept_node>
+                        <name>label_config</name>
+                        <definition_loaded>false</definition_loaded>
+                        <description></description>
+                        <comment></comment>
+                        <default_text></default_text>
+                        <translations>
+                            <translation>
+                                <language>de-DE</language>
+                                <approved>false</approved>
+                            </translation>
+                            <translation>
+                                <language>en-AU</language>
+                                <approved>true</approved>
+                            </translation>
+                        </translations>
+                    </concept_node>
+                    <concept_node>
+                        <name>label_plugins</name>
+                        <definition_loaded>false</definition_loaded>
+                        <description></description>
+                        <comment></comment>
+                        <default_text></default_text>
+                        <translations>
+                            <translation>
+                                <language>de-DE</language>
+                                <approved>false</approved>
+                            </translation>
+                            <translation>
+                                <language>en-AU</language>
+                                <approved>true</approved>
+                            </translation>
+                        </translations>
+                    </concept_node>
+                    <concept_node>
+                        <name>label_status</name>
+                        <definition_loaded>false</definition_loaded>
+                        <description></description>
+                        <comment></comment>
+                        <default_text></default_text>
+                        <translations>
+                            <translation>
+                                <language>de-DE</language>
+                                <approved>false</approved>
+                            </translation>
+                            <translation>
+                                <language>en-AU</language>
+                                <approved>true</approved>
+                            </translation>
+                        </translations>
+                    </concept_node>
                     <folder_node>
                         <name>linux</name>
                         <children>
@@ -476,41 +600,7 @@
                         </translations>
                     </concept_node>
                     <concept_node>
-                        <name>label_plugins</name>
-                        <definition_loaded>false</definition_loaded>
-                        <description></description>
-                        <comment></comment>
-                        <default_text></default_text>
-                        <translations>
-                            <translation>
-                                <language>de-DE</language>
-                                <approved>false</approved>
-                            </translation>
-                            <translation>
-                                <language>en-AU</language>
-                                <approved>true</approved>
-                            </translation>
-                        </translations>
-                    </concept_node>
-                    <concept_node>
                         <name>tooltip_restart</name>
-                        <definition_loaded>false</definition_loaded>
-                        <description></description>
-                        <comment></comment>
-                        <default_text></default_text>
-                        <translations>
-                            <translation>
-                                <language>de-DE</language>
-                                <approved>false</approved>
-                            </translation>
-                            <translation>
-                                <language>en-AU</language>
-                                <approved>true</approved>
-                            </translation>
-                        </translations>
-                    </concept_node>
-                    <concept_node>
-                        <name>label_status</name>
                         <definition_loaded>false</definition_loaded>
                         <description></description>
                         <comment></comment>
@@ -566,7 +656,7 @@
                 <name>plugins</name>
                 <children>
                     <concept_node>
-                        <name>label_certified_plugin</name>
+                        <name>button_install</name>
                         <definition_loaded>false</definition_loaded>
                         <description></description>
                         <comment></comment>
@@ -583,7 +673,41 @@
                         </translations>
                     </concept_node>
                     <concept_node>
-                        <name>button_install</name>
+                        <name>button_settings</name>
+                        <definition_loaded>false</definition_loaded>
+                        <description></description>
+                        <comment></comment>
+                        <default_text></default_text>
+                        <translations>
+                            <translation>
+                                <language>de-DE</language>
+                                <approved>false</approved>
+                            </translation>
+                            <translation>
+                                <language>en-AU</language>
+                                <approved>true</approved>
+                            </translation>
+                        </translations>
+                    </concept_node>
+                    <concept_node>
+                        <name>button_uninstall</name>
+                        <definition_loaded>false</definition_loaded>
+                        <description></description>
+                        <comment></comment>
+                        <default_text></default_text>
+                        <translations>
+                            <translation>
+                                <language>de-DE</language>
+                                <approved>false</approved>
+                            </translation>
+                            <translation>
+                                <language>en-AU</language>
+                                <approved>true</approved>
+                            </translation>
+                        </translations>
+                    </concept_node>
+                    <concept_node>
+                        <name>button_update</name>
                         <definition_loaded>false</definition_loaded>
                         <description></description>
                         <comment></comment>
@@ -617,7 +741,7 @@
                         </translations>
                     </concept_node>
                     <concept_node>
-                        <name>status_installed</name>
+                        <name>label_certified_plugin</name>
                         <definition_loaded>false</definition_loaded>
                         <description></description>
                         <comment></comment>
@@ -843,23 +967,6 @@
                         </children>
                     </folder_node>
                     <concept_node>
-                        <name>status_not_installed</name>
-                        <definition_loaded>false</definition_loaded>
-                        <description></description>
-                        <comment></comment>
-                        <default_text></default_text>
-                        <translations>
-                            <translation>
-                                <language>de-DE</language>
-                                <approved>false</approved>
-                            </translation>
-                            <translation>
-                                <language>en-AU</language>
-                                <approved>true</approved>
-                            </translation>
-                        </translations>
-                    </concept_node>
-                    <concept_node>
                         <name>placeholder_search_plugin</name>
                         <definition_loaded>false</definition_loaded>
                         <description></description>
@@ -877,7 +984,7 @@
                         </translations>
                     </concept_node>
                     <concept_node>
-                        <name>button_settings</name>
+                        <name>status_installed</name>
                         <definition_loaded>false</definition_loaded>
                         <description></description>
                         <comment></comment>
@@ -894,24 +1001,7 @@
                         </translations>
                     </concept_node>
                     <concept_node>
-                        <name>button_uninstall</name>
-                        <definition_loaded>false</definition_loaded>
-                        <description></description>
-                        <comment></comment>
-                        <default_text></default_text>
-                        <translations>
-                            <translation>
-                                <language>de-DE</language>
-                                <approved>false</approved>
-                            </translation>
-                            <translation>
-                                <language>en-AU</language>
-                                <approved>true</approved>
-                            </translation>
-                        </translations>
-                    </concept_node>
-                    <concept_node>
-                        <name>button_update</name>
+                        <name>status_not_installed</name>
                         <definition_loaded>false</definition_loaded>
                         <description></description>
                         <comment></comment>
@@ -1001,23 +1091,6 @@
                         </translations>
                     </concept_node>
                     <concept_node>
-                        <name>message_accessory_config_will_not_be_changed</name>
-                        <definition_loaded>false</definition_loaded>
-                        <description></description>
-                        <comment></comment>
-                        <default_text></default_text>
-                        <translations>
-                            <translation>
-                                <language>de-DE</language>
-                                <approved>false</approved>
-                            </translation>
-                            <translation>
-                                <language>en-AU</language>
-                                <approved>true</approved>
-                            </translation>
-                        </translations>
-                    </concept_node>
-                    <concept_node>
                         <name>label_reset_homebridge</name>
                         <definition_loaded>false</definition_loaded>
                         <description></description>
@@ -1031,6 +1104,23 @@
                             <translation>
                                 <language>en-AU</language>
                                 <approved>false</approved>
+                            </translation>
+                        </translations>
+                    </concept_node>
+                    <concept_node>
+                        <name>message_accessory_config_will_not_be_changed</name>
+                        <definition_loaded>false</definition_loaded>
+                        <description></description>
+                        <comment></comment>
+                        <default_text></default_text>
+                        <translations>
+                            <translation>
+                                <language>de-DE</language>
+                                <approved>false</approved>
+                            </translation>
+                            <translation>
+                                <language>en-AU</language>
+                                <approved>true</approved>
                             </translation>
                         </translations>
                     </concept_node>
@@ -1210,23 +1300,6 @@
                         </translations>
                     </concept_node>
                     <concept_node>
-                        <name>toast_server_restart_error</name>
-                        <definition_loaded>false</definition_loaded>
-                        <description></description>
-                        <comment></comment>
-                        <default_text></default_text>
-                        <translations>
-                            <translation>
-                                <language>de-DE</language>
-                                <approved>false</approved>
-                            </translation>
-                            <translation>
-                                <language>en-AU</language>
-                                <approved>true</approved>
-                            </translation>
-                        </translations>
-                    </concept_node>
-                    <concept_node>
                         <name>message_please_wait_while_server_restarts</name>
                         <definition_loaded>false</definition_loaded>
                         <description></description>
@@ -1245,6 +1318,40 @@
                     </concept_node>
                     <concept_node>
                         <name>message_server_is_taking_long_time_to_restart</name>
+                        <definition_loaded>false</definition_loaded>
+                        <description></description>
+                        <comment></comment>
+                        <default_text></default_text>
+                        <translations>
+                            <translation>
+                                <language>de-DE</language>
+                                <approved>false</approved>
+                            </translation>
+                            <translation>
+                                <language>en-AU</language>
+                                <approved>true</approved>
+                            </translation>
+                        </translations>
+                    </concept_node>
+                    <concept_node>
+                        <name>title_restart</name>
+                        <definition_loaded>false</definition_loaded>
+                        <description></description>
+                        <comment></comment>
+                        <default_text></default_text>
+                        <translations>
+                            <translation>
+                                <language>de-DE</language>
+                                <approved>false</approved>
+                            </translation>
+                            <translation>
+                                <language>en-AU</language>
+                                <approved>true</approved>
+                            </translation>
+                        </translations>
+                    </concept_node>
+                    <concept_node>
+                        <name>toast_server_restart_error</name>
                         <definition_loaded>false</definition_loaded>
                         <description></description>
                         <comment></comment>
@@ -1294,152 +1401,11 @@
                             </translation>
                         </translations>
                     </concept_node>
-                    <concept_node>
-                        <name>title_restart</name>
-                        <definition_loaded>false</definition_loaded>
-                        <description></description>
-                        <comment></comment>
-                        <default_text></default_text>
-                        <translations>
-                            <translation>
-                                <language>de-DE</language>
-                                <approved>false</approved>
-                            </translation>
-                            <translation>
-                                <language>en-AU</language>
-                                <approved>true</approved>
-                            </translation>
-                        </translations>
-                    </concept_node>
                 </children>
             </folder_node>
             <folder_node>
                 <name>status</name>
                 <children>
-                    <concept_node>
-                        <name>message_code_scan_instructions</name>
-                        <definition_loaded>false</definition_loaded>
-                        <description></description>
-                        <comment></comment>
-                        <default_text></default_text>
-                        <translations>
-                            <translation>
-                                <language>de-DE</language>
-                                <approved>false</approved>
-                            </translation>
-                            <translation>
-                                <language>en-AU</language>
-                                <approved>true</approved>
-                            </translation>
-                        </translations>
-                    </concept_node>
-                    <concept_node>
-                        <name>title_server_status</name>
-                        <definition_loaded>false</definition_loaded>
-                        <description></description>
-                        <comment></comment>
-                        <default_text></default_text>
-                        <translations>
-                            <translation>
-                                <language>de-DE</language>
-                                <approved>false</approved>
-                            </translation>
-                            <translation>
-                                <language>en-AU</language>
-                                <approved>true</approved>
-                            </translation>
-                        </translations>
-                    </concept_node>
-                    <folder_node>
-                        <name>services</name>
-                        <children>
-                            <concept_node>
-                                <name>label_console</name>
-                                <definition_loaded>false</definition_loaded>
-                                <description></description>
-                                <comment></comment>
-                                <default_text></default_text>
-                                <translations>
-                                    <translation>
-                                        <language>de-DE</language>
-                                        <approved>false</approved>
-                                    </translation>
-                                    <translation>
-                                        <language>en-AU</language>
-                                        <approved>true</approved>
-                                    </translation>
-                                </translations>
-                            </concept_node>
-                            <concept_node>
-                                <name>label_listening_on_port</name>
-                                <definition_loaded>false</definition_loaded>
-                                <description></description>
-                                <comment></comment>
-                                <default_text></default_text>
-                                <translations>
-                                    <translation>
-                                        <language>de-DE</language>
-                                        <approved>false</approved>
-                                    </translation>
-                                    <translation>
-                                        <language>en-AU</language>
-                                        <approved>true</approved>
-                                    </translation>
-                                </translations>
-                            </concept_node>
-                            <concept_node>
-                                <name>label_not_running</name>
-                                <definition_loaded>false</definition_loaded>
-                                <description></description>
-                                <comment></comment>
-                                <default_text></default_text>
-                                <translations>
-                                    <translation>
-                                        <language>de-DE</language>
-                                        <approved>false</approved>
-                                    </translation>
-                                    <translation>
-                                        <language>en-AU</language>
-                                        <approved>true</approved>
-                                    </translation>
-                                </translations>
-                            </concept_node>
-                            <concept_node>
-                                <name>label_running_on_port</name>
-                                <definition_loaded>false</definition_loaded>
-                                <description></description>
-                                <comment></comment>
-                                <default_text></default_text>
-                                <translations>
-                                    <translation>
-                                        <language>de-DE</language>
-                                        <approved>false</approved>
-                                    </translation>
-                                    <translation>
-                                        <language>en-AU</language>
-                                        <approved>true</approved>
-                                    </translation>
-                                </translations>
-                            </concept_node>
-                            <concept_node>
-                                <name>title_services</name>
-                                <definition_loaded>false</definition_loaded>
-                                <description></description>
-                                <comment></comment>
-                                <default_text></default_text>
-                                <translations>
-                                    <translation>
-                                        <language>de-DE</language>
-                                        <approved>false</approved>
-                                    </translation>
-                                    <translation>
-                                        <language>en-AU</language>
-                                        <approved>true</approved>
-                                    </translation>
-                                </translations>
-                            </concept_node>
-                        </children>
-                    </folder_node>
                     <folder_node>
                         <name>cpu</name>
                         <children>
@@ -1590,23 +1556,6 @@
                                 </translations>
                             </concept_node>
                             <concept_node>
-                                <name>title_memory</name>
-                                <definition_loaded>false</definition_loaded>
-                                <description></description>
-                                <comment></comment>
-                                <default_text></default_text>
-                                <translations>
-                                    <translation>
-                                        <language>de-DE</language>
-                                        <approved>false</approved>
-                                    </translation>
-                                    <translation>
-                                        <language>en-AU</language>
-                                        <approved>true</approved>
-                                    </translation>
-                                </translations>
-                            </concept_node>
-                            <concept_node>
                                 <name>label_total</name>
                                 <definition_loaded>false</definition_loaded>
                                 <description></description>
@@ -1640,8 +1589,149 @@
                                     </translation>
                                 </translations>
                             </concept_node>
+                            <concept_node>
+                                <name>title_memory</name>
+                                <definition_loaded>false</definition_loaded>
+                                <description></description>
+                                <comment></comment>
+                                <default_text></default_text>
+                                <translations>
+                                    <translation>
+                                        <language>de-DE</language>
+                                        <approved>false</approved>
+                                    </translation>
+                                    <translation>
+                                        <language>en-AU</language>
+                                        <approved>true</approved>
+                                    </translation>
+                                </translations>
+                            </concept_node>
                         </children>
                     </folder_node>
+                    <concept_node>
+                        <name>message_code_scan_instructions</name>
+                        <definition_loaded>false</definition_loaded>
+                        <description></description>
+                        <comment></comment>
+                        <default_text></default_text>
+                        <translations>
+                            <translation>
+                                <language>de-DE</language>
+                                <approved>false</approved>
+                            </translation>
+                            <translation>
+                                <language>en-AU</language>
+                                <approved>true</approved>
+                            </translation>
+                        </translations>
+                    </concept_node>
+                    <folder_node>
+                        <name>services</name>
+                        <children>
+                            <concept_node>
+                                <name>label_console</name>
+                                <definition_loaded>false</definition_loaded>
+                                <description></description>
+                                <comment></comment>
+                                <default_text></default_text>
+                                <translations>
+                                    <translation>
+                                        <language>de-DE</language>
+                                        <approved>false</approved>
+                                    </translation>
+                                    <translation>
+                                        <language>en-AU</language>
+                                        <approved>true</approved>
+                                    </translation>
+                                </translations>
+                            </concept_node>
+                            <concept_node>
+                                <name>label_listening_on_port</name>
+                                <definition_loaded>false</definition_loaded>
+                                <description></description>
+                                <comment></comment>
+                                <default_text></default_text>
+                                <translations>
+                                    <translation>
+                                        <language>de-DE</language>
+                                        <approved>false</approved>
+                                    </translation>
+                                    <translation>
+                                        <language>en-AU</language>
+                                        <approved>true</approved>
+                                    </translation>
+                                </translations>
+                            </concept_node>
+                            <concept_node>
+                                <name>label_not_running</name>
+                                <definition_loaded>false</definition_loaded>
+                                <description></description>
+                                <comment></comment>
+                                <default_text></default_text>
+                                <translations>
+                                    <translation>
+                                        <language>de-DE</language>
+                                        <approved>false</approved>
+                                    </translation>
+                                    <translation>
+                                        <language>en-AU</language>
+                                        <approved>true</approved>
+                                    </translation>
+                                </translations>
+                            </concept_node>
+                            <concept_node>
+                                <name>label_running_on_port</name>
+                                <definition_loaded>false</definition_loaded>
+                                <description></description>
+                                <comment></comment>
+                                <default_text></default_text>
+                                <translations>
+                                    <translation>
+                                        <language>de-DE</language>
+                                        <approved>false</approved>
+                                    </translation>
+                                    <translation>
+                                        <language>en-AU</language>
+                                        <approved>true</approved>
+                                    </translation>
+                                </translations>
+                            </concept_node>
+                            <concept_node>
+                                <name>title_services</name>
+                                <definition_loaded>false</definition_loaded>
+                                <description></description>
+                                <comment></comment>
+                                <default_text></default_text>
+                                <translations>
+                                    <translation>
+                                        <language>de-DE</language>
+                                        <approved>false</approved>
+                                    </translation>
+                                    <translation>
+                                        <language>en-AU</language>
+                                        <approved>true</approved>
+                                    </translation>
+                                </translations>
+                            </concept_node>
+                        </children>
+                    </folder_node>
+                    <concept_node>
+                        <name>title_server_status</name>
+                        <definition_loaded>false</definition_loaded>
+                        <description></description>
+                        <comment></comment>
+                        <default_text></default_text>
+                        <translations>
+                            <translation>
+                                <language>de-DE</language>
+                                <approved>false</approved>
+                            </translation>
+                            <translation>
+                                <language>en-AU</language>
+                                <approved>true</approved>
+                            </translation>
+                        </translations>
+                    </concept_node>
                     <folder_node>
                         <name>uptime</name>
                         <children>
@@ -1845,23 +1935,6 @@
                         </translations>
                     </concept_node>
                     <concept_node>
-                        <name>title_edit_user</name>
-                        <definition_loaded>false</definition_loaded>
-                        <description></description>
-                        <comment></comment>
-                        <default_text></default_text>
-                        <translations>
-                            <translation>
-                                <language>de-DE</language>
-                                <approved>false</approved>
-                            </translation>
-                            <translation>
-                                <language>en-AU</language>
-                                <approved>true</approved>
-                            </translation>
-                        </translations>
-                    </concept_node>
-                    <concept_node>
                         <name>label_full_name</name>
                         <definition_loaded>false</definition_loaded>
                         <description></description>
@@ -1913,6 +1986,23 @@
                         </translations>
                     </concept_node>
                     <concept_node>
+                        <name>label_username</name>
+                        <definition_loaded>false</definition_loaded>
+                        <description></description>
+                        <comment></comment>
+                        <default_text></default_text>
+                        <translations>
+                            <translation>
+                                <language>de-DE</language>
+                                <approved>false</approved>
+                            </translation>
+                            <translation>
+                                <language>en-AU</language>
+                                <approved>true</approved>
+                            </translation>
+                        </translations>
+                    </concept_node>
+                    <concept_node>
                         <name>title_add_user</name>
                         <definition_loaded>false</definition_loaded>
                         <description></description>
@@ -1930,7 +2020,7 @@
                         </translations>
                     </concept_node>
                     <concept_node>
-                        <name>title_users</name>
+                        <name>title_edit_user</name>
                         <definition_loaded>false</definition_loaded>
                         <description></description>
                         <comment></comment>
@@ -1947,7 +2037,7 @@
                         </translations>
                     </concept_node>
                     <concept_node>
-                        <name>label_username</name>
+                        <name>title_users</name>
                         <definition_loaded>false</definition_loaded>
                         <description></description>
                         <comment></comment>
