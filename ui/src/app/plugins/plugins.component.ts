@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { StateService } from '@uirouter/angular';
+import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 
 import { ApiService } from '../_services/api.service';
@@ -24,7 +25,8 @@ export class PluginsComponent implements OnInit {
     public $plugin: PluginService,
     private $state: StateService,
     public $fb: FormBuilder,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private translate: TranslateService,
   ) { }
 
   ngOnInit() {
@@ -34,8 +36,10 @@ export class PluginsComponent implements OnInit {
          this.installedPlugins = data.sort(x => !x.update);
          this.loading = false;
       },
-      (err) => {
-        this.toastr.error(`Failed to load plugins: ${err.message}`, 'Error');
+      async (err) => {
+        const toastError = await this.translate.get('toast.title_error').toPromise();
+        const toastFailedToLoadPlugins = await this.translate.get('plugins.toast_failed_to_load_plugins').toPromise();
+        this.toastr.error(`${toastFailedToLoadPlugins}: ${err.message}`, toastError);
       }
     );
 

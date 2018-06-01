@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AbstractControl } from '@angular/forms/src/model';
+import { TranslateService } from '@ngx-translate/core';
 import { StateService } from '@uirouter/angular';
 import { ToastrService } from 'ngx-toastr';
 
@@ -15,14 +16,15 @@ export class UsersEditComponent implements OnInit {
   @Input() user;
   form: FormGroup;
   page = {
-    title: 'users.edit_user',
-    save: 'button_save',
-    password: 'users.new_password'
+    title: 'users.title_edit_user',
+    save: 'form.button_save',
+    password: 'users.label_new_password'
   };
 
   constructor(
     public activeModal: NgbActiveModal,
     public toastr: ToastrService,
+    private translate: TranslateService,
     private $api: ApiService,
     private $state: StateService,
     public $fb: FormBuilder
@@ -54,13 +56,17 @@ export class UsersEditComponent implements OnInit {
 
   onSubmit({ value, valid }) {
     this.$api.updateUser(this.user.id, value).subscribe(
-      data => {
+      async data => {
+        const toastSuccess = await this.translate.get('toast.title_success').toPromise();
+        const toastUpdatedUser = await this.translate.get('users.toast_updated_user').toPromise();
         this.$state.reload();
         this.activeModal.close();
-        this.toastr.success(`Updated User`, 'Success!');
+        this.toastr.success(toastUpdatedUser, toastSuccess);
       },
-      err => {
-        this.toastr.error(`Failed To Update User`, 'Error');
+      async err => {
+        const toastError = await this.translate.get('toast.title_error').toPromise();
+        const toastFailedToUpdatedUser = await this.translate.get('users.toast_failed_to_add_user').toPromise();
+        this.toastr.error(toastFailedToUpdatedUser, toastError);
       }
     );
   }
