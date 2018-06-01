@@ -15,9 +15,9 @@ export class UsersEditComponent implements OnInit {
   @Input() user;
   form: FormGroup;
   page = {
-    title: 'Edit User',
-    save: 'Save',
-    password: 'New Password'
+    title: 'users.edit_user',
+    save: 'button_save',
+    password: 'users.new_password'
   };
 
   constructor(

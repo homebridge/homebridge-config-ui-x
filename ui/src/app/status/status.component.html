@@ -5,7 +5,7 @@
     <div class="card card-body text-center">
       <div #qrcode class="qr-code-container"></div>
       <p>{{ server.pin }}</p>
-      <p class="mt-1 grey-text">
+      <p class="mt-1 grey-text" [translate]="'status.code_scan_instructions'">
         Scan this code with the camera on your iOS device to add to Apple Home.
       </p>
     </div>
@@ -14,7 +14,7 @@
   </div>
 
   <div class="col-md-8">
-    <h3 class="primary-text">Server Status</h3>
+    <h3 class="primary-text" [translate]="'status.server_status_title'">Server Status</h3>
 
     <!--Panel-->
     <div class="card card-body mb-3">
@@ -30,11 +30,11 @@
             <i *ngIf="homebridge.version && homebridge.update" class="material-icons status-circle bg-yellow">&#xE863;</i>
           </div>
           <div class="align-self-center">
-            <span *ngIf="!homebridge.version">Checking for updates...</span>
-            <span *ngIf="homebridge.version && !homebridge.update">Up To Date</span>
-            <span *ngIf="homebridge.version && homebridge.update">{{ homebridge.version }} Update Available</span>
+            <span *ngIf="!homebridge.version" [translate]="'status.homebridge.checking_for_updates'">Checking for updates...</span>
+            <span *ngIf="homebridge.version && !homebridge.update" [translate]="'status.homebridge.up_to_date'">Up To Date</span>
+            <span *ngIf="homebridge.version && homebridge.update" [translate]="'status.homebridge.update_available'" [translateParams]="{version: homebridge.version}">Update Available</span>
             <br>
-            <span class="grey-text" *ngIf="homebridge.version"><span class="d-none d-sm-inline">Version</span> {{ homebridge.installed }}</span>
+            <span class="grey-text" *ngIf="homebridge.version"><span class="d-none d-sm-inline" [translate]="'status.homebridge.version'">Version</span> {{ homebridge.installed }}</span>
           </div>
           <div class="align-self-center p-3" *ngIf="homebridge.update && $auth.user.admin">
             <button type="button" class="btn btn-red waves-effect waves-light" (click)="$plugin.upgradeHomebridge()">Upgrade</button>
@@ -46,7 +46,7 @@
 
     <!--Panel-->
     <div class="card card-body mb-3">
-      <h5 class="mb-0">Services</h5>
+      <h5 class="mb-0" [translate]="'status.services.title'">Services</h5>
       <div class="d-flex flex-row">
         <div class="d-flex p-1">
           <div class="p-3">
@@ -56,8 +56,8 @@
           <div class="align-self-center">
             <span>Homebridge</span>
             <br>
-            <span class="grey-text d-none d-sm-block" *ngIf="this.server.status==='up'">Running on port {{ server.port }}</span>
-            <span class="grey-text d-none d-sm-block" *ngIf="this.server.status!=='up'">Not running</span>
+            <span class="grey-text d-none d-sm-block" *ngIf="this.server.status==='up'" [translate]="'status.services.running_on_port'" [translateParams]="{port: server.port}">Running</span>
+            <span class="grey-text d-none d-sm-block" *ngIf="this.server.status!=='up'" [translate]="'status.services.not_running'">Not running</span>
           </div>
         </div>
         <div class="d-flex p-1">
@@ -66,10 +66,10 @@
             <i *ngIf="consoleStatus!=='up'" class="material-icons status-circle bg-red">&#xE14B;</i>
           </div>
           <div class="align-self-center">
-            <span>Console</span>
+            <span [translate]="'status.services.console'">Console</span>
             <br>
-            <span class="grey-text d-none d-sm-block" *ngIf="consoleStatus==='up'">Listening on port {{ server.consolePort }}</span>
-            <span class="grey-text d-none d-sm-block" *ngIf="consoleStatus!=='up'">Not running</span>
+            <span class="grey-text d-none d-sm-block" *ngIf="consoleStatus==='up'" [translate]="'status.services.listening_on_port'" [translateParams]="{port: server.consolePort}">Listening</span>
+            <span class="grey-text d-none d-sm-block" *ngIf="consoleStatus!=='up'" [translate]="'status.services.not_running'">Not running</span>
           </div>
         </div>
       </div>
@@ -78,7 +78,7 @@
 
     <!--Panel-->
     <div class="card card-body mb-3" *ngIf="consoleStatus==='up' && stats.uptime">
-      <h5 class="mb-0">Uptime</h5>
+      <h5 class="mb-0" [translate]="'status.uptime.title'">Uptime</h5>
       <div class="d-flex flex-row">
         <div class="p-1" [ngClass]="{'d-flex': stats.uptime.days, 'd-none d-sm-flex': !stats.uptime.days}">
           <div class="p-3">
@@ -87,7 +87,7 @@
           <div class="align-self-center">
             <span [innerText]="stats.uptime.days"></span>
             <br>
-            <span class="grey-text">Days</span>
+            <span class="grey-text" [translate]="'status.uptime.days'">Days</span>
           </div>
         </div>
         <div class="d-flex p-1">
@@ -97,7 +97,7 @@
           <div class="align-self-center">
             <span [innerText]="stats.uptime.hours"></span>
             <br>
-            <span class="grey-text">Hours</span>
+            <span class="grey-text" [translate]="'status.uptime.hours'">Hours</span>
           </div>
         </div>
         <div class="p-1" [ngClass]="{'d-flex': !stats.uptime.days, 'd-none d-sm-flex': stats.uptime.days}">
@@ -107,7 +107,7 @@
           <div class="align-self-center">
             <span [innerText]="stats.uptime.minutes"></span>
             <br>
-            <span class="grey-text">Minutes</span>
+            <span class="grey-text" [translate]="'status.uptime.minutes'">Minutes</span>
           </div>
         </div>
       </div>
@@ -116,7 +116,7 @@
 
     <!--Panel-->
     <div class="card card-body mb-3" *ngIf="consoleStatus==='up' && stats.cpu">
-      <h5 class="mb-0">CPU</h5>
+      <h5 class="mb-0" [translate]="'status.cpu.title'">CPU</h5>
       <div class="d-flex flex-row">
         <div class="d-flex p-1">
           <div class="p-3">
@@ -125,7 +125,7 @@
           <div class="align-self-center">
             <span>{{ stats.cpu }}%</span>
             <br>
-            <span class="grey-text">Load</span>
+            <span class="grey-text" [translate]="'status.cpu.load'">Load</span>
           </div>
         </div>
         <div class="d-flex p-1" *ngIf="stats.cputemp">
@@ -135,7 +135,7 @@
           <div class="align-self-center">
             <span>{{ stats.cputemp }}&deg;{{ ($auth.env.temperatureUnits || 'C') | uppercase }}</span>
             <br>
-            <span class="grey-text">Temp</span>
+            <span class="grey-text" [translate]="'status.memory.temp'">Temp</span>
           </div>
         </div>
       </div>
@@ -144,7 +144,7 @@
 
     <!--Panel-->
     <div class="card card-body mb-3" *ngIf="consoleStatus==='up' && stats.memory">
-      <h5 class="mb-0">Memory</h5>
+      <h5 class="mb-0" [translate]="'status.memory.title'">Memory</h5>
       <div class="d-flex flex-row">
         <div class="d-flex p-1">
           <div class="p-3">
@@ -153,7 +153,7 @@
           <div class="align-self-center">
             <span>{{ stats.memory.total }} GB</span>
             <br>
-            <span class="grey-text">Total</span>
+            <span class="grey-text" [translate]="'status.memory.total'">Total</span>
           </div>
         </div>
         <div class="d-none d-sm-flex p-1">
@@ -163,7 +163,7 @@
           <div class="align-self-center">
             <span>{{ stats.memory.used }} GB</span>
             <br>
-            <span class="grey-text">Used</span>
+            <span class="grey-text" [translate]="'status.memory.used'">Used</span>
           </div>
         </div>
         <div class="d-flex p-1">
@@ -173,7 +173,7 @@
           <div class="align-self-center">
             <span>{{ stats.memory.free }} GB</span>
             <br>
-            <span class="grey-text">Free</span>
+            <span class="grey-text" [translate]="'status.memory.free'">Free</span>
           </div>
         </div>
       </div>

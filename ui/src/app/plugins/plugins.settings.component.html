@@ -36,7 +36,7 @@
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-elegant mr-auto" data-dismiss="modal" (click)="addBlock()">Add {{ configSchema.pluginType }} Block</button>
-    <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')">Cancel</button>
-    <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="save()">Save</button>
+    <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')" [translate]="'button_cancel'">Cancel</button>
+    <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="save()" [translate]="'button_save'">Save</button>
   </div>
 </div>

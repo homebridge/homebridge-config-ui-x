@@ -2,7 +2,7 @@
 
 <div class="row">
   <div class="col-md-12 text-center">
-    <h3 class="primary-text">Restarting Homebridge</h3>
+    <h3 class="primary-text" [translate]="'restart.title'">Restarting Homebridge</h3>
     <p class="grey-text" *ngIf="!timeout && !error">Please wait, this page will automatically redirect when the server is back online.</p>
     <p class="grey-text" *ngIf="error">{{ error }}</p>
     <div *ngIf="timeout">

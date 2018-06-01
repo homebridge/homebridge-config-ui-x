@@ -14,9 +14,9 @@ import { ApiService } from '../_services/api.service';
 export class UsersAddComponent implements OnInit {
   form: FormGroup;
   page = {
-    title: 'Add User',
-    save: 'Add New User',
-    password: 'Password'
+    title: 'users.add_user',
+    save: 'users.add_new_user',
+    password: 'users.password'
   };
 
   constructor(
