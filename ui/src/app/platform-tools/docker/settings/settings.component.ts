@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-
+import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { StateService } from '@uirouter/angular';
 import { ApiService } from '../../../_services/api.service';
@@ -21,6 +21,7 @@ export class SettingsComponent implements OnInit {
     private $api: ApiService,
     public $fb: FormBuilder,
     public toastr: ToastrService,
+    private translate: TranslateService,
   ) { }
 
   ngOnInit() {
@@ -38,7 +39,10 @@ export class SettingsComponent implements OnInit {
     this.savedSettings = true;
 
     this.$api.dockerSaveEnv(data).subscribe(() => {
-      this.toastr.success('Container Restart Required', 'Settings Saved');
+      this.toastr.success(
+        this.translate.instant('platform.docker.settings.toast_container_restart_required'),
+        this.translate.instant('platform.docker.settings.toast_title_settings_saved')
+      );
     });
   }
 

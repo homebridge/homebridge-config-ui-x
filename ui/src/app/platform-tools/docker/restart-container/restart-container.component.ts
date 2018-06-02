@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { TimerObservable } from 'rxjs/observable/TimerObservable';
 import { StateService } from '@uirouter/angular';
 import { ToastrService } from 'ngx-toastr';
@@ -23,6 +24,7 @@ export class RestartContainerComponent implements OnInit {
     private $api: ApiService,
     private ws: WsService,
     public toastr: ToastrService,
+    private translate: TranslateService,
     private $state: StateService,
   ) { }
 
@@ -42,8 +44,8 @@ export class RestartContainerComponent implements OnInit {
         this.checkIfServerUp();
       },
       err => {
-        this.error = 'An error occured sending the restart command to the server.';
-        this.toastr.error(`An error occured sending the restart command to the server: ${err.message}`, 'Error');
+        this.error = this.translate.instant('restart.toast_server_restart_error');
+        this.toastr.error(`${this.error}: ${err.message}`, this.translate.instant('toast.title_error'));
       }
     );
   }
@@ -52,14 +54,19 @@ export class RestartContainerComponent implements OnInit {
     this.checkDelay = TimerObservable.create(10000).subscribe(() => {
       this.onMessage = this.ws.handlers.server.subscribe((data) => {
         if (data.status === 'up') {
-          this.toastr.success('Docker Container Restarted', 'Success');
+          this.toastr.success(
+            this.translate.instant('platform.docker.restart_container.toast_container_restarted'),
+            this.translate.instant('toast.title_success')
+          );
           this.$state.go('status');
         }
       });
     });
 
     this.checkTimeout = TimerObservable.create(60000).subscribe(() => {
-      this.toastr.warning('The server is taking a long time to come back online', 'Warning', {
+      this.toastr.warning(
+        this.translate.instant('restart.message_please_wait_while_server_restarts'),
+        this.translate.instant('toast.title_warning'), {
         timeOut: 10000
       });
       this.timeout = true;

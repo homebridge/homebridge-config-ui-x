@@ -2,11 +2,11 @@
 
 <div class="row">
   <div class="col-md-12 text-center">
-    <h3 class="primary-text">Restarting Server</h3>
-    <p class="grey-text" *ngIf="!timeout && !error">Please wait, this page will automatically redirect when the Homebridge is back online.</p>
+    <h3 class="primary-text" [translate]="'platform.linux.restart.title_restarting_server'">Restarting Server</h3>
+    <p class="grey-text" *ngIf="!timeout && !error" [translate]="'platform.linux.restart.message_please_wait_while_server_restarts'">Please wait, this page will automatically redirect when the Homebridge is back online.</p>
     <p class="grey-text" *ngIf="error">{{ error }}</p>
     <div *ngIf="timeout">
-      <p class="grey-text">Server restart is taking a long time. You may need to bring up the server back up manually.</p>
+      <p class="grey-text" [translate]="'platform.linux.restart.message_server_taking_long_time_to_restart'">Server restart is taking a long time. You may need to bring up the server back up manually.</p>
     </div>
   </div>
 </div>

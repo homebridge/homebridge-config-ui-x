@@ -1,16 +1,16 @@
 <div class="d-flex justify-content-between">
-  <h3 class="primary-text m-0">Settings</h3>
+  <h3 class="primary-text m-0" [translate]="'platform.docker.settings.title_settings'">Settings</h3>
   <div class="text-right">
-    <button class="btn btn-primary waves-effect m-0" *ngIf="savedSettings" uiSref="docker.restart-container">Restart Required</button>
+    <button class="btn btn-primary waves-effect m-0" *ngIf="savedSettings" uiSref="docker.restart-container" [translate]="'platform.docker.settings.button_restart_required'">Restart Required</button>
   </div>
 </div>
 
 <div class="row mt-3">
   <div class="col-md-12">
     <div class="alert alert-danger" role="alert" *ngIf="!$auth.env.ableToConfigureSelf">
-      Please upgrade the oznu/homebridge docker image to the latest version. <a target="_blank" rel="noopener noreferrer" href="https://github.com/oznu/docker-homebridge">https://github.com/oznu/docker-homebridge</a>
+       {{'platform.docker.settings.message_image_upgrade_required' | translate}} <a target="_blank" rel="noopener noreferrer" href="https://github.com/oznu/docker-homebridge">https://github.com/oznu/docker-homebridge</a>
     </div>
-    <div class="alert alert-warning" role="alert">
+    <div class="alert alert-warning" role="alert" [translate]="'platform.docker.settings.message_env_warning'">
       Changing these values will override the corresponding environment variables you may have set with the docker run command.
     </div>
   </div>
