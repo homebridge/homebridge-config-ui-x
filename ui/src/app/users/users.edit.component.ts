@@ -56,17 +56,13 @@ export class UsersEditComponent implements OnInit {
 
   onSubmit({ value, valid }) {
     this.$api.updateUser(this.user.id, value).subscribe(
-      async data => {
-        const toastSuccess = await this.translate.get('toast.title_success').toPromise();
-        const toastUpdatedUser = await this.translate.get('users.toast_updated_user').toPromise();
+      data => {
         this.$state.reload();
         this.activeModal.close();
-        this.toastr.success(toastUpdatedUser, toastSuccess);
+        this.toastr.success(this.translate.instant('users.toast_updated_user'), this.translate.instant('toast.title_success'));
       },
-      async err => {
-        const toastError = await this.translate.get('toast.title_error').toPromise();
-        const toastFailedToUpdatedUser = await this.translate.get('users.toast_failed_to_add_user').toPromise();
-        this.toastr.error(toastFailedToUpdatedUser, toastError);
+      err => {
+        this.toastr.error(this.translate.instant('users.toast_failed_to_add_user'), this.translate.instant('toast.title_error'));
       }
     );
   }

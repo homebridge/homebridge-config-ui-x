@@ -43,32 +43,26 @@ export class RestartComponent implements OnInit {
         this.resp = data;
         this.checkIfServerUp();
       },
-      async err => {
-        const toastError = await this.translate.get('toast.title_error').toPromise();
-        const toastRestartError = await this.translate.get('restart.toast_server_restart_error').toPromise();
+      err => {
+        const toastRestartError = this.translate.instant('restart.toast_server_restart_error');
         this.error = toastRestartError + '.';
-        this.toastr.error(`${toastRestartError}: ${err.message}`, toastError);
+        this.toastr.error(`${toastRestartError}: ${err.message}`, this.translate.instant('toast.title_error'));
       }
     );
   }
 
-  async checkIfServerUp() {
-    const toastWarning = await this.translate.get('toast.title_warning').toPromise();
-    const toastSuccess = await this.translate.get('toast.title_success').toPromise();
-    const toastServerRestarted = await this.translate.get('restart.toast_server_restarted').toPromise();
-    const toastServerRestartTimeout = await this.translate.get('restart.toast_sever_restart_timeout').toPromise();
-
+  checkIfServerUp() {
     this.checkDelay = TimerObservable.create(3000).subscribe(() => {
       this.onMessage = this.ws.handlers.server.subscribe((data) => {
         if (data.status === 'up') {
-          this.toastr.success(toastServerRestarted, toastSuccess);
+          this.toastr.success(this.translate.instant('restart.toast_server_restarted'), this.translate.instant('toast.title_success'));
           this.$state.go('status');
         }
       });
     });
 
     this.checkTimeout = TimerObservable.create(20000).subscribe(() => {
-      this.toastr.warning(toastServerRestartTimeout, toastWarning, {
+      this.toastr.warning(this.translate.instant('restart.toast_sever_restart_timeout'), this.translate.instant('toast.title_warning'), {
         timeOut: 10000
       });
       this.timeout = true;

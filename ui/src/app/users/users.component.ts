@@ -41,16 +41,15 @@ export class UsersComponent implements OnInit {
 
   deleteUser(id) {
     this.$api.deleteUser(id).subscribe(
-      async data => {
-        const toastSuccess = await this.translate.get('toast.title_success').toPromise();
-        const toastUserDeleted = await this.translate.get('users.toast_user_deleted').toPromise();
-        this.toastr.success(toastUserDeleted, toastSuccess);
+      data => {
+        this.toastr.success(this.translate.instant('users.toast_user_deleted'), this.translate.instant('toast.title_success'));
         this.$state.reload();
       },
-      async err => {
-        const toastError = await this.translate.get('toast.title_error').toPromise();
-        const toastFailedToDeleteUser = await this.translate.get('users.toast_failed_to_delete_user').toPromise();
-        this.toastr.error(err.error.message || toastFailedToDeleteUser, toastError);
+      err => {
+        this.toastr.error(
+          err.error.message || this.translate.instant('users.toast_failed_to_delete_user'),
+          this.translate.instant('toast.title_error')
+        );
       }
     );
   }

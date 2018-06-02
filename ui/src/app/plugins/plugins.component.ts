@@ -36,10 +36,11 @@ export class PluginsComponent implements OnInit {
          this.installedPlugins = data.sort(x => !x.update);
          this.loading = false;
       },
-      async (err) => {
-        const toastError = await this.translate.get('toast.title_error').toPromise();
-        const toastFailedToLoadPlugins = await this.translate.get('plugins.toast_failed_to_load_plugins').toPromise();
-        this.toastr.error(`${toastFailedToLoadPlugins}: ${err.message}`, toastError);
+      (err) => {
+        this.toastr.error(
+          `${this.translate.instant('plugins.toast_failed_to_load_plugins')}: ${err.message}`,
+          this.translate.instant('toast.title_error')
+        );
       }
     );
 

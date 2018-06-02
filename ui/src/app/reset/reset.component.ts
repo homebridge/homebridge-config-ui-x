@@ -41,17 +41,13 @@ export class ResetModalComponent {
   onResetHomebridgeAccessoryClick() {
     this.clicked = true;
     return this.$api.resetHomebridgeAccessory().subscribe(
-      async data => {
-        const toastSuccess = await this.translate.get('toast.title_success').toPromise();
-        const toastAccessoryReset = await this.translate.get('reset.toast_accessory_reset').toPromise();
-        this.toastr.success(toastAccessoryReset, toastSuccess);
+      data => {
+        this.toastr.success(this.translate.instant('reset.toast_accessory_reset'), this.translate.instant('toast.title_success'));
         this.activeModal.close();
         this.$state.go('restart');
       },
       async err => {
-        const toastError = await this.translate.get('toast.title_error').toPromise();
-        const toastFailedToReset = await this.translate.get('reset.toast_failed_to_reset').toPromise();
-        this.toastr.error(toastFailedToReset, toastError);
+        this.toastr.error(this.translate.instant('reset.toast_failed_to_reset'), this.translate.instant('toast.title_error'));
       }
     );
   }

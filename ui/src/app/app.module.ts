@@ -107,6 +107,7 @@ import { ResetComponent, ResetModalComponent } from './reset/reset.component';
     },
     NgxMdModule.forRoot(),
     ToastrModule.forRoot({
+      autoDismiss: true,
       newestOnTop: false,
       closeButton: true,
       maxOpened: 2,

@@ -44,7 +44,7 @@ export class PluginsManageComponent implements OnInit {
     private $state: StateService,
   ) {}
 
-  async ngOnInit() {
+  ngOnInit() {
     this.termTarget = document.getElementById('plugin-log-output');
     this.term.open(this.termTarget);
     (<any>this.term).fit();
@@ -61,28 +61,28 @@ export class PluginsManageComponent implements OnInit {
       }
     });
 
-    this.toastSuccess = await this.translate.get('toast.title_success').toPromise();
+    this.toastSuccess = this.translate.instant('toast.title_success');
 
     switch (this.action) {
       case 'Install':
         this.install();
-        this.presentTenseVerb = await this.translate.get('plugins.manage.label_install').toPromise();
-        this.pastTenseVerb = await this.translate.get('plugins.manage.label_installed').toPromise();
+        this.presentTenseVerb = this.translate.instant('plugins.manage.label_install');
+        this.pastTenseVerb = this.translate.instant('plugins.manage.label_installed');
         break;
       case 'Uninstall':
         this.uninstall();
-        this.presentTenseVerb = await this.translate.get('plugins.manage.label_uninstall').toPromise();
-        this.pastTenseVerb = await this.translate.get('plugins.manage.label_uninstalled').toPromise();
+        this.presentTenseVerb = this.translate.instant('plugins.manage.label_uninstall');
+        this.pastTenseVerb = this.translate.instant('plugins.manage.label_uninstalled');
         break;
       case 'Update':
         this.update();
-        this.presentTenseVerb = await this.translate.get('plugins.manage.label_update').toPromise();
-        this.pastTenseVerb = await this.translate.get('plugins.manage.label_updated').toPromise();
+        this.presentTenseVerb = this.translate.instant('plugins.manage.label_update');
+        this.pastTenseVerb = this.translate.instant('plugins.manage.label_updated');
         break;
       case 'Upgrade':
         this.upgradeHomebridge();
-        this.presentTenseVerb = await this.translate.get('plugins.manage.label_upgrade').toPromise();
-        this.pastTenseVerb = await this.translate.get('plugins.manage.label_homebridge_upgraded').toPromise();
+        this.presentTenseVerb = this.translate.instant('plugins.manage.label_upgrade');
+        this.pastTenseVerb = this.translate.instant('plugins.manage.label_homebridge_upgraded');
         break;
     }
   }

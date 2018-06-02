@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { StateService } from '@uirouter/angular';
+import { TranslateService } from '@ngx-translate/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import * as uuid from 'uuid/v4';
@@ -30,7 +31,8 @@ export class PluginSettingsComponent implements OnInit {
     public activeModal: NgbActiveModal,
     private $api: ApiService,
     private $state: StateService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private translate: TranslateService,
   ) { }
 
   ngOnInit() {
@@ -178,7 +180,10 @@ export class PluginSettingsComponent implements OnInit {
 
     this.$api.saveConfig(this.homebridgeConfig).subscribe(
       (done) => {
-        this.toastr.success('Restart Homebridge to apply the changes.', 'Plugin Config Saved');
+        this.toastr.success(
+          this.translate.instant('plugins.settings.toast_restart_required'),
+          this.translate.instant('plugins.settings.toast_plugin_config_saved')
+        );
         this.activeModal.close();
       }
     );
