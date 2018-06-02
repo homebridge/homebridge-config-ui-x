@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file. This projec
 
 * Added support for non-english translations ([#102](https://github.com/oznu/homebridge-config-ui-x/issues/102))
   * German translations added with the assistance of [@razer4908](https://github.com/razer4908)
+  * French translations added by [@the0neyouseek](https://github.com/the0neyouseek) ([#105](https://github.com/oznu/homebridge-config-ui-x/pull/105))
   * Language is selected automatically based on browser settings
 * Updated npm dependencies
 
