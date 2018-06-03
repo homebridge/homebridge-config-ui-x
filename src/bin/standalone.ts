@@ -73,7 +73,7 @@ class StandaloneUI {
     if (semver.satisfies(process.env.CONFIG_UI_VERSION, '>=3.5.5') && fs.existsSync(path.resolve(this.setup.configPath))) {
       const homebridgeConfig = await fs.readJson(this.setup.configPath);
       if (homebridgeConfig && homebridgeConfig.platforms) {
-        const config = homebridgeConfig.platforms.find(x => x.platform === 'config');
+        const config = homebridgeConfig.platforms.find(x => x.platform === 'config' || x.platform === 'homebridge-config-ui-x.config');
         if (config) {
           this.setup.config = config;
         }

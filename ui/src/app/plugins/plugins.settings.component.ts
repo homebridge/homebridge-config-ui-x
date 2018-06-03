@@ -39,18 +39,18 @@ export class PluginSettingsComponent implements OnInit {
     this.loadConfigSchema();
   }
 
-  blockChanged(__uuid__) {
+  blockChanged(__uuid__, blockName) {
     if (this.configSchema.pluginType === 'platform') {
       return (config) => {
         config.__uuid__ = __uuid__;
-        config.platform = this.configSchema.pluginAlias;
+        config.platform = blockName;
         const index = this.homebridgeConfig.platforms.findIndex(x => x.__uuid__ === __uuid__);
         this.homebridgeConfig.platforms[index] = config;
       };
     } else if (this.configSchema.pluginType === 'accessory') {
       return (config) => {
         config.__uuid__ = __uuid__;
-        config.accessory = this.configSchema.pluginAlias;
+        config.accessory = blockName;
         const index = this.homebridgeConfig.accessories.findIndex(x => x.__uuid__ === __uuid__);
         this.homebridgeConfig.accessories[index] = config;
       };
@@ -67,7 +67,7 @@ export class PluginSettingsComponent implements OnInit {
       const platformConfig = {
         __uuid__: __uuid__,
         name: 'New ' + this.configSchema.pluginAlias + ' Platform #' + (this.pluginConfig.length + 1),
-        onChange: this.blockChanged(__uuid__)
+        onChange: this.blockChanged(__uuid__, this.pluginName + '.' + this.configSchema.pluginAlias)
       };
 
       const baseConfig = {
@@ -88,7 +88,7 @@ export class PluginSettingsComponent implements OnInit {
       const accessoryConfig = {
         __uuid__: __uuid__,
         name: 'New ' + this.configSchema.pluginAlias + ' Accessory #' + (this.pluginConfig.length + 1),
-        onChange: this.blockChanged(__uuid__)
+        onChange: this.blockChanged(__uuid__, this.pluginName + '.' + this.configSchema.pluginAlias)
       };
 
       const baseConfig = {
@@ -132,14 +132,17 @@ export class PluginSettingsComponent implements OnInit {
 
         if (this.homebridgeConfig.platforms && this.configSchema.pluginType === 'platform') {
           this.homebridgeConfig.platforms.forEach((platform: any) => {
-            if (platform.platform === this.configSchema.pluginAlias) {
+            if (
+              platform.platform === this.configSchema.pluginAlias ||
+              platform.platform === this.pluginName + '.' + this.configSchema.pluginAlias
+            ) {
               platform.__uuid__ = uuid();
 
               const platformConfig: any = {
                 config: platform,
-                onChange: this.blockChanged(platform.__uuid__),
+                onChange: this.blockChanged(platform.__uuid__, platform.platform),
                 __uuid__: platform.__uuid__,
-                name: platform.name || platform.platform
+                name: platform.name || platform.platform,
               };
 
               this.pluginConfig.push(platformConfig);
@@ -147,14 +150,17 @@ export class PluginSettingsComponent implements OnInit {
           });
         } else if (this.homebridgeConfig.accessories && this.configSchema.pluginType === 'accessory') {
           this.homebridgeConfig.accessories.forEach((accessory: any) => {
-            if (accessory.accessory === this.configSchema.pluginAlias) {
+            if (
+              accessory.accessory === this.configSchema.pluginAlias ||
+              accessory.accessory === this.pluginName + '.' + this.configSchema.pluginAlias
+            ) {
               accessory.__uuid__ = uuid();
 
               const accessoryConfig: any = {
                 config: accessory,
-                onChange: this.blockChanged(accessory.__uuid__),
+                onChange: this.blockChanged(accessory.__uuid__, accessory.accessory),
                 __uuid__: accessory.__uuid__,
-                name: accessory.name || accessory.platform
+                name: accessory.name || accessory.accessory,
               };
 
               this.pluginConfig.push(accessoryConfig);
