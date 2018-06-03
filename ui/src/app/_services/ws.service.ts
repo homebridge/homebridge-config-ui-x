@@ -40,6 +40,7 @@ export class WsService {
 
       this.socket.onopen = () => {
         this.open.emit(null);
+        this.$auth.getAppSettings();
       };
 
       this.socket.onmessage = (msg) => {

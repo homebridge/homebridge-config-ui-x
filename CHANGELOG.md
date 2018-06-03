@@ -10,8 +10,14 @@ All notable changes to this project will be documented in this file. This projec
   * German translation added with the assistance of [@razer4908](https://github.com/razer4908)
   * French translation added by [@the0neyouseek](https://github.com/the0neyouseek) ([#105](https://github.com/oznu/homebridge-config-ui-x/pull/105))
   * Language is selected automatically based on browser settings
+  * If you want to contribute to the translation work please see [CONTRIBUTING.md](https://github.com/oznu/homebridge-config-ui-x/blob/master/CONTRIBUTING.md#contributing-to-translations)
 * Imperial display units now apply to temperature sensors and thermostat accessories ([#96](https://github.com/oznu/homebridge-config-ui-x/issues/96))
+
+
+### Other Changes
+
 * Updated npm dependencies
+* Config changes for the UI should require a full page refresh less often
 
 ## 3.7.0 (2018-05-31)
 
