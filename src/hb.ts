@@ -132,14 +132,14 @@ class HomebridgeUI {
 
   public async refreshHomebridgeConfig() {
     try {
-      this.homebridgeConfig = await import(hb.configPath);
+      this.homebridgeConfig = await import(this.configPath);
     } catch (e) {
       this.homebridgeConfig = {
         bridge: {
            name: 'Homebridge',
         }
       };
-      this.error(`Failed to load ${hb.configPath} - ${e.message}`);
+      this.error(`Failed to load ${this.configPath} - ${e.message}`);
     }
   }
 
@@ -179,7 +179,7 @@ class HomebridgeUI {
     }
 
     // create backup of existing config
-    await fs.rename(hb.configPath, `${hb.configPath}.${now.getTime()}`);
+    await fs.rename(this.configPath, `${this.configPath}.${now.getTime()}`);
 
     // save config file
     await fs.writeJson(this.configPath, config, { spaces: 4 });
@@ -190,7 +190,7 @@ class HomebridgeUI {
   }
 
   public async listConfigBackups() {
-    const dirContents = await fs.readdir(hb.storagePath);
+    const dirContents = await fs.readdir(this.storagePath);
 
     const backups = dirContents
       .filter(x => x.indexOf('config.json.') === 0)
@@ -215,12 +215,12 @@ class HomebridgeUI {
 
   public async getConfigBackup(backupId: string) {
     // check backup file exists
-    if (!fs.existsSync(hb.configPath + '.' + parseInt(backupId, 10))) {
+    if (!fs.existsSync(this.configPath + '.' + parseInt(backupId, 10))) {
       throw new Error(`Backup ${backupId} Not Found`);
     }
 
     // read source backup
-    return await fs.readFile(hb.configPath + '.' + parseInt(backupId, 10));
+    return await fs.readFile(this.configPath + '.' + parseInt(backupId, 10));
   }
 
   public async deleteAllConfigBackups() {
@@ -228,7 +228,7 @@ class HomebridgeUI {
 
     // delete each backup file
     await backups.forEach(async(backupFile) => {
-      await fs.unlink(path.resolve(hb.storagePath, backupFile.file));
+      await fs.unlink(path.resolve(this.storagePath, backupFile.file));
     });
   }
 
