@@ -8,8 +8,8 @@
   <div class="modal-body text-center">
 
      
-    <h5 class="mb-0"><strong>{{ service.values.CurrentTemperature }}&deg;</strong></h5>
-    <p>Set to {{ targetTemperature.value }}&deg;</p>
+    <h5 class="mb-0"><strong>{{ service.values.CurrentTemperature | convertTemp }}&deg;</strong></h5>
+    <p>Set to {{ targetTemperature.value | convertTemp }}&deg;</p>
 
     <div class="thermostat-mode-control btn-group btn-group-toggle d-flex justify-content-center mb-4"
       ngbRadioGroup name="radioBasic" [(ngModel)]="targetMode" (change)="onTargetStateChange()">

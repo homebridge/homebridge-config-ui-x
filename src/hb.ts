@@ -86,6 +86,7 @@ class HomebridgeUI {
     this.linuxServerOpts = config.linux || {};
     this.ableToConfigureSelf = (!this.runningInDocker || semver.satisfies(process.env.CONFIG_UI_VERSION, '>=3.5.5'));
     this.loginWallpaper = config.loginWallpaper;
+    this.temperatureUnits = config.tempUnits || 'c';
 
     if (config.auth === 'none' || config.auth === false) {
       this.formAuth = false;
@@ -111,7 +112,6 @@ class HomebridgeUI {
     // check the path to the temp file actually exists
     if (config.temp && fs.existsSync(config.temp)) {
       this.temperatureFile = config.temp;
-      this.temperatureUnits = config.tempUnits || 'c';
     } else if (config.temp) {
       // delay the output of the warning message so it does not get lost under homebridge setup details
       setTimeout(() => {

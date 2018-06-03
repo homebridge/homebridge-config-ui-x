@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## 3.8.0 (2018-XX-XX)
+## 3.8.0 (2018-06-03)
 
 ### Notable Changes
 
@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file. This projec
   * German translation added with the assistance of [@razer4908](https://github.com/razer4908)
   * French translation added by [@the0neyouseek](https://github.com/the0neyouseek) ([#105](https://github.com/oznu/homebridge-config-ui-x/pull/105))
   * Language is selected automatically based on browser settings
+* Imperial display units now apply to temperature sensors and thermostat accessories ([#96](https://github.com/oznu/homebridge-config-ui-x/issues/96))
 * Updated npm dependencies
 
 ## 3.7.0 (2018-05-31)

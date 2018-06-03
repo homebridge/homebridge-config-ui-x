@@ -107,10 +107,6 @@ export class StatusWssHandler {
       try {
         temp = fs.readFileSync(hb.temperatureFile);
         temp = ((temp / 1000).toPrecision(3));
-
-        if (hb.temperatureUnits === 'f') {
-          temp = temp * 1.8 + 32;
-        }
       } catch (e) {
         temp = null;
         hb.log(`ERROR: Failed to read temp from ${hb.temperatureFile}`);

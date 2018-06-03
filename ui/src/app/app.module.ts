@@ -34,6 +34,7 @@ import { MobileDetectService } from './_services/mobile-detect.service';
 import { SpinnerModule } from './spinner/spinner.module';
 import { AccessoriesModule } from './accessories/accessories.module';
 import { PlatformToolsModule } from './platform-tools/platform-tools.module';
+import { CustomPipesModule } from './_pipes/custom-pipes.module';
 
 import { AppComponent } from './app.component';
 import { StatusComponent, StatusStates } from './status/status.component';
@@ -130,7 +131,8 @@ import { ResetComponent, ResetModalComponent } from './reset/reset.component';
       otherwise: '/'
     }),
     AccessoriesModule,
-    PlatformToolsModule
+    PlatformToolsModule,
+    CustomPipesModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthHttpInterceptor, multi: true },
