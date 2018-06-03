@@ -133,7 +133,7 @@
             <i class="material-icons status-circle bg-blue">&#xE30D;</i>
           </div>
           <div class="align-self-center">
-            <span>{{ stats.cputemp | convertTemp }}&deg;{{ ($auth.env.temperatureUnits || 'C') | uppercase }}</span>
+            <span>{{ stats.cputemp | convertTemp | number:'1.0-2' }}&deg;{{ ($auth.env.temperatureUnits || 'C') | uppercase }}</span>
             <br>
             <span class="grey-text" [translate]="'status.cpu.label_temp'">Temp</span>
           </div>

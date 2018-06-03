@@ -13,7 +13,6 @@ All notable changes to this project will be documented in this file. This projec
   * If you want to contribute to the translation work please see [CONTRIBUTING.md](https://github.com/oznu/homebridge-config-ui-x/blob/master/CONTRIBUTING.md#contributing-to-translations)
 * Imperial display units now apply to temperature sensors and thermostat accessories ([#96](https://github.com/oznu/homebridge-config-ui-x/issues/96))
 
-
 ### Other Changes
 
 * Updated npm dependencies
