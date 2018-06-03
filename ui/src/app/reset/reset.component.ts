@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { StateService } from '@uirouter/angular';
 import { ToastrService } from 'ngx-toastr';
@@ -32,6 +33,7 @@ export class ResetModalComponent {
   constructor(
     public activeModal: NgbActiveModal,
     public toastr: ToastrService,
+    private translate: TranslateService,
     private $state: StateService,
     private $api: ApiService,
   ) { }
@@ -40,12 +42,12 @@ export class ResetModalComponent {
     this.clicked = true;
     return this.$api.resetHomebridgeAccessory().subscribe(
       data => {
-        this.toastr.success('Homebridge Accessory Reset', 'Success!');
+        this.toastr.success(this.translate.instant('reset.toast_accessory_reset'), this.translate.instant('toast.title_success'));
         this.activeModal.close();
         this.$state.go('restart');
       },
-      err => {
-        this.toastr.error('Failed to reset Homebridge. See Logs.', 'Error');
+      async err => {
+        this.toastr.error(this.translate.instant('reset.toast_failed_to_reset'), this.translate.instant('toast.title_error'));
       }
     );
   }

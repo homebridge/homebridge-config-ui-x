@@ -1,6 +1,6 @@
 <div class="modal-content">
   <div class="modal-header">
-    <h5 class="modal-title">Settings: {{ pluginName }}</h5>
+    <h5 class="modal-title">{{'plugins.settings.title_settings' | translate}}: {{ pluginName }}</h5>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
       <span aria-hidden="true">&times;</span>
     </button>
@@ -36,7 +36,7 @@
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-elegant mr-auto" data-dismiss="modal" (click)="addBlock()">Add {{ configSchema.pluginType }} Block</button>
-    <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')">Cancel</button>
-    <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="save()">Save</button>
+    <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')" [translate]="'form.button_cancel'">Cancel</button>
+    <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="save()" [translate]="'form.button_save'">Save</button>
   </div>
 </div>

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AbstractControl } from '@angular/forms/src/model';
+import { TranslateService } from '@ngx-translate/core';
 import { StateService } from '@uirouter/angular';
 import { ToastrService } from 'ngx-toastr';
 
@@ -14,14 +15,15 @@ import { ApiService } from '../_services/api.service';
 export class UsersAddComponent implements OnInit {
   form: FormGroup;
   page = {
-    title: 'Add User',
-    save: 'Add New User',
-    password: 'Password'
+    title: 'users.title_add_user',
+    save: 'users.button_add_new_user',
+    password: 'users.label_password'
   };
 
   constructor(
     public activeModal: NgbActiveModal,
     public toastr: ToastrService,
+    private translate: TranslateService,
     private $api: ApiService,
     private $state: StateService,
     public $fb: FormBuilder
@@ -54,10 +56,10 @@ export class UsersAddComponent implements OnInit {
       data => {
         this.$state.reload();
         this.activeModal.close();
-        this.toastr.success(`Added New User`, 'Success!');
+        this.toastr.success(this.translate.instant('users.toast_added_new_user'), this.translate.instant('toast.title_success'));
       },
       err => {
-        this.toastr.error(`Failed To Add User`, 'Error');
+        this.toastr.error(this.translate.instant('users.toast_failed_to_add_user'), this.translate.instant('toast.title_error'));
       }
     );
   }

@@ -3,12 +3,12 @@
   <div class="row">
     <div class="col-sm-6 d-none d-sm-block">
       <h3 class="primary-text m-0">
-        <span class="d-none d-md-inline">Homebridge</span> Config Editor</h3>
+        <span class="d-none d-md-inline">Homebridge</span> {{'config.title_config' | translate}}</h3>
     </div>
     <div class="col-sm-6 text-right">
-      <a class="btn btn-elegant waves-effect" [href]="backupConfigHref" download="config.json">Backup</a>
-      <button class="btn btn-elegant waves-effect" (click)="onRestore()">Restore</button>
-      <button class="btn btn-primary waves-effect" (click)="onSave()">Save</button>
+      <a class="btn btn-elegant waves-effect" [href]="backupConfigHref" download="config.json" [translate]="'config.button_backup'">Backup</a>
+      <button class="btn btn-elegant waves-effect" (click)="onRestore()" [translate]="'config.button_restore'">Restore</button>
+      <button class="btn btn-primary waves-effect" (click)="onSave()" [translate]="'form.button_save'">Save</button>
     </div>
   </div>
 

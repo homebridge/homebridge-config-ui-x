@@ -2,7 +2,7 @@
   <div class="card card-body ml-2 mr-2 login-card">
 
     <form novalidate (ngSubmit)="onSubmit(form)" [formGroup]="form">
-      <p class="h4 text-center mb-4">Login</p>
+      <p class="h4 text-center mb-4" [translate]="'login.title_login'">Login</p>
     
       <div class="md-form">
         <i class="material-icons prefix grey-text">&#xE85E;</i>
@@ -10,7 +10,7 @@
          autofocus autocomplete="username" tabindex="1" class="form-control pl-0 pr-0" [ngClass]="{
             'is-invalid': form.controls.username.dirty && form.controls.username.errors
           }" >
-        <label for="form-username">Username</label>
+        <label for="form-username" [translate]="'login.label_username'">Username</label>
       </div>
 
       <div class="md-form">
@@ -19,12 +19,12 @@
           autocomplete="current-password" tabindex="2" class="form-control pl-0 pr-0" [ngClass]="{
             'is-invalid': form.controls.password.dirty && form.controls.password.errors
           }">
-        <label for="form-pass">Password</label>
+        <label for="form-pass" [translate]="'login.label_password'">Password</label>
       </div>
     
       <div class="text-center">
-        <p class="red-text" *ngIf="invalidCredentials"><small>Invalid Username and Password</small></p>
-        <button tabindex="3" class="btn btn-amber" type="submit" [disabled]="!form.valid">Login</button>
+        <p class="red-text" *ngIf="invalidCredentials"><small [translate]="'login.message_invalid_username_or_password'">Invalid Username and Password</small></p>
+        <button tabindex="3" class="btn btn-amber" type="submit" [disabled]="!form.valid" [translate]="'login.button_login'">Login</button>
       </div>
   
     </form>

@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-
+import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { StateService } from '@uirouter/angular';
 import { ApiService } from '../../../_services/api.service';
@@ -20,6 +20,7 @@ export class StartupScriptEditorComponent implements OnInit {
     private $api: ApiService,
     private $md: MobileDetectService,
     public toastr: ToastrService,
+    private translate: TranslateService,
   ) {
     // remove editor gutter on small screen devices
     if ($md.detect.phone()) {
@@ -38,14 +39,20 @@ export class StartupScriptEditorComponent implements OnInit {
   onSave() {
     // check startup script is using the correct hashbang
     if (this.startupScript.split('\n')[0].trim() !== '#!/bin/sh') {
-      this.toastr.error('Script must use #!/bin/sh hashbang.', 'Script Error');
+      this.toastr.error(
+        this.translate.instant('platform.docker.startup_script.toast_script_must_use_hashbang'),
+        this.translate.instant('platform.docker.startup_script.toast_title_script_error')
+      );
       this.startupScript = '#!/bin/sh\n\n' + this.startupScript;
       return;
     }
 
     this.$api.dockerSaveStartupScript({ script: this.startupScript }).subscribe(
-      data => this.toastr.success('You will need to restart this docker container for the changes to take effect.', 'Startup Script Saved'),
-      err =>  this.toastr.error(err.message, 'Error')
+      data => this.toastr.success(
+        this.translate.instant('platform.docker.startup_script.toast_restart_required'),
+        this.translate.instant('platform.docker.startup_script.toast_title_script_saved')
+      ),
+      err =>  this.toastr.error(err.message, this.translate.instant('toast.title_error'))
     );
   }
 

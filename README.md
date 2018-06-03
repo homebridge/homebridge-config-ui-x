@@ -224,6 +224,10 @@ The following browsers are supported by this plugin:
 
 MS Internet Explorer (any version) is not supported!
 
+# Contributing
+
+Please see [CONTRIBUTING.md](CONTRIBUTING.md).
+
 # Troubleshooting
 
 #### 1. Errors during installation

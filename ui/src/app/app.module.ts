@@ -1,9 +1,10 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClientModule, HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { UIRouterModule } from '@uirouter/angular';
 import { AceEditorModule } from 'ng2-ace-editor';
@@ -21,6 +22,7 @@ import {
 } from 'ngx-json-schema';
 
 import { routerConfigFn } from './_helpers/router.config';
+import { HttpLoaderFactory } from './_helpers/translate.loader';
 
 import { WsService } from './_services/ws.service';
 import { ApiService } from './_services/api.service';
@@ -83,6 +85,13 @@ import { ResetComponent, ResetModalComponent } from './reset/reset.component';
     BrowserAnimationsModule,
     HttpClientModule,
     FormsModule,
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient],
+      }
+    }),
     ReactiveFormsModule,
     AceEditorModule,
     SpinnerModule,
@@ -98,6 +107,7 @@ import { ResetComponent, ResetModalComponent } from './reset/reset.component';
     },
     NgxMdModule.forRoot(),
     ToastrModule.forRoot({
+      autoDismiss: true,
       newestOnTop: false,
       closeButton: true,
       maxOpened: 2,

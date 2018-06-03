@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { StateService } from '@uirouter/angular';
 import { ToastrService } from 'ngx-toastr';
@@ -30,9 +31,14 @@ export class PluginsManageComponent implements OnInit {
   public updateSelf = false;
   public changeLog: string;
 
+  private toastSuccess: string;
+  public presentTenseVerb: string;
+  public pastTenseVerb: string;
+
   constructor(
     public activeModal: NgbActiveModal,
     public toastr: ToastrService,
+    private translate: TranslateService,
     private $api: ApiService,
     private ws: WsService,
     private $state: StateService,
@@ -55,18 +61,28 @@ export class PluginsManageComponent implements OnInit {
       }
     });
 
+    this.toastSuccess = this.translate.instant('toast.title_success');
+
     switch (this.action) {
       case 'Install':
         this.install();
+        this.presentTenseVerb = this.translate.instant('plugins.manage.label_install');
+        this.pastTenseVerb = this.translate.instant('plugins.manage.label_installed');
         break;
       case 'Uninstall':
         this.uninstall();
+        this.presentTenseVerb = this.translate.instant('plugins.manage.label_uninstall');
+        this.pastTenseVerb = this.translate.instant('plugins.manage.label_uninstalled');
         break;
       case 'Update':
         this.update();
+        this.presentTenseVerb = this.translate.instant('plugins.manage.label_update');
+        this.pastTenseVerb = this.translate.instant('plugins.manage.label_updated');
         break;
       case 'Upgrade':
         this.upgradeHomebridge();
+        this.presentTenseVerb = this.translate.instant('plugins.manage.label_upgrade');
+        this.pastTenseVerb = this.translate.instant('plugins.manage.label_homebridge_upgraded');
         break;
     }
   }
@@ -77,7 +93,7 @@ export class PluginsManageComponent implements OnInit {
         this.onComplete = () => {
           this.$state.go('plugins');
           this.activeModal.close();
-          this.toastr.success(`Installed ${this.pluginName}`, 'Success!');
+          this.toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);
         };
       },
       (err) => {
@@ -92,7 +108,7 @@ export class PluginsManageComponent implements OnInit {
         this.onComplete = () => {
           this.$state.reload();
           this.activeModal.close();
-          this.toastr.success(`Removed ${this.pluginName}`, 'Success!');
+          this.toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);
         };
       },
       (err) => {
@@ -110,7 +126,7 @@ export class PluginsManageComponent implements OnInit {
           } else {
             this.$state.reload();
           }
-          this.toastr.success(`Updated ${this.pluginName}`, 'Success!');
+          this.toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);
           this.getChangeLog();
         };
       },
@@ -126,7 +142,7 @@ export class PluginsManageComponent implements OnInit {
         this.onComplete = () => {
           this.$state.go('restart');
           this.activeModal.close();
-          this.toastr.success(`Homebridge Upgraded`, 'Success!');
+          this.toastr.success(this.pastTenseVerb, this.toastSuccess);
         };
       },
       (err) => {

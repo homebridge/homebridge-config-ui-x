@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { TimerObservable } from 'rxjs/observable/TimerObservable';
 import { StateService } from '@uirouter/angular';
 import { ToastrService } from 'ngx-toastr';
@@ -22,6 +23,7 @@ export class ShutdownServerComponent implements OnInit {
     private $api: ApiService,
     private ws: WsService,
     public toastr: ToastrService,
+    private translate: TranslateService,
     private $state: StateService,
   ) { }
 
@@ -41,8 +43,8 @@ export class ShutdownServerComponent implements OnInit {
         this.checkIfServerUp();
       },
       err => {
-        this.error = 'An error occured sending the restart command to the server.';
-        this.toastr.error(`An error occured sending the restart command to the server: ${err.message}`, 'Error');
+        this.error = this.translate.instant('platform.linux.restart.toast_server_restart_error');
+        this.toastr.error(`${this.error} ${err.message}`, this.translate.instant('toast.title_error'));
       }
     );
   }
@@ -51,7 +53,10 @@ export class ShutdownServerComponent implements OnInit {
     this.checkDelay = TimerObservable.create(60000).subscribe(() => {
       this.onMessage = this.ws.handlers.server.subscribe((data) => {
         if (data.status === 'up') {
-          this.toastr.success('Server Restarted', 'Success');
+          this.toastr.success(
+            this.translate.instant('platform.linux.restart.toast_server_restarted'),
+            this.translate.instant('toast.title_success')
+          );
           this.$state.go('status');
         }
       });

@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+import { TranslateModule } from '@ngx-translate/core';
 import { UIRouterModule, StateDeclaration } from '@uirouter/angular';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AceEditorModule } from 'ng2-ace-editor';
@@ -43,6 +44,7 @@ export const TerminalState = {
     NgbModule,
     AceEditorModule,
     SpinnerModule,
+    TranslateModule.forChild(),
     UIRouterModule.forChild({
       states: [
         AbstractState,

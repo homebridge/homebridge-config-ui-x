@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { TimerObservable } from 'rxjs/observable/TimerObservable';
 import { StateService } from '@uirouter/angular';
 import { ToastrService } from 'ngx-toastr';
@@ -23,6 +24,7 @@ export class RestartComponent implements OnInit {
     private $api: ApiService,
     private ws: WsService,
     public toastr: ToastrService,
+    private translate: TranslateService,
     private $state: StateService,
   ) { }
 
@@ -42,8 +44,9 @@ export class RestartComponent implements OnInit {
         this.checkIfServerUp();
       },
       err => {
-        this.error = 'An error occured sending the restart command to the server.';
-        this.toastr.error(`An error occured sending the restart command to the server: ${err.message}`, 'Error');
+        const toastRestartError = this.translate.instant('restart.toast_server_restart_error');
+        this.error = toastRestartError + '.';
+        this.toastr.error(`${toastRestartError}: ${err.message}`, this.translate.instant('toast.title_error'));
       }
     );
   }
@@ -52,14 +55,14 @@ export class RestartComponent implements OnInit {
     this.checkDelay = TimerObservable.create(3000).subscribe(() => {
       this.onMessage = this.ws.handlers.server.subscribe((data) => {
         if (data.status === 'up') {
-          this.toastr.success('Server Restarted', 'Success');
+          this.toastr.success(this.translate.instant('restart.toast_server_restarted'), this.translate.instant('toast.title_success'));
           this.$state.go('status');
         }
       });
     });
 
     this.checkTimeout = TimerObservable.create(20000).subscribe(() => {
-      this.toastr.warning('The server is taking a long time to come back online', 'Warning', {
+      this.toastr.warning(this.translate.instant('restart.toast_sever_restart_timeout'), this.translate.instant('toast.title_warning'), {
         timeOut: 10000
       });
       this.timeout = true;

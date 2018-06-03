@@ -12,36 +12,36 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item waves-effect waves-light" uiSrefActive="active">
-          <a class="nav-link" uiSref="status">Status</a>
+          <a class="nav-link" uiSref="status" [translate]="'menu.label_status'">Status</a>
         </li>
         <li class="nav-item waves-effect waves-light" uiSrefActive="active" *ngIf="$auth.user.admin">
-          <a class="nav-link" uiSref="plugins">Plugins</a>
+          <a class="nav-link" uiSref="plugins" [translate]="'menu.label_plugins'">Plugins</a>
         </li>
         <li class="nav-item waves-effect waves-light" uiSrefActive="active" *ngIf="$auth.user.admin">
-          <a class="nav-link" uiSref="config">Config</a>
+          <a class="nav-link" uiSref="config" [translate]="'menu.label_config'">Config</a>
         </li>
         <li class="nav-item waves-effect waves-light" uiSrefActive="active" *ngIf="$auth.env.enableAccessories">
-          <a class="nav-link" uiSref="accessories">Accessories</a>
+          <a class="nav-link" uiSref="accessories" [translate]="'menu.label_accessories'">Accessories</a>
         </li>
       </ul>
 
       <ul class="navbar-nav nav-flex-icons">
-        <li class="nav-item waves-effect waves-light" uiSrefActive="active" placement="bottom" ngbTooltip="View Logs" container="body">
+        <li class="nav-item waves-effect waves-light" uiSrefActive="active" placement="bottom" ngbTooltip="{{'menu.tooltip_view_logs' | translate}}" container="body">
           <a class="nav-link" uiSref="logs">
             <i class="material-icons">chrome_reader_mode</i>
           </a>
         </li>
-        <li class="nav-item waves-effect waves-light" uiSrefActive="active" placement="bottom" ngbTooltip="User Accounts" container="body" *ngIf="$auth.user.admin">
+        <li class="nav-item waves-effect waves-light" uiSrefActive="active" placement="bottom" ngbTooltip="{{'menu.tooltip_user_accounts' | translate}}" container="body" *ngIf="$auth.user.admin">
           <a class="nav-link" uiSref="users">
             <i class="material-icons">supervisor_account</i>
           </a>
         </li>
-        <li class="nav-item waves-effect waves-light" uiSrefActive="active" placement="bottom" ngbTooltip="Restart" container="body">
+        <li class="nav-item waves-effect waves-light" uiSrefActive="active" placement="bottom" ngbTooltip="{{'menu.tooltip_restart' | translate}}" container="body">
           <a class="nav-link" uiSref="restart">
             <i class="material-icons">power_settings_new</i>
           </a>
         </li>
-        <li class="nav-item waves-effect waves-light" uiSrefActive="active" placement="bottom" ngbTooltip="Logout" container="body" *ngIf="$auth.formAuth">
+        <li class="nav-item waves-effect waves-light" uiSrefActive="active" placement="bottom" ngbTooltip="{{'menu.tooltip_logout' | translate}}" container="body" *ngIf="$auth.formAuth">
           <a class="nav-link" (click)="$auth.logout()">
             <i class="material-icons">exit_to_app</i>
           </a>
@@ -52,10 +52,10 @@
             <i class="fab fa-docker"></i>
           </a>
           <div class="dropdown-menu dropdown-menu-right dropdown-info">
-            <a class="dropdown-item waves-effect waves-light" uiSref="docker.terminal">Terminal</a>
-            <a class="dropdown-item waves-effect waves-light" uiSref="docker.startup-script" >Startup Script</a>
-            <a class="dropdown-item waves-effect waves-light" uiSref="docker.restart-container">Restart Container</a>
-            <a class="dropdown-item waves-effect waves-light" uiSref="docker.settings">Settings</a>
+            <a class="dropdown-item waves-effect waves-light" uiSref="docker.terminal" [translate]="'menu.docker.label_terminal'">Terminal</a>
+            <a class="dropdown-item waves-effect waves-light" uiSref="docker.startup-script" [translate]="'menu.docker.label_startup_script'">Startup Script</a>
+            <a class="dropdown-item waves-effect waves-light" uiSref="docker.restart-container" [translate]="'menu.docker.label_restart_container'">Restart Container</a>
+            <a class="dropdown-item waves-effect waves-light" uiSref="docker.settings" [translate]="'menu.docker.label_settings'">Settings</a>
           </div>
         </li>
 
@@ -64,8 +64,8 @@
             <i class="material-icons">more_vert</i>
           </a>
           <div class="dropdown-menu dropdown-menu-right dropdown-info">
-            <a class="dropdown-item waves-effect waves-light" uiSref="linux.restart-server">Restart Server</a>
-            <a class="dropdown-item waves-effect waves-light" uiSref="linux.shutdown-server">Shutdown Server</a>
+            <a class="dropdown-item waves-effect waves-light" uiSref="linux.restart-server" [translate]="'menu.linux.label_restart_server'">Restart Server</a>
+            <a class="dropdown-item waves-effect waves-light" uiSref="linux.shutdown-server" [translate]="'menu.linux.label_shutdown_server'">Shutdown Server</a>
           </div>
         </li>
 

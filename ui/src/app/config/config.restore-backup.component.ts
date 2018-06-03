@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
+import { TranslateService } from '@ngx-translate/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ApiService } from '../_services/api.service';
 import { ToastrService } from 'ngx-toastr';
@@ -19,13 +19,14 @@ export class ConfigRestoreBackupComponent implements OnInit {
   constructor(
     public activeModal: NgbActiveModal,
     public toastr: ToastrService,
+    private translate: TranslateService,
     private $api: ApiService,
   ) { }
 
   ngOnInit() {
     this.$api.getConfigBackupList().subscribe(
       (data: any[]) => this.backupList = data,
-      (err) => this.toastr.error(err.error.message, 'Failed To Load Backups')
+      (err) => this.toastr.error(err.error.message, this.translate.instant('config.restore.toast_failed_to_load_backups'))
     );
   }
 
@@ -37,9 +38,9 @@ export class ConfigRestoreBackupComponent implements OnInit {
     return this.$api.deleteConfigBackups().subscribe(
       (data) => {
         this.activeModal.dismiss();
-        this.toastr.success('All Backups Deleted', 'Success!');
+        this.toastr.success(this.translate.instant('config.restore.toast_backups_deleted'), this.translate.instant('toast.title_success'));
       },
-      (err) => this.toastr.error(err.error.message, 'Failed To Delete Backups')
+      (err) => this.toastr.error(err.error.message, this.translate.instant('config.restore.toast_failed_to_delete_backups'))
     );
   }
 

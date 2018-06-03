@@ -2,20 +2,20 @@
   <div class="modal-body">
 
     <form novalidate (ngSubmit)="onSubmit(form)" [formGroup]="form">
-      <p class="h4 text-center mb-4" [innerText]="page.title"></p>
+      <p class="h4 text-center mb-4" [innerText]="page.title | translate"></p>
     
       <div class="md-form">
         <i class="material-icons prefix grey-text">&#xE85E;</i>
-        <input formControlName="username" [attr.disabled]="(page.title === 'Edit User') ? true : null" type="text"
+        <input formControlName="username" [attr.disabled]="(page.title === 'users.title_edit_user') ? true : null" type="text"
           id="form-username" autocomplete="off" class="form-control pl-0 pr-0">
-        <label for="form-username" [ngClass]="{'active': page.title === 'Edit User'}">Username</label>
+        <label for="form-username" [ngClass]="{'active': page.title === 'users.title_edit_user'}" [translate]="'users.label_username'">Username</label>
       </div>
 
       <div class="md-form">
         <i class="material-icons prefix grey-text">&#xE853;</i>
         <input formControlName="name" type="text"
           id="form-name" autocomplete="off" class="form-control pl-0 pr-0">
-        <label for="form-name" [ngClass]="{'active': page.title === 'Edit User'}">Full Name</label>
+        <label for="form-name" [ngClass]="{'active': page.title === 'users.title_edit_user'}" [translate]="'users.label_full_name'">Full Name</label>
       </div>
 
       <div class="row pb-3">
@@ -26,7 +26,7 @@
               id="form-pass" class="form-control pl-0 pr-0" [ngClass]="{
                 'is-invalid': form.controls.password.dirty && form.controls.password.errors
               }">
-            <label for="form-pass" [innerText]="page.password"></label>
+            <label for="form-pass" [innerText]="page.password | translate"></label>
           </div>
         </div>
         <div class="col-md-6">
@@ -35,18 +35,18 @@
               id="form-pass-confirm" class="form-control pl-0 pr-0" [ngClass]="{
                 'is-invalid': form.controls.passwordConfirm.dirty && form.controls.passwordConfirm.errors
               }">
-            <label for="form-pass-confirm">Confirm Password</label>
+            <label for="form-pass-confirm" [translate]="'users.label_confirm_password'"></label>
           </div>
         </div>
       </div>
 
       <div class="form-check text-center mb-4">
         <input formControlName="admin" type="checkbox" class="form-check-input" id="isAdmin">
-        <label class="form-check-label grey-text" for="isAdmin">Admin User?</label>
+        <label class="form-check-label grey-text" for="isAdmin" [translate]="'users.label_admin_user'">Admin User?</label>
       </div>
 
       <div class="text-center">
-        <button class="btn btn-primary" type="submit" [disabled]="!form.valid" [innerText]="page.save"></button>
+        <button class="btn btn-primary" type="submit" [disabled]="!form.valid" [innerText]="page.save | translate"></button>
       </div>
     
     </form>

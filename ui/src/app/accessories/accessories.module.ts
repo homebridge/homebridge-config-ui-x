@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
+import { TranslateModule } from '@ngx-translate/core';
 import { UIRouterModule } from '@uirouter/angular';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { DragulaModule } from 'ng2-dragula';
@@ -68,6 +69,7 @@ import { AirqualitysensorComponent } from './airqualitysensor/airqualitysensor.c
     NouisliderModule,
     DragulaModule,
     NgbModule,
+    TranslateModule.forChild(),
     UIRouterModule.forChild({
       states: [
         AccessoriesStates

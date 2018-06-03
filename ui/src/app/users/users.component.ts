@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-
+import { TranslateService } from '@ngx-translate/core';
 import { StateService } from '@uirouter/angular';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
@@ -17,6 +17,7 @@ export class UsersComponent implements OnInit {
 
   constructor(
     public toastr: ToastrService,
+    private translate: TranslateService,
     private modalService: NgbModal,
     private $api: ApiService,
     private $state: StateService,
@@ -41,11 +42,14 @@ export class UsersComponent implements OnInit {
   deleteUser(id) {
     this.$api.deleteUser(id).subscribe(
       data => {
-        this.toastr.success('User Deleted', 'Success!');
+        this.toastr.success(this.translate.instant('users.toast_user_deleted'), this.translate.instant('toast.title_success'));
         this.$state.reload();
       },
       err => {
-        this.toastr.error(err.error.message || 'Failed to delete user', 'Error');
+        this.toastr.error(
+          err.error.message || this.translate.instant('users.toast_failed_to_delete_user'),
+          this.translate.instant('toast.title_error')
+        );
       }
     );
   }
