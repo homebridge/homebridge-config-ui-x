@@ -1,6 +1,6 @@
 {
   "name": "homebridge-config-ui-x",
-  "version": "3.8.1",
+  "version": "3.8.2",
   "description": "Configuration UI plugin for Homebridge",
   "license": "MIT",
   "keywords": [
@@ -33,7 +33,6 @@
     "homebridge": ">=0.4.22"
   },
   "dependencies": {
-    "@angular-devkit/build-angular": "^0.6.7",
     "@oznu/hap-client": "0.0.3",
     "bash-color": "^0.0.4",
     "bluebird": "^3.5.1",
