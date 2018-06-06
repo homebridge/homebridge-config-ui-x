@@ -67,7 +67,7 @@ export class PluginSettingsComponent implements OnInit {
       const platformConfig = {
         __uuid__: __uuid__,
         name: 'New ' + this.configSchema.pluginAlias + ' Platform #' + (this.pluginConfig.length + 1),
-        onChange: this.blockChanged(__uuid__, this.pluginName + '.' + this.configSchema.pluginAlias)
+        onChange: this.blockChanged(__uuid__, this.configSchema.pluginAlias)
       };
 
       const baseConfig = {
@@ -88,7 +88,7 @@ export class PluginSettingsComponent implements OnInit {
       const accessoryConfig = {
         __uuid__: __uuid__,
         name: 'New ' + this.configSchema.pluginAlias + ' Accessory #' + (this.pluginConfig.length + 1),
-        onChange: this.blockChanged(__uuid__, this.pluginName + '.' + this.configSchema.pluginAlias)
+        onChange: this.blockChanged(__uuid__, this.configSchema.pluginAlias)
       };
 
       const baseConfig = {

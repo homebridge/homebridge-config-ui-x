@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { JwtHelper } from 'angular2-jwt';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 import { ApiService } from './api.service';
 
@@ -13,7 +13,7 @@ interface HomebridgeUser {
 
 @Injectable()
 export class AuthService {
-  private jwtHelper: JwtHelper = new JwtHelper();
+  private jwtHelper: JwtHelperService = new JwtHelperService();
 
   public env: any = {};
   public formAuth = true;

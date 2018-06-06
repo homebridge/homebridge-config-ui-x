@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 3.8.1 (2018-06-06)
+
+### Other Changes
+
+* Minor bug fixes
+* Updated npm dependencies
+
 ## 3.8.0 (2018-06-03)
 
 ### Notable Changes
