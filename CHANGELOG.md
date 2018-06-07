@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 3.8.3 (2018-06-07)
+
+### Notable Changes
+
+* Fixes to German Translation ([#116](https://github.com/oznu/homebridge-config-ui-x/pull/116)])
+* Allow web terminal access on Linux-based hosts *only* if a certain environment variable is set ([#110](https://github.com/oznu/homebridge-config-ui-x/issues/110))
+  * Homebridge must be running with the `HOMEBRIDGE_CONFIG_UI_TERMINAL=1` environment variable to access the terminal
+
 ## 3.8.2 (2018-06-06)
 
 ### Other Changes

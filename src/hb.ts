@@ -18,6 +18,7 @@ class HomebridgeUI {
   public runningInDocker: boolean;
   public runningInLinux: boolean;
   public linuxServerOpts: { restart?: string; shutdown?: string; };
+  public enableTerminalAccess: boolean;
   public ableToConfigureSelf: boolean;
   public configPath: string;
   public authPath: string;
@@ -84,6 +85,7 @@ class HomebridgeUI {
     this.runningInDocker = Boolean(process.env.HOMEBRIDGE_CONFIG_UI === '1');
     this.runningInLinux = (!this.runningInDocker && os.platform() === 'linux');
     this.linuxServerOpts = config.linux || {};
+    this.enableTerminalAccess = this.runningInDocker || Boolean(process.env.HOMEBRIDGE_CONFIG_UI_TERMINAL === '1');
     this.ableToConfigureSelf = (!this.runningInDocker || semver.satisfies(process.env.CONFIG_UI_VERSION, '>=3.5.5'));
     this.loginWallpaper = config.loginWallpaper;
     this.temperatureUnits = config.tempUnits || 'c';
@@ -136,10 +138,15 @@ class HomebridgeUI {
     } catch (e) {
       this.homebridgeConfig = {
         bridge: {
-           name: 'Homebridge',
+          name: 'Homebridge',
+          port: 51826
         }
       };
       this.error(`Failed to load ${this.configPath} - ${e.message}`);
+    }
+
+    if (!this.homebridgeConfig.bridge.port) {
+      this.error('Homebridge config.json error: bridge.port missing.');
     }
   }
 
@@ -331,7 +338,7 @@ export interface HomebridgeConfigType {
   bridge: {
     name: string;
     username?: string;
-    port?: number;
+    port: number;
     pin?: string;
   };
   platforms?: {

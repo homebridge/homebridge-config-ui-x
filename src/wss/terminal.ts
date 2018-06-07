@@ -20,7 +20,7 @@ export class TerminalWssHandler {
       return;
     }
 
-    if (!hb.runningInDocker) {
+    if (!hb.enableTerminalAccess) {
       this.send(color.red(`Request to spawn terminal rejected, see log for details.`));
       hb.error(`[${this.user.username}]`, `Request to spawn terminal rejected. ` +
         `Terminal mode is only available when running Homebridge in Docker.`);

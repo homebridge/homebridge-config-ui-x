@@ -25,6 +25,7 @@ export class SettingsRouter {
         runningInLinux: hb.runningInLinux,
         ableToConfigureSelf: hb.ableToConfigureSelf,
         temperatureUnits: hb.temperatureUnits,
+        enableTerminalAccess: hb.enableTerminalAccess,
       }
     });
   }

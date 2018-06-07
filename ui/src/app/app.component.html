@@ -64,6 +64,7 @@
             <i class="material-icons">more_vert</i>
           </a>
           <div class="dropdown-menu dropdown-menu-right dropdown-info">
+            <a class="dropdown-item waves-effect waves-light" *ngIf="$auth.env.enableTerminalAccess" uiSref="linux.terminal" [translate]="'menu.linux.label_terminal'">Terminal</a>
             <a class="dropdown-item waves-effect waves-light" uiSref="linux.restart-server" [translate]="'menu.linux.label_restart_server'">Restart Server</a>
             <a class="dropdown-item waves-effect waves-light" uiSref="linux.shutdown-server" [translate]="'menu.linux.label_shutdown_server'">Shutdown Server</a>
           </div>

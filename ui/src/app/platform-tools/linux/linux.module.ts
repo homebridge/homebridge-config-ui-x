@@ -8,6 +8,7 @@ import { AceEditorModule } from 'ng2-ace-editor';
 
 import { SpinnerModule } from '../../spinner/spinner.module';
 
+import { TerminalComponent } from '../terminal/terminal.component';
 import { RestartServerComponent, RestartServerState } from './restart-server/restart-server.component';
 import { ShutdownServerComponent, ShutdownServerState } from './shutdown-server/shutdown-server.component';
 
@@ -21,6 +22,18 @@ export const AbstractState: StateDeclaration = {
   },
 };
 
+export const TerminalState = {
+  name: 'linux.terminal',
+  url: '/terminal',
+  views: {
+    '!$default': { component: TerminalComponent }
+  },
+  data: {
+    requiresAuth: true,
+    requiresAdmin: true
+  }
+};
+
 @NgModule({
   imports: [
     CommonModule,
@@ -32,7 +45,8 @@ export const AbstractState: StateDeclaration = {
       states: [
         AbstractState,
         RestartServerState,
-        ShutdownServerState
+        ShutdownServerState,
+        TerminalState
       ]
     })
   ],

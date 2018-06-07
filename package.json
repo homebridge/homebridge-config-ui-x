@@ -1,6 +1,6 @@
 {
   "name": "homebridge-config-ui-x",
-  "version": "3.8.2",
+  "version": "3.8.3",
   "description": "Configuration UI plugin for Homebridge",
   "license": "MIT",
   "keywords": [
@@ -22,8 +22,7 @@
     "watch:server": "tsc --watch",
     "watch:ui": "npm run start --prefix ui",
     "install:ui": "npm install --prefix ui",
-    "prepublishOnly": "npm i --package-lock-only && npm audit && npm run build",
-    "postinstall": "node dist/bin/fake-nsp.js"
+    "prepublishOnly": "npm i --package-lock-only && npm audit && npm run build"
   },
   "bin": {
     "homebridge-config-ui-x": "./dist/bin/standalone.js"
@@ -45,6 +44,7 @@
     "fs-extra": "^6.0.1",
     "helmet": "^3.12.1",
     "jsonwebtoken": "^8.2.2",
+    "lodash": "^4.17.10",
     "node-pty": "^0.7.4",
     "passport": "~0.4.0",
     "passport-http": "^0.3.0",
@@ -63,6 +63,6 @@
     "@types/ws": "^5.1.0",
     "concurrently": "^3.5.1",
     "tslint": "^5.10.0",
-    "typescript": "^2.8.3"
+    "typescript": "^2.9.1"
   }
 }

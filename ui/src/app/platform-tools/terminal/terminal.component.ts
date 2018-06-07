@@ -1,10 +1,12 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { Terminal } from 'xterm';
 import * as fit from 'xterm/lib/addons/fit/fit';
+import * as webLinks from 'xterm/lib/addons/webLinks/webLinks';
 
 import { WsService } from '../../_services/ws.service';
 
 Terminal.applyAddon(fit);
+Terminal.applyAddon(webLinks);
 
 @Component({
   selector: 'app-terminal',
@@ -29,6 +31,7 @@ export class TerminalComponent implements OnInit {
     this.termTarget = document.getElementById('docker-terminal');
     this.term.open(this.termTarget);
     (<any>this.term).fit();
+    (<any>this.term).webLinksInit();
 
     // subscribe to terminal events
     if (this.ws.socket.readyState) {
