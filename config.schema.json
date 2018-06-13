@@ -145,6 +145,11 @@
           }
         }
       },
+      "proxyHost": {
+        "title": "Reverse Proxy Hostname",
+        "type": "string",
+        "pattern": "^[^{}/ :\\\\]+(?::\\d+)?$"
+      },
       "homebridgeNpmPkg": {
         "title": "Custom NPM package for Homebridge updates",
         "type": "string"
@@ -202,6 +207,11 @@
         {
           "key": "restart",
           "description": "If no restart command is set the process will terminate with a non-zero exit code."
+        },
+        {
+          "key": "proxyHost",
+          "placeholder": "eg. example.com:8443",
+          "description": "When running behind a reverse proxy you may need to enter the hostname you use to access the UI."
         },
         {
           "key": "loginWallpaper",

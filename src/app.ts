@@ -19,11 +19,16 @@ import { PlatformToolsRouter } from './routes/platform-tools';
 export class ExpressServer {
   public app: Express;
   private auth;
+  private cspWsOveride = '';
 
   constructor() {
     this.auth = new AuthMiddleware();
 
     this.app = <Express>express();
+
+    if (hb.proxyHost) {
+      this.cspWsOveride = `wss://${hb.proxyHost} ws://${hb.proxyHost}`;
+    }
 
     // set some headers to help secure the app
     this.app.use(helmet({
@@ -38,7 +43,7 @@ export class ExpressServer {
           imgSrc: ['\'self\'', 'data:', 'https://raw.githubusercontent.com'],
           workerSrc: ['blob:'],
           connectSrc: ['\'self\'', (req: Request) => {
-            return 'wss://' + req.headers.host + ' ws://' + req.headers.host;
+            return `wss://${req.headers.host} ws://${req.headers.host} ${this.cspWsOveride}`;
           }],
         }
       }

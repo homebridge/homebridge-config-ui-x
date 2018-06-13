@@ -25,6 +25,7 @@ class HomebridgeUI {
   public storagePath: string;
   public pluginPath: string;
   public port: number | string;
+  public proxyHost: string;
   public logOpts: {
     method: 'file' | 'systemd' | 'custom';
     path?: string;
@@ -74,6 +75,7 @@ class HomebridgeUI {
   private parseConfig(config) {
     this.pluginName = config.name || this.ui.name;
     this.port = config.port || 8080;
+    this.proxyHost = config.proxyHost;
     this.logOpts = config.log;
     this.restartCmd = config.restart;
     this.useSudo = config.sudo;
