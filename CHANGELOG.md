@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 3.8.4 (2018-06-14)
+
+### Notable Changes
+
+* Made `config.json` saves a bit more robust in an attempt to fix ([#122](https://github.com/oznu/homebridge-config-ui-x/issues/122))
+* Added `proxyHost` config option to make running behind a reverse proxy easier ([#119](https://github.com/oznu/homebridge-config-ui-x/issues/119))
+
 ## 3.8.3 (2018-06-07)
 
 ### Notable Changes

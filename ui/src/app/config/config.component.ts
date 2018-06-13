@@ -18,6 +18,7 @@ import { ConfigRestoreBackupComponent } from './config.restore-backup.component'
 })
 export class ConfigComponent implements OnInit {
   @Input() homebridgeConfig;
+  public saveInProgress: boolean;
   backupConfigHref: SafeUrl;
   options: any = { printMargin: false };
 
@@ -44,7 +45,12 @@ export class ConfigComponent implements OnInit {
     this.generateBackupConfigLink();
   }
 
-  onSave() {
+  async onSave() {
+    if (this.saveInProgress) {
+      return;
+    }
+
+    this.saveInProgress = true;
     // verify homebridgeConfig contains valid json
     try {
       const config = JSON.parse(this.homebridgeConfig);
@@ -71,7 +77,7 @@ export class ConfigComponent implements OnInit {
           this.translate.instant('config.toast_title_config_error')
         );
       } else {
-        this.saveConfig(config);
+        await this.saveConfig(config);
       }
     } catch (e) {
       this.toastr.error(
@@ -79,16 +85,19 @@ export class ConfigComponent implements OnInit {
         this.translate.instant('config.toast_title_config_syntax_error')
       );
     }
+    this.saveInProgress = false;
   }
 
   saveConfig(config) {
-    this.$api.saveConfig(config).subscribe(
+    return this.$api.saveConfig(config).toPromise().then(
       data => {
         this.toastr.success(this.translate.instant('config.toast_config_saved'), this.translate.instant('toast.title_success'));
         this.homebridgeConfig = JSON.stringify(data, null, 4);
         this.generateBackupConfigLink();
       },
-      err => this.toastr.error(this.translate.instant('config.toast_failed_to_save_config'), this.translate.instant('toast.title_error'))
+      err => {
+        this.toastr.error(this.translate.instant('config.toast_failed_to_save_config'), this.translate.instant('toast.title_error'));
+      }
     );
   }
 

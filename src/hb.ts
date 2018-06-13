@@ -191,7 +191,7 @@ class HomebridgeUI {
     await fs.rename(this.configPath, `${this.configPath}.${now.getTime()}`);
 
     // save config file
-    await fs.writeJson(this.configPath, config, { spaces: 4 });
+    fs.writeJsonSync(this.configPath, config, { spaces: 4 });
 
     this.log('Changes to config.json saved.');
 
