@@ -89,16 +89,16 @@ export class ConfigComponent implements OnInit {
   }
 
   saveConfig(config) {
-    return this.$api.saveConfig(config).toPromise().then(
-      data => {
+    return this.$api.saveConfig(config)
+      .toPromise()
+      .then(data => {
         this.toastr.success(this.translate.instant('config.toast_config_saved'), this.translate.instant('toast.title_success'));
         this.homebridgeConfig = JSON.stringify(data, null, 4);
         this.generateBackupConfigLink();
-      },
-      err => {
+      })
+      .catch(err => {
         this.toastr.error(this.translate.instant('config.toast_failed_to_save_config'), this.translate.instant('toast.title_error'));
-      }
-    );
+      });
   }
 
   generateBackupConfigLink() {

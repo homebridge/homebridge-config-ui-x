@@ -19,6 +19,7 @@ export class PluginSettingsComponent implements OnInit {
   public pluginConfig = [];
   public form: any = {};
   public show;
+  public saveInProgress: boolean;
 
   public jsonFormOptions = {
     addSubmit: false,
@@ -175,7 +176,9 @@ export class PluginSettingsComponent implements OnInit {
     );
   }
 
-  save() {
+  async save() {
+    this.saveInProgress = true;
+
     this.homebridgeConfig.platforms.forEach((platform: any) => {
       delete platform.__uuid__;
     });
@@ -184,15 +187,20 @@ export class PluginSettingsComponent implements OnInit {
       delete accessory.__uuid__;
     });
 
-    this.$api.saveConfig(this.homebridgeConfig).subscribe(
-      (done) => {
+    await this.$api.saveConfig(this.homebridgeConfig)
+      .toPromise()
+      .then((done) => {
         this.toastr.success(
           this.translate.instant('plugins.settings.toast_restart_required'),
           this.translate.instant('plugins.settings.toast_plugin_config_saved')
         );
         this.activeModal.close();
-      }
-    );
+      })
+      .catch(err => {
+        this.toastr.error(this.translate.instant('config.toast_failed_to_save_config'), this.translate.instant('toast.title_error'));
+      });
+
+    this.saveInProgress = false;
   }
 
 }

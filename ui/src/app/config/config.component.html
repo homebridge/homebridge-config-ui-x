@@ -8,9 +8,8 @@
     <div class="col-sm-6 text-right">
       <a class="btn btn-elegant waves-effect" [href]="backupConfigHref" download="config.json" [translate]="'config.button_backup'">Backup</a>
       <button class="btn btn-elegant waves-effect" (click)="onRestore()" [translate]="'config.button_restore'">Restore</button>
-      <button class="btn btn-primary waves-effect" (click)="onSave()" [translate]="'form.button_save'" [disabled]="saveInProgress">
-        <span *ngIf="saveInProgress">Saving <i class="fas fa-spinner fa-pulse"></i></span>
-        <span *ngIf="!saveInProgress">Save</span>
+      <button class="btn btn-primary waves-effect" (click)="onSave()" [disabled]="saveInProgress">
+        {{ 'form.button_save' | translate }} <i *ngIf="saveInProgress" class="fas fa-spinner fa-pulse"></i>
       </button>
     </div>
   </div>

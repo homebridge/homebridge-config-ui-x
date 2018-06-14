@@ -37,6 +37,8 @@
   <div class="modal-footer">
     <button type="button" class="btn btn-elegant mr-auto" data-dismiss="modal" (click)="addBlock()">Add {{ configSchema.pluginType }} Block</button>
     <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')" [translate]="'form.button_cancel'">Cancel</button>
-    <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="save()" [translate]="'form.button_save'">Save</button>
+    <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="save()" [disabled]="saveInProgress">
+      {{ 'form.button_save' | translate }} <i *ngIf="saveInProgress" class="fas fa-spinner fa-pulse"></i>
+    </button>
   </div>
 </div>
