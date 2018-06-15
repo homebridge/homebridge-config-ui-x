@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 3.8.5 (2018-06-15)
+
+### Bug Fixes
+
+* Handle loading config schema for [@homebridge](https://www.npmjs.com/org/homebridge) plugins correctly
+
 ## 3.8.4 (2018-06-14)
 
 ### Notable Changes
