@@ -63,11 +63,11 @@ export class ApiService {
   }
 
   getPluginChangeLog(pluginName) {
-    return this.$http.get(`${this.base}/api/packages/changelog/${pluginName}`, this.httpOptions);
+    return this.$http.get(`${this.base}/api/packages/changelog/${encodeURIComponent(pluginName)}`, this.httpOptions);
   }
 
   getPluginConfigSchema(pluginName) {
-    return this.$http.get(`${this.base}/api/packages/config-schema/${pluginName}`, this.httpOptions);
+    return this.$http.get(`${this.base}/api/packages/config-schema/${encodeURIComponent(pluginName)}`, this.httpOptions);
   }
 
   getConfig() {
