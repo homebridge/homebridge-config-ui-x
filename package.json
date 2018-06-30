@@ -1,5 +1,5 @@
 {
-  "name": "homekitbridge-config",
+  "name": "homekit-bridge-config",
   "version": "3.8.5",
   "description": "Configuration UI plugin for Homebridge",
   "license": "MIT",
