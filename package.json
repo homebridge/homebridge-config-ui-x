@@ -1,5 +1,5 @@
 {
-  "name": "homebridge-config-ui-x",
+  "name": "homekit-bridge-config",
   "version": "3.8.5",
   "description": "Configuration UI plugin for Homebridge",
   "license": "MIT",
@@ -8,10 +8,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/oznu/homebridge-config-ui-x.git"
+    "url": "git://github.com/RienduPre/homekit-bridge-config.git"
   },
   "bugs": {
-    "url": "https://github.com/oznu/homebridge-config-ui-x/issues"
+    "url": "https://github.com/RienduPre/homekit-bridge-config/issues"
   },
   "main": "./dist/index.js",
   "scripts": {
@@ -25,7 +25,7 @@
     "prepublishOnly": "npm i --package-lock-only && npm audit && npm run build"
   },
   "bin": {
-    "homebridge-config-ui-x": "./dist/bin/standalone.js"
+    "homekitbridge-config": "./dist/bin/standalone.js"
   },
   "engines": {
     "node": ">=6.9.1",

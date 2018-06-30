@@ -1,7 +1,7 @@
-/* Homebridge Config UI X Themes */
+/* HomeKit bridge Config Themes */
 
 @mixin make-theme($name, $primary, $primary-dark) {
-  .config-ui-x-#{$name} {
+  .config-#{$name} {
     .bg-primary {
       background-color: $primary-dark !important;
     }

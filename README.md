@@ -1,7 +1,7 @@
 [![npm](https://img.shields.io/npm/v/homebridge-config-ui-x.svg)](https://www.npmjs.com/package/homebridge-config-ui-x) 
 [![npm](https://img.shields.io/npm/dt/homebridge-config-ui-x.svg)](https://www.npmjs.com/package/homebridge-config-ui-x)
 
-# Homebridge Config UI X
+# Homekit Bridge Config
 
 This is a plugin for [Homebridge](https://github.com/nfarina/homebridge). This is a fork of the work originally done by [mkellsy](https://github.com/mkellsy/homebridge-config-ui).
 
@@ -12,7 +12,7 @@ This plugin allows you to monitor, backup and configure your Homebridge server f
 ## Installation Instructions
 
 ```
-sudo npm install -g --unsafe-perm homebridge-config-ui-x
+sudo npm install -g --unsafe-perm homekit-bridge-config
 ```
 
 Once you have installed and configured the plugin you can access the interface via http://localhost:8080. 
