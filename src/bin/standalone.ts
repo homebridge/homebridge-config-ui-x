@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-/* This file enables homebridge-config-ui-x to be run independently of the main homebridge process */
-process.title = 'homebridge-config-ui-x';
+/* This file enables homekit-bridge-config to be run independently of the main homebridge process */
+process.title = 'homekit-bridge-config';
 
 import 'source-map-support/register';
 
@@ -69,11 +69,11 @@ class StandaloneUI {
       storagePath: this.options.userStoragePath
     };
 
-    // check and see if config-ui platform is defined in config.json
+    // check and see if config platform is defined in config.json
     if (semver.satisfies(process.env.CONFIG_UI_VERSION, '>=3.5.5') && fs.existsSync(path.resolve(this.setup.configPath))) {
       const homebridgeConfig = await fs.readJson(this.setup.configPath);
       if (homebridgeConfig && homebridgeConfig.platforms) {
-        const config = homebridgeConfig.platforms.find(x => x.platform === 'config' || x.platform === 'homebridge-config-ui-x.config');
+        const config = homebridgeConfig.platforms.find(x => x.platform === 'config' || x.platform === 'homekit-bridge-config.config');
         if (config) {
           this.setup.config = config;
         }
