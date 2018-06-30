@@ -1,4 +1,4 @@
-process.title = 'homebridge-config-ui-x';
+process.title = 'homekit-bridge-config';
 
 import 'source-map-support/register';
 
