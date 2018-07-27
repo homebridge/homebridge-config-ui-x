@@ -89,4 +89,19 @@ export class AuthMiddleware {
     }
   }
 
+  queryTokenAuthHandler(req: Request, res: Response, next: NextFunction) {
+    if (req.query.token) {
+      return users.verifyJwt(req.query.token)
+        .then((user) => {
+          if (user) {
+            return next();
+          } else {
+            return res.sendStatus(401);
+          }
+        });
+    } else {
+      return res.sendStatus(401);
+    }
+  }
+
 }

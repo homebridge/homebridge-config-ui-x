@@ -12,6 +12,7 @@ import { LoginRouter } from './routes/login';
 import { SettingsRouter } from './routes/settings';
 import { ServerRouter } from './routes/server';
 import { ConfigRouter } from './routes/config';
+import { BackupRouter } from './routes/backup';
 import { PackageRouter } from './routes/packages';
 import { AccessoriesRouter } from './routes/accessories';
 import { PlatformToolsRouter } from './routes/platform-tools';
@@ -78,6 +79,9 @@ export class ExpressServer {
 
     this.app.use('/api/login', new LoginRouter().router);
     this.app.use('/api/settings', new SettingsRouter().router);
+
+    // query token auth for backup url route
+    this.app.use('/api/backup/config.json', this.auth.queryTokenAuthHandler, new BackupRouter().router);
 
     // force authentication on all other /api routes
     this.app.use('/api', this.auth.main);
