@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 3.8.6 (2018-07-27)
+
+### Bug Fixes
+
+* Config Editor: Backup button more reliable ([#135](https://github.com/oznu/homebridge-config-ui-x/issues/135))
+* Accessory Control: Refresh all accessories when one is changed to ensure the dashboard is up-to-date ([#136](https://github.com/oznu/homebridge-config-ui-x/issues/136))
+
+### Other Changes
+
+* Updated Angular to 6.1.0
+* Updated npm dependencies
+
 ## 3.8.5 (2018-06-15)
 
 ### Bug Fixes

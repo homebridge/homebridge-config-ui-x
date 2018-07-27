@@ -66,10 +66,10 @@ import { AirqualitysensorComponent } from './types/airqualitysensor/airqualityse
   imports: [
     CommonModule,
     FormsModule,
-    InlineSVGModule,
     NouisliderModule,
-    DragulaModule,
     NgbModule,
+    DragulaModule.forRoot(),
+    InlineSVGModule.forRoot(),
     TranslateModule.forChild(),
     UIRouterModule.forChild({
       states: [

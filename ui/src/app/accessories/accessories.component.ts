@@ -38,17 +38,17 @@ export class AccessoriesComponent implements OnInit {
     this.isMobile = $md.detect.mobile();
 
     // disable drag and drop for everything except the room title
-    dragulaService.setOptions('rooms-bag', {
+    dragulaService.createGroup('rooms-bag', {
       moves: (el, container, handle) => !this.isMobile && handle.classList.contains('drag-handle')
     });
 
     // disable drag and drop for the .no-drag class
-    dragulaService.setOptions('services-bag', {
+    dragulaService.createGroup('services-bag', {
       moves: (el, source, handle, sibling) => !this.isMobile && !el.classList.contains('no-drag')
     });
 
     // save the room and service layout
-    dragulaService.drop.subscribe(() => {
+    dragulaService.drop().subscribe(() => {
       setTimeout(() => {
         this.saveLayout();
       });
