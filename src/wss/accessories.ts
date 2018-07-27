@@ -26,6 +26,11 @@ export class AccessoriesWssHandler {
         const service: ServiceType = this.services.find(x => x.aid === msg.set.aid && x.iid === msg.set.siid);
         await service.setCharacteristic(msg.set.iid, msg.set.value);
         await this.loadAccessories();
+
+        // do a refresh to check if any accessories changed after this action
+        setTimeout(() => {
+          this.loadAccessories(true);
+        }, 1500);
       }
     };
     ws.on('accessories', requestHandler);
