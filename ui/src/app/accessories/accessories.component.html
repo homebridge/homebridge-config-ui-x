@@ -19,7 +19,7 @@
       </div>
       <div class="row mb-4">
         <div class="col-md-12 d-flex flex-wrap noselect services-bag" *ngIf="room.services.length" [dragula]='"services-bag"' [dragulaModel]='room.services'>
-          <div *ngFor="let service of room.services" [ngSwitch]="service.type">
+          <div *ngFor="let service of room.services" [ngSwitch]="service.type" (contextmenu)="showAccessoryInformation(service)">
             <app-switch *ngSwitchCase="'Switch'" [service]="service">Switch</app-switch>
             <app-thermostat *ngSwitchCase="'Thermostat'" [service]="service">Thermostat</app-thermostat>
             <app-outlet *ngSwitchCase="'Outlet'" [service]="service">Outlet</app-outlet>

@@ -11,6 +11,7 @@ import { AuthService } from '../_services/auth.service';
 import { ApiService } from '../_services/api.service';
 import { MobileDetectService } from '../_services/mobile-detect.service';
 import { AddRoomModalComponent } from './add-room-modal/add-room-modal.component';
+import { InfoModalComponent } from './info-modal/info-modal.component';
 
 @Component({
   selector: 'app-accessories',
@@ -238,6 +239,16 @@ export class AccessoriesComponent implements OnInit {
         };
       }
     });
+  }
+
+  showAccessoryInformation(service) {
+    const ref = this.modalService.open(InfoModalComponent, {
+      size: 'lg',
+    });
+
+    ref.componentInstance.service = service;
+
+    return false;
   }
 
   // tslint:disable-next-line:use-life-cycle-interface

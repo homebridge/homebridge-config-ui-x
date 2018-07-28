@@ -13,6 +13,7 @@ import { LongClickDirective } from './longclick.directive';
 
 import { DragHerePlaceholderComponent } from './drag-here-placeholder/drag-here-placeholder.component';
 import { AddRoomModalComponent } from './add-room-modal/add-room-modal.component';
+import { InfoModalComponent } from './info-modal/info-modal.component';
 import { CustomPipesModule } from '../_pipes/custom-pipes.module';
 
 import { AccessoriesComponent, AccessoriesStates } from './accessories.component';
@@ -54,11 +55,13 @@ import { AirqualitysensorComponent } from './types/airqualitysensor/airqualityse
     LongClickDirective,
     DragHerePlaceholderComponent,
     AddRoomModalComponent,
+    InfoModalComponent,
     HumiditysensorComponent,
     AirqualitysensorComponent
   ],
   entryComponents: [
     AddRoomModalComponent,
+    InfoModalComponent,
     ThermostatManageComponent,
     LightbulbManageComponent,
     FanManageComponent,

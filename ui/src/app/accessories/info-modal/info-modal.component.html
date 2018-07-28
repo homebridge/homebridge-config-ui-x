@@ -1,0 +1,30 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title">{{ service.serviceName }}</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <form>
+    <div class="modal-body">
+      <table class="table table-borderless table-hover table-striped table-sm">
+        <tbody>
+          <tr *ngFor="let characteristic of service.serviceCharacteristics">
+            <td>{{ characteristic.description }}</td>
+            <td class="text-right">
+              <span [ngSwitch]="characteristic.unit">
+                <span *ngSwitchCase="'percentage'">{{ characteristic.value }}%</span>
+                <span *ngSwitchCase="'celsius'">{{ characteristic.value | convertTemp }}&deg;</span>
+                <span *ngSwitchDefault>{{ characteristic.value }}</span>
+              </span>
+            </td>
+          </tr>
+          <tr *ngFor="let information of accessoryInformation">
+            <td>{{ information.key }}</td>
+            <td class="text-right">{{ information.value }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </form>
+</div>
