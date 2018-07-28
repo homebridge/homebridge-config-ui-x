@@ -2,12 +2,19 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 3.8.7 (2018-07-28)
+
+### Notable Changes
+
+* **Accessory Control:** Long-clicking a lightbulb with no additional characteristics (eg. brightness) no longer opens a modal ([#47#issuecomment-405089113](https://github.com/oznu/homebridge-config-ui-x/issues/47#issuecomment-405089113))
+* **Accessory Control:** Right-clicking an accessory on a non-mobile device will bring up a modal showing all accessory characteristics and other information.
+
 ## 3.8.6 (2018-07-27)
 
 ### Bug Fixes
 
-* Config Editor: Backup button more reliable ([#135](https://github.com/oznu/homebridge-config-ui-x/issues/135))
-* Accessory Control: Refresh all accessories when one is changed to ensure the dashboard is up-to-date ([#136](https://github.com/oznu/homebridge-config-ui-x/issues/136))
+* **Config Editor:** Backup button more reliable ([#135](https://github.com/oznu/homebridge-config-ui-x/issues/135))
+* **Accessory Control:** Refresh all accessories when one is changed to ensure the dashboard is up-to-date ([#136](https://github.com/oznu/homebridge-config-ui-x/issues/136))
 
 ### Other Changes
 
