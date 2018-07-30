@@ -20,6 +20,7 @@ import { ConfigRestoreBackupComponent } from './config.restore-backup.component'
 export class ConfigComponent implements OnInit {
   @Input() homebridgeConfig;
   public saveInProgress: boolean;
+  public isMobile: any = false;
   public backupUrl: string;
   public options: any = { printMargin: false };
 
@@ -32,6 +33,7 @@ export class ConfigComponent implements OnInit {
     private modalService: NgbModal
   ) {
     this.backupUrl = environment.apiBaseUrl + '/api/backup/config.json?token=' + this.$auth.user.token;
+    this.isMobile = this.$md.detect.mobile();
 
     // remove editor gutter on small screen devices
     if (this.$md.detect.phone()) {

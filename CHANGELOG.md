@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Bug Fixes
 
 * **Config Editor:** Backup button actually downloads up the `config.json` now ([#144](https://github.com/oznu/homebridge-config-ui-x/issues/144))
+* **Config Editor:** Fixed issued using config editor on mobile devices ([#131](https://github.com/oznu/homebridge-config-ui-x/issues/131))
 * **Accessory Control:** Accessory layout changes are now persistent again
 
 ## 3.8.7 (2018-07-28)

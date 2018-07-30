@@ -33,6 +33,12 @@ body {
   padding-top: 5.5rem;
 }
 
+@media only screen and (max-width: 600px) {
+  body {
+    padding-top: 4rem;
+  }
+}
+
 #log-output {
   bottom: 0;
   top: 0;
@@ -125,6 +131,15 @@ body {
 
 .hb-ace-text-editor {
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+}
+
+.hb-plain-text-editor {
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  border: none;
+  white-space: pre;
+  font-family: monospace;
+  overflow-wrap: normal;
+  overflow-x: scroll;
 }
 
 .status-circle {
