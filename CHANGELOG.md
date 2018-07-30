@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Notable Changes
 
 * **i18n:** Czech language translation added by [@HonzaaD](https://github.com/HonzaaD)
+* **i18n:** Russian language translation added by [@Caribsky](https://github.com/Caribsky)
   * User contributions to the non-english translations are always welcome, [click here](https://github.com/oznu/homebridge-config-ui-x/blob/master/CONTRIBUTING.md#contributing-to-translations) for details on how you can help
 
 ### Bug Fixes
@@ -22,7 +23,6 @@ All notable changes to this project will be documented in this file. This projec
 * **Accessory Control:** Long-clicking a lightbulb with no additional characteristics (eg. brightness) no longer opens a modal ([#47#issuecomment-405089113](https://github.com/oznu/homebridge-config-ui-x/issues/47#issuecomment-405089113))
 * **Accessory Control:** Right-clicking an accessory on a non-mobile device will bring up a modal showing all accessory characteristics and other information
 * **i18n:** Polish language translation added by [@mientki](https://github.com/mientki)
-* **i18n:** Russian language translation added by [@Caribsky](https://github.com/Caribsky)
   * User contributions to the non-english translations are always welcome, [click here](https://github.com/oznu/homebridge-config-ui-x/blob/master/CONTRIBUTING.md#contributing-to-translations) for details on how you can help
 
 ## 3.8.6 (2018-07-27)
