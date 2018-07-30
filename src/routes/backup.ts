@@ -13,6 +13,6 @@ export class BackupRouter {
   downloadConfig(req: Request, res: Response, next: NextFunction) {
     res.set('content-disposition', 'attachment; filename=config.json');
     res.header('content-type', 'application/json');
-    return res.send(hb.configPath);
+    return res.sendFile(hb.configPath);
   }
 }
