@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+# 3.8.8 (2018-07-30)
+
+### Notable Changes
+
+* **i18n:** Czech language translation added by [@HonzaaD](https://github.com/HonzaaD)
+  * User contributions to the non-english translations are always welcome, [click here](https://github.com/oznu/homebridge-config-ui-x/blob/master/CONTRIBUTING.md#contributing-to-translations) for details on how you can help
+
+### Bug Fixes
+
+* **Config Editor:** Backup button actually downloads up the `config.json` now ([#144](https://github.com/oznu/homebridge-config-ui-x/issues/144))
+* **Accessory Control:** Accessory layout changes are now persistent again
+
 ## 3.8.7 (2018-07-28)
 
 ### Notable Changes

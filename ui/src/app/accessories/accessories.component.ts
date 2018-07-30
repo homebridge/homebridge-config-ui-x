@@ -36,7 +36,7 @@ export class AccessoriesComponent implements OnInit {
     private $api: ApiService,
     private $md: MobileDetectService
   ) {
-    this.isMobile = $md.detect.mobile();
+    this.isMobile = this.$md.detect.mobile();
 
     // disable drag and drop for everything except the room title
     dragulaService.createGroup('rooms-bag', {

@@ -34,12 +34,12 @@ export class ConfigComponent implements OnInit {
     this.backupUrl = environment.apiBaseUrl + '/api/backup/config.json?token=' + this.$auth.user.token;
 
     // remove editor gutter on small screen devices
-    if ($md.detect.phone()) {
+    if (this.$md.detect.phone()) {
       this.options.showGutter = false;
     }
 
     // make font size 16px on touch devices to prevent zoom
-    if ($md.detect.mobile()) {
+    if (this.$md.detect.mobile()) {
       this.options.fontSize = '16px';
     }
   }
