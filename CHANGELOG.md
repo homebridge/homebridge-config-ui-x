@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-# 3.8.8 (2018-07-30)
+## 3.8.8 (2018-07-30)
 
 ### Notable Changes
 
