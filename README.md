@@ -1,6 +1,8 @@
 [![npm](https://img.shields.io/npm/v/homebridge-config-ui-x.svg)](https://www.npmjs.com/package/homebridge-config-ui-x) 
 [![npm](https://img.shields.io/npm/dt/homebridge-config-ui-x.svg)](https://www.npmjs.com/package/homebridge-config-ui-x)
 
+:gb: :de: :fr: :poland: :czech_republic: :ru:
+
 # Homebridge Config UI X
 
 This is a plugin for [Homebridge](https://github.com/nfarina/homebridge). This is a fork of the work originally done by [mkellsy](https://github.com/mkellsy/homebridge-config-ui).
