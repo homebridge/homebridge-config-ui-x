@@ -13,7 +13,7 @@ export class AppComponent {
     public $auth: AuthService,
   ) {
     // this array needs to be updated each time a new translation is added
-    translate.addLangs(['en', 'de', 'fr', 'pl', 'cs', 'ru']);
+    translate.addLangs(['en', 'de', 'fr', 'pl', 'cs', 'ru', 'zh-CN']);
 
     if (translate.getLangs().find(x  => x === translate.getBrowserLang())) {
       translate.use(translate.getBrowserLang());
