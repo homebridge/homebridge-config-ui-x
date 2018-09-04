@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 3.8.10 (2018-09-04)
+
+### Notable Changes
+
+* **i18n:** Simplified Chinese language translation added by [@niinaranpo](https://github.com/niinaranpo)
+
+### Other Changes
+
+* Updated Angular to 6.1.6
+* Updated npm dependencies
+
 ## 3.8.9 (2018-08-06)
 
 ### Bug Fixes

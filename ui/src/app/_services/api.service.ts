@@ -75,8 +75,8 @@ export class ApiService {
   }
 
   loadConfig() {
-  return this.$http.get(`${this.base}/api/config`,
-    Object.assign({ responseType: 'text' as 'text' }, this.httpOptions));
+    return this.$http.get(`${this.base}/api/config`,
+      Object.assign({ responseType: 'text' as 'text' }, this.httpOptions));
   }
 
   saveConfig(config) {
