@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 3.8.11 (2018-10-06)
+
+### Notable Changes
+
+* **i18n:** Improvements to French language translation ([#162](https://github.com/oznu/homebridge-config-ui-x/pull/162))
+
+### Other Changes
+
+* Updated Angular to 6.1.9
+* Updated npm dependencies
+
 ## 3.8.10 (2018-09-04)
 
 ### Notable Changes
