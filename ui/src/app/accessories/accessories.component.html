@@ -6,7 +6,17 @@
       </h3>
     </div>
     <div class="col-sm-6 text-right d-none d-sm-block">
-      <button class="btn btn-primary waves-effect m-0" (click)="addRoom()" [translate]="'accessories.button_add_room'">Add Room</button>
+      <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+        <div class="btn-group" role="group">
+          <button id="accessory-dropdown-menu" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+            <i class="fas fa-cog"></i>
+          </button>
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="accessory-dropdown-menu">
+            <a class="dropdown-item" (click)="addRoom()" [translate]="'accessories.button_add_room'">Add Room</a>
+            <a class="dropdown-item" (click)="hideHidden = !hideHidden" [translate]="'accessories.button_toggle_hidden'">Toggle Hidden</a>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -20,19 +30,21 @@
       <div class="row mb-4">
         <div class="col-md-12 d-flex flex-wrap noselect services-bag" *ngIf="room.services.length" [dragula]='"services-bag"' [(dragulaModel)]='room.services'>
           <div *ngFor="let service of room.services" [ngSwitch]="service.type" (contextmenu)="showAccessoryInformation(service)">
-            <app-switch *ngSwitchCase="'Switch'" [service]="service">Switch</app-switch>
-            <app-thermostat *ngSwitchCase="'Thermostat'" [service]="service">Thermostat</app-thermostat>
-            <app-outlet *ngSwitchCase="'Outlet'" [service]="service">Outlet</app-outlet>
-            <app-fan *ngSwitchCase="'Fan'" [service]="service" class="w-100">Fan</app-fan>
-            <app-lightbulb *ngSwitchCase="'Lightbulb'" [service]="service">Lightbulb</app-lightbulb>
-            <app-lockmechanism *ngSwitchCase="'LockMechanism'" [service]="service">Lock Mechanism</app-lockmechanism>
-            <app-temperaturesensor *ngSwitchCase="'TemperatureSensor'" [service]="service">Temperature Sensor</app-temperaturesensor>
-            <app-garagedooropener *ngSwitchCase="'GarageDoorOpener'" [service]="service">Garage Door Opener</app-garagedooropener>
-            <app-motionsensor *ngSwitchCase="'MotionSensor'" [service]="service">Motion Sensor</app-motionsensor>
-            <app-occupancysensor *ngSwitchCase="'OccupancySensor'" [service]="service">Occupancy Sensor</app-occupancysensor>
-            <app-humiditysensor *ngSwitchCase="'HumiditySensor'" [service]="service">Humidity Sensor</app-humiditysensor>
-            <app-airqualitysensor *ngSwitchCase="'AirQualitySensor'" [service]="service">Air Quality Sensor</app-airqualitysensor>
-            <app-unknown *ngSwitchDefault [service]="service">{{ service.humanType }}</app-unknown>
+            <div *ngIf="!hideHidden || !service.hidden">
+              <app-switch *ngSwitchCase="'Switch'" [service]="service">Switch</app-switch>
+              <app-thermostat *ngSwitchCase="'Thermostat'" [service]="service">Thermostat</app-thermostat>
+              <app-outlet *ngSwitchCase="'Outlet'" [service]="service">Outlet</app-outlet>
+              <app-fan *ngSwitchCase="'Fan'" [service]="service" class="w-100">Fan</app-fan>
+              <app-lightbulb *ngSwitchCase="'Lightbulb'" [service]="service">Lightbulb</app-lightbulb>
+              <app-lockmechanism *ngSwitchCase="'LockMechanism'" [service]="service">Lock Mechanism</app-lockmechanism>
+              <app-temperaturesensor *ngSwitchCase="'TemperatureSensor'" [service]="service">Temperature Sensor</app-temperaturesensor>
+              <app-garagedooropener *ngSwitchCase="'GarageDoorOpener'" [service]="service">Garage Door Opener</app-garagedooropener>
+              <app-motionsensor *ngSwitchCase="'MotionSensor'" [service]="service">Motion Sensor</app-motionsensor>
+              <app-occupancysensor *ngSwitchCase="'OccupancySensor'" [service]="service">Occupancy Sensor</app-occupancysensor>
+              <app-humiditysensor *ngSwitchCase="'HumiditySensor'" [service]="service">Humidity Sensor</app-humiditysensor>
+              <app-airqualitysensor *ngSwitchCase="'AirQualitySensor'" [service]="service">Air Quality Sensor</app-airqualitysensor>
+              <app-unknown *ngSwitchDefault [service]="service">{{ service.humanType }}</app-unknown>
+            </div>
           </div>
         </div>
         <div class="col-md-12 d-flex flex-wrap noselect" *ngIf="!room.services.length && !isMobile" [dragula]='"services-bag"' [(dragulaModel)]='room.services'>

@@ -1,6 +1,6 @@
 <div class="accessory-box" [ngClass]="{'switch-on': service.values.CurrentDoorState === 0 || service.values.CurrentDoorState === 2}" (click)="onClick()">
   <div [inlineSVG]="'/assets/hap-icons/garagedoor.svg'" aria-label="Garage Door" class="accessory-svg"></div>
-  <div class="accessory-label">{{ service.serviceName }}</div>
+  <div class="accessory-label">{{ service.customName || service.serviceName }}</div>
 
   <div class="accessory-label" 
     *ngIf="service.values.CurrentDoorState < 2 " [innerText]="service.values.CurrentDoorState ? 'Closed' : 'Open'"

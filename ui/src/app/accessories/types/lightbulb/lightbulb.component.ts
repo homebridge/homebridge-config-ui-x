@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ServiceType } from '@oznu/hap-client';
+import { ServiceTypeX } from '../../accessories.component';
 
 import { LightbulbManageComponent } from './lightbulb.manage.component';
 
@@ -10,7 +10,7 @@ import { LightbulbManageComponent } from './lightbulb.manage.component';
   styleUrls: ['./lightbulb.component.scss']
 })
 export class LightbulbComponent implements OnInit {
-  @Input() public service: ServiceType;
+  @Input() public service: ServiceTypeX;
 
   constructor(
     private modalService: NgbModal

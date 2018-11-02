@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ServiceType } from '@oznu/hap-client';
+import { ServiceTypeX } from '../../accessories.component';
 
 @Component({
   selector: 'app-humiditysensor',
@@ -7,7 +7,7 @@ import { ServiceType } from '@oznu/hap-client';
   styleUrls: ['./humiditysensor.component.scss']
 })
 export class HumiditysensorComponent implements OnInit {
-  @Input() public service: ServiceType;
+  @Input() public service: ServiceTypeX;
 
   constructor() { }
 

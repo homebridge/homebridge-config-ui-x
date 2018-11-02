@@ -1,7 +1,10 @@
 {
     "accessories.button_add_room": "Raum hinzufügen",
     "accessories.button_create_room": "Neuen Raum erstellen",
+    "accessories.button_toggle_hidden": "Toggle Hidden",
     "accessories.label_room_name": "Raumname",
+    "accessories.label_name": "Name",
+    "accessories.label_hide_this_accessory": "Verstecken Sie dieses Zubehör",
     "accessories.message_for_more_information": "für mehr Informationen",
     "accessories.message_must_use_insecure_mode": "Um deine Geräte zu steuern, müssen Sie Homebridge im <strong>unsicheren</strong> Modus ausführen.",
     "accessories.message_please_see": "Bitte beachten",

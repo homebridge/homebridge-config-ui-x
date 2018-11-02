@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 3.9.0 (2018-11-03)
+
+### Notable Changes
+
+* **Accessory Control:** Added ability for accessories to be assigned custom names; right click to access the accessory config/info panel ([#156](https://github.com/oznu/homebridge-config-ui-x/issues/156))
+* **Accessory Control:** Added ability for accessories to be hidden ([#84](https://github.com/oznu/homebridge-config-ui-x/issues/84))
+
+### Other Changes
+
+* **Auth:** removed some unnecessary log messages ([#171](https://github.com/oznu/homebridge-config-ui-x/issues/171))
+* Updated npm dependencies
+
 ## 3.8.11 (2018-10-06)
 
 ### Notable Changes

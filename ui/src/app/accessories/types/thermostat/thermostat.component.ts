@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ServiceType } from '@oznu/hap-client';
+import { ServiceTypeX } from '../../accessories.component';
 
 import { ThermostatManageComponent } from './thermostat.manage.component';
 
@@ -10,7 +10,7 @@ import { ThermostatManageComponent } from './thermostat.manage.component';
   styleUrls: ['./thermostat.component.scss']
 })
 export class ThermostatComponent implements OnInit {
-  @Input() public service: ServiceType;
+  @Input() public service: ServiceTypeX;
   model = 1;
 
   constructor(

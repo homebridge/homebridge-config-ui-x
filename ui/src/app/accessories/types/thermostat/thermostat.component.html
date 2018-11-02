@@ -3,7 +3,7 @@
     'cooling': service.values.CurrentHeatingCoolingState === 2,
     'heating': service.values.CurrentHeatingCoolingState === 1
   }"></div>
-  <div class="accessory-label">{{ service.serviceName }}</div>
+  <div class="accessory-label">{{ service.customName || service.serviceName }}</div>
   <div class="accessory-label grey-text" *ngIf="!service.values.CurrentHeatingCoolingState">
     Off
   </div>

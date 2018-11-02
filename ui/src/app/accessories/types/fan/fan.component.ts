@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ServiceType } from '@oznu/hap-client';
+import { ServiceTypeX } from '../../accessories.component';
 
 import { FanManageComponent } from './fan.manage.component';
 
@@ -10,7 +10,7 @@ import { FanManageComponent } from './fan.manage.component';
   styleUrls: ['./fan.component.scss']
 })
 export class FanComponent implements OnInit {
-  @Input() public service: ServiceType;
+  @Input() public service: ServiceTypeX;
 
   constructor(
     private modalService: NgbModal

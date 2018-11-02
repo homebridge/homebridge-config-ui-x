@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { ServiceType } from '@oznu/hap-client';
+import { ServiceTypeX } from '../../accessories.component';
 
 import { interval } from 'rxjs/observable/interval';
 import { Subject } from 'rxjs/Subject';
@@ -13,7 +13,7 @@ import 'rxjs/add/operator/distinctUntilChanged';
   styleUrls: ['./fan.component.scss']
 })
 export class FanManageComponent implements OnInit {
-  @Input() public service: ServiceType;
+  @Input() public service: ServiceTypeX;
   public targetMode: any;
   public targetRotationSpeed: any;
   public targetRotationSpeedChanged: Subject<string> = new Subject<string>();

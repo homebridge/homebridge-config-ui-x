@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ServiceType } from '@oznu/hap-client';
+import { ServiceTypeX } from '../../accessories.component';
 
 @Component({
   selector: 'app-lockmechanism',
@@ -7,7 +7,7 @@ import { ServiceType } from '@oznu/hap-client';
   styleUrls: ['./lockmechanism.component.scss']
 })
 export class LockmechanismComponent implements OnInit {
-  @Input() public service: ServiceType;
+  @Input() public service: ServiceTypeX;
 
   constructor() { }
 

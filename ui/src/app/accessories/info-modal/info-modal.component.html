@@ -1,12 +1,22 @@
 <div class="modal-content">
   <div class="modal-header">
-    <h5 class="modal-title">{{ service.serviceName }}</h5>
+    <h5 class="modal-title">{{ service.customName || service.serviceName }}</h5>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
-  <form>
     <div class="modal-body">
+      <div>
+        <label for="basic-url" [translate]="'accessories.label_name'">Name</label>
+        <div class="custom-control custom-checkbox float-right">
+          <input type="checkbox" class="custom-control-input" id="hide-accessory" [(ngModel)]="service.hidden">
+          <label class="custom-control-label" for="hide-accessory" [translate]="'accessories.label_hide_this_accessory'">Hide this accessory</label>
+        </div>
+        <div class="form-group mb-3">
+          <input type="text" class="form-control" id="basic-url" [ngModel]="service.customName || service.serviceName" (ngModelChange)="service.customName = $event">
+        </div>
+      </div>
+      <hr>
       <table class="table table-borderless table-hover table-striped table-sm">
         <tbody>
           <tr>
@@ -30,5 +40,4 @@
         </tbody>
       </table>
     </div>
-  </form>
 </div>

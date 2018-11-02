@@ -1,7 +1,10 @@
 {
     "accessories.button_add_room": "Ajouter une pièce",
     "accessories.button_create_room": "Créer une pièce",
+    "accessories.button_toggle_hidden": "Toggle Hidden",
     "accessories.label_room_name": "Nom de la pièce",
+    "accessories.label_name": "Prénom",
+    "accessories.label_hide_this_accessory": "Masquer cet accessoire",
     "accessories.message_for_more_information": "pour plus d'informations.",
     "accessories.message_must_use_insecure_mode": "Pour contrôler vos accessoires vous devez lancez Homebridge en mode <strong>insecure</strong>.",
     "accessories.message_please_see": "Merci de voir",

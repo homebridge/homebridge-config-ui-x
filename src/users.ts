@@ -156,7 +156,6 @@ class Users {
         await jwt.verifyAsync(token, user.hashedPassword);
         return user;
       } catch (e) {
-        hb.log(`Invalid token sent by ${user.username}: ${e.message}`);
         return null;
       }
     } else {

@@ -13,6 +13,8 @@ import { MobileDetectService } from '../_services/mobile-detect.service';
 import { AddRoomModalComponent } from './add-room-modal/add-room-modal.component';
 import { InfoModalComponent } from './info-modal/info-modal.component';
 
+export type ServiceTypeX = ServiceType & { customName?: string, hidden?: boolean };
+
 @Component({
   selector: 'app-accessories',
   templateUrl: './accessories.component.html',
@@ -21,8 +23,9 @@ import { InfoModalComponent } from './info-modal/info-modal.component';
 export class AccessoriesComponent implements OnInit {
   @Input() accessoryLayout: { name: string; services: Array<{ aid: number; iid: number; uuid: string; }>; }[];
   public accessories: { services: ServiceType[] } = { services: [] };
-  public rooms: Array<{ name: string, services: ServiceType[] }> = [];
+  public rooms: Array<{ name: string, services: ServiceTypeX[] }> = [];
   public isMobile: any = false;
+  public hideHidden = true;
   private roomsOrdered = false;
   private onOpen;
   private onMessage;
@@ -83,6 +86,7 @@ export class AccessoriesComponent implements OnInit {
 
         if (!this.roomsOrdered) {
           this.orderRooms();
+          this.applyCustomAttributes();
           this.roomsOrdered = true;
         }
       }
@@ -162,6 +166,17 @@ export class AccessoriesComponent implements OnInit {
     });
   }
 
+  applyCustomAttributes() {
+    // apply custom saved attributes to the service
+    this.rooms.forEach((room) => {
+      const roomCache = this.accessoryLayout.find(r => r.name === room.name);
+      room.services.forEach((service) => {
+        const serviceCache = roomCache.services.find(s => s.aid === service.aid && s.iid === service.iid && s.uuid === service.uuid);
+        Object.assign(service, serviceCache);
+      });
+    });
+  }
+
   addRoom() {
     const ref = this.modalService.open(AddRoomModalComponent, {
       size: 'lg',
@@ -193,7 +208,9 @@ export class AccessoriesComponent implements OnInit {
           return {
             aid: service.aid,
             iid: service.iid,
-            uuid: service.uuid
+            uuid: service.uuid,
+            customName: service.customName || undefined,
+            hidden: service.hidden || undefined
           };
         })
       };
@@ -247,6 +264,10 @@ export class AccessoriesComponent implements OnInit {
     });
 
     ref.componentInstance.service = service;
+
+    ref.result
+      .then(x => this.saveLayout())
+      .catch(x => this.saveLayout());
 
     return false;
   }
