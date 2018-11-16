@@ -33,6 +33,11 @@ class LoginComponent implements OnInit {
   }
 
   onSubmit({ value, valid }) {
+    if (!valid) {
+      this.invalidCredentials = true;
+      return;
+    }
+
     this.$auth.login(value.username, value.password)
       .then((user) => {
         this.$state.go(this.returnTo.name(), this.returnTo.params());
