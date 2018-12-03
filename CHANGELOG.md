@@ -2,13 +2,18 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## NEXT
+## 3.9.1 (2018-12-03)
 
 ### Notable Changes
 
 * **i18n:** Improvements to German language translation ([#174](https://github.com/oznu/homebridge-config-ui-x/pull/174))
 * **Auth:** Fixed bug preventing login when credentials were autofilled in Chrome ([#175](https://github.com/oznu/homebridge-config-ui-x/issues/175))
 * **Plugins:** Prevent invalid link to plugin homepage being displayed if the URL is not known ([#178](https://github.com/oznu/homebridge-config-ui-x/issues/178))
+
+### Other Changes
+
+* Updated Angular from 6.1.9 to 7.1.1
+* Updated npm dependencies
 
 ## 3.9.0 (2018-11-03)
 

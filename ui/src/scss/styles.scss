@@ -5,7 +5,7 @@ $roboto-font-path: '../../node_modules/mdbootstrap/font/roboto/';
 $material-design-icons-font-path: '../../node_modules/material-design-icons-iconfont/dist/fonts/';
 $fa-font-path:'../../node_modules/@fortawesome/fontawesome-free-webfonts/webfonts';
 
-@import "~material-design-icons-iconfont/dist/material-design-icons";
+@import "~material-design-icons-iconfont/src/material-design-icons";
 @import "~@fortawesome/fontawesome-free-webfonts/scss/fontawesome.scss";
 @import "~@fortawesome/fontawesome-free-webfonts/scss/fa-solid.scss";
 @import "~@fortawesome/fontawesome-free-webfonts/scss/fa-brands.scss";
