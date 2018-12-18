@@ -2,7 +2,7 @@ import { Injectable, Injector } from '@angular/core';
 import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest } from '@angular/common/http';
 import { StateService } from '@uirouter/core';
 import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/throw';
+import { throwError } from 'rxjs';
 import 'rxjs/add/operator/catch';
 
 import { AuthService } from './auth.service';
@@ -39,7 +39,7 @@ export class AuthHttpInterceptor implements HttpInterceptor {
           }
         }
 
-        return Observable.throw(error);
+        return throwError(error);
       }) as any;
   }
 }

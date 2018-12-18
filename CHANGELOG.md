@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 3.9.2 (2018-12-18)
+
+### Notable Changes
+
+* **i18n:** Improvements to Polish language translation ([#186](https://github.com/oznu/homebridge-config-ui-x/pull/186))
+* **i18n:** Hungarian language translation added by Nagy Attila
+* **i18n:** Traditional Chinese language translation added by [@r951236958](https://github.com/r951236958)
+* **i18n:** Improved i18n capabilities to support both Simplified and Traditional Chinese translations
+
+## Bug Fixes
+
+* Fixed a bug that prevented errors being handled correctly by the client
+
 ## 3.9.1 (2018-12-03)
 
 ### Notable Changes

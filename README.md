@@ -1,7 +1,7 @@
 [![npm](https://img.shields.io/npm/v/homebridge-config-ui-x.svg)](https://www.npmjs.com/package/homebridge-config-ui-x) 
 [![npm](https://img.shields.io/npm/dt/homebridge-config-ui-x.svg)](https://www.npmjs.com/package/homebridge-config-ui-x)
 
-Supported Languages: :gb: :de: :fr: :poland: :czech_republic: :ru: :cn:
+Supported Languages: :gb: :de: :fr: :poland: :czech_republic: :ru: :cn: :hungary:
 
 # Homebridge Config UI X
 
