@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file. This projec
 * **i18n:** Traditional Chinese language translation added by [@r951236958](https://github.com/r951236958)
 * **i18n:** Improved i18n capabilities to support both Simplified and Traditional Chinese translations
 
-## Bug Fixes
+### Bug Fixes
 
 * Fixed a bug that prevented errors being handled correctly by the client
 
