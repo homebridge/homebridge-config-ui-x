@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 
 import { StateService } from '@uirouter/angular';
 import { ToastrService } from 'ngx-toastr';
+import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ServiceType } from '@oznu/hap-client';
 import { DragulaService } from 'ng2-dragula';
@@ -37,7 +38,8 @@ export class AccessoriesComponent implements OnInit {
     private ws: WsService,
     public $auth: AuthService,
     private $api: ApiService,
-    private $md: MobileDetectService
+    private $md: MobileDetectService,
+    private translate: TranslateService,
   ) {
     this.isMobile = this.$md.detect.mobile();
 
@@ -57,6 +59,11 @@ export class AccessoriesComponent implements OnInit {
         this.saveLayout();
       });
     });
+
+    // check to see if the layout should be locked
+    if (window.localStorage.getItem('accessories-layout-locked')) {
+      this.isMobile = true;
+    }
   }
 
   ngOnInit() {
@@ -270,6 +277,20 @@ export class AccessoriesComponent implements OnInit {
       .catch(x => this.saveLayout());
 
     return false;
+  }
+
+  toggleLayoutLock() {
+    this.isMobile = !this.isMobile;
+
+    if (this.isMobile) {
+      // layout locked
+      window.localStorage.setItem('accessories-layout-locked', 'yes');
+      this.toastr.success(this.translate.instant('accessories.layout_locked'), this.translate.instant('accessories.title_accessories'));
+    } else {
+      // layout unlocked
+      window.localStorage.removeItem('accessories-layout-locked');
+      this.toastr.success(this.translate.instant('accessories.layout_unlocked'), this.translate.instant('accessories.title_accessories'));
+    }
   }
 
   // tslint:disable-next-line:use-life-cycle-interface

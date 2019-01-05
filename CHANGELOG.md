@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+
+## 3.9.3 (2019-01-05)
+
+### Notable Changes
+
+* **i18n:** Improvements to Polish language translation ([#192](https://github.com/oznu/homebridge-config-ui-x/pull/192))
+* **i18n:** Improvements to Simplified Chinese language translations ([#195](https://github.com/oznu/homebridge-config-ui-x/pull/195))
+* **Accessory Control:** Added ability to lock the accessory layout ([#197](https://github.com/oznu/homebridge-config-ui-x/issues/197))
+
 ## 3.9.2 (2018-12-18)
 
 ### Notable Changes
