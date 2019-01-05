@@ -114,7 +114,7 @@
     "reset.message_all_automations_will_be_reset": "所有自动化都需要在重置后重新配置。",
     "reset.message_need_to_remove_homebridge_accessory_from_home_app": "您需要手动从 Home 应用程序中删除现有的 Homebridge 配件。",
     "reset.message_reset_will_unpair_from_homekit": "运行重置将使本 Homebridge 实例与 Apple HomeKit 取消配对。",
-    "reset.message_your_homebridge_username_will_be_changed": "您的 Homebridge 用户民和 pin 已更改。",
+    "reset.message_your_homebridge_username_will_be_changed": "您的 Homebridge 用户名和 pin 已更改。",
     "reset.title_reset_homebridge_accessory": "重置 Homebridge 配件",
     "reset.title_warning": "警告",
     "reset.toast_accessory_reset": "Homebridge 配件重置",
