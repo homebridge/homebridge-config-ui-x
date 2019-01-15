@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 3.9.4 (2019-01-15)
+
+### Other Changes
+
+* Updated `xterm` dependency to fix [CVE-2019-0542](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-0542)
+* Updated Angular from 7.1.0 -> 7.2.0
+* Updated other npm dependencies
 
 ## 3.9.3 (2019-01-05)
 
