@@ -15,7 +15,7 @@ export class AppComponent {
     // this array needs to be updated each time a new translation is added
 
     console.log(translate.getBrowserCultureLang());
-    translate.addLangs(['en', 'de', 'fr', 'pl', 'cs', 'ru', 'zh-CN', 'zh-TW', 'hu']);
+    translate.addLangs(['en', 'de', 'fr', 'pl', 'cs', 'ru', 'zh-CN', 'zh-TW', 'hu', 'ja']);
 
     const browserLang = translate.getLangs().find(x => x === translate.getBrowserLang() || x === translate.getBrowserCultureLang());
 
