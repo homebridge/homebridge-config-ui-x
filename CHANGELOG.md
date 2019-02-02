@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 3.9.5 (2019-02-02)
+
+### Notable Changes
+
+* **i18n:** Japanese language translation added by [@gaojie429](https://github.com/gaojie429)
+
+### Other Changes
+
+* Updated Angular from 7.2.0 -> 7.2.3
+* Updated other npm dependencies
+
 ## 3.9.4 (2019-01-15)
 
 ### Other Changes
