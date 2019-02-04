@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 3.9.6 (2019-02-04)
+
+### Notable Changes
+
+* **i18n:** Spanish language translation added by [@Rubenfer](https://github.com/Rubenfer)
+
 ## 3.9.5 (2019-02-02)
 
 ### Notable Changes
