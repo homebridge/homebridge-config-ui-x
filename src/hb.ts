@@ -57,7 +57,14 @@ class HomebridgeUI {
       'blue',
       'blue-grey',
       'green',
-      'orange'
+      'orange',
+      'grey',
+      'brown',
+      'amber',
+      'teal',
+      'navi-blue',
+      'cyan',
+      'deep-purple'
     ];
   }
 
