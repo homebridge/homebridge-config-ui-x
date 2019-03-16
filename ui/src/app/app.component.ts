@@ -13,9 +13,10 @@ export class AppComponent {
     public $auth: AuthService,
   ) {
     // this array needs to be updated each time a new translation is added
+    console.log('Browser Culture Lang:', translate.getBrowserCultureLang());
+    console.log('Browser Lang:', translate.getBrowserLang());
 
-    console.log(translate.getBrowserCultureLang());
-    translate.addLangs(['en', 'de', 'fr', 'pl', 'cs', 'ru', 'zh-CN', 'zh-TW', 'hu', 'ja', 'es', 'nl-NL']);
+    translate.addLangs(['en', 'de', 'fr', 'pl', 'cs', 'ru', 'zh-CN', 'zh-TW', 'hu', 'ja', 'es', 'nl']);
 
     const browserLang = translate.getLangs().find(x => x === translate.getBrowserLang() || x === translate.getBrowserCultureLang());
 

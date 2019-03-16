@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 3.9.7 (2019-03-16)
+
+### Notable Changes
+
+* **i18n:** Dutch language translation added by [@RaymondMouthaan](https://github.com/RaymondMouthaan)
+
+### Other Changes
+
+* Updated Angular to 7.2.9
+* Updated other npm dependencies
+
 ## 3.9.6 (2019-02-04)
 
 ### Notable Changes
