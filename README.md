@@ -43,7 +43,7 @@ Add this to your homebridge `config.json` file
 * `sudo` - [See below for details](#sudo-mode).
 * `restart` - The command to run when a restart request is sent from the browser. If not populated it will just terminate the Homebridge process and let your process manager (like systemd) restart it.
 * `temp` - The path to the file that can display your current CPU temperature in WEB UI. eg. `/sys/class/thermal/thermal_zone0/temp`
-* `theme` - The colour scheme to use. Possible values: `red`, `pink`, `purple`, `indigo`, `blue`, `blue-grey`, `green`, `orange`. Defaults to `red`.
+* `theme` - The colour scheme to use. Possible values: `red`, `pink`, `purple`, `indigo`, `blue`, `blue-grey`, `green`, `orange`, `grey`, `brown`, `amber`, `teal`, `navi-blue`, `cyan` and `deep-purple`. Defaults to `red`.
 * `ssl` - [See below for details](#enabling-ssl)
 
 ## Accessory Control
