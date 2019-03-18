@@ -48,7 +48,8 @@
           { "title": "Teal", "enum": ["teal"] },
           { "title": "Navi-blue", "enum": ["navi-blue"] },
           { "title": "Cyan", "enum": ["cyan"] },
-          { "title": "Deep-purple", "enum": ["deep-purple"] }
+          { "title": "Deep-purple", "enum": ["deep-purple"] },
+          { "title": "Dark-mode", "enum": ["dark-mode"] }
         ],
         "required": true
       },
