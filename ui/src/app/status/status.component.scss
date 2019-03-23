@@ -1,0 +1,7 @@
+:host /deep/ a {
+  &.grey-text {
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

@@ -24,8 +24,11 @@ $fa-font-path:'../../node_modules/@fortawesome/fontawesome-free-webfonts/webfont
 
 html, body {
   height: 100%;
-  background-color: #f4f4f4;
   -webkit-font-smoothing: subpixel-antialiased;
+}
+
+body {
+  background-color: #f4f4f4;
 }
 
 /* Move down content because we have a fixed navbar that is 5.5rem tall */

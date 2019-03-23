@@ -23,33 +23,128 @@
         "type": "string",
         "default": "form",
         "oneOf": [
-          { "title": "Form", "enum": ["form"] },
-          { "title": "Basic Auth", "enum": ["basic"] },
-          { "title": "None", "enum": ["none"] }
+          {
+            "title": "Form",
+            "enum": [
+              "form"
+            ]
+          },
+          {
+            "title": "Basic Auth",
+            "enum": [
+              "basic"
+            ]
+          },
+          {
+            "title": "None",
+            "enum": [
+              "none"
+            ]
+          }
         ],
         "required": true
       },
       "theme": {
         "title": "UI Theme",
-        "type":  "string",
+        "type": "string",
         "default": "red",
         "oneOf": [
-          { "title": "Red", "enum": ["red"] },
-          { "title": "Pink", "enum": ["pink"] },
-          { "title": "Purple", "enum": ["purple"] },
-          { "title": "Indigo", "enum": ["indigo"] },
-          { "title": "Blue", "enum": ["blue"] },
-          { "title": "Blue-grey", "enum": ["blue-grey"] },
-          { "title": "Green", "enum": ["green"] },
-          { "title": "Orange", "enum": ["orange"] },
-          { "title": "Grey", "enum": ["grey"] },
-          { "title": "Brown", "enum": ["brown"] },
-          { "title": "Amber", "enum": ["amber"] },
-          { "title": "Teal", "enum": ["teal"] },
-          { "title": "Navi-blue", "enum": ["navi-blue"] },
-          { "title": "Cyan", "enum": ["cyan"] },
-          { "title": "Deep-purple", "enum": ["deep-purple"] },
-          { "title": "Dark-mode", "enum": ["dark-mode"] }
+          {
+            "title": "Red",
+            "enum": [
+              "red"
+            ]
+          },
+          {
+            "title": "Pink",
+            "enum": [
+              "pink"
+            ]
+          },
+          {
+            "title": "Purple",
+            "enum": [
+              "purple"
+            ]
+          },
+          {
+            "title": "Purple - Deep",
+            "enum": [
+              "deep-purple"
+            ]
+          },
+          {
+            "title": "Indigo",
+            "enum": [
+              "indigo"
+            ]
+          },
+          {
+            "title": "Blue",
+            "enum": [
+              "blue"
+            ]
+          },
+          {
+            "title": "Blue - Navi",
+            "enum": [
+              "navi-blue"
+            ]
+          },
+          {
+            "title": "Blue Grey",
+            "enum": [
+              "blue-grey"
+            ]
+          },
+          {
+            "title": "Cyan",
+            "enum": [
+              "cyan"
+            ]
+          },
+          {
+            "title": "Green",
+            "enum": [
+              "green"
+            ]
+          },
+          {
+            "title": "Teal",
+            "enum": [
+              "teal"
+            ]
+          },
+          {
+            "title": "Orange",
+            "enum": [
+              "orange"
+            ]
+          },
+          {
+            "title": "Amber",
+            "enum": [
+              "amber"
+            ]
+          },
+          {
+            "title": "Grey",
+            "enum": [
+              "grey"
+            ]
+          },
+          {
+            "title": "Brown",
+            "enum": [
+              "brown"
+            ]
+          },
+          {
+            "title": "Dark Mode",
+            "enum": [
+              "dark-mode"
+            ]
+          }
         ],
         "required": true
       },
@@ -67,8 +162,18 @@
         "required": true,
         "default": "c",
         "oneOf": [
-          { "title": "Celsius", "enum": ["c"] },
-          { "title": "Fahrenheit", "enum": ["f"] }
+          {
+            "title": "Celsius",
+            "enum": [
+              "c"
+            ]
+          },
+          {
+            "title": "Fahrenheit",
+            "enum": [
+              "f"
+            ]
+          }
         ]
       },
       "loginWallpaper": {
@@ -90,9 +195,24 @@
             "title": "Log Method",
             "type": "string",
             "oneOf": [
-              { "title": "From File", "enum": ["file"] },
-              { "title": "Systemd", "enum": ["systemd"] },
-              { "title": "Custom Command", "enum": ["custom"] }
+              {
+                "title": "From File",
+                "enum": [
+                  "file"
+                ]
+              },
+              {
+                "title": "Systemd",
+                "enum": [
+                  "systemd"
+                ]
+              },
+              {
+                "title": "Custom Command",
+                "enum": [
+                  "custom"
+                ]
+              }
             ]
           },
           "path": {

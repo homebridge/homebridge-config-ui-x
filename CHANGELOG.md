@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 3.10.0 (2019-03-23)
+
+### Notable Changes
+
+* **Themes:** Dark mode and other themes added by [@RaymondMouthaan](https://github.com/RaymondMouthaan) ([#236](https://github.com/oznu/homebridge-config-ui-x/pull/236))
+* **Themes:** Make it easier to see that there are three separate links at the bottom of ths status page by adding hover effect ([#230](https://github.com/oznu/homebridge-config-ui-x/issues/230))
+
+
 ## 3.9.7 (2019-03-16)
 
 ### Notable Changes

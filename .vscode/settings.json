@@ -1,0 +1,8 @@
+{
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "files.eol": "\n",
+  "tslint.enable": true,
+  "tslint.autoFixOnSave": true,
+  "editor.formatOnSave": true
+}

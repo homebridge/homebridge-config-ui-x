@@ -17,7 +17,10 @@ interface HomebridgeStatus {
 
 @Component({
   selector: 'app-status',
-  templateUrl: './status.component.html'
+  templateUrl: './status.component.html',
+  styleUrls: [
+    './status.component.scss'
+  ]
 })
 export class StatusComponent implements OnInit {
   @ViewChild('qrcode') qrcode: ElementRef;
@@ -39,7 +42,7 @@ export class StatusComponent implements OnInit {
     public $plugin: PluginService,
     private $api: ApiService,
     public toastr: ToastrService,
-    ) {}
+  ) { }
 
   ngOnInit() {
     // subscribe to status events
