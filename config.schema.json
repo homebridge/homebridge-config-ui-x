@@ -41,7 +41,15 @@
           { "title": "Blue", "enum": ["blue"] },
           { "title": "Blue-grey", "enum": ["blue-grey"] },
           { "title": "Green", "enum": ["green"] },
-          { "title": "Orange", "enum": ["orange"] }
+          { "title": "Orange", "enum": ["orange"] },
+          { "title": "Grey", "enum": ["grey"] },
+          { "title": "Brown", "enum": ["brown"] },
+          { "title": "Amber", "enum": ["amber"] },
+          { "title": "Teal", "enum": ["teal"] },
+          { "title": "Navi-blue", "enum": ["navi-blue"] },
+          { "title": "Cyan", "enum": ["cyan"] },
+          { "title": "Deep-purple", "enum": ["deep-purple"] },
+          { "title": "Dark-mode", "enum": ["dark-mode"] }
         ],
         "required": true
       },
