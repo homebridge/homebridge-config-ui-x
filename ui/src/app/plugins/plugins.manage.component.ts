@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { StateService } from '@uirouter/angular';
@@ -16,16 +16,14 @@ Terminal.applyAddon(fit);
   templateUrl: './plugins.manage.component.html',
   styleUrls: ['./plugins.component.scss']
 })
-export class PluginsManageComponent implements OnInit {
+export class PluginsManageComponent implements OnInit, OnDestroy {
   @Input() pluginName;
   @Input() action;
 
+  private io = this.$ws.connectToNamespace('plugins');
+
   private term = new Terminal();
   private termTarget: HTMLElement;
-
-  private onMessage;
-  private onDone;
-  private onComplete: Function;
 
   public actionComplete = false;
   public updateSelf = false;
@@ -40,25 +38,17 @@ export class PluginsManageComponent implements OnInit {
     public toastr: ToastrService,
     private translate: TranslateService,
     private $api: ApiService,
-    private ws: WsService,
+    private $ws: WsService,
     private $state: StateService,
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.termTarget = document.getElementById('plugin-log-output');
     this.term.open(this.termTarget);
     (<any>this.term).fit();
 
-    this.onMessage = this.ws.handlers.npmLog.subscribe((data) => {
+    this.io.socket.on('stdout', (data) => {
       this.term.write(data);
-    });
-
-    this.onDone = this.ws.handlers.npmInstall.subscribe((data) => {
-      if (data.succeeded && data.pkg === this.pluginName) {
-        this.onComplete();
-      } else if (data.pkg === this.pluginName) {
-        this.$state.reload();
-      }
     });
 
     this.toastSuccess = this.translate.instant('toast.title_success');
@@ -88,47 +78,43 @@ export class PluginsManageComponent implements OnInit {
   }
 
   install() {
-    this.$api.installPlugin(this.pluginName).subscribe(
+    this.io.request('install', this.pluginName).subscribe(
       (data) => {
-        this.onComplete = () => {
-          this.$state.go('plugins');
-          this.activeModal.close();
-          this.toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);
-        };
+        this.$state.go('plugins');
+        this.activeModal.close();
+        this.toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);
       },
       (err) => {
+        console.error(`Failed to install ${this.pluginName}`);
         this.$state.reload();
       }
     );
   }
 
   uninstall() {
-    this.$api.uninstallPlugin(this.pluginName).subscribe(
+    this.io.request('uninstall', this.pluginName).subscribe(
       (data) => {
-        this.onComplete = () => {
-          this.$state.reload();
-          this.activeModal.close();
-          this.toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);
-        };
+        this.$state.reload();
+        this.activeModal.close();
+        this.toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);
       },
       (err) => {
+        console.error(`Failed to uninstall ${this.pluginName}`);
         this.$state.reload();
       }
     );
   }
 
   update() {
-    this.$api.updatePlugin(this.pluginName).subscribe(
+    this.io.request('update', this.pluginName).subscribe(
       (data) => {
-        this.onComplete = () => {
-          if (this.pluginName === 'homebridge-config-ui-x') {
-            this.updateSelf = true;
-          } else {
-            this.$state.reload();
-          }
-          this.toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);
-          this.getChangeLog();
-        };
+        if (this.pluginName === 'homebridge-config-ui-x') {
+          this.updateSelf = true;
+        } else {
+          this.$state.reload();
+        }
+        this.toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);
+        this.getChangeLog();
       },
       (err) => {
         this.$state.reload();
@@ -137,15 +123,14 @@ export class PluginsManageComponent implements OnInit {
   }
 
   upgradeHomebridge() {
-    this.$api.upgradeHomebridgePackage().subscribe(
+    this.io.request('homebridge-update').subscribe(
       (data) => {
-        this.onComplete = () => {
-          this.$state.go('restart');
-          this.activeModal.close();
-          this.toastr.success(this.pastTenseVerb, this.toastSuccess);
-        };
+        this.$state.go('restart');
+        this.activeModal.close();
+        this.toastr.success(this.pastTenseVerb, this.toastSuccess);
       },
       (err) => {
+        this.toastr.error(err.message);
         this.$state.reload();
       }
     );
@@ -153,7 +138,7 @@ export class PluginsManageComponent implements OnInit {
 
   getChangeLog() {
     this.$api.getPluginChangeLog(this.pluginName).subscribe(
-      (data: {changelog: string}) => {
+      (data: { changelog: string }) => {
         if (data.changelog) {
           this.actionComplete = true;
           this.changeLog = data.changelog;
@@ -172,13 +157,9 @@ export class PluginsManageComponent implements OnInit {
     this.activeModal.close();
   }
 
-
-  // tslint:disable-next-line:use-life-cycle-interface
   ngOnDestroy() {
-    try {
-      this.onMessage.unsubscribe();
-      this.onDone.unsubscribe();
-    } catch (e) { }
+    this.io.socket.disconnect();
+    this.io.socket.removeAllListeners();
   }
 
 }

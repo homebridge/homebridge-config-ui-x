@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '../_services/api.service';
 import { AuthService } from '../_services/auth.service';
 import { PluginService } from '../_services/plugin.service';
+import { WsService } from '../_services/ws.service';
 
 @Component({
   selector: 'app-plugins.search',
@@ -39,7 +40,7 @@ export class PluginSearchComponent implements OnInit {
       query: this.searchQuery
     });
 
-    this.$api.searchNpmForPlugins(this.searchQuery).subscribe(
+    this.$api.get(`/plugins/search/${this.searchQuery}`).subscribe(
       (data) => {
         this.installedPlugins = data;
         this.loading = false;
@@ -51,7 +52,11 @@ export class PluginSearchComponent implements OnInit {
   }
 
   onSubmit({ value, valid }) {
-    this.$state.go('plugins.search', {query: value.query});
+    if (!value.query.length) {
+      this.$state.go('plugins');
+    } else {
+      this.$state.go('plugins.search', { query: value.query });
+    }
   }
 
 }

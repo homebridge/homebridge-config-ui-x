@@ -3,6 +3,9 @@ import { environment } from '../../environments/environment';
 import { ApiService } from './api.service';
 import { AuthService } from './auth.service';
 
+import { connect } from 'socket.io-client';
+import { Observable } from 'rxjs';
+
 @Injectable()
 export class WsService {
   @Output() open: EventEmitter<any> = new EventEmitter();
@@ -26,12 +29,54 @@ export class WsService {
   private reconnecting = false;
   private autoReconnectInterval = 2000;
 
+  public io: SocketIOClient.Socket;
+
   constructor(
     private $api: ApiService,
     private $auth: AuthService
   ) {
     this.socket = { readyState: 0 };
     this.listen();
+
+    this.io = connect(environment.api.socket, {
+      transports: ['websocket'],
+      multiplex: true,
+      query: {
+        some: 'thing',
+      },
+    });
+  }
+
+  /**
+   * Establish a connection to the namespace
+   * @param namespace
+   */
+  connectToNamespace(namespace: string) {
+    const socket = connect(`${environment.api.socket}/${namespace}`, {
+      transports: ['websocket'],
+      query: {
+        some: 'thing',
+      },
+    });
+
+    function request(resource: string, payload?: string | object | Array<any>): Observable<string | object | Array<any>> {
+      return Observable.create((observer) => {
+        socket.emit(resource, payload, (resp) => {
+          console.log(resp);
+          if (typeof resp === 'object' && resp.error) {
+            observer.error(resp);
+          } else {
+            observer.next(resp);
+          }
+          observer.complete();
+        });
+      });
+    }
+
+    return {
+      socket,
+      request
+    };
   }
 
   listen() {

@@ -31,10 +31,10 @@ export class PluginsComponent implements OnInit {
 
   ngOnInit() {
     // load list of installed plugins
-    this.$api.getInstalledPlugins().subscribe(
+    this.$api.get(`/plugins`).subscribe(
       (data: any) => {
-         this.installedPlugins = data.sort(x => !x.update);
-         this.loading = false;
+        this.installedPlugins = data.sort(x => !x.update);
+        this.loading = false;
       },
       (err) => {
         this.toastr.error(

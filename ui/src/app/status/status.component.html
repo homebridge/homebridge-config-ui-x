@@ -26,27 +26,29 @@
       <div class="d-flex flex-row">
         <div class="d-flex p-1">
           <div class="p-3">
-            <i *ngIf="!homebridge.version" class="material-icons status-circle bg-status-green spin">&#xE863;</i>
-            <i *ngIf="homebridge.version && !homebridge.update"
+            <i *ngIf="!homebridge.installedVersion"
+              class="material-icons status-circle bg-status-green spin">&#xE863;</i>
+            <i *ngIf="homebridge.installedVersion && !homebridge.updateAvailable"
               class="material-icons status-circle bg-status-green">&#xE5CA;</i>
-            <i *ngIf="homebridge.version && homebridge.update"
+            <i *ngIf="homebridge.installedVersion && homebridge.updateAvailable"
               class="material-icons status-circle bg-yellow">&#xE863;</i>
           </div>
           <div class="align-self-center">
-            <span *ngIf="!homebridge.version" [translate]="'status.homebridge.label_checking_for_updates'">
+            <span *ngIf="!homebridge.installedVersion" [translate]="'status.homebridge.label_checking_for_updates'">
               Checking for updates...
             </span>
-            <span *ngIf="homebridge.version && !homebridge.update" [translate]="'status.homebridge.label_up_to_date'">
+            <span *ngIf="homebridge.installedVersion && !homebridge.updateAvailable"
+              [translate]="'status.homebridge.label_up_to_date'">
               Up To Date
             </span>
-            <span *ngIf="homebridge.version && homebridge.update"
-              [translate]="'status.homebridge.label_update_available'"
-              [translateParams]="{version: homebridge.version}">Update Available</span>
+            <span *ngIf="homebridge.installedVersion && homebridge.updateAvailable"
+              [translate]="'status.homebridge.label_update_available'" [translateParams]="homebridge">Update
+              Available</span>
             <br>
-            <span class="grey-text" *ngIf="homebridge.version"><span class="d-none d-sm-inline"
-                [translate]="'status.homebridge.label_version'">Version</span> {{ homebridge.installed }}</span>
+            <span class="grey-text" *ngIf="homebridge.installedVersion"><span class="d-none d-sm-inline"
+                [translate]="'status.homebridge.label_version'">Version</span> {{ homebridge.installedVersion }}</span>
           </div>
-          <div class="align-self-center p-3" *ngIf="homebridge.update && $auth.user.admin">
+          <div class="align-self-center p-3" *ngIf="homebridge.updateAvailable && $auth.user.admin">
             <button type="button" class="btn btn-red waves-effect waves-light" (click)="$plugin.upgradeHomebridge()"
               [translate]="'plugins.button_upgrade'">Upgrade</button>
           </div>
