@@ -27,6 +27,7 @@
     "bootstrap": "^4.3.1",
     "classlist.js": "^1.1.20150312",
     "core-js": "^2.6.5",
+    "dayjs": "^1.8.11",
     "jquery": "^3.3.1",
     "material-design-icons-iconfont": "^4.0.5",
     "mdbootstrap": "^4.7.4",

@@ -4,6 +4,7 @@ import { HttpClientModule, HttpClient, HTTP_INTERCEPTORS } from '@angular/common
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+import { JwtModule } from '@auth0/angular-jwt';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { UIRouterModule } from '@uirouter/angular';
@@ -21,6 +22,8 @@ import {
   JsonSchemaFormService
 } from 'ngx-json-schema';
 
+import { environment } from '../environments/environment';
+
 import { routerConfigFn } from './_helpers/router.config';
 import { HttpLoaderFactory } from './_helpers/translate.loader';
 
@@ -28,7 +31,6 @@ import { WsService } from './_services/ws.service';
 import { ApiService } from './_services/api.service';
 import { PluginService } from './_services/plugin.service';
 import { AuthService } from './_services/auth.service';
-import { AuthHttpInterceptor } from './_services/http.service';
 import { MobileDetectService } from './_services/mobile-detect.service';
 
 import { SpinnerModule } from './spinner/spinner.module';
@@ -52,6 +54,11 @@ import { UsersEditComponent } from './users/users.edit.component';
 import { RestartComponent, RestartState } from './restart/restart.component';
 import { LoginComponent, LoginStates } from './login/login.component';
 import { ResetComponent, ResetModalComponent } from './reset/reset.component';
+
+
+export function tokenGetter() {
+  return localStorage.getItem(environment.jwt.tokenKey);
+}
 
 @NgModule({
   declarations: [
@@ -86,6 +93,14 @@ import { ResetComponent, ResetModalComponent } from './reset/reset.component';
     BrowserAnimationsModule,
     HttpClientModule,
     FormsModule,
+    JwtModule.forRoot({
+      config: {
+        authScheme: 'bearer ',
+        tokenGetter: tokenGetter,
+        whitelistedDomains: environment.jwt.whitelistedDomains,
+        blacklistedRoutes: environment.jwt.blacklistedRoutes
+      }
+    }),
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -135,7 +150,6 @@ import { ResetComponent, ResetModalComponent } from './reset/reset.component';
     CustomPipesModule,
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: AuthHttpInterceptor, multi: true },
     AuthService,
     WsService,
     ApiService,

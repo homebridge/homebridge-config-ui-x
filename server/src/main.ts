@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 
 import { AppModule } from './app.module';
@@ -20,6 +21,13 @@ async function bootstrap() {
   app.enableCors({
     origin: ['http://localhost:8080', 'http://localhost:4200'],
   });
+
+  // validation pipes
+  // https://github.com/typestack/class-validator
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    skipMissingProperties: true,
+  }));
 
   await app.listen(3000);
 }

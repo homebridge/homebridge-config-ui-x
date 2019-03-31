@@ -50,6 +50,7 @@ export class StatusComponent implements OnInit, OnDestroy {
 
     this.io.socket.on('connect', () => {
       this.consoleStatus = 'up';
+      this.io.socket.emit('monitor-server-status');
     });
 
     this.io.socket.on('disconnect', () => {

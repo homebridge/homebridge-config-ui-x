@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { JwtHelperService } from '@auth0/angular-jwt';
-
+import * as dayjs from 'dayjs';
 import { ApiService } from './api.service';
+import { environment } from '../../environments/environment';
 
-interface HomebridgeUser {
+interface UserInterface {
   token?: string;
   username?: string;
   name?: string;
@@ -13,68 +14,83 @@ interface HomebridgeUser {
 
 @Injectable()
 export class AuthService {
-  private jwtHelper: JwtHelperService = new JwtHelperService();
-
   public env: any = {};
   public formAuth = true;
   public theme: string;
-  public user: HomebridgeUser = {};
+  public token: string;
+  public user: UserInterface = {};
+  private logoutTimer;
 
   constructor(
+    private $jwtHelper: JwtHelperService,
     private $api: ApiService,
     private titleService: Title
   ) {
+    // load the token (if present) from local storage on page init
     this.loadToken();
     this.getAppSettings();
   }
 
-  isLoggedIn() {
-    return this.user && this.user.token && !this.jwtHelper.isTokenExpired(this.user.token);
-  }
-
   login(username: string, password: string) {
-    return this.$api.login(username, password).toPromise()
-      .then((user: any) => {
-        window.localStorage.setItem('token', user.token);
-        return this.parseToken(user.token);
+    return this.$api.post('/auth/login', { username, password })
+      .toPromise()
+      .then((resp) => {
+        if (!this.validateToken(resp.access_token)) {
+          throw new Error('Invalid username or password.');
+        } else {
+          window.localStorage.setItem(environment.jwt.tokenKey, resp.access_token);
+        }
       });
   }
 
   logout() {
     this.user = null;
-    window.localStorage.removeItem('token');
+    this.token = null;
+    window.localStorage.removeItem(environment.jwt.tokenKey);
     window.location.reload();
+  }
+
+  loadToken() {
+    const token = window.localStorage.getItem(environment.jwt.tokenKey);
+    if (token) {
+      this.validateToken(token);
+    }
+  }
+
+  validateToken(token: string) {
+    try {
+      this.user = this.$jwtHelper.decodeToken(token);
+      this.token = token;
+      this.setLogoutTimer();
+      return true;
+    } catch (e) {
+      window.localStorage.removeItem(environment.jwt.tokenKey);
+      this.token = null;
+      return false;
+    }
+  }
+
+  setLogoutTimer() {
+    clearTimeout(this.logoutTimer);
+    if (!this.$jwtHelper.isTokenExpired(this.token)) {
+      const expires = dayjs(this.$jwtHelper.getTokenExpirationDate(this.token));
+      const timeout = expires.diff(dayjs(), 'millisecond');
+      this.logoutTimer = setTimeout(() => {
+        this.logout();
+      }, timeout);
+    }
+  }
+
+  isLoggedIn() {
+    return this.user && this.token && !this.$jwtHelper.isTokenExpired(this.token);
   }
 
   refreshToken() {
     return this.$api.getToken().toPromise()
       .then((user: any) => {
         window.localStorage.setItem('token', user.token);
-        return this.parseToken(user.token);
+        return this.validateToken(user.token);
       });
-  }
-
-  parseToken(token: string) {
-    let decoded;
-    try {
-       decoded = this.jwtHelper.decodeToken(token);
-    } catch (e) {
-       return window.localStorage.removeItem('token');
-    }
-
-    this.user = {
-      token: token,
-      username: decoded.username,
-      name: decoded.name,
-      admin: decoded.admin
-    };
-  }
-
-  loadToken() {
-    const token = window.localStorage.getItem('token');
-    if (token) {
-      this.parseToken(token);
-    }
   }
 
   getAppSettings() {

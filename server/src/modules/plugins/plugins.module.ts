@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { PassportModule } from '@nestjs/passport';
 import { PluginsService } from './plugins.service';
 import { LoggerModule } from '../../core/logger/logger.module';
 import { PluginsController } from './plugins.controller';
@@ -7,6 +8,7 @@ import { ConfigModule } from '../../core/config/config.module';
 
 @Module({
   imports: [
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     ConfigModule,
     LoggerModule,
   ],

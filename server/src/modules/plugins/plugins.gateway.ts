@@ -1,8 +1,11 @@
+import { UseGuards } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets';
 import * as color from 'bash-color';
 import { PluginsService } from './plugins.service';
 import { Logger } from '../../core/logger/logger.service';
+import { WsJwtGuard } from '../../core/auth/ws-jwt.guard';
 
+@UseGuards(WsJwtGuard)
 @WebSocketGateway({ namespace: '/plugins' })
 export class PluginsGateway {
 

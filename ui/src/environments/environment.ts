@@ -9,6 +9,11 @@ export const environment = {
     base: 'http://localhost:3000/api',
     socket: 'http://localhost:3000'
   },
+  jwt: {
+    tokenKey: 'access_token',
+    whitelistedDomains: ['localhost:3000'],
+    blacklistedRoutes: ['localhost:3000/api/auth/login'],
+  },
   socketUrl: 'ws://localhost:8080',
   apiBaseUrl: 'http://localhost:8080',
   apiHttpOptions: {
