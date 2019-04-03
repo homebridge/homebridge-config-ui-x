@@ -53,6 +53,7 @@ export class AuthMiddleware {
       this.staticAuth = this.noAuthHandler;
     } else if (hb.authMethod === 'basic') {
       hb.log('Using Basic Authentication');
+      hb.warn('Basic Authentication has been depreciated and will be removed in a later version. Please swap to Form Authentication.');
       this.main = this.passport.authenticate('basic', { session: false });
       this.staticAuth = this.passport.authenticate('basic', { session: false });
     } else {

@@ -1,6 +1,6 @@
 {
   "name": "homebridge-config-ui-x",
-  "version": "3.10.0",
+  "version": "3.11.0",
   "description": "Configuration UI plugin for Homebridge",
   "license": "MIT",
   "keywords": [
@@ -15,8 +15,9 @@
   },
   "main": "./dist/index.js",
   "scripts": {
+    "webpack": "webpack --config webpack.config.js",
     "build": "npm run build:server && npm run build:ui",
-    "build:server": "tsc",
+    "build:server": "rimraf dist && tsc && npm run webpack",
     "build:ui": "npm run build --prefix ui",
     "watch": "concurrently \"npm run watch:ui\" \"npm run watch:server\"",
     "watch:server": "tsc --watch",
@@ -34,16 +35,16 @@
   "dependencies": {
     "@oznu/hap-client": "0.0.4",
     "bash-color": "^0.0.4",
-    "bluebird": "^3.5.4",
+    "bluebird": "^3.5.3",
     "body-parser": "^1.18.3",
     "buffer-shims": "^1.0.0",
-    "commander": "^2.20.0",
+    "commander": "^2.19.0",
     "cors": "^2.8.5",
     "dotenv": "^7.0.0",
     "express": "^4.16.4",
     "fs-extra": "^7.0.1",
     "helmet": "^3.16.0",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^8.5.0",
     "lodash": "^4.17.11",
     "node-pty-prebuilt-multiarch": "0.8.1",
     "passport": "~0.4.0",
@@ -53,16 +54,20 @@
     "request-promise": "^4.2.4",
     "semver": "^6.0.0",
     "source-map-support": "^0.5.11",
-    "ws": "^6.2.1"
+    "ws": "^6.2.0"
   },
   "devDependencies": {
     "@types/express": "^4.16.1",
     "@types/fs-extra": "^5.0.5",
-    "@types/node": "10.11.0",
+    "@types/node": "^10.11.0",
     "@types/passport": "^1.0.0",
     "@types/ws": "^6.0.1",
     "concurrently": "^4.1.0",
-    "tslint": "^5.15.0",
-    "typescript": "^3.4.1"
+    "rimraf": "^2.6.3",
+    "ts-loader": "^5.3.3",
+    "tslint": "^5.14.0",
+    "typescript": "^3.3.3333",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.0"
   }
 }

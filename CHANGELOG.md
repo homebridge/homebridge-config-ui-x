@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 3.11.0 (2019-04-03)
+
+### Notable Changes
+
+* **Auth:** The Basic Authentication option has been depreciated. Users should switch to Form Authentication instead (the default).
+
+### Other Changes
+
+* Swap to using a prebuilt version of the node-pty package to try and reduce errors during installation
+* Updated other npm dependencies
+
 ## 3.10.0 (2019-03-23)
 
 ### Notable Changes

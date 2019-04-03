@@ -1,5 +1,3 @@
-import 'source-map-support/register';
-
 import * as path from 'path';
 import * as child_process from 'child_process';
 import * as commander from 'commander';
@@ -58,7 +56,7 @@ class HomebridgeConfigUi {
       process.exit(1);
     });
 
-    ui.on('error', (err) => {});
+    ui.on('error', (err) => { });
   }
 
   /**

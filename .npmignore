@@ -6,6 +6,7 @@ screenshots
 tsconfig.json
 tslint.json
 yarn.lock
+webpack.config.js
 
 # Logs
 logs

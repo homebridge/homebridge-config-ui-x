@@ -1,7 +1,5 @@
 process.title = 'homebridge-config-ui-x';
 
-import 'source-map-support/register';
-
 import { UiServer } from '../server';
 
 setInterval(() => {
