@@ -1,7 +1,7 @@
 import * as os from 'os';
 import * as fs from 'fs';
 import * as WebSocket from 'ws';
-import * as pty from 'node-pty';
+import * as pty from 'node-pty-prebuilt-multiarch';
 import * as color from 'bash-color';
 import * as child_process from 'child_process';
 
@@ -112,7 +112,7 @@ export class LogsWssHandler {
 
   send(data) {
     if (this.ws.readyState === 1) {
-      this.ws.send(JSON.stringify({logs: data}));
+      this.ws.send(JSON.stringify({ logs: data }));
     }
   }
 
@@ -201,7 +201,7 @@ export class LogsWssHandler {
       try {
         this.term.kill();
         this.term.destroy();
-      } catch (e) {}
+      } catch (e) { }
       this.forceKillProcess();
     }
   }

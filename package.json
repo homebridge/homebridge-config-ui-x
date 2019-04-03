@@ -34,35 +34,35 @@
   "dependencies": {
     "@oznu/hap-client": "0.0.4",
     "bash-color": "^0.0.4",
-    "bluebird": "^3.5.3",
+    "bluebird": "^3.5.4",
     "body-parser": "^1.18.3",
     "buffer-shims": "^1.0.0",
-    "commander": "^2.19.0",
+    "commander": "^2.20.0",
     "cors": "^2.8.5",
-    "dotenv": "^6.2.0",
+    "dotenv": "^7.0.0",
     "express": "^4.16.4",
     "fs-extra": "^7.0.1",
     "helmet": "^3.16.0",
-    "jsonwebtoken": "^8.5.0",
+    "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.11",
-    "node-pty": "0.7.8",
+    "node-pty-prebuilt-multiarch": "0.8.1",
     "passport": "~0.4.0",
     "passport-http": "^0.3.0",
     "qr-image": "^3.2.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
-    "semver": "^5.6.0",
+    "semver": "^6.0.0",
     "source-map-support": "^0.5.11",
-    "ws": "^6.2.0"
+    "ws": "^6.2.1"
   },
   "devDependencies": {
     "@types/express": "^4.16.1",
     "@types/fs-extra": "^5.0.5",
-    "@types/node": "^10.11.0",
+    "@types/node": "10.11.0",
     "@types/passport": "^1.0.0",
     "@types/ws": "^6.0.1",
     "concurrently": "^4.1.0",
-    "tslint": "^5.14.0",
-    "typescript": "^3.3.3333"
+    "tslint": "^5.15.0",
+    "typescript": "^3.4.1"
   }
 }

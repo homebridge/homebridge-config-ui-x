@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as WebSocket from 'ws';
-import * as pty from 'node-pty';
+import * as pty from 'node-pty-prebuilt-multiarch';
 import * as color from 'bash-color';
 
 import { User } from '../users';

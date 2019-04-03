@@ -2,7 +2,7 @@ import * as os from 'os';
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import * as pty from 'node-pty';
+import * as pty from 'node-pty-prebuilt-multiarch';
 import * as semver from 'semver';
 import * as color from 'bash-color';
 import * as Bluebird from 'bluebird';
@@ -25,7 +25,7 @@ class PackageManager {
     this.paths = this.getBasePaths();
 
     // setup requests with default options
-    this.rp = rp.defaults({json: true});
+    this.rp = rp.defaults({ json: true });
 
     // get npm path
     this.npm = this.getNpmPath();
@@ -42,7 +42,7 @@ class PackageManager {
         path.join(process.env.APPDATA, 'npm/npm.cmd'),
         path.join(process.env.ProgramFiles, 'nodejs/npm.cmd')
       ]
-      .filter(fs.existsSync);
+        .filter(fs.existsSync);
 
       if (windowsNpmPath.length) {
         return [windowsNpmPath[0], '--no-update-notifier'];
@@ -99,9 +99,9 @@ class PackageManager {
   }
 
   wssBroadcast(data) {
-    hb.wss.server.clients.forEach(function each (client) {
+    hb.wss.server.clients.forEach(function each(client) {
       if (client.readyState === 1) {
-        client.send(JSON.stringify({npmLog: data}));
+        client.send(JSON.stringify({ npmLog: data }));
       }
     });
   }
@@ -164,10 +164,10 @@ class PackageManager {
         term.kill('SIGTERM');
       }, 300000);
     })
-    .then(() => {
-      // update the installed cache
-      return this.getInstalled();
-    });
+      .then(() => {
+        // update the installed cache
+        return this.getInstalled();
+      });
   }
 
   getInstalled() {
@@ -235,20 +235,20 @@ class PackageManager {
             });
         });
     })
-    .then(() => {
-      // filter out duplicate plugins and give preference to non-global plugins
-      staging.forEach((plugin) => {
-        if (!plugins.find(x => plugin.name === x.name)) {
-          plugins.push(plugin);
-        } else if (!plugin.globalInstall && plugins.find(x => plugin.name === x.name && x.globalInstall === true)) {
-          const index = plugins.findIndex(x => plugin.name === x.name && x.globalInstall === true);
-          plugins[index] = plugin;
-        }
-      });
+      .then(() => {
+        // filter out duplicate plugins and give preference to non-global plugins
+        staging.forEach((plugin) => {
+          if (!plugins.find(x => plugin.name === x.name)) {
+            plugins.push(plugin);
+          } else if (!plugin.globalInstall && plugins.find(x => plugin.name === x.name && x.globalInstall === true)) {
+            const index = plugins.findIndex(x => plugin.name === x.name && x.globalInstall === true);
+            plugins[index] = plugin;
+          }
+        });
 
-      this.plugins = _.sortBy(plugins, ['name']);
-      return this.plugins;
-    });
+        this.plugins = _.sortBy(plugins, ['name']);
+        return this.plugins;
+      });
   }
 
   searchRegistry(query) {
@@ -256,41 +256,41 @@ class PackageManager {
 
     const q = ((!query || !query.length) ? '' : query + '+') + 'keywords:homebridge-plugin+not:deprecated&size=30';
     return this.rp.get(`https://registry.npmjs.org/-/v1/search?text=${q}`)
-    .then((res) => {
-      return res.objects;
-    })
-    .filter(pkg => pkg.package.name
-      && ((pkg.package.name.indexOf('homebridge-') === 0)) || pkg.package.name.indexOf('@homebridge/homebridge-') === 0)
-    .map((pkg) => {
-      if (this.plugins.find(x => x.name === pkg.package.name)) {
-        // a plugin with the same name is already installed
-        const installedPlugin = this.plugins.find(x => x.name === pkg.package.name);
-        packages.push({
-          publicPackage: true,
-          name: pkg.package.name,
-          installed: installedPlugin.installed,
-          version: pkg.package.version,
-          update: semver.lt(installedPlugin.installed, pkg.package.version),
-          description: (pkg.package.description) ?
-            pkg.package.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkg.package.name,
-          links: pkg.package.links,
-          author: (pkg.package.publisher) ? pkg.package.publisher.username : null,
-          certifiedPlugin: (pkg.package.name.indexOf('@homebridge/homebridge-') === 0),
-        });
-      } else {
-        packages.push({
-          publicPackage: true,
-          name: pkg.package.name,
-          version: pkg.package.version,
-          description: (pkg.package.description) ?
-            pkg.package.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkg.package.name,
-          links: pkg.package.links,
-          author: (pkg.package.publisher) ? pkg.package.publisher.username : null,
-          certifiedPlugin: (pkg.package.name.indexOf('@homebridge/homebridge-') === 0),
-        });
-      }
-    })
-    .then(x => packages);
+      .then((res) => {
+        return res.objects;
+      })
+      .filter(pkg => pkg.package.name
+        && ((pkg.package.name.indexOf('homebridge-') === 0)) || pkg.package.name.indexOf('@homebridge/homebridge-') === 0)
+      .map((pkg) => {
+        if (this.plugins.find(x => x.name === pkg.package.name)) {
+          // a plugin with the same name is already installed
+          const installedPlugin = this.plugins.find(x => x.name === pkg.package.name);
+          packages.push({
+            publicPackage: true,
+            name: pkg.package.name,
+            installed: installedPlugin.installed,
+            version: pkg.package.version,
+            update: semver.lt(installedPlugin.installed, pkg.package.version),
+            description: (pkg.package.description) ?
+              pkg.package.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkg.package.name,
+            links: pkg.package.links,
+            author: (pkg.package.publisher) ? pkg.package.publisher.username : null,
+            certifiedPlugin: (pkg.package.name.indexOf('@homebridge/homebridge-') === 0),
+          });
+        } else {
+          packages.push({
+            publicPackage: true,
+            name: pkg.package.name,
+            version: pkg.package.version,
+            description: (pkg.package.description) ?
+              pkg.package.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkg.package.name,
+            links: pkg.package.links,
+            author: (pkg.package.publisher) ? pkg.package.publisher.username : null,
+            certifiedPlugin: (pkg.package.name.indexOf('@homebridge/homebridge-') === 0),
+          });
+        }
+      })
+      .then(x => packages);
   }
 
   getHomebridge() {
@@ -418,7 +418,7 @@ class PackageManager {
     const paths = this.getBasePaths();
     let yarnDir = null;
     // check if homebridge was installed using yarn
-    return childProcess.execAsync('yarn global dir', {cwd: os.tmpdir()})
+    return childProcess.execAsync('yarn global dir', { cwd: os.tmpdir() })
       .then(data => {
         yarnDir = path.join(data.trim(data), 'node_modules');
         paths.push(yarnDir);
