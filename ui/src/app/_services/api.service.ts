@@ -31,18 +31,6 @@ export class ApiService {
     return this.$http.delete(`${environment.api.base}${url}`, options);
   }
 
-  getAppSettings() {
-    return this.$http.get(`${this.base}/api/settings`, this.httpOptions);
-  }
-
-  login(username, password) {
-    return this.$http.get(`${this.base}/api/settings`, this.httpOptions);
-  }
-
-  getToken() {
-    return this.$http.get(`${this.base}/api/settings`, this.httpOptions);
-  }
-
   getQrCode() {
     return this.$http.get(`${this.base}/api/settings`, this.httpOptions);
   }

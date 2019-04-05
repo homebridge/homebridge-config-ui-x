@@ -7,7 +7,7 @@ import * as child_process from 'child_process';
 import * as semver from 'semver';
 import * as rp from 'request-promise';
 import * as color from 'bash-color';
-import * as pty from 'node-pty';
+import * as pty from 'node-pty-prebuilt-multiarch';
 
 import { Logger } from '../../core/logger/logger.service';
 import { ConfigService } from '../../core/config/config.service';

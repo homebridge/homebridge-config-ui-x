@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
 import * as os from 'os';
 import * as fs from 'fs-extra';
+import * as rp from 'request-promise';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '../../core/config/config.service';
 import { Logger } from '../../core/logger/logger.service';
 
@@ -41,9 +42,9 @@ export class StatusService {
     return {
       consolePort: 1000,
       port: 1000,
-      pin: '123-123-123',
-      packageVersion: '123.123.123',
-      status: 'up',
+      pin: this.configService.homebridgeConfig.bridge.pin,
+      packageVersion: this.configService.package.version,
+      status: await this.checkHomebridgeStatus(),
     };
   }
 
@@ -90,5 +91,20 @@ export class StatusService {
       uptime,
       cputemp,
     };
+  }
+
+  /**
+   * Check if homebridge is running on the local system
+   */
+  private async checkHomebridgeStatus() {
+    try {
+      await rp.get(`http://localhost:${this.configService.homebridgeConfig.bridge.port}`, {
+        resolveWithFullResponse: true,
+        simple: false, // <- This prevents the promise from failing on a 404
+      });
+      return 'up';
+    } catch (e) {
+      return 'down';
+    }
   }
 }

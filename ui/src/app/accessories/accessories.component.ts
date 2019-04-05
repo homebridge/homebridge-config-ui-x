@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 
 import { StateService } from '@uirouter/angular';
 import { ToastrService } from 'ngx-toastr';
@@ -21,7 +21,9 @@ export type ServiceTypeX = ServiceType & { customName?: string, hidden?: boolean
   templateUrl: './accessories.component.html',
   styleUrls: ['./accessories.component.scss']
 })
-export class AccessoriesComponent implements OnInit {
+export class AccessoriesComponent implements OnInit, OnDestroy {
+  private io = this.$ws.connectToNamespace('accessories');
+
   @Input() accessoryLayout: { name: string; services: Array<{ aid: number; iid: number; uuid: string; }>; }[];
   public accessories: { services: ServiceType[] } = { services: [] };
   public rooms: Array<{ name: string, services: ServiceTypeX[] }> = [];
@@ -35,7 +37,7 @@ export class AccessoriesComponent implements OnInit {
     private dragulaService: DragulaService,
     public toastr: ToastrService,
     private modalService: NgbModal,
-    private ws: WsService,
+    private $ws: WsService,
     public $auth: AuthService,
     private $api: ApiService,
     private $md: MobileDetectService,
@@ -75,27 +77,19 @@ export class AccessoriesComponent implements OnInit {
       };
     });
 
-    // subscribe to status events
-    if (this.ws.socket.readyState) {
-      this.ws.subscribe('accessories');
-    }
-
-    this.onOpen = this.ws.open.subscribe(() => {
-      this.ws.subscribe('accessories');
+    this.io.socket.on('connect', () => {
+      this.io.socket.emit('get-accessories');
     });
 
-    // listen for accessory data
-    this.onMessage = this.ws.handlers.accessories.subscribe((data) => {
-      if (data.services) {
-        this.parseServices(data.services);
-        this.generateHelpers();
-        this.sortIntoRooms();
+    this.io.socket.on('accessories-data', (data) => {
+      this.parseServices(data);
+      this.generateHelpers();
+      this.sortIntoRooms();
 
-        if (!this.roomsOrdered) {
-          this.orderRooms();
-          this.applyCustomAttributes();
-          this.roomsOrdered = true;
-        }
+      if (!this.roomsOrdered) {
+        this.orderRooms();
+        this.applyCustomAttributes();
+        this.roomsOrdered = true;
       }
     });
   }
@@ -203,7 +197,7 @@ export class AccessoriesComponent implements OnInit {
         services: []
       });
     })
-    .catch(() => { /* modal dismissed */ });
+      .catch(() => { /* modal dismissed */ });
   }
 
   saveLayout() {
@@ -222,10 +216,10 @@ export class AccessoriesComponent implements OnInit {
         })
       };
     })
-    .filter(room => room.services.length);
+      .filter(room => room.services.length);
 
     // send update request to server
-    this.$api.updateAccessoryLayout(this.accessoryLayout)
+    this.$api.post('/accessories', this.accessoryLayout)
       .subscribe(
         data => true,
         err => this.toastr.error(err.message, 'Failed to save page layout')
@@ -245,14 +239,12 @@ export class AccessoriesComponent implements OnInit {
 
           characteristic.setValue = (value: number | string | boolean) => {
             return new Promise((resolve, reject) => {
-              this.ws.send({
-                accessories: {
-                  set: {
-                    aid: service.aid,
-                    siid: service.iid,
-                    iid: characteristic.iid,
-                    value: value
-                  }
+              this.io.socket.emit('accessory-control', {
+                set: {
+                  aid: service.aid,
+                  siid: service.iid,
+                  iid: characteristic.iid,
+                  value: value
                 }
               });
               return resolve();
@@ -293,16 +285,9 @@ export class AccessoriesComponent implements OnInit {
     }
   }
 
-  // tslint:disable-next-line:use-life-cycle-interface
   ngOnDestroy() {
-    try {
-      // unsubscribe from log events
-      this.ws.unsubscribe('accessories');
-
-      // unsubscribe listeners
-      this.onOpen.unsubscribe();
-      this.onMessage.unsubscribe();
-    } catch (e) { }
+    this.io.socket.disconnect();
+    this.io.socket.removeAllListeners();
 
     // destroy drag and drop bags
     this.dragulaService.destroy('rooms-bag');
@@ -312,7 +297,7 @@ export class AccessoriesComponent implements OnInit {
 }
 
 export function accessoriesStateResolve($api, toastr, $state) {
-  return $api.getAccessoryLayout().toPromise().catch((err) => {
+  return $api.get('/accessories').toPromise().catch((err) => {
     toastr.error(err.message, 'Failed to Load Accessories');
     $state.go('status');
   });

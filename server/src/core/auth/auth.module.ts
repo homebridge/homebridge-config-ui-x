@@ -7,6 +7,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { WsJwtGuard } from './ws-jwt.guard';
+import { LoggerModule } from '../logger/logger.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { WsJwtGuard } from './ws-jwt.guard';
       inject: [ConfigService],
     }),
     ConfigModule,
+    LoggerModule,
   ],
   providers: [
     AuthService,

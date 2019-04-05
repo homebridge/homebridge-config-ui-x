@@ -59,6 +59,13 @@
     "max-line-length": [
       true,
       150
+    ],
+    "no-bitwise": [
+      false,
+    ],
+    "semicolon": [
+      true,
+      "always"
     ]
   },
   "rulesDirectory": []

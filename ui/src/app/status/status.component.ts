@@ -69,9 +69,9 @@ export class StatusComponent implements OnInit, OnDestroy {
       this.getQrCodeImage();
 
       // check if client is up-to-date
-      // if (this.server.packageVersion && this.server.packageVersion !== this.$auth.env.packageVersion) {
-      //   window.location.reload(true);
-      // }
+      if (this.server.packageVersion && this.server.packageVersion !== this.$auth.env.packageVersion) {
+        window.location.reload(true);
+      }
     });
   }
 
@@ -88,7 +88,7 @@ export class StatusComponent implements OnInit, OnDestroy {
 
   getQrCodeImage() {
     if (!this.loadedQrCode) {
-      return this.$api.getQrCode().subscribe(
+      return this.$api.get('/server/qrcode.svg', { responseType: 'text' as 'text' }).subscribe(
         (svg) => {
           this.qrcode.nativeElement.innerHTML = svg;
           this.loadedQrCode = true;

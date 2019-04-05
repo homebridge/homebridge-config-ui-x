@@ -86,15 +86,18 @@ export class AuthService {
   }
 
   refreshToken() {
-    return this.$api.getToken().toPromise()
-      .then((user: any) => {
-        window.localStorage.setItem('token', user.token);
-        return this.validateToken(user.token);
+    return this.$api.get('/api/auth/token').toPromise()
+      .then((resp: any) => {
+        if (!this.validateToken(resp.access_token)) {
+          throw new Error('Invalid username or password.');
+        } else {
+          window.localStorage.setItem(environment.jwt.tokenKey, resp.access_token);
+        }
       });
   }
 
   getAppSettings() {
-    return this.$api.getAppSettings().toPromise()
+    return this.$api.get('/auth/settings').toPromise()
       .then((data: any) => {
         this.formAuth = data.formAuth;
         this.env = data.env;

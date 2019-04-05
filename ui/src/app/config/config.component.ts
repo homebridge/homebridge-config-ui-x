@@ -1,15 +1,12 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-
 import { StateService, isArray } from '@uirouter/angular';
 import { ToastrService } from 'ngx-toastr';
 import 'brace/theme/xcode';
 import 'brace/mode/json';
 
-import { environment } from '../../environments/environment';
 import { ApiService } from '../_services/api.service';
-import { AuthService } from '../_services/auth.service';
 import { MobileDetectService } from '../_services/mobile-detect.service';
 import { ConfigRestoreBackupComponent } from './config.restore-backup.component';
 
@@ -18,7 +15,7 @@ import { ConfigRestoreBackupComponent } from './config.restore-backup.component'
   templateUrl: './config.component.html'
 })
 export class ConfigComponent implements OnInit {
-  @Input() homebridgeConfig;
+  @Input() homebridgeConfig: string;
   public saveInProgress: boolean;
   public isMobile: any = false;
   public backupUrl: string;
@@ -26,13 +23,11 @@ export class ConfigComponent implements OnInit {
 
   constructor(
     private $api: ApiService,
-    private $auth: AuthService,
     private $md: MobileDetectService,
     public toastr: ToastrService,
     private translate: TranslateService,
     private modalService: NgbModal
   ) {
-    this.backupUrl = environment.apiBaseUrl + '/api/backup/config.json?token=' + this.$auth.user.token;
     this.isMobile = this.$md.detect.mobile();
 
     // remove editor gutter on small screen devices
@@ -46,7 +41,7 @@ export class ConfigComponent implements OnInit {
     }
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   async onSave() {
     if (this.saveInProgress) {
@@ -59,7 +54,7 @@ export class ConfigComponent implements OnInit {
       const config = JSON.parse(this.homebridgeConfig);
 
       // basic validation of homebridge config spec
-      if (typeof(config.bridge) !== 'object') {
+      if (typeof (config.bridge) !== 'object') {
         this.toastr.error(
           this.translate.instant('config.toast_config_bridge_missing'),
           this.translate.instant('config.toast_title_config_error')
@@ -92,7 +87,7 @@ export class ConfigComponent implements OnInit {
   }
 
   saveConfig(config) {
-    return this.$api.saveConfig(config)
+    return this.$api.post('/config-editor', config)
       .toPromise()
       .then(data => {
         this.toastr.success(this.translate.instant('config.toast_config_saved'), this.translate.instant('toast.title_success'));
@@ -107,29 +102,33 @@ export class ConfigComponent implements OnInit {
     this.modalService.open(ConfigRestoreBackupComponent, {
       size: 'lg',
     })
-    .result
-    .then((backupId) => {
-      this.$api.getConfigBackup(backupId).subscribe(
-        data => {
-          this.toastr.warning(
-            this.translate.instant('config.toast_click_save_to_confirm_backup_restore'),
-            this.translate.instant('config.toast_title_backup_loaded')
-          );
-          this.homebridgeConfig = data;
-        },
-        err => this.toastr.error(err.error.message || 'Failed to load config backup', this.translate.instant('toast.title_error'))
-      );
-    })
-    .catch(() => { /* modal dismissed */ });
+      .result
+      .then((backupId) => {
+        this.$api.get(`/config-editor/backups/${backupId}`).subscribe(
+          json => {
+            this.toastr.warning(
+              this.translate.instant('config.toast_click_save_to_confirm_backup_restore'),
+              this.translate.instant('config.toast_title_backup_loaded')
+            );
+            this.homebridgeConfig = JSON.stringify(json, null, 4);
+          },
+          err => this.toastr.error(err.error.message || 'Failed to load config backup', this.translate.instant('toast.title_error'))
+        );
+      })
+      .catch(() => { /* modal dismissed */ });
   }
 
 }
 
-export function configStateResolve ($api, toastr, $state) {
-  return $api.loadConfig().toPromise().catch((err) => {
-    toastr.error(err.message, 'Failed to Load Config');
-    $state.go('status');
-  });
+export function configStateResolve($api, toastr, $state) {
+  return $api.get('/config-editor').toPromise()
+    .then((json) => {
+      return JSON.stringify(json, null, 4);
+    })
+    .catch((err) => {
+      toastr.error(err.message, 'Failed to Load Config');
+      $state.go('status');
+    });
 }
 
 export const ConfigStates = {

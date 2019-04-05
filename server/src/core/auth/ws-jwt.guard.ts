@@ -1,7 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '../config/config.service';
-import { WsException } from '@nestjs/websockets';
 
 @Injectable()
 export class WsJwtGuard implements CanActivate {

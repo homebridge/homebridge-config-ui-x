@@ -24,7 +24,7 @@ export class ConfigRestoreBackupComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.$api.getConfigBackupList().subscribe(
+    this.$api.get('/config-editor/backups').subscribe(
       (data: any[]) => this.backupList = data,
       (err) => this.toastr.error(err.error.message, this.translate.instant('config.restore.toast_failed_to_load_backups'))
     );
@@ -35,7 +35,7 @@ export class ConfigRestoreBackupComponent implements OnInit {
   }
 
   deleteAllBackups() {
-    return this.$api.deleteConfigBackups().subscribe(
+    return this.$api.delete('/config-editor/backups').subscribe(
       (data) => {
         this.activeModal.dismiss();
         this.toastr.success(this.translate.instant('config.restore.toast_backups_deleted'), this.translate.instant('toast.title_success'));

@@ -23,7 +23,7 @@ export function authHook(transitionService: TransitionService) {
     const targetState: TargetState = transition.targetState();
 
     if (!$auth.isLoggedIn()) {
-      return $api.getAppSettings().toPromise()
+      return $api.get('/auth/settings').toPromise()
         .then((data: any) => {
           if (data && data.formAuth === false) {
             return $auth.refreshToken();
