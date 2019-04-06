@@ -31,99 +31,11 @@ export class ApiService {
     return this.$http.delete(`${environment.api.base}${url}`, options);
   }
 
-  getQrCode() {
-    return this.$http.get(`${this.base}/api/settings`, this.httpOptions);
-  }
-
   resetHomebridgeAccessory() {
     return this.$http.get(`${this.base}/api/settings`, this.httpOptions);
   }
 
   restartServer() {
-    return this.$http.get(`${this.base}/api/settings`, this.httpOptions);
-  }
-
-  getHomebridgePackage() {
-    return this.$http.get(`${this.base}/api/settings`, this.httpOptions);
-  }
-
-  upgradeHomebridgePackage() {
-    return this.$http.get(`${this.base}/api/settings`, this.httpOptions);
-  }
-
-  getInstalledPlugins() {
-    return this.$http.get(`${this.base}/api/settings`, this.httpOptions);
-  }
-
-  searchNpmForPlugins(query) {
-    return this.$http.get(`${this.base}/api/settings`, this.httpOptions);
-  }
-
-  installPlugin(pluginName) {
-    return this.$http.get(`${this.base}/api/settings`, this.httpOptions);
-  }
-
-  uninstallPlugin(pluginName) {
-    return this.$http.get(`${this.base}/api/settings`, this.httpOptions);
-  }
-
-  updatePlugin(pluginName) {
-    return this.$http.get(`${this.base}/api/settings`, this.httpOptions);
-  }
-
-  getPluginChangeLog(pluginName) {
-    return this.$http.get(`${this.base}/api/settings`, this.httpOptions);
-  }
-
-  getPluginConfigSchema(pluginName) {
-    return this.$http.get(`${this.base}/api/settings`, this.httpOptions);
-  }
-
-  getConfig() {
-    return this.$http.get(`${this.base}/api/settings`, this.httpOptions);
-  }
-
-  loadConfig() {
-    return this.$http.get(`${this.base}/api/settings`, this.httpOptions);
-  }
-
-  saveConfig(config) {
-    return this.$http.get(`${this.base}/api/settings`, this.httpOptions);
-  }
-
-  getConfigBackupList() {
-    return this.$http.get(`${this.base}/api/settings`, this.httpOptions);
-  }
-
-  getConfigBackup(backupId) {
-    return this.$http.get(`${this.base}/api/settings`, this.httpOptions);
-  }
-
-  deleteConfigBackups() {
-    return this.$http.get(`${this.base}/api/settings`, this.httpOptions);
-  }
-
-  getUsers() {
-    return this.$http.get(`${this.base}/api/settings`, this.httpOptions);
-  }
-
-  addNewUser(user) {
-    return this.$http.get(`${this.base}/api/settings`, this.httpOptions);
-  }
-
-  updateUser(userId, user) {
-    return this.$http.get(`${this.base}/api/settings`, this.httpOptions);
-  }
-
-  deleteUser(userId) {
-    return this.$http.get(`${this.base}/api/settings`, this.httpOptions);
-  }
-
-  getAccessoryLayout() {
-    return this.$http.get(`${this.base}/api/settings`, this.httpOptions);
-  }
-
-  updateAccessoryLayout(layout) {
     return this.$http.get(`${this.base}/api/settings`, this.httpOptions);
   }
 

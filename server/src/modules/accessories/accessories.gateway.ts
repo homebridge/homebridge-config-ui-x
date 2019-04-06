@@ -1,9 +1,9 @@
 import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { UseGuards } from '@nestjs/common';
-import { WsJwtGuard } from '../../core/auth/ws-jwt.guard';
+import { WsGuard } from '../../core/auth/guards/ws.guard';
 import { AccessoriesService } from './accessories.service';
 
-@UseGuards(WsJwtGuard)
+@UseGuards(WsGuard)
 @WebSocketGateway({ namespace: 'accessories' })
 export class AccessoriesGateway {
   constructor(

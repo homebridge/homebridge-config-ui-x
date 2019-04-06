@@ -25,6 +25,7 @@ import { ServerModule } from './modules/server/server.module';
     TerminalModule,
     AccessoriesModule,
     ConfigEditorModule,
+    LogModule,
   ],
   controllers: [AppController],
   providers: [AppService],

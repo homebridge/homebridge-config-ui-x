@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+# 4.0.0 (2019-xx-xx)
+
+### Notable Changes
+
+* **Plugins:** Before updating a Homebridge plugin the release notes from GitHub will be shown where possible.
+
+
 ## 3.10.0 (2019-03-23)
 
 ### Notable Changes

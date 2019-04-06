@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import * as os from 'os';
 import * as _ from 'lodash';
 import * as path from 'path';
@@ -40,7 +40,12 @@ export class PluginsService {
   private installedPlugins: HomebridgePlugin[];
 
   // setup requests with default options
-  private rp = rp.defaults({ json: true });
+  private rp = rp.defaults({
+    json: true,
+    headers: {
+      'User-Agent': this.configService.package.name,
+    }
+  });
 
   constructor(
     private configService: ConfigService,
@@ -264,6 +269,81 @@ export class PluginsService {
   }
 
   /**
+   * Returns the config.schema.json for the plugin
+   * @param pluginName 
+   */
+  public async getPluginConfigSchema(pluginName: string) {
+    if (!this.installedPlugins) await this.getInstalledPlugins();
+    const plugin = this.installedPlugins.find(x => x.name === pluginName);
+    if (!plugin) {
+      throw new NotFoundException();
+    }
+
+    const schemaPath = path.resolve(plugin.installPath, pluginName, 'config.schema.json');
+
+    if (await fs.pathExists(schemaPath)) {
+      return await fs.readJson(schemaPath);
+    } else {
+      throw new NotFoundException();
+    }
+  }
+
+  /**
+   * Returns the changelog from the npm package for a plugin
+   * @param pluginName
+   */
+  public async getPluginChangeLog(pluginName: string) {
+    await this.getInstalledPlugins();
+    const plugin = this.installedPlugins.find(x => x.name === pluginName);
+    if (!plugin) {
+      throw new NotFoundException();
+    }
+
+    const changeLog = path.resolve(plugin.installPath, plugin.name, 'CHANGELOG.md');
+
+    if (await fs.pathExists(changeLog)) {
+      return {
+        changelog: await fs.readFile(changeLog, 'utf8'),
+      }
+    } else {
+      throw new NotFoundException();
+    }
+  }
+
+  /**
+   * Get the latest release notes from GitHub for a plugin
+   * @param pluginName 
+   */
+  public async getPluginRelease(pluginName: string) {
+    if (!this.installedPlugins) await this.getInstalledPlugins();
+    const plugin = this.installedPlugins.find(x => x.name === pluginName);
+    if (!plugin) {
+      throw new NotFoundException();
+    }
+
+    // plugin must have a homepage to workout Git Repo
+    if (!plugin.links.homepage) {
+      throw new NotFoundException();
+    }
+
+    // make sure the repo is GitHub
+    if (!plugin.links.homepage.match(/https:\/\/github.com/)) {
+      throw new NotFoundException();
+    }
+
+    try {
+      const repo = plugin.links.homepage.split('https://github.com/')[1].split('#readme')[0]
+      const release = await this.rp.get(`https://api.github.com/repos/${repo}/releases/latest`)
+      return {
+        name: release.name,
+        changelog: release.body,
+      }
+    } catch (e) {
+      throw new NotFoundException();
+    }
+  }
+
+  /**
    * Returns a list of modules installed
    */
   private async getInstalledModules(): Promise<Array<{ name: string, path: string, installPath: string }>> {
@@ -400,11 +480,10 @@ export class PluginsService {
     let timeoutTimer;
     command = command.filter(x => x.length);
 
-    // TODO - re-impoliment this
     // sudo mode is requested in plugin config
-    // if (hb.useSudo) {
-    //  command.unshift('sudo', '-E', '-n');
-    // }
+    if (this.configService.ui.sudo) {
+      command.unshift('sudo', '-E', '-n');
+    }
 
     this.logger.log(`Running Command: ${command.join(' ')}`);
 

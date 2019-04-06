@@ -3,14 +3,11 @@ import { UseGuards } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets';
 import { PluginsService } from '../plugins/plugins.service';
 import { StatusService } from './status.service';
-import { WsJwtGuard } from '../../core/auth/ws-jwt.guard';
-import { AuthService } from '../../core/auth/auth.service';
+import { WsGuard } from '../../core/auth/guards/ws.guard';
 
-
-@UseGuards(WsJwtGuard)
+@UseGuards(WsGuard)
 @WebSocketGateway({ namespace: 'status' })
 export class StatusGateway {
-  private authService: AuthService;
 
   constructor(
     private statusService: StatusService,

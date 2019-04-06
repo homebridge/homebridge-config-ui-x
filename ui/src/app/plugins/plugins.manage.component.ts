@@ -26,8 +26,10 @@ export class PluginsManageComponent implements OnInit, OnDestroy {
   private termTarget: HTMLElement;
 
   public actionComplete = false;
+  public showReleaseNotes = false;
   public updateSelf = false;
   public changeLog: string;
+  public release;
 
   private toastSuccess: string;
   public presentTenseVerb: string;
@@ -65,7 +67,7 @@ export class PluginsManageComponent implements OnInit, OnDestroy {
         this.pastTenseVerb = this.translate.instant('plugins.manage.label_uninstalled');
         break;
       case 'Update':
-        this.update();
+        this.getReleaseNotes();
         this.presentTenseVerb = this.translate.instant('plugins.manage.label_update');
         this.pastTenseVerb = this.translate.instant('plugins.manage.label_updated');
         break;
@@ -106,6 +108,7 @@ export class PluginsManageComponent implements OnInit, OnDestroy {
   }
 
   update() {
+    this.showReleaseNotes = false;
     this.io.request('update', this.pluginName).subscribe(
       (data) => {
         if (this.pluginName === 'homebridge-config-ui-x') {
@@ -137,7 +140,7 @@ export class PluginsManageComponent implements OnInit, OnDestroy {
   }
 
   getChangeLog() {
-    this.$api.getPluginChangeLog(this.pluginName).subscribe(
+    this.$api.get(`/plugins/changelog/${encodeURIComponent(this.pluginName)}`).subscribe(
       (data: { changelog: string }) => {
         if (data.changelog) {
           this.actionComplete = true;
@@ -148,6 +151,18 @@ export class PluginsManageComponent implements OnInit, OnDestroy {
       },
       (err) => {
         this.activeModal.close();
+      }
+    );
+  }
+
+  getReleaseNotes() {
+    this.$api.get(`/plugins/release/${encodeURIComponent(this.pluginName)}`).subscribe(
+      (data) => {
+        this.showReleaseNotes = true;
+        this.release = data;
+      },
+      (err) => {
+        this.update();
       }
     );
   }

@@ -38,8 +38,8 @@ export class UsersEditComponent implements OnInit {
       passwordConfirm: [''],
       admin: [true]
     }, {
-      validator: this.matchPassword
-    });
+        validator: this.matchPassword
+      });
 
     this.form.patchValue(this.user);
   }
@@ -55,7 +55,7 @@ export class UsersEditComponent implements OnInit {
   }
 
   onSubmit({ value, valid }) {
-    this.$api.updateUser(this.user.id, value).subscribe(
+    this.$api.patch(`/users/${this.user.id}`, value).subscribe(
       data => {
         this.$state.reload();
         this.activeModal.close();

@@ -3,9 +3,9 @@ import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websock
 import * as color from 'bash-color';
 import { PluginsService } from './plugins.service';
 import { Logger } from '../../core/logger/logger.service';
-import { WsJwtGuard } from '../../core/auth/ws-jwt.guard';
+import { WsAdminGuard } from '../../core/auth/guards/ws-admin-guard';
 
-@UseGuards(WsJwtGuard)
+@UseGuards(WsAdminGuard)
 @WebSocketGateway({ namespace: '/plugins' })
 export class PluginsGateway {
 

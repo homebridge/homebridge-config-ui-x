@@ -2,7 +2,7 @@ import * as fs from 'fs-extra';
 import * as crypto from 'crypto';
 import * as jwt from 'jsonwebtoken';
 import { JwtService } from '@nestjs/jwt';
-import { Injectable, ForbiddenException } from '@nestjs/common';
+import { Injectable, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '../config/config.service';
 import { Logger } from '../logger/logger.service';
 import { WsException } from '@nestjs/websockets';
@@ -204,12 +204,12 @@ export class AuthService {
     const index = authfile.findIndex(x => x.id === parseInt(id, 10));
 
     if (index < 0) {
-      throw new Error('User not found');
+      throw new BadRequestException('User Not Found');
     }
 
     // prevent deleting the only admin user
     if (authfile[index].admin && authfile.filter(x => x.admin === true).length < 2) {
-      throw new Error('Cannot delete only admin user');
+      throw new BadRequestException('Cannot delete only admin user');
     }
 
     authfile.splice(index, 1);
@@ -224,13 +224,13 @@ export class AuthService {
    * @param userId 
    * @param update 
    */
-  async updateUser(userId, update) {
+  async updateUser(id, update) {
     const authfile = await this.getUsers();
 
-    const user = authfile.find(x => x.id === userId);
+    const user = authfile.find(x => x.id === parseInt(id, 10));
 
     if (!user) {
-      throw new Error('User Not Found');
+      throw new BadRequestException('User Not Found');
     }
 
     user.name = update.name || user.name;
@@ -238,7 +238,6 @@ export class AuthService {
 
     if (update.password) {
       const salt = await this.genSalt();
-
       user.hashedPassword = await this.hashPassword(update.password, salt);
       user.salt = salt;
     }

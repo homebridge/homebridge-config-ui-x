@@ -118,7 +118,7 @@ export class PluginSettingsComponent implements OnInit {
   }
 
   loadConfigSchema() {
-    this.$api.getPluginConfigSchema(this.pluginName).subscribe(
+    this.$api.get(`/plugins/config-schema/${encodeURIComponent(this.pluginName)}`).subscribe(
       (schema) => {
         this.configSchema = schema;
         this.loadHomebridgeConfig();
@@ -127,7 +127,7 @@ export class PluginSettingsComponent implements OnInit {
   }
 
   loadHomebridgeConfig() {
-    this.$api.getConfig().subscribe(
+    this.$api.get('/config-editor').subscribe(
       (config) => {
         this.homebridgeConfig = config;
 
@@ -187,7 +187,7 @@ export class PluginSettingsComponent implements OnInit {
       delete accessory.__uuid__;
     });
 
-    await this.$api.saveConfig(this.homebridgeConfig)
+    await this.$api.post('/config-editor', this.homebridgeConfig)
       .toPromise()
       .then((done) => {
         this.toastr.success(

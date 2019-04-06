@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
 import { Terminal } from 'xterm';
 import * as fit from 'xterm/lib/addons/fit/fit';
 
@@ -10,46 +10,41 @@ Terminal.applyAddon(fit);
   selector: 'app-logs',
   templateUrl: './logs.component.html'
 })
-export class LogsComponent implements OnInit {
+export class LogsComponent implements OnInit, OnDestroy {
+  private io = this.$ws.connectToNamespace('log');
+
   private term = new Terminal();
   private termTarget: HTMLElement;
 
-  private onOpen;
-  private onMessage;
-  private onError;
-
-  constructor(private ws: WsService) {}
+  constructor(
+    private $ws: WsService
+  ) { }
 
   ngOnInit() {
+    // set body bg color
+    window.document.querySelector('body').classList.add(`bg-black`);
+
     this.termTarget = document.getElementById('log-output');
     this.term.open(this.termTarget);
     (<any>this.term).fit();
 
-    this.term.write('\n\r\n\r\n\r\n\r\n\r');
-
-    // subscribe to log events
-    if (this.ws.socket.readyState) {
-      this.ws.subscribe('logs');
-      this.resizeTerminal({ cols: this.term.cols, rows: this.term.rows });
-    }
-
-    this.onOpen = this.ws.open.subscribe(() => {
-      this.ws.subscribe('logs');
-      this.resizeTerminal({ cols: this.term.cols, rows: this.term.rows });
+    this.io.socket.on('connect', () => {
+      this.io.socket.emit('tail-log');
     });
 
-    // listen for to log data
-    this.onMessage = this.ws.handlers.logs.subscribe((data) => {
+    this.io.socket.on('disconnect', () => {
+      this.term.write('Websocket failed to connect. Is the server running?\n\r\n\r');
+    });
+
+    // subscribe to log events
+    this.io.socket.on('stdout', data => {
       this.term.write(data);
+      this.resizeTerminal({ cols: this.term.cols, rows: this.term.rows });
     });
 
     // handle resize events
     this.term.on('resize', (size) => {
       this.resizeTerminal(size);
-    });
-
-    this.onError = this.ws.error.subscribe((err) => {
-      this.term.write('Websocket failed to connect. Is the server running?\n\r');
     });
   }
 
@@ -59,23 +54,16 @@ export class LogsComponent implements OnInit {
   }
 
   resizeTerminal(size) {
-    this.ws.send({ logs: { size: size } });
+    this.io.socket.emit('resize', size);
   }
 
-  // tslint:disable-next-line:use-life-cycle-interface
   ngOnDestroy() {
-    try {
-      // unsubscribe from log events
-      this.ws.unsubscribe('logs');
+    // unset body bg color
+    window.document.querySelector('body').classList.remove(`bg-black`);
 
-      // unsubscribe listeners
-      this.onOpen.unsubscribe();
-      this.onMessage.unsubscribe();
-      this.onError.unsubscribe();
-
-      // destroy the terminal
-      this.term.destroy();
-    } catch (e) {}
+    this.io.socket.disconnect();
+    this.io.socket.removeAllListeners();
+    this.term.destroy();
   }
 
 }

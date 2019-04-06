@@ -40,7 +40,7 @@ export class UsersComponent implements OnInit {
   }
 
   deleteUser(id) {
-    this.$api.deleteUser(id).subscribe(
+    this.$api.delete(`/users/${id}`).subscribe(
       data => {
         this.toastr.success(this.translate.instant('users.toast_user_deleted'), this.translate.instant('toast.title_success'));
         this.$state.reload();
@@ -57,7 +57,7 @@ export class UsersComponent implements OnInit {
 }
 
 export function userStateResolve($api, toastr, $state) {
-  return $api.getUsers().toPromise().catch((err) => {
+  return $api.get('/users').toPromise().catch((err) => {
     toastr.error(err.message, 'Failed to Load Users');
     $state.go('status');
   });
@@ -77,3 +77,4 @@ export const UsersStates = {
     requiresAdmin: true
   }
 };
+

@@ -42,7 +42,7 @@ export class StatusWssHandler {
 
   sendData() {
     if (this.ws.readyState === 1) {
-      this.ws.send(JSON.stringify({stats: this.getStats()}));
+      this.ws.send(JSON.stringify({ stats: this.getStats() }));
     }
   }
 
@@ -73,7 +73,7 @@ export class StatusWssHandler {
           }));
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }
 
   getStats() {
@@ -123,11 +123,11 @@ export class StatusWssHandler {
       resolveWithFullResponse: true,
       simple: false // <- This prevents the promise from failing on a 404
     })
-    .then(() => {
-      return true;
-    })
-    .catch(() => {
-      return false;
-    });
+      .then(() => {
+        return true;
+      })
+      .catch(() => {
+        return false;
+      });
   }
 }

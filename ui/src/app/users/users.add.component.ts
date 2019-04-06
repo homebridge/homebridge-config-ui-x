@@ -37,8 +37,8 @@ export class UsersAddComponent implements OnInit {
       passwordConfirm: ['', Validators.required],
       admin: [true]
     }, {
-      validator: this.matchPassword
-    });
+        validator: this.matchPassword
+      });
   }
 
   matchPassword(AC: AbstractControl) {
@@ -52,7 +52,7 @@ export class UsersAddComponent implements OnInit {
   }
 
   onSubmit({ value, valid }) {
-    this.$api.addNewUser(value).subscribe(
+    this.$api.post(`/users`, value).subscribe(
       data => {
         this.$state.reload();
         this.activeModal.close();
