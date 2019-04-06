@@ -10,7 +10,7 @@ export class LogService {
   private command;
 
   constructor(
-    private configService: ConfigService
+    private configService: ConfigService,
   ) {
     if (typeof this.configService.ui.log !== 'object') {
       this.logNotConfigured();
@@ -38,7 +38,6 @@ export class LogService {
       client.emit('stdout', color.red(`Cannot show logs. "log" option is not configured correctly in your Homebridge config.json file.\r\n\r\n`));
       client.emit('stdout', color.cyan(`See https://github.com/oznu/homebridge-config-ui-x#log-viewer-configuration for instructions.\r\n`));
     }
-    console.log(this.command)
   }
 
   /**
@@ -107,8 +106,6 @@ export class LogService {
       }
     }
 
-    // this.send(color.cyan(`Loading logs from file\r\nCMD: ${command.join(' ')}\r\n\r\n`));
-
     this.command = command;
   }
 
@@ -123,8 +120,6 @@ export class LogService {
       command.unshift('sudo', '-n');
     }
 
-    // this.send(color.cyan(`Using systemd to tail logs\r\nCMD: ${command.join(' ')}\r\n\r\n`));
-
     this.command = command;
   }
 
@@ -132,11 +127,7 @@ export class LogService {
    * Construct the logs from custom command
    */
   private logFromCommand() {
-    const command = this.configService.ui.log.command.split(' ');
-
-    //this.send(color.cyan(`Using custom command to tail logs\r\nCMD: ${command.join(' ')}\r\n\r\n`));
-
-    this.command = command;
+    this.command = this.configService.ui.log.command.split(' ');
   }
 
   /**
