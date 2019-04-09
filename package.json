@@ -15,8 +15,9 @@
   },
   "main": "./dist/index.js",
   "scripts": {
+    "webpack": "webpack --config webpack.config.js",
     "build": "npm run build:server && npm run build:ui",
-    "build:server": "tsc",
+    "build:server": "rimraf dist && tsc && npm run webpack",
     "build:ui": "npm run build --prefix ui",
     "watch": "concurrently \"npm run watch:ui\" \"npm run watch:server\"",
     "watch:server": "tsc --watch",
@@ -39,19 +40,19 @@
     "buffer-shims": "^1.0.0",
     "commander": "^2.19.0",
     "cors": "^2.8.5",
-    "dotenv": "^6.2.0",
+    "dotenv": "^7.0.0",
     "express": "^4.16.4",
     "fs-extra": "^7.0.1",
     "helmet": "^3.16.0",
     "jsonwebtoken": "^8.5.0",
     "lodash": "^4.17.11",
-    "node-pty": "0.7.8",
+    "node-pty-prebuilt-multiarch": "0.8.1",
     "passport": "~0.4.0",
     "passport-http": "^0.3.0",
     "qr-image": "^3.2.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
-    "semver": "^5.6.0",
+    "semver": "^6.0.0",
     "source-map-support": "^0.5.11",
     "ws": "^6.2.0"
   },
@@ -62,7 +63,11 @@
     "@types/passport": "^1.0.0",
     "@types/ws": "^6.0.1",
     "concurrently": "^4.1.0",
+    "rimraf": "^2.6.3",
+    "ts-loader": "^5.3.3",
     "tslint": "^5.14.0",
-    "typescript": "^3.3.3333"
+    "typescript": "^3.3.3333",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.0"
   }
 }

@@ -144,7 +144,7 @@ class HomebridgeUI {
 
   public async refreshHomebridgeConfig() {
     try {
-      this.homebridgeConfig = await import(this.configPath);
+      this.homebridgeConfig = await fs.readJson(this.configPath);
     } catch (e) {
       this.homebridgeConfig = {
         bridge: {

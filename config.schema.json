@@ -30,12 +30,6 @@
             ]
           },
           {
-            "title": "Basic Auth",
-            "enum": [
-              "basic"
-            ]
-          },
-          {
             "title": "None",
             "enum": [
               "none"

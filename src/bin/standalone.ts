@@ -3,8 +3,6 @@
 /* This file enables homebridge-config-ui-x to be run independently of the main homebridge process */
 process.title = 'homebridge-config-ui-x';
 
-import 'source-map-support/register';
-
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as commander from 'commander';

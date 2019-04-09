@@ -1,4 +1,4 @@
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as bufferShim from 'buffer-shims';
 
@@ -31,7 +31,7 @@ class QRCode {
       return null;
     }
 
-    this._accessoryInfo = require(this.accessoryInfoPath);
+    this._accessoryInfo = fs.readJsonSync(this.accessoryInfoPath);
 
     // this code is from https://github.com/KhaosT/HAP-NodeJS/blob/master/lib/Accessory.js#L369
 
