@@ -12,6 +12,6 @@ export class LogGateway {
 
   @SubscribeMessage('tail-log')
   connect(client: any, payload: any) {
-    this.logService.connect(client)
+    this.logService.connect(client, payload)
   }
 }

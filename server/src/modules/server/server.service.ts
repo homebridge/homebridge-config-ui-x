@@ -2,8 +2,10 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as bufferShim from 'buffer-shims';
 import * as qr from 'qr-image';
+import * as child_process from 'child_process';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '../../core/config/config.service';
+import { Logger } from '../../core/logger/logger.service';
 
 @Injectable()
 export class ServerService {
@@ -14,7 +16,30 @@ export class ServerService {
 
   constructor(
     private readonly configService: ConfigService,
+    private readonly logger: Logger,
   ) { }
+
+  /**
+   * Restart the server
+   */
+  public async restartServer(res) {
+    this.logger.log('Homebridge restart request received');
+    res.code(202).send({ ok: true, command: this.configService.ui.restart })
+
+    setTimeout(() => {
+      if (this.configService.ui.restart) {
+        this.logger.log(`Executing restart command: ${this.configService.ui.restart}`);
+        child_process.exec(this.configService.ui.restart, (err) => {
+          if (err) {
+            this.logger.log('Restart command exited with an error. Failed to restart Homebridge.');
+          }
+        });
+      } else {
+        this.logger.log(`No restart command defined, killing process...`);
+        process.exit(1);
+      }
+    }, 500)
+  }
 
   /**
    * Returns a QR Code SVG

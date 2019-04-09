@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Res } from '@nestjs/common';
+import { Controller, Get, UseGuards, Res, Put } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ServerService } from './server.service';
 
@@ -9,6 +9,11 @@ export class ServerController {
   constructor(
     private serverService: ServerService,
   ) { }
+
+  @Put('/restart')
+  restartServer(@Res() res) {
+    return this.serverService.restartServer(res);
+  }
 
   @Get('/qrcode.svg')
   async getQrCode(@Res() res) {

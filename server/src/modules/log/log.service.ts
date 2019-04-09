@@ -29,11 +29,11 @@ export class LogService {
    * Socket handler
    * @param client 
    */
-  public connect(client) {
+  public connect(client, size) {
     if (this.command) {
       client.emit('stdout', color.cyan(`Loading logs using "${this.configService.ui.log.method}" method...\r\n`));
       client.emit('stdout', color.cyan(`CMD: ${this.command.join(' ')}\r\n\r\n`));
-      this.tailLog(client);
+      this.tailLog(client, size);
     } else {
       client.emit('stdout', color.red(`Cannot show logs. "log" option is not configured correctly in your Homebridge config.json file.\r\n\r\n`));
       client.emit('stdout', color.cyan(`See https://github.com/oznu/homebridge-config-ui-x#log-viewer-configuration for instructions.\r\n`));
@@ -44,14 +44,14 @@ export class LogService {
    * Connect pty
    * @param client 
    */
-  private tailLog(client) {
+  private tailLog(client, size) {
     const command = [...this.command];
 
     // spawn the process that will output the logs
     const term = pty.spawn(command.shift(), command, {
       name: 'xterm-color',
-      cols: 80,
-      rows: 30,
+      cols: size.cols,
+      rows: size.rows,
       cwd: this.configService.storagePath,
       env: process.env
     });
@@ -75,7 +75,7 @@ export class LogService {
       try {
         term.resize(size.cols, size.rows);
       } catch (e) { }
-    })
+    });
 
     client.on('disconnect', () => {
       try {
@@ -85,7 +85,9 @@ export class LogService {
       if (this.configService.ui.sudo && term && term.pid) {
         child_process.exec(`sudo -n kill -9 ${term.pid}`);
       }
-    })
+    });
+
+    client.emit('ready');
   }
 
   /**

@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Notable Changes
 
 * **Plugins:** Before updating a Homebridge plugin the release notes from GitHub will be shown where possible.
+* **i18n:** Turkish language translation added by [@btutal](https://github.com/btutal)
 
 ## 3.11.0 (2019-04-03)
 

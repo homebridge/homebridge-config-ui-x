@@ -1,106 +1,33 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule, HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-
-import { JwtModule } from '@auth0/angular-jwt';
-import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { UIRouterModule } from '@uirouter/angular';
-import { AceEditorModule } from 'ng2-ace-editor';
 import { ToastrModule } from 'ngx-toastr';
-import { NgxMdModule } from 'ngx-md';
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
-import {
-  JsonSchemaFormModule,
-  Bootstrap4FrameworkModule,
-  Bootstrap4Framework,
-  Framework,
-  WidgetLibraryService,
-  FrameworkLibraryService,
-  JsonSchemaFormService
-} from 'ngx-json-schema';
-
-import { environment } from '../environments/environment';
-
-import { routerConfigFn } from './_helpers/router.config';
-import { HttpLoaderFactory } from './_helpers/translate.loader';
-
-import { WsService } from './_services/ws.service';
-import { ApiService } from './_services/api.service';
-import { PluginService } from './_services/plugin.service';
-import { AuthService } from './_services/auth.service';
-import { MobileDetectService } from './_services/mobile-detect.service';
-
-import { SpinnerModule } from './spinner/spinner.module';
-import { AccessoriesModule } from './accessories/accessories.module';
-import { PlatformToolsModule } from './platform-tools/platform-tools.module';
-import { CustomPipesModule } from './_pipes/custom-pipes.module';
-
+import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { StatusComponent, StatusStates } from './status/status.component';
-import { PluginsComponent, PluginStates } from './plugins/plugins.component';
-import { PluginSearchComponent, PluginSearchStates } from './plugins/plugins.search.component';
-import { PluginsManageComponent } from './plugins/plugins.manage.component';
-import { PluginSettingsComponent } from './plugins/plugins.settings.component';
-import { PluginsMarkdownDirective } from './plugins/plugins.markdown.directive';
-import { ConfigComponent, ConfigStates } from './config/config.component';
-import { ConfigRestoreBackupComponent } from './config/config.restore-backup.component';
-import { LogsComponent, LogsStates } from './logs/logs.component';
-import { UsersComponent, UsersStates } from './users/users.component';
-import { UsersAddComponent } from './users/users.add.component';
-import { UsersEditComponent } from './users/users.edit.component';
-import { RestartComponent, RestartState } from './restart/restart.component';
-import { LoginComponent, LoginStates } from './login/login.component';
-import { ResetComponent, ResetModalComponent } from './reset/reset.component';
+import { LayoutComponent } from './shared/layout/layout.component';
+import { CoreModule } from './core/core.module';
+import { AuthModule } from './core/auth/auth.module';
 
-
-export function tokenGetter() {
-  return localStorage.getItem(environment.jwt.tokenKey);
+// translate loader
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http, './i18n/', '.json');
 }
 
 @NgModule({
   declarations: [
     AppComponent,
-    StatusComponent,
-    PluginsComponent,
-    ConfigComponent,
-    ConfigRestoreBackupComponent,
-    LogsComponent,
-    UsersComponent,
-    PluginSearchComponent,
-    PluginsManageComponent,
-    PluginSettingsComponent,
-    PluginsMarkdownDirective,
-    UsersAddComponent,
-    UsersEditComponent,
-    RestartComponent,
-    LoginComponent,
-    ResetComponent,
-    ResetModalComponent,
+    LayoutComponent,
   ],
-  entryComponents: [
-    PluginsManageComponent,
-    PluginSettingsComponent,
-    UsersAddComponent,
-    UsersEditComponent,
-    ResetModalComponent,
-    ConfigRestoreBackupComponent
-  ],
+  entryComponents: [],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    FormsModule,
-    JwtModule.forRoot({
-      config: {
-        authScheme: 'bearer ',
-        tokenGetter: tokenGetter,
-        whitelistedDomains: environment.jwt.whitelistedDomains,
-        blacklistedRoutes: environment.jwt.blacklistedRoutes
-      }
-    }),
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -108,20 +35,6 @@ export function tokenGetter() {
         deps: [HttpClient],
       }
     }),
-    ReactiveFormsModule,
-    AceEditorModule,
-    SpinnerModule,
-    Bootstrap4FrameworkModule,
-    {
-      ngModule: JsonSchemaFormModule,
-      providers: [
-        JsonSchemaFormService,
-        FrameworkLibraryService,
-        WidgetLibraryService,
-        { provide: Framework, useClass: Bootstrap4Framework, multi: true }
-      ]
-    },
-    NgxMdModule.forRoot(),
     ToastrModule.forRoot({
       autoDismiss: true,
       newestOnTop: false,
@@ -130,32 +43,11 @@ export function tokenGetter() {
       positionClass: 'toast-bottom-right'
     }),
     NgbModule.forRoot(),
-    UIRouterModule.forRoot({
-      states: [
-        StatusStates,
-        ConfigStates,
-        LogsStates,
-        UsersStates,
-        PluginStates,
-        PluginSearchStates,
-        RestartState,
-        LoginStates
-      ],
-      useHash: false,
-      config: routerConfigFn,
-      otherwise: '/'
-    }),
-    AccessoriesModule,
-    PlatformToolsModule,
-    CustomPipesModule,
+    CoreModule,
+    AuthModule,
+    AppRoutingModule,
   ],
-  providers: [
-    AuthService,
-    WsService,
-    ApiService,
-    PluginService,
-    MobileDetectService
-  ],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
