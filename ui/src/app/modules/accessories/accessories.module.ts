@@ -55,7 +55,7 @@ import { AirqualitysensorComponent } from './types/airqualitysensor/airqualityse
     AddRoomModalComponent,
     InfoModalComponent,
     HumiditysensorComponent,
-    AirqualitysensorComponent
+    AirqualitysensorComponent,
   ],
   entryComponents: [
     AddRoomModalComponent,
@@ -76,7 +76,7 @@ import { AirqualitysensorComponent } from './types/airqualitysensor/airqualityse
     AccessoriesRoutingModule,
   ],
   providers: [
-    AccessoriesResolver
-  ]
+    AccessoriesResolver,
+  ],
 })
 export class AccessoriesModule { }

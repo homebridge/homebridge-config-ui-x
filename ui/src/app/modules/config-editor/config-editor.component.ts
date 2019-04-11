@@ -1,7 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { isArray } from '@uirouter/angular';
 import { ToastrService } from 'ngx-toastr';
 import 'brace/theme/xcode';
 import 'brace/mode/json';
@@ -13,7 +12,7 @@ import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-config',
-  templateUrl: './config-editor.component.html'
+  templateUrl: './config-editor.component.html',
 })
 export class ConfigEditorComponent implements OnInit {
   public homebridgeConfig: string;
@@ -28,7 +27,7 @@ export class ConfigEditorComponent implements OnInit {
     public $toastr: ToastrService,
     private $route: ActivatedRoute,
     private translate: TranslateService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
   ) {
     this.isMobile = this.$md.detect.mobile();
 
@@ -64,22 +63,22 @@ export class ConfigEditorComponent implements OnInit {
       if (typeof (config.bridge) !== 'object') {
         this.$toastr.error(
           this.translate.instant('config.toast_config_bridge_missing'),
-          this.translate.instant('config.toast_title_config_error')
+          this.translate.instant('config.toast_title_config_error'),
         );
       } else if (!/^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$/.test(config.bridge.username)) {
         this.$toastr.error(
           this.translate.instant('config.toast_config_username_format_error'),
-          this.translate.instant('config.toast_title_config_error')
+          this.translate.instant('config.toast_title_config_error'),
         );
-      } else if (config.accessories && !isArray(config.accessories)) {
+      } else if (config.accessories && !Array.isArray(config.accessories)) {
         this.$toastr.error(
           this.translate.instant('config.toast_config_accessory_must_be_array'),
-          this.translate.instant('config.toast_title_config_error')
+          this.translate.instant('config.toast_title_config_error'),
         );
-      } else if (config.platforms && !isArray(config.platforms)) {
+      } else if (config.platforms && !Array.isArray(config.platforms)) {
         this.$toastr.error(
           this.translate.instant('config.toast_config_platform_must_be_array'),
-          this.translate.instant('config.toast_title_config_error')
+          this.translate.instant('config.toast_title_config_error'),
         );
       } else {
         await this.saveConfig(config);
@@ -87,7 +86,7 @@ export class ConfigEditorComponent implements OnInit {
     } catch (e) {
       this.$toastr.error(
         this.translate.instant('config.toast_config_invalid_json'),
-        this.translate.instant('config.toast_title_config_syntax_error')
+        this.translate.instant('config.toast_title_config_syntax_error'),
       );
     }
     this.saveInProgress = false;
@@ -115,11 +114,11 @@ export class ConfigEditorComponent implements OnInit {
           json => {
             this.$toastr.warning(
               this.translate.instant('config.toast_click_save_to_confirm_backup_restore'),
-              this.translate.instant('config.toast_title_backup_loaded')
+              this.translate.instant('config.toast_title_backup_loaded'),
             );
             this.homebridgeConfig = JSON.stringify(json, null, 4);
           },
-          err => this.$toastr.error(err.error.message || 'Failed to load config backup', this.translate.instant('toast.title_error'))
+          err => this.$toastr.error(err.error.message || 'Failed to load config backup', this.translate.instant('toast.title_error')),
         );
       })
       .catch(() => { /* modal dismissed */ });

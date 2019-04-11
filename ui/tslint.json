@@ -72,7 +72,6 @@
     "no-trailing-whitespace": true,
     "no-unnecessary-initializer": true,
     "no-unused-expression": true,
-    "no-unused-variable": true,
     "no-use-before-declare": true,
     "no-var-keyword": true,
     "object-literal-sort-keys": false,
@@ -92,6 +91,13 @@
     "semicolon": [
       true,
       "always"
+    ],
+    "trailing-comma": [
+      true,
+      {
+        "multiline": "always",
+        "singleline": "never"
+      }
     ],
     "triple-equals": [
       true,
@@ -114,7 +120,6 @@
         "constructor": "never"
       }
     ],
-    "typeof-compare": true,
     "unified-signatures": true,
     "variable-name": false,
     "whitespace": [
@@ -127,8 +132,14 @@
     ],
     "directive-selector": [
       true,
-      ["element","attribute"],
-      ["app", ""],
+      [
+        "element",
+        "attribute"
+      ],
+      [
+        "app",
+        ""
+      ],
       "camelCase"
     ],
     "component-selector": [

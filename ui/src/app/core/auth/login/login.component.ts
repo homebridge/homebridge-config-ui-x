@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { RouterModule, Routes, Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
   public form: FormGroup;
@@ -18,13 +18,13 @@ export class LoginComponent implements OnInit {
   constructor(
     private $fb: FormBuilder,
     private $router: Router,
-    private $auth: AuthService
+    private $auth: AuthService,
   ) { }
 
   ngOnInit() {
     this.form = this.$fb.group({
       username: ['', Validators.required],
-      password: ['', Validators.required]
+      password: ['', Validators.required],
     });
 
     this.targetRoute = window.sessionStorage.getItem('target_route') || '';

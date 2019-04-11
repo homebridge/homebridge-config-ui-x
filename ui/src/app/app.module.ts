@@ -33,21 +33,21 @@ export function HttpLoaderFactory(http: HttpClient) {
         provide: TranslateLoader,
         useFactory: HttpLoaderFactory,
         deps: [HttpClient],
-      }
+      },
     }),
     ToastrModule.forRoot({
       autoDismiss: true,
       newestOnTop: false,
       closeButton: true,
       maxOpened: 2,
-      positionClass: 'toast-bottom-right'
+      positionClass: 'toast-bottom-right',
     }),
-    NgbModule.forRoot(),
+    NgbModule,
     CoreModule,
     AuthModule,
     AppRoutingModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule { }

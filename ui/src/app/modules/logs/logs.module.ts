@@ -6,11 +6,11 @@ import { LogsComponent } from './logs.component';
 
 @NgModule({
   declarations: [
-    LogsComponent
+    LogsComponent,
   ],
   imports: [
     CommonModule,
-    LogsRoutingModule
-  ]
+    LogsRoutingModule,
+  ],
 })
 export class LogsModule { }

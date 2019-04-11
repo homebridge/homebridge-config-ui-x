@@ -14,7 +14,7 @@ Terminal.applyAddon(fit);
 @Component({
   selector: 'app-manage-plugins-modal',
   templateUrl: './manage-plugins-modal.component.html',
-  styleUrls: ['./manage-plugins-modal.component.scss']
+  styleUrls: ['./manage-plugins-modal.component.scss'],
 })
 export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   @Input() pluginName;
@@ -89,7 +89,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       (err) => {
         this.$router.navigate(['/plugins']);
         console.error(`Failed to install ${this.pluginName}`);
-      }
+      },
     );
   }
 
@@ -102,7 +102,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       },
       (err) => {
         console.error(`Failed to uninstall ${this.pluginName}`);
-      }
+      },
     );
   }
 
@@ -118,7 +118,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
         this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);
         this.getChangeLog();
       },
-      (err) => { }
+      (err) => { },
     );
   }
 
@@ -131,7 +131,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       },
       (err) => {
         this.$toastr.error(err.message);
-      }
+      },
     );
   }
 
@@ -147,7 +147,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       },
       (err) => {
         this.activeModal.close();
-      }
+      },
     );
   }
 
@@ -159,7 +159,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       },
       (err) => {
         this.update();
-      }
+      },
     );
   }
 

@@ -9,12 +9,12 @@ const routes: Routes = [
     component: UsersComponent,
     resolve: {
       homebridgeUsers: UsersResolver,
-    }
-  }
+    },
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class UsersRoutingModule { }

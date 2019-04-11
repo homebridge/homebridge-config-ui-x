@@ -7,13 +7,13 @@ import { FanManageComponent } from './fan.manage.component';
 @Component({
   selector: 'app-fan',
   templateUrl: './fan.component.html',
-  styleUrls: ['./fan.component.scss']
+  styleUrls: ['./fan.component.scss'],
 })
 export class FanComponent implements OnInit {
   @Input() public service: ServiceTypeX;
 
   constructor(
-    private modalService: NgbModal
+    private modalService: NgbModal,
   ) { }
 
   ngOnInit() {

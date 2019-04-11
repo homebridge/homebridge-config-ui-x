@@ -25,10 +25,10 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     AceEditorModule,
     NgbModule,
     TranslateModule.forChild(),
-    ConfigEditorRoutingModule
+    ConfigEditorRoutingModule,
   ],
   providers: [
-    ConfigEditorResolver
-  ]
+    ConfigEditorResolver,
+  ],
 })
 export class ConfigEditorModule { }

@@ -20,8 +20,8 @@ interface HomebridgeStatus {
   selector: 'app-status',
   templateUrl: './status.component.html',
   styleUrls: [
-    './status.component.scss'
-  ]
+    './status.component.scss',
+  ],
 })
 export class StatusComponent implements OnInit, OnDestroy {
   @ViewChild('qrcode') qrcode: ElementRef;
@@ -73,6 +73,7 @@ export class StatusComponent implements OnInit, OnDestroy {
 
       // check if client is up-to-date
       if (this.server.packageVersion && this.server.packageVersion !== this.$auth.env.packageVersion) {
+        // tslint:disable-next-line:deprecation
         window.location.reload(true);
       }
     });
@@ -85,7 +86,7 @@ export class StatusComponent implements OnInit, OnDestroy {
       },
       (err) => {
         this.$toastr.error(err.message);
-      }
+      },
     );
   }
 
@@ -98,14 +99,14 @@ export class StatusComponent implements OnInit, OnDestroy {
         },
         (err) => {
           this.loadedQrCode = false;
-        }
+        },
       );
     }
   }
 
   resetHomebridgeState() {
     this.$modal.open(ResetHomebridgeModalComponent, {
-      size: 'lg'
+      size: 'lg',
     });
   }
 
@@ -115,13 +116,3 @@ export class StatusComponent implements OnInit, OnDestroy {
   }
 
 }
-
-export const StatusStates = {
-  name: 'status',
-  url: '/',
-  component: StatusComponent,
-  data: {
-    requiresAuth: true
-  }
-};
-

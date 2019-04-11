@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "exclude": [
+    "node_modules",
+    "test",
+    "**/*spec.ts",
+    "ui",
+    "public",
+  ]
+}

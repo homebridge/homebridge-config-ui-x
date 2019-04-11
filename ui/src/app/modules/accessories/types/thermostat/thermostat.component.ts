@@ -7,14 +7,14 @@ import { ThermostatManageComponent } from './thermostat.manage.component';
 @Component({
   selector: 'app-thermostat',
   templateUrl: './thermostat.component.html',
-  styleUrls: ['./thermostat.component.scss']
+  styleUrls: ['./thermostat.component.scss'],
 })
 export class ThermostatComponent implements OnInit {
   @Input() public service: ServiceTypeX;
   model = 1;
 
   constructor(
-    private modalService: NgbModal
+    private modalService: NgbModal,
   ) { }
 
   ngOnInit() {

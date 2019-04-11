@@ -8,13 +8,13 @@ const routes: Routes = [
     path: '',
     component: ConfigEditorComponent,
     resolve: {
-      config: ConfigEditorResolver
-    }
+      config: ConfigEditorResolver,
+    },
   },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class ConfigEditorRoutingModule { }

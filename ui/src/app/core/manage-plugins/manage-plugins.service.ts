@@ -5,12 +5,12 @@ import { ManagePluginsModalComponent } from './manage-plugins-modal/manage-plugi
 import { SettingsPluginsModalComponent } from './settings-plugins-modal/settings-plugins-modal.component';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ManagePluginsService {
 
   constructor(
-    private modalService: NgbModal
+    private modalService: NgbModal,
   ) { }
 
   installPlugin(pluginName) {

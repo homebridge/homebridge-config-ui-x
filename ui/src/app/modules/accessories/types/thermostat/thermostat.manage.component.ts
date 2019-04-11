@@ -2,7 +2,6 @@ import { Component, OnInit, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ServiceType } from '@oznu/hap-client';
 
-import { interval } from 'rxjs/observable/interval';
 import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
@@ -10,7 +9,7 @@ import 'rxjs/add/operator/distinctUntilChanged';
 @Component({
   selector: 'app-thermostat-manage',
   templateUrl: './thermostat.manage.component.html',
-  styleUrls: ['./thermostat.component.scss']
+  styleUrls: ['./thermostat.component.scss'],
 })
 export class ThermostatManageComponent implements OnInit {
   @Input() public service: ServiceType;

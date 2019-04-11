@@ -6,7 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '../../../core/api.service';
 
 @Component({
-  templateUrl: './reset-homebridge-modal.component.html'
+  templateUrl: './reset-homebridge-modal.component.html',
 })
 export class ResetHomebridgeModalComponent {
   public clicked: boolean;
@@ -29,7 +29,7 @@ export class ResetHomebridgeModalComponent {
       },
       async err => {
         this.toastr.error(this.translate.instant('reset.toast_failed_to_reset'), this.translate.instant('toast.title_error'));
-      }
+      },
     );
   }
 }

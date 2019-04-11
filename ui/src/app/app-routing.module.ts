@@ -8,7 +8,7 @@ import { LoginComponent } from './core/auth/login/login.component';
 const routes: Routes = [
   {
     path: 'login',
-    component: LoginComponent
+    component: LoginComponent,
   },
   {
     path: '',
@@ -40,24 +40,56 @@ const routes: Routes = [
       {
         path: 'users',
         loadChildren: './modules/users/users.module#UsersModule',
+        canActivate: [AdminGuard],
       },
       {
         path: 'restart',
         loadChildren: './modules/restart/restart.module#RestartModule',
+        canActivate: [AdminGuard],
       },
       {
         path: 'platform-tools',
         loadChildren: './modules/platform-tools/platform-tools.module#PlatformToolsModule',
-      }
-    ]
+        canActivate: [AdminGuard],
+      },
+      // redirects from old urls below
+      {
+        path: 'docker/terminal',
+        redirectTo: 'platform-tools/terminal',
+      },
+      {
+        path: 'docker/startup-script',
+        redirectTo: 'platform-tools/docker/startup-script',
+      },
+      {
+        path: 'docker/restart',
+        redirectTo: 'platform-tools/docker/restart-container',
+      },
+      {
+        path: 'docker/settings',
+        redirectTo: 'platform-tools/docker/settings',
+      },
+      {
+        path: 'linux/terminal',
+        redirectTo: 'platform-tools/terminal',
+      },
+      {
+        path: 'linux/restart',
+        redirectTo: 'platform-tools/linux/restart-server',
+      },
+      {
+        path: 'linux/shutdown',
+        redirectTo: 'platform-tools/linux/shutdown-server',
+      },
+    ],
   },
   {
-    path: '**', pathMatch: 'full', redirectTo: '/'
-  }
+    path: '**', pathMatch: 'full', redirectTo: '/',
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, { scrollPositionRestoration: 'enabled', onSameUrlNavigation: 'reload' })],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class AppRoutingModule { }

@@ -24,6 +24,6 @@ import { ManagePluginsModule } from '../../core/manage-plugins/manage-plugins.mo
     CoreModule,
     ManagePluginsModule,
     StatusRoutingModule,
-  ]
+  ],
 })
 export class StatusModule { }

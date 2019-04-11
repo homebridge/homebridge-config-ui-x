@@ -9,7 +9,7 @@ Terminal.applyAddon(fit);
 
 @Component({
   selector: 'app-logs',
-  templateUrl: './logs.component.html'
+  templateUrl: './logs.component.html',
 })
 export class LogsComponent implements OnInit, OnDestroy {
   private io = this.$ws.connectToNamespace('log');
@@ -19,7 +19,7 @@ export class LogsComponent implements OnInit, OnDestroy {
   private resize = new Subject();
 
   constructor(
-    private $ws: WsService
+    private $ws: WsService,
   ) { }
 
   ngOnInit() {
@@ -70,7 +70,7 @@ export class LogsComponent implements OnInit, OnDestroy {
 
     this.io.socket.disconnect();
     this.io.socket.removeAllListeners();
-    this.term.destroy();
+    this.term.dispose();
   }
 
 }
@@ -80,6 +80,6 @@ export const LogsStates = {
   url: '/logs',
   component: LogsComponent,
   data: {
-    requiresAuth: true
-  }
+    requiresAuth: true,
+  },
 };

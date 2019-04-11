@@ -20,7 +20,7 @@ import { LongClickDirective } from './directives/longclick.directive';
     SpinnerComponent,
     ConvertTempPipe,
     HrefTargetBlankDirective,
-    LongClickDirective
-  ]
+    LongClickDirective,
+  ],
 })
 export class CoreModule { }

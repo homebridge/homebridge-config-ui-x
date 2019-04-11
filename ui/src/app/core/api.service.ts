@@ -5,12 +5,9 @@ import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ApiService {
-  private base = environment.apiBaseUrl;
-  private httpOptions = environment.apiHttpOptions;
-
   constructor(private $http: HttpClient) { }
 
   get(url: string, options?): Observable<any> {

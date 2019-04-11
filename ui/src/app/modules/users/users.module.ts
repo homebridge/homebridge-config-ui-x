@@ -26,10 +26,10 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     ReactiveFormsModule,
     TranslateModule.forChild(),
     NgbModule,
-    UsersRoutingModule
+    UsersRoutingModule,
   ],
   providers: [
     UsersResolver,
-  ]
+  ],
 })
 export class UsersModule { }

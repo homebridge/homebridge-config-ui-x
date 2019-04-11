@@ -10,7 +10,7 @@ import { ManagePluginsService } from '../../../core/manage-plugins/manage-plugin
 @Component({
   selector: 'app-plugins.search',
   templateUrl: '../plugins.component.html',
-  styleUrls: ['../plugins.component.scss']
+  styleUrls: ['../plugins.component.scss'],
 })
 export class SearchPluginsComponent implements OnInit, OnDestroy {
   public query: string;
@@ -26,7 +26,7 @@ export class SearchPluginsComponent implements OnInit, OnDestroy {
     public $router: Router,
     private $route: ActivatedRoute,
     public $fb: FormBuilder,
-    private $toastr: ToastrService
+    private $toastr: ToastrService,
   ) { }
 
   ngOnInit() {
@@ -58,7 +58,7 @@ export class SearchPluginsComponent implements OnInit, OnDestroy {
       },
       (err) => {
         this.$toastr.error(`Failed search npm: ${err.message}`, 'Error');
-      }
+      },
     );
   }
 

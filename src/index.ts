@@ -1,3 +1,7 @@
+/**
+ * Homebridge Entry Point
+ */
+
 import * as path from 'path';
 import * as child_process from 'child_process';
 import * as commander from 'commander';
@@ -16,41 +20,33 @@ class HomebridgeConfigUi {
   constructor(log, config) {
     this.log = log;
 
-    const setup = {
-      homebridgeVersion: homebridge.serverVersion,
-      configPath: homebridge.user.configPath(),
-      storagePath: homebridge.user.storagePath(),
-      config: config
-    };
+    process.env.UIX_CONFIG_PATH = homebridge.user.configPath();
+    process.env.UIX_STORAGE_PATH = homebridge.user.storagePath();
 
     commander
       .allowUnknownOption()
-      .option('-P, --plugin-path [path]', '', (p) => config.pluginPath = p)
-      .option('-I, --insecure', '', () => config.homebridgeInsecure = true)
+      .option('-P, --plugin-path [path]', '', (p) => process.env.UIX_CUSTOM_PLUGIN_PATH = p)
+      .option('-I, --insecure', '', () => process.env.UIX_INSECURE_MODE = '1')
       .parse(process.argv);
 
     if (process.env.HOMEBRIDGE_CONFIG_UI === '1' && semver.satisfies(process.env.CONFIG_UI_VERSION, '>=3.5.5')) {
       this.log(`Running in Docker Standalone Mode.`);
     } else if (config.noFork) {
-      this.noFork(setup);
+      this.noFork();
     } else {
-      this.fork(setup);
+      this.fork();
     }
   }
 
   /**
    * Run plugin as a seperate node.js process
    */
-  fork(setup) {
-    const ui = child_process.fork(path.resolve(__dirname, 'bin/fork'));
+  fork() {
+    const ui = child_process.fork(path.resolve(__dirname, 'bin/fork'), null, {
+      env: process.env,
+    });
 
     this.log(`Spawning homebridge-config-ui-x with PID`, ui.pid);
-
-    ui.on('message', (message) => {
-      if (message === 'ready') {
-        ui.send(setup);
-      }
-    });
 
     ui.on('close', () => {
       process.exit(1);
@@ -62,13 +58,13 @@ class HomebridgeConfigUi {
   /**
    * Run plugin in the main homebridge process
    */
-  async noFork(setup) {
-    const { UiServer } = await import('./server');
-    return new UiServer(setup);
+  async noFork() {
+    await import('./main');
   }
 
   accessories(callback) {
     const accessories = [];
     callback(accessories);
   }
+
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
@@ -19,7 +19,7 @@ export type ServiceTypeX = ServiceType & { customName?: string, hidden?: boolean
 @Component({
   selector: 'app-accessories',
   templateUrl: './accessories.component.html',
-  styleUrls: ['./accessories.component.scss']
+  styleUrls: ['./accessories.component.scss'],
 })
 export class AccessoriesComponent implements OnInit, OnDestroy {
   private io = this.$ws.connectToNamespace('accessories');
@@ -46,12 +46,12 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
     // disable drag and drop for everything except the room title
     dragulaService.createGroup('rooms-bag', {
-      moves: (el, container, handle) => !this.isMobile && handle.classList.contains('drag-handle')
+      moves: (el, container, handle) => !this.isMobile && handle.classList.contains('drag-handle'),
     });
 
     // disable drag and drop for the .no-drag class
     dragulaService.createGroup('services-bag', {
-      moves: (el, source, handle, sibling) => !this.isMobile && !el.classList.contains('no-drag')
+      moves: (el, source, handle, sibling) => !this.isMobile && !el.classList.contains('no-drag'),
     });
 
     // save the room and service layout
@@ -147,7 +147,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
           } else {
             this.rooms.push({
               name: 'Default Room',
-              services: [service]
+              services: [service],
             });
           }
         }
@@ -199,7 +199,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
       this.rooms.push({
         name: roomName,
-        services: []
+        services: [],
       });
     })
       .catch(() => { /* modal dismissed */ });
@@ -216,9 +216,9 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
             iid: service.iid,
             uuid: service.uuid,
             customName: service.customName || undefined,
-            hidden: service.hidden || undefined
+            hidden: service.hidden || undefined,
           };
-        })
+        }),
       };
     })
       .filter(room => room.services.length);
@@ -227,7 +227,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     this.$api.post('/accessories', this.accessoryLayout)
       .subscribe(
         data => true,
-        err => this.$toastr.error(err.message, 'Failed to save page layout')
+        err => this.$toastr.error(err.message, 'Failed to save page layout'),
       );
   }
 
@@ -249,8 +249,8 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
                   aid: service.aid,
                   siid: service.iid,
                   iid: characteristic.iid,
-                  value: value
-                }
+                  value: value,
+                },
               });
               return resolve();
             });

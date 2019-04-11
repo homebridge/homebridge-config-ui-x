@@ -8,7 +8,7 @@ import { ApiService } from '../../api.service';
 @Component({
   selector: 'app-settings-plugins-modal',
   templateUrl: './settings-plugins-modal.component.html',
-  styleUrls: ['./settings-plugins-modal.component.scss']
+  styleUrls: ['./settings-plugins-modal.component.scss'],
 })
 export class SettingsPluginsModalComponent implements OnInit {
   @Input() pluginName;
@@ -23,7 +23,7 @@ export class SettingsPluginsModalComponent implements OnInit {
     addSubmit: false,
     loadExternalAssets: false,
     returnEmptyFields: false,
-    setSchemaDefaults: true
+    setSchemaDefaults: true,
   };
 
   constructor(
@@ -65,7 +65,7 @@ export class SettingsPluginsModalComponent implements OnInit {
       const platformConfig = {
         __uuid__: __uuid__,
         name: 'New ' + this.configSchema.pluginAlias + ' Platform #' + (this.pluginConfig.length + 1),
-        onChange: this.blockChanged(__uuid__, this.configSchema.pluginAlias)
+        onChange: this.blockChanged(__uuid__, this.configSchema.pluginAlias),
       };
 
       const baseConfig = {
@@ -86,7 +86,7 @@ export class SettingsPluginsModalComponent implements OnInit {
       const accessoryConfig = {
         __uuid__: __uuid__,
         name: 'New ' + this.configSchema.pluginAlias + ' Accessory #' + (this.pluginConfig.length + 1),
-        onChange: this.blockChanged(__uuid__, this.configSchema.pluginAlias)
+        onChange: this.blockChanged(__uuid__, this.configSchema.pluginAlias),
       };
 
       const baseConfig = {
@@ -169,7 +169,7 @@ export class SettingsPluginsModalComponent implements OnInit {
         if (!this.pluginConfig.length) {
           this.addBlock();
         }
-      }
+      },
     );
   }
 
@@ -189,7 +189,7 @@ export class SettingsPluginsModalComponent implements OnInit {
       .then((done) => {
         this.$toastr.success(
           this.translate.instant('plugins.settings.toast_restart_required'),
-          this.translate.instant('plugins.settings.toast_plugin_config_saved')
+          this.translate.instant('plugins.settings.toast_plugin_config_saved'),
         );
         this.activeModal.close();
       })

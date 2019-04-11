@@ -16,7 +16,7 @@ export function tokenGetter() {
 
 @NgModule({
   declarations: [
-    LoginComponent
+    LoginComponent,
   ],
   imports: [
     CommonModule,
@@ -28,8 +28,8 @@ export function tokenGetter() {
         tokenGetter: tokenGetter,
         skipWhenExpired: true,
         whitelistedDomains: environment.jwt.whitelistedDomains,
-        blacklistedRoutes: environment.jwt.blacklistedRoutes
-      }
+        blacklistedRoutes: environment.jwt.blacklistedRoutes,
+      },
     }),
   ],
   providers: [

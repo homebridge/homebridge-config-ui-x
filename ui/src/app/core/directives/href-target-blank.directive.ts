@@ -6,7 +6,7 @@ import { Directive, ElementRef, OnInit } from '@angular/core';
 export class HrefTargetBlankDirective implements OnInit {
 
   constructor(
-    private el: ElementRef
+    private el: ElementRef,
   ) { }
 
   ngOnInit() {

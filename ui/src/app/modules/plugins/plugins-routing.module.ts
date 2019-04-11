@@ -11,11 +11,11 @@ const routes: Routes = [
   {
     path: 'search/:query',
     component: SearchPluginsComponent,
-  }
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class PluginsRoutingModule { }

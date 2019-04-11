@@ -23,7 +23,7 @@ export class AuthService {
   constructor(
     private $jwtHelper: JwtHelperService,
     private $api: ApiService,
-    private titleService: Title
+    private titleService: Title,
   ) {
     // load the token (if present) from local storage on page init
     this.loadToken();

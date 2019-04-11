@@ -4,14 +4,14 @@ import { ServiceTypeX } from '../accessories.component';
 
 @Component({
   selector: 'app-info-modal',
-  templateUrl: './info-modal.component.html'
+  templateUrl: './info-modal.component.html',
 })
 export class InfoModalComponent implements OnInit {
   @Input() public service: ServiceTypeX;
   public accessoryInformation: Array<any>;
 
   constructor(
-    public activeModal: NgbActiveModal
+    public activeModal: NgbActiveModal,
   ) { }
 
   ngOnInit() {

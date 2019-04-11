@@ -4,7 +4,7 @@ import { ServiceTypeX } from '../../accessories.component';
 @Component({
   selector: 'app-unknown',
   templateUrl: './unknown.component.html',
-  styleUrls: ['./unknown.component.scss']
+  styleUrls: ['./unknown.component.scss'],
 })
 export class UnknownComponent implements OnInit {
   @Input() public service: ServiceTypeX;

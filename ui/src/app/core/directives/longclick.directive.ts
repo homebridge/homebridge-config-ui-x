@@ -1,7 +1,7 @@
-import { OnDestroy, Directive, EventEmitter, HostListener, Input, Output, Host } from '@angular/core';
+import { OnDestroy, Directive, EventEmitter, HostListener, Input, Output } from '@angular/core';
 
 @Directive({
-  selector: '[appLongclick]'
+  selector: '[appLongclick]',
 })
 export class LongClickDirective implements OnDestroy {
   @Input() public duration = 350;
@@ -32,6 +32,7 @@ export class LongClickDirective implements OnDestroy {
   @HostListener('touchstart', ['$event'])
   @HostListener('mousedown', ['$event'])
   public onMouseDown(event: MouseEvent): void {
+    // tslint:disable-next-line:deprecation
     if (event.which > 1) {
       return;
     }

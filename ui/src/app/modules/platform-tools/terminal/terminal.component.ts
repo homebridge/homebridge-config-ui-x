@@ -11,10 +11,10 @@ Terminal.applyAddon(webLinks);
 
 @Component({
   selector: 'app-terminal',
-  templateUrl: './terminal.component.html'
+  templateUrl: './terminal.component.html',
 })
 export class TerminalComponent implements OnInit, OnDestroy {
-  private io = this.$ws.connectToNamespace('terminal');
+  private io = this.$ws.connectToNamespace('platform-tools/terminal');
 
   private term = new Terminal();
   private termTarget: HTMLElement;
@@ -26,7 +26,7 @@ export class TerminalComponent implements OnInit, OnDestroy {
   private onClose;
 
   constructor(
-    private $ws: WsService
+    private $ws: WsService,
   ) { }
 
   ngOnInit() {
@@ -40,11 +40,11 @@ export class TerminalComponent implements OnInit, OnDestroy {
     (<any>this.term).webLinksInit();
 
     this.io.socket.on('connect', () => {
-      this.io.socket.emit('start-session', { cols: this.term.cols, rows: this.term.rows });
+      this.startTerminal();
     });
 
     this.io.socket.on('disconnect', () => {
-      this.term.write('Websocket failed to connect. Is the server running?\n\r\n\r');
+      this.term.write('\n\r\n\rTerminal disconnected. Is the server running?\n\r\n\r');
     });
 
     // send resize events
@@ -71,15 +71,6 @@ export class TerminalComponent implements OnInit, OnDestroy {
     this.term.on('data', (data) => {
       this.io.socket.emit('stdin', data);
     });
-
-    this.onClose = this.$ws.close.subscribe(() => {
-      this.term.reset();
-      this.term.write('Connection to server lost...');
-    });
-
-    this.onError = this.$ws.error.subscribe((err) => {
-      this.term.write('Websocket failed to connect. Is the server running?\n\r');
-    });
   }
 
   @HostListener('window:resize', ['$event'])
@@ -89,7 +80,7 @@ export class TerminalComponent implements OnInit, OnDestroy {
 
   startTerminal() {
     this.term.reset();
-    this.$ws.send({ terminal: { start: true } });
+    this.io.socket.emit('start-session', { cols: this.term.cols, rows: this.term.rows });
     this.resize.next({ cols: this.term.cols, rows: this.term.rows });
     this.term.focus();
   }
@@ -101,7 +92,7 @@ export class TerminalComponent implements OnInit, OnDestroy {
 
     this.io.socket.disconnect();
     this.io.socket.removeAllListeners();
-    this.term.destroy();
+    this.term.dispose();
   }
 
 }

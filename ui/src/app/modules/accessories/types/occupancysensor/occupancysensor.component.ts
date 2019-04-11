@@ -4,7 +4,7 @@ import { ServiceTypeX } from '../../accessories.component';
 @Component({
   selector: 'app-occupancysensor',
   templateUrl: './occupancysensor.component.html',
-  styleUrls: ['./occupancysensor.component.scss']
+  styleUrls: ['./occupancysensor.component.scss'],
 })
 export class OccupancysensorComponent implements OnInit {
   @Input() public service: ServiceTypeX;

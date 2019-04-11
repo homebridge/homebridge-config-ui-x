@@ -23,11 +23,11 @@ import { ManagePluginsModalComponent } from './manage-plugins-modal/manage-plugi
 @NgModule({
   entryComponents: [
     SettingsPluginsModalComponent,
-    ManagePluginsModalComponent
+    ManagePluginsModalComponent,
   ],
   declarations: [
     SettingsPluginsModalComponent,
-    ManagePluginsModalComponent
+    ManagePluginsModalComponent,
   ],
   imports: [
     CommonModule,
@@ -43,13 +43,13 @@ import { ManagePluginsModalComponent } from './manage-plugins-modal/manage-plugi
         JsonSchemaFormService,
         FrameworkLibraryService,
         WidgetLibraryService,
-        { provide: Framework, useClass: Bootstrap4Framework, multi: true }
-      ]
+        { provide: Framework, useClass: Bootstrap4Framework, multi: true },
+      ],
     },
     CoreModule,
   ],
   providers: [
     ManagePluginsService,
-  ]
+  ],
 })
 export class ManagePluginsModule { }

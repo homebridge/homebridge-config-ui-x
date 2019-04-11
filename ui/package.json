@@ -5,7 +5,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --prod --output-path=../public --source-map=false --extract-css --aot=true"
+    "build": "ng build --prod --output-path=../public --source-map=false --extract-css --aot=true",
+    "lint": "tslint -p tsconfig.json -c tslint.json"
   },
   "private": true,
   "dependencies": {
@@ -23,7 +24,6 @@
     "@ng-bootstrap/ng-bootstrap": "^4.1.0",
     "@ngx-translate/core": "^11.0.1",
     "@ngx-translate/http-loader": "^4.0.0",
-    "@uirouter/angular": "^3.0.0",
     "bootstrap": "^4.3.1",
     "classlist.js": "^1.1.20150312",
     "core-js": "^2.6.5",

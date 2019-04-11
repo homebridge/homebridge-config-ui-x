@@ -6,13 +6,13 @@ import { ApiService } from '../../../core/api.service';
 
 @Component({
   selector: 'app-config.restore-backup',
-  templateUrl: './config.restore-backup.component.html'
+  templateUrl: './config.restore-backup.component.html',
 })
 export class ConfigRestoreBackupComponent implements OnInit {
   public backupList: {
     id: string,
     timestamp: string,
-    file: string
+    file: string,
   }[];
 
   constructor(
@@ -25,7 +25,7 @@ export class ConfigRestoreBackupComponent implements OnInit {
   ngOnInit() {
     this.$api.get('/config-editor/backups').subscribe(
       (data: any[]) => this.backupList = data,
-      (err) => this.$toastr.error(err.error.message, this.translate.instant('config.restore.toast_failed_to_load_backups'))
+      (err) => this.$toastr.error(err.error.message, this.translate.instant('config.restore.toast_failed_to_load_backups')),
     );
   }
 
@@ -39,7 +39,7 @@ export class ConfigRestoreBackupComponent implements OnInit {
         this.activeModal.dismiss();
         this.$toastr.success(this.translate.instant('config.restore.toast_backups_deleted'), this.translate.instant('toast.title_success'));
       },
-      (err) => this.$toastr.error(err.error.message, this.translate.instant('config.restore.toast_failed_to_delete_backups'))
+      (err) => this.$toastr.error(err.error.message, this.translate.instant('config.restore.toast_failed_to_delete_backups')),
     );
   }
 

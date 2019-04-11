@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -11,7 +11,7 @@ import { ApiService } from '../../core/api.service';
 
 @Component({
   selector: 'app-users',
-  templateUrl: './users.component.html'
+  templateUrl: './users.component.html',
 })
 export class UsersComponent implements OnInit {
   public homebridgeUsers: Array<any>;
@@ -35,7 +35,7 @@ export class UsersComponent implements OnInit {
     return this.$api.get('/users').subscribe(
       (result) => {
         this.homebridgeUsers = result;
-      }
+      },
     );
   }
 
@@ -69,9 +69,9 @@ export class UsersComponent implements OnInit {
       err => {
         this.toastr.error(
           err.error.message || this.translate.instant('users.toast_failed_to_delete_user'),
-          this.translate.instant('toast.title_error')
+          this.translate.instant('toast.title_error'),
         );
-      }
+      },
     );
   }
 

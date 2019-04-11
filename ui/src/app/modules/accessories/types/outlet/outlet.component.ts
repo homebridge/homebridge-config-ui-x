@@ -4,7 +4,7 @@ import { ServiceTypeX } from '../../accessories.component';
 @Component({
   selector: 'app-outlet',
   templateUrl: './outlet.component.html',
-  styleUrls: ['./outlet.component.scss']
+  styleUrls: ['./outlet.component.scss'],
 })
 export class OutletComponent implements OnInit {
   @Input() public service: ServiceTypeX;

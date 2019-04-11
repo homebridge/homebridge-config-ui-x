@@ -6,11 +6,11 @@ const routes: Routes = [
   {
     path: '',
     component: RestartComponent,
-  }
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class RestartRoutingModule { }

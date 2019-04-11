@@ -9,7 +9,7 @@ import { ApiService } from '../../../core/api.service';
 
 @Component({
   selector: 'app-users-edit',
-  templateUrl: './users-edit.component.html'
+  templateUrl: './users-edit.component.html',
 })
 export class UsersEditComponent implements OnInit {
   @Input() user;
@@ -17,7 +17,7 @@ export class UsersEditComponent implements OnInit {
   page = {
     title: 'users.title_edit_user',
     save: 'form.button_save',
-    password: 'users.label_new_password'
+    password: 'users.label_new_password',
   };
 
   constructor(
@@ -25,7 +25,7 @@ export class UsersEditComponent implements OnInit {
     public toastr: ToastrService,
     private translate: TranslateService,
     private $api: ApiService,
-    public $fb: FormBuilder
+    public $fb: FormBuilder,
   ) { }
 
   ngOnInit() {
@@ -34,9 +34,9 @@ export class UsersEditComponent implements OnInit {
       name: ['', Validators.required],
       password: ['', Validators.minLength(4)],
       passwordConfirm: [''],
-      admin: [true]
+      admin: [true],
     }, {
-        validator: this.matchPassword
+        validator: this.matchPassword,
       });
 
     this.form.patchValue(this.user);
@@ -60,7 +60,7 @@ export class UsersEditComponent implements OnInit {
       },
       err => {
         this.toastr.error(this.translate.instant('users.toast_failed_to_add_user'), this.translate.instant('toast.title_error'));
-      }
+      },
     );
   }
 

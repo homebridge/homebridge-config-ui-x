@@ -2,7 +2,6 @@ import { Component, OnInit, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ServiceTypeX } from '../../accessories.component';
 
-import { interval } from 'rxjs/observable/interval';
 import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
@@ -10,7 +9,7 @@ import 'rxjs/add/operator/distinctUntilChanged';
 @Component({
   selector: 'app-fan-manage',
   templateUrl: './fan.manage.component.html',
-  styleUrls: ['./fan.component.scss']
+  styleUrls: ['./fan.component.scss'],
 })
 export class FanManageComponent implements OnInit {
   @Input() public service: ServiceTypeX;

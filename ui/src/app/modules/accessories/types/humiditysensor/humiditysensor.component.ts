@@ -4,7 +4,7 @@ import { ServiceTypeX } from '../../accessories.component';
 @Component({
   selector: 'app-humiditysensor',
   templateUrl: './humiditysensor.component.html',
-  styleUrls: ['./humiditysensor.component.scss']
+  styleUrls: ['./humiditysensor.component.scss'],
 })
 export class HumiditysensorComponent implements OnInit {
   @Input() public service: ServiceTypeX;

@@ -4,7 +4,7 @@ import { ServiceTypeX } from '../../accessories.component';
 @Component({
   selector: 'app-airqualitysensor',
   templateUrl: './airqualitysensor.component.html',
-  styleUrls: ['./airqualitysensor.component.scss']
+  styleUrls: ['./airqualitysensor.component.scss'],
 })
 export class AirqualitysensorComponent implements OnInit {
   @Input() public service: ServiceTypeX;

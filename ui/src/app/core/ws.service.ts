@@ -1,35 +1,15 @@
-import { Injectable, EventEmitter, Output } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
+import { connect } from 'socket.io-client';
 import { environment } from '../../environments/environment';
-import { ApiService } from './api.service';
 import { AuthService } from './auth/auth.service';
 
-import { connect } from 'socket.io-client';
-import { Observable } from 'rxjs';
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class WsService {
-
-  // remove below
-  public socket;
-
-  @Output() open: EventEmitter<any> = new EventEmitter();
-  @Output() close: EventEmitter<any> = new EventEmitter();
-  @Output() error: EventEmitter<any> = new EventEmitter();
-
-  public handlers = {
-    stats: new EventEmitter(),
-    server: new EventEmitter(),
-    logs: new EventEmitter(),
-    accessories: new EventEmitter(),
-    terminal: new EventEmitter(),
-    npmLog: new EventEmitter(),
-    npmInstall: new EventEmitter()
-  };
-
   constructor(
-    private $auth: AuthService
+    private $auth: AuthService,
   ) { }
 
   /**
@@ -45,9 +25,8 @@ export class WsService {
     });
 
     function request(resource: string, payload?: string | object | Array<any>): Observable<string | object | Array<any>> {
-      return Observable.create((observer) => {
+      return new Observable((observer) => {
         socket.emit(resource, payload, (resp) => {
-          console.log(resp);
           if (typeof resp === 'object' && resp.error) {
             observer.error(resp);
           } else {
@@ -60,21 +39,7 @@ export class WsService {
 
     return {
       socket,
-      request
+      request,
     };
   }
-
-  // remove below
-  send(data: object) {
-  }
-
-  subscribe(sub: string) {
-  }
-
-  unsubscribe(sub: string) {
-  }
-
-  routeMessage(msg: { data: any }) {
-  }
-
 }

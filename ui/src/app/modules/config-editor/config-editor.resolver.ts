@@ -8,12 +8,12 @@ export class ConfigEditorResolver implements Resolve<any> {
   constructor(
     private $api: ApiService,
     private $toastr: ToastrService,
-    private $router: Router
+    private $router: Router,
   ) { }
 
   resolve(
     route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
+    state: RouterStateSnapshot,
   ) {
     return this.$api.get('/config-editor').toPromise()
       .then((json) => {

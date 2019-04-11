@@ -9,14 +9,14 @@ import { ApiService } from '../../../core/api.service';
 
 @Component({
   selector: 'app-users-add',
-  templateUrl: './users-add.component.html'
+  templateUrl: './users-add.component.html',
 })
 export class UsersAddComponent implements OnInit {
   form: FormGroup;
   page = {
     title: 'users.title_add_user',
     save: 'users.button_add_new_user',
-    password: 'users.label_password'
+    password: 'users.label_password',
   };
 
   constructor(
@@ -24,7 +24,7 @@ export class UsersAddComponent implements OnInit {
     public toastr: ToastrService,
     private translate: TranslateService,
     private $api: ApiService,
-    public $fb: FormBuilder
+    public $fb: FormBuilder,
   ) { }
 
   ngOnInit() {
@@ -33,9 +33,9 @@ export class UsersAddComponent implements OnInit {
       name: ['', Validators.required],
       password: ['', Validators.compose([Validators.required, Validators.minLength(4)])],
       passwordConfirm: ['', Validators.required],
-      admin: [true]
+      admin: [true],
     }, {
-        validator: this.matchPassword
+        validator: this.matchPassword,
       });
   }
 
@@ -57,7 +57,7 @@ export class UsersAddComponent implements OnInit {
       },
       err => {
         this.toastr.error(this.translate.instant('users.toast_failed_to_add_user'), this.translate.instant('toast.title_error'));
-      }
+      },
     );
   }
 

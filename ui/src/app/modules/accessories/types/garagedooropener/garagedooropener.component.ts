@@ -4,7 +4,7 @@ import { ServiceTypeX } from '../../accessories.component';
 @Component({
   selector: 'app-garagedooropener',
   templateUrl: './garagedooropener.component.html',
-  styleUrls: ['./garagedooropener.component.scss']
+  styleUrls: ['./garagedooropener.component.scss'],
 })
 export class GaragedooropenerComponent implements OnInit {
   @Input() public service: ServiceTypeX;

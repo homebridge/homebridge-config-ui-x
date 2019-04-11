@@ -12,7 +12,7 @@ import { ManagePluginsService } from '../../../core/manage-plugins/manage-plugin
 @Component({
   selector: 'app-plugins',
   templateUrl: '../plugins.component.html',
-  styleUrls: ['../plugins.component.scss']
+  styleUrls: ['../plugins.component.scss'],
 })
 export class InstalledPluginsComponent implements OnInit, OnDestroy {
   public form: FormGroup;
@@ -58,9 +58,9 @@ export class InstalledPluginsComponent implements OnInit, OnDestroy {
       (err) => {
         this.toastr.error(
           `${this.translate.instant('plugins.toast_failed_to_load_plugins')}: ${err.message}`,
-          this.translate.instant('toast.title_error')
+          this.translate.instant('toast.title_error'),
         );
-      }
+      },
     );
   }
 

@@ -7,12 +7,12 @@ import { CoreModule } from 'src/app/core/core.module';
 
 @NgModule({
   declarations: [
-    RestartComponent
+    RestartComponent,
   ],
   imports: [
     CommonModule,
     CoreModule,
-    RestartRoutingModule
-  ]
+    RestartRoutingModule,
+  ],
 })
 export class RestartModule { }

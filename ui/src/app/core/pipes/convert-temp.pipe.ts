@@ -4,7 +4,7 @@ import { AuthService } from '../auth/auth.service';
 @Pipe({ name: 'convertTemp' })
 export class ConvertTempPipe implements PipeTransform {
   constructor(
-    private $auth: AuthService
+    private $auth: AuthService,
   ) { }
 
   transform(value: number): number {

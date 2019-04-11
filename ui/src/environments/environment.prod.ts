@@ -3,13 +3,12 @@ export const environment = {
   socket: '',
   api: {
     base: '/api',
+    socket: `${(window.location.protocol) === 'http:' ? 'ws://' : 'wss://'}${window.location.host}`,
   },
   jwt: {
     tokenKey: 'access_token',
     whitelistedDomains: [document.location.host],
     blacklistedRoutes: [`${document.location.host}/api/auth/login`],
   },
-  socketUrl: `${(window.location.protocol) === 'http:' ? 'ws://' : 'wss://'}${window.location.host}`,
-  apiBaseUrl: '',
-  apiHttpOptions: {}
+  apiHttpOptions: {},
 };

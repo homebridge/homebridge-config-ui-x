@@ -3,12 +3,40 @@ const path = require('path');
 
 module.exports = {
   entry: {
-    server: './src/server.ts',
+    server: './src/main.ts',
+  },
+  output: {
+    filename: "main.js",
+    path: path.join(__dirname, "dist"),
+    libraryTarget: "commonjs",
   },
   target: 'node',
+  mode: "production",
   externals: {
     "fsevents": "fsevents",
     "node-pty-prebuilt-multiarch": "node-pty-prebuilt-multiarch",
+    "@nestjs/common": "@nestjs/common",
+    "@nestjs/core": "@nestjs/core",
+    "@nestjs/platform-socket.io": "@nestjs/platform-socket.io",
+    "@nestjs/websockets": "@nestjs/websockets",
+    "reflect-metadata": "reflect-metadata",
+    "rxjs": "rxjs",
+    "class-transformer": "class-transformer",
+    "class-validator": "class-validator",
+    "commander": "commander",
+    "semver": "semver"
+  },
+  node: {
+    console: false,
+    global: false,
+    process: false,
+    Buffer: false,
+    __filename: false,
+    __dirname: false,
+    setImmediate: false,
+  },
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js'],
   },
   module: {
     rules: [
@@ -19,26 +47,12 @@ module.exports = {
       },
     ],
   },
-  resolve: {
-    extensions: ['.tsx', '.ts', '.js'],
-  },
   optimization: {
     minimize: false,
   },
-  output: {
-    // filename: "server.js",
-    path: path.join(__dirname, "dist"),
-    libraryTarget: "commonjs",
-  },
-  mode: "production",
-  node: {
-    console: false,
-    global: false,
-    process: false,
-    Buffer: false,
-    __filename: false,
-    __dirname: false,
-    setImmediate: false
-  },
-  plugins: [],
+  plugins: [
+    new webpack.IgnorePlugin(/@nestjs\/microservices/),
+    new webpack.IgnorePlugin(/@nestjs\/platform-express/),
+    new webpack.IgnorePlugin(/cache-manager/),
+  ],
 };

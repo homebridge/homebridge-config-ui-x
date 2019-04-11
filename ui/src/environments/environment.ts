@@ -6,17 +6,15 @@
 export const environment = {
   production: false,
   api: {
-    base: 'http://localhost:3000/api',
-    socket: 'http://localhost:3000'
+    base: 'http://localhost:8080/api',
+    socket: 'http://localhost:8080',
   },
   jwt: {
     tokenKey: 'access_token',
-    whitelistedDomains: ['localhost:3000'],
-    blacklistedRoutes: ['localhost:3000/api/auth/login'],
+    whitelistedDomains: ['localhost:8080'],
+    blacklistedRoutes: ['localhost:8080/api/auth/login'],
   },
-  socketUrl: 'ws://localhost:8080',
-  apiBaseUrl: 'http://localhost:8080',
   apiHttpOptions: {
-    withCredentials: true
-  }
+    withCredentials: true,
+  },
 };

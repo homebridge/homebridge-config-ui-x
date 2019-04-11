@@ -7,13 +7,13 @@ import { LightbulbManageComponent } from './lightbulb.manage.component';
 @Component({
   selector: 'app-lightbulb',
   templateUrl: './lightbulb.component.html',
-  styleUrls: ['./lightbulb.component.scss']
+  styleUrls: ['./lightbulb.component.scss'],
 })
 export class LightbulbComponent implements OnInit {
   @Input() public service: ServiceTypeX;
 
   constructor(
-    private modalService: NgbModal
+    private modalService: NgbModal,
   ) { }
 
   ngOnInit() {}

@@ -6,10 +6,11 @@ import { ToastrService } from 'ngx-toastr';
 
 import { ApiService } from '../../core/api.service';
 import { WsService } from '../../core/ws.service';
+import { AuthService } from '../../core/auth/auth.service';
 
 @Component({
   selector: 'app-restart',
-  templateUrl: './restart.component.html'
+  templateUrl: './restart.component.html',
 })
 export class RestartComponent implements OnInit, OnDestroy {
   private io = this.$ws.connectToNamespace('status');
@@ -23,6 +24,7 @@ export class RestartComponent implements OnInit, OnDestroy {
   constructor(
     private $api: ApiService,
     private $ws: WsService,
+    private $auth: AuthService,
     public $toastr: ToastrService,
     private translate: TranslateService,
     private $router: Router,
@@ -31,6 +33,7 @@ export class RestartComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.io.socket.on('connect', () => {
       this.io.socket.emit('monitor-server-status');
+      this.$auth.getAppSettings().catch(/* do nothing */);
     });
 
     this.$api.put('/server/restart', {}).subscribe(
@@ -42,7 +45,7 @@ export class RestartComponent implements OnInit, OnDestroy {
         const toastRestartError = this.translate.instant('restart.toast_server_restart_error');
         this.error = toastRestartError + '.';
         this.$toastr.error(`${toastRestartError}: ${err.message}`, this.translate.instant('toast.title_error'));
-      }
+      },
     );
   }
 
@@ -57,9 +60,9 @@ export class RestartComponent implements OnInit, OnDestroy {
       });
     });
 
-    this.checkTimeout = TimerObservable.create(30000).subscribe(() => {
+    this.checkTimeout = TimerObservable.create(40000).subscribe(() => {
       this.$toastr.warning(this.translate.instant('restart.toast_sever_restart_timeout'), this.translate.instant('toast.title_warning'), {
-        timeOut: 10000
+        timeOut: 10000,
       });
       this.timeout = true;
     });
