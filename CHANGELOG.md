@@ -4,15 +4,33 @@ All notable changes to this project will be documented in this file. This projec
 
 ## 4.0.0 (2019-xx-xx)
 
-### Notable Changes
-
-* **Plugins:** Before updating a Homebridge plugin the release notes from GitHub will be shown where possible
-* **i18n:** Turkish language translation added by [@btutal](https://github.com/btutal)
-
-## Breaking Changes
+### Breaking Changes
 
 * **Auth:** The Basic Authentication option has been removed. Users who have Basic Authentication enabled will be swapped to Form Authentication
-* **Reverse Proxy:** Users who have setup a reverse proxy will need to swap the WebSocket endpoint from `/wscocket` to `/socket.io`
+* **Reverse Proxy:** Some users who have setup a reverse proxy and defined the websocket path will need to swap the WebSocket endpoint from `/wsocket` to `/socket.io`
+  * *If you are using the reverse proxy templates from the [wiki](https://github.com/oznu/homebridge-config-ui-x/wiki/) no changes are required*
+* **Node.js Version:** Dropping support for Node 7 and below. This plugin now requires Node.js v8.15.1 or higher
+
+### Notable Changes
+
+* **Plugins:** Before updating a Homebridge plugin the release notes from GitHub will be shown where possible ([#233](https://github.com/oznu/homebridge-config-ui-x/pull/233))
+* **Plugins:** A corrupt plugin will no longer prevent all the installed plugins from being displayed ([#252](https://github.com/oznu/homebridge-config-ui-x/pull/252))
+* **i18n:** Turkish language translation added by [@btutal](https://github.com/btutal)
+* **Theme:** The default theme for new installs is now `teal` instead of `red`
+
+### Other Changes
+
+* The code base has been refactored
+* Client side changes include:
+  * Swapped from `ui-router` to `@angular/router` for page routing
+  * Now using `socket.io` for WebSockets
+  * Split code into modules
+  * Lazy load modules on demand
+* Server side changes include:
+  * Swapped from Express to the [Nest.js](https://nestjs.com/) framework with Fastify
+  * Swapped from `ws` to `socket.io` for WebSockets - while I do prefer to use the `ws` library, the syntastic sugar provided by Socket.io simplified the code base
+  * Split code into modules
+  * Packaged code is now combined with Webpack, this should reduce startup times on slow I/O systems like the Raspberry Pi
 
 ## 3.11.0 (2019-04-03)
 
