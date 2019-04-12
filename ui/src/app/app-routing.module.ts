@@ -45,7 +45,6 @@ const routes: Routes = [
       {
         path: 'restart',
         loadChildren: './modules/restart/restart.module#RestartModule',
-        canActivate: [AdminGuard],
       },
       {
         path: 'platform-tools',

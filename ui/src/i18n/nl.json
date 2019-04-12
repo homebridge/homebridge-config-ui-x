@@ -79,7 +79,7 @@
     "platform.linux.restart.message_server_taking_long_time_to_restart": "Het opnieuw opstarten van de server duurt lang. Mogelijk moet u de server handmatig opstarten.",
     "platform.linux.restart.title_restarting_server": "Herstarten van de server",
     "platform.linux.restart.toast_server_restart_error": "Er is een fout opgetreden bij het verzenden van de opdracht Opnieuw opstarten naar de server",
-    "platform.linux.restart.toast_server_restarted": "Server opnieuw gestart'",
+    "platform.linux.restart.toast_server_restarted": "Server opnieuw gestart",
     "platform.linux.restart.toast_server_taking_long_time_to_come_online": "Het duurt lang voordat de server weer online komt",
     "platform.linux.shutdown.message_server_will_power_down": "De server zal binnenkort worden uitgeschakeld.",
     "platform.linux.shutdown.title_shutting_down_server": "Server Afsluiten",

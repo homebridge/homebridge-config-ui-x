@@ -2,18 +2,23 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-# 4.0.0 (2019-xx-xx)
+## 4.0.0 (2019-xx-xx)
 
 ### Notable Changes
 
-* **Plugins:** Before updating a Homebridge plugin the release notes from GitHub will be shown where possible.
+* **Plugins:** Before updating a Homebridge plugin the release notes from GitHub will be shown where possible
 * **i18n:** Turkish language translation added by [@btutal](https://github.com/btutal)
+
+## Breaking Changes
+
+* **Auth:** The Basic Authentication option has been removed. Users who have Basic Authentication enabled will be swapped to Form Authentication
+* **Reverse Proxy:** Users who have setup a reverse proxy will need to swap the WebSocket endpoint from `/wscocket` to `/socket.io`
 
 ## 3.11.0 (2019-04-03)
 
 ### Notable Changes
 
-* **Auth:** The Basic Authentication option has been depreciated. Users should switch to Form Authentication instead (the default).
+* **Auth:** The Basic Authentication option has been depreciated. Users should switch to Form Authentication instead (the default)
 
 ### Other Changes
 

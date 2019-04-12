@@ -6,6 +6,7 @@ import * as child_process from 'child_process';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '../../core/config/config.service';
 import { Logger } from '../../core/logger/logger.service';
+import { ConfigEditorService } from '../config-editor/config-editor.service';
 
 @Injectable()
 export class ServerService {
@@ -16,6 +17,7 @@ export class ServerService {
 
   constructor(
     private readonly configService: ConfigService,
+    private readonly configEditorService: ConfigEditorService,
     private readonly logger: Logger,
   ) { }
 
@@ -39,6 +41,31 @@ export class ServerService {
         process.exit(1);
       }
     }, 500);
+  }
+
+  /**
+   * Resets homebridge accessory and deletes all accessory cache.
+   * Preserves plugin config.
+   */
+  public async resetHomebridgeAccessory() {
+    const configFile = await this.configEditorService.getConfigFile();
+
+    // generate new random username and pin
+    configFile.bridge.pin = this.configEditorService.generatePin();
+    configFile.bridge.username = this.configEditorService.generateUsername();
+
+    this.logger.warn(`Homebridge Reset: New Username: ${configFile.bridge.username}`);
+    this.logger.warn(`Homebridge Reset: New Pin: ${configFile.bridge.pin}`);
+
+    // save the config file
+    await this.configEditorService.updateConfigFile(configFile);
+
+    // remove accessories and persist directories
+    await fs.remove(path.resolve(this.configService.storagePath, 'accessories'));
+    await fs.remove(path.resolve(this.configService.storagePath, 'persist'));
+
+    this.logger.log(`Homebridge Reset: "persist" directory removed.`);
+    this.logger.log(`Homebridge Reset: "accessories" directory removed.`);
   }
 
   /**

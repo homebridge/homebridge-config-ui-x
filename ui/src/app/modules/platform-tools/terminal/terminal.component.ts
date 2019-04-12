@@ -20,11 +20,6 @@ export class TerminalComponent implements OnInit, OnDestroy {
   private termTarget: HTMLElement;
   private resize = new Subject();
 
-  private onOpen;
-  private onMessage;
-  private onError;
-  private onClose;
-
   constructor(
     private $ws: WsService,
   ) { }
@@ -39,7 +34,7 @@ export class TerminalComponent implements OnInit, OnDestroy {
     (<any>this.term).fit();
     (<any>this.term).webLinksInit();
 
-    this.io.socket.on('connect', () => {
+    this.io.connected.subscribe(() => {
       this.startTerminal();
     });
 
@@ -55,11 +50,6 @@ export class TerminalComponent implements OnInit, OnDestroy {
     // subscribe to log events
     this.io.socket.on('stdout', data => {
       this.term.write(data);
-    });
-
-    // when ready, resize the terminal
-    this.io.socket.on('ready', data => {
-      this.resize.next({ cols: this.term.cols, rows: this.term.rows });
     });
 
     // handle resize events
@@ -90,8 +80,7 @@ export class TerminalComponent implements OnInit, OnDestroy {
     // unset body bg color
     window.document.querySelector('body').classList.remove(`bg-black`);
 
-    this.io.socket.disconnect();
-    this.io.socket.removeAllListeners();
+    this.io.end();
     this.term.dispose();
   }
 

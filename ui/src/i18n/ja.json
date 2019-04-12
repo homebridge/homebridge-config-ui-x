@@ -79,7 +79,7 @@
     "platform.linux.restart.message_server_taking_long_time_to_restart": "サーバーの再起動に時間がかかっています。手動でサーバーを再起動する必要がある可能性があります。",
     "platform.linux.restart.title_restarting_server": "サーバーを再起動中",
     "platform.linux.restart.toast_server_restart_error": "サーバー再起動コマンドを送信中にエラーが発生しました",
-    "platform.linux.restart.toast_server_restarted": "サーバーが再起動しました'",
+    "platform.linux.restart.toast_server_restarted": "サーバーが再起動しました",
     "platform.linux.restart.toast_server_taking_long_time_to_come_online": "サーバーがオンラインに復帰するのに時間がかかっています",
     "platform.linux.shutdown.message_server_will_power_down": "サーバーはまもなく停止します",
     "platform.linux.shutdown.title_shutting_down_server": "サーバーを終了しています",

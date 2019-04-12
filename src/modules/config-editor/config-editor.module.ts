@@ -17,5 +17,8 @@ import { LoggerModule } from '../../core/logger/logger.module';
   controllers: [
     ConfigEditorController,
   ],
+  exports: [
+    ConfigEditorService,
+  ],
 })
 export class ConfigEditorModule { }

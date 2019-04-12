@@ -22,6 +22,8 @@ export async function getStartupConfig() {
       pfx?: Buffer,
       passphrase?: string,
     },
+    cspWsOveride?: string;
+    debug?: boolean;
   };
 
   if (ui.ssl && ((ui.ssl.key && ui.ssl.cert) || ui.ssl.pfx)) {
@@ -31,6 +33,16 @@ export async function getStartupConfig() {
       pfx: ui.ssl.pfx ? await fs.readFile(ui.ssl.pfx) : undefined,
       passphrase: ui.ssl.passphrase,
     };
+  }
+
+  if (ui.proxyHost) {
+    config.cspWsOveride = `wss://${ui.proxyHost} ws://${ui.proxyHost}`;
+  }
+
+  if (ui.debug) {
+    config.debug = true;
+  } else {
+    config.debug = false;
   }
 
   return config;

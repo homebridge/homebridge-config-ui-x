@@ -64,14 +64,20 @@ export class TerminalService {
       } catch (e) { }
     });
 
-    // kill the process when the client disconnects
-    client.on('disconnect', () => {
+    // cleanup on disconnect
+    const onEnd = () => {
+      client.removeAllListeners('stdin');
+      client.removeAllListeners('resize');
+      client.removeAllListeners('end');
+      client.removeAllListeners('disconnect');
+
       try {
         this.logger.log('Terminal session ended.');
         term.kill();
       } catch (e) { }
-    });
+    };
 
-    client.emit('ready');
+    client.on('end', onEnd.bind(this));
+    client.on('disconnect', onEnd.bind(this));
   }
 }

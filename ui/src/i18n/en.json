@@ -79,7 +79,7 @@
     "platform.linux.restart.message_server_taking_long_time_to_restart": "Server restart is taking a long time. You may need to bring up the server back up manually.",
     "platform.linux.restart.title_restarting_server": "Restarting Server",
     "platform.linux.restart.toast_server_restart_error": "An error occured sending the restart command to the server",
-    "platform.linux.restart.toast_server_restarted": "Server Restarted'",
+    "platform.linux.restart.toast_server_restarted": "Server Restarted",
     "platform.linux.restart.toast_server_taking_long_time_to_come_online": "The server is taking a long time to come back online",
     "platform.linux.shutdown.message_server_will_power_down": "The server will power down shortly.",
     "platform.linux.shutdown.title_shutting_down_server": "Shutting Down Server",

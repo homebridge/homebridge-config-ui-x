@@ -71,13 +71,19 @@ export class LogService {
       }
     });
 
+    // handle resize events
     client.on('resize', (resize) => {
       try {
         term.resize(resize.cols, resize.rows);
       } catch (e) { }
     });
 
-    client.on('disconnect', () => {
+    // cleanup on disconnect
+    const onEnd = () => {
+      client.removeAllListeners('resize');
+      client.removeAllListeners('end');
+      client.removeAllListeners('disconnect');
+
       try {
         term.kill();
       } catch (e) { }
@@ -85,9 +91,10 @@ export class LogService {
       if (this.configService.ui.sudo && term && term.pid) {
         child_process.exec(`sudo -n kill -9 ${term.pid}`);
       }
-    });
+    };
 
-    client.emit('ready');
+    client.on('end', onEnd.bind(this));
+    client.on('disconnect', onEnd.bind(this));
   }
 
   /**

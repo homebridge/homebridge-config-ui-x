@@ -20,11 +20,9 @@ export class AuthController {
     return this.configService.uiSettings();
   }
 
-  @Get('/token')
+  @Post('/noauth')
   getToken() {
-    if (this.configService.ui.auth === 'none') {
-
-    }
+    return this.authService.generateNoAuthToken();
   }
 
 }

@@ -65,22 +65,26 @@ export class PluginsService {
       .filter(async module => (await fs.pathExists(path.join(module.installPath, 'package.json')).catch(x => null)))
       .filter(x => x);
 
-    for (const pkg of homebridgePlugins) {
-      const pjson = await fs.readJson(path.join(pkg.installPath, 'package.json'));
-      // check each plugin has the 'homebridge-plugin' keyword
-      if (pjson.keywords && pjson.keywords.includes('homebridge-plugin')) {
-        // parse the package.json for each plugin
-        const plugin = await this.parsePackageJson(pjson, pkg.path);
+    await Promise.all(homebridgePlugins.map(async (pkg) => {
+      try {
+        const pjson = await fs.readJson(path.join(pkg.installPath, 'package.json'));
+        // check each plugin has the 'homebridge-plugin' keyword
+        if (pjson.keywords && pjson.keywords.includes('homebridge-plugin')) {
+          // parse the package.json for each plugin
+          const plugin = await this.parsePackageJson(pjson, pkg.path);
 
-        // filter out duplicate plugins and give preference to non-global plugins
-        if (!plugins.find(x => plugin.name === x.name)) {
-          plugins.push(plugin);
-        } else if (!plugin.globalInstall && plugins.find(x => plugin.name === x.name && x.globalInstall === true)) {
-          const index = plugins.findIndex(x => plugin.name === x.name && x.globalInstall === true);
-          plugins[index] = plugin;
+          // filter out duplicate plugins and give preference to non-global plugins
+          if (!plugins.find(x => plugin.name === x.name)) {
+            plugins.push(plugin);
+          } else if (!plugin.globalInstall && plugins.find(x => plugin.name === x.name && x.globalInstall === true)) {
+            const index = plugins.findIndex(x => plugin.name === x.name && x.globalInstall === true);
+            plugins[index] = plugin;
+          }
         }
+      } catch (e) {
+        this.logger.error(`Failed to parse plugin "${pkg.name}": ${e.message}`);
       }
-    }
+    }));
 
     this.installedPlugins = plugins;
     return _.sortBy(plugins, ['name']);

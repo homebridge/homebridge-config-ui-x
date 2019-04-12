@@ -2,7 +2,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { Injectable } from '@nestjs/common';
 import { Logger } from '../../core/logger/logger.service';
-import { ConfigService } from '../../core/config/config.service';
+import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
 
 @Injectable()
 export class ConfigEditorService {
@@ -14,22 +14,22 @@ export class ConfigEditorService {
   /**
    * Returns the config file
    */
-  public async getConfigFile() {
+  public async getConfigFile(): Promise<HomebridgeConfig> {
     return await fs.readJson(this.configService.configPath);
   }
 
   /**
    * Updates the config file
    */
-  public async updateConfigFile(config: any) {
+  public async updateConfigFile(config: HomebridgeConfig) {
     const now = new Date();
 
     if (!config) {
-      config = {};
+      config = {} as HomebridgeConfig;
     }
 
     if (!config.bridge) {
-      config.bridge = {};
+      config.bridge = {} as HomebridgeConfig['bridge'];
     }
 
     if (!config.bridge.name) {
@@ -123,7 +123,7 @@ export class ConfigEditorService {
   /**
    * Generates a new random pin
    */
-  private generatePin() {
+  public generatePin() {
     let code: string | Array<any> = Math.floor(10000000 + Math.random() * 90000000) + '';
     code = code.split('');
     code.splice(3, 0, '-');
@@ -135,7 +135,7 @@ export class ConfigEditorService {
   /**
    * Generates a new random username
    */
-  private generateUsername() {
+  public generateUsername() {
     const hexDigits = '0123456789ABCDEF';
     let username = '0E:';
     for (let i = 0; i < 5; i++) {

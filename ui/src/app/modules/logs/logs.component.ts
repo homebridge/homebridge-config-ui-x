@@ -30,7 +30,7 @@ export class LogsComponent implements OnInit, OnDestroy {
     this.term.open(this.termTarget);
     (<any>this.term).fit();
 
-    this.io.socket.on('connect', () => {
+    this.io.connected.subscribe(() => {
       this.io.socket.emit('tail-log', { cols: this.term.cols, rows: this.term.rows });
     });
 
@@ -48,11 +48,6 @@ export class LogsComponent implements OnInit, OnDestroy {
       this.term.write(data);
     });
 
-    // when ready, resize the terminal
-    this.io.socket.on('ready', data => {
-      this.resize.next({ cols: this.term.cols, rows: this.term.rows });
-    });
-
     // handle resize events
     this.term.on('resize', (size) => {
       this.resize.next(size);
@@ -67,9 +62,7 @@ export class LogsComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     // unset body bg color
     window.document.querySelector('body').classList.remove(`bg-black`);
-
-    this.io.socket.disconnect();
-    this.io.socket.removeAllListeners();
+    this.io.end();
     this.term.dispose();
   }
 

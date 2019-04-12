@@ -1,7 +1,9 @@
 import * as path from 'path';
 import * as fastify from 'fastify';
+import * as helmet from 'helmet';
+import * as fs from 'fs-extra';
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe, HttpService } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 
 import { AppModule } from './app.module';
@@ -23,13 +25,32 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter(server),
     {
-      logger: new Logger(),
+      logger: startupConfig.debug ? new Logger() : false,
       httpsOptions: startupConfig.httpsOptions,
     },
   );
 
   const configService: ConfigService = app.get(ConfigService);
   const logger: Logger = app.get(Logger);
+
+  // helmet security headers
+  app.use(helmet({
+    hsts: false,
+    frameguard: false,
+    referrerPolicy: true,
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ['\'self\''],
+        scriptSrc: ['\'self\'', '\'unsafe-inline\'', '\'unsafe-eval\''],
+        styleSrc: ['\'self\'', '\'unsafe-inline\''],
+        imgSrc: ['\'self\'', 'data:', 'https://raw.githubusercontent.com'],
+        workerSrc: ['blob:'],
+        connectSrc: ['\'self\'', (req) => {
+          return `wss://${req.headers.host} ws://${req.headers.host} ${startupConfig.cspWsOveride || ''}`;
+        }],
+      },
+    },
+  }));
 
   // serve static assets with a long cache timeout
   app.useStaticAssets({
@@ -45,7 +66,23 @@ async function bootstrap() {
     res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.header('Pragma', 'no-cache');
     res.header('Expires', '0');
-    res.sendFile(path.resolve(process.env.UIX_BASE_PATH, 'index.html'));
+    res.sendFile('index.html');
+  });
+
+  // login page image
+  app.getHttpAdapter().get('/assets/snapshot.jpg', async (req, res) => {
+    if (configService.ui.loginWallpaper) {
+      if (!await fs.pathExists(configService.ui.loginWallpaper)) {
+        logger.error(`Custom Login Wallpaper does not exist: ${configService.ui.loginWallpaper}`);
+        return res.code(404).send('Not Found');
+      }
+      res.type('image/jpg');
+      res.header('Cache-Control', 'public,max-age=31536000,immutable');
+      res.send(await fs.readFile(path.resolve(configService.ui.loginWallpaper)));
+    } else {
+      res.header('Cache-Control', 'public,max-age=31536000,immutable');
+      res.sendFile('assets/snapshot.jpg');
+    }
   });
 
   // set prefix

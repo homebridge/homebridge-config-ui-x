@@ -47,11 +47,7 @@ export class StatusComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.checkHomebridgeVersion();
 
-    if (this.io.socket.io.readyState) {
-      this.consoleStatus = 'up';
-    }
-
-    this.io.socket.on('connect', () => {
+    this.io.connected.subscribe(() => {
       this.consoleStatus = 'up';
       this.io.socket.emit('monitor-server-status');
     });
@@ -111,8 +107,7 @@ export class StatusComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.io.socket.disconnect();
-    this.io.socket.removeAllListeners();
+    this.io.end();
   }
 
 }

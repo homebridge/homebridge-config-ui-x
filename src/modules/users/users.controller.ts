@@ -29,6 +29,7 @@ export class UsersController {
     return this.authService.updateUser(param.userId, body);
   }
 
+  @UseGuards(AdminGuard)
   @Delete('/:userId(\\d+)')
   deleteUser(@Param() param) {
     return this.authService.deleteUser(param.userId);

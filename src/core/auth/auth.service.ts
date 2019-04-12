@@ -2,10 +2,11 @@ import * as fs from 'fs-extra';
 import * as crypto from 'crypto';
 import * as jwt from 'jsonwebtoken';
 import { JwtService } from '@nestjs/jwt';
-import { Injectable, ForbiddenException, BadRequestException } from '@nestjs/common';
+import { Injectable, ForbiddenException, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '../config/config.service';
 import { Logger } from '../logger/logger.service';
 import { WsException } from '@nestjs/websockets';
+import { UsersController } from 'src/modules/users/users.controller';
 
 export interface UserInterface {
   id: number;
@@ -54,6 +55,33 @@ export class AuthService {
   async signIn(username: string, password: string): Promise<any> {
     const user = await this.authenticate(username, password);
     const token = await this.jwtService.sign(user);
+
+    return {
+      access_token: token,
+      token_type: 'Bearer',
+      expires_in: 28800,
+    };
+  }
+
+  /**
+   * Returns a token for use when authentication is disabled
+   */
+  async generateNoAuthToken() {
+    // prevent access if auth is not disabled
+    if (this.configService.ui.auth !== 'none') {
+      throw new UnauthorizedException();
+    }
+
+    // load the first admin we can find
+    const users = await this.getUsers();
+    const user = users.find(x => x.admin === true);
+
+    // generate a token
+    const token = await this.jwtService.sign({
+      username: user.username,
+      name: user.name,
+      admin: user.admin,
+    });
 
     return {
       access_token: token,

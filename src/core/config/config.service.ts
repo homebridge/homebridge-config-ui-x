@@ -5,11 +5,21 @@ import * as fs from 'fs-extra';
 import * as crypto from 'crypto';
 import * as semver from 'semver';
 
+export interface HomebridgeConfig {
+  bridge: {
+    username: string;
+    pin: string;
+    name: string;
+    port: number;
+  };
+  platforms: any[];
+  accessories: any[];
+}
+
 @Injectable()
 export class ConfigService {
   public name = 'homebridge-config-ui-x';
   public customPluginPath: string | undefined | null;
-  public temperatureFile: string;
 
   // homebridge env
   public configPath = process.env.UIX_CONFIG_PATH || path.resolve(os.homedir(), '.homebridge/config.json');
@@ -32,16 +42,7 @@ export class ConfigService {
   // package.json
   public package = fs.readJsonSync(path.resolve(process.env.UIX_BASE_PATH, 'package.json'));
 
-  public homebridgeConfig: {
-    bridge: {
-      username: string;
-      pin: string;
-      name: string;
-      port: number;
-    },
-    platforms: any[];
-    accessories: any[];
-  };
+  public homebridgeConfig: HomebridgeConfig;
 
   public ui: {
     name: string;

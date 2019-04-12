@@ -31,7 +31,7 @@ export class RestartComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.io.socket.on('connect', () => {
+    this.io.connected.subscribe(() => {
       this.io.socket.emit('monitor-server-status');
       this.$auth.getAppSettings().catch(/* do nothing */);
     });
@@ -69,8 +69,7 @@ export class RestartComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.io.socket.disconnect();
-    this.io.socket.removeAllListeners();
+    this.io.end();
 
     if (this.checkDelay) {
       this.checkDelay.unsubscribe();

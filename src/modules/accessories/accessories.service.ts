@@ -49,9 +49,15 @@ export class AccessoriesService {
     }, 3000);
 
     // clean up on disconnect
-    client.on('disconnect', () => {
+    const onEnd = () => {
+      client.removeAllListeners('end');
+      client.removeAllListeners('disconnect');
+      client.removeAllListeners('accessory-control');
       clearInterval(loadAccessoriesInterval);
-    });
+    };
+
+    client.on('disconnect', onEnd.bind(this));
+    client.on('end', onEnd.bind(this));
   }
 
   /**

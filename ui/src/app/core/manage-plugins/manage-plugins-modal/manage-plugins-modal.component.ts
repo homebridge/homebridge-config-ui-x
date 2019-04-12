@@ -169,8 +169,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.io.socket.disconnect();
-    this.io.socket.removeAllListeners();
+    this.io.end();
   }
 
 }

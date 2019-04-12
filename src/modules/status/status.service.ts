@@ -29,10 +29,16 @@ export class StatusService {
       client.emit('homebridge-status', await this.getHomebridgeStats());
     }, 10000);
 
-    client.on('disconnect', () => {
+    // cleanup on disconnect
+    const onEnd = () => {
+      client.removeAllListeners('end');
+      client.removeAllListeners('disconnect');
       clearInterval(systemStatusInterval);
       clearInterval(homebridgeStatusInterval);
-    });
+    };
+
+    client.on('end', onEnd.bind(this));
+    client.on('disconnect', onEnd.bind(this));
   }
 
   /**
@@ -40,8 +46,8 @@ export class StatusService {
    */
   private async getHomebridgeStats() {
     return {
-      consolePort: 1000,
-      port: 1000,
+      consolePort: this.configService.ui.port,
+      port: this.configService.homebridgeConfig.bridge.port,
       pin: this.configService.homebridgeConfig.bridge.pin,
       packageVersion: this.configService.package.version,
       status: await this.checkHomebridgeStatus(),
@@ -75,13 +81,13 @@ export class StatusService {
 
     // cpu temp
     let cputemp = null;
-    if (this.configService.temperatureFile) {
+    if (this.configService.ui.temp) {
       try {
-        cputemp = fs.readFileSync(this.configService.temperatureFile);
+        cputemp = await fs.readFile(this.configService.ui.temp, 'utf-8');
         cputemp = ((cputemp / 1000).toPrecision(3));
       } catch (e) {
         cputemp = null;
-        this.logger.error(`Failed to read temp from ${this.configService.temperatureFile}`);
+        this.logger.error(`Failed to read temp from ${this.configService.ui.temp}`);
       }
     }
 

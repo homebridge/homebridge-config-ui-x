@@ -13,6 +13,7 @@ interface UserInterface {
 
 @Injectable()
 export class AuthService {
+  public settingsLoaded = false;
   public env: any = {};
   public formAuth = true;
   public theme: string;
@@ -42,6 +43,18 @@ export class AuthService {
       });
   }
 
+  noauth() {
+    return this.$api.post('/auth/noauth', {})
+      .toPromise()
+      .then((resp) => {
+        if (!this.validateToken(resp.access_token)) {
+          throw new Error('Invalid username or password.');
+        } else {
+          window.localStorage.setItem(environment.jwt.tokenKey, resp.access_token);
+        }
+      });
+  }
+
   logout() {
     this.user = null;
     this.token = null;
@@ -58,6 +71,9 @@ export class AuthService {
 
   validateToken(token: string) {
     try {
+      if (this.$jwtHelper.isTokenExpired(token)) {
+        this.logout();
+      }
       this.user = this.$jwtHelper.decodeToken(token);
       this.token = token;
       this.setLogoutTimer();
@@ -75,7 +91,11 @@ export class AuthService {
       const expires = dayjs(this.$jwtHelper.getTokenExpirationDate(this.token));
       const timeout = expires.diff(dayjs(), 'millisecond');
       this.logoutTimer = setTimeout(() => {
-        this.logout();
+        if (this.formAuth === false) {
+          this.noauth();
+        } else {
+          this.logout();
+        }
       }, timeout);
     }
   }
@@ -98,6 +118,7 @@ export class AuthService {
   getAppSettings() {
     return this.$api.get('/auth/settings').toPromise()
       .then((data: any) => {
+        this.settingsLoaded = true;
         this.formAuth = data.formAuth;
         this.env = data.env;
         this.setTheme(data.theme || 'red');

@@ -11,6 +11,7 @@ export class PluginsController {
     private pluginsService: PluginsService,
   ) { }
 
+  @UseGuards(AdminGuard)
   @Get()
   pluginsGet() {
     return this.pluginsService.getInstalledPlugins();

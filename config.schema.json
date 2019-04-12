@@ -182,6 +182,10 @@
         "title": "Do not run the Config UI web server in a seperate process/thread",
         "type": "boolean"
       },
+      "debug": {
+        "title": "Enable / disable debug logging",
+        "type": "boolean"
+      },
       "log": {
         "type": "object",
         "properties": {

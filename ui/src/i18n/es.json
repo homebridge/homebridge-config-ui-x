@@ -79,7 +79,7 @@
     "platform.linux.restart.message_server_taking_long_time_to_restart": "El reinicio del servidor está tardando mucho. Quizá debas iniciarlo de nuevo manualmente.",
     "platform.linux.restart.title_restarting_server": "Reiniciando servidor",
     "platform.linux.restart.toast_server_restart_error": "Un error ha ocurrido al enviar el comando de reinicio al servidor",
-    "platform.linux.restart.toast_server_restarted": "Servidor reiniciado'",
+    "platform.linux.restart.toast_server_restarted": "Servidor reiniciado",
     "platform.linux.restart.toast_server_taking_long_time_to_come_online": "El servidor está tardando mucho tiempo en volver a estar online",
     "platform.linux.shutdown.message_server_will_power_down": "El servidor se apagará pronto.",
     "platform.linux.shutdown.title_shutting_down_server": "Apagando el servidor",

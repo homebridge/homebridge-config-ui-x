@@ -81,8 +81,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
         });
       });
 
-
-    this.io.socket.on('connect', () => {
+    this.io.connected.subscribe(() => {
       this.io.socket.emit('get-accessories');
     });
 
@@ -291,8 +290,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.io.socket.disconnect();
-    this.io.socket.removeAllListeners();
+    this.io.end();
 
     // destroy drag and drop bags
     this.dragulaService.destroy('rooms-bag');

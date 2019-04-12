@@ -21,7 +21,7 @@ export class ResetHomebridgeModalComponent {
 
   onResetHomebridgeAccessoryClick() {
     this.clicked = true;
-    return this.$api.put('/server/reset-homebridge-settings', {}).subscribe(
+    return this.$api.put('/server/reset-homebridge-accessory', {}).subscribe(
       data => {
         this.toastr.success(this.translate.instant('reset.toast_accessory_reset'), this.translate.instant('toast.title_success'));
         this.activeModal.close();
