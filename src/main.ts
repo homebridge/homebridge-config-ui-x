@@ -52,21 +52,21 @@ async function bootstrap() {
     },
   }));
 
+  // serve index.html without a cache
+  app.getHttpAdapter().get('/', async (req, res) => {
+    res.type('text/html');
+    res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.header('Pragma', 'no-cache');
+    res.header('Expires', '0');
+    res.send(await fs.readFile(path.resolve(process.env.UIX_BASE_PATH, 'public/index.html')));
+  });
+
   // serve static assets with a long cache timeout
   app.useStaticAssets({
     root: path.resolve(process.env.UIX_BASE_PATH, 'public'),
     setHeaders(res) {
       res.setHeader('Cache-Control', 'public,max-age=31536000,immutable');
     },
-  });
-
-  // serve index.html without a cache
-  app.getHttpAdapter().get('/', (req, res) => {
-    res.type('text/html');
-    res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
-    res.header('Pragma', 'no-cache');
-    res.header('Expires', '0');
-    res.sendFile('index.html');
   });
 
   // login page image
