@@ -5,6 +5,13 @@ import { AuthGuard } from './core/auth/auth.guard';
 import { AdminGuard } from './core/auth/admin.guard';
 import { LoginComponent } from './core/auth/login/login.component';
 
+/*
+ * The status and restart modules should not be lazy loaded
+ * to ensure restarts after an update go smoothly
+ */
+import { RestartComponent } from './modules/restart/restart.component';
+import { StatusComponent } from './modules/status/status.component';
+
 const routes: Routes = [
   {
     path: 'login',
@@ -17,7 +24,12 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        loadChildren: './modules/status/status.module#StatusModule',
+        component: StatusComponent,
+      },
+      {
+        path: 'restart',
+        component: RestartComponent,
+        canActivate: [AdminGuard],
       },
       {
         path: 'plugins',
@@ -41,10 +53,6 @@ const routes: Routes = [
         path: 'users',
         loadChildren: './modules/users/users.module#UsersModule',
         canActivate: [AdminGuard],
-      },
-      {
-        path: 'restart',
-        loadChildren: './modules/restart/restart.module#RestartModule',
       },
       {
         path: 'platform-tools',

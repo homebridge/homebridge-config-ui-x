@@ -12,6 +12,8 @@ import { AppComponent } from './app.component';
 import { LayoutComponent } from './shared/layout/layout.component';
 import { CoreModule } from './core/core.module';
 import { AuthModule } from './core/auth/auth.module';
+import { RestartModule } from './modules/restart/restart.module';
+import { StatusModule } from './modules/status/status.module';
 
 // translate loader
 export function HttpLoaderFactory(http: HttpClient) {
@@ -45,6 +47,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     NgbModule,
     CoreModule,
     AuthModule,
+    StatusModule,
+    RestartModule,
     AppRoutingModule,
   ],
   providers: [],

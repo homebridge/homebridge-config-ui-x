@@ -19,6 +19,9 @@ async function bootstrap() {
 
   const server = fastify({
     https: startupConfig.httpsOptions,
+    logger: startupConfig.debug ? {
+      prettyPrint: true,
+    } : false,
   });
 
   const app = await NestFactory.create<NestFastifyApplication>(

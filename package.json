@@ -1,6 +1,6 @@
 {
   "name": "homebridge-config-ui-x",
-  "version": "4.0.0-beta11",
+  "version": "4.0.0-beta12",
   "description": "Configuration UI plugin for Homebridge",
   "license": "MIT",
   "author": "oznu <dev@oz.nu>",
@@ -71,6 +71,7 @@
     "nodemon": "^1.18.11",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
+    "pino-pretty": "^2.6.0",
     "point-of-view": "^3.1.1",
     "prettier": "^1.14.2",
     "qr-image": "^3.2.0",

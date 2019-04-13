@@ -4,7 +4,6 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { CoreModule } from '../../core/core.module';
-import { StatusRoutingModule } from './status-routing.module';
 import { StatusComponent } from './status.component';
 import { ResetHomebridgeModalComponent } from './reset-homebridge-modal/reset-homebridge-modal.component';
 import { ManagePluginsModule } from '../../core/manage-plugins/manage-plugins.module';
@@ -23,7 +22,6 @@ import { ManagePluginsModule } from '../../core/manage-plugins/manage-plugins.mo
     NgbModule,
     CoreModule,
     ManagePluginsModule,
-    StatusRoutingModule,
   ],
 })
 export class StatusModule { }

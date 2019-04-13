@@ -186,6 +186,10 @@
         "title": "Enable / disable debug logging",
         "type": "boolean"
       },
+      "standalone": {
+        "title": "Tell Homebridge the plugin is operating in standalone mode",
+        "type": "boolean"
+      },
       "log": {
         "type": "object",
         "properties": {
