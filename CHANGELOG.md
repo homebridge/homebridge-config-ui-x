@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file. This projec
 * **Auth:** The Basic Authentication option has been removed. Users who have Basic Authentication enabled will be swapped to Form Authentication
 * **Reverse Proxy:** Some users who have setup a reverse proxy and defined the websocket path will need to swap the WebSocket endpoint from `/wsocket` to `/socket.io`
   * *If you are using the reverse proxy templates from the [wiki](https://github.com/oznu/homebridge-config-ui-x/wiki/) no changes are required*
-* **Node.js Version:** Dropping support for Node 7 and below. This plugin now requires Node.js v8.15.1 or higher
+* **Node.js Version:** Dropping support for Node 7 and below, this plugin now requires Node.js v8.15.1 or higher on Linux and v10 or higher on Windows
 
 ### Notable Changes
 
@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file. This projec
 * **Plugins:** A corrupt plugin will no longer prevent all the installed plugins from being displayed ([#252](https://github.com/oznu/homebridge-config-ui-x/pull/252))
 * **i18n:** Turkish language translation added by [@btutal](https://github.com/btutal)
 * **Theme:** The default theme for new installs is now `teal` instead of `red`
+* **System:** Added the ability for the plugin to run as a separate service rather than a Homebridge plugin, this will allow users who have configured this to still manage their server even if Homebridge is crashing due to a bad config / other issue
 
 ### Other Changes
 
