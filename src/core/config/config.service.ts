@@ -32,7 +32,7 @@ export class ConfigService {
   // server env
   public runningInDocker = Boolean(process.env.HOMEBRIDGE_CONFIG_UI === '1');
   public runningInLinux = (!this.runningInDocker && os.platform() === 'linux');
-  public ableToConfigureSelf = (!this.runningInDocker || semver.satisfies(process.env.CONFIG_UI_VERSION, '>=3.5.5'));
+  public ableToConfigureSelf = (!this.runningInDocker || semver.satisfies(process.env.CONFIG_UI_VERSION, '>=3.5.5'), { includePrerelease: true });
   public enableTerminalAccess = this.runningInDocker || Boolean(process.env.HOMEBRIDGE_CONFIG_UI_TERMINAL === '1');
 
   // docker paths
@@ -92,6 +92,10 @@ export class ConfigService {
       this.setConfigForDocker();
     }
 
+    if (!this.ui.port) {
+      this.ui.port = 8080;
+    }
+
     this.secrets = this.getSecrets();
   }
 
@@ -131,8 +135,10 @@ export class ConfigService {
       path: '/homebridge/logs/homebridge.log',
     };
 
-    // these options cannot be overridden using the config.json file
-    this.ui.port = this.ui.port || process.env.HOMEBRIDGE_CONFIG_UI_PORT ? parseInt(process.env.HOMEBRIDGE_CONFIG_UI_PORT, 10) : 8080;
+    // these options can be overridden using the config.json file
+    if (!this.ui.port && process.env.HOMEBRIDGE_CONFIG_UI_PORT) {
+      this.ui.port = parseInt(process.env.HOMEBRIDGE_CONFIG_UI_PORT, 10);
+    }
     this.ui.theme = this.ui.theme || process.env.HOMEBRIDGE_CONFIG_UI_THEME || 'teal';
     this.ui.auth = this.ui.auth || process.env.HOMEBRIDGE_CONFIG_UI_AUTH as 'form' | 'none' || 'form';
     this.ui.temp = this.ui.temp || process.env.HOMEBRIDGE_CONFIG_UI_TEMP || undefined;

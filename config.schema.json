@@ -41,7 +41,7 @@
       "theme": {
         "title": "UI Theme",
         "type": "string",
-        "default": "red",
+        "default": "teal",
         "oneOf": [
           {
             "title": "Red",

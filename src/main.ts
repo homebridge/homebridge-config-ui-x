@@ -107,6 +107,6 @@ async function bootstrap() {
   app.useGlobalFilters(new SpaFilter());
 
   logger.warn(`Console v${configService.package.version} is listening on port ${configService.ui.port}`);
-  await app.listen(configService.ui.port || 8080, '0.0.0.0');
+  await app.listen(configService.ui.port, '0.0.0.0');
 }
 bootstrap();

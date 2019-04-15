@@ -216,7 +216,7 @@ export class PluginsService {
 
     installPath = path.resolve(installPath, '../');
 
-    await this.runNpmCommand([...this.npm, 'install', '--unsafe-perm', ...installOptions, pluginName], installPath, client);
+    await this.runNpmCommand([...this.npm, 'install', '--unsafe-perm', ...installOptions, `${pluginName}@latest`], installPath, client);
 
     return true;
   }
@@ -267,7 +267,7 @@ export class PluginsService {
 
     installPath = path.resolve(installPath, '../');
 
-    await this.runNpmCommand([...this.npm, 'install', '--unsafe-perm', ...installOptions, homebridge.name], installPath, client);
+    await this.runNpmCommand([...this.npm, 'install', '--unsafe-perm', ...installOptions, `${homebridge.name}@latest`], installPath, client);
 
     return true;
   }
@@ -286,7 +286,14 @@ export class PluginsService {
     const schemaPath = path.resolve(plugin.installPath, pluginName, 'config.schema.json');
 
     if (await fs.pathExists(schemaPath)) {
-      return await fs.readJson(schemaPath);
+      const configSchema = await fs.readJson(schemaPath);
+
+      // modify this plugins schema to set the default port number
+      if (pluginName === this.configService.name) {
+        configSchema.schema.properties.port.default = this.configService.ui.port;
+      }
+
+      return configSchema;
     } else {
       throw new NotFoundException();
     }

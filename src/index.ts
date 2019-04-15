@@ -29,8 +29,10 @@ class HomebridgeConfigUi {
       .option('-I, --insecure', '', () => process.env.UIX_INSECURE_MODE = '1')
       .parse(process.argv);
 
-    if (config.standalone || (process.env.HOMEBRIDGE_CONFIG_UI === '1' && semver.satisfies(process.env.CONFIG_UI_VERSION, '>=3.5.5'))) {
-      this.log(`Running in Docker Standalone Mode.`);
+    if (config.standalone || (
+      process.env.HOMEBRIDGE_CONFIG_UI === '1' && semver.satisfies(process.env.CONFIG_UI_VERSION, '>=3.5.5', { includePrerelease: true }))
+    ) {
+      this.log(`Running in Standalone Mode.`);
     } else if (config.noFork) {
       this.noFork();
     } else {
