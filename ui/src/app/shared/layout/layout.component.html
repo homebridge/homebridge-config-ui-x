@@ -1,5 +1,5 @@
 <!--Main Navigation-->
-<header *ngIf="$auth.theme">
+<header *ngIf="$auth.theme && $auth.user">
 
   <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary scrolling-navbar">
     <a class="navbar-brand" routerLink="/">

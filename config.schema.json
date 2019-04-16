@@ -190,6 +190,10 @@
         "title": "Tell Homebridge the plugin is operating in standalone mode",
         "type": "boolean"
       },
+      "sessionTimeout": {
+        "title": "Session timeout in seconds",
+        "type": "integer"
+      },
       "log": {
         "type": "object",
         "properties": {

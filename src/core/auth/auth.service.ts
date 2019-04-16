@@ -59,7 +59,7 @@ export class AuthService {
     return {
       access_token: token,
       token_type: 'Bearer',
-      expires_in: 28800,
+      expires_in: this.configService.ui.sessionTimeout,
     };
   }
 
@@ -86,7 +86,7 @@ export class AuthService {
     return {
       access_token: token,
       token_type: 'Bearer',
-      expires_in: 28800,
+      expires_in: this.configService.ui.sessionTimeout,
     };
   }
 

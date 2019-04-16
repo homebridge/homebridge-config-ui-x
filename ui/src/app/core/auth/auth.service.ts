@@ -90,13 +90,16 @@ export class AuthService {
     if (!this.$jwtHelper.isTokenExpired(this.token)) {
       const expires = dayjs(this.$jwtHelper.getTokenExpirationDate(this.token));
       const timeout = expires.diff(dayjs(), 'millisecond');
-      this.logoutTimer = setTimeout(() => {
-        if (this.formAuth === false) {
-          this.noauth();
-        } else {
-          this.logout();
-        }
-      }, timeout);
+      // setTimeout only accepts a 32bit integer, if the number is larger than this, do not timeout
+      if (timeout <= 2147483647) {
+        this.logoutTimer = setTimeout(() => {
+          if (this.formAuth === false) {
+            this.noauth();
+          } else {
+            this.logout();
+          }
+        }, timeout);
+      }
     }
   }
 

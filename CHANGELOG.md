@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file. This projec
 * **Plugins:** A corrupt plugin will no longer prevent all the installed plugins from being displayed ([#252](https://github.com/oznu/homebridge-config-ui-x/pull/252))
 * **i18n:** Turkish language translation added by [@btutal](https://github.com/btutal)
 * **Theme:** The default theme for new installs is now `teal` instead of `red`
+* **Auth:** Ability to customise the session timeout
 * **System:** Added the ability for the plugin to run as a separate service rather than a Homebridge plugin, this will allow users who have configured this feature to manage their server even if Homebridge is crashing due to a bad config / other issue
   * Previously this has only been supported, and the default setup, when running in Docker ([oznu/homebridge](https://github.com/oznu/docker-homebridge))
 

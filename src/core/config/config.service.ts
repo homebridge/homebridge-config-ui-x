@@ -72,6 +72,7 @@ export class ConfigService {
       restart?: string;
     };
     proxyHost?: string;
+    sessionTimeout?: number;
   };
 
   public secrets: {
@@ -94,6 +95,10 @@ export class ConfigService {
 
     if (!this.ui.port) {
       this.ui.port = 8080;
+    }
+
+    if (!this.ui.sessionTimeout) {
+      this.ui.sessionTimeout = 28800;
     }
 
     this.secrets = this.getSecrets();

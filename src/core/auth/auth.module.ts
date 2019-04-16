@@ -19,7 +19,7 @@ import { WsAdminGuard } from './guards/ws-admin-guard';
       useFactory: async (configService: ConfigService) => ({
         secretOrPrivateKey: configService.secrets.secretKey,
         signOptions: {
-          expiresIn: 28800,
+          expiresIn: configService.ui.sessionTimeout,
         },
       }),
       inject: [ConfigService],
