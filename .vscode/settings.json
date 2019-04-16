@@ -2,7 +2,8 @@
   "editor.tabSize": 2,
   "editor.insertSpaces": true,
   "files.eol": "\n",
-  "tslint.enable": true,
-  "tslint.autoFixOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.tslint": true
+  },
   "editor.formatOnSave": true
 }

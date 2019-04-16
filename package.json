@@ -1,11 +1,9 @@
 {
   "name": "homebridge-config-ui-x",
-  "version": "3.11.0",
+  "version": "4.0.0",
   "description": "Configuration UI plugin for Homebridge",
   "license": "MIT",
-  "keywords": [
-    "homebridge-plugin"
-  ],
+  "author": "oznu <dev@oz.nu>",
   "repository": {
     "type": "git",
     "url": "git://github.com/oznu/homebridge-config-ui-x.git"
@@ -14,60 +12,79 @@
     "url": "https://github.com/oznu/homebridge-config-ui-x/issues"
   },
   "main": "./dist/index.js",
-  "scripts": {
-    "webpack": "webpack --config webpack.config.js",
-    "build": "npm run build:server && npm run build:ui",
-    "build:server": "rimraf dist && tsc && npm run webpack",
-    "build:ui": "npm run build --prefix ui",
-    "watch": "concurrently \"npm run watch:ui\" \"npm run watch:server\"",
-    "watch:server": "tsc --watch",
-    "watch:ui": "npm run start --prefix ui",
-    "install:ui": "npm install --prefix ui",
-    "prepublishOnly": "npm i --package-lock-only && npm audit && npm run build"
-  },
   "bin": {
     "homebridge-config-ui-x": "./dist/bin/standalone.js"
   },
   "engines": {
-    "node": ">=6.9.1",
+    "node": ">=8.15.1",
     "homebridge": ">=0.4.22"
   },
+  "keywords": [
+    "homebridge-plugin"
+  ],
+  "scripts": {
+    "watch": "concurrently \"npm run watch:ui\" \"npm run watch:server\"",
+    "watch:server": "nodemon",
+    "watch:ui": "npm run start --prefix ui",
+    "build": "npm run build:server && npm run build:ui",
+    "build:server": "rimraf dist && tsc -p tsconfig.build.json && npm run webpack",
+    "build:ui": "npm run build --prefix ui",
+    "start": "ts-node -r tsconfig-paths/register src/main.ts",
+    "lint": "npm run lint:server && npm run lint:ui",
+    "lint:server": "tslint -p tsconfig.json -c tslint.json",
+    "lint:ui": "npm run lint --prefix ui",
+    "webpack": "webpack --config webpack.config.js",
+    "install:ui": "npm install --prefix ui",
+    "prepublishOnly": "npm i --package-lock-only && npm audit && npm run lint && npm run build"
+  },
   "dependencies": {
+    "@nestjs/common": "^6.1.1",
+    "@nestjs/core": "^6.1.1",
+    "@nestjs/platform-socket.io": "^6.1.1",
+    "@nestjs/websockets": "^6.1.1",
+    "class-transformer": "^0.2.0",
+    "class-validator": "^0.9.1",
+    "commander": "^2.20.0",
+    "node-pty-prebuilt-multiarch": "^0.8.1",
+    "reflect-metadata": "^0.1.12",
+    "rxjs": "^6.2.2",
+    "semver": "^6.0.0"
+  },
+  "devDependencies": {
+    "@nestjs/jwt": "^6.0.0",
+    "@nestjs/passport": "^6.0.0",
+    "@nestjs/platform-fastify": "^6.1.1",
     "@oznu/hap-client": "0.0.4",
-    "bash-color": "^0.0.4",
-    "bluebird": "^3.5.3",
-    "body-parser": "^1.18.3",
+    "@types/express": "^4.16.0",
+    "@types/fs-extra": "^5.0.5",
+    "@types/node": "^11.13.4",
+    "@types/socket.io": "^2.1.2",
+    "bash-color": "0.0.4",
     "buffer-shims": "^1.0.0",
-    "commander": "^2.19.0",
-    "cors": "^2.8.5",
+    "concurrently": "^4.1.0",
     "dotenv": "^7.0.0",
-    "express": "^4.16.4",
+    "fastify": "^2.2.0",
+    "fastify-static": "^2.4.0",
     "fs-extra": "^7.0.1",
     "helmet": "^3.16.0",
-    "jsonwebtoken": "^8.5.0",
     "lodash": "^4.17.11",
-    "node-pty-prebuilt-multiarch": "0.8.1",
-    "passport": "~0.4.0",
-    "passport-http": "^0.3.0",
+    "nodemon": "^1.18.11",
+    "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0",
+    "pino-pretty": "^2.6.0",
+    "point-of-view": "^3.1.1",
+    "prettier": "^1.17.0",
     "qr-image": "^3.2.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
-    "semver": "^6.0.0",
-    "source-map-support": "^0.5.11",
-    "ws": "^6.2.0"
-  },
-  "devDependencies": {
-    "@types/express": "^4.16.1",
-    "@types/fs-extra": "^5.0.5",
-    "@types/node": "^10.11.0",
-    "@types/passport": "^1.0.0",
-    "@types/ws": "^6.0.1",
-    "concurrently": "^4.1.0",
-    "rimraf": "^2.6.3",
+    "rimraf": "^2.6.2",
     "ts-loader": "^5.3.3",
-    "tslint": "^5.14.0",
-    "typescript": "^3.3.3333",
-    "webpack": "^4.29.6",
-    "webpack-cli": "^3.3.0"
+    "ts-node": "^8.1.0",
+    "tsconfig-paths": "^3.5.0",
+    "tslint": "^5.15.0",
+    "typescript": "^3.4.3",
+    "webpack": "^4.30.0",
+    "webpack-cli": "^3.3.0",
+    "webpack-node-externals": "^1.7.2"
   }
 }

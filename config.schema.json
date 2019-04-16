@@ -41,7 +41,7 @@
       "theme": {
         "title": "UI Theme",
         "type": "string",
-        "default": "red",
+        "default": "teal",
         "oneOf": [
           {
             "title": "Red",
@@ -181,6 +181,18 @@
       "noFork": {
         "title": "Do not run the Config UI web server in a seperate process/thread",
         "type": "boolean"
+      },
+      "debug": {
+        "title": "Enable / disable debug logging",
+        "type": "boolean"
+      },
+      "standalone": {
+        "title": "Tell Homebridge the plugin is operating in standalone mode",
+        "type": "boolean"
+      },
+      "sessionTimeout": {
+        "title": "Session timeout in seconds",
+        "type": "integer"
       },
       "log": {
         "type": "object",

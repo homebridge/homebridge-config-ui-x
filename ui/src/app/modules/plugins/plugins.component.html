@@ -1,0 +1,75 @@
+<app-spinner *ngIf="loading"></app-spinner>
+
+<div class="row">
+  <div class="col-md-12">
+    <form novalidate (ngSubmit)="onSubmit(form)" [formGroup]="form">
+      <input type="text" class="hb-npm-search" tabindex="1"
+        [placeholder]="'plugins.placeholder_search_plugin' | translate" formControlName="query">
+    </form>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12" *ngFor="let plugin of installedPlugins">
+    <!--Panel-->
+    <div class="card card-body mb-3">
+      <div class="row">
+        <div class="col-sm-6">
+          <p class="mb-0 primary-text" *ngIf="!plugin.updateAvailable && plugin.installedVersion"
+            [translate]="'plugins.status_installed'">Installed</p>
+          <p class="mb-0 grey-text" *ngIf="!plugin.installedVersion" [translate]="'plugins.status_not_installed'">Not
+            Installed
+          </p>
+          <p class="mb-0 primary-text" *ngIf="plugin.updateAvailable" [translate]="'plugins.status_update_available'">
+            Update
+            Available</p>
+        </div>
+        <div class="col-sm-6 d-none d-sm-block">
+          <p class="mb-0 grey-text text-right" *ngIf="plugin.author && !plugin.certifiedPlugin">
+            <a class="card-link grey-text" target="_blank" rel="noopener noreferrer"
+              [href]="'https://www.npmjs.com/~' + plugin.author">@{{ plugin.author }}</a>
+          </p>
+          <p class="mb-0 grey-text text-right" *ngIf="plugin.certifiedPlugin">
+            <span class="card-link green-text"><i class="fas fa-shield-alt"></i>
+              {{'plugins.label_certified_plugin' | translate}}</span>
+          </p>
+        </div>
+      </div>
+      <h4 class="card-title mb-0" [innerHtml]="plugin.description"></h4>
+      <p class="card-text">{{ plugin.name }} v{{ plugin.installedVersion || plugin.latestVersion }}</p>
+      <div class="d-flex">
+        <a class="card-link" target="_blank" *ngIf="plugin.publicPackage" [href]="plugin.links.npm">
+          NPM
+        </a>
+        <a class="card-link" *ngIf="plugin.updateAvailable" (click)="$plugin.updatePlugin(plugin.name)"
+          placement="bottom" ngbTooltip="{{'plugins.tooltip_update_plugin_to' | translate:plugin }}" container="body"
+          [translate]="'plugins.button_update'">
+          {{ 'plugins.button_update' | translate | uppercase }}
+        </a>
+        <a class="card-link" *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x'"
+          (click)="$plugin.uninstallPlugin(plugin.name)">
+          {{ 'plugins.button_uninstall' | translate | uppercase }}
+        </a>
+        <a class="card-link" *ngIf="!plugin.installedVersion" (click)="$plugin.installPlugin(plugin.name)">
+          {{ 'plugins.button_install' | translate | uppercase }}
+        </a>
+        <a class="card-link"
+          *ngIf="plugin.settingsSchema && !(plugin.name === 'homebridge-config-ui-x' && !$auth.env.ableToConfigureSelf)"
+          (click)="$plugin.settings(plugin.name)">
+          {{ 'plugins.button_settings' | translate | uppercase }}
+        </a>
+        <a class="card-link"
+          *ngIf="plugin.settingsSchema && plugin.name === 'homebridge-config-ui-x' && !$auth.env.ableToConfigureSelf"
+          routerLink="/platform-tools/docker/settings">
+          {{ 'plugins.button_settings' | translate | uppercase }}
+        </a>
+        <a class="card-link ml-auto grey-text" target="_blank" rel="noopener noreferrer"
+          *ngIf="plugin.links.homepage || plugin.links.npm" [href]="plugin.links.homepage || plugin.links.npm"
+          [ngbTooltip]="plugin.links.homepage || plugin.links.npm" container="body" placement="left">
+          <i class="fas fa-external-link-alt"></i>
+        </a>
+      </div>
+    </div>
+    <!--/.Panel-->
+  </div>
+</div>

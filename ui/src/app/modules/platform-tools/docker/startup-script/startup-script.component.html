@@ -1,0 +1,27 @@
+<div class="flex-column d-flex align-items-stretch h-100">
+
+  <div class="row">
+    <div class="col-sm-8 d-none d-sm-block">
+      <h3 class="primary-text m-0">
+        <span class="d-none d-md-inline">Docker Container</span> startup.sh</h3>
+    </div>
+    <div class="col-sm-4 text-right">
+      <button class="btn btn-primary waves-effect m-0" (click)="onSave()" [translate]="'form.button_save'">Save</button>
+    </div>
+  </div>
+
+  <div class="row mt-3">
+    <div class="col-md-12">
+      <div class="alert alert-warning" role="alert" [translate]="'platform.docker.startup_script.message_script_help'">
+        This script will be executed each time the docker container starts.
+        You can use this to install any extra packages your plugins may need such as ffmpeg or libpcap-dev.
+      </div>
+    </div>
+  </div>
+
+  <ace-editor class="hb-ace-text-editor align-self-end h-100 mb-3 mt-3" [(text)]="startupScript" theme="xcode" mode="sh"
+    [options]="options" [readOnly]="false" [autoUpdateContent]="true"
+    (keydown.meta.s)="$event.preventDefault(); onSave()" (keydown.control.s)="$event.preventDefault(); onSave()">
+  </ace-editor>
+
+</div>

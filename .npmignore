@@ -7,6 +7,12 @@ tsconfig.json
 tslint.json
 yarn.lock
 webpack.config.js
+tsconfig.build.json
+nodemon-debug.json
+nodemon.json
+nest-cli.json
+.prettierrc
+.vscode/settings.json
 
 # Logs
 logs

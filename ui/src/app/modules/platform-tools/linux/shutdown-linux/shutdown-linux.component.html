@@ -1,0 +1,9 @@
+<div class="row">
+  <div class="col-md-12 text-center">
+    <h3 class="primary-text" [translate]="'platform.linux.shutdown.title_shutting_down_server'">Shutting Down Server
+    </h3>
+    <p class="grey-text" *ngIf="!timeout && !error"
+      [translate]="'platform.linux.shutdown.message_server_will_power_down'">The server will power down shortly.</p>
+    <p class="grey-text" *ngIf="error">{{ error }}</p>
+  </div>
+</div>

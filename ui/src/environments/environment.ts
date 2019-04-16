@@ -5,9 +5,16 @@
 
 export const environment = {
   production: false,
-  socketUrl: 'ws://localhost:8080',
-  apiBaseUrl: 'http://localhost:8080',
+  api: {
+    base: 'http://localhost:8080/api',
+    socket: 'http://localhost:8080',
+  },
+  jwt: {
+    tokenKey: 'access_token',
+    whitelistedDomains: ['localhost:8080'],
+    blacklistedRoutes: ['localhost:8080/api/auth/login'],
+  },
   apiHttpOptions: {
-    withCredentials: true
-  }
+    withCredentials: true,
+  },
 };

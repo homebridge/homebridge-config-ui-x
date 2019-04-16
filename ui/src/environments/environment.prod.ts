@@ -1,6 +1,14 @@
 export const environment = {
   production: true,
-  socketUrl: `${(window.location.protocol) === 'http:' ? 'ws://' : 'wss://'}${window.location.host}`,
-  apiBaseUrl: '',
-  apiHttpOptions: {}
+  socket: '',
+  api: {
+    base: '/api',
+    socket: `${(window.location.protocol) === 'http:' ? 'ws://' : 'wss://'}${window.location.host}`,
+  },
+  jwt: {
+    tokenKey: 'access_token',
+    whitelistedDomains: [document.location.host],
+    blacklistedRoutes: [`${document.location.host}/api/auth/login`],
+  },
+  apiHttpOptions: {},
 };
