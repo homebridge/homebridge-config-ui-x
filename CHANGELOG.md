@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## 4.0.0 (2019-xx-xx)
+## 4.0.0 (2019-04-16)
 
 ### Breaking Changes
 
