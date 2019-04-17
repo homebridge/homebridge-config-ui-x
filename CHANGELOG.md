@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 4.0.1 (2019-04-17)
+
+### Bug Fixes
+
+* Fixed resolving of custom plugin path for non-Docker installations
+
 ## 4.0.0 (2019-04-16)
 
 ### Breaking Changes

@@ -19,11 +19,11 @@ export interface HomebridgeConfig {
 @Injectable()
 export class ConfigService {
   public name = 'homebridge-config-ui-x';
-  public customPluginPath: string | undefined | null;
 
   // homebridge env
   public configPath = process.env.UIX_CONFIG_PATH || path.resolve(os.homedir(), '.homebridge/config.json');
   public storagePath = process.env.UIX_STORAGE_PATH || path.resolve(os.homedir(), '.homebridge');
+  public customPluginPath = process.env.UIX_CUSTOM_PLUGIN_PATH;
   public secretPath = path.resolve(this.storagePath, '.uix-secrets');
   public authPath = path.resolve(this.storagePath, 'auth.json');
   public accessoryLayoutPath = path.resolve(this.storagePath, 'accessories', 'uiAccessoriesLayout.json');
@@ -133,7 +133,6 @@ export class ConfigService {
     // forced config
     this.ui.restart = 'killall -9 homebridge && killall -9 homebridge-config-ui-x';
     this.homebridgeInsecureMode = Boolean(process.env.HOMEBRIDGE_INSECURE === '1');
-    this.customPluginPath = process.env.UIX_CUSTOM_PLUGIN_PATH;
     this.ui.sudo = false;
     this.ui.log = {
       method: 'file',
