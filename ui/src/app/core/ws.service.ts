@@ -79,7 +79,7 @@ export class WsService {
    */
   private establishConnectionToNamespace(namespace: string): IoNamespace {
     const socket: SocketIOClient.Socket = connect(`${environment.api.socket}/${namespace}`, {
-      transports: ['websocket'],
+      transports: this.$auth.env.websocketCompatibilityMode ? undefined : ['websocket'],
       query: {
         token: this.$auth.token,
       },

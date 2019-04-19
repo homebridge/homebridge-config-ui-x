@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 4.0.2 (2019-04-19)
+
+### Notable Changes
+
+* Added `websocketCompatibilityMode` option for users who are having issues with WebSocket connections ([#238](https://github.com/oznu/homebridge-config-ui-x/pull/238))
+
+### Other Changes
+
+* Updated npm dependencies
+
 ## 4.0.1 (2019-04-17)
 
 ### Bug Fixes

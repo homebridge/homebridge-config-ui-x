@@ -15,14 +15,14 @@ export class AuthGuard implements CanActivate {
   async canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): | Promise<boolean> {
+    // ensure app settings are loaded
+    if (!this.$auth.settingsLoaded) {
+      await this.$auth.getAppSettings();
+    }
+
     if (this.$auth.isLoggedIn()) {
       return true;
     } else {
-      // ensure app settings are loaded
-      if (!this.$auth.settingsLoaded) {
-        await this.$auth.getAppSettings();
-      }
-
       // if using not using auth, get a token
       if (this.$auth.formAuth === false) {
         await this.$auth.noauth();

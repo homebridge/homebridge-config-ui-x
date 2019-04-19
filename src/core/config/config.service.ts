@@ -73,6 +73,7 @@ export class ConfigService {
     };
     proxyHost?: string;
     sessionTimeout?: number;
+    websocketCompatibilityMode?: boolean;
   };
 
   public secrets: {
@@ -120,6 +121,7 @@ export class ConfigService {
         runningInDocker: this.runningInDocker,
         runningInLinux: this.runningInLinux,
         temperatureUnits: this.ui.tempUnits || 'c',
+        websocketCompatibilityMode: this.ui.websocketCompatibilityMode || false,
       },
       formAuth: Boolean(this.ui.auth !== 'none'),
       theme: this.ui.theme || 'teal',
