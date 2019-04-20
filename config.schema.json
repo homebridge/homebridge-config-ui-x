@@ -182,6 +182,10 @@
         "title": "Do not run the Config UI web server in a seperate process/thread",
         "type": "boolean"
       },
+      "host": {
+        "title": "The host ip address to listen on. In most cases this will be '::' or '0.0.0.0'",
+        "type": "string"
+      },
       "debug": {
         "title": "Enable / disable debug logging",
         "type": "boolean"

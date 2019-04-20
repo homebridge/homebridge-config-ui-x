@@ -106,7 +106,7 @@ async function bootstrap() {
   // serve spa on all 404
   app.useGlobalFilters(new SpaFilter());
 
-  logger.warn(`Console v${configService.package.version} is listening on port ${configService.ui.port}`);
-  await app.listen(configService.ui.port, '::');
+  logger.warn(`Console v${configService.package.version} is listening on ${startupConfig.host} port ${configService.ui.port}`);
+  await app.listen(configService.ui.port, startupConfig.host);
 }
 bootstrap();

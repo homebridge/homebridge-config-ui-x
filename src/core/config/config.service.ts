@@ -47,6 +47,7 @@ export class ConfigService {
   public ui: {
     name: string;
     port: number;
+    host?: '::' | '0.0.0.0' | string;
     auth: 'form' | 'none';
     theme: string;
     sudo?: boolean;
@@ -71,6 +72,7 @@ export class ConfigService {
       shutdown?: string;
       restart?: string;
     };
+    debug?: boolean;
     proxyHost?: string;
     sessionTimeout?: number;
     websocketCompatibilityMode?: boolean;

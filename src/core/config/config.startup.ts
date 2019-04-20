@@ -16,6 +16,7 @@ export async function getStartupConfig() {
   }
 
   const config = {} as {
+    host?: '::' | '0.0.0.0' | string;
     httpsOptions?: {
       key?: Buffer,
       cert?: Buffer,
@@ -26,6 +27,14 @@ export async function getStartupConfig() {
     debug?: boolean;
   };
 
+  // check if IPv6 is available on this host
+  const ipv6 = Object.entries(os.networkInterfaces()).filter(([net, addresses]) => {
+    return addresses.find(x => x.family === 'IPv6');
+  }).length;
+
+  config.host = ui.host || (ipv6 ? '::' : '0.0.0.0');
+
+  // preload ssl settings
   if (ui.ssl && ((ui.ssl.key && ui.ssl.cert) || ui.ssl.pfx)) {
     config.httpsOptions = {
       key: ui.ssl.key ? await fs.readFile(ui.ssl.key) : undefined,
@@ -35,10 +44,12 @@ export async function getStartupConfig() {
     };
   }
 
+  // preload proxy host settings
   if (ui.proxyHost) {
     config.cspWsOveride = `wss://${ui.proxyHost} ws://${ui.proxyHost}`;
   }
 
+  // preload debug settings
   if (ui.debug) {
     config.debug = true;
   } else {

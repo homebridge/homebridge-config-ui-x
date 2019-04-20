@@ -2,11 +2,21 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 4.0.4 (2019-04-20)
+
+### Bug Fixes
+
+* Check for IPv6 interfaces before attempting to listen on `::` ([#261](https://github.com/oznu/homebridge-config-ui-x/issues/261))
+
+### Other Changes
+
+* Added `host` config option to allow users to manually specify which interface/ip address the web interface should listen on
+
 ## 4.0.3 (2019-04-20)
 
 ### Bug Fixes
 
-* Fixed bug that prevented web service listening on IPv6 interfaces ([#260](https://github.com/oznu/homebridge-config-ui-x/issues/260))
+* Fixed bug that prevented the web service listening on IPv6 interfaces ([#260](https://github.com/oznu/homebridge-config-ui-x/issues/260))
 
 ## 4.0.2 (2019-04-19)
 
