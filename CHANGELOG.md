@@ -2,11 +2,17 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 4.0.3 (2019-04-20)
+
+### Bug Fixes
+
+* Fixed bug that prevented web service listening on IPv6 interfaces ([#260](https://github.com/oznu/homebridge-config-ui-x/issues/260))
+
 ## 4.0.2 (2019-04-19)
 
 ### Notable Changes
 
-* Added `websocketCompatibilityMode` option for users who are having issues with WebSocket connections ([#238](https://github.com/oznu/homebridge-config-ui-x/pull/238))
+* Added `websocketCompatibilityMode` option for users who are having issues with WebSocket connections ([#238](https://github.com/oznu/homebridge-config-ui-x/issues/238))
 
 ### Other Changes
 
@@ -29,8 +35,8 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Notable Changes
 
-* **Plugins:** Before updating a Homebridge plugin the release notes from GitHub will be shown where possible ([#233](https://github.com/oznu/homebridge-config-ui-x/pull/233))
-* **Plugins:** A corrupt plugin will no longer prevent all the installed plugins from being displayed ([#252](https://github.com/oznu/homebridge-config-ui-x/pull/252))
+* **Plugins:** Before updating a Homebridge plugin the release notes from GitHub will be shown where possible ([#233](https://github.com/oznu/homebridge-config-ui-x/issues/233))
+* **Plugins:** A corrupt plugin will no longer prevent all the installed plugins from being displayed ([#252](https://github.com/oznu/homebridge-config-ui-x/issues/252))
 * **i18n:** Turkish language translation added by [@btutal](https://github.com/btutal)
 * **Theme:** The default theme for new installs is now `teal` instead of `red`
 * **Auth:** Ability to customise the session timeout
