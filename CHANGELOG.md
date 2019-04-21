@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 4.0.5 (2019-04-21)
+
+### Bug Fixes
+
+* Fixed issue preventing the web service from loading correctly in config-less [oznu/homebridge](https://github.com/oznu/docker-homebridge) docker containers ([#262](https://github.com/oznu/homebridge-config-ui-x/issues/262))
+
 ## 4.0.4 (2019-04-20)
 
 ### Bug Fixes

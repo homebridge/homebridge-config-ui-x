@@ -11,10 +11,6 @@ export async function getStartupConfig() {
   const homebridgeConfig = await fs.readJSON(configPath);
   const ui = homebridgeConfig.platforms.find(x => x.platform === 'config');
 
-  if (!ui) {
-    return {};
-  }
-
   const config = {} as {
     host?: '::' | '0.0.0.0' | string;
     httpsOptions?: {
@@ -32,7 +28,17 @@ export async function getStartupConfig() {
     return addresses.find(x => x.family === 'IPv6');
   }).length;
 
-  config.host = ui.host || (ipv6 ? '::' : '0.0.0.0');
+  config.host = ipv6 ? '::' : '0.0.0.0';
+
+  // if no ui settings configured - we are done
+  if (!ui) {
+    return config;
+  }
+
+  // preload custom host settings
+  if (ui.host) {
+    config.host = ui.host;
+  }
 
   // preload ssl settings
   if (ui.ssl && ((ui.ssl.key && ui.ssl.cert) || ui.ssl.pfx)) {
