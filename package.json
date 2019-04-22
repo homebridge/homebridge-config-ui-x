@@ -1,6 +1,6 @@
 {
   "name": "homebridge-config-ui-x",
-  "version": "4.0.5",
+  "version": "4.0.6",
   "description": "Configuration UI plugin for Homebridge",
   "license": "MIT",
   "author": "oznu <dev@oz.nu>",
@@ -57,7 +57,7 @@
     "@oznu/hap-client": "0.0.4",
     "@types/express": "^4.16.0",
     "@types/fs-extra": "^5.0.5",
-    "@types/node": "^11.13.5",
+    "@types/node": "^11.13.6",
     "@types/socket.io": "^2.1.2",
     "bash-color": "0.0.4",
     "buffer-shims": "^1.0.0",
@@ -71,7 +71,7 @@
     "nodemon": "^1.18.11",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
-    "pino-pretty": "^2.6.0",
+    "pino-pretty": "^2.6.1",
     "point-of-view": "^3.2.0",
     "prettier": "^1.17.0",
     "qr-image": "^3.2.0",
@@ -84,7 +84,7 @@
     "tslint": "^5.16.0",
     "typescript": "^3.4.4",
     "webpack": "^4.30.0",
-    "webpack-cli": "^3.3.0",
+    "webpack-cli": "^3.3.1",
     "webpack-node-externals": "^1.7.2"
   }
 }

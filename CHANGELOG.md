@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 4.0.6 (2019-04-22)
+
+### Bug Fixes
+
+* Fixed issue causing the UI to crash when `platforms` was not present in the Homebridge `config.json` ([#263](https://github.com/oznu/homebridge-config-ui-x/issues/263))
+
+### Other Changes
+
+* Updated npm dependencies
+
 ## 4.0.5 (2019-04-21)
 
 ### Bug Fixes

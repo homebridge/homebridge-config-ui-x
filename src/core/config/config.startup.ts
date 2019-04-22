@@ -9,7 +9,7 @@ export async function getStartupConfig() {
   const configPath = process.env.UIX_CONFIG_PATH || path.resolve(os.homedir(), '.homebridge/config.json');
 
   const homebridgeConfig = await fs.readJSON(configPath);
-  const ui = homebridgeConfig.platforms.find(x => x.platform === 'config');
+  const ui = Array.isArray(homebridgeConfig.platforms) ? homebridgeConfig.platforms.find(x => x.platform === 'config') : undefined;
 
   const config = {} as {
     host?: '::' | '0.0.0.0' | string;

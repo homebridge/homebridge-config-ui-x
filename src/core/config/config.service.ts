@@ -84,7 +84,7 @@ export class ConfigService {
 
   constructor() {
     this.homebridgeConfig = fs.readJSONSync(this.configPath);
-    this.ui = this.homebridgeConfig.platforms.find(x => x.platform === 'config');
+    this.ui = Array.isArray(this.homebridgeConfig.platforms) ? this.homebridgeConfig.platforms.find(x => x.platform === 'config') : undefined;
 
     if (!this.ui) {
       this.ui = {
