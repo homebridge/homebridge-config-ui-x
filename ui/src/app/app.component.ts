@@ -18,7 +18,7 @@ export class AppComponent {
     console.log('Browser Culture Lang:', translate.getBrowserCultureLang());
     console.log('Browser Lang:', translate.getBrowserLang());
 
-    translate.addLangs(['en', 'de', 'fr', 'pl', 'cs', 'ru', 'zh-CN', 'zh-TW', 'hu', 'ja', 'es', 'nl', 'tr']);
+    translate.addLangs(['en', 'de', 'fr', 'pl', 'cs', 'ru', 'zh-CN', 'zh-TW', 'hu', 'ja', 'es', 'nl', 'tr', 'it']);
 
     const browserLang = translate.getLangs().find(x => x === translate.getBrowserLang() || x === translate.getBrowserCultureLang());
 

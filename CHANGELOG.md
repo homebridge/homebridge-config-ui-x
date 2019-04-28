@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 4.1.0 (2019-04-28)
+
+### Notable Changes
+
+* **i18n:** Italian language translation added by [@cyberfafu](https://github.com/cyberfafu)
+
+### Other Changes
+
+* Updated npm dependencies
+
 ## 4.0.6 (2019-04-22)
 
 ### Bug Fixes
