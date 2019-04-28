@@ -227,6 +227,13 @@ The following browsers are supported by this plugin:
 
 MS Internet Explorer (any version) is not supported!
 
+# Supported Node.js Versions
+
+The following versions of Node.js are supported:
+
+* Linux >= v8.15.1
+* Windows >= v10.15.3
+
 # Contributing
 
 Please see [CONTRIBUTING.md](CONTRIBUTING.md).
@@ -249,7 +256,11 @@ sudo npm install -g --unsafe-perm homebridge-config-ui-x
 
 If the Accessories tab is not show then you are not running Homebridge in insecure mode. See the [Enabling Accessory Control](https://github.com/oznu/homebridge-config-ui-x/wiki/Enabling-Accessory-Control) wiki for details. If you have just enabled insecure mode make sure you have restarted Homebridge and refreshed the page in your browser.
 
-#### 3. Ask on Slack
+#### 3. Running in Docker
+
+This plugin supports the [oznu/homebridge](https://github.com/oznu/docker-homebridge) Docker image. You must enable the UI using the method described in [the wiki](https://github.com/oznu/homebridge-config-ui-x/wiki/Enabling-UI-with-Docker).
+
+#### 4. Ask on Slack
 
 [![Slack Status](https://slackin-znyruquwmv.now.sh/badge.svg)](https://slackin-znyruquwmv.now.sh)
 
