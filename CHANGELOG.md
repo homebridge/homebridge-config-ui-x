@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+# Read Before Restarting
+
+After upgrading from 3.x to 4.x you will need to manually refresh your browser window.
+
+![upgrade-steps](https://raw.githubusercontent.com/oznu/homebridge-config-ui-x/master/screenshots/homebridge-config-ui-x-4.x-upgrade.gif)
+
+1. Click the **Restart** button
+2. Wait about as long as it usually takes for Homebridge to restart then go to the **Status** tab
+3. Refresh the page using "**CTRL+F5**" on Windows or "**CMD + R**" on macOS
+4. Login again as normal
+
 ## 4.2.0 (2019-05-03)
 
 ### Notice
@@ -10,9 +21,9 @@ Node.js 12 is currently not supported by this plugin due to compatibility issues
 
 ### Notable Changes
 
-* **Plugins:** Plugins that need updating are now corectly displayed at the top of the list [#275](https://github.com/oznu/homebridge-config-ui-x/issues/275)
-* **Plugins:** The status/homepage will now display a notice if you have any out-of-date plugins [#200](https://github.com/oznu/homebridge-config-ui-x/issues/200)
-* **Config:** The "Backup Config" feature is back [#279](https://github.com/oznu/homebridge-config-ui-x/issues/279)
+* **Plugins:** Plugins that need updating are now correctly displayed at the top of the list ([#275](https://github.com/oznu/homebridge-config-ui-x/issues/275))
+* **Plugins:** The status/homepage will now display a notice if you have any out-of-date plugins ([#200](https://github.com/oznu/homebridge-config-ui-x/issues/200))
+* **Config:** The "Backup Config" feature is back ([#279](https://github.com/oznu/homebridge-config-ui-x/issues/279))
 
 ## 4.1.0 (2019-04-28)
 
