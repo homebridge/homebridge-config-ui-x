@@ -136,6 +136,7 @@
     "status.homebridge.label_up_to_date": "最新",
     "status.homebridge.label_update_available": "新しいバージョン{{latestVersion}} が利用可能です",
     "status.homebridge.label_version": "バージョン",
+    "status.plugins_out_of_date": "期限切れのプラグイン",
     "status.memory.label_free": "空き",
     "status.memory.label_total": "合計",
     "status.memory.label_used": "使用率",

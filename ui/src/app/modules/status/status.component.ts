@@ -31,6 +31,7 @@ export class StatusComponent implements OnInit, OnDestroy {
   public server: HomebridgeStatus = {};
   public stats: any = {};
   public homebridge: any = {};
+  public outOfDatePlugins: Array<any> = [];
 
   public loadedQrCode = false;
   public consoleStatus;
@@ -45,11 +46,11 @@ export class StatusComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.checkHomebridgeVersion();
-
-    this.io.connected.subscribe(() => {
+    this.io.connected.subscribe(async () => {
       this.consoleStatus = 'up';
       this.io.socket.emit('monitor-server-status');
+      await this.checkHomebridgeVersion();
+      await this.getOutOfDatePlugins();
     });
 
     this.io.socket.on('disconnect', () => {
@@ -76,14 +77,23 @@ export class StatusComponent implements OnInit, OnDestroy {
   }
 
   checkHomebridgeVersion() {
-    this.io.request('homebridge-version-check').subscribe(
-      (response) => {
+    return this.io.request('homebridge-version-check').toPromise()
+      .then((response) => {
         this.homebridge = response;
-      },
-      (err) => {
+      })
+      .catch((err) => {
         this.$toastr.error(err.message);
-      },
-    );
+      });
+  }
+
+  getOutOfDatePlugins() {
+    return this.io.request('get-out-of-date-plugins').toPromise()
+      .then((response) => {
+        this.outOfDatePlugins = response;
+      })
+      .catch((err) => {
+        this.$toastr.error(err.message);
+      });
   }
 
   getQrCodeImage() {

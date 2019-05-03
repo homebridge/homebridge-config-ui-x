@@ -136,6 +136,7 @@
   "status.homebridge.label_up_to_date": "Aktuální",
   "status.homebridge.label_update_available": "{{latestVersion}} Aktualizace k dispozici",
   "status.homebridge.label_version": "Verze",
+  "status.plugins_out_of_date": "Pluginy mimo datum",
   "status.memory.label_free": "Volná",
   "status.memory.label_total": "Celková",
   "status.memory.label_used": "Použitá",

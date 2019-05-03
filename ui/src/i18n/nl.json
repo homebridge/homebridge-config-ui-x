@@ -136,6 +136,7 @@
     "status.homebridge.label_up_to_date": "Up To Date",
     "status.homebridge.label_update_available": "{{latestVersion}} Update Beschikbaar",
     "status.homebridge.label_version": "Versie",
+    "status.plugins_out_of_date": "Plug-ins verouderd",
     "status.memory.label_free": "Vrij",
     "status.memory.label_total": "Totaal",
     "status.memory.label_used": "Gebruikt",

@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 4.2.0 (2019-05-03)
+
+### Notice
+
+Node.js 12 is currently not supported by this plugin due to compatibility issues still being resolved by third party dependencies. You should not upgrade to Node.js 12 until [#277](https://github.com/oznu/homebridge-config-ui-x/issues/277) is resolved.
+
+### Notable Changes
+
+* **Plugins:** Plugins that need updating are now corectly displayed at the top of the list [#275](https://github.com/oznu/homebridge-config-ui-x/issues/275)
+* **Plugins:** The status/homepage will now display a notice if you have any out-of-date plugins [#200](https://github.com/oznu/homebridge-config-ui-x/issues/200)
+* **Config:** The "Backup Config" feature is back [#279](https://github.com/oznu/homebridge-config-ui-x/issues/279)
+
 ## 4.1.0 (2019-04-28)
 
 ### Notable Changes

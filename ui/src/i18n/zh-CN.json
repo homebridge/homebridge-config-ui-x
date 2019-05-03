@@ -136,6 +136,7 @@
     "status.homebridge.label_up_to_date": "已是最新版本",
     "status.homebridge.label_update_available": "可升级至 {{latestVersion}}",
     "status.homebridge.label_version": "版本",
+    "status.plugins_out_of_date": "插件已过时",
     "status.memory.label_free": "空闲",
     "status.memory.label_total": "总内存",
     "status.memory.label_used": "使用",

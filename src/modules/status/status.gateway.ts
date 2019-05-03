@@ -28,4 +28,13 @@ export class StatusGateway {
       return new WsException(e.message);
     }
   }
+
+  @SubscribeMessage('get-out-of-date-plugins')
+  async getOutOfDatePlugins(client, payload) {
+    try {
+      return await this.pluginsService.getOutOfDatePlugins();
+    } catch (e) {
+      return new WsException(e.message);
+    }
+  }
 }

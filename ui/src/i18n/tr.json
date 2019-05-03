@@ -136,6 +136,7 @@
     "status.homebridge.label_up_to_date": "Güncel",
     "status.homebridge.label_update_available": "{{version}} Güncelleme Mevcut",
     "status.homebridge.label_version": "Versiyon",
+    "status.plugins_out_of_date": "Eklentiler güncel değil",
     "status.memory.label_free": "Kullanılmayan",
     "status.memory.label_total": "Toplam",
     "status.memory.label_used": "Kullanılan",

@@ -53,6 +53,18 @@
               [translate]="'plugins.button_upgrade'">Upgrade</button>
           </div>
         </div>
+
+        <div class="d-flex p-1" *ngIf="outOfDatePlugins.length">
+          <div class="p-3">
+            <i class="material-icons status-circle bg-yellow">update</i>
+          </div>
+          <div class="align-self-center">
+            <span>{{ outOfDatePlugins.length }}</span>
+            <br>
+            <span class="grey-text" [translate]="'status.plugins_out_of_date'">Plugins Out Of Date</span>
+          </div>
+        </div>
+
       </div>
     </div>
     <!--/.Panel-->

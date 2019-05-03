@@ -91,6 +91,14 @@ export class PluginsService {
   }
 
   /**
+   * Returns an array of out-of-date plugins
+   */
+  public async getOutOfDatePlugins(): Promise<HomebridgePlugin[]> {
+    const plugins = await this.getInstalledPlugins();
+    return plugins.filter(x => x.updateAvailable);
+  }
+
+  /**
    * Search the npm registry for homebridge plugins
    * @param query
    */

@@ -136,6 +136,7 @@
 	"status.homebridge.label_up_to_date": "Актуальная версия",
 	"status.homebridge.label_update_available": "Доступено обновление {{latestVersion}} ",
 	"status.homebridge.label_version": "Версия",
+	"status.plugins_out_of_date": "Плагины устарели",
 	"status.memory.label_free": "Свободно",
 	"status.memory.label_total": "Всего",
 	"status.memory.label_used": "Использовано",
