@@ -231,6 +231,8 @@ MS Internet Explorer (any version) is not supported!
 
 The following versions of Node.js are supported:
 
+**Due to [#279](https://github.com/oznu/homebridge-config-ui-x/issues/277) Node.js 12 is not currently supported on any platform.**
+
 * Linux >= v8.15.1
 * Windows >= v10.15.3
 

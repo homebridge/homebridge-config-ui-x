@@ -87,7 +87,7 @@ export class PluginsService {
     }));
 
     this.installedPlugins = plugins;
-    return _.sortBy(plugins, ['name']);
+    return _.orderBy(plugins, ['updateAvailable', 'name'], ['desc', 'asc']);
   }
 
   /**
