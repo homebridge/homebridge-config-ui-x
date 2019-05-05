@@ -46,6 +46,8 @@ Add this to your homebridge `config.json` file
 * `theme` - [See wiki for details](https://github.com/oznu/homebridge-config-ui-x/wiki/Themes)
 * `ssl` - [See below for details](#enabling-ssl)
 
+All config options are [listed here](https://github.com/oznu/homebridge-config-ui-x/wiki/Config-Options).
+
 ## Accessory Control
 
 The plugin allows you to view and control some types of Homebridge accessories from your web browser. 

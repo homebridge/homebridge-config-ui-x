@@ -2,11 +2,22 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## 4.2.0 (2019-05-03)
+## 4.2.0 (2019-05-05)
 
 ### Notice
 
 Node.js 12 is currently not supported by this plugin due to compatibility issues still being resolved by third party dependencies. You should not upgrade to Node.js 12 until [#277](https://github.com/oznu/homebridge-config-ui-x/issues/277) is resolved.
+
+### Notable Changes
+
+* **Homebridge:** Added `homebridgePackagePath` to allow users to defined where the Homebridge module is installed if it's not installed globally ([#280](https://github.com/oznu/homebridge-config-ui-x/issues/280))
+* **Wiki**: Created [wiki page](https://github.com/oznu/homebridge-config-ui-x/wiki/Config-Options) showing all available config options
+
+### Other Changes
+
+* Updated npm dependencies
+
+## 4.2.0 (2019-05-03)
 
 ### Notable Changes
 

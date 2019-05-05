@@ -233,6 +233,16 @@ export class PluginsService {
    * Gets the Homebridge package details
    */
   public async getHomebridgePackage() {
+    // try load from the "homebridgePackagePath" option first
+    if (this.configService.ui.homebridgePackagePath) {
+      const pjsonPath = path.join(this.configService.ui.homebridgePackagePath, 'package.json');
+      if (await fs.pathExists(pjsonPath)) {
+        return await this.parsePackageJson(await fs.readJson(pjsonPath), this.configService.ui.homebridgePackagePath);
+      } else {
+        this.logger.error(`"homebridgePath" (${this.configService.ui.homebridgePackagePath}) does not exist`);
+      }
+    }
+
     const modules = await this.getInstalledModules();
 
     const homebridgeInstalls = modules.filter(x => x.name === 'homebridge');

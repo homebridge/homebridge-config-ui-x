@@ -178,6 +178,10 @@
         "title": "Use Sudo",
         "type": "boolean"
       },
+      "homebridgePackagePath": {
+        "title": "Path To Homebridge Module",
+        "type": "string"
+      },
       "noFork": {
         "title": "Do not run the Config UI web server in a seperate process/thread",
         "type": "boolean"
@@ -291,14 +295,6 @@
         "title": "Reverse Proxy Hostname",
         "type": "string",
         "pattern": "^[^{}/ :\\\\]+(?::\\d+)?$"
-      },
-      "homebridgeNpmPkg": {
-        "title": "Custom NPM package for Homebridge updates",
-        "type": "string"
-      },
-      "fork": {
-        "title": "Custom fork in <github username>/<repo> format for Homebridge updates",
-        "type": "string"
       }
     }
   },
@@ -364,7 +360,11 @@
           "placeholder": "eg. /sys/class/thermal/thermal_zone0/temp"
         },
         "tempUnits",
-        "noFork"
+        {
+          "key": "homebridgePackagePath",
+          "description": "Leave blank unless you have not installed Homebridge as a global module."
+        },
+        "websocketCompatibilityMode"
       ]
     },
     {

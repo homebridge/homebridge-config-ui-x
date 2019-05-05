@@ -76,6 +76,7 @@ export class ConfigService {
     proxyHost?: string;
     sessionTimeout?: number;
     websocketCompatibilityMode?: boolean;
+    homebridgePackagePath?: string;
   };
 
   public secrets: {
