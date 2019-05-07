@@ -51,7 +51,7 @@ class HomebridgeConfigUi {
     this.log(`Spawning homebridge-config-ui-x with PID`, ui.pid);
 
     ui.on('close', () => {
-      process.exit(1);
+      process.kill(process.pid, 'SIGTERM');
     });
 
     ui.on('error', (err) => { });
