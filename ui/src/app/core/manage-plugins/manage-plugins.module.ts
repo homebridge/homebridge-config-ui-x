@@ -4,16 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 import { NgxMdModule } from 'ngx-md';
-
-import {
-  JsonSchemaFormModule,
-  Bootstrap4FrameworkModule,
-  Bootstrap4Framework,
-  Framework,
-  WidgetLibraryService,
-  FrameworkLibraryService,
-  JsonSchemaFormService,
-} from 'ngx-json-schema';
+import { Bootstrap4FrameworkModule } from '@oznu/ngx-bs4-jsonform';
 
 import { CoreModule } from '../core.module';
 import { ManagePluginsService } from './manage-plugins.service';
@@ -37,15 +28,6 @@ import { ManagePluginsModalComponent } from './manage-plugins-modal/manage-plugi
     NgbModule,
     NgxMdModule,
     Bootstrap4FrameworkModule,
-    {
-      ngModule: JsonSchemaFormModule,
-      providers: [
-        JsonSchemaFormService,
-        FrameworkLibraryService,
-        WidgetLibraryService,
-        { provide: Framework, useClass: Bootstrap4Framework, multi: true },
-      ],
-    },
     CoreModule,
   ],
   providers: [

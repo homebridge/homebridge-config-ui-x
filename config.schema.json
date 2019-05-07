@@ -1,6 +1,7 @@
 {
   "pluginAlias": "config",
   "pluginType": "platform",
+  "singular": true,
   "schema": {
     "type": "object",
     "properties": {
