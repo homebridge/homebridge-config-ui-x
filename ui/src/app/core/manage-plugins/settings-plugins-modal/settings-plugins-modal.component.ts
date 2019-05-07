@@ -128,6 +128,14 @@ export class SettingsPluginsModalComponent implements OnInit {
       (config) => {
         this.homebridgeConfig = config;
 
+        if (!Array.isArray(this.homebridgeConfig.platforms)) {
+          this.homebridgeConfig.platforms = [];
+        }
+
+        if (!Array.isArray(this.homebridgeConfig.accessories)) {
+          this.homebridgeConfig.accessories = [];
+        }
+
         if (this.homebridgeConfig.platforms && this.configSchema.pluginType === 'platform') {
           this.homebridgeConfig.platforms.forEach((platform: any) => {
             if (
