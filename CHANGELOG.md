@@ -2,11 +2,31 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## 4.3.0 (2019-05-05)
+## 4.4.0 (2019-05-07)
 
 ### Notice
 
 Node.js 12 is currently not supported by this plugin due to compatibility issues still being resolved by third party dependencies. You should not upgrade to Node.js 12 until [#277](https://github.com/oznu/homebridge-config-ui-x/issues/277) is resolved.
+
+### Notable Changes
+
+* **Plugins:** Allow plugins to specify only a single config block should exist in the GUI config editor ([#290](https://github.com/oznu/homebridge-config-ui-x/issues/290))
+* **Plugins:** The plugin will no longer log with timestamps when homebridge is started with `-T` ([#288](https://github.com/oznu/homebridge-config-ui-x/issues/288))
+* **Plugins:** The plugin logs are now prefixed with the name defined in the `config.json` ([#288](https://github.com/oznu/homebridge-config-ui-x/issues/288))
+* **Auth:** Display a warning if the time on the server varies to greatly from time on the client which could cause mysterious login issues
+
+### Bug Fixes
+
+* **Plugins:** Fixed a bug preventing users adding additional elements to an array with the GUI config editor ([#289](https://github.com/oznu/homebridge-config-ui-x/issues/289))
+* **Plugins:** Fixed an issue preventing the plugins tab from loading when the npm registry was slow to respond ([#284](https://github.com/oznu/homebridge-config-ui-x/issues/284))
+* **Plugins:** Fixed an issue that prevented plugins from displaying for some users ([#284](https://github.com/oznu/homebridge-config-ui-x/issues/284))
+
+### Other Changes
+
+* Updated npm dependencies
+* Bundle some dependencies using `bundledDependencies` in the `package.json` to try and reduce installation errors
+
+## 4.3.0 (2019-05-05)
 
 ### Notable Changes
 

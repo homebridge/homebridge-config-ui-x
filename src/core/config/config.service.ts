@@ -28,6 +28,7 @@ export class ConfigService {
   public authPath = path.resolve(this.storagePath, 'auth.json');
   public accessoryLayoutPath = path.resolve(this.storagePath, 'accessories', 'uiAccessoriesLayout.json');
   public homebridgeInsecureMode = Boolean(process.env.UIX_INSECURE_MODE);
+  public homebridgeNoTimestamps = Boolean(process.env.UIX_LOG_NO_TIMESTAMPS);
 
   // server env
   public runningInDocker = Boolean(process.env.HOMEBRIDGE_CONFIG_UI === '1');
