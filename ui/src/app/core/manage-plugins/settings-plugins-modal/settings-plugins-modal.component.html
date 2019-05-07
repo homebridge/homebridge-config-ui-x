@@ -16,7 +16,7 @@
       <ngb-panel [id]="block.__uuid__" [title]="block.name" *ngFor="let block of pluginConfig">
         <ng-template ngbPanelContent>
           <json-schema-form *ngIf="configSchema.schema" [options]="jsonFormOptions" [schema]="configSchema.schema"
-            [layout]="configSchema.layout" [form]="configSchema.form" [(ngModel)]="block.config"
+            [layout]="configSchema.layout" [form]="configSchema.form" [(ngModel)]="block.config" framework="bootstrap-4"
             (onChanges)="block.onChange($event)">
           </json-schema-form>
           <div class="d-flex">
@@ -35,8 +35,10 @@
     </div>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-elegant mr-auto" data-dismiss="modal" (click)="addBlock()">Add
-      {{ configSchema.pluginType }} Block</button>
+    <button type="button" class="btn btn-elegant mr-auto" data-dismiss="modal" (click)="addBlock()"
+      *ngIf="!configSchema.singular || pluginConfig.length === 0">
+      Add {{ configSchema.pluginType }} Block
+    </button>
     <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')"
       [translate]="'form.button_cancel'">Cancel</button>
     <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="save()" [disabled]="saveInProgress">
