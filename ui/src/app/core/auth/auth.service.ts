@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { ToastrService } from 'ngx-toastr';
 import * as dayjs from 'dayjs';
 import { ApiService } from '../api.service';
 import { environment } from '../../../environments/environment';
@@ -24,6 +25,7 @@ export class AuthService {
   constructor(
     private $jwtHelper: JwtHelperService,
     private $api: ApiService,
+    private $toastr: ToastrService,
     private titleService: Title,
   ) {
     // load the token (if present) from local storage on page init
@@ -126,6 +128,7 @@ export class AuthService {
         this.env = data.env;
         this.setTheme(data.theme || 'red');
         this.setTitle(data.env.homebridgeInstanceName);
+        this.checkServerTime(data.serverTimestamp);
       });
   }
 
@@ -139,5 +142,20 @@ export class AuthService {
 
   setTitle(title: string) {
     this.titleService.setTitle(title || 'Homebridge');
+  }
+
+  /**
+   * Check to make sure the server time is roughly the same as the client time.
+   * A warning is shown if the time difference is >= 4 hours.
+   * @param timestamp
+   */
+  checkServerTime(timestamp: string) {
+    const serverTime = dayjs(timestamp);
+    const diff = serverTime.diff(dayjs(), 'hour');
+    if (diff >= 4 || diff <= -4) {
+      const msg = 'The date and time on your Homebridge server is different to your browser. This may cause login issues.';
+      console.error(msg);
+      this.$toastr.warning(msg);
+    }
   }
 }

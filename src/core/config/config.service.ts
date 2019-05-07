@@ -130,6 +130,7 @@ export class ConfigService {
       },
       formAuth: Boolean(this.ui.auth !== 'none'),
       theme: this.ui.theme || 'teal',
+      serverTimestamp: new Date().toISOString(),
     };
   }
 
