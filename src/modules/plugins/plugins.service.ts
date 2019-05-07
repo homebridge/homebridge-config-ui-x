@@ -45,6 +45,7 @@ export class PluginsService {
     headers: {
       'User-Agent': this.configService.package.name,
     },
+    timeout: 5000,
   });
 
   constructor(

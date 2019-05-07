@@ -1,6 +1,6 @@
 {
   "name": "homebridge-config-ui-x",
-  "version": "4.3.0",
+  "version": "4.3.1-beta.4",
   "description": "Configuration UI plugin for Homebridge",
   "license": "MIT",
   "author": "oznu <dev@oz.nu>",
@@ -37,6 +37,18 @@
     "install:ui": "npm install --prefix ui",
     "prepublishOnly": "npm i --package-lock-only && npm audit && npm run lint && npm run build"
   },
+  "bundledDependencies": [
+    "@nestjs/common",
+    "@nestjs/core",
+    "@nestjs/platform-socket.io",
+    "@nestjs/websockets",
+    "class-transformer",
+    "class-validator",
+    "commander",
+    "reflect-metadata",
+    "rxjs",
+    "semver"
+  ],
   "dependencies": {
     "@nestjs/common": "^6.1.1",
     "@nestjs/core": "^6.1.1",
