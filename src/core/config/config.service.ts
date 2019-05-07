@@ -14,6 +14,7 @@ export interface HomebridgeConfig {
   };
   platforms: any[];
   accessories: any[];
+  plugins?: string;
 }
 
 @Injectable()

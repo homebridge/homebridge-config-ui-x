@@ -56,6 +56,15 @@ export class ConfigEditorService {
       config.platforms = [];
     }
 
+    // ensure config.plugins is an array and not empty
+    if (config.plugins && Array.isArray(config.plugins)) {
+      if (!config.plugins.length) {
+        delete config.plugins;
+      }
+    } else if (config.plugins) {
+      delete config.plugins;
+    }
+
     // create backup of existing config
     await fs.rename(this.configService.configPath, `${this.configService.configPath}.${now.getTime()}`);
 

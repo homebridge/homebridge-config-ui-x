@@ -138,7 +138,60 @@ export class PluginsService {
         return plugin;
       });
 
+    if (!result.length && query.indexOf('homebridge-') === 0) {
+      return await this.searchNpmRegistrySingle(query);
+    }
+
     return result;
+  }
+
+  /**
+   * Get a single plugin from the registry using it's exact name
+   * Used as a fallback if the search queries are not finding the desired plugin
+   * @param query
+   */
+  async searchNpmRegistrySingle(query: string): Promise<HomebridgePlugin[]> {
+    try {
+      const pkg = await this.rp.get(`https://registry.npmjs.org/${encodeURIComponent(query).replace('%40', '@')}`);
+      if (!pkg.keywords || !pkg.keywords.includes('homebridge-plugin')) {
+        return [];
+      }
+
+      let plugin: HomebridgePlugin;
+
+      // see if the plugin is already installed
+      const isInstalled = this.installedPlugins.find(x => x.name === pkg.name);
+      if (isInstalled) {
+        plugin = isInstalled;
+        return [plugin];
+      }
+
+      plugin = {
+        name: pkg.name,
+        description: (pkg.description) ?
+          pkg.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkg.name,
+        certifiedPlugin: (pkg.name.indexOf('@homebridge/homebridge-') === 0),
+      } as HomebridgePlugin;
+
+      // it's not installed; finish building the response
+      plugin.publicPackage = true;
+      plugin.latestVersion = pkg['dist-tags'].latest;
+      plugin.updateAvailable = false;
+      plugin.links = {
+        npm: `https://www.npmjs.com/package/${plugin.name}`,
+        homepage: pkg.homepage,
+        bugs: (pkg.bugs) ? pkg.bugs.url : null,
+      };
+      plugin.author = (pkg.maintainers.length) ? pkg.maintainers[0].name : null;
+      plugin.certifiedPlugin = (pkg.name.indexOf('@homebridge/homebridge-') === 0);
+
+      return [plugin];
+    } catch (e) {
+      if (e.statusCode !== 404) {
+        this.logger.error(e.message);
+      }
+      return [];
+    }
   }
 
   /**

@@ -20,6 +20,7 @@ Node.js 12 is currently not supported by this plugin due to compatibility issues
 * **Plugins:** Fixed a bug preventing users adding additional elements to an array with the GUI config editor ([#289](https://github.com/oznu/homebridge-config-ui-x/issues/289))
 * **Plugins:** Fixed an issue preventing the plugins tab from loading when the npm registry was slow to respond ([#284](https://github.com/oznu/homebridge-config-ui-x/issues/284))
 * **Plugins:** Fixed an issue that prevented plugins from displaying for some users ([#284](https://github.com/oznu/homebridge-config-ui-x/issues/284))
+* **Plugins:** Searching for the exact name of a plugin will return a result even if the [npm registry search is not working](https://status.npmjs.org/incidents/qg46dsfk1vt2)
 
 ### Other Changes
 
