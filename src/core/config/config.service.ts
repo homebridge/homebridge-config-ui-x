@@ -93,6 +93,8 @@ export class ConfigService {
       } as any;
     }
 
+    process.env.UIX_PLUGIN_NAME = this.ui.name || 'homebridge-config-ui-x';
+
     if (this.runningInDocker) {
       this.setConfigForDocker();
     }

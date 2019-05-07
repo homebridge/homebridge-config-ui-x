@@ -22,11 +22,13 @@ class HomebridgeConfigUi {
 
     process.env.UIX_CONFIG_PATH = homebridge.user.configPath();
     process.env.UIX_STORAGE_PATH = homebridge.user.storagePath();
+    process.env.UIX_PLUGIN_NAME = config.name || 'homebridge-config-ui-x';
 
     commander
       .allowUnknownOption()
       .option('-P, --plugin-path [path]', '', (p) => process.env.UIX_CUSTOM_PLUGIN_PATH = p)
       .option('-I, --insecure', '', () => process.env.UIX_INSECURE_MODE = '1')
+      .option('-T, --no-timestamp', '', () => process.env.UIX_LOG_NO_TIMESTAMPS = '1')
       .parse(process.argv);
 
     if (config.standalone || (

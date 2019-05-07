@@ -11,6 +11,7 @@ commander
   .option('-U, --user-storage-path [path]', '', (p) => process.env.UIX_STORAGE_PATH = p)
   .option('-P, --plugin-path [path]', '', (p) => process.env.UIX_CUSTOM_PLUGIN_PATH = p)
   .option('-I, --insecure', '', () => process.env.UIX_INSECURE_MODE = '1')
+  .option('-T, --no-timestamp', '', () => process.env.UIX_LOG_NO_TIMESTAMPS = '1')
   .parse(process.argv);
 
 if (!process.env.UIX_STORAGE_PATH) {
