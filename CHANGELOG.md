@@ -2,11 +2,19 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 4.4.1 (2019-05-14)
+
+### Notable Changes
+
+* Node.js v12 is now supported ([#277](https://github.com/oznu/homebridge-config-ui-x/issues/277))
+* **Plugins:** Added a check before a plugin is installed to test for write access to the target directory if sudo mode is not enabled - this should result in a more helpful message being displayed when a plugin fails to install due to lack of permissions
+* **Docker:** Ensure the node_modules directory is present after all plugins are uninstalled
+
+### Other Changes
+
+* Updated npm dependencies
+
 ## 4.4.0 (2019-05-07)
-
-### Notice
-
-Node.js 12 is currently not supported by this plugin due to compatibility issues still being resolved by third party dependencies. You should not upgrade to Node.js 12 until [#277](https://github.com/oznu/homebridge-config-ui-x/issues/277) is resolved.
 
 ### Notable Changes
 

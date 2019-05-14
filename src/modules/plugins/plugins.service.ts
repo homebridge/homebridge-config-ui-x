@@ -248,6 +248,7 @@ export class PluginsService {
     installPath = path.resolve(installPath, '../');
 
     await this.runNpmCommand([...this.npm, 'uninstall', '--unsafe-perm', ...installOptions, pluginName], installPath, client);
+    await this.ensureCustomPluginDirExists();
 
     return true;
   }
@@ -568,6 +569,17 @@ export class PluginsService {
     // sudo mode is requested in plugin config
     if (this.configService.ui.sudo) {
       command.unshift('sudo', '-E', '-n');
+    } else {
+      // do a pre-check to test for write access when not using sudo mode
+      try {
+        await fs.access(cwd, fs.constants.W_OK);
+      } catch (e) {
+        client.emit('stdout', color.yellow(`The user "${os.userInfo().username}" does not have write access to the target directory:\n\r\n\r`));
+        client.emit('stdout', `${cwd}\n\r\n\r`);
+        client.emit('stdout', color.yellow(`This may cause the operation to fail.\n\r`));
+        client.emit('stdout', color.yellow(`See the docs for details on how to enable sudo mode:\n\r`));
+        client.emit('stdout', color.yellow(`https://github.com/oznu/homebridge-config-ui-x#sudo-mode\n\r\n\r`));
+      }
     }
 
     this.logger.log(`Running Command: ${command.join(' ')}`);
@@ -607,6 +619,26 @@ export class PluginsService {
         term.kill('SIGTERM');
       }, 300000);
     });
+  }
+
+  /**
+   * When npm removes the last plugin in a custom node_modules location it may delete this location
+   * which will cause errors. This function ensures the plugin directory is recreated if it was removed.
+   */
+  private async ensureCustomPluginDirExists() {
+    if (!this.configService.customPluginPath) {
+      return;
+    }
+
+    if (!await fs.pathExists(this.configService.customPluginPath)) {
+      this.logger.warn(`Custom plugin directory was removed. Re-creating: ${this.configService.customPluginPath}`);
+      try {
+        await fs.ensureDir(this.configService.customPluginPath);
+      } catch (e) {
+        this.logger.error(`Failed to recreate custom plugin directory`);
+        this.logger.error(e.message);
+      }
+    }
   }
 
 }
