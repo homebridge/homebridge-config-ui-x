@@ -1,0 +1,10 @@
+.menu-logo {
+  height: 37px;
+
+  @media screen and (max-width: 600px){
+    height: 27px;
+  }
+    @media screen and (max-width: 991px){
+    height: 32px;
+  }
+}

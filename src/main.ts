@@ -1,3 +1,5 @@
+import './self-check';
+
 import * as path from 'path';
 import * as fastify from 'fastify';
 import * as helmet from 'helmet';

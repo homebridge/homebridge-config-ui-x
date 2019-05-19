@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 4.4.2 (2019-05-19)
+
+### Other Changes
+
+* **Plugins:** Added extra logging to try and investigate the cause of [#299](https://github.com/oznu/homebridge-config-ui-x/issues/299)
+* Provide a more detailed error with steps to resolve if the `node-pty` module fails to load (after a Node.js update for example)
+* Added a warning message in the logs letting the user know if their Node.js version is to low (anything less than 8.0.0)
+* Updated npm dependencies
+
 ## 4.4.1 (2019-05-14)
 
 ### Notable Changes

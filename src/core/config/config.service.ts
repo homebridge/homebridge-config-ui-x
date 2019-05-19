@@ -36,6 +36,7 @@ export class ConfigService {
   public runningInLinux = (!this.runningInDocker && os.platform() === 'linux');
   public ableToConfigureSelf = (!this.runningInDocker || semver.satisfies(process.env.CONFIG_UI_VERSION, '>=3.5.5'), { includePrerelease: true });
   public enableTerminalAccess = this.runningInDocker || Boolean(process.env.HOMEBRIDGE_CONFIG_UI_TERMINAL === '1');
+  public branding = process.env.CONFIG_UI_BRANDING || false;
 
   // docker paths
   public startupScript = path.resolve(this.storagePath, 'startup.sh');
@@ -129,6 +130,7 @@ export class ConfigService {
         runningInLinux: this.runningInLinux,
         temperatureUnits: this.ui.tempUnits || 'c',
         websocketCompatibilityMode: this.ui.websocketCompatibilityMode || false,
+        branding: this.branding,
       },
       formAuth: Boolean(this.ui.auth !== 'none'),
       theme: this.ui.theme || 'teal',
