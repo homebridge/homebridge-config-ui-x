@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file. This projec
 * Added a warning message in the logs letting the user know if their Node.js version is to low (anything less than 8.0.0)
 * Updated npm dependencies
 
-## 4.4.1 (2019-05-14)
+## 4.4.1 (2019-05-16)
 
 ### Notable Changes
 
