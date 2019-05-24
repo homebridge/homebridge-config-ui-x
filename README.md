@@ -264,7 +264,7 @@ sudo npm uninstall -g homebridge-config-ui-x
 sudo npm install -g --unsafe-perm homebridge-config-ui-x
 ```
 
-Make sure you are running [supported versions of node and npm](#supported-nodejs-and-npm-versions):
+Make sure you are running [supported versions of node and npm](#supported-nodejs-and-npm-versions).
 
 #### 2. Accessories tab missing
 
