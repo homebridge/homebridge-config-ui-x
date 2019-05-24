@@ -229,14 +229,22 @@ The following browsers are supported by this plugin:
 
 MS Internet Explorer (any version) is not supported!
 
-# Supported Node.js Versions
+# Supported Node.js and Npm Versions
 
-The following versions of Node.js are supported:
+While this plugin should work on Node.js 8+, only the following versions of Node.js are officially supported:
 
-**Due to [#279](https://github.com/oznu/homebridge-config-ui-x/issues/277) Node.js 12 is not currently supported on any platform.**
+* node v10.15.3 or higher
+* npm v6.4.1 or higher
 
-* Linux >= v8.15.1
-* Windows >= v10.15.3
+You can check your current versions using these commands:
+
+```shell
+# check node version
+node -v
+
+# check npm version
+npm -v
+```
 
 # Contributing
 
@@ -255,6 +263,8 @@ sudo npm uninstall -g homebridge-config-ui-x
 # reinstall
 sudo npm install -g --unsafe-perm homebridge-config-ui-x
 ```
+
+Make sure you are running [supported versions of node and npm](#supported-nodejs-and-npm-versions):
 
 #### 2. Accessories tab missing
 
