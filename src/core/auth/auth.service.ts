@@ -40,9 +40,13 @@ export class AuthService {
           username: user.username,
           name: user.name,
           admin: user.admin,
+          instanceId: this.configService.instanceId,
         };
       }
     } catch (e) {
+      this.logger.warn(`Failed login attempt`);
+      this.logger.warn(`If you've forgotten your password you can reset to the default ` +
+        `of admin/admin by deleting the "auth.json" file (${this.configService.authPath}) and then restarting Homebridge.`);
       throw new ForbiddenException();
     }
   }
@@ -81,6 +85,7 @@ export class AuthService {
       username: user.username,
       name: user.name,
       admin: user.admin,
+      instanceId: this.configService.instanceId,
     });
 
     return {

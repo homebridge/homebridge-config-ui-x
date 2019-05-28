@@ -1,5 +1,6 @@
 import * as os from 'os';
 import * as color from 'bash-color';
+import * as semver from 'semver';
 import * as pty from 'node-pty-prebuilt-multiarch';
 import * as child_process from 'child_process';
 import { Injectable } from '@nestjs/common';
@@ -30,6 +31,11 @@ export class LogService {
    * @param client
    */
   public connect(client, size) {
+    if (!semver.satisfies(process.version, `>=${this.configService.minimumNodeVersion}`)) {
+      client.emit('stdout', color.yellow(`Node.js v${this.configService.minimumNodeVersion} higher is required for ${this.configService.name}.\n\r`));
+      client.emit('stdout', color.yellow(`You may experience issues while running on Node.js ${process.version}.\n\r\n\r`));
+    }
+
     if (this.command) {
       client.emit('stdout', color.cyan(`Loading logs using "${this.configService.ui.log.method}" method...\r\n`));
       client.emit('stdout', color.cyan(`CMD: ${this.command.join(' ')}\r\n\r\n`));

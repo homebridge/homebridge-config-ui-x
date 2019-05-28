@@ -585,6 +585,11 @@ export class PluginsService {
 
     this.logger.log(`Running Command: ${command.join(' ')}`);
 
+    if (!semver.satisfies(process.version, `>=${this.configService.minimumNodeVersion}`)) {
+      client.emit('stdout', color.yellow(`Node.js v${this.configService.minimumNodeVersion} higher is required for ${this.configService.name}.\n\r`));
+      client.emit('stdout', color.yellow(`You may experience issues while running on Node.js ${process.version}.\n\r\n\r`));
+    }
+
     client.emit('stdout', color.cyan(`USER: ${os.userInfo().username}\n\r`));
     client.emit('stdout', color.cyan(`DIR: ${cwd}\n\r`));
     client.emit('stdout', color.cyan(`CMD: ${command.join(' ')}\n\r\n\r`));

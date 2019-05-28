@@ -10,6 +10,7 @@ interface UserInterface {
   username?: string;
   name?: string;
   admin?: boolean;
+  instanceId?: string;
 }
 
 @Injectable()
@@ -29,8 +30,12 @@ export class AuthService {
     private titleService: Title,
   ) {
     // load the token (if present) from local storage on page init
+    this.init();
+  }
+
+  async init() {
+    await this.getAppSettings();
     this.loadToken();
-    this.getAppSettings();
   }
 
   login(username: string, password: string) {
@@ -78,6 +83,9 @@ export class AuthService {
       }
       this.user = this.$jwtHelper.decodeToken(token);
       this.token = token;
+      if (this.env.instanceId !== this.user.instanceId) {
+        throw new Error('Token does not match instance');
+      }
       this.setLogoutTimer();
       return true;
     } catch (e) {

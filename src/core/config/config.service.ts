@@ -32,6 +32,7 @@ export class ConfigService {
   public homebridgeNoTimestamps = Boolean(process.env.UIX_LOG_NO_TIMESTAMPS);
 
   // server env
+  public minimumNodeVersion = '8.15.1';
   public runningInDocker = Boolean(process.env.HOMEBRIDGE_CONFIG_UI === '1');
   public runningInLinux = (!this.runningInDocker && os.platform() === 'linux');
   public ableToConfigureSelf = (!this.runningInDocker || semver.satisfies(process.env.CONFIG_UI_VERSION, '>=3.5.5'), { includePrerelease: true });
@@ -86,6 +87,8 @@ export class ConfigService {
     secretKey: string;
   };
 
+  public instanceId: string;
+
   constructor() {
     this.homebridgeConfig = fs.readJSONSync(this.configPath);
     this.ui = Array.isArray(this.homebridgeConfig.platforms) ? this.homebridgeConfig.platforms.find(x => x.platform === 'config') : undefined;
@@ -111,6 +114,7 @@ export class ConfigService {
     }
 
     this.secrets = this.getSecrets();
+    this.instanceId = this.getInstanceId();
   }
 
   /**
@@ -131,6 +135,7 @@ export class ConfigService {
         temperatureUnits: this.ui.tempUnits || 'c',
         websocketCompatibilityMode: this.ui.websocketCompatibilityMode || false,
         branding: this.branding,
+        instanceId: this.instanceId,
       },
       formAuth: Boolean(this.ui.auth !== 'none'),
       theme: this.ui.theme || 'teal',
@@ -192,6 +197,13 @@ export class ConfigService {
     fs.writeJsonSync(this.secretPath, secrets);
 
     return secrets;
+  }
+
+  /**
+   * Generates a public instance id from a sha256 has of the secret key
+   */
+  private getInstanceId(): string {
+    return crypto.createHash('sha256').update(this.secrets.secretKey).digest('hex');
   }
 
 }

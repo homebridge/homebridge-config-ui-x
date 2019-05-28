@@ -21,6 +21,11 @@ export class AccessoriesService {
    * @param client
    */
   public async connect(client) {
+    if (!this.configService.homebridgeConfig.bridge.port) {
+      this.logger.error(`config.json does not define a port under bridge.port`);
+      this.logger.error(`You can correct this automatically by going to the Config editor and clicking save and then restarting Homebridge.`);
+    }
+
     let services;
 
     // initial load
