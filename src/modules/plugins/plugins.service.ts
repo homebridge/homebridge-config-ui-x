@@ -367,6 +367,11 @@ export class PluginsService {
         configSchema.schema.properties.port.default = this.configService.ui.port;
       }
 
+      // modify homebridge-alexa to set the default pin
+      if (pluginName === 'homebridge-alexa') {
+        configSchema.schema.properties.pin.default = this.configService.homebridgeConfig.bridge.pin;
+      }
+
       return configSchema;
     } else {
       throw new NotFoundException();
