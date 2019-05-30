@@ -552,7 +552,7 @@ export class PluginsService {
       plugin.author = (pkg.maintainers.length) ? pkg.maintainers[0].name : null;
     } catch (e) {
       if (e.statusCode !== 404) {
-        this.logger.error(`[${plugin}] ${e.message}`);
+        this.logger.error(`[${plugin.name}] ${e.message}`);
       }
       plugin.publicPackage = false;
       plugin.latestVersion = null;

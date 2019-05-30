@@ -17,6 +17,7 @@ module.exports = {
     "node-pty-prebuilt-multiarch": "node-pty-prebuilt-multiarch",
     "@nestjs/common": "@nestjs/common",
     "@nestjs/core": "@nestjs/core",
+    "@nestjs/platform-fastify": "@nestjs/platform-fastify",
     "@nestjs/platform-socket.io": "@nestjs/platform-socket.io",
     "@nestjs/websockets": "@nestjs/websockets",
     "reflect-metadata": "reflect-metadata",
@@ -24,6 +25,8 @@ module.exports = {
     "class-transformer": "class-transformer",
     "class-validator": "class-validator",
     "commander": "commander",
+    "fastify": "fastify",
+    "fastify-static": "fastify-static",
     "semver": "semver"
   },
   node: {
