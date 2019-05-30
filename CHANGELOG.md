@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 4.4.4 (2019-05-30)
+
+### Other Changes
+
+* **Config Editor:** Prevent *Smart Punctuation* autocorrect in the config editor on mobile devices ([#313](https://github.com/oznu/homebridge-config-ui-x/issues/313))
+
 ## 4.4.3 (2019-05-28)
 
 ### Notable Changes

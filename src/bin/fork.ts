@@ -28,6 +28,10 @@ process.on('unhandledRejection', (err: any) => {
       'Please change the homebridge-config-ui-x port to something above 1024.',
     );
     setTimeout(() => process.exit(0));
+  } else {
+    const msg = 'Caught Unhandled Rejection Error :: Details Below';
+    console.error(`[${new Date().toLocaleString()}]`, '\x1b[36m[homebridge-config-ui-x]\x1b[0m', '\033[31m' + msg + '\x1b[0m');
+    console.error(err);
   }
 });
 
