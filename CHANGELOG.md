@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 4.4.5 (2019-06-02)
+
+### Bug Fixes
+
+* Fixed a bug that caused the UI to stop responding for some users ([#299](https://github.com/oznu/homebridge-config-ui-x/issues/299))
+
+### Other Changes
+
+* Updated npm dependencies
+
 ## 4.4.4 (2019-05-30)
 
 ### Other Changes
