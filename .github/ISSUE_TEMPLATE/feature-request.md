@@ -19,4 +19,5 @@ assignees: ''
 **Additional context:**
 <!-- Add any other context or screenshots about the feature request here. -->
 
-<!-- Click the "Preview" tab before you submitting ensure the formatting is correct. -->
+
+<!-- Click the "Preview" tab before you submit to ensure the formatting is correct. -->

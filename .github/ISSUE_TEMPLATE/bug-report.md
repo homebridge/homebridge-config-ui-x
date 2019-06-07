@@ -44,4 +44,4 @@ Show your homebridge config.json here
 * **Process Supervisor**: Docker / Systemd / init.d / pm2 / launchctl / other / none
 
 
-<!-- Click the "Preview" tab before you submitting ensure the formatting is correct. -->
+<!-- Click the "Preview" tab before you submit to ensure the formatting is correct. -->
