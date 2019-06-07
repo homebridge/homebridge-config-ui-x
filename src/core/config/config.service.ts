@@ -76,6 +76,7 @@ export class ConfigService {
       shutdown?: string;
       restart?: string;
     };
+    standalone?: boolean;
     debug?: boolean;
     proxyHost?: string;
     sessionTimeout?: number;
