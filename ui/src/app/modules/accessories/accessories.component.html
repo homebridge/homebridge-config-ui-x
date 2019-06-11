@@ -54,6 +54,8 @@
               </app-humiditysensor>
               <app-airqualitysensor *ngSwitchCase="'AirQualitySensor'" [service]="service">Air Quality Sensor
               </app-airqualitysensor>
+              <app-windowcovering *ngSwitchCase="'WindowCovering'" [service]="service">Window Covering
+              </app-windowcovering>
               <app-unknown *ngSwitchDefault [service]="service">{{ service.humanType }}</app-unknown>
             </div>
           </div>

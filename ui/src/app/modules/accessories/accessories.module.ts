@@ -32,6 +32,8 @@ import { MotionsensorComponent } from './types/motionsensor/motionsensor.compone
 import { OccupancysensorComponent } from './types/occupancysensor/occupancysensor.component';
 import { HumiditysensorComponent } from './types/humiditysensor/humiditysensor.component';
 import { AirqualitysensorComponent } from './types/airqualitysensor/airqualitysensor.component';
+import { WindowcoveringComponent } from './types/windowcovering/windowcovering.component';
+import { WindowcoveringManageComponent } from './types/windowcovering/windowcovering.manage.component';
 
 
 @NgModule({
@@ -56,6 +58,8 @@ import { AirqualitysensorComponent } from './types/airqualitysensor/airqualityse
     InfoModalComponent,
     HumiditysensorComponent,
     AirqualitysensorComponent,
+    WindowcoveringComponent,
+    WindowcoveringManageComponent,
   ],
   entryComponents: [
     AddRoomModalComponent,
@@ -63,6 +67,7 @@ import { AirqualitysensorComponent } from './types/airqualitysensor/airqualityse
     ThermostatManageComponent,
     LightbulbManageComponent,
     FanManageComponent,
+    WindowcoveringManageComponent,
   ],
   imports: [
     CommonModule,
