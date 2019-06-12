@@ -24,7 +24,7 @@ interface HomebridgeStatus {
   ],
 })
 export class StatusComponent implements OnInit, OnDestroy {
-  @ViewChild('qrcode') qrcode: ElementRef;
+  @ViewChild('qrcode', { static: true }) qrcode: ElementRef;
 
   private io = this.$ws.connectToNamespace('status');
 

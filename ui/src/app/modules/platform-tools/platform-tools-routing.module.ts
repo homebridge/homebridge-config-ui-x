@@ -9,15 +9,15 @@ const routes: Routes = [
   },
   {
     path: 'docker',
-    loadChildren: './docker/docker.module#DockerModule',
+    loadChildren: () => import('./docker/docker.module').then(m => m.DockerModule),
   },
   {
     path: 'linux',
-    loadChildren: './linux/linux.module#LinuxModule',
+    loadChildren: () => import('./linux/linux.module').then(m => m.LinuxModule),
   },
   {
     path: 'terminal',
-    loadChildren: './terminal/terminal.module#TerminalModule',
+    loadChildren: () => import('./terminal/terminal.module').then(m => m.TerminalModule),
   },
 ];
 

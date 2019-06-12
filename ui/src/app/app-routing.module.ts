@@ -33,30 +33,30 @@ const routes: Routes = [
       },
       {
         path: 'plugins',
-        loadChildren: './modules/plugins/plugins.module#PluginsModule',
+        loadChildren: () => import('./modules/plugins/plugins.module').then(m => m.PluginsModule),
         canActivate: [AdminGuard],
       },
       {
         path: 'config',
-        loadChildren: './modules/config-editor/config-editor.module#ConfigEditorModule',
+        loadChildren: () => import('./modules/config-editor/config-editor.module').then(m => m.ConfigEditorModule),
         canActivate: [AdminGuard],
       },
       {
         path: 'accessories',
-        loadChildren: './modules/accessories/accessories.module#AccessoriesModule',
+        loadChildren: () => import('./modules/accessories/accessories.module').then(m => m.AccessoriesModule),
       },
       {
         path: 'logs',
-        loadChildren: './modules/logs/logs.module#LogsModule',
+        loadChildren: () => import('./modules/logs/logs.module').then(m => m.LogsModule),
       },
       {
         path: 'users',
-        loadChildren: './modules/users/users.module#UsersModule',
+        loadChildren: () => import('./modules/users/users.module').then(m => m.UsersModule),
         canActivate: [AdminGuard],
       },
       {
         path: 'platform-tools',
-        loadChildren: './modules/platform-tools/platform-tools.module#PlatformToolsModule',
+        loadChildren: () => import('./modules/platform-tools/platform-tools.module').then(m => m.PlatformToolsModule),
         canActivate: [AdminGuard],
       },
       // redirects from old urls below
