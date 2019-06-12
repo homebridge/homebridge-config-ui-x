@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 4.5.0 (2019-xx-xx)
+
+### Notable Changes
+
+* **Accessory Control:** Added basic support for "Window Covering" accessories ([#224](https://github.com/oznu/homebridge-config-ui-x/issues/224))
+
+### Other Changes
+
+* Updated npm dependencies
+* The footer links on the status page are now stuck to the bottom of the page, rather than the end of the content
+* Update Content Security Policy to allow remote images from `https://user-images.githubusercontent.com`
+
 ## 4.4.5 (2019-06-02)
 
 ### Bug Fixes

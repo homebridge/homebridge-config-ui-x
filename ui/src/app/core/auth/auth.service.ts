@@ -131,12 +131,12 @@ export class AuthService {
   getAppSettings() {
     return this.$api.get('/auth/settings').toPromise()
       .then((data: any) => {
-        this.settingsLoaded = true;
         this.formAuth = data.formAuth;
         this.env = data.env;
         this.setTheme(data.theme || 'red');
         this.setTitle(data.env.homebridgeInstanceName);
         this.checkServerTime(data.serverTimestamp);
+        this.settingsLoaded = true;
       });
   }
 

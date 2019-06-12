@@ -48,7 +48,7 @@ async function bootstrap() {
         defaultSrc: ['\'self\''],
         scriptSrc: ['\'self\'', '\'unsafe-inline\'', '\'unsafe-eval\''],
         styleSrc: ['\'self\'', '\'unsafe-inline\''],
-        imgSrc: ['\'self\'', 'data:', 'https://raw.githubusercontent.com'],
+        imgSrc: ['\'self\'', 'data:', 'https://raw.githubusercontent.com', 'https://user-images.githubusercontent.com'],
         workerSrc: ['blob:'],
         connectSrc: ['\'self\'', (req) => {
           return `wss://${req.headers.host} ws://${req.headers.host} ${startupConfig.cspWsOveride || ''}`;

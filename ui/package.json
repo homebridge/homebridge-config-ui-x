@@ -56,7 +56,7 @@
     "@angular/cli": "^7.3.9",
     "@angular/compiler-cli": "^7.2.15",
     "@angular/language-service": "^7.2.15",
-    "@oznu/hap-client": "0.0.4",
+    "@oznu/hap-client": "0.0.9",
     "@types/node": "^10.14.7",
     "@types/socket.io-client": "^1.4.32",
     "codelyzer": "^4.5.0",

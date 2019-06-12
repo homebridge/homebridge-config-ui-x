@@ -31,6 +31,10 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   public hideHidden = true;
   private roomsOrdered = false;
 
+  private hiddenTypes = [
+    'InputSource',
+  ];
+
   constructor(
     private dragulaService: DragulaService,
     public $toastr: ToastrService,
@@ -118,6 +122,19 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
   sortIntoRooms() {
     this.accessories.services.forEach((service) => {
+      // don't put hidden types into rooms
+      if (this.hiddenTypes.includes(service.type)) {
+        return;
+      }
+
+      // link services
+      if (service.linked) {
+        service.linkedServices = {};
+        service.linked.forEach((iid) => {
+          service.linkedServices[iid] = this.accessories.services.find(s => s.aid === service.aid && s.iid === iid);
+        });
+      }
+
       // check if the service has already been allocated to an active room
       const inRoom = this.rooms.find(r => {
         if (r.services.find(s => s.aid === service.aid && s.iid === service.iid && s.uuid === service.uuid)) {
