@@ -34,7 +34,8 @@ import { HumiditysensorComponent } from './types/humiditysensor/humiditysensor.c
 import { AirqualitysensorComponent } from './types/airqualitysensor/airqualitysensor.component';
 import { WindowcoveringComponent } from './types/windowcovering/windowcovering.component';
 import { WindowcoveringManageComponent } from './types/windowcovering/windowcovering.manage.component';
-
+import { TelevisionComponent } from './types/television/television.component';
+import { ContactsensorComponent } from './types/contactsensor/contactsensor.component';
 
 @NgModule({
   declarations: [
@@ -60,6 +61,8 @@ import { WindowcoveringManageComponent } from './types/windowcovering/windowcove
     AirqualitysensorComponent,
     WindowcoveringComponent,
     WindowcoveringManageComponent,
+    TelevisionComponent,
+    ContactsensorComponent,
   ],
   entryComponents: [
     AddRoomModalComponent,

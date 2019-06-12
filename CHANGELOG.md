@@ -2,17 +2,20 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## 4.5.0 (2019-xx-xx)
+## 4.5.0 (2019-06-12)
 
 ### Notable Changes
 
 * **Accessory Control:** Added basic support for "Window Covering" accessories ([#224](https://github.com/oznu/homebridge-config-ui-x/issues/224))
+* **Accessory Control:** Added basic support for "Television" accessories: on, off, current input display ([#47#issuecomment-479768040](https://github.com/oznu/homebridge-config-ui-x/issues/47#issuecomment-479768040))
+* **Accessory Control:** Added support for "Contact Sensor" accessories ([#47#issuecomment-437576223](https://github.com/oznu/homebridge-config-ui-x/issues/47#issuecomment-437576223))
 
 ### Other Changes
 
 * Updated npm dependencies
+* Upgraded Angular from v7.2.15 to v8.0.0
 * The footer links on the status page are now stuck to the bottom of the page, rather than the end of the content
-* Update Content Security Policy to allow remote images from `https://user-images.githubusercontent.com`
+* Update Content Security Policy to allow remote images from `https://user-images.githubusercontent.com` in plugin Change Logs / Release Notes
 
 ## 4.4.5 (2019-06-02)
 

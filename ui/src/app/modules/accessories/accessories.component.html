@@ -50,12 +50,16 @@
               <app-motionsensor *ngSwitchCase="'MotionSensor'" [service]="service">Motion Sensor</app-motionsensor>
               <app-occupancysensor *ngSwitchCase="'OccupancySensor'" [service]="service">Occupancy Sensor
               </app-occupancysensor>
+              <app-contactsensor *ngSwitchCase="'ContactSensor'" [service]="service">Contact Sensor
+              </app-contactsensor>
               <app-humiditysensor *ngSwitchCase="'HumiditySensor'" [service]="service">Humidity Sensor
               </app-humiditysensor>
               <app-airqualitysensor *ngSwitchCase="'AirQualitySensor'" [service]="service">Air Quality Sensor
               </app-airqualitysensor>
               <app-windowcovering *ngSwitchCase="'WindowCovering'" [service]="service">Window Covering
               </app-windowcovering>
+              <app-television *ngSwitchCase="'Television'" [service]="service">Television
+              </app-television>
               <app-unknown *ngSwitchDefault [service]="service">{{ service.humanType }}</app-unknown>
             </div>
           </div>
