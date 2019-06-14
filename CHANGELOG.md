@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 4.5.1 (2019-06-14)
+
+### Bug Fixes
+
+* Fixed a display issues on iOS ([#322](https://github.com/oznu/homebridge-config-ui-x/issues/322))
+* Fixed an issue causing users to be logged out before their session had expired
+
 ## 4.5.0 (2019-06-12)
 
 ### Notable Changes
