@@ -7,7 +7,7 @@
       <div class="md-form">
         <i class="material-icons prefix grey-text">&#xE85E;</i>
         <input formControlName="username" [attr.disabled]="(page.title === 'users.title_edit_user') ? true : null" type="text"
-          id="form-username" autocomplete="off" class="form-control pl-0 pr-0">
+          id="form-username" autocomplete="off" autocapitalize="none" class="form-control pl-0 pr-0">
         <label for="form-username" [ngClass]="{'active': page.title === 'users.title_edit_user'}" [translate]="'users.label_username'">Username</label>
       </div>
 
