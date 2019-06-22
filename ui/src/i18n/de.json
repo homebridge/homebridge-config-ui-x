@@ -101,7 +101,7 @@
     "plugins.manage.message_restart_required": "Neustart nach Aktualisierung erforderlich",
     "plugins.manage.message_restart_required_reason": "Nach der Installation einer neuen Version müssen Sie Homebridge neustarten und <strong>diese Seite aktualisieren</strong>, um sicherzustellen, dass du über die neueste Version des Clients verfügst.",
     "plugins.manage.message_thanks_for_upgrading_ui": "Vielen Dank für die Installation der neuesten Version von Homebridge Config UI X.",
-    "plugins.placeholder_search_plugin": "Suche nach zu installierenden Plugins...",
+    "plugins.placeholder_search_plugin": "Suche nach installierbaren Plugins...",
     "plugins.settings.title_settings": "Einstellungen",
     "plugins.settings.toast_plugin_config_saved": "Plugin-Konfiguration gespeichert",
     "plugins.settings.toast_restart_required": "Starte Homebridge neu, um die Änderungen zu übernehmen.",
