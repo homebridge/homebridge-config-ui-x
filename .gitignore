@@ -61,3 +61,7 @@ yarn.lock
 # dotenv environment variables file
 .env
 .DS_Store
+
+# npm generated files
+package-lock.json
+ui/package-lock.json
