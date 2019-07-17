@@ -130,7 +130,7 @@ export class PluginsService {
         plugin.publicPackage = true;
         plugin.installedVersion = null;
         plugin.latestVersion = pkg.package.version;
-        plugin.latestReleaseDate = pkg.package.date
+        plugin.latestReleaseDate = pkg.package.date;
         plugin.description = (pkg.package.description) ?
           pkg.package.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkg.package.name;
         plugin.links = pkg.package.links;
@@ -178,6 +178,7 @@ export class PluginsService {
       // it's not installed; finish building the response
       plugin.publicPackage = true;
       plugin.latestVersion = pkg['dist-tags'].latest;
+      plugin.latestReleaseDate = pkg.package.date;
       plugin.updateAvailable = false;
       plugin.links = {
         npm: `https://www.npmjs.com/package/${plugin.name}`,
