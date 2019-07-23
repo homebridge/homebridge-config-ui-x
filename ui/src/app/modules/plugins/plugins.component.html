@@ -37,6 +37,8 @@
       </div>
       <h4 class="card-title mb-0" [innerHtml]="plugin.description"></h4>
       <p class="card-text">{{ plugin.name }} v{{ plugin.installedVersion || plugin.latestVersion }}</p>
+      <p class="card-text" *ngIf="!plugin.installedVersion">{{ 'Latest Release Date: ' + plugin.latestReleaseDate }}
+      </p>
       <div class="d-flex">
         <a class="card-link" target="_blank" *ngIf="plugin.publicPackage" [href]="plugin.links.npm">
           NPM

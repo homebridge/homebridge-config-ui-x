@@ -28,7 +28,7 @@
     "classlist.js": "^1.1.20150312",
     "dayjs": "^1.8.14",
     "jquery": "^3.4.1",
-    "lodash-es": "^4.17.11",
+    "lodash-es": "^4.17.14",
     "material-design-icons-iconfont": "^5.0.1",
     "mdbootstrap": "^4.8.2",
     "mobile-detect": "^1.4.3",

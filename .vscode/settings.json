@@ -4,6 +4,5 @@
   "files.eol": "\n",
   "editor.codeActionsOnSave": {
     "source.fixAll.tslint": true
-  },
-  "editor.formatOnSave": true
+  }
 }

@@ -61,12 +61,14 @@
     "class-transformer": "^0.2.3",
     "class-validator": "^0.9.1",
     "commander": "^2.20.0",
+    "dayjs": "^1.8.15",
     "fastify": "^2.4.1",
     "fastify-static": "^2.4.0",
     "node-pty-prebuilt-multiarch": "0.9.0-beta2",
     "reflect-metadata": "^0.1.12",
     "rxjs": "^6.5.2",
-    "semver": "^6.1.1"
+    "semver": "^6.1.1",
+    "zone.js": "^0.8.29"
   },
   "devDependencies": {
     "@nestjs/jwt": "^6.1.1",
