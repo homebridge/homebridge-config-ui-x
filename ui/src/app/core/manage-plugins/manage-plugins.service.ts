@@ -3,6 +3,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ManagePluginsModalComponent } from './manage-plugins-modal/manage-plugins-modal.component';
 import { SettingsPluginsModalComponent } from './settings-plugins-modal/settings-plugins-modal.component';
+import { CustomPluginsService } from './custom-plugins/custom-plugins.service';
 
 @Injectable({
   providedIn: 'root',
@@ -11,6 +12,7 @@ export class ManagePluginsService {
 
   constructor(
     private modalService: NgbModal,
+    private customPluginsService: CustomPluginsService,
   ) { }
 
   installPlugin(pluginName) {
@@ -46,6 +48,10 @@ export class ManagePluginsService {
   }
 
   settings(pluginName) {
+    if (this.customPluginsService.plugins[pluginName]) {
+      return this.customPluginsService.openSettings(pluginName);
+    }
+
     const ref = this.modalService.open(SettingsPluginsModalComponent, {
       size: 'lg',
     });

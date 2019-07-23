@@ -10,6 +10,7 @@ import { CoreModule } from '../core.module';
 import { ManagePluginsService } from './manage-plugins.service';
 import { SettingsPluginsModalComponent } from './settings-plugins-modal/settings-plugins-modal.component';
 import { ManagePluginsModalComponent } from './manage-plugins-modal/manage-plugins-modal.component';
+import { CustomPluginsModule } from './custom-plugins/custom-plugins.module';
 
 @NgModule({
   entryComponents: [
@@ -29,6 +30,7 @@ import { ManagePluginsModalComponent } from './manage-plugins-modal/manage-plugi
     NgxMdModule,
     Bootstrap4FrameworkModule,
     CoreModule,
+    CustomPluginsModule,
   ],
   providers: [
     ManagePluginsService,
