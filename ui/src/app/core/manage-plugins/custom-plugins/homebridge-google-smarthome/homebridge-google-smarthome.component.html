@@ -12,8 +12,8 @@
       Google Home enabled smart speaker or the Google Home mobile app.
     </p>
     <p *ngIf="!pluginConfig.token">
-      To enable this functionality you must sign in with your Google or GitHub account; make sure you the same
-      account when adding the Homebridge device in the Google Home mobile app.
+      To enable this functionality you must sign in with your Google or GitHub account; make sure you use the same
+      account when adding the Homebridge action in the Google Home mobile app.
     </p>
     <div class="text-center" *ngIf="!pluginConfig.token">
       <button class="btn btn-primary btn-lg" (click)="linkAccount()">Link Account</button>
@@ -21,7 +21,13 @@
 
     <div class="text-center mt-1" *ngIf="pluginConfig.token">
       <i class="fas fa-check-circle primary-text" style="font-size:50px;"></i>
-      <h4 class="mt-2">Account Linked</h4>
+      <h4 class="mt-2">{{ linkType | titlecase }} Account Linked</h4>
+
+      <div class="mt-3" *ngIf="justLinked">
+        <p class="primary-text">
+          <strong>Homebridge requires restarting for the changes to take effect.</strong>
+        </p>
+      </div>
     </div>
   </div>
 
