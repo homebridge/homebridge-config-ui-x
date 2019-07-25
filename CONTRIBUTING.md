@@ -2,7 +2,7 @@
 
 Pull requests are welcome from everyone.
 
-This project is written in [TypeScript](https://www.typescriptlang.org/) and uses [Express](https://expressjs.com/) for the server and [Angular](https://angular.io/) for the client UI.
+This project is written in [TypeScript](https://www.typescriptlang.org/) and uses [Nest.js](https://nestjs.com/) for the server and [Angular](https://angular.io/) for the client UI.
 
 ## Getting Setup
 
@@ -49,20 +49,21 @@ You can now run `homebridge` and it will use `homebridge-config-ui-x` from your 
     {
         "platform": "config",
         "name": "Config",
-        "port": 8080
+        "port": 8080,
+        "standalone": true
     }
 ]
 ```
 
 ## Watching For Changes
 
-This will start the Angular development server on port `4200`. It will also watch and compile changes made to the server side TypeScript code:
+This will start the Angular development server on port `4200` and a standalone server on port 8080. It will also watch and compile changes made to the server side TypeScript code:
 
 ```
 npm run watch
 ```
 
-You should now be able to navigate to `https://localhost:4200` in your browser which will connect to your `homebridge` instance running on port `8080`. The UI will automatically reload whenever you make changes to the UI, however you will need to restart `homebridge` each time you make a change to the server side code.
+You should now be able to navigate to `https://localhost:4200` in your browser which will connect to your `homebridge` instance running on port `8080`. The UI  will automatically reload whenever you make changes to the code.
 
 ## Contributing To Translations
 

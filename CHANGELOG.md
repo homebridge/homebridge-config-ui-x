@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## Next
+
+### Notable Changes
+
+* **Plugins:** Support for configuring the new [Homebridge Google Smart Home Plugin](https://github.com/oznu/homebridge-gsh). This plugin allows you to control supported Homebridge accessories from any Google Home Smart Speaker, Google Assistant, or the Google Home mobile app on iOS and Android.
+* **Plugins:** The "last updated" date is now displayed when searching for plugins to install ([#336](https://github.com/oznu/homebridge-config-ui-x/pull/336))
+
+### Bug Fixes
+
+* **i18n:** Improve German Translations ([#328](https://github.com/oznu/homebridge-config-ui-x/pull/328))
+* **Auth:** Disable auto-capitalization for username fields on mobile browsers ([#325](https://github.com/oznu/homebridge-config-ui-x/pull/325))
+
+### Other Changes
+
+* Updated npm dependencies
+* Upgraded Angular from v8.0.0 to v8.1.2
+
 ## 4.5.1 (2019-06-14)
 
 ### Bug Fixes
