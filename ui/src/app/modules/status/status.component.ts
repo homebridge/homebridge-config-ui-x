@@ -1,12 +1,14 @@
 import { Component, ElementRef, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
+import { take } from 'rxjs/operators';
 
 import { WsService } from '../../core/ws.service';
 import { AuthService } from '../../core/auth/auth.service';
 import { ApiService } from '../../core/api.service';
 import { ManagePluginsService } from '../../core/manage-plugins/manage-plugins.service';
 import { ResetHomebridgeModalComponent } from './reset-homebridge-modal/reset-homebridge-modal.component';
+
 
 interface HomebridgeStatus {
   consolePort?: number;
@@ -69,7 +71,7 @@ export class StatusComponent implements OnInit, OnDestroy {
       this.getQrCodeImage();
 
       // check if client is up-to-date
-      if (this.server.packageVersion && this.server.packageVersion !== this.$auth.env.packageVersion) {
+      if (this.server.packageVersion && this.server.packageVersion !== this.$auth.uiVersion) {
         // tslint:disable-next-line:deprecation
         window.location.reload(true);
       }

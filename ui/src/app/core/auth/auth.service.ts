@@ -17,6 +17,7 @@ interface UserInterface {
 export class AuthService {
   public settingsLoaded = false;
   public env: any = {};
+  public uiVersion: string;
   public formAuth = true;
   public theme: string;
   public token: string;
@@ -133,6 +134,7 @@ export class AuthService {
         this.setTheme(data.theme || 'red');
         this.setTitle(data.env.homebridgeInstanceName);
         this.checkServerTime(data.serverTimestamp);
+        this.setUiVersion(data.env.packageVersion);
         this.settingsLoaded = true;
       });
   }
@@ -147,6 +149,12 @@ export class AuthService {
 
   setTitle(title: string) {
     this.titleService.setTitle(title || 'Homebridge');
+  }
+
+  setUiVersion(version) {
+    if (!this.uiVersion) {
+      this.uiVersion = version;
+    }
   }
 
   /**

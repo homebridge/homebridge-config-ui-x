@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file. This projec
 
 * **i18n:** Improve German Translations ([#328](https://github.com/oznu/homebridge-config-ui-x/pull/328))
 * **Auth:** Disable auto-capitalization for username fields on mobile browsers ([#325](https://github.com/oznu/homebridge-config-ui-x/pull/325))
+* Fixed a bug that prevented the UI automatically reloading after an update
 
 ### Other Changes
 
