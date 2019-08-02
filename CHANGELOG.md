@@ -4,10 +4,15 @@ All notable changes to this project will be documented in this file. This projec
 
 ## Next
 
+### New Features
+
+* **Plugins:** Added support for configuring the new [Homebridge Google Smart Home Plugin](https://github.com/oznu/homebridge-gsh). This plugin allows you to control supported Homebridge accessories from any Google Home Smart Speaker, Google Assistant, or the Google Home mobile app on iOS and Android.
+* **System:** Added a new feature to help setup and run Homebridge and Homebridge Config UI X as a service on Windows 10.
+
 ### Notable Changes
 
-* **Plugins:** Support for configuring the new [Homebridge Google Smart Home Plugin](https://github.com/oznu/homebridge-gsh). This plugin allows you to control supported Homebridge accessories from any Google Home Smart Speaker, Google Assistant, or the Google Home mobile app on iOS and Android.
 * **Plugins:** The "last updated" date is now displayed when searching for plugins to install ([#336](https://github.com/oznu/homebridge-config-ui-x/pull/336))
+* **Logs:** Increased the default number of lines to show for the "Log from File" method from 200 to 500 ([#339](https://github.com/oznu/homebridge-config-ui-x/issues/339))
 
 ### Bug Fixes
 

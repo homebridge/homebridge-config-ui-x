@@ -33,6 +33,7 @@ export class ConfigService {
 
   // server env
   public minimumNodeVersion = '8.15.1';
+  public serviceMode = (process.env.UIX_SERVICE_MODE === '1');
   public runningInDocker = Boolean(process.env.HOMEBRIDGE_CONFIG_UI === '1');
   public runningInLinux = (!this.runningInDocker && os.platform() === 'linux');
   public ableToConfigureSelf = (!this.runningInDocker || semver.satisfies(process.env.CONFIG_UI_VERSION, '>=3.5.5'), { includePrerelease: true });
@@ -106,6 +107,10 @@ export class ConfigService {
       this.setConfigForDocker();
     }
 
+    if (this.serviceMode) {
+      this.setConfigForServiceMode();
+    }
+
     if (!this.ui.port) {
       this.ui.port = 8080;
     }
@@ -165,6 +170,18 @@ export class ConfigService {
     this.ui.auth = this.ui.auth || process.env.HOMEBRIDGE_CONFIG_UI_AUTH as 'form' | 'none' || 'form';
     this.ui.temp = this.ui.temp || process.env.HOMEBRIDGE_CONFIG_UI_TEMP || undefined;
     this.ui.loginWallpaper = this.ui.loginWallpaper || process.env.HOMEBRIDGE_CONFIG_UI_LOGIN_WALLPAPER || undefined;
+  }
+
+  /**
+   * Populate the required config when running in "Service Mode"
+   */
+  private setConfigForServiceMode() {
+    this.ui.restart = undefined;
+    this.homebridgeInsecureMode = true;
+    this.ui.log = {
+      method: 'file',
+      path: path.resolve(this.storagePath, 'homebridge.log'),
+    };
   }
 
   /**

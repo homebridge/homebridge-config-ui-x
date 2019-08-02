@@ -20,6 +20,8 @@ module.exports = {
     "@nestjs/platform-fastify": "@nestjs/platform-fastify",
     "@nestjs/platform-socket.io": "@nestjs/platform-socket.io",
     "@nestjs/websockets": "@nestjs/websockets",
+    "request": "request",
+    "request-promise": "request-promise",
     "reflect-metadata": "reflect-metadata",
     "rxjs": "rxjs",
     "class-transformer": "class-transformer",
@@ -27,6 +29,7 @@ module.exports = {
     "commander": "commander",
     "fastify": "fastify",
     "fastify-static": "fastify-static",
+    "fs-extra": "fs-extra",
     "semver": "semver"
   },
   node: {

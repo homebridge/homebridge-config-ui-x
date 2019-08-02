@@ -63,10 +63,12 @@ export class LogService {
     });
 
     // send stdout data from the process to the client
-    term.on('data', (data) => { client.emit('stdout', data); });
+    term.onData((data) => {
+      client.emit('stdout', data);
+    });
 
     // send an error message to the client if the log tailing process exits early
-    term.on('exit', (code) => {
+    term.onExit((code) => {
       try {
         client.emit('stdout', '\n\r');
         client.emit('stdout', color.red(`The log tail command "${command.join(' ')}" exited with code ${code}.\n\r`));

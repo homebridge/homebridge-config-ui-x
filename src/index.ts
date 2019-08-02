@@ -37,9 +37,8 @@ class HomebridgeConfigUi {
       log.warn(msg);
     }
 
-    if (config.standalone || (
-      process.env.HOMEBRIDGE_CONFIG_UI === '1' && semver.satisfies(process.env.CONFIG_UI_VERSION, '>=3.5.5', { includePrerelease: true }))
-    ) {
+    if (config.standalone || process.env.UIX_SERVICE_MODE === '1' ||
+      (process.env.HOMEBRIDGE_CONFIG_UI === '1' && semver.satisfies(process.env.CONFIG_UI_VERSION, '>=3.5.5', { includePrerelease: true }))) {
       this.log(`Running in Standalone Mode.`);
     } else if (config.noFork) {
       this.noFork();
