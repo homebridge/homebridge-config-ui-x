@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file. This projec
 
 * **Plugins:** The "last updated" date is now displayed when searching for plugins to install ([#336](https://github.com/oznu/homebridge-config-ui-x/pull/336))
 * **Logs:** Increased the default number of lines to show for the "Log from File" method from 200 to 500 ([#339](https://github.com/oznu/homebridge-config-ui-x/issues/339))
+* **Accessory Control:** Accessory tiles now animate when clicked/press, similar to how they behave in native iOS Home app
 
 ### Bug Fixes
 

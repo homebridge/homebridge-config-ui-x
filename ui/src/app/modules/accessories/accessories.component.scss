@@ -15,6 +15,15 @@
     padding: 8px;
     margin: 7px;
   }
+
+  &:active {
+   transform: scale(1.15);
+   -webkit-transform: scale(1.15);
+   -ms-transform: scale(1.15);
+  }
+
+  -webkit-transition: all .15s ease-in-out;
+  transition: all .15s ease-in-out;
 }
 
 ::ng-deep .accessory-svg {
