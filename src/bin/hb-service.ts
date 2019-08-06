@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
 /**
- * The purpose of this file is to run homebridge and homebridge-config-ui-x as a service on Windows 10
+ * The purpose of this file is to run and install homebridge and homebridge-config-ui-x as a service on Windows 10
+ * This may be expanded to other operating systems in the future
  */
 
 import * as os from 'os';
@@ -11,49 +12,86 @@ import * as commander from 'commander';
 import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
 
-/**
- * We are using environment variables as they are passed through to the child processes env.
- */
-commander
-  .allowUnknownOption()
-  .option('-U, --user-storage-path [path]', '', (p) => process.env.UIX_STORAGE_PATH = p)
-  .option('-P, --plugin-path [path]', '', (p) => process.env.UIX_CUSTOM_PLUGIN_PATH = p)
-  .option('-I, --insecure', '', () => process.env.UIX_INSECURE_MODE = '1')
-  .option('-T, --no-timestamp', '', () => process.env.UIX_LOG_NO_TIMESTAMPS = '1')
-  .option('--service-name [service name]', '', (p) => process.env.UIX_SERVICE_NAME = p)
-  .option('install', '')
-  .option('uninstall', '')
-  .option('start', '')
-  .option('stop', '')
-  .option('restart', '')
-  .parse(process.argv);
+class HomebridgeServiceHelper {
+  private action: string;
+  private serviceName = 'Homebridge';
+  private storagePath = path.resolve(os.homedir(), '.homebridge');
+  private logPath: string;
+  private log: fs.WriteStream;
+  private homebridgeBinary: string;
+  private homebridge: child_process.ChildProcessWithoutNullStreams;
+  private uiBinary: string;
 
-if (!process.env.UIX_STORAGE_PATH) {
-  process.env.UIX_STORAGE_PATH = path.resolve(os.homedir(), '.homebridge');
-}
+  private uiPort = 8080;
 
-if (!process.env.UIX_SERVICE_NAME) {
-  process.env.UIX_SERVICE_NAME = 'Homebridge';
-}
+  constructor() {
+    commander
+      .allowUnknownOption()
+      .option('-U, --user-storage-path [path]', '', (p) => this.storagePath = p)
+      .option('-P, --plugin-path [path]', '', (p) => process.env.UIX_CUSTOM_PLUGIN_PATH = p)
+      .option('-I, --insecure', '', () => process.env.UIX_INSECURE_MODE = '1')
+      .option('-T, --no-timestamp', '', () => process.env.UIX_LOG_NO_TIMESTAMPS = '1')
+      .option('-S, --service-name [service name]', '', (p) => this.serviceName = p)
+      .arguments('<install|uninstall|start|stop|restart|run>')
+      .action((cmd) => {
+        this.action = cmd;
+      })
+      .parse(process.argv);
 
-process.env.UIX_CONFIG_PATH = path.resolve(process.env.UIX_STORAGE_PATH, 'config.json');
-process.env.UIX_BASE_PATH = path.resolve(__dirname, '../../');
-process.env.UIX_SERVICE_MODE = '1';
+    this.osCheck();
+    this.setEnv();
 
-class HomebridgeService {
-  logPath: string;
-  log: fs.WriteStream;
-  homebridgeBinary: string;
-  homebridge: child_process.ChildProcessWithoutNullStreams;
-  uiBinary: string;
-  ui: child_process.ChildProcessWithoutNullStreams;
+    switch (this.action) {
+      case 'install': {
+        this.logger(`Installing ${this.serviceName} Service`);
+        this.install();
+        break;
+      }
+      case 'uninstall': {
+        this.logger(`Removing ${this.serviceName} Service`);
+        this.uninstall();
+        break;
+      }
+      case 'start': {
+        this.logger(`Starting ${this.serviceName} Service`);
+        this.start();
+        break;
+      }
+      case 'stop': {
+        this.logger(`Stopping ${this.serviceName} Service`);
+        this.stop();
+        break;
+      }
+      case 'restart': {
+        this.logger(`Restart ${this.serviceName} Service`);
+        this.restart();
+        break;
+      }
+      case 'run': {
+        this.launch();
+        break;
+      }
+      default: {
+        commander.outputHelp();
 
-  constructor() { }
+        console.log('\nThe hb-service command is provided by homebridge-config-ui-x\n');
+        console.log('Please provide a command:');
+        console.log('    install                          install homebridge as a service');
+        console.log('    uninstall                        remove the homebridge service');
+        console.log('    start                            start the homebridge service');
+        console.log('    stop                             stop the homebridge service');
+        console.log('    restart                          restart the homebridge service');
+        console.log('    run                              run homebridge daemon');
+
+        process.exit(1);
+      }
+    }
+  }
 
   /**
    * Logger function, log to homebridge.log file when possible
    */
-  logger(msg) {
+  private logger(msg) {
     msg = `\x1b[37m[${new Date().toLocaleString()}]\x1b[0m ` +
       '\x1b[36m[HB Supervisor]\x1b[0m ' + msg;
     if (this.log) {
@@ -64,20 +102,39 @@ class HomebridgeService {
   }
 
   /**
+   * Checks the OS is supported
+   */
+  private osCheck() {
+    // windows only for now
+    if (os.platform() !== 'win32') {
+      this.logger('ERROR: This command is only supported on Windows 10.');
+      process.exit(1);
+    }
+  }
+
+  /**
+   * Sets the required environment variables passed on to the child processes
+   */
+  private setEnv() {
+    process.env.UIX_STORAGE_PATH = this.storagePath;
+    process.env.UIX_CONFIG_PATH = path.resolve(this.storagePath, 'config.json');
+    process.env.UIX_BASE_PATH = path.resolve(__dirname, '../../');
+    process.env.UIX_SERVICE_MODE = '1';
+  }
+
+  /**
    * Launch script, starts homebridge and homebridge-config-ui-x
    */
-  async launch() {
+  private async launch() {
     // check storage path exists
     await this.storagePathCheck();
 
-    // work out the log path and create a writable stream
-    this.logPath = path.resolve(process.env.UIX_STORAGE_PATH, 'homebridge.log');
-    this.log = fs.createWriteStream(this.logPath, {
-      flags: 'a',
-    });
+    // work out the log path
+    this.logPath = path.resolve(this.storagePath, 'homebridge.log');
+    this.logger(`Logging to ${this.logPath}`);
 
     // redirect all stdout to the log file
-    this.logger(`Logging to ${this.logPath}`);
+    this.log = fs.createWriteStream(this.logPath, { flags: 'a' });
     process.stdout.write = process.stderr.write = this.log.write.bind(this.log);
 
     // verify the config
@@ -100,7 +157,7 @@ class HomebridgeService {
   /**
    * Starts homebridge as a child process, sending the log output to the homebridge.log
    */
-  runHomebridge() {
+  private runHomebridge() {
     // launch the homebridge process
     this.homebridge = child_process.spawn(process.execPath,
       [
@@ -108,7 +165,7 @@ class HomebridgeService {
         '-I',
         '-C',
         '-U',
-        process.env.UIX_STORAGE_PATH,
+        this.storagePath,
       ],
       {
         env: process.env,
@@ -136,7 +193,7 @@ class HomebridgeService {
    * @param code
    * @param signal
    */
-  handleHomebridgeClose(code: number, signal: string) {
+  private handleHomebridgeClose(code: number, signal: string) {
     this.logger(`Homebridge Process Ended. Code: ${code}, Signal: ${signal}`);
     setTimeout(() => {
       this.logger('Restarting Homebridge...');
@@ -147,7 +204,7 @@ class HomebridgeService {
   /**
    * Start the user interface
    */
-  async runUi() {
+  private async runUi() {
     await import('../main');
   }
 
@@ -155,56 +212,46 @@ class HomebridgeService {
    * Windows Only!
    * Installs Homebridge and Homebridge Config UI X as a Windows 10 service
    */
-  async install() {
+  private async install() {
     await this.storagePathCheck();
     await this.configCheck();
-
-    // windows only for now
-    if (os.platform() !== 'win32' || os.arch() !== 'x64') {
-      this.logger('ERROR: Installing Homebridge as a service using this method is only supported on Windows x64.');
-      process.exit(1);
-    }
 
     // download nssm.exe to help create the service
     const nssmPath: string = await this.downloadNssm();
 
     // commands to run
-    const installCmd = `${nssmPath} install ${process.env.UIX_SERVICE_NAME} ` +
-      `"${process.execPath}" "${__filename}" -I -U ${process.env.UIX_STORAGE_PATH}`;
-    const setUserDirCmd = `${nssmPath} set ${process.env.UIX_SERVICE_NAME} AppEnvironmentExtra ":UIX_STORAGE_PATH=${process.env.UIX_STORAGE_PATH}"`;
+    const installCmd = `${nssmPath} install ${this.serviceName} ` +
+      `"${process.execPath}" "${__filename}" run -I -U ${this.storagePath}`;
+    const setUserDirCmd = `${nssmPath} set ${this.serviceName} AppEnvironmentExtra ":UIX_STORAGE_PATH=${this.storagePath}"`;
 
     try {
       child_process.execSync(installCmd);
       child_process.execSync(setUserDirCmd);
+      await this.start();
+      console.log(`\nManage Homebridge by going to http://localhost:${this.uiPort} in your browser`);
+      console.log(`Default Username: admin`);
+      console.log(`Default Password: admin\n`);
     } catch (e) {
       console.error(e.toString());
       this.logger(`ERROR: Failed Operation`);
     }
-    // start the service
-    await this.start();
   }
 
   /**
    * Windows Only!
    * Removes the Homebridge Service
    */
-  async uninstall() {
-    // windows only for now
-    if (os.platform() !== 'win32' || os.arch() !== 'x64') {
-      this.logger('ERROR: Installing Homebridge as a service using this method is only supported on Windows x64.');
-      process.exit(1);
-    }
-
+  private async uninstall() {
     // download nssm.exe to help create the service
     const nssmPath: string = await this.downloadNssm();
-    const uninstallCmd = `${nssmPath} remove ${process.env.UIX_SERVICE_NAME} confirm`;
+    const uninstallCmd = `${nssmPath} remove ${this.serviceName} confirm`;
 
     // stop existing service
     await this.stop();
 
     try {
       child_process.execSync(uninstallCmd);
-      this.logger(`Removed ${process.env.UIX_SERVICE_NAME} Service.`);
+      this.logger(`Removed ${this.serviceName} Service.`);
     } catch (e) {
       console.error(e.toString());
       this.logger(`ERROR: Failed Operation`);
@@ -215,19 +262,19 @@ class HomebridgeService {
    * Windows Only!
    * Starts the Homebridge Service
    */
-  async start() {
+  private async start() {
     // download nssm.exe to help create the service
     const nssmPath: string = await this.downloadNssm();
 
     // commands to run
-    const stopCmd = `${nssmPath} start ${process.env.UIX_SERVICE_NAME}`;
+    const stopCmd = `${nssmPath} start ${this.serviceName}`;
 
     try {
-      this.logger(`Starting ${process.env.UIX_SERVICE_NAME} Service...`);
+      this.logger(`Starting ${this.serviceName} Service...`);
       child_process.execSync(stopCmd);
-      this.logger(`${process.env.UIX_SERVICE_NAME} Started`);
+      this.logger(`${this.serviceName} Started`);
     } catch (e) {
-      this.logger(`Failed to start ${process.env.UIX_SERVICE_NAME}`);
+      this.logger(`Failed to start ${this.serviceName}`);
     }
   }
 
@@ -235,19 +282,19 @@ class HomebridgeService {
    * Windows Only!
    * Stops the Homebridge Service
    */
-  async stop() {
+  private async stop() {
     // download nssm.exe to help create the service
     const nssmPath: string = await this.downloadNssm();
 
     // commands to run
-    const stopCmd = `${nssmPath} stop ${process.env.UIX_SERVICE_NAME}`;
+    const stopCmd = `${nssmPath} stop ${this.serviceName}`;
 
     try {
-      this.logger(`Stopping ${process.env.UIX_SERVICE_NAME} Service...`);
+      this.logger(`Stopping ${this.serviceName} Service...`);
       child_process.execSync(stopCmd);
-      this.logger(`${process.env.UIX_SERVICE_NAME} Stopped`);
+      this.logger(`${this.serviceName} Stopped`);
     } catch (e) {
-      this.logger(`Failed to stop ${process.env.UIX_SERVICE_NAME}`);
+      this.logger(`Failed to stop ${this.serviceName}`);
     }
   }
 
@@ -255,7 +302,7 @@ class HomebridgeService {
    * Windows Only!
    * Restarts the Homebridge Service
    */
-  async restart() {
+  private async restart() {
     await this.stop();
     setTimeout(async () => {
       await this.start();
@@ -267,9 +314,9 @@ class HomebridgeService {
    * Downloads nssm - NSSM - the Non-Sucking Service Manager - https://nssm.cc/
    * This is used to create the Windows Services
    */
-  async downloadNssm(): Promise<string> {
-    const downloadUrl = 'https://github.com/oznu/nssm/releases/download/2.24-101-g897c7ad/nssm.exe';
-    const nssmPath = path.resolve(process.env.UIX_STORAGE_PATH, 'nssm.exe');
+  private async downloadNssm(): Promise<string> {
+    const downloadUrl = `https://github.com/oznu/nssm/releases/download/2.24-101-g897c7ad/nssm_${os.arch()}.exe`;
+    const nssmPath = path.resolve(this.storagePath, 'nssm.exe');
 
     if (await fs.pathExists(nssmPath)) {
       return nssmPath;
@@ -297,10 +344,10 @@ class HomebridgeService {
   /**
    * Ensures the storage path defined exists
    */
-  async storagePathCheck() {
-    if (!await fs.pathExists(process.env.UIX_STORAGE_PATH)) {
-      this.logger(`Creating Homebridge directory: ${process.env.UIX_STORAGE_PATH}`);
-      await fs.mkdirp(process.env.UIX_STORAGE_PATH);
+  private async storagePathCheck() {
+    if (!await fs.pathExists(this.storagePath)) {
+      this.logger(`Creating Homebridge directory: ${this.storagePath}`);
+      await fs.mkdirp(this.storagePath);
     }
   }
 
@@ -308,7 +355,7 @@ class HomebridgeService {
    * Ensures the config.json exists and is valid.
    * If the config is not valid json it will be backed up and replaced with the default.
    */
-  async configCheck() {
+  private async configCheck() {
     if (!await fs.pathExists(process.env.UIX_CONFIG_PATH)) {
       this.logger(`Creating default config.json: ${process.env.UIX_CONFIG_PATH}`);
       return await this.createDefaultConfig();
@@ -317,7 +364,7 @@ class HomebridgeService {
     try {
       await fs.readJson(process.env.UIX_CONFIG_PATH);
     } catch (e) {
-      const backupFile = path.resolve(process.env.UIX_STORAGE_PATH, 'config.json.invalid.' + new Date().getTime().toString());
+      const backupFile = path.resolve(this.storagePath, 'config.json.invalid.' + new Date().getTime().toString());
       this.logger(`${process.env.UIX_CONFIG_PATH} does not contain valid JSON.`);
       this.logger(`Invalid config.json file has been backed up to ${backupFile}.`);
       await fs.rename(process.env.UIX_CONFIG_PATH, backupFile);
@@ -328,10 +375,10 @@ class HomebridgeService {
   /**
    * Creates the default config.json
    */
-  async createDefaultConfig() {
+  private async createDefaultConfig() {
     await fs.writeJson(process.env.UIX_CONFIG_PATH, {
       bridge: {
-        name: process.env.UIX_SERVICE_NAME,
+        name: this.serviceName,
         username: this.generateUsername(),
         port: Math.floor(Math.random() * (52000 - 51000 + 1) + 51000),
         pin: this.generatePin(),
@@ -340,7 +387,7 @@ class HomebridgeService {
       platforms: [
         {
           name: 'Config',
-          port: 8080,
+          port: this.uiPort,
           platform: 'config',
         },
       ],
@@ -348,20 +395,9 @@ class HomebridgeService {
   }
 
   /**
-   * Checks the OS is supported
-   */
-  osCheck() {
-    // windows only for now
-    if (os.platform() !== 'win32' || os.arch() !== 'x64') {
-      this.logger('ERROR: Installing Homebridge as a service using this method is only supported on Windows x64.');
-      process.exit(1);
-    }
-  }
-
-  /**
    * Generates a new random pin
    */
-  public generatePin() {
+  private generatePin() {
     let code: string | Array<any> = Math.floor(10000000 + Math.random() * 90000000) + '';
     code = code.split('');
     code.splice(3, 0, '-');
@@ -373,7 +409,7 @@ class HomebridgeService {
   /**
    * Generates a new random username
    */
-  public generateUsername() {
+  private generateUsername() {
     const hexDigits = '0123456789ABCDEF';
     let username = '0E:';
     for (let i = 0; i < 5; i++) {
@@ -388,31 +424,8 @@ class HomebridgeService {
 
 }
 
-async function bootstrap() {
-  const homebridgeService = new HomebridgeService();
-  if (commander.install) {
-    homebridgeService.osCheck();
-    homebridgeService.logger(`Installing ${process.env.UIX_SERVICE_NAME} Service`);
-    homebridgeService.install();
-  } else if (commander.uninstall) {
-    homebridgeService.osCheck();
-    homebridgeService.logger(`Removing ${process.env.UIX_SERVICE_NAME} Service`);
-    homebridgeService.uninstall();
-  } else if (commander.start) {
-    homebridgeService.osCheck();
-    homebridgeService.logger(`Starting ${process.env.UIX_SERVICE_NAME} Service`);
-    homebridgeService.start();
-  } else if (commander.stop) {
-    homebridgeService.osCheck();
-    homebridgeService.logger(`Stopping ${process.env.UIX_SERVICE_NAME} Service`);
-    homebridgeService.stop();
-  } else if (commander.restart) {
-    homebridgeService.osCheck();
-    homebridgeService.logger(`Restart ${process.env.UIX_SERVICE_NAME} Service`);
-    homebridgeService.restart();
-  } else {
-    homebridgeService.launch();
-  }
+function bootstrap() {
+  return new HomebridgeServiceHelper();
 }
 
 bootstrap();

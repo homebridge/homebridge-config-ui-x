@@ -1,6 +1,6 @@
 {
   "name": "homebridge-config-ui-x",
-  "version": "4.6.0-beta.11",
+  "version": "4.6.0-beta.15",
   "description": "Configuration UI plugin for Homebridge",
   "license": "MIT",
   "author": "oznu <dev@oz.nu>",
@@ -69,7 +69,7 @@
     "fastify": "^2.6.0",
     "fastify-static": "^2.5.0",
     "fs-extra": "^8.1.0",
-    "node-pty-prebuilt-multiarch": "0.9.0-beta2",
+    "node-pty-prebuilt-multiarch": "^0.9.0-beta21.1",
     "reflect-metadata": "^0.1.12",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
