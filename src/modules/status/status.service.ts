@@ -1,6 +1,6 @@
 import * as os from 'os';
 import * as fs from 'fs-extra';
-import * as rp from 'request-promise';
+import * as rp from 'request-promise-native';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '../../core/config/config.service';
 import { Logger } from '../../core/logger/logger.service';

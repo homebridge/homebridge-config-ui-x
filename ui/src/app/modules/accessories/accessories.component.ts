@@ -24,7 +24,7 @@ export type ServiceTypeX = ServiceType & { customName?: string, hidden?: boolean
 export class AccessoriesComponent implements OnInit, OnDestroy {
   private io = this.$ws.connectToNamespace('accessories');
 
-  public accessoryLayout: { name: string; services: Array<{ aid: number; iid: number; uuid: string; }>; }[];
+  public accessoryLayout: { name: string; services: Array<{ aid: number; iid: number; uuid: string; uniqueId: string }>; }[];
   public accessories: { services: ServiceType[] } = { services: [] };
   public rooms: Array<{ name: string, services: ServiceTypeX[] }> = [];
   public isMobile: any = false;
@@ -110,7 +110,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
     // update the existing objects to avoid re-painting the dom element each refresh
     services.forEach((service) => {
-      const existing = this.accessories.services.find(x => x.aid === service.aid && x.iid === service.iid && x.uuid === service.uuid);
+      const existing = this.accessories.services.find(x => x.uniqueId === service.uniqueId);
 
       if (existing) {
         Object.assign(existing, service);
@@ -131,13 +131,14 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       if (service.linked) {
         service.linkedServices = {};
         service.linked.forEach((iid) => {
-          service.linkedServices[iid] = this.accessories.services.find(s => s.aid === service.aid && s.iid === iid);
+          service.linkedServices[iid] = this.accessories.services.find(s => s.aid === service.aid && s.iid === iid
+            && s.instance.username === service.instance.username);
         });
       }
 
       // check if the service has already been allocated to an active room
       const inRoom = this.rooms.find(r => {
-        if (r.services.find(s => s.aid === service.aid && s.iid === service.iid && s.uuid === service.uuid)) {
+        if (r.services.find(s => s.uniqueId === service.uniqueId)) {
           return true;
         }
       });
@@ -145,7 +146,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       // not in an active room, perhaps the service is in the layout cache
       if (!inRoom) {
         const inCache = this.accessoryLayout.find(r => {
-          if (r.services.find(s => s.aid === service.aid && s.iid === service.iid && s.uuid === service.uuid)) {
+          if (r.services.find(s => s.uniqueId === service.uniqueId)) {
             return true;
           }
         });
@@ -176,8 +177,8 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     this.rooms.forEach((room) => {
       const roomCache = this.accessoryLayout.find(r => r.name === room.name);
       room.services.sort((a, b) => {
-        const posA = roomCache.services.findIndex(s => s.aid === a.aid && s.iid === a.iid && s.uuid === a.uuid);
-        const posB = roomCache.services.findIndex(s => s.aid === b.aid && s.iid === b.iid && s.uuid === b.uuid);
+        const posA = roomCache.services.findIndex(s => s.uniqueId === a.uniqueId);
+        const posB = roomCache.services.findIndex(s => s.uniqueId === b.uniqueId);
         if (posA < posB) {
           return -1;
         } else if (posA > posB) {
@@ -193,7 +194,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     this.rooms.forEach((room) => {
       const roomCache = this.accessoryLayout.find(r => r.name === room.name);
       room.services.forEach((service) => {
-        const serviceCache = roomCache.services.find(s => s.aid === service.aid && s.iid === service.iid && s.uuid === service.uuid);
+        const serviceCache = roomCache.services.find(s => s.uniqueId === service.uniqueId);
         Object.assign(service, serviceCache);
       });
     });
@@ -228,6 +229,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
         name: room.name,
         services: room.services.map((service) => {
           return {
+            uniqueId: service.uniqueId,
             aid: service.aid,
             iid: service.iid,
             uuid: service.uuid,
@@ -262,6 +264,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
             return new Promise((resolve, reject) => {
               this.io.socket.emit('accessory-control', {
                 set: {
+                  uniqueId: service.uniqueId,
                   aid: service.aid,
                   siid: service.iid,
                   iid: characteristic.iid,

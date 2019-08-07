@@ -5,7 +5,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as child_process from 'child_process';
 import * as semver from 'semver';
-import * as rp from 'request-promise';
+import * as rp from 'request-promise-native';
 import * as color from 'bash-color';
 import * as pty from 'node-pty-prebuilt-multiarch';
 

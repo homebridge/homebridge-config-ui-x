@@ -176,7 +176,7 @@
         "type": "string"
       },
       "sudo": {
-        "title": "Use Sudo",
+        "title": " Use Sudo",
         "type": "boolean"
       },
       "homebridgePackagePath": {
@@ -192,7 +192,7 @@
         "type": "string"
       },
       "debug": {
-        "title": "Enable / disable debug logging",
+        "title": " Enable / disable debug level logging",
         "type": "boolean"
       },
       "standalone": {
@@ -200,7 +200,7 @@
         "type": "boolean"
       },
       "websocketCompatibilityMode": {
-        "title": "Run the web socket connection in compatibility mode",
+        "title": " Run the web socket connection in compatibility mode",
         "type": "boolean"
       },
       "sessionTimeout": {
@@ -278,6 +278,25 @@
           }
         }
       },
+      "accessoryControl": {
+        "title": "Accessory Control Setup",
+        "type": "object",
+        "properties": {
+          "debug": {
+            "title": " Enable / disable debug level logging for accessory control",
+            "type": "boolean"
+          },
+          "instanceBlacklist": {
+            "title": "Blacklisted Instances",
+            "type": "array",
+            "items": {
+              "title": "Instance Username",
+              "type": "string",
+              "pattern": "^([A-Fa-f0-9]{2}:){5}[A-Fa-f0-9]{2}$"
+            }
+          }
+        }
+      },
       "linux": {
         "title": "Linux Server Commands",
         "type": "object",
@@ -299,12 +318,29 @@
       }
     }
   },
-  "form": [
-    "name",
-    "port",
-    "auth",
-    "theme",
-    "sudo",
+  "layout": [
+    {
+      "type": "flex",
+      "flex-flow": "row wrap",
+      "items": [
+        {
+          "type": "flex",
+          "flex-flow": "column",
+          "items": [
+            "name",
+            "theme"
+          ]
+        },
+        {
+          "type": "flex",
+          "flex-flow": "column",
+          "items": [
+            "port",
+            "auth"
+          ]
+        }
+      ]
+    },
     {
       "type": "fieldset",
       "expandable": true,
@@ -340,9 +376,46 @@
     },
     {
       "type": "fieldset",
+      "title": "Accessory Control Settings",
+      "expandable": true,
+      "expanded": false,
+      "items": [
+        "accessoryControl.debug",
+        {
+          "type": "help",
+          "helpvalue": "<h6>Instance Blacklist</h6><em class='primary-text'>Enter the usernames of any other Homebridge instances on your network that you do not want to be able to control from this instance.</div>"
+        },
+        {
+          "nodescription": true,
+          "notitle": true,
+          "key": "accessoryControl.instanceBlacklist",
+          "type": "array",
+          "items": [
+            {
+              "type": "div",
+              "displayFlex": true,
+              "flex-direction": "row",
+              "items": [
+                {
+                  "key": "accessoryControl.instanceBlacklist[]",
+                  "flex": "1 1 50px",
+                  "notitle": true,
+                  "placeholder": "Enter homebridge username..."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "fieldset",
       "expandable": true,
       "title": "Advanced",
       "items": [
+        "sudo",
+        "websocketCompatibilityMode",
+        "debug",
         {
           "key": "restart",
           "description": "If no restart command is set the process will terminate with a non-zero exit code."
@@ -364,8 +437,7 @@
         {
           "key": "homebridgePackagePath",
           "description": "Leave blank unless you have not installed Homebridge as a global module."
-        },
-        "websocketCompatibilityMode"
+        }
       ]
     },
     {

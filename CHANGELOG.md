@@ -6,14 +6,19 @@ All notable changes to this project will be documented in this file. This projec
 
 ### New Features
 
-* **Plugins:** Added support for configuring the new [Homebridge Google Smart Home Plugin](https://github.com/oznu/homebridge-gsh). This plugin allows you to control supported Homebridge accessories from any Google Home Smart Speaker, Google Assistant, or the Google Home mobile app on iOS and Android.
-* **System:** Added a new feature to help setup and run Homebridge and Homebridge Config UI X as a service on Windows 10.
+* **Plugins:** Added support for configuring the new [Homebridge Google Smart Home Plugin](https://github.com/oznu/homebridge-gsh). This plugin allows you to control supported Homebridge accessories from any Google Home Smart Speaker, Google Assistant, or the Google Home mobile app on iOS and Android
+* **Accessory Control:** Multi-instance support. You can now control accessories from multiple Homebridge instances.
+  * All instances you want to control must have the same PIN, be on the same network, and running in insecure mode
+  * You can blacklist instances you don't want to control using the plugin settings
+  * Due to the changes required to identify accessories across multiple instances your room layout will be reset after upgrading
+* **System:** Added a new feature to help setup and run Homebridge and Homebridge Config UI X as a service on Windows 10
 
 ### Notable Changes
 
 * **Plugins:** The "last updated" date is now displayed when searching for plugins to install ([#336](https://github.com/oznu/homebridge-config-ui-x/pull/336))
 * **Logs:** Increased the default number of lines to show for the "Log from File" method from 200 to 500 ([#339](https://github.com/oznu/homebridge-config-ui-x/issues/339))
-* **Accessory Control:** Accessory tiles now animate when clicked/press, similar to how they behave in native iOS Home app
+* **Accessory Control:** Accessory tiles now animate when clicked/pressed, similar to how they behave in native iOS Home app
+* **Accessory Control:** Accessory characteristics (on, off, brightness etc) now update immediately when changed in HomeKit (previously there was up to a 3 second delay)
 
 ### Bug Fixes
 
@@ -25,7 +30,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Other Changes
 
 * Updated npm dependencies
-* Upgraded Angular from v8.0.0 to v8.1.2
+* Upgraded Angular from v8.0.0 to v8.2.0
 
 ## 4.5.1 (2019-06-14)
 

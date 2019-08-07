@@ -69,6 +69,10 @@ export class ConfigService {
       pfx?: string;
       passphrase?: string;
     };
+    accessoryControl?: {
+      debug?: boolean;
+      instanceBlacklist?: string[];
+    }
     temp?: string;
     tempUnits?: string;
     loginWallpaper?: string;

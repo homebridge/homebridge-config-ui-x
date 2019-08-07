@@ -6,59 +6,61 @@ import { Logger } from '../../core/logger/logger.service';
 
 @Injectable()
 export class AccessoriesService {
-  private hapClient = new HapClient(
-    `http://localhost:${this.configService.homebridgeConfig.bridge.port}`,
-    this.configService.homebridgeConfig.bridge.pin,
-  );
+  private hapClient: HapClient;
 
   constructor(
     private readonly configService: ConfigService,
     private readonly logger: Logger,
-  ) { }
+  ) {
+    this.hapClient = new HapClient({
+      pin: this.configService.homebridgeConfig.bridge.pin,
+      logger: this.logger,
+      config: this.configService.ui.accessoryControl || {},
+    });
+  }
 
   /**
    * Connects the client to the homebridge service
    * @param client
    */
   public async connect(client) {
-    if (!this.configService.homebridgeConfig.bridge.port) {
-      this.logger.error(`config.json does not define a port under bridge.port`);
-      this.logger.error(`You can correct this automatically by going to the Config editor and clicking save and then restarting Homebridge.`);
-    }
-
     let services;
 
     // initial load
     services = await this.loadAccessories();
-    this.refreshrefreshCharacteristics(services);
+    this.refreshCharacteristics(services);
     client.emit('accessories-data', services);
 
     // handling incoming requests
     const requestHandler = async (msg?) => {
       if (msg.set) {
-        const service: ServiceType = services.find(x => x.aid === msg.set.aid && x.iid === msg.set.siid);
-        await service.setCharacteristic(msg.set.iid, msg.set.value);
-        services = await this.loadAccessories();
-        // do a refresh to check if any accessories changed after this action
-        setTimeout(() => {
-          this.refreshrefreshCharacteristics(services);
-        }, 1500);
+        const service: ServiceType = services.find(x => x.uniqueId === msg.set.uniqueId);
+        if (service) {
+          await service.setCharacteristic(msg.set.iid, msg.set.value);
+          services = await this.loadAccessories();
+          // do a refresh to check if any accessories changed after this action
+          setTimeout(() => {
+            this.refreshCharacteristics(services);
+          }, 1500);
+        }
       }
     };
     client.on('accessory-control', requestHandler);
 
-    // refresh every 3 seconds
-    const loadAccessoriesInterval = setInterval(async () => {
-      services = await this.loadAccessories();
-      client.emit('accessories-data', services);
-    }, 3000);
+    const monitor = await this.hapClient.monitorCharacteristics();
+
+    const updateHandler = (data) => {
+      client.emit('accessories-data', data);
+    };
+    monitor.on('service-update', updateHandler);
 
     // clean up on disconnect
     const onEnd = () => {
       client.removeAllListeners('end');
       client.removeAllListeners('disconnect');
       client.removeAllListeners('accessory-control');
-      clearInterval(loadAccessoriesInterval);
+      monitor.removeAllListeners('service-update');
+      monitor.finish();
     };
 
     client.on('disconnect', onEnd.bind(this));
@@ -69,7 +71,7 @@ export class AccessoriesService {
    * Refersh the characteristics from Homebridge
    * @param services
    */
-  private refreshrefreshCharacteristics(services) {
+  private refreshCharacteristics(services) {
     services.forEach(service => service.refreshCharacteristics());
   }
 

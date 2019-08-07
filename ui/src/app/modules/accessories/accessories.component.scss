@@ -104,6 +104,10 @@
   }
 }
 
+.cursor-move {
+  cursor: move;
+}
+
 // prevent random text selection when long pressing on mobile
 ::ng-deep .noselect {
   -webkit-touch-callout: none; /* iOS Safari */

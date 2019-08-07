@@ -21,7 +21,7 @@ module.exports = {
     "@nestjs/platform-socket.io": "@nestjs/platform-socket.io",
     "@nestjs/websockets": "@nestjs/websockets",
     "request": "request",
-    "request-promise": "request-promise",
+    "request-promise-native": "request-promise-native",
     "reflect-metadata": "reflect-metadata",
     "rxjs": "rxjs",
     "class-transformer": "class-transformer",
