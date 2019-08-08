@@ -115,7 +115,7 @@ export class LogService {
       command = ['powershell.exe', '-command', `Get-Content -Path '${this.configService.ui.log.path}' -Wait -Tail 200`];
     } else {
       // linux / macos etc
-      command = ['tail', '-n', '200', '-f', this.configService.ui.log.path];
+      command = ['tail', '-n', '500', '-f', this.configService.ui.log.path];
 
       // sudo mode is requested in plugin config
       if (this.configService.ui.sudo) {

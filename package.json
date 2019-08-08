@@ -1,7 +1,7 @@
 {
   "name": "homebridge-config-ui-x",
-  "version": "4.6.0-beta.18",
-  "description": "Configuration UI plugin for Homebridge",
+  "version": "4.6.0-beta.21",
+  "description": "Homebride Config UI X",
   "license": "MIT",
   "author": "oznu <dev@oz.nu>",
   "repository": {
@@ -20,9 +20,6 @@
     "node": ">=8.15.1",
     "homebridge": ">=0.4.22"
   },
-  "keywords": [
-    "homebridge-plugin"
-  ],
   "scripts": {
     "watch": "concurrently \"npm run watch:ui\" \"npm run watch:server\"",
     "watch:server": "nodemon",
@@ -106,5 +103,32 @@
     "webpack": "^4.39.1",
     "webpack-cli": "^3.3.6",
     "webpack-node-externals": "^1.7.2"
-  }
+  },
+  "keywords": [
+    "homebridge-plugin",
+    "ui",
+    "gui",
+    "web",
+    "homebridge",
+    "homebridge-config-ui-x",
+    "ui-x",
+    "config-ui-x",
+    "homebridge-x",
+    "homebridge server",
+    "homebridge ui",
+    "homebridge-ui",
+    "homebridge gui",
+    "homebridge-gui",
+    "web interface",
+    "config ui",
+    "management",
+    "config editor",
+    "linux",
+    "macOS",
+    "osx",
+    "windows",
+    "raspberry pi",
+    "accessory control",
+    "smart home"
+  ]
 }
