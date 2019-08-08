@@ -14,16 +14,16 @@
 
     <div class="thermostat-mode-control btn-group-vertical btn-group-toggle d-flex justify-content-center mb-4"
       ngbRadioGroup name="radioBasic" [(ngModel)]="targetMode" (change)="onTargetStateChange()">
-      <label ngbButtonLabel class="btn-primary">
+      <label ngbButtonLabel class="btn-primary m-0">
         <input ngbButton type="radio" [value]="0"> {{ 'accessories.control.label_off' | translate }}
       </label>
-      <label ngbButtonLabel class="btn-primary">
+      <label ngbButtonLabel class="btn-primary  m-0">
         <input ngbButton type="radio" [value]="1"> {{ 'accessories.control.label_heat' | translate }}
       </label>
-      <label ngbButtonLabel class="btn-primary">
+      <label ngbButtonLabel class="btn-primary  m-0">
         <input ngbButton type="radio" [value]="2"> {{ 'accessories.control.label_cool' | translate }}
       </label>
-      <label ngbButtonLabel class="btn-primary">
+      <label ngbButtonLabel class="btn-primary  m-0">
         <input ngbButton type="radio" [value]="3"> {{ 'accessories.control.label_auto' | translate }}
       </label>
     </div>
