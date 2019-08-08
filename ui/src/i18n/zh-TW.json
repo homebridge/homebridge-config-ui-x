@@ -37,6 +37,7 @@
     "accessories.control.label_fan": "Fan",
     "accessories.control.label_light": "Light",
     "accessories.control.not_supported": "Not Supported",
+    "accessories.control.default_room": "Default Room",
     "config.button_backup": "備份",
     "config.button_restore": "從備份恢復",
     "config.restore.button_remote_all_backups": "刪除所有備份",

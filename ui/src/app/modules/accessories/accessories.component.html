@@ -28,7 +28,9 @@
     <div *ngFor="let room of rooms">
       <div class="row" *ngIf="!isMobile || room.services.length">
         <div class="col-md-12">
-          <h5 class="primary-text drag-handle room-title" [ngClass]="{'cursor-move': !isMobile}">{{ room.name }}</h5>
+          <h5 class="primary-text drag-handle room-title" [ngClass]="{'cursor-move': !isMobile}">
+            {{ room.name === 'Default Room' ? ('accessories.control.default_room' | translate) : room.name }}
+          </h5>
         </div>
       </div>
       <div class="row mb-4">

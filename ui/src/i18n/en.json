@@ -37,6 +37,7 @@
     "accessories.control.label_fan": "Fan",
     "accessories.control.label_light": "Light",
     "accessories.control.not_supported": "Not Supported",
+    "accessories.control.default_room": "Default Room",
     "config.button_backup": "Backup",
     "config.button_restore": "Restore",
     "config.restore.button_remote_all_backups": "Remove All Backups",

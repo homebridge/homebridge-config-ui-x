@@ -37,6 +37,7 @@
 	"accessories.control.label_fan": "Вентилятор",
 	"accessories.control.label_light": "Свет",
 	"accessories.control.not_supported": "Не поддерживается",
+	"accessories.control.default_room": "Default Room",
 	"config.button_backup": "Резервное копирование",
 	"config.button_restore": "Восстановить",
 	"config.restore.button_remote_all_backups": "Удалить все резервные копии",

@@ -37,6 +37,7 @@
   "accessories.control.label_fan": "Wentylator",
   "accessories.control.label_light": "Swiatło",
   "accessories.control.not_supported": "Brak wsparcia",
+  "accessories.control.default_room": "Default Room",
   "config.button_backup": "Kopia",
   "config.button_restore": "Przywróć",
   "config.restore.button_remote_all_backups": "Usuń wszystkie kopie",
