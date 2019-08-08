@@ -12,8 +12,8 @@
     <h5 class="mb-0"><strong>{{ service.values.CurrentTemperature | convertTemp }}&deg;</strong></h5>
     <p>{{ 'accessories.control.label_set_to' | translate }} {{ targetTemperature.value | convertTemp }}&deg;</p>
 
-    <div class="thermostat-mode-control btn-group btn-group-toggle d-flex justify-content-center mb-4" ngbRadioGroup
-      name="radioBasic" [(ngModel)]="targetMode" (change)="onTargetStateChange()">
+    <div class="thermostat-mode-control btn-group-vertical btn-group-toggle d-flex justify-content-center mb-4"
+      ngbRadioGroup name="radioBasic" [(ngModel)]="targetMode" (change)="onTargetStateChange()">
       <label ngbButtonLabel class="btn-primary">
         <input ngbButton type="radio" [value]="0"> {{ 'accessories.control.label_off' | translate }}
       </label>
