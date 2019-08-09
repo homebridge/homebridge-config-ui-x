@@ -14,6 +14,7 @@ import { ConfigService } from '../../core/config/config.service';
 
 export interface HomebridgePlugin {
   name: string;
+  displayName?: string;
   description?: string;
   certifiedPlugin?: boolean;
   publicPackage?: boolean;
@@ -525,6 +526,7 @@ export class PluginsService {
   private async parsePackageJson(pjson, installPath: string): Promise<HomebridgePlugin> {
     const plugin = {
       name: pjson.name,
+      displayName: pjson.displayName,
       description: (pjson.description) ?
         pjson.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pjson.name,
       certifiedPlugin: (pjson.name.indexOf('@homebridge/homebridge-') === 0),

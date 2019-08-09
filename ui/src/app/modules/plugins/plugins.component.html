@@ -9,20 +9,20 @@
   </div>
 </div>
 
-<div class="row">
-  <div class="col-md-12" *ngFor="let plugin of installedPlugins">
+<div class="d-flex flex-wrap justify-content-between">
+  <div class="hb-plugin-space-between" *ngFor="let plugin of installedPlugins">
     <!--Panel-->
     <div class="card card-body mb-3">
       <div class="row">
         <div class="col-sm-6">
           <p class="mb-0 primary-text" *ngIf="!plugin.updateAvailable && plugin.installedVersion"
             [translate]="'plugins.status_installed'">Installed</p>
-          <p class="mb-0 grey-text" *ngIf="!plugin.installedVersion" [translate]="'plugins.status_not_installed'">Not
-            Installed
+          <p class="mb-0 grey-text" *ngIf="!plugin.installedVersion" [translate]="'plugins.status_not_installed'">
+            Not Installed
           </p>
           <p class="mb-0 primary-text" *ngIf="plugin.updateAvailable" [translate]="'plugins.status_update_available'">
-            Update
-            Available</p>
+            Update Available
+          </p>
         </div>
         <div class="col-sm-6 d-none d-sm-block">
           <p class="mb-0 grey-text text-right" *ngIf="plugin.author && !plugin.certifiedPlugin">
@@ -35,7 +35,7 @@
           </p>
         </div>
       </div>
-      <h4 class="card-title mb-0" [innerHtml]="plugin.description"></h4>
+      <h4 class="card-title mb-0">{{ plugin.displayName || (plugin.name | replace:'-':' ' | titlecase) }}</h4>
       <p class="card-text">{{ plugin.name }} v{{ plugin.installedVersion || plugin.latestVersion }}
         <span *ngIf="plugin.lastUpdated">({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
       </p>

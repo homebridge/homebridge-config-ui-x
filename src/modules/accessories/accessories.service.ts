@@ -12,11 +12,13 @@ export class AccessoriesService {
     private readonly configService: ConfigService,
     private readonly logger: Logger,
   ) {
-    this.hapClient = new HapClient({
-      pin: this.configService.homebridgeConfig.bridge.pin,
-      logger: this.logger,
-      config: this.configService.ui.accessoryControl || {},
-    });
+    if (this.configService.homebridgeInsecureMode) {
+      this.hapClient = new HapClient({
+        pin: this.configService.homebridgeConfig.bridge.pin,
+        logger: this.logger,
+        config: this.configService.ui.accessoryControl || {},
+      });
+    }
   }
 
   /**
@@ -24,6 +26,11 @@ export class AccessoriesService {
    * @param client
    */
   public async connect(client) {
+    if (!this.configService.homebridgeInsecureMode) {
+      this.logger.error('Homebridge must be running in insecure mode to control accessories');
+      return;
+    }
+
     let services;
 
     // initial load
