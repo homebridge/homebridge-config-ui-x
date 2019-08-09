@@ -22,6 +22,7 @@ All notable changes to this project will be documented in this file. This projec
 * **i18n:** Bulgarian language translation added by [@mafyata](https://github.com/mafyata)
 * **i18n:** Added translation support for accessory states and labels ([#342](https://github.com/oznu/homebridge-config-ui-x/pull/342))
   * If you're still seeing English labels, we need your help translating the new values for your language, [get started here](https://github.com/oznu/homebridge-config-ui-x/tree/master/ui/src/i18n)
+* **Theme:** The dark mode theme has received a makeover, if you prefered the old dark mode you can switch back in the plugin settings
 
 ### Bug Fixes
 

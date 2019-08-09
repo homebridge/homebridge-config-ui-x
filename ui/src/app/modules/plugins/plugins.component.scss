@@ -1,7 +1,7 @@
 .hb-npm-search {
     outline: none;
     box-sizing: inherit !important;
-    border: 1px solid #d0d0d0 !important;
+    border: 1px solid #d0d0d0;
     background-color: inherit;
     height: 50px !important;
     width: 100%;
@@ -10,11 +10,11 @@
     margin-bottom: 15px;
 
     &:focus, &:hover {
-      border: 1px solid #000000 !important;
+      border: 1px solid #000000;
     }
 
     &:focus {
-      box-shadow: 0 1px 0 0 #000000 !important;
+      box-shadow: 0 1px 0 0 #000000;
     }
 }
 

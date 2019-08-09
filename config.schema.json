@@ -139,6 +139,12 @@
             "enum": [
               "dark-mode"
             ]
+          },
+          {
+            "title": "Dark Mode (Old Version)",
+            "enum": [
+              "dark-mode-v1"
+            ]
           }
         ],
         "required": true
