@@ -1,7 +1,7 @@
 {
   "name": "homebridge-config-ui-x",
-  "version": "4.6.0-beta.26",
-  "description": "Homebride Config UI X",
+  "version": "4.6.0-beta.27",
+  "description": "Homebridge Config UI X",
   "license": "MIT",
   "author": "oznu <dev@oz.nu>",
   "repository": {
