@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file. This projec
 * **Accessory Control:** Multi-instance support. You can now control accessories from multiple Homebridge instances.
   * All instances you want to control must have the same PIN, be on the same network, and running in insecure mode
   * Your other instances are automatically discovered, however you can blacklist instances you don't want to control using the plugin settings
-  * Due to the changes required to identify accessories across multiple instances your room layout will be reset after upgrading
+  * Due to the changes required to identify accessories across multiple instances your room/accessory layout will be reset after upgrading
 * **System:** Added a new feature to help setup and run Homebridge and Homebridge Config UI X as a service on Windows 10
 
 ### Notable Changes
@@ -19,16 +19,18 @@ All notable changes to this project will be documented in this file. This projec
 * **Logs:** Increased the default number of lines to show for the "Log from File" method from 200 to 500 ([#339](https://github.com/oznu/homebridge-config-ui-x/issues/339))
 * **Accessory Control:** Accessory tiles now animate when clicked/pressed, similar to how they behave in native iOS Home app
 * **Accessory Control:** Accessory characteristics (on, off, brightness etc) now update immediately when changed in HomeKit (previously there was up to a 3 second delay)
-* **i18n:** Added translation support for accessory states and labels ([#336](https://github.com/oznu/homebridge-config-ui-x/pull/336))
+* **i18n:** Bulgarian language translation added by [@mafyata](https://github.com/mafyata)
+* **i18n:** Added translation support for accessory states and labels ([#342](https://github.com/oznu/homebridge-config-ui-x/pull/342))
   * If you're still seeing English labels, we need your help translating the new values for your language, [get started here](https://github.com/oznu/homebridge-config-ui-x/tree/master/ui/src/i18n)
 
 ### Bug Fixes
 
 * **i18n:** Improve German Translations ([#328](https://github.com/oznu/homebridge-config-ui-x/pull/328))
 * **i18n:** Improve Polish Translations ([#328](https://github.com/oznu/homebridge-config-ui-x/pull/338))
+* **i18n:** The Restart Homebridge page is now translated again ([#342#issuecomment-519499941](https://github.com/oznu/homebridge-config-ui-x/issues/342#issuecomment-519499941))
 * **Auth:** Disable auto-capitalization for username fields on mobile browsers ([#325](https://github.com/oznu/homebridge-config-ui-x/pull/325))
-* Fixed a bug that prevented the UI automatically reloading after an update
 * **Accessory Control:** Fixed bug preventing switches correctly reflecting their state when on ([#343](https://github.com/oznu/homebridge-config-ui-x/pull/343))
+* Fixed a bug that prevented the UI automatically reloading after an update
 
 ### Other Changes
 

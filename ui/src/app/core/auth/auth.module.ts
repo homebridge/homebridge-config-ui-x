@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { JwtModule } from '@auth0/angular-jwt';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { environment } from '../../../environments/environment';
 import { LoginComponent } from './login/login.component';
@@ -22,6 +23,7 @@ export function tokenGetter() {
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    TranslateModule.forChild(),
     JwtModule.forRoot({
       config: {
         authScheme: 'bearer ',

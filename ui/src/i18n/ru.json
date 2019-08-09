@@ -68,7 +68,7 @@
 	"login.label_password": "Пароль",
 	"login.label_username": "Имя пользователя",
 	"login.message_invalid_username_or_password": "Неверное имя пользователя и пароль",
-	"login.title_login": "Панель управления Homebridge",
+	"login.title_login": "Войти",
 	"menu.docker.label_restart_container": "Перезапустить контейнер",
 	"menu.docker.label_settings": "Настройки",
 	"menu.docker.label_startup_script": "Скрипт запуска",
