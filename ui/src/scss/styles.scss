@@ -156,6 +156,15 @@ body {
   }
 }
 
+/* Prevent outlines around the close button when a modal opens */
+button {
+  &.close {
+    &:focus {
+      outline: none;
+    }
+  }
+}
+
 /* TOASTR BUGFIX */
 /* https://github.com/scttcper/ngx-toastr/issues/605 */
 #toast-container > div {

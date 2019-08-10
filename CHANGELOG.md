@@ -31,6 +31,7 @@ All notable changes to this project will be documented in this file. This projec
 * **i18n:** The Restart Homebridge page is now translated again ([#342#issuecomment-519499941](https://github.com/oznu/homebridge-config-ui-x/issues/342#issuecomment-519499941))
 * **Auth:** Disable auto-capitalization for username fields on mobile browsers ([#325](https://github.com/oznu/homebridge-config-ui-x/pull/325))
 * **Accessory Control:** Fixed bug preventing switches correctly reflecting their state when on ([#343](https://github.com/oznu/homebridge-config-ui-x/pull/343))
+* **Accessory Control:** Removed outline around modal close buttons ([#349](https://github.com/oznu/homebridge-config-ui-x/pull/349))
 * Fixed a bug that prevented the UI automatically reloading after an update
 
 ### Other Changes
