@@ -27,6 +27,16 @@
         }
       }
     }
+
+    .hb-uix-switch {
+      .hb-uix-slider  {
+        border-color: $primary !important;
+      }
+
+      input:checked ~ .hb-uix-slider {
+        background-color: $primary !important;
+      }
+    }
   }
 }
 

@@ -389,7 +389,7 @@
         "accessoryControl.debug",
         {
           "type": "help",
-          "helpvalue": "<h6>Instance Blacklist</h6><em class='primary-text'>Enter the usernames of any other Homebridge instances on your network that you do not want to be able to control from this instance.</div>"
+          "helpvalue": "<h6>Instance Blacklist</h6><em class='primary-text'>Enter the usernames of any other Homebridge instances on your network that you do not want to be able to control from this instance.</em>"
         },
         {
           "nodescription": true,

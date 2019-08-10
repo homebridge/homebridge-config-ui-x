@@ -19,8 +19,15 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
   public pluginConfig;
   public linkType: string;
 
-  @Input() pluginName;
-  @Input() schema;
+  public jsonFormOptions = {
+    addSubmit: false,
+    loadExternalAssets: false,
+    returnEmptyFields: false,
+    setSchemaDefaults: true,
+  };
+
+  @Input() public pluginName;
+  @Input() public schema;
   @Input() homebridgeConfig;
 
   constructor(
@@ -125,15 +132,26 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
   }
 
   saveConfig() {
-    this.$api.post('/config-editor', this.homebridgeConfig).subscribe(
-      (result) => {
+    return this.$api.post('/config-editor', this.homebridgeConfig).toPromise()
+      .then((result) => {
         this.justLinked = true;
-        this.$toastr.success(this.translate.instant('config.toast_config_saved'), this.translate.instant('toast.title_success'));
-      },
-      (err) => {
+        this.$toastr.success(
+          this.translate.instant('plugins.settings.toast_restart_required'),
+          this.translate.instant('plugins.settings.toast_plugin_config_saved'),
+        );
+      })
+      .catch((err) => {
         this.$toastr.error(this.translate.instant('config.toast_failed_to_save_config'), this.translate.instant('toast.title_error'));
-      },
-    );
+      });
+  }
+
+  async saveAndClose() {
+    this.pluginConfig.platform = this.schema.pluginAlias;
+    const existingConfigIndex = this.homebridgeConfig.platforms.findIndex(x => x.platform === this.schema.pluginAlias);
+    this.homebridgeConfig.platforms[existingConfigIndex] = this.pluginConfig;
+
+    await this.saveConfig();
+    this.activeModal.close();
   }
 
   ngOnDestroy() {

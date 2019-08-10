@@ -24,7 +24,7 @@
     "@ngx-translate/core": "^11.0.1",
     "@ngx-translate/http-loader": "^4.0.0",
     "@oznu/hap-client": "^1.0.1",
-    "@oznu/ngx-bs4-jsonform": "^7.1.0-beta.1",
+    "@oznu/ngx-bs4-jsonform": "^7.3.1",
     "bootstrap": "^4.3.1",
     "classlist.js": "^1.1.20150312",
     "dayjs": "^1.8.15",
