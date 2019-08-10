@@ -22,7 +22,7 @@ Once you have installed and configured the plugin you can access the interface v
 
 The default username is `admin` and the default password is `admin`.
 
-*Docker users should set the environment variable `HOMEBRIDGE_CONFIG_UI=1` to enable the UI. No further manual installation or configuration is required. [See options](https://github.com/oznu/docker-homebridge#homebridge-ui-options).*
+*Docker users should set the environment variable `HOMEBRIDGE_CONFIG_UI=1` to enable the UI. No further manual installation or configuration is required. [See wiki for details](https://github.com/oznu/homebridge-config-ui-x/wiki/Enabling-UI-with-Docker).*
 
 # Configuration
 
