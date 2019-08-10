@@ -47,6 +47,14 @@
     color: $secondaryText;
   }
 
+  .ace_cursor {
+    color: #FFFFFF !important;
+  }
+
+  .ace_selection {
+    background: rgba(255, 255, 255, 0.1) !important;
+  }
+
   .ace_gutter {
     background-color: #3c3c3c !important;
   }
@@ -61,22 +69,18 @@
 
   .ace_variable {
     color: #E06C75;
-    font-weight: bold;
   }
 
   .ace_string {
     color: #98C379 !important;
-    font-weight: bold;
   }
 
   .ace_numeric {
     color: #3aa5f7 !important;
-    font-weight: bold;
   }
 
   .ace_boolean {
     color: #56B6C2 !important;
-    font-weight: bold;
   }
 
   a {
@@ -174,5 +178,15 @@
         text-shadow: none;
       }
     }
+  }
+
+  .accessory-box {
+    background-color: $secondaryBackground;
+    color: $secondaryText;
+  }
+
+  .switch-on {
+    background-color: #FFF;
+    color: #000000;
   }
 }
