@@ -22,6 +22,8 @@ Once you have installed and configured the plugin you can access the interface v
 
 The default username is `admin` and the default password is `admin`.
 
+*Docker users should set the environment variable `HOMEBRIDGE_CONFIG_UI=1` to enable the UI. No further manual installation or configuration is required. [See options](https://github.com/oznu/docker-homebridge#homebridge-ui-options).*
+
 # Configuration
 
 Add this to your homebridge `config.json` file
@@ -190,32 +192,32 @@ Or if using a **PKCS#12** certificate you can setup SSL like this:
 
 ### Status Screen
 
-This shows you that the services are running. It also has your HomeKit pin.
+This shows an overview of your Homebridge system. It displays your pairing QR code, and informs you if there are any updates available for Homebridge or installed plugins.
 
-![Status](screenshots/homebridge-config-ui-x-status.png)
+![Status](screenshots/homebridge-config-ui-x-status.png?2019-08-10)
 
 ### Log Screen
 
-This shows you the rolling log. This is helpful for troubleshooting.
+This shows you the Homebridge rolling log. This is helpful for troubleshooting.
 
-![Log](screenshots/homebridge-config-ui-x-logs.png)
+![Log](screenshots/homebridge-config-ui-x-logs.png?2019-08-10)
 
 ### Plugin Screen
 
 This shows you the currently installed plugins and allows you to install, remove and upgrade plugins.
 
-![Log](screenshots/homebridge-config-ui-x-plugins.png)
+![Log](screenshots/homebridge-config-ui-x-darkmode-plugins.png)
 
-When installing, removing or upgrading plugins the output is show in the browser to help troubleshoot any issues.
+You can configure supported plugins using the graphical settings editor, removing the need to manually edit the `config.json`.
 
-![Log](screenshots/homebridge-config-ui-x-plugins-install.png)
+![Log](screenshots/homebridge-config-ui-x-darkmode-alexa-settings.png?2019-08-10)
 
 
 ### Configuration Screen
 
-And finally the configuration screen allows you to modify your Homebridge settings and your platforms and accessories.
+The configuration screen allows you to modify your Homebridge `config.json`. The built in editor automatically syntax-checks your JSON and makes a backup of your config every time you make a change.
 
-![Config](screenshots/homebridge-config-ui-x-config.png)
+![Config](screenshots/homebridge-config-ui-x-config.png?2019-08-10)
 
 # Supported Browsers
 
