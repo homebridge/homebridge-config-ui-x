@@ -17,12 +17,20 @@ export class LongClickDirective implements OnDestroy {
     clearInterval(this.downTimeout);
   }
 
-  @HostListener('touchend', ['$event'])
   @HostListener('mouseup', ['$event'])
   public onMouseUp(event: MouseEvent): void {
     clearInterval(this.downTimeout);
-    // event.preventDefault();
-    // event.stopPropagation();
+    if (!this.done) {
+      this.done = true;
+      this.shortclick.emit(event);
+    }
+  }
+
+  @HostListener('touchend', ['$event'])
+  public onTouchEnd(event: MouseEvent): void {
+    clearInterval(this.downTimeout);
+    event.preventDefault();
+    event.stopPropagation();
     if (!this.done) {
       this.done = true;
       this.shortclick.emit(event);
