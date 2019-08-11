@@ -12,10 +12,15 @@ $fa-font-path:'../../node_modules/@fortawesome/fontawesome-free-webfonts/webfont
 @import "~@fortawesome/fontawesome-free-webfonts/scss/fa-brands.scss";
 @import "~bootstrap/scss/bootstrap";
 @import "~mdbootstrap/scss/mdb";
-@import "~ngx-toastr/toastr.css";
+
 @import "~xterm/dist/xterm.css";
 @import "~nouislider/distribute/nouislider.min.css";
 @import "~dragula/dist/dragula.min.css";
+
+@import './toastr.scss';
+@import './checkbox.scss';
+@import './accessories.scss';
+@import './json-schema-form.scss';
 
 @import './themes';
 @import './theme-dark.scss';
@@ -57,6 +62,15 @@ body {
   font-size: 1rem;
   line-height: 1.5;
   border-radius: .25rem;
+}
+
+/* Prevent outlines around the close button when a modal opens */
+button {
+  &.close {
+    &:focus {
+      outline: none;
+    }
+  }
 }
 
 /* icon spinner from font-awesome */
@@ -124,65 +138,6 @@ body {
   display:none
 }
 
-/* Custom Checkboxes */
-.hb-uix-switch {
-  display: block;
-  position: relative;
-  padding-left: 35px;
-  margin-bottom: 12px;
-  cursor: pointer;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-
-  input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-    height: 0;
-    width: 0;
-  }
-
-  .hb-uix-slider {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 25px;
-    width: 25px;
-    border: 1px solid;
-  }
-
-  .hb-uix-slider:after {
-    content: "";
-    position: absolute;
-    display: none;
-  }
-
-  input:checked ~ .hb-uix-slider {
-    border: none;
-  }
-
-  input:checked ~ .hb-uix-slider:after {
-    display: block;
-  }
-
-  .hb-uix-slider:after {
-    left: 8px;
-    top: 3px;
-    width: 9px;
-    height: 15px;
-    border: solid white;
-    border-width: 0 3px 3px 0;
-    -webkit-transform: rotate(45deg);
-    -ms-transform: rotate(45deg);
-    transform: rotate(45deg);
-  }
-  .hb-uix-round {
-    border-radius: 4px;
-  }
-}
-
 .hb-ace-text-editor {
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
 }
@@ -212,51 +167,5 @@ body {
   svg {
     position: inline;
     width: 100%;
-  }
-}
-
-/* Prevent outlines around the close button when a modal opens */
-button {
-  &.close {
-    &:focus {
-      outline: none;
-    }
-  }
-}
-
-/* TOASTR BUGFIX */
-/* https://github.com/scttcper/ngx-toastr/issues/605 */
-#toast-container > div {
-  opacity: 1;
-}
-
-.toast {
-  font-size: initial !important;
-  border: initial !important;
-  backdrop-filter: blur(0) !important;
-}
-.toast-success {
-  background-color: #51A351 !important;
-}
-.toast-error {
-  background-color: #BD362F !important;
-}
-.toast-info {
-  background-color: #2F96B4 !important;
-}
-.toast-warning {
-  background-color: #F89406 !important;
-}
-
-/* Accessory Control Global CSS */
-.accessory-box {
-  background-color: #e0e0e0;
-}
-
-.switch-on {
-  background-color: #FFF;
-  
-  #accessoryIcon {
-    fill: #1976D2 !important;
   }
 }

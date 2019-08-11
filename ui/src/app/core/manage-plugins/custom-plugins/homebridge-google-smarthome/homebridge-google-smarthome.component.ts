@@ -109,6 +109,7 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
       this.popup.close();
     }
     this.pluginConfig.token = token;
+    this.pluginConfig.notice = 'Keep your token a secret!';
 
     const existingConfig = this.homebridgeConfig.platforms.find(x => x.platform === this.schema.pluginAlias);
     if (!existingConfig) {

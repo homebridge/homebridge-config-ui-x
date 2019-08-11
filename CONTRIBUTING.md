@@ -67,7 +67,7 @@ You should now be able to navigate to `https://localhost:4200` in your browser w
 
 ## Contributing To Translations
 
-Additional language translations, or improvments to existing translations are most welcome.  Translations can be found here: 
+Additional language translations, or improvements to existing translations are most welcome.  Translations can be found here: 
 
 https://github.com/oznu/homebridge-config-ui-x/tree/master/ui/src/i18n
 

@@ -1,0 +1,37 @@
+/* Json Schema Form CSS */
+
+json-schema-form {
+  legend {
+    cursor: pointer;
+  }
+
+  .expandable {
+    legend {
+      &:before {
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        content: '\f054' !important;
+      }
+    }
+  }
+
+  .expanded {
+    legend {
+      &:before {
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        content: '\f078' !important;
+      }
+    }
+  }
+
+  .form-group {
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+
+
+  .schema-form-fieldset.form-group {
+    margin-bottom: 0px;
+  }
+}
