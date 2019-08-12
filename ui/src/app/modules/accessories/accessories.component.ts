@@ -100,6 +100,10 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
         this.roomsOrdered = true;
       }
     });
+
+    this.io.socket.on('accessories-reload-required', () => {
+      window.location.reload();
+    });
   }
 
   parseServices(services) {

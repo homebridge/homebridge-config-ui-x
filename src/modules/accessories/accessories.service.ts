@@ -61,6 +61,11 @@ export class AccessoriesService {
     };
     monitor.on('service-update', updateHandler);
 
+    const instanceUpdateHandler = async (data) => {
+      client.emit('accessories-reload-required', services);
+    };
+    this.hapClient.on('instance-discovered', instanceUpdateHandler);
+
     // clean up on disconnect
     const onEnd = () => {
       client.removeAllListeners('end');
@@ -68,10 +73,13 @@ export class AccessoriesService {
       client.removeAllListeners('accessory-control');
       monitor.removeAllListeners('service-update');
       monitor.finish();
+      this.hapClient.removeListener('instance-discovered', instanceUpdateHandler);
     };
 
     client.on('disconnect', onEnd.bind(this));
     client.on('end', onEnd.bind(this));
+
+    this.hapClient.refreshInstances();
   }
 
   /**
