@@ -1,11 +1,11 @@
 import { Logger } from './core/logger/logger.service';
 
+const logger = new Logger();
+
 /**
  * The purpose of this script is to check the environment before launching the UI
  */
 async function main() {
-  const logger = new Logger();
-
   // check if node-pty is built correctly
   try {
     require('node-pty-prebuilt-multiarch');
@@ -25,3 +25,24 @@ async function main() {
 }
 
 main();
+
+/**
+ * Catch startup errors
+ */
+process.on('unhandledRejection', (err: any) => {
+  logger.error(err.toString());
+  if (err.code === 'EADDRINUSE') {
+    logger.error('Another process or service on this host is using port ' + err.port + '.');
+    logger.error('Please stop the other service or change the port you have assigned to homebridge-config-ui-x.');
+    logger.error('Ending process now.');
+    setTimeout(() => process.exit(0));
+  } else if (err.code === 'EACCES') {
+    logger.error('The process owner does not have permission to run services on port ' + err.port + '.');
+    logger.error('Please change the homebridge-config-ui-x port to something above 1024.');
+    logger.error('Ending process now.');
+    setTimeout(() => process.exit(0));
+  } else {
+    logger.error('Caught Unhandled Rejection Error :: Details Below');
+    console.error(err);
+  }
+});
