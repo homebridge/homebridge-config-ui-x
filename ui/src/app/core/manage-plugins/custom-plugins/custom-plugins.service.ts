@@ -26,6 +26,8 @@ export class CustomPluginsService {
     ref.componentInstance.pluginName = pluginName;
     ref.componentInstance.schema = schema;
     ref.componentInstance.homebridgeConfig = homebridgeConfig;
+
+    return ref.result;
   }
 
   async loadConfigSchema(pluginName) {

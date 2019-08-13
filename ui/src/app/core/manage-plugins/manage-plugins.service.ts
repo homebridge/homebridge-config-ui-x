@@ -18,6 +18,7 @@ export class ManagePluginsService {
   installPlugin(pluginName) {
     const ref = this.modalService.open(ManagePluginsModalComponent, {
       size: 'lg',
+      backdrop: 'static',
     });
     ref.componentInstance.action = 'Install';
     ref.componentInstance.pluginName = pluginName;
@@ -26,6 +27,7 @@ export class ManagePluginsService {
   uninstallPlugin(pluginName) {
     const ref = this.modalService.open(ManagePluginsModalComponent, {
       size: 'lg',
+      backdrop: 'static',
     });
     ref.componentInstance.action = 'Uninstall';
     ref.componentInstance.pluginName = pluginName;
@@ -34,6 +36,7 @@ export class ManagePluginsService {
   updatePlugin(pluginName) {
     const ref = this.modalService.open(ManagePluginsModalComponent, {
       size: 'lg',
+      backdrop: 'static',
     });
     ref.componentInstance.action = 'Update';
     ref.componentInstance.pluginName = pluginName;
@@ -42,6 +45,7 @@ export class ManagePluginsService {
   upgradeHomebridge() {
     const ref = this.modalService.open(ManagePluginsModalComponent, {
       size: 'lg',
+      backdrop: 'static',
     });
     ref.componentInstance.action = 'Upgrade';
     ref.componentInstance.pluginName = 'homebridge';
@@ -56,6 +60,8 @@ export class ManagePluginsService {
       size: 'lg',
     });
     ref.componentInstance.pluginName = pluginName;
+
+    return ref.result;
   }
 
 }

@@ -361,25 +361,24 @@ export class PluginsService {
       throw new NotFoundException();
     }
 
-    const schemaPath = path.resolve(plugin.installPath, pluginName, 'config.schema.json');
-
-    if (await fs.pathExists(schemaPath)) {
-      const configSchema = await fs.readJson(schemaPath);
-
-      // modify this plugins schema to set the default port number
-      if (pluginName === this.configService.name) {
-        configSchema.schema.properties.port.default = this.configService.ui.port;
-      }
-
-      // modify homebridge-alexa to set the default pin
-      if (pluginName === 'homebridge-alexa') {
-        configSchema.schema.properties.pin.default = this.configService.homebridgeConfig.bridge.pin;
-      }
-
-      return configSchema;
-    } else {
+    if (!plugin.settingsSchema) {
       throw new NotFoundException();
     }
+
+    const schemaPath = path.resolve(plugin.installPath, pluginName, 'config.schema.json');
+    const configSchema = await fs.readJson(schemaPath);
+
+    // modify this plugins schema to set the default port number
+    if (pluginName === this.configService.name) {
+      configSchema.schema.properties.port.default = this.configService.ui.port;
+    }
+
+    // modify homebridge-alexa to set the default pin
+    if (pluginName === 'homebridge-alexa') {
+      configSchema.schema.properties.pin.default = this.configService.homebridgeConfig.bridge.pin;
+    }
+
+    return configSchema;
   }
 
   /**

@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 
@@ -26,6 +26,7 @@ export class InstalledPluginsComponent implements OnInit, OnDestroy {
     private $api: ApiService,
     public $plugin: ManagePluginsService,
     private $router: Router,
+    private $route: ActivatedRoute,
     public $fb: FormBuilder,
     private toastr: ToastrService,
     private translate: TranslateService,
@@ -54,6 +55,7 @@ export class InstalledPluginsComponent implements OnInit, OnDestroy {
       (data: any) => {
         this.installedPlugins = data.sort(x => !x.update);
         this.loading = false;
+        this.checkRecentlyInstalled();
       },
       (err) => {
         this.toastr.error(
@@ -62,6 +64,17 @@ export class InstalledPluginsComponent implements OnInit, OnDestroy {
         );
       },
     );
+  }
+
+  checkRecentlyInstalled() {
+    this.$route.queryParams.subscribe(async (params) => {
+      if (params.installed && this.installedPlugins.find(x => x.name === params.installed && x.settingsSchema)) {
+        this.$plugin.settings(params.installed)
+          .finally(() => {
+            this.$router.navigate(['/plugins']);
+          });
+      }
+    });
   }
 
   onSubmit({ value, valid }) {
