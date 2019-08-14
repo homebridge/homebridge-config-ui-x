@@ -116,7 +116,7 @@
     "plugins.manage.button_restart_now": "Herstart Homebridge Nu",
     "plugins.manage.label_homebridge_upgraded": "Homebridge Upgraded",
     "plugins.manage.label_install": "Installeer",
-    "plugins.manage.label_installed": "Geinstalleerd",
+    "plugins.manage.label_installed": "Geïnstalleerd",
     "plugins.manage.label_uninstall": "Ge-de-installeerd",
     "plugins.manage.label_uninstalled": "Verwijderd",
     "plugins.manage.label_update": "Update",
