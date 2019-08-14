@@ -79,6 +79,7 @@ export class AccessoriesService {
     client.on('disconnect', onEnd.bind(this));
     client.on('end', onEnd.bind(this));
 
+    // send a refresh instances request
     this.hapClient.refreshInstances();
   }
 
