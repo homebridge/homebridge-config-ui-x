@@ -6,8 +6,8 @@
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
-  <div class="modal-body">
 
+  <div class="modal-body" *ngIf="!$auth.env.enableAccessories">
     <div *ngIf="!$auth.env.enableAccessories">
       <div class="alert alert-warning" role="alert">
         <p [innerHTML]="'accessories.message_must_use_insecure_mode' | translate">To control your accessories you must
@@ -22,7 +22,9 @@
         </p>
       </div>
     </div>
+  </div>
 
+  <div class="modal-body" *ngIf="$auth.env.enableAccessories">
     <p [innerHTML]="'plugins.settings.custom.homebridge-gsh.message_about' | translate"></p>
     <p *ngIf="!pluginConfig.token" translate="plugins.settings.custom.homebridge-gsh.message_account_link_required"></p>
     <div class="text-center" *ngIf="!pluginConfig.token">
