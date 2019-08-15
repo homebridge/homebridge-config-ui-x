@@ -52,7 +52,7 @@ All config options are [listed here](https://github.com/oznu/homebridge-config-u
 
 ## Accessory Control
 
-The plugin allows you to view and control some types of Homebridge accessories from your web browser. 
+The plugin allows you to view and control some types of Homebridge accessories from your web browser.
 
 To [enable accessory control](https://github.com/oznu/homebridge-config-ui-x/wiki/Enabling-Accessory-Control) you must be running Homebridge in insecure mode:
 
@@ -63,6 +63,10 @@ homebridge -I
 *Insecure mode, as it's name suggests, is not secure. Anyone with network access to your Homebridge server port and pin will be able to control your accessories. Unless exposing the Homebridge port to the internet, this will generally not be a problem as access will be limited to people already on your local network. Remote access via a home hub (Apple TV, iPad, HomePod etc.) will still be secure. Enable at your own risk.*
 
 Not all accessory types are supported. See [this issue](https://github.com/oznu/homebridge-config-ui-x/issues/47) for a full list of supported accessory types.
+
+**Controlling Multiple Instances**
+
+Homebridge Config UI X's Accessory Control feature allows you to control the accessories from multiple instances of Homebridge. To make this work all instances you want to control must have the same PIN, be on the same network, and be running in insecure mode. Your other instances are automatically discovered, however you can blacklist instances you don't want to control using the plugin settings.
 
 ## Log Viewer Configuration
 
