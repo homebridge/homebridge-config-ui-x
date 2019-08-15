@@ -60,8 +60,6 @@ To [enable accessory control](https://github.com/oznu/homebridge-config-ui-x/wik
 homebridge -I
 ```
 
-*Insecure mode, as it's name suggests, is not secure. Anyone with network access to your Homebridge server port and pin will be able to control your accessories. Unless exposing the Homebridge port to the internet, this will generally not be a problem as access will be limited to people already on your local network. Remote access via a home hub (Apple TV, iPad, HomePod etc.) will still be secure. Enable at your own risk.*
-
 Not all accessory types are supported. See [this issue](https://github.com/oznu/homebridge-config-ui-x/issues/47) for a full list of supported accessory types.
 
 **Controlling Multiple Instances**
