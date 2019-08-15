@@ -66,11 +66,11 @@ Not all accessory types are supported. See [this issue](https://github.com/oznu/
 
 **Controlling Multiple Instances**
 
-Homebridge Config UI X's Accessory Control feature allows you to control the accessories from multiple instances of Homebridge. To make this work all instances you want to control must have the same PIN, be on the same network, and be running in insecure mode. Your other instances are automatically discovered, however you can blacklist instances you don't want to control using the plugin settings.
+*Homebridge Config UI X's* Accessory Control feature allows you to control the accessories from multiple instances of Homebridge. To make this work all instances you want to control must have the same PIN, be on the same network, and be running in insecure mode. Your other instances are automatically discovered, however you can blacklist instances you don't want to control using the plugin settings.
 
 ## Log Viewer Configuration
 
-Homebridge Config UI X allows you to view the homebridge process logs in the browser. These logs can be loaded from a file or from a command.
+*Homebridge Config UI X* allows you to view the homebridge process logs in the browser. These logs can be loaded from a file or from a command.
 
 ### Logs From File
 
@@ -133,7 +133,7 @@ The `log` option can alternatively specify a command to spawn that will stream t
 
 ## Sudo Mode
 
-Many operations performed by Homebridge Config UI X, such as installing plugins, upgrading Homebridge and viewing the logs can require root permissions. You can run the Homebridge service as root or you can enable the `sudo` option in the config.
+Many operations performed by *Homebridge Config UI X*, such as installing plugins, upgrading Homebridge and viewing the logs can require root permissions. You can run the Homebridge service as root or you can enable the `sudo` option in the config.
 
 ```json
 "platforms": [
@@ -146,7 +146,7 @@ Many operations performed by Homebridge Config UI X, such as installing plugins,
 ]
 ```
 
-When `sudo` mode is enabled Homebridge Config UI X will use `sudo` when executing installing, removing or upgrading plugins, viewing the logs using the [Logs From File](#logs-from-file) or [Logs From Systemd](#logs-from-systemd) method, and when upgrading Homebridge. It will not be used for [Logs From Custom Command](#logs-from-custom-command) or custom restart commands.
+When `sudo` mode is enabled *Homebridge Config UI X* will use `sudo` when executing installing, removing or upgrading plugins, viewing the logs using the [Logs From File](#logs-from-file) or [Logs From Systemd](#logs-from-systemd) method, and when upgrading Homebridge. It will not be used for [Logs From Custom Command](#logs-from-custom-command) or custom restart commands.
 
 ### Password-less sudo required
 
