@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '../../../../core/api.service';
+import { AuthService } from '../../../../core/auth/auth.service';
 
 @Component({
   selector: 'app-homebridge-google-smarthome',
@@ -35,6 +36,7 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
     private translate: TranslateService,
     private $jwtHelper: JwtHelperService,
     private $api: ApiService,
+    public $auth: AuthService,
     private $toastr: ToastrService,
   ) {
     // listen for sign in events from the link account popup
