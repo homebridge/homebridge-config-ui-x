@@ -7,8 +7,9 @@ All notable changes to this project will be documented in this file. This projec
 ### Bug Fixes
 
 * **Theme:** Improved visibility of user profiles in the new dark mode theme ([#363](https://github.com/oznu/homebridge-config-ui-x/issues/363))
-* **i18n:** Bulgarian language improvments ([#364](https://github.com/oznu/homebridge-config-ui-x/issues/364))
 * **Accessory Control:** Fix an issue causing errors when discovering instances in some circumstances ([#370](https://github.com/oznu/homebridge-config-ui-x/issues/370))
+* **i18n:** Bulgarian language improvments ([#364](https://github.com/oznu/homebridge-config-ui-x/issues/364))
+* **i18n:** German language improvments ([#365](https://github.com/oznu/homebridge-config-ui-x/pull/365))
 
 ## 4.6.0 (2019-08-16)
 
