@@ -1,6 +1,14 @@
 # Change Log
 
-All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
+All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).+
+
+## 4.6.1 (2019-08-21)
+
+### Bug Fixes
+
+* **Theme:** Improved visibility of user profiles in the new dark mode theme ([#363](https://github.com/oznu/homebridge-config-ui-x/issues/363))
+* **i18n:** Bulgarian language improvments ([#364](https://github.com/oznu/homebridge-config-ui-x/issues/364))
+* **Accessory Control:** Fix an issue causing errors when discovering instances in some circumstances ([#370](https://github.com/oznu/homebridge-config-ui-x/issues/370))
 
 ## 4.6.0 (2019-08-16)
 

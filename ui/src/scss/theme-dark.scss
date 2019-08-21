@@ -168,6 +168,17 @@
         }
       }
     }
+
+    .form-control {
+      &:disabled {
+        color: #FFFFFF;
+      }
+    }
+
+    .grey-text {
+      color: $darkModePrimary !important;
+    }
+
   }
 
   .hb-npm-search {
