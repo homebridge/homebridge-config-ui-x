@@ -23,7 +23,7 @@
     "@ng-bootstrap/ng-bootstrap": "^5.1.0",
     "@ngx-translate/core": "^11.0.1",
     "@ngx-translate/http-loader": "^4.0.0",
-    "@oznu/hap-client": "^1.0.5",
+    "@oznu/hap-client": "^1.0.6",
     "@oznu/ngx-bs4-jsonform": "^7.3.1",
     "bootstrap": "^4.3.1",
     "classlist.js": "^1.1.20150312",
