@@ -148,7 +148,7 @@ export class ConfigService {
         instanceId: this.instanceId,
       },
       formAuth: Boolean(this.ui.auth !== 'none'),
-      theme: this.ui.theme || 'teal',
+      theme: this.ui.theme || 'auto',
       serverTimestamp: new Date().toISOString(),
     };
   }

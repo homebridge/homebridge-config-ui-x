@@ -42,8 +42,14 @@
       "theme": {
         "title": "UI Theme",
         "type": "string",
-        "default": "teal",
+        "default": "auto",
         "oneOf": [
+          {
+            "title": "Default",
+            "enum": [
+              "auto"
+            ]
+          },
           {
             "title": "Red",
             "enum": [

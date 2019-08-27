@@ -140,7 +140,18 @@ export class AuthService {
   }
 
   setTheme(theme: string) {
-    if (this.theme) {
+    if (theme === 'auto') {
+      // select theme based on os dark mode preferences
+      try {
+        if (matchMedia('(prefers-color-scheme: dark)').matches) {
+          theme = 'dark-mode';
+        } else {
+          theme = 'teal';
+        }
+      } catch (e) {
+        theme = 'teal';
+      }
+    } else if (this.theme) {
       window.document.querySelector('body').classList.remove(`config-ui-x-${this.theme}`);
     }
     this.theme = theme;
