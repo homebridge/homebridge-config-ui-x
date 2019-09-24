@@ -38,7 +38,7 @@
   "accessories.control.label_light": "Swiatło",
   "accessories.control.not_supported": "Brak wsparcia",
   "accessories.control.default_room": "Domyślny pokój",
-  "config.button_backup": "Kopiój",
+  "config.button_backup": "Kopiuj",
   "config.button_restore": "Przywróć",
   "config.restore.button_remote_all_backups": "Usuń wszystkie kopie",
   "config.restore.message_copy_to_editor": "Kopiuj do edytora",
