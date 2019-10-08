@@ -264,6 +264,11 @@ export class PluginsService {
    * @param client
    */
   async updatePlugin(pluginName: string, client) {
+    if (pluginName === this.configService.name && this.configService.dockerOfflineUpdate) {
+      await this.updateSelfOffline(client);
+      return true;
+    }
+
     await this.getInstalledPlugins();
     // find the plugin
     const plugin = this.installedPlugins.find(x => x.name === pluginName);
@@ -348,6 +353,27 @@ export class PluginsService {
     await this.runNpmCommand([...this.npm, 'install', '--unsafe-perm', ...installOptions, `${homebridge.name}@latest`], installPath, client);
 
     return true;
+  }
+
+  /**
+   * Sets a flag telling the system to update the package next time the UI is restarted
+   * Dependend on OS support - currently only supported by the oznu/homebridge docker image
+   */
+  public async updateSelfOffline(client) {
+    client.emit('stdout', color.yellow(`${this.configService.name} has been scheduled to update on the next container restart.\n\r\n\r`));
+    await new Promise(resolve => setTimeout(resolve, 800));
+
+    client.emit('stdout', color.yellow(`The Docker container will now try and restart.\n\r\n\r`));
+    await new Promise(resolve => setTimeout(resolve, 800));
+
+    client.emit('stdout', color.yellow(`If you have not started the Docker container with `) +
+      color.red('--restart=always') + color.yellow(` you may\n\rneed to manually start the container again.\n\r\n\r`));
+    await new Promise(resolve => setTimeout(resolve, 800));
+
+    client.emit('stdout', color.yellow(`This process may take several minutes. Please be patient.\n\r`));
+    await new Promise(resolve => setTimeout(resolve, 10000));
+
+    await fs.createFile('/homebridge/.uix-upgrade-on-restart');
   }
 
   /**

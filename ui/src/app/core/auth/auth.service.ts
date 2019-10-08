@@ -131,7 +131,7 @@ export class AuthService {
       .then((data: any) => {
         this.formAuth = data.formAuth;
         this.env = data.env;
-        this.setTheme(data.theme || 'red');
+        this.setTheme(data.theme || 'auto');
         this.setTitle(data.env.homebridgeInstanceName);
         this.checkServerTime(data.serverTimestamp);
         this.setUiVersion(data.env.packageVersion);

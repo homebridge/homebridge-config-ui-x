@@ -5,6 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Terminal } from 'xterm';
 import * as fit from 'xterm/lib/addons/fit/fit';
 
+import { AuthService } from '../../auth/auth.service';
 import { ApiService } from '../../api.service';
 import { WsService } from '../../ws.service';
 import { Router } from '@angular/router';
@@ -39,6 +40,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
     public activeModal: NgbActiveModal,
     public $toastr: ToastrService,
     private translate: TranslateService,
+    public $auth: AuthService,
     private $api: ApiService,
     private $ws: WsService,
     private $router: Router,
@@ -114,6 +116,11 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       (data) => {
         if (this.pluginName === 'homebridge-config-ui-x') {
           this.updateSelf = true;
+          if (this.$auth.env.dockerOfflineUpdate) {
+            this.$router.navigate(['/platform-tools/docker/restart-container']);
+            this.activeModal.close();
+            return;
+          }
         }
         this.$router.navigate(['/plugins']);
         this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);

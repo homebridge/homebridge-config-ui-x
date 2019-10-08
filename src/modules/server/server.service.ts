@@ -24,9 +24,8 @@ export class ServerService {
   /**
    * Restart the server
    */
-  public async restartServer(res) {
+  public async restartServer() {
     this.logger.log('Homebridge restart request received');
-    res.code(202).send({ ok: true, command: this.configService.ui.restart });
 
     setTimeout(() => {
       if (this.configService.ui.restart) {
@@ -41,6 +40,8 @@ export class ServerService {
         process.kill(process.pid, 'SIGTERM');
       }
     }, 500);
+
+    return { ok: true, command: this.configService.ui.restart };
   }
 
   /**

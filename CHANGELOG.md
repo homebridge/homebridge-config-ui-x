@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 4.6.2 (2019-10-08)
+
+### Notable Changes
+
+* **Theme:** Added new "Default" theme, the default theme will automatically switch between a "Light Mode" theme (Teal) and a "Dark Mode" theme based on the client operating system's dark mode preferences.
+* **i18n:** Swedish language translation added by [@DewGew](https://github.com/DewGew) ([#404](https://github.com/oznu/homebridge-config-ui-x/pull/404))
+
+### Bug Fixes
+
+* **i18n:** German language improvements ([#365](https://github.com/oznu/homebridge-config-ui-x/pull/365), [#388](https://github.com/oznu/homebridge-config-ui-x/pull/388))
+* **i18n:** Polish language improvements ([#395](https://github.com/oznu/homebridge-config-ui-x/pull/395))
+* **i18n:** French language improvements ([#400](https://github.com/oznu/homebridge-config-ui-x/pull/400))
+* **System:** Perform self-updates offline when using Docker - latest [oznu/homebridge](https://github.com/oznu/docker-homebridge) docker image required ([docker-homebridge#220](https://github.com/oznu/docker-homebridge/issues/220))
+
 ## 4.6.1 (2019-08-24)
 
 ### Bug Fixes

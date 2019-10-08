@@ -12,7 +12,7 @@ export class LinuxService {
   /**
    * Reboot the host
    */
-  restartHost(res) {
+  restartHost() {
     const cmd = [(this.configService.ui.linux && this.configService.ui.linux.restart) ? this.configService.ui.linux.restart : 'shutdown -r now'];
 
     if (this.configService.ui.sudo) {
@@ -20,7 +20,6 @@ export class LinuxService {
     }
 
     this.logger.warn(`Rebooting linux server with command: "${cmd.join(' ')}"`);
-    res.code(202).send({ ok: true, command: cmd });
 
     setTimeout(() => {
       child_process.exec(cmd.join(' '), (err) => {
@@ -29,12 +28,14 @@ export class LinuxService {
         }
       });
     }, 100);
+
+    return { ok: true, command: cmd };
   }
 
   /**
    * Shutdown the host
    */
-  shutdownHost(res) {
+  shutdownHost() {
     const cmd = [(this.configService.ui.linux && this.configService.ui.linux.shutdown) ? this.configService.ui.linux.restart : 'shutdown -h now'];
 
     if (this.configService.ui.sudo) {
@@ -42,7 +43,6 @@ export class LinuxService {
     }
 
     this.logger.warn(`Shutting down linux server with command: "${cmd.join(' ')}"`);
-    res.code(202).send({ ok: true, command: cmd });
 
     setTimeout(() => {
       child_process.exec(cmd.join(' '), (err) => {
@@ -51,5 +51,7 @@ export class LinuxService {
         }
       });
     }, 500);
+
+    return { ok: true, command: cmd };
   }
 }

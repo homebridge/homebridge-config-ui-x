@@ -37,14 +37,15 @@ export class DockerService {
   /**
    * Restarts the docker container
    */
-  async restartDockerContainer(res) {
+  async restartDockerContainer() {
     const cmd = 'killall s6-svscan';
     this.logger.log('Restarting the docker container, make sure you have --restart=always turned on or the container will not come back online');
-    res.code(202).send({ ok: true, command: cmd });
 
     setTimeout(() => {
       child_process.exec('killall s6-svscan');
     }, 500);
+
+    return { ok: true, command: cmd };
   }
 
   /**

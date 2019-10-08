@@ -43,6 +43,7 @@ export class ConfigService {
   // docker paths
   public startupScript = path.resolve(this.storagePath, 'startup.sh');
   public dockerEnvFile = path.resolve(this.storagePath, '.docker.env');
+  public dockerOfflineUpdate = this.runningInDocker && semver.satisfies(process.env.CONFIG_UI_VERSION, '>=4.6.2', { includePrerelease: true });
 
   // package.json
   public package = fs.readJsonSync(path.resolve(process.env.UIX_BASE_PATH, 'package.json'));
@@ -142,6 +143,7 @@ export class ConfigService {
         packageVersion: this.package.version,
         runningInDocker: this.runningInDocker,
         runningInLinux: this.runningInLinux,
+        dockerOfflineUpdate: this.dockerOfflineUpdate,
         temperatureUnits: this.ui.tempUnits || 'c',
         websocketCompatibilityMode: this.ui.websocketCompatibilityMode || false,
         branding: this.branding,

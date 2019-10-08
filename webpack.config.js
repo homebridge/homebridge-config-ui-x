@@ -30,6 +30,7 @@ module.exports = {
     "fastify": "fastify",
     "fastify-static": "fastify-static",
     "fs-extra": "fs-extra",
+    "helmet": "helmet",
     "semver": "semver"
   },
   node: {

@@ -1,4 +1,4 @@
-import { Controller, UseGuards, Get, Put, Body, Res } from '@nestjs/common';
+import { Controller, UseGuards, Get, Put, Body } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AdminGuard } from '../../../core/auth/guards/admin.guard';
 import { DockerService } from './docker.service';
@@ -24,8 +24,8 @@ export class DockerController {
 
   @UseGuards(AdminGuard)
   @Put('restart-container')
-  restartDockerContainer(@Res() res) {
-    return this.dockerService.restartDockerContainer(res);
+  restartDockerContainer() {
+    return this.dockerService.restartDockerContainer();
   }
 
   @UseGuards(AdminGuard)
