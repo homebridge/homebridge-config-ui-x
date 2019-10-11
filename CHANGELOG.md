@@ -2,11 +2,17 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## Next
+
+### Notable Changes
+
+* **Config Editor:** Improved Validation: Config in the `platforms` and `accessories` arrays are now checked to ensure they match the structure expected by Homebridge
+
 ## 4.6.2 (2019-10-08)
 
 ### Notable Changes
 
-* **Theme:** Added new "Default" theme, the default theme will automatically switch between a "Light Mode" theme (Teal) and a "Dark Mode" theme based on the client operating system's dark mode preferences.
+* **Theme:** Added new "Default" theme, the default theme will automatically switch between a "Light Mode" theme (Teal) and a "Dark Mode" theme based on the client operating system's dark mode preferences
 * **i18n:** Swedish language translation added by [@DewGew](https://github.com/DewGew) ([#404](https://github.com/oznu/homebridge-config-ui-x/pull/404))
 
 ### Bug Fixes
@@ -30,7 +36,7 @@ All notable changes to this project will be documented in this file. This projec
 ### New Features
 
 * **Plugins:** Added support for configuring the new [Homebridge Google Smart Home Plugin](https://github.com/oznu/homebridge-gsh). This plugin allows you to control supported Homebridge accessories from any Google Home Smart Speaker, Google Assistant, or the Google Home mobile app on iOS and Android
-* **Accessory Control:** Multi-instance support. You can now control accessories from multiple Homebridge instances.
+* **Accessory Control:** Multi-instance support. You can now control accessories from multiple Homebridge instances
   * All instances you want to control must have the same PIN, be on the same network, and running in insecure mode
   * Your other instances are automatically discovered, however you can blacklist instances you don't want to control using the plugin settings
   * Due to the changes required to identify accessories across multiple instances your room/accessory layout will be reset after upgrading

@@ -80,6 +80,10 @@ export class ConfigEditorComponent implements OnInit {
           this.translate.instant('config.toast_config_platform_must_be_array'),
           this.translate.instant('config.toast_title_config_error'),
         );
+      } else if (config.platforms && Array.isArray(config.platforms) && !this.validateSection(config.platforms, 'platform')) {
+        // handled in validator function
+      } else if (config.accessories && Array.isArray(config.accessories) && !this.validateSection(config.accessories, 'accessory')) {
+        // handled in validator function
       } else {
         await this.saveConfig(config);
       }
@@ -132,6 +136,31 @@ export class ConfigEditorComponent implements OnInit {
     document.body.appendChild(downloadAnchorNode); // required for firefox
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
+  }
+
+  validateSection(sections: any[], type: 'accessory' | 'platform') {
+    for (const section of sections) {
+      // check section is an object
+      if (typeof section !== 'object' || Array.isArray(section)) {
+        this.$toastr.error(JSON.stringify(section, null, 4), `All ${type} blocks must be objects.`);
+        return false;
+      }
+
+      // check section contains platform/accessory key
+      if (!section[type]) {
+        this.$toastr.error(JSON.stringify(section, null, 4), `All ${type} blocks must contain the "${type}" attribute.`);
+        return false;
+      }
+
+      // check section platform/accessory key is a string
+      if (typeof section[type] !== 'string') {
+        this.$toastr.error(JSON.stringify(section, null, 4), `The "${type}" attribute must be a string.`);
+        return false;
+      }
+    }
+
+    // validation passed
+    return true;
   }
 
 }
