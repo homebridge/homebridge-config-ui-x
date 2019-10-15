@@ -104,6 +104,12 @@
     color: #56B6C2 !important;
   }
 
+.hb-editor-block-error {
+  position:absolute;
+  background:rgba(74,58,21,0.88);
+  z-index:20
+}
+
   a {
     &.card-link {
       color: #9e9e9e;

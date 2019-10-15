@@ -151,6 +151,12 @@ button {
   overflow-x: scroll;
 }
 
+.hb-editor-block-error {
+  position:absolute;
+  background:rgba(255,231,186,0.88);
+  z-index:20
+}
+
 .status-circle {
   color: #ffffff;
   width: 40px;
@@ -169,3 +175,5 @@ button {
     width: 100%;
   }
 }
+
+

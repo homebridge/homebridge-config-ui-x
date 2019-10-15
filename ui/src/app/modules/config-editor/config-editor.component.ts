@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
@@ -9,17 +9,23 @@ import { ApiService } from '../../core/api.service';
 import { MobileDetectService } from '../../core/mobile-detect.service';
 import { ConfigRestoreBackupComponent } from './config-restore-backup/config.restore-backup.component';
 import { ActivatedRoute } from '@angular/router';
+import { AceEditorComponent } from 'ng2-ace-editor';
+
+declare var ace: any;
 
 @Component({
   selector: 'app-config',
   templateUrl: './config-editor.component.html',
 })
 export class ConfigEditorComponent implements OnInit {
+  @ViewChild('editor', { static: false }) editor: AceEditorComponent;
+
   public homebridgeConfig: string;
   public saveInProgress: boolean;
   public isMobile: any = false;
   public backupUrl: string;
   public options: any = { printMargin: false };
+  public currentMarker;
 
   constructor(
     private $api: ApiService,
@@ -54,10 +60,16 @@ export class ConfigEditorComponent implements OnInit {
       return;
     }
 
+    if (this.currentMarker) {
+      this.editor.getEditor().session.removeMarker(this.currentMarker);
+    }
+
     this.saveInProgress = true;
     // verify homebridgeConfig contains valid json
     try {
       const config = JSON.parse(this.homebridgeConfig);
+      // ensure it's formatted so errors can be easily spotted
+      this.homebridgeConfig = JSON.stringify(config, null, 4);
 
       // basic validation of homebridge config spec
       if (typeof (config.bridge) !== 'object') {
@@ -83,6 +95,8 @@ export class ConfigEditorComponent implements OnInit {
       } else if (config.platforms && Array.isArray(config.platforms) && !this.validateSection(config.platforms, 'platform')) {
         // handled in validator function
       } else if (config.accessories && Array.isArray(config.accessories) && !this.validateSection(config.accessories, 'accessory')) {
+        // handled in validator function
+      } else if (config.plugins && Array.isArray(config.plugins) && !this.validatePlugins(config.plugins)) {
         // handled in validator function
       } else {
         await this.saveConfig(config);
@@ -142,25 +156,51 @@ export class ConfigEditorComponent implements OnInit {
     for (const section of sections) {
       // check section is an object
       if (typeof section !== 'object' || Array.isArray(section)) {
-        this.$toastr.error(JSON.stringify(section, null, 4), `All ${type} blocks must be objects.`);
+        this.$toastr.error(`All ${type} blocks must be objects.`);
+        this.highlightOffendingArrayItem(section);
         return false;
       }
 
       // check section contains platform/accessory key
       if (!section[type]) {
-        this.$toastr.error(JSON.stringify(section, null, 4), `All ${type} blocks must contain the "${type}" attribute.`);
+        this.$toastr.error(`All ${type} blocks must contain the "${type}" attribute.`);
+        this.highlightOffendingArrayItem(section);
         return false;
       }
 
       // check section platform/accessory key is a string
       if (typeof section[type] !== 'string') {
-        this.$toastr.error(JSON.stringify(section, null, 4), `The "${type}" attribute must be a string.`);
+        this.$toastr.error(`The "${type}" attribute must be a string.`);
+        this.highlightOffendingArrayItem(section);
         return false;
       }
     }
 
     // validation passed
     return true;
+  }
+
+  validatePlugins(plugins: any[]) {
+    for (const item of plugins) {
+      if (typeof item !== 'string') {
+        this.$toastr.error(`Each item in the plugins array must be a string.`);
+        return false;
+      }
+    }
+    return true;
+  }
+
+  highlightOffendingArrayItem(block) {
+    // figure out which lines the offending block spans
+    block = JSON.stringify(block, null, 4).split('\n').map(x => x.trim()).join('\n');
+    const trimedConfig = this.homebridgeConfig.split('\n').map(x => x.trim()).join('\n');
+    const markedConfig = trimedConfig.replace(`\n${block}\n`, `\n____START____\n${block}\n____END____\n`);
+    const from = markedConfig.split('\n').findIndex(x => x === '____START____');
+    const to = markedConfig.split('\n').findIndex(x => x === '____END____') - 2;
+
+    // highlight those lines
+    const Range = ace.require('ace/range').Range;
+    this.currentMarker = this.editor.getEditor().session.addMarker(new Range(from, 0, to, 1), 'hb-editor-block-error', 'fullLine');
   }
 
 }

@@ -27,7 +27,8 @@
               "node_modules/jquery/dist/jquery.min.js",
               "node_modules/popper.js/dist/umd/popper.min.js",
               "node_modules/mdbootstrap/js/bootstrap.min.js",
-              "node_modules/mdbootstrap/js/mdb.js"
+              "node_modules/mdbootstrap/js/mdb.js",
+              "node_modules/ace-builds/src-min/ace.js"
             ]
           },
           "configurations": {
