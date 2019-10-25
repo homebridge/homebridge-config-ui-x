@@ -283,12 +283,15 @@ export class AuthService {
    * Setup the default user
    */
   async setupDefaultUser() {
-    return this.addUser({
+    await this.addUser({
       username: 'admin',
       password: 'admin',
       name: 'Administrator',
       admin: true,
     });
+    this.logger.log(`Username and password have been set to default:`);
+    this.logger.log('Username: admin');
+    this.logger.log('Password: admin');
   }
 
   /**
@@ -299,7 +302,15 @@ export class AuthService {
       await fs.writeJson(this.configService.authPath, []);
     }
 
-    const authfile = await this.getUsers();
+    // try and read the auth.json file, if it's corrupted
+    let authfile;
+    try {
+      authfile = await this.getUsers();
+    } catch (e) {
+      this.logger.error(`Failed to read auth.json file at ${this.configService.authPath}.`);
+      await fs.writeJson(this.configService.authPath, []);
+      authfile = await this.getUsers();
+    }
 
     // if there are no admin users, add the default user
     if (!authfile.find(x => x.admin === true || x.username === 'admin')) {

@@ -7,6 +7,11 @@ All notable changes to this project will be documented in this file. This projec
 ### Notable Changes
 
 * **Config Editor:** Improved Validation: Config in the `platforms` and `accessories` arrays are now checked to ensure they match the structure expected by Homebridge
+* **Auth:** If the `auth.json` file is corrupted or empty it will be recreated with the default credentials rather than throwing an error
+
+### Bug Fixes
+
+* **i18n:** Swedish language improvements ([#410](https://github.com/oznu/homebridge-config-ui-x/pull/410))
 
 ## 4.6.2 (2019-10-08)
 
