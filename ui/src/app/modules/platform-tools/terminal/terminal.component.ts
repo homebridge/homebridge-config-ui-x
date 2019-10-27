@@ -2,12 +2,9 @@ import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import { debounceTime } from 'rxjs/operators';
 import { Terminal } from 'xterm';
-import * as fit from 'xterm/lib/addons/fit/fit';
-import * as webLinks from 'xterm/lib/addons/webLinks/webLinks';
+import { FitAddon } from 'xterm-addon-fit';
+import { WebLinksAddon } from 'xterm-addon-web-links';
 import { WsService } from '../../../core/ws.service';
-
-Terminal.applyAddon(fit);
-Terminal.applyAddon(webLinks);
 
 @Component({
   selector: 'app-terminal',
@@ -17,12 +14,17 @@ export class TerminalComponent implements OnInit, OnDestroy {
   private io = this.$ws.connectToNamespace('platform-tools/terminal');
 
   private term = new Terminal();
+  private fitAddon = new FitAddon();
+  private webLinksAddon = new WebLinksAddon();
   private termTarget: HTMLElement;
   private resize = new Subject();
 
   constructor(
     private $ws: WsService,
-  ) { }
+  ) {
+    this.term.loadAddon(this.fitAddon);
+    this.term.loadAddon(this.webLinksAddon);
+  }
 
   ngOnInit() {
     // set body bg color
@@ -31,8 +33,7 @@ export class TerminalComponent implements OnInit, OnDestroy {
     // create terminal
     this.termTarget = document.getElementById('docker-terminal');
     this.term.open(this.termTarget);
-    (<any>this.term).fit();
-    (<any>this.term).webLinksInit();
+    this.fitAddon.fit();
 
     this.io.connected.subscribe(() => {
       this.startTerminal();
@@ -53,19 +54,19 @@ export class TerminalComponent implements OnInit, OnDestroy {
     });
 
     // handle resize events
-    this.term.on('resize', (size) => {
+    this.term.onResize((size) => {
       this.resize.next(size);
     });
 
     // handle data events
-    this.term.on('data', (data) => {
+    this.term.onData((data) => {
       this.io.socket.emit('stdin', data);
     });
   }
 
   @HostListener('window:resize', ['$event'])
   onWindowResize(event) {
-    (<any>this.term).fit();
+    this.fitAddon.fit();
   }
 
   startTerminal() {

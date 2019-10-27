@@ -12,7 +12,7 @@ This plugin allows you to monitor, backup and configure your Homebridge server f
 
 [![Status](screenshots/homebridge-config-ui-x-accessories.png)](#accessory-control)
 
-## Installation Instructions
+# Installation Instructions
 
 ```
 sudo npm install -g --unsafe-perm homebridge-config-ui-x
@@ -225,11 +225,11 @@ The configuration screen allows you to modify your Homebridge `config.json`. The
 
 The following browsers are supported by this plugin:
 
-* Safari >= 10
-* Chrome >= 55 (including Opera)
-* FireFox >= 58
-* MS Edge >= 13 on the desktop
-* iOS >=10 and Chrome on mobile
+* Chrome - latest
+* Firefox - latest
+* Safari - 2 most recent major versions
+* Edge - 2 most recent major versions
+* iOS - 2 most recent major versions
 
 MS Internet Explorer (any version) is not supported!
 

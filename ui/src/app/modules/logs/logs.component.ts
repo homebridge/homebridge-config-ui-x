@@ -2,10 +2,8 @@ import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import { debounceTime } from 'rxjs/operators';
 import { Terminal } from 'xterm';
-import * as fit from 'xterm/lib/addons/fit/fit';
+import { FitAddon } from 'xterm-addon-fit';
 import { WsService } from '../../core/ws.service';
-
-Terminal.applyAddon(fit);
 
 @Component({
   selector: 'app-logs',
@@ -16,11 +14,14 @@ export class LogsComponent implements OnInit, OnDestroy {
 
   private term = new Terminal();
   private termTarget: HTMLElement;
+  private fitAddon = new FitAddon();
   private resize = new Subject();
 
   constructor(
     private $ws: WsService,
-  ) { }
+  ) {
+    this.term.loadAddon(this.fitAddon);
+  }
 
   ngOnInit() {
     // set body bg color
@@ -28,7 +29,7 @@ export class LogsComponent implements OnInit, OnDestroy {
 
     this.termTarget = document.getElementById('log-output');
     this.term.open(this.termTarget);
-    (<any>this.term).fit();
+    this.fitAddon.fit();
 
     this.io.connected.subscribe(() => {
       this.io.socket.emit('tail-log', { cols: this.term.cols, rows: this.term.rows });
@@ -49,14 +50,14 @@ export class LogsComponent implements OnInit, OnDestroy {
     });
 
     // handle resize events
-    this.term.on('resize', (size) => {
+    this.term.onResize((size) => {
       this.resize.next(size);
     });
   }
 
   @HostListener('window:resize', ['$event'])
   onWindowResize(event) {
-    (<any>this.term).fit();
+    this.fitAddon.fit();
   }
 
   ngOnDestroy() {

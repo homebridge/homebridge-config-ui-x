@@ -3,14 +3,12 @@ import { TranslateService } from '@ngx-translate/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { Terminal } from 'xterm';
-import * as fit from 'xterm/lib/addons/fit/fit';
+import { FitAddon } from 'xterm-addon-fit';
 
 import { AuthService } from '../../auth/auth.service';
 import { ApiService } from '../../api.service';
 import { WsService } from '../../ws.service';
 import { Router } from '@angular/router';
-
-Terminal.applyAddon(fit);
 
 @Component({
   selector: 'app-manage-plugins-modal',
@@ -25,6 +23,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
 
   private term = new Terminal();
   private termTarget: HTMLElement;
+  private fitAddon = new FitAddon();
 
   public actionComplete = false;
   public showReleaseNotes = false;
@@ -44,12 +43,14 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
     private $api: ApiService,
     private $ws: WsService,
     private $router: Router,
-  ) { }
+  ) {
+    this.term.loadAddon(this.fitAddon);
+  }
 
   ngOnInit() {
     this.termTarget = document.getElementById('plugin-log-output');
     this.term.open(this.termTarget);
-    (<any>this.term).fit();
+    this.fitAddon.fit();
 
     this.io.socket.on('stdout', (data) => {
       this.term.write(data);

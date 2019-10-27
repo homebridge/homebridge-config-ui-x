@@ -2,16 +2,20 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## Next
+## 4.6.3 (2019-10-27)
 
 ### Notable Changes
 
 * **Config Editor:** Improved Validation: Config in the `platforms` and `accessories` arrays are now checked to ensure they match the structure expected by Homebridge
-* **Auth:** If the `auth.json` file is corrupted or empty it will be recreated with the default credentials rather than throwing an error
+* **Auth:** If the `auth.json` file is corrupted or empty it will be recreated with the default credentials
 
 ### Bug Fixes
 
 * **i18n:** Swedish language improvements ([#410](https://github.com/oznu/homebridge-config-ui-x/pull/410))
+
+### Other Changes
+
+* Updated npm dependencies
 
 ## 4.6.2 (2019-10-08)
 

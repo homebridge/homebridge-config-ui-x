@@ -20,7 +20,7 @@
     "@angular/router": "^8.2.12",
     "@auth0/angular-jwt": "^3.0.0",
     "@fortawesome/fontawesome-free-webfonts": "^1.0.9",
-    "@ng-bootstrap/ng-bootstrap": "^5.1.1",
+    "@ng-bootstrap/ng-bootstrap": "^5.1.2",
     "@ngx-translate/core": "^11.0.1",
     "@ngx-translate/http-loader": "^4.0.0",
     "@oznu/hap-client": "^1.0.6",
@@ -47,9 +47,9 @@
     "socket.io-client": "^2.3.0",
     "tslib": "^1.10.0",
     "uuid": "^3.3.3",
-    "xterm": "^3.14.5",
-    "xterm-addon-fit": "^0.1.0",
-    "xterm-addon-web-links": "^0.1.0",
+    "xterm": "^4.2.0",
+    "xterm-addon-fit": "^0.3.0",
+    "xterm-addon-web-links": "^0.2.1",
     "zone.js": "~0.9.1"
   },
   "devDependencies": {
