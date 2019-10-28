@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## Next
+
+### Notable Changes
+
+* **Themes:** Dark mode is now darker
+
 ## 4.6.3 (2019-10-27)
 
 ### Notable Changes
