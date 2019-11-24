@@ -3,16 +3,18 @@
   $backgroundColor: #000000;
   $secondaryBackground: #2b2b2b;
   $secondaryText: #9e9e9e;
+
+  $modalBackground: #242424;
   
   background-color: $backgroundColor !important;
 
   .bg-primary {
-    background-color: #2b2b2b !important;
+    background-color: #242424 !important;
   }
 
   .navbar-dark {
-    background-color: #000000 !important;
-    border-bottom: #3e3e3e;
+    background-color: #0F0F0F !important;
+    border-bottom: #0F0F0F;
     border-bottom-style: solid;
     border-bottom-width: 1px;
   }
@@ -137,7 +139,7 @@
   }
 
   .modal-header {
-    background-color: $backgroundColor;
+    background-color: $modalBackground;
     border-bottom: none;
     border-radius: 0 !important;
 
@@ -153,18 +155,17 @@
   }
 
   .modal-body {
-    background-color: $backgroundColor;
+    background-color: $modalBackground;
     color: #FFFFFF;
   }
 
   .modal-footer {
-    background-color: $backgroundColor;
+    background-color: $modalBackground;
     border-top: none;
     border-radius: 0 !important;
   }
 
   .modal-backdrop {
-    background-color: #333333;
     opacity: 0.8;
   }
 
@@ -211,10 +212,10 @@
 
   .hb-npm-search {
     color: #999999 !important;
-    border-color: #999999 !important;
+    border-color: #242424 !important;
 
     &:focus, &:hover {
-      border: 1px solid #999999 !important;
+      border: 1px solid #242424 !important;
     }
 
     &:focus {
@@ -225,12 +226,12 @@
 
   .hb-plugin-settings-modal, .hb-accessories-info-modal {
     input, select {
-      border-color: $backgroundColor;
-      background-color: #575757;
+      border-color: #242424; //$backgroundColor;
+      background-color: #242424;
       color: #FFFFFF;
        
       &::placeholder {
-        color: $secondaryBackground;
+        color: #BDBDBD;
       }
     }
 

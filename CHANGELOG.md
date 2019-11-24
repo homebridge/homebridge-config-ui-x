@@ -2,11 +2,15 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## Next
+## 4.6.4 (2019-11-24)
 
 ### Notable Changes
 
 * **Themes:** Dark mode is now darker
+
+### Other Changes
+
+* Updated npm dependencies
 
 ## 4.6.3 (2019-10-27)
 
