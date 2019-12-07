@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 4.6.5 (2019-12-07)
+
+### Notable Changes
+
+* **i18n:** Norwegian language (no) translation added by [@fmandal](https://github.com/fmandal) ([#420](https://github.com/oznu/homebridge-config-ui-x/pull/420))
+
+### Other Changes
+
+* Updated npm dependencies
+
 ## 4.6.4 (2019-11-24)
 
 ### Notable Changes

@@ -1,14 +1,13 @@
-<div class="login-container d-flex align-items-center justify-content-center" [ngClass]="$auth.env.branding">
+<div class="login-container d-flex align-items-center justify-content-center">
   <div class="card card-body ml-2 mr-2 login-card">
 
     <form novalidate (ngSubmit)="onSubmit(form)" [formGroup]="form">
-      <img *ngIf="$auth.env.branding" class="login-logo" src="/assets/branding/{{ $auth.env.branding }}-logo-bw.png" />
       <p class="h4 text-center mb-4" [translate]="'login.title_login'">Login</p>
 
       <div class="md-form">
         <i class="material-icons prefix grey-text">&#xE85E;</i>
-        <input formControlName="username" type="text" id="form-username" autofocus autocomplete="username" autocapitalize="none" tabindex="1"
-          class="form-control pl-0 pr-0" [ngClass]="{
+        <input formControlName="username" type="text" id="form-username" autofocus autocomplete="username"
+          autocapitalize="none" tabindex="1" class="form-control pl-0 pr-0" [ngClass]="{
             'is-invalid': form.controls.username.dirty && form.controls.username.errors
           }">
         <label for="form-username" [translate]="'login.label_username'">Username</label>
