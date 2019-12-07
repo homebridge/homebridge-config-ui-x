@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-<!-- Please search existing issues to avoid creating duplicates. -->
+<!-- You must use the issue template below when submitting a bug -->
 
 **Describe The Bug:**
 <!-- A clear and concise description of what the bug is. -->

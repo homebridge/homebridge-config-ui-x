@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-<!-- Please search existing issues to avoid creating duplicates. -->
+<!-- You must use the issue template below when submitting a support request -->
 
 **Describe Your Problem:**
 <!-- A clear and concise description of what problem you are trying to solve. -->
