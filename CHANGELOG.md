@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 4.6.6 (2019-12-17)
+
+### Bug Fixes
+
+* **Accessory Control:** Fixed a bug that causes some accessory states not to update ([#426](https://github.com/oznu/homebridge-config-ui-x/issues/426))
+
+### Other Changes
+
+* Updated npm dependencies
+
 ## 4.6.5 (2019-12-07)
 
 ### Notable Changes

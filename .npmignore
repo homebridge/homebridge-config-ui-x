@@ -12,7 +12,8 @@ nodemon-debug.json
 nodemon.json
 nest-cli.json
 .prettierrc
-.vscode/settings.json
+.vscode
+.github
 
 # Logs
 logs

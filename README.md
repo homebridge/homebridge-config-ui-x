@@ -6,7 +6,7 @@ Supported Languages: :gb: :de: :fr: :poland: :czech_republic: :ru: :cn: :hungary
 
 # Homebridge Config UI X
 
-This is a plugin for [Homebridge](https://github.com/nfarina/homebridge). This is a fork of the work originally done by [mkellsy](https://github.com/mkellsy/homebridge-config-ui).
+This is a plugin for [Homebridge](https://github.com/nfarina/homebridge). This is a fork of the work originally done by [mkellsy](https://github.com/mkellsy).
 
 This plugin allows you to monitor, backup and configure your Homebridge server from a browser.
 
