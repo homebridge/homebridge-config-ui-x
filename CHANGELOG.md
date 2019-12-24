@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 4.6.7 (2019-12-24)
+
+### Bug Fixes
+
+* **System:** The Windows 10 service installer (hb-service) now configures the system firewall
+
 ## 4.6.6 (2019-12-17)
 
 ### Bug Fixes

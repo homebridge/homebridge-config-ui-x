@@ -227,6 +227,7 @@ class HomebridgeServiceHelper {
     try {
       child_process.execSync(installCmd);
       child_process.execSync(setUserDirCmd);
+      await this.configureFirewall();
       await this.start();
       console.log(`\nManage Homebridge by going to http://localhost:${this.uiPort} in your browser`);
       console.log(`Default Username: admin`);
@@ -339,6 +340,30 @@ class HomebridgeServiceHelper {
           return reject(err);
         });
     });
+  }
+
+  /**
+   * Ensures the Node.js process is allowed to accept incoming connections
+   */
+  private async configureFirewall() {
+    // firewall commands
+    const cleanFirewallCmd = `netsh advfirewall firewall Delete rule name="Homebridge"`;
+    const openFirewallCmd = `netsh advfirewall firewall add rule name="Homebridge" dir=in action=allow program="${process.execPath}"`;
+
+    // try and remove any existing rules so there are not any duplicates
+    try {
+      child_process.execSync(cleanFirewallCmd);
+    } catch (e) {
+      // this is probably ok, the firewall rule may not exist to remove
+    }
+
+    // create a new firewall rule
+    try {
+      child_process.execSync(openFirewallCmd);
+    } catch (e) {
+      this.logger(`Failed to configure firewall rule for Homebridge.`);
+      this.logger(e);
+    }
   }
 
   /**
