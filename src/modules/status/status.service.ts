@@ -1,12 +1,15 @@
-import * as os from 'os';
+import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as rp from 'request-promise-native';
+import * as si from 'systeminformation';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '../../core/config/config.service';
 import { Logger } from '../../core/logger/logger.service';
 
 @Injectable()
 export class StatusService {
+  private dashboardLayout;
+
   constructor(
     private logger: Logger,
     private configService: ConfigService,
@@ -23,7 +26,7 @@ export class StatusService {
 
     const systemStatusInterval = setInterval(async () => {
       client.emit('system-status', await this.getSystemStats());
-    }, 5000);
+    }, 10000);
 
     const homebridgeStatusInterval = setInterval(async () => {
       client.emit('homebridge-status', await this.getHomebridgeStats());
@@ -58,44 +61,13 @@ export class StatusService {
    * Returns system stats
    */
   private async getSystemStats() {
-    // memory usage
-    const memory = {
-      total: (((os.totalmem() / 1024) / 1024) / 1024).toFixed(2),
-      used: ((((os.totalmem() - os.freemem()) / 1024) / 1024) / 1024).toFixed(2),
-      free: (((os.freemem() / 1024) / 1024) / 1024).toFixed(2),
-    };
-
-    // cpu load
-    const cpu = (os.platform() === 'win32') ? null : (os.loadavg()[0] * 100 / os.cpus().length).toFixed(2);
-
-    // server uptime
-    const uptime: any = {
-      delta: Math.floor(os.uptime()),
-    };
-
-    uptime.days = Math.floor(uptime.delta / 86400);
-    uptime.delta -= uptime.days * 86400;
-    uptime.hours = Math.floor(uptime.delta / 3600) % 24;
-    uptime.delta -= uptime.hours * 3600;
-    uptime.minutes = Math.floor(uptime.delta / 60) % 60;
-
-    // cpu temp
-    let cputemp = null;
-    if (this.configService.ui.temp) {
-      try {
-        cputemp = await fs.readFile(this.configService.ui.temp, 'utf-8');
-        cputemp = ((cputemp / 1000).toPrecision(3));
-      } catch (e) {
-        cputemp = null;
-        this.logger.error(`Failed to read temp from ${this.configService.ui.temp}`);
-      }
-    }
-
     return {
-      memory,
-      cpu,
-      uptime,
-      cputemp,
+      mem: await si.mem(),
+      cpu: await si.cpu(),
+      cpuTemperature: await si.cpuTemperature(),
+      time: await si.time(),
+      currentLoad: await si.currentLoad(),
+      processUptime: process.uptime(),
     };
   }
 
@@ -112,5 +84,50 @@ export class StatusService {
     } catch (e) {
       return 'down';
     }
+  }
+
+  /**
+   * Get the current dashboard layout
+   */
+  public async getDashboardLayout() {
+    if (!this.dashboardLayout) {
+      try {
+        const layout = await fs.readJSON(path.resolve(this.configService.storagePath, '.uix-dashboard.json'));
+        this.dashboardLayout = layout;
+        return layout;
+      } catch (e) {
+        return [];
+      }
+    } else {
+      return this.dashboardLayout;
+    }
+  }
+
+  /**
+   * Saves the current dashboard layout
+   */
+  public async setDashboardLayout(layout) {
+    fs.writeJSONSync(path.resolve(this.configService.storagePath, '.uix-dashboard.json'), layout);
+    this.dashboardLayout = layout;
+    return { status: 'ok' };
+  }
+
+  /**
+   * Returns details about this Homebridge server
+   */
+  public async getHomebridgeServerInfo() {
+    const defaultInterface = await si.networkInterfaceDefault();
+    return {
+      homebridgeConfigJsonPath: this.configService.configPath,
+      homebridgeStoragePath: this.configService.storagePath,
+      homebridgeInsecureMode: this.configService.homebridgeInsecureMode,
+      homebridgeCustomPluginPath: this.configService.customPluginPath,
+      homebridgeRunningInDocker: this.configService.runningInDocker,
+      homebridgeServiceMode: this.configService.serviceMode,
+      nodeVersion: process.version,
+      os: await si.osInfo(),
+      time: await si.time(),
+      network: (await si.networkInterfaces()).find(x => x.iface === defaultInterface),
+    };
   }
 }

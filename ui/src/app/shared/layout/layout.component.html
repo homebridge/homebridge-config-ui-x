@@ -31,57 +31,57 @@
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" placement="bottom"
           ngbTooltip="{{'menu.tooltip_view_logs' | translate}}" container="body">
           <a class="nav-link" routerLink="/logs">
-            <i class="material-icons">chrome_reader_mode</i>
-          </a>
-        </li>
-        <li class="nav-item waves-effect waves-light" routerLinkActive="active" placement="bottom"
-          ngbTooltip="{{'menu.tooltip_user_accounts' | translate}}" container="body" *ngIf="$auth.user.admin">
-          <a class="nav-link" routerLink="/users">
-            <i class="material-icons">supervisor_account</i>
+            <i class="fas fa-wave-square nav-menu-icon"></i>
           </a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" placement="bottom"
           ngbTooltip="{{'menu.tooltip_restart' | translate}}" container="body">
           <a class="nav-link" routerLink="/restart">
-            <i class="material-icons">power_settings_new</i>
-          </a>
-        </li>
-        <li class="nav-item waves-effect waves-light" routerLinkActive="active" placement="bottom"
-          ngbTooltip="{{'menu.tooltip_logout' | translate}}" container="body" *ngIf="$auth.formAuth">
-          <a class="nav-link" (click)="$auth.logout()">
-            <i class="material-icons">exit_to_app</i>
+            <i class="fas fa-power-off nav-menu-icon"></i>
           </a>
         </li>
 
-        <li class="nav-item dropdown" *ngIf="$auth.env.runningInDocker && $auth.user.admin">
+        <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle waves-effect waves-light" data-toggle="dropdown" aria-haspopup="true"
             aria-expanded="false">
-            <i class="fab fa-docker"></i>
+            <i class="fas fa-ellipsis-v nav-menu-icon"></i>
           </a>
           <div class="dropdown-menu dropdown-menu-right dropdown-info">
-            <a class="dropdown-item waves-effect waves-light" routerLink="/platform-tools/terminal"
-              [translate]="'menu.docker.label_terminal'">Terminal</a>
-            <a class="dropdown-item waves-effect waves-light" routerLink="/platform-tools/docker/startup-script"
-              [translate]="'menu.docker.label_startup_script'">Startup Script</a>
-            <a class="dropdown-item waves-effect waves-light" routerLink="/platform-tools/docker/restart-container"
-              [translate]="'menu.docker.label_restart_container'">Restart Container</a>
             <a class="dropdown-item waves-effect waves-light" routerLink="/platform-tools/docker/settings"
-              [translate]="'menu.docker.label_settings'">Settings</a>
-          </div>
-        </li>
-
-        <li class="nav-item dropdown" *ngIf="$auth.env.runningInLinux && $auth.user.admin">
-          <a class="nav-link dropdown-toggle waves-effect waves-light" data-toggle="dropdown" aria-haspopup="true"
-            aria-expanded="false">
-            <i class="material-icons">more_vert</i>
-          </a>
-          <div class="dropdown-menu dropdown-menu-right dropdown-info">
-            <a class="dropdown-item waves-effect waves-light" *ngIf="$auth.env.enableTerminalAccess"
-              routerLink="/platform-tools/terminal" [translate]="'menu.linux.label_terminal'">Terminal</a>
-            <a class="dropdown-item waves-effect waves-light" routerLink="/platform-tools/linux/restart-server"
-              [translate]="'menu.linux.label_restart_server'">Restart Server</a>
-            <a class="dropdown-item waves-effect waves-light" routerLink="/platform-tools/linux/shutdown-server"
-              [translate]="'menu.linux.label_shutdown_server'">Shutdown Server</a>
+              *ngIf="$auth.env.runningInDocker && $auth.user.admin">
+              {{ 'menu.docker.label_settings' | translate }}
+            </a>
+            <a class="dropdown-item waves-effect waves-light" *ngIf="$auth.env.enableTerminalAccess && $auth.user.admin"
+              routerLink="/platform-tools/terminal">
+              {{ 'menu.linux.label_terminal' | translate }}
+            </a>
+            <a class="dropdown-item waves-effect waves-light" routerLink="/platform-tools/docker/startup-script"
+              *ngIf="$auth.env.runningInDocker && $auth.user.admin">
+              {{ 'menu.docker.label_startup_script' | translate }}
+            </a>
+            <a class="dropdown-item waves-effect waves-light" routerLink="/platform-tools/docker/restart-container"
+              *ngIf="$auth.env.runningInDocker && $auth.user.admin">
+              {{ 'menu.docker.label_restart_container' | translate }}
+            </a>
+            <a class="dropdown-item waves-effect waves-light" *ngIf="$auth.env.runningInLinux && $auth.user.admin"
+              routerLink="/platform-tools/linux/restart-server">
+              {{ 'menu.linux.label_restart_server' | translate }}
+            </a>
+            <a class="dropdown-item waves-effect waves-light" *ngIf="$auth.env.runningInLinux && $auth.user.admin"
+              routerLink="/platform-tools/linux/shutdown-server">
+              {{ 'menu.linux.label_shutdown_server' | translate }}
+            </a>
+            <div class="dropdown-divider" *ngIf="$auth.user.admin"></div>
+            <a class="dropdown-item waves-effect waves-light" (click)="resetHomebridgeState()" *ngIf="$auth.user.admin">
+              {{ 'reset.label_reset_homebridge' | translate | titlecase }}
+            </a>
+            <div class="dropdown-divider" *ngIf="$auth.user.admin"></div>
+            <a class="dropdown-item waves-effect waves-light" routerLink="/users" *ngIf=" $auth.user.admin">
+              {{'menu.tooltip_user_accounts' | translate}}
+            </a>
+            <a class="dropdown-item" (click)="$auth.logout()" *ngIf="$auth.formAuth">
+              {{ 'menu.tooltip_logout' | translate }}
+            </a>
           </div>
         </li>
 

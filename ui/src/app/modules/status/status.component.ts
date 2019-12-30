@@ -1,22 +1,13 @@
-import { Component, ElementRef, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
-import { take } from 'rxjs/operators';
+import { GridsterConfig, GridsterItem } from 'angular-gridster2';
+import { Subject } from 'rxjs';
 
 import { WsService } from '../../core/ws.service';
 import { AuthService } from '../../core/auth/auth.service';
-import { ApiService } from '../../core/api.service';
 import { ManagePluginsService } from '../../core/manage-plugins/manage-plugins.service';
-import { ResetHomebridgeModalComponent } from './reset-homebridge-modal/reset-homebridge-modal.component';
-
-
-interface HomebridgeStatus {
-  consolePort?: number;
-  port?: number;
-  pin?: string;
-  status?: string;
-  packageVersion?: string;
-}
+import { WidgetControlComponent } from './widget-control/widget-control.component';
 
 @Component({
   selector: 'app-status',
@@ -26,100 +17,127 @@ interface HomebridgeStatus {
   ],
 })
 export class StatusComponent implements OnInit, OnDestroy {
-  @ViewChild('qrcode', { static: true }) qrcode: ElementRef;
-
   private io = this.$ws.connectToNamespace('status');
 
-  public server: HomebridgeStatus = {};
-  public stats: any = {};
-  public homebridge: any = {};
-  public outOfDatePlugins: Array<any> = [];
-
-  public loadedQrCode = false;
-  public consoleStatus;
+  public options: GridsterConfig;
+  public dashboard: Array<GridsterItem> = [];
+  public consoleStatus: 'up' | 'down' = 'down';
 
   constructor(
     private $ws: WsService,
     public $auth: AuthService,
     public $plugin: ManagePluginsService,
-    private $api: ApiService,
     public $toastr: ToastrService,
     private $modal: NgbModal,
   ) { }
 
   ngOnInit() {
+    this.options = {
+      itemChangeCallback: this.gridChangedEvent.bind(this),
+      itemResizeCallback: this.gridResizeEvent,
+      draggable: {
+        enabled: this.$auth.user.admin,
+      },
+      resizable: {
+        enabled: this.$auth.user.admin,
+      },
+      gridType: 'verticalFixed',
+      minCols: 20,
+      maxCols: 20,
+      minRows: 20,
+      maxRows: 40,
+      fixedColWidth: 36,
+      fixedRowHeight: 36,
+      disableScrollHorizontal: true,
+      disableScrollVertical: false,
+      pushItems: true,
+      displayGrid: 'none',
+    };
+
     this.io.connected.subscribe(async () => {
       this.consoleStatus = 'up';
       this.io.socket.emit('monitor-server-status');
-      await this.checkHomebridgeVersion();
-      await this.getOutOfDatePlugins();
+
+      // get the dashboard layout
+      if (!this.dashboard.length) {
+        this.io.request('get-dashboard-layout').subscribe((layout) => {
+          if (!layout.length) {
+            layout = require('./default-dashboard-layout.json');
+          }
+          this.dashboard = layout.map((item) => {
+            item.$resizeEvent = new Subject();
+            return item;
+          });
+        });
+      }
     });
 
     this.io.socket.on('disconnect', () => {
       this.consoleStatus = 'down';
-      this.server.status = 'down';
-      this.loadedQrCode = false;
-    });
-
-    // listen for to stats data
-    this.io.socket.on('system-status', (data) => {
-      this.stats = data;
     });
 
     this.io.socket.on('homebridge-status', (data) => {
-      this.server = data;
-      this.getQrCodeImage();
-
       // check if client is up-to-date
-      if (this.server.packageVersion && this.server.packageVersion !== this.$auth.uiVersion) {
+      if (data.packageVersion && data.packageVersion !== this.$auth.uiVersion) {
         // tslint:disable-next-line:deprecation
         window.location.reload(true);
       }
     });
   }
 
-  checkHomebridgeVersion() {
-    return this.io.request('homebridge-version-check').toPromise()
-      .then((response) => {
-        this.homebridge = response;
-      })
-      .catch((err) => {
-        this.$toastr.error(err.message);
-      });
+  gridResizeEvent(item, itemComponent) {
+    itemComponent.item.$resizeEvent.next('resize');
   }
 
-  getOutOfDatePlugins() {
-    return this.io.request('get-out-of-date-plugins').toPromise()
-      .then((response) => {
-        this.outOfDatePlugins = response;
-      })
-      .catch((err) => {
-        this.$toastr.error(err.message);
-      });
-  }
-
-  getQrCodeImage() {
-    if (!this.loadedQrCode) {
-      return this.$api.get('/server/qrcode.svg', { responseType: 'text' as 'text' }).subscribe(
-        (svg) => {
-          this.qrcode.nativeElement.innerHTML = svg;
-          this.loadedQrCode = true;
-        },
-        (err) => {
-          this.loadedQrCode = false;
-        },
-      );
-    }
-  }
-
-  resetHomebridgeState() {
-    this.$modal.open(ResetHomebridgeModalComponent, {
-      size: 'lg',
+  async gridChangedEvent() {
+    const layout = this.dashboard.map((item) => {
+      const resp = {};
+      for (const key of Object.keys(item)) {
+        if (!key.startsWith('$')) {
+          resp[key] = item[key];
+        }
+      }
+      return resp;
     });
+
+    try {
+      await this.io.request('set-dashboard-layout', layout).toPromise();
+    } catch (e) {
+      console.error('Failed to save dashboard layout');
+      console.error(e);
+    }
   }
 
   ngOnDestroy() {
     this.io.end();
+  }
+
+  addWidget() {
+    this.dashboard.push({
+      'cols': 6,
+      'rows': 6,
+      'y': undefined,
+      'x': undefined,
+      'component': 'SystemInfoWidgetComponent',
+      $resizeEvent: new Subject(),
+    });
+  }
+
+  manageWidget(item) {
+    const ref = this.$modal.open(WidgetControlComponent);
+    ref.componentInstance.widget = item;
+
+    ref.result
+      .then((action) => {
+        if (action === 'remove') {
+          const index = this.dashboard.findIndex(x => x === item);
+          this.dashboard.splice(index, 1);
+          this.gridChangedEvent();
+        }
+      })
+      .catch(() => {
+
+      });
   }
 
 }

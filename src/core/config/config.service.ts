@@ -73,7 +73,6 @@ export class ConfigService {
       debug?: boolean;
       instanceBlacklist?: string[];
     }
-    temp?: string;
     tempUnits?: string;
     loginWallpaper?: string;
     noFork?: boolean;
@@ -85,7 +84,6 @@ export class ConfigService {
     debug?: boolean;
     proxyHost?: string;
     sessionTimeout?: number;
-    websocketCompatibilityMode?: boolean;
     homebridgePackagePath?: string;
   };
 
@@ -144,7 +142,6 @@ export class ConfigService {
         runningInLinux: this.runningInLinux,
         dockerOfflineUpdate: this.dockerOfflineUpdate,
         temperatureUnits: this.ui.tempUnits || 'c',
-        websocketCompatibilityMode: this.ui.websocketCompatibilityMode || false,
         instanceId: this.instanceId,
       },
       formAuth: Boolean(this.ui.auth !== 'none'),
@@ -172,7 +169,6 @@ export class ConfigService {
     }
     this.ui.theme = this.ui.theme || process.env.HOMEBRIDGE_CONFIG_UI_THEME || 'teal';
     this.ui.auth = this.ui.auth || process.env.HOMEBRIDGE_CONFIG_UI_AUTH as 'form' | 'none' || 'form';
-    this.ui.temp = this.ui.temp || process.env.HOMEBRIDGE_CONFIG_UI_TEMP || undefined;
     this.ui.loginWallpaper = this.ui.loginWallpaper || process.env.HOMEBRIDGE_CONFIG_UI_LOGIN_WALLPAPER || undefined;
   }
 

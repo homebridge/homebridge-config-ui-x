@@ -9,6 +9,7 @@ import { ConfigService } from '../../core/config/config.service';
 @Injectable()
 export class LogService {
   private command;
+  private ending = false;
 
   constructor(
     private configService: ConfigService,
@@ -31,6 +32,8 @@ export class LogService {
    * @param client
    */
   public connect(client, size) {
+    this.ending = false;
+
     if (!semver.satisfies(process.version, `>=${this.configService.minimumNodeVersion}`)) {
       client.emit('stdout', color.yellow(`Node.js v${this.configService.minimumNodeVersion} higher is required for ${this.configService.name}.\n\r`));
       client.emit('stdout', color.yellow(`You may experience issues while running on Node.js ${process.version}.\n\r\n\r`));
@@ -70,10 +73,12 @@ export class LogService {
     // send an error message to the client if the log tailing process exits early
     term.onExit((code) => {
       try {
-        client.emit('stdout', '\n\r');
-        client.emit('stdout', color.red(`The log tail command "${command.join(' ')}" exited with code ${code}.\n\r`));
-        client.emit('stdout', color.red(`Please check the command in your config.json is correct.\n\r\n\r`));
-        client.emit('stdout', color.cyan(`See https://github.com/oznu/homebridge-config-ui-x#log-viewer-configuration for instructions.\r\n`));
+        if (!this.ending) {
+          client.emit('stdout', '\n\r');
+          client.emit('stdout', color.red(`The log tail command "${command.join(' ')}" exited with code ${code.exitCode}.\n\r`));
+          client.emit('stdout', color.red(`Please check the command in your config.json is correct.\n\r\n\r`));
+          client.emit('stdout', color.cyan(`See https://github.com/oznu/homebridge-config-ui-x#log-viewer-configuration for instructions.\r\n`));
+        }
       } catch (e) {
         // the client socket probably closed
       }
@@ -88,6 +93,8 @@ export class LogService {
 
     // cleanup on disconnect
     const onEnd = () => {
+      this.ending = true;
+
       client.removeAllListeners('resize');
       client.removeAllListeners('end');
       client.removeAllListeners('disconnect');

@@ -29,10 +29,46 @@ export class StatusGateway {
     }
   }
 
+  @SubscribeMessage('npm-version-check')
+  async npmVersionCheck(client, payload) {
+    try {
+      return await this.pluginsService.getNpmPackage();
+    } catch (e) {
+      return new WsException(e.message);
+    }
+  }
+
   @SubscribeMessage('get-out-of-date-plugins')
   async getOutOfDatePlugins(client, payload) {
     try {
       return await this.pluginsService.getOutOfDatePlugins();
+    } catch (e) {
+      return new WsException(e.message);
+    }
+  }
+
+  @SubscribeMessage('get-dashboard-layout')
+  async getDashboardLayout(client, payload) {
+    try {
+      return await this.statusService.getDashboardLayout();
+    } catch (e) {
+      return new WsException(e.message);
+    }
+  }
+
+  @SubscribeMessage('set-dashboard-layout')
+  async setDashboardLayout(client, payload) {
+    try {
+      return await this.statusService.setDashboardLayout(payload);
+    } catch (e) {
+      return new WsException(e.message);
+    }
+  }
+
+  @SubscribeMessage('get-homebridge-server-info')
+  async getHomebridgeServerInfo(client, payload) {
+    try {
+      return await this.statusService.getHomebridgeServerInfo();
     } catch (e) {
       return new WsException(e.message);
     }

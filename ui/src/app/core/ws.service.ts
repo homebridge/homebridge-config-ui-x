@@ -73,13 +73,16 @@ export class WsService {
     }
   }
 
+  public getExistingNamespace(namespace: string): IoNamespace {
+    return this.namespaceConnectionCache[namespace];
+  }
+
   /**
    * Establish a connection to the namespace
    * @param namespace
    */
   private establishConnectionToNamespace(namespace: string): IoNamespace {
     const socket: SocketIOClient.Socket = connect(`${environment.api.socket}/${namespace}`, {
-      transports: this.$auth.env.websocketCompatibilityMode ? undefined : ['websocket'],
       query: {
         token: this.$auth.token,
       },

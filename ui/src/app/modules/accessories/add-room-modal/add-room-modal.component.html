@@ -1,21 +1,23 @@
 <div class="modal-content">
   <div class="modal-header">
     <h5 class="modal-title" [translate]="'accessories.title_create_new_room'">Create New Room</h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+      (click)="activeModal.dismiss('Cross click')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <form>
     <div class="modal-body">
       <div class="md-form">
-        <i class="material-icons prefix grey-text">&#xE88A;</i>
+        <i class="fas fa-home prefix grey-text"></i>
         <input type="text" id="form-name" autofocus class="form-control pl-0 pr-0" [(ngModel)]="roomName"
           [ngModelOptions]="{standalone: true}" (keyup.enter)="activeModal.close(roomName)">
         <label for="form-name" [translate]="'accessories.label_room_name'">Room Name</label>
       </div>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="activeModal.close(roomName)" [translate]="'accessories.button_create_room'">Create Room</button>
+      <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="activeModal.close(roomName)"
+        [translate]="'accessories.button_create_room'">Create Room</button>
     </div>
   </form>
 </div>

@@ -1,4 +1,4 @@
-.config-ui-x-dark-mode {
+.config-ui-x-dark-mode, .config-ui-x-dark-mode-v1 {
   $darkModePrimary: #ffa000;
   $backgroundColor: #000000;
   $secondaryBackground: #2b2b2b;
@@ -254,5 +254,16 @@
   .switch-on {
     background-color: #FFF;
     color: #000000;
+  }
+
+
+  /** Gridster **/
+  gridster-item {
+    color: #FFFFFF;
+    background-color: #2b2b2b;
+  }
+
+  gridster-preview {
+    background: rgba(224, 224, 224, 0.5);
   }
 }

@@ -9,3 +9,32 @@
 .status-container {
   min-height: 100%;
 }
+
+gridster {
+  background-color: inherit;
+}
+
+.widget-control-button {
+  cursor: pointer;
+  position: fixed;
+  right: 5px;
+  top: 5px;
+  opacity: 0;
+  -webkit-transition: opacity 200ms ease-in;
+  -moz-transition: opacity 200ms ease-in;
+  -ms-transition: opacity 200ms ease-in;
+  -o-transition: opacity 200ms ease-in;
+  transition: opacity 200ms ease-in;
+
+  &:active {
+    transform: scale(1.2);
+  }
+}
+
+.widget-item {
+  &:hover, &:active {
+    .widget-control-button {
+      opacity: 1;
+    }
+  }
+}

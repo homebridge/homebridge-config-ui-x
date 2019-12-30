@@ -1,0 +1,58 @@
+[
+  {
+    "cols": 15,
+    "rows": 3,
+    "y": 0,
+    "x": 5,
+    "component": "HomebridgeStatusWidgetComponent"
+  },
+  {
+    "cols": 5,
+    "rows": 3,
+    "y": 3,
+    "x": 5,
+    "component": "CpuWidgetComponent"
+  },
+  {
+    "cols": 5,
+    "rows": 9,
+    "y": 9,
+    "x": 0,
+    "component": "SystemInfoWidgetComponent"
+  },
+  {
+    "cols": 5,
+    "rows": 3,
+    "y": 3,
+    "x": 10,
+    "component": "MemoryWidgetComponent"
+  },
+  {
+    "cols": 5,
+    "rows": 3,
+    "y": 3,
+    "x": 15,
+    "component": "UptimeWidgetComponent"
+  },
+  {
+    "cols": 5,
+    "rows": 9,
+    "y": 0,
+    "x": 0,
+    "component": "HapQrcodeWidgetComponent"
+  },
+  {
+    "cols": 7,
+    "rows": 9,
+    "y": 9,
+    "x": 5,
+    "component": "HomebridgeLogsWidgetComponent"
+  },
+  {
+    "cols": 8,
+    "rows": 9,
+    "y": 9,
+    "x": 12,
+    "component": "TerminalWidgetComponent"
+  }
+]

@@ -41,6 +41,9 @@ export class PluginsService {
   // installed plugin cache
   private installedPlugins: HomebridgePlugin[];
 
+  // npm package cache
+  private npmPackage: HomebridgePlugin;
+
   // setup requests with default options
   private rp = rp.defaults({
     json: true,
@@ -179,7 +182,7 @@ export class PluginsService {
       // it's not installed; finish building the response
       plugin.publicPackage = true;
       plugin.latestVersion = pkg['dist-tags'].latest;
-      plugin.lastUpdated = pkg.package.date;
+      plugin.lastUpdated = pkg.time.modified;
       plugin.updateAvailable = false;
       plugin.links = {
         npm: `https://www.npmjs.com/package/${plugin.name}`,
@@ -353,6 +356,29 @@ export class PluginsService {
     await this.runNpmCommand([...this.npm, 'install', '--unsafe-perm', ...installOptions, `${homebridge.name}@latest`], installPath, client);
 
     return true;
+  }
+
+  /**
+   * Gets the npm module details
+   */
+  public async getNpmPackage() {
+    if (this.npmPackage) {
+      return this.npmPackage;
+    } else {
+      const modules = await this.getInstalledModules();
+
+      const npmPkg = modules.find(x => x.name === 'npm');
+
+      if (!npmPkg) {
+        throw new Error('Could not find npm package');
+      }
+
+      const pjson = await fs.readJson(path.join(npmPkg.installPath, 'package.json'));
+      const npm = await this.parsePackageJson(pjson, npmPkg.path);
+
+      this.npmPackage = npm;
+      return npm;
+    }
   }
 
   /**

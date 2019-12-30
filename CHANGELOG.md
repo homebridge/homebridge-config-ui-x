@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## NEXT
+
+### Notable Changes
+
+* **Status:** This release comes with a brand new status dashboard that features:
+  * User configurable widgets - everything on the dashboard is a widget, users are able to resize and position, add or remove the widgets however they like
+  * New widgets include:
+    * **Homebridge Status Widget** - Homebridge version and update check, current Homebridge service status and Homebridge plugins update check
+    * **CPU Widget** - shows the current cpu load (now much more accurate) and CPU temperature when available
+    * **Memory Widget** - shows the total and available memory (previously "Free" memory as show which is not a reliable indicator of "Available" memory)
+    * **Uptime Widget** - shows the server uptime and the process uptime
+    * **QR Code Widget** - shows the pairing QR Code
+    * **Homebridge Logs Widget** - shows the Homebridge logs stream
+    * **Homebridge Terminal Widget** - an interactive terminal (only available when web terminals are enabled on Linux or Docker)
+    * **System Information Widget** - shows details about your server and homebridge setup
+  * Full dark mode theme support
+
+### Other Changes
+
+* **Logs:** URLs in the log output are now clickable
+* **Status:** CPU temperature option, `temp`, has been removed, the CPU temperature will now automatically be displayed where possible on Linux and Windows
+* **System:** Removed the `websocketCompatibilityMode` option, this setting is now the default for all users
+* **Terminal:** The terminal now automatically respawns the shell if the shell is terminated by the user (e.g, when using CTRL+D)
+* **Themes:** The legacy Dark Mode (v1) has been removed, users will be migrated to the new Dark Mode automatically
+
 ## 4.6.7 (2019-12-24)
 
 ### Bug Fixes

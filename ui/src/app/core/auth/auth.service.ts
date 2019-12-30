@@ -146,10 +146,10 @@ export class AuthService {
         if (matchMedia('(prefers-color-scheme: dark)').matches) {
           theme = 'dark-mode';
         } else {
-          theme = 'teal';
+          theme = 'purple';
         }
       } catch (e) {
-        theme = 'teal';
+        theme = 'purple';
       }
     } else if (this.theme) {
       window.document.querySelector('body').classList.remove(`config-ui-x-${this.theme}`);

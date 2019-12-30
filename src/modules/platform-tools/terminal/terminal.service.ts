@@ -7,6 +7,8 @@ import { Logger } from '../../../core/logger/logger.service';
 
 @Injectable()
 export class TerminalService {
+  private ending = false;
+
   constructor(
     private configService: ConfigService,
     private logger: Logger,
@@ -17,6 +19,8 @@ export class TerminalService {
    * @param client
    */
   async startSession(client, size) {
+    this.ending = false;
+
     // if terminal is not enabled, disconnect the client
     if (!this.configService.enableTerminalAccess) {
       this.logger.error('Terminal is not enabled. Disconnecting client...');
@@ -39,14 +43,16 @@ export class TerminalService {
     });
 
     // write to the client
-    term.on('data', (data) => {
+    term.onData((data) => {
       client.emit('stdout', data);
     });
 
     // let the client know when the session ends
-    term.on('exit', () => {
+    term.onExit((code) => {
       try {
-        client.emit('stdout', color.red(`\n\r\n\rTerminal Session Ended\n\r\n\r`));
+        if (!this.ending) {
+          client.emit('process-exit', code);
+        }
       } catch (e) {
         // the client socket probably closed
       }
@@ -66,6 +72,8 @@ export class TerminalService {
 
     // cleanup on disconnect
     const onEnd = () => {
+      this.ending = true;
+
       client.removeAllListeners('stdin');
       client.removeAllListeners('resize');
       client.removeAllListeners('end');
