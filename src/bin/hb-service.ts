@@ -220,9 +220,9 @@ class HomebridgeServiceHelper {
     const nssmPath: string = await this.downloadNssm();
 
     // commands to run
-    const installCmd = `${nssmPath} install ${this.serviceName} ` +
-      `"${process.execPath}" "${__filename}" run -I -U ${this.storagePath}`;
-    const setUserDirCmd = `${nssmPath} set ${this.serviceName} AppEnvironmentExtra ":UIX_STORAGE_PATH=${this.storagePath}"`;
+    const installCmd = `"${nssmPath}" install ${this.serviceName} ` +
+      `"${process.execPath}" "\""${__filename}"\"" run -I -U "\""${this.storagePath}"\""`;
+    const setUserDirCmd = `"${nssmPath}" set ${this.serviceName} AppEnvironmentExtra ":UIX_STORAGE_PATH=${this.storagePath}"`;
 
     try {
       child_process.execSync(installCmd);
@@ -245,7 +245,7 @@ class HomebridgeServiceHelper {
   private async uninstall() {
     // download nssm.exe to help create the service
     const nssmPath: string = await this.downloadNssm();
-    const uninstallCmd = `${nssmPath} remove ${this.serviceName} confirm`;
+    const uninstallCmd = `"${nssmPath}" remove ${this.serviceName} confirm`;
 
     // stop existing service
     await this.stop();
@@ -268,7 +268,7 @@ class HomebridgeServiceHelper {
     const nssmPath: string = await this.downloadNssm();
 
     // commands to run
-    const stopCmd = `${nssmPath} start ${this.serviceName}`;
+    const stopCmd = `"${nssmPath}" start ${this.serviceName}`;
 
     try {
       this.logger(`Starting ${this.serviceName} Service...`);
@@ -288,7 +288,7 @@ class HomebridgeServiceHelper {
     const nssmPath: string = await this.downloadNssm();
 
     // commands to run
-    const stopCmd = `${nssmPath} stop ${this.serviceName}`;
+    const stopCmd = `"${nssmPath}" stop ${this.serviceName}`;
 
     try {
       this.logger(`Stopping ${this.serviceName} Service...`);
