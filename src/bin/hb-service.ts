@@ -221,7 +221,7 @@ class HomebridgeServiceHelper {
 
     // commands to run
     const installCmd = `"${nssmPath}" install ${this.serviceName} ` +
-      `"${process.execPath}" "${__filename}" run -I -U "${this.storagePath}"`;
+      `"${process.execPath}" "\""${__filename}"\"" run -I -U "\""${this.storagePath}"\""`;
     const setUserDirCmd = `"${nssmPath}" set ${this.serviceName} AppEnvironmentExtra ":UIX_STORAGE_PATH=${this.storagePath}"`;
 
     try {
