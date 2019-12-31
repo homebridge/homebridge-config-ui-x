@@ -1,15 +1,15 @@
 <div class="flex-column d-flex align-items-stretch h-100 w-100 pb-1">
-  <div style="cursor: move;" class="pl-2 pt-1 pb-1 pr-2" [translate]="'status.cpu.title_cpu'">CPU</div>
+  <div style="cursor: move;" class="drag-handler pl-2 pt-1 pb-1 pr-2" [translate]="'status.cpu.title_cpu'">CPU</div>
   <div class="d-flex justify-content-around flex-wrap w-100 gridster-item-content">
-    <div class="text-center">
-      <h1 class="mb-0">{{ currentLoad.currentload | number:'1.0-0' }}%</h1>
-      <span class="grey-text" [translate]="'status.cpu.label_load'">CPU Load</span>
+    <div class="text-center widget-value-parent-wrap">
+      <div class="widget-value mb-0">{{ currentLoad.currentload | number:'1.0-0' }}%</div>
+      <div class="widget-value-label grey-text" [translate]="'status.cpu.label_load'">CPU Load</div>
     </div>
-    <div class="text-center" *ngIf="cpuTemperature.main > 0">
-      <h1 class="mb-0">
+    <div class="text-center widget-value-parent-wrap" *ngIf="cpuTemperature.main > 0">
+      <div class="widget-value mb-0">
         {{ cpuTemperature.main | convertTemp | number:'1.0-2' }}&deg;{{ ($auth.env.temperatureUnits || 'C') | uppercase }}
-      </h1>
-      <span class="grey-text" [translate]="'status.cpu.label_temp'">CPU Temp</span>
+      </div>
+      <div class="widget-value-label grey-text" [translate]="'status.cpu.label_temp'">CPU Temp</div>
     </div>
   </div>
 </div>

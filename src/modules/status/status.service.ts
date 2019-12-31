@@ -9,82 +9,12 @@ import { Logger } from '../../core/logger/logger.service';
 @Injectable()
 export class StatusService {
   private dashboardLayout;
+  private homebridgeStatus: 'up' | 'down';
 
   constructor(
     private logger: Logger,
     private configService: ConfigService,
   ) { }
-
-  /**
-   * Socket Handler - Per Client
-   * Start emitting server stats to client
-   * @param client
-   */
-  public async watchStats(client) {
-    client.emit('system-status', await this.getSystemStats());
-    client.emit('homebridge-status', await this.getHomebridgeStats());
-
-    const systemStatusInterval = setInterval(async () => {
-      client.emit('system-status', await this.getSystemStats());
-    }, 10000);
-
-    const homebridgeStatusInterval = setInterval(async () => {
-      client.emit('homebridge-status', await this.getHomebridgeStats());
-    }, 10000);
-
-    // cleanup on disconnect
-    const onEnd = () => {
-      client.removeAllListeners('end');
-      client.removeAllListeners('disconnect');
-      clearInterval(systemStatusInterval);
-      clearInterval(homebridgeStatusInterval);
-    };
-
-    client.on('end', onEnd.bind(this));
-    client.on('disconnect', onEnd.bind(this));
-  }
-
-  /**
-   * Returns Homebridge Status From Healthcheck
-   */
-  private async getHomebridgeStats() {
-    return {
-      consolePort: this.configService.ui.port,
-      port: this.configService.homebridgeConfig.bridge.port,
-      pin: this.configService.homebridgeConfig.bridge.pin,
-      packageVersion: this.configService.package.version,
-      status: await this.checkHomebridgeStatus(),
-    };
-  }
-
-  /**
-   * Returns system stats
-   */
-  private async getSystemStats() {
-    return {
-      mem: await si.mem(),
-      cpu: await si.cpu(),
-      cpuTemperature: await si.cpuTemperature(),
-      time: await si.time(),
-      currentLoad: await si.currentLoad(),
-      processUptime: process.uptime(),
-    };
-  }
-
-  /**
-   * Check if homebridge is running on the local system
-   */
-  private async checkHomebridgeStatus() {
-    try {
-      await rp.get(`http://localhost:${this.configService.homebridgeConfig.bridge.port}`, {
-        resolveWithFullResponse: true,
-        simple: false, // <- This prevents the promise from failing on a 404
-      });
-      return 'up';
-    } catch (e) {
-      return 'down';
-    }
-  }
 
   /**
    * Get the current dashboard layout
@@ -110,6 +40,111 @@ export class StatusService {
     fs.writeJSONSync(path.resolve(this.configService.storagePath, '.uix-dashboard.json'), layout);
     this.dashboardLayout = layout;
     return { status: 'ok' };
+  }
+
+  /**
+   * Returns server CPU Load and temperature information
+   */
+  public async getServerCpuInfo() {
+    return {
+      cpu: await si.cpu(),
+      cpuTemperature: await si.cpuTemperature(),
+      currentLoad: await si.currentLoad(),
+    };
+  }
+
+  /**
+   * Returns server Memory usage information
+   */
+  public async getServerMemoryInfo() {
+    return {
+      mem: await si.mem(),
+    };
+  }
+
+  /**
+   * Returns server and process uptime information
+   */
+  public async getServerUptimeInfo() {
+    return {
+      time: await si.time(),
+      processUptime: process.uptime(),
+    };
+  }
+
+  /**
+   * Returns Homebridge pairing information
+   */
+  public async getHomebridgePairingPin() {
+    return {
+      pin: this.configService.homebridgeConfig.bridge.pin,
+    };
+  }
+
+  /**
+   * Returns Homebridge up/down status from cache
+   */
+  public async getHomebridgeStatus() {
+    return {
+      consolePort: this.configService.ui.port,
+      port: this.configService.homebridgeConfig.bridge.port,
+      pin: this.configService.homebridgeConfig.bridge.pin,
+      packageVersion: this.configService.package.version,
+      status: this.homebridgeStatus,
+    };
+  }
+
+  /**
+   * Socket Handler - Per Client
+   * Start emitting server stats to client
+   * @param client
+   */
+  public async watchStats(client) {
+    client.emit('homebridge-status', await this.getHomebridgeStats());
+
+    const homebridgeStatusInterval = setInterval(async () => {
+      client.emit('homebridge-status', await this.getHomebridgeStats());
+    }, 10000);
+
+    // cleanup on disconnect
+    const onEnd = () => {
+      client.removeAllListeners('end');
+      client.removeAllListeners('disconnect');
+      clearInterval(homebridgeStatusInterval);
+    };
+
+    client.on('end', onEnd.bind(this));
+    client.on('disconnect', onEnd.bind(this));
+  }
+
+  /**
+   * Returns Homebridge Status From Healthcheck
+   */
+  private async getHomebridgeStats() {
+    return {
+      consolePort: this.configService.ui.port,
+      port: this.configService.homebridgeConfig.bridge.port,
+      pin: this.configService.homebridgeConfig.bridge.pin,
+      packageVersion: this.configService.package.version,
+      status: await this.checkHomebridgeStatus(),
+    };
+  }
+
+  /**
+   * Check if homebridge is running on the local system
+   */
+  private async checkHomebridgeStatus() {
+    try {
+      await rp.get(`http://localhost:${this.configService.homebridgeConfig.bridge.port}`, {
+        resolveWithFullResponse: true,
+        simple: false, // <- This prevents the promise from failing on a 404
+      });
+      this.homebridgeStatus = 'up';
+    } catch (e) {
+      this.homebridgeStatus = 'down';
+    }
+
+    return this.homebridgeStatus;
   }
 
   /**

@@ -29,11 +29,13 @@ export class HomebridgeStatusWidgetComponent implements OnInit {
     });
 
     this.io.connected.subscribe(async () => {
+      await this.getHomebridgeStatus();
       await this.checkHomebridgeVersion();
       await this.getOutOfDatePlugins();
     });
 
     if (this.io.socket.connected) {
+      await this.getHomebridgeStatus();
       await this.checkHomebridgeVersion();
       await this.getOutOfDatePlugins();
     }
@@ -41,6 +43,13 @@ export class HomebridgeStatusWidgetComponent implements OnInit {
     this.io.socket.on('disconnect', () => {
       this.homebridgeStatus.status = 'down';
     });
+  }
+
+  getHomebridgeStatus() {
+    return this.io.request('get-homebridge-status').toPromise()
+      .then((response) => {
+        this.homebridgeStatus = response;
+      });
   }
 
   checkHomebridgeVersion() {

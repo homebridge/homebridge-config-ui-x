@@ -8,8 +8,12 @@ import { LogService } from '../../../../core/log.service';
   styleUrls: ['./homebridge-logs-widget.component.scss'],
 })
 export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
+  @ViewChild('widgetcontainer', { static: true }) widgetContainerElement: ElementRef;
+  @ViewChild('terminaltitle', { static: true }) titleElement: ElementRef;
   @ViewChild('logoutput', { static: true }) termTarget: ElementRef;
   @Input() resizeEvent: Subject<any>;
+
+  public terminalHeight = 200;
 
   constructor(
     private $log: LogService,
@@ -24,6 +28,18 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
         },
       }, this.resizeEvent);
     });
+
+    this.resizeEvent.subscribe({
+      next: () => {
+        this.terminalHeight = this.getTerminalHeight();
+      },
+    });
+  }
+
+  getTerminalHeight(): number {
+    const widgetContainerHeight = (<HTMLElement>this.widgetContainerElement.nativeElement).offsetHeight;
+    const titleHeight = (<HTMLElement>this.titleElement.nativeElement).offsetHeight;
+    return widgetContainerHeight - titleHeight;
   }
 
   ngOnDestroy() {

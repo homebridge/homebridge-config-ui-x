@@ -37,7 +37,7 @@ export class ConfigService {
   public runningInDocker = Boolean(process.env.HOMEBRIDGE_CONFIG_UI === '1');
   public runningInLinux = (!this.runningInDocker && os.platform() === 'linux');
   public ableToConfigureSelf = (!this.runningInDocker || semver.satisfies(process.env.CONFIG_UI_VERSION, '>=3.5.5'), { includePrerelease: true });
-  public enableTerminalAccess = this.runningInDocker || Boolean(process.env.HOMEBRIDGE_CONFIG_UI_TERMINAL === '1');
+  public enableTerminalAccess = true; // this.runningInDocker || Boolean(process.env.HOMEBRIDGE_CONFIG_UI_TERMINAL === '1');
 
   // docker paths
   public startupScript = path.resolve(this.storagePath, 'startup.sh');

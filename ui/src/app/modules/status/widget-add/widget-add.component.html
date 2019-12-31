@@ -1,21 +1,20 @@
 <div class="modal-content">
   <div class="modal-header">
-    <h5 class="modal-title" [translate]="'status.widget.title_manage_widget'">Manage Widget</h5>
+    <h5 class="modal-title" [translate]="'status.widget.label_add_widget'">Add Widget</h5>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"
       (click)="activeModal.dismiss('Cross click')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body">
-    <div class="text-center">
-      <h6 [translate]="'status.widget.label_widget_has_no_options'">This widget has no options</h6>
+    <div class="d-flex flex-wrap">
+      <div class="available-widget d-flex" *ngFor="let widget of availableWidgets" (click)="selectWidget(widget)">
+        <span class="align-self-center text-center w-100 add-widget-label primary-text">{{ widget.name }}</span>
+      </div>
     </div>
+
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-danger mr-auto" data-dismiss="modal" (click)="activeModal.close('remove')"
-      placement="right" ngbTooltip="{{ 'status.widget.label_remove_widget' | translate }}">
-      <i class="fas fa-trash-alt"></i>
-    </button>
     <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')"
       [translate]="'form.button_close'">Close</button>
   </div>

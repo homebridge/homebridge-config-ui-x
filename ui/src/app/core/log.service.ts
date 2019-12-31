@@ -86,7 +86,7 @@ export class LogService {
 
     if (this.elementResize) {
       // subscribe to grid resize event
-      this.elementResize.subscribe({
+      this.elementResize.pipe(debounceTime(100)).subscribe({
         next: () => {
           this.fitAddon.fit();
         },

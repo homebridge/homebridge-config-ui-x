@@ -18,7 +18,7 @@ export class HapQrcodeWidgetComponent implements OnInit {
   private loadedQrCode: boolean;
   private io = this.$ws.getExistingNamespace('status');
 
-  public pin;
+  public pin = 'Loading...';
   public qrCodeHeight;
   public qrCodeWidth;
 
@@ -34,6 +34,11 @@ export class HapQrcodeWidgetComponent implements OnInit {
       this.getQrCodeImage();
       this.pin = data.pin;
     });
+
+    if (this.io.socket.connected) {
+      this.getQrCodeImage();
+      this.getPairingPin();
+    }
 
     this.io.socket.on('disconnect', () => {
       this.loadedQrCode = false;
@@ -75,6 +80,12 @@ export class HapQrcodeWidgetComponent implements OnInit {
         },
       );
     }
+  }
+
+  getPairingPin() {
+    this.io.request('get-homebridge-pairing-pin').subscribe((data) => {
+      this.pin = data.pin;
+    });
   }
 
 }

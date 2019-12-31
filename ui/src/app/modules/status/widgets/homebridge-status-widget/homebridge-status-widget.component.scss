@@ -1,3 +1,9 @@
 .hb-status-icon {
   font-size: 40px;
 }
+
+.hb-status-item {
+  @media (max-width: 767px) {
+    width: 100%;
+  }
+}

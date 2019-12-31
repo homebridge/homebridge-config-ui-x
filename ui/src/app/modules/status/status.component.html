@@ -1,5 +1,12 @@
 <div class="status-container d-flex flex-column mt-0">
 
+
+  <button *ngIf="consoleStatus === 'up'" (click)="addWidget()" class="btn btn-primary btn-floating add-widget-button"
+    ngbTooltip="{{ 'status.widget.label_add_widget' | translate }}">
+    <i class="fas fa-plus"></i>
+  </button>
+
+
   <app-spinner *ngIf="consoleStatus === 'down'"></app-spinner>
 
   <div class="row flex-column flex-grow-1">
@@ -7,7 +14,7 @@
       <button (click)="addWidget()" class="btn btn-primary">Hi</button>
     </div> -->
     <gridster [options]="options" class="flex-grow-1" [hidden]="consoleStatus === 'down'" *ngIf="dashboard.length">
-      <gridster-item [item]="item" *ngFor="let item of dashboard" class="widget-item">
+      <gridster-item [item]="item" *ngFor="let item of dashboard" class="widget-item" [id]="item.component">
         <div class="gridster-item-content">
           <i class="fas fa-cog widget-control-button primary-text" (click)="manageWidget(item)"></i>
         </div>

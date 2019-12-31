@@ -5,8 +5,17 @@
   @media screen and (max-width: 600px){
     height: 27px;
   }
-    @media screen and (max-width: 991px){
+  @media screen and (max-width: 991px){
     height: 32px;
+  }
+}
+
+.hb-nav-right {
+  @media screen and (max-width: 991px){
+    float: right;
+      li {
+        margin-left: 20px;
+      } 
   }
 }
 

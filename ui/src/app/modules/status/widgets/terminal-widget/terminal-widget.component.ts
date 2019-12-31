@@ -8,8 +8,12 @@ import { TerminalService } from '../../../../core/terminal.service';
   styleUrls: ['./terminal-widget.component.scss'],
 })
 export class TerminalWidgetComponent implements OnInit, OnDestroy {
+  @ViewChild('widgetcontainer', { static: true }) widgetContainerElement: ElementRef;
+  @ViewChild('terminaltitle', { static: true }) titleElement: ElementRef;
   @ViewChild('terminaloutput', { static: true }) termTarget: ElementRef;
   @Input() resizeEvent: Subject<any>;
+
+  public terminalHeight = 200;
 
   constructor(
     private $terminal: TerminalService,
@@ -24,6 +28,18 @@ export class TerminalWidgetComponent implements OnInit, OnDestroy {
         },
       }, this.resizeEvent);
     });
+
+    this.resizeEvent.subscribe({
+      next: () => {
+        this.terminalHeight = this.getTerminalHeight();
+      },
+    });
+  }
+
+  getTerminalHeight(): number {
+    const widgetContainerHeight = (<HTMLElement>this.widgetContainerElement.nativeElement).offsetHeight;
+    const titleHeight = (<HTMLElement>this.titleElement.nativeElement).offsetHeight;
+    return widgetContainerHeight - titleHeight;
   }
 
   ngOnDestroy() {

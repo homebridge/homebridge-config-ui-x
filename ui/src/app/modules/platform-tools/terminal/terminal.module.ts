@@ -13,8 +13,4 @@ import { TerminalComponent } from './terminal.component';
     TerminalRoutingModule,
   ],
 })
-export class TerminalModule {
-  constructor() {
-    console.log('loaded');
-  }
-}
+export class TerminalModule { }

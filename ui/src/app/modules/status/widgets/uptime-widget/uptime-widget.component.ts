@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import * as moment from 'moment';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { interval, Subscription } from 'rxjs';
 
 import { WsService } from '../../../../core/ws.service';
 import { AuthService } from '../../../../core/auth/auth.service';
@@ -9,8 +9,9 @@ import { AuthService } from '../../../../core/auth/auth.service';
   templateUrl: './uptime-widget.component.html',
   styleUrls: ['./uptime-widget.component.scss'],
 })
-export class UptimeWidgetComponent implements OnInit {
+export class UptimeWidgetComponent implements OnInit, OnDestroy {
   private io = this.$ws.getExistingNamespace('status');
+  private intervalSubscription: Subscription;
 
   public serverUptime: string;
   public processUptime: string;
@@ -19,14 +20,46 @@ export class UptimeWidgetComponent implements OnInit {
     private $ws: WsService,
     public $auth: AuthService,
   ) {
-    moment.locale(window.navigator['userLanguage'] || window.navigator.language);
   }
 
   ngOnInit() {
-    this.io.socket.on('system-status', (data) => {
-      this.serverUptime = moment.duration(data.time.uptime, 'seconds').humanize();
-      this.processUptime = moment.duration(data.processUptime, 'seconds').humanize();
+    this.io.connected.subscribe(async () => {
+      this.getServerUptimeInfo();
     });
+
+    if (this.io.socket.connected) {
+      this.getServerUptimeInfo();
+    }
+
+    this.intervalSubscription = interval(11000).subscribe(() => {
+      if (this.io.socket.connected) {
+        this.getServerUptimeInfo();
+      }
+    });
+  }
+
+  getServerUptimeInfo() {
+    this.io.request('get-server-uptime-info').subscribe((data) => {
+      this.serverUptime = this.humaniseDuration(data.time.uptime);
+      this.processUptime = this.humaniseDuration(data.processUptime);
+    });
+  }
+
+  humaniseDuration(seconds: number) {
+    if (seconds < 50) {
+      return '< 1m';
+    }
+    if (seconds < 3600) {
+      return Math.round((seconds / 60)) + 'm';
+    }
+    if (seconds < 86400) {
+      return Math.round((seconds / 60 / 60)) + 'h';
+    }
+    return Math.floor((seconds / 60 / 60 / 24)) + 'd';
+  }
+
+  ngOnDestroy() {
+    this.intervalSubscription.unsubscribe();
   }
 
 }

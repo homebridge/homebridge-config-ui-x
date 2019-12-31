@@ -38,3 +38,54 @@ gridster {
     }
   }
 }
+
+.add-widget-button {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  z-index: 1000;
+  opacity: 0.4;
+
+  -webkit-transition: opacity 200ms ease-in;
+  -moz-transition: opacity 200ms ease-in;
+  -ms-transition: opacity 200ms ease-in;
+  -o-transition: opacity 200ms ease-in;
+  transition: opacity 200ms ease-in;
+
+  &:hover, &:active {
+    opacity: 1;
+  }
+
+  @media (max-width: 1023px) {
+    display: none;
+  }
+}
+
+gridster {
+  &.mobile {
+
+    #HomebridgeStatusWidgetComponent {
+      @media (min-width: 768px) {
+        min-height: 130px;
+        max-height: 130px;
+      }
+
+      @media (max-width: 767px) {
+        min-height: 300px;
+        max-height: 300px;
+      }
+    }
+
+    #CpuWidgetComponent, #MemoryWidgetComponent, #UptimeWidgetComponent {
+      max-height: 100px;
+    }
+
+    #SystemInfoWidgetComponent {
+      max-height: 360px;
+    }
+
+    #HapQrcodeWidgetComponent {
+      max-height: 360px;
+    }
+  }
+}

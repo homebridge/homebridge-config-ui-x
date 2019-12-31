@@ -19,9 +19,11 @@ import { MemoryWidgetComponent } from './widgets/memory-widget/memory-widget.com
 import { UptimeWidgetComponent } from './widgets/uptime-widget/uptime-widget.component';
 import { HomebridgeStatusWidgetComponent } from './widgets/homebridge-status-widget/homebridge-status-widget.component';
 import { SystemInfoWidgetComponent } from './widgets/system-info-widget/system-info-widget.component';
+import { WidgetAddComponent } from './widget-add/widget-add.component';
 
 @NgModule({
   entryComponents: [
+    WidgetAddComponent,
     WidgetControlComponent,
     HapQrcodeWidgetComponent,
     HomebridgeLogsWidgetComponent,
@@ -35,6 +37,7 @@ import { SystemInfoWidgetComponent } from './widgets/system-info-widget/system-i
   declarations: [
     StatusComponent,
     WidgetsComponent,
+    WidgetAddComponent,
     WidgetControlComponent,
     HapQrcodeWidgetComponent,
     HomebridgeLogsWidgetComponent,

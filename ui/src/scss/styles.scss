@@ -119,6 +119,29 @@ button {
   background-color: #000000 !important;
 }
 
+.btn-floating {
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  padding: 0;
+  margin: 10px;
+  overflow: hidden;
+  vertical-align: middle;
+  cursor: pointer;
+  border-radius: 50%;
+  -webkit-box-shadow: 0 5px 11px 0 rgba(0,0,0,0.18), 0 4px 15px 0 rgba(0,0,0,0.15);
+  box-shadow: 0 5px 11px 0 rgba(0,0,0,0.18), 0 4px 15px 0 rgba(0,0,0,0.15);
+  -webkit-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+  width: 47px;
+  height: 47px;
+
+  &:hover {
+    -webkit-box-shadow: 0 8px 17px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    box-shadow: 0 8px 17px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+  }
+}
+
 .help-block {
   color: #9e9e9e !important;
 }
@@ -189,4 +212,29 @@ gridster-item {
 
 gridster-preview {
   background: rgba(224, 224, 224, 0.5);
+}
+
+
+.widget-value-parent-wrap {
+  min-width: 100px;
+
+  .widget-value {
+    font-size: 2.5rem;
+    font-weight: 300;
+    line-height: 1.2;
+
+    @media (max-width: 1300px) {
+      font-size: 2.0rem;
+    }
+
+    @media (max-width: 1200px) {
+      font-size: 1.5rem;
+    }
+  }
+
+  .widget-value-label {
+    @media (max-width: 850px) {
+      font-size: 13px
+    }
+  }
 }

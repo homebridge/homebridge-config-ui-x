@@ -1,7 +1,7 @@
 <div class="flex-column d-flex align-items-stretch h-100 w-100 pb-1">
-  <div style="cursor: move;" class="pl-2 pt-1 pb-1 pr-2">Homebridge</div>
+  <div style="cursor: move;" class="drag-handler pl-2 pt-1 pb-1 pr-2">Homebridge</div>
   <div class="d-flex flex-wrap w-100 pr-3 pl-2 justify-content-start gridster-item-content">
-    <div class="d-flex flex-row mr-4">
+    <div class="hb-status-item d-flex flex-row mr-4">
       <div class="d-flex">
         <div class="mb-0 p-3 hb-status-icon">
           <i class="fas fa-cog fa-spin primary-text" *ngIf="!homebridgePkg.installedVersion"></i>
@@ -26,8 +26,8 @@
             Update Available
           </a>
           <br>
-          <span class="grey-text" *ngIf="homebridgePkg.installedVersion"><span class="d-none d-sm-inline"
-              [translate]="'status.homebridge.label_version'">Version</span>
+          <span class="grey-text" *ngIf="homebridgePkg.installedVersion">
+            <span [translate]="'status.homebridge.label_version'">Version</span>
             {{ homebridgePkg.installedVersion }}
           </span>
         </div>
@@ -35,7 +35,7 @@
       </div>
     </div>
 
-    <div class="d-flex flex-row mr-4">
+    <div class="hb-status-item d-flex flex-row mr-4">
       <div class="d-flex">
         <div class="mb-0 p-3 hb-status-icon">
           <i class="fas fa-exclamation-circle red-text" *ngIf="homebridgeStatus.status !== 'up'"></i>
@@ -44,16 +44,16 @@
         <div class="align-self-center">
           <span>Homebridge</span>
           <br>
-          <span class="grey-text d-none d-sm-block" *ngIf="homebridgeStatus.status === 'up'"
+          <span class="grey-text" *ngIf="homebridgeStatus.status === 'up'"
             [translate]="'status.services.label_running_on_port'"
             [translateParams]="{port: homebridgeStatus.port}">Listening</span>
-          <span class="grey-text d-none d-sm-block" *ngIf="homebridgeStatus.status !== 'up'"
+          <span class="grey-text" *ngIf="homebridgeStatus.status !== 'up'"
             [translate]="'status.services.label_not_running'">Not running</span>
         </div>
       </div>
     </div>
 
-    <div class="d-flex flex-row">
+    <div class="hb-status-item d-flex flex-row">
       <div class="d-flex">
         <div class="mb-0 p-3 hb-status-icon">
           <i class="fas fa-check-circle primary-text" *ngIf="homebridgePluginStatus.length"></i>
@@ -63,10 +63,10 @@
           <span [translate]="'menu.label_plugins'">Plugins</span>
           <br>
 
-          <a routerLink="/plugins" class="primary-text d-none d-sm-block" *ngIf="homebridgePluginStatus.length">
+          <a routerLink="/plugins" class="primary-text" *ngIf="homebridgePluginStatus.length">
             {{ homebridgePluginStatus.length }} {{ 'status.plugins_out_of_date' | translate }}
           </a>
-          <span class="grey-text d-none d-sm-block" *ngIf="!homebridgePluginStatus.length"
+          <span class="grey-text " *ngIf="!homebridgePluginStatus.length"
             [translate]="'status.services.label_not_running'">
             {{ 'status.homebridge.label_up_to_date' | translate }}
           </span>

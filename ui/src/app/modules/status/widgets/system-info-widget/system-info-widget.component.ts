@@ -21,12 +21,10 @@ export class SystemInfoWidgetComponent implements OnInit {
   ngOnInit() {
     this.io.request('get-homebridge-server-info').subscribe((data) => {
       this.serverInfo = data;
-      console.log(data);
     });
 
     this.io.request('npm-version-check').subscribe((data) => {
       this.npmInfo = data;
-      console.log(data);
     });
   }
 

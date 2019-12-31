@@ -8,6 +8,7 @@ import { WsService } from '../../core/ws.service';
 import { AuthService } from '../../core/auth/auth.service';
 import { ManagePluginsService } from '../../core/manage-plugins/manage-plugins.service';
 import { WidgetControlComponent } from './widget-control/widget-control.component';
+import { WidgetAddComponent } from './widget-add/widget-add.component';
 
 @Component({
   selector: 'app-status',
@@ -33,6 +34,7 @@ export class StatusComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.options = {
+      mobileBreakpoint: 1023,
       itemChangeCallback: this.gridChangedEvent.bind(this),
       itemResizeCallback: this.gridResizeEvent,
       draggable: {
@@ -90,6 +92,18 @@ export class StatusComponent implements OnInit, OnDestroy {
   }
 
   async gridChangedEvent() {
+    // sort the array to ensure mobile displays correctly
+    this.dashboard.sort((a: any, b: any) => {
+      if (a.mobileOrder < b.mobileOrder) {
+        return -1;
+      }
+      if (b.mobileOrder > b.mobileOrder) {
+        return 1;
+      }
+      return 0;
+    });
+
+    // remove private properties
     const layout = this.dashboard.map((item) => {
       const resp = {};
       for (const key of Object.keys(item)) {
@@ -100,6 +114,7 @@ export class StatusComponent implements OnInit, OnDestroy {
       return resp;
     });
 
+    // save to server
     try {
       await this.io.request('set-dashboard-layout', layout).toPromise();
     } catch (e) {
@@ -113,14 +128,19 @@ export class StatusComponent implements OnInit, OnDestroy {
   }
 
   addWidget() {
-    this.dashboard.push({
-      'cols': 6,
-      'rows': 6,
-      'y': undefined,
-      'x': undefined,
-      'component': 'SystemInfoWidgetComponent',
-      $resizeEvent: new Subject(),
-    });
+    const ref = this.$modal.open(WidgetAddComponent, { size: 'lg' });
+    ref.componentInstance.dashboard = this.dashboard;
+
+    ref.result
+      .then((widget) => {
+        setTimeout(() => {
+          const widgetElement = document.getElementById(widget.component);
+          widgetElement.scrollIntoView();
+        }, 500);
+      })
+      .catch(() => {
+        // modal closed
+      });
   }
 
   manageWidget(item) {
@@ -136,7 +156,7 @@ export class StatusComponent implements OnInit, OnDestroy {
         }
       })
       .catch(() => {
-
+        // modal closed
       });
   }
 

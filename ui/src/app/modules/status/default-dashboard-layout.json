@@ -4,55 +4,63 @@
     "rows": 3,
     "y": 0,
     "x": 5,
-    "component": "HomebridgeStatusWidgetComponent"
+    "component": "HomebridgeStatusWidgetComponent",
+    "mobileOrder": 0
   },
   {
     "cols": 5,
     "rows": 3,
     "y": 3,
     "x": 5,
-    "component": "CpuWidgetComponent"
-  },
-  {
-    "cols": 5,
-    "rows": 9,
-    "y": 9,
-    "x": 0,
-    "component": "SystemInfoWidgetComponent"
+    "component": "CpuWidgetComponent",
+    "mobileOrder": 1
   },
   {
     "cols": 5,
     "rows": 3,
     "y": 3,
     "x": 10,
-    "component": "MemoryWidgetComponent"
+    "component": "MemoryWidgetComponent",
+    "mobileOrder": 2
   },
   {
     "cols": 5,
     "rows": 3,
     "y": 3,
     "x": 15,
-    "component": "UptimeWidgetComponent"
+    "component": "UptimeWidgetComponent",
+    "mobileOrder": 3
+  },
+  {
+    "cols": 5,
+    "rows": 9,
+    "y": 9,
+    "x": 0,
+    "component": "SystemInfoWidgetComponent",
+    "mobileOrder": 4
   },
   {
     "cols": 5,
     "rows": 9,
     "y": 0,
     "x": 0,
-    "component": "HapQrcodeWidgetComponent"
+    "component": "HapQrcodeWidgetComponent",
+    "mobileOrder": 5
   },
   {
     "cols": 7,
     "rows": 9,
     "y": 9,
     "x": 5,
-    "component": "HomebridgeLogsWidgetComponent"
+    "component": "HomebridgeLogsWidgetComponent",
+    "mobileOrder": 10
   },
   {
     "cols": 8,
     "rows": 9,
     "y": 9,
     "x": 12,
-    "component": "TerminalWidgetComponent"
+    "component": "TerminalWidgetComponent",
+    "mobileOrder": 10
   }
 ]
