@@ -89,12 +89,31 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     this.saveInProgress = true;
     // verify homebridgeConfig contains valid json
     try {
+
       // get the value from the editor
       if (!this.isMobile) {
+        // format the document
         await this.monacoEditor.getAction('editor.action.formatDocument').run();
+
+        // check for issues, specifically block saving if there are any duplicate keys
+        const issues = window['monaco'].editor.getModelMarkers({ owner: 'json' });
+
+        for (const issue of issues) {
+          if (issue.message === 'Duplicate object key') {
+            this.saveInProgress = false;
+            this.$toastr.error(
+              this.translate.instant('config.toast_config_invalid_json'),
+              this.translate.instant('config.toast_title_config_syntax_error'),
+            );
+            return;
+          }
+        }
+
+        // set the value
         this.homebridgeConfig = this.monacoEditor.getModel().getValue();
       }
 
+      // parse the JSON
       const config = JSON.parse(this.homebridgeConfig);
 
       // ensure it's formatted so errors can be easily spotted
@@ -260,6 +279,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     const uri = monaco.Uri.parse('a://homebridge/config.json');
 
     window['monaco'].languages.json.jsonDefaults.setDiagnosticsOptions({
+      allowComments: false,
       validate: true,
       schemas: [
         {
@@ -299,22 +319,28 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                     pattern: '^([0-9]{3}-[0-9]{2}-[0-9]{3})$',
                   },
                 },
+                default: { name: 'Homebridge', username: '0E:89:49:64:91:86', port: 51173, pin: '630-27-655' },
               },
               mdns: {
                 type: 'object',
+                description: 'Tell Homebridge to listen on a specific IP address. This is useful if your server has multiple interfaces.',
                 required: ['interface'],
                 properties: {
                   interface: {
                     type: 'string',
+                    description: 'The IP address of the interface you want Homebridge to listen on.',
                   },
                 },
+                default: { interface: '' },
               },
               plugins: {
                 type: 'array',
-                description: 'An array of plugins that should be enabled. Remove this array to enable all plugins.',
+                description: 'An array of plugins that should be selectively enabled. Remove this array to enable all plugins.',
                 items: {
                   type: 'string',
+                  description: 'The full plugin npm package name.\nExample: homebridge-dummy',
                 },
+                default: ['homebridge-config-ui-x'],
               },
               ports: {
                 type: 'object',
@@ -334,6 +360,10 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                     maximum: 65534,
                   },
                 },
+                default: {
+                  start: 52100,
+                  end: 52150,
+                },
               },
               platforms: {
                 type: 'array',
@@ -341,15 +371,56 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                 items: {
                   type: 'object',
                   required: ['platform'],
-                  properties: {
-                    platform: {
-                      type: 'string',
-                      description: 'This is used by Homebridge to identify which plugin this platform belongs to.',
+                  anyOf: [
+                    {
+                      type: 'object',
+                      required: ['platform'],
+                      properties: {
+                        platform: {
+                          type: 'string',
+                          description: 'This is used by Homebridge to identify which plugin this platform belongs to.',
+                          not: { enum: ['config'] },
+                        },
+                        name: {
+                          type: 'string',
+                          description: 'The name of the platform.',
+                        },
+                      },
                     },
-                    name: {
-                      type: 'string',
+                    {
+                      type: 'object',
+                      properties: {
+                        platform: {
+                          type: 'string',
+                          description: 'Homebridge Config UI X platform name must be set to "config".\nDo Not Change!',
+                          oneOf: [
+                            { enum: 'config' },
+                          ],
+                        },
+                        name: {
+                          type: 'string',
+                          default: 'Config',
+                          description: 'The name used in the Homebridge log',
+                        },
+                        port: {
+                          type: 'number',
+                          description: 'The port Homebridge Config UI X will listen on',
+                          default: 52100,
+                          minimum: 10,
+                          maximum: 65534,
+                        },
+                        auth: {
+                          type: 'string',
+                          default: 'form',
+                          description: 'The Homebridge Config UI X authentication method',
+                          oneOf: [
+                            { 'enum': ['form'] },
+                            { 'enum': ['none'] },
+                          ],
+                        },
+                      },
                     },
-                  },
+                  ],
                 },
               },
               accessories: {
@@ -365,6 +436,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                     },
                     name: {
                       type: 'string',
+                      description: 'The name of the accessory.',
                     },
                   },
                 },

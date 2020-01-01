@@ -11,7 +11,17 @@
         </tr>
         <tr>
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_os'">OS</th>
-          <td>{{ serverInfo.os.codename || serverInfo.os.distro }}</td>
+          <td [ngSwitch]="serverInfo.os.platform">
+            <span *ngSwitchCase="'darwin'">
+              {{ serverInfo.os.codename }}
+            </span>
+            <span *ngSwitchCase="'win32'">
+              {{ serverInfo.os.distro }}
+            </span>
+            <span *ngSwitchDefault>
+              {{ serverInfo.os.distro }} {{ serverInfo.os.codename | titlecase }} ({{ serverInfo.os.release }})
+            </span>
+          </td>
         </tr>
         <tr>
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_hostname'">Hostname</th>

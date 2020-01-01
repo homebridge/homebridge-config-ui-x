@@ -11,16 +11,16 @@
     "cols": 5,
     "rows": 3,
     "y": 3,
-    "x": 5,
-    "component": "CpuWidgetComponent",
-    "mobileOrder": 1
-  },
-  {
-    "cols": 5,
-    "rows": 3,
-    "y": 3,
     "x": 10,
     "component": "MemoryWidgetComponent",
+    "mobileOrder": 2
+  },
+  {
+    "x": 5,
+    "y": 3,
+    "component": "CpuWidgetComponent",
+    "cols": 5,
+    "rows": 3,
     "mobileOrder": 2
   },
   {
@@ -33,7 +33,7 @@
   },
   {
     "cols": 5,
-    "rows": 9,
+    "rows": 8,
     "y": 9,
     "x": 0,
     "component": "SystemInfoWidgetComponent",
@@ -48,19 +48,12 @@
     "mobileOrder": 5
   },
   {
-    "cols": 7,
-    "rows": 9,
-    "y": 9,
     "x": 5,
+    "y": 6,
     "component": "HomebridgeLogsWidgetComponent",
-    "mobileOrder": 10
-  },
-  {
-    "cols": 8,
-    "rows": 9,
-    "y": 9,
-    "x": 12,
-    "component": "TerminalWidgetComponent",
-    "mobileOrder": 10
+    "cols": 15,
+    "rows": 11,
+    "mobileOrder": 10,
+    "hideOnMobile": true
   }
 ]
