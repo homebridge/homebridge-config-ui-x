@@ -18,7 +18,12 @@
             "polyfills": "src/polyfills.ts",
             "assets": [
               "src/assets",
-              "src/favicon.ico"
+              "src/favicon.ico",
+              {
+                "glob": "**/*",
+                "input": "node_modules/ngx-monaco-editor/assets/monaco",
+                "output": "./assets/monaco/"
+              }
             ],
             "styles": [
               "src/scss/styles.scss"
@@ -27,8 +32,7 @@
               "node_modules/jquery/dist/jquery.min.js",
               "node_modules/popper.js/dist/umd/popper.min.js",
               "node_modules/mdbootstrap/js/bootstrap.min.js",
-              "node_modules/mdbootstrap/js/mdb.js",
-              "node_modules/ace-builds/src-min/ace.js"
+              "node_modules/mdbootstrap/js/mdb.js"
             ]
           },
           "configurations": {

@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { AceEditorModule } from 'ng2-ace-editor';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
+import { MonacoEditorModule } from 'ngx-monaco-editor';
 
 import { CoreModule } from '../../../core/core.module';
 import { DockerRoutingModule } from './docker-routing.module';
@@ -23,7 +23,7 @@ import { ContainerSettingsResolver } from './container-settings/container-settin
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    AceEditorModule,
+    MonacoEditorModule,
     NgbModule,
     TranslateModule.forChild(),
     CoreModule,

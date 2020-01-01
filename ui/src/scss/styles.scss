@@ -168,8 +168,10 @@ button {
   -ms-overflow-style: none; // edge
 }
 
-.hb-ace-text-editor {
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+.hb-monaco-editor-line-error {
+	background: red;
+	width: 5px !important;
+  margin-left: 3px;
 }
 
 .hb-plain-text-editor {
@@ -179,6 +181,7 @@ button {
   font-family: monospace;
   overflow-wrap: normal;
   overflow-x: scroll;
+  font-size: 16px;
 }
 
 .hb-editor-block-error {

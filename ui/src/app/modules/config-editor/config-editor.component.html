@@ -16,11 +16,10 @@
     </div>
   </div>
 
-  <ace-editor #editor *ngIf="!isMobile" class="hb-ace-text-editor align-self-end h-100 mb-3 mt-3"
-    [(text)]="homebridgeConfig" theme="xcode" mode="json" [options]="options" [readOnly]="saveInProgress"
-    [autoUpdateContent]="true" (keydown.meta.s)="$event.preventDefault(); onSave()"
-    (keydown.control.s)="$event.preventDefault(); onSave()">
-  </ace-editor>
+  <ngx-monaco-editor *ngIf="!isMobile" class="flex-grow-1 h-100 w-100 mb-3 mt-3" [options]="editorOptions"
+    [model]="monacoEditorModel" (onInit)="onEditorInit($event)" (keydown.control.s)="$event.preventDefault(); onSave()"
+    (keydown.meta.s)="$event.preventDefault(); onSave()">
+  </ngx-monaco-editor>
 
   <textarea wrap="off" *ngIf="isMobile" class="hb-plain-text-editor align-self-end h-100 w-100 mb-3 mt-3"
     autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" [(ngModel)]="homebridgeConfig">

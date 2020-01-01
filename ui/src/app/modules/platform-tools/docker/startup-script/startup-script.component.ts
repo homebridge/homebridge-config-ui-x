@@ -1,38 +1,44 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-import 'brace/theme/xcode';
-import 'brace/mode/sh';
+import { NgxEditorModel } from 'ngx-monaco-editor';
 
+import { AuthService } from '../../../../core/auth/auth.service';
 import { ApiService } from '../../../../core/api.service';
 import { MobileDetectService } from '../../../../core/mobile-detect.service';
+import { MonacoEditorService } from '../../../../core/monaco-editor.service';
 
 @Component({
   selector: 'app-startup-script',
   templateUrl: './startup-script.component.html',
   styleUrls: ['./startup-script.component.scss'],
 })
-export class StartupScriptComponent implements OnInit {
+export class StartupScriptComponent implements OnInit, OnDestroy {
   public startupScript: string;
+  public saveInProgress: boolean;
+  public isMobile: any = false;
   public options: any = { printMargin: false };
 
+  public monacoEditor;
+  public editorOptions = {
+    language: 'shell',
+    theme: this.$auth.theme === 'dark-mode' ? 'vs-dark' : 'vs-light',
+  };
+
+  private editorDecoractions = [];
+  public monacoEditorModel: NgxEditorModel;
+
   constructor(
+    private $auth: AuthService,
     private $api: ApiService,
     private $md: MobileDetectService,
+    private $monacoEditor: MonacoEditorService,
     public $toastr: ToastrService,
     private translate: TranslateService,
     private $route: ActivatedRoute,
   ) {
-    // remove editor gutter on small screen devices
-    if ($md.detect.phone()) {
-      this.options.showGutter = false;
-    }
-
-    // make font size 16px on mobile devices to prevent zoom
-    if ($md.detect.mobile()) {
-      this.options.fontSize = '16px';
-    }
+    this.isMobile = this.$md.detect.mobile();
   }
 
   ngOnInit() {
@@ -40,9 +46,35 @@ export class StartupScriptComponent implements OnInit {
       .subscribe((data: { startupScript: { script: string } }) => {
         this.startupScript = data.startupScript.script;
       });
+
+    // setup the base monaco editor model
+    this.monacoEditorModel = {
+      value: '',
+      language: 'shell',
+    };
   }
 
-  onSave() {
+  /**
+    * Called when the monaco editor is ready
+    */
+  onEditorInit(editor) {
+    this.monacoEditor = editor;
+    this.monacoEditor.getModel().setValue(this.startupScript);
+  }
+
+  async onSave() {
+    if (this.saveInProgress) {
+      return;
+    }
+
+    this.saveInProgress = true;
+
+    // get the value from the editor
+    if (!this.isMobile) {
+      await this.monacoEditor.getAction('editor.action.formatDocument').run();
+      this.startupScript = this.monacoEditor.getModel().getValue();
+    }
+
     // check startup script is using the correct hashbang
     if (this.startupScript.split('\n')[0].trim() !== '#!/bin/sh') {
       this.$toastr.error(
@@ -50,16 +82,30 @@ export class StartupScriptComponent implements OnInit {
         this.translate.instant('platform.docker.startup_script.toast_title_script_error'),
       );
       this.startupScript = '#!/bin/sh\n\n' + this.startupScript;
+
+      if (!this.isMobile) {
+        this.monacoEditor.getModel().setValue(this.startupScript);
+      }
+      this.saveInProgress = false;
       return;
     }
 
-    this.$api.put('/platform-tools/docker/startup-script', { script: this.startupScript }).subscribe(
-      data => this.$toastr.success(
+    try {
+      await this.$api.put('/platform-tools/docker/startup-script', { script: this.startupScript }).toPromise();
+      this.$toastr.success(
         this.translate.instant('platform.docker.startup_script.toast_restart_required'),
         this.translate.instant('platform.docker.startup_script.toast_title_script_saved'),
-      ),
-      err => this.$toastr.error(err.message, this.translate.instant('toast.title_error')),
-    );
+      );
+    } catch (e) {
+      this.$toastr.error(e.message, this.translate.instant('toast.title_error'));
+    }
+
+    this.saveInProgress = false;
   }
 
+  ngOnDestroy() {
+    if (this.monacoEditor) {
+      this.monacoEditor.dispose();
+    }
+  }
 }

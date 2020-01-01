@@ -69,56 +69,6 @@
     }
   }
 
-  .ace_content {
-    background-color: $secondaryBackground !important;
-  }
-
-  .ace_text-layer {
-    color: $secondaryText;
-  }
-
-  .ace_cursor {
-    color: #FFFFFF !important;
-  }
-
-  .ace_selection {
-    background: rgba(255, 255, 255, 0.1) !important;
-  }
-
-  .ace_gutter {
-    background-color: #3c3c3c !important;
-  }
-
-  .ace_gutter-cell {
-    color: #9e9e9e !important;
-  }
-
-  .ace_indent-guide {
-    background: none !important;
-  }
-
-  .ace_variable {
-    color: #E06C75;
-  }
-
-  .ace_string {
-    color: #98C379 !important;
-  }
-
-  .ace_numeric {
-    color: #3aa5f7 !important;
-  }
-
-  .ace_boolean {
-    color: #56B6C2 !important;
-  }
-
-.hb-editor-block-error {
-  position:absolute;
-  background:rgba(74,58,21,0.88);
-  z-index:20
-}
-
   a {
     &.card-link {
       color: #9e9e9e;
