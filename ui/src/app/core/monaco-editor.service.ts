@@ -15,6 +15,5 @@ export class MonacoEditorService {
 }
 
 export function onMonacoLoad() {
-  console.log('loaded monaco');
   readyEvent.next();
 }

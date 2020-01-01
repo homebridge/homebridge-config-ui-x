@@ -33,7 +33,7 @@
   },
   {
     "cols": 5,
-    "rows": 8,
+    "rows": 9,
     "y": 9,
     "x": 0,
     "component": "SystemInfoWidgetComponent",
@@ -52,7 +52,7 @@
     "y": 6,
     "component": "HomebridgeLogsWidgetComponent",
     "cols": 15,
-    "rows": 11,
+    "rows": 12,
     "mobileOrder": 10,
     "hideOnMobile": true
   }

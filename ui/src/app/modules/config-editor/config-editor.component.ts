@@ -399,24 +399,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                         },
                         name: {
                           type: 'string',
-                          default: 'Config',
                           description: 'The name used in the Homebridge log',
-                        },
-                        port: {
-                          type: 'number',
-                          description: 'The port Homebridge Config UI X will listen on',
-                          default: 52100,
-                          minimum: 10,
-                          maximum: 65534,
-                        },
-                        auth: {
-                          type: 'string',
-                          default: 'form',
-                          description: 'The Homebridge Config UI X authentication method',
-                          oneOf: [
-                            { 'enum': ['form'] },
-                            { 'enum': ['none'] },
-                          ],
                         },
                       },
                     },
