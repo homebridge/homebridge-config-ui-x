@@ -1,64 +1,72 @@
-<div class="flex-column d-flex align-items-stretch h-100 w-100 pb-1 overflow-auto">
+<div class="flex-column d-flex align-items-stretch h-100 w-100 pb-1 overflow-auto no-scrollbars">
   <div style="cursor: move;" class="drag-handler pl-2 pt-1 pb-1 pr-2" [translate]="'status.widget.label_systeminfo'">
     System Information
   </div>
-  <div class="d-flex flex-wrap w-100 pl-2 pr-2" *ngIf="serverInfo">
-    <table class="table table-sm table-borderless gridster-item-content">
+  <div class="d-flex flex-wrap w-100 pl-1 pr-1" *ngIf="serverInfo">
+    <table class="table table-sm table-borderless gridster-item-content ">
       <tbody>
         <tr>
-          <th scope="row" [translate]="'status.widget.systeminfo.label_timezone'">Timezone</th>
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_timezone'">Timezone</th>
           <td>{{ serverInfo.time.timezone }}</td>
         </tr>
         <tr>
-          <th scope="row" [translate]="'status.widget.systeminfo.label_os'">OS</th>
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_os'">OS</th>
           <td>{{ serverInfo.os.codename || serverInfo.os.distro }}</td>
         </tr>
         <tr>
-          <th scope="row" [translate]="'status.widget.systeminfo.label_hostname'">Hostname</th>
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_hostname'">Hostname</th>
           <td>{{ serverInfo.os.hostname }}</td>
         </tr>
         <tr>
-          <th scope="row" *ngIf="serverInfo.network.ip4">
+          <th scope="row" class="text-nowrap" *ngIf="serverInfo.network.ip4">
             {{ 'status.widget.systeminfo.label_ipv4' | translate }} ({{ serverInfo.network.iface }})
           </th>
           <td>{{ serverInfo.network.ip4 }}</td>
         </tr>
         <tr>
-          <th scope="row" [translate]="'status.widget.systeminfo.label_timezone'" *ngIf="serverInfo.network.ip6">
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_timezone'"
+            *ngIf="serverInfo.network.ip6">
             {{ 'status.widget.systeminfo.label_ipv6' | translate }} ({{ serverInfo.network.iface }})
           </th>
           <td>{{ serverInfo.network.ip6 }}</td>
         </tr>
         <tr>
-          <th scope="row" [translate]="'status.widget.systeminfo.label_nodejs_version'">Node.js Version</th>
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_nodejs_version'">Node.js
+            Version</th>
           <td>{{ serverInfo.nodeVersion }}</td>
         </tr>
         <tr *ngIf="npmInfo.installedVersion">
-          <th scope="row" [translate]="'status.widget.systeminfo.label_npm_version'">Npm version</th>
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_npm_version'">Npm version
+          </th>
           <td>v{{ npmInfo.installedVersion }}</td>
         </tr>
         <tr>
-          <th scope="row" [translate]="'status.widget.systeminfo.label_storage_path'">Storage Path</th>
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_storage_path'">Storage Path
+          </th>
           <td>{{ serverInfo.homebridgeStoragePath }}</td>
         </tr>
         <tr>
-          <th scope="row" [translate]="'status.widget.systeminfo.label_config_path'">Config Path</th>
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_config_path'">Config Path
+          </th>
           <td>{{ serverInfo.homebridgeConfigJsonPath }}</td>
         </tr>
         <tr *ngIf="serverInfo.homebridgeCustomPluginPath">
-          <th scope="row" [translate]="'status.widget.systeminfo.label_plugin_path'">Plugin Path</th>
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_plugin_path'">Plugin Path
+          </th>
           <td>{{ serverInfo.homebridgeCustomPluginPath }}</td>
         </tr>
         <tr *ngIf="serverInfo.homebridgeInsecureMode">
-          <th scope="row" [translate]="'status.widget.systeminfo.label_insecure_mode'">Insecure Mode</th>
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_insecure_mode'">Insecure Mode
+          </th>
           <td>Yes</td>
         </tr>
         <tr *ngIf="serverInfo.homebridgeRunningInDocker">
-          <th scope="row" [translate]="'status.widget.systeminfo.label_docker'">Docker</th>
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_docker'">Docker</th>
           <td>Yes</td>
         </tr>
         <tr *ngIf="serverInfo.homebridgeServiceMode">
-          <th scope="row" [translate]="'status.widget.systeminfo.label_service_mode'">Service Mode</th>
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_service_mode'">Service Mode
+          </th>
           <td>Yes</td>
         </tr>
       </tbody>

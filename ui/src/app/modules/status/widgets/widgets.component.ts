@@ -9,6 +9,7 @@ import { MemoryWidgetComponent } from './memory-widget/memory-widget.component';
 import { UptimeWidgetComponent } from './uptime-widget/uptime-widget.component';
 import { HomebridgeStatusWidgetComponent } from './homebridge-status-widget/homebridge-status-widget.component';
 import { SystemInfoWidgetComponent } from './system-info-widget/system-info-widget.component';
+import { WeatherWidgetComponent } from './weather-widget/weather-widget.component';
 
 @Component({
   selector: 'app-widgets',
@@ -16,7 +17,6 @@ import { SystemInfoWidgetComponent } from './system-info-widget/system-info-widg
 })
 export class WidgetsComponent implements OnInit, OnDestroy {
   @Input() widget;
-  @Input() resizeEvent: Subject<any>;
 
   private availableWidgets = {
     HapQrcodeWidgetComponent,
@@ -27,6 +27,7 @@ export class WidgetsComponent implements OnInit, OnDestroy {
     UptimeWidgetComponent,
     HomebridgeStatusWidgetComponent,
     SystemInfoWidgetComponent,
+    WeatherWidgetComponent,
   };
 
   private componentRef;
@@ -46,7 +47,8 @@ export class WidgetsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.componentRef) {
-      this.resizeEvent.complete();
+      this.widget.$resizeEvent.complete();
+      this.widget.$configureEvent.complete();
       this.componentRef.destroy();
     }
   }
@@ -57,8 +59,10 @@ export class WidgetsComponent implements OnInit, OnDestroy {
       .resolveComponentFactory(component)
       .create(this.injector);
 
-    // 2. Pass the resize event observable
-    this.componentRef.instance.resizeEvent = this.resizeEvent;
+    // 2. Pass the though things
+    this.componentRef.instance.resizeEvent = this.widget.$resizeEvent;
+    this.componentRef.instance.configureEvent = this.widget.$configureEvent;
+    this.componentRef.instance.widget = this.widget;
 
     // 3. Get DOM element from component
     const domElem = (this.componentRef.hostView as EmbeddedViewRef<any>)

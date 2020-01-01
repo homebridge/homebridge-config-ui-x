@@ -1,4 +1,4 @@
-<div class="modal-content">
+<div class="modal-content" style="min-height: 400px;">
   <div class="modal-header">
     <h5 class="modal-title" [translate]="'status.widget.label_add_widget'">Add Widget</h5>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"
@@ -11,6 +11,10 @@
       <div class="available-widget d-flex" *ngFor="let widget of availableWidgets" (click)="selectWidget(widget)">
         <span class="align-self-center text-center w-100 add-widget-label primary-text">{{ widget.name }}</span>
       </div>
+    </div>
+
+    <div *ngIf="!availableWidgets.length" class="text-center">
+      <h4>{{ 'status.widget.label_no_additional_widgets' | translate }}</h4>
     </div>
 
   </div>

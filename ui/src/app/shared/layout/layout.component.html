@@ -49,7 +49,7 @@
           <div class="dropdown-menu dropdown-menu-right dropdown-info">
             <a class="dropdown-item waves-effect waves-light" routerLink="/platform-tools/docker/settings"
               *ngIf="$auth.env.runningInDocker && $auth.user.admin">
-              {{ 'menu.docker.label_settings' | translate }}
+              Docker {{ 'menu.docker.label_settings' | translate }}
             </a>
             <a class="dropdown-item waves-effect waves-light" *ngIf="$auth.env.enableTerminalAccess && $auth.user.admin"
               routerLink="/platform-tools/terminal">
@@ -76,6 +76,9 @@
               {{ 'reset.label_reset_homebridge' | translate | titlecase }}
             </a>
             <div class="dropdown-divider" *ngIf="$auth.user.admin"></div>
+            <a class="dropdown-item waves-effect waves-light" (click)="openUiSettings()" *ngIf="$auth.user.admin">
+              {{ 'menu.label_ui_settings' | translate }}
+            </a>
             <a class="dropdown-item waves-effect waves-light" routerLink="/users" *ngIf=" $auth.user.admin">
               {{'menu.tooltip_user_accounts' | translate}}
             </a>

@@ -6,9 +6,32 @@
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
-  <div class="modal-body">
-    <div class="text-center">
+  <div class="modal-body" [ngSwitch]="widget.component">
+    <div *ngSwitchCase="'WeatherWidgetComponent'">
+      <div class="alert alert-primary" role="alert" [translate]="'status.widget.weather.label_add_city_instructions'">
+        To enable the weather widget please search for your city name in English.
+      </div>
+
+      <label for="city-search-input" [translate]="'status.widget.weather.label_search_for_your_city'">
+        Search for your city:
+      </label>
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="">
+            <i class="fas" [ngClass]="{'fa-sync fa-spin': searching, 'fa-city': !searching}"></i>
+          </span>
+        </div>
+        <input id="city-search-input" type="text" class="form-control" [ngbTypeahead]="searchCountryCodes"
+          [resultFormatter]="searchCountryCodeFormatter" [inputFormatter]="searchCountryCodeFormatter"
+          [editable]='false' [(ngModel)]="widget.location" />
+      </div>
+      <p class="muted grey-text font-italic text-center">
+        Weather data is provided by OpenWeather.
+      </p>
+    </div>
+    <div class="text-center" *ngSwitchDefault>
       <h6 [translate]="'status.widget.label_widget_has_no_options'">This widget has no options</h6>
+      <pre>{{ hideOnMobile }}</pre>
     </div>
   </div>
   <div class="modal-footer">

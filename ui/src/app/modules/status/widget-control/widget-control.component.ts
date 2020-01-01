@@ -1,5 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { Observable, of } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, tap, switchMap, catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-widget-control',
@@ -9,11 +12,58 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 export class WidgetControlComponent implements OnInit {
   @Input() widget;
 
+  public searching: boolean;
+
+  public searchCountryCodes = (text$: Observable<string>) =>
+    text$.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      tap(() => this.searching = true),
+      switchMap(term =>
+        term.length < 3 ? [] :
+          this.findOpenWeatherMapCity(term).pipe(
+            catchError((e) => {
+              this.searching = false;
+              return of([]);
+            })),
+      ),
+      tap(() => this.searching = false),
+    )
+
+  public searchCountryCodeFormatter = (result: any) => result.name + ', ' + result.country;
+
   constructor(
     public activeModal: NgbActiveModal,
+    private $http: HttpClient,
   ) { }
 
   ngOnInit() {
+  }
+
+  findOpenWeatherMapCity(query: string) {
+    return this.$http
+      .get('https://openweathermap.org/data/2.5/find', {
+        params: new HttpParams({
+          fromObject: {
+            q: query,
+            type: 'like',
+            sort: 'population',
+            cnt: '30',
+            appid: 'b6907d289e10d714a6e88b30761fae22',
+          },
+        }),
+      }).pipe(
+        map((response: any) => {
+          return response.list.map((item) => {
+            return {
+              id: item.id,
+              name: item.name,
+              country: item.sys.country,
+              coord: item.coord,
+            };
+          });
+        }),
+      );
   }
 
 }

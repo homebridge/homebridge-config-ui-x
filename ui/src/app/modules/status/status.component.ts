@@ -6,6 +6,7 @@ import { Subject } from 'rxjs';
 
 import { WsService } from '../../core/ws.service';
 import { AuthService } from '../../core/auth/auth.service';
+import { MobileDetectService } from '../../core/mobile-detect.service';
 import { ManagePluginsService } from '../../core/manage-plugins/manage-plugins.service';
 import { WidgetControlComponent } from './widget-control/widget-control.component';
 import { WidgetAddComponent } from './widget-add/widget-add.component';
@@ -23,20 +24,24 @@ export class StatusComponent implements OnInit, OnDestroy {
   public options: GridsterConfig;
   public dashboard: Array<GridsterItem> = [];
   public consoleStatus: 'up' | 'down' = 'down';
+  public page = {
+    mobile: (window.innerWidth < 1024),
+  };
 
   constructor(
+    public $toastr: ToastrService,
+    private $modal: NgbModal,
     private $ws: WsService,
     public $auth: AuthService,
     public $plugin: ManagePluginsService,
-    public $toastr: ToastrService,
-    private $modal: NgbModal,
+    public $md: MobileDetectService,
   ) { }
 
   ngOnInit() {
     this.options = {
       mobileBreakpoint: 1023,
       itemChangeCallback: this.gridChangedEvent.bind(this),
-      itemResizeCallback: this.gridResizeEvent,
+      itemResizeCallback: this.gridResizeEvent.bind(this),
       draggable: {
         enabled: this.$auth.user.admin,
       },
@@ -68,6 +73,7 @@ export class StatusComponent implements OnInit, OnDestroy {
           }
           this.dashboard = layout.map((item) => {
             item.$resizeEvent = new Subject();
+            item.$configureEvent = new Subject();
             return item;
           });
         });
@@ -89,6 +95,7 @@ export class StatusComponent implements OnInit, OnDestroy {
 
   gridResizeEvent(item, itemComponent) {
     itemComponent.item.$resizeEvent.next('resize');
+    this.page.mobile = (window.innerWidth < 1024);
   }
 
   async gridChangedEvent() {
@@ -133,6 +140,24 @@ export class StatusComponent implements OnInit, OnDestroy {
 
     ref.result
       .then((widget) => {
+        const item = {
+          x: undefined,
+          y: undefined,
+          component: widget.component,
+          cols: widget.cols,
+          rows: widget.rows,
+          mobileOrder: widget.mobileOrder,
+          hideOnMobile: widget.hideOnMobile,
+          $resizeEvent: new Subject(),
+          $configureEvent: new Subject(),
+        };
+
+        this.dashboard.push(item);
+
+        if (widget.requiresConfig) {
+          this.manageWidget(item);
+        }
+
         setTimeout(() => {
           const widgetElement = document.getElementById(widget.component);
           widgetElement.scrollIntoView();
@@ -156,7 +181,8 @@ export class StatusComponent implements OnInit, OnDestroy {
         }
       })
       .catch(() => {
-        // modal closed
+        this.gridChangedEvent();
+        item.$configureEvent.next();
       });
   }
 

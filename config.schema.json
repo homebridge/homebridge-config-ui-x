@@ -20,12 +20,12 @@
         "required": true
       },
       "auth": {
-        "title": "Auth Mode",
+        "title": "Homebridge Config UI X Authentication",
         "type": "string",
         "default": "form",
         "oneOf": [
           {
-            "title": "Form",
+            "title": "Require Authentication",
             "enum": [
               "form"
             ]
@@ -334,7 +334,7 @@
           "flex-flow": "column",
           "items": [
             "port",
-            "auth"
+            "tempUnits"
           ]
         }
       ]
@@ -413,6 +413,7 @@
       "items": [
         "sudo",
         "debug",
+        "auth",
         {
           "key": "restart",
           "description": "If no restart command is set the process will terminate with a non-zero exit code."
@@ -426,26 +427,10 @@
           "key": "loginWallpaper",
           "description": "Leave blank to use default wallpaper."
         },
-        "tempUnits",
         {
           "key": "homebridgePackagePath",
           "description": "Leave blank unless you have not installed Homebridge as a global module."
         }
-      ]
-    },
-    {
-      "type": "fieldset",
-      "expandable": true,
-      "title": "SSL Setup",
-      "items": [
-        {
-          "type": "help",
-          "helpvalue": "<em class='primary-text'>Leave these fields blank to disable SSL.</em><br><em class='text-danger'>After enabling SSL you will only be able to access the Config UI using https://</div>"
-        },
-        "ssl.key",
-        "ssl.cert",
-        "ssl.pfx",
-        "ssl.passphrase"
       ]
     }
   ]

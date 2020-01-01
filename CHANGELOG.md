@@ -13,10 +13,11 @@ All notable changes to this project will be documented in this file. This projec
     * **CPU Widget** - shows the current cpu load (now much more accurate) and CPU temperature when available
     * **Memory Widget** - shows the total and available memory (previously "Free" memory as show which is not a reliable indicator of "Available" memory)
     * **Uptime Widget** - shows the server uptime and the process uptime
-    * **QR Code Widget** - shows the pairing QR Code
+    * **QR Code Widget** - shows the pairing QR Code and Homebridge PIN
     * **Homebridge Logs Widget** - shows the Homebridge logs stream
-    * **Homebridge Terminal Widget** - an interactive terminal (only available when web terminals are enabled on Linux or Docker)
+    * **Homebridge Terminal Widget** - an interactive terminal (only available when interactive web terminals are enabled)
     * **System Information Widget** - shows details about your server and homebridge setup
+    * **Weather Widget:** - shows the current weather for the set location (may add a forcast later)
   * Full dark mode theme support
 
 ### Other Changes
@@ -26,12 +27,17 @@ All notable changes to this project will be documented in this file. This projec
 * **System:** Removed the `websocketCompatibilityMode` option, this setting is now the default for all users
 * **Terminal:** The terminal now automatically respawns the shell if the shell is terminated by the user (e.g, when using CTRL+D)
 * **Themes:** The legacy Dark Mode (v1) has been removed, users will be migrated to the new Dark Mode automatically
+* Updated npm dependencies
+
+### Bug Fixes
+
+* **System:** Fixed a bug that prevented the Windows 10 service installer (`hb-service`) from working when the user's login name contained spaces
 
 ## 4.6.7 (2019-12-24)
 
 ### Bug Fixes
 
-* **System:** The Windows 10 service installer (hb-service) now configures the system firewall
+* **System:** The Windows 10 service installer (`hb-service`) now configures the system firewall
 
 ## 4.6.6 (2019-12-17)
 

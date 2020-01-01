@@ -20,8 +20,9 @@
             (onChanges)="block.onChange($event)">
           </json-schema-form>
           <div class="d-flex">
-            <a class="ml-auto red-text" (click)="removeBlock(block.__uuid__)"
-              [ngbTooltip]="'Remove ' + configSchema.pluginType + '.'" container="body">
+            <a *ngIf="pluginName !== 'homebridge-config-ui-x'" class="ml-auto red-text"
+              (click)="removeBlock(block.__uuid__)" [ngbTooltip]="'Remove ' + configSchema.pluginType + '.'"
+              container="body">
               <i class="fas fa-trash"></i>
             </a>
           </div>

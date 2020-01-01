@@ -36,7 +36,7 @@ export class WidgetAddComponent implements OnInit {
       hidden: false,
       cols: 5,
       rows: 3,
-      mobileOrder: 1,
+      mobileOrder: 2,
     },
     {
       name: this.translate.instant('status.memory.title_memory'),
@@ -44,7 +44,7 @@ export class WidgetAddComponent implements OnInit {
       hidden: false,
       cols: 5,
       rows: 3,
-      mobileOrder: 2,
+      mobileOrder: 3,
     },
     {
       name: this.translate.instant('status.uptime.title_uptime'),
@@ -52,7 +52,7 @@ export class WidgetAddComponent implements OnInit {
       hidden: false,
       cols: 5,
       rows: 3,
-      mobileOrder: 3,
+      mobileOrder: 4,
     },
     {
       name: this.translate.instant('status.widget.label_systeminfo'),
@@ -60,7 +60,7 @@ export class WidgetAddComponent implements OnInit {
       hidden: false,
       cols: 5,
       rows: 9,
-      mobileOrder: 4,
+      mobileOrder: 5,
     },
     {
       name: this.translate.instant('status.widget.label_homebridge_logs'),
@@ -69,6 +69,7 @@ export class WidgetAddComponent implements OnInit {
       cols: 7,
       rows: 6,
       mobileOrder: 10,
+      hideOnMobile: true,
     },
     {
       name: 'Homebridge ' + this.translate.instant('menu.docker.label_terminal'),
@@ -77,6 +78,16 @@ export class WidgetAddComponent implements OnInit {
       cols: 7,
       rows: 6,
       mobileOrder: 10,
+      hideOnMobile: true,
+    },
+    {
+      name: 'Weather',
+      component: 'WeatherWidgetComponent',
+      hidden: false,
+      cols: 3,
+      rows: 5,
+      mobileOrder: 1,
+      requiresConfig: true,
     },
   ];
 
@@ -93,13 +104,6 @@ export class WidgetAddComponent implements OnInit {
   }
 
   selectWidget(widget) {
-    this.dashboard.push({
-      component: widget.component,
-      cols: widget.cols,
-      rows: widget.rows,
-      mobileOrder: widget.mobileOrder,
-      $resizeEvent: new Subject(),
-    });
     this.activeModal.close(widget);
   }
 

@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 import { GridsterModule } from 'angular-gridster2';
@@ -20,6 +21,7 @@ import { UptimeWidgetComponent } from './widgets/uptime-widget/uptime-widget.com
 import { HomebridgeStatusWidgetComponent } from './widgets/homebridge-status-widget/homebridge-status-widget.component';
 import { SystemInfoWidgetComponent } from './widgets/system-info-widget/system-info-widget.component';
 import { WidgetAddComponent } from './widget-add/widget-add.component';
+import { WeatherWidgetComponent } from './widgets/weather-widget/weather-widget.component';
 
 @NgModule({
   entryComponents: [
@@ -33,6 +35,7 @@ import { WidgetAddComponent } from './widget-add/widget-add.component';
     UptimeWidgetComponent,
     HomebridgeStatusWidgetComponent,
     SystemInfoWidgetComponent,
+    WeatherWidgetComponent,
   ],
   declarations: [
     StatusComponent,
@@ -47,10 +50,13 @@ import { WidgetAddComponent } from './widget-add/widget-add.component';
     UptimeWidgetComponent,
     HomebridgeStatusWidgetComponent,
     SystemInfoWidgetComponent,
+    WeatherWidgetComponent,
   ],
   imports: [
     CommonModule,
     RouterModule,
+    FormsModule,
+    ReactiveFormsModule,
     TranslateModule.forChild(),
     NgbModule,
     GridsterModule,
