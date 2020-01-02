@@ -1,24 +1,22 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
-import { JwtHelperService } from '@auth0/angular-jwt';
 import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '../../../../core/api.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 
 @Component({
-  selector: 'app-homebridge-google-smarthome',
-  templateUrl: './homebridge-google-smarthome.component.html',
-  styleUrls: ['./homebridge-google-smarthome.component.scss'],
+  selector: 'app-homebridge-honeywell-home',
+  templateUrl: './homebridge-honeywell-home.component.html',
+  styleUrls: ['./homebridge-honeywell-home.component.scss'],
 })
-export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
-  private linkDomain = 'https://homebridge-gsh.iot.oz.nu';
+export class HomebridgeHoneywellHomeComponent implements OnInit, OnDestroy {
+  private linkDomain = 'https://homebridge-honeywell.iot.oz.nu';
   private linkUrl = this.linkDomain + '/link-account';
   private popup;
   private originCheckInterval;
   public justLinked = false;
   public pluginConfig;
-  public linkType: string;
 
   public jsonFormOptions = {
     addSubmit: false,
@@ -34,7 +32,6 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
   constructor(
     public activeModal: NgbActiveModal,
     private translate: TranslateService,
-    private $jwtHelper: JwtHelperService,
     private $api: ApiService,
     public $auth: AuthService,
     private $toastr: ToastrService,
@@ -52,12 +49,14 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
 
     if (!this.pluginConfig) {
       this.pluginConfig = {
-        name: 'Google Smart Home',
         platform: this.schema.pluginAlias,
+        name: 'HoneywellHome',
+        options: {
+          ttl: 60,
+          verbose: false,
+        },
       };
     }
-
-    this.parseToken();
   }
 
   windowMessageListener = (e) => {
@@ -68,9 +67,7 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
 
     try {
       const data = JSON.parse(e.data);
-      if (data.token) {
-        this.processToken(data.token);
-      }
+      this.addCredentials(data);
     } catch (e) {
       console.error(e);
     }
@@ -95,7 +92,6 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
 
   unlinkAccount() {
     this.pluginConfig = {
-      name: 'Google Smart Home',
       platform: this.schema.pluginAlias,
     };
 
@@ -105,33 +101,20 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
     this.saveConfig();
   }
 
-  processToken(token) {
+  addCredentials(credentials) {
     clearInterval(this.originCheckInterval);
     if (this.popup) {
       this.popup.close();
     }
-    this.pluginConfig.token = token;
-    this.pluginConfig.notice = 'Keep your token a secret!';
+
+    this.pluginConfig.credentials = credentials;
 
     const existingConfig = this.homebridgeConfig.platforms.find(x => x.platform === this.schema.pluginAlias);
     if (!existingConfig) {
       this.homebridgeConfig.platforms.push(this.pluginConfig);
     }
 
-    this.parseToken();
     this.saveConfig();
-  }
-
-  parseToken() {
-    if (this.pluginConfig.token) {
-      try {
-        const decoded = this.$jwtHelper.decodeToken(this.pluginConfig.token);
-        this.linkType = decoded.id.split('|')[0].split('-')[0];
-      } catch (e) {
-        this.$toastr.error('Invalid account linking token in config.json', this.translate.instant('toast.title_error'));
-        delete this.pluginConfig.token;
-      }
-    }
   }
 
   saveConfig() {

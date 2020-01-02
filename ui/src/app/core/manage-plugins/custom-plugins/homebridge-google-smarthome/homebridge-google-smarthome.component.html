@@ -53,7 +53,7 @@
 
     <div *ngIf="pluginConfig && pluginConfig.token" class="card p-2 pt-3 mt-4">
       <json-schema-form [options]="jsonFormOptions" [schema]="schema.schema" [layout]="schema.layout"
-        [form]="schema.form" [(ngModel)]="pluginConfig" framework="bootstrap-4" (onChanges)="block.onChange($event)">
+        [form]="schema.form" [(ngModel)]="pluginConfig" framework="bootstrap-4">
       </json-schema-form>
     </div>
   </div>
@@ -62,7 +62,7 @@
     <button type="button" class="btn btn-elegant mr-auto" data-dismiss="modal" (click)="unlinkAccount()"
       *ngIf="pluginConfig.token" translate="plugins.settings.custom.homebridge-gsh.label_unlink_account">
     </button>
-    <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')"
+    <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="close()"
       [translate]="'form.button_close'">Close</button>
     <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="saveAndClose()"
       *ngIf="pluginConfig.token" [translate]="'form.button_save'">Save</button>

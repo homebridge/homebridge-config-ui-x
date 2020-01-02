@@ -7,26 +7,37 @@ All notable changes to this project will be documented in this file. This projec
 ### Notable Changes
 
 * **Status:** This release comes with a brand new status dashboard that features:
-  * User configurable widgets - everything on the dashboard is a widget, users are able to resize and position, add or remove the widgets however they like
-  * New widgets include:
-    * **Homebridge Status Widget** - Homebridge version and update check, current Homebridge service status and Homebridge plugins update check
-    * **CPU Widget** - shows the current cpu load (now much more accurate) and CPU temperature when available
-    * **Memory Widget** - shows the total and available memory (previously "Free" memory as show which is not a reliable indicator of "Available" memory)
-    * **Uptime Widget** - shows the server uptime and the process uptime
-    * **QR Code Widget** - shows the pairing QR Code and Homebridge PIN
-    * **Homebridge Logs Widget** - shows the Homebridge logs stream
-    * **Homebridge Terminal Widget** - an interactive terminal (only available when interactive web terminals are enabled)
-    * **System Information Widget** - shows details about your server and homebridge setup
-    * **Weather Widget:** - shows the current weather for the set location (may add a forcast later)
-  * Full dark mode theme support
+    * Full dark mode theme support
+    * User configurable widgets - everything on the dashboard is a widget, users are able to resize and position, add or remove the widgets however they like
+    * New widgets include:
+        * **Homebridge Status Widget** - Homebridge version and update check, current Homebridge service status and Homebridge plugins update check
+        * **CPU Widget** - shows the current cpu load (now much more accurate) and CPU temperature when available
+        * **Memory Widget** - shows the total and available memory (previously "Free" memory as show which is not a reliable indicator of "Available" memory)
+        * **Uptime Widget** - shows the server uptime and the process uptime
+        * **QR Code Widget** - shows the pairing QR Code and Homebridge PIN
+        * **Homebridge Logs Widget** - shows the Homebridge logs stream
+        * **Homebridge Terminal Widget** - an interactive terminal (only available when interactive web terminals are enabled)
+        * **System Information Widget** - shows details about your server and homebridge setup
+        * **Weather Widget:** - shows the current weather for the set location (may add a forcast later)
+
+* **Config Editor:** The config editor (non-mobile) has been updated with the following new features:
+    * Replaced Ace Editor with the [Microsoft Monaco Editor](https://microsoft.github.io/monaco-editor/) (the code editor that powers VS Code)
+    * Help text is now shown when hovering over the core components of the config.json
+    * Autocomplete of the bridge, plugins, ports and mdns objects
+    * Warnings when the JSON does not match what is allowed by Homebridge
+    * Duplicate key checking
+    * More detailed JSON syntax error messages
 
 ### Other Changes
 
 * **Logs:** URLs in the log output are now clickable
+* **Status:** CPU Load is now shown for Windows 10 users
 * **Status:** CPU temperature option, `temp`, has been removed, the CPU temperature will now automatically be displayed where possible on Linux and Windows
 * **System:** Removed the `websocketCompatibilityMode` option, this setting is now the default for all users
 * **Terminal:** The terminal now automatically respawns the shell if the shell is terminated by the user (e.g, when using CTRL+D)
 * **Themes:** The legacy Dark Mode (v1) has been removed, users will be migrated to the new Dark Mode automatically
+* **i18n:** Improvements to Simplified Chinese language translations ([#431](https://github.com/oznu/homebridge-config-ui-x/pull/431))
+* **Plugins:** Added support for configuring the [Homebridge Honeywell Home Plugin](https://github.com/d0n4v4nb3ck3r/homebridge-honeywell-home) with no user input
 * Updated npm dependencies
 
 ### Bug Fixes

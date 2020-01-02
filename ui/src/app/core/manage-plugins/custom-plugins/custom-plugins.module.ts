@@ -8,13 +8,16 @@ import { NgxMdModule } from 'ngx-md';
 import { CoreModule } from '../../core.module';
 import { HomebridgeGoogleSmarthomeComponent } from './homebridge-google-smarthome/homebridge-google-smarthome.component';
 import { CustomPluginsService } from './custom-plugins.service';
+import { HomebridgeHoneywellHomeComponent } from './homebridge-honeywell-home/homebridge-honeywell-home.component';
 
 @NgModule({
   entryComponents: [
     HomebridgeGoogleSmarthomeComponent,
+    HomebridgeHoneywellHomeComponent,
   ],
   declarations: [
     HomebridgeGoogleSmarthomeComponent,
+    HomebridgeHoneywellHomeComponent,
   ],
   imports: [
     CommonModule,
