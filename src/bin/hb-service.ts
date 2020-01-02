@@ -7,24 +7,47 @@
 
 import * as os from 'os';
 import * as path from 'path';
-import * as request from 'request';
 import * as commander from 'commander';
 import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
 
-class HomebridgeServiceHelper {
-  private action: string;
-  private serviceName = 'Homebridge';
-  private storagePath = path.resolve(os.homedir(), '.homebridge');
+import { Win32Installer } from './platforms/win32';
+import { LinuxInstaller } from './platforms/linux';
+import { DarwinInstaller } from './platforms/darwin';
+
+export class HomebridgeServiceHelper {
+  public action: string;
+  public selfPath = __filename;
+  public serviceName = 'Homebridge';
+  public storagePath = path.resolve(os.homedir(), '.homebridge');
+  private allowRunRoot = false;
   private logPath: string;
   private log: fs.WriteStream;
   private homebridgeBinary: string;
   private homebridge: child_process.ChildProcessWithoutNullStreams;
   private uiBinary: string;
 
-  private uiPort = 8080;
+  public uiPort = 8080;
+
+  private installer: Win32Installer | LinuxInstaller | DarwinInstaller;
 
   constructor() {
+    // select the installer for the current platform
+    switch (os.platform()) {
+      case 'linux':
+        this.installer = new LinuxInstaller(this);
+        break;
+      case 'win32':
+        this.installer = new Win32Installer(this);
+        break;
+      case 'darwin':
+        this.installer = new DarwinInstaller(this);
+        break;
+      default:
+        this.logger(`ERROR: This command is not supported on ${os.platform()}.`);
+        process.exit(1);
+    }
+
     commander
       .allowUnknownOption()
       .option('-U, --user-storage-path [path]', '', (p) => this.storagePath = p)
@@ -32,39 +55,39 @@ class HomebridgeServiceHelper {
       .option('-I, --insecure', '', () => process.env.UIX_INSECURE_MODE = '1')
       .option('-T, --no-timestamp', '', () => process.env.UIX_LOG_NO_TIMESTAMPS = '1')
       .option('-S, --service-name [service name]', '', (p) => this.serviceName = p)
+      .option('--allow-root', '', () => this.allowRunRoot = true)
       .arguments('<install|uninstall|start|stop|restart|run>')
       .action((cmd) => {
         this.action = cmd;
       })
       .parse(process.argv);
 
-    this.osCheck();
     this.setEnv();
 
     switch (this.action) {
       case 'install': {
         this.logger(`Installing ${this.serviceName} Service`);
-        this.install();
+        this.installer.install();
         break;
       }
       case 'uninstall': {
         this.logger(`Removing ${this.serviceName} Service`);
-        this.uninstall();
+        this.installer.uninstall();
         break;
       }
       case 'start': {
         this.logger(`Starting ${this.serviceName} Service`);
-        this.start();
+        this.installer.start();
         break;
       }
       case 'stop': {
         this.logger(`Stopping ${this.serviceName} Service`);
-        this.stop();
+        this.installer.stop();
         break;
       }
       case 'restart': {
         this.logger(`Restart ${this.serviceName} Service`);
-        this.restart();
+        this.installer.restart();
         break;
       }
       case 'run': {
@@ -91,24 +114,13 @@ class HomebridgeServiceHelper {
   /**
    * Logger function, log to homebridge.log file when possible
    */
-  private logger(msg) {
+  public logger(msg) {
     msg = `\x1b[37m[${new Date().toLocaleString()}]\x1b[0m ` +
       '\x1b[36m[HB Supervisor]\x1b[0m ' + msg;
     if (this.log) {
       this.log.write(msg + '\n');
     } else {
       console.log(msg);
-    }
-  }
-
-  /**
-   * Checks the OS is supported
-   */
-  private osCheck() {
-    // windows only for now
-    if (os.platform() !== 'win32') {
-      this.logger('ERROR: This command is only supported on Windows 10.');
-      process.exit(1);
     }
   }
 
@@ -126,6 +138,12 @@ class HomebridgeServiceHelper {
    * Launch script, starts homebridge and homebridge-config-ui-x
    */
   private async launch() {
+    if (os.platform() !== 'win32' && process.getuid() === 0 && !this.allowRunRoot) {
+      this.logger('The hb-service run command should not be executed as root.');
+      this.logger('Use the --allow-root flag to force the service to run as the root user.');
+      process.exit(0);
+    }
+
     // check storage path exists
     await this.storagePathCheck();
 
@@ -158,6 +176,21 @@ class HomebridgeServiceHelper {
    * Starts homebridge as a child process, sending the log output to the homebridge.log
    */
   private runHomebridge() {
+    // handle exit signals
+    process.on('SIGINT', (code) => {
+      this.logger('Got SIGINT, shutting down...');
+      setTimeout(() => {
+        process.exit(1282);
+      }, 5100);
+    });
+
+    process.on('SIGTERM', (code) => {
+      this.logger('Got SIGTERM, shutting down...');
+      setTimeout(() => {
+        process.exit(12815);
+      }, 5100);
+    });
+
     // launch the homebridge process
     this.homebridge = child_process.spawn(process.execPath,
       [
@@ -209,170 +242,22 @@ class HomebridgeServiceHelper {
   }
 
   /**
-   * Windows Only!
-   * Installs Homebridge and Homebridge Config UI X as a Windows 10 service
+   * Prints usage information to the screen after installations
    */
-  private async install() {
-    await this.storagePathCheck();
-    await this.configCheck();
-
-    // download nssm.exe to help create the service
-    const nssmPath: string = await this.downloadNssm();
-
-    // commands to run
-    const installCmd = `"${nssmPath}" install ${this.serviceName} ` +
-      `"${process.execPath}" "\""${__filename}"\"" run -I -U "\""${this.storagePath}"\""`;
-    const setUserDirCmd = `"${nssmPath}" set ${this.serviceName} AppEnvironmentExtra ":UIX_STORAGE_PATH=${this.storagePath}"`;
-
-    try {
-      child_process.execSync(installCmd);
-      child_process.execSync(setUserDirCmd);
-      await this.configureFirewall();
-      await this.start();
-      console.log(`\nManage Homebridge by going to http://localhost:${this.uiPort} in your browser`);
-      console.log(`Default Username: admin`);
-      console.log(`Default Password: admin\n`);
-    } catch (e) {
-      console.error(e.toString());
-      this.logger(`ERROR: Failed Operation`);
-    }
-  }
-
-  /**
-   * Windows Only!
-   * Removes the Homebridge Service
-   */
-  private async uninstall() {
-    // download nssm.exe to help create the service
-    const nssmPath: string = await this.downloadNssm();
-    const uninstallCmd = `"${nssmPath}" remove ${this.serviceName} confirm`;
-
-    // stop existing service
-    await this.stop();
-
-    try {
-      child_process.execSync(uninstallCmd);
-      this.logger(`Removed ${this.serviceName} Service.`);
-    } catch (e) {
-      console.error(e.toString());
-      this.logger(`ERROR: Failed Operation`);
-    }
-  }
-
-  /**
-   * Windows Only!
-   * Starts the Homebridge Service
-   */
-  private async start() {
-    // download nssm.exe to help create the service
-    const nssmPath: string = await this.downloadNssm();
-
-    // commands to run
-    const stopCmd = `"${nssmPath}" start ${this.serviceName}`;
-
-    try {
-      this.logger(`Starting ${this.serviceName} Service...`);
-      child_process.execSync(stopCmd);
-      this.logger(`${this.serviceName} Started`);
-    } catch (e) {
-      this.logger(`Failed to start ${this.serviceName}`);
-    }
-  }
-
-  /**
-   * Windows Only!
-   * Stops the Homebridge Service
-   */
-  private async stop() {
-    // download nssm.exe to help create the service
-    const nssmPath: string = await this.downloadNssm();
-
-    // commands to run
-    const stopCmd = `"${nssmPath}" stop ${this.serviceName}`;
-
-    try {
-      this.logger(`Stopping ${this.serviceName} Service...`);
-      child_process.execSync(stopCmd);
-      this.logger(`${this.serviceName} Stopped`);
-    } catch (e) {
-      this.logger(`Failed to stop ${this.serviceName}`);
-    }
-  }
-
-  /**
-   * Windows Only!
-   * Restarts the Homebridge Service
-   */
-  private async restart() {
-    await this.stop();
-    setTimeout(async () => {
-      await this.start();
-    }, 3000);
-  }
-
-  /**
-   * Windows Only!
-   * Downloads nssm - NSSM - the Non-Sucking Service Manager - https://nssm.cc/
-   * This is used to create the Windows Services
-   */
-  private async downloadNssm(): Promise<string> {
-    const downloadUrl = `https://github.com/oznu/nssm/releases/download/2.24-101-g897c7ad/nssm_${os.arch()}.exe`;
-    const nssmPath = path.resolve(this.storagePath, 'nssm.exe');
-
-    if (await fs.pathExists(nssmPath)) {
-      return nssmPath;
-    }
-
-    const nssmFile = fs.createWriteStream(nssmPath);
-
-    this.logger(`Downloading NSSM from ${downloadUrl}`);
-
-    return new Promise((resolve, reject) => {
-      request({
-        url: downloadUrl,
-        method: 'GET',
-        encoding: null,
-      }).pipe(nssmFile)
-        .on('finish', () => {
-          return resolve(nssmPath);
-        })
-        .on('error', (err) => {
-          return reject(err);
-        });
-    });
-  }
-
-  /**
-   * Ensures the Node.js process is allowed to accept incoming connections
-   */
-  private async configureFirewall() {
-    // firewall commands
-    const cleanFirewallCmd = `netsh advfirewall firewall Delete rule name="Homebridge"`;
-    const openFirewallCmd = `netsh advfirewall firewall add rule name="Homebridge" dir=in action=allow program="${process.execPath}"`;
-
-    // try and remove any existing rules so there are not any duplicates
-    try {
-      child_process.execSync(cleanFirewallCmd);
-    } catch (e) {
-      // this is probably ok, the firewall rule may not exist to remove
-    }
-
-    // create a new firewall rule
-    try {
-      child_process.execSync(openFirewallCmd);
-    } catch (e) {
-      this.logger(`Failed to configure firewall rule for Homebridge.`);
-      this.logger(e);
-    }
+  public printPostInstallInstructions() {
+    console.log(`\nManage Homebridge by going to http://localhost:${this.uiPort} in your browser`);
+    console.log(`Default Username: admin`);
+    console.log(`Default Password: admin\n`);
   }
 
   /**
    * Ensures the storage path defined exists
    */
-  private async storagePathCheck() {
+  public async storagePathCheck() {
     if (!await fs.pathExists(this.storagePath)) {
       this.logger(`Creating Homebridge directory: ${this.storagePath}`);
       await fs.mkdirp(this.storagePath);
+      await this.chownPath(this.storagePath);
     }
   }
 
@@ -380,7 +265,7 @@ class HomebridgeServiceHelper {
    * Ensures the config.json exists and is valid.
    * If the config is not valid json it will be backed up and replaced with the default.
    */
-  private async configCheck() {
+  public async configCheck() {
     if (!await fs.pathExists(process.env.UIX_CONFIG_PATH)) {
       this.logger(`Creating default config.json: ${process.env.UIX_CONFIG_PATH}`);
       return await this.createDefaultConfig();
@@ -400,7 +285,7 @@ class HomebridgeServiceHelper {
   /**
    * Creates the default config.json
    */
-  private async createDefaultConfig() {
+  public async createDefaultConfig() {
     await fs.writeJson(process.env.UIX_CONFIG_PATH, {
       bridge: {
         name: this.serviceName,
@@ -417,6 +302,7 @@ class HomebridgeServiceHelper {
         },
       ],
     }, { spaces: 4 });
+    await this.chownPath(process.env.UIX_CONFIG_PATH);
   }
 
   /**
@@ -445,6 +331,16 @@ class HomebridgeServiceHelper {
       }
     }
     return username;
+  }
+
+  /**
+   * Corrects the permissions on files when running the hb-service command using sudo
+   */
+  private async chownPath(pathToChown: fs.PathLike) {
+    if (os.platform() !== 'win32' && process.getuid() === 0) {
+      const { uid, gid } = await this.installer.getId();
+      fs.chownSync(pathToChown, uid, gid);
+    }
   }
 
 }
