@@ -17,6 +17,7 @@ export class Win32Installer {
    * Installs the Windows 10 Homebridge Service
    */
   public async install() {
+    await this.hbService.portCheck();
     await this.hbService.storagePathCheck();
     await this.hbService.configCheck();
 

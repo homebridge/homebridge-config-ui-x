@@ -1,15 +1,17 @@
 #!/usr/bin/env node
 
 /**
- * The purpose of this file is to run and install homebridge and homebridge-config-ui-x as a service on Windows 10
- * This may be expanded to other operating systems in the future
+ * The purpose of this file is to run and install homebridge and homebridge-config-ui-x as a service
  */
+
+process.title = 'hb-service';
 
 import * as os from 'os';
 import * as path from 'path';
 import * as commander from 'commander';
 import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
+import * as tcpPortUsed from 'tcp-port-used';
 
 import { Win32Installer } from './platforms/win32';
 import { LinuxInstaller } from './platforms/linux';
@@ -19,15 +21,16 @@ export class HomebridgeServiceHelper {
   public action: string;
   public selfPath = __filename;
   public serviceName = 'Homebridge';
-  public storagePath = path.resolve(os.homedir(), '.homebridge');
-  private allowRunRoot = false;
+  public storagePath;
+  public allowRunRoot = false;
+  public asUser;
   private logPath: string;
   private log: fs.WriteStream;
   private homebridgeBinary: string;
   private homebridge: child_process.ChildProcessWithoutNullStreams;
   private uiBinary: string;
 
-  public uiPort = 8080;
+  public uiPort = 8581;
 
   private installer: Win32Installer | LinuxInstaller | DarwinInstaller;
 
@@ -55,6 +58,8 @@ export class HomebridgeServiceHelper {
       .option('-I, --insecure', '', () => process.env.UIX_INSECURE_MODE = '1')
       .option('-T, --no-timestamp', '', () => process.env.UIX_LOG_NO_TIMESTAMPS = '1')
       .option('-S, --service-name [service name]', '', (p) => this.serviceName = p)
+      .option('--port [port]', '', (p) => this.uiPort = parseInt(p, 10))
+      .option('--user [user]', '', (p) => this.asUser = p)
       .option('--allow-root', '', () => this.allowRunRoot = true)
       .arguments('<install|uninstall|start|stop|restart|run>')
       .action((cmd) => {
@@ -128,6 +133,17 @@ export class HomebridgeServiceHelper {
    * Sets the required environment variables passed on to the child processes
    */
   private setEnv() {
+    if (!this.serviceName.match(/^[a-z0-9-]+$/i)) {
+      this.logger('ERROR: Service name must not contain spaces or special characters');
+      process.exit(1);
+    }
+    if (!this.storagePath) {
+      if (os.platform() === 'linux') {
+        this.storagePath = path.resolve('/var/lib', this.serviceName.toLowerCase());
+      } else {
+        this.storagePath = path.resolve(os.homedir(), `.${this.serviceName.toLowerCase()}`);
+      }
+    }
     process.env.UIX_STORAGE_PATH = this.storagePath;
     process.env.UIX_CONFIG_PATH = path.resolve(this.storagePath, 'config.json');
     process.env.UIX_BASE_PATH = path.resolve(__dirname, '../../');
@@ -168,29 +184,37 @@ export class HomebridgeServiceHelper {
     this.logger(`UI Path: ${this.uiBinary}`);
 
     // start homebridge
+    this.startExitHandler();
     this.runHomebridge();
     this.runUi();
+  }
+
+  /**
+   * Handles exit event
+   */
+  private startExitHandler() {
+    const exitHandler = () => {
+      this.logger('Stopping services...');
+      try {
+        this.homebridge.kill();
+      } catch (e) { }
+
+      setTimeout(() => {
+        try {
+          this.homebridge.kill('SIGKILL');
+        } catch (e) { }
+        process.exit(1282);
+      }, 5100);
+    };
+
+    process.on('SIGTERM', exitHandler);
+    process.on('SIGINT', exitHandler);
   }
 
   /**
    * Starts homebridge as a child process, sending the log output to the homebridge.log
    */
   private runHomebridge() {
-    // handle exit signals
-    process.on('SIGINT', (code) => {
-      this.logger('Got SIGINT, shutting down...');
-      setTimeout(() => {
-        process.exit(1282);
-      }, 5100);
-    });
-
-    process.on('SIGTERM', (code) => {
-      this.logger('Got SIGTERM, shutting down...');
-      setTimeout(() => {
-        process.exit(12815);
-      }, 5100);
-    });
-
     // launch the homebridge process
     this.homebridge = child_process.spawn(process.execPath,
       [
@@ -251,6 +275,19 @@ export class HomebridgeServiceHelper {
   }
 
   /**
+   * Checks if the port is currently in use by another process
+   */
+  public async portCheck() {
+    const inUse = await tcpPortUsed.check(this.uiPort);
+    if (inUse) {
+      this.logger(`ERROR: Port ${this.uiPort} is already in use by another process on this host.`);
+      this.logger(`You can specify another port using the --port flag, eg.`);
+      this.logger(`hb-service ${this.action} --port 8581`);
+      process.exit(1);
+    }
+  }
+
+  /**
    * Ensures the storage path defined exists
    */
   public async storagePathCheck() {
@@ -272,7 +309,30 @@ export class HomebridgeServiceHelper {
     }
 
     try {
-      await fs.readJson(process.env.UIX_CONFIG_PATH);
+      const currentConfig = await fs.readJson(process.env.UIX_CONFIG_PATH);
+
+      // if doing an install, make sure the ui config is set, and the port is updated
+      if (this.action === 'install') {
+        if (!Array.isArray(currentConfig.platforms)) {
+          currentConfig.platforms = [];
+        }
+        const uiConfigBlock = currentConfig.platforms.find((x) => x.platform === 'config');
+        if (uiConfigBlock) {
+          if (uiConfigBlock.port !== this.uiPort) {
+            uiConfigBlock.port = this.uiPort;
+            this.logger(`Updating config ui port in ${process.env.UIX_CONFIG_PATH} to ${this.uiPort}`);
+          }
+        } else {
+          this.logger(`Adding missing config ui block to ${process.env.UIX_CONFIG_PATH}`);
+          currentConfig.platforms.push({
+            name: 'Config',
+            port: this.uiPort,
+            platform: 'config',
+          });
+        }
+        await fs.writeJSON(process.env.UIX_CONFIG_PATH, currentConfig, { spaces: 4 });
+      }
+
     } catch (e) {
       const backupFile = path.resolve(this.storagePath, 'config.json.invalid.' + new Date().getTime().toString());
       this.logger(`${process.env.UIX_CONFIG_PATH} does not contain valid JSON.`);
@@ -286,12 +346,17 @@ export class HomebridgeServiceHelper {
    * Creates the default config.json
    */
   public async createDefaultConfig() {
+    const username = this.generateUsername();
+    const port = Math.floor(Math.random() * (52000 - 51000 + 1) + 51000);
+    const name = 'Homebridge ' + username.substr(username.length - 5).replace(/:/g, '');
+    const pin = this.generatePin();
+
     await fs.writeJson(process.env.UIX_CONFIG_PATH, {
       bridge: {
-        name: this.serviceName,
-        username: this.generateUsername(),
-        port: Math.floor(Math.random() * (52000 - 51000 + 1) + 51000),
-        pin: this.generatePin(),
+        name,
+        username,
+        port,
+        pin,
       },
       accessories: [],
       platforms: [

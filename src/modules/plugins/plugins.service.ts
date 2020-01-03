@@ -634,10 +634,10 @@ export class PluginsService {
     } else {
       // do a pre-check to test for write access when not using sudo mode
       try {
-        await fs.access(cwd, fs.constants.W_OK);
+        await fs.access(path.resolve(cwd, 'node_modules'), fs.constants.W_OK);
       } catch (e) {
         client.emit('stdout', color.yellow(`The user "${os.userInfo().username}" does not have write access to the target directory:\n\r\n\r`));
-        client.emit('stdout', `${cwd}\n\r\n\r`);
+        client.emit('stdout', `${path.resolve(cwd, 'node_modules')}\n\r\n\r`);
         client.emit('stdout', color.yellow(`This may cause the operation to fail.\n\r`));
         client.emit('stdout', color.yellow(`See the docs for details on how to enable sudo mode:\n\r`));
         client.emit('stdout', color.yellow(`https://github.com/oznu/homebridge-config-ui-x#sudo-mode\n\r\n\r`));

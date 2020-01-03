@@ -1,7 +1,7 @@
 {
   "name": "homebridge-config-ui-x",
   "displayName": "Homebridge Config UI X",
-  "version": "4.7.0-test.9",
+  "version": "4.7.0-test.10",
   "description": "A web based management, configuration and control platform for Homebridge",
   "license": "MIT",
   "author": "oznu <dev@oz.nu>",
@@ -75,7 +75,8 @@
     "request-promise-native": "^1.0.8",
     "rxjs": "^6.5.3",
     "semver": "^6.3.0",
-    "systeminformation": "^4.16.0"
+    "systeminformation": "^4.16.0",
+    "tcp-port-used": "^1.0.1"
   },
   "devDependencies": {
     "@nestjs/jwt": "^6.1.1",

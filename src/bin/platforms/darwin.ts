@@ -8,13 +8,17 @@ import { HomebridgeServiceHelper } from '../hb-service';
 export class DarwinInstaller {
   private hbService: HomebridgeServiceHelper;
   private user: string;
-  private plistName: string;
-  private plistPath: string;
 
   constructor(hbService: HomebridgeServiceHelper) {
     this.hbService = hbService;
-    this.plistName = `com.${this.hbService.serviceName.toLowerCase()}.server`;
-    this.plistPath = path.resolve('/Library/LaunchDaemons/', this.plistName + '.plist');
+  }
+
+  private get plistName() {
+    return `com.${this.hbService.serviceName.toLowerCase()}.server`;
+  }
+
+  private get plistPath() {
+    return path.resolve('/Library/LaunchDaemons/', this.plistName + '.plist');
   }
 
   /**
@@ -22,6 +26,8 @@ export class DarwinInstaller {
    */
   public async install() {
     this.checkForRoot();
+    await this.hbService.portCheck();
+    await this.checkGlobalNpmAccess();
     await this.hbService.storagePathCheck();
     await this.hbService.configCheck();
 
@@ -97,9 +103,9 @@ export class DarwinInstaller {
    * Returns the users uid and gid.
    */
   public async getId(): Promise<{ uid: number, gid: number }> {
-    if (process.getuid() === 0 && process.env.SUDO_USER) {
-      const uid = child_process.execSync(`id -u ${process.env.SUDO_USER}`).toString('utf8');
-      const gid = child_process.execSync(`id -g ${process.env.SUDO_USER}`).toString('utf8');
+    if (process.getuid() === 0 && this.hbService.asUser || process.env.SUDO_USER) {
+      const uid = child_process.execSync(`id -u ${this.hbService.asUser || process.env.SUDO_USER}`).toString('utf8');
+      const gid = child_process.execSync(`id -g ${this.hbService.asUser || process.env.SUDO_USER}`).toString('utf8');
       return {
         uid: parseInt(uid, 10),
         gid: parseInt(gid, 10),
@@ -121,11 +127,40 @@ export class DarwinInstaller {
       this.hbService.logger(`sudo hb-service ${this.hbService.action}`);
       process.exit(1);
     }
-    if (!process.env.SUDO_USER) {
-      this.hbService.logger('ERROR: Could not detect user');
+    if (!process.env.SUDO_USER && !this.hbService.asUser) {
+      this.hbService.logger('ERROR: Could not detect user. Pass in the user you want to run Homebridge as using the --user flag eg.');
+      this.hbService.logger(`sudo hb-service ${this.hbService.action} --user your-user`);
       process.exit(1);
     }
-    this.user = process.env.SUDO_USER;
+    this.user = this.hbService.asUser || process.env.SUDO_USER;
+  }
+
+  /**
+   * Checks if the user has write access to the global npm directory
+   */
+  private async checkGlobalNpmAccess() {
+    const npmGlobalPath = child_process.execSync('/bin/echo -n "$(npm --no-update-notifier -g prefix)/lib/node_modules"').toString('utf8');
+    const { uid, gid } = await this.getId();
+
+    try {
+      child_process.execSync(`test -w "${npmGlobalPath}"`, {
+        uid,
+        gid,
+      });
+    } catch (e) {
+      if (this.hbService.allowRunRoot) {
+        this.user = 'root';
+      } else {
+        this.hbService.logger(`ERROR: User "${this.user}" does not have write access to the global npm modules path.`);
+        this.hbService.logger(``);
+        this.hbService.logger(`You can fix this issue by using Homebrew to install Node.js as per the instructions on the Homebridge wiki:`);
+        this.hbService.logger(`https://github.com/nfarina/homebridge/wiki/Install-Homebridge-on-macOS`);
+        this.hbService.logger(``);
+        this.hbService.logger(`Alternatively you can force to run Homebridge as "root" (NOT RECOMMENDED) using the following command:`);
+        this.hbService.logger(`hb-service install --allow-root`);
+        process.exit(1);
+      }
+    }
   }
 
   /**
@@ -150,6 +185,7 @@ export class DarwinInstaller {
       `             <string>run</string>`,
       `             <string>-U</string>`,
       `             <string>${this.hbService.storagePath}</string>`,
+      this.hbService.allowRunRoot && this.user === 'root' ? `             <string>--allow-root</string>` : null,
       `        </array>`,
       `    <key>StandardOutPath</key>`,
       `        <string>${this.hbService.storagePath}/homebridge.log</string>`,
@@ -168,7 +204,7 @@ export class DarwinInstaller {
       `        </dict>`,
       `</dict>`,
       `</plist>`,
-    ].join('\n');
+    ].filter(x => x).join('\n');
 
     await fs.writeFile(this.plistPath, plistFileContents);
   }
