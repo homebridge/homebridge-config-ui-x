@@ -20,6 +20,11 @@ All notable changes to this project will be documented in this file. This projec
         * **System Information Widget** - shows details about your server and homebridge setup
         * **Weather Widget:** - shows the current weather for the set location (may add a forcast later)
 
+* **Easy Installer:** This release expands the `hb-service` command to support macOS and Linux (Debian-based) as well as Windows 10
+    * Running `hb-service install` will setup Homebridge and Homebridge Config UI X to run as a service with auto-start on boot
+    * The UI will remain running even if there is an issue preventing Homebridge from starting
+    * Multiple instances are supported, see the wiki for further details
+
 * **Config Editor:** The config editor (non-mobile) has been updated with the following new features:
     * Replaced Ace Editor with the [Microsoft Monaco Editor](https://microsoft.github.io/monaco-editor/) (the code editor that powers VS Code)
     * Help text is now shown when hovering over the core components of the config.json
@@ -37,7 +42,6 @@ All notable changes to this project will be documented in this file. This projec
 * **Terminal:** The terminal now automatically respawns the shell if the shell is terminated by the user (e.g, when using CTRL+D)
 * **Themes:** The legacy Dark Mode (v1) has been removed, users will be migrated to the new Dark Mode automatically
 * **i18n:** Improvements to Simplified Chinese language translations ([#431](https://github.com/oznu/homebridge-config-ui-x/pull/431))
-* **Plugins:** Added support for configuring the [Homebridge Honeywell Home Plugin](https://github.com/d0n4v4nb3ck3r/homebridge-honeywell-home) with no user input
 * Updated npm dependencies
 
 ### Bug Fixes

@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as bufferShim from 'buffer-shims';
 import * as qr from 'qr-image';
 import * as child_process from 'child_process';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '../../core/config/config.service';
 import { Logger } from '../../core/logger/logger.service';
 import { ConfigEditorService } from '../config-editor/config-editor.service';
@@ -42,6 +42,21 @@ export class ServerService {
     }, 500);
 
     return { ok: true, command: this.configService.ui.restart };
+  }
+
+  /**
+   * Remove cached accessories for which plugin is not loaded
+   */
+  public async removeOrphans() {
+    if (!this.configService.serviceMode) {
+      this.logger.error('Homebridge Config UI X can only remove orphans from homebridge when running in service mode');
+      throw new BadRequestException('Not Available');
+    }
+    try {
+      process.emit('message', 'homebridge-remove-ophans', null);
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   /**

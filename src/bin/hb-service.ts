@@ -28,6 +28,7 @@ export class HomebridgeServiceHelper {
   private log: fs.WriteStream;
   private homebridgeBinary: string;
   private homebridge: child_process.ChildProcessWithoutNullStreams;
+  private homebridgeNextRunOpts = [];
   private uiBinary: string;
 
   public uiPort = 8581;
@@ -209,6 +210,18 @@ export class HomebridgeServiceHelper {
 
     process.on('SIGTERM', exitHandler);
     process.on('SIGINT', exitHandler);
+
+    process.on('message', (message) => {
+      if (message === 'homebridge-remove-ophans' && this.homebridge) {
+        try {
+          this.logger('Restarting Homebridge in "-R Remove Orphans" mode for the next run only');
+          this.homebridgeNextRunOpts = ['-R'];
+          this.homebridge.kill();
+        } catch (e) {
+          console.log(e);
+        }
+      }
+    });
   }
 
   /**
@@ -221,14 +234,19 @@ export class HomebridgeServiceHelper {
         this.homebridgeBinary,
         '-I',
         '-C',
+        '-Q',
         '-U',
         this.storagePath,
+        ...this.homebridgeNextRunOpts,
       ],
       {
         env: process.env,
         windowsHide: true,
       },
     );
+
+    // clear the next run opts array
+    this.homebridgeNextRunOpts = [];
 
     this.logger(`Started Homebridge with PID: ${this.homebridge.pid}`);
 
@@ -311,17 +329,22 @@ export class HomebridgeServiceHelper {
     try {
       const currentConfig = await fs.readJson(process.env.UIX_CONFIG_PATH);
 
-      // if doing an install, make sure the ui config is set, and the port is updated
+      // if doing an install, make sure the ui config is set
       if (this.action === 'install') {
         if (!Array.isArray(currentConfig.platforms)) {
           currentConfig.platforms = [];
         }
         const uiConfigBlock = currentConfig.platforms.find((x) => x.platform === 'config');
         if (uiConfigBlock) {
+          // correct the port
           if (uiConfigBlock.port !== this.uiPort) {
             uiConfigBlock.port = this.uiPort;
-            this.logger(`Updating config ui port in ${process.env.UIX_CONFIG_PATH} to ${this.uiPort}`);
+            this.logger(`WARNING: HOMEBRIDGE CONFIG UI PORT IN ${process.env.UIX_CONFIG_PATH} CHANGED TO ${this.uiPort}`);
           }
+          // delete unnecessary config
+          delete uiConfigBlock.restart;
+          delete uiConfigBlock.sudo;
+          delete uiConfigBlock.log;
         } else {
           this.logger(`Adding missing config ui block to ${process.env.UIX_CONFIG_PATH}`);
           currentConfig.platforms.push({

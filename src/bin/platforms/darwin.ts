@@ -37,6 +37,7 @@ export class DarwinInstaller {
       this.hbService.printPostInstallInstructions();
     } catch (e) {
       console.error(e.toString());
+      this.hbService.logger(`ERROR: Failed Operation`);
     }
   }
 
@@ -148,18 +149,27 @@ export class DarwinInstaller {
         gid,
       });
     } catch (e) {
-      if (this.hbService.allowRunRoot) {
-        this.user = 'root';
-      } else {
-        this.hbService.logger(`ERROR: User "${this.user}" does not have write access to the global npm modules path.`);
-        this.hbService.logger(``);
-        this.hbService.logger(`You can fix this issue by using Homebrew to install Node.js as per the instructions on the Homebridge wiki:`);
-        this.hbService.logger(`https://github.com/nfarina/homebridge/wiki/Install-Homebridge-on-macOS`);
-        this.hbService.logger(``);
-        this.hbService.logger(`Alternatively you can force to run Homebridge as "root" (NOT RECOMMENDED) using the following command:`);
-        this.hbService.logger(`hb-service install --allow-root`);
-        process.exit(1);
-      }
+      await this.setNpmPermissions(npmGlobalPath);
+    }
+  }
+
+  /**
+   * Set permissions on global npm path
+   */
+  private async setNpmPermissions(npmGlobalPath: fs.PathLike) {
+    try {
+      child_process.execSync(`chown -R ${this.user}:admin "${npmGlobalPath}"`);
+      child_process.execSync(`chown -R ${this.user}:admin "$(dirname $(which npm))"`);
+    } catch (e) {
+      this.hbService.logger(`ERROR: User "${this.user}" does not have write access to the global npm modules path.`);
+      this.hbService.logger(``);
+      this.hbService.logger(`You can fix this issue by running the following commands:`);
+      console.log('');
+      console.log(`sudo chown -R ${this.user}:admin "${npmGlobalPath}"`);
+      console.log(`sudo chown -R ${this.user}:admin "$(dirname $(which npm))"`);
+      console.log('');
+      this.hbService.logger(`Once you have done this run the hb-service install command again to complete your installation.`);
+      process.exit(1);
     }
   }
 
@@ -185,7 +195,6 @@ export class DarwinInstaller {
       `             <string>run</string>`,
       `             <string>-U</string>`,
       `             <string>${this.hbService.storagePath}</string>`,
-      this.hbService.allowRunRoot && this.user === 'root' ? `             <string>--allow-root</string>` : null,
       `        </array>`,
       `    <key>StandardOutPath</key>`,
       `        <string>${this.hbService.storagePath}/homebridge.log</string>`,

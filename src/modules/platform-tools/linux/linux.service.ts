@@ -13,11 +13,8 @@ export class LinuxService {
    * Reboot the host
    */
   restartHost() {
-    const cmd = [(this.configService.ui.linux && this.configService.ui.linux.restart) ? this.configService.ui.linux.restart : 'shutdown -r now'];
-
-    if (this.configService.ui.sudo) {
-      cmd.unshift('sudo -n');
-    }
+    const cmd = [(this.configService.ui.linux && this.configService.ui.linux.restart) ?
+      this.configService.ui.linux.restart : 'sudo -n shutdown -r now'];
 
     this.logger.warn(`Rebooting linux server with command: "${cmd.join(' ')}"`);
 
@@ -36,11 +33,8 @@ export class LinuxService {
    * Shutdown the host
    */
   shutdownHost() {
-    const cmd = [(this.configService.ui.linux && this.configService.ui.linux.shutdown) ? this.configService.ui.linux.restart : 'shutdown -h now'];
-
-    if (this.configService.ui.sudo) {
-      cmd.unshift('sudo -n');
-    }
+    const cmd = [(this.configService.ui.linux && this.configService.ui.linux.shutdown) ?
+      this.configService.ui.linux.restart : 'sudo -n shutdown -h now'];
 
     this.logger.warn(`Shutting down linux server with command: "${cmd.join(' ')}"`);
 

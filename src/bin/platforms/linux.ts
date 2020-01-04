@@ -24,10 +24,14 @@ export class LinuxInstaller {
     return path.resolve('/etc/default', this.systemdServiceName);
   }
 
+  /**
+   * Installs the systemd service
+   */
   public async install() {
     this.checkForRoot();
     this.checkUser();
     this.setupAcl();
+    this.setupSudo();
 
     await this.hbService.portCheck();
     await this.hbService.storagePathCheck();
@@ -42,6 +46,7 @@ export class LinuxInstaller {
       this.hbService.printPostInstallInstructions();
     } catch (e) {
       console.error(e.toString());
+      this.hbService.logger(`ERROR: Failed Operation`);
     }
   }
 
@@ -66,6 +71,9 @@ export class LinuxInstaller {
     }
   }
 
+  /**
+   * Starts the systemd service
+   */
   public async start() {
     this.checkForRoot();
     this.fixPermissions();
@@ -75,10 +83,12 @@ export class LinuxInstaller {
       this.hbService.logger(`${this.hbService.serviceName} Started`);
     } catch (e) {
       this.hbService.logger(`Failed to start ${this.hbService.serviceName}`);
-      this.hbService.logger(`Check the logs for more information`);
     }
   }
 
+  /**
+   * Stops the systemd service
+   */
   public async stop() {
     this.checkForRoot();
     try {
@@ -90,6 +100,9 @@ export class LinuxInstaller {
     }
   }
 
+  /**
+   * Restarts the systemd service
+   */
   public async restart() {
     this.checkForRoot();
     this.fixPermissions();
@@ -223,16 +236,36 @@ export class LinuxInstaller {
   }
 
   /**
+   * Allows the homebridge user to shutdown and restart the server from the UI
+   * There is no need for full sudo access when running using hb-service
+   */
+  private setupSudo() {
+    try {
+      const sudoersEntry = `${this.hbService.asUser}    ALL=(ALL) NOPASSWD: /sbin/shutdown`;
+      const sudoers = fs.readFileSync('/etc/sudoers', 'utf-8');
+      if (sudoers.includes(sudoersEntry)) {
+        return;
+      }
+      // grant the user restricted sudo privileges to /sbin/shutdown
+      child_process.execSync(`echo 'homebridge    ALL=(ALL) NOPASSWD: /sbin/shutdown' | sudo EDITOR='tee -a' visudo`);
+    } catch (e) {
+      this.hbService.logger('WARNING: Failed to setup /etc/sudoers, you may not be able to shutdown/restart your server from the Homebridge UI.');
+    }
+  }
+
+  /**
    * Fixes the permission on the storage path
    */
   private fixPermissions() {
     if (fs.existsSync(this.systemdServicePath) && fs.existsSync(this.systemdEnvPath)) {
       try {
         // extract the user this process is running as
-        const serviceUser = child_process.execSync(`cat "${this.systemdServicePath}" | grep "User=" | awk -F'=' '{print $2}'`).toString('utf8').trim();
+        const serviceUser = child_process.execSync(`cat "${this.systemdServicePath}" | grep "User=" | awk -F'=' '{print $2}'`)
+          .toString('utf8').trim();
 
         // get the storage path (we may not know it when running the start command)
-        const storagePath = child_process.execSync(`cat ${this.systemdEnvPath} | grep "UIX_STORAGE_PATH" | awk -F'=' '{print $2}' | sed -e 's/^"//' -e 's/"$//'`).toString('utf8').trim();
+        const storagePath = child_process.execSync(`cat "${this.systemdEnvPath}" | grep "UIX_STORAGE_PATH" | awk -F'=' '{print $2}' | sed -e 's/^"//' -e 's/"$//'`)
+          .toString('utf8').trim();
 
         if (storagePath.length > 5 && fs.existsSync(storagePath)) {
           // chown the storage directory to the service user
