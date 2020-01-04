@@ -12,6 +12,7 @@ import * as commander from 'commander';
 import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
 import * as tcpPortUsed from 'tcp-port-used';
+import { Tail } from 'tail';
 
 import { Win32Installer } from './platforms/win32';
 import { LinuxInstaller } from './platforms/linux';
@@ -68,7 +69,7 @@ export class HomebridgeServiceHelper {
       .option('--port [port]', '', (p) => this.uiPort = parseInt(p, 10))
       .option('--user [user]', '', (p) => this.asUser = p)
       .option('--allow-root', '', () => this.allowRunRoot = true)
-      .arguments('<install|uninstall|start|stop|restart|run>')
+      .arguments('<install|uninstall|start|stop|restart|run|logs>')
       .action((cmd) => {
         this.action = cmd;
       })
@@ -106,6 +107,10 @@ export class HomebridgeServiceHelper {
         this.launch();
         break;
       }
+      case 'logs': {
+        this.tailLogs();
+        break;
+      }
       default: {
         commander.outputHelp();
 
@@ -117,6 +122,7 @@ export class HomebridgeServiceHelper {
         console.log('    stop                             stop the homebridge service');
         console.log('    restart                          restart the homebridge service');
         console.log('    run                              run homebridge daemon');
+        console.log('    logs                             tails the homebridge service logs');
 
         process.exit(1);
       }
@@ -469,6 +475,26 @@ export class HomebridgeServiceHelper {
       const { uid, gid } = await this.installer.getId();
       fs.chownSync(pathToChown, uid, gid);
     }
+  }
+
+  /**
+   * Tails the Homebridge service log and outputs the results to the console
+   */
+  private tailLogs() {
+    if (!fs.existsSync(this.logPath)) {
+      this.logger(`ERROR: Log file does not exist at expected location: ${this.logPath}`);
+      process.exit(1);
+    }
+
+    const tail = new Tail(this.logPath, {
+      fromBeginning: true,
+      useWatchFile: true,
+      fsWatchOptions: {
+        interval: 200,
+      },
+    });
+
+    tail.on('line', console.log);
   }
 
 }
