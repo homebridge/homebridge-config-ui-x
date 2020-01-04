@@ -20,7 +20,7 @@ All notable changes to this project will be documented in this file. This projec
         * **System Information Widget** - shows details about your server and homebridge setup
         * **Weather Widget:** - shows the current weather for the set location (may add a forcast later)
 
-* **Easy Installer:** This release expands the `hb-service` command to support macOS and Linux (Debian-based) as well as Windows 10
+* **Easy Installer:** This release expands the `hb-service` command to support macOS and Linux in addition to Windows 10
     * Running `hb-service install` will setup Homebridge and Homebridge Config UI X to run as a service with auto-start on boot
     * The UI will remain running even if there is an issue preventing Homebridge from starting
     * Multiple instances are supported, see the wiki for further details

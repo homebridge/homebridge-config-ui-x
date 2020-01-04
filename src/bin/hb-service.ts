@@ -24,7 +24,6 @@ export class HomebridgeServiceHelper {
   public storagePath;
   public allowRunRoot = false;
   public asUser;
-  private logPath: string;
   private log: fs.WriteStream;
   private homebridgeBinary: string;
   private homebridge: child_process.ChildProcessWithoutNullStreams;
@@ -35,7 +34,14 @@ export class HomebridgeServiceHelper {
 
   private installer: Win32Installer | LinuxInstaller | DarwinInstaller;
 
+  get logPath(): string {
+    return path.resolve(this.storagePath, 'homebridge.log');
+  }
+
   constructor() {
+    // check the node.js version
+    this.nodeVersionCheck();
+
     // select the installer for the current platform
     switch (os.platform()) {
       case 'linux':
@@ -152,6 +158,29 @@ export class HomebridgeServiceHelper {
   }
 
   /**
+   * Opens the log file stream
+   */
+  private async startLog() {
+    // work out the log path
+    this.logger(`Logging to ${this.logPath}`);
+
+    // redirect all stdout to the log file
+    this.log = fs.createWriteStream(this.logPath, { flags: 'a' });
+    process.stdout.write = process.stderr.write = this.log.write.bind(this.log);
+  }
+
+  /**
+   * Trucate the log file to prevent large log files
+   */
+  private async truncateLog() {
+    const logFile = await (await fs.readFile(this.logPath, 'utf8')).split('\n');
+    if (logFile.length > 5000) {
+      logFile.splice(0, (logFile.length - 5000));
+    }
+    await fs.writeFile(this.logPath, logFile.join('\n'), {});
+  }
+
+  /**
    * Launch script, starts homebridge and homebridge-config-ui-x
    */
   private async launch() {
@@ -161,16 +190,16 @@ export class HomebridgeServiceHelper {
       process.exit(0);
     }
 
+    // start the interval to truncate the logs every two hours
+    setInterval(() => {
+      this.truncateLog();
+    }, (1000 * 60 * 60) * 2);
+
     // check storage path exists
     await this.storagePathCheck();
 
-    // work out the log path
-    this.logPath = path.resolve(this.storagePath, 'homebridge.log');
-    this.logger(`Logging to ${this.logPath}`);
-
-    // redirect all stdout to the log file
-    this.log = fs.createWriteStream(this.logPath, { flags: 'a' });
-    process.stdout.write = process.stderr.write = this.log.write.bind(this.log);
+    // start logging to file
+    await this.startLog();
 
     // verify the config
     await this.configCheck();
@@ -281,6 +310,17 @@ export class HomebridgeServiceHelper {
    */
   private async runUi() {
     await import('../main');
+  }
+
+  /**
+   * Checks the current Node.js version is > 10
+   */
+  private nodeVersionCheck() {
+    // 64 = v10;
+    if (parseInt(process.versions.modules, 10) < 64) {
+      this.logger(`ERROR: Node.js v10.13.0 or greater is required. Current: ${process.version}.`);
+      process.exit(1);
+    }
   }
 
   /**
