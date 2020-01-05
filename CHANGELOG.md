@@ -19,6 +19,7 @@ All notable changes to this project will be documented in this file. This projec
         * **Homebridge Terminal Widget** - an interactive terminal (only available when interactive web terminals are enabled)
         * **System Information Widget** - shows details about your server and homebridge setup
         * **Weather Widget:** - shows the current weather for the set location (may add a forcast later)
+        * **Accessories Widget** - display and control the accessories you select
 
 * **Easy Installer:** This release expands the `hb-service` command to support macOS and Linux in addition to Windows 10
     * Running `hb-service install` will setup Homebridge and Homebridge Config UI X to run as a service with auto-start on boot

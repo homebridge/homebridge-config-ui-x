@@ -27,7 +27,7 @@ import { AccessoriesComponent } from './accessories.component';
     CommonModule,
     FormsModule,
     NgbModule,
-    DragulaModule.forRoot(),
+    DragulaModule,
     TranslateModule.forChild(),
     CoreModule,
     AccessoriesCoreModule,

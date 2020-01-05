@@ -21,6 +21,7 @@ import { WidgetAddComponent } from './widget-add/widget-add.component';
 export class StatusComponent implements OnInit, OnDestroy {
   private io = this.$ws.connectToNamespace('status');
 
+  public saveWidgetsEvent = new Subject();
   public options: GridsterConfig;
   public dashboard: Array<GridsterItem> = [];
   public consoleStatus: 'up' | 'down' = 'down';
@@ -75,6 +76,7 @@ export class StatusComponent implements OnInit, OnDestroy {
           this.dashboard = layout.map((item) => {
             item.$resizeEvent = new Subject();
             item.$configureEvent = new Subject();
+            item.$saveWidgetsEvent = this.saveWidgetsEvent;
             return item;
           });
         });
@@ -91,6 +93,14 @@ export class StatusComponent implements OnInit, OnDestroy {
         // tslint:disable-next-line:deprecation
         window.location.reload(true);
       }
+    });
+
+    // this allows widgets to trigger a save to the grid layout
+    // eg. when the order of the accessories in the accessories widget changes
+    this.saveWidgetsEvent.subscribe({
+      next: () => {
+        this.gridChangedEvent();
+      },
     });
   }
 
@@ -131,10 +141,6 @@ export class StatusComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy() {
-    this.io.end();
-  }
-
   addWidget() {
     const ref = this.$modal.open(WidgetAddComponent, { size: 'lg' });
     ref.componentInstance.dashboard = this.dashboard;
@@ -151,6 +157,7 @@ export class StatusComponent implements OnInit, OnDestroy {
           hideOnMobile: widget.hideOnMobile,
           $resizeEvent: new Subject(),
           $configureEvent: new Subject(),
+          $saveWidgetsEvent: this.saveWidgetsEvent,
         };
 
         this.dashboard.push(item);
@@ -185,6 +192,11 @@ export class StatusComponent implements OnInit, OnDestroy {
         this.gridChangedEvent();
         item.$configureEvent.next();
       });
+  }
+
+  ngOnDestroy() {
+    this.io.end();
+    this.saveWidgetsEvent.complete();
   }
 
 }

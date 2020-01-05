@@ -3,6 +3,7 @@ import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DragulaService } from 'ng2-dragula';
+import { Subscription } from 'rxjs';
 
 import { AuthService } from '../../core/auth/auth.service';
 import { AccessoriesService } from '../../core//accessories/accessories.service';
@@ -17,6 +18,7 @@ import { AddRoomModalComponent } from './add-room-modal/add-room-modal.component
 export class AccessoriesComponent implements OnInit, OnDestroy {
   public isMobile: any = false;
   public hideHidden = true;
+  private orderSubscription: Subscription;
 
   constructor(
     private dragulaService: DragulaService,
@@ -40,7 +42,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     });
 
     // save the room and service layout
-    dragulaService.drop().subscribe(() => {
+    this.orderSubscription = dragulaService.drop().subscribe(() => {
       setTimeout(() => {
         this.$accessories.saveLayout();
       });
@@ -100,6 +102,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     this.$accessories.stop();
 
     // destroy drag and drop bags
+    this.orderSubscription.unsubscribe();
     this.dragulaService.destroy('rooms-bag');
     this.dragulaService.destroy('services-bag');
   }

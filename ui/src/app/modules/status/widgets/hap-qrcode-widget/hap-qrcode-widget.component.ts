@@ -67,12 +67,6 @@ export class HapQrcodeWidgetComponent implements OnInit {
         (svg) => {
           this.qrcodeElement.nativeElement.innerHTML = svg;
           this.loadedQrCode = true;
-          setTimeout(() => {
-            this.resizeQrCode();
-          }, 20);
-          setTimeout(() => {
-            this.resizeEvent.next();
-          }, 1000);
         },
         (err) => {
           this.loadedQrCode = false;

@@ -6,6 +6,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrModule } from 'ngx-toastr';
 import { TranslateModule } from '@ngx-translate/core';
 import { MonacoEditorModule } from 'ngx-monaco-editor';
+import { DragulaModule } from 'ng2-dragula';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -50,6 +51,7 @@ import { onMonacoLoad } from './core/monaco-editor.service';
       },
       onMonacoLoad,
     }),
+    DragulaModule.forRoot(),
     CoreModule,
     AuthModule,
     StatusModule,

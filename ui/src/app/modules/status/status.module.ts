@@ -5,6 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 import { GridsterModule } from 'angular-gridster2';
+import { DragulaModule } from 'ng2-dragula';
 
 import { CoreModule } from '../../core/core.module';
 import { StatusComponent } from './status.component';
@@ -64,6 +65,7 @@ import { AccessoriesWidgetComponent } from './widgets/accessories-widget/accesso
     TranslateModule.forChild(),
     NgbModule,
     GridsterModule,
+    DragulaModule,
     CoreModule,
     AccessoriesCoreModule,
     ManagePluginsModule,

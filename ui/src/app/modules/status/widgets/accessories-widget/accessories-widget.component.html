@@ -2,7 +2,8 @@
   <div style="cursor: move;" class="drag-handler pl-2 pt-1 pb-1 pr-2" [translate]="'accessories.title_accessories'">
     Accessories
   </div>
-  <div class="d-flex flex-wrap gridster-item-content" *ngIf="dashboardAccessories.length">
+  <div class="d-flex flex-wrap gridster-item-content" *ngIf="dashboardAccessories.length"
+    [dragula]='"widget-accessories-bag"' [(dragulaModel)]='dashboardAccessories'>
     <div *ngFor="let service of dashboardAccessories" [ngSwitch]="service.type"
       class="accessory-item accessory-widget-box noselect">
       <ng-container *ngIf="!hideHidden || !service.hidden">

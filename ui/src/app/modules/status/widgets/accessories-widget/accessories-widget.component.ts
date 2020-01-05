@@ -1,6 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { DragulaService } from 'ng2-dragula';
+
 import { AccessoriesService } from '../../../../core/accessories/accessories.service';
+import { MobileDetectService } from '../../../../core/mobile-detect.service';
+import { ServiceTypeX } from '../../../../core/accessories/accessories.interfaces';
 
 @Component({
   selector: 'app-accessories-widget',
@@ -8,13 +12,35 @@ import { AccessoriesService } from '../../../../core/accessories/accessories.ser
   styleUrls: ['./accessories-widget.component.scss'],
 })
 export class AccessoriesWidgetComponent implements OnInit, OnDestroy {
-  public dashboardAccessories = [];
+  @Input() widget;
+
+  public isMobile: any = false;
+
+  public dashboardAccessories: ServiceTypeX[] = [];
   public loaded = false;
   public layoutSubscription: Subscription;
+  public orderSubscription: Subscription;
 
   constructor(
+    private dragulaService: DragulaService,
     public $accessories: AccessoriesService,
-  ) { }
+    private $md: MobileDetectService,
+  ) {
+    this.isMobile = this.$md.detect.mobile();
+
+    // disable drag and drop for the .no-drag class
+    dragulaService.createGroup('widget-accessories-bag', {
+      moves: (el, source, handle, sibling) => !this.isMobile && !el.classList.contains('no-drag'),
+    });
+
+    // save the room and service layout
+    this.orderSubscription = dragulaService.drop().subscribe(() => {
+      setTimeout(() => {
+        this.widget.accessoryOrder = this.dashboardAccessories.map(x => x.uniqueId);
+        this.widget.$saveWidgetsEvent.next();
+      });
+    });
+  }
 
   async ngOnInit() {
     await this.$accessories.start();
@@ -42,6 +68,19 @@ export class AccessoriesWidgetComponent implements OnInit, OnDestroy {
       }
     }
 
+    if (this.widget.accessoryOrder && this.widget.accessoryOrder.length) {
+      dashboardAccessories.sort((a, b) => {
+        const posA = this.widget.accessoryOrder.findIndex(s => s === a.uniqueId);
+        const posB = this.widget.accessoryOrder.findIndex(s => s === b.uniqueId);
+        if (posA < posB) {
+          return -1;
+        } else if (posA > posB) {
+          return 1;
+        }
+        return 0;
+      });
+    }
+
     this.dashboardAccessories = dashboardAccessories;
     this.loaded = true;
   }
@@ -49,6 +88,8 @@ export class AccessoriesWidgetComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.$accessories.stop();
     this.layoutSubscription.unsubscribe();
+    this.orderSubscription.unsubscribe();
+    this.dragulaService.destroy('widget-accessories-bag');
   }
 
 }
