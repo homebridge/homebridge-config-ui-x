@@ -58,7 +58,7 @@ export class ConfigService {
     sudo?: boolean;
     restart?: string;
     log?: {
-      method: 'file' | 'custom' | 'systemd';
+      method: 'file' | 'custom' | 'systemd' | 'native';
       command?: string;
       path?: string;
       service?: string;
@@ -179,7 +179,7 @@ export class ConfigService {
     this.ui.restart = undefined;
     this.homebridgeInsecureMode = true;
     this.ui.log = {
-      method: 'file',
+      method: os.platform() === 'win32' ? 'native' : 'file',
       path: path.resolve(this.storagePath, 'homebridge.log'),
     };
   }

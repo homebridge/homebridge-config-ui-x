@@ -41,6 +41,7 @@ All notable changes to this project will be documented in this file. This projec
 * **Status:** CPU temperature option, `temp`, has been removed, the CPU temperature will now automatically be displayed where possible on Linux and Windows
 * **System:** Removed the `websocketCompatibilityMode` option, this setting is now the default for all users
 * **Terminal:** The terminal now automatically respawns the shell if the shell is terminated by the user (e.g, when using CTRL+D)
+* **Accessory Control:** The right click handler on accessory tiles has been removed and replaced with a clickable cog icon in the top right hand side of each tile
 * **Themes:** The legacy Dark Mode (v1) has been removed, users will be migrated to the new Dark Mode automatically
 * **i18n:** Improvements to Simplified Chinese language translations ([#431](https://github.com/oznu/homebridge-config-ui-x/pull/431))
 * Updated npm dependencies

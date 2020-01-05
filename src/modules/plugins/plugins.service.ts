@@ -224,7 +224,7 @@ export class PluginsService {
 
     installPath = path.resolve(installPath, '../');
 
-    await this.runNpmCommand([...this.npm, 'install', '--unsafe-perm', ...installOptions, `${pluginName}@latest`], installPath, client);
+    await this.runNpmCommand([...this.npm, 'install', ...installOptions, `${pluginName}@latest`], installPath, client);
 
     return true;
   }
@@ -255,7 +255,7 @@ export class PluginsService {
 
     installPath = path.resolve(installPath, '../');
 
-    await this.runNpmCommand([...this.npm, 'uninstall', '--unsafe-perm', ...installOptions, pluginName], installPath, client);
+    await this.runNpmCommand([...this.npm, 'uninstall', ...installOptions, pluginName], installPath, client);
     await this.ensureCustomPluginDirExists();
 
     return true;
@@ -292,7 +292,7 @@ export class PluginsService {
 
     installPath = path.resolve(installPath, '../');
 
-    await this.runNpmCommand([...this.npm, 'install', '--unsafe-perm', ...installOptions, `${pluginName}@latest`], installPath, client);
+    await this.runNpmCommand([...this.npm, 'install', ...installOptions, `${pluginName}@latest`], installPath, client);
 
     return true;
   }
@@ -353,7 +353,7 @@ export class PluginsService {
 
     installPath = path.resolve(installPath, '../');
 
-    await this.runNpmCommand([...this.npm, 'install', '--unsafe-perm', ...installOptions, `${homebridge.name}@latest`], installPath, client);
+    await this.runNpmCommand([...this.npm, 'install', ...installOptions, `${homebridge.name}@latest`], installPath, client);
 
     return true;
   }
@@ -520,7 +520,7 @@ export class PluginsService {
         .filter(fs.existsSync);
 
       if (windowsNpmPath.length) {
-        return [windowsNpmPath[0], '--no-update-notifier'];
+        return [windowsNpmPath[0]];
       } else {
         this.logger.error(`ERROR: Cannot find npm binary. You will not be able to manage plugins or update homebridge.`);
         this.logger.error(`ERROR: You might be able to fix this problem by running: npm install -g npm`);
@@ -528,7 +528,7 @@ export class PluginsService {
 
     }
     // Linux and macOS don't require the full path to npm
-    return ['npm', '--no-update-notifier'];
+    return ['npm'];
   }
 
   /**
@@ -661,7 +661,12 @@ export class PluginsService {
         cols: 80,
         rows: 30,
         cwd,
-        env: process.env,
+        env: Object.assign({
+          npm_config_global_style: 'true',
+          npm_config_unsafe_perm: 'true',
+          npm_config_update_notifier: 'false',
+          npm_config_prefer_online: 'true',
+        }, process.env),
       });
 
       // send stdout data from the process to all clients
