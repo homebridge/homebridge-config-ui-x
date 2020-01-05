@@ -77,11 +77,12 @@ gridster {
     }
 
     #CpuWidgetComponent, #MemoryWidgetComponent, #UptimeWidgetComponent {
-      max-height: 100px;
+      height: unset !important;
+      padding-bottom: 10px;
     }
 
     #SystemInfoWidgetComponent {
-      max-height: 360px;
+      height: unset !important;
     }
 
     #HapQrcodeWidgetComponent {
@@ -91,5 +92,15 @@ gridster {
     #WeatherWidgetComponent {
       max-height: 200px;
     }
+
+    #AccessoriesWidgetComponent {
+      height: unset !important;
+      border: none !important;
+    }
+  }
+
+  #AccessoriesWidgetComponent {
+    background-color: inherit;
+    border: 2px solid #e0e0e0;
   }
 }

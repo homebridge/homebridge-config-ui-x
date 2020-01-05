@@ -8,7 +8,6 @@ import { AuthService } from '../../core/auth/auth.service';
 import { AccessoriesService } from '../../core//accessories/accessories.service';
 import { MobileDetectService } from '../../core/mobile-detect.service';
 import { AddRoomModalComponent } from './add-room-modal/add-room-modal.component';
-import { InfoModalComponent } from './info-modal/info-modal.component';
 
 @Component({
   selector: 'app-accessories',
@@ -81,20 +80,6 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       });
     })
       .catch(() => { /* modal dismissed */ });
-  }
-
-  showAccessoryInformation(service) {
-    const ref = this.modalService.open(InfoModalComponent, {
-      size: 'lg',
-    });
-
-    ref.componentInstance.service = service;
-
-    ref.result
-      .then(x => this.$accessories.saveLayout())
-      .catch(x => this.$accessories.saveLayout());
-
-    return false;
   }
 
   toggleLayoutLock() {

@@ -1,5 +1,7 @@
 <div class="accessory-box">
-  <div [inlineSVG]="'/assets/hap-icons/unknown.svg'" aria-label="Switch" class="accessory-svg"></div>
-  <div class="accessory-label">{{ service.customName || service.serviceName }}</div>
-  <div class="accessory-label grey-text">{{ 'accessories.control.not_supported' | translate }}</div>
+  <div class="d-flex flex-column h-100">
+    <div [inlineSVG]="'/assets/hap-icons/unknown.svg'" aria-label="Switch" class="accessory-svg"></div>
+    <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
+    <div class="accessory-label grey-text">{{ 'accessories.control.not_supported' | translate }}</div>
+  </div>
 </div>

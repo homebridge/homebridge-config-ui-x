@@ -9,10 +9,19 @@
   <div class="modal-body">
     <div>
       <label for="basic-url" [translate]="'accessories.label_name'">Name</label>
-      <div class="custom-control custom-checkbox float-right">
-        <input type="checkbox" class="custom-control-input" id="hide-accessory" [(ngModel)]="service.hidden">
-        <label class="custom-control-label" for="hide-accessory"
-          [translate]="'accessories.label_hide_this_accessory'">Hide this accessory</label>
+      <div class="float-right">
+        <label for="hide-accessory" class="hb-uix-switch d-inline pr-3">
+          <input type="checkbox" [(ngModel)]="service.hidden" id="hide-accessory">
+          <span [translate]="'accessories.label_hide_this_accessory'">Hide this accessory</span>
+          <span class="hb-uix-slider hb-uix-round"></span>
+        </label>
+
+        <label for="show-on-dashboard" class="hb-uix-switch d-inline">
+          <input type="checkbox" [(ngModel)]="service.onDashboard" id="show-on-dashboard">
+          <span [translate]="'accessories.label_show_on_dashboard'">Show in dashboard widget</span>
+          <span class="hb-uix-slider hb-uix-round"></span>
+        </label>
+
       </div>
       <div class="form-group mb-3">
         <input type="text" class="form-control" id="basic-url" [ngModel]="service.customName || service.serviceName"

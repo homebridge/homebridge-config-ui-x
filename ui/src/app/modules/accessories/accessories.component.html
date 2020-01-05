@@ -36,9 +36,10 @@
       <div class="row mb-4">
         <div class="col-md-12 d-flex flex-wrap noselect services-bag" *ngIf="room.services.length"
           [dragula]='"services-bag"' [(dragulaModel)]='room.services'>
-          <div *ngFor="let service of room.services" [ngSwitch]="service.type"
-            (contextmenu)="showAccessoryInformation(service)">
-            <div *ngIf="!hideHidden || !service.hidden">
+          <div *ngFor="let service of room.services" [ngSwitch]="service.type" class="accessory-item accessory-tab">
+            <ng-container *ngIf="!hideHidden || !service.hidden">
+              <i class="fas fa-cog manage-accessory-button primary-text"
+                (click)="$accessories.showAccessoryInformation(service)"></i>
               <app-switch *ngSwitchCase="'Switch'" [service]="service">Switch</app-switch>
               <app-thermostat *ngSwitchCase="'Thermostat'" [service]="service">Thermostat</app-thermostat>
               <app-outlet *ngSwitchCase="'Outlet'" [service]="service">Outlet</app-outlet>
@@ -63,7 +64,7 @@
               <app-television *ngSwitchCase="'Television'" [service]="service">Television
               </app-television>
               <app-unknown *ngSwitchDefault [service]="service">{{ service.humanType }}</app-unknown>
-            </div>
+            </ng-container>
           </div>
         </div>
         <div class="col-md-12 d-flex flex-wrap noselect" *ngIf="!room.services.length && !isMobile"

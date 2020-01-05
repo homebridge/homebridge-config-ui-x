@@ -9,6 +9,7 @@ import { GridsterModule } from 'angular-gridster2';
 import { CoreModule } from '../../core/core.module';
 import { StatusComponent } from './status.component';
 import { ManagePluginsModule } from '../../core/manage-plugins/manage-plugins.module';
+import { AccessoriesCoreModule } from '../../core/accessories/accessories.module';
 
 import { WidgetsComponent } from './widgets/widgets.component';
 import { WidgetControlComponent } from './widget-control/widget-control.component';
@@ -64,6 +65,7 @@ import { AccessoriesWidgetComponent } from './widgets/accessories-widget/accesso
     NgbModule,
     GridsterModule,
     CoreModule,
+    AccessoriesCoreModule,
     ManagePluginsModule,
   ],
 })

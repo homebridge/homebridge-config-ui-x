@@ -65,11 +65,6 @@
           </th>
           <td>{{ serverInfo.homebridgeCustomPluginPath }}</td>
         </tr>
-        <tr *ngIf="serverInfo.homebridgeInsecureMode">
-          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_insecure_mode'">Insecure Mode
-          </th>
-          <td>Yes</td>
-        </tr>
         <tr *ngIf="serverInfo.homebridgeRunningInDocker">
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_docker'">Docker</th>
           <td>Yes</td>

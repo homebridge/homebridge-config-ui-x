@@ -1,7 +1,10 @@
 <div class="accessory-box" [ngClass]="{'switch-on': service.values.AirQuality > 3}">
-  <div [inlineSVG]="'/assets/hap-icons/airquality.svg'" aria-label="Switch" class="accessory-svg"></div>
-  <div class="accessory-label">{{ service.customName || service.serviceName }}</div>
-  <div class="accessory-label" [ngClass]="{'grey-text': service.values.AirQuality < 4, 'red-text': service.values.AirQuality > 3}">
-    {{ labels[service.values.AirQuality] }}
+  <div class="d-flex flex-column h-100">
+    <div [inlineSVG]="'/assets/hap-icons/airquality.svg'" aria-label="Switch" class="accessory-svg"></div>
+    <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
+    <div class="accessory-label"
+      [ngClass]="{'grey-text': service.values.AirQuality < 4, 'red-text': service.values.AirQuality > 3}">
+      {{ labels[service.values.AirQuality] }}
+    </div>
   </div>
 </div>

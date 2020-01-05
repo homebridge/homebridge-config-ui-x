@@ -31,15 +31,18 @@ import { WindowcoveringManageComponent } from './types/windowcovering/windowcove
 import { TelevisionComponent } from './types/television/television.component';
 import { ContactsensorComponent } from './types/contactsensor/contactsensor.component';
 
+import { InfoModalComponent } from './info-modal/info-modal.component';
 
 @NgModule({
   entryComponents: [
+    InfoModalComponent,
     ThermostatManageComponent,
     LightbulbManageComponent,
     FanManageComponent,
     WindowcoveringManageComponent,
   ],
   declarations: [
+    InfoModalComponent,
     SwitchComponent,
     ThermostatComponent,
     ThermostatManageComponent,

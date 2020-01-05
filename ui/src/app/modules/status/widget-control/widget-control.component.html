@@ -29,7 +29,17 @@
         Weather data is provided by OpenWeather.
       </p>
     </div>
-    <div class="text-center" *ngSwitchDefault>
+    <div *ngSwitchCase="'AccessoriesWidgetComponent'">
+      <div class="alert alert-primary" role="alert"
+        [translate]="'status.widget.accessories.label_choose_accessories_to_display'">
+        Choose the Accessories to display in this widget from the Accessories tab.
+      </div>
+      <div class="text-center">
+        <a class="btn btn-primary" routerLink="/accessories" (click)="activeModal.dismiss()"
+          [translate]="'accessories.title_accessories'">Accessories</a>
+      </div>
+    </div>
+    <div class=" text-center" *ngSwitchDefault>
       <h6 [translate]="'status.widget.label_widget_has_no_options'">This widget has no options</h6>
       <pre>{{ hideOnMobile }}</pre>
     </div>

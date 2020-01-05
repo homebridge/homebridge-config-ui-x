@@ -206,7 +206,6 @@
     color: #000000;
   }
 
-
   /** Gridster **/
   gridster-item {
     color: #FFFFFF;
@@ -219,5 +218,9 @@
 
   .available-widget {
     background-color: #000000;
+  }
+
+  #AccessoriesWidgetComponent {
+    border: 2px solid #2b2b2b !important;
   }
 }

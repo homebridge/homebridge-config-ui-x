@@ -1,4 +1,7 @@
 <div class="accessory-box">
-  <div class="temperature-circle" [innerText]="(service.values.CurrentTemperature | convertTemp | number:'1.0-0') + '°'"></div>
-  <div class="accessory-label">{{ service.customName || service.serviceName }}</div>
+  <div class="d-flex flex-column h-100">
+    <div class="temperature-circle"
+      [innerText]="(service.values.CurrentTemperature | convertTemp | number:'1.0-0') + '°'"></div>
+    <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
+  </div>
 </div>

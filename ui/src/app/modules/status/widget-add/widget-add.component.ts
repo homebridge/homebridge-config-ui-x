@@ -28,7 +28,7 @@ export class WidgetAddComponent implements OnInit {
       hidden: false,
       cols: 3,
       rows: 7,
-      mobileOrder: 5,
+      mobileOrder: 9,
     },
     {
       name: this.translate.instant('status.cpu.title_cpu'),
@@ -60,7 +60,7 @@ export class WidgetAddComponent implements OnInit {
       hidden: false,
       cols: 5,
       rows: 9,
-      mobileOrder: 5,
+      mobileOrder: 6,
     },
     {
       name: this.translate.instant('status.widget.label_homebridge_logs'),
@@ -94,10 +94,9 @@ export class WidgetAddComponent implements OnInit {
       component: 'AccessoriesWidgetComponent',
       hidden: !this.$auth.env.enableAccessories,
       cols: 7,
-      rows: 6,
-      mobileOrder: 10,
+      rows: 9,
+      mobileOrder: 5,
       hideOnMobile: false,
-      requiresConfig: true,
     },
   ];
 

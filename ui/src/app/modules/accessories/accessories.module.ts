@@ -11,7 +11,6 @@ import { AccessoriesCoreModule } from '../../core/accessories/accessories.module
 import { AccessoriesRoutingModule } from './accessories-routing.module';
 import { DragHerePlaceholderComponent } from './drag-here-placeholder/drag-here-placeholder.component';
 import { AddRoomModalComponent } from './add-room-modal/add-room-modal.component';
-import { InfoModalComponent } from './info-modal/info-modal.component';
 
 import { AccessoriesComponent } from './accessories.component';
 
@@ -20,11 +19,9 @@ import { AccessoriesComponent } from './accessories.component';
     AccessoriesComponent,
     DragHerePlaceholderComponent,
     AddRoomModalComponent,
-    InfoModalComponent,
   ],
   entryComponents: [
     AddRoomModalComponent,
-    InfoModalComponent,
   ],
   imports: [
     CommonModule,

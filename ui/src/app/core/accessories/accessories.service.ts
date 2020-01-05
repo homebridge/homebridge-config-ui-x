@@ -1,19 +1,32 @@
 import { Injectable } from '@angular/core';
 import { ServiceType } from '@oznu/hap-client';
 import { ToastrService } from 'ngx-toastr';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Subject } from 'rxjs';
 
 import { WsService, IoNamespace } from '../ws.service';
 import { AuthService } from '../auth/auth.service';
 import { ApiService } from '../api.service';
 import { ServiceTypeX } from './accessories.interfaces';
+import { InfoModalComponent } from './info-modal/info-modal.component';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AccessoriesService {
   public io: IoNamespace;
+  public layoutSaved = new Subject();
 
-  public accessoryLayout: { name: string; services: Array<{ aid: number; iid: number; uuid: string; uniqueId: string }>; }[];
+  public accessoryLayout: {
+    name: string; services: Array<{
+      aid: number;
+      iid: number;
+      uuid: string;
+      uniqueId: string;
+      hidden?: boolean,
+      onDashboard?: boolean
+    }>;
+  }[];
   public accessories: { services: ServiceType[] } = { services: [] };
   public rooms: Array<{ name: string, services: ServiceTypeX[] }> = [];
   private roomsOrdered = false;
@@ -23,6 +36,7 @@ export class AccessoriesService {
   ];
 
   constructor(
+    private modalService: NgbModal,
     public $toastr: ToastrService,
     private $ws: WsService,
     public $auth: AuthService,
@@ -208,16 +222,16 @@ export class AccessoriesService {
             uuid: service.uuid,
             customName: service.customName || undefined,
             hidden: service.hidden || undefined,
+            onDashboard: service.onDashboard || undefined,
           };
         }),
       };
-    })
-      .filter(room => room.services.length);
+    }).filter(room => room.services.length);
 
     // send update request to server
     this.io.request('save-layout', { user: this.$auth.user.username, layout: this.accessoryLayout })
       .subscribe(
-        data => true,
+        data => this.layoutSaved.next(),
         err => this.$toastr.error(err.message, 'Failed to save page layout'),
       );
   }
@@ -258,10 +272,31 @@ export class AccessoriesService {
   }
 
   /**
+   *
+   */
+  showAccessoryInformation(service) {
+    const ref = this.modalService.open(InfoModalComponent, {
+      size: 'lg',
+    });
+
+    ref.componentInstance.service = service;
+
+    ref.result
+      .then(x => this.saveLayout())
+      .catch(x => this.saveLayout());
+
+    return false;
+  }
+
+  /**
    * Stop the accessory control session
    */
   public stop() {
     this.io.end();
+    this.rooms = [];
+    this.accessories = { services: [] };
+    this.roomsOrdered = false;
+    delete this.accessoryLayout;
   }
 
 }
