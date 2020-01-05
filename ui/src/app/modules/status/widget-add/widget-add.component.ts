@@ -89,6 +89,16 @@ export class WidgetAddComponent implements OnInit {
       mobileOrder: 1,
       requiresConfig: true,
     },
+    {
+      name: 'Accessories',
+      component: 'AccessoriesWidgetComponent',
+      hidden: !this.$auth.env.enableAccessories,
+      cols: 7,
+      rows: 6,
+      mobileOrder: 10,
+      hideOnMobile: false,
+      requiresConfig: true,
+    },
   ];
 
   public availableWidgets = [];

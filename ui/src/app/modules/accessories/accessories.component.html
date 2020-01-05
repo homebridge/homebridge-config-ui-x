@@ -24,8 +24,8 @@
     </div>
   </div>
 
-  <div [dragula]='"rooms-bag"' [(dragulaModel)]='rooms'>
-    <div *ngFor="let room of rooms">
+  <div [dragula]='"rooms-bag"' [(dragulaModel)]='$accessories.rooms'>
+    <div *ngFor="let room of $accessories.rooms">
       <div class="row" *ngIf="!isMobile || room.services.length">
         <div class="col-md-12">
           <h5 class="primary-text drag-handle room-title" [ngClass]="{'cursor-move': !isMobile}">

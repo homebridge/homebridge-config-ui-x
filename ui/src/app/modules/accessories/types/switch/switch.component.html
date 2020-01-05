@@ -1,7 +1,0 @@
-<div class="accessory-box" [ngClass]="{'switch-on': service.values.On}" (click)="onClick()">
-  <div [inlineSVG]="'/assets/hap-icons/switch.svg'" aria-label="Switch" class="accessory-svg"></div>
-  <div class="accessory-label">{{ service.customName || service.serviceName }}</div>
-  <div class="accessory-label grey-text"
-    [innerText]="(service.values.On ? 'accessories.control.label_on' : 'accessories.control.label_off') | translate">
-  </div>
-</div>

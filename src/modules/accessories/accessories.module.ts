@@ -4,7 +4,6 @@ import { AccessoriesService } from './accessories.service';
 import { AccessoriesGateway } from './accessories.gateway';
 import { ConfigModule } from '../../core/config/config.module';
 import { LoggerModule } from '../../core/logger/logger.module';
-import { AccessoriesController } from './accessories.controller';
 
 @Module({
   imports: [
@@ -15,9 +14,6 @@ import { AccessoriesController } from './accessories.controller';
   providers: [
     AccessoriesService,
     AccessoriesGateway,
-  ],
-  controllers: [
-    AccessoriesController,
   ],
 })
 export class AccessoriesModule { }

@@ -22,6 +22,7 @@ import { HomebridgeStatusWidgetComponent } from './widgets/homebridge-status-wid
 import { SystemInfoWidgetComponent } from './widgets/system-info-widget/system-info-widget.component';
 import { WidgetAddComponent } from './widget-add/widget-add.component';
 import { WeatherWidgetComponent } from './widgets/weather-widget/weather-widget.component';
+import { AccessoriesWidgetComponent } from './widgets/accessories-widget/accessories-widget.component';
 
 @NgModule({
   entryComponents: [
@@ -36,6 +37,7 @@ import { WeatherWidgetComponent } from './widgets/weather-widget/weather-widget.
     HomebridgeStatusWidgetComponent,
     SystemInfoWidgetComponent,
     WeatherWidgetComponent,
+    AccessoriesWidgetComponent,
   ],
   declarations: [
     StatusComponent,
@@ -51,6 +53,7 @@ import { WeatherWidgetComponent } from './widgets/weather-widget/weather-widget.
     HomebridgeStatusWidgetComponent,
     SystemInfoWidgetComponent,
     WeatherWidgetComponent,
+    AccessoriesWidgetComponent,
   ],
   imports: [
     CommonModule,

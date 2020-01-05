@@ -1,7 +1,0 @@
-<div class="accessory-box" [ngClass]="{'switch-on': service.values.OccupancyDetected}">
-  <div [inlineSVG]="'/assets/hap-icons/motionsensor.svg'" aria-label="Switch" class="accessory-svg"></div>
-  <div class="accessory-label">{{ service.customName || service.serviceName }}</div>
-  <div class="accessory-label red-text" *ngIf="service.values.OccupancyDetected">
-    {{ 'accessories.control.label_triggered' | translate }}
-  </div>
-</div>

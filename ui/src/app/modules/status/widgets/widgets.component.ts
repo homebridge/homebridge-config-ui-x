@@ -10,6 +10,7 @@ import { UptimeWidgetComponent } from './uptime-widget/uptime-widget.component';
 import { HomebridgeStatusWidgetComponent } from './homebridge-status-widget/homebridge-status-widget.component';
 import { SystemInfoWidgetComponent } from './system-info-widget/system-info-widget.component';
 import { WeatherWidgetComponent } from './weather-widget/weather-widget.component';
+import { AccessoriesWidgetComponent } from './accessories-widget/accessories-widget.component';
 
 @Component({
   selector: 'app-widgets',
@@ -28,6 +29,7 @@ export class WidgetsComponent implements OnInit, OnDestroy {
     HomebridgeStatusWidgetComponent,
     SystemInfoWidgetComponent,
     WeatherWidgetComponent,
+    AccessoriesWidgetComponent,
   };
 
   private componentRef;

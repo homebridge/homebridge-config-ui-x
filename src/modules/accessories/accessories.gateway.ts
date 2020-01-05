@@ -14,4 +14,14 @@ export class AccessoriesGateway {
   connect(client: any, payload: any) {
     this.accessoriesService.connect(client);
   }
+
+  @SubscribeMessage('get-layout')
+  async getAccessoryLayout(client: any, payload: any) {
+    return await this.accessoriesService.getAccessoryLayout(payload.user);
+  }
+
+  @SubscribeMessage('save-layout')
+  async saveAccessoryLayout(client: any, payload: any) {
+    return await this.accessoriesService.saveAccessoryLayout(payload.user, payload.layout);
+  }
 }
