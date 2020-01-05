@@ -40,6 +40,7 @@ export class StatusComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.options = {
       mobileBreakpoint: 1023,
+      keepFixedHeightInMobile: false,
       itemChangeCallback: this.gridChangedEvent.bind(this),
       itemResizeCallback: this.gridResizeEvent.bind(this),
       draggable: {

@@ -53,13 +53,12 @@ export class HapQrcodeWidgetComponent implements OnInit {
   }
 
   resizeQrCode() {
-    if (this.loadedQrCode) {
-      const containerHeight = (<HTMLElement>this.qrcodeContainerElement.nativeElement).offsetHeight;
-      const containerWidth = (<HTMLElement>this.qrcodeContainerElement.nativeElement).offsetWidth;
-      const pinCodeHeight = (<HTMLElement>this.pincodeElement.nativeElement).offsetHeight;
-      this.qrCodeHeight = containerHeight - pinCodeHeight;
-      this.qrCodeWidth = containerWidth;
-    }
+    const containerHeight = (<HTMLElement>this.qrcodeContainerElement.nativeElement).offsetHeight;
+    const containerWidth = (<HTMLElement>this.qrcodeContainerElement.nativeElement).offsetWidth;
+    const pinCodeHeight = (<HTMLElement>this.pincodeElement.nativeElement).offsetHeight;
+
+    this.qrCodeHeight = containerHeight - pinCodeHeight;
+    this.qrCodeWidth = containerWidth > this.qrCodeHeight ? this.qrCodeHeight : containerWidth;
   }
 
   getQrCodeImage() {

@@ -64,16 +64,8 @@ gridster {
 gridster {
   &.mobile {
 
-    #HomebridgeStatusWidgetComponent {
-      @media (min-width: 768px) {
-        min-height: 130px;
-        max-height: 130px;
-      }
-
-      @media (max-width: 767px) {
-        min-height: 300px;
-        max-height: 300px;
-      }
+    #HomebridgeStatusWidgetComponent, #SystemInfoWidgetComponent, #WeatherWidgetComponent  {
+      height: unset !important;
     }
 
     #CpuWidgetComponent, #MemoryWidgetComponent, #UptimeWidgetComponent {
@@ -81,16 +73,8 @@ gridster {
       padding-bottom: 10px;
     }
 
-    #SystemInfoWidgetComponent {
-      height: unset !important;
-    }
-
     #HapQrcodeWidgetComponent {
-      max-height: 360px;
-    }
-
-    #WeatherWidgetComponent {
-      max-height: 200px;
+      height: 360px !important;
     }
 
     #AccessoriesWidgetComponent {
