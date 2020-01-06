@@ -30,7 +30,6 @@ export class LinuxInstaller {
   public async install() {
     this.checkForRoot();
     this.checkUser();
-    this.setupAcl();
     this.setupSudo();
 
     await this.hbService.portCheck();
@@ -197,57 +196,23 @@ export class LinuxInstaller {
   }
 
   /**
-   * Sets an ACL on the global node modules folder to allow the user to install plugins without needing sudo
-   */
-  private setupAcl() {
-    try {
-      // check setfacl is installed
-      child_process.execSync('command -v setfacl');
-    } catch (e) {
-      // need to install setfacl
-      this.installAcl();
-    }
-
-    try {
-      const groupName = child_process.execSync(`id -gn ${this.hbService.asUser}`).toString('utf8').trim();
-      // allow access to the global npm modules folder without needing root
-      child_process.execSync(`setfacl -Rm d:g:${groupName}:rwx,g:${groupName}:rwx $(npm -g prefix)/lib/node_modules`);
-      // allow access to the default npm bin location without needing root
-      child_process.execSync(`setfacl -m g:${groupName}:rwx $(dirname $(which npm))`);
-    } catch (e) {
-      this.hbService.logger('WARNING: Failed to set ACL. You may not be able to install plugins using the UI.');
-    }
-
-  }
-
-  /**
-   * Installs the ACL package
-   */
-  private installAcl() {
-    try {
-      this.hbService.logger('The "acl" package is missing, installing now using apt-get...');
-      this.hbService.logger('Running apt-get update...');
-      child_process.execSync('apt-get update', { stdio: 'inherit' });
-      this.hbService.logger('Running apt-get install -y acl...');
-      child_process.execSync('apt-get install -y acl', { stdio: 'inherit' });
-    } catch (e) {
-      this.hbService.logger('WARNING: Failed to install the "acl" package.');
-    }
-  }
-
-  /**
    * Allows the homebridge user to shutdown and restart the server from the UI
    * There is no need for full sudo access when running using hb-service
    */
   private setupSudo() {
     try {
-      const sudoersEntry = `${this.hbService.asUser}    ALL=(ALL) NOPASSWD: /sbin/shutdown`;
+      const npmPath = child_process.execSync('which npm').toString('utf8').trim();
+      const shutdownPath = child_process.execSync('which shutdown').toString('utf8').trim();
+      const sudoersEntry = `${this.hbService.asUser}    ALL=(ALL) NOPASSWD:SETENV: ${shutdownPath}, ${npmPath}`;
+
+      // check if the sudoers file already contains the entry
       const sudoers = fs.readFileSync('/etc/sudoers', 'utf-8');
       if (sudoers.includes(sudoersEntry)) {
         return;
       }
+
       // grant the user restricted sudo privileges to /sbin/shutdown
-      child_process.execSync(`echo 'homebridge    ALL=(ALL) NOPASSWD: /sbin/shutdown' | sudo EDITOR='tee -a' visudo`);
+      child_process.execSync(`echo '${sudoersEntry}' | sudo EDITOR='tee -a' visudo`);
     } catch (e) {
       this.hbService.logger('WARNING: Failed to setup /etc/sudoers, you may not be able to shutdown/restart your server from the Homebridge UI.');
     }
@@ -306,7 +271,9 @@ export class LinuxInstaller {
       `[Service]`,
       `Type=simple`,
       `User=${this.hbService.asUser}`,
+      `PermissionsStartOnly=true`,
       `EnvironmentFile=/etc/default/${this.systemdServiceName}`,
+      `ExecStartPre=${this.hbService.selfPath} before-start $HOMEBRIDGE_OPTS`,
       `ExecStart=${this.hbService.selfPath} run $HOMEBRIDGE_OPTS`,
       `Restart=always`,
       `RestartSec=3`,

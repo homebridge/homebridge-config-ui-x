@@ -51,6 +51,11 @@
           <td>v{{ npmInfo.installedVersion }}</td>
         </tr>
         <tr>
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_service_user'">User
+          </th>
+          <td>{{ serverInfo.serviceUser }}</td>
+        </tr>
+        <tr>
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_storage_path'">Storage Path
           </th>
           <td>{{ serverInfo.homebridgeStoragePath }}</td>

@@ -11,8 +11,8 @@ All notable changes to this project will be documented in this file. This projec
     * User configurable widgets - everything on the dashboard is a widget, users are able to resize and position, add or remove the widgets however they like
     * New widgets include:
         * **Homebridge Status Widget** - Homebridge version and update check, current Homebridge service status and Homebridge plugins update check
-        * **CPU Widget** - shows the current cpu load (now much more accurate) and CPU temperature when available
-        * **Memory Widget** - shows the total and available memory (previously "Free" memory as show which is not a reliable indicator of "Available" memory)
+        * **CPU Widget** - shows the current cpu load (now much more accurate) and CPU temperature when available, plus a graph of the last 0-10 minutes cpu load
+        * **Memory Widget** - shows the total and available memory (previously "Free" memory as show which is not a reliable indicator of "Available" memory), plus a graph of the last 0-10 minutes free memory
         * **Uptime Widget** - shows the server uptime and the process uptime
         * **QR Code Widget** - shows the pairing QR Code and Homebridge PIN
         * **Homebridge Logs Widget** - shows the Homebridge logs stream
@@ -49,6 +49,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Bug Fixes
 
 * **System:** Fixed a bug that prevented the Windows 10 service installer (`hb-service`) from working when the user's login name contained spaces
+* **Linux:** Fixed a bug where the custom shutdown command was executing the custom restart command instead ([#442](https://github.com/oznu/homebridge-config-ui-x/issues/442))
 
 ## 4.6.7 (2019-12-24)
 

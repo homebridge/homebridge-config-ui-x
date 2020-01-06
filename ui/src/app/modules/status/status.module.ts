@@ -6,6 +6,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 import { GridsterModule } from 'angular-gridster2';
 import { DragulaModule } from 'ng2-dragula';
+import { ChartsModule } from 'ng2-charts';
 
 import { CoreModule } from '../../core/core.module';
 import { StatusComponent } from './status.component';
@@ -66,6 +67,7 @@ import { AccessoriesWidgetComponent } from './widgets/accessories-widget/accesso
     NgbModule,
     GridsterModule,
     DragulaModule,
+    ChartsModule,
     CoreModule,
     AccessoriesCoreModule,
     ManagePluginsModule,

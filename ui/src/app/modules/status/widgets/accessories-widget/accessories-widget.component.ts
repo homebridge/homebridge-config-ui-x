@@ -18,8 +18,9 @@ export class AccessoriesWidgetComponent implements OnInit, OnDestroy {
 
   public dashboardAccessories: ServiceTypeX[] = [];
   public loaded = false;
-  public layoutSubscription: Subscription;
-  public orderSubscription: Subscription;
+  private accessoryDataSubscription: Subscription;
+  private layoutSubscription: Subscription;
+  private orderSubscription: Subscription;
 
   constructor(
     private dragulaService: DragulaService,
@@ -43,13 +44,15 @@ export class AccessoriesWidgetComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
-    await this.$accessories.start();
-
-    // subscribe to accessory events
-    this.$accessories.io.socket.on('accessories-data', () => {
+    // subscribe to accessory data events
+    this.accessoryDataSubscription = this.$accessories.accessoryData.subscribe((data) => {
       this.getDashboardAccessories();
     });
 
+    // start the accessory service
+    await this.$accessories.start();
+
+    // subscrive to layout events
     this.layoutSubscription = this.$accessories.layoutSaved.subscribe({
       next: () => {
         this.getDashboardAccessories();
@@ -89,6 +92,7 @@ export class AccessoriesWidgetComponent implements OnInit, OnDestroy {
     this.$accessories.stop();
     this.layoutSubscription.unsubscribe();
     this.orderSubscription.unsubscribe();
+    this.accessoryDataSubscription.unsubscribe();
     this.dragulaService.destroy('widget-accessories-bag');
   }
 

@@ -34,7 +34,7 @@ export class LinuxService {
    */
   shutdownHost() {
     const cmd = [(this.configService.ui.linux && this.configService.ui.linux.shutdown) ?
-      this.configService.ui.linux.restart : 'sudo -n shutdown -h now'];
+      this.configService.ui.linux.shutdown : 'sudo -n shutdown -h now'];
 
     this.logger.warn(`Shutting down linux server with command: "${cmd.join(' ')}"`);
 

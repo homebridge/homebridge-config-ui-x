@@ -71,14 +71,9 @@ export class StatusComponent implements OnInit, OnDestroy {
       if (!this.dashboard.length) {
         this.io.request('get-dashboard-layout').subscribe((layout) => {
           if (!layout.length) {
-            layout = require('./default-dashboard-layout.json');
+            return this.resetLayout();
           }
-          this.dashboard = layout.map((item) => {
-            item.$resizeEvent = new Subject();
-            item.$configureEvent = new Subject();
-            item.$saveWidgetsEvent = this.saveWidgetsEvent;
-            return item;
-          });
+          this.setLayout(layout);
         });
       }
     });
@@ -102,6 +97,20 @@ export class StatusComponent implements OnInit, OnDestroy {
         this.gridChangedEvent();
       },
     });
+  }
+
+  setLayout(layout) {
+    this.dashboard = layout.map((item) => {
+      item.$resizeEvent = new Subject();
+      item.$configureEvent = new Subject();
+      item.$saveWidgetsEvent = this.saveWidgetsEvent;
+      return item;
+    });
+  }
+
+  resetLayout() {
+    this.setLayout(require('./default-dashboard-layout.json'));
+    this.gridChangedEvent();
   }
 
   gridResizeEvent(item, itemComponent) {
@@ -144,6 +153,7 @@ export class StatusComponent implements OnInit, OnDestroy {
   addWidget() {
     const ref = this.$modal.open(WidgetAddComponent, { size: 'lg' });
     ref.componentInstance.dashboard = this.dashboard;
+    ref.componentInstance.resetLayout = this.resetLayout.bind(this);
 
     ref.result
       .then((widget) => {

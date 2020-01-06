@@ -56,10 +56,6 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.$accessories.start();
-
-    this.$accessories.io.socket.on('accessories-reload-required', () => {
-      window.location.reload();
-    });
   }
 
   addRoom() {

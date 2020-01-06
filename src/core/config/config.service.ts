@@ -176,10 +176,11 @@ export class ConfigService {
    * Populate the required config when running in "Service Mode"
    */
   private setConfigForServiceMode() {
-    this.ui.restart = undefined;
     this.homebridgeInsecureMode = true;
+    this.ui.restart = undefined;
+    this.ui.sudo = (os.platform() === 'linux');
     this.ui.log = {
-      method: os.platform() === 'win32' ? 'native' : 'file',
+      method: 'native',
       path: path.resolve(this.storagePath, 'homebridge.log'),
     };
   }

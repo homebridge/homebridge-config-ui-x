@@ -207,6 +207,7 @@
     "status.widget.systeminfo.label_plugin_path": "Plugin Path",
     "status.widget.systeminfo.label_docker": "Docker",
     "status.widget.systeminfo.label_service_mode": "Service Mode",
+    "status.widget.systeminfo.label_service_user": "User",
     "status.widget.weather.title_weather": "Weather",
     "status.widget.weather.label_config_required": "Configuration Required",
     "status.widget.weather.label_config_required_help": "Please select your city in the widget settings.",

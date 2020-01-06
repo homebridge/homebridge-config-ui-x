@@ -111,6 +111,11 @@ export class HomebridgeServiceHelper {
         this.tailLogs();
         break;
       }
+      case 'before-start': {
+        // this currently does nothing, but may be used in the future
+        process.exit(0);
+        break;
+      }
       default: {
         commander.outputHelp();
 
@@ -195,6 +200,9 @@ export class HomebridgeServiceHelper {
       this.logger('Use the --allow-root flag to force the service to run as the root user.');
       process.exit(0);
     }
+
+    this.logger(`Homebridge Storage Path: ${this.storagePath}`);
+    this.logger(`Homebridge Config Path: ${process.env.UIX_CONFIG_PATH}`);
 
     // start the interval to truncate the logs every two hours
     setInterval(() => {

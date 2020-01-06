@@ -12,6 +12,7 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class WidgetAddComponent implements OnInit {
   @Input() dashboard;
+  @Input() resetLayout;
 
   private allWidgets = [
     {
@@ -114,6 +115,11 @@ export class WidgetAddComponent implements OnInit {
 
   selectWidget(widget) {
     this.activeModal.close(widget);
+  }
+
+  doResetLayout() {
+    this.resetLayout();
+    this.activeModal.dismiss();
   }
 
 }

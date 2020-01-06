@@ -1,3 +1,4 @@
+import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as rp from 'request-promise-native';
@@ -11,10 +12,41 @@ export class StatusService {
   private dashboardLayout;
   private homebridgeStatus: 'up' | 'down';
 
+  private cpuLoadHistory: number[] = [];
+  private memoryUsageHistory: number[] = [];
+
+  private memoryInfo: si.Systeminformation.MemData;
+
   constructor(
     private logger: Logger,
     private configService: ConfigService,
-  ) { }
+  ) {
+    setInterval(async () => {
+      this.getCpuLoadPoint();
+      this.getMemoryUsagePoint();
+    }, 10000);
+  }
+
+  /**
+   * Looks up the cpu current load % and stores the last 60 points
+   */
+  private async getCpuLoadPoint() {
+    const currentLoad = (await si.currentLoad()).currentload;
+    this.cpuLoadHistory = this.cpuLoadHistory.slice(-60);
+    this.cpuLoadHistory.push(currentLoad);
+  }
+
+  /**
+   * Looks up the current memory usage and stores the last 60 points
+   */
+  private async getMemoryUsagePoint() {
+    const mem = await si.mem();
+    this.memoryInfo = mem;
+
+    const memoryFreePercent = ((mem.total - mem.available) / mem.total) * 100;
+    this.memoryUsageHistory = this.memoryUsageHistory.slice(-60);
+    this.memoryUsageHistory.push(memoryFreePercent);
+  }
 
   /**
    * Get the current dashboard layout
@@ -46,10 +78,14 @@ export class StatusService {
    * Returns server CPU Load and temperature information
    */
   public async getServerCpuInfo() {
+    if (!this.memoryUsageHistory.length) {
+      await this.getCpuLoadPoint();
+    }
+
     return {
-      cpu: await si.cpu(),
       cpuTemperature: await si.cpuTemperature(),
-      currentLoad: await si.currentLoad(),
+      currentLoad: this.cpuLoadHistory.slice(-1)[0],
+      cpuLoadHistory: this.cpuLoadHistory,
     };
   }
 
@@ -57,8 +93,13 @@ export class StatusService {
    * Returns server Memory usage information
    */
   public async getServerMemoryInfo() {
+    if (!this.memoryUsageHistory.length) {
+      await this.getMemoryUsagePoint();
+    }
+
     return {
-      mem: await si.mem(),
+      mem: this.memoryInfo,
+      memoryUsageHistory: this.memoryUsageHistory,
     };
   }
 
@@ -153,6 +194,7 @@ export class StatusService {
   public async getHomebridgeServerInfo() {
     const defaultInterface = await si.networkInterfaceDefault();
     return {
+      serviceUser: os.userInfo().username,
       homebridgeConfigJsonPath: this.configService.configPath,
       homebridgeStoragePath: this.configService.storagePath,
       homebridgeInsecureMode: this.configService.homebridgeInsecureMode,

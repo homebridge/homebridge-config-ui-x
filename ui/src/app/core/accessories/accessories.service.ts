@@ -14,8 +14,10 @@ import { InfoModalComponent } from './info-modal/info-modal.component';
   providedIn: 'root',
 })
 export class AccessoriesService {
-  public io: IoNamespace;
+  private io: IoNamespace;
+
   public layoutSaved = new Subject();
+  public accessoryData = new Subject();
 
   public accessoryLayout: {
     name: string; services: Array<{
@@ -78,6 +80,14 @@ export class AccessoriesService {
         this.applyCustomAttributes();
         this.roomsOrdered = true;
       }
+
+      this.accessoryData.next(data);
+    });
+
+    // when a new instance is available, do a self reload
+    this.io.socket.on('accessories-reload-required', async () => {
+      await this.stop();
+      await this.start();
     });
   }
 

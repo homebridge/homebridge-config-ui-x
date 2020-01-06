@@ -44,6 +44,11 @@
       }
     }
 
+    .hb-widget-chart-background {
+      background-color: rgba($primary-dark, 0.2);
+      display: none;
+    }
+
   }
 }
 
@@ -76,4 +81,9 @@
       color: #2196f3;
     }
   }
+
+  .hb-widget-chart-background {
+    background-color: rgba(#000070, 0.2);
+    display: none;
+   }
 }

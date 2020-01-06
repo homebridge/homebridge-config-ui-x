@@ -221,6 +221,11 @@
   }
 
   #AccessoriesWidgetComponent {
-    border: 2px solid #2b2b2b !important;
+    border-color: rgba($secondaryBackground, 0.5) !important;
+  }
+
+  .hb-widget-chart-background {
+    background-color: rgba(#ffa000, 0.2);
+    display: none;
   }
 }
