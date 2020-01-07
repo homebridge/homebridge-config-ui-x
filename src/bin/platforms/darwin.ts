@@ -34,7 +34,7 @@ export class DarwinInstaller {
     try {
       await this.createLaunchAgent();
       await this.start();
-      this.hbService.printPostInstallInstructions();
+      await this.hbService.printPostInstallInstructions();
     } catch (e) {
       console.error(e.toString());
       this.hbService.logger(`ERROR: Failed Operation`);

@@ -12,6 +12,7 @@ import * as commander from 'commander';
 import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
 import * as tcpPortUsed from 'tcp-port-used';
+import * as si from 'systeminformation';
 import { Tail } from 'tail';
 
 import { Win32Installer } from './platforms/win32';
@@ -340,9 +341,23 @@ export class HomebridgeServiceHelper {
   /**
    * Prints usage information to the screen after installations
    */
-  public printPostInstallInstructions() {
-    console.log(`\nManage Homebridge by going to http://localhost:${this.uiPort} in your browser`);
-    console.log(`Default Username: admin`);
+  public async printPostInstallInstructions() {
+    const defaultAdapter = await si.networkInterfaceDefault();
+    const defaultInterface = (await si.networkInterfaces()).find(x => x.iface === defaultAdapter);
+
+    console.log(`\nManage Homebridge by going to one of the following in your browser:\n`);
+
+    console.log(`* http://localhost:${this.uiPort}`);
+
+    if (defaultInterface.ip4) {
+      console.log(`* http://${defaultInterface.ip4}:${this.uiPort}`);
+    }
+
+    if (defaultInterface.ip6) {
+      console.log(`* http://[${defaultInterface.ip6}]:${this.uiPort}`);
+    }
+
+    console.log(`\nDefault Username: admin`);
     console.log(`Default Password: admin\n`);
   }
 

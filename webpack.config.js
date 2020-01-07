@@ -31,7 +31,9 @@ module.exports = {
     "fastify-static": "fastify-static",
     "fs-extra": "fs-extra",
     "helmet": "helmet",
-    "semver": "semver"
+    "semver": "semver",
+    "systeminformation": "systeminformation",
+    "tcp-port-used": "tcp-port-used"
   },
   node: {
     console: false,

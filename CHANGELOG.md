@@ -4,35 +4,60 @@ All notable changes to this project will be documented in this file. This projec
 
 ## NEXT
 
-### Notable Changes
+### New Dashboard
 
-* **Status:** This release comes with a brand new status dashboard that features:
-    * Full dark mode theme support
-    * User configurable widgets - everything on the dashboard is a widget, users are able to resize and position, add or remove the widgets however they like
-    * New widgets include:
-        * **Homebridge Status Widget** - Homebridge version and update check, current Homebridge service status and Homebridge plugins update check
-        * **CPU Widget** - shows the current cpu load (now much more accurate) and CPU temperature when available, plus a graph of the last 0-10 minutes cpu load
-        * **Memory Widget** - shows the total and available memory (previously "Free" memory as show which is not a reliable indicator of "Available" memory), plus a graph of the last 0-10 minutes free memory
-        * **Uptime Widget** - shows the server uptime and the process uptime
-        * **QR Code Widget** - shows the pairing QR Code and Homebridge PIN
-        * **Homebridge Logs Widget** - shows the Homebridge logs stream
-        * **Homebridge Terminal Widget** - an interactive terminal (only available when interactive web terminals are enabled)
-        * **System Information Widget** - shows details about your server and homebridge setup
-        * **Weather Widget:** - shows the current weather for the set location (may add a forcast later)
-        * **Accessories Widget** - display and control the accessories you select
+This release comes with a brand new status dashboard that features a fully customisable, widget-based design. Users can decide which widgets they wish to enable and position and resize them as they like.
 
-* **Easy Installer:** This release expands the `hb-service` command to support macOS and Linux in addition to Windows 10
-    * Running `hb-service install` will setup Homebridge and Homebridge Config UI X to run as a service with auto-start on boot
-    * The UI will remain running even if there is an issue preventing Homebridge from starting
-    * Multiple instances are supported, see the wiki for further details
+<p align="center">
+  <img width="600px" src="https://user-images.githubusercontent.com/3979615/71886653-b16d3f80-3190-11ea-9ff8-49dc4ae4fff0.png">
+</p>
 
-* **Config Editor:** The config editor (non-mobile) has been updated with the following new features:
-    * Replaced Ace Editor with the [Microsoft Monaco Editor](https://microsoft.github.io/monaco-editor/) (the code editor that powers VS Code)
-    * Help text is now shown when hovering over the core components of the config.json
-    * Autocomplete of the bridge, plugins, ports and mdns objects
-    * Warnings when the JSON does not match what is allowed by Homebridge
-    * Duplicate key checking
-    * More detailed JSON syntax error messages
+New widgets include:
+
+* **Homebridge Status Widget** - Homebridge version and update check, current Homebridge service status and Homebridge plugins update check
+* **CPU Widget** - shows the current cpu load (now much more accurate) and CPU temperature when available, plus a graph of the last 0-10 minutes cpu load
+* **Memory Widget** - shows the total and available memory (previously "Free" memory as show which is not a reliable indicator of "Available" memory), plus a graph of the last 0-10 minutes free memory
+* **Uptime Widget** - shows the server uptime and the process uptime
+* **QR Code Widget** - shows the pairing QR Code and Homebridge PIN
+* **Homebridge Logs Widget** - shows the Homebridge logs stream
+* **Homebridge Terminal Widget** - an interactive terminal (only available when interactive web terminals are enabled)
+* **System Information Widget** - shows details about your server and homebridge setup
+* **Weather Widget:** - shows the current weather for the set location (may add a forecast later)
+* **Accessories Widget** - display and control the accessories you select
+
+### Simple Service Installer
+
+This release expands the `hb-service` command to support macOS and Linux in addition to Windows 10. This command allows you to setup a Homebridge instance in seconds.
+
+Running `hb-service install` will setup Homebridge and Homebridge Config UI X to run as a service with auto-start on boot. The same command works across Linux, macOS and Windows 10.
+
+<p align="center">
+  <img width="600px" src="https://user-images.githubusercontent.com/3979615/71888439-4291e580-3194-11ea-8687-a3d58f94ba47.gif">
+</p>
+
+Notable Features:
+
+* The UI will remain running even if there is an issue preventing Homebridge from starting
+* Easily setup and manage multiple homebridge instances
+* The ability to start, stop, restart and view the logs of your Homebridge instances using the `hb-service` commands
+* [See the wiki for further details](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command)
+
+### New Config Editor
+
+The config editor (non-mobile) has had the Ace Editor replaced with the [Microsoft Monaco Editor](https://microsoft.github.io/monaco-editor/) (the code editor that powers VS Code).
+
+This allow for much more powerful JSON syntax checking, more helpful error messages and the new ability to detect duplicate keys in object (like when a second platform[] array!).
+
+<p align="center">
+  <img width="600px" src="https://user-images.githubusercontent.com/3979615/71890579-b635f180-3198-11ea-98ab-cc7b7263afd9.gif">
+</p>
+
+In addition:
+
+* Help text is now shown when hovering over the core components of the config.json
+* Autocomplete of the bridge, plugins, ports and mdns objects
+* Detect when accessory config has been added to the platform array, or vice versa
+* Warnings when the JSON does not match what is allowed by Homebridge
 
 ### Other Changes
 

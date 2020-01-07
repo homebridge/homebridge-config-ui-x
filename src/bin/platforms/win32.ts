@@ -34,7 +34,7 @@ export class Win32Installer {
       child_process.execSync(setUserDirCmd);
       await this.configureFirewall();
       await this.start();
-      this.hbService.printPostInstallInstructions();
+      await this.hbService.printPostInstallInstructions();
     } catch (e) {
       console.error(e.toString());
       this.hbService.logger(`ERROR: Failed Operation`);
