@@ -6,5 +6,6 @@
     "**/*spec.ts",
     "ui",
     "public",
+    "scripts",
   ]
 }

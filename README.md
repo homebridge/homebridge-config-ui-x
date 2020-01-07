@@ -10,9 +10,15 @@ This is a plugin for [Homebridge](https://github.com/nfarina/homebridge). This i
 
 This plugin allows you to monitor, backup and configure your Homebridge server from a browser.
 
-[![Status](screenshots/homebridge-config-ui-x-accessories.png)](#accessory-control)
+![Status](screenshots/homebridge-config-ui-x-darkmode-status.png?2020-01-07)
 
 # Installation Instructions
+
+For detailed instructions on how to setup Homebridge with Homebridge Config UI X as a service see the guides on the wiki:
+
+* [Setup Homebridge as service on Linux](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-&-Systemd-(Raspbian,-Ubuntu,-Debian))
+* [Setup Homebridge as service on Windows 10](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-on-Windows-10)
+* [Setup Homebridge as service on macOS](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-UI-on-macOS)
 
 ```
 sudo npm install -g --unsafe-perm homebridge-config-ui-x
@@ -193,32 +199,37 @@ Or if using a **PKCS#12** certificate you can setup SSL like this:
 
 ### Status Screen
 
-This shows an overview of your Homebridge system. It displays your pairing QR code, and informs you if there are any updates available for Homebridge or installed plugins.
+This shows an overview of your Homebridge system. The dashboard is widget based and completely customisable.
 
-![Status](screenshots/homebridge-config-ui-x-status.png?2019-08-10)
-
-### Log Screen
-
-This shows you the Homebridge rolling log. This is helpful for troubleshooting.
-
-![Log](screenshots/homebridge-config-ui-x-logs.png?2019-08-10)
+![Status](screenshots/homebridge-config-ui-x-status.png?2020-01-07)
 
 ### Plugin Screen
 
 This shows you the currently installed plugins and allows you to install, remove and upgrade plugins.
 
-![Log](screenshots/homebridge-config-ui-x-darkmode-plugins.png)
+![Plugin](screenshots/homebridge-config-ui-x-darkmode-plugins.png?2020-01-07)
 
-You can configure supported plugins using the graphical settings editor, removing the need to manually edit the `config.json`.
+You can configure supported plugins using the graphical settings editor, removing the need to manually edit the `config.json`. Over 30 popular plugins have implimented support for this feature.
 
-![Log](screenshots/homebridge-config-ui-x-darkmode-alexa-settings.png?2019-08-10)
-
+![Plugin Settings](screenshots/homebridge-config-ui-x-darkmode-alexa-settings.png?2020-01-07)
 
 ### Configuration Screen
 
 The configuration screen allows you to modify your Homebridge `config.json`. The built in editor automatically syntax-checks your JSON and makes a backup of your config every time you make a change.
 
-![Config](screenshots/homebridge-config-ui-x-config.png?2019-08-10)
+![Config](screenshots/homebridge-config-ui-x-config.png?2020-01-07)
+
+### Log Screen
+
+This shows you the Homebridge rolling log. This is helpful for troubleshooting.
+
+![Log](screenshots/homebridge-config-ui-x-logs.png?2020-01-07)
+
+### Accessories Screen
+
+This shows you the Homebridge accessories for all the Homebridge instances on your network. You can use this to control accessories from a web browser and works well on mobile devices which allows users to control Homebridge from non-Apple devices.
+
+![Accessories](screenshots/homebridge-config-ui-x-accessories.png?2020-01-07)
 
 # Supported Browsers
 

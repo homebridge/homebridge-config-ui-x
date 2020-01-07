@@ -1,7 +1,7 @@
 {
   "name": "homebridge-config-ui-x",
   "displayName": "Homebridge Config UI X",
-  "version": "4.7.0-test.22",
+  "version": "4.7.0-test.24",
   "description": "A web based management, configuration and control platform for Homebridge",
   "license": "MIT",
   "author": "oznu <dev@oz.nu>",
@@ -56,15 +56,15 @@
     "semver"
   ],
   "dependencies": {
-    "@nestjs/common": "^6.10.11",
-    "@nestjs/core": "^6.10.11",
-    "@nestjs/platform-fastify": "^6.10.11",
-    "@nestjs/platform-socket.io": "^6.10.11",
-    "@nestjs/websockets": "^6.10.11",
+    "@nestjs/common": "^6.10.14",
+    "@nestjs/core": "^6.10.14",
+    "@nestjs/platform-fastify": "^6.10.14",
+    "@nestjs/platform-socket.io": "^6.10.14",
+    "@nestjs/websockets": "^6.10.14",
     "class-transformer": "^0.2.3",
     "class-validator": "^0.11.0",
     "commander": "^2.20.3",
-    "dayjs": "^1.8.17",
+    "dayjs": "^1.8.19",
     "fastify": "^2.11.0",
     "fastify-static": "^2.5.1",
     "fs-extra": "^8.1.0",
@@ -73,9 +73,9 @@
     "reflect-metadata": "^0.1.12",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.8",
-    "rxjs": "^6.5.3",
+    "rxjs": "^6.5.4",
     "semver": "^6.3.0",
-    "systeminformation": "^4.16.0",
+    "systeminformation": "^4.17.3",
     "tail": "^2.0.3",
     "tcp-port-used": "^1.0.1"
   },
@@ -85,11 +85,11 @@
     "@oznu/hap-client": "^1.1.1",
     "@types/express": "^4.17.2",
     "@types/fs-extra": "^8.0.1",
-    "@types/node": "^12.12.18",
+    "@types/node": "^12.12.24",
     "@types/socket.io": "^2.1.4",
     "bash-color": "0.0.4",
     "buffer-shims": "^1.0.0",
-    "concurrently": "^5.0.1",
+    "concurrently": "^5.0.2",
     "dotenv": "^8.2.0",
     "lodash": "^4.17.15",
     "nodemon": "^2.0.2",
@@ -105,7 +105,7 @@
     "tsconfig-paths": "^3.9.0",
     "tslint": "^5.20.1",
     "typescript": "3.6.4",
-    "webpack": "^4.41.3",
+    "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10",
     "webpack-node-externals": "^1.7.2"
   },
@@ -134,6 +134,7 @@
     "windows",
     "raspberry pi",
     "accessory control",
-    "smart home"
+    "smart home",
+    "hb-service"
   ]
 }

@@ -167,7 +167,7 @@ export class ConfigService {
     if (!this.ui.port && process.env.HOMEBRIDGE_CONFIG_UI_PORT) {
       this.ui.port = parseInt(process.env.HOMEBRIDGE_CONFIG_UI_PORT, 10);
     }
-    this.ui.theme = this.ui.theme || process.env.HOMEBRIDGE_CONFIG_UI_THEME || 'teal';
+    this.ui.theme = this.ui.theme || process.env.HOMEBRIDGE_CONFIG_UI_THEME || 'auto';
     this.ui.auth = this.ui.auth || process.env.HOMEBRIDGE_CONFIG_UI_AUTH as 'form' | 'none' || 'form';
     this.ui.loginWallpaper = this.ui.loginWallpaper || process.env.HOMEBRIDGE_CONFIG_UI_LOGIN_WALLPAPER || undefined;
   }
