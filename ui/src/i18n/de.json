@@ -184,7 +184,7 @@
     "status.uptime.label_hours": "Std",
     "status.uptime.label_minutes": "Minuten",
     "status.uptime.title_uptime": "Betriebszeit",
-    "status.widget.accessories.label_choose_accessories_to_display": "Wähle die Accessories, die in diesem Widget vom Accessories Tab angezeigt werden sollen.",
+    "status.widget.accessories.label_choose_accessories_to_display": "Wähle die Geräte, die in diesem Widget vom Geräte Tab angezeigt werden sollen.",
     "status.widget.add.label_homebridge_status": "Homebridge Status",
     "status.widget.add.label_pairing_code": "Pairing Code",
     "status.widget.label_add_widget": "Widget hinzufügen",
