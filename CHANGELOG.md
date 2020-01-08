@@ -22,7 +22,7 @@ New widgets include:
 * **Homebridge Logs Widget** - shows the Homebridge logs stream
 * **Homebridge Terminal Widget** - an interactive terminal (only available when interactive web terminals are enabled)
 * **System Information Widget** - shows details about your server and homebridge setup
-* **Weather Widget:** - shows the current weather for the set location (may add a forecast later)
+* **Weather Widget** - shows the current weather for the set location (may add a forecast later)
 * **Accessories Widget** - display and control the accessories you select
 
 ### Simple Service Installer
@@ -46,7 +46,7 @@ Notable Features:
 
 The config editor (non-mobile) has had the Ace Editor replaced with the [Microsoft Monaco Editor](https://microsoft.github.io/monaco-editor/) (the code editor that powers VS Code).
 
-This allow for much more powerful JSON syntax checking, more helpful error messages and the new ability to detect duplicate keys in object (like when a second platform[] array!).
+This allow for much more powerful JSON syntax checking, more helpful error messages and the new ability to detect duplicate keys in object (like when a second platforms[] array is added by mistake!).
 
 <p align="center">
   <img width="600px" src="https://user-images.githubusercontent.com/3979615/71890579-b635f180-3198-11ea-98ab-cc7b7263afd9.gif">

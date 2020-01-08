@@ -29,6 +29,7 @@ export class HomebridgeServiceHelper {
   private log: fs.WriteStream;
   private homebridgeBinary: string;
   private homebridge: child_process.ChildProcessWithoutNullStreams;
+  private homebridgeOpts = [];
   private homebridgeNextRunOpts = [];
   private uiBinary: string;
 
@@ -62,15 +63,16 @@ export class HomebridgeServiceHelper {
 
     commander
       .allowUnknownOption()
-      .option('-U, --user-storage-path [path]', '', (p) => this.storagePath = p)
-      .option('-P, --plugin-path [path]', '', (p) => process.env.UIX_CUSTOM_PLUGIN_PATH = p)
-      .option('-I, --insecure', '', () => process.env.UIX_INSECURE_MODE = '1')
-      .option('-T, --no-timestamp', '', () => process.env.UIX_LOG_NO_TIMESTAMPS = '1')
-      .option('-S, --service-name [service name]', '', (p) => this.serviceName = p)
-      .option('--port [port]', '', (p) => this.uiPort = parseInt(p, 10))
-      .option('--user [user]', '', (p) => this.asUser = p)
-      .option('--allow-root', '', () => this.allowRunRoot = true)
       .arguments('<install|uninstall|start|stop|restart|run|logs>')
+      .option('-P, --plugin-path [path]', '', (p) => { process.env.UIX_CUSTOM_PLUGIN_PATH = p; this.homebridgeOpts.push('-P', p); })
+      .option('-R, --remove-orphans', '', () => this.homebridgeOpts.push('-R'))
+      .option('-U, --user-storage-path [path]', '', (p) => this.storagePath = p)
+      .option('-I, --insecure', '', () => process.env.UIX_INSECURE_MODE = '1')
+      .option('-D, --debug', 'Enable debug level logging', () => this.homebridgeOpts.push('-D'))
+      .option('-S, --service-name [service name]', 'The name of the homebridge service to install or control', (p) => this.serviceName = p)
+      .option('--port [port]', 'The port to set to the Homebridge UI when installing as a service', (p) => this.uiPort = parseInt(p, 10))
+      .option('--user [user]', 'The user account the Homebridge service will be installed as (Linux, macOS only)', (p) => this.asUser = p)
+      .option('--allow-root', '', () => this.allowRunRoot = true)
       .action((cmd) => {
         this.action = cmd;
       })
@@ -167,6 +169,7 @@ export class HomebridgeServiceHelper {
     process.env.UIX_CONFIG_PATH = path.resolve(this.storagePath, 'config.json');
     process.env.UIX_BASE_PATH = path.resolve(__dirname, '../../');
     process.env.UIX_SERVICE_MODE = '1';
+    process.env.UIX_INSECURE_MODE = '1';
   }
 
   /**
@@ -258,9 +261,13 @@ export class HomebridgeServiceHelper {
     process.on('message', (message) => {
       if (message === 'homebridge-remove-ophans' && this.homebridge) {
         try {
-          this.logger('Restarting Homebridge in "-R Remove Orphans" mode for the next run only');
-          this.homebridgeNextRunOpts = ['-R'];
-          this.homebridge.kill();
+          if (!this.homebridgeOpts.includes('-R')) {
+            this.logger('Restarting Homebridge in "-R Remove Orphans" mode for the next run only');
+            this.homebridgeNextRunOpts = ['-R'];
+            this.homebridge.kill();
+          } else {
+            this.logger('Homebridge is already running in "-R Remove Orphans" mode.');
+          }
         } catch (e) {
           console.log(e);
         }
@@ -281,6 +288,7 @@ export class HomebridgeServiceHelper {
         '-Q',
         '-U',
         this.storagePath,
+        ...this.homebridgeOpts,
         ...this.homebridgeNextRunOpts,
       ],
       {

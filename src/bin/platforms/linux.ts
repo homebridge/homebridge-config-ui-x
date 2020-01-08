@@ -24,6 +24,10 @@ export class LinuxInstaller {
     return path.resolve('/etc/default', this.systemdServiceName);
   }
 
+  private get runPartsPath() {
+    return path.resolve('/etc/hb-service', this.hbService.serviceName.toLowerCase(), 'prestart.d');
+  }
+
   /**
    * Installs the systemd service
    */
@@ -39,6 +43,7 @@ export class LinuxInstaller {
     try {
       await this.createSystemdEnvFile();
       await this.createSystemdService();
+      await this.createRunPartsPath();
       await this.reloadSystemd();
       await this.enableService();
       await this.start();
@@ -243,6 +248,29 @@ export class LinuxInstaller {
   }
 
   /**
+   * Setup the run-parts path and scripts
+   * This allows users to define their own scripts to run before Homebridge starts/restarts
+   * The default script will ensure the homebridge storage path has the correct permissions each time Homebridge starts
+   */
+  private async createRunPartsPath() {
+    await fs.mkdirp(this.runPartsPath);
+
+    const permissionScriptPath = path.resolve(this.runPartsPath, '10-fix-permissions');
+    const permissionScript = [
+      `#!/bin/sh`,
+      ``,
+      `# Ensure the storage path permissions are correct`,
+      `if [ -n "$UIX_STORAGE_PATH" ] && [ -n "$USER" ]; then`,
+      `  echo "Ensuring $UIX_STORAGE_PATH is owned by $USER"`,
+      `  chown -R $USER: $UIX_STORAGE_PATH`,
+      `fi`,
+    ].filter(x => x !== null).join('\n');
+
+    await fs.writeFile(permissionScriptPath, permissionScript);
+    await fs.chmod(permissionScriptPath, '755');
+  }
+
+  /**
    * Create the systemd environment file
    */
   private async createSystemdEnvFile() {
@@ -273,7 +301,8 @@ export class LinuxInstaller {
       `User=${this.hbService.asUser}`,
       `PermissionsStartOnly=true`,
       `EnvironmentFile=/etc/default/${this.systemdServiceName}`,
-      `ExecStartPre=${this.hbService.selfPath} before-start $HOMEBRIDGE_OPTS`,
+      `ExecStartPre=-run-parts ${this.runPartsPath}`,
+      `ExecStartPre=-${this.hbService.selfPath} before-start $HOMEBRIDGE_OPTS`,
       `ExecStart=${this.hbService.selfPath} run $HOMEBRIDGE_OPTS`,
       `Restart=always`,
       `RestartSec=3`,
