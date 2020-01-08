@@ -262,6 +262,7 @@ export class LinuxInstaller {
       `# Ensure the storage path permissions are correct`,
       `if [ -n "$UIX_STORAGE_PATH" ] && [ -n "$USER" ]; then`,
       `  echo "Ensuring $UIX_STORAGE_PATH is owned by $USER"`,
+      `  [ -d $UIX_STORAGE_PATH ] || mkdir -p $UIX_STORAGE_PATH`,
       `  chown -R $USER: $UIX_STORAGE_PATH`,
       `fi`,
     ].filter(x => x !== null).join('\n');

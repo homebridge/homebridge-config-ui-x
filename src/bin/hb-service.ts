@@ -213,23 +213,29 @@ export class HomebridgeServiceHelper {
       this.truncateLog();
     }, (1000 * 60 * 60) * 2);
 
-    // check storage path exists
-    await this.storagePathCheck();
+    // pre-start
+    try {
+      // check storage path exists
+      await this.storagePathCheck();
 
-    // start logging to file
-    await this.startLog();
+      // start logging to file
+      await this.startLog();
 
-    // verify the config
-    await this.configCheck();
+      // verify the config
+      await this.configCheck();
 
-    // work out the homebridge binary path
-    const node_modules = path.resolve(process.env.UIX_BASE_PATH, '..');
-    this.homebridgeBinary = path.resolve(node_modules, 'homebridge', 'bin', 'homebridge');
-    this.logger(`Homebridge Path: ${this.homebridgeBinary}`);
+      // work out the homebridge binary path
+      const node_modules = path.resolve(process.env.UIX_BASE_PATH, '..');
+      this.homebridgeBinary = path.resolve(node_modules, 'homebridge', 'bin', 'homebridge');
+      this.logger(`Homebridge Path: ${this.homebridgeBinary}`);
 
-    // get the standalone ui binary on this system
-    this.uiBinary = path.resolve(process.env.UIX_BASE_PATH, 'dist', 'bin', 'standalone.js');
-    this.logger(`UI Path: ${this.uiBinary}`);
+      // get the standalone ui binary on this system
+      this.uiBinary = path.resolve(process.env.UIX_BASE_PATH, 'dist', 'bin', 'standalone.js');
+      this.logger(`UI Path: ${this.uiBinary}`);
+    } catch (e) {
+      this.logger(e.message);
+      process.exit(1);
+    }
 
     // start homebridge
     this.startExitHandler();
@@ -357,11 +363,11 @@ export class HomebridgeServiceHelper {
 
     console.log(`* http://localhost:${this.uiPort}`);
 
-    if (defaultInterface.ip4) {
+    if (defaultInterface && defaultInterface.ip4) {
       console.log(`* http://${defaultInterface.ip4}:${this.uiPort}`);
     }
 
-    if (defaultInterface.ip6) {
+    if (defaultInterface && defaultInterface.ip6) {
       console.log(`* http://[${defaultInterface.ip6}]:${this.uiPort}`);
     }
 
