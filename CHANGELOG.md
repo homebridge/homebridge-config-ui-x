@@ -69,6 +69,9 @@ In addition:
 * **Accessory Control:** The right click handler on accessory tiles has been removed and replaced with a clickable cog icon in the top right hand side of each tile
 * **Themes:** The legacy Dark Mode (v1) has been removed, users will be migrated to the new Dark Mode automatically
 * **i18n:** Improvements to Simplified Chinese language translations ([#431](https://github.com/oznu/homebridge-config-ui-x/pull/431))
+* **i18n:** Improvements to German language translations ([#444](https://github.com/oznu/homebridge-config-ui-x/pull/444))
+* **i18n:** Improvements to Spanish language translations ([#445](https://github.com/oznu/homebridge-config-ui-x/pull/445))
+* **i18n:** Improvements to Polish language translations ([#446](https://github.com/oznu/homebridge-config-ui-x/pull/446))
 * Updated npm dependencies
 
 ### Bug Fixes
