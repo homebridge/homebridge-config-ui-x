@@ -12,6 +12,7 @@ export class SystemInfoWidgetComponent implements OnInit {
 
   public serverInfo;
   public npmInfo = {} as any;
+  public nodejsInfo = {} as any;
 
   constructor(
     private $ws: WsService,
@@ -25,6 +26,10 @@ export class SystemInfoWidgetComponent implements OnInit {
 
     this.io.request('npm-version-check').subscribe((data) => {
       this.npmInfo = data;
+    });
+
+    this.io.request('nodejs-version-check').subscribe((data) => {
+      this.nodejsInfo = data;
     });
   }
 

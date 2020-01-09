@@ -12,7 +12,7 @@ import { WsService, IoNamespace } from './ws.service';
 })
 export class LogService {
   private io: IoNamespace;
-  private term: Terminal;
+  public term: Terminal;
 
   private fitAddon: FitAddon;
   private webLinksAddon: WebLinksAddon;

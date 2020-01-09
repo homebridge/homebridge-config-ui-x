@@ -45,10 +45,10 @@ export class StatusComponent implements OnInit, OnDestroy {
       itemChangeCallback: this.gridChangedEvent.bind(this),
       itemResizeCallback: this.gridResizeEvent.bind(this),
       draggable: {
-        enabled: this.$auth.user.admin,
+        enabled: this.isLayoutUnlocked(),
       },
       resizable: {
-        enabled: this.$auth.user.admin,
+        enabled: this.isLayoutUnlocked(),
       },
       gridType: 'verticalFixed',
       minCols: 20,
@@ -113,6 +113,27 @@ export class StatusComponent implements OnInit, OnDestroy {
     this.gridChangedEvent();
   }
 
+  isLayoutUnlocked() {
+    if (localStorage.getItem(`${this.$auth.env.instanceId}-dashboard-locked`) === 'true') {
+      return false;
+    }
+    return this.$auth.user.admin;
+  }
+
+  lockLayout() {
+    localStorage.setItem(`${this.$auth.env.instanceId}-dashboard-locked`, 'true');
+    this.options.draggable.enabled = false;
+    this.options.resizable.enabled = false;
+    this.options.api.optionsChanged();
+  }
+
+  unlockLayout() {
+    localStorage.removeItem(`${this.$auth.env.instanceId}-dashboard-locked`);
+    this.options.draggable.enabled = true;
+    this.options.resizable.enabled = true;
+    this.options.api.optionsChanged();
+  }
+
   gridResizeEvent(item, itemComponent) {
     itemComponent.item.$resizeEvent.next('resize');
     this.page.mobile = (window.innerWidth < 1024);
@@ -154,6 +175,9 @@ export class StatusComponent implements OnInit, OnDestroy {
     const ref = this.$modal.open(WidgetAddComponent, { size: 'lg' });
     ref.componentInstance.dashboard = this.dashboard;
     ref.componentInstance.resetLayout = this.resetLayout.bind(this);
+    ref.componentInstance.lockLayout = this.lockLayout.bind(this);
+    ref.componentInstance.unlockLayout = this.unlockLayout.bind(this);
+    ref.componentInstance.isLayoutUnlocked = !this.isLayoutUnlocked();
 
     ref.result
       .then((widget) => {

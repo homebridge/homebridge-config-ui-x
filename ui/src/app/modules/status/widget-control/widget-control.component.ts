@@ -10,9 +10,17 @@ import { debounceTime, distinctUntilChanged, map, tap, switchMap, catchError } f
   styleUrls: ['./widget-control.component.scss'],
 })
 export class WidgetControlComponent implements OnInit {
+
+  constructor(
+    public activeModal: NgbActiveModal,
+    private $http: HttpClient,
+  ) { }
   @Input() widget;
 
   public searching: boolean;
+
+  public fontSizes = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+  public fontWeights = ['100', '200', '300', '400', '500', '600', '700', '800', '900', 'bold', 'normal'];
 
   public searchCountryCodes = (text$: Observable<string>) =>
     text$.pipe(
@@ -32,12 +40,15 @@ export class WidgetControlComponent implements OnInit {
 
   public searchCountryCodeFormatter = (result: any) => result.name + ', ' + result.country;
 
-  constructor(
-    public activeModal: NgbActiveModal,
-    private $http: HttpClient,
-  ) { }
-
   ngOnInit() {
+    if (this.widget.component === 'HomebridgeLogsWidgetComponent' || this.widget.component === 'TerminalWidgetComponent') {
+      if (!this.widget.fontWeight) {
+        this.widget.fontWeight = '400';
+      }
+      if (!this.widget.fontSize) {
+        this.widget.fontSize = 15;
+      }
+    }
   }
 
   findOpenWeatherMapCity(query: string) {

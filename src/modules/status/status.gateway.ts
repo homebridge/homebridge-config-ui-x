@@ -49,6 +49,15 @@ export class StatusGateway {
     }
   }
 
+  @SubscribeMessage('nodejs-version-check')
+  async nodeJsVersionCheck(client, payload) {
+    try {
+      return await this.statusService.getNodeJsVersionInfo();
+    } catch (e) {
+      return new WsException(e.message);
+    }
+  }
+
   @SubscribeMessage('get-out-of-date-plugins')
   async getOutOfDatePlugins(client, payload) {
     try {

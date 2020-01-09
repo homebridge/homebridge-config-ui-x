@@ -66,8 +66,14 @@ export class AccessoriesService {
     };
     this.hapClient.on('instance-discovered', instanceUpdateHandler);
 
+    // const loadAccessoriesInterval = setInterval(async () => {
+    //   services = await this.loadAccessories();
+    //   client.emit('accessories-data', services);
+    // }, 3000);
+
     // clean up on disconnect
     const onEnd = () => {
+      // clearInterval(loadAccessoriesInterval);
       client.removeAllListeners('end');
       client.removeAllListeners('disconnect');
       client.removeAllListeners('accessory-control');
@@ -84,7 +90,7 @@ export class AccessoriesService {
   }
 
   /**
-   * Refersh the characteristics from Homebridge
+   * Refresh the characteristics from Homebridge
    * @param services
    */
   private refreshCharacteristics(services) {

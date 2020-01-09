@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as rp from 'request-promise-native';
 import * as si from 'systeminformation';
+import * as semver from 'semver';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '../../core/config/config.service';
 import { Logger } from '../../core/logger/logger.service';
@@ -10,6 +11,7 @@ import { Logger } from '../../core/logger/logger.service';
 @Injectable()
 export class StatusService {
   private dashboardLayout;
+  private nodeJsVersionCache;
   private homebridgeStatus: 'up' | 'down';
 
   private cpuLoadHistory: number[] = [];
@@ -206,5 +208,31 @@ export class StatusService {
       time: await si.time(),
       network: (await si.networkInterfaces()).find(x => x.iface === defaultInterface),
     };
+  }
+
+  /**
+   * Checks the current version of Node.js and compares to the latest LTS
+   */
+  public async getNodeJsVersionInfo() {
+    if (this.nodeJsVersionCache) {
+      return this.nodeJsVersionCache;
+    }
+
+    try {
+      const versionList = await rp.get('https://nodejs.org/dist/index.json', { json: true });
+      const currentLts = versionList.filter(x => x.lts)[0];
+      this.nodeJsVersionCache = {
+        currentVersion: process.version,
+        latestVersion: currentLts.version,
+        updateAvailable: semver.gt(currentLts.version, process.version),
+      };
+    } catch (e) {
+      this.logger.warn('Failed to check for Node.js version updates');
+      return {
+        currentVersion: process.version,
+        latestVersion: process.version,
+        updateAvailable: false,
+      };
+    }
   }
 }

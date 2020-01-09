@@ -1,6 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { Subject } from 'rxjs';
 
 import { AuthService } from '../../../core/auth/auth.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -12,7 +11,10 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class WidgetAddComponent implements OnInit {
   @Input() dashboard;
-  @Input() resetLayout;
+  @Input() resetLayout: Function;
+  @Input() lockLayout: Function;
+  @Input() unlockLayout: Function;
+  @Input() public isLayoutUnlocked: boolean;
 
   private allWidgets = [
     {
@@ -119,6 +121,16 @@ export class WidgetAddComponent implements OnInit {
 
   doResetLayout() {
     this.resetLayout();
+    this.activeModal.dismiss();
+  }
+
+  doLockLayout() {
+    this.lockLayout();
+    this.activeModal.dismiss();
+  }
+
+  doUnlockLayout() {
+    this.unlockLayout();
     this.activeModal.dismiss();
   }
 

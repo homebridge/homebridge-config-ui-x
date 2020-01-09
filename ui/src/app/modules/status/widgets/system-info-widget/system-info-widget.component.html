@@ -43,12 +43,24 @@
         <tr>
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_nodejs_version'">Node.js
             Version</th>
-          <td>{{ serverInfo.nodeVersion }}</td>
+          <td>
+            <span>{{ serverInfo.nodeVersion }}</span>
+            <span *ngIf="nodejsInfo.updateAvailable && $auth.env.platform !== 'win32'"
+              ngbTooltip="{{ 'plugins.status_update_available' | translate }} - {{ nodejsInfo.latestVersion }}">&nbsp;
+              <i class="primary-text fas fa-exclamation-circle"></i>
+            </span>
+          </td>
         </tr>
         <tr *ngIf="npmInfo.installedVersion">
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_npm_version'">Npm version
           </th>
-          <td>v{{ npmInfo.installedVersion }}</td>
+          <td>
+            <span>v{{ npmInfo.installedVersion }}</span>
+            <span *ngIf="npmInfo.updateAvailable && $auth.env.platform !== 'win32'"
+              ngbTooltip="{{ 'plugins.status_update_available' | translate }} - v{{ npmInfo.latestVersion }}">&nbsp;
+              <i class="primary-text fas fa-exclamation-circle"></i>
+            </span>
+          </td>
         </tr>
         <tr>
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_service_user'">User

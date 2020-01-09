@@ -39,6 +39,42 @@
           [translate]="'accessories.title_accessories'">Accessories</a>
       </div>
     </div>
+    <div *ngSwitchCase="'HomebridgeLogsWidgetComponent'">
+      <div class="form-group row">
+        <label class="col-sm-4 col-form-label" [translate]="'status.widget.label_font_size'">Font Size</label>
+        <div class="col-sm-8">
+          <select class="form-control" [(ngModel)]="widget.fontSize">
+            <option *ngFor="let size of fontSizes" [value]="size">{{ size }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-4 col-form-label" [translate]="'status.widget.label_font_weight'">Font Weight</label>
+        <div class="col-sm-8">
+          <select class="form-control" [(ngModel)]="widget.fontWeight">
+            <option *ngFor="let weight of fontWeights" [value]="weight">{{ weight }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div *ngSwitchCase="'TerminalWidgetComponent'">
+      <div class="form-group row">
+        <label class="col-sm-4 col-form-label" [translate]="'status.widget.label_font_size'">Font Size</label>
+        <div class="col-sm-8">
+          <select class="form-control" [(ngModel)]="widget.fontSize">
+            <option *ngFor="let size of fontSizes" [value]="size">{{ size }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-4 col-form-label" [translate]="'status.widget.label_font_weight'">Font Weight</label>
+        <div class="col-sm-8">
+          <select class="form-control" [(ngModel)]="widget.fontWeight">
+            <option *ngFor="let weight of fontWeights" [value]="weight">{{ weight }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
     <div class=" text-center" *ngSwitchDefault>
       <h6 [translate]="'status.widget.label_widget_has_no_options'">This widget has no options</h6>
       <pre>{{ hideOnMobile }}</pre>

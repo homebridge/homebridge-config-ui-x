@@ -40,7 +40,8 @@
         <span *ngIf="plugin.lastUpdated">({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
       </p>
       <div class="d-flex">
-        <a class="card-link" target="_blank" *ngIf="plugin.publicPackage" [href]="plugin.links.npm">
+        <a class="card-link" target="_blank" *ngIf="plugin.publicPackage" [href]="plugin.links.npm"
+          rel="noopener noreferrer">
           NPM
         </a>
         <a class="card-link" *ngIf="plugin.updateAvailable" (click)="$plugin.updatePlugin(plugin.name)"

@@ -1,9 +1,13 @@
 <div class="status-container d-flex flex-column mt-0">
 
 
-  <button *ngIf="consoleStatus === 'up'" (click)="addWidget()" class="btn btn-primary btn-floating add-widget-button"
-    ngbTooltip="{{ 'status.widget.label_add_widget' | translate }}">
-    <i class="fas fa-plus"></i>
+  <button *ngIf="consoleStatus === 'up' && $auth.user.admin" (click)="addWidget()"
+    class="btn btn-primary btn-floating add-widget-button"
+    ngbTooltip="{{ (options.draggable.enabled ? 'status.widget.label_add_widget' : 'status.widget.label_layout_locked') | translate }}">
+    <i class="fas fa-plus" [ngClass]="{
+      'fa-plus': options.draggable.enabled,
+      'fa-lock': !options.draggable.enabled
+    }"></i>
   </button>
 
 

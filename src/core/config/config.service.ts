@@ -138,6 +138,7 @@ export class ConfigService {
         nodeVersion: process.version,
         packageName: this.package.name,
         packageVersion: this.package.version,
+        platform: os.platform(),
         runningInDocker: this.runningInDocker,
         runningInLinux: this.runningInLinux,
         dockerOfflineUpdate: this.dockerOfflineUpdate,
