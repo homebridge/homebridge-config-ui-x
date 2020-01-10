@@ -52,7 +52,9 @@ export class LongClickDirective implements OnDestroy {
   }
 
   @HostListener('mousemove', ['$event'])
+  @HostListener('touchmove', ['$event'])
   public onMouseMove(event: MouseEvent): void {
+    this.done = true;
     clearInterval(this.downTimeout);
   }
 }

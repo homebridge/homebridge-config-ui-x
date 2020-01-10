@@ -24,10 +24,12 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
   public editorOptions = {
     language: 'shell',
     theme: this.$auth.theme === 'dark-mode' ? 'vs-dark' : 'vs-light',
+    automaticLayout: true,
   };
 
-  private editorDecoractions = [];
   public monacoEditorModel: NgxEditorModel;
+
+  private visualViewPortEventCallback: () => void;
 
   constructor(
     private $auth: AuthService,
@@ -42,6 +44,14 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    // capture viewport events
+    this.visualViewPortEventCallback = () => this.visualViewPortChanged();
+
+    if (window['visualViewport']) {
+      window['visualViewport'].addEventListener('resize', this.visualViewPortEventCallback, true);
+      this.$md.disableTouchMove();
+    }
+
     this.$route.data
       .subscribe((data: { startupScript: { script: string } }) => {
         this.startupScript = data.startupScript.script;
@@ -103,7 +113,22 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
     this.saveInProgress = false;
   }
 
+  visualViewPortChanged() {
+    if (window['visualViewport'].height < window.innerHeight) {
+      // keyboard may have opened
+      this.$md.enableTouchMove();
+    } else if (window['visualViewport'].height === window.innerHeight) {
+      // keyboard is closed
+      this.$md.disableTouchMove();
+    }
+  }
+
   ngOnDestroy() {
+    if (window['visualViewport']) {
+      window['visualViewport'].removeEventListener('resize', this.visualViewPortEventCallback, true);
+      this.$md.enableTouchMove();
+    }
+
     if (this.monacoEditor) {
       this.monacoEditor.dispose();
     }

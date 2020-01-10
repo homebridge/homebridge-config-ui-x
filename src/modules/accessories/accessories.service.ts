@@ -33,10 +33,14 @@ export class AccessoriesService {
 
     let services;
 
+    const loadAllAccessories = async () => {
+      services = await this.loadAccessories();
+      this.refreshCharacteristics(services);
+      client.emit('accessories-data', services);
+    };
+
     // initial load
-    services = await this.loadAccessories();
-    this.refreshCharacteristics(services);
-    client.emit('accessories-data', services);
+    await loadAllAccessories();
 
     // handling incoming requests
     const requestHandler = async (msg?) => {
@@ -66,14 +70,14 @@ export class AccessoriesService {
     };
     this.hapClient.on('instance-discovered', instanceUpdateHandler);
 
-    // const loadAccessoriesInterval = setInterval(async () => {
-    //   services = await this.loadAccessories();
-    //   client.emit('accessories-data', services);
-    // }, 3000);
+    // load a second time in case anything was missed
+    const secondaryLoadTimeout = setTimeout(async () => {
+      await loadAllAccessories();
+    }, 3000);
 
     // clean up on disconnect
     const onEnd = () => {
-      // clearInterval(loadAccessoriesInterval);
+      clearTimeout(secondaryLoadTimeout);
       client.removeAllListeners('end');
       client.removeAllListeners('disconnect');
       client.removeAllListeners('accessory-control');

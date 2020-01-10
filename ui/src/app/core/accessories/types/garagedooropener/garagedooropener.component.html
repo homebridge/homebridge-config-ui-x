@@ -1,6 +1,6 @@
 <div class="accessory-box"
-  [ngClass]="{'switch-on': service.values.CurrentDoorState === 0 || service.values.CurrentDoorState === 2}"
-  (click)="onClick()">
+  [ngClass]="{'switch-on': service.values.CurrentDoorState === 0 || service.values.CurrentDoorState === 2}" appLongclick
+  (shortclick)="onClick()">
   <div class="d-flex flex-column h-100">
     <div [inlineSVG]="'/assets/hap-icons/garagedoor.svg'" aria-label="Garage Door" class="accessory-svg"></div>
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>

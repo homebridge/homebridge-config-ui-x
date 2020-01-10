@@ -1,4 +1,4 @@
-<div class="accessory-box" [ngClass]="{'switch-on': service.values.On}" (click)="onClick()">
+<div class="accessory-box" [ngClass]="{'switch-on': service.values.On}" appLongclick (shortclick)="onClick()">
   <div class="d-flex flex-column h-100">
     <div [inlineSVG]="'/assets/hap-icons/outlet.svg'" aria-label="Outlet" class="accessory-svg"></div>
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>

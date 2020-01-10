@@ -25,10 +25,13 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   public editorOptions = {
     language: 'json',
     theme: this.$auth.theme === 'dark-mode' ? 'vs-dark' : 'vs-light',
+    automaticLayout: true,
   };
 
   private editorDecoractions = [];
   public monacoEditorModel: NgxEditorModel;
+
+  private visualViewPortEventCallback: () => void;
 
   constructor(
     private $auth: AuthService,
@@ -44,6 +47,14 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    // capture viewport events
+    this.visualViewPortEventCallback = () => this.visualViewPortChanged();
+
+    if (window['visualViewport'] && !this.isMobile) {
+      window['visualViewport'].addEventListener('resize', this.visualViewPortEventCallback, true);
+      this.$md.disableTouchMove();
+    }
+
     this.$route.data
       .subscribe((data: { config: string }) => {
         this.homebridgeConfig = data.config;
@@ -51,7 +62,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
     // setup the base monaco editor model
     this.monacoEditorModel = {
-      value: '',
+      value: '{}',
       language: 'json',
       uri: window['monaco'] ? window['monaco'].Uri.parse('a://homebridge/config.json') : undefined,
     };
@@ -74,6 +85,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   onEditorInit(editor) {
     this.monacoEditor = editor;
     this.monacoEditor.getModel().setValue(this.homebridgeConfig);
+    window['editor'] = editor;
   }
 
   async onSave() {
@@ -182,7 +194,34 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
               this.translate.instant('config.toast_click_save_to_confirm_backup_restore'),
               this.translate.instant('config.toast_title_backup_loaded'),
             );
+
             this.homebridgeConfig = JSON.stringify(json, null, 4);
+
+            // update the editor
+            if (this.monacoEditor) {
+              // remove all decorations
+              this.editorDecoractions = this.monacoEditor.deltaDecorations(this.editorDecoractions, []);
+
+              // remove existing config
+              this.monacoEditor.executeEdits('beautifier', [
+                {
+                  identifier: 'delete' as any,
+                  range: new monaco.Range(1, 1, this.monacoEditor.getModel().getLineCount() + 10, 1),
+                  text: '',
+                  forceMoveMarkers: true,
+                },
+              ]);
+
+              // inject the restored content
+              this.monacoEditor.executeEdits('beautifier', [
+                {
+                  identifier: 'insert' as any,
+                  range: new monaco.Range(1, 1, 1, 1),
+                  text: this.homebridgeConfig,
+                  forceMoveMarkers: true,
+                },
+              ]);
+            }
           },
           err => this.$toastr.error(err.error.message || 'Failed to load config backup', this.translate.instant('toast.title_error')),
         );
@@ -433,7 +472,22 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     this.monacoEditorModel.uri = monaco.Uri.parse('a://homebridge/config.json');
   }
 
+  visualViewPortChanged() {
+    if (window['visualViewport'].height < window.innerHeight) {
+      // keyboard may have opened
+      this.$md.enableTouchMove();
+    } else if (window['visualViewport'].height === window.innerHeight) {
+      // keyboard is closed
+      this.$md.disableTouchMove();
+    }
+  }
+
   ngOnDestroy() {
+    if (window['visualViewport']) {
+      window['visualViewport'].removeEventListener('resize', this.visualViewPortEventCallback, true);
+      this.$md.enableTouchMove();
+    }
+
     if (this.monacoEditor) {
       this.monacoEditor.dispose();
     }

@@ -1,4 +1,5 @@
-<div class="accessory-box" [ngClass]="{'switch-on': service.values.LockCurrentState === 0}" (click)="onClick()">
+<div class="accessory-box" [ngClass]="{'switch-on': service.values.LockCurrentState === 0}" appLongclick
+  (shortclick)="onClick()">
   <div class="d-flex flex-column h-100">
     <div *ngIf="service.values.LockCurrentState === 0" [inlineSVG]="'/assets/hap-icons/lock-unlocked.svg'"
       aria-label="Unlocked" class="accessory-svg">
