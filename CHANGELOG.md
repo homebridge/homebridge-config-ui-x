@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## NEXT
+## 4.7.0 (2020-01-11)
 
 ### New Dashboard
 
@@ -27,7 +27,7 @@ New widgets include:
 
 ### Simple Service Installer
 
-This release expands the `hb-service` command to support macOS and Linux in addition to Windows 10. This command allows you to setup a Homebridge instance in seconds.
+This release expands the `hb-service` command to support macOS and Linux in addition to Windows 10. This command allows you to setup a Homebridge instance as a service in seconds.
 
 Running `hb-service install` will setup Homebridge and Homebridge Config UI X to run as a service with auto-start on boot. The same command works across Linux, macOS and Windows 10.
 
@@ -62,7 +62,7 @@ In addition:
 ### Other Changes
 
 * **Logs:** URLs in the log output are now clickable
-* **Status:** CPU Load is now shown for Windows 10 users
+* **Status:** CPU utilization is now shown for Windows 10 users
 * **Status:** CPU temperature option, `temp`, has been removed, the CPU temperature will now automatically be displayed where possible on Linux and Windows
 * **System:** Removed the `websocketCompatibilityMode` option, this setting is now the default for all users
 * **Terminal:** The terminal now automatically respawns the shell if the shell is terminated by the user (e.g, when using CTRL+D)

@@ -35,7 +35,7 @@ Show your homebridge config.json here
 * **Homebridge Version**: <!-- homebridge -V -->
 * **Homebridge Config UI X Version**:
 * **Operating System**: Raspbian / Ubuntu / Debian / Windows / macOS / Docker / other
-* **Process Supervisor**: Docker / Systemd / init.d / pm2 / launchctl / other / none
+* **Process Supervisor**: Docker / Systemd / init.d / pm2 / launchctl / hb-service / other / none
 
 
 <!-- Click the "Preview" tab before you submit to ensure the formatting is correct. -->
