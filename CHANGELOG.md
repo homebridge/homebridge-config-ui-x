@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Bug Fixes
 
 * **System:** Fixed an issue causing the UI to crash when running in a FreeBSD Jailed Shell ([#461](https://github.com/oznu/homebridge-config-ui-x/issues/461))
+* **System:** Prevent an unnecessary log message showing up in the logs on certain Linux distros ([#466](https://github.com/oznu/homebridge-config-ui-x/issues/466))
 * **Dashboard:** Fixed a bug where the "Plugin Status" icon was not changing when there were updates available ([#443](https://github.com/oznu/homebridge-config-ui-x/issues/443))
 
 ## 4.7.0 (2020-01-11)
