@@ -49,6 +49,11 @@
       display: none;
     }
 
+    hr {
+      border-color: $primary;
+      background-color: $primary;
+      color: $primary;
+    }
   }
 }
 

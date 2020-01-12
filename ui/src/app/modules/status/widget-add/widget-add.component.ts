@@ -101,6 +101,14 @@ export class WidgetAddComponent implements OnInit {
       mobileOrder: 1000,
       hideOnMobile: true,
     },
+    {
+      name: this.translate.instant('status.widget.label_clock'),
+      component: 'ClockWidgetComponent',
+      cols: 5,
+      rows: 3,
+      mobileOrder: 23,
+      hideOnMobile: true,
+    },
   ];
 
   public availableWidgets = [];

@@ -35,6 +35,8 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   public presentTenseVerb: string;
   public pastTenseVerb: string;
 
+  public onlineUpdateOk: boolean;
+
   constructor(
     public activeModal: NgbActiveModal,
     public $toastr: ToastrService,
@@ -57,6 +59,8 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
     });
 
     this.toastSuccess = this.translate.instant('toast.title_success');
+
+    this.onlineUpdateOk = !(['homebridge', 'homebridge-config-ui-x'].includes(this.pluginName) && this.$auth.env.platform === 'win32');
 
     switch (this.action) {
       case 'Install':
@@ -167,7 +171,9 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
         this.release = data;
       },
       (err) => {
-        this.update();
+        if (this.onlineUpdateOk) {
+          this.update();
+        }
       },
     );
   }

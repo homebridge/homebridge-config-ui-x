@@ -6,7 +6,7 @@
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
-  <div [hidden]="actionComplete || showReleaseNotes" id="plugin-log-output" class="modal-body"></div>
+  <div [hidden]="!onlineUpdateOk || actionComplete || showReleaseNotes" id="plugin-log-output" class="modal-body"></div>
   <div *ngIf="actionComplete" class="modal-body plugin-modal-body">
     <div *ngIf="updateSelf">
       <h3 class="text-center primary-text" [translate]="'plugins.manage.message_restart_required'">Restart and Refresh
@@ -25,6 +25,24 @@
     </div>
     <markdown hrefTargetBlank class="plugin-md" [data]="changeLog"></markdown>
   </div>
+  <div *ngIf="!onlineUpdateOk" class="modal-body plugin-modal-body">
+    <h4 class="primary-text text-center" [translate]="'plugins.manage.label_manual_update_required'">
+      Manual Update Required
+    </h4>
+    <p [translate]="'plugins.manage.label_online_updates_not_supported_on_windows'">
+      Online updates are not supported on Windows. You will need to upgrade Homebridge Config UI X
+      manually after stopping the Homebridge service.
+    </p>
+    <div *ngIf="$auth.env.serviceMode">
+      <p>
+        To upgrade Homebridge run open a <strong>Node.js command prompt</strong> and run the following commands:
+      </p>
+      <pre class="p-2" style="background-color: #efefef;">hb-service stop
+npm install -g homebridge@latest homebridge-config-ui-x@latest
+hb-service start</pre>
+    </div>
+    <hr>
+  </div>
   <div *ngIf="showReleaseNotes && !actionComplete" class="modal-body plugin-modal-body">
     <h3>Release Notes</h3>
     <h5>{{ release.name }}</h5>
@@ -33,7 +51,7 @@
   <div class="modal-footer">
     <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')"
       [translate]="'form.button_close'">Close</button>
-    <button *ngIf="showReleaseNotes" type="button" class="btn btn-primary" data-dismiss="modal" (click)="update()"
-      [translate]="'plugins.button_update'">Update</button>
+    <button *ngIf="onlineUpdateOk && showReleaseNotes" type="button" class="btn btn-primary" data-dismiss="modal"
+      (click)="update()" [translate]="'plugins.button_update'">Update</button>
   </div>
 </div>

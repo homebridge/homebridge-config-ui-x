@@ -75,9 +75,31 @@
         </div>
       </div>
     </div>
+    <div *ngSwitchCase="'ClockWidgetComponent'">
+      <div class="form-group row">
+        <label class="col-sm-4 col-form-label" [translate]="'status.widget.label_clock_timeformat'">
+          Time Format
+        </label>
+        <div class="col-sm-8">
+          <select class="form-control" [(ngModel)]="widget.timeFormat">
+            <option *ngFor="let timeFormat of timeFormats | keyvalue" [value]="timeFormat.value">{{ timeFormat.key }}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col-sm-8">
+          <div class="form-group form-check pt-1">
+            <input type="checkbox" class="form-check-input" id="hideOnMobile" [(ngModel)]="widget.hideOnMobile">
+            <label class="form-check-label" for="hideOnMobile" [translate]="'status.widget.label_hide_on_mobile'">
+              Hide in compact view (mobile displays)
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class=" text-center" *ngSwitchDefault>
       <h6 [translate]="'status.widget.label_widget_has_no_options'">This widget has no options</h6>
-      <pre>{{ hideOnMobile }}</pre>
     </div>
   </div>
   <div class="modal-footer">

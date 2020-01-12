@@ -142,6 +142,7 @@ export class ConfigService {
         runningInDocker: this.runningInDocker,
         runningInLinux: this.runningInLinux,
         dockerOfflineUpdate: this.dockerOfflineUpdate,
+        serviceMode: this.serviceMode,
         temperatureUnits: this.ui.tempUnits || 'c',
         instanceId: this.instanceId,
       },

@@ -17,10 +17,20 @@ export class WidgetControlComponent implements OnInit {
   ) { }
   @Input() widget;
 
+  // weather
   public searching: boolean;
 
+  // terminal
   public fontSizes = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
   public fontWeights = ['100', '200', '300', '400', '500', '600', '700', '800', '900', 'bold', 'normal'];
+
+  // clock
+  public timeFormats = {
+    '9:03 AM': 'h:mm a',
+    '9:03:01 AM': 'h:mm:ss a',
+    '09:03': 'H:mm',
+    '09:03:01': 'H:mm:ss',
+  };
 
   public searchCountryCodes = (text$: Observable<string>) =>
     text$.pipe(
@@ -48,6 +58,10 @@ export class WidgetControlComponent implements OnInit {
       if (!this.widget.fontSize) {
         this.widget.fontSize = 15;
       }
+    }
+
+    if (this.widget.component === 'ClockWidgetComponent') {
+
     }
   }
 

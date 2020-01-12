@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## NEXT
+
+### Notable Changes
+
+* **Dashboard:** Added a Clock widget, users can select the time format they wish the clock to display ([#459](https://github.com/oznu/homebridge-config-ui-x/issues/459))
+
+### Other Changes
+
+* **System:** Prevent in-app updates to the UI for Windows 10 users. Windows file-locking prevents online updates from completing successfully while Homebridge Config UI X is still running, this can leave Homebridge in an unstable state. After this update Windows users will need to manually stop the Homebridge service, then manually update the UI using npm. **Existing Windows 10 users:** please perform this update manually after stopping the Homebridge service!
+
+### Bug Fixes
+
+* **System:** Fixed an issue causing the UI to crash when running in a FreeBSD Jailed Shell ([#461](https://github.com/oznu/homebridge-config-ui-x/issues/461))
+* **Dashboard:** Fixed a bug where the "Plugin Status" icon was not changing when there were updates available ([#443](https://github.com/oznu/homebridge-config-ui-x/issues/443))
+
 ## 4.7.0 (2020-01-11)
 
 ### New Dashboard

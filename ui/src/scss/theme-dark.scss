@@ -84,6 +84,12 @@
     }
   }
 
+  hr {
+    border-color: $darkModePrimary;
+    background-color: $darkModePrimary;
+    color: $darkModePrimary;
+  }
+
   .modal-content {
     border-radius: 0;
   }
