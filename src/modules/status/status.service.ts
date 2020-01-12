@@ -23,6 +23,12 @@ export class StatusService {
     private logger: Logger,
     private configService: ConfigService,
   ) {
+
+    // systeminformation.currentLoad is not supported on FreeBSD
+    if (os.platform() === 'freebsd') {
+      this.getCpuLoadPoint = this.getCpuLoadPointAlt;
+    }
+
     setInterval(async () => {
       this.getCpuLoadPoint();
       this.getMemoryUsagePoint();
@@ -48,6 +54,16 @@ export class StatusService {
     const memoryFreePercent = ((mem.total - mem.available) / mem.total) * 100;
     this.memoryUsageHistory = this.memoryUsageHistory.slice(-60);
     this.memoryUsageHistory.push(memoryFreePercent);
+  }
+
+  /**
+   * Alternative method to get the CPU load on systems that do not support systeminformation.currentLoad
+   * This is currently only used on FreeBSD
+   */
+  private async getCpuLoadPointAlt() {
+    const currentLoad = (os.loadavg()[0] * 100 / os.cpus().length);
+    this.cpuLoadHistory = this.cpuLoadHistory.slice(-60);
+    this.cpuLoadHistory.push(currentLoad);
   }
 
   /**
