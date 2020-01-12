@@ -3,6 +3,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { GridsterConfig, GridsterItem } from 'angular-gridster2';
 import { Subject } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 import { WsService } from '../../core/ws.service';
 import { AuthService } from '../../core/auth/auth.service';
@@ -63,19 +64,21 @@ export class StatusComponent implements OnInit, OnDestroy {
       displayGrid: 'none',
     };
 
+    if (this.io.socket.connected) {
+      this.getLayout();
+      this.consoleStatus = 'up';
+    } else {
+      this.consoleStatus = 'down';
+
+      // get the dashboard layout when the server is up
+      this.io.connected.pipe(take(1)).subscribe(() => {
+        this.getLayout();
+      });
+    }
+
     this.io.connected.subscribe(async () => {
       this.consoleStatus = 'up';
       this.io.socket.emit('monitor-server-status');
-
-      // get the dashboard layout
-      if (!this.dashboard.length) {
-        this.io.request('get-dashboard-layout').subscribe((layout) => {
-          if (!layout.length) {
-            return this.resetLayout();
-          }
-          this.setLayout(layout);
-        });
-      }
     });
 
     this.io.socket.on('disconnect', () => {
@@ -97,6 +100,17 @@ export class StatusComponent implements OnInit, OnDestroy {
         this.gridChangedEvent();
       },
     });
+  }
+
+  getLayout() {
+    this.io.request('get-dashboard-layout').subscribe(
+      (layout) => {
+        if (!layout.length) {
+          return this.resetLayout();
+        }
+        this.setLayout(layout);
+      },
+    );
   }
 
   setLayout(layout) {

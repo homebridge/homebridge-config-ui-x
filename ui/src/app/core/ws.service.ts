@@ -29,12 +29,14 @@ export class WsService {
   public connectToNamespace(namespace: string): IoNamespace {
     if (this.namespaceConnectionCache[namespace]) {
       /* connection to namespace already exists */
-      const io = this.namespaceConnectionCache[namespace];
+      const io: IoNamespace = this.namespaceConnectionCache[namespace];
       io.connected = new Subject();
 
       // broadcast to sbuscribers that the connection is ready
       setTimeout(() => {
-        io.connected.next();
+        if (io.socket.connected) {
+          io.connected.next();
+        }
       });
 
       // watch for re-connections, and broadcast
