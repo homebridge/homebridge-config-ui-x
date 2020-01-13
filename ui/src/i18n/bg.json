@@ -170,7 +170,7 @@
     "status.homebridge.label_up_to_date": "Актуален",
     "status.homebridge.label_update_available": "{{latestVersion}} налична актуализация",
     "status.homebridge.label_version": "Версия",
-    "status.memory.label_free": "Свободна",
+    "status.memory.label_available": "Свободна",
     "status.memory.label_total": "Общо",
     "status.memory.label_used": "Заета",
     "status.memory.title_memory": "Рам Памет",

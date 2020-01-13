@@ -24,9 +24,10 @@ export class StatusService {
     private configService: ConfigService,
   ) {
 
-    // systeminformation.currentLoad is not supported on FreeBSD
+    // systeminformation cpu data is not supported in FreeBSD Jail Shells
     if (os.platform() === 'freebsd') {
       this.getCpuLoadPoint = this.getCpuLoadPointAlt;
+      this.getCpuTemp = this.getCpuTempAlt;
     }
 
     setInterval(async () => {
@@ -67,6 +68,25 @@ export class StatusService {
   }
 
   /**
+   * Get the current CPU temperature using systeminformation.cpuTemperature
+   */
+  private async getCpuTemp() {
+    return await si.cpuTemperature();
+  }
+
+  /**
+   * Alternative method for CPU temp
+   * This is currently only used on FreeBSD and will return null
+   */
+  private async getCpuTempAlt() {
+    return {
+      main: -1,
+      cores: [],
+      max: -1,
+    };
+  }
+
+  /**
    * Get the current dashboard layout
    */
   public async getDashboardLayout() {
@@ -101,7 +121,7 @@ export class StatusService {
     }
 
     return {
-      cpuTemperature: await si.cpuTemperature(),
+      cpuTemperature: await this.getCpuTemp(),
       currentLoad: this.cpuLoadHistory.slice(-1)[0],
       cpuLoadHistory: this.cpuLoadHistory,
     };

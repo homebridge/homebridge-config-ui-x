@@ -170,7 +170,7 @@
     "status.homebridge.label_up_to_date": "Up To Date",
     "status.homebridge.label_update_available": "{{latestVersion}} Update Beschikbaar",
     "status.homebridge.label_version": "Versie",
-    "status.memory.label_free": "Vrij",
+    "status.memory.label_available": "Vrij",
     "status.memory.label_total": "Totaal",
     "status.memory.label_used": "Gebruikt",
     "status.memory.title_memory": "Geheugen",

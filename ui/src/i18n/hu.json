@@ -170,7 +170,7 @@
     "status.homebridge.label_up_to_date": "Legfrissebb",
     "status.homebridge.label_update_available": "Elérhető a {{latestVersion}} frissítés",
     "status.homebridge.label_version": "Verzió",
-    "status.memory.label_free": "Szabad",
+    "status.memory.label_available": "Szabad",
     "status.memory.label_total": "Összesen",
     "status.memory.label_used": "Használt",
     "status.memory.title_memory": "Memória",

@@ -170,7 +170,7 @@
     "status.homebridge.label_up_to_date": "Aggiornato",
     "status.homebridge.label_update_available": "Versione {{latestVersion}} Disponibile",
     "status.homebridge.label_version": "Versione",
-    "status.memory.label_free": "Libera",
+    "status.memory.label_available": "Libera",
     "status.memory.label_total": "Totale",
     "status.memory.label_used": "Utilizzata",
     "status.memory.title_memory": "Memoria",

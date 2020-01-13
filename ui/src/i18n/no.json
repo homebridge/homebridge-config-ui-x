@@ -170,7 +170,7 @@
     "status.homebridge.label_up_to_date": "Oppdatert",
     "status.homebridge.label_update_available": "{{latestVersion}} Oppdatering tilgjengelig",
     "status.homebridge.label_version": "Versjon",
-    "status.memory.label_free": "Ledig",
+    "status.memory.label_available": "Ledig",
     "status.memory.label_total": "Totalt",
     "status.memory.label_used": "Brukes",
     "status.memory.title_memory": "Minne",

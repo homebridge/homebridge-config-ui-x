@@ -170,7 +170,7 @@
     "status.homebridge.label_up_to_date": "Aktuální",
     "status.homebridge.label_update_available": "{{latestVersion}} Aktualizace k dispozici",
     "status.homebridge.label_version": "Verze",
-    "status.memory.label_free": "Volná",
+    "status.memory.label_available": "Volná",
     "status.memory.label_total": "Celková",
     "status.memory.label_used": "Použitá",
     "status.memory.title_memory": "Paměť RAM",

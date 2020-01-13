@@ -17,7 +17,7 @@ import { WsAdminGuard } from './guards/ws-admin-guard';
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        secretOrPrivateKey: configService.secrets.secretKey,
+        secret: configService.secrets.secretKey,
         signOptions: {
           expiresIn: configService.ui.sessionTimeout,
         },

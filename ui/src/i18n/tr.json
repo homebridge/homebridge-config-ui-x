@@ -170,7 +170,7 @@
     "status.homebridge.label_up_to_date": "Güncel",
     "status.homebridge.label_update_available": "{{version}} Güncelleme Mevcut",
     "status.homebridge.label_version": "Versiyon",
-    "status.memory.label_free": "Kullanılmayan",
+    "status.memory.label_available": "Kullanılmayan",
     "status.memory.label_total": "Toplam",
     "status.memory.label_used": "Kullanılan",
     "status.memory.title_memory": "Bellek",
