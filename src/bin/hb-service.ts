@@ -30,7 +30,7 @@ export class HomebridgeServiceHelper {
   private homebridgeBinary: string;
   private homebridge: child_process.ChildProcessWithoutNullStreams;
   private homebridgeOpts = [];
-  private homebridgeNextRunOpts = [];
+  private homebridgeCustomEnv = {};
   private uiBinary: string;
 
   public uiPort = 8581;
@@ -224,6 +224,9 @@ export class HomebridgeServiceHelper {
       // verify the config
       await this.configCheck();
 
+      // load startup options if they exist
+      await this.loadHomebridgeStartupOptions();
+
       // work out the homebridge binary path
       const node_modules = path.resolve(process.env.UIX_BASE_PATH, '..');
       this.homebridgeBinary = path.resolve(node_modules, 'homebridge', 'bin', 'homebridge');
@@ -263,28 +266,25 @@ export class HomebridgeServiceHelper {
 
     process.on('SIGTERM', exitHandler);
     process.on('SIGINT', exitHandler);
-
-    process.on('message', (message) => {
-      if (message === 'homebridge-remove-ophans' && this.homebridge) {
-        try {
-          if (!this.homebridgeOpts.includes('-R')) {
-            this.logger('Restarting Homebridge in "-R Remove Orphans" mode for the next run only');
-            this.homebridgeNextRunOpts = ['-R'];
-            this.homebridge.kill();
-          } else {
-            this.logger('Homebridge is already running in "-R Remove Orphans" mode.');
-          }
-        } catch (e) {
-          console.log(e);
-        }
-      }
-    });
   }
 
   /**
    * Starts homebridge as a child process, sending the log output to the homebridge.log
    */
   private runHomebridge() {
+    if (this.homebridgeOpts.length) {
+      this.logger(`Starting Homebridge with extra flags: ${this.homebridgeOpts.join(' ')}`);
+    }
+
+    if (Object.keys(this.homebridgeCustomEnv).length) {
+      this.logger(`Starting Homebridge with custom env: ${JSON.stringify(this.homebridgeCustomEnv)}`);
+    }
+
+    // env setup
+    const env = {};
+    Object.assign(env, process.env);
+    Object.assign(env, this.homebridgeCustomEnv);
+
     // launch the homebridge process
     this.homebridge = child_process.spawn(process.execPath,
       [
@@ -295,16 +295,12 @@ export class HomebridgeServiceHelper {
         '-U',
         this.storagePath,
         ...this.homebridgeOpts,
-        ...this.homebridgeNextRunOpts,
       ],
       {
-        env: process.env,
+        env,
         windowsHide: true,
       },
     );
-
-    // clear the next run opts array
-    this.homebridgeNextRunOpts = [];
 
     this.logger(`Started Homebridge with PID: ${this.homebridge.pid}`);
 
@@ -532,6 +528,39 @@ export class HomebridgeServiceHelper {
     });
 
     tail.on('line', console.log);
+  }
+
+  /**
+   * Returns the path of the homebridge startup settings file
+   */
+  get homebridgeStartupOptionsPath() {
+    return path.resolve(this.storagePath, '.uix-hb-service-homebridge-startup.json');
+  }
+
+  /**
+   * Get the Homebridge startup options defined in the UI
+   */
+  private async loadHomebridgeStartupOptions() {
+    try {
+      if (await fs.pathExists(this.homebridgeStartupOptionsPath)) {
+        const homebridgeStartupOptions = await fs.readJson(this.homebridgeStartupOptionsPath);
+
+        // check if debug should be enabled
+        if (homebridgeStartupOptions.debugMode && !this.homebridgeOpts.includes('-D')) {
+          this.homebridgeOpts.push('-D');
+        }
+
+        // check if remove orphans should be enabled
+        if (homebridgeStartupOptions.removeOrphans && !this.homebridgeOpts.includes('-R')) {
+          this.homebridgeOpts.push('-R');
+        }
+
+        // copy any custom env vars in
+        Object.assign(this.homebridgeCustomEnv, homebridgeStartupOptions.env);
+      }
+    } catch (e) {
+      this.logger(`Failed to load startup options ${e.message}`);
+    }
   }
 
 }

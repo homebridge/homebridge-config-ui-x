@@ -55,6 +55,11 @@ const routes: Routes = [
         canActivate: [AdminGuard],
       },
       {
+        path: 'settings',
+        loadChildren: () => import('./modules/settings/settings.module').then(m => m.SettingsModule),
+        canActivate: [AdminGuard],
+      },
+      {
         path: 'platform-tools',
         loadChildren: () => import('./modules/platform-tools/platform-tools.module').then(m => m.PlatformToolsModule),
         canActivate: [AdminGuard],
@@ -87,6 +92,10 @@ const routes: Routes = [
       {
         path: 'linux/shutdown',
         redirectTo: 'platform-tools/linux/shutdown-server',
+      },
+      {
+        path: 'platform-tools/docker/settings',
+        redirectTo: '/settings',
       },
     ],
   },

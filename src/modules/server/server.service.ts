@@ -45,21 +45,6 @@ export class ServerService {
   }
 
   /**
-   * Remove cached accessories for which plugin is not loaded
-   */
-  public async removeOrphans() {
-    if (!this.configService.serviceMode) {
-      this.logger.error('Homebridge Config UI X can only remove orphans from homebridge when running in service mode');
-      throw new BadRequestException('Not Available');
-    }
-    try {
-      process.emit('message', 'homebridge-remove-ophans', null);
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  /**
    * Resets homebridge accessory and deletes all accessory cache.
    * Preserves plugin config.
    */

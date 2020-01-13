@@ -180,6 +180,14 @@
     }
   }
 
+  .list-group-item {
+      background-color: $secondaryBackground;
+      color: #FFFFFF;
+      .badge-primary {
+        background-color: $darkModePrimary !important;
+      }
+  }
+
   .hb-plugin-settings-modal, .hb-accessories-info-modal {
     input, select {
       border-color: #242424; //$backgroundColor;

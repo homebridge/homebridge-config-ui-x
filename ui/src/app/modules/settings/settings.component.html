@@ -1,0 +1,78 @@
+<div class="d-flex justify-content-between">
+  <h3 class="primary-text m-0">Homebridge Settings</h3>
+  <button class="btn btn-primary waves-effect m-0" *ngIf="saved" routerLink="/restart"
+    [translate]="'platform.docker.settings.button_restart_required'">Restart Required</button>
+</div>
+
+<form class="mt-3" novalidate [formGroup]="serviceForm" *ngIf="$auth.env.runningInDocker || $auth.env.serviceMode">
+
+  <h5 class="primary-text">Startup Options</h5>
+
+  <div class="row mt-3" *ngIf="$auth.env.runningInDocker">
+    <div class="col-md-12">
+      <div class="alert alert-danger" role="alert" *ngIf="!$auth.env.ableToConfigureSelf">
+        {{'platform.docker.settings.message_image_upgrade_required' | translate}} <a target="_blank"
+          rel="noopener noreferrer"
+          href="https://github.com/oznu/docker-homebridge">https://github.com/oznu/docker-homebridge</a>
+      </div>
+      <div class="alert alert-warning" role="alert" [translate]="'platform.docker.settings.message_env_warning'">
+        Changing these values will override the corresponding environment variables you may have set with the docker run
+        command.
+      </div>
+    </div>
+  </div>
+
+  <ul class="list-group">
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span>Homebridge Debug Mode <code>-D</code></span>
+      <div class="material-switch pull-right">
+        <input id="homebridgeDebugMode" formControlName="HOMEBRIDGE_DEBUG" type="checkbox" />
+        <label for="homebridgeDebugMode" class="badge-primary"></label>
+      </div>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="$auth.env.runningInDocker">
+      <span>Homebridge Insecure Mode <code>-I</code></span>
+      <div class="material-switch pull-right">
+        <input id="homebridgeInsecureMode" formControlName="HOMEBRIDGE_INSECURE" type="checkbox" />
+        <label for="homebridgeInsecureMode" class="badge-primary"></label>
+      </div>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="$auth.env.serviceMode">
+      <span>Remove accessories of uninstalled plugins <code>-R</code></span>
+      <div class="material-switch pull-right">
+        <input id="homebridgeRemoveOrphans" formControlName="HOMEBRIDGE_REMOVE_ORPHANS" type="checkbox" />
+        <label for="homebridgeRemoveOrphans" class="badge-primary"></label>
+      </div>
+    </li>
+  </ul>
+
+  <div class="mt-3" *ngIf="$auth.env.serviceMode">
+    <h5 class="primary-text">Environment Variables</h5>
+
+    <ul class="list-group mt-2">
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span>
+          DEBUG
+          <i class="fas fa-info-circle primary-text"
+            ngbTooltip="Some plugins require you to set the DEBUG environment variable to enable debug level logging."></i>
+        </span>
+        <div class="pull-right">
+          <input class="form-control form-control-sm" formControlName="ENV_DEBUG" type="text" />
+        </div>
+      </li>
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span>
+          NODE_OPTIONS
+          <a href="https://nodejs.org/api/cli.html" target="_blank"
+            ngbTooltip="Node.js runtime options for the Homebridge process. This should be kept blank unless you know what you are doing.">
+            <i class="fas fa-info-circle primary-text"></i>
+          </a>
+        </span>
+        <div class="pull-right">
+          <input class="form-control form-control-sm" formControlName="ENV_NODE_OPTIONS" type="text" />
+        </div>
+      </li>
+    </ul>
+  </div>
+
+</form>

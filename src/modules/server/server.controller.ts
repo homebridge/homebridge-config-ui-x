@@ -28,10 +28,4 @@ export class ServerController {
     return this.serverService.resetHomebridgeAccessory();
   }
 
-  @UseGuards(AdminGuard)
-  @Put('/remove-orphans')
-  removeOrphans() {
-    return this.serverService.removeOrphans();
-  }
-
 }

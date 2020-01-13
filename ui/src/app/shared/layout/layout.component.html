@@ -47,9 +47,13 @@
             <i class="fas fa-ellipsis-v nav-menu-icon"></i>
           </a>
           <div class="dropdown-menu dropdown-menu-right dropdown-info">
-            <a class="dropdown-item waves-effect waves-light" routerLink="/platform-tools/docker/settings"
+            <a class="dropdown-item waves-effect waves-light" routerLink="/settings"
               *ngIf="$auth.env.runningInDocker && $auth.user.admin">
               Docker {{ 'menu.docker.label_settings' | translate }}
+            </a>
+            <a class="dropdown-item waves-effect waves-light" routerLink="/settings"
+              *ngIf="$auth.env.serviceMode && $auth.user.admin">
+              Homebridge {{ 'menu.docker.label_settings' | translate }}
             </a>
             <a class="dropdown-item waves-effect waves-light" *ngIf="$auth.env.enableTerminalAccess && $auth.user.admin"
               routerLink="/platform-tools/terminal">
