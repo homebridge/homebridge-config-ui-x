@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Notable Changes
 
 * **Dashboard:** Added a Clock widget, users can select the time format they wish the clock to display ([#459](https://github.com/oznu/homebridge-config-ui-x/issues/459))
+* **hb-service:** Added the ability for `hb-service` users to set the homebridge `-D` and `-R` flags, as well as the `DEBUG` and `NODE_OPTIONS` environment variables from the UI ([#472](https://github.com/oznu/homebridge-config-ui-x/issues/472))
 
 ### Other Changes
 
