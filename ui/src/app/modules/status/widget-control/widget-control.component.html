@@ -82,7 +82,18 @@
         </label>
         <div class="col-sm-8">
           <select class="form-control" [(ngModel)]="widget.timeFormat">
-            <option *ngFor="let timeFormat of timeFormats | keyvalue" [value]="timeFormat.value">{{ timeFormat.key }}
+            <option *ngFor="let timeFormat of timeFormats" [value]="timeFormat">{{ currentDate | date:timeFormat }}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-4 col-form-label" [translate]="'status.widget.label_clock_dateformat'">
+          Date Format
+        </label>
+        <div class="col-sm-8">
+          <select class="form-control" [(ngModel)]="widget.dateFormat">
+            <option *ngFor="let dateFormat of dateFormats" [value]="dateFormat">{{ currentDate | date:dateFormat }}
             </option>
           </select>
         </div>

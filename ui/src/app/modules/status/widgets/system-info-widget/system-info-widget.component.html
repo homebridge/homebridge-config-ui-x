@@ -9,7 +9,7 @@
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_timezone'">Timezone</th>
           <td>{{ serverInfo.time.timezone }}</td>
         </tr>
-        <tr>
+        <tr *ngIf="serverInfo.os">
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_os'">OS</th>
           <td [ngSwitch]="serverInfo.os.platform">
             <span *ngSwitchCase="'darwin'">
@@ -23,7 +23,7 @@
             </span>
           </td>
         </tr>
-        <tr>
+        <tr *ngIf="serverInfo.os">
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_hostname'">Hostname</th>
           <td>{{ serverInfo.os.hostname }}</td>
         </tr>
@@ -41,24 +41,28 @@
           <td>{{ serverInfo.network.ip6 }}</td>
         </tr>
         <tr>
-          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_nodejs_version'">Node.js
-            Version</th>
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_nodejs_version'"
+            container="body" [openDelay]="1000" ngbTooltip="{{ nodejsInfo.installPath }}">
+            Node.js Version
+          </th>
           <td>
-            <span>{{ serverInfo.nodeVersion }}</span>
-            <span *ngIf="nodejsInfo.updateAvailable && $auth.env.platform !== 'win32'"
-              ngbTooltip="{{ 'plugins.status_update_available' | translate }} - {{ nodejsInfo.latestVersion }}">&nbsp;
-              <i class="primary-text fas fa-exclamation-circle"></i>
+            <span
+              ngbTooltip="{{ nodejsInfo.updateAvailable ? ('plugins.status_update_available' | translate) + ' - ' + nodejsInfo.latestVersion : ''}}">
+              {{ serverInfo.nodeVersion }}
+              <i *ngIf="nodejsInfo.showUpdateWarning" class="primary-text fas fa-info-circle"></i>
             </span>
           </td>
         </tr>
         <tr *ngIf="npmInfo.installedVersion">
-          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_npm_version'">Npm version
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_npm_version'"
+            container="body" [openDelay]="1000" ngbTooltip="{{ npmInfo.installPath }}">
+            Npm version
           </th>
           <td>
-            <span>v{{ npmInfo.installedVersion }}</span>
-            <span *ngIf="npmInfo.updateAvailable && $auth.env.platform !== 'win32'"
-              ngbTooltip="{{ 'plugins.status_update_available' | translate }} - v{{ npmInfo.latestVersion }}">&nbsp;
-              <i class="primary-text fas fa-exclamation-circle"></i>
+            <span
+              ngbTooltip="{{ npmInfo.updateAvailable ? ('plugins.status_update_available' | translate) + ' - v' + npmInfo.latestVersion : ''}}">
+              v{{ npmInfo.installedVersion }}
+              <i *ngIf="npmInfo.showUpdateWarning" class="primary-text fas fa-info-circle"></i>
             </span>
           </td>
         </tr>

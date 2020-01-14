@@ -12,7 +12,6 @@ export class ClockWidgetComponent implements OnInit, OnDestroy {
   private secondsCounter = interval(1000);
   private secondsCounterSubscription: Subscription;
   public currentTime: Date = new Date();
-  public currentDate = this.currentTime.toLocaleDateString();
 
   constructor() { }
 
@@ -20,10 +19,12 @@ export class ClockWidgetComponent implements OnInit, OnDestroy {
     if (!this.widget.timeFormat) {
       this.widget.timeFormat = 'H:mm';
     }
+    if (!this.widget.dateFormat) {
+      this.widget.dateFormat = 'yyyy-MM-dd';
+    }
 
     this.secondsCounterSubscription = this.secondsCounter.subscribe(() => {
       this.currentTime = new Date();
-      this.currentDate = this.currentTime.toLocaleDateString();
     });
   }
 

@@ -25,12 +25,29 @@ export class WidgetControlComponent implements OnInit {
   public fontWeights = ['100', '200', '300', '400', '500', '600', '700', '800', '900', 'bold', 'normal'];
 
   // clock
-  public timeFormats = {
-    '9:03 AM': 'h:mm a',
-    '9:03:01 AM': 'h:mm:ss a',
-    '09:03': 'H:mm',
-    '09:03:01': 'H:mm:ss',
-  };
+  public currentDate = new Date();
+
+  public timeFormats = [
+    'h:mm a',
+    'h:mm:ss a',
+    'H:mm',
+    'H:mm:ss',
+  ];
+
+  public dateFormats = [
+    'yyyy-MM-dd',
+    'dd/MM/yy',
+    'dd/MM/yyyy',
+    'M/d/yy',
+    'M/dd/yyyy',
+    'MMM d',
+    'MMM d, y',
+    'MMMM d, y',
+    'EEEE, MMMM d, y',
+    'EEE, MMM d',
+    'EEEE',
+    'EEEE, MMM d',
+  ];
 
   public searchCountryCodes = (text$: Observable<string>) =>
     text$.pipe(
@@ -58,10 +75,6 @@ export class WidgetControlComponent implements OnInit {
       if (!this.widget.fontSize) {
         this.widget.fontSize = 15;
       }
-    }
-
-    if (this.widget.component === 'ClockWidgetComponent') {
-
     }
   }
 

@@ -25,7 +25,7 @@
     </div>
     <markdown hrefTargetBlank class="plugin-md" [data]="changeLog"></markdown>
   </div>
-  <div *ngIf="!onlineUpdateOk" class="modal-body plugin-modal-body">
+  <div *ngIf="!onlineUpdateOk" class="modal-body">
     <h4 class="primary-text text-center" [translate]="'plugins.manage.label_manual_update_required'">
       Manual Update Required
     </h4>
@@ -35,7 +35,8 @@
     </p>
     <div *ngIf="$auth.env.serviceMode">
       <p>
-        To upgrade Homebridge run open a <strong>Node.js command prompt</strong> and run the following commands:
+        To upgrade Homebridge run open a <strong>Node.js command prompt as an Administrator</strong> and run the
+        following commands:
       </p>
       <pre class="p-2" style="background-color: #efefef;">hb-service stop
 npm install -g homebridge@latest homebridge-config-ui-x@latest

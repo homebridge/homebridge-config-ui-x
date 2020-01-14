@@ -20,6 +20,16 @@ export class SystemInfoWidgetComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.io.connected.subscribe(async () => {
+      this.getSystemInfo();
+    });
+
+    if (this.io.socket.connected) {
+      this.getSystemInfo();
+    }
+  }
+
+  getSystemInfo() {
     this.io.request('get-homebridge-server-info').subscribe((data) => {
       this.serverInfo = data;
     });

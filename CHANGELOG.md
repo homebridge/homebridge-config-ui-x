@@ -6,13 +6,19 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Notable Changes
 
+* **System:** Prevent in-app updates to the UI for Windows 10 users. Windows file-locking prevents online updates from completing successfully while Homebridge Config UI X is still running, this can leave Homebridge in an unstable state. After this update Windows users will need to manually stop the Homebridge service, then manually update the UI using npm. **Existing Windows 10 users:** please perform this update manually after stopping the Homebridge service!
 * **Dashboard:** Added a Clock widget, users can select the time format they wish the clock to display ([#459](https://github.com/oznu/homebridge-config-ui-x/issues/459))
-* **hb-service:** Added the ability for `hb-service` users to set the homebridge `-D` and `-R` flags, as well as the `DEBUG` and `NODE_OPTIONS` environment variables from the UI ([#472](https://github.com/oznu/homebridge-config-ui-x/issues/472))
+* **hb-service:** Added the ability for [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) users to set the Homebridge `-D` and `-R` flags, as well as the `DEBUG` and `NODE_OPTIONS` environment variables directly from the UI ([#472](https://github.com/oznu/homebridge-config-ui-x/issues/472))
+
+<p align="center">
+  <img width="600px" src="https://user-images.githubusercontent.com/3979615/72317538-b92b6780-36ed-11ea-8001-77921be18417.png">
+</p>
 
 ### Other Changes
 
-* **System:** Prevent in-app updates to the UI for Windows 10 users. Windows file-locking prevents online updates from completing successfully while Homebridge Config UI X is still running, this can leave Homebridge in an unstable state. After this update Windows users will need to manually stop the Homebridge service, then manually update the UI using npm. **Existing Windows 10 users:** please perform this update manually after stopping the Homebridge service!
 * **i18n:** Improvements to Polish language translations ([#467](https://github.com/oznu/homebridge-config-ui-x/pull/467))
+* **i18n:** Improvements to Swedish language translations ([#476](https://github.com/oznu/homebridge-config-ui-x/pull/476))
+* **Dashboard:** Node.js / npm version warning icons will now only show up if you are using an unsupported version of Node.js, the latest available version can still be viewed by hovering over the current version
 
 ### Bug Fixes
 

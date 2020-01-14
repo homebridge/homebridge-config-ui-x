@@ -191,6 +191,7 @@
     "status.widget.add.label_pairing_code": "Kod parowania",
     "status.widget.label_add_widget": "Dodaj widżet",
     "status.widget.label_clock": "Zegar",
+    "status.widget.label_clock_dateformat": "Date Format",
     "status.widget.label_clock_timeformat": "Format czasu",
     "status.widget.label_font_size": "Rozmiar czcionki",
     "status.widget.label_font_weight": "Grubość czcionki",

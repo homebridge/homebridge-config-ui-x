@@ -191,6 +191,7 @@
     "status.widget.add.label_pairing_code": "Parning kod",
     "status.widget.label_add_widget": "Lägg till Widget",
     "status.widget.label_clock": "Klocka",
+    "status.widget.label_clock_dateformat": "Date Format",
     "status.widget.label_clock_timeformat": "Tids Format",
     "status.widget.label_font_size": "Textstorlek",
     "status.widget.label_font_weight": "Teckensnitt vikt",

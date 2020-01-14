@@ -374,7 +374,10 @@ export class PluginsService {
       }
 
       const pjson = await fs.readJson(path.join(npmPkg.installPath, 'package.json'));
-      const npm = await this.parsePackageJson(pjson, npmPkg.path);
+      const npm = await this.parsePackageJson(pjson, npmPkg.path) as HomebridgePlugin & { showUpdateWarning?: boolean };
+
+      // show the update warning if the installed version is below the minimum recommended
+      npm.showUpdateWarning = semver.lt(npm.installedVersion, '6.4.1');
 
       this.npmPackage = npm;
       return npm;
@@ -520,7 +523,7 @@ export class PluginsService {
         .filter(fs.existsSync);
 
       if (windowsNpmPath.length) {
-        return [windowsNpmPath[0]];
+        return [windowsNpmPath[0], '-g'];
       } else {
         this.logger.error(`ERROR: Cannot find npm binary. You will not be able to manage plugins or update homebridge.`);
         this.logger.error(`ERROR: You might be able to fix this problem by running: npm install -g npm`);
@@ -655,18 +658,30 @@ export class PluginsService {
     client.emit('stdout', color.cyan(`DIR: ${cwd}\n\r`));
     client.emit('stdout', color.cyan(`CMD: ${command.join(' ')}\n\r\n\r`));
 
+    // setup the environment for the call
+    const env = {};
+    Object.assign(env, process.env);
+    Object.assign(env, {
+      npm_config_global_style: 'true',
+      npm_config_unsafe_perm: 'true',
+      npm_config_update_notifier: 'false',
+      npm_config_prefer_online: 'true',
+    });
+
+    // on windows we want to ensure the global prefix is the same as the install path
+    if (os.platform() === 'win32') {
+      Object.assign(env, {
+        npm_config_prefix: cwd,
+      });
+    }
+
     await new Promise((resolve, reject) => {
       const term = pty.spawn(command.shift(), command, {
         name: 'xterm-color',
         cols: 80,
         rows: 30,
         cwd,
-        env: Object.assign({
-          npm_config_global_style: 'true',
-          npm_config_unsafe_perm: 'true',
-          npm_config_update_notifier: 'false',
-          npm_config_prefer_online: 'true',
-        }, process.env),
+        env,
       });
 
       // send stdout data from the process to all clients

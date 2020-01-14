@@ -334,7 +334,20 @@ export class HomebridgeServiceHelper {
    * Start the user interface
    */
   private async runUi() {
-    await import('../main');
+    try {
+      await import('../main');
+    } catch (e) {
+      this.logger('ERROR: The user interface threw an unhandled error');
+      console.error(e);
+
+      setTimeout(() => {
+        process.exit(1);
+      }, 4500);
+
+      if (this.homebridge) {
+        this.homebridge.kill();
+      }
+    }
   }
 
   /**
