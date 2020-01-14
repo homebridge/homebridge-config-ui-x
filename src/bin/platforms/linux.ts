@@ -2,6 +2,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
+import * as si from 'systeminformation';
 
 import { HomebridgeServiceHelper } from '../hb-service';
 
@@ -33,7 +34,7 @@ export class LinuxInstaller {
    */
   public async install() {
     this.checkForRoot();
-    this.checkUser();
+    await this.checkUser();
     this.setupSudo();
 
     await this.hbService.portCheck();
@@ -154,7 +155,7 @@ export class LinuxInstaller {
    */
   private async enableService() {
     try {
-      child_process.execSync(`systemctl enable ${this.systemdServiceName}`);
+      child_process.execSync(`systemctl enable ${this.systemdServiceName} 2> /dev/null`);
     } catch (e) {
       this.hbService.logger('WARNING: failed to run "systemctl enable ..."');
     }
@@ -165,7 +166,7 @@ export class LinuxInstaller {
    */
   private async disableService() {
     try {
-      child_process.execSync(`systemctl disable ${this.systemdServiceName}`);
+      child_process.execSync(`systemctl disable ${this.systemdServiceName} 2> /dev/null`);
     } catch (e) {
       this.hbService.logger('WARNING: failed to run "systemctl disable ..."');
     }
@@ -190,13 +191,23 @@ export class LinuxInstaller {
   /**
    * Checks the user exists
    */
-  private checkUser() {
+  private async checkUser() {
     try {
       // check if user exists
-      child_process.execSync(`id ${this.hbService.asUser}`);
+      child_process.execSync(`id ${this.hbService.asUser} 2> /dev/null`);
     } catch (e) {
       // if not create the user
       child_process.execSync(`useradd -m --system ${this.hbService.asUser}`);
+    }
+
+    try {
+      // try and add the user to commonly required groups if on Raspbian
+      const osInfo = await si.osInfo();
+      if (osInfo.distro === 'Raspbian GNU/Linux') {
+        child_process.execSync(`usermod -a -G audio,bluetooth,dialout,gpio,video ${this.hbService.asUser} 2> /dev/null`);
+      }
+    } catch (e) {
+      // do nothing
     }
   }
 
