@@ -65,14 +65,13 @@ export class HomebridgeServiceHelper {
       .allowUnknownOption()
       .arguments('<install|uninstall|start|stop|restart|run|logs>')
       .option('-P, --plugin-path [path]', '', (p) => { process.env.UIX_CUSTOM_PLUGIN_PATH = p; this.homebridgeOpts.push('-P', p); })
-      .option('-R, --remove-orphans', '', () => this.homebridgeOpts.push('-R'))
       .option('-U, --user-storage-path [path]', '', (p) => this.storagePath = p)
       .option('-I, --insecure', '', () => process.env.UIX_INSECURE_MODE = '1')
-      .option('-D, --debug', 'Enable debug level logging', () => this.homebridgeOpts.push('-D'))
       .option('-S, --service-name [service name]', 'The name of the homebridge service to install or control', (p) => this.serviceName = p)
       .option('--port [port]', 'The port to set to the Homebridge UI when installing as a service', (p) => this.uiPort = parseInt(p, 10))
       .option('--user [user]', 'The user account the Homebridge service will be installed as (Linux, macOS only)', (p) => this.asUser = p)
       .option('--allow-root', '', () => this.allowRunRoot = true)
+      .option('-v, --version', 'output the version number', () => this.showVersion())
       .action((cmd) => {
         this.action = cmd;
       })
@@ -170,6 +169,15 @@ export class HomebridgeServiceHelper {
     process.env.UIX_BASE_PATH = path.resolve(__dirname, '../../');
     process.env.UIX_SERVICE_MODE = '1';
     process.env.UIX_INSECURE_MODE = '1';
+  }
+
+  /**
+   * Outputs the package version number
+   */
+  private showVersion() {
+    const pjson = fs.readJsonSync(path.resolve(__dirname, '../../', 'package.json'));
+    console.log('v' + pjson.version);
+    process.exit(0);
   }
 
   /**

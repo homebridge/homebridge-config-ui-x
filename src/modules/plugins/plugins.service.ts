@@ -272,6 +272,14 @@ export class PluginsService {
       return true;
     }
 
+    // show a warning if updating homebridge-config-ui-x on Raspberry Pi 1 / Zero
+    if (pluginName === this.configService.name && os.cpus().length === 1 && os.arch() === 'arm') {
+      client.emit('stdout', color.yellow(`***************************************************************\r\n`));
+      client.emit('stdout', color.yellow(`Please be patient while ${this.configService.name} updates.\r\n`));
+      client.emit('stdout', color.yellow(`This process may take 5-15 minutes to complete on your device.\r\n`));
+      client.emit('stdout', color.yellow(`***************************************************************\r\n\r\n`));
+    }
+
     await this.getInstalledPlugins();
     // find the plugin
     const plugin = this.installedPlugins.find(x => x.name === pluginName);
