@@ -1,15 +1,10 @@
-import { Injectable, NotFoundException, BadRequestException, UnauthorizedException, HttpException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { Logger } from '../../../../core/logger/logger.service';
 import { ConfigService } from '../../../../core/config/config.service';
 import * as rp from 'request-promise-native';
-import { machineId } from 'node-machine-id';
-import * as generateRandomUuid from 'uuid/v4';
-import * as generateUuidFromNamespace from 'uuid/v5';
 
 @Injectable()
 export class HomebridgeRingService {
-  private uuidNamespace = 'e53ffdc0-e91d-4ce1-bec2-df939d94739c';
-
   constructor(
     private configService: ConfigService,
     private logger: Logger,
@@ -33,7 +28,6 @@ export class HomebridgeRingService {
           grant_type: 'password',
           password: credentials.password,
           username: credentials.email,
-          hardware_id: await this.getHardwareId(),
         },
       });
     } catch (e) {
@@ -49,18 +43,4 @@ export class HomebridgeRingService {
       }
     }
   }
-
-  generateUuid(seed?: string) {
-    if (seed) {
-      return generateUuidFromNamespace(seed, this.uuidNamespace);
-    }
-
-    return generateRandomUuid();
-  }
-
-  async getHardwareId() {
-    const id = await machineId();
-    return this.generateUuid(id);
-  }
-
 }
