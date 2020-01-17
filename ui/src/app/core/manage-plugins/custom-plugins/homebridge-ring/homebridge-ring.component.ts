@@ -19,7 +19,6 @@ export class HomebridgeRingComponent implements OnInit {
   public phoneLastTwo: string;
   public doingLogin = false;
 
-  public loaded = false;
   public justLinked = false;
   public pluginConfig;
 
@@ -80,6 +79,7 @@ export class HomebridgeRingComponent implements OnInit {
         await this.saveConfig();
         this.linkAccountForm.reset();
         this.doingLogin = false;
+        this.twoFactorRequired = false;
       },
       (err) => {
         this.doingLogin = false;
