@@ -31,7 +31,7 @@
       </div>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="$auth.env.runningInDocker">
-      <span>Homebridge Insecure Mode <code>-I</code></span>
+      <span>Homebridge Insecure Mode (enables Accessory mode - use at your own risk!) <code>-I</code></span>
       <div class="material-switch pull-right">
         <input id="homebridgeInsecureMode" formControlName="HOMEBRIDGE_INSECURE" type="checkbox" />
         <label for="homebridgeInsecureMode" class="badge-primary"></label>
