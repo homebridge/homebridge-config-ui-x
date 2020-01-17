@@ -8,11 +8,6 @@
   </div>
 
   <div class="modal-body">
-    <div class="mt-3">
-      <markdown hrefTargetBlank class="plugin-md" [data]="schema.headerDisplay" *ngIf="schema.headerDisplay">
-      </markdown>
-    </div>
-
     <div *ngIf="!pluginConfig?.refreshToken && !(pluginConfig?.email && pluginConfig?.password)">
 
       <div class="d-flex justify-content-center">
@@ -21,31 +16,33 @@
             <h4 class="text-center primary-text mb-3"
               translate="plugins.settings.custom.homebridge-gsh.label_link_account"></h4>
 
-            <div [hidden]="doingLogin">
-              <div class="form-group" *ngIf="!twoFactorRequired">
-                <label for="ringAccountEmail">Ring Account Email</label>
-                <input formControlName="email" type="email" class="form-control" id="ringAccountEmail"
-                  autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-              </div>
-              <div class="form-group" *ngIf="!twoFactorRequired">
-                <label for="ringAccountPassword">Ring Account Password</label>
-                <input formControlName="password" type="password" class="form-control" id="ringAccountPassword"
-                  autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-                <small id="ringAccountPasswordHelp" class="form-text text-muted">
-                  Your password will not be stored or sent to any third parties apart from ring.com.
-                </small>
-              </div>
+            <div [hidden]="doingLogin" class="card p-3">
+              <ng-container *ngIf="!twoFactorRequired">
+                <div class="form-group">
+                  <label for="ringAccountEmail">Ring Account Email</label>
+                  <input formControlName="email" type="email" class="form-control" id="ringAccountEmail"
+                    autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                </div>
+                <div class="form-group">
+                  <label for="ringAccountPassword">Ring Account Password</label>
+                  <input formControlName="password" type="password" class="form-control" id="ringAccountPassword"
+                    autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                  <small id="ringAccountPasswordHelp" class="form-text text-muted">
+                    Your password will not be stored or sent to any third parties apart from ring.com.
+                  </small>
+                </div>
+              </ng-container>
               <div class="form-group" *ngIf="twoFactorRequired">
                 <label for="ringVerificationCode">Verification Code</label>
                 <input formControlName="twoFactorAuthCode" type="text" class="form-control" id="ringVerificationCode"
                   autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
                 <small id="ringVerificationCodeHelp" class="form-text text-muted">
-                  Please enter the code we sent to {{ phoneLastTwo }}.
+                  Please enter the code sent to phone ending in XX{{ phoneLastTwo }}
                 </small>
               </div>
               <div class="text-center">
                 <div class="text-danger mb-2" *ngIf="loginFailReason">{{ loginFailReason | titlecase }}</div>
-                <button type="button" class="btn btn-primary ml-0" (click)="linkAccount()"
+                <button type="submit" class="btn btn-primary ml-0" (click)="linkAccount()"
                   [disabled]="linkAccountForm.invalid">
                   {{ twoFactorRequired ? 'Verify Code' : 'Get Token' }}
                 </button>
@@ -63,12 +60,16 @@
     </div>
 
     <div class="text-center mt-1" *ngIf="pluginConfig?.refreshToken || (pluginConfig?.email && pluginConfig?.password)">
-      <i class="fas fa-check-circle primary-text" style="font-size:50px;"></i>
-      <h4 class="mt-2" translate="plugins.settings.custom.homebridge-gsh.label_account_linked">
-        Account Linked
-      </h4>
+      <div class="mt-3" *ngIf="!justLinked">
+        <markdown hrefTargetBlank class="plugin-md" [data]="schema.headerDisplay" *ngIf="schema.headerDisplay">
+        </markdown>
+      </div>
 
       <div class="mt-3" *ngIf="justLinked">
+        <i class="fas fa-check-circle primary-text" style="font-size:50px;"></i>
+        <h4 class="mt-2" translate="plugins.settings.custom.homebridge-gsh.label_account_linked">
+          Account Linked
+        </h4>
         <p class="primary-text">
           <strong translate="plugins.settings.custom.homebridge-gsh.message_homebridge_restart_required"></strong>
         </p>
