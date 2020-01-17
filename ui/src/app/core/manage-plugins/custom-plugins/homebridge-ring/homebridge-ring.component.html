@@ -10,15 +10,15 @@
   <div class="modal-body">
     <div *ngIf="!pluginConfig?.refreshToken && !(pluginConfig?.email && pluginConfig?.password)">
 
+      <markdown hrefTargetBlank class="plugin-md" [data]="schema.accountLinkingHeader"
+        *ngIf="schema.accountLinkingHeader">
+      </markdown>
+
       <div class="d-flex justify-content-center">
         <div class="col-lg-6">
           <form class="ng-bs4-validate" [formGroup]="linkAccountForm" novalidate>
             <h4 class="text-center primary-text mb-3"
               translate="plugins.settings.custom.homebridge-gsh.label_link_account"></h4>
-
-            <markdown hrefTargetBlank class="plugin-md" [data]="schema.accountLinkingHeader" *ngIf="schema.accountLinkingHeader">
-            </markdown>
-
             <div [hidden]="doingLogin" class="card p-3">
               <ng-container *ngIf="!twoFactorRequired">
                 <div class="form-group">

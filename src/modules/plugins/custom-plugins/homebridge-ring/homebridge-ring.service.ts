@@ -1,12 +1,10 @@
 import { Injectable, UnauthorizedException, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { Logger } from '../../../../core/logger/logger.service';
-import { ConfigService } from '../../../../core/config/config.service';
 import * as rp from 'request-promise-native';
 
 @Injectable()
 export class HomebridgeRingService {
   constructor(
-    private configService: ConfigService,
     private logger: Logger,
   ) { }
 
@@ -14,7 +12,6 @@ export class HomebridgeRingService {
    * Exchange the users Ring Credentials for a Refresh Token
    */
   async exchangeCredentials(credentials) {
-    console.log(credentials);
     try {
       return await rp.post('https://oauth.ring.com/oauth/token', {
         headers: {
