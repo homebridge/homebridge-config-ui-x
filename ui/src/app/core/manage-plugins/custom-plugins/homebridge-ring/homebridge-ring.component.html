@@ -1,0 +1,102 @@
+<div class="modal-content hb-plugin-settings-modal">
+  <div class="modal-header">
+    <h5 class="modal-title">Homebridge Ring</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+      (click)="activeModal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <div class="mt-3">
+      <markdown hrefTargetBlank class="plugin-md" [data]="schema.headerDisplay" *ngIf="schema.headerDisplay">
+      </markdown>
+    </div>
+
+    <div *ngIf="!pluginConfig?.refreshToken && !(pluginConfig?.email && pluginConfig?.password)">
+
+      <div class="d-flex justify-content-center">
+        <div class="col-lg-6">
+          <form class="ng-bs4-validate" [formGroup]="linkAccountForm" novalidate>
+            <h4 class="text-center primary-text mb-3"
+              translate="plugins.settings.custom.homebridge-gsh.label_link_account"></h4>
+
+            <div [hidden]="doingLogin">
+              <div class="form-group" *ngIf="!twoFactorRequired">
+                <label for="ringAccountEmail">Ring Account Email</label>
+                <input formControlName="email" type="email" class="form-control" id="ringAccountEmail"
+                  autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+              </div>
+              <div class="form-group" *ngIf="!twoFactorRequired">
+                <label for="ringAccountPassword">Ring Account Password</label>
+                <input formControlName="password" type="password" class="form-control" id="ringAccountPassword"
+                  autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                <small id="ringAccountPasswordHelp" class="form-text text-muted">
+                  Your password will not be stored or sent to any third parties apart from ring.com.
+                </small>
+              </div>
+              <div class="form-group" *ngIf="twoFactorRequired">
+                <label for="ringVerificationCode">Verification Code</label>
+                <input formControlName="twoFactorAuthCode" type="text" class="form-control" id="ringVerificationCode"
+                  autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                <small id="ringVerificationCodeHelp" class="form-text text-muted">
+                  Please enter the code we sent to {{ phoneLastTwo }}.
+                </small>
+              </div>
+              <div class="text-center">
+                <div class="text-danger mb-2" *ngIf="loginFailReason">{{ loginFailReason | titlecase }}</div>
+                <button type="button" class="btn btn-primary ml-0" (click)="linkAccount()"
+                  [disabled]="linkAccountForm.invalid">
+                  {{ twoFactorRequired ? 'Verify Code' : 'Get Token' }}
+                </button>
+              </div>
+            </div>
+            <div *ngIf="doingLogin" class="text-center mt-5 mb-5">
+              <h1>
+                <i class="primary-text fas fa-cog fa-spin"></i>
+              </h1>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="text-center mt-1" *ngIf="pluginConfig?.refreshToken || (pluginConfig?.email && pluginConfig?.password)">
+      <i class="fas fa-check-circle primary-text" style="font-size:50px;"></i>
+      <h4 class="mt-2" translate="plugins.settings.custom.homebridge-gsh.label_account_linked">
+        Account Linked
+      </h4>
+
+      <div class="mt-3" *ngIf="justLinked">
+        <p class="primary-text">
+          <strong translate="plugins.settings.custom.homebridge-gsh.message_homebridge_restart_required"></strong>
+        </p>
+      </div>
+    </div>
+
+    <div class="mt-3" *ngIf="pluginConfig?.refreshToken || (pluginConfig?.email && pluginConfig?.password)">
+      <markdown hrefTargetBlank class="plugin-md" [data]="schema.footerDisplay" *ngIf="schema.footerDisplay">
+      </markdown>
+    </div>
+
+    <div *ngIf="pluginConfig?.refreshToken || (pluginConfig?.email && pluginConfig?.password)"
+      class="card p-2 pt-3 mt-4">
+      <json-schema-form [options]="jsonFormOptions" [schema]="schema.schema" [layout]="schema.layout"
+        [form]="schema.form" [(ngModel)]="pluginConfig" framework="bootstrap-4">
+      </json-schema-form>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-elegant mr-auto" data-dismiss="modal" (click)="unlinkAccount()"
+      *ngIf="pluginConfig?.refreshToken || (pluginConfig?.email && pluginConfig?.password)"
+      translate="plugins.settings.custom.homebridge-gsh.label_unlink_account">
+    </button>
+    <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="close()"
+      [translate]="'form.button_close'">Close</button>
+    <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="saveAndClose()"
+      *ngIf="pluginConfig?.refreshToken || (pluginConfig?.email && pluginConfig?.password)"
+      [translate]="'form.button_save'">Save</button>
+  </div>
+</div>

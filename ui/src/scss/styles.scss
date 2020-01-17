@@ -156,6 +156,14 @@ button {
   color: rgba(0,0,0,.46)
 }
 
+.ng-bs4-validate {
+  .form-group {
+    input.ng-touched.ng-dirty.ng-invalid {
+      @extend .form-control.is-invalid;
+    }
+  }
+}
+
 .dropdown-toggle::after {
   display:none
 }
@@ -245,7 +253,7 @@ gridster-preview {
 
   .widget-value-label {
     @media (max-width: 850px) {
-      font-size: 13px
+      font-size: 13px;
     }
   }
 }

@@ -58,6 +58,7 @@ export class ManagePluginsService {
 
     const ref = this.modalService.open(SettingsPluginsModalComponent, {
       size: 'lg',
+      backdrop: 'static',
     });
     ref.componentInstance.pluginName = pluginName;
 

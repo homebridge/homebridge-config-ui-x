@@ -29,6 +29,7 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
 
   public monacoEditorModel: NgxEditorModel;
 
+  private lastHeight: number;
   private visualViewPortEventCallback: () => void;
 
   constructor(
@@ -46,8 +47,9 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
   ngOnInit() {
     // capture viewport events
     this.visualViewPortEventCallback = () => this.visualViewPortChanged();
+    this.lastHeight = window.innerHeight;
 
-    if (window['visualViewport']) {
+    if (window['visualViewport'] && !this.isMobile) {
       window['visualViewport'].addEventListener('resize', this.visualViewPortEventCallback, true);
       this.$md.disableTouchMove();
     }
@@ -114,12 +116,18 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
   }
 
   visualViewPortChanged() {
+    if (this.lastHeight < window['visualViewport'].height) {
+      (document.activeElement as HTMLElement).blur();
+    }
+
     if (window['visualViewport'].height < window.innerHeight) {
       // keyboard may have opened
       this.$md.enableTouchMove();
+      this.lastHeight = window['visualViewport'].height;
     } else if (window['visualViewport'].height === window.innerHeight) {
       // keyboard is closed
       this.$md.disableTouchMove();
+      this.lastHeight = window['visualViewport'].height;
     }
   }
 

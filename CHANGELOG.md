@@ -18,7 +18,10 @@ All notable changes to this project will be documented in this file. This projec
 
 * **i18n:** Improvements to Polish language translations ([#467](https://github.com/oznu/homebridge-config-ui-x/pull/467))
 * **i18n:** Improvements to Swedish language translations ([#476](https://github.com/oznu/homebridge-config-ui-x/pull/476))
+* **i18n:** Improvements to German language translations ([#482](https://github.com/oznu/homebridge-config-ui-x/pull/482))
 * **Dashboard:** Node.js / npm version warning icons will now only show up if you are using an unsupported version of Node.js, the latest available version can still be viewed by hovering over the current version
+* **Plugins**: Added seemless account linking support for the [Homebridge Honeywell Home](https://github.com/donavanbecker/homebridge-honeywell-home#readme) plugin
+* **Plugins**: Added the ability to get your [Homebridge Ring](https://github.com/dgreif/ring/tree/master/homebridge) users to get their Ring account `refreshToken` directly from the UI
 
 ### Bug Fixes
 
@@ -27,6 +30,7 @@ All notable changes to this project will be documented in this file. This projec
 * **System:** Fixed a bug that caused the UI to crash when running in debug mode in production ([#469](https://github.com/oznu/homebridge-config-ui-x/issues/469))
 * **Dashboard:** Fixed a bug where the "Plugin Status" icon was not changing when there were updates available ([#443](https://github.com/oznu/homebridge-config-ui-x/issues/443))
 * **Auth:** Fixed a warning about a depreciated option that was in use ([#473](https://github.com/oznu/homebridge-config-ui-x/issues/473))
+* **Config Editor:** Fixed a issue that prevented the on-screen keyboard from being able to be displayed after it was dismissed on an iPad Pro ([#480](https://github.com/oznu/homebridge-config-ui-x/issues/480))
 
 ## 4.7.0 (2020-01-11)
 

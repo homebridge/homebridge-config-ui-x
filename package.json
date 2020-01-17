@@ -1,7 +1,7 @@
 {
   "name": "homebridge-config-ui-x",
   "displayName": "Homebridge Config UI X",
-  "version": "4.7.1-test.23",
+  "version": "4.7.1-test.25",
   "description": "A web based management, configuration and control platform for Homebridge",
   "license": "MIT",
   "author": "oznu <dev@oz.nu>",
@@ -93,6 +93,7 @@
     "concurrently": "^5.0.2",
     "dotenv": "^8.2.0",
     "lodash": "^4.17.15",
+    "node-machine-id": "^1.1.12",
     "nodemon": "^2.0.2",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
@@ -105,6 +106,7 @@
     "tsconfig-paths": "^3.9.0",
     "tslint": "^5.20.1",
     "typescript": "3.6.4",
+    "uuid": "^3.4.0",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10",
     "webpack-node-externals": "^1.7.2"

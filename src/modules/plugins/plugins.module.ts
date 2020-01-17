@@ -5,12 +5,14 @@ import { LoggerModule } from '../../core/logger/logger.module';
 import { PluginsController } from './plugins.controller';
 import { PluginsGateway } from './plugins.gateway';
 import { ConfigModule } from '../../core/config/config.module';
+import { CustomPluginsModule } from './custom-plugins/custom-plugins.module';
 
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
     ConfigModule,
     LoggerModule,
+    CustomPluginsModule,
   ],
   providers: [
     PluginsService,
