@@ -16,6 +16,9 @@
             <h4 class="text-center primary-text mb-3"
               translate="plugins.settings.custom.homebridge-gsh.label_link_account"></h4>
 
+            <markdown hrefTargetBlank class="plugin-md" [data]="schema.accountLinkingHeader" *ngIf="schema.accountLinkingHeader">
+            </markdown>
+
             <div [hidden]="doingLogin" class="card p-3">
               <ng-container *ngIf="!twoFactorRequired">
                 <div class="form-group">
@@ -37,7 +40,7 @@
                 <input formControlName="twoFactorAuthCode" type="text" class="form-control" id="ringVerificationCode"
                   autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
                 <small id="ringVerificationCodeHelp" class="form-text text-muted">
-                  Please enter the code sent to phone ending in XX{{ phoneLastTwo }}
+                  Please enter the code sent to phone {{ phoneLastTwo }}
                 </small>
               </div>
               <div class="text-center">
