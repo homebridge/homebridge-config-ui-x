@@ -17,7 +17,7 @@
         <ng-template ngbPanelContent>
           <json-schema-form *ngIf="configSchema.schema" [options]="jsonFormOptions" [schema]="configSchema.schema"
             [layout]="configSchema.layout" [form]="configSchema.form" [(ngModel)]="block.config" framework="bootstrap-4"
-            (onChanges)="block.onChange($event)">
+            (onChanges)="block.onChange($event)" class="ng-bs4-validate">
           </json-schema-form>
           <div class="d-flex">
             <a *ngIf="pluginName !== 'homebridge-config-ui-x'" class="ml-auto red-text"

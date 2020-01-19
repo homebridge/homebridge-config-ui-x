@@ -429,7 +429,21 @@ export class PluginsService {
     }
 
     const schemaPath = path.resolve(plugin.installPath, pluginName, 'config.schema.json');
-    const configSchema = await fs.readJson(schemaPath);
+    let configSchema = await fs.readJson(schemaPath);
+
+    // check to see if this plugin implements dynamic schemas
+    if (configSchema.dynamicSchemaVersion) {
+      const dynamicSchemaPath = path.resolve(this.configService.storagePath, `.${pluginName}-v${configSchema.dynamicSchemaVersion}.schema.json`);
+      this.logger.log(`[${pluginName}] dynamic schema path: ${dynamicSchemaPath}`);
+      if (fs.existsSync(dynamicSchemaPath)) {
+        try {
+          configSchema = await fs.readJson(dynamicSchemaPath);
+          this.logger.log(`[${pluginName}] dynamic schema loaded from: ${dynamicSchemaPath}`);
+        } catch (e) {
+          this.logger.error(`[${pluginName}] Failed to load dynamic schema at ${dynamicSchemaPath}: ${e.message}`);
+        }
+      }
+    }
 
     // modify this plugins schema to set the default port number
     if (pluginName === this.configService.name) {
