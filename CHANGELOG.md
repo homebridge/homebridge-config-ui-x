@@ -21,7 +21,7 @@ All notable changes to this project will be documented in this file. This projec
 * **i18n:** Improvements to German language translations ([#482](https://github.com/oznu/homebridge-config-ui-x/pull/482))
 * **Dashboard:** Node.js / npm version warning icons will now only show up if you are using an unsupported version of Node.js, the latest available version can still be viewed by hovering over the current version
 * **Plugins**: Added seemless account linking support for the [Homebridge Honeywell Home](https://github.com/donavanbecker/homebridge-honeywell-home#readme) plugin
-* **Plugins**: Added the ability for [Homebridge Ring](https://github.com/dgreif/ring/tree/master/homebridge) users to get their Ring account `refreshToken` directly from the UI
+* **Plugins**: Added the ability for [Homebridge Ring](https://github.com/dgreif/ring/tree/master/homebridge) users to get their Ring account `refreshToken` directly from the UI ([#486](https://github.com/oznu/homebridge-config-ui-x/pull/486))
 
 ### Bug Fixes
 
