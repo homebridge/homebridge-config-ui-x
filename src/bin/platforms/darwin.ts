@@ -101,6 +101,28 @@ export class DarwinInstaller {
   }
 
   /**
+   * Rebuilds the Node.js modules
+   */
+  public async rebuild() {
+    try {
+      this.checkForRoot();
+      const npmGlobalPath = child_process.execSync('/bin/echo -n "$(npm --no-update-notifier -g prefix)/lib/node_modules"').toString('utf8');
+
+      child_process.execSync('npm rebuild --unsafe-perm', {
+        cwd: npmGlobalPath,
+        stdio: 'inherit',
+      });
+
+      await this.setNpmPermissions(npmGlobalPath);
+
+      this.hbService.logger(`Rebuilt all modules in ${npmGlobalPath} for Node.js ${process.version}.`);
+    } catch (e) {
+      console.error(e.toString());
+      this.hbService.logger(`ERROR: Failed Operation`);
+    }
+  }
+
+  /**
    * Returns the users uid and gid.
    */
   public async getId(): Promise<{ uid: number, gid: number }> {

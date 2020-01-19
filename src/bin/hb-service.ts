@@ -63,7 +63,7 @@ export class HomebridgeServiceHelper {
 
     commander
       .allowUnknownOption()
-      .arguments('<install|uninstall|start|stop|restart|run|logs>')
+      .arguments('<install|uninstall|start|stop|restart|rebuild|run|logs>')
       .option('-P, --plugin-path [path]', '', (p) => { process.env.UIX_CUSTOM_PLUGIN_PATH = p; this.homebridgeOpts.push('-P', p); })
       .option('-U, --user-storage-path [path]', '', (p) => this.storagePath = p)
       .option('-I, --insecure', '', () => process.env.UIX_INSECURE_MODE = '1')
@@ -105,6 +105,11 @@ export class HomebridgeServiceHelper {
         this.installer.restart();
         break;
       }
+      case 'rebuild': {
+        this.logger(`Rebuilding global modules for Node.js ${process.version}...`);
+        this.installer.rebuild();
+        break;
+      }
       case 'run': {
         this.launch();
         break;
@@ -128,6 +133,7 @@ export class HomebridgeServiceHelper {
         console.log('    start                            start the homebridge service');
         console.log('    stop                             stop the homebridge service');
         console.log('    restart                          restart the homebridge service');
+        console.log('    rebuild                          rebuild global Node.js modules');
         console.log('    run                              run homebridge daemon');
         console.log('    logs                             tails the homebridge service logs');
 

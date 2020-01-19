@@ -110,6 +110,30 @@ export class Win32Installer {
   }
 
   /**
+   * Rebuilds the Node.js modules
+   */
+  public async rebuild() {
+    try {
+      const npmGlobalPath = path.resolve(process.env.UIX_BASE_PATH, '..');
+
+      if (path.basename(npmGlobalPath) === 'node_modules') {
+        child_process.execSync('npm rebuild --unsafe-perm', {
+          cwd: npmGlobalPath,
+          stdio: 'inherit',
+        });
+
+        this.hbService.logger(`Rebuilt all modules in ${npmGlobalPath} for Node.js ${process.version}.`);
+      } else {
+        this.hbService.logger(`Could not determine global modules path: ${npmGlobalPath}`);
+        process.exit(1);
+      }
+    } catch (e) {
+      console.error(e.toString());
+      this.hbService.logger(`ERROR: Failed Operation`);
+    }
+  }
+
+  /**
    * Returns the users uid and gid. Not used on Windows
    */
   public async getId(): Promise<{ uid: number, gid: number }> {
