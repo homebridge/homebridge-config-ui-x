@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## NEXT
+
+### Bug Fixes
+
+* **System:** Fixed an issue causing the UI to crash when running in a FreeBSD Jailed Shell ([#488](https://github.com/oznu/homebridge-config-ui-x/issues/488))
+
 ## 4.8.0 (2020-01-18)
 
 ### Notable Changes

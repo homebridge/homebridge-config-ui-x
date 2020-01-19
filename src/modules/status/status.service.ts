@@ -230,7 +230,8 @@ export class StatusService {
    * Returns details about this Homebridge server
    */
   public async getHomebridgeServerInfo() {
-    const defaultInterface = await si.networkInterfaceDefault();
+    const defaultInterface = (os.platform() !== 'freebsd') ? await si.networkInterfaceDefault() : await undefined;
+
     return {
       serviceUser: os.userInfo().username,
       homebridgeConfigJsonPath: this.configService.configPath,
@@ -242,7 +243,7 @@ export class StatusService {
       nodeVersion: process.version,
       os: await si.osInfo(),
       time: await si.time(),
-      network: (await si.networkInterfaces()).find(x => x.iface === defaultInterface),
+      network: defaultInterface ? (await si.networkInterfaces()).find(x => x.iface === defaultInterface) : {},
     };
   }
 

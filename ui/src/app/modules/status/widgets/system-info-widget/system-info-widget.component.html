@@ -27,15 +27,14 @@
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_hostname'">Hostname</th>
           <td>{{ serverInfo.os.hostname }}</td>
         </tr>
-        <tr>
-          <th scope="row" class="text-nowrap" *ngIf="serverInfo.network.ip4">
+        <tr *ngIf="serverInfo.network.ip4">
+          <th scope="row" class="text-nowrap">
             {{ 'status.widget.systeminfo.label_ipv4' | translate }} ({{ serverInfo.network.iface }})
           </th>
           <td>{{ serverInfo.network.ip4 }}</td>
         </tr>
-        <tr>
-          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_timezone'"
-            *ngIf="serverInfo.network.ip6">
+        <tr *ngIf="serverInfo.network.ip6">
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_timezone'">
             {{ 'status.widget.systeminfo.label_ipv6' | translate }} ({{ serverInfo.network.iface }})
           </th>
           <td>{{ serverInfo.network.ip6 }}</td>
