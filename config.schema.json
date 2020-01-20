@@ -342,6 +342,23 @@
     {
       "type": "fieldset",
       "expandable": true,
+      "title": "Camera & TV Ports",
+      "items": [
+        "port_start.method",
+        {
+          "key": "port_start",
+          "description": "The Starting Port for Camera & TV Accessories"
+        },
+        port_end.method",
+        {
+          "key": "port_end",
+          "description": "The Ending Port for Camera & TV Accessories",
+        },
+        ]
+    },
+    {
+      "type": "fieldset",
+      "expandable": true,
       "title": "Log Viewer Setup",
       "items": [
         "log.method",
