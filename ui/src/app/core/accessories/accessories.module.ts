@@ -30,6 +30,9 @@ import { WindowcoveringComponent } from './types/windowcovering/windowcovering.c
 import { WindowcoveringManageComponent } from './types/windowcovering/windowcovering.manage.component';
 import { TelevisionComponent } from './types/television/television.component';
 import { ContactsensorComponent } from './types/contactsensor/contactsensor.component';
+import { BatteryserviceComponent } from './types/batteryservice/batteryservice.component';
+import { SpeakerComponent } from './types/speaker/speaker.component';
+import { SpeakerManageComponent } from './types/speaker/speaker.manage.component';
 
 import { InfoModalComponent } from './info-modal/info-modal.component';
 
@@ -40,6 +43,7 @@ import { InfoModalComponent } from './info-modal/info-modal.component';
     LightbulbManageComponent,
     FanManageComponent,
     WindowcoveringManageComponent,
+    SpeakerManageComponent,
   ],
   declarations: [
     InfoModalComponent,
@@ -63,6 +67,9 @@ import { InfoModalComponent } from './info-modal/info-modal.component';
     WindowcoveringManageComponent,
     TelevisionComponent,
     ContactsensorComponent,
+    BatteryserviceComponent,
+    SpeakerComponent,
+    SpeakerManageComponent,
   ],
   imports: [
     CommonModule,
@@ -96,6 +103,9 @@ import { InfoModalComponent } from './info-modal/info-modal.component';
     WindowcoveringManageComponent,
     TelevisionComponent,
     ContactsensorComponent,
+    BatteryserviceComponent,
+    SpeakerComponent,
+    SpeakerManageComponent,
   ],
   providers: [
     AccessoriesService,
