@@ -17,6 +17,7 @@ export class Win32Installer {
    * Installs the Windows 10 Homebridge Service
    */
   public async install() {
+    this.checkIsAdmin();
     await this.hbService.portCheck();
     await this.hbService.storagePathCheck();
     await this.hbService.configCheck();
@@ -45,15 +46,13 @@ export class Win32Installer {
    * Removes the Windows 10 Homebridge Service
    */
   public async uninstall() {
-    // download nssm.exe to help create the service
-    const nssmPath: string = await this.downloadNssm();
-    const uninstallCmd = `"${nssmPath}" remove ${this.hbService.serviceName} confirm`;
+    this.checkIsAdmin();
 
     // stop existing service
     await this.stop();
 
     try {
-      child_process.execSync(uninstallCmd);
+      child_process.execSync(`sc delete ${this.hbService.serviceName}`);
       this.hbService.logger(`Removed ${this.hbService.serviceName} Service.`);
     } catch (e) {
       console.error(e.toString());
@@ -65,15 +64,11 @@ export class Win32Installer {
    * Starts the Windows 10 Homebridge Service
    */
   public async start() {
-    // download nssm.exe to help create the service
-    const nssmPath: string = await this.downloadNssm();
-
-    // commands to run
-    const stopCmd = `"${nssmPath}" start ${this.hbService.serviceName}`;
+    this.checkIsAdmin();
 
     try {
       this.hbService.logger(`Starting ${this.hbService.serviceName} Service...`);
-      child_process.execSync(stopCmd);
+      child_process.execSync(`sc start ${this.hbService.serviceName}`);
       this.hbService.logger(`${this.hbService.serviceName} Started`);
     } catch (e) {
       this.hbService.logger(`Failed to start ${this.hbService.serviceName}`);
@@ -84,15 +79,11 @@ export class Win32Installer {
    * Stops the Windows 10 Homebridge Service
    */
   public async stop() {
-    // download nssm.exe to help create the service
-    const nssmPath: string = await this.downloadNssm();
-
-    // commands to run
-    const stopCmd = `"${nssmPath}" stop ${this.hbService.serviceName}`;
+    this.checkIsAdmin();
 
     try {
       this.hbService.logger(`Stopping ${this.hbService.serviceName} Service...`);
-      child_process.execSync(stopCmd);
+      child_process.execSync(`sc stop ${this.hbService.serviceName}`);
       this.hbService.logger(`${this.hbService.serviceName} Stopped`);
     } catch (e) {
       this.hbService.logger(`Failed to stop ${this.hbService.serviceName}`);
@@ -103,6 +94,7 @@ export class Win32Installer {
    * Restarts the Windows 10 Homebridge Service
    */
   public async restart() {
+    this.checkIsAdmin();
     await this.stop();
     setTimeout(async () => {
       await this.start();
@@ -113,6 +105,8 @@ export class Win32Installer {
    * Rebuilds the Node.js modules
    */
   public async rebuild() {
+    this.checkIsAdmin();
+
     try {
       const npmGlobalPath = path.resolve(process.env.UIX_BASE_PATH, '..');
 
@@ -141,6 +135,19 @@ export class Win32Installer {
       uid: 0,
       gid: 0,
     };
+  }
+
+  /**
+   * Checks if the current user is an admin
+   */
+  private checkIsAdmin() {
+    try {
+      child_process.execSync('fsutil dirty query %systemdrive% >nul');
+    } catch (e) {
+      this.hbService.logger('ERROR: This command must be run as an Administrator');
+      this.hbService.logger(`Node.js command prompt shortcut -> Right Click -> Run as administrator`);
+      process.exit(1);
+    }
   }
 
   /**

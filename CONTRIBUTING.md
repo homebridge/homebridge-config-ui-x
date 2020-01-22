@@ -6,6 +6,8 @@ This project is written in [TypeScript](https://www.typescriptlang.org/) and use
 
 ## Getting Setup
 
+*Note: The Raspberry Pi and similar boards do not meet the memory or CPU requirements required to setup the development environment.*
+
 First, remove any globally installed versions of `homebridge-config-ui-x` you may have installed on your development machine:
 
 ```

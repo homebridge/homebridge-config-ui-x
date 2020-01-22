@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Bug Fixes
 
 * **System:** Fixed an issue causing the UI to crash when running in a FreeBSD Jailed Shell ([#488](https://github.com/oznu/homebridge-config-ui-x/issues/488))
+* **System:** Fixed an issue that may have caused Homebridge not to restart when a certain plugin was installed when running on Docker ([#494](https://github.com/oznu/homebridge-config-ui-x/issues/494))
 
 ## 4.8.0 (2020-01-18)
 

@@ -157,7 +157,7 @@ export class ConfigService {
    */
   private setConfigForDocker() {
     // forced config
-    this.ui.restart = 'killall -9 homebridge && killall -9 homebridge-config-ui-x';
+    this.ui.restart = 'kill -15 $(pidof homebridge); sleep 3; kill -15 $(pidof homebridge-config-ui-x);';
     this.homebridgeInsecureMode = Boolean(process.env.HOMEBRIDGE_INSECURE === '1');
     this.ui.sudo = false;
     this.ui.log = {
