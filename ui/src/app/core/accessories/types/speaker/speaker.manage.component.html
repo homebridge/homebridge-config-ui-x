@@ -1,0 +1,36 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title" [innerText]="service.customName || service.serviceName"></h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+      (click)="activeModal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body text-center">
+
+    <h5>
+      <strong>
+        {{ (service.values.Mute ? 'accessories.control.label_off' : 'accessories.control.label_on') | translate }}
+      </strong>
+    </h5>
+
+    <div class="speaker-mode-control btn-group btn-group-toggle d-flex justify-content-center mb-4 mt-4" ngbRadioGroup
+      name="radioBasic" [(ngModel)]="targetMode" (change)="onTargetStateChange()">
+      <label ngbButtonLabel class="btn-primary">
+        <input ngbButton type="radio" [value]="false"> {{ 'accessories.control.label_on' | translate }}
+      </label>
+      <label ngbButtonLabel class="btn-primary">
+        <input ngbButton type="radio" [value]="true"> {{ 'accessories.control.label_off' | translate }}
+      </label>
+    </div>
+
+    <div *ngIf="targetVolume">
+      <h5 class="mb-0">{{ 'accessories.control.label_speaker_volume' | translate }}</h5>
+      <p>{{ targetVolume.value }}%</p>
+      <nouislider [min]="targetVolume.min" [max]="targetVolume.max" [step]="targetVolume.step"
+        [(ngModel)]="targetVolume.value" (ngModelChange)="onVolumeStateChange()">
+      </nouislider>
+    </div>
+
+  </div>
+</div>

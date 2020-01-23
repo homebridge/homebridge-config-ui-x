@@ -1,0 +1,31 @@
+.batterylevel-circle {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  padding: 12% 0;
+  border-radius: 50%;
+  overflow: visible;
+  font-size: 16px;
+  text-align: center;
+  margin-bottom:6px;
+  background-color: grey;
+  color: lightgrey;
+
+  @media (max-width: 575px) {
+    width: 31px;
+    font-size: 14px;
+    margin-bottom: 7px;
+  }
+}
+
+.lowbattery {
+  background-color: #FF8800;
+  color: #FFF;
+}
+
+.default {
+  background-color: #42d672;
+  color: #FFF;
+  -webkit-transition: all .15 ease-in-out;
+  transition: all .15 ease-in-out;
+}

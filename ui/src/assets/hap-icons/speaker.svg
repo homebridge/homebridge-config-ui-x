@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+ <!-- Created with Method Draw, but modified - http://github.com/duopixel/Method-Draw/ -->
+ <g>
+  <title>background</title>
+  <rect fill="none" id="canvas_background" height="34" width="34" y="-1" x="-1"/>
+  <g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">
+   <rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>
+  </g>
+ </g>
+ <g>
+  <title>speaker</title>
+  <path stroke="#7F7F7F" id="svg_12" d="m2.63366,10.44981l0,11.04296l6.25803,0l8.3897,7.72829l0,-26.49955l-8.38553,7.7283l-6.26221,0zm19.22659,12.09743c1.7013,-1.70615 2.7538,-4.07114 2.75518,-6.67943c0.00138,-2.60829 -1.05806,-4.98158 -2.75796,-6.68786m3.20067,16.57845c2.51718,-2.53001 4.07787,-6.03471 4.07506,-9.89195c0.00141,-3.86001 -1.55925,-7.3675 -4.08062,-9.8947" fill-opacity="null" stroke-opacity="null" stroke-width="2.0" fill="none"/>
+ </g>
+</svg>
