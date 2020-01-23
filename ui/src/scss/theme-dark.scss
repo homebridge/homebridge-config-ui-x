@@ -48,6 +48,10 @@
     background-color: $secondaryBackground !important;
   }
 
+  .login-card {
+    background-color: rgba($secondaryBackground, 0.97) !important;
+  }
+
   .alert-warning {
     color: $secondaryBackground;
     background-color: #ffd793;
@@ -188,10 +192,10 @@
       }
   }
 
-  .hb-plugin-settings-modal, .hb-accessories-info-modal {
+  .hb-plugin-settings-modal {
     input, select {
-      border-color: #242424; //$backgroundColor;
-      background-color: #242424;
+      border-color: #242424 !important; //$backgroundColor;
+      background-color: #242424 !important;
       color: #FFFFFF;
        
       &::placeholder {
