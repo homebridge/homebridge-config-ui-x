@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## NEXT
+
+### Notable Changes
+
+* **Accessory Control:** Added support for Speaker and Battery Service accessory types ([#500](https://github.com/oznu/homebridge-config-ui-x/pull/500))
+
+### Other Changes
+
+* **i18n:** Improvements to Russian language translations ([#502](https://github.com/oznu/homebridge-config-ui-x/pull/502))
+
 ## 4.8.1 (2020-01-22)
 
 ### Notable Changes
