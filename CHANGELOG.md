@@ -6,11 +6,14 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Notable Changes
 
-* **Accessory Control:** Added support for Speaker and Battery Service accessory types ([#500](https://github.com/oznu/homebridge-config-ui-x/pull/500))
+* **Accessory Control:** [@LaborEtArs](https://github.com/LaborEtArs) added support for Speaker and Battery Service accessory types ([#500](https://github.com/oznu/homebridge-config-ui-x/pull/500))
 
 ### Other Changes
 
 * **i18n:** Improvements to Russian language translations ([#502](https://github.com/oznu/homebridge-config-ui-x/pull/502))
+* **Accessory Control:** `CameraRTPStreamManagement` accessory types will no longer be displayed
+* **Plugins:** Prevent the dynamic `users` config for the [homebridge-hue](https://github.com/ebaauw/homebridge-hue) plugin from being deleted when using the Plugin Config GUI ([#417](https://github.com/oznu/homebridge-config-ui-x/issues/417))
+* Updated npm dependencies
 
 ## 4.8.1 (2020-01-22)
 

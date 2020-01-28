@@ -3,9 +3,9 @@
   <div class="d-flex flex-column h-100">
     <div [inlineSVG]="'/assets/hap-icons/speaker.svg'" aria-label="Speaker" class="accessory-svg"></div>
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
-    <div class="accessory-label grey-text" *ngIf="!service.values.Volume"
-      [innerText]="(service.values.Mute ? 'accessories.control.label_off' : 'accessories.control.label_on') | translate">
+    <div class="accessory-label red-text" *ngIf="service.values.Mute"
+      [innerText]="'accessories.control.label_mute' | translate">
     </div>
-    <div class="accessory-label grey-text" *ngIf="service.values.Volume">{{ service.values.Volume }}%</div>
+    <div class="accessory-label grey-text" *ngIf="!service.values.Mute">{{ service.values.Volume }}%</div>
   </div>
 </div>

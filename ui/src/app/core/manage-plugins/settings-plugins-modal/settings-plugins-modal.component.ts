@@ -144,6 +144,11 @@ export class SettingsPluginsModalComponent implements OnInit {
             ) {
               platform.__uuid__ = uuid();
 
+              // Homebridge Hue - ensure users object is preserved
+              if (this.pluginName === 'homebridge-hue') {
+                this.homebridgeHueFix(platform);
+              }
+
               const platformConfig: any = {
                 config: platform,
                 onChange: this.blockChanged(platform.__uuid__, platform.platform),
@@ -206,6 +211,22 @@ export class SettingsPluginsModalComponent implements OnInit {
       });
 
     this.saveInProgress = false;
+  }
+
+  /**
+   * Homebridge Hue - ensure users object is preserved
+   */
+  homebridgeHueFix(platform) {
+    this.configSchema.schema.properties.users = {
+      type: 'object',
+      properties: {},
+    };
+
+    for (const key of Object.keys(platform.users)) {
+      this.configSchema.schema.properties.users.properties[key] = {
+        type: 'string',
+      };
+    }
   }
 
 }
