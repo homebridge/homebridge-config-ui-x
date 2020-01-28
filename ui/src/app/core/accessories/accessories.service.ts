@@ -36,6 +36,7 @@ export class AccessoriesService {
   private hiddenTypes = [
     'InputSource',
     'CameraRTPStreamManagement',
+    'ProtocolInformation',
   ];
 
   constructor(
