@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## NEXT
+## 4.9.0 (2020-01-29)
 
 ### Notable Changes
 
@@ -11,8 +11,9 @@ All notable changes to this project will be documented in this file. This projec
 ### Other Changes
 
 * **i18n:** Improvements to Russian language translations ([#502](https://github.com/oznu/homebridge-config-ui-x/pull/502))
-* **Accessory Control:** `CameraRTPStreamManagement` accessory types will no longer be displayed
+* **i18n:** Improvements to German language translations ([#512](https://github.com/oznu/homebridge-config-ui-x/pull/512))
 * **Plugins:** Prevent the dynamic `users` config for the [homebridge-hue](https://github.com/ebaauw/homebridge-hue) plugin from being deleted when using the Plugin Config GUI ([#417](https://github.com/oznu/homebridge-config-ui-x/issues/417))
+* **Accessory Control:** `CameraRTPStreamManagement` accessory types will no longer be displayed
 * Updated npm dependencies
 
 ## 4.8.1 (2020-01-22)
