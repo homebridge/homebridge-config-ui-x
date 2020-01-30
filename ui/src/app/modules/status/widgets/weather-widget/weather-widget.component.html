@@ -22,7 +22,7 @@
           <i class="primary-text" [ngClass]="getWeatherIconClass(currentWeather.weather[0].icon)"></i>
         </h1>
         <h3>
-          {{ currentWeather.weather[0].main }}
+          {{ currentWeather.weather[0].description | titlecase }}
         </h3>
         <h2>
           {{ currentWeather.main.temp | convertTemp | number:'1.0-0' }}&deg;

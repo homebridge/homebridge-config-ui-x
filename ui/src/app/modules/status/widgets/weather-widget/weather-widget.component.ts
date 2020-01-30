@@ -1,11 +1,11 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { TranslateService } from '@ngx-translate/core';
 import { Subject, Subscription, interval } from 'rxjs';
 import * as dayjs from 'dayjs';
 
 import { WsService } from '../../../../core/ws.service';
 import { AuthService } from '../../../../core/auth/auth.service';
-
 
 @Component({
   selector: 'app-weather-widget',
@@ -25,6 +25,7 @@ export class WeatherWidgetComponent implements OnInit, OnDestroy {
     private $ws: WsService,
     public $auth: AuthService,
     private $http: HttpClient,
+    private $translate: TranslateService,
   ) { }
 
   ngOnInit() {
@@ -72,6 +73,7 @@ export class WeatherWidgetComponent implements OnInit, OnDestroy {
           id: this.widget.location.id,
           appid: 'fec67b55f7f74deaa28df89ba6a60821',
           units: 'metric',
+          lang: this.$translate.currentLang,
         },
       }),
     }).subscribe((data: any) => {

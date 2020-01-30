@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { TranslateService } from '@ngx-translate/core';
 import { Observable, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, tap, switchMap, catchError } from 'rxjs/operators';
 
@@ -14,6 +15,7 @@ export class WidgetControlComponent implements OnInit {
   constructor(
     public activeModal: NgbActiveModal,
     private $http: HttpClient,
+    private $translate: TranslateService,
   ) { }
   @Input() widget;
 
@@ -88,6 +90,7 @@ export class WidgetControlComponent implements OnInit {
             sort: 'population',
             cnt: '30',
             appid: 'b6907d289e10d714a6e88b30761fae22',
+            lang: this.$translate.currentLang,
           },
         }),
       }).pipe(
