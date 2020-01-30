@@ -50,7 +50,7 @@
           {{ 'plugins.button_update' | translate | uppercase }}
         </a>
         <a class="card-link" *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x'"
-          (click)="$plugin.uninstallPlugin(plugin.name)">
+          (click)="$plugin.uninstallPlugin(plugin.name, plugin.settingsSchema)">
           {{ 'plugins.button_uninstall' | translate | uppercase }}
         </a>
         <a class="card-link" *ngIf="!plugin.installedVersion" (click)="$plugin.installPlugin(plugin.name)">

@@ -209,7 +209,7 @@ This shows you the currently installed plugins and allows you to install, remove
 
 ![Plugin](screenshots/homebridge-config-ui-x-darkmode-plugins.png?2020-01-07)
 
-You can configure supported plugins using the graphical settings editor, removing the need to manually edit the `config.json`. Over 30 popular plugins have implimented support for this feature.
+You can configure supported plugins using the graphical settings editor, removing the need to manually edit the `config.json`. Over 40 popular plugins have implimented support for this feature.
 
 ![Plugin Settings](screenshots/homebridge-config-ui-x-darkmode-alexa-settings.png?2020-01-07)
 

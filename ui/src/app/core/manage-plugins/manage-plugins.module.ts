@@ -11,15 +11,18 @@ import { ManagePluginsService } from './manage-plugins.service';
 import { SettingsPluginsModalComponent } from './settings-plugins-modal/settings-plugins-modal.component';
 import { ManagePluginsModalComponent } from './manage-plugins-modal/manage-plugins-modal.component';
 import { CustomPluginsModule } from './custom-plugins/custom-plugins.module';
+import { UninstallPluginsModalComponent } from './uninstall-plugins-modal/uninstall-plugins-modal.component';
 
 @NgModule({
   entryComponents: [
     SettingsPluginsModalComponent,
     ManagePluginsModalComponent,
+    UninstallPluginsModalComponent,
   ],
   declarations: [
     SettingsPluginsModalComponent,
     ManagePluginsModalComponent,
+    UninstallPluginsModalComponent,
   ],
   imports: [
     CommonModule,

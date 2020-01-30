@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## NEXT
+
+### Notable Changes
+
+* **Plugins:** Added a confirmation box when uninstalling plugins
+* **Plugins:** Added an option to have a plugin's config remove from the `config.json` when the plugin is being uninstalled
+    * only plugins that implement the [Plugins Settings GUI](https://github.com/oznu/homebridge-config-ui-x/wiki/Developers:-Plugin-Settings-GUI) are support this feature
+
 ## 4.9.0 (2020-01-29)
 
 ### Notable Changes
