@@ -16,7 +16,7 @@ This plugin allows you to monitor, backup and configure your Homebridge server f
 
 For detailed instructions on how to setup Homebridge with Homebridge Config UI X as a service see the guides on the wiki:
 
-* [Setup Homebridge as service on Linux](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-&-Systemd-(Raspbian,-Ubuntu,-Debian))
+* [Setup Homebridge as service on Linux / Raspbian](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-&-Systemd-(Raspbian,-Ubuntu,-Debian))
 * [Setup Homebridge as service on Windows 10](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-on-Windows-10)
 * [Setup Homebridge as service on macOS](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-UI-on-macOS)
 

@@ -10,14 +10,14 @@
 
     <h5>
       <strong>
-        {{ (service.values.Mute ? 'accessories.control.label_mute' : 'accessories.control.label_on') | translate }}
+        {{ (service.values.Mute ? 'accessories.control.label_mute' : 'accessories.control.label_not_mute') | translate }}
       </strong>
     </h5>
 
     <div class="speaker-mode-control btn-group btn-group-toggle d-flex justify-content-center mb-4 mt-4" ngbRadioGroup
       name="radioBasic" [(ngModel)]="targetMode" (change)="onTargetStateChange()">
       <label ngbButtonLabel class="btn-primary">
-        <input ngbButton type="radio" [value]="false"> {{ 'accessories.control.label_on' | translate }}
+        <input ngbButton type="radio" [value]="false"> {{ 'accessories.control.label_not_mute' | translate }}
       </label>
       <label ngbButtonLabel class="btn-primary">
         <input ngbButton type="radio" [value]="true"> {{ 'accessories.control.label_mute' | translate }}

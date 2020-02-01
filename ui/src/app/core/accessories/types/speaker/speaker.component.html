@@ -6,6 +6,11 @@
     <div class="accessory-label red-text" *ngIf="service.values.Mute"
       [innerText]="'accessories.control.label_mute' | translate">
     </div>
-    <div class="accessory-label grey-text" *ngIf="!service.values.Mute">{{ service.values.Volume }}%</div>
+    <div class="accessory-label grey-text" *ngIf="service.values.Volume !== undefined && !service.values.Mute">
+      {{ service.values.Volume }}%
+    </div>
+    <div class="accessory-label grey-text" *ngIf="service.values.Volume === undefined && !service.values.Mute">
+      {{ 'accessories.control.label_not_mute' | translate }}
+    </div>
   </div>
 </div>

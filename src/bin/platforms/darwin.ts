@@ -101,7 +101,7 @@ export class DarwinInstaller {
   }
 
   /**
-   * Rebuilds the Node.js modules
+   * Rebuilds the Node.js modules for Homebridge Config UI X
    */
   public async rebuild() {
     try {
@@ -109,13 +109,13 @@ export class DarwinInstaller {
       const npmGlobalPath = child_process.execSync('/bin/echo -n "$(npm --no-update-notifier -g prefix)/lib/node_modules"').toString('utf8');
 
       child_process.execSync('npm rebuild --unsafe-perm', {
-        cwd: npmGlobalPath,
+        cwd: process.env.UIX_BASE_PATH,
         stdio: 'inherit',
       });
 
       await this.setNpmPermissions(npmGlobalPath);
 
-      this.hbService.logger(`Rebuilt all modules in ${npmGlobalPath} for Node.js ${process.version}.`);
+      this.hbService.logger(`Rebuilt modules in ${process.env.UIX_BASE_PATH} for Node.js ${process.version}.`);
     } catch (e) {
       console.error(e.toString());
       this.hbService.logger(`ERROR: Failed Operation`);

@@ -102,25 +102,18 @@ export class Win32Installer {
   }
 
   /**
-   * Rebuilds the Node.js modules
+   * Rebuilds the Node.js modules for Homebridge Config UI X
    */
   public async rebuild() {
     this.checkIsAdmin();
 
     try {
-      const npmGlobalPath = path.resolve(process.env.UIX_BASE_PATH, '..');
+      child_process.execSync('npm rebuild --unsafe-perm', {
+        cwd: process.env.UIX_BASE_PATH,
+        stdio: 'inherit',
+      });
 
-      if (path.basename(npmGlobalPath) === 'node_modules') {
-        child_process.execSync('npm rebuild --unsafe-perm', {
-          cwd: npmGlobalPath,
-          stdio: 'inherit',
-        });
-
-        this.hbService.logger(`Rebuilt all modules in ${npmGlobalPath} for Node.js ${process.version}.`);
-      } else {
-        this.hbService.logger(`Could not determine global modules path: ${npmGlobalPath}`);
-        process.exit(1);
-      }
+      this.hbService.logger(`Rebuilt modules in ${process.env.UIX_BASE_PATH} for Node.js ${process.version}.`);
     } catch (e) {
       console.error(e.toString());
       this.hbService.logger(`ERROR: Failed Operation`);

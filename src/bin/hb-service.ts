@@ -106,7 +106,7 @@ export class HomebridgeServiceHelper {
         break;
       }
       case 'rebuild': {
-        this.logger(`Rebuilding global modules for Node.js ${process.version}...`);
+        this.logger(`Rebuilding for Node.js ${process.version}...`);
         this.installer.rebuild();
         break;
       }
@@ -133,7 +133,7 @@ export class HomebridgeServiceHelper {
         console.log('    start                            start the homebridge service');
         console.log('    stop                             stop the homebridge service');
         console.log('    restart                          restart the homebridge service');
-        console.log('    rebuild                          rebuild global Node.js modules');
+        console.log('    rebuild                          rebuild npm modules (use after updating Node.js)');
         console.log('    run                              run homebridge daemon');
         console.log('    logs                             tails the homebridge service logs');
 

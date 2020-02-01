@@ -1,4 +1,6 @@
 import * as os from 'os';
+import * as path from 'path';
+import * as child_process from 'child_process';
 import { Logger } from './core/logger/logger.service';
 
 const logger = new Logger();
@@ -15,41 +17,64 @@ function main() {
     logger.error(`[node-pty] Node.js ${process.version}`);
     logger.error('[node-pty] Failed to load node-pty module');
     logger.error('[node-pty] This could be because the installation of this plugin did not complete successfully ' +
-      'or you may have recently upgraded Node.js to a new major version and have not reinstalled or rebuilt this plugin.');
-    logger.error('[node-pty] This can usually be fixed by uninstalling and ' +
-      'reinstalling this homebridge-config-ui-x.');
+      'or you may have recently upgraded Node.js to a new major version.');
+    logger.error('[node-pty] Follow the steps below to resolve this issue.');
+
+    try {
+      tryRebuildNodePtyModule();
+      logger.warn('[node-pty] Module rebuilt successfully (maybe) - if you are still encountering errors follow the steps below.');
+    } catch (rebuildError) {
+      logger.error('[node-pty] Failed to rebuild npm modules automatically. Manual operation is now required.');
+    }
+
+    const modulePath = path.dirname(__dirname);
 
     if ((process.env.UIX_SERVICE_MODE === '1')) {
       if (os.platform() === 'win32') {
-        logger.error('[node-pty] From the Node.js command prompt (run as Administrator) run this command to rebuild Node.js modules:\n');
+        logger.warn('[node-pty] From the Node.js command prompt (run as Administrator) run this command to rebuild npm modules:\n');
         logger.warn('hb-service rebuild\n');
       } else {
-        logger.error('[node-pty] From the terminal run this command to rebuild Node.js modules:\n');
+        logger.warn('[node-pty] From the terminal run this command to rebuild npm modules:\n');
         logger.warn('sudo hb-service rebuild\n');
       }
       throw new Error('Node.js global modules rebuild required. See log errors above.');
     } else {
       if (os.platform() === 'win32') {
-        logger.error('[node-pty] From the Node.js command prompt (run as Administrator) run these commands (exact commands may vary):\n');
+        logger.warn('[node-pty] From the Node.js command prompt (run as Administrator) run these commands (exact commands may vary):\n');
         logger.warn('npm uninstall -g homebridge-config-ui-x');
         logger.warn('npm install -g homebridge-config-ui-x\n');
       } else if (os.platform() === 'darwin') {
-        logger.error('[node-pty] From the terminal run these commands (exact commands may vary):\n');
-        logger.warn('npm uninstall -g homebridge-config-ui-x');
-        logger.warn('npm install -g --unsafe-perm homebridge-config-ui-x');
-        logger.warn('cd $(npm -g prefix)/lib/node_modules');
-        logger.warn('npm rebuild --unsafe-perm\n');
+        logger.warn('[node-pty] From the terminal run these commands (exact commands may vary):\n');
+        logger.warn(`cd ${modulePath}`);
+        logger.warn('sudo npm rebuild --unsafe-perm\n');
       } else {
-        logger.error('[node-pty] From the terminal run these commands (exact commands may vary):\n');
-        logger.warn('sudo npm uninstall -g homebridge-config-ui-x');
-        logger.warn('sudo npm install -g --unsafe-perm homebridge-config-ui-x');
-        logger.warn('cd $(sudo npm -g prefix)/lib/node_modules');
+        logger.warn('[node-pty] From the terminal run these commands (exact commands may vary):\n');
+        logger.warn(`cd ${modulePath}`);
         logger.warn('sudo npm rebuild --unsafe-perm\n');
       }
     }
     process.exit(1);
   }
 
+}
+
+function tryRebuildNodePtyModule() {
+  logger.warn('[node-pty] Trying to rebuild automatically...');
+  try {
+    child_process.execSync('npm rebuild node-pty-prebuilt-multiarch --unsafe-perm', {
+      cwd: path.dirname(__dirname),
+      stdio: 'ignore',
+    });
+  } catch (e) {
+    if (os.platform() !== 'win32') {
+      child_process.execSync('sudo -E -n npm rebuild node-pty-prebuilt-multiarch --unsafe-perm', {
+        cwd: path.dirname(__dirname),
+        stdio: 'ignore',
+      });
+    } else {
+      throw e;
+    }
+  }
 }
 
 main();
