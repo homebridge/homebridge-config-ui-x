@@ -108,7 +108,7 @@ export class DarwinInstaller {
       this.checkForRoot();
       const npmGlobalPath = child_process.execSync('/bin/echo -n "$(npm --no-update-notifier -g prefix)/lib/node_modules"').toString('utf8');
 
-      child_process.execSync('npm rebuild --unsafe-perm', {
+      child_process.execSync('npm rebuild --unsafe-perm node-pty-prebuilt-multiarch', {
         cwd: process.env.UIX_BASE_PATH,
         stdio: 'inherit',
       });

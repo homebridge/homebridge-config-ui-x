@@ -108,7 +108,7 @@ export class Win32Installer {
     this.checkIsAdmin();
 
     try {
-      child_process.execSync('npm rebuild --unsafe-perm', {
+      child_process.execSync('npm rebuild --unsafe-perm node-pty-prebuilt-multiarch', {
         cwd: process.env.UIX_BASE_PATH,
         stdio: 'inherit',
       });

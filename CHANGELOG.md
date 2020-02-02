@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Other Changes 
 
+* **i18n:** Improvements to Polish language translations ([#519](https://github.com/oznu/homebridge-config-ui-x/pull/519))
 * **hb-service:** Adjusted the [`hb-service rebuild`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) command to just rebuild the modules used by Homebridge Config UI X. This command should now work to fix the modules used by Homebridge Config UI X on any setup - not just those using `hb-service` as a process supervisor
 * **Accessory Control:** Minor tweaks to the Speaker accessory type
 
