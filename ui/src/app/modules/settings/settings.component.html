@@ -84,25 +84,35 @@
 
     <ul class="list-group mt-2">
       <li class="list-group-item d-flex justify-content-between align-items-center">
-        <span>
+        <span class="d-none d-sm-inline">
           {{ 'reset.title_clear_cached_accessories' | translate }}
           <i class="fas fa-info-circle primary-text"
             ngbTooltip="{{ 'reset.message_remove_cached_accessories' | translate }}"></i>
         </span>
         <button class="btn btn-primary waves-effect m-0" [translate]="'reset.title_clear_cached_accessories'"
           (click)="resetCachedAccessories()">
-          {{ 'reset.title_clear_cache' | translate }}
+          <span class="d-none d-sm-inline">
+            {{ 'reset.title_clear_cache' | translate }}
+          </span>
+          <span class="d-sm-none">
+            {{ 'reset.title_clear_cached_accessories' | translate }}
+          </span>
         </button>
       </li>
       <li class="list-group-item d-flex justify-content-between align-items-center">
-        <span>
+        <span class="d-none d-sm-inline">
           {{ 'reset.title_reset_homebridge_accessory' | translate | titlecase }}
           <i class="fas fa-info-circle primary-text"
             ngbTooltip="{{ 'reset.message_reset_will_unpair_from_homekit' | translate }}"></i>
         </span>
         <button class="btn btn-primary waves-effect m-0" [translate]="'reset.title_clear_cached_accessories'"
           (click)="resetHomebridgeState()">
-          {{ 'reset.title_reset' | translate }}
+          <span class="d-none d-sm-inline">
+            {{ 'reset.title_reset' | translate }}
+          </span>
+          <span class="d-sm-none">
+            {{ 'reset.title_reset_homebridge_accessory' | translate | titlecase }}
+          </span>
         </button>
       </li>
     </ul>
