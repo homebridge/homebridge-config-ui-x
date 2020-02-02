@@ -28,4 +28,10 @@ export class ServerController {
     return this.serverService.resetHomebridgeAccessory();
   }
 
+  @UseGuards(AdminGuard)
+  @Put('/reset-cached-accessories')
+  resetCachedAccessories() {
+    return this.serverService.resetCachedAccessories();
+  }
+
 }

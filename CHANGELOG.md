@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file. This projec
 * **Plugins:** Added an option to have a plugin's config removed from the `config.json` when the plugin is being uninstalled (only plugins that implement the [Plugins Settings GUI](https://github.com/oznu/homebridge-config-ui-x/wiki/Developers:-Plugin-Settings-GUI) support this feature)
 * **Dashboard:** Weather widget now supports local translations of the current weather description ([#515](https://github.com/oznu/homebridge-config-ui-x/issues/515))
 * **System:** The UI will now attempt to rebuild it's own modules after a Node.js upgrade
+* **System:** Added the ability for [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) users to clear the Homebridge cached accessories from the UI (without doing a full hard reset)
 
 ### Other Changes 
 

@@ -3,10 +3,13 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { debounceTime } from 'rxjs/operators';
 
 import { AuthService } from '../../core/auth/auth.service';
 import { ApiService } from '../../core/api.service';
-import { debounceTime } from 'rxjs/operators';
+import { ResetCachedAccessoriesModalComponent } from '../../core/reset-cached-accessories-modal/reset-cached-accessories-modal.component';
+import { ResetHomebridgeModalComponent } from '../../core/reset-homebridge-modal/reset-homebridge-modal.component';
 
 @Component({
   selector: 'app-settings',
@@ -22,6 +25,7 @@ export class SettingsComponent implements OnInit {
     private $api: ApiService,
     public $fb: FormBuilder,
     public $toastr: ToastrService,
+    private $modal: NgbModal,
     private $route: ActivatedRoute,
     private translate: TranslateService,
   ) { }
@@ -83,6 +87,18 @@ export class SettingsComponent implements OnInit {
   saveServiceModeSettings(data = this.serviceForm.value) {
     this.$api.put('/platform-tools/hb-service/homebridge-startup-settings', data).subscribe(() => {
       this.saved = true;
+    });
+  }
+
+  resetHomebridgeState() {
+    this.$modal.open(ResetHomebridgeModalComponent, {
+      size: 'lg',
+    });
+  }
+
+  resetCachedAccessories() {
+    this.$modal.open(ResetCachedAccessoriesModalComponent, {
+      size: 'lg',
     });
   }
 

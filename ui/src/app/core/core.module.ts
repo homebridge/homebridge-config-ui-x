@@ -7,10 +7,12 @@ import { HrefTargetBlankDirective } from './directives/href-target-blank.directi
 import { LongClickDirective } from './directives/longclick.directive';
 import { ResetHomebridgeModalComponent } from './reset-homebridge-modal/reset-homebridge-modal.component';
 import { TranslateModule } from '@ngx-translate/core';
+import { ResetCachedAccessoriesModalComponent } from './reset-cached-accessories-modal/reset-cached-accessories-modal.component';
 
 @NgModule({
   entryComponents: [
     ResetHomebridgeModalComponent,
+    ResetCachedAccessoriesModalComponent,
   ],
   declarations: [
     SpinnerComponent,
@@ -19,6 +21,7 @@ import { TranslateModule } from '@ngx-translate/core';
     HrefTargetBlankDirective,
     LongClickDirective,
     ResetHomebridgeModalComponent,
+    ResetCachedAccessoriesModalComponent,
   ],
   imports: [
     CommonModule,

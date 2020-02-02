@@ -29,6 +29,7 @@ export class HomebridgeServiceHelper {
   private log: fs.WriteStream;
   private homebridgeBinary: string;
   private homebridge: child_process.ChildProcessWithoutNullStreams;
+  private homebridgeStopped = true;
   private homebridgeOpts = [];
   private homebridgeCustomEnv = {};
   private uiBinary: string;
@@ -258,6 +259,12 @@ export class HomebridgeServiceHelper {
     this.startExitHandler();
     this.runHomebridge();
     this.runUi();
+
+    process.addListener('message', (event) => {
+      if (event === 'clearCachedAccessories') {
+        this.clearHomebridgeCachedAccessories();
+      }
+    });
   }
 
   /**
@@ -286,6 +293,8 @@ export class HomebridgeServiceHelper {
    * Starts homebridge as a child process, sending the log output to the homebridge.log
    */
   private runHomebridge() {
+    this.homebridgeStopped = false;
+
     if (this.homebridgeOpts.length) {
       this.logger(`Starting Homebridge with extra flags: ${this.homebridgeOpts.join(' ')}`);
     }
@@ -337,6 +346,7 @@ export class HomebridgeServiceHelper {
    * @param signal
    */
   private handleHomebridgeClose(code: number, signal: string) {
+    this.homebridgeStopped = true;
     this.logger(`Homebridge Process Ended. Code: ${code}, Signal: ${signal}`);
     setTimeout(() => {
       this.logger('Restarting Homebridge...');
@@ -587,6 +597,32 @@ export class HomebridgeServiceHelper {
       }
     } catch (e) {
       this.logger(`Failed to load startup options ${e.message}`);
+    }
+  }
+
+  /**
+   * Clears the Homebridge Cached Accessories
+   */
+  private clearHomebridgeCachedAccessories() {
+    const cachedAccessoriesPath = path.resolve(this.storagePath, 'accessories', 'cachedAccessories');
+
+    const clearAccessoriesCache = () => {
+      try {
+        if (fs.existsSync(cachedAccessoriesPath)) {
+          this.logger('Clearing Cached Homebridge Accessories...');
+          fs.unlinkSync(cachedAccessoriesPath);
+        }
+      } catch (e) {
+        this.logger(`ERROR: Failed to clear Homebridge Accessories Cache at ${cachedAccessoriesPath}`);
+        console.error(e);
+      }
+    };
+
+    if (this.homebridge && !this.homebridgeStopped) {
+      this.homebridge.once('close', clearAccessoriesCache);
+      this.homebridge.kill();
+    } else {
+      clearAccessoriesCache();
     }
   }
 

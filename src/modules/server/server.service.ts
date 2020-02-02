@@ -70,6 +70,19 @@ export class ServerService {
   }
 
   /**
+   * Clears the Homebridge Accessory Cache
+   */
+  public async resetCachedAccessories() {
+    if (this.configService.serviceMode) {
+      this.logger.warn('Sent request to clear cached accesories to hb-service');
+      process.emit('message', 'clearCachedAccessories', undefined);
+    } else {
+      this.logger.error('The reset accessories cache command is only available in service mode');
+      throw new BadRequestException('This command is only available in service mode');
+    }
+  }
+
+  /**
    * Returns a QR Code SVG
    */
   public async generateQrCode() {

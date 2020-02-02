@@ -1,0 +1,31 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title" [translate]="'reset.title_clear_cached_accessories'">Clear Cached Accessories</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+      (click)="activeModal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <h3 class="text-center primary-text" [translate]="'reset.title_warning'">Warning</h3>
+    <p class="text-center grey-text" [translate]="'reset.message_action_is_irreversible'">This action is irreversible.
+      Please read carefully before proceeding.</p>
+    <ul>
+      <li [translate]="'reset.message_remove_cached_accessories'">
+        This action will remove all cached accessories from your Homebridge instance.
+      </li>
+      <li [translate]="'reset.accessories_will_may_need_to_be_reconfigured'">
+        After performing this action some accessories may need to be reconfigured in HomeKit or re-added to your
+        automations.
+      </li>
+    </ul>
+    <div class="text-center">
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="onResetCachedAccessoriesClick()"
+        [disabled]="clicked" [translate]="'reset.title_clear_cached_accessories'">Clear Cached Accessories</button>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')"
+      [translate]="'form.button_close'">Close</button>
+  </div>
+</div>
