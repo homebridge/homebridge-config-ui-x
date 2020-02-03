@@ -131,6 +131,13 @@ export class Win32Installer {
   }
 
   /**
+   * Returns the pid of the process running on the defined port
+   */
+  public getPidOfPort(port: number) {
+    return null;
+  }
+
+  /**
    * Checks if the current user is an admin
    */
   private checkIsAdmin() {

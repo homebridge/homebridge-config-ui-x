@@ -142,6 +142,17 @@ export class DarwinInstaller {
   }
 
   /**
+   * Returns the pid of the process running on the defined port
+   */
+  public getPidOfPort(port: number) {
+    try {
+      return child_process.execSync(`lsof -n -iTCP:${port} -sTCP:LISTEN -t 2> /dev/null`).toString('utf8').trim();
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /**
    * Check the command is being run as root and we can detect the user
    */
   private checkForRoot() {

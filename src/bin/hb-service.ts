@@ -348,6 +348,9 @@ export class HomebridgeServiceHelper {
   private handleHomebridgeClose(code: number, signal: string) {
     this.homebridgeStopped = true;
     this.logger(`Homebridge Process Ended. Code: ${code}, Signal: ${signal}`);
+
+    this.checkForStaleHomebridgeProcess();
+
     setTimeout(() => {
       this.logger('Restarting Homebridge...');
       this.runHomebridge();
@@ -472,6 +475,13 @@ export class HomebridgeServiceHelper {
         await fs.writeJSON(process.env.UIX_CONFIG_PATH, currentConfig, { spaces: 4 });
       }
 
+      // ensure port is set in bridge config
+      if (currentConfig.bridge && !currentConfig.bridge.port) {
+        currentConfig.bridge.port = await this.generatePort();
+        await fs.writeJSON(process.env.UIX_CONFIG_PATH, currentConfig, { spaces: 4 });
+        this.logger(`Added missing port to Homebridge bridge block: ${currentConfig.bridge.port}`);
+      }
+
     } catch (e) {
       const backupFile = path.resolve(this.storagePath, 'config.json.invalid.' + new Date().getTime().toString());
       this.logger(`${process.env.UIX_CONFIG_PATH} does not contain valid JSON.`);
@@ -486,7 +496,7 @@ export class HomebridgeServiceHelper {
    */
   public async createDefaultConfig() {
     const username = this.generateUsername();
-    const port = Math.floor(Math.random() * (52000 - 51000 + 1) + 51000);
+    const port = await this.generatePort();
     const name = 'Homebridge ' + username.substr(username.length - 5).replace(/:/g, '');
     const pin = this.generatePin();
 
@@ -538,12 +548,59 @@ export class HomebridgeServiceHelper {
   }
 
   /**
+   * Generate a random port for Homebridge
+   */
+  private async generatePort() {
+    const randomPort = () => Math.floor(Math.random() * (52000 - 51000 + 1) + 51000);
+
+    let port = randomPort();
+    while (await tcpPortUsed.check(this.uiPort)) {
+      port = randomPort();
+    }
+
+    return port;
+  }
+
+  /**
    * Corrects the permissions on files when running the hb-service command using sudo
    */
   private async chownPath(pathToChown: fs.PathLike) {
     if (os.platform() !== 'win32' && process.getuid() === 0) {
       const { uid, gid } = await this.installer.getId();
       fs.chownSync(pathToChown, uid, gid);
+    }
+  }
+
+  /**
+   * Checks to see if there are stale homebridge processes running on the same port
+   */
+  private async checkForStaleHomebridgeProcess() {
+    if (os.platform() === 'win32') {
+      return;
+    }
+    try {
+      // load the config to get the homebridge port
+      const currentConfig = await fs.readJson(process.env.UIX_CONFIG_PATH);
+      if (!currentConfig.bridge || !currentConfig.bridge.port) {
+        return;
+      }
+
+      // check if port is still in use
+      if (!await tcpPortUsed.check(currentConfig.bridge.port)) {
+        return;
+      }
+
+      // find the pid of the process using the port
+      const pid = this.installer.getPidOfPort(currentConfig.bridge.port);
+      if (!pid) {
+        return;
+      }
+
+      // kill the stale Homebridge process
+      this.logger(`Found stale Homebridge process running on port ${currentConfig.bridge.port} with PID ${pid}, killing...`);
+      process.kill(pid, 'SIGKILL');
+    } catch (e) {
+      // do nothing
     }
   }
 

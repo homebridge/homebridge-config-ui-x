@@ -222,6 +222,10 @@ export class SettingsPluginsModalComponent implements OnInit {
       properties: {},
     };
 
+    if (!platform.users || typeof platform.users !== 'object') {
+      return;
+    }
+
     for (const key of Object.keys(platform.users)) {
       this.configSchema.schema.properties.users.properties[key] = {
         type: 'string',

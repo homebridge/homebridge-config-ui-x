@@ -37,7 +37,7 @@ export class ConfigEditorService {
     }
 
     if (!config.bridge.port) {
-      config.bridge.port = 51826;
+      config.bridge.port = Math.floor(Math.random() * (52000 - 51000 + 1) + 51000);
     }
 
     if (!config.bridge.username) {

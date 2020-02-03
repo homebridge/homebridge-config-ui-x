@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import * as os from 'os';
 import * as _ from 'lodash';
 import * as path from 'path';
+import * as https from 'https';
 import * as fs from 'fs-extra';
 import * as child_process from 'child_process';
 import * as semver from 'semver';
@@ -46,6 +47,7 @@ export class PluginsService {
 
   // setup requests with default options
   private rp = rp.defaults({
+    agent: new https.Agent({ keepAlive: true }),
     json: true,
     headers: {
       'User-Agent': this.configService.package.name,
