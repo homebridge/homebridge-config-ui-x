@@ -8,9 +8,9 @@ Supported Languages: :gb: :de: :fr: :poland: :czech_republic: :ru: :cn: :hungary
 
 Homebridge Config UI X is a web based management tool for [Homebridge](https://github.com/nfarina/homebridge) that can run either has a Homebridge plugin or a standalone service. The Homebridge Config UI X web interface allows you to manage all aspects of your Homebridge setup, including:
 
-* A fully customisable widget-based dashboard to monitor your Homebridge server
 * Installing, managing and configuring Homebridge plugins
 * Edit the Homebridge `config.json` with with advanced JSON syntax checking and structure validation
+* Monitor your Homebridge server via a fully customisable widget-based dashboard
 * View the Homebridge logs
 * View and controlling Homebridge accessories
 * and more... 
