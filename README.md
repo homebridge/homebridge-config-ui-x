@@ -10,11 +10,9 @@ Homebridge Config UI X is a web based management tool for [Homebridge](https://g
 
 * A fully customisable widget-based dashboard to monitor your Homebridge server
 * Installing, managing and configuring Homebridge plugins
-* Editing the Homebridge `config.json` using a web based editor with advanced JSON syntax checking and structure validation
-* Viewing the Homebridge logs
-* Viewing and controlling Homebridge accessories
-* Easily create a Homebridge service with automatic startup on boot using a single command on Windows 10, Linux/Raspbian and macOS (optional)
-* Fully supported on mobile devices
+* Edit the Homebridge `config.json` with with advanced JSON syntax checking and structure validation
+* View the Homebridge logs
+* View and controlling Homebridge accessories
 * and more... 
 
 ![Status](screenshots/homebridge-config-ui-x-darkmode-status.png?2020-01-07)
