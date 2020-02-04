@@ -6,18 +6,19 @@ Supported Languages: :gb: :de: :fr: :poland: :czech_republic: :ru: :cn: :hungary
 
 # Homebridge Config UI X
 
-Homebridge Config UI X is a web based management tool for [Homebridge](https://github.com/nfarina/homebridge) that can run either as a Homebridge plugin or a standalone service. The Homebridge Config UI X web interface allows you to manage all aspects of your Homebridge setup, including:
+[Homebridge Config UI X]((https://www.npmjs.com/package/homebridge-config-ui-x)) is a web based management tool for [Homebridge](https://github.com/nfarina/homebridge) that allows you to manage all aspects of your Homebridge setup.
 
-* Installing, managing and configuring Homebridge plugins
-* Edit the Homebridge `config.json` with with advanced JSON syntax checking and structure validation
+* Install and configure Homebridge plugins
+* Edit the Homebridge `config.json` with advanced JSON syntax checking and structure validation
 * Monitor your Homebridge server via a fully customisable widget-based dashboard
 * View the Homebridge logs
 * View and control Homebridge accessories
+* Restart Homebridge
 * and more... 
 
 Homebridge Config UI X also provides a tool called [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) which makes it easy to setup Homebridge as a service on Linux/Raspbian, macOS and Windows 10.
 
-![Status](screenshots/homebridge-config-ui-x-darkmode-status.png?2020-01-07)
+[![Status](screenshots/homebridge-config-ui-x-darkmode-status.png?2020-01-07)](#usage)
 
 # Installation Instructions
 
