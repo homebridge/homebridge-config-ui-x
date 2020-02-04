@@ -6,9 +6,16 @@ Supported Languages: :gb: :de: :fr: :poland: :czech_republic: :ru: :cn: :hungary
 
 # Homebridge Config UI X
 
-This is a plugin for [Homebridge](https://github.com/nfarina/homebridge). This is a fork of the work originally done by [mkellsy](https://github.com/mkellsy).
+Homebridge Config UI X is a web based management tool for [Homebridge](https://github.com/nfarina/homebridge) that can run either has a Homebridge plugin or a standalone service. The Homebridge Config UI X web interface allows you to manage all aspects of your Homebridge setup, including:
 
-This plugin allows you to monitor, backup and configure your Homebridge server from a browser.
+* A fully customisable widget-based dashboard to monitor your Homebridge server
+* Installing, managing and configuring Homebridge plugins
+* Editing the Homebridge `config.json` using a web based editor with advanced JSON syntax checking and structure validation
+* Viewing the Homebridge logs
+* Viewing and controlling Homebridge accessories
+* Easily create a Homebridge service with automatic startup on boot using a single command on Windows 10, Linux/Raspbian and macOS (optional)
+* Fully supported on mobile devices
+* and more... 
 
 ![Status](screenshots/homebridge-config-ui-x-darkmode-status.png?2020-01-07)
 
