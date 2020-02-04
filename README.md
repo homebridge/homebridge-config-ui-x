@@ -12,7 +12,7 @@ Homebridge Config UI X is a web based management tool for [Homebridge](https://g
 * Edit the Homebridge `config.json` with with advanced JSON syntax checking and structure validation
 * Monitor your Homebridge server via a fully customisable widget-based dashboard
 * View the Homebridge logs
-* View and controlling Homebridge accessories
+* View and control Homebridge accessories
 * and more... 
 
 Homebridge Config UI X also provides a tool called [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) which makes it easy to setup Homebridge as a service on Linux/Raspbian, macOS and Windows 10.
