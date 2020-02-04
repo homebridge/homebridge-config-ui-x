@@ -6,7 +6,7 @@ Supported Languages: :gb: :de: :fr: :poland: :czech_republic: :ru: :cn: :hungary
 
 # Homebridge Config UI X
 
-[Homebridge Config UI X]((https://www.npmjs.com/package/homebridge-config-ui-x)) is a web based management tool for [Homebridge](https://github.com/nfarina/homebridge) that allows you to manage all aspects of your Homebridge setup.
+[Homebridge Config UI X](https://www.npmjs.com/package/homebridge-config-ui-x) is a web based management tool for [Homebridge](https://github.com/nfarina/homebridge) that allows you to manage all aspects of your Homebridge setup.
 
 * Install and configure Homebridge plugins
 * Edit the Homebridge `config.json` with advanced JSON syntax checking and structure validation
