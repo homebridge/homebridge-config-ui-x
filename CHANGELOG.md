@@ -2,21 +2,22 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## NEXT
+## 4.10.0 (2020-02-05)
 
 ### Notable Changes
 
 * **Plugins:** Added a confirmation box when uninstalling plugins
 * **Plugins:** Added an option to have a plugin's config removed from the `config.json` when the plugin is being uninstalled (only plugins that implement the [Plugins Settings GUI](https://github.com/oznu/homebridge-config-ui-x/wiki/Developers:-Plugin-Settings-GUI) support this feature)
-* **Dashboard:** Weather widget now supports local translations of the current weather description ([#515](https://github.com/oznu/homebridge-config-ui-x/issues/515))
 * **System:** The UI will now attempt to rebuild it's own modules after a Node.js upgrade
-* **System:** Added the ability for [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) users to clear the Homebridge cached accessories from the UI (without doing a full hard reset)
+* **System:** Added the ability for [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) users to clear the Homebridge cached accessories from the UI (without doing a full Homebridge reset)
+* **Dashboard:** Weather widget now supports local translations of the current weather description ([#515](https://github.com/oznu/homebridge-config-ui-x/issues/515))
 
 ### Other Changes 
 
 * **i18n:** Improvements to Polish language translations ([#519](https://github.com/oznu/homebridge-config-ui-x/pull/519))
 * **hb-service:** Adjusted the [`hb-service rebuild`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) command to just rebuild the modules used by Homebridge Config UI X. This command should now work to fix the modules used by Homebridge Config UI X on any setup - not just those using `hb-service` as a process supervisor
 * **Accessory Control:** Minor tweaks to the Speaker accessory type
+* Updated npm dependencies
 
 ## 4.9.0 (2020-01-29)
 
