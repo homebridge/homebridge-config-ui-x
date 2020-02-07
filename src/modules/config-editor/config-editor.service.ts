@@ -73,6 +73,9 @@ export class ConfigEditorService {
 
     this.logger.log('Changes to config.json saved.');
 
+    // parse the config for ui settings
+    this.configService.parseConfig(config);
+
     return config;
   }
 

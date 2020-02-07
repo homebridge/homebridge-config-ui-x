@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## NEXT
+
+### Notable Changes
+
+* **System:** The UI no longer requires a restart to apply changes to certain settings (such as theme, temperature units, sudo etc.)
+
+### Other Changes 
+
+* **i18n:** Improvements to Polish language translations ([#519](https://github.com/oznu/homebridge-config-ui-x/pull/527))
+* **i18n:** Improvements to German language translations ([#519](https://github.com/oznu/homebridge-config-ui-x/pull/529))
+
 ## 4.10.0 (2020-02-05)
 
 ### Notable Changes

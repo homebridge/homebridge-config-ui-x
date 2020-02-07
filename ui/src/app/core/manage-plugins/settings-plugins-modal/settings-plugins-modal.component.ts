@@ -4,6 +4,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import * as uuid from 'uuid/v4';
 import { ApiService } from '../../api.service';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-settings-plugins-modal',
@@ -29,6 +30,7 @@ export class SettingsPluginsModalComponent implements OnInit {
   constructor(
     public activeModal: NgbActiveModal,
     private $api: ApiService,
+    private $auth: AuthService,
     private $toastr: ToastrService,
     private translate: TranslateService,
   ) { }
@@ -205,6 +207,11 @@ export class SettingsPluginsModalComponent implements OnInit {
           this.translate.instant('plugins.settings.toast_plugin_config_saved'),
         );
         this.activeModal.close();
+
+        // reload app settings if the config was changed for Homebridge Config UI X
+        if (this.pluginName === 'homebridge-config-ui-x') {
+          this.$auth.getAppSettings();
+        }
       })
       .catch(err => {
         this.$toastr.error(this.translate.instant('config.toast_failed_to_save_config'), this.translate.instant('toast.title_error'));

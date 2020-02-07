@@ -168,7 +168,8 @@ export class AuthService {
       } catch (e) {
         theme = 'purple';
       }
-    } else if (this.theme) {
+    }
+    if (this.theme) {
       window.document.querySelector('body').classList.remove(`config-ui-x-${this.theme}`);
     }
     this.theme = theme;

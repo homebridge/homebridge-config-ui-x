@@ -94,7 +94,15 @@ export class ConfigService {
   public instanceId: string;
 
   constructor() {
-    this.homebridgeConfig = fs.readJSONSync(this.configPath);
+    const homebridgeConfig = fs.readJSONSync(this.configPath);
+    this.parseConfig(homebridgeConfig);
+  }
+
+  /**
+   * Loads the config from the config.json
+   */
+  public parseConfig(homebridgeConfig) {
+    this.homebridgeConfig = homebridgeConfig;
     this.ui = Array.isArray(this.homebridgeConfig.platforms) ? this.homebridgeConfig.platforms.find(x => x.platform === 'config') : undefined;
 
     if (!this.ui) {
