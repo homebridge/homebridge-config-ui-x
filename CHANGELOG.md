@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Other Changes 
 
 * **System:** The UI no longer requires a restart to apply changes to certain settings (such as theme, temperature units, sudo etc.)
-* **Plugins:** Fixed duplicate descriptions for arrays in the Plugin Settings GUI ([#535](https://github.com/oznu/homebridge-config-ui-x/issues/535))
+* **Plugins:** Fixed a bug that caused duplicate help text in some circumstances ([#535](https://github.com/oznu/homebridge-config-ui-x/issues/535))
 * **i18n:** Improvements to Polish language translations ([#519](https://github.com/oznu/homebridge-config-ui-x/pull/527))
 * **i18n:** Improvements to German language translations ([#519](https://github.com/oznu/homebridge-config-ui-x/pull/529))
 * **i18n:** Improvements to Russian language translations ([#519](https://github.com/oznu/homebridge-config-ui-x/pull/531))
