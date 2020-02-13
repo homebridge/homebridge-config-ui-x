@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## NEXT
+
+### Bug Fixes
+
+**Docker:** Fixed a bug that prevented the UI from restarting correctly when running the Debian Docker image
+
 ## 4.10.1 (2020-02-12)
 
 ### Other Changes 
