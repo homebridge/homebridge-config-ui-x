@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. This projec
 
 ## NEXT
 
+### Other Changes 
+
+* **Dashboard:** Added more date formats to the Clock widget ([#463](https://github.com/oznu/homebridge-config-ui-x/issues/463))
+
 ### Bug Fixes
 
 **Docker:** Fixed a bug that prevented the UI from restarting correctly when running the Debian Docker image
