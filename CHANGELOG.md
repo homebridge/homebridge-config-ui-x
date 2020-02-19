@@ -6,7 +6,6 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Other Changes 
 
-* **UI:** Fixed the dropdown menu on very small screens ([#540](https://github.com/oznu/homebridge-config-ui-x/issues/540))
 * **Dashboard:** Added more date formats to the Clock widget ([#463](https://github.com/oznu/homebridge-config-ui-x/issues/463))
 * **Dashboard:** Adjusted method used to check if the Homebridge process is running
 * **Config Editor:** Enabled code folding
@@ -15,7 +14,8 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Bug Fixes
 
-**Docker:** Fixed a bug that prevented the UI from restarting correctly when running the Debian Docker image
+* **UI:** Fixed the dropdown menu display on very small screens ([#540](https://github.com/oznu/homebridge-config-ui-x/issues/540))
+* **Docker:** Fixed a bug that prevented the UI from restarting correctly when running the Debian Docker image
 
 ## 4.10.1 (2020-02-12)
 
