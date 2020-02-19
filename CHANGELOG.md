@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Other Changes 
 
+* **UI:** Fixed a drop down menu on very small screens ([#540](https://github.com/oznu/homebridge-config-ui-x/issues/540))
 * **Dashboard:** Added more date formats to the Clock widget ([#463](https://github.com/oznu/homebridge-config-ui-x/issues/463))
 * **Dashboard:** Adjusted method used to check if the Homebridge process is running
 * **Config Editor:** Enabled code folding
