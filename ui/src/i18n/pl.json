@@ -42,7 +42,7 @@
     "accessories.message_for_more_information": "Więcej informacji",
     "accessories.message_must_use_insecure_mode": "Aby sterować swoimi akcesoriami musisz uruchomić Homebridge w trybie <strong>niezabezpieczonym</strong>.",
     "accessories.message_please_see": "Zobacz",
-    "accessories.message_rooms_not_appear_in_homekit": "The rooms you create here will not appear in HomeKit, they are only for the organisation of accessories in Homebridge Config UI X.",
+    "accessories.message_rooms_not_appear_in_homekit": "Pomieszczenia utworzone tutaj nie będą wyświetlane w aplikacji HomeKit, są tylko dla organizacji akcesoriów w Homebridge Config UI X.",
     "accessories.title_accessories": "Akcesoria",
     "accessories.title_accessory_control_disabled": "Sterowanie akcesoriami jest wyłączone",
     "accessories.title_create_new_room": "Utwórz nowy pokój",
