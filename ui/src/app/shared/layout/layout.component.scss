@@ -22,3 +22,10 @@
 .nav-menu-icon {
   font-size: 20px;
 }
+
+.dropdown-menu {
+  @media screen and (max-width: 600px){
+    position: fixed !important;
+    top: 0;
+  }
+}
