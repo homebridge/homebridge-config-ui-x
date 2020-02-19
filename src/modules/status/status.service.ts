@@ -2,6 +2,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as rp from 'request-promise-native';
+import * as tcpPortUsed from 'tcp-port-used';
 import * as si from 'systeminformation';
 import * as semver from 'semver';
 import { Injectable } from '@nestjs/common';
@@ -214,13 +215,13 @@ export class StatusService {
    */
   private async checkHomebridgeStatus() {
     try {
-      await rp.get(`http://localhost:${this.configService.homebridgeConfig.bridge.port}`, {
-        resolveWithFullResponse: true,
-        simple: false, // <- This prevents the promise from failing on a 404
-      });
-      this.homebridgeStatus = 'up';
+      if (await tcpPortUsed.check(this.configService.homebridgeConfig.bridge.port)) {
+        this.homebridgeStatus = 'up';
+      } else {
+        this.homebridgeStatus = 'down';
+      }
     } catch (e) {
-      this.homebridgeStatus = 'down';
+      this.logger.error(`Failed to check if Homebridge is running: ${e.message}`);
     }
 
     return this.homebridgeStatus;

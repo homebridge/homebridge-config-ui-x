@@ -44,7 +44,7 @@ import { onMonacoLoad } from './core/monaco-editor.service';
         parameterHints: true,
         formatOnType: true,
         formatOnPaste: true,
-        folding: false,
+        folding: true,
         minimap: {
           enabled: false,
         },

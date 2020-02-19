@@ -2,11 +2,15 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## NEXT
+## 4.10.2 (2020-02-19)
 
 ### Other Changes 
 
 * **Dashboard:** Added more date formats to the Clock widget ([#463](https://github.com/oznu/homebridge-config-ui-x/issues/463))
+* **Dashboard:** Adjusted method used to check if the Homebridge process is running
+* **Config Editor:** Enabled code folding
+* **Accessory Control:** Added a message to the "Add Room" modal explaining that the rooms created will not appear in HomeKit
+* Updated npm dependencies
 
 ### Bug Fixes
 
