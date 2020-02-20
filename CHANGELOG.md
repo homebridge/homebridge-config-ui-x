@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 4.10.3 (2020-02-20)
+
+### Other Changes 
+
+* **Config Editor:** Ensure the bridge port number is a valid number and automatically correct it on save if not ([#553](https://github.com/oznu/homebridge-config-ui-x/issues/553))
+
+### Bug Fixes
+
+* **Dashboard:** Fixed a bug that caused Homebridge to display as "Not Running" when the bridge port number was quoted as a string in the `config.json` ([#553](https://github.com/oznu/homebridge-config-ui-x/issues/553))
+
 ## 4.10.2 (2020-02-19)
 
 ### Other Changes 

@@ -215,13 +215,13 @@ export class StatusService {
    */
   private async checkHomebridgeStatus() {
     try {
-      if (await tcpPortUsed.check(this.configService.homebridgeConfig.bridge.port)) {
-        this.homebridgeStatus = 'up';
-      } else {
-        this.homebridgeStatus = 'down';
-      }
+      await rp.get(`http://localhost:${this.configService.homebridgeConfig.bridge.port}`, {
+        resolveWithFullResponse: true,
+        simple: false, // <- This prevents the promise from failing on a 404
+      });
+      this.homebridgeStatus = 'up';
     } catch (e) {
-      this.logger.error(`Failed to check if Homebridge is running: ${e.message}`);
+      this.homebridgeStatus = 'down';
     }
 
     return this.homebridgeStatus;

@@ -554,7 +554,7 @@ export class HomebridgeServiceHelper {
     const randomPort = () => Math.floor(Math.random() * (52000 - 51000 + 1) + 51000);
 
     let port = randomPort();
-    while (await tcpPortUsed.check(this.uiPort)) {
+    while (await tcpPortUsed.check(port)) {
       port = randomPort();
     }
 
@@ -586,12 +586,12 @@ export class HomebridgeServiceHelper {
       }
 
       // check if port is still in use
-      if (!await tcpPortUsed.check(currentConfig.bridge.port)) {
+      if (!await tcpPortUsed.check(parseInt(currentConfig.bridge.port.toString(), 10))) {
         return;
       }
 
       // find the pid of the process using the port
-      const pid = this.installer.getPidOfPort(currentConfig.bridge.port);
+      const pid = this.installer.getPidOfPort(parseInt(currentConfig.bridge.port.toString(), 10));
       if (!pid) {
         return;
       }
