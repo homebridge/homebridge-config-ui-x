@@ -42,7 +42,7 @@
     "accessories.message_for_more_information": "чтобы получить больше информации",
     "accessories.message_must_use_insecure_mode": "Чтобы управлять своими аксессуарами, вы должны запустить Homebridge <strong>в небезопасном</strong> режиме.",
     "accessories.message_please_see": "Пожалуйста, посмотрите",
-    "accessories.message_rooms_not_appear_in_homekit": "The rooms you create here will not appear in HomeKit, they are only for the organisation of accessories in Homebridge Config UI X.",
+    "accessories.message_rooms_not_appear_in_homekit": "Комнаты, которые вы здесь создадите, не появятся в HomeKit, они предназначены только для организации аксессуаров в Homebridge Config UI X.",
     "accessories.title_accessories": "Аксессуары",
     "accessories.title_accessory_control_disabled": "Управление аксессуарами отключено",
     "accessories.title_create_new_room": "Создать Новую Комнату",
