@@ -7,6 +7,8 @@ All notable changes to this project will be documented in this file. This projec
 ### Other Changes 
 
 * **Config Editor:** Ensure the bridge port number is a valid number and automatically correct it on save if not ([#553](https://github.com/oznu/homebridge-config-ui-x/issues/553))
+* **i18n:** Improvements to Polish language translations ([#551](https://github.com/oznu/homebridge-config-ui-x/pull/551))
+* **i18n:** Improvements to Russian language translations ([#552](https://github.com/oznu/homebridge-config-ui-x/pull/552))
 
 ### Bug Fixes
 
