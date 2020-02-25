@@ -5,7 +5,14 @@ All notable changes to this project will be documented in this file. This projec
 
 ## NEXT
 
+### Notable Changes
+
+* **New Feature:** Added a new feature to allow users to backup/restore their entire Homebridge instance
+
+### Other Changes 
+
 * **i18n:** Improvements to Russian language translations ([#554](https://github.com/oznu/homebridge-config-ui-x/pull/554))
+* **i18n:** Improvements to German language translations ([#555](https://github.com/oznu/homebridge-config-ui-x/pull/555))
 
 ## 4.10.3 (2020-02-20)
 
