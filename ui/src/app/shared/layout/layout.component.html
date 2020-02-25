@@ -76,6 +76,10 @@
             <a class="dropdown-item waves-effect waves-light" (click)="resetHomebridgeState()" *ngIf="$auth.user.admin">
               {{ 'reset.label_reset_homebridge' | translate | titlecase }}
             </a>
+            <a class="dropdown-item waves-effect waves-light" (click)="backupRestoreHomebridge()"
+              *ngIf="$auth.user.admin">
+              Backup / Restore
+            </a>
             <div class="dropdown-divider" *ngIf="$auth.user.admin"></div>
             <a class="dropdown-item waves-effect waves-light" (click)="openUiSettings()" *ngIf="$auth.user.admin">
               {{ 'menu.label_ui_settings' | translate }}

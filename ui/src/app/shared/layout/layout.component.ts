@@ -4,6 +4,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { AuthService } from '../../core/auth/auth.service';
 import { ResetHomebridgeModalComponent } from '../../core/reset-homebridge-modal/reset-homebridge-modal.component';
+import { BackupRestoreComponent } from '../../core/backup-restore/backup-restore.component';
 import { ManagePluginsService } from '../../core/manage-plugins/manage-plugins.service';
 
 @Component({
@@ -26,6 +27,13 @@ export class LayoutComponent implements OnInit {
   resetHomebridgeState() {
     this.$modal.open(ResetHomebridgeModalComponent, {
       size: 'lg',
+    });
+  }
+
+  backupRestoreHomebridge() {
+    this.$modal.open(BackupRestoreComponent, {
+      size: 'lg',
+      backdrop: 'static',
     });
   }
 

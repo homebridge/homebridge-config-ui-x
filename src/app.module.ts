@@ -12,6 +12,7 @@ import { ConfigEditorModule } from './modules/config-editor/config-editor.module
 import { AuthModule } from './core/auth/auth.module';
 import { ServerModule } from './modules/server/server.module';
 import { PlatformToolsModule } from './modules/platform-tools/platform-tools.module';
+import { BackupModule } from './modules/backup/backup.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { PlatformToolsModule } from './modules/platform-tools/platform-tools.mod
     AccessoriesModule,
     ConfigEditorModule,
     PlatformToolsModule,
+    BackupModule,
     LogModule,
   ],
   controllers: [AppController],

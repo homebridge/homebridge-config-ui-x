@@ -261,8 +261,13 @@ export class HomebridgeServiceHelper {
     this.runUi();
 
     process.addListener('message', (event) => {
-      if (event === 'clearCachedAccessories') {
-        this.clearHomebridgeCachedAccessories();
+      switch (event) {
+        case 'clearCachedAccessories': {
+          return this.clearHomebridgeCachedAccessories();
+        }
+        case 'postBackupRestoreRestart': {
+          return this.postBackupRestoreRestart();
+        }
       }
     });
   }
@@ -681,6 +686,21 @@ export class HomebridgeServiceHelper {
     } else {
       clearAccessoriesCache();
     }
+  }
+
+  /**
+   * Send SIGKILL to Homebridge after a restore is completed to prevent the
+   * Homebridge cached accessories being regenerated
+   */
+  private postBackupRestoreRestart() {
+    if (this.homebridge) {
+      this.logger('Sending SIGKILL to Homebridge');
+      this.homebridge.kill('SIGKILL');
+    }
+
+    setTimeout(() => {
+      process.kill(process.pid, 'SIGKILL');
+    }, 500);
   }
 
 }

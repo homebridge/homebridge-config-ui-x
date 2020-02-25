@@ -29,11 +29,13 @@ module.exports = {
     "commander": "commander",
     "fastify": "fastify",
     "fastify-static": "fastify-static",
+    "fastify-multipart": "fastify-multipart",
     "fs-extra": "fs-extra",
     "helmet": "helmet",
     "semver": "semver",
     "systeminformation": "systeminformation",
-    "tcp-port-used": "tcp-port-used"
+    "tcp-port-used": "tcp-port-used",
+    "tar": "tar"
   },
   node: {
     console: false,

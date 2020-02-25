@@ -8,11 +8,13 @@ import { LongClickDirective } from './directives/longclick.directive';
 import { ResetHomebridgeModalComponent } from './reset-homebridge-modal/reset-homebridge-modal.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { ResetCachedAccessoriesModalComponent } from './reset-cached-accessories-modal/reset-cached-accessories-modal.component';
+import { BackupRestoreComponent } from './backup-restore/backup-restore.component';
 
 @NgModule({
   entryComponents: [
     ResetHomebridgeModalComponent,
     ResetCachedAccessoriesModalComponent,
+    BackupRestoreComponent,
   ],
   declarations: [
     SpinnerComponent,
@@ -22,6 +24,7 @@ import { ResetCachedAccessoriesModalComponent } from './reset-cached-accessories
     LongClickDirective,
     ResetHomebridgeModalComponent,
     ResetCachedAccessoriesModalComponent,
+    BackupRestoreComponent,
   ],
   imports: [
     CommonModule,

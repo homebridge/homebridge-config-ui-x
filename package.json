@@ -1,7 +1,7 @@
 {
   "name": "homebridge-config-ui-x",
   "displayName": "Homebridge Config UI X",
-  "version": "4.10.3",
+  "version": "4.11.0-test.2",
   "description": "A web based management, configuration and control platform for Homebridge",
   "license": "MIT",
   "author": "oznu <dev@oz.nu>",
@@ -47,6 +47,7 @@
     "commander",
     "fastify",
     "fastify-static",
+    "fastify-multipart",
     "fs-extra",
     "helmet",
     "reflect-metadata",
@@ -66,6 +67,7 @@
     "commander": "^2.20.3",
     "dayjs": "^1.8.20",
     "fastify": "^2.12.0",
+    "fastify-multipart": "^1.0.5",
     "fastify-static": "^2.6.0",
     "fs-extra": "^8.1.0",
     "helmet": "^3.21.2",
@@ -78,6 +80,7 @@
     "semver": "^6.3.0",
     "systeminformation": "^4.22.1",
     "tail": "^2.0.3",
+    "tar": "^6.0.1",
     "tcp-port-used": "^1.0.1"
   },
   "devDependencies": {
@@ -88,6 +91,7 @@
     "@types/fs-extra": "^8.1.0",
     "@types/node": "^12.12.27",
     "@types/socket.io": "^2.1.4",
+    "@types/tar": "^4.0.3",
     "bash-color": "0.0.4",
     "buffer-shims": "^1.0.0",
     "concurrently": "^5.1.0",

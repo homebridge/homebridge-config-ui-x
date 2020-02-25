@@ -2,6 +2,7 @@ import './self-check';
 
 import * as path from 'path';
 import * as fastify from 'fastify';
+import * as fastifyMultipart from 'fastify-multipart';
 import * as helmet from 'helmet';
 import * as fs from 'fs-extra';
 import { NestFactory } from '@nestjs/core';
@@ -26,9 +27,13 @@ async function bootstrap() {
     } : false,
   });
 
+  const fAdapter = new FastifyAdapter(server);
+
+  fAdapter.register(fastifyMultipart);
+
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter(server),
+    fAdapter,
     {
       logger: startupConfig.debug ? new Logger() : false,
       httpsOptions: startupConfig.httpsOptions,
