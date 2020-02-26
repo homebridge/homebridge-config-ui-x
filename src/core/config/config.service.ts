@@ -174,7 +174,14 @@ export class ConfigService {
   /**
    * Checks to see if the UI requires a restart due to changed ui or bridge settings
    */
-  public uiRestartRequired() {
+  public async uiRestartRequired(): Promise<boolean> {
+    // if the ui version has changed on disk, a restart is required
+    const currentPackage = await fs.readJson(path.resolve(process.env.UIX_BASE_PATH, 'package.json'));
+    if (currentPackage.version !== this.package.version) {
+      return true;
+    }
+
+    // if the ui or bridge config has changed, a restart is required
     return !(_.isEqual(this.ui, this.uiFreeze) && _.isEqual(this.homebridgeConfig.bridge, this.bridgeFreeze));
   }
 
