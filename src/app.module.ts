@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { LoggerModule } from './core/logger/logger.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AppGateway } from './app.gateway';
 import { ConfigModule } from './core/config/config.module';
 import { PluginsModule } from './modules/plugins/plugins.module';
 import { UsersModule } from './modules/users/users.module';
@@ -29,7 +30,12 @@ import { BackupModule } from './modules/backup/backup.module';
     BackupModule,
     LogModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [
+    AppController,
+  ],
+  providers: [
+    AppService,
+    AppGateway,
+  ],
 })
 export class AppModule { }

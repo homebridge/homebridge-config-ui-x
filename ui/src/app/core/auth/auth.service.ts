@@ -106,6 +106,17 @@ export class AuthService {
     }
   }
 
+  checkToken() {
+    return this.$api.get('/auth/check').toPromise()
+      .catch((err: any) => {
+        if (err.status === 401) {
+          // token is no longer valid, do logout
+          console.error('Current token is not valid');
+          this.logout();
+        }
+      });
+  }
+
   setLogoutTimer() {
     clearTimeout(this.logoutTimer);
     if (!this.$jwtHelper.isTokenExpired(this.token)) {
@@ -130,17 +141,6 @@ export class AuthService {
       return false;
     }
     return (this.user && this.token && !this.$jwtHelper.isTokenExpired(this.token));
-  }
-
-  refreshToken() {
-    return this.$api.get('/api/auth/token').toPromise()
-      .then((resp: any) => {
-        if (!this.validateToken(resp.access_token)) {
-          throw new Error('Invalid username or password.');
-        } else {
-          window.localStorage.setItem(environment.jwt.tokenKey, resp.access_token);
-        }
-      });
   }
 
   getAppSettings() {

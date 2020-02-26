@@ -1,7 +1,8 @@
-import { Controller, Post, Body, Get } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthDto } from './auth.dto';
 import { ConfigService } from '../config/config.service';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
@@ -23,6 +24,12 @@ export class AuthController {
   @Post('/noauth')
   getToken() {
     return this.authService.generateNoAuthToken();
+  }
+
+  @UseGuards(AuthGuard())
+  @Get('/check')
+  checkAuth() {
+    return { status: 'OK' };
   }
 
 }

@@ -51,7 +51,7 @@
     <div class="text-center" *ngIf="selectedFile">
       <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="onRestoreBackupClick()"
         [disabled]="clicked">
-        <i *ngIf="clicked" class="fa fa-circle-notch fa-spin"></i>
+        <span *ngIf="clicked"><i class="fa fa-circle-notch fa-spin"></i> Uploading...</span>
         <span *ngIf="!clicked">Restore Backup</span>
       </button>
     </div>
@@ -59,7 +59,7 @@
 
   <div [hidden]="!restoreStarted" id="plugin-log-output" class="modal-body"></div>
 
-  <div class="modal-footer" *ngIf="!restoreStarted">
+  <div class="modal-footer" *ngIf="!restoreStarted || restoreFailed === true">
     <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')"
       [translate]="'form.button_close'">Close</button>
   </div>

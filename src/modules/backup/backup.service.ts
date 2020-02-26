@@ -34,10 +34,12 @@ export class BackupService {
     // create a copy of the storage directory in the temp path
     await fs.copy(this.configService.storagePath, path.resolve(backupDir, 'storage'), {
       filter: (filePath) => (![
-        'nssm.exe',
-        'node_modules',
-        '.docker.env',
-        'startup.sh',
+        'nssm.exe',           // windows hb-service
+        'homebridge.log',     // hb-service
+        'logs',               // docker
+        'node_modules',       // docker
+        'startup.sh',         // docker
+        '.docker.env',        // docker
       ].includes(path.basename(filePath))), // list of files not to include in the archive
     });
 
@@ -59,6 +61,13 @@ export class BackupService {
       gzip: true,
       file: backupPath,
       cwd: backupDir,
+      filter: (filePath, stat) => {
+        if (stat.size > 1e+7) {
+          this.logger.warn(`Backup is skipping "${filePath}" because it is larger than 10MB.`);
+          return false;
+        }
+        return true;
+      },
     }, [
       'storage', 'plugins.json', 'info.json',
     ]);
@@ -104,6 +113,15 @@ export class BackupService {
   }
 
   /**
+   * Removes the temporary directory used for the restore
+   */
+  async removeRestoreDirectory() {
+    if (this.restoreDirectory) {
+      return await fs.remove(this.restoreDirectory);
+    }
+  }
+
+  /**
    * Restores the uploaded backup
    */
   async restoreFromBackup(payload, client) {
@@ -111,9 +129,37 @@ export class BackupService {
       throw new BadRequestException();
     }
 
+    // check info.json exists
+    if (!await fs.pathExists(path.resolve(this.restoreDirectory, 'info.json'))) {
+      await this.removeRestoreDirectory();
+      throw new Error('Uploaded file is not a valid Homebridge Backup Archive.');
+    }
+
+    // check plugins.json exists
+    if (!await fs.pathExists(path.resolve(this.restoreDirectory, 'plugins.json'))) {
+      await this.removeRestoreDirectory();
+      throw new Error('Uploaded file is not a valid Homebridge Backup Archive.');
+    }
+
+    // check storage exists
+    if (!await fs.pathExists(path.resolve(this.restoreDirectory, 'storage'))) {
+      await this.removeRestoreDirectory();
+      throw new Error('Uploaded file is not a valid Homebridge Backup Archive.');
+    }
+
+    // load info.json
+    const backupInfo = await fs.readJson(path.resolve(this.restoreDirectory, 'info.json'));
+
+    // display backup archive information
+    client.emit('stdout', color.cyan('Backup Archive Information\r\n'));
+    client.emit('stdout', `Source Node.js Version: ${backupInfo.node}\r\n`);
+    client.emit('stdout', `Source Homebridge Config UI X Version: v${backupInfo.uix}\r\n`);
+    client.emit('stdout', `Source Platform: ${backupInfo.platform}\r\n`);
+    client.emit('stdout', `Created: ${backupInfo.timestamp}\r\n`);
+
     // start restore
     this.logger.warn(`Starting backup restore...`);
-    client.emit('stdout', color.cyan('Restoring backup...\r\n\r\n'));
+    client.emit('stdout', color.cyan('\r\nRestoring backup...\r\n\r\n'));
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     // restore files
@@ -181,7 +227,7 @@ export class BackupService {
     await fs.writeJson(this.configService.configPath, restoredConfig, { spaces: 4 });
 
     // remove temp files
-    await fs.remove(this.restoreDirectory);
+    await this.removeRestoreDirectory();
 
     client.emit('stdout', color.green('\r\nRestore Complete!\r\n'));
 

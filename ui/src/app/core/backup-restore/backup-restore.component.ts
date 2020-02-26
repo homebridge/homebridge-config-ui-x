@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { saveAs } from 'file-saver';
@@ -14,11 +14,12 @@ import { WsService } from '../ws.service';
   templateUrl: './backup-restore.component.html',
   styleUrls: ['./backup-restore.component.scss'],
 })
-export class BackupRestoreComponent implements OnInit {
+export class BackupRestoreComponent implements OnInit, OnDestroy {
   public clicked = false;
   public selectedFile: File;
   public restoreInProgress = false;
   public restoreStarted = false;
+  public restoreFailed = false;
 
   private term = new Terminal();
   private termTarget: HTMLElement;
@@ -81,9 +82,17 @@ export class BackupRestoreComponent implements OnInit {
   }
 
   async startRestore() {
-    await this.io.request('do-restore').toPromise();
-    this.restoreInProgress = false;
-    this.$toastr.success('Backup Archive Restored', 'Success');
+    await this.io.request('do-restore').subscribe(
+      (res) => {
+        this.restoreInProgress = false;
+        this.$toastr.success('Backup Archive Restored', 'Success');
+      },
+      (err) => {
+        this.restoreFailed = true;
+        this.$toastr.error('Restore Failed', 'Error');
+      },
+    );
+
   }
 
   handleRestoreFileInput(files: FileList) {
@@ -106,5 +115,8 @@ export class BackupRestoreComponent implements OnInit {
     );
   }
 
+  ngOnDestroy() {
+    this.io.end();
+  }
 
 }
