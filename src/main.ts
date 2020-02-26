@@ -29,7 +29,11 @@ async function bootstrap() {
 
   const fAdapter = new FastifyAdapter(server);
 
-  fAdapter.register(fastifyMultipart);
+  fAdapter.register(fastifyMultipart, {
+    limits: {
+      files: 1,
+    },
+  });
 
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,

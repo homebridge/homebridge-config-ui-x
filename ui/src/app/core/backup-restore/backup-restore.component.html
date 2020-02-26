@@ -1,58 +1,42 @@
 <div class="modal-content">
   <div class="modal-header">
-    <h5 class="modal-title">Backup / Restore</h5>
+    <h5 class="modal-title" [translate]="'backup.title_backup_restore'"></h5>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"
       (click)="activeModal.dismiss('Cross click')" *ngIf="!restoreInProgress">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body" *ngIf="!restoreStarted">
-    <h4 class="text-center">Backup</h4>
-    <p>
-      Download a backup archive of your entire Homebridge environment. This will backup the entire contents of your
-      Homebridge storage directory which you can later restore on any platform capable of running Homebridge Config UI
-      X.
-    </p>
-    <p>
-      Plugins not hosted on npm, or plugins installed directly from GitHub will not be backed up or restored.
-    </p>
-    <p class="primary-text">
-      Backup archives contain sensative information and should not be shared with others.
-    </p>
+    <h4 class="text-center" [translate]="'backup.title_backup'"></h4>
+    <p [translate]="'backup.message_backup_help_one'"></p>
+    <p [translate]="'backup.message_backup_help_two'"></p>
+    <p class="primary-text" [translate]="'backup.message_backup_warning'"></p>
     <div class="text-center">
       <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="onDownloadBackupClick()"
         [disabled]="clicked">
         <i *ngIf="clicked" class="fa fa-circle-notch fa-spin"></i>
-        <span *ngIf="!clicked">Download Backup Archive</span>
+        <span *ngIf="!clicked" [translate]="'backup.button_download_backup_archive'"></span>
       </button>
     </div>
     <hr>
-    <h4 class="text-center">Restore</h4>
-    <p>
-      Restore a backup archive you previously made using Homebridge Config UI X. Your Homebridge config, cached
-      accessories, HomeKit pairings and Homebridge Config UI X user accounts will be restored. Any Homebridge plugins
-      you had installed will also be downloaded from the npm registry.
-    </p>
-    <p>
-      You will need to login to Homebridge Config UI X again after doing a restore using the credentials from the
-      restored instance.
-    </p>
-
-
+    <h4 class="text-center" [translate]="'backup.title_restore'"></h4>
+    <p [translate]="'backup.message_restore_help_one'"></p>
+    <p [translate]="'backup.message_restore_help_two'"></p>
     <div class="custom-file">
       <input type="file" class="custom-file-input" id="restoreFileUpload" accept="application/gzip, .gz"
         (change)="handleRestoreFileInput($event.target.files)">
       <label class="custom-file-label"
-        for="restoreFileUpload">{{ selectedFile?.name || 'Choose backup file to restore...' }}</label>
+        for="restoreFileUpload">{{ selectedFile?.name || 'backup.label_choose_backup_file_to_restore' | translate }}</label>
     </div>
-    <p class="primary-text mt-3" *ngIf="selectedFile">
-      Restoring from a backup will irreversibly overwrite the current Homebridge configuration.
-    </p>
+    <p class="primary-text mt-3" *ngIf="selectedFile" [translate]="'backup.message_restore_warning'"></p>
     <div class="text-center" *ngIf="selectedFile">
       <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="onRestoreBackupClick()"
         [disabled]="clicked">
-        <span *ngIf="clicked"><i class="fa fa-circle-notch fa-spin"></i> Uploading...</span>
-        <span *ngIf="!clicked">Restore Backup</span>
+        <span *ngIf="clicked">
+          <i class="fa fa-circle-notch fa-spin"></i>
+          {{ 'backup.label_uploading' | translate }}
+        </span>
+        <span *ngIf="!clicked" [translate]="'backup.button_restore_backup'"></span>
       </button>
     </div>
   </div>
@@ -66,6 +50,6 @@
 
   <div class="modal-footer" *ngIf="!restoreInProgress && restoreStarted">
     <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="postBackupRestart()">
-      Restart Homebridge</button>
+      {{ 'menu.tooltip_restart' | translate }} Homebridge</button>
   </div>
 </div>

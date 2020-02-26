@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { TranslateService } from '@ngx-translate/core';
 import { saveAs } from 'file-saver';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
@@ -30,6 +31,7 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
   constructor(
     private $route: Router,
     public activeModal: NgbActiveModal,
+    private translate: TranslateService,
     public $toastr: ToastrService,
     private $api: ApiService,
     private $ws: WsService,
@@ -53,10 +55,14 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
         saveAs(res.body, archiveName);
         this.clicked = false;
         this.activeModal.close();
-        this.$toastr.success('Backup Archive Created', 'Success');
+        this.$toastr.success(
+          this.translate.instant('backup.message_backup_archive_created'),
+          this.translate.instant('toast.title_success'),
+        );
       },
       (err) => {
         this.clicked = false;
+        this.$toastr.error(this.translate.instant('backup.message_backup_download_failed'), this.translate.instant('toast.title_error'));
       },
     );
   }
@@ -76,6 +82,7 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
         this.clicked = false;
       },
       (err) => {
+        this.$toastr.error(this.translate.instant('backup.message_restore_failed'), this.translate.instant('toast.title_error'));
         this.clicked = false;
       },
     );
@@ -85,11 +92,11 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
     await this.io.request('do-restore').subscribe(
       (res) => {
         this.restoreInProgress = false;
-        this.$toastr.success('Backup Archive Restored', 'Success');
+        this.$toastr.success(this.translate.instant('backup.message_backup_restored'), this.translate.instant('toast.title_success'));
       },
       (err) => {
         this.restoreFailed = true;
-        this.$toastr.error('Restore Failed', 'Error');
+        this.$toastr.error(this.translate.instant('backup.message_restore_failed'), this.translate.instant('toast.title_error'));
       },
     );
 

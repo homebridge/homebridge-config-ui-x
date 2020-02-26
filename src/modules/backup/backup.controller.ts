@@ -21,9 +21,6 @@ export class BackupController {
   @Post('/restore')
   restoreBackkup(@Req() req, @Res() res) {
     req.multipart(async (field, file, filename, encoding, mimetype) => {
-      if (mimetype !== 'application/x-gzip') {
-        return res.code(400).send('Invalid File Type');
-      }
       this.backupService.uploadBackupRestore(file);
     }, (err) => {
       if (err) {

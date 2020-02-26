@@ -99,12 +99,17 @@ export class BackupService {
    * File upload handler
    */
   async uploadBackupRestore(file) {
+    // clear restore directory
+    this.restoreDirectory = undefined;
+
     // prepare a temp working directory
     const backupDir = await fs.mkdtemp(path.join(os.tmpdir(), 'homebridge-backup-'));
 
     // create a write stream and pipe the upload into it
     file.pipe(tar.x({
       cwd: backupDir,
+    }).on('error', (err) => {
+      this.logger.error(err);
     }));
 
     file.on('end', () => {
