@@ -14,6 +14,7 @@ Supported Languages: :gb: :de: :fr: :poland: :czech_republic: :ru: :cn: :hungary
 * View the Homebridge logs
 * View and control Homebridge accessories
 * Restart Homebridge
+* Backup and Restore your Homebridge instance
 * and more... 
 
 Homebridge Config UI X also provides a tool called [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) which makes it easy to setup Homebridge as a service on Linux/Raspbian, macOS and Windows 10.

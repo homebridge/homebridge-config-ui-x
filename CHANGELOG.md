@@ -5,14 +5,37 @@ All notable changes to this project will be documented in this file. This projec
 
 ## NEXT
 
+### Backup / Restore Feature
+
+This release comes with a new feature that allows users to backup and restore their entire Homebridge instance.
+
+<p align="center">
+  <img width="600px" src="https://user-images.githubusercontent.com/3979615/75332950-5f67b100-58d9-11ea-9da8-72faf2145892.png">
+</p>
+
+The backup and restore process works in such a way that users should be able to use the feature roll back to a previous state, or transfer their current Homebridge setup to a new server without the need to re-pair with HomeKit.
+
+Highlights:
+
+* Full backup of your Homebridge storage, persist and accessories folders
+* Migrate your Homebridge instance to a new platform or server with ease
+* Rollback your existing instance in seconds (if you made a full backup first)
+* The backup is a standard .tar.gz archive (this means manual restores or extracting a single file is possible)
+* Works on all platforms that are supported by Homebridge Config UI X including Docker, macOS, Windows 10, Linux and Raspbian
+* The restore process will install any missing plugins (provided they are published to npm)
+
 ### Notable Changes
 
-* **New Feature:** Added a new feature to allow users to backup/restore their entire Homebridge instance
+* **hb-service:** When running under Homebridge using the [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) process supervisor, the following changes have been made to the *Restart* action from the UI:
+  * If no changes have been made to the Homebridge Config UI X, or the `bridge` sections in the `config.json`, just the Homebridge process will be restarted
+  * If changes have been made to either of those sections, both the UI and the Homebridge processes will be restarted as per normal
+  * This change will significantly decrease the Homebridge restart time on lower powered devices
+  * No changes have been made to the `hb-service restart` command executed via the Terminal
 
 ### Other Changes 
 
 * **i18n:** Improvements to Russian language translations ([#554](https://github.com/oznu/homebridge-config-ui-x/pull/554))
-* **i18n:** Improvements to German language translations ([#555](https://github.com/oznu/homebridge-config-ui-x/pull/555))
+* **i18n:** Improvements to German language translations ([#555](https://github.com/oznu/homebridge-config-ui-x/pull/555), [#559](https://github.com/oznu/homebridge-config-ui-x/pull/559))
 
 ## 4.10.3 (2020-02-20)
 
@@ -101,9 +124,7 @@ All notable changes to this project will be documented in this file. This projec
 * **Dashboard:** Added a Clock widget, users can select the time format they wish the clock to display ([#459](https://github.com/oznu/homebridge-config-ui-x/issues/459))
 * **hb-service:** Added the ability for [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) users to set the Homebridge `-D` and `-R` flags, as well as the `DEBUG` and `NODE_OPTIONS` environment variables directly from the UI ([#472](https://github.com/oznu/homebridge-config-ui-x/issues/472))
 
-<p align="center">
-  <img width="600px" src="https://user-images.githubusercontent.com/3979615/72317538-b92b6780-36ed-11ea-8001-77921be18417.png">
-</p>
+https://user-images.githubusercontent.com/3979615/72317538-b92b6780-36ed-11ea-8001-77921be18417.png
 
 ### Other Changes
 
@@ -129,9 +150,7 @@ All notable changes to this project will be documented in this file. This projec
 
 This release comes with a brand new status dashboard that features a fully customisable, widget-based design. Users can decide which widgets they wish to enable and position and resize them as they like.
 
-<p align="center">
-  <img width="600px" src="https://user-images.githubusercontent.com/3979615/71886653-b16d3f80-3190-11ea-9ff8-49dc4ae4fff0.png">
-</p>
+https://user-images.githubusercontent.com/3979615/71886653-b16d3f80-3190-11ea-9ff8-49dc4ae4fff0.png
 
 New widgets include:
 
@@ -152,9 +171,7 @@ This release expands the `hb-service` command to support macOS and Linux in addi
 
 Running `hb-service install` will setup Homebridge and Homebridge Config UI X to run as a service with auto-start on boot. The same command works across Linux, macOS and Windows 10.
 
-<p align="center">
-  <img width="600px" src="https://user-images.githubusercontent.com/3979615/71888439-4291e580-3194-11ea-8687-a3d58f94ba47.gif">
-</p>
+https://user-images.githubusercontent.com/3979615/71888439-4291e580-3194-11ea-8687-a3d58f94ba47.gif
 
 Notable Features:
 
@@ -169,9 +186,7 @@ The config editor (non-mobile) has had the Ace Editor replaced with the [Microso
 
 This allow for much more powerful JSON syntax checking, more helpful error messages and the new ability to detect duplicate keys in object (like when a second platforms[] array is added by mistake!).
 
-<p align="center">
-  <img width="600px" src="https://user-images.githubusercontent.com/3979615/71890579-b635f180-3198-11ea-98ab-cc7b7263afd9.gif">
-</p>
+https://user-images.githubusercontent.com/3979615/71890579-b635f180-3198-11ea-98ab-cc7b7263afd9.gif
 
 In addition:
 

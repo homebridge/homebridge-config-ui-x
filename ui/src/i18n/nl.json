@@ -58,7 +58,7 @@
     "backup.message_backup_warning": "Backup archives contain sensative information and should not be shared with others.",
     "backup.message_restore_failed": "Restore Failed",
     "backup.message_restore_help_one": "Restore a backup archive you previously made using Homebridge Config UI X. Your Homebridge config, cached accessories, HomeKit pairings and Homebridge Config UI X user accounts will be restored. Any Homebridge plugins you had installed will also be downloaded from the npm registry.",
-    "backup.message_restore_help_two": "You will need to login to Homebridge Config UI X again after doing a restore using the credentials from the estored instance.",
+    "backup.message_restore_help_two": "You will need to login to Homebridge Config UI X after doing a restore using the credentials from the restored instance.",
     "backup.message_restore_warning": "Restoring from a backup will irreversibly overwrite the current Homebridge configuration.",
     "backup.title_backup": "Backup",
     "backup.title_backup_restore": "Backup / Restore",

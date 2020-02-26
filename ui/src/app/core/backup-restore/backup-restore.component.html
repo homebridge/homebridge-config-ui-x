@@ -1,4 +1,4 @@
-<div class="modal-content">
+<div class="modal-content hb-backup-modal">
   <div class="modal-header">
     <h5 class="modal-title" [translate]="'backup.title_backup_restore'"></h5>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"
@@ -12,7 +12,7 @@
     <p [translate]="'backup.message_backup_help_two'"></p>
     <p class="primary-text" [translate]="'backup.message_backup_warning'"></p>
     <div class="text-center">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="onDownloadBackupClick()"
+      <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="onDownloadBackupClick()"
         [disabled]="clicked">
         <i *ngIf="clicked" class="fa fa-circle-notch fa-spin"></i>
         <span *ngIf="!clicked" [translate]="'backup.button_download_backup_archive'"></span>
@@ -30,7 +30,7 @@
     </div>
     <p class="primary-text mt-3" *ngIf="selectedFile" [translate]="'backup.message_restore_warning'"></p>
     <div class="text-center" *ngIf="selectedFile">
-      <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="onRestoreBackupClick()"
+      <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="onRestoreBackupClick()"
         [disabled]="clicked">
         <span *ngIf="clicked">
           <i class="fa fa-circle-notch fa-spin"></i>

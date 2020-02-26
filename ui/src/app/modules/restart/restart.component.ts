@@ -50,7 +50,7 @@ export class RestartComponent implements OnInit, OnDestroy {
   }
 
   checkIfServerUp() {
-    this.checkDelay = TimerObservable.create(3000).subscribe(() => {
+    this.checkDelay = TimerObservable.create(5000).subscribe(() => {
       // listen to homebridge-status events to see when it's back online
       this.io.socket.on('homebridge-status', (data) => {
         if (data.status === 'up') {
