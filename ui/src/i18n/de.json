@@ -58,7 +58,7 @@
     "backup.message_backup_warning": "Backup-Archive enthalten sensible Informationen und sollten daher nicht mit anderen geteilt werden.",
     "backup.message_restore_failed": "Wiederherstellung fehlgeschlagen",
     "backup.message_restore_help_one": "Stelle ein Backup-Archiv wieder her, welches du mit  Homebridge Config UI X erstellt hast. Deine Konfiguration, Geräte, HomeKit-Pairings und Homebridge Config UI X Benutzerkonten werden wiederhergestellt. Jedes installierte Homebridge-Plugin wird ebenfalls vom npm Registry heruntergeladen.",
-    "backup.message_restore_help_two": "Du musst dich erneut mit deinen Anmeldeinformationen aus der wiederhergestellten Instanz in Homebridge Config UI X nach einer Backup-Wiederherstellung anmelden.",
+    "backup.message_restore_help_two": "Du musst dich erneut nach einer Backup-Wiederherstellung mit deinen Anmeldeinformationen aus der wiederhergestellten Instanz in Homebridge Config UI X anmelden.",
     "backup.message_restore_warning": "Das Wiederherstellen eines Backups überschreibt unwiderruflich die aktuelle Homebridge-Konfiguration.",
     "backup.title_backup": "Backup",
     "backup.title_backup_restore": "Backup / Wiederherstellen",
