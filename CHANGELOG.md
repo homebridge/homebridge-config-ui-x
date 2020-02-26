@@ -24,6 +24,14 @@ Highlights:
 * Works on all platforms that are supported by Homebridge Config UI X including Docker, macOS, Windows 10, Linux and Raspbian
 * The restore process will install any missing plugins (provided they are published to npm)
 
+### Notable Changes
+
+* **hb-service:** When running under Homebridge using the [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) process supervisor, the following changes have been made to the *Restart* action from the UI:
+  * If no changes have been made to the Homebridge Config UI X, or the `bridge` sections in the `config.json`, just the Homebridge process will be restarted
+  * If changes have been made to either of those sections, both the UI and the Homebridge processes will be restarted as per normal
+  * This change will significantly decrease the Homebridge restart time on lower powered devices
+  * No changes have been made to the `hb-service restart` command executed via the Terminal
+
 ### Other Changes 
 
 * **i18n:** Improvements to Russian language translations ([#554](https://github.com/oznu/homebridge-config-ui-x/pull/554))

@@ -257,13 +257,27 @@ export class HomebridgeServiceHelper {
 
     // start homebridge
     this.startExitHandler();
-    this.runHomebridge();
+
+    // delay the launch of homebridge on Raspberry Pi 1/Zero by 20 seconds
+    if (os.cpus().length === 1 && os.arch() === 'arm') {
+      this.logger(`Delaying Homebridge startup by 20 seconds on low powered server`);
+      setTimeout(() => {
+        this.runHomebridge();
+      }, 20000);
+    } else {
+      this.runHomebridge();
+    }
+
+    // start the ui
     this.runUi();
 
     process.addListener('message', (event) => {
       switch (event) {
         case 'clearCachedAccessories': {
           return this.clearHomebridgeCachedAccessories();
+        }
+        case 'restartHomebridge': {
+          return this.restartHomebridge();
         }
         case 'postBackupRestoreRestart': {
           return this.postBackupRestoreRestart();
@@ -682,9 +696,28 @@ export class HomebridgeServiceHelper {
 
     if (this.homebridge && !this.homebridgeStopped) {
       this.homebridge.once('close', clearAccessoriesCache);
-      this.homebridge.kill();
+      this.restartHomebridge();
     } else {
       clearAccessoriesCache();
+    }
+  }
+
+  /**
+   * Standard SIGTERM restart for Homebridge
+   */
+  private restartHomebridge() {
+    if (this.homebridge) {
+      this.logger('Sending SIGTERM to Homebridge');
+      this.homebridge.kill('SIGTERM');
+
+      setTimeout(() => {
+        if (!this.homebridgeStopped) {
+          try {
+            this.logger('Sending SIGKILL to Homebridge');
+            this.homebridge.kill('SIGKILL');
+          } catch (e) { }
+        }
+      }, 5100);
     }
   }
 

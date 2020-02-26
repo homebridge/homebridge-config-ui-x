@@ -4,6 +4,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as crypto from 'crypto';
 import * as semver from 'semver';
+import * as _ from 'lodash';
 
 export interface HomebridgeConfig {
   bridge: {
@@ -87,6 +88,9 @@ export class ConfigService {
     homebridgePackagePath?: string;
   };
 
+  private bridgeFreeze: this['homebridgeConfig']['bridge'];
+  private uiFreeze: this['ui'];
+
   public secrets: {
     secretKey: string;
   };
@@ -103,6 +107,11 @@ export class ConfigService {
    */
   public parseConfig(homebridgeConfig) {
     this.homebridgeConfig = homebridgeConfig;
+
+    if (!this.homebridgeConfig.bridge) {
+      this.homebridgeConfig.bridge = {} as this['homebridgeConfig']['bridge'];
+    }
+
     this.ui = Array.isArray(this.homebridgeConfig.platforms) ? this.homebridgeConfig.platforms.find(x => x.platform === 'config') : undefined;
 
     if (!this.ui) {
@@ -131,6 +140,8 @@ export class ConfigService {
 
     this.secrets = this.getSecrets();
     this.instanceId = this.getInstanceId();
+
+    this.freezeUiSettings();
   }
 
   /**
@@ -158,6 +169,30 @@ export class ConfigService {
       theme: this.ui.theme || 'auto',
       serverTimestamp: new Date().toISOString(),
     };
+  }
+
+  /**
+   * Checks to see if the UI requires a restart due to changed ui or bridge settings
+   */
+  public uiRestartRequired() {
+    return !(_.isEqual(this.ui, this.uiFreeze) && _.isEqual(this.homebridgeConfig.bridge, this.bridgeFreeze));
+  }
+
+  /**
+   * Freeze a copy of the initial ui config and homebridge port
+   */
+  private freezeUiSettings() {
+    if (!this.uiFreeze) {
+      // freeze ui
+      this.uiFreeze = {} as this['ui'];
+      Object.assign(this.uiFreeze, this.ui);
+    }
+
+    if (!this.bridgeFreeze) {
+      // freeze bridge port
+      this.bridgeFreeze = {} as this['homebridgeConfig']['bridge'];
+      Object.assign(this.bridgeFreeze, this.homebridgeConfig.bridge);
+    }
   }
 
   /**

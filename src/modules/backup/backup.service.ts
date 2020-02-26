@@ -255,12 +255,6 @@ export class BackupService {
         return child_process.execSync('killall -9 homebridge; kill -9 $(pidof homebridge-config-ui-x);');
       }
 
-      // if standalone mode
-      if (this.configService.ui.standalone && this.configService.runningInLinux) {
-        child_process.execSync('killall -9 homebridge;');
-        return process.kill(process.pid, 'SIGKILL');
-      }
-
       // if running as a fork, kill the parent homebridge process
       if (process.connected) {
         process.kill(process.ppid, 'SIGKILL');

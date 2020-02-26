@@ -27,6 +27,12 @@ export class ServerService {
   public async restartServer() {
     this.logger.log('Homebridge restart request received');
 
+    if (this.configService.serviceMode && !this.configService.uiRestartRequired()) {
+      this.logger.log('UI / Bridge settings have not changed; only restarting Homebridge process');
+      process.emit('message', 'restartHomebridge', undefined);
+      return { ok: true, command: 'SIGTERM' };
+    }
+
     setTimeout(() => {
       if (this.configService.ui.restart) {
         this.logger.log(`Executing restart command: ${this.configService.ui.restart}`);
