@@ -252,7 +252,12 @@ export class BackupService {
 
       // if running in docker
       if (this.configService.runningInDocker) {
-        return child_process.execSync('killall -9 homebridge; kill -9 $(pidof homebridge-config-ui-x);');
+        try {
+          return child_process.execSync('killall -9 homebridge; kill -9 $(pidof homebridge-config-ui-x);');
+        } catch (e) {
+          this.logger.error(e);
+          this.logger.error('Failed to restart Homebridge');
+        }
       }
 
       // if running as a fork, kill the parent homebridge process
@@ -266,9 +271,47 @@ export class BackupService {
         return process.kill(process.pid, 'SIGKILL');
       }
 
+      // if running in standalone mode, need to find the pid of homebridge and kill it
+      if (os.platform() === 'linux' && this.configService.ui.standalone) {
+        try {
+          // try get pid by port
+          const getPidByPort = (port: number): number => {
+            try {
+              return parseInt(child_process.execSync(
+                `fuser ${port}/tcp 2>/dev/null`,
+              ).toString('utf8').trim(), 10);
+            } catch (e) {
+              return null;
+            }
+          };
+
+          // try get pid by name
+          const getPidByName = (): number => {
+            try {
+              return parseInt(child_process.execSync(`pidof homebridge`).toString('utf8').trim(), 10);
+            } catch (e) {
+              return null;
+            }
+          };
+
+          const homebridgePid = getPidByPort(this.configService.homebridgeConfig.bridge.port) || getPidByName();
+
+          if (homebridgePid) {
+            process.kill(homebridgePid, 'SIGKILL');
+            return process.kill(process.pid, 'SIGKILL');
+          }
+        } catch (e) {
+          // just proceed to the users restart command
+        }
+      }
+
       // try the users restart command
       if (this.configService.ui.restart) {
-        return child_process.exec(this.configService.ui.restart);
+        return child_process.exec(this.configService.ui.restart, (err) => {
+          if (err) {
+            this.logger.log('Restart command exited with an error. Failed to restart Homebridge.');
+          }
+        });
       }
 
       // if all else fails just kill the current process

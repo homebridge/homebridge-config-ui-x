@@ -2,8 +2,7 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-
-## NEXT
+## 4.11.0 (2020-02-27)
 
 ### Backup / Restore Feature
 
@@ -34,8 +33,10 @@ Highlights:
 
 ### Other Changes 
 
-* **i18n:** Improvements to Russian language translations ([#554](https://github.com/oznu/homebridge-config-ui-x/pull/554))
-* **i18n:** Improvements to German language translations ([#555](https://github.com/oznu/homebridge-config-ui-x/pull/555), [#559](https://github.com/oznu/homebridge-config-ui-x/pull/559))
+* **i18n:** Improvements to Russian language translations ([#554](https://github.com/oznu/homebridge-config-ui-x/pull/554), [#564](https://github.com/oznu/homebridge-config-ui-x/pull/564))
+* **i18n:** Improvements to German language translations ([#555](https://github.com/oznu/homebridge-config-ui-x/pull/555), [#559](https://github.com/oznu/homebridge-config-ui-x/pull/559), [#563](https://github.com/oznu/homebridge-config-ui-x/pull/563), [#565](https://github.com/oznu/homebridge-config-ui-x/pull/565))
+* **i18n:** Improvements to Swedish language translations ([#561](https://github.com/oznu/homebridge-config-ui-x/pull/561))
+* **i18n:** Improvements to Polish language translations ([#562](https://github.com/oznu/homebridge-config-ui-x/pull/562))
 
 ## 4.10.3 (2020-02-20)
 
