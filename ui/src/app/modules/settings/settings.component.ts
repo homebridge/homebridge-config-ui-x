@@ -31,10 +31,10 @@ export class SettingsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    if (this.$auth.env.runningInDocker) {
-      this.initDockerForm();
-    } else if (this.$auth.env.serviceMode) {
+    if (this.$auth.env.serviceMode) {
       this.initServiceModeForm();
+    } else if (this.$auth.env.runningInDocker) {
+      this.initDockerForm();
     }
   }
 

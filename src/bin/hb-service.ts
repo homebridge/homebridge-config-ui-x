@@ -26,13 +26,21 @@ export class HomebridgeServiceHelper {
   public storagePath;
   public allowRunRoot = false;
   public asUser;
-  private log: fs.WriteStream;
+  private log: fs.WriteStream | NodeJS.WriteStream;
   private homebridgeBinary: string;
   private homebridge: child_process.ChildProcessWithoutNullStreams;
   private homebridgeStopped = true;
   private homebridgeOpts = [];
   private homebridgeCustomEnv = {};
   private uiBinary: string;
+
+  // send logs to stdout instead of the homebridge.log
+  private stdout: boolean;
+
+  // oznu/docker-homebridge options
+  private docker: boolean;
+  private uid: number;
+  private gid: number;
 
   public uiPort = 8581;
 
@@ -72,6 +80,10 @@ export class HomebridgeServiceHelper {
       .option('--port [port]', 'The port to set to the Homebridge UI when installing as a service', (p) => this.uiPort = parseInt(p, 10))
       .option('--user [user]', 'The user account the Homebridge service will be installed as (Linux, macOS only)', (p) => this.asUser = p)
       .option('--allow-root', '', () => this.allowRunRoot = true)
+      .option('--uid <number>', '', (i) => this.uid = parseInt(i, 10))
+      .option('--gid <number>', '', (i) => this.gid = parseInt(i, 10))
+      .option('--stdout', '', () => this.stdout = true)
+      .option('--docker', '', () => this.docker = true)
       .option('-v, --version', 'output the version number', () => this.showVersion())
       .action((cmd) => {
         this.action = cmd;
@@ -191,6 +203,11 @@ export class HomebridgeServiceHelper {
    * Opens the log file stream
    */
   private async startLog() {
+    if (this.stdout === true) {
+      this.log = process.stdout;
+      return;
+    }
+
     // work out the log path
     this.logger(`Logging to ${this.logPath}`);
 
@@ -327,6 +344,23 @@ export class HomebridgeServiceHelper {
     Object.assign(env, process.env);
     Object.assign(env, this.homebridgeCustomEnv);
 
+    // child process spawn options
+    const childProcessOpts: child_process.SpawnOptionsWithoutStdio = {
+      env,
+      windowsHide: true,
+    };
+
+    // spawn homebridge as a different user (probably for docker)
+    if (this.allowRunRoot && this.uid && this.gid) {
+      childProcessOpts.uid = this.uid;
+      childProcessOpts.gid = this.gid;
+    }
+
+    // fix docker permission if running on docker
+    if (this.docker) {
+      this.fixDockerPermissions();
+    }
+
     // launch the homebridge process
     this.homebridge = child_process.spawn(process.execPath,
       [
@@ -338,10 +372,7 @@ export class HomebridgeServiceHelper {
         this.storagePath,
         ...this.homebridgeOpts,
       ],
-      {
-        env,
-        windowsHide: true,
-      },
+      childProcessOpts,
     );
 
     this.logger(`Started Homebridge with PID: ${this.homebridge.pid}`);
@@ -734,6 +765,18 @@ export class HomebridgeServiceHelper {
     setTimeout(() => {
       process.kill(process.pid, 'SIGKILL');
     }, 500);
+  }
+
+  /**
+   * Fix the permission on the docker storage directory
+   * This is only used when running in the oznu/docker-homebridge docker container
+   */
+  private fixDockerPermissions() {
+    try {
+      child_process.execSync(`chown -R ${this.uid}:${this.gid} "${this.storagePath}"`);
+    } catch (e) {
+      // do nothing
+    }
   }
 
 }

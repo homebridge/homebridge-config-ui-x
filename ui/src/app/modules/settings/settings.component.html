@@ -8,7 +8,7 @@
 
   <h5 class="primary-text">Startup Options</h5>
 
-  <div class="row mt-3" *ngIf="$auth.env.runningInDocker">
+  <div class="row mt-3" *ngIf="$auth.env.runningInDocker && !$auth.env.serviceMode">
     <div class="col-md-12">
       <div class="alert alert-danger" role="alert" *ngIf="!$auth.env.ableToConfigureSelf">
         {{'platform.docker.settings.message_image_upgrade_required' | translate}} <a target="_blank"
@@ -30,7 +30,8 @@
         <label for="homebridgeDebugMode" class="badge-primary"></label>
       </div>
     </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="$auth.env.runningInDocker">
+    <li class="list-group-item d-flex justify-content-between align-items-center"
+      *ngIf="$auth.env.runningInDocker && !$auth.env.serviceMode">
       <span>
         Homebridge Insecure Mode
         <span class="d-none d-md-inline"> / Enable Accessory Control </span>
