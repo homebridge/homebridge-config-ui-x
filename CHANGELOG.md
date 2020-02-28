@@ -6,7 +6,8 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Notable Changes
 
-* **hb-service:** Added the ability to toggle Homebridge insecure mode (`-I`, `--insecure`) from the UI when running under [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command).
+* **hb-service:** Added the ability to toggle Homebridge insecure mode (`-I`, `--insecure`) from the UI when running under [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command)
+* **Dashboard:** Added a configurable option to each widget to determine if it should be shown in the mobile/compact view ([#560](https://github.com/oznu/homebridge-config-ui-x/issues/560))
 
 ### Other Changes
 
