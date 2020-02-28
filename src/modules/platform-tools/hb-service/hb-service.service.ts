@@ -22,12 +22,15 @@ export class HbServiceService {
         return {
           HOMEBRIDGE_DEBUG: settings.debugMode,
           HOMEBRIDGE_REMOVE_ORPHANS: settings.removeOrphans,
+          HOMEBRIDGE_INSECURE: typeof settings.insecureMode === 'boolean' ? settings.insecureMode : this.configService.homebridgeInsecureMode,
           ENV_DEBUG: settings.env.DEBUG,
           ENV_NODE_OPTIONS: settings.env.NODE_OPTIONS,
         };
 
       } else {
-        return {};
+        return {
+          HOMEBRIDGE_INSECURE: this.configService.homebridgeInsecureMode,
+        };
       }
     } catch (e) {
       return {};
@@ -38,10 +41,14 @@ export class HbServiceService {
    * Sets the Homebridge startup settings
    */
   async setHomebridgeStartupSettings(data) {
+    // restart ui on next restart
+    this.configService.hbServiceUiRestartRequired = true;
+
     // format the settings payload
     const settings = {
       debugMode: data.HOMEBRIDGE_DEBUG,
       removeOrphans: data.HOMEBRIDGE_REMOVE_ORPHANS,
+      insecureMode: data.HOMEBRIDGE_INSECURE,
       env: {
         DEBUG: data.ENV_DEBUG ? data.ENV_DEBUG : undefined,
         NODE_OPTIONS: data.ENV_NODE_OPTIONS ? data.ENV_NODE_OPTIONS : undefined,

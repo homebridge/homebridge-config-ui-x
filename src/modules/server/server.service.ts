@@ -55,6 +55,9 @@ export class ServerService {
    * Preserves plugin config.
    */
   public async resetHomebridgeAccessory() {
+    // restart ui on next restart
+    this.configService.hbServiceUiRestartRequired = true;
+
     const configFile = await this.configEditorService.getConfigFile();
 
     // generate new random username and pin

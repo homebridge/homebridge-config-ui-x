@@ -48,6 +48,9 @@ export class ConfigService {
   // package.json
   public package = fs.readJsonSync(path.resolve(process.env.UIX_BASE_PATH, 'package.json'));
 
+  // set true to force the ui to restart on next restart request
+  public hbServiceUiRestartRequired = false;
+
   public homebridgeConfig: HomebridgeConfig;
 
   public ui: {
@@ -175,6 +178,11 @@ export class ConfigService {
    * Checks to see if the UI requires a restart due to changed ui or bridge settings
    */
   public async uiRestartRequired(): Promise<boolean> {
+    // if the flag is set, force a restart
+    if (this.hbServiceUiRestartRequired) {
+      return true;
+    }
+
     // if the ui version has changed on disk, a restart is required
     const currentPackage = await fs.readJson(path.resolve(process.env.UIX_BASE_PATH, 'package.json'));
     if (currentPackage.version !== this.package.version) {
@@ -228,7 +236,7 @@ export class ConfigService {
    * Populate the required config when running in "Service Mode"
    */
   private setConfigForServiceMode() {
-    this.homebridgeInsecureMode = true;
+    this.homebridgeInsecureMode = Boolean(process.env.UIX_INSECURE_MODE === '1');
     this.ui.restart = undefined;
     this.ui.sudo = (os.platform() === 'linux');
     this.ui.log = {

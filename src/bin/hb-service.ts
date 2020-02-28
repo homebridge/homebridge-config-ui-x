@@ -30,7 +30,7 @@ export class HomebridgeServiceHelper {
   private homebridgeBinary: string;
   private homebridge: child_process.ChildProcessWithoutNullStreams;
   private homebridgeStopped = true;
-  private homebridgeOpts = [];
+  private homebridgeOpts = ['-I'];
   private homebridgeCustomEnv = {};
   private uiBinary: string;
 
@@ -75,7 +75,6 @@ export class HomebridgeServiceHelper {
       .arguments('<install|uninstall|start|stop|restart|rebuild|run|logs>')
       .option('-P, --plugin-path [path]', '', (p) => { process.env.UIX_CUSTOM_PLUGIN_PATH = p; this.homebridgeOpts.push('-P', p); })
       .option('-U, --user-storage-path [path]', '', (p) => this.storagePath = p)
-      .option('-I, --insecure', '', () => process.env.UIX_INSECURE_MODE = '1')
       .option('-S, --service-name [service name]', 'The name of the homebridge service to install or control', (p) => this.serviceName = p)
       .option('--port [port]', 'The port to set to the Homebridge UI when installing as a service', (p) => this.uiPort = parseInt(p, 10))
       .option('--user [user]', 'The user account the Homebridge service will be installed as (Linux, macOS only)', (p) => this.asUser = p)
@@ -365,7 +364,6 @@ export class HomebridgeServiceHelper {
     this.homebridge = child_process.spawn(process.execPath,
       [
         this.homebridgeBinary,
-        '-I',
         '-C',
         '-Q',
         '-U',
@@ -699,8 +697,25 @@ export class HomebridgeServiceHelper {
           this.homebridgeOpts.push('-R');
         }
 
+        // insecure mode is enabled by default, allow it to be removed if set to false
+        if (homebridgeStartupOptions.insecureMode === false && this.homebridgeOpts.includes('-I')) {
+          this.homebridgeOpts.splice(this.homebridgeOpts.findIndex((x) => x === '-I'), 1);
+          process.env.UIX_INSECURE_MODE = '0';
+        }
+
         // copy any custom env vars in
         Object.assign(this.homebridgeCustomEnv, homebridgeStartupOptions.env);
+      } else if (this.docker) {
+        // check old docker flag for debug mode
+        if (process.env.HOMEBRIDGE_DEBUG === '1' && !this.homebridgeOpts.includes('-D')) {
+          this.homebridgeOpts.push('-D');
+        }
+
+        // check old docker flag for insecure mode
+        if (process.env.HOMEBRIDGE_INSECURE !== '1' && this.homebridgeOpts.includes('-I')) {
+          this.homebridgeOpts.splice(this.homebridgeOpts.findIndex((x) => x === '-I'), 1);
+          process.env.UIX_INSECURE_MODE = '0';
+        }
       }
     } catch (e) {
       this.logger(`Failed to load startup options ${e.message}`);
