@@ -4,8 +4,13 @@ All notable changes to this project will be documented in this file. This projec
 
 ## NEXT
 
+### Notable Changes
+
+* **hb-service:** Added the ability to toggle Homebridge insecure mode (`-I`, `--insecure`) from the UI when running under [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command).
+
 ### Other Changes
 
+* **Docker:** Added various changes to facilitate the [oznu/homebridge](https://github.com/oznu/docker-homebridge) Docker image using [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) (docker image update required)
 * **i18n:** Improvements to Polish language translations ([#568](https://github.com/oznu/homebridge-config-ui-x/pull/568))
 
 ## 4.11.0 (2020-02-27)
