@@ -153,7 +153,7 @@
     "plugins.manage.message_restart_required": "Neustart nach Aktualisierung erforderlich",
     "plugins.manage.message_restart_required_reason": "Nach der Installation einer neuen Version musst du Homebridge neustarten und <strong>diese Seite aktualisieren</strong>, um sicherzustellen, dass du über die neueste Version des Clients verfügst.",
     "plugins.manage.message_thanks_for_upgrading_ui": "Vielen Dank für die Installation der neuesten Version von Homebridge Config UI X.",
-    "plugins.manage.message_uninstall_remove_config_required": "Stelle sicher, das wenn du dieses Plugin dauerhaft entfernst, jede Konfiguration für dieses Plugin in der config.json entfernt hast, bevor du Homebridge neu startest.",
+    "plugins.manage.message_uninstall_remove_config_required": "Stelle sicher, dass wenn du dieses Plugin dauerhaft entfernst, jede Konfiguration für dieses Plugin in der config.json entfernt hast, bevor du Homebridge neu startest.",
     "plugins.manage.message_uninstall_remove_confirmation": "Bist du sicher, dass du {{ pluginName }} entfernen möchtest?",
     "plugins.manage.message_uninstall_remove_plugin_config": "Plugin Konfiguration entfernen?",
     "plugins.placeholder_search_plugin": "Suche nach installierbaren Plugins...",
