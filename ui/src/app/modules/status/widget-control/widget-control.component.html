@@ -39,7 +39,18 @@
           [translate]="'accessories.title_accessories'">Accessories</a>
       </div>
     </div>
-    <div *ngSwitchCase="'HomebridgeLogsWidgetComponent'">
+    <div *ngSwitchCase="'HomebridgeStatusWidgetComponent'">
+      <div class="form-group row">
+        <div class="col-sm-8">
+          <div class="form-group form-check pt-1">
+            <input type="checkbox" class="form-check-input" id="hidePort" [(ngModel)]="widget.hidePort">
+            <label class="form-check-label" for="hidePort" [translate]="'status.widget.homebridgestatus.label_port'">Hide the used Port
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngSwitchCase="'HomebridgeLogsWidgetComponent'">form-check-lab
       <div class="form-group row">
         <label class="col-sm-4 col-form-label" [translate]="'status.widget.label_font_size'">Font Size</label>
         <div class="col-sm-8">
