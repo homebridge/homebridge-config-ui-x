@@ -46,8 +46,8 @@
           <br>
           <span class="grey-text" *ngIf="homebridgeStatus.status === 'up' && !widget.hidePort"
             [translate]="'status.services.label_running_on_port'"
-            [translateParams]="{port: homebridgeStatus.port}">Listening</span>
-          <span class="grey-text" *ngIf="homebridgeStatus.status === 'up'"
+            [translateParams]="{port: homebridgeStatus.port}">Running</span>
+          <span class="grey-text" *ngIf="homebridgeStatus.status === 'up' && widget.hidePort"
             [translate]="'status.services.label_running'"
             [translateParams]="{port: homebridgeStatus.port}">Listening</span>
           <span class="grey-text" *ngIf="homebridgeStatus.status !== 'up'"
