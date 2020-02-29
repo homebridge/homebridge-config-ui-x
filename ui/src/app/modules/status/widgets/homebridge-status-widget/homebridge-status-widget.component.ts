@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { WsService } from '../../../../core/ws.service';
 import { AuthService } from '../../../../core/auth/auth.service';
@@ -9,10 +9,7 @@ import { ManagePluginsService } from '../../../../core//manage-plugins/manage-pl
   templateUrl: './homebridge-status-widget.component.html',
   styleUrls: ['./homebridge-status-widget.component.scss'],
 })
-
 export class HomebridgeStatusWidgetComponent implements OnInit {
-  @Input() widget;
-
   private io = this.$ws.getExistingNamespace('status');
 
   public homebridgePkg = {} as any;
@@ -74,5 +71,4 @@ export class HomebridgeStatusWidgetComponent implements OnInit {
         this.$toastr.error(err.message);
       });
   }
-
 }
