@@ -211,7 +211,7 @@
     "status.plugins_out_of_date": "Plugins inaktuella",
     "status.services.label_console": "Konsol",
     "status.services.label_listening_on_port": "Lyssnar på port {{port}}",
-    "status.services.label_running_on_port": "Running on port {{port}}",
+    "status.services.label_running_on_port": "Kör på port {{port}}",
     "status.services.label_not_running": "Körs inte",
     "status.services.label_running": "Kör",
     "status.services.title_services": "Tjänster",

@@ -211,7 +211,7 @@
     "status.plugins_out_of_date": "Plug-ins verouderd",
     "status.services.label_console": "Console",
     "status.services.label_listening_on_port": "Luisteren op poort {{port}}",
-    "status.services.label_running_on_port": "Running on port {{port}}",
+    "status.services.label_running_on_port": "Draait op poort {{port}}",
     "status.services.label_not_running": "Draait Niet",
     "status.services.label_running": "Draait",
     "status.services.title_services": "Services",

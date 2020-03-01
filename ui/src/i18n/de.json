@@ -52,7 +52,7 @@
     "backup.label_uploading": "Lädt hoch...",
     "backup.message_backup_archive_created": "Backup-Archiv erstellt",
     "backup.message_backup_download_failed": "Backup-Download fehlgeschlagen",
-    "backup.message_backup_help_one": "Lade ein Backup-Archiv deiner gesamten Homebridge-Umgebung herunter. Dies wird den gesamten Inhalt deines Homebridge-Speicherverzeichnisses sichern, welches du später auf jeder Platform, die Homebridge Config UI X laufen lassen kann, wiederhergestellt werden kann.",
+    "backup.message_backup_help_one": "Lade ein Backup-Archiv deiner gesamten Homebridge-Umgebung herunter. Dies wird den gesamten Inhalt deines Homebridge-Speicherverzeichnisses sichern, welches Du später auf jeder Platform, die Homebridge Config UI X laufen lassen kann, wiederherstellen kannst.",
     "backup.message_backup_help_two": "Plugins welche nicht auf npm gehostet werden oder direkt installierte Plugins von GitHub werden nicht im Backup enthalten sein bzw. nicht wiederhergestellt werden.",
     "backup.message_backup_restored": "Backup-Archiv wiederhergestellt",
     "backup.message_backup_warning": "Backup-Archive enhalten sensitive Informationen und sollten nicht mit anderen geteilt werden.",
