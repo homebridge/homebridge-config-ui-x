@@ -12,8 +12,11 @@ All notable changes to this project will be documented in this file. This projec
 ### Other Changes
 
 * **Docker:** Added various changes to facilitate the [oznu/homebridge](https://github.com/oznu/docker-homebridge) Docker image using [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) (docker image update required)
-* **Backup/Restore:** If an error is encountered during a backup request ( for example, a permission error), the error will now be logged to assist users in resolving the issue
+* **Backup/Restore:** If an error is encountered during a backup request (for example, a permission error), the error will now be logged to assist users in resolving the issue
 * **i18n:** Improvements to Polish language translations ([#568](https://github.com/oznu/homebridge-config-ui-x/pull/568))
+* **i18n:** Improvements to German language translations ([#571](https://github.com/oznu/homebridge-config-ui-x/pull/571))
+* **i18n:** Improvements to Russian language translations ([#573](https://github.com/oznu/homebridge-config-ui-x/pull/573))
+* Updated npm dependencies
 
 ## 4.11.0 (2020-02-27)
 
