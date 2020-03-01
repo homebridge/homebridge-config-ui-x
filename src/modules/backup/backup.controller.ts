@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Put, UseGuards, Res, Req } from '@nestjs/common';
+import { Controller, Get, Post, Put, UseGuards, Res, Req, InternalServerErrorException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { BackupService } from './backup.service';
 import { AdminGuard } from '../../core/auth/guards/admin.guard';
+import { Logger } from '../../core/logger/logger.service';
 
 @UseGuards(AuthGuard())
 @Controller('backup')
@@ -9,12 +10,19 @@ export class BackupController {
 
   constructor(
     private backupService: BackupService,
+    private logger: Logger,
   ) { }
 
   @UseGuards(AdminGuard)
   @Get('/download')
-  downloadBackup(@Res() reply) {
-    return this.backupService.downloadBackup(reply);
+  async downloadBackup(@Res() reply) {
+    try {
+      return await this.backupService.downloadBackup(reply);
+    } catch (e) {
+      console.error(e);
+      this.logger.error('Backup Failed ' + e);
+      throw new InternalServerErrorException(e.message);
+    }
   }
 
   @UseGuards(AdminGuard)
