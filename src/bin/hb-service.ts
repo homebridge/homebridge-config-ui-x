@@ -78,11 +78,11 @@ export class HomebridgeServiceHelper {
       .option('-S, --service-name [service name]', 'The name of the homebridge service to install or control', (p) => this.serviceName = p)
       .option('--port [port]', 'The port to set to the Homebridge UI when installing as a service', (p) => this.uiPort = parseInt(p, 10))
       .option('--user [user]', 'The user account the Homebridge service will be installed as (Linux, macOS only)', (p) => this.asUser = p)
+      .option('--stdout', '', () => this.stdout = true)
       .option('--allow-root', '', () => this.allowRunRoot = true)
+      .option('--docker', '', () => this.docker = true)
       .option('--uid <number>', '', (i) => this.uid = parseInt(i, 10))
       .option('--gid <number>', '', (i) => this.gid = parseInt(i, 10))
-      .option('--stdout', '', () => this.stdout = true)
-      .option('--docker', '', () => this.docker = true)
       .option('-v, --version', 'output the version number', () => this.showVersion())
       .action((cmd) => {
         this.action = cmd;
