@@ -36,6 +36,7 @@ export class HomebridgeServiceHelper {
 
   // send logs to stdout instead of the homebridge.log
   private stdout: boolean;
+  private disableLogPrefix: boolean;
 
   // oznu/docker-homebridge options
   private docker: boolean;
@@ -79,6 +80,7 @@ export class HomebridgeServiceHelper {
       .option('--port [port]', 'The port to set to the Homebridge UI when installing as a service', (p) => this.uiPort = parseInt(p, 10))
       .option('--user [user]', 'The user account the Homebridge service will be installed as (Linux, macOS only)', (p) => this.asUser = p)
       .option('--stdout', '', () => this.stdout = true)
+      .option('--disable-log-prefix', '', () => this.disableLogPrefix = true)
       .option('--allow-root', '', () => this.allowRunRoot = true)
       .option('--docker', '', () => this.docker = true)
       .option('--uid <number>', '', (i) => this.uid = parseInt(i, 10))
@@ -158,8 +160,10 @@ export class HomebridgeServiceHelper {
    * Logger function, log to homebridge.log file when possible
    */
   public logger(msg) {
-    msg = `\x1b[37m[${new Date().toLocaleString()}]\x1b[0m ` +
-      '\x1b[36m[HB Supervisor]\x1b[0m ' + msg;
+    if (!this.disableLogPrefix) {
+      msg = `\x1b[37m[${new Date().toLocaleString()}]\x1b[0m ` +
+        '\x1b[36m[HB Supervisor]\x1b[0m ' + msg;
+    }
     if (this.log) {
       this.log.write(msg + '\n');
     } else {
