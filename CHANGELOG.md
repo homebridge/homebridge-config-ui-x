@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file. This projec
 
 * **hb-service:** Added the ability to toggle Homebridge insecure mode (`-I`, `--insecure`) from the UI when running under [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command)
 * **Dashboard:** Added a configurable option to each widget to determine if it should be shown in the mobile/compact view ([#560](https://github.com/oznu/homebridge-config-ui-x/issues/560))
+* **Dashboard:** [@Staubgeborener](https://github.com/Staubgeborener) added an option to the Homebridge status widget to let users decide if the Homebridge port should be shown or not ([#572](https://github.com/oznu/homebridge-config-ui-x/pull/572))
 
 ### Other Changes
 

@@ -57,4 +57,11 @@ export class HbServiceService {
 
     return fs.writeJsonSync(this.hbServiceSettingsPath, settings, { spaces: 4 });
   }
+
+  async setFullServiceRestartFlag() {
+    // restart ui on next restart
+    this.configService.hbServiceUiRestartRequired = true;
+
+    return { status: 0 };
+  }
 }

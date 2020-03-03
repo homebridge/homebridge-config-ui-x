@@ -40,11 +40,12 @@
       </div>
     </div>
     <div *ngSwitchCase="'HomebridgeStatusWidgetComponent'">
-      <div class="form-group row">
-        <div class="col-sm-8">
-          <div class="form-group form-check pt-1">
-            <input type="checkbox" class="form-check-input" id="hidePort" [(ngModel)]="widget.hidePort">
-            <label class="form-check-label" for="hidePort" [translate]="'status.widget.homebridgestatus.label_port'">Hide the used Port
+      <div class="d-flex flex-row flex-grow-1 align-items-center w-100">
+        <div class="form-group w-100">
+          <div class="pt-1 text-center custom-control custom-checkbox c-pointer">
+            <input type="checkbox" class="custom-control-input" id="hidePort" [(ngModel)]="widget.hidePort">
+            <label class="custom-control-label" for="hidePort"
+              [translate]="'status.widget.homebridgestatus.label_port'">Hide the Homebridge Port
             </label>
           </div>
         </div>
