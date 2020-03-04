@@ -153,6 +153,10 @@
         "title": "Restart Command",
         "type": "string"
       },
+      "temp": {
+        "title": "Path to OS Temp File",
+        "type": "string"
+      },
       "tempUnits": {
         "title": "Temperature Display Units",
         "type": "string",

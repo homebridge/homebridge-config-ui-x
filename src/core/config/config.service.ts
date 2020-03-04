@@ -89,6 +89,7 @@ export class ConfigService {
     proxyHost?: string;
     sessionTimeout?: number;
     homebridgePackagePath?: string;
+    temp?: string;
   };
 
   private bridgeFreeze: this['homebridgeConfig']['bridge'];
