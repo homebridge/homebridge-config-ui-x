@@ -177,6 +177,116 @@
           }
         ]
       },
+      "lang": {
+        "title": "Language",
+        "type": "string",
+        "default": "auto",
+        "required": true,
+        "oneOf": [
+          {
+            "title": "Automatic (Use Browser Settings)",
+            "enum": [
+              "auto"
+            ]
+          },
+          {
+            "title": "Bulgarian (bg)",
+            "enum": [
+              "bg"
+            ]
+          },
+          {
+            "title": "Czech (cs)",
+            "enum": [
+              "cs"
+            ]
+          },
+          {
+            "title": "German (de)",
+            "enum": [
+              "de"
+            ]
+          },
+          {
+            "title": "English (en)",
+            "enum": [
+              "en"
+            ]
+          },
+          {
+            "title": "Spanish (es)",
+            "enum": [
+              "es"
+            ]
+          },
+          {
+            "title": "French (fr)",
+            "enum": [
+              "fr"
+            ]
+          },
+          {
+            "title": "Hungarian (hu)",
+            "enum": [
+              "hu"
+            ]
+          },
+          {
+            "title": "Italian (it)",
+            "enum": [
+              "it"
+            ]
+          },
+          {
+            "title": "Japanese (ja)",
+            "enum": [
+              "ja"
+            ]
+          },
+          {
+            "title": "Dutch (nl)",
+            "enum": [
+              "nl"
+            ]
+          },
+          {
+            "title": "Norwegian (no)",
+            "enum": [
+              "no"
+            ]
+          },
+          {
+            "title": "Russian (ru)",
+            "enum": [
+              "ru"
+            ]
+          },
+          {
+            "title": "Swedish (sv)",
+            "enum": [
+              "sv"
+            ]
+          },
+          {
+            "title": "Turkish (tr)",
+            "enum": [
+              "tr"
+            ]
+          },
+          {
+            "title": "Chinese - Simplified (zh-CN)",
+            "enum": [
+              "zh-CN"
+            ]
+          },
+          {
+            "title": "Chinese - Traditional (zh-TW)",
+            "enum": [
+              "zh-TW"
+            ]
+          }
+        ]
+      },
       "loginWallpaper": {
         "title": "Path to Login Wallpaper Image File",
         "type": "string"
@@ -417,6 +527,7 @@
       "items": [
         "sudo",
         "debug",
+        "lang",
         "auth",
         {
           "key": "restart",

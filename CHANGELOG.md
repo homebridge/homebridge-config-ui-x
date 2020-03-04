@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file. This projec
 * **Docker:** Added various changes to facilitate the [oznu/homebridge](https://github.com/oznu/docker-homebridge) Docker image using [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) (docker image update required)
 * **Backup/Restore:** If an error is encountered during a backup request (for example, a permission error), the error will now be logged to assist users in resolving the issue
 * **Dashboard:** Allow the use of the previously removed `temp` option to read the CPU temperature from a file ([#470](https://github.com/oznu/homebridge-config-ui-x/issues/470))
+* **i18n:** Added the ability to manually set the UI language ([#398](https://github.com/oznu/homebridge-config-ui-x/issues/398))
 * **i18n:** Improvements to Polish language translations ([#568](https://github.com/oznu/homebridge-config-ui-x/pull/568))
 * **i18n:** Improvements to German language translations ([#571](https://github.com/oznu/homebridge-config-ui-x/pull/571))
 * **i18n:** Improvements to Russian language translations ([#573](https://github.com/oznu/homebridge-config-ui-x/pull/573))

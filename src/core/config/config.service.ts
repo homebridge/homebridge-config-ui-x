@@ -61,6 +61,7 @@ export class ConfigService {
     theme: string;
     sudo?: boolean;
     restart?: string;
+    lang?: string;
     log?: {
       method: 'file' | 'custom' | 'systemd' | 'native';
       command?: string;
@@ -77,6 +78,7 @@ export class ConfigService {
       debug?: boolean;
       instanceBlacklist?: string[];
     }
+    temp?: string;
     tempUnits?: string;
     loginWallpaper?: string;
     noFork?: boolean;
@@ -89,7 +91,6 @@ export class ConfigService {
     proxyHost?: string;
     sessionTimeout?: number;
     homebridgePackagePath?: string;
-    temp?: string;
   };
 
   private bridgeFreeze: this['homebridgeConfig']['bridge'];
@@ -167,6 +168,7 @@ export class ConfigService {
         dockerOfflineUpdate: this.dockerOfflineUpdate,
         serviceMode: this.serviceMode,
         temperatureUnits: this.ui.tempUnits || 'c',
+        lang: this.ui.lang === 'auto' ? null : this.ui.lang,
         instanceId: this.instanceId,
       },
       formAuth: Boolean(this.ui.auth !== 'none'),
