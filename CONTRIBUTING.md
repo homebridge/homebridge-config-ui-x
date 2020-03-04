@@ -72,5 +72,3 @@ You should now be able to navigate to `https://localhost:4200` in your browser w
 Additional language translations, or improvements to existing translations are most welcome.  Translations can be found here: 
 
 https://github.com/oznu/homebridge-config-ui-x/tree/master/ui/src/i18n
-
-[BabelEdit](https://www.codeandweb.com/babeledit) is a useful tool that will help editing or creating a new language file. Where possible, please derive new translations from the English version.
