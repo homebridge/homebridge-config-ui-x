@@ -1,0 +1,31 @@
+<div class="accessory-box" [ngClass]="{'switch-on': service.values.SecuritySystemCurrentState !== 3}" appLongclick
+  (shortclick)="onClick()">
+  <div class="d-flex flex-column h-100">
+    <div [inlineSVG]="'/assets/hap-icons/securitysystem-active.svg'" aria-label="Armed" class="accessory-svg"
+      *ngIf="service.values.SecuritySystemCurrentState !== 3">
+    </div>
+    <div [inlineSVG]="'/assets/hap-icons/securitysystem-off.svg'" aria-label="Disarmed" class="accessory-svg"
+      *ngIf="service.values.SecuritySystemCurrentState === 3">
+    </div>
+
+    <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
+
+    <ng-container [ngSwitch]="service.values.SecuritySystemCurrentState">
+      <div class="accessory-label grey-text" *ngSwitchCase="0">
+        {{ 'accessories.control.label_home' | translate }}
+      </div>
+      <div class="accessory-label grey-text" *ngSwitchCase="1">
+        {{ 'accessories.control.label_away' | translate }}
+      </div>
+      <div class="accessory-label grey-text" *ngSwitchCase="2">
+        {{ 'accessories.control.label_night' | translate }}
+      </div>
+      <div class="accessory-label red-text" *ngSwitchCase="3">
+        {{ 'accessories.control.label_off' | translate }}
+      </div>
+      <div class="accessory-label red-text" *ngSwitchCase="4">
+        {{ 'accessories.control.label_triggered' | translate }}
+      </div>
+    </ng-container>
+  </div>
+</div>
