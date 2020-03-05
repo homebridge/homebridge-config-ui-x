@@ -1,13 +1,13 @@
 ::ng-deep {
   .switch-off {
     svg {
-      .occupancy_sensor_person {
+      .leak_sensor_droplet {
         fill: #E0E0E0;
       }
-      .occupancy_sensor_trigger_lines {
+      .leak_sensor_trigger_lines {
         display: none;
       }
-      .occupancy_sensor_background {
+      .leak_sensor_background {
         fill: #808080;
       }
     }
@@ -17,7 +17,7 @@
 ::ng-deep body.config-ui-x-dark-mode {
   .switch-off {
     svg {
-      .occupancy_sensor_person {
+      .leak_sensor_droplet {
         fill: #2B2B2B;
       }
     }
