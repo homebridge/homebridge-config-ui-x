@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+
+## NEXT
+
+### Other Changes
+
+* Update UI to use Angular 9
+
 ## 4.12.0 (2020-03-05)
 
 ### Notable Changes
