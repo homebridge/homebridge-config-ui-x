@@ -32,7 +32,7 @@
     "file-saver": "^2.0.2",
     "jquery": "^3.4.1",
     "lodash-es": "^4.17.15",
-    "mdbootstrap": "^4.13.0",
+    "mdbootstrap": "^4.14.0",
     "mobile-detect": "^1.4.4",
     "monaco-editor": "^0.19.3",
     "ng-inline-svg": "^9.2.2",
