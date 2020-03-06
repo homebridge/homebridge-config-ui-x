@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Other Changes
 
+* Updated npm dependencies
 * Update UI to use Angular 9
 
 ## 4.12.0 (2020-03-05)

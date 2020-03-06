@@ -37,7 +37,7 @@ export class DarwinInstaller {
       await this.hbService.printPostInstallInstructions();
     } catch (e) {
       console.error(e.toString());
-      this.hbService.logger(`ERROR: Failed Operation`);
+      this.hbService.logger(`ERROR: Failed Operation`, 'fail');
     }
   }
 
@@ -50,14 +50,14 @@ export class DarwinInstaller {
 
     try {
       if (fs.existsSync(this.plistPath)) {
-        this.hbService.logger(`Removed ${this.hbService.serviceName} Service.`);
+        this.hbService.logger(`Removed ${this.hbService.serviceName} Service`, 'succeed');
         fs.unlinkSync(this.plistPath);
       } else {
-        this.hbService.logger(`Could not find installed ${this.hbService.serviceName} Service.`);
+        this.hbService.logger(`Could not find installed ${this.hbService.serviceName} Service.`, 'fail');
       }
     } catch (e) {
       console.error(e.toString());
-      this.hbService.logger(`ERROR: Failed Operation`);
+      this.hbService.logger(`ERROR: Failed Operation`, 'fail');
     }
   }
 
@@ -69,9 +69,9 @@ export class DarwinInstaller {
     try {
       this.hbService.logger(`Starting ${this.hbService.serviceName} Service...`);
       child_process.execSync(`launchctl load -w ${this.plistPath}`);
-      this.hbService.logger(`${this.hbService.serviceName} Started`);
+      this.hbService.logger(`${this.hbService.serviceName} Started`, 'succeed');
     } catch (e) {
-      this.hbService.logger(`Failed to start ${this.hbService.serviceName}`);
+      this.hbService.logger(`Failed to start ${this.hbService.serviceName}`, 'fail');
     }
   }
 
@@ -83,9 +83,9 @@ export class DarwinInstaller {
     try {
       this.hbService.logger(`Stopping ${this.hbService.serviceName} Service...`);
       child_process.execSync(`launchctl unload -w ${this.plistPath}`);
-      this.hbService.logger(`${this.hbService.serviceName} Stopped`);
+      this.hbService.logger(`${this.hbService.serviceName} Stopped`, 'succeed');
     } catch (e) {
-      this.hbService.logger(`Failed to stop ${this.hbService.serviceName}`);
+      this.hbService.logger(`Failed to stop ${this.hbService.serviceName}`, 'fail');
     }
   }
 
@@ -115,10 +115,10 @@ export class DarwinInstaller {
 
       await this.setNpmPermissions(npmGlobalPath);
 
-      this.hbService.logger(`Rebuilt modules in ${process.env.UIX_BASE_PATH} for Node.js ${process.version}.`);
+      this.hbService.logger(`Rebuilt modules in ${process.env.UIX_BASE_PATH} for Node.js ${process.version}.`, 'succeed');
     } catch (e) {
       console.error(e.toString());
-      this.hbService.logger(`ERROR: Failed Operation`);
+      this.hbService.logger(`ERROR: Failed Operation`, 'fail');
     }
   }
 
@@ -157,13 +157,13 @@ export class DarwinInstaller {
    */
   private checkForRoot() {
     if (process.getuid() !== 0) {
-      this.hbService.logger('ERROR: This command must be executed using sudo on macOS');
-      this.hbService.logger(`sudo hb-service ${this.hbService.action}`);
+      this.hbService.logger('ERROR: This command must be executed using sudo on macOS', 'fail');
+      this.hbService.logger(`sudo hb-service ${this.hbService.action}`, 'fail');
       process.exit(1);
     }
     if (!process.env.SUDO_USER && !this.hbService.asUser) {
-      this.hbService.logger('ERROR: Could not detect user. Pass in the user you want to run Homebridge as using the --user flag eg.');
-      this.hbService.logger(`sudo hb-service ${this.hbService.action} --user your-user`);
+      this.hbService.logger('ERROR: Could not detect user. Pass in the user you want to run Homebridge as using the --user flag eg.', 'fail');
+      this.hbService.logger(`sudo hb-service ${this.hbService.action} --user your-user`, 'fail');
       process.exit(1);
     }
     this.user = this.hbService.asUser || process.env.SUDO_USER;
@@ -194,14 +194,13 @@ export class DarwinInstaller {
       child_process.execSync(`chown -R ${this.user}:admin "${npmGlobalPath}"`);
       child_process.execSync(`chown -R ${this.user}:admin "$(dirname $(which npm))"`);
     } catch (e) {
-      this.hbService.logger(`ERROR: User "${this.user}" does not have write access to the global npm modules path.`);
-      this.hbService.logger(``);
-      this.hbService.logger(`You can fix this issue by running the following commands:`);
+      this.hbService.logger(`ERROR: User "${this.user}" does not have write access to the global npm modules path.`, 'fail');
+      this.hbService.logger(`You can fix this issue by running the following commands:`, 'fail');
       console.log('');
       console.log(`sudo chown -R ${this.user}:admin "${npmGlobalPath}"`);
       console.log(`sudo chown -R ${this.user}:admin "$(dirname $(which npm))"`);
       console.log('');
-      this.hbService.logger(`Once you have done this run the hb-service install command again to complete your installation.`);
+      this.hbService.logger(`Once you have done this run the hb-service install command again to complete your installation.`, 'fail');
       process.exit(1);
     }
   }

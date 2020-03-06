@@ -51,7 +51,7 @@ export class LinuxInstaller {
       await this.hbService.printPostInstallInstructions();
     } catch (e) {
       console.error(e.toString());
-      this.hbService.logger(`ERROR: Failed Operation`);
+      this.hbService.logger(`ERROR: Failed Operation`, 'fail');
     }
   }
 
@@ -69,10 +69,14 @@ export class LinuxInstaller {
       if (fs.existsSync(this.systemdEnvPath)) {
         fs.unlinkSync(this.systemdEnvPath);
       }
-      this.hbService.logger(`Removed ${this.hbService.serviceName} Service.`);
+
+      // reload services
+      await this.reloadSystemd();
+
+      this.hbService.logger(`Removed ${this.hbService.serviceName} Service`, 'succeed');
     } catch (e) {
       console.error(e.toString());
-      this.hbService.logger(`ERROR: Failed Operation`);
+      this.hbService.logger(`ERROR: Failed Operation`, 'fail');
     }
   }
 
@@ -85,9 +89,9 @@ export class LinuxInstaller {
     try {
       this.hbService.logger(`Starting ${this.hbService.serviceName} Service...`);
       child_process.execSync(`systemctl start ${this.systemdServiceName}`);
-      this.hbService.logger(`${this.hbService.serviceName} Started`);
+      this.hbService.logger(`${this.hbService.serviceName} Started`, 'succeed');
     } catch (e) {
-      this.hbService.logger(`Failed to start ${this.hbService.serviceName}`);
+      this.hbService.logger(`Failed to start ${this.hbService.serviceName}`, 'fail');
     }
   }
 
@@ -99,9 +103,9 @@ export class LinuxInstaller {
     try {
       this.hbService.logger(`Stopping ${this.hbService.serviceName} Service...`);
       child_process.execSync(`systemctl stop ${this.systemdServiceName}`);
-      this.hbService.logger(`${this.hbService.serviceName} Stopped`);
+      this.hbService.logger(`${this.hbService.serviceName} Stopped`, 'succeed');
     } catch (e) {
-      this.hbService.logger(`Failed to stop ${this.systemdServiceName}`);
+      this.hbService.logger(`Failed to stop ${this.systemdServiceName}`, 'fail');
     }
   }
 
@@ -114,9 +118,9 @@ export class LinuxInstaller {
     try {
       this.hbService.logger(`Restarting ${this.hbService.serviceName} Service...`);
       child_process.execSync(`systemctl restart ${this.systemdServiceName}`);
-      this.hbService.logger(`${this.hbService.serviceName} Restarted`);
+      this.hbService.logger(`${this.hbService.serviceName} Restarted`, 'succeed');
     } catch (e) {
-      this.hbService.logger(`Failed to restart ${this.hbService.serviceName}`);
+      this.hbService.logger(`Failed to restart ${this.hbService.serviceName}`, 'fail');
     }
   }
 
@@ -132,10 +136,10 @@ export class LinuxInstaller {
         stdio: 'inherit',
       });
 
-      this.hbService.logger(`Rebuilt modules in ${process.env.UIX_BASE_PATH} for Node.js ${process.version}.`);
+      this.hbService.logger(`Rebuilt modules in ${process.env.UIX_BASE_PATH} for Node.js ${process.version}.`, 'succeed');
     } catch (e) {
       console.error(e.toString());
-      this.hbService.logger(`ERROR: Failed Operation`);
+      this.hbService.logger(`ERROR: Failed Operation`, 'fail');
     }
   }
 
@@ -163,7 +167,11 @@ export class LinuxInstaller {
    */
   public getPidOfPort(port: number) {
     try {
-      return child_process.execSync(`fuser ${port}/tcp 2>/dev/null`).toString('utf8').trim();
+      if (this.hbService.docker) {
+        return child_process.execSync(`pidof homebridge`).toString('utf8').trim();
+      } else {
+        return child_process.execSync(`fuser ${port}/tcp 2>/dev/null`).toString('utf8').trim();
+      }
     } catch (e) {
       return null;
     }
@@ -176,7 +184,7 @@ export class LinuxInstaller {
     try {
       child_process.execSync('systemctl daemon-reload');
     } catch (e) {
-      this.hbService.logger('WARNING: failed to run "systemctl daemon-reload"');
+      this.hbService.logger('WARNING: failed to run "systemctl daemon-reload"', 'warn');
     }
   }
 
@@ -187,7 +195,7 @@ export class LinuxInstaller {
     try {
       child_process.execSync(`systemctl enable ${this.systemdServiceName} 2> /dev/null`);
     } catch (e) {
-      this.hbService.logger('WARNING: failed to run "systemctl enable ..."');
+      this.hbService.logger(`WARNING: failed to run "systemctl enable ${this.systemdServiceName}"`, 'warn');
     }
   }
 
@@ -198,7 +206,7 @@ export class LinuxInstaller {
     try {
       child_process.execSync(`systemctl disable ${this.systemdServiceName} 2> /dev/null`);
     } catch (e) {
-      this.hbService.logger('WARNING: failed to run "systemctl disable ..."');
+      this.hbService.logger(`WARNING: failed to run "systemctl disable ${this.systemdServiceName}"`, 'warn');
     }
   }
 
@@ -207,13 +215,13 @@ export class LinuxInstaller {
    */
   private checkForRoot() {
     if (process.getuid() !== 0) {
-      this.hbService.logger('ERROR: This command must be executed using sudo on Linux');
-      this.hbService.logger(`sudo hb-service ${this.hbService.action} --user ${this.hbService.asUser || 'your-user'}`);
+      this.hbService.logger('ERROR: This command must be executed using sudo on Linux', 'fail');
+      this.hbService.logger(`sudo hb-service ${this.hbService.action} --user ${this.hbService.asUser || 'your-user'}`, 'fail');
       process.exit(1);
     }
     if (this.hbService.action === 'install' && !this.hbService.asUser) {
-      this.hbService.logger('ERROR: User parameter missing. Pass in the user you want to run Homebridge as using the --user flag eg.');
-      this.hbService.logger(`sudo hb-service ${this.hbService.action} --user your-user`);
+      this.hbService.logger('ERROR: User parameter missing. Pass in the user you want to run Homebridge as using the --user flag eg.', 'fail');
+      this.hbService.logger(`sudo hb-service ${this.hbService.action} --user your-user`, 'fail');
       process.exit(1);
     }
   }
@@ -260,7 +268,7 @@ export class LinuxInstaller {
       // grant the user restricted sudo privileges to /sbin/shutdown
       child_process.execSync(`echo '${sudoersEntry}' | sudo EDITOR='tee -a' visudo`);
     } catch (e) {
-      this.hbService.logger('WARNING: Failed to setup /etc/sudoers, you may not be able to shutdown/restart your server from the Homebridge UI.');
+      this.hbService.logger('WARNING: Failed to setup /etc/sudoers, you may not be able to shutdown/restart your server from the Homebridge UI.', 'warn');
     }
   }
 
@@ -283,7 +291,7 @@ export class LinuxInstaller {
           child_process.execSync(`chown -R ${serviceUser}: "${storagePath}"`);
         }
       } catch (e) {
-        this.hbService.logger(`WARNING: Failed to set permissions`);
+        this.hbService.logger(`WARNING: Failed to set permissions`, 'warn');
       }
     }
   }

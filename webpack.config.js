@@ -35,7 +35,8 @@ module.exports = {
     "semver": "semver",
     "systeminformation": "systeminformation",
     "tcp-port-used": "tcp-port-used",
-    "tar": "tar"
+    "tar": "tar",
+    "ora": "ora"
   },
   node: {
     console: false,

@@ -13,6 +13,7 @@ import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
 import * as tcpPortUsed from 'tcp-port-used';
 import * as si from 'systeminformation';
+import * as ora from 'ora';
 import { Tail } from 'tail';
 
 import { Win32Installer } from './platforms/win32';
@@ -36,10 +37,9 @@ export class HomebridgeServiceHelper {
 
   // send logs to stdout instead of the homebridge.log
   private stdout: boolean;
-  private disableLogPrefix: boolean;
 
   // oznu/docker-homebridge options
-  private docker: boolean;
+  public docker: boolean;
   private uid: number;
   private gid: number;
 
@@ -67,7 +67,7 @@ export class HomebridgeServiceHelper {
         this.installer = new DarwinInstaller(this);
         break;
       default:
-        this.logger(`ERROR: This command is not supported on ${os.platform()}.`);
+        this.logger(`ERROR: This command is not supported on ${os.platform()}.`, 'fail');
         process.exit(1);
     }
 
@@ -80,7 +80,6 @@ export class HomebridgeServiceHelper {
       .option('--port [port]', 'The port to set to the Homebridge UI when installing as a service', (p) => this.uiPort = parseInt(p, 10))
       .option('--user [user]', 'The user account the Homebridge service will be installed as (Linux, macOS only)', (p) => this.asUser = p)
       .option('--stdout', '', () => this.stdout = true)
-      .option('--disable-log-prefix', '', () => this.disableLogPrefix = true)
       .option('--allow-root', '', () => this.allowRunRoot = true)
       .option('--docker', '', () => this.docker = true)
       .option('--uid <number>', '', (i) => this.uid = parseInt(i, 10))
@@ -105,17 +104,15 @@ export class HomebridgeServiceHelper {
         break;
       }
       case 'start': {
-        this.logger(`Starting ${this.serviceName} Service`);
         this.installer.start();
         break;
       }
       case 'stop': {
-        this.logger(`Stopping ${this.serviceName} Service`);
         this.installer.stop();
         break;
       }
       case 'restart': {
-        this.logger(`Restart ${this.serviceName} Service`);
+        this.logger(`Restarting ${this.serviceName} Service`);
         this.installer.restart();
         break;
       }
@@ -159,15 +156,17 @@ export class HomebridgeServiceHelper {
   /**
    * Logger function, log to homebridge.log file when possible
    */
-  public logger(msg) {
-    if (!this.disableLogPrefix) {
+  public logger(msg, type: 'info' | 'succeed' | 'fail' | 'warn' = 'info') {
+    if (this.action === 'run') {
       msg = `\x1b[37m[${new Date().toLocaleString()}]\x1b[0m ` +
         '\x1b[36m[HB Supervisor]\x1b[0m ' + msg;
-    }
-    if (this.log) {
-      this.log.write(msg + '\n');
+      if (this.log) {
+        this.log.write(msg + '\n');
+      } else {
+        console.log(msg);
+      }
     } else {
-      console.log(msg);
+      ora()[type](msg);
     }
   }
 
@@ -175,10 +174,13 @@ export class HomebridgeServiceHelper {
    * Sets the required environment variables passed on to the child processes
    */
   private setEnv() {
+    // Ensure service name is valid
     if (!this.serviceName.match(/^[a-z0-9-]+$/i)) {
-      this.logger('ERROR: Service name must not contain spaces or special characters');
+      this.logger('ERROR: Service name must not contain spaces or special characters', 'fail');
       process.exit(1);
     }
+
+    // Setup default storage path
     if (!this.storagePath) {
       if (os.platform() === 'linux') {
         this.storagePath = path.resolve('/var/lib', this.serviceName.toLowerCase());
@@ -186,6 +188,16 @@ export class HomebridgeServiceHelper {
         this.storagePath = path.resolve(os.homedir(), `.${this.serviceName.toLowerCase()}`);
       }
     }
+
+    // Certain commands are not supported when running in Docker
+    if (process.env.CONFIG_UI_VERSION && process.env.HOMEBRIDGE_VERSION && process.env.QEMU_ARCH) {
+      if (os.platform() === 'linux' && ['install', 'uninstall', 'start', 'stop', 'restart', 'logs'].includes(this.action)) {
+        this.logger(`Sorry, the ${this.action} command is not supported in Docker.`, 'fail');
+        process.exit(1);
+      }
+    }
+
+    // Set Env Vars
     process.env.UIX_STORAGE_PATH = this.storagePath;
     process.env.UIX_CONFIG_PATH = path.resolve(this.storagePath, 'config.json');
     process.env.UIX_BASE_PATH = path.resolve(__dirname, '../../');
@@ -435,7 +447,7 @@ export class HomebridgeServiceHelper {
   private nodeVersionCheck() {
     // 64 = v10;
     if (parseInt(process.versions.modules, 10) < 64) {
-      this.logger(`ERROR: Node.js v10.13.0 or greater is required. Current: ${process.version}.`);
+      this.logger(`ERROR: Node.js v10.13.0 or greater is required. Current: ${process.version}.`, 'fail');
       process.exit(1);
     }
   }
@@ -461,6 +473,8 @@ export class HomebridgeServiceHelper {
 
     console.log(`\nDefault Username: admin`);
     console.log(`Default Password: admin\n`);
+
+    this.logger('Homebridge Setup Complete', 'succeed');
   }
 
   /**
@@ -469,9 +483,9 @@ export class HomebridgeServiceHelper {
   public async portCheck() {
     const inUse = await tcpPortUsed.check(this.uiPort);
     if (inUse) {
-      this.logger(`ERROR: Port ${this.uiPort} is already in use by another process on this host.`);
-      this.logger(`You can specify another port using the --port flag, eg.`);
-      this.logger(`hb-service ${this.action} --port 8581`);
+      this.logger(`ERROR: Port ${this.uiPort} is already in use by another process on this host.`, 'fail');
+      this.logger(`You can specify another port using the --port flag, eg.`, 'fail');
+      this.logger(`hb-service ${this.action} --port 8581`, 'fail');
       process.exit(1);
     }
   }
@@ -510,7 +524,7 @@ export class HomebridgeServiceHelper {
           // correct the port
           if (uiConfigBlock.port !== this.uiPort) {
             uiConfigBlock.port = this.uiPort;
-            this.logger(`WARNING: HOMEBRIDGE CONFIG UI PORT IN ${process.env.UIX_CONFIG_PATH} CHANGED TO ${this.uiPort}`);
+            this.logger(`WARNING: HOMEBRIDGE CONFIG UI PORT IN ${process.env.UIX_CONFIG_PATH} CHANGED TO ${this.uiPort}`, 'warn');
           }
           // delete unnecessary config
           delete uiConfigBlock.restart;
@@ -536,8 +550,8 @@ export class HomebridgeServiceHelper {
 
     } catch (e) {
       const backupFile = path.resolve(this.storagePath, 'config.json.invalid.' + new Date().getTime().toString());
-      this.logger(`${process.env.UIX_CONFIG_PATH} does not contain valid JSON.`);
-      this.logger(`Invalid config.json file has been backed up to ${backupFile}.`);
+      this.logger(`${process.env.UIX_CONFIG_PATH} does not contain valid JSON.`, 'warn');
+      this.logger(`Invalid config.json file has been backed up to ${backupFile}.`, 'warn');
       await fs.rename(process.env.UIX_CONFIG_PATH, backupFile);
       await this.createDefaultConfig();
     }
@@ -659,14 +673,18 @@ export class HomebridgeServiceHelper {
   /**
    * Tails the Homebridge service log and outputs the results to the console
    */
-  private tailLogs() {
+  private async tailLogs() {
     if (!fs.existsSync(this.logPath)) {
-      this.logger(`ERROR: Log file does not exist at expected location: ${this.logPath}`);
+      this.logger(`ERROR: Log file does not exist at expected location: ${this.logPath}`, 'fail');
       process.exit(1);
     }
 
+    // only print the last 1000 lines
+    const currentLog = (await fs.readFile(this.logPath, 'utf8')).split(os.EOL).slice(-1000).join(os.EOL);
+    process.stdout.write(currentLog);
+
     const tail = new Tail(this.logPath, {
-      fromBeginning: true,
+      fromBeginning: false,
       useWatchFile: true,
       fsWatchOptions: {
         interval: 200,
