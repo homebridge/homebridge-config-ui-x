@@ -333,6 +333,7 @@ export class PluginsService {
     }
 
     if (!homebridgeInstalls.length) {
+      this.configService.hbServiceUiRestartRequired = true;
       this.logger.error('Unable To Find Homebridge Installation');
       throw new Error('Unable To Find Homebridge Installation');
     }

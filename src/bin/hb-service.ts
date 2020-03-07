@@ -275,8 +275,7 @@ export class HomebridgeServiceHelper {
       await this.loadHomebridgeStartupOptions();
 
       // work out the homebridge binary path
-      const node_modules = path.resolve(process.env.UIX_BASE_PATH, '..');
-      this.homebridgeBinary = path.resolve(node_modules, 'homebridge', 'bin', 'homebridge');
+      this.homebridgeBinary = await this.findHomebridgePath();
       this.logger(`Homebridge Path: ${this.homebridgeBinary}`);
 
       // get the standalone ui binary on this system
@@ -345,6 +344,12 @@ export class HomebridgeServiceHelper {
    */
   private runHomebridge() {
     this.homebridgeStopped = false;
+
+    if (!this.homebridgeBinary || !fs.pathExistsSync(this.homebridgeBinary)) {
+      this.logger('Could not find Homebridge. Make sure you have installed homebridge using the -g flag then restart.', 'fail');
+      this.logger('npm install -g --unsafe-perm homebridge', 'fail');
+      return;
+    }
 
     if (this.homebridgeOpts.length) {
       this.logger(`Starting Homebridge with extra flags: ${this.homebridgeOpts.join(' ')}`);
@@ -439,6 +444,50 @@ export class HomebridgeServiceHelper {
         this.homebridge.kill();
       }
     }
+  }
+
+  /**
+   * Get the global npm directory
+   */
+  private async getNpmGlobalModulesDirectory() {
+    try {
+      const npmPrefix = child_process.execSync('npm -g prefix').toString('utf8').trim();
+      return os.platform() === 'win32' ? path.join(npmPrefix, 'node_modules') : path.join(npmPrefix, 'lib', 'node_modules');
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /**
+   * Finds the homebridge binary
+   */
+  private async findHomebridgePath() {
+    let homebridgeModulePath;
+
+    // check the folder directly above
+    const nodeModules = path.resolve(process.env.UIX_BASE_PATH, '..');
+    if (await fs.pathExists(path.resolve(nodeModules, 'homebridge'))) {
+      homebridgeModulePath = path.resolve(nodeModules, 'homebridge');
+    }
+
+    // check the global npm modules directory
+    if (!homebridgeModulePath) {
+      const globaModules = await this.getNpmGlobalModulesDirectory();
+      if (globaModules && await fs.pathExists(path.resolve(globaModules, 'homebridge'))) {
+        homebridgeModulePath = path.resolve(globaModules, 'homebridge');
+      }
+    }
+
+    if (homebridgeModulePath) {
+      try {
+        const homebridgePackage = await fs.readJson(path.join(homebridgeModulePath, 'package.json'));
+        return path.resolve(homebridgeModulePath, homebridgePackage.bin.homebridge);
+      } catch (e) {
+        console.log(e);
+      }
+    }
+
+    return null;
   }
 
   /**
