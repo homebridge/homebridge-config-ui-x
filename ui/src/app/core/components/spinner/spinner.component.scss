@@ -1,69 +1,47 @@
-// This is just to center the spinner
-
 .app-spinner-container {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
 }
 
-.animate_loader:before {
-    content: '';
-    display: block;
-    padding-top: 100%;
+.animate_loader svg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  width: 200px;
+  overflow: visible;
 }
- 
-.animate_loader .circular {
-    animation: rotate 2s linear infinite;
-    height: 120px;
-    transform-origin: center center;
-    width: 120px;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: auto;
+
+.animate_loader svg mask path {
+  animation-iteration-count: 2;
+  stroke-dasharray: 1300;
+  stroke-dashoffset: 1300;
+  animation: dash 4s alternate-reverse infinite;
+  // animation-delay: 1.75s; 
 }
- 
-.animate_loader .path {
-    stroke-dasharray: 1, 200;
-    stroke-dashoffset: 0;
-    animation: dash 1.5s ease-in-out infinite, color 6s ease-in-out infinite;
-    stroke-linecap: round;
+
+.animate_loader svg g#base path {
+  opacity: 0.3;
 }
- 
-@keyframes rotate{
-    100%{
-        transform: rotate(360deg);
-    }
+
+.animate_loader svg g#draw path {
+  opacity: 0.8;
 }
- 
-@keyframes dash{
-    0%{
-        stroke-dasharray: 1,200;
-        stroke-dashoffset: 0;
-    }
-    50%{
-        stroke-dasharray: 89,200;
-        stroke-dashoffset: -35;
-    }
-    100%{
-        stroke-dasharray: 89,200;
-        stroke-dashoffset: -124;
-    }
-}
- 
-@keyframes color{
-    100%, 0%{
-        stroke: #9c0;
-    }
-    50%{
-        stroke: #FF9300;
-    }
+
+@keyframes dash {
+  50% {
+    stroke-dashoffset: 0; 
+  }
+  100% {
+    stroke-dashoffset: 1300; 
+  }
 }

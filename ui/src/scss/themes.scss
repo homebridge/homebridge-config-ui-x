@@ -48,6 +48,10 @@
       background-color: rgba($primary-dark, 0.2);
       display: none;
     }
+
+    .animated_loader_path {
+      fill: $primary-dark;
+    }
   }
 }
 
