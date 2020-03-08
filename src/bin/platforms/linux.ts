@@ -358,7 +358,7 @@ export class LinuxInstaller {
       `RestartSec=3`,
       `KillMode=process`,
       `CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_CHOWN CAP_FOWNER CAP_DAC_OVERRIDE CAP_AUDIT_WRITE CAP_SYS_ADMIN`,
-      `AmbientCapabilities=CAP_NET_RAW`,
+      `AmbientCapabilities=CAP_NET_RAW CAP_NET_BIND_SERVICE`,
       '',
       `[Install]`,
       `WantedBy=multi-user.target`,
