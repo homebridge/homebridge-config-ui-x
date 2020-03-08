@@ -20,28 +20,3 @@
   width: 200px;
   overflow: visible;
 }
-
-.animate_loader svg mask path {
-  animation-iteration-count: 2;
-  stroke-dasharray: 1300;
-  stroke-dashoffset: 1300;
-  animation: dash 4s alternate-reverse infinite;
-  // animation-delay: 1.75s; 
-}
-
-.animate_loader svg g#base path {
-  opacity: 0.3;
-}
-
-.animate_loader svg g#draw path {
-  opacity: 0.8;
-}
-
-@keyframes dash {
-  50% {
-    stroke-dashoffset: 0; 
-  }
-  100% {
-    stroke-dashoffset: 1300; 
-  }
-}

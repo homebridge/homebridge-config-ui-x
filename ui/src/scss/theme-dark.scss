@@ -247,7 +247,12 @@
     display: none;
   }
 
-  .animated_loader_path {
-    fill: $darkModePrimary;
+  .animate_loader {
+    .spinner_outer {
+      stroke: $darkModePrimary
+    }
+    .spinner_inner {
+      stroke: #FFF;
+    }
   }
 }

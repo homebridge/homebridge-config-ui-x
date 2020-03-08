@@ -49,8 +49,13 @@
       display: none;
     }
 
-    .animated_loader_path {
-      fill: $primary-dark;
+    .animate_loader {
+      .spinner_outer {
+        stroke: $primary-dark
+      }
+      .spinner_inner {
+        stroke: $primary
+      }
     }
   }
 }

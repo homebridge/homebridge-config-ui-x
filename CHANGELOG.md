@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Other Changes
 
 * **i18n:** The display of dates (in the Clock widget for example) are now localised ([#528](https://github.com/oznu/homebridge-config-ui-x/issues/528))
+* Updated the loading spinner to match the set theme
 * Updated npm dependencies
 * Update UI to use Angular 9
 
