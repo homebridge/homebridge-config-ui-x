@@ -55,6 +55,3 @@ export const supportedLocales = {
   'sv': 'sv',
   'no': 'nb', // Norwegian -> no -> nb
 };
-
-
-

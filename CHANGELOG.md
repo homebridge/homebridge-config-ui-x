@@ -11,6 +11,10 @@ All notable changes to this project will be documented in this file. This projec
 * Updated npm dependencies
 * Update UI to use Angular 9
 
+### Bug Fixes
+
+* **Accessory Control:** Address an issue that may have caused the UI to crash when Homebridge becomes unavailable ([#543](https://github.com/oznu/homebridge-config-ui-x/issues/543), [#583](https://github.com/oznu/homebridge-config-ui-x/issues/583))
+
 ## 4.12.0 (2020-03-05)
 
 ### Notable Changes
