@@ -365,9 +365,9 @@ export class HomebridgeServiceHelper {
     Object.assign(env, this.homebridgeCustomEnv);
 
     // child process spawn options
-    const childProcessOpts: child_process.SpawnOptionsWithoutStdio = {
+    const childProcessOpts: child_process.ForkOptions = {
       env,
-      windowsHide: true,
+      silent: true,
     };
 
     // spawn homebridge as a different user (probably for docker)
@@ -382,9 +382,8 @@ export class HomebridgeServiceHelper {
     }
 
     // launch the homebridge process
-    this.homebridge = child_process.spawn(process.execPath,
+    this.homebridge = child_process.fork(this.homebridgeBinary,
       [
-        this.homebridgeBinary,
         '-C',
         '-Q',
         '-U',
