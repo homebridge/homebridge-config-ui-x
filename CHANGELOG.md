@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file. This projec
 
 * **i18n:** The display of dates (in the Clock widget for example) are now localised ([#528](https://github.com/oznu/homebridge-config-ui-x/issues/528))
 * **hb-service:** Linux only: Updated the generated systemd unit file, `homebridge.service`, to allow the UI to listen on ports below 1024 (requires service re-install for existing [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) users) ([#584](https://github.com/oznu/homebridge-config-ui-x/pull/584))
+* **i18n:** Improvements to Traditional Chinese language translations ([#585](https://github.com/oznu/homebridge-config-ui-x/pull/585))
 * Updated the loading spinner to match the set theme
 * Updated npm dependencies
 * Update UI to use Angular 9
