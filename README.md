@@ -1,6 +1,6 @@
-[![npm](https://img.shields.io/npm/v/homebridge-config-ui-x.svg)](https://www.npmjs.com/package/homebridge-config-ui-x) 
-[![npm](https://img.shields.io/npm/dt/homebridge-config-ui-x.svg)](https://www.npmjs.com/package/homebridge-config-ui-x)
-[![Donate](https://img.shields.io/badge/donate-paypal-yellowgreen.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZEW8TFQCU2MSJ&source=url)
+[![npm](https://badgen.net/npm/v/homebridge-config-ui-x/latest)](https://www.npmjs.com/package/homebridge-config-ui-x) 
+[![npm](https://badgen.net/npm/dt/homebridge-config-ui-x)](https://www.npmjs.com/package/homebridge-config-ui-x)
+[![Donate](https://badgen.net/badge/donate/paypal/yellow)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZEW8TFQCU2MSJ&source=url)
 
 Supported Languages: :gb: :de: :fr: :poland: :czech_republic: :ru: :cn: :hungary: :jp: :es: :netherlands: :tr: :it: :bulgaria: :sweden: :norway:
 
