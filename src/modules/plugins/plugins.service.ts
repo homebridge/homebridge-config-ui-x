@@ -17,7 +17,7 @@ export interface HomebridgePlugin {
   name: string;
   displayName?: string;
   description?: string;
-  certifiedPlugin?: boolean;
+  endorsedPlugin?: boolean;
   publicPackage?: boolean;
   installedVersion?: string;
   latestVersion?: boolean;
@@ -44,6 +44,9 @@ export class PluginsService {
 
   // npm package cache
   private npmPackage: HomebridgePlugin;
+
+  // load endorsed plugin list
+  private endorsedPlugins: string[] = [];
 
   // setup requests with default options
   private rp = rp.defaults({
@@ -141,7 +144,7 @@ export class PluginsService {
           pkg.package.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkg.package.name;
         plugin.links = pkg.package.links;
         plugin.author = (pkg.package.publisher) ? pkg.package.publisher.username : null;
-        plugin.certifiedPlugin = (pkg.package.name.indexOf('@homebridge/homebridge-') === 0);
+        plugin.endorsedPlugin = this.endorsedPlugins.includes(pkg.package.name);
 
         return plugin;
       });
@@ -150,7 +153,7 @@ export class PluginsService {
       return await this.searchNpmRegistrySingle(query);
     }
 
-    return result;
+    return _.orderBy(result, ['endorsedPlugin'], ['desc']);
   }
 
   /**
@@ -178,7 +181,7 @@ export class PluginsService {
         name: pkg.name,
         description: (pkg.description) ?
           pkg.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkg.name,
-        certifiedPlugin: (pkg.name.indexOf('@homebridge/homebridge-') === 0),
+        endorsedPlugin: this.endorsedPlugins.includes(pkg.name),
       } as HomebridgePlugin;
 
       // it's not installed; finish building the response
@@ -192,7 +195,7 @@ export class PluginsService {
         bugs: (pkg.bugs) ? pkg.bugs.url : null,
       };
       plugin.author = (pkg.maintainers.length) ? pkg.maintainers[0].name : null;
-      plugin.certifiedPlugin = (pkg.name.indexOf('@homebridge/homebridge-') === 0);
+      plugin.endorsedPlugin = this.endorsedPlugins.includes(pkg.name);
 
       return [plugin];
     } catch (e) {
@@ -608,7 +611,7 @@ export class PluginsService {
       displayName: pjson.displayName,
       description: (pjson.description) ?
         pjson.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pjson.name,
-      certifiedPlugin: (pjson.name.indexOf('@homebridge/homebridge-') === 0),
+      endorsedPlugin: this.endorsedPlugins.includes(pjson.name),
       installedVersion: installPath ? (pjson.version || '0.0.1') : null,
       globalInstall: (installPath !== this.configService.customPluginPath),
       settingsSchema: await fs.pathExists(path.resolve(installPath, pjson.name, 'config.schema.json')),

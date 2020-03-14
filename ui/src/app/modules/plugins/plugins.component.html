@@ -25,13 +25,18 @@
           </p>
         </div>
         <div class="col-sm-6 d-none d-sm-block">
-          <p class="mb-0 grey-text text-right" *ngIf="plugin.author && !plugin.certifiedPlugin">
+          <p class="mb-0 grey-text text-right" *ngIf="plugin.author && !plugin.endorsedPlugin">
             <a class="card-link grey-text" target="_blank" rel="noopener noreferrer"
               [href]="'https://www.npmjs.com/~' + plugin.author">@{{ plugin.author }}</a>
           </p>
-          <p class="mb-0 grey-text text-right" *ngIf="plugin.certifiedPlugin">
-            <span class="card-link green-text"><i class="fas fa-shield-alt"></i>
-              {{'plugins.label_certified_plugin' | translate}}</span>
+          <p class="mb-0 grey-text text-right" *ngIf="plugin.endorsedPlugin">
+            <a class="card-link grey-text" target="_blank" rel="noopener noreferrer"
+              href="https://github.com/homebridge/homebridge/wiki/Endorsed-Plugins" ngbTooltip="@{{ plugin.author }}">
+              <span class="card-link green-text">
+                <i class="fas fa-shield-alt"></i>
+                Verified
+              </span>
+            </a>
           </p>
         </div>
       </div>
