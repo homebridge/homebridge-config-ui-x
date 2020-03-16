@@ -25,13 +25,13 @@
           </p>
         </div>
         <div class="col-sm-6 d-none d-sm-block">
-          <p class="mb-0 grey-text text-right" *ngIf="plugin.author && !plugin.endorsedPlugin">
+          <p class="mb-0 grey-text text-right" *ngIf="plugin.author && !plugin.verifiedPlugin">
             <a class="card-link grey-text" target="_blank" rel="noopener noreferrer"
               [href]="'https://www.npmjs.com/~' + plugin.author">@{{ plugin.author }}</a>
           </p>
-          <p class="mb-0 grey-text text-right" *ngIf="plugin.endorsedPlugin">
+          <p class="mb-0 grey-text text-right" *ngIf="plugin.verifiedPlugin">
             <a class="card-link grey-text" target="_blank" rel="noopener noreferrer"
-              href="https://github.com/homebridge/homebridge/wiki/Endorsed-Plugins" ngbTooltip="@{{ plugin.author }}">
+              href="https://github.com/homebridge/homebridge/wiki/verified-Plugins" ngbTooltip="@{{ plugin.author }}">
               <span class="card-link green-text">
                 <i class="fas fa-shield-alt"></i>
                 Verified
@@ -40,7 +40,9 @@
           </p>
         </div>
       </div>
-      <h4 class="card-title mb-0">{{ plugin.displayName || (plugin.name | replace:'-':' ' | titlecase) }}</h4>
+      <h4 class="card-title mb-0">
+        {{ plugin.displayName || ((plugin.name.charAt(0) === '@' ? plugin.name.split('/')[1] : plugin.name) | replace:'-':' ' | titlecase) }}
+      </h4>
       <p class="card-text">{{ plugin.name }} v{{ plugin.installedVersion || plugin.latestVersion }}
         <span *ngIf="plugin.lastUpdated">({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
       </p>

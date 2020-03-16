@@ -51,7 +51,7 @@ export class SearchPluginsComponent implements OnInit, OnDestroy {
 
   search() {
     this.loading = true;
-    this.$api.get(`/plugins/search/${this.query}`).subscribe(
+    this.$api.get(`/plugins/search/${encodeURIComponent(this.query)}`).subscribe(
       (data) => {
         this.installedPlugins = data;
         this.loading = false;

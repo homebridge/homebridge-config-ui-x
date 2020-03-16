@@ -17,7 +17,7 @@ export interface HomebridgePlugin {
   name: string;
   displayName?: string;
   description?: string;
-  endorsedPlugin?: boolean;
+  verifiedPlugin?: boolean;
   publicPackage?: boolean;
   installedVersion?: string;
   latestVersion?: boolean;
@@ -45,9 +45,6 @@ export class PluginsService {
   // npm package cache
   private npmPackage: HomebridgePlugin;
 
-  // load endorsed plugin list
-  private endorsedPlugins: string[] = [];
-
   // setup requests with default options
   private rp = rp.defaults({
     agent: new https.Agent({ keepAlive: true }),
@@ -72,7 +69,7 @@ export class PluginsService {
 
     // filter out non-homebridge plugins by name
     const homebridgePlugins = modules
-      .filter(module => (module.name.indexOf('homebridge-') === 0))
+      .filter(module => (module.name.indexOf('homebridge-') === 0) || this.isScopedPlugin(module.name))
       .filter(async module => (await fs.pathExists(path.join(module.installPath, 'package.json')).catch(x => null)))
       .filter(x => x);
 
@@ -122,7 +119,7 @@ export class PluginsService {
     const searchResults = await this.rp.get(`https://registry.npmjs.org/-/v1/search?text=${q}`);
 
     const result: HomebridgePlugin[] = searchResults.objects
-      .filter(x => x.package.name.indexOf('homebridge-') === 0)
+      .filter(x => x.package.name.indexOf('homebridge-') === 0 || this.isScopedPlugin(x.package.name))
       .map((pkg) => {
         let plugin: HomebridgePlugin = {
           name: pkg.package.name,
@@ -144,16 +141,16 @@ export class PluginsService {
           pkg.package.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkg.package.name;
         plugin.links = pkg.package.links;
         plugin.author = (pkg.package.publisher) ? pkg.package.publisher.username : null;
-        plugin.endorsedPlugin = this.endorsedPlugins.includes(pkg.package.name);
+        plugin.verifiedPlugin = this.configService.verifiedPlugins.includes(pkg.package.name);
 
         return plugin;
       });
 
-    if (!result.length && query.indexOf('homebridge-') === 0) {
+    if (!result.length && (query.indexOf('homebridge-') === 0 || this.isScopedPlugin(query))) {
       return await this.searchNpmRegistrySingle(query);
     }
 
-    return _.orderBy(result, ['endorsedPlugin'], ['desc']);
+    return _.orderBy(result, ['verifiedPlugin'], ['desc']);
   }
 
   /**
@@ -181,7 +178,7 @@ export class PluginsService {
         name: pkg.name,
         description: (pkg.description) ?
           pkg.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkg.name,
-        endorsedPlugin: this.endorsedPlugins.includes(pkg.name),
+        verifiedPlugin: this.configService.verifiedPlugins.includes(pkg.name),
       } as HomebridgePlugin;
 
       // it's not installed; finish building the response
@@ -195,7 +192,7 @@ export class PluginsService {
         bugs: (pkg.bugs) ? pkg.bugs.url : null,
       };
       plugin.author = (pkg.maintainers.length) ? pkg.maintainers[0].name : null;
-      plugin.endorsedPlugin = this.endorsedPlugins.includes(pkg.name);
+      plugin.verifiedPlugin = this.configService.verifiedPlugins.includes(pkg.name);
 
       return [plugin];
     } catch (e) {
@@ -519,6 +516,26 @@ export class PluginsService {
     }
   }
 
+  private async getInstalledScopedModules(requiredPath, scope): Promise<Array<{ name: string, path: string, installPath: string }>> {
+    try {
+      if ((await fs.stat(path.join(requiredPath, scope))).isDirectory()) {
+        const scopedModules = await fs.readdir(path.join(requiredPath, scope));
+        return scopedModules
+          .filter((x) => x.startsWith('homebridge-'))
+          .map((x) => {
+            return {
+              name: path.join(scope, x).split(path.sep).join('/'),
+              installPath: path.join(requiredPath, scope, x),
+              path: requiredPath,
+            };
+          });
+      }
+    } catch (e) {
+      this.logger.debug(e);
+      return [];
+    }
+  }
+
   /**
    * Returns a list of modules installed
    */
@@ -526,16 +543,27 @@ export class PluginsService {
     const allModules = [];
     // loop over each possible path to find installed plugins
     for (const requiredPath of this.paths) {
-      const modules: any = await fs.readdir(requiredPath);
+      const modules: string[] = await fs.readdir(requiredPath);
       for (const module of modules) {
-        allModules.push({
-          name: module,
-          installPath: path.join(requiredPath, module),
-          path: requiredPath,
-        });
+        if (module.charAt(0) === '@') {
+          allModules.push(...await this.getInstalledScopedModules(requiredPath, module));
+        } else {
+          allModules.push({
+            name: module,
+            installPath: path.join(requiredPath, module),
+            path: requiredPath,
+          });
+        }
       }
     }
     return allModules;
+  }
+
+  /**
+   * Return a boolean if the plugin is an @scoped/homebridge plugin
+   */
+  private isScopedPlugin(name: string): boolean {
+    return (name.charAt(0) === '@' && name.split('/').length > 0 && name.split('/')[1].indexOf('homebridge-') === 0);
   }
 
   /**
@@ -611,7 +639,7 @@ export class PluginsService {
       displayName: pjson.displayName,
       description: (pjson.description) ?
         pjson.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pjson.name,
-      endorsedPlugin: this.endorsedPlugins.includes(pjson.name),
+      verifiedPlugin: this.configService.verifiedPlugins.includes(pjson.name),
       installedVersion: installPath ? (pjson.version || '0.0.1') : null,
       globalInstall: (installPath !== this.configService.customPluginPath),
       settingsSchema: await fs.pathExists(path.resolve(installPath, pjson.name, 'config.schema.json')),
