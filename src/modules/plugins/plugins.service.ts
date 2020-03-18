@@ -473,7 +473,7 @@ export class PluginsService {
    */
   public async getPluginRelease(pluginName: string) {
     if (!this.installedPlugins) await this.getInstalledPlugins();
-    const plugin = this.installedPlugins.find(x => x.name === pluginName);
+    const plugin = pluginName === 'homebridge' ? await this.getHomebridgePackage() : this.installedPlugins.find(x => x.name === pluginName);
     if (!plugin) {
       throw new NotFoundException();
     }

@@ -48,7 +48,7 @@ export class ManagePluginsService {
       size: 'lg',
       backdrop: 'static',
     });
-    ref.componentInstance.action = 'Upgrade';
+    ref.componentInstance.action = 'Update';
     ref.componentInstance.pluginName = 'homebridge';
   }
 
