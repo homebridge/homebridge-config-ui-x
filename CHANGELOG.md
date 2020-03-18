@@ -3,11 +3,16 @@
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
 
-## NEXT
+## 4.13.0 (2020-03-18)
+
+### Notable Changes
+
+* **Plugins:** Added support for scoped npm modules as Homebridge plugins, this means you can install plugins from npm such as `@username/homebridge-plugin`. Requires Homebridge update ([homebridge#2447](https://github.com/homebridge/homebridge/pull/2447))
 
 ### Other Changes
 
 * **i18n:** The display of dates (in the Clock widget for example) are now localised ([#528](https://github.com/oznu/homebridge-config-ui-x/issues/528))
+* **Accessory Control:** If controlling an accessory fails, the error message is now shown in the UI as a toast notification
 * **hb-service:** Linux only: Updated the generated systemd unit file, `homebridge.service`, to allow the UI to listen on ports below 1024 (requires service re-install for existing [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) users) ([#584](https://github.com/oznu/homebridge-config-ui-x/pull/584))
 * **i18n:** Improvements to Traditional Chinese language translations ([#585](https://github.com/oznu/homebridge-config-ui-x/pull/585))
 * **i18n:** Improvements to Dutch language translations ([#588](https://github.com/oznu/homebridge-config-ui-x/pull/588))

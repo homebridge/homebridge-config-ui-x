@@ -1,6 +1,6 @@
 import * as os from 'os';
+import axios from 'axios';
 import * as path from 'path';
-import * as request from 'request';
 import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
 
@@ -168,17 +168,26 @@ export class Win32Installer {
     this.hbService.logger(`Downloading NSSM from ${downloadUrl}`);
 
     return new Promise((resolve, reject) => {
-      request({
-        url: downloadUrl,
+      axios({
         method: 'GET',
-        encoding: null,
-      }).pipe(nssmFile)
-        .on('finish', () => {
-          return resolve(nssmPath);
-        })
-        .on('error', (err) => {
-          return reject(err);
-        });
+        url: downloadUrl,
+        responseType: 'stream'
+      }).then((response) => {
+        response.data.pipe(nssmFile)
+          .on('finish', () => {
+            return resolve(nssmPath);
+          })
+          .on('error', (err) => {
+            return reject(err);
+          });
+      }).catch(async (e) => {
+        // cleanup
+        nssmFile.close();
+        await fs.remove(nssmPath);
+
+        this.hbService.logger(`Failed to download nssm: ${e.message}`, 'fail');
+        process.exit(0);
+      });
     });
   }
 

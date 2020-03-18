@@ -1,4 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { HomebridgePlugin, IPackageJson, INpmSearchResults, INpmRegistryModule } from './types';
+import axios from 'axios';
 import * as os from 'os';
 import * as _ from 'lodash';
 import * as path from 'path';
@@ -6,33 +8,11 @@ import * as https from 'https';
 import * as fs from 'fs-extra';
 import * as child_process from 'child_process';
 import * as semver from 'semver';
-import * as rp from 'request-promise-native';
 import * as color from 'bash-color';
 import * as pty from 'node-pty-prebuilt-multiarch';
 
 import { Logger } from '../../core/logger/logger.service';
 import { ConfigService } from '../../core/config/config.service';
-
-export interface HomebridgePlugin {
-  name: string;
-  displayName?: string;
-  description?: string;
-  verifiedPlugin?: boolean;
-  publicPackage?: boolean;
-  installedVersion?: string;
-  latestVersion?: boolean;
-  lastUpdated?: string;
-  updateAvailable?: boolean;
-  installPath?: string;
-  globalInstall?: boolean;
-  settingsSchema?: boolean;
-  links?: {
-    npm?: string;
-    homepage?: string;
-    bugs?: string;
-  };
-  author?: string;
-}
 
 @Injectable()
 export class PluginsService {
@@ -45,20 +25,24 @@ export class PluginsService {
   // npm package cache
   private npmPackage: HomebridgePlugin;
 
-  // setup requests with default options
-  private rp = rp.defaults({
-    agent: new https.Agent({ keepAlive: true }),
-    json: true,
+  // verified plugins cache
+  private verifiedPlugins: string[] = [];
+
+  // setup http client with default options
+  private http = axios.create({
     headers: {
       'User-Agent': this.configService.package.name,
     },
     timeout: 5000,
+    httpsAgent: new https.Agent({ keepAlive: true })
   });
 
   constructor(
     private configService: ConfigService,
     private logger: Logger,
-  ) { }
+  ) {
+    this.loadVerifiedPluginsList();
+  }
 
   /**
    * Return an array of plugins currently installed
@@ -75,7 +59,7 @@ export class PluginsService {
 
     await Promise.all(homebridgePlugins.map(async (pkg) => {
       try {
-        const pjson = await fs.readJson(path.join(pkg.installPath, 'package.json'));
+        const pjson: IPackageJson = await fs.readJson(path.join(pkg.installPath, 'package.json'));
         // check each plugin has the 'homebridge-plugin' keyword
         if (pjson.keywords && pjson.keywords.includes('homebridge-plugin')) {
           // parse the package.json for each plugin
@@ -116,7 +100,7 @@ export class PluginsService {
     }
 
     const q = ((!query || !query.length) ? '' : query + '+') + 'keywords:homebridge-plugin+not:deprecated&size=30';
-    const searchResults = await this.rp.get(`https://registry.npmjs.org/-/v1/search?text=${q}`);
+    const searchResults: INpmSearchResults = (await this.http.get(`https://registry.npmjs.org/-/v1/search?text=${q}`)).data;
 
     const result: HomebridgePlugin[] = searchResults.objects
       .filter(x => x.package.name.indexOf('homebridge-') === 0 || this.isScopedPlugin(x.package.name))
@@ -141,7 +125,7 @@ export class PluginsService {
           pkg.package.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkg.package.name;
         plugin.links = pkg.package.links;
         plugin.author = (pkg.package.publisher) ? pkg.package.publisher.username : null;
-        plugin.verifiedPlugin = this.configService.verifiedPlugins.includes(pkg.package.name);
+        plugin.verifiedPlugin = this.verifiedPlugins.includes(pkg.package.name);
 
         return plugin;
       });
@@ -160,7 +144,7 @@ export class PluginsService {
    */
   async searchNpmRegistrySingle(query: string): Promise<HomebridgePlugin[]> {
     try {
-      const pkg = await this.rp.get(`https://registry.npmjs.org/${encodeURIComponent(query).replace('%40', '@')}`);
+      const pkg: INpmRegistryModule = (await (this.http.get(`https://registry.npmjs.org/${encodeURIComponent(query).replace('%40', '@')}`))).data;
       if (!pkg.keywords || !pkg.keywords.includes('homebridge-plugin')) {
         return [];
       }
@@ -178,7 +162,7 @@ export class PluginsService {
         name: pkg.name,
         description: (pkg.description) ?
           pkg.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkg.name,
-        verifiedPlugin: this.configService.verifiedPlugins.includes(pkg.name),
+        verifiedPlugin: this.verifiedPlugins.includes(pkg.name),
       } as HomebridgePlugin;
 
       // it's not installed; finish building the response
@@ -192,7 +176,7 @@ export class PluginsService {
         bugs: (pkg.bugs) ? pkg.bugs.url : null,
       };
       plugin.author = (pkg.maintainers.length) ? pkg.maintainers[0].name : null;
-      plugin.verifiedPlugin = this.configService.verifiedPlugins.includes(pkg.name);
+      plugin.verifiedPlugin = this.verifiedPlugins.includes(pkg.name);
 
       return [plugin];
     } catch (e) {
@@ -339,7 +323,7 @@ export class PluginsService {
     }
 
     const homebridgeModule = homebridgeInstalls[0];
-    const pjson = await fs.readJson(path.join(homebridgeModule.installPath, 'package.json'));
+    const pjson: IPackageJson = await fs.readJson(path.join(homebridgeModule.installPath, 'package.json'));
     const homebridge = await this.parsePackageJson(pjson, homebridgeModule.path);
 
     return homebridge;
@@ -384,7 +368,7 @@ export class PluginsService {
         throw new Error('Could not find npm package');
       }
 
-      const pjson = await fs.readJson(path.join(npmPkg.installPath, 'package.json'));
+      const pjson: IPackageJson = await fs.readJson(path.join(npmPkg.installPath, 'package.json'));
       const npm = await this.parsePackageJson(pjson, npmPkg.path) as HomebridgePlugin & { showUpdateWarning?: boolean };
 
       // show the update warning if the installed version is below the minimum recommended
@@ -506,7 +490,7 @@ export class PluginsService {
 
     try {
       const repo = plugin.links.homepage.split('https://github.com/')[1].split('#readme')[0];
-      const release = await this.rp.get(`https://api.github.com/repos/${repo}/releases/latest`);
+      const release = (await this.http.get(`https://api.github.com/repos/${repo}/releases/latest`)).data;
       return {
         name: release.name,
         changelog: release.body,
@@ -633,13 +617,13 @@ export class PluginsService {
    * @param pjson
    * @param installPath
    */
-  private async parsePackageJson(pjson, installPath: string): Promise<HomebridgePlugin> {
+  private async parsePackageJson(pjson: IPackageJson, installPath: string): Promise<HomebridgePlugin> {
     const plugin = {
       name: pjson.name,
       displayName: pjson.displayName,
       description: (pjson.description) ?
         pjson.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pjson.name,
-      verifiedPlugin: this.configService.verifiedPlugins.includes(pjson.name),
+      verifiedPlugin: this.verifiedPlugins.includes(pjson.name),
       installedVersion: installPath ? (pjson.version || '0.0.1') : null,
       globalInstall: (installPath !== this.configService.customPluginPath),
       settingsSchema: await fs.pathExists(path.resolve(installPath, pjson.name, 'config.schema.json')),
@@ -655,7 +639,7 @@ export class PluginsService {
    */
   private async getPluginFromNpm(plugin: HomebridgePlugin): Promise<HomebridgePlugin> {
     try {
-      const pkg = await this.rp.get(`https://registry.npmjs.org/${encodeURIComponent(plugin.name).replace('%40', '@')}`);
+      const pkg: INpmRegistryModule = (await this.http.get(`https://registry.npmjs.org/${encodeURIComponent(plugin.name).replace('%40', '@')}`)).data;
       plugin.publicPackage = true;
       plugin.latestVersion = pkg['dist-tags'].latest;
       plugin.updateAvailable = semver.lt(plugin.installedVersion, plugin.latestVersion);
@@ -781,6 +765,17 @@ export class PluginsService {
         this.logger.error(`Failed to recreate custom plugin directory`);
         this.logger.error(e.message);
       }
+    }
+  }
+
+  /**
+   * Loads the list of verified plugins from github
+   */
+  private async loadVerifiedPluginsList() {
+    try {
+      this.verifiedPlugins = (await this.http.get('https://raw.githubusercontent.com/homebridge/verified/master/verified-plugins.json')).data;
+    } catch (e) {
+      // do nothing
     }
   }
 

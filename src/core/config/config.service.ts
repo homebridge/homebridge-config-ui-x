@@ -48,9 +48,6 @@ export class ConfigService {
   // package.json
   public package = fs.readJsonSync(path.resolve(process.env.UIX_BASE_PATH, 'package.json'));
 
-  // verified plugins
-  public verifiedPlugins = [];
-
   // set true to force the ui to restart on next restart request
   public hbServiceUiRestartRequired = false;
 

@@ -13,6 +13,7 @@ module.exports = {
   target: 'node',
   mode: "production",
   externals: {
+    "axios": "axios",
     "fsevents": "fsevents",
     "node-pty-prebuilt-multiarch": "node-pty-prebuilt-multiarch",
     "@nestjs/common": "@nestjs/common",
@@ -20,8 +21,6 @@ module.exports = {
     "@nestjs/platform-fastify": "@nestjs/platform-fastify",
     "@nestjs/platform-socket.io": "@nestjs/platform-socket.io",
     "@nestjs/websockets": "@nestjs/websockets",
-    "request": "request",
-    "request-promise-native": "request-promise-native",
     "reflect-metadata": "reflect-metadata",
     "rxjs": "rxjs",
     "class-transformer": "class-transformer",
