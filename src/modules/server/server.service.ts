@@ -7,6 +7,7 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { ConfigService } from '../../core/config/config.service';
 import { Logger } from '../../core/logger/logger.service';
 import { ConfigEditorService } from '../config-editor/config-editor.service';
+import { AccessoriesService } from '../accessories/accessories.service';
 
 @Injectable()
 export class ServerService {
@@ -18,6 +19,7 @@ export class ServerService {
   constructor(
     private readonly configService: ConfigService,
     private readonly configEditorService: ConfigEditorService,
+    private readonly accessoriesService: AccessoriesService,
     private readonly logger: Logger,
   ) { }
 
@@ -29,7 +31,10 @@ export class ServerService {
 
     if (this.configService.serviceMode && !(await this.configService.uiRestartRequired())) {
       this.logger.log('UI / Bridge settings have not changed; only restarting Homebridge process');
+      // emit restart request to hb-service
       process.emit('message', 'restartHomebridge', undefined);
+      // reset the pool of discovered homebridge instances
+      this.accessoriesService.resetInstancePool();
       return { ok: true, command: 'SIGTERM' };
     }
 

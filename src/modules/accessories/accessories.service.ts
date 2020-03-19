@@ -164,4 +164,13 @@ export class AccessoriesService {
     this.logger.log(`[${user}] Accessory layout changes saved.`);
     return layout;
   }
+
+  /**
+   * Reset the instance pool and do a full scan for Homebridge instances
+   */
+  public resetInstancePool() {
+    if (this.configService.homebridgeInsecureMode) {
+      this.hapClient.resetInstancePool();
+    }
+  }
 }

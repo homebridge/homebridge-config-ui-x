@@ -395,7 +395,7 @@
         "type": "object",
         "properties": {
           "debug": {
-            "title": " Enable / disable debug level logging for accessory control",
+            "title": " Enable / disable debug level logging for accessory control via the web UI",
             "type": "boolean"
           },
           "instanceBlacklist": {

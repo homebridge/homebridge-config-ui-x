@@ -15,5 +15,8 @@ import { LoggerModule } from '../../core/logger/logger.module';
     AccessoriesService,
     AccessoriesGateway,
   ],
+  exports: [
+    AccessoriesService,
+  ]
 })
 export class AccessoriesModule { }
