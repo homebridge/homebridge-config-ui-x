@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. This projec
 
 # Next
 
+### Other Changes
+
+* Updated npm dependencies
+
 ### Bug Fixes
 
 * **System:** When updating Homebridge, the release notes will now be correctly shown prior to the update occuring
