@@ -465,7 +465,7 @@ export class HomebridgeServiceHelper {
 
     // check the folder directly above
     const nodeModules = path.resolve(process.env.UIX_BASE_PATH, '..');
-    if (await fs.pathExists(path.resolve(nodeModules, 'homebridge'))) {
+    if (await fs.pathExists(path.resolve(nodeModules, 'homebridge', 'package.json'))) {
       homebridgeModulePath = path.resolve(nodeModules, 'homebridge');
     }
 
