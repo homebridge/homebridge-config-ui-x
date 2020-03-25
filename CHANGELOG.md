@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-# Next
+## 4.13.2 (2020-03-25)
 
 ### Other Changes
 
@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Bug Fixes
 
-* **System:** When updating Homebridge, the release notes will now be correctly shown prior to the update occuring
+* **System:** When updating Homebridge, the release notes will now be shown prior to the update occuring
 * **hb-service:** improved discovery of Homebridge install path
 
 ## 4.13.0 (2020-03-18)
