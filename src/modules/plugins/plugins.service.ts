@@ -618,7 +618,7 @@ export class PluginsService {
    * @param installPath
    */
   private async parsePackageJson(pjson: IPackageJson, installPath: string): Promise<HomebridgePlugin> {
-    const plugin = {
+    const plugin: HomebridgePlugin = {
       name: pjson.name,
       displayName: pjson.displayName,
       description: (pjson.description) ?
@@ -629,6 +629,15 @@ export class PluginsService {
       settingsSchema: await fs.pathExists(path.resolve(installPath, pjson.name, 'config.schema.json')),
       installPath,
     };
+
+    // if the plugin is private, do not attempt to query npm
+    if (pjson.private) {
+      plugin.publicPackage = false;
+      plugin.latestVersion = null;
+      plugin.updateAvailable = false;
+      plugin.links = {};
+      return plugin;
+    }
 
     return this.getPluginFromNpm(plugin);
   }
