@@ -8,6 +8,10 @@ All notable changes to this project will be documented in this file. This projec
 
 * **Plugins:** The service will not longer attempt to check if updates are available for plugins that have `"private": true` set in their `package.json` file
 
+### Bug Fixes
+
+* **hb-service:** Fixed a bug in the macOS installer that resulted in the wrong storage path being set in some circumstances ([homebridge#2464](https://github.com/homebridge/homebridge/issues/2464))
+
 ## 4.13.2 (2020-03-25)
 
 ### Other Changes

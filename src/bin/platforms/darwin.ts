@@ -26,6 +26,7 @@ export class DarwinInstaller {
    */
   public async install() {
     this.checkForRoot();
+    this.fixStoragePath();
     await this.hbService.portCheck();
     await this.checkGlobalNpmAccess();
     await this.hbService.storagePathCheck();
@@ -170,6 +171,30 @@ export class DarwinInstaller {
   }
 
   /**
+   * Fix the storage path when running the installer as root
+   */
+  private fixStoragePath() {
+    if (!this.hbService.usingCustomStoragePath) {
+      this.hbService.storagePath = path.resolve(this.getUserHomeDir(), `.${this.hbService.serviceName.toLowerCase()}`);
+    }
+  }
+
+  /**
+   * Resolves the target user home directory when running the install command as SUDO
+   */
+  public getUserHomeDir() {
+    try {
+      const realHomeDir = child_process.execSync(`eval echo "~${this.user}"`).toString('utf8').trim();
+      if (realHomeDir.charAt(0) === '~') {
+        throw new Error('Could not resolve user home directory');
+      }
+      return realHomeDir;
+    } catch (e) {
+      return os.homedir();
+    }
+  }
+
+  /**
    * Checks if the user has write access to the global npm directory
    */
   private async checkGlobalNpmAccess() {
@@ -229,6 +254,8 @@ export class DarwinInstaller {
       `             <string>-U</string>`,
       `             <string>${this.hbService.storagePath}</string>`,
       `        </array>`,
+      `    <key>WorkingDirectory</key>`,
+      `         <string>${this.hbService.storagePath}</string>`,
       `    <key>StandardOutPath</key>`,
       `        <string>${this.hbService.storagePath}/homebridge.log</string>`,
       `    <key>StandardErrorPath</key>`,
@@ -240,7 +267,7 @@ export class DarwinInstaller {
       `            <key>PATH</key>`,
       `                <string>${process.env.PATH}</string>`,
       `            <key>HOME</key>`,
-      `                <string>${os.homedir()}</string>`,
+      `                <string>${this.getUserHomeDir()}</string>`,
       `            <key>UIX_STORAGE_PATH</key>`,
       `                <string>${this.hbService.storagePath}</string>`,
       `        </dict>`,

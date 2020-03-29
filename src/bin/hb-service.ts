@@ -25,6 +25,7 @@ export class HomebridgeServiceHelper {
   public selfPath = __filename;
   public serviceName = 'Homebridge';
   public storagePath;
+  public usingCustomStoragePath = false;
   public allowRunRoot = false;
   public asUser;
   private log: fs.WriteStream | NodeJS.WriteStream;
@@ -75,7 +76,7 @@ export class HomebridgeServiceHelper {
       .allowUnknownOption()
       .arguments('<install|uninstall|start|stop|restart|rebuild|run|logs>')
       .option('-P, --plugin-path [path]', '', (p) => { process.env.UIX_CUSTOM_PLUGIN_PATH = p; this.homebridgeOpts.push('-P', p); })
-      .option('-U, --user-storage-path [path]', '', (p) => this.storagePath = p)
+      .option('-U, --user-storage-path [path]', '', (p) => { this.storagePath = p; this.usingCustomStoragePath = true; })
       .option('-S, --service-name [service name]', 'The name of the homebridge service to install or control', (p) => this.serviceName = p)
       .option('--port [port]', 'The port to set to the Homebridge UI when installing as a service', (p) => this.uiPort = parseInt(p, 10))
       .option('--user [user]', 'The user account the Homebridge service will be installed as (Linux, macOS only)', (p) => this.asUser = p)
@@ -533,7 +534,7 @@ export class HomebridgeServiceHelper {
     if (inUse) {
       this.logger(`ERROR: Port ${this.uiPort} is already in use by another process on this host.`, 'fail');
       this.logger(`You can specify another port using the --port flag, eg.`, 'fail');
-      this.logger(`hb-service ${this.action} --port 8581`, 'fail');
+      this.logger(`EXAMPLE: hb-service ${this.action} --port 8581`, 'fail');
       process.exit(1);
     }
   }
