@@ -2,11 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## NEXT
+## 4.13.3 (2020-03-31)
 
 ### Other Changes
 
 * **Plugins:** The service will not longer attempt to check if updates are available for plugins that have `"private": true` set in their `package.json` file
+* Updated npm dependencies
 
 ### Bug Fixes
 
