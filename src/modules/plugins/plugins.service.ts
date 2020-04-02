@@ -41,6 +41,24 @@ export class PluginsService {
     private configService: ConfigService,
     private logger: Logger,
   ) {
+
+    /**
+     * The "timeout" option on axios is the response timeout
+     * If the user has no internet, the dns lookup may take a long time to timeout
+     * As the dns lookup timeout is not configurable in Node.js, this interceptor
+     * will cancel the request after 15 seconds.
+     */
+    this.http.interceptors.request.use((config) => {
+      const source = axios.CancelToken.source();
+      config.cancelToken = source.token;
+
+      setTimeout(() => {
+        source.cancel('Timeout: request took more than 15 seconds');
+      }, 15000);
+
+      return config;
+    });
+
     this.loadVerifiedPluginsList();
   }
 
@@ -500,6 +518,9 @@ export class PluginsService {
     }
   }
 
+  /**
+   * Load any @scoped homebridge modules
+   */
   private async getInstalledScopedModules(requiredPath, scope): Promise<Array<{ name: string, path: string, installPath: string }>> {
     try {
       if ((await fs.stat(path.join(requiredPath, scope))).isDirectory()) {
