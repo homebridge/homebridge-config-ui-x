@@ -28,6 +28,12 @@ export class PluginsService {
   // verified plugins cache
   private verifiedPlugins: string[] = [];
 
+  // misc schemas
+  private miscSchemas = {
+    'homebridge-tplink-smarthome': path.join(process.env.UIX_BASE_PATH, 'misc-schemas', 'homebridge-tplink-smarthome.json'),
+    'homebridge-platform-wemo': path.join(process.env.UIX_BASE_PATH, 'misc-schemas', 'homebridge-platform-wemo.json'),
+  };
+
   // setup http client with default options
   private http = axios.create({
     headers: {
@@ -434,6 +440,11 @@ export class PluginsService {
     }
 
     const schemaPath = path.resolve(plugin.installPath, pluginName, 'config.schema.json');
+
+    if (this.miscSchemas[pluginName] && !await fs.pathExists(schemaPath)) {
+      return await fs.readJson(this.miscSchemas[pluginName]);
+    }
+
     let configSchema = await fs.readJson(schemaPath);
 
     // check to see if this plugin implements dynamic schemas
@@ -647,7 +658,7 @@ export class PluginsService {
       verifiedPlugin: this.verifiedPlugins.includes(pjson.name),
       installedVersion: installPath ? (pjson.version || '0.0.1') : null,
       globalInstall: (installPath !== this.configService.customPluginPath),
-      settingsSchema: await fs.pathExists(path.resolve(installPath, pjson.name, 'config.schema.json')),
+      settingsSchema: await fs.pathExists(path.resolve(installPath, pjson.name, 'config.schema.json')) || this.miscSchemas[pjson.name],
       installPath,
     };
 

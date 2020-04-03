@@ -1,0 +1,128 @@
+{
+  "pluginAlias": "BelkinWeMo",
+  "pluginType": "platform",
+  "headerDisplay": "<p align='center'><img width='150px' src='https://raw.githubusercontent.com/donavanbecker/homebridge-belkin-wemo/master/wemo/wemo.png'></p>\n\nThe **Homebridge Belkin WeMo** plugin allows you to control your WeMo Devices from HomeKit. To get started setup your config below.",
+  "footerDisplay": "</p>\n\nFor Wemo Client see [Manual Setup Wiki](https://github.com/donavanbecker/homebridge-belkin-wemo/wiki/Manual-Setup).</p>\n\nYour WeMo device is setup, Pull Request are welcome at our [project page](https://github.com/donavanbecker/homebridge-meross/issues).",
+  "singular": true,
+  "schema": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "title": "Name",
+        "description": "The Name that will show up in homebridge log.",
+        "default": "Belkin WeMo",
+        "required": true
+      },
+      "noMotionTimer": {
+        "type": "integer",
+        "title": "No Motion Timer",
+        "description": "It is a timer in seconds for how long after motion is not detected that the state is changed.",
+        "placeholder": 60
+      },
+      "ignoredDevices": {
+        "title": "Ignored Devices",
+        "type": "array",
+        "items": {
+          "type": "string",
+          "pattern": "^([A-Fa-f0-9]{2}:){5}[A-Fa-f0-9]{2}$",
+          "description": "Expects an array of serial numbers, any devices found with matching serial numbers will be skipped or removed from Homebridge."
+        }
+      },
+      "manualDevices": {
+        "title": "Manual Devices",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "discovery": {
+        "type": "boolean",
+        "title": "Discovery",
+        "description": "default: true. A way to disable device discovery if not required."
+      }
+    }
+  },
+  "layout": [
+    {
+      "type": "flex",
+      "flex-flow": "row wrap",
+      "items": [
+        {
+          "key": "name",
+          "type": "name"
+        }
+      ]
+    },
+    {
+      "type": "fieldset",
+      "title": "Optional Configuration",
+      "expandable": true,
+      "items": [
+        {
+          "type": "help",
+          "helpvalue": "<h6>Devices To Ignore</h6><em class='primary-text'></em>"
+        },
+        {
+          "key": "ignoredDevices",
+          "add": "Add Another Devices To Ignore",
+          "type": "array",
+          "pattern": "^([A-Fa-f0-9]{2}:){5}[A-Fa-f0-9]{2}$",
+          "nodescription": true,
+          "notitle": true,
+          "items": [
+            {
+              "type": "div",
+              "displayFlex": true,
+              "flex-direction": "row wrap",
+              "nodescription": true,
+              "notitle": true,
+              "items": [
+                {
+                  "key": "ignoredDevices[]",
+                  "placeholder": "Device serial number.",
+                  "notitle": true,
+                  "description": "Devices with matching serial numbers will be skipped or removed from Homebridge."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "help",
+          "helpvalue": "<h6>Manually Configured Devices</h6><em class='primary-text'></em>"
+        },
+        {
+          "key": "manualDevices",
+          "add": "Add Another Manual Devices",
+          "type": "array",
+          "nodescription": true,
+          "notitle": true,
+          "items": [
+            {
+              "type": "div",
+              "displayFlex": true,
+              "flex-direction": "row wrap",
+              "nodescription": true,
+              "notitle": true,
+              "items": [
+                {
+                  "key": "manualDevices[]",
+                  "placeholder": "\nhttp://192.168.1.20:49153/setup.xml",
+                  "notitle": true,
+                  "description": "Devices to be configured manually outside the device discovery process."
+                }
+              ]
+            }
+          ]
+        },
+        "noMotionTimer",
+        "discovery",
+        {
+          "type": "help",
+          "helpvalue": "<h6>Wemo Client</h6><em class='primary-text'>See Manual Setup Wiki to manually configure this.</em>"
+        }
+      ]
+    }
+  ]
+}
