@@ -35,8 +35,8 @@ export class UsersAddComponent implements OnInit {
       passwordConfirm: ['', Validators.required],
       admin: [true],
     }, {
-        validator: this.matchPassword,
-      });
+      validator: this.matchPassword,
+    });
   }
 
   matchPassword(AC: AbstractControl) {
@@ -56,7 +56,10 @@ export class UsersAddComponent implements OnInit {
         this.toastr.success(this.translate.instant('users.toast_added_new_user'), this.translate.instant('toast.title_success'));
       },
       err => {
-        this.toastr.error(this.translate.instant('users.toast_failed_to_add_user'), this.translate.instant('toast.title_error'));
+        this.toastr.error(
+          err.error.message || this.translate.instant('users.toast_failed_to_add_user'),
+          this.translate.instant('toast.title_error'),
+        );
       },
     );
   }

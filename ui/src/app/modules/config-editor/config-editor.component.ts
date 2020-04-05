@@ -359,6 +359,14 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                     default: '630-27-655',
                     pattern: '^([0-9]{3}-[0-9]{2}-[0-9]{3})$',
                   },
+                  manufacturer: {
+                    type: 'string',
+                    description: 'The bridge manufacturer to be displayed in HomeKit',
+                  },
+                  model: {
+                    type: 'string',
+                    description: 'The bridge model to be displayed  in HomeKit',
+                  },
                 },
                 default: { name: 'Homebridge', username: '0E:89:49:64:91:86', port: 51173, pin: '630-27-655' },
               },
@@ -452,7 +460,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                 description: 'Plugins that expose a "Accessory" should have there config entered in this array.\nSeperate each plugin config block using a comma.',
                 items: {
                   type: 'object',
-                  required: ['accessory'],
+                  required: ['accessory', 'name'],
                   properties: {
                     accessory: {
                       type: 'string',

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { debounceTime } from 'rxjs/operators';
@@ -27,6 +27,7 @@ export class SettingsComponent implements OnInit {
     public $toastr: ToastrService,
     private $modal: NgbModal,
     private $route: ActivatedRoute,
+    private $router: Router,
     private translate: TranslateService,
   ) { }
 
@@ -103,5 +104,15 @@ export class SettingsComponent implements OnInit {
     });
   }
 
+  forceRestartService() {
+    this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}).subscribe(
+      () => {
+        this.$router.navigate(['/restart']);
+      },
+      (err) => {
+        this.$toastr.error(err.message, 'Failed to set force setvice restart flag.');
+      },
+    );
+  }
 
 }

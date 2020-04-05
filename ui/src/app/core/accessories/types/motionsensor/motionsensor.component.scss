@@ -1,0 +1,25 @@
+::ng-deep {
+  .switch-off {
+    svg {
+      .motion_sensor_person, .motion_sensor_trail_lines {
+        fill: #E0E0E0;
+      }
+      .motion_sensor_trigger_lines {
+        display: none;
+      }
+      .motion_sensor_background {
+        fill: #808080;
+      }
+    }
+  }
+}
+
+::ng-deep body.config-ui-x-dark-mode {
+  .switch-off {
+    svg {
+      .motion_sensor_person, .motion_sensor_trail_lines {
+        fill: #2B2B2B;
+      }
+    }
+  }
+}

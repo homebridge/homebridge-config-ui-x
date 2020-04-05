@@ -21,4 +21,10 @@ export class HbServiceController {
   setHomebridgeStartupSettings(@Body() body) {
     return this.hbServiceService.setHomebridgeStartupSettings(body);
   }
+
+  @UseGuards(AdminGuard)
+  @Put('set-full-service-restart-flag')
+  setFullServiceRestartFlag() {
+    return this.hbServiceService.setFullServiceRestartFlag();
+  }
 }

@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { Logger } from '../../../../core/logger/logger.service';
-import * as rp from 'request-promise-native';
+import axios from 'axios';
 
 @Injectable()
 export class HomebridgeRingService {
@@ -13,26 +13,27 @@ export class HomebridgeRingService {
    */
   async exchangeCredentials(credentials) {
     try {
-      return await rp.post('https://oauth.ring.com/oauth/token', {
-        headers: {
-          'content-type': 'application/json',
-          '2fa-support': 'true',
-          '2fa-code': credentials.twoFactorAuthCode || '',
-        },
-        json: {
+      return (await axios.post('https://oauth.ring.com/oauth/token',
+        {
           client_id: 'ring_official_android',
           scope: 'client',
           grant_type: 'password',
           password: credentials.password,
           username: credentials.email,
         },
-      });
+        {
+          headers: {
+            'content-type': 'application/json',
+            '2fa-support': 'true',
+            '2fa-code': credentials.twoFactorAuthCode || '',
+          }
+        })).data;
     } catch (e) {
-      if (e.response && e.response.statusCode === 412) {
+      if (e.response && e.response.status === 412) {
         // 2fa required
-        return new HttpException(e.response.body, 412);
-      } else if (e.response) {
-        return new UnauthorizedException(e.response.body);
+        return new HttpException(e.response.data, 412);
+      } else if (e.response.data) {
+        return new UnauthorizedException(e.response.data);
       } else {
         this.logger.error('[homebridge-ring] - Failed to get credentials');
         this.logger.error(e);

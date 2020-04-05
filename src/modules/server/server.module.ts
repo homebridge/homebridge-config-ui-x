@@ -5,6 +5,7 @@ import { ServerService } from './server.service';
 import { ServerController } from './server.controller';
 import { LoggerModule } from '../../core/logger/logger.module';
 import { ConfigEditorModule } from '../config-editor/config-editor.module';
+import { AccessoriesModule } from '../accessories/accessories.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { ConfigEditorModule } from '../config-editor/config-editor.module';
     ConfigModule,
     LoggerModule,
     ConfigEditorModule,
+    AccessoriesModule,
   ],
   providers: [
     ServerService,

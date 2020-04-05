@@ -60,11 +60,11 @@
               {{ 'menu.docker.label_restart_container' | translate }}
             </a>
             <a class="dropdown-item waves-effect waves-light" *ngIf="$auth.env.runningInLinux && $auth.user.admin"
-              routerLink="/platform-tools/linux/restart-server">
+              (click)="restartServer()">
               {{ 'menu.linux.label_restart_server' | translate }}
             </a>
             <a class="dropdown-item waves-effect waves-light" *ngIf="$auth.env.runningInLinux && $auth.user.admin"
-              routerLink="/platform-tools/linux/shutdown-server">
+              (click)="shutdownServer()">
               {{ 'menu.linux.label_shutdown_server' | translate }}
             </a>
             <div class="dropdown-divider"

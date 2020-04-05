@@ -1,4 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { HomebridgePlugin, IPackageJson, INpmSearchResults, INpmRegistryModule } from './types';
+import axios from 'axios';
 import * as os from 'os';
 import * as _ from 'lodash';
 import * as path from 'path';
@@ -6,33 +8,11 @@ import * as https from 'https';
 import * as fs from 'fs-extra';
 import * as child_process from 'child_process';
 import * as semver from 'semver';
-import * as rp from 'request-promise-native';
 import * as color from 'bash-color';
 import * as pty from 'node-pty-prebuilt-multiarch';
 
 import { Logger } from '../../core/logger/logger.service';
 import { ConfigService } from '../../core/config/config.service';
-
-export interface HomebridgePlugin {
-  name: string;
-  displayName?: string;
-  description?: string;
-  certifiedPlugin?: boolean;
-  publicPackage?: boolean;
-  installedVersion?: string;
-  latestVersion?: boolean;
-  lastUpdated?: string;
-  updateAvailable?: boolean;
-  installPath?: string;
-  globalInstall?: boolean;
-  settingsSchema?: boolean;
-  links?: {
-    npm?: string;
-    homepage?: string;
-    bugs?: string;
-  };
-  author?: string;
-}
 
 @Injectable()
 export class PluginsService {
@@ -45,20 +25,48 @@ export class PluginsService {
   // npm package cache
   private npmPackage: HomebridgePlugin;
 
-  // setup requests with default options
-  private rp = rp.defaults({
-    agent: new https.Agent({ keepAlive: true }),
-    json: true,
+  // verified plugins cache
+  private verifiedPlugins: string[] = [];
+
+  // misc schemas
+  private miscSchemas = {
+    'homebridge-tplink-smarthome': path.join(process.env.UIX_BASE_PATH, 'misc-schemas', 'homebridge-tplink-smarthome.json'),
+    'homebridge-platform-wemo': path.join(process.env.UIX_BASE_PATH, 'misc-schemas', 'homebridge-platform-wemo.json'),
+  };
+
+  // setup http client with default options
+  private http = axios.create({
     headers: {
       'User-Agent': this.configService.package.name,
     },
     timeout: 5000,
+    httpsAgent: new https.Agent({ keepAlive: true })
   });
 
   constructor(
     private configService: ConfigService,
     private logger: Logger,
-  ) { }
+  ) {
+
+    /**
+     * The "timeout" option on axios is the response timeout
+     * If the user has no internet, the dns lookup may take a long time to timeout
+     * As the dns lookup timeout is not configurable in Node.js, this interceptor
+     * will cancel the request after 15 seconds.
+     */
+    this.http.interceptors.request.use((config) => {
+      const source = axios.CancelToken.source();
+      config.cancelToken = source.token;
+
+      setTimeout(() => {
+        source.cancel('Timeout: request took more than 15 seconds');
+      }, 15000);
+
+      return config;
+    });
+
+    this.loadVerifiedPluginsList();
+  }
 
   /**
    * Return an array of plugins currently installed
@@ -69,13 +77,13 @@ export class PluginsService {
 
     // filter out non-homebridge plugins by name
     const homebridgePlugins = modules
-      .filter(module => (module.name.indexOf('homebridge-') === 0))
+      .filter(module => (module.name.indexOf('homebridge-') === 0) || this.isScopedPlugin(module.name))
       .filter(async module => (await fs.pathExists(path.join(module.installPath, 'package.json')).catch(x => null)))
       .filter(x => x);
 
     await Promise.all(homebridgePlugins.map(async (pkg) => {
       try {
-        const pjson = await fs.readJson(path.join(pkg.installPath, 'package.json'));
+        const pjson: IPackageJson = await fs.readJson(path.join(pkg.installPath, 'package.json'));
         // check each plugin has the 'homebridge-plugin' keyword
         if (pjson.keywords && pjson.keywords.includes('homebridge-plugin')) {
           // parse the package.json for each plugin
@@ -116,10 +124,10 @@ export class PluginsService {
     }
 
     const q = ((!query || !query.length) ? '' : query + '+') + 'keywords:homebridge-plugin+not:deprecated&size=30';
-    const searchResults = await this.rp.get(`https://registry.npmjs.org/-/v1/search?text=${q}`);
+    const searchResults: INpmSearchResults = (await this.http.get(`https://registry.npmjs.org/-/v1/search?text=${q}`)).data;
 
     const result: HomebridgePlugin[] = searchResults.objects
-      .filter(x => x.package.name.indexOf('homebridge-') === 0)
+      .filter(x => x.package.name.indexOf('homebridge-') === 0 || this.isScopedPlugin(x.package.name))
       .map((pkg) => {
         let plugin: HomebridgePlugin = {
           name: pkg.package.name,
@@ -141,16 +149,16 @@ export class PluginsService {
           pkg.package.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkg.package.name;
         plugin.links = pkg.package.links;
         plugin.author = (pkg.package.publisher) ? pkg.package.publisher.username : null;
-        plugin.certifiedPlugin = (pkg.package.name.indexOf('@homebridge/homebridge-') === 0);
+        plugin.verifiedPlugin = this.verifiedPlugins.includes(pkg.package.name);
 
         return plugin;
       });
 
-    if (!result.length && query.indexOf('homebridge-') === 0) {
+    if (!result.length && (query.indexOf('homebridge-') === 0 || this.isScopedPlugin(query))) {
       return await this.searchNpmRegistrySingle(query);
     }
 
-    return result;
+    return _.orderBy(result, ['verifiedPlugin'], ['desc']);
   }
 
   /**
@@ -160,7 +168,7 @@ export class PluginsService {
    */
   async searchNpmRegistrySingle(query: string): Promise<HomebridgePlugin[]> {
     try {
-      const pkg = await this.rp.get(`https://registry.npmjs.org/${encodeURIComponent(query).replace('%40', '@')}`);
+      const pkg: INpmRegistryModule = (await (this.http.get(`https://registry.npmjs.org/${encodeURIComponent(query).replace('%40', '@')}`))).data;
       if (!pkg.keywords || !pkg.keywords.includes('homebridge-plugin')) {
         return [];
       }
@@ -178,7 +186,7 @@ export class PluginsService {
         name: pkg.name,
         description: (pkg.description) ?
           pkg.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkg.name,
-        certifiedPlugin: (pkg.name.indexOf('@homebridge/homebridge-') === 0),
+        verifiedPlugin: this.verifiedPlugins.includes(pkg.name),
       } as HomebridgePlugin;
 
       // it's not installed; finish building the response
@@ -192,7 +200,7 @@ export class PluginsService {
         bugs: (pkg.bugs) ? pkg.bugs.url : null,
       };
       plugin.author = (pkg.maintainers.length) ? pkg.maintainers[0].name : null;
-      plugin.certifiedPlugin = (pkg.name.indexOf('@homebridge/homebridge-') === 0);
+      plugin.verifiedPlugin = this.verifiedPlugins.includes(pkg.name);
 
       return [plugin];
     } catch (e) {
@@ -333,12 +341,13 @@ export class PluginsService {
     }
 
     if (!homebridgeInstalls.length) {
+      this.configService.hbServiceUiRestartRequired = true;
       this.logger.error('Unable To Find Homebridge Installation');
       throw new Error('Unable To Find Homebridge Installation');
     }
 
     const homebridgeModule = homebridgeInstalls[0];
-    const pjson = await fs.readJson(path.join(homebridgeModule.installPath, 'package.json'));
+    const pjson: IPackageJson = await fs.readJson(path.join(homebridgeModule.installPath, 'package.json'));
     const homebridge = await this.parsePackageJson(pjson, homebridgeModule.path);
 
     return homebridge;
@@ -383,7 +392,7 @@ export class PluginsService {
         throw new Error('Could not find npm package');
       }
 
-      const pjson = await fs.readJson(path.join(npmPkg.installPath, 'package.json'));
+      const pjson: IPackageJson = await fs.readJson(path.join(npmPkg.installPath, 'package.json'));
       const npm = await this.parsePackageJson(pjson, npmPkg.path) as HomebridgePlugin & { showUpdateWarning?: boolean };
 
       // show the update warning if the installed version is below the minimum recommended
@@ -431,6 +440,11 @@ export class PluginsService {
     }
 
     const schemaPath = path.resolve(plugin.installPath, pluginName, 'config.schema.json');
+
+    if (this.miscSchemas[pluginName] && !await fs.pathExists(schemaPath)) {
+      return await fs.readJson(this.miscSchemas[pluginName]);
+    }
+
     let configSchema = await fs.readJson(schemaPath);
 
     // check to see if this plugin implements dynamic schemas
@@ -488,7 +502,7 @@ export class PluginsService {
    */
   public async getPluginRelease(pluginName: string) {
     if (!this.installedPlugins) await this.getInstalledPlugins();
-    const plugin = this.installedPlugins.find(x => x.name === pluginName);
+    const plugin = pluginName === 'homebridge' ? await this.getHomebridgePackage() : this.installedPlugins.find(x => x.name === pluginName);
     if (!plugin) {
       throw new NotFoundException();
     }
@@ -505,7 +519,7 @@ export class PluginsService {
 
     try {
       const repo = plugin.links.homepage.split('https://github.com/')[1].split('#readme')[0];
-      const release = await this.rp.get(`https://api.github.com/repos/${repo}/releases/latest`);
+      const release = (await this.http.get(`https://api.github.com/repos/${repo}/releases/latest`)).data;
       return {
         name: release.name,
         changelog: release.body,
@@ -516,22 +530,56 @@ export class PluginsService {
   }
 
   /**
+   * Load any @scoped homebridge modules
+   */
+  private async getInstalledScopedModules(requiredPath, scope): Promise<Array<{ name: string, path: string, installPath: string }>> {
+    try {
+      if ((await fs.stat(path.join(requiredPath, scope))).isDirectory()) {
+        const scopedModules = await fs.readdir(path.join(requiredPath, scope));
+        return scopedModules
+          .filter((x) => x.startsWith('homebridge-'))
+          .map((x) => {
+            return {
+              name: path.join(scope, x).split(path.sep).join('/'),
+              installPath: path.join(requiredPath, scope, x),
+              path: requiredPath,
+            };
+          });
+      }
+    } catch (e) {
+      this.logger.debug(e);
+      return [];
+    }
+  }
+
+  /**
    * Returns a list of modules installed
    */
   private async getInstalledModules(): Promise<Array<{ name: string, path: string, installPath: string }>> {
     const allModules = [];
     // loop over each possible path to find installed plugins
     for (const requiredPath of this.paths) {
-      const modules: any = await fs.readdir(requiredPath);
+      const modules: string[] = await fs.readdir(requiredPath);
       for (const module of modules) {
-        allModules.push({
-          name: module,
-          installPath: path.join(requiredPath, module),
-          path: requiredPath,
-        });
+        if (module.charAt(0) === '@') {
+          allModules.push(...await this.getInstalledScopedModules(requiredPath, module));
+        } else {
+          allModules.push({
+            name: module,
+            installPath: path.join(requiredPath, module),
+            path: requiredPath,
+          });
+        }
       }
     }
     return allModules;
+  }
+
+  /**
+   * Return a boolean if the plugin is an @scoped/homebridge plugin
+   */
+  private isScopedPlugin(name: string): boolean {
+    return (name.charAt(0) === '@' && name.split('/').length > 0 && name.split('/')[1].indexOf('homebridge-') === 0);
   }
 
   /**
@@ -601,18 +649,27 @@ export class PluginsService {
    * @param pjson
    * @param installPath
    */
-  private async parsePackageJson(pjson, installPath: string): Promise<HomebridgePlugin> {
-    const plugin = {
+  private async parsePackageJson(pjson: IPackageJson, installPath: string): Promise<HomebridgePlugin> {
+    const plugin: HomebridgePlugin = {
       name: pjson.name,
       displayName: pjson.displayName,
       description: (pjson.description) ?
         pjson.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pjson.name,
-      certifiedPlugin: (pjson.name.indexOf('@homebridge/homebridge-') === 0),
+      verifiedPlugin: this.verifiedPlugins.includes(pjson.name),
       installedVersion: installPath ? (pjson.version || '0.0.1') : null,
       globalInstall: (installPath !== this.configService.customPluginPath),
-      settingsSchema: await fs.pathExists(path.resolve(installPath, pjson.name, 'config.schema.json')),
+      settingsSchema: await fs.pathExists(path.resolve(installPath, pjson.name, 'config.schema.json')) || this.miscSchemas[pjson.name],
       installPath,
     };
+
+    // if the plugin is private, do not attempt to query npm
+    if (pjson.private) {
+      plugin.publicPackage = false;
+      plugin.latestVersion = null;
+      plugin.updateAvailable = false;
+      plugin.links = {};
+      return plugin;
+    }
 
     return this.getPluginFromNpm(plugin);
   }
@@ -623,7 +680,7 @@ export class PluginsService {
    */
   private async getPluginFromNpm(plugin: HomebridgePlugin): Promise<HomebridgePlugin> {
     try {
-      const pkg = await this.rp.get(`https://registry.npmjs.org/${encodeURIComponent(plugin.name).replace('%40', '@')}`);
+      const pkg: INpmRegistryModule = (await this.http.get(`https://registry.npmjs.org/${encodeURIComponent(plugin.name).replace('%40', '@')}`)).data;
       plugin.publicPackage = true;
       plugin.latestVersion = pkg['dist-tags'].latest;
       plugin.updateAvailable = semver.lt(plugin.installedVersion, plugin.latestVersion);
@@ -635,7 +692,7 @@ export class PluginsService {
       plugin.author = (pkg.maintainers.length) ? pkg.maintainers[0].name : null;
     } catch (e) {
       if (e.statusCode !== 404) {
-        this.logger.error(`[${plugin.name}] ${e.message}`);
+        this.logger.log(`[${plugin.name}] Failed to check registry.npmjs.org for updates: ${e.message}`);
       }
       plugin.publicPackage = false;
       plugin.latestVersion = null;
@@ -749,6 +806,17 @@ export class PluginsService {
         this.logger.error(`Failed to recreate custom plugin directory`);
         this.logger.error(e.message);
       }
+    }
+  }
+
+  /**
+   * Loads the list of verified plugins from github
+   */
+  private async loadVerifiedPluginsList() {
+    try {
+      this.verifiedPlugins = (await this.http.get('https://raw.githubusercontent.com/homebridge/verified/master/verified-plugins.json')).data;
+    } catch (e) {
+      // do nothing
     }
   }
 

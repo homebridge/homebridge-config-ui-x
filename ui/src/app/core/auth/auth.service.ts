@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import * as dayjs from 'dayjs';
 import { ApiService } from '../api.service';
@@ -26,6 +27,7 @@ interface EnvInterface {
   runningInLinux: boolean;
   dockerOfflineUpdate: boolean;
   serviceMode: boolean;
+  lang: string | null;
   temperatureUnits: string;
   instanceId: string;
 }
@@ -46,6 +48,7 @@ export class AuthService {
     private $api: ApiService,
     private $toastr: ToastrService,
     private titleService: Title,
+    private translate: TranslateService,
   ) {
     // load the token (if present) from local storage on page init
     this.loadToken();
@@ -149,9 +152,10 @@ export class AuthService {
         this.formAuth = data.formAuth;
         this.env = data.env;
         this.setTheme(data.theme || 'auto');
-        this.setTitle(data.env.homebridgeInstanceName);
+        this.setTitle(this.env.homebridgeInstanceName);
         this.checkServerTime(data.serverTimestamp);
         this.setUiVersion(data.env.packageVersion);
+        this.setLang(this.env.lang);
         this.settingsLoaded = true;
       });
   }
@@ -183,6 +187,12 @@ export class AuthService {
   setUiVersion(version) {
     if (!this.uiVersion) {
       this.uiVersion = version;
+    }
+  }
+
+  setLang(lang: string) {
+    if (lang) {
+      this.translate.use(lang);
     }
   }
 

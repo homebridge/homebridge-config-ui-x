@@ -246,4 +246,13 @@
     background-color: rgba(#ffa000, 0.2);
     display: none;
   }
+
+  .animate_loader {
+    .spinner_outer {
+      stroke: $darkModePrimary
+    }
+    .spinner_inner {
+      stroke: #FFF;
+    }
+  }
 }

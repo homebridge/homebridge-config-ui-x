@@ -1,12 +1,13 @@
-[![npm](https://img.shields.io/npm/v/homebridge-config-ui-x.svg)](https://www.npmjs.com/package/homebridge-config-ui-x) 
-[![npm](https://img.shields.io/npm/dt/homebridge-config-ui-x.svg)](https://www.npmjs.com/package/homebridge-config-ui-x)
-[![Donate](https://img.shields.io/badge/donate-paypal-yellowgreen.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZEW8TFQCU2MSJ&source=url)
+[![npm](https://badgen.net/npm/v/homebridge-config-ui-x/latest)](https://www.npmjs.com/package/homebridge-config-ui-x) 
+[![npm](https://badgen.net/npm/dt/homebridge-config-ui-x)](https://www.npmjs.com/package/homebridge-config-ui-x)
+[![Discord](https://img.shields.io/discord/432663330281226270?color=728ED5&logo=discord&label=discord)](https://discord.gg/C87Pvq3)
+[![Donate](https://badgen.net/badge/donate/paypal/yellow)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZEW8TFQCU2MSJ&source=url)
 
 Supported Languages: :gb: :de: :fr: :poland: :czech_republic: :ru: :cn: :hungary: :jp: :es: :netherlands: :tr: :it: :bulgaria: :sweden: :norway:
 
 # Homebridge Config UI X
 
-[Homebridge Config UI X](https://www.npmjs.com/package/homebridge-config-ui-x) is a web based management tool for [Homebridge](https://github.com/nfarina/homebridge) that allows you to manage all aspects of your Homebridge setup.
+[Homebridge Config UI X](https://www.npmjs.com/package/homebridge-config-ui-x) is a web based management tool for [Homebridge](https://github.com/homebridge/homebridge) that allows you to manage all aspects of your Homebridge setup.
 
 * Install and configure Homebridge plugins
 * Edit the Homebridge `config.json` with advanced JSON syntax checking and structure validation
@@ -218,7 +219,7 @@ This shows you the currently installed plugins and allows you to install, remove
 
 ![Plugin](screenshots/homebridge-config-ui-x-darkmode-plugins.png?2020-01-07)
 
-You can configure supported plugins using the graphical settings editor, removing the need to manually edit the `config.json`. Over 40 popular plugins have implimented support for this feature.
+You can configure supported plugins using the graphical settings editor, removing the need to manually edit the `config.json`. Over 65 popular plugins have implimented support for this feature.
 
 ![Plugin Settings](screenshots/homebridge-config-ui-x-darkmode-alexa-settings.png?2020-01-07)
 
@@ -297,8 +298,6 @@ If the Accessories tab is not show then you are not running Homebridge in insecu
 
 This plugin supports the [oznu/homebridge](https://github.com/oznu/docker-homebridge) Docker image. You must enable the UI using the method described in [the wiki](https://github.com/oznu/homebridge-config-ui-x/wiki/Enabling-UI-with-Docker).
 
-#### 4. Ask on Slack
+#### 4. Ask on Discord
 
-[![Slack Status](https://slackin-znyruquwmv.now.sh/badge.svg)](https://slackin-znyruquwmv.now.sh)
-
-Join the [Homebridge Slack](https://slackin-znyruquwmv.now.sh/) chat and ask in the [#ui](https://homebridgeteam.slack.com/messages/C9NH0CUTY) channel.
+Join the [Official Homebridge Discord](https://discord.gg/C87Pvq3) community and ask in the [#ui](https://discord.gg/C87Pvq3) channel.

@@ -2,11 +2,10 @@ import * as fs from 'fs-extra';
 import * as crypto from 'crypto';
 import * as jwt from 'jsonwebtoken';
 import { JwtService } from '@nestjs/jwt';
-import { Injectable, ForbiddenException, BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, ForbiddenException, BadRequestException, UnauthorizedException, ConflictException } from '@nestjs/common';
 import { ConfigService } from '../config/config.service';
 import { Logger } from '../logger/logger.service';
 import { WsException } from '@nestjs/websockets';
-import { UsersController } from 'src/modules/users/users.controller';
 
 export interface UserInterface {
   id: number;
@@ -118,9 +117,18 @@ export class AuthService {
   }
   /**
    * Returns all the users
+   * @param strip if true, remove the users salt and hashed password from the response
    */
-  async getUsers(): Promise<UserInterface[]> {
-    const users = await fs.readJson(this.configService.authPath);
+  async getUsers(strip?: boolean): Promise<UserInterface[]> {
+    const users: UserInterface[] = await fs.readJson(this.configService.authPath);
+
+    if (strip) {
+      for (const user of users) {
+        delete user.hashedPassword;
+        delete user.salt;
+      }
+    }
+
     return users;
   }
 
@@ -218,6 +226,11 @@ export class AuthService {
       admin: user.admin,
     };
 
+    // check a user with the same username does not already exist
+    if (authfile.find(x => x.username.toLowerCase() === newUser.username.toLowerCase())) {
+      throw new ConflictException(`User with username '${newUser.username}' already exists.`);
+    }
+
     // add the user to the authfile
     authfile.push(newUser);
 
@@ -230,10 +243,10 @@ export class AuthService {
    * Remove a user
    * @param id
    */
-  async deleteUser(id) {
+  async deleteUser(id: number) {
     const authfile = await this.getUsers();
 
-    const index = authfile.findIndex(x => x.id === parseInt(id, 10));
+    const index = authfile.findIndex(x => x.id === id);
 
     if (index < 0) {
       throw new BadRequestException('User Not Found');
@@ -256,10 +269,10 @@ export class AuthService {
    * @param userId
    * @param update
    */
-  async updateUser(id, update) {
+  async updateUser(id: number, update) {
     const authfile = await this.getUsers();
 
-    const user = authfile.find(x => x.id === parseInt(id, 10));
+    const user = authfile.find(x => x.id === id);
 
     if (!user) {
       throw new BadRequestException('User Not Found');

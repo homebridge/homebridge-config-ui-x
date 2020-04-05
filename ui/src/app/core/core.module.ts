@@ -9,12 +9,14 @@ import { ResetHomebridgeModalComponent } from './reset-homebridge-modal/reset-ho
 import { TranslateModule } from '@ngx-translate/core';
 import { ResetCachedAccessoriesModalComponent } from './reset-cached-accessories-modal/reset-cached-accessories-modal.component';
 import { BackupRestoreComponent } from './backup-restore/backup-restore.component';
+import { ConfirmComponent } from './components/confirm/confirm.component';
 
 @NgModule({
   entryComponents: [
     ResetHomebridgeModalComponent,
     ResetCachedAccessoriesModalComponent,
     BackupRestoreComponent,
+    ConfirmComponent,
   ],
   declarations: [
     SpinnerComponent,
@@ -25,6 +27,7 @@ import { BackupRestoreComponent } from './backup-restore/backup-restore.componen
     ResetHomebridgeModalComponent,
     ResetCachedAccessoriesModalComponent,
     BackupRestoreComponent,
+    ConfirmComponent,
   ],
   imports: [
     CommonModule,

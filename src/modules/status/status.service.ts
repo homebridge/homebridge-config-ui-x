@@ -1,8 +1,7 @@
+import axios from 'axios';
 import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import * as rp from 'request-promise-native';
-import * as tcpPortUsed from 'tcp-port-used';
 import * as si from 'systeminformation';
 import * as semver from 'semver';
 import { Injectable } from '@nestjs/common';
@@ -72,7 +71,31 @@ export class StatusService {
    * Get the current CPU temperature using systeminformation.cpuTemperature
    */
   private async getCpuTemp() {
-    return await si.cpuTemperature();
+    const cpuTempData = await si.cpuTemperature();
+
+    if (cpuTempData.main === -1 && this.configService.ui.temp) {
+      return this.getCpuTempLegacy();
+    }
+
+    return cpuTempData;
+  }
+
+  /**
+   * The old way of getting the cpu temp
+   */
+  private async getCpuTempLegacy() {
+    try {
+      const tempData = await fs.readFile(this.configService.ui.temp, 'utf-8');
+      const cpuTemp = parseInt(tempData, 10) / 1000;
+      return {
+        main: cpuTemp,
+        cores: [],
+        max: cpuTemp,
+      };
+    } catch (e) {
+      this.logger.error(`Failed to read temp from ${this.configService.ui.temp} - ${e.message}`);
+      return this.getCpuTempAlt();
+    }
   }
 
   /**
@@ -215,9 +238,8 @@ export class StatusService {
    */
   private async checkHomebridgeStatus() {
     try {
-      await rp.get(`http://localhost:${this.configService.homebridgeConfig.bridge.port}`, {
-        resolveWithFullResponse: true,
-        simple: false, // <- This prevents the promise from failing on a 404
+      await axios.get(`http://localhost:${this.configService.homebridgeConfig.bridge.port}`, {
+        validateStatus: () => true
       });
       this.homebridgeStatus = 'up';
     } catch (e) {
@@ -257,7 +279,7 @@ export class StatusService {
     }
 
     try {
-      const versionList = await rp.get('https://nodejs.org/dist/index.json', { json: true });
+      const versionList = (await axios.get('https://nodejs.org/dist/index.json')).data;
       const currentLts = versionList.filter(x => x.lts)[0];
       this.nodeJsVersionCache = {
         currentVersion: process.version,

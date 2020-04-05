@@ -78,11 +78,6 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
         this.presentTenseVerb = this.translate.instant('plugins.manage.label_update');
         this.pastTenseVerb = this.translate.instant('plugins.manage.label_updated');
         break;
-      case 'Upgrade':
-        this.upgradeHomebridge();
-        this.presentTenseVerb = this.translate.instant('plugins.manage.label_upgrade');
-        this.pastTenseVerb = this.translate.instant('plugins.manage.label_homebridge_upgraded');
-        break;
     }
   }
 
@@ -116,7 +111,14 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   }
 
   update() {
+    // hide the release notes
     this.showReleaseNotes = false;
+
+    // if this is updating homebridge, use an alternative workflow
+    if (this.pluginName === 'homebridge') {
+      return this.upgradeHomebridge();
+    }
+
     this.io.request('update', this.pluginName).subscribe(
       (data) => {
         if (this.pluginName === 'homebridge-config-ui-x') {

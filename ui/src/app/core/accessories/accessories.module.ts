@@ -33,6 +33,9 @@ import { ContactsensorComponent } from './types/contactsensor/contactsensor.comp
 import { BatteryserviceComponent } from './types/batteryservice/batteryservice.component';
 import { SpeakerComponent } from './types/speaker/speaker.component';
 import { SpeakerManageComponent } from './types/speaker/speaker.manage.component';
+import { SecuritysystemComponent } from './types/securitysystem/securitysystem.component';
+import { SecuritysystemManageComponent } from './types/securitysystem/securitysystem.manage.component';
+import { LeaksensorComponent } from './types/leaksensor/leaksensor.component';
 
 import { InfoModalComponent } from './info-modal/info-modal.component';
 
@@ -44,6 +47,7 @@ import { InfoModalComponent } from './info-modal/info-modal.component';
     FanManageComponent,
     WindowcoveringManageComponent,
     SpeakerManageComponent,
+    SecuritysystemManageComponent,
   ],
   declarations: [
     InfoModalComponent,
@@ -70,6 +74,9 @@ import { InfoModalComponent } from './info-modal/info-modal.component';
     BatteryserviceComponent,
     SpeakerComponent,
     SpeakerManageComponent,
+    SecuritysystemComponent,
+    SecuritysystemManageComponent,
+    LeaksensorComponent,
   ],
   imports: [
     CommonModule,
@@ -106,6 +113,9 @@ import { InfoModalComponent } from './info-modal/info-modal.component';
     BatteryserviceComponent,
     SpeakerComponent,
     SpeakerManageComponent,
+    SecuritysystemComponent,
+    SecuritysystemManageComponent,
+    LeaksensorComponent,
   ],
   providers: [
     AccessoriesService,

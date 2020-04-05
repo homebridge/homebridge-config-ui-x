@@ -47,12 +47,16 @@ export class AccessoriesService {
       if (msg.set) {
         const service: ServiceType = services.find(x => x.uniqueId === msg.set.uniqueId);
         if (service) {
-          await service.setCharacteristic(msg.set.iid, msg.set.value);
-          services = await this.loadAccessories();
-          // do a refresh to check if any accessories changed after this action
-          setTimeout(() => {
-            this.refreshCharacteristics(services);
-          }, 1500);
+          try {
+            await service.setCharacteristic(msg.set.iid, msg.set.value);
+            services = await this.loadAccessories();
+            // do a refresh to check if any accessories changed after this action
+            setTimeout(() => {
+              this.refreshCharacteristics(services);
+            }, 1500);
+          } catch (e) {
+            client.emit('accessory-control-failure', e.message);
+          }
         }
       }
     };
@@ -159,5 +163,14 @@ export class AccessoriesService {
     fs.writeJsonSync(this.configService.accessoryLayoutPath, accessoryLayout);
     this.logger.log(`[${user}] Accessory layout changes saved.`);
     return layout;
+  }
+
+  /**
+   * Reset the instance pool and do a full scan for Homebridge instances
+   */
+  public resetInstancePool() {
+    if (this.configService.homebridgeInsecureMode) {
+      this.hapClient.resetInstancePool();
+    }
   }
 }

@@ -153,6 +153,10 @@
         "title": "Restart Command",
         "type": "string"
       },
+      "temp": {
+        "title": "Path to OS Temp File",
+        "type": "string"
+      },
       "tempUnits": {
         "title": "Temperature Display Units",
         "type": "string",
@@ -169,6 +173,116 @@
             "title": "Fahrenheit",
             "enum": [
               "f"
+            ]
+          }
+        ]
+      },
+      "lang": {
+        "title": "Language",
+        "type": "string",
+        "default": "auto",
+        "required": true,
+        "oneOf": [
+          {
+            "title": "Automatic (Use Browser Settings)",
+            "enum": [
+              "auto"
+            ]
+          },
+          {
+            "title": "Bulgarian (bg)",
+            "enum": [
+              "bg"
+            ]
+          },
+          {
+            "title": "Czech (cs)",
+            "enum": [
+              "cs"
+            ]
+          },
+          {
+            "title": "German (de)",
+            "enum": [
+              "de"
+            ]
+          },
+          {
+            "title": "English (en)",
+            "enum": [
+              "en"
+            ]
+          },
+          {
+            "title": "Spanish (es)",
+            "enum": [
+              "es"
+            ]
+          },
+          {
+            "title": "French (fr)",
+            "enum": [
+              "fr"
+            ]
+          },
+          {
+            "title": "Hungarian (hu)",
+            "enum": [
+              "hu"
+            ]
+          },
+          {
+            "title": "Italian (it)",
+            "enum": [
+              "it"
+            ]
+          },
+          {
+            "title": "Japanese (ja)",
+            "enum": [
+              "ja"
+            ]
+          },
+          {
+            "title": "Dutch (nl)",
+            "enum": [
+              "nl"
+            ]
+          },
+          {
+            "title": "Norwegian (no)",
+            "enum": [
+              "no"
+            ]
+          },
+          {
+            "title": "Russian (ru)",
+            "enum": [
+              "ru"
+            ]
+          },
+          {
+            "title": "Swedish (sv)",
+            "enum": [
+              "sv"
+            ]
+          },
+          {
+            "title": "Turkish (tr)",
+            "enum": [
+              "tr"
+            ]
+          },
+          {
+            "title": "Chinese - Simplified (zh-CN)",
+            "enum": [
+              "zh-CN"
+            ]
+          },
+          {
+            "title": "Chinese - Traditional (zh-TW)",
+            "enum": [
+              "zh-TW"
             ]
           }
         ]
@@ -281,7 +395,7 @@
         "type": "object",
         "properties": {
           "debug": {
-            "title": " Enable / disable debug level logging for accessory control",
+            "title": " Enable / disable debug level logging for accessory control via the web UI",
             "type": "boolean"
           },
           "instanceBlacklist": {
@@ -413,6 +527,7 @@
       "items": [
         "sudo",
         "debug",
+        "lang",
         "auth",
         {
           "key": "restart",

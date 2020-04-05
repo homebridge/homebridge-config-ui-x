@@ -91,6 +91,10 @@ export class AccessoriesService {
       await this.stop();
       await this.start();
     });
+
+    this.io.socket.on('accessory-control-failure', (message) => {
+      this.$toastr.error(message);
+    });
   }
 
   /**

@@ -5,7 +5,8 @@
     "component": "HomebridgeStatusWidgetComponent",
     "cols": 15,
     "rows": 3,
-    "mobileOrder": 10
+    "mobileOrder": 10,
+    "hidePort": true
   },
   {
     "x": 5,

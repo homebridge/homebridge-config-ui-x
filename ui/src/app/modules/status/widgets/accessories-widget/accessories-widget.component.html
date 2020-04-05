@@ -32,6 +32,10 @@
         </app-windowcovering>
         <app-television *ngSwitchCase="'Television'" [service]="service">Television
         </app-television>
+        <app-securitysystem *ngSwitchCase="'SecuritySystem'" [service]="service">Security System
+        </app-securitysystem>
+        <app-leaksensor *ngSwitchCase="'LeakSensor'" [service]="service">Leak Sensor
+        </app-leaksensor>
         <app-unknown *ngSwitchDefault [service]="service">{{ service.humanType }}</app-unknown>
       </ng-container>
     </div>

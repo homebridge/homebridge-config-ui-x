@@ -4,15 +4,78 @@ All notable changes to this project will be documented in this file. This projec
 
 ## NEXT
 
-### Notable Changes
+### Other Changes
 
-* **hb-service:** Added the ability to toggle Homebridge insecure mode (`-I`, `--insecure`) from the UI when running under [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command)
-* **Dashboard:** Added a configurable option to each widget to determine if it should be shown in the mobile/compact view ([#560](https://github.com/oznu/homebridge-config-ui-x/issues/560))
+* **Linux:** Users are now prompted for confirmation before shutting down or restarting the host server
+
+### Bug Fixes
+
+* **Plugins:** Fixed a bug that caused the plugin page not to load if the DNS lookup took a long time to timeout ([#598](https://github.com/oznu/homebridge-config-ui-x/issues/598))
+
+## 4.13.3 (2020-03-31)
 
 ### Other Changes
 
+* **Plugins:** The service will not longer attempt to check if updates are available for plugins that have `"private": true` set in their `package.json` file
+* Updated npm dependencies
+
+### Bug Fixes
+
+* **hb-service:** Fixed a bug in the macOS installer that resulted in the wrong storage path being set in some circumstances ([homebridge#2464](https://github.com/homebridge/homebridge/issues/2464))
+
+## 4.13.2 (2020-03-25)
+
+### Other Changes
+
+* Updated npm dependencies
+
+### Bug Fixes
+
+* **System:** When updating Homebridge, the release notes will now be shown prior to the update occuring
+* **hb-service:** improved discovery of Homebridge install path
+
+## 4.13.0 (2020-03-18)
+
+### Notable Changes
+
+* **Plugins:** Added support for scoped npm modules as Homebridge plugins, this means you can install plugins from npm such as `@username/homebridge-plugin`. Requires Homebridge update ([homebridge#2447](https://github.com/homebridge/homebridge/pull/2447))
+
+### Other Changes
+
+* **i18n:** The display of dates (in the Clock widget for example) are now localised ([#528](https://github.com/oznu/homebridge-config-ui-x/issues/528))
+* **Accessory Control:** If controlling an accessory fails, the error message is now shown in the UI as a toast notification
+* **hb-service:** Linux only: Updated the generated systemd unit file, `homebridge.service`, to allow the UI to listen on ports below 1024 (requires service re-install for existing [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) users) ([#584](https://github.com/oznu/homebridge-config-ui-x/pull/584))
+* **i18n:** Improvements to Traditional Chinese language translations ([#585](https://github.com/oznu/homebridge-config-ui-x/pull/585))
+* **i18n:** Improvements to Dutch language translations ([#588](https://github.com/oznu/homebridge-config-ui-x/pull/588))
+* Updated the loading spinner to match the set theme
+* Updated npm dependencies
+* Update UI to use Angular 9
+
+### Bug Fixes
+
+* **Accessory Control:** Address an issue that may have caused the UI to crash when Homebridge becomes unavailable ([#543](https://github.com/oznu/homebridge-config-ui-x/issues/543), [#583](https://github.com/oznu/homebridge-config-ui-x/issues/583))
+
+## 4.12.0 (2020-03-05)
+
+### Notable Changes
+
+* **hb-service:** Added the ability to toggle Homebridge insecure mode (`-I`) from the UI when running under [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command)
+* **Accessory Control:** Added support for Security System accessory types ([#47](https://github.com/oznu/homebridge-config-ui-x/issues/47#issuecomment-594452362))
+* **Accessory Control:** Added support for Leak Sensor accessory types ([#47](https://github.com/oznu/homebridge-config-ui-x/issues/47#issuecomment-595138847))
+* **Dashboard:** Added a configurable option to each widget to determine if it should be shown in the mobile/compact view ([#560](https://github.com/oznu/homebridge-config-ui-x/issues/560))
+* **Dashboard:** [@Staubgeborener](https://github.com/Staubgeborener) added an option to the Homebridge status widget to let users decide if the Homebridge port should be shown or not ([#572](https://github.com/oznu/homebridge-config-ui-x/pull/572))
+
+### Other Changes
+
+* **Accessory Control:** Updated the icons for Motion, Occupancy and Contact sensors ([#47](https://github.com/oznu/homebridge-config-ui-x/issues/47#issuecomment-595138847))
 * **Docker:** Added various changes to facilitate the [oznu/homebridge](https://github.com/oznu/docker-homebridge) Docker image using [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) (docker image update required)
-* **i18n:** Improvements to Polish language translations ([#568](https://github.com/oznu/homebridge-config-ui-x/pull/568))
+* **Backup/Restore:** If an error is encountered during a backup request (for example, a permission error), the error will now be logged to assist users in resolving the issue
+* **Dashboard:** Allow the use of the previously removed `temp` option to read the CPU temperature from a file ([#470](https://github.com/oznu/homebridge-config-ui-x/issues/470))
+* **i18n:** Added the ability to manually set the UI language ([#398](https://github.com/oznu/homebridge-config-ui-x/issues/398))
+* **i18n:** Improvements to Polish language translations ([#568](https://github.com/oznu/homebridge-config-ui-x/pull/568), [#575](https://github.com/oznu/homebridge-config-ui-x/pull/575), [#576](https://github.com/oznu/homebridge-config-ui-x/pull/576))
+* **i18n:** Improvements to German language translations ([#571](https://github.com/oznu/homebridge-config-ui-x/pull/571), [#578](https://github.com/oznu/homebridge-config-ui-x/pull/578))
+* **i18n:** Improvements to Russian language translations ([#573](https://github.com/oznu/homebridge-config-ui-x/pull/573), [#577](https://github.com/oznu/homebridge-config-ui-x/pull/577))
+* Updated npm dependencies
 
 ## 4.11.0 (2020-02-27)
 

@@ -48,6 +48,15 @@
       background-color: rgba($primary-dark, 0.2);
       display: none;
     }
+
+    .animate_loader {
+      .spinner_outer {
+        stroke: $primary-dark
+      }
+      .spinner_inner {
+        stroke: $primary
+      }
+    }
   }
 }
 

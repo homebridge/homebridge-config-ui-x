@@ -26,6 +26,7 @@ export class DarwinInstaller {
    */
   public async install() {
     this.checkForRoot();
+    this.fixStoragePath();
     await this.hbService.portCheck();
     await this.checkGlobalNpmAccess();
     await this.hbService.storagePathCheck();
@@ -37,7 +38,7 @@ export class DarwinInstaller {
       await this.hbService.printPostInstallInstructions();
     } catch (e) {
       console.error(e.toString());
-      this.hbService.logger(`ERROR: Failed Operation`);
+      this.hbService.logger(`ERROR: Failed Operation`, 'fail');
     }
   }
 
@@ -50,14 +51,14 @@ export class DarwinInstaller {
 
     try {
       if (fs.existsSync(this.plistPath)) {
-        this.hbService.logger(`Removed ${this.hbService.serviceName} Service.`);
+        this.hbService.logger(`Removed ${this.hbService.serviceName} Service`, 'succeed');
         fs.unlinkSync(this.plistPath);
       } else {
-        this.hbService.logger(`Could not find installed ${this.hbService.serviceName} Service.`);
+        this.hbService.logger(`Could not find installed ${this.hbService.serviceName} Service.`, 'fail');
       }
     } catch (e) {
       console.error(e.toString());
-      this.hbService.logger(`ERROR: Failed Operation`);
+      this.hbService.logger(`ERROR: Failed Operation`, 'fail');
     }
   }
 
@@ -69,9 +70,9 @@ export class DarwinInstaller {
     try {
       this.hbService.logger(`Starting ${this.hbService.serviceName} Service...`);
       child_process.execSync(`launchctl load -w ${this.plistPath}`);
-      this.hbService.logger(`${this.hbService.serviceName} Started`);
+      this.hbService.logger(`${this.hbService.serviceName} Started`, 'succeed');
     } catch (e) {
-      this.hbService.logger(`Failed to start ${this.hbService.serviceName}`);
+      this.hbService.logger(`Failed to start ${this.hbService.serviceName}`, 'fail');
     }
   }
 
@@ -83,9 +84,9 @@ export class DarwinInstaller {
     try {
       this.hbService.logger(`Stopping ${this.hbService.serviceName} Service...`);
       child_process.execSync(`launchctl unload -w ${this.plistPath}`);
-      this.hbService.logger(`${this.hbService.serviceName} Stopped`);
+      this.hbService.logger(`${this.hbService.serviceName} Stopped`, 'succeed');
     } catch (e) {
-      this.hbService.logger(`Failed to stop ${this.hbService.serviceName}`);
+      this.hbService.logger(`Failed to stop ${this.hbService.serviceName}`, 'fail');
     }
   }
 
@@ -115,10 +116,10 @@ export class DarwinInstaller {
 
       await this.setNpmPermissions(npmGlobalPath);
 
-      this.hbService.logger(`Rebuilt modules in ${process.env.UIX_BASE_PATH} for Node.js ${process.version}.`);
+      this.hbService.logger(`Rebuilt modules in ${process.env.UIX_BASE_PATH} for Node.js ${process.version}.`, 'succeed');
     } catch (e) {
       console.error(e.toString());
-      this.hbService.logger(`ERROR: Failed Operation`);
+      this.hbService.logger(`ERROR: Failed Operation`, 'fail');
     }
   }
 
@@ -157,16 +158,40 @@ export class DarwinInstaller {
    */
   private checkForRoot() {
     if (process.getuid() !== 0) {
-      this.hbService.logger('ERROR: This command must be executed using sudo on macOS');
-      this.hbService.logger(`sudo hb-service ${this.hbService.action}`);
+      this.hbService.logger('ERROR: This command must be executed using sudo on macOS', 'fail');
+      this.hbService.logger(`sudo hb-service ${this.hbService.action}`, 'fail');
       process.exit(1);
     }
     if (!process.env.SUDO_USER && !this.hbService.asUser) {
-      this.hbService.logger('ERROR: Could not detect user. Pass in the user you want to run Homebridge as using the --user flag eg.');
-      this.hbService.logger(`sudo hb-service ${this.hbService.action} --user your-user`);
+      this.hbService.logger('ERROR: Could not detect user. Pass in the user you want to run Homebridge as using the --user flag eg.', 'fail');
+      this.hbService.logger(`sudo hb-service ${this.hbService.action} --user your-user`, 'fail');
       process.exit(1);
     }
     this.user = this.hbService.asUser || process.env.SUDO_USER;
+  }
+
+  /**
+   * Fix the storage path when running the installer as root
+   */
+  private fixStoragePath() {
+    if (!this.hbService.usingCustomStoragePath) {
+      this.hbService.storagePath = path.resolve(this.getUserHomeDir(), `.${this.hbService.serviceName.toLowerCase()}`);
+    }
+  }
+
+  /**
+   * Resolves the target user home directory when running the install command as SUDO
+   */
+  public getUserHomeDir() {
+    try {
+      const realHomeDir = child_process.execSync(`eval echo "~${this.user}"`).toString('utf8').trim();
+      if (realHomeDir.charAt(0) === '~') {
+        throw new Error('Could not resolve user home directory');
+      }
+      return realHomeDir;
+    } catch (e) {
+      return os.homedir();
+    }
   }
 
   /**
@@ -194,14 +219,13 @@ export class DarwinInstaller {
       child_process.execSync(`chown -R ${this.user}:admin "${npmGlobalPath}"`);
       child_process.execSync(`chown -R ${this.user}:admin "$(dirname $(which npm))"`);
     } catch (e) {
-      this.hbService.logger(`ERROR: User "${this.user}" does not have write access to the global npm modules path.`);
-      this.hbService.logger(``);
-      this.hbService.logger(`You can fix this issue by running the following commands:`);
+      this.hbService.logger(`ERROR: User "${this.user}" does not have write access to the global npm modules path.`, 'fail');
+      this.hbService.logger(`You can fix this issue by running the following commands:`, 'fail');
       console.log('');
       console.log(`sudo chown -R ${this.user}:admin "${npmGlobalPath}"`);
       console.log(`sudo chown -R ${this.user}:admin "$(dirname $(which npm))"`);
       console.log('');
-      this.hbService.logger(`Once you have done this run the hb-service install command again to complete your installation.`);
+      this.hbService.logger(`Once you have done this run the hb-service install command again to complete your installation.`, 'fail');
       process.exit(1);
     }
   }
@@ -230,6 +254,8 @@ export class DarwinInstaller {
       `             <string>-U</string>`,
       `             <string>${this.hbService.storagePath}</string>`,
       `        </array>`,
+      `    <key>WorkingDirectory</key>`,
+      `         <string>${this.hbService.storagePath}</string>`,
       `    <key>StandardOutPath</key>`,
       `        <string>${this.hbService.storagePath}/homebridge.log</string>`,
       `    <key>StandardErrorPath</key>`,
@@ -241,7 +267,7 @@ export class DarwinInstaller {
       `            <key>PATH</key>`,
       `                <string>${process.env.PATH}</string>`,
       `            <key>HOME</key>`,
-      `                <string>${os.homedir()}</string>`,
+      `                <string>${this.getUserHomeDir()}</string>`,
       `            <key>UIX_STORAGE_PATH</key>`,
       `                <string>${this.hbService.storagePath}</string>`,
       `        </dict>`,

@@ -20,7 +20,7 @@
 
 <form class="mt-3" novalidate [formGroup]="serviceForm" *ngIf="$auth.env.runningInDocker || $auth.env.serviceMode">
 
-  <h5 class="primary-text">Startup Options</h5>
+  <h5 class="primary-text">{{ 'settings.title_startup_options' | translate }}</h5>
 
   <ul class="list-group">
     <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -51,7 +51,7 @@
   </ul>
 
   <div class="mt-3" *ngIf="$auth.env.serviceMode">
-    <h5 class="primary-text">Environment Variables</h5>
+    <h5 class="primary-text">{{ 'settings.title_environment_variables' | translate }}</h5>
 
     <ul class="list-group mt-2">
       <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -80,7 +80,7 @@
   </div>
 
   <div class="mt-3" *ngIf="$auth.env.serviceMode">
-    <h5 class="primary-text">Actions</h5>
+    <h5 class="primary-text">{{ 'settings.title_actions' | translate }}</h5>
 
     <ul class="list-group mt-2">
       <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -112,6 +112,21 @@
           </span>
           <span class="d-sm-none">
             {{ 'reset.title_reset_homebridge_accessory' | translate | titlecase }}
+          </span>
+        </button>
+      </li>
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span class="d-none d-sm-inline">
+          {{ 'reset.title_force_restart_hb_service' | translate }}
+          <i class="fas fa-info-circle primary-text"
+            ngbTooltip="{{ 'reset.message_force_restart_hb_help_text' | translate }}"></i>
+        </span>
+        <button class=" btn btn-primary waves-effect m-0" (click)="forceRestartService()">
+          <span class="d-none d-sm-inline">
+            {{ 'reset.title_force_restart_hb_service_short' | translate }}
+          </span>
+          <span class="d-sm-none">
+            {{ 'reset.title_force_restart_hb_service' | translate }}
           </span>
         </button>
       </li>

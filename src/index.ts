@@ -37,7 +37,10 @@ class HomebridgeConfigUi {
       log.warn(msg);
     }
 
-    if (config.standalone || process.env.UIX_SERVICE_MODE === '1' ||
+    if (process.env.UIX_SERVICE_MODE === '1' && process.connected) {
+      this.log('Running in Service Mode');
+      this.serviceMode();
+    } else if (config.standalone || process.env.UIX_SERVICE_MODE === '1' ||
       (process.env.HOMEBRIDGE_CONFIG_UI === '1' && semver.satisfies(process.env.CONFIG_UI_VERSION, '>=3.5.5', { includePrerelease: true }))) {
       this.log(`Running in Standalone Mode.`);
     } else if (config.noFork) {
@@ -69,6 +72,17 @@ class HomebridgeConfigUi {
    */
   async noFork() {
     await import('./main');
+  }
+
+  /**
+   * Setup the service mode process helper
+   * This ensures the Homebridge process is killed when hb-service
+   * is killed with SIGTERM to prevent stale processes.
+   */
+  serviceMode() {
+    process.on('disconnect', () => {
+      process.exit();
+    });
   }
 
   accessories(callback) {
