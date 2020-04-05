@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Other Changes
 
 * **Linux:** Users are now prompted for confirmation before shutting down or restarting the host server
-* **hb-service:** The systemd will now really ensure the network is online before starting Homebridge ([#605](https://github.com/oznu/homebridge-config-ui-x/pull/605))
+* **hb-service:** Linux only: systemd will now really ensure the network is online before starting Homebridge ([#605](https://github.com/oznu/homebridge-config-ui-x/pull/605))
 * **i18n:** Improvements to German language translations ([#599](https://github.com/oznu/homebridge-config-ui-x/pull/599))
 
 ### Bug Fixes
