@@ -344,6 +344,7 @@ export class LinuxInstaller {
     const serviceFile = [
       `[Unit]`,
       `Description=${this.hbService.serviceName}`,
+      `Wants=network-online.target`,
       `After=syslog.target network-online.target`,
       '',
       `[Service]`,
