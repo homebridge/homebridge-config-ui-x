@@ -31,7 +31,6 @@ export class PluginsService {
   // misc schemas
   private miscSchemas = {
     'homebridge-tplink-smarthome': path.join(process.env.UIX_BASE_PATH, 'misc-schemas', 'homebridge-tplink-smarthome.json'),
-    'homebridge-platform-wemo': path.join(process.env.UIX_BASE_PATH, 'misc-schemas', 'homebridge-platform-wemo.json'),
   };
 
   // setup http client with default options

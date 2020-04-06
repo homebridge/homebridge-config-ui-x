@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { NgxEditorModel } from 'ngx-monaco-editor';
+import * as JSON5 from 'json5';
 
 import { ApiService } from '../../core/api.service';
 import { AuthService } from '../../core/auth/auth.service';
@@ -127,8 +128,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
         this.homebridgeConfig = this.monacoEditor.getModel().getValue();
       }
 
-      // parse the JSON
-      const config = JSON.parse(this.homebridgeConfig);
+      // get the config from the editor
+      const config = this.parseConfigFromEditor();
 
       // ensure it's formatted so errors can be easily spotted
       this.homebridgeConfig = JSON.stringify(config, null, 4);
@@ -170,6 +171,19 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       );
     }
     this.saveInProgress = false;
+  }
+
+  parseConfigFromEditor() {
+    try {
+      return JSON.parse(this.homebridgeConfig);
+    } catch (e) {
+      const config = JSON5.parse(this.homebridgeConfig);
+      this.homebridgeConfig = JSON.stringify(config, null, 4);
+      if (this.monacoEditor) {
+        this.monacoEditor.getModel().setValue(this.homebridgeConfig);
+      }
+      return config;
+    }
   }
 
   saveConfig(config) {
