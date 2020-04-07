@@ -561,14 +561,17 @@ export class HomebridgeServiceHelper {
     }
 
     try {
+      let saveRequired = false;
       const currentConfig = await fs.readJson(process.env.UIX_CONFIG_PATH);
+
+      // extract ui config
+      if (!Array.isArray(currentConfig.platforms)) {
+        currentConfig.platforms = [];
+      }
+      const uiConfigBlock = currentConfig.platforms.find((x) => x.platform === 'config');
 
       // if doing an install, make sure the ui config is set
       if (this.action === 'install') {
-        if (!Array.isArray(currentConfig.platforms)) {
-          currentConfig.platforms = [];
-        }
-        const uiConfigBlock = currentConfig.platforms.find((x) => x.platform === 'config');
         if (uiConfigBlock) {
           // correct the port
           if (uiConfigBlock.port !== this.uiPort) {
@@ -580,21 +583,48 @@ export class HomebridgeServiceHelper {
           delete uiConfigBlock.sudo;
           delete uiConfigBlock.log;
         } else {
-          this.logger(`Adding missing config ui block to ${process.env.UIX_CONFIG_PATH}`);
+          this.logger(`Adding missing config ui block to ${process.env.UIX_CONFIG_PATH}`, 'info');
           currentConfig.platforms.push({
             name: 'Config',
             port: this.uiPort,
             platform: 'config',
           });
         }
-        await fs.writeJSON(process.env.UIX_CONFIG_PATH, currentConfig, { spaces: 4 });
+        saveRequired = true;
+      }
+
+      // check the bridge section exists
+      if (!currentConfig.bridge) {
+        currentConfig.bridge = await this.generateBridgeConfig();
+        this.logger(`Added missing Homebridge bridge section to the config.json`, 'info');
+        saveRequired = true;
       }
 
       // ensure port is set in bridge config
-      if (currentConfig.bridge && !currentConfig.bridge.port) {
+      if (!currentConfig.bridge.port) {
         currentConfig.bridge.port = await this.generatePort();
+        this.logger(`Added port to the Homebridge bridge section of the config.json: ${currentConfig.bridge.port}`, 'info');
+        saveRequired = true;
+      }
+
+      // ensure bridge port is not the same as the UI port
+      if ((uiConfigBlock && currentConfig.bridge.port === uiConfigBlock.port) || currentConfig.bridge.port === 8080) {
+        currentConfig.bridge.port = await this.generatePort();
+        this.logger(`Bridge port must not be the same as the UI port. Changing bridge port to ${currentConfig.bridge.port}.`, 'info');
+        saveRequired = true;
+      }
+
+      // ensure homebridge-config-ui-x is enabled if the plugins array is set
+      if (currentConfig.plugins && Array.isArray(currentConfig.plugins)) {
+        if (!currentConfig.plugins.includes('homebridge-config-ui-x')) {
+          currentConfig.plugins.push('homebridge-config-ui-x');
+          this.logger(`Added homebridge-config-ui-x to the plugins array in the config.json`, 'info');
+          saveRequired = true;
+        }
+      }
+
+      if (saveRequired) {
         await fs.writeJSON(process.env.UIX_CONFIG_PATH, currentConfig, { spaces: 4 });
-        this.logger(`Added missing port to Homebridge bridge block: ${currentConfig.bridge.port}`);
       }
 
     } catch (e) {
@@ -610,28 +640,42 @@ export class HomebridgeServiceHelper {
    * Creates the default config.json
    */
   public async createDefaultConfig() {
+    await fs.writeJson(process.env.UIX_CONFIG_PATH, {
+      bridge: await this.generateBridgeConfig(),
+      accessories: [],
+      platforms: [
+        await this.createDefaultConfig(),
+      ],
+    }, { spaces: 4 });
+    await this.chownPath(process.env.UIX_CONFIG_PATH);
+  }
+
+  /**
+   * Create a default Homebridge bridge config
+   */
+  private async generateBridgeConfig() {
     const username = this.generateUsername();
     const port = await this.generatePort();
     const name = 'Homebridge ' + username.substr(username.length - 5).replace(/:/g, '');
     const pin = this.generatePin();
 
-    await fs.writeJson(process.env.UIX_CONFIG_PATH, {
-      bridge: {
-        name,
-        username,
-        port,
-        pin,
-      },
-      accessories: [],
-      platforms: [
-        {
-          name: 'Config',
-          port: this.uiPort,
-          platform: 'config',
-        },
-      ],
-    }, { spaces: 4 });
-    await this.chownPath(process.env.UIX_CONFIG_PATH);
+    return {
+      name,
+      username,
+      port,
+      pin,
+    };
+  }
+
+  /**
+   * Create the default ui config
+   */
+  private async createDefaultUiConfig() {
+    return {
+      name: 'Config',
+      port: this.uiPort,
+      platform: 'config',
+    };
   }
 
   /**
