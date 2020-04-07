@@ -644,7 +644,7 @@ export class HomebridgeServiceHelper {
       bridge: await this.generateBridgeConfig(),
       accessories: [],
       platforms: [
-        await this.createDefaultConfig(),
+        await this.createDefaultUiConfig(),
       ],
     }, { spaces: 4 });
     await this.chownPath(process.env.UIX_CONFIG_PATH);
