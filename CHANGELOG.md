@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Notable Changes
 
-* **Config Editor:** The config editor will now automatically correct some common JSON syntax errors on save such as removing trailing commas at the end of arrays and objects, removing comments, ensuring keys are quoted, and ensuring strings are quoted with double quotes instead of single quotes.
+* **Config Editor:** The config editor will now automatically correct some common JSON syntax errors on save such as removing trailing commas at the end of arrays and objects, removing comments, ensuring keys are quoted, and ensuring strings are quoted with double quotes instead of single quotes
 
 ### Other Changes
 
