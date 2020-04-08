@@ -102,7 +102,7 @@ export class PluginsService {
     }));
 
     this.installedPlugins = plugins;
-    return _.orderBy(plugins, ['updateAvailable', 'name'], ['desc', 'asc']);
+    return _.orderBy(plugins, [(resultItem) => { return resultItem.name === this.configService.name; }, 'updateAvailable', 'name'], ['desc', 'desc', 'asc']);
   }
 
   /**
