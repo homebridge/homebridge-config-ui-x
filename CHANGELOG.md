@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## NEXT
+
+## Other Changes
+
+* **i18n:** Improvements to Polish language translations ([#608](https://github.com/oznu/homebridge-config-ui-x/pull/608))
+* **i18n:** Improvements to Russian language translations ([#609](https://github.com/oznu/homebridge-config-ui-x/pull/609))
+
 ## 4.14.0 (2020-04-08)
 
 ### Notable Changes
