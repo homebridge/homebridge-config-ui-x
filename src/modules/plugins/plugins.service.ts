@@ -689,6 +689,7 @@ export class PluginsService {
         bugs: (pkg.bugs) ? pkg.bugs.url : null,
       };
       plugin.author = (pkg.maintainers.length) ? pkg.maintainers[0].name : null;
+      plugin.engines = plugin.latestVersion ? pkg.versions[plugin.latestVersion].engines : {};
     } catch (e) {
       if (e.statusCode !== 404) {
         this.logger.log(`[${plugin.name}] Failed to check registry.npmjs.org for updates: ${e.message}`);

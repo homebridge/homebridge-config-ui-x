@@ -12,17 +12,20 @@ import { SettingsPluginsModalComponent } from './settings-plugins-modal/settings
 import { ManagePluginsModalComponent } from './manage-plugins-modal/manage-plugins-modal.component';
 import { CustomPluginsModule } from './custom-plugins/custom-plugins.module';
 import { UninstallPluginsModalComponent } from './uninstall-plugins-modal/uninstall-plugins-modal.component';
+import { NodeUpdateRequiredModalComponent } from './node-update-required-modal/node-update-required-modal.component';
 
 @NgModule({
   entryComponents: [
     SettingsPluginsModalComponent,
     ManagePluginsModalComponent,
     UninstallPluginsModalComponent,
+    NodeUpdateRequiredModalComponent,
   ],
   declarations: [
     SettingsPluginsModalComponent,
     ManagePluginsModalComponent,
     UninstallPluginsModalComponent,
+    NodeUpdateRequiredModalComponent,
   ],
   imports: [
     CommonModule,

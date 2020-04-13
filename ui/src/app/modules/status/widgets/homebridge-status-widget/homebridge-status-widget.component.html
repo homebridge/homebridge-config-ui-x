@@ -19,7 +19,7 @@
             [translate]="'status.homebridge.label_up_to_date'">
             Up To Date
           </span>
-          <a (click)="$plugin.upgradeHomebridge()" href="JavaScript:Void(0)" class="primary-text"
+          <a (click)="$plugin.upgradeHomebridge(homebridgePkg)" href="JavaScript:void(0)" class="primary-text"
             *ngIf="homebridgePkg.installedVersion && homebridgePkg.updateAvailable"
             [translate]="'status.homebridge.label_update_available'" [translateParams]="homebridgePkg"
             ngbTooltip="{{'plugins.button_upgrade' | translate}} Homebridge">

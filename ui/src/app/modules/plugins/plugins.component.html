@@ -51,8 +51,8 @@
           rel="noopener noreferrer">
           NPM
         </a>
-        <a class="card-link" *ngIf="plugin.updateAvailable" (click)="$plugin.updatePlugin(plugin.name)"
-          placement="bottom" ngbTooltip="{{'plugins.tooltip_update_plugin_to' | translate:plugin }}" container="body"
+        <a class="card-link" *ngIf="plugin.updateAvailable" (click)="$plugin.updatePlugin(plugin)" placement="bottom"
+          ngbTooltip="{{'plugins.tooltip_update_plugin_to' | translate:plugin }}" container="body"
           [translate]="'plugins.button_update'">
           {{ 'plugins.button_update' | translate | uppercase }}
         </a>

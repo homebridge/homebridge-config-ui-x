@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. This projec
 
 ## NEXT
 
+### Notable Changes
+
+* **Plugins:** A warning message will now be show when updating Homebridge or a plugin that requires a newer version of Node.js than the user currently has installed
+
 ## Other Changes
 
 * **i18n:** Improvements to Polish language translations ([#608](https://github.com/oznu/homebridge-config-ui-x/pull/608))

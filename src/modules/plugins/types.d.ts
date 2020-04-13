@@ -17,6 +17,10 @@ export interface HomebridgePlugin {
     bugs?: string;
   };
   author?: string;
+  engines?: {
+    homebridge?: string;
+    node?: string;
+  }
 }
 
 export interface IPackageJson {
@@ -93,10 +97,10 @@ export interface INpmRegistryModule {
   _rev: string;
   name: string;
   'dist-tags': {
+    latest: string;
     [key: string]: string;
   },
   versions: {
-    latest: IPackageJson;
     [key: string]: IPackageJson;
   },
   time: {
