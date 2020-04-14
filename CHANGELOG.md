@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file. This projec
 * **Plugins:** A warning message will now be show when updating a plugin that requires a newer version of Node.js than the user currently has installed
 * **Homebridge:** The next release of Homebridge will require Node.js v10.17.0 or later, the UI will prevent Homebridge from updating if the user's Node.js version is lower than this
 
-## Other Changes
+### Other Changes
 
 * **Accessory Control:** Accessories from other Homebridge instances will no longer be displayed unless the other instance has the same PIN set
 * **i18n:** Improvements to Polish language translations ([#608](https://github.com/oznu/homebridge-config-ui-x/pull/608))
