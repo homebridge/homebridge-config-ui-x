@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ## Other Changes
 
+* **Accessory Control:** Accessories from other Homebridge instances will no longer be displayed unless the other instance has the same PIN set
 * **i18n:** Improvements to Polish language translations ([#608](https://github.com/oznu/homebridge-config-ui-x/pull/608))
 * **i18n:** Improvements to Russian language translations ([#609](https://github.com/oznu/homebridge-config-ui-x/pull/609))
 
