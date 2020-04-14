@@ -502,6 +502,7 @@
           "notitle": true,
           "key": "accessoryControl.instanceBlacklist",
           "type": "array",
+          "orderable": false,
           "items": [
             {
               "type": "div",
