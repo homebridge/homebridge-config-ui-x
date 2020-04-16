@@ -70,6 +70,10 @@
               </app-securitysystem>
               <app-leaksensor *ngSwitchCase="'LeakSensor'" [service]="service">Leak Sensor
               </app-leaksensor>
+              <app-valve *ngSwitchCase="'Valve'" [service]="service">Valve
+              </app-valve>
+              <app-irrigationsystem *ngSwitchCase="'IrrigationSystem'" [service]="service">Irrigation System
+              </app-irrigationsystem>
               <app-unknown *ngSwitchDefault [service]="service">{{ service.humanType }}</app-unknown>
             </ng-container>
           </div>

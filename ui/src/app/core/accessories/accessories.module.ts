@@ -38,6 +38,9 @@ import { SecuritysystemManageComponent } from './types/securitysystem/securitysy
 import { LeaksensorComponent } from './types/leaksensor/leaksensor.component';
 
 import { InfoModalComponent } from './info-modal/info-modal.component';
+import { ValveComponent } from './types/valve/valve.component';
+import { ValveManageComponent } from './types/valve/valve.manage.component';
+import { IrrigationSystemComponent } from './types/irrigationsystem/irrigationsystem.component';
 
 @NgModule({
   entryComponents: [
@@ -48,6 +51,7 @@ import { InfoModalComponent } from './info-modal/info-modal.component';
     WindowcoveringManageComponent,
     SpeakerManageComponent,
     SecuritysystemManageComponent,
+    ValveManageComponent,
   ],
   declarations: [
     InfoModalComponent,
@@ -77,6 +81,9 @@ import { InfoModalComponent } from './info-modal/info-modal.component';
     SecuritysystemComponent,
     SecuritysystemManageComponent,
     LeaksensorComponent,
+    ValveComponent,
+    ValveManageComponent,
+    IrrigationSystemComponent,
   ],
   imports: [
     CommonModule,
@@ -116,6 +123,9 @@ import { InfoModalComponent } from './info-modal/info-modal.component';
     SecuritysystemComponent,
     SecuritysystemManageComponent,
     LeaksensorComponent,
+    ValveComponent,
+    ValveManageComponent,
+    IrrigationSystemComponent,
   ],
   providers: [
     AccessoriesService,
