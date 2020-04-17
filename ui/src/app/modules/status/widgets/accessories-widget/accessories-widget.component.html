@@ -14,6 +14,8 @@
         <app-outlet *ngSwitchCase="'Outlet'" [service]="service">Outlet</app-outlet>
         <app-fan *ngSwitchCase="'Fan'" [service]="service" class="w-100">Fan</app-fan>
         <app-lightbulb *ngSwitchCase="'Lightbulb'" [service]="service">Lightbulb</app-lightbulb>
+        <app-lightsensor *ngSwitchCase="'LightSensor'" [service]="service">Light Sensor
+        </app-lightsensor>
         <app-lockmechanism *ngSwitchCase="'LockMechanism'" [service]="service">Lock Mechanism</app-lockmechanism>
         <app-temperaturesensor *ngSwitchCase="'TemperatureSensor'" [service]="service">Temperature Sensor
         </app-temperaturesensor>

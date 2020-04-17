@@ -1,0 +1,7 @@
+<div class="accessory-box">
+  <div class="d-flex flex-column h-100 mt-auto">
+    <div [inlineSVG]="'/assets/hap-icons/lightbulb.svg'" aria-label="Light Sensor" class="accessory-svg"></div>
+    <div class="accessory-label">{{ service.customName || service.serviceName }}</div>
+    <div class="accessory-label grey-text">{{ service.values.CurrentAmbientLightLevel }}%</div>
+  </div>
+</div>
