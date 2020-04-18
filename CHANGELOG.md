@@ -14,6 +14,10 @@ All notable changes to this project will be documented in this file. This projec
 * **i18n:** Improvements to Polish language translations ([#615](https://github.com/oznu/homebridge-config-ui-x/pull/615))
 * **i18n:** Improvements to Russian language translations ([#617](https://github.com/oznu/homebridge-config-ui-x/pull/617))
 
+### Bug Fixes
+
+* **Accessory Control:** Added support for HAP short-form UUIDs ([#624](https://github.com/oznu/homebridge-config-ui-x/pull/624))
+
 ## 4.15.0 (2020-04-14)
 
 ### Notable Changes
