@@ -19,6 +19,7 @@ import { FanManageComponent } from './types/fan/fan.manage.component';
 import { UnknownComponent } from './types/unknown/unknown.component';
 import { LightbulbComponent } from './types/lightbulb/lightbulb.component';
 import { LightbulbManageComponent } from './types/lightbulb/lightbulb.manage.component';
+import { LightsensorComponent } from './types/lightsensor/lightsensor.component';
 import { LockmechanismComponent } from './types/lockmechanism/lockmechanism.component';
 import { TemperaturesensorComponent } from './types/temperaturesensor/temperaturesensor.component';
 import { GaragedooropenerComponent } from './types/garagedooropener/garagedooropener.component';
@@ -64,6 +65,7 @@ import { IrrigationSystemComponent } from './types/irrigationsystem/irrigationsy
     UnknownComponent,
     LightbulbComponent,
     LightbulbManageComponent,
+    LightsensorComponent,
     LockmechanismComponent,
     TemperaturesensorComponent,
     GaragedooropenerComponent,
@@ -106,6 +108,7 @@ import { IrrigationSystemComponent } from './types/irrigationsystem/irrigationsy
     UnknownComponent,
     LightbulbComponent,
     LightbulbManageComponent,
+    LightsensorComponent,
     LockmechanismComponent,
     TemperaturesensorComponent,
     GaragedooropenerComponent,
