@@ -42,6 +42,8 @@ import { LeaksensorComponent } from './types/leaksensor/leaksensor.component';
 import { ValveComponent } from './types/valve/valve.component';
 import { ValveManageComponent } from './types/valve/valve.manage.component';
 import { IrrigationSystemComponent } from './types/irrigationsystem/irrigationsystem.component';
+import { AirpurifierComponent } from './types/airpurifier/airpurifier.component';
+import { AirpurifierManageComponent } from './types/airpurifier/airpurifier.manage.component';
 
 import { InfoModalComponent } from './info-modal/info-modal.component';
 
@@ -56,6 +58,7 @@ import { InfoModalComponent } from './info-modal/info-modal.component';
     SpeakerManageComponent,
     SecuritysystemManageComponent,
     ValveManageComponent,
+    AirpurifierManageComponent,
   ],
   declarations: [
     InfoModalComponent,
@@ -91,6 +94,8 @@ import { InfoModalComponent } from './info-modal/info-modal.component';
     ValveComponent,
     ValveManageComponent,
     IrrigationSystemComponent,
+    AirpurifierComponent,
+    AirpurifierManageComponent,
   ],
   imports: [
     CommonModule,
@@ -136,6 +141,8 @@ import { InfoModalComponent } from './info-modal/info-modal.component';
     ValveComponent,
     ValveManageComponent,
     IrrigationSystemComponent,
+    AirpurifierComponent,
+    AirpurifierManageComponent,
   ],
   providers: [
     AccessoriesService,

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="100px" height="149px" viewBox="0 0 100 149" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="airpurifier" transform="translate(7.000000, 5.000000)">
+            <path d="M-4.26325641e-14,6.22067087 C4.02953795,8.50225516 12.4315562,9.67933849 25.2060547,9.75192087 C32.8391014,9.79529045 51.5791554,2.41088415 63.7714844,0.357389618 C69.2464736,-0.564736121 76.8610569,0.297568567 86.6152344,2.94430368" id="Line" class="airpurifier_off_grey" stroke="#5BC8FA" stroke-width="10" stroke-linecap="square"></path>
+            <path d="M-4.26325641e-14,30.2206709 C4.02953795,32.5022552 12.4315562,33.6793385 25.2060547,33.7519209 C32.8391014,33.7952905 51.5791554,26.4108841 63.7714844,24.3573896 C69.2464736,23.4352639 76.8610569,24.2975686 86.6152344,26.9443037" id="Line" class="airpurifier_off_grey" stroke="#91DBFB" stroke-width="10" stroke-linecap="square"></path>
+            <path d="M-4.26325641e-14,54.2206709 C4.02953795,56.5022552 12.4315562,57.6793385 25.2060547,57.7519209 C32.8391014,57.7952905 51.5791554,50.4108841 63.7714844,48.3573896 C69.2464736,47.4352639 76.8610569,48.2975686 86.6152344,50.9443037" id="Line" class="airpurifier_off_grey" stroke="#C8EAFE" stroke-width="10" stroke-linecap="square"></path>
+            <polygon id="Path" class="airpurifier_off_grey" fill="#C7C5CB" points="17.2333685 76.7914641 70.0374945 76.7914641 73.9430133 79.2866885 76.8250853 84.9649087 87.1832833 114.139252 87.1832833 140.017181 85.5385126 142.175202 83.1303576 143.984565 5.21741581 143.984565 2.85966936 142.750318 1.09613307 140.017181 1.09613307 114.139252 10.9193128 84.9649087 14.372682 79.2866885"></polygon>
+            <rect id="Rectangle" class="airpurifier_off_lgrey" fill="#454545" x="46" y="84" width="17" height="5"></rect>
+            <rect id="Rectangle" class="airpurifier_off_lgrey" fill="#454545" x="46" y="94" width="20" height="5"></rect>
+            <rect id="Rectangle" class="airpurifier_off_lgrey" fill="#454545" x="46" y="103" width="22" height="5"></rect>
+            <rect id="Rectangle" class="airpurifier_off_lgrey" fill="#454545" x="20" y="103" width="22" height="5"></rect>
+            <rect id="Rectangle" class="airpurifier_off_lgrey" fill="#454545" x="22" y="94" width="20" height="5"></rect>
+            <rect id="Rectangle" class="airpurifier_off_lgrey" fill="#454545" x="25" y="84" width="17" height="5"></rect>
+        </g>
+    </g>
+</svg>

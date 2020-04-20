@@ -1,3 +1,4 @@
+import * as path from 'path';
 import * as fs from 'fs-extra';
 import { Injectable } from '@nestjs/common';
 import { HapClient, ServiceType } from '@oznu/hap-client';
@@ -157,6 +158,10 @@ export class AccessoriesService {
       accessoryLayout = await fs.readJson(this.configService.accessoryLayoutPath);
     } catch (e) {
       accessoryLayout = {};
+    }
+
+    if (!await fs.pathExists(path.join(this.configService.storagePath, 'accessories'))) {
+      await fs.mkdirp(path.join(this.configService.storagePath, 'accessories'));
     }
 
     accessoryLayout[user] = layout;
