@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Notable Changes
 
 * **Accessory Control:** Added support for Valves and Irrigation Systems ([#47](https://github.com/oznu/homebridge-config-ui-x/issues/47#issuecomment-614660136))
+* **Accessory Control:** Added support for Fan V2 ([#47](https://github.com/oznu/homebridge-config-ui-x/issues/47#issuecomment-614660136))
 
 ### Other Changes
 

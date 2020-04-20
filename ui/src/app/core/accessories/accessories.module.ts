@@ -16,6 +16,8 @@ import { ThermostatManageComponent } from './types/thermostat/thermostat.manage.
 import { OutletComponent } from './types/outlet/outlet.component';
 import { FanComponent } from './types/fan/fan.component';
 import { FanManageComponent } from './types/fan/fan.manage.component';
+import { Fanv2Component } from './types/fanv2/fanv2.component';
+import { Fanv2ManageComponent } from './types/fanv2/fanv2.manage.component';
 import { UnknownComponent } from './types/unknown/unknown.component';
 import { LightbulbComponent } from './types/lightbulb/lightbulb.component';
 import { LightbulbManageComponent } from './types/lightbulb/lightbulb.manage.component';
@@ -37,11 +39,11 @@ import { SpeakerManageComponent } from './types/speaker/speaker.manage.component
 import { SecuritysystemComponent } from './types/securitysystem/securitysystem.component';
 import { SecuritysystemManageComponent } from './types/securitysystem/securitysystem.manage.component';
 import { LeaksensorComponent } from './types/leaksensor/leaksensor.component';
-
-import { InfoModalComponent } from './info-modal/info-modal.component';
 import { ValveComponent } from './types/valve/valve.component';
 import { ValveManageComponent } from './types/valve/valve.manage.component';
 import { IrrigationSystemComponent } from './types/irrigationsystem/irrigationsystem.component';
+
+import { InfoModalComponent } from './info-modal/info-modal.component';
 
 @NgModule({
   entryComponents: [
@@ -49,6 +51,7 @@ import { IrrigationSystemComponent } from './types/irrigationsystem/irrigationsy
     ThermostatManageComponent,
     LightbulbManageComponent,
     FanManageComponent,
+    Fanv2ManageComponent,
     WindowcoveringManageComponent,
     SpeakerManageComponent,
     SecuritysystemManageComponent,
@@ -62,6 +65,8 @@ import { IrrigationSystemComponent } from './types/irrigationsystem/irrigationsy
     OutletComponent,
     FanComponent,
     FanManageComponent,
+    Fanv2Component,
+    Fanv2ManageComponent,
     UnknownComponent,
     LightbulbComponent,
     LightbulbManageComponent,
@@ -105,6 +110,8 @@ import { IrrigationSystemComponent } from './types/irrigationsystem/irrigationsy
     OutletComponent,
     FanComponent,
     FanManageComponent,
+    Fanv2Component,
+    Fanv2ManageComponent,
     UnknownComponent,
     LightbulbComponent,
     LightbulbManageComponent,
