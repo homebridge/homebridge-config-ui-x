@@ -3,16 +3,20 @@
 // `ng build --env=prod` then `environment.prod.ts` will be used instead.
 // The list of which env maps to which file can be found in `.angular-cli.json`.
 
+const baseHref = window.location.pathname.split('/')[1] === 'homebridge' ? '/homebridge' : '';
+
 export const environment = {
   production: false,
+
   api: {
-    base: 'http://localhost:8080/api',
-    socket: 'http://localhost:8080',
+    base: `http://localhost:8080${baseHref}/api`,
+    socket: `http://localhost:8080`,
+    socketPath: `${baseHref}/socket.io`,
   },
   jwt: {
     tokenKey: 'access_token',
-    whitelistedDomains: ['localhost:8080'],
-    blacklistedRoutes: ['localhost:8080/api/auth/login'],
+    whitelistedDomains: [`localhost:8080`],
+    blacklistedRoutes: [`localhost:8080${baseHref}/api/auth/login`],
   },
   apiHttpOptions: {
     withCredentials: true,
