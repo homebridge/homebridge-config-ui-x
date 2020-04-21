@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file. This projec
 * **i18n:** Improvements to German language translations ([#613](https://github.com/oznu/homebridge-config-ui-x/pull/613), [#614](https://github.com/oznu/homebridge-config-ui-x/pull/614))
 * **i18n:** Improvements to Polish language translations ([#615](https://github.com/oznu/homebridge-config-ui-x/pull/615), [#620](https://github.com/oznu/homebridge-config-ui-x/pull/620))
 * **i18n:** Improvements to Russian language translations ([#617](https://github.com/oznu/homebridge-config-ui-x/pull/617))
+* Updated npm dependencies
 
 ### Bug Fixes
 
