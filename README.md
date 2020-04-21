@@ -11,6 +11,7 @@ Supported Languages: :gb: :de: :fr: :poland: :czech_republic: :ru: :cn: :hungary
 
 * Install and configure Homebridge plugins
 * Edit the Homebridge `config.json` with advanced JSON syntax checking and structure validation
+* Visual configuration for over 160 plugins (no manual config.json editing required)
 * Monitor your Homebridge server via a fully customisable widget-based dashboard
 * View the Homebridge logs
 * View and control Homebridge accessories
@@ -26,6 +27,7 @@ Homebridge Config UI X also provides a tool called [`hb-service`](https://github
 
 For detailed instructions on how to setup Homebridge with Homebridge Config UI X as a service see the guides on the wiki:
 
+* [Setup Homebridge using the official Homebridge Raspberry Pi Image](https://github.com/homebridge/homebridge-raspbian-image/wiki/Getting-Started)
 * [Setup Homebridge as service on Linux / Raspbian](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-&-Systemd-(Raspbian,-Ubuntu,-Debian))
 * [Setup Homebridge as service on Windows 10](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-on-Windows-10)
 * [Setup Homebridge as service on macOS](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-UI-on-macOS)
@@ -257,7 +259,7 @@ MS Internet Explorer (any version) is not supported!
 
 While this plugin should work on Node.js 8+, only the following versions of Node.js are officially supported:
 
-* node v10.15.3 or higher
+* node v10.17.0 or higher
 * npm v6.4.1 or higher
 
 You can check your current versions using these commands:

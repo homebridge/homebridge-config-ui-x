@@ -1,7 +1,7 @@
 {
   "name": "homebridge-config-ui-x",
   "displayName": "Homebridge Config UI X",
-  "version": "4.15.2-test.7",
+  "version": "4.15.2-test.9",
   "description": "A web based management, configuration and control platform for Homebridge",
   "license": "MIT",
   "author": "oznu <dev@oz.nu>",
@@ -18,7 +18,7 @@
     "hb-service": "./dist/bin/hb-service.js"
   },
   "engines": {
-    "node": ">=8.15.1",
+    "node": ">=10.17.0",
     "homebridge": ">=0.4.22"
   },
   "scripts": {

@@ -4,8 +4,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subject, Subscription, interval } from 'rxjs';
 import * as dayjs from 'dayjs';
 
-import { WsService } from '../../../../core/ws.service';
-import { AuthService } from '../../../../core/auth/auth.service';
+import { WsService } from '@/app/core/ws.service';
+import { AuthService } from '@/app/core/auth/auth.service';
+import { environment } from '@/environments/environment';
 
 @Component({
   selector: 'app-weather-widget',
@@ -71,7 +72,7 @@ export class WeatherWidgetComponent implements OnInit, OnDestroy {
       params: new HttpParams({
         fromObject: {
           id: this.widget.location.id,
-          appid: 'fec67b55f7f74deaa28df89ba6a60821',
+          appid: environment.owm.appid,
           units: 'metric',
           lang: this.$translate.currentLang,
         },

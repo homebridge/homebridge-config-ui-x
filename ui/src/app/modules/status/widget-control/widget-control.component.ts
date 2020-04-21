@@ -5,6 +5,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { Observable, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, tap, switchMap, catchError } from 'rxjs/operators';
 
+import { environment } from '@/environments/environment';
+
 @Component({
   selector: 'app-widget-control',
   templateUrl: './widget-control.component.html',
@@ -85,14 +87,14 @@ export class WidgetControlComponent implements OnInit {
 
   findOpenWeatherMapCity(query: string) {
     return this.$http
-      .get('https://openweathermap.org/data/2.5/find', {
+      .get('https://api.openweathermap.org/data/2.5/find', {
         params: new HttpParams({
           fromObject: {
             q: query,
             type: 'like',
             sort: 'population',
             cnt: '30',
-            appid: 'b6907d289e10d714a6e88b30761fae22',
+            appid: environment.owm.appid,
             lang: this.$translate.currentLang,
           },
         }),

@@ -11,4 +11,7 @@ export const environment = {
     blacklistedRoutes: [`${document.location.host}/api/auth/login`],
   },
   apiHttpOptions: {},
+  owm: {
+    appid: 'fec67b55f7f74deaa28df89ba6a60821',
+  },
 };

@@ -17,4 +17,7 @@ export const environment = {
   apiHttpOptions: {
     withCredentials: true,
   },
+  owm: {
+    appid: 'fec67b55f7f74deaa28df89ba6a60821',
+  },
 };
