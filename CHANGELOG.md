@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file. This projec
 * **Accessory Control:** Added support for Valves and Irrigation Systems ([#47](https://github.com/oznu/homebridge-config-ui-x/issues/47#issuecomment-614660136))
 * **Accessory Control:** Added support for Fan V2 ([#47](https://github.com/oznu/homebridge-config-ui-x/issues/47))
 * **Accessory Control:** Added support for Air Purifiers ([#47](https://github.com/oznu/homebridge-config-ui-x/issues/47))
+* **Accessory Control:** [@NicoFR75](https://github.com/NicoFR75) added support for Light Sensors ([#623](https://github.com/oznu/homebridge-config-ui-x/pull/623))
 
 ### Other Changes
 
