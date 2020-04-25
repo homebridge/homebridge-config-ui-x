@@ -96,7 +96,7 @@
     "form.button_save": "Guardar",
     "login.button_login": "Iniciar sesión",
     "login.label_password": "Contraseña",
-    "login.label_username": "usuario",
+    "login.label_username": "Usuario",
     "login.message_invalid_username_or_password": "Usuario o contraseña incorrecto",
     "login.title_login": "Iniciar sesión",
     "menu.docker.label_restart_container": "Reiniciar contenedor",
