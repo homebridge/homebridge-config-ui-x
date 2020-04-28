@@ -37,6 +37,7 @@
           },
           "configurations": {
             "production": {
+              "crossOrigin": "use-credentials",
               "budgets": [
                 {
                   "type": "anyComponentStyle",
