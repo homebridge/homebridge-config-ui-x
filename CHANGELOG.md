@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## NEXT
+
+### Notable Changes
+
+* **hb-service:** Add support for configuring the new *Keep Orphans* flag, `-K` ([#642](https://github.com/oznu/homebridge-config-ui-x/pull/642))
+
+### Other Changes
+
+* **i18n:** Improvements to Traditional Chinese language translations ([#630](https://github.com/oznu/homebridge-config-ui-x/pull/630))
+* **i18n:** Improvements to Spanish language translations ([#635](https://github.com/oznu/homebridge-config-ui-x/pull/635))
+
 ## 4.16.0 (2020-04-21)
 
 ### Notable Changes

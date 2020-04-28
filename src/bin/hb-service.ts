@@ -13,6 +13,7 @@ import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
 import * as tcpPortUsed from 'tcp-port-used';
 import * as si from 'systeminformation';
+import * as semver from 'semver';
 import * as ora from 'ora';
 import { Tail } from 'tail';
 
@@ -29,6 +30,7 @@ export class HomebridgeServiceHelper {
   public allowRunRoot = false;
   public asUser;
   private log: fs.WriteStream | NodeJS.WriteStream;
+  private homebridgePackage: { version: string, bin: { homebridge: string } };
   private homebridgeBinary: string;
   private homebridge: child_process.ChildProcessWithoutNullStreams;
   private homebridgeStopped = true;
@@ -272,12 +274,15 @@ export class HomebridgeServiceHelper {
       // verify the config
       await this.configCheck();
 
-      // load startup options if they exist
-      await this.loadHomebridgeStartupOptions();
+      // log os info
+      this.logger(`OS: ${os.type()} ${os.release()} ${os.arch()}`);
 
       // work out the homebridge binary path
       this.homebridgeBinary = await this.findHomebridgePath();
       this.logger(`Homebridge Path: ${this.homebridgeBinary}`);
+
+      // load startup options if they exist
+      await this.loadHomebridgeStartupOptions();
 
       // get the standalone ui binary on this system
       this.uiBinary = path.resolve(process.env.UIX_BASE_PATH, 'dist', 'bin', 'standalone.js');
@@ -394,7 +399,7 @@ export class HomebridgeServiceHelper {
       childProcessOpts,
     );
 
-    this.logger(`Started Homebridge with PID: ${this.homebridge.pid}`);
+    this.logger(`Started Homebridge v${this.homebridgePackage.version} with PID: ${this.homebridge.pid}`);
 
     this.homebridge.stdout.on('data', (data) => {
       this.log.write(data);
@@ -480,8 +485,8 @@ export class HomebridgeServiceHelper {
 
     if (homebridgeModulePath) {
       try {
-        const homebridgePackage = await fs.readJson(path.join(homebridgeModulePath, 'package.json'));
-        return path.resolve(homebridgeModulePath, homebridgePackage.bin.homebridge);
+        this.homebridgePackage = await fs.readJson(path.join(homebridgeModulePath, 'package.json'));
+        return path.resolve(homebridgeModulePath, this.homebridgePackage.bin.homebridge);
       } catch (e) {
         console.log(e);
       }
@@ -807,9 +812,11 @@ export class HomebridgeServiceHelper {
           this.homebridgeOpts.push('-D');
         }
 
-        // check if keep orphans should be enabled
-        if (homebridgeStartupOptions.keepOrphans && !this.homebridgeOpts.includes('-K')) {
-          this.homebridgeOpts.push('-K');
+        // check if keep orphans should be enabled, only for Homebridge v1.0.2 and later
+        if (semver.gte(this.homebridgePackage.version, '1.0.2', { includePrerelease: true })) {
+          if (homebridgeStartupOptions.keepOrphans && !this.homebridgeOpts.includes('-K')) {
+            this.homebridgeOpts.push('-K');
+          }
         }
 
         // insecure mode is enabled by default, allow it to be removed if set to false
