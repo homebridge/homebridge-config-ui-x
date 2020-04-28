@@ -807,9 +807,9 @@ export class HomebridgeServiceHelper {
           this.homebridgeOpts.push('-D');
         }
 
-        // check if remove orphans should be enabled
-        if (homebridgeStartupOptions.removeOrphans && !this.homebridgeOpts.includes('-R')) {
-          this.homebridgeOpts.push('-R');
+        // check if keep orphans should be enabled
+        if (homebridgeStartupOptions.keepOrphans && !this.homebridgeOpts.includes('-K')) {
+          this.homebridgeOpts.push('-K');
         }
 
         // insecure mode is enabled by default, allow it to be removed if set to false
