@@ -69,7 +69,7 @@ export class SettingsComponent implements OnInit {
   initServiceModeForm() {
     this.serviceForm = this.$fb.group({
       HOMEBRIDGE_DEBUG: [false],
-      HOMEBRIDGE_REMOVE_ORPHANS: [false],
+      HOMEBRIDGE_KEEP_ORPHANS: [false],
       HOMEBRIDGE_INSECURE: [true],
       ENV_DEBUG: [null],
       ENV_NODE_OPTIONS: [null],

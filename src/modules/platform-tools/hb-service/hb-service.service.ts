@@ -21,7 +21,7 @@ export class HbServiceService {
 
         return {
           HOMEBRIDGE_DEBUG: settings.debugMode,
-          HOMEBRIDGE_REMOVE_ORPHANS: settings.removeOrphans,
+          HOMEBRIDGE_KEEP_ORPHANS: settings.keepOrphans,
           HOMEBRIDGE_INSECURE: typeof settings.insecureMode === 'boolean' ? settings.insecureMode : this.configService.homebridgeInsecureMode,
           ENV_DEBUG: settings.env.DEBUG,
           ENV_NODE_OPTIONS: settings.env.NODE_OPTIONS,
@@ -47,7 +47,7 @@ export class HbServiceService {
     // format the settings payload
     const settings = {
       debugMode: data.HOMEBRIDGE_DEBUG,
-      removeOrphans: data.HOMEBRIDGE_REMOVE_ORPHANS,
+      keepOrphans: data.HOMEBRIDGE_KEEP_ORPHANS,
       insecureMode: data.HOMEBRIDGE_INSECURE,
       env: {
         DEBUG: data.ENV_DEBUG ? data.ENV_DEBUG : undefined,

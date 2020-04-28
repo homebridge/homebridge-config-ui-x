@@ -42,10 +42,10 @@
       </div>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="$auth.env.serviceMode">
-      <span>Remove accessories of uninstalled plugins <code>-R</code></span>
+      <span>Keep accessories of uninstalled plugins <code>-K</code></span>
       <div class="material-switch pull-right">
-        <input id="homebridgeRemoveOrphans" formControlName="HOMEBRIDGE_REMOVE_ORPHANS" type="checkbox" />
-        <label for="homebridgeRemoveOrphans" class="badge-primary"></label>
+        <input id="homebridgeKeepOrphans" formControlName="HOMEBRIDGE_KEEP_ORPHANS" type="checkbox" />
+        <label for="homebridgeKeepOrphans" class="badge-primary"></label>
       </div>
     </li>
   </ul>
