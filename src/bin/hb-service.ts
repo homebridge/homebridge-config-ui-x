@@ -813,7 +813,7 @@ export class HomebridgeServiceHelper {
         }
 
         // check if keep orphans should be enabled, only for Homebridge v1.0.2 and later
-        if (semver.gte(this.homebridgePackage.version, '1.0.2', { includePrerelease: true })) {
+        if (this.homebridgePackage && semver.gte(this.homebridgePackage.version, '1.0.2', { includePrerelease: true })) {
           if (homebridgeStartupOptions.keepOrphans && !this.homebridgeOpts.includes('-K')) {
             this.homebridgeOpts.push('-K');
           }
