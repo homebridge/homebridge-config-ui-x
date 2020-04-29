@@ -50,8 +50,10 @@
           <span class="grey-text" *ngIf="homebridgeStatus.status === 'up' && widget.hidePort"
             [translate]="'status.services.label_running'"
             [translateParams]="{port: homebridgeStatus.port}">Listening</span>
-          <span class="grey-text" *ngIf="homebridgeStatus.status !== 'up'"
-            [translate]="'status.services.label_not_running'">Not running</span>
+          <a routerLink="/logs" class="primary-text" *ngIf="homebridgeStatus.status !== 'up'">
+            {{ 'status.services.label_not_running' | translate}} -
+            {{ 'menu.tooltip_view_logs' | translate }}
+          </a>
         </div>
       </div>
     </div>

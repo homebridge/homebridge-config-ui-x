@@ -76,6 +76,10 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
         name: roomName,
         services: [],
       });
+
+      if (this.isMobile) {
+        this.toggleLayoutLock();
+      }
     })
       .catch(() => { /* modal dismissed */ });
   }

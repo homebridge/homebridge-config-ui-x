@@ -241,7 +241,7 @@ export class ConfigService {
   private setConfigForServiceMode() {
     this.homebridgeInsecureMode = Boolean(process.env.UIX_INSECURE_MODE === '1');
     this.ui.restart = undefined;
-    this.ui.sudo = (os.platform() === 'linux');
+    this.ui.sudo = (os.platform() === 'linux' && !this.runningInDocker);
     this.ui.log = {
       method: 'native',
       path: path.resolve(this.storagePath, 'homebridge.log'),

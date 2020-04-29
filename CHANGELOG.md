@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## NEXT
+## 4.17.0 (2020-04-29)
 
 ### Notable Changes
 
@@ -12,6 +12,12 @@ All notable changes to this project will be documented in this file. This projec
 
 * **i18n:** Improvements to Traditional Chinese language translations ([#630](https://github.com/oznu/homebridge-config-ui-x/pull/630))
 * **i18n:** Improvements to Spanish language translations ([#635](https://github.com/oznu/homebridge-config-ui-x/pull/635))
+* **Docker:** Fixed an issue that prevented plugins from being installed/updated when using the Debian/Ubuntu versions of the [oznu/homebridge](https://github.com/oznu/docker-homebridge) Docker image
+
+### Bug Fixes
+
+* **Homebridge Updates:** If Homebridge fails to update the error logs will now be displayed on the screen
+* **Accessory Control:** The accessory layout will now be unlocked when adding a new room ([#643](https://github.com/oznu/homebridge-config-ui-x/issues/643))
 
 ## 4.16.0 (2020-04-21)
 

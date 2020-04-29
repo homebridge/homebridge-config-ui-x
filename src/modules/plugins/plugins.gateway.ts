@@ -52,7 +52,9 @@ export class PluginsGateway {
     try {
       return await this.pluginsService.updateHomebridgePackage(client);
     } catch (e) {
-      return new WsException(e.message);
+      this.logger.error(e);
+      client.emit('stdout', '\n\r' + color.red(e.toString()) + '\n\r');
+      return new WsException(e);
     }
   }
 }

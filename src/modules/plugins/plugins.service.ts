@@ -190,7 +190,7 @@ export class PluginsService {
 
       // it's not installed; finish building the response
       plugin.publicPackage = true;
-      plugin.latestVersion = pkg['dist-tags'].latest;
+      plugin.latestVersion = pkg['dist-tags'] ? pkg['dist-tags'].latest : undefined;
       plugin.lastUpdated = pkg.time.modified;
       plugin.updateAvailable = false;
       plugin.links = {
@@ -681,7 +681,7 @@ export class PluginsService {
     try {
       const pkg: INpmRegistryModule = (await this.http.get(`https://registry.npmjs.org/${encodeURIComponent(plugin.name).replace('%40', '@')}`)).data;
       plugin.publicPackage = true;
-      plugin.latestVersion = pkg['dist-tags'].latest;
+      plugin.latestVersion = pkg['dist-tags'] ? pkg['dist-tags'].latest : undefined;
       plugin.updateAvailable = semver.lt(plugin.installedVersion, plugin.latestVersion);
       plugin.links = {
         npm: `https://www.npmjs.com/package/${plugin.name}`,
