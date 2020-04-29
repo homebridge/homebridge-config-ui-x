@@ -196,7 +196,6 @@ export class PluginsService {
       plugin.links = {
         npm: `https://www.npmjs.com/package/${plugin.name}`,
         homepage: pkg.homepage,
-        bugs: (pkg.bugs) ? pkg.bugs.url : null,
       };
       plugin.author = (pkg.maintainers.length) ? pkg.maintainers[0].name : null;
       plugin.verifiedPlugin = this.verifiedPlugins.includes(pkg.name);
@@ -679,17 +678,35 @@ export class PluginsService {
    */
   private async getPluginFromNpm(plugin: HomebridgePlugin): Promise<HomebridgePlugin> {
     try {
-      const pkg: INpmRegistryModule = (await this.http.get(`https://registry.npmjs.org/${encodeURIComponent(plugin.name).replace('%40', '@')}`)).data;
-      plugin.publicPackage = true;
-      plugin.latestVersion = pkg['dist-tags'] ? pkg['dist-tags'].latest : undefined;
-      plugin.updateAvailable = semver.lt(plugin.installedVersion, plugin.latestVersion);
-      plugin.links = {
-        npm: `https://www.npmjs.com/package/${plugin.name}`,
-        homepage: pkg.homepage,
-        bugs: (pkg.bugs) ? pkg.bugs.url : null,
-      };
-      plugin.author = (pkg.maintainers.length) ? pkg.maintainers[0].name : null;
-      plugin.engines = plugin.latestVersion ? pkg.versions[plugin.latestVersion].engines : {};
+      if (plugin.name.includes('@')) {
+        // scoped plugins do not allow us to access the "latest" tag directly
+        const pkg: INpmRegistryModule = (
+          await this.http.get(`https://registry.npmjs.org/${plugin.name.replace('%40', '@')}`)
+        ).data;
+        plugin.publicPackage = true;
+        plugin.latestVersion = pkg['dist-tags'] ? pkg['dist-tags'].latest : plugin.installedVersion;
+        plugin.updateAvailable = semver.lt(plugin.installedVersion, plugin.latestVersion);
+        plugin.links = {
+          npm: `https://www.npmjs.com/package/${plugin.name}`,
+          homepage: pkg.homepage,
+        };
+        plugin.author = (pkg.maintainers.length) ? pkg.maintainers[0].name : null;
+        plugin.engines = plugin.latestVersion ? pkg.versions[plugin.latestVersion].engines : {};
+      } else {
+        // access the "latest" tag directly to speed up the request time
+        const pkg: IPackageJson = (
+          await this.http.get(`https://registry.npmjs.org/${encodeURIComponent(plugin.name).replace('%40', '@')}/latest`)
+        ).data;
+        plugin.publicPackage = true;
+        plugin.latestVersion = pkg.version;
+        plugin.updateAvailable = semver.lt(plugin.installedVersion, plugin.latestVersion);
+        plugin.links = {
+          npm: `https://www.npmjs.com/package/${plugin.name}`,
+          homepage: pkg.homepage,
+        };
+        plugin.author = (pkg.maintainers.length) ? pkg.maintainers[0].name : null;
+        plugin.engines = pkg.engines;
+      }
     } catch (e) {
       if (e.statusCode !== 404) {
         this.logger.log(`[${plugin.name}] Failed to check registry.npmjs.org for updates: ${e.message}`);

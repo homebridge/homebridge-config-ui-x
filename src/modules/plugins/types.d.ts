@@ -14,7 +14,6 @@ export interface HomebridgePlugin {
   links?: {
     npm?: string;
     homepage?: string;
-    bugs?: string;
   };
   author?: string;
   engines?: {
@@ -33,6 +32,7 @@ export interface IPackageJson {
   bugs?: string | { email?: string, url?: string };
   license?: string;
   author?: string | INpmPerson;
+  maintainers?: INpmPerson[];
   contributors?: string[] | INpmPerson[];
   files?: string[];
   main?: string;
