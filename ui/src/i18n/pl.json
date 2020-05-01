@@ -137,7 +137,7 @@
     "platform.linux.restart.toast_server_restart_error": "Wystąpił błąd podczas wysyłania polecenia restartu serwera",
     "platform.linux.restart.toast_server_restarted": "Serwer uruchomił się ponownie",
     "platform.linux.restart.toast_server_taking_long_time_to_come_online": "Serwer potrzebuje więcej czasu, by powrócić do trybu online",
-    "platform.linux.shutdown.confirmation": "Are you sure you want to shutdown your operating system?",
+    "platform.linux.shutdown.confirmation": "Jesteś pewny że chcesz całkowicie wyłączyć system operacyjny?",
     "platform.linux.shutdown.message_server_will_power_down": "Serwer wkrótce się wyłączy.",
     "platform.linux.shutdown.title_shutting_down_server": "Wyłączanie serwera",
     "plugins.button_install": "Instaluj",
