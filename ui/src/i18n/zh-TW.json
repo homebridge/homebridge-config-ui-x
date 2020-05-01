@@ -256,7 +256,7 @@
     "status.widget.label_no_additional_widgets": "沒有其他 Widgets 可供使用",
     "status.widget.label_remove_widget": "移除 Widget",
     "status.widget.label_reset_layout": "重置 Layout",
-    "status.widget.label_systeminfo": "系統資訊n",
+    "status.widget.label_systeminfo": "系統資訊",
     "status.widget.label_unlock_layout": "解除 Layout 鎖定",
     "status.widget.label_widget_has_no_options": "此 Widget 沒有選項",
     "status.widget.systeminfo.label_config_path": "Config 路徑",
