@@ -543,6 +543,8 @@ export class PluginsService {
               path: requiredPath,
             };
           });
+      } else {
+        return [];
       }
     } catch (e) {
       this.logger.debug(e);
@@ -559,14 +561,18 @@ export class PluginsService {
     for (const requiredPath of this.paths) {
       const modules: string[] = await fs.readdir(requiredPath);
       for (const module of modules) {
-        if (module.charAt(0) === '@') {
-          allModules.push(...await this.getInstalledScopedModules(requiredPath, module));
-        } else {
-          allModules.push({
-            name: module,
-            installPath: path.join(requiredPath, module),
-            path: requiredPath,
-          });
+        try {
+          if (module.charAt(0) === '@') {
+            allModules.push(...await this.getInstalledScopedModules(requiredPath, module));
+          } else {
+            allModules.push({
+              name: module,
+              installPath: path.join(requiredPath, module),
+              path: requiredPath,
+            });
+          }
+        } catch (e) {
+          this.logger.log(`Failed to parse item "${module}" in ${requiredPath}: ${e.message}`);
         }
       }
     }
@@ -635,6 +641,9 @@ export class PluginsService {
         paths.push(child_process.execSync('/bin/echo -n "$(npm --no-update-notifier -g prefix)/lib/node_modules"').toString('utf8'));
       }
     }
+
+    // don't look at homebridge-config-ui-x's own modules
+    paths = paths.filter(x => x !== path.join(process.env.UIX_BASE_PATH, 'node_modules'));
 
     // filter out duplicates and non-existent paths
     return _.uniq(paths).filter((requiredPath) => {
