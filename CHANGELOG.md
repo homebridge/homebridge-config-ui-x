@@ -4,9 +4,14 @@ All notable changes to this project will be documented in this file. This projec
 
 ## NEXT
 
+### Other Changes
+
+* Updated npm dependencies
+
 ### Bug Fixes
 
 * **Plugins:** Fixed a bug that prevented the plugins from loading when there was an bad file in the global node_modules directory ([#657](https://github.com/oznu/homebridge-config-ui-x/issues/657))
+
 
 ## 4.17.1 (2020-04-29)
 
