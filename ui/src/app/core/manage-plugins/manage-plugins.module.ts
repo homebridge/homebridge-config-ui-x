@@ -7,6 +7,7 @@ import { NgxMdModule } from 'ngx-md';
 import { Bootstrap4FrameworkModule } from '@oznu/ngx-bs4-jsonform';
 
 import { CoreModule } from '../core.module';
+import { InterpolateMdPipe } from './interpolate-md.pipe';
 import { ManagePluginsService } from './manage-plugins.service';
 import { SettingsPluginsModalComponent } from './settings-plugins-modal/settings-plugins-modal.component';
 import { ManagePluginsModalComponent } from './manage-plugins-modal/manage-plugins-modal.component';
@@ -26,6 +27,7 @@ import { NodeUpdateRequiredModalComponent } from './node-update-required-modal/n
     ManagePluginsModalComponent,
     UninstallPluginsModalComponent,
     NodeUpdateRequiredModalComponent,
+    InterpolateMdPipe,
   ],
   imports: [
     CommonModule,
