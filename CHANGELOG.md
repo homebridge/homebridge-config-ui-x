@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Other Changes
 
 * **Plugins:** Developers can now interpolate the current hostname into their header and footer markdown ([#661](https://github.com/oznu/homebridge-config-ui-x/pull/661))
+* **Plugins:** Fixed an an issue with select boxes in the plugin settings GUI ([#665](https://github.com/oznu/homebridge-config-ui-x/pull/665))
 * **i18n:** Improvements to Polish language translations ([#656](https://github.com/oznu/homebridge-config-ui-x/pull/656))
 * **i18n:** Improvements to Traditional Chinese language translations ([#659](https://github.com/oznu/homebridge-config-ui-x/pull/659))
 * **i18n:** Improvements to German language translations ([#662](https://github.com/oznu/homebridge-config-ui-x/pull/662))
