@@ -2,10 +2,14 @@ import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 
+import { Logger } from '../logger/logger.service';
+
 /**
  * Return config required to start the console server
  */
 export async function getStartupConfig() {
+  const logger = new Logger();
+
   const configPath = process.env.UIX_CONFIG_PATH || path.resolve(os.homedir(), '.homebridge/config.json');
 
   const homebridgeConfig = await fs.readJSON(configPath);
@@ -42,12 +46,25 @@ export async function getStartupConfig() {
 
   // preload ssl settings
   if (ui.ssl && ((ui.ssl.key && ui.ssl.cert) || ui.ssl.pfx)) {
-    config.httpsOptions = {
-      key: ui.ssl.key ? await fs.readFile(ui.ssl.key) : undefined,
-      cert: ui.ssl.cert ? await fs.readFile(ui.ssl.cert) : undefined,
-      pfx: ui.ssl.pfx ? await fs.readFile(ui.ssl.pfx) : undefined,
-      passphrase: ui.ssl.passphrase,
-    };
+    for (const attribute of ['key', 'cert', 'pfx']) {
+      if (ui.ssl[attribute]) {
+        if (!(await (fs.stat(ui.ssl[attribute]))).isFile()) {
+          logger.error(`SSL Config Error: ui.ssl.${attribute}: ${ui.ssl[attribute]} is not a valid file`);
+        }
+      }
+    }
+
+    try {
+      config.httpsOptions = {
+        key: ui.ssl.key ? await fs.readFile(ui.ssl.key) : undefined,
+        cert: ui.ssl.cert ? await fs.readFile(ui.ssl.cert) : undefined,
+        pfx: ui.ssl.pfx ? await fs.readFile(ui.ssl.pfx) : undefined,
+        passphrase: ui.ssl.passphrase,
+      };
+    } catch (e) {
+      logger.error(`WARNING: COULD NOT START SERVER WITH SSL ENABLED`);
+      logger.error(e);
+    }
   }
 
   // preload proxy host settings
