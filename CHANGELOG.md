@@ -9,6 +9,11 @@ All notable changes to this project will be documented in this file. This projec
 * **Plugins:** Added a "clear query" button to the right of the search box ([#674](https://github.com/oznu/homebridge-config-ui-x/issues/674))
 * **Plugins:** Users of `homebridge-hue` can now download the debug dump file from the UI ([#676](https://github.com/oznu/homebridge-config-ui-x/issues/676))
 
+### Other Changes
+
+* **i18n:** Improvements to Simplified Chinese language translations ([#672](https://github.com/oznu/homebridge-config-ui-x/pull/672))
+* **i18n:** Improvements to Italian language translations ([#678](https://github.com/oznu/homebridge-config-ui-x/pull/678))
+
 ## 4.18.0 (2020-05-07)
 
 ### Other Changes
