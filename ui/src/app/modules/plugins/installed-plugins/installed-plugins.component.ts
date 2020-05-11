@@ -77,6 +77,10 @@ export class InstalledPluginsComponent implements OnInit, OnDestroy {
     });
   }
 
+  onClearSearch() {
+    this.form.setValue({ query: '' });
+  }
+
   onSubmit({ value, valid }) {
     this.$router.navigate(['/plugins/search', value.query]);
   }

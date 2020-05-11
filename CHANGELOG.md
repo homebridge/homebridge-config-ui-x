@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Notable Changes
 
+* **Plugins:** Added a "clear query" button to the right of the search box ([#674](https://github.com/oznu/homebridge-config-ui-x/issues/674))
 * **Plugins:** Users of `homebridge-hue` can now download the debug dump file from the UI ([#676](https://github.com/oznu/homebridge-config-ui-x/issues/676))
 
 ## 4.18.0 (2020-05-07)

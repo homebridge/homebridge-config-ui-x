@@ -18,6 +18,15 @@
     }
 }
 
+.hb-npm-search-clear {
+  position: absolute;
+  right: 25px;
+  font-size: 35px;
+  color: #d0d0d0;
+  line-height: 50px;
+  cursor: pointer;
+}
+
 .plugin-modal-body {
   max-height: 60vh;
   overflow: scroll;

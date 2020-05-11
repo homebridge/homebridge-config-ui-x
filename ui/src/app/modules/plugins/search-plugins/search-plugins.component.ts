@@ -62,6 +62,11 @@ export class SearchPluginsComponent implements OnInit, OnDestroy {
     );
   }
 
+  onClearSearch() {
+    this.form.setValue({ query: '' });
+    this.$router.navigate(['/plugins']);
+  }
+
   onSubmit({ value, valid }) {
     if (!value.query.length) {
       this.$router.navigate(['/plugins']);
