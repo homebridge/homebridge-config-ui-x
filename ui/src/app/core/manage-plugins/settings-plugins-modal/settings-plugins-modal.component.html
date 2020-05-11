@@ -36,6 +36,7 @@
     </div>
   </div>
   <div class="modal-footer">
+    <app-homebridge-hue class="mr-auto" *ngIf="pluginName === 'homebridge-hue'"></app-homebridge-hue>
     <button type="button" class="btn btn-elegant mr-auto" data-dismiss="modal" (click)="addBlock()"
       *ngIf="!configSchema.singular || pluginConfig.length === 0">
       Add {{ configSchema.pluginType }} Block
