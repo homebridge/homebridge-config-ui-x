@@ -23,7 +23,7 @@
     "@ngx-translate/core": "^12.1.2",
     "@ngx-translate/http-loader": "^4.0.0",
     "@oznu/hap-client": "^1.4.0",
-    "@oznu/ngx-bs4-jsonform": "^7.3.5",
+    "@oznu/ngx-bs4-jsonform": "^7.3.6",
     "angular-gridster2": "^9.1.0",
     "bootstrap": "^4.4.1",
     "chart.js": "^2.9.3",

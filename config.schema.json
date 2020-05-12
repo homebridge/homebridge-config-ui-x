@@ -400,6 +400,7 @@
           },
           "instanceBlacklist": {
             "title": "Blacklisted Instances",
+            "buttonText": "Add Instance",
             "type": "array",
             "items": {
               "title": "Instance Username",
