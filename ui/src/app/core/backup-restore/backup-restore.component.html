@@ -23,7 +23,7 @@
     <p [translate]="'backup.message_restore_help_one'"></p>
     <p [translate]="'backup.message_restore_help_two'"></p>
     <div class="custom-file">
-      <input type="file" class="custom-file-input" id="restoreFileUpload" accept="application/gzip, .gz"
+      <input type="file" class="custom-file-input" id="restoreFileUpload" accept="application/gzip, .gz, .hbfx"
         (change)="handleRestoreFileInput($event.target.files)">
       <label class="custom-file-label"
         for="restoreFileUpload">{{ selectedFile?.name || 'backup.label_choose_backup_file_to_restore' | translate }}</label>
@@ -33,7 +33,8 @@
       <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="onRestoreBackupClick()"
         [disabled]="clicked">
         <span *ngIf="clicked">
-          <i class="fa fa-circle-notch fa-spin"></i>
+          <span *ngIf="uploadPercent">{{ uploadPercent }}% - </span>
+          <i *ngIf="!uploadPercent" class="fa fa-circle-notch fa-spin"></i>
           {{ 'backup.label_uploading' | translate }}
         </span>
         <span *ngIf="!clicked" [translate]="'backup.button_restore_backup'"></span>

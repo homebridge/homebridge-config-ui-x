@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
@@ -21,6 +22,8 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
   public restoreInProgress = false;
   public restoreStarted = false;
   public restoreFailed = false;
+  public restoreArchiveType: 'homebridge' | 'hbfx' = 'homebridge';
+  public uploadPercent = 0;
 
   private term = new Terminal();
   private termTarget: HTMLElement;
@@ -68,6 +71,14 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
   }
 
   onRestoreBackupClick() {
+    if (this.restoreArchiveType === 'homebridge') {
+      this.uploadHomebridgeArchive();
+    } else if (this.restoreArchiveType === 'hbfx') {
+      this.uploadHbfxArchive();
+    }
+  }
+
+  uploadHomebridgeArchive() {
     this.term.reset();
     this.clicked = true;
     const formData: FormData = new FormData();
@@ -99,12 +110,57 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
         this.$toastr.error(this.translate.instant('backup.message_restore_failed'), this.translate.instant('toast.title_error'));
       },
     );
+  }
 
+  uploadHbfxArchive() {
+    this.term.reset();
+    this.clicked = true;
+    const formData: FormData = new FormData();
+    formData.append('restoreArchive', this.selectedFile, this.selectedFile.name);
+    this.$api.post('/backup/restore/hbfx', formData, {
+      reportProgress: true,
+      observe: 'events',
+    }).subscribe((event) => {
+      if (event.type === HttpEventType.UploadProgress) {
+        this.uploadPercent = Math.round(100 * event.loaded / event.total);
+      } else if (event instanceof HttpResponse) {
+        this.uploadPercent = 0;
+        if (event.status === 200) {
+          this.restoreStarted = true;
+          this.restoreInProgress = true;
+          setTimeout(() => {
+            this.startHbfxRestore();
+          }, 500);
+          this.clicked = false;
+        } else {
+          this.$toastr.error(this.translate.instant('backup.message_restore_failed'), this.translate.instant('toast.title_error'));
+          this.clicked = false;
+        }
+      }
+    });
+  }
+
+  async startHbfxRestore() {
+    await this.io.request('do-restore-hbfx').subscribe(
+      (res) => {
+        this.restoreInProgress = false;
+        this.$toastr.success(this.translate.instant('backup.message_backup_restored'), this.translate.instant('toast.title_success'));
+      },
+      (err) => {
+        this.restoreFailed = true;
+        this.$toastr.error(this.translate.instant('backup.message_restore_failed'), this.translate.instant('toast.title_error'));
+      },
+    );
   }
 
   handleRestoreFileInput(files: FileList) {
     if (files.length) {
       this.selectedFile = files[0];
+      if (this.selectedFile.name.endsWith('.hbfx')) {
+        this.restoreArchiveType = 'hbfx';
+      } else {
+        this.restoreArchiveType = 'homebridge';
+      }
     } else {
       delete this.selectedFile;
     }

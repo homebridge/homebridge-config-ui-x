@@ -27,9 +27,22 @@ export class BackupController {
 
   @UseGuards(AdminGuard)
   @Post('/restore')
-  restoreBackkup(@Req() req, @Res() res) {
+  restoreBackup(@Req() req, @Res() res) {
     req.multipart(async (field, file, filename, encoding, mimetype) => {
       this.backupService.uploadBackupRestore(file);
+    }, (err) => {
+      if (err) {
+        return res.send(500).send(err.message);
+      }
+      return res.code(200).send();
+    });
+  }
+
+  @UseGuards(AdminGuard)
+  @Post('/restore/hbfx')
+  restoreHbfx(@Req() req, @Res() res) {
+    req.multipart(async (field, file, filename, encoding, mimetype) => {
+      this.backupService.uploadHbfxRestore(file);
     }, (err) => {
       if (err) {
         return res.send(500).send(err.message);

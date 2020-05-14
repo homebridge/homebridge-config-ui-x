@@ -14,9 +14,20 @@ export class BackupGateway {
   ) { }
 
   @SubscribeMessage('do-restore')
-  async installPlugin(client, payload) {
+  async doRestore(client, payload) {
     try {
       return await this.backupService.restoreFromBackup(payload, client);
+    } catch (e) {
+      this.logger.error(e);
+      client.emit('stdout', '\n\r' + color.red(e.toString()) + '\n\r');
+      return new WsException(e);
+    }
+  }
+
+  @SubscribeMessage('do-restore-hbfx')
+  async doRestoreHbfx(client, payload) {
+    try {
+      return await this.backupService.restoreHbfxBackup(payload, client);
     } catch (e) {
       this.logger.error(e);
       client.emit('stdout', '\n\r' + color.red(e.toString()) + '\n\r');

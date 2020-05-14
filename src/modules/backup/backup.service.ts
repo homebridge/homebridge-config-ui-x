@@ -3,10 +3,11 @@ import * as tar from 'tar';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as color from 'bash-color';
+import * as unzipper from 'unzipper';
 import * as child_process from 'child_process';
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PluginsService } from '../plugins/plugins.service';
-import { ConfigService } from '../../core/config/config.service';
+import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
 import { Logger } from '../../core/logger/logger.service';
 
 @Injectable()
@@ -230,6 +231,154 @@ export class BackupService {
 
     // save the config
     await fs.writeJson(this.configService.configPath, restoredConfig, { spaces: 4 });
+
+    // remove temp files
+    await this.removeRestoreDirectory();
+
+    client.emit('stdout', color.green('\r\nRestore Complete!\r\n'));
+
+    return { status: 0 };
+  }
+
+  /**
+   * Upload a .hbfx backup file
+   */
+  async uploadHbfxRestore(file: fs.ReadStream) {
+    // clear restore directory
+    this.restoreDirectory = undefined;
+
+    // prepare a temp working directory
+    const backupDir = await fs.mkdtemp(path.join(os.tmpdir(), 'homebridge-backup-'));
+
+    this.logger.log(`Extracting .hbfx file to ${backupDir}`);
+
+    file.pipe(unzipper.Extract({
+      path: backupDir,
+    }));
+
+    file.on('end', () => {
+      this.restoreDirectory = backupDir;
+    });
+  }
+
+  /**
+   * Restore .hbfx backup file
+   */
+  async restoreHbfxBackup(payload, client) {
+    if (!this.restoreDirectory) {
+      throw new BadRequestException();
+    }
+
+    // check package.json exists
+    if (!await fs.pathExists(path.resolve(this.restoreDirectory, 'package.json'))) {
+      await this.removeRestoreDirectory();
+      throw new Error('Uploaded file is not a valid HBFX Backup Archive.');
+    }
+
+    // check config.json exists
+    if (!await fs.pathExists(path.resolve(this.restoreDirectory, 'etc', 'config.json'))) {
+      await this.removeRestoreDirectory();
+      throw new Error('Uploaded file is not a valid HBFX Backup Archive.');
+    }
+
+    // load package.json
+    const backupInfo = await fs.readJson(path.resolve(this.restoreDirectory, 'package.json'));
+
+    // display backup archive information
+    client.emit('stdout', color.cyan('Backup Archive Information\r\n'));
+    client.emit('stdout', `Backup Source: ${backupInfo.name}\r\n`);
+    client.emit('stdout', `Version: v${backupInfo.version}\r\n`);
+
+    // start restore
+    this.logger.warn(`Starting hbfx restore...`);
+    client.emit('stdout', color.cyan('\r\nRestoring hbfx backup...\r\n\r\n'));
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // restore files
+    client.emit('stdout', color.yellow(`Restoring Homebridge storage to ${this.configService.storagePath}\r\n`));
+    await fs.copy(path.resolve(this.restoreDirectory, 'etc'), path.resolve(this.configService.storagePath), {
+      filter: (filePath) => {
+        if ([
+          'access.json',
+          'dashboard.json',
+          'layout.json',
+          'config.json'
+        ].includes(path.basename(filePath))) {
+          return false;
+        }
+        client.emit('stdout', `Restoring ${path.basename(filePath)}\r\n`);
+        return true;
+      },
+    });
+
+    // restore accessories
+    const sourceAccessoriesPath = path.resolve(this.restoreDirectory, 'etc', 'accessories');
+    const targeAccessoriestPath = path.resolve(this.configService.storagePath, 'accessories');
+    if (await fs.pathExists(sourceAccessoriesPath)) {
+      await fs.copy(sourceAccessoriesPath, targeAccessoriestPath, {
+        filter: (filePath) => {
+          client.emit('stdout', `Restoring ${path.basename(filePath)}\r\n`);
+          return true;
+        },
+      });
+    }
+
+    // load source config.json
+    const sourceConfig = await fs.readJson(path.resolve(this.restoreDirectory, 'etc', 'config.json'));
+
+    // map hbfx plugins to homebridge plugins
+    const pluginMap = {
+      'hue': 'homebridge-hue',
+      'chamberlain': 'homebridge-chamberlain',
+      'google-home': 'homebridge-gsh',
+      'ikea-tradfri': 'homebridge-ikea-tradfri-gateway',
+      'nest': 'homebridge-nest',
+      'ring': 'homebridge-ring',
+      'roborock': 'homebridge-roborock',
+      'shelly': 'homebridge-shelly',
+      'wink': 'homebridge-wink3'
+    };
+
+    // install plugins
+    if (sourceConfig.plugins?.length) {
+      for (let plugin of sourceConfig.plugins) {
+        if (plugin in pluginMap) {
+          plugin = pluginMap[plugin];
+        }
+        try {
+          client.emit('stdout', color.yellow(`\r\nInstalling ${plugin}...\r\n`));
+          await this.pluginsService.installPlugin(plugin, client);
+        } catch (e) {
+          client.emit('stdout', color.red(`Failed to install ${plugin}.\r\n`));
+        }
+      }
+    }
+
+    // clone elements from the source config that we care about
+    const targetConfig: HomebridgeConfig = JSON.parse(JSON.stringify({
+      bridge: sourceConfig.bridge,
+      accessories: sourceConfig.accessories?.map((x) => {
+        delete x.plugin_map;
+        return x;
+      }) || [],
+      platforms: sourceConfig.platforms?.map((x) => {
+        if (x.platform === 'google-home') {
+          x.platform = 'google-smarthome';
+          x.notice = 'Keep your token a secret!';
+        }
+        delete x.plugin_map;
+        return x;
+      }) || [],
+    }));
+
+    // correct bridge name
+    targetConfig.bridge.name = 'Homebridge ' + targetConfig.bridge.username.substr(targetConfig.bridge.username.length - 5).replace(/:/g, '');
+
+    // add config ui platform
+    targetConfig.platforms.push(this.configService.ui);
+
+    // save the config
+    await fs.writeJson(this.configService.configPath, targetConfig, { spaces: 4 });
 
     // remove temp files
     await this.removeRestoreDirectory();

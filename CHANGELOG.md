@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file. This projec
 * **Plugins:** Added the ability for developers to customise the "Add Item" button label in the settings ui ([#668](https://github.com/oznu/homebridge-config-ui-x/issues/668))
 * **Plugins:** Added a "clear query" button to the right of the search box ([#674](https://github.com/oznu/homebridge-config-ui-x/issues/674))
 * **Plugins:** Users of `homebridge-hue` can now download the debug dump file from the UI ([#676](https://github.com/oznu/homebridge-config-ui-x/issues/676))
+* **Backup/Restore:** Added the ability to restore a `.hbfx` backup file
 
 ### Other Changes
 
