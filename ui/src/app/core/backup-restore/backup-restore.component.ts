@@ -120,24 +120,26 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
     this.$api.post('/backup/restore/hbfx', formData, {
       reportProgress: true,
       observe: 'events',
-    }).subscribe((event) => {
-      if (event.type === HttpEventType.UploadProgress) {
-        this.uploadPercent = Math.round(100 * event.loaded / event.total);
-      } else if (event instanceof HttpResponse) {
-        this.uploadPercent = 0;
-        if (event.status === 200) {
-          this.restoreStarted = true;
-          this.restoreInProgress = true;
-          setTimeout(() => {
-            this.startHbfxRestore();
-          }, 500);
-          this.clicked = false;
-        } else {
-          this.$toastr.error(this.translate.instant('backup.message_restore_failed'), this.translate.instant('toast.title_error'));
-          this.clicked = false;
+    }).subscribe(
+      (event) => {
+        if (event.type === HttpEventType.UploadProgress) {
+          this.uploadPercent = Math.round(100 * event.loaded / event.total);
+        } else if (event instanceof HttpResponse) {
+          if (event.status === 200) {
+            this.restoreStarted = true;
+            this.restoreInProgress = true;
+            setTimeout(() => {
+              this.startHbfxRestore();
+            }, 500);
+            this.clicked = false;
+          }
         }
-      }
-    });
+      },
+      (err) => {
+        this.$toastr.error(this.translate.instant('backup.message_restore_failed'), this.translate.instant('toast.title_error'));
+        this.clicked = false;
+      },
+    );
   }
 
   async startHbfxRestore() {

@@ -33,9 +33,10 @@
       <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="onRestoreBackupClick()"
         [disabled]="clicked">
         <span *ngIf="clicked">
-          <span *ngIf="uploadPercent">{{ uploadPercent }}% - </span>
-          <i *ngIf="!uploadPercent" class="fa fa-circle-notch fa-spin"></i>
-          {{ 'backup.label_uploading' | translate }}
+          <i *ngIf="!uploadPercent || uploadPercent === 100" class="fa fa-circle-notch fa-spin"></i>
+          <span *ngIf="uploadPercent && uploadPercent !== 100">{{ uploadPercent }}% - </span>
+          <span *ngIf="uploadPercent === 100"> Extracting Archive</span>
+          <span *ngIf="uploadPercent !== 100"> {{ 'backup.label_uploading' | translate }}</span>
         </span>
         <span *ngIf="!clicked" [translate]="'backup.button_restore_backup'"></span>
       </button>
@@ -46,7 +47,7 @@
 
   <div class="modal-footer" *ngIf="!restoreStarted || restoreFailed === true">
     <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')"
-      [translate]="'form.button_close'">Close</button>
+      [translate]="'form.button_close'" [disabled]="clicked">Close</button>
   </div>
 
   <div class="modal-footer" *ngIf="!restoreInProgress && restoreStarted">
