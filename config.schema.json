@@ -316,8 +316,11 @@
         "type": "boolean"
       },
       "sessionTimeout": {
-        "title": "Session timeout in seconds",
-        "type": "integer"
+        "title": "Session Timeout (in seconds)",
+        "type": "integer",
+        "placeholder": 28800,
+        "minimum": 600,
+        "maximum": 86400000
       },
       "log": {
         "type": "object",
@@ -400,7 +403,6 @@
           },
           "instanceBlacklist": {
             "title": "Blacklisted Instances",
-            "buttonText": "Add Instance",
             "type": "array",
             "items": {
               "title": "Instance Username",
@@ -455,6 +457,7 @@
       ]
     },
     {
+      "ref": "log",
       "type": "fieldset",
       "expandable": true,
       "title": "Log Viewer Setup",
@@ -488,41 +491,7 @@
       ]
     },
     {
-      "type": "fieldset",
-      "title": "Accessory Control Settings",
-      "expandable": true,
-      "expanded": false,
-      "items": [
-        "accessoryControl.debug",
-        {
-          "type": "help",
-          "helpvalue": "<h6>Instance Blacklist</h6><em class='primary-text'>Enter the usernames of any other Homebridge instances on your network that you do not want to be able to control from this instance.</em>"
-        },
-        {
-          "nodescription": true,
-          "notitle": true,
-          "key": "accessoryControl.instanceBlacklist",
-          "type": "array",
-          "orderable": false,
-          "items": [
-            {
-              "type": "div",
-              "displayFlex": true,
-              "flex-direction": "row",
-              "items": [
-                {
-                  "key": "accessoryControl.instanceBlacklist[]",
-                  "flex": "1 1 50px",
-                  "notitle": true,
-                  "placeholder": "Enter homebridge username..."
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
+      "ref": "advanced",
       "type": "fieldset",
       "expandable": true,
       "title": "Advanced",
@@ -531,6 +500,10 @@
         "debug",
         "lang",
         "auth",
+        {
+          "key": "sessionTimeout",
+          "type": "number"
+        },
         {
           "key": "restart",
           "description": "If no restart command is set the process will terminate with a non-zero exit code."
@@ -543,10 +516,6 @@
         {
           "key": "loginWallpaper",
           "description": "Leave blank to use default wallpaper."
-        },
-        {
-          "key": "homebridgePackagePath",
-          "description": "Leave blank unless you have not installed Homebridge as a global module."
         }
       ]
     }

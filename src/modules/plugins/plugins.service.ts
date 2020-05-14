@@ -462,6 +462,24 @@ export class PluginsService {
     // modify this plugins schema to set the default port number
     if (pluginName === this.configService.name) {
       configSchema.schema.properties.port.default = this.configService.ui.port;
+
+      // filter some options from the UI config when using service mode
+      if (this.configService.serviceMode) {
+        configSchema.layout = configSchema.layout.filter(x => {
+          if (x.ref === 'log') {
+            return false;
+          }
+          return true;
+        });
+
+        const advanced = configSchema.layout.find(x => x.ref === 'advanced');
+        advanced.items = advanced.items.filter(x => {
+          if (x === 'sudo' || x.key === 'restart') {
+            return false;
+          }
+          return true;
+        });
+      }
     }
 
     // modify homebridge-alexa to set the default pin
