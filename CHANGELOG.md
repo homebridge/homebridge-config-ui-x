@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Notable Changes
 
+* **Plugins:** Plugin "update available" status is now cached for 5 minutes to reduce the number of outbound calls to the npm registry and decrease load times for the plugins tab for those with slower internet connections
+* **Plugins:** If the initial attempt to load the "Verified Plugins" list fails, the UI will now try again after 60 seconds
 * **Plugins:** Added the ability for developers to customise the "Add Item" button label in the settings ui ([#668](https://github.com/oznu/homebridge-config-ui-x/issues/668))
 * **Plugins:** Added a "clear query" button to the right of the search box ([#674](https://github.com/oznu/homebridge-config-ui-x/issues/674))
 * **Plugins:** Users of `homebridge-hue` can now download the debug dump file from the UI ([#676](https://github.com/oznu/homebridge-config-ui-x/issues/676))

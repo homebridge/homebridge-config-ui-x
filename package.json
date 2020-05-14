@@ -70,6 +70,7 @@
     "fastify-static": "^2.7.0",
     "fs-extra": "^8.1.0",
     "helmet": "^3.22.0",
+    "node-cache": "^5.1.0",
     "node-pty-prebuilt-multiarch": "^0.9.0",
     "ora": "^4.0.4",
     "pino-pretty": "^3.6.1",
