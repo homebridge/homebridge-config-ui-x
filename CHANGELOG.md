@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## Next
+
+### Bug Fixes
+
+* **hb-service:** Fix a bug that caused strange behaviour on boot for users with home folders on a remote network share ([#680](https://github.com/oznu/homebridge-config-ui-x/issues/680))
+
 ## 4.19.0 (2020-05-14)
 
 ### Notable Changes
@@ -32,7 +38,6 @@ All notable changes to this project will be documented in this file. This projec
 ### Bug Fixes
 
 * **Plugins:** Fixed a bug that prevented the plugins from loading when there was an bad file in the global node_modules directory ([#657](https://github.com/oznu/homebridge-config-ui-x/issues/657))
-
 
 ## 4.17.1 (2020-04-29)
 

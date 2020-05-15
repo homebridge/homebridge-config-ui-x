@@ -548,6 +548,11 @@ export class HomebridgeServiceHelper {
    * Ensures the storage path defined exists
    */
   public async storagePathCheck() {
+    if (os.platform() === 'darwin' && !await fs.pathExists(path.dirname(this.storagePath))) {
+      this.logger(`Cannot create Homebridge storage directory, base path does not exist: ${path.dirname(this.storagePath)}`, 'fail');
+      process.exit(1);
+    }
+
     if (!await fs.pathExists(this.storagePath)) {
       this.logger(`Creating Homebridge directory: ${this.storagePath}`);
       await fs.mkdirp(this.storagePath);
