@@ -4,11 +4,15 @@ All notable changes to this project will be documented in this file. This projec
 
 ## Next
 
+### Other Changes
+
+* **i18n:** Improvements to English language translation ([#689](https://github.com/oznu/homebridge-config-ui-x/issues/689))
+* **i18n:** Improvements to Czech language translation ([#691](https://github.com/oznu/homebridge-config-ui-x/issues/691))
+
 ### Bug Fixes
 
 * **hb-service:** Fix a bug that caused strange behaviour on boot for users running macOS with home folders mounted on a remote network share ([#680](https://github.com/oznu/homebridge-config-ui-x/issues/680))
-* **i18n:** Improvements to English language translation ([#689](https://github.com/oznu/homebridge-config-ui-x/issues/689))
-* **i18n:** Improvements to Czech language translation ([#691](https://github.com/oznu/homebridge-config-ui-x/issues/691))
+* **Accessory Control:** Fixed an issue where the accessory name would sometimes not be displayed correctly ([#690](https://github.com/oznu/homebridge-config-ui-x/issues/690))
 
 ## 4.19.0 (2020-05-14)
 
