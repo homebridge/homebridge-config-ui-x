@@ -338,7 +338,7 @@ export class HomebridgeServiceHelper {
           this.homebridge.kill('SIGKILL');
         } catch (e) { }
         process.exit(1282);
-      }, 5100);
+      }, 7000);
     };
 
     process.on('SIGTERM', exitHandler);
@@ -890,7 +890,7 @@ export class HomebridgeServiceHelper {
             this.homebridge.kill('SIGKILL');
           } catch (e) { }
         }
-      }, 5100);
+      }, 7000);
     }
   }
 
