@@ -711,10 +711,17 @@ export class PluginsService {
     try {
       if (plugin.name.includes('@')) {
         // scoped plugins do not allow us to access the "latest" tag directly
-        const pkg: INpmRegistryModule = this.npmPluginCache.get(plugin.name) || (
-          await this.http.get(`https://registry.npmjs.org/${plugin.name.replace('%40', '@')}`)
-        ).data;
-        this.npmPluginCache.set(plugin.name, pkg);
+
+        // attempt to load from cache
+        const fromCache = this.npmPluginCache.get(plugin.name);
+
+        // restore from cache, or load from npm
+        const pkg: INpmRegistryModule = fromCache || (await this.http.get(`https://registry.npmjs.org/${plugin.name.replace('%40', '@')}`)).data;
+
+        // store in cache if it was not there already
+        if (!fromCache) {
+          this.npmPluginCache.set(plugin.name, pkg);
+        }
 
         plugin.publicPackage = true;
         plugin.latestVersion = pkg['dist-tags'] ? pkg['dist-tags'].latest : plugin.installedVersion;
@@ -727,10 +734,17 @@ export class PluginsService {
         plugin.engines = plugin.latestVersion ? pkg.versions[plugin.latestVersion].engines : {};
       } else {
         // access the "latest" tag directly to speed up the request time
-        const pkg: IPackageJson = this.npmPluginCache.get(plugin.name) || (
-          await this.http.get(`https://registry.npmjs.org/${encodeURIComponent(plugin.name).replace('%40', '@')}/latest`)
-        ).data;
-        this.npmPluginCache.set(plugin.name, pkg);
+
+        // attempt to load from cache
+        const fromCache = this.npmPluginCache.get(plugin.name);
+
+        // restore from cache, or load from npm
+        const pkg: IPackageJson = fromCache || (await this.http.get(`https://registry.npmjs.org/${encodeURIComponent(plugin.name).replace('%40', '@')}/latest`)).data;
+
+        // store in cache if it was not there already
+        if (!fromCache) {
+          this.npmPluginCache.set(plugin.name, pkg);
+        }
 
         plugin.publicPackage = true;
         plugin.latestVersion = pkg.version;
