@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Res, Put, Req, Header } from '@nestjs/common';
+import { Controller, Get, UseGuards, Put, Header, Delete, Param, HttpCode } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ServerService } from './server.service';
 import { AdminGuard } from '../../core/auth/guards/admin.guard';
@@ -32,6 +32,32 @@ export class ServerController {
   @Put('/reset-cached-accessories')
   resetCachedAccessories() {
     return this.serverService.resetCachedAccessories();
+  }
+
+  @UseGuards(AdminGuard)
+  @Get('/cached-accessories')
+  getCachedAccessories() {
+    return this.serverService.getCachedAccessories();
+  }
+
+  @UseGuards(AdminGuard)
+  @Delete('/cached-accessories/:uuid')
+  @HttpCode(204)
+  deleteCachedAccessory(@Param('uuid') uuid: string) {
+    return this.serverService.deleteCachedAccessory(uuid);
+  }
+
+  @UseGuards(AdminGuard)
+  @Get('/pairings')
+  getDevicePairings() {
+    return this.serverService.getDevicePairings();
+  }
+
+  @UseGuards(AdminGuard)
+  @Delete('/pairings/:deviceId')
+  @HttpCode(204)
+  deleteDevicePairing(@Param('deviceId') deviceId: string) {
+    return this.serverService.deleteDevicePairing(deviceId);
   }
 
 }

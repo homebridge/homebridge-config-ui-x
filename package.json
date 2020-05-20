@@ -86,7 +86,7 @@
   "devDependencies": {
     "@nestjs/jwt": "^7.0.0",
     "@nestjs/passport": "^7.0.0",
-    "@oznu/hap-client": "^1.5.0",
+    "@oznu/hap-client": "^1.6.0",
     "@types/fs-extra": "^8.1.0",
     "@types/node": "^13.13.4",
     "@types/semver": "^7.1.0",
