@@ -196,7 +196,7 @@
     "reset.message_reset_will_unpair_from_homekit": "Нулирането ще раздвои тази инсталация на Homebridge от вашата настройка на Apple HomeKit.",
     "reset.message_your_homebridge_username_will_be_changed": "Вашите Homebridge потребителско име и pin ще бъдат променени.",
     "reset.title_clear_cache": "Clear Cache",
-    "reset.title_clear_cached_accessories": "Clear Cached Accessories",
+    "reset.title_clear_cached_accessories": "Remove All Cached Accessories",
     "reset.title_force_restart_hb_service": "Force Service Restart",
     "reset.title_force_restart_hb_service_short": "Restart Service",
     "reset.title_reset": "Reset",

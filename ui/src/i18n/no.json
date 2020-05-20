@@ -196,7 +196,7 @@
     "reset.message_reset_will_unpair_from_homekit": "En tilbakestilling kommer til å fjerne denne Homebridge-instansen fra din Apple HomeKit-installasjon.",
     "reset.message_your_homebridge_username_will_be_changed": "Ditt brukernavn og pin for Homebridge kommer til å endres.",
     "reset.title_clear_cache": "Clear Cache",
-    "reset.title_clear_cached_accessories": "Clear Cached Accessories",
+    "reset.title_clear_cached_accessories": "Remove All Cached Accessories",
     "reset.title_force_restart_hb_service": "Force Service Restart",
     "reset.title_force_restart_hb_service_short": "Restart Service",
     "reset.title_reset": "Reset",

@@ -1,0 +1,59 @@
+import { Component, OnInit } from '@angular/core';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { ToastrService } from 'ngx-toastr';
+import { TranslateService } from '@ngx-translate/core';
+import { ApiService } from '../../../core/api.service';
+
+@Component({
+  selector: 'app-remove-single-cached-accessory-modal',
+  templateUrl: './remove-single-cached-accessory-modal.component.html',
+  styleUrls: ['./remove-single-cached-accessory-modal.component.scss'],
+})
+export class RemoveSingleCachedAccessoryModalComponent implements OnInit {
+  public cachedAccessories: any[];
+  public deleting: null | string = null;
+
+  constructor(
+    public activeModal: NgbActiveModal,
+    public toastr: ToastrService,
+    private translate: TranslateService,
+    private $api: ApiService,
+  ) { }
+
+  ngOnInit(): void {
+    this.$api.get('/server/cached-accessories').subscribe(
+      data => {
+        this.cachedAccessories = data;
+      },
+      err => {
+        this.toastr.error('Accessory cache could not be loaded. You may not have any cached accessories.', this.translate.instant('toast.title_error'));
+        this.activeModal.close();
+      },
+    );
+  }
+
+  removeAccessory(uuid: string) {
+    this.deleting = uuid;
+
+    this.toastr.info(this.translate.instant('reset.toast_removing_cached_accessory_please_wait'));
+
+    this.$api.delete(`/server/cached-accessories/${uuid}`).subscribe(
+      data => {
+        const itemIndex = this.cachedAccessories.findIndex(x => x.UUID = uuid);
+        this.cachedAccessories.splice(itemIndex, 1);
+        this.deleting = null;
+
+        if (!this.cachedAccessories.length) {
+          this.activeModal.close();
+        }
+
+        this.toastr.success(this.translate.instant('reset.toast_cached_accessory_removed'), this.translate.instant('toast.title_success'));
+      },
+      err => {
+        this.deleting = null;
+        this.toastr.error(this.translate.instant('reset.toast_failed_to_delete_cached_accessory'), this.translate.instant('toast.title_error'));
+      },
+    );
+  }
+
+}

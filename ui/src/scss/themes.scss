@@ -49,6 +49,12 @@
       display: none;
     }
 
+    .alert-info {
+      background-color: rgba($primary-dark, 0.1);
+      border-color: rgba($primary-dark, 0.1);
+      color: $primary;
+    }
+
     .animate_loader {
       .spinner_outer {
         stroke: $primary-dark

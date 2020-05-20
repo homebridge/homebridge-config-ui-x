@@ -196,7 +196,7 @@
     "reset.message_reset_will_unpair_from_homekit": "Une réinitialisation va délier cette instance Homebridge de votre configuration Apple Homekit.",
     "reset.message_your_homebridge_username_will_be_changed": "Votre nom d'utilisateur et pin Homebridge sera modifié.",
     "reset.title_clear_cache": "Clear Cache",
-    "reset.title_clear_cached_accessories": "Clear Cached Accessories",
+    "reset.title_clear_cached_accessories": "Remove All Cached Accessories",
     "reset.title_force_restart_hb_service": "Force Service Restart",
     "reset.title_force_restart_hb_service_short": "Restart Service",
     "reset.title_reset": "Reset",

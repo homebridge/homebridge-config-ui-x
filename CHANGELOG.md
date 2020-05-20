@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. This projec
 
 ## Next
 
+### Notable Changes
+
+* **hb-service:** Users can now remove individual accessories from the accessory cache, *Homebridge Settings* -> *Remove Single Cached Accessory*
+
 ### Other Changes
 
 * **i18n:** Improvements to English language translation ([#689](https://github.com/oznu/homebridge-config-ui-x/issues/689))
