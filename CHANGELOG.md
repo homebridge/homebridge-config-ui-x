@@ -2,17 +2,19 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## Next
+## 4.20.0 (2020-05-21)
 
 ### Notable Changes
 
 * **Server:** Added the ability to unpair selected bridges / cameras / TVs without needed to reset the main Homebridge instance, this feature is available in from the drop down menu -> *Homebridge Settings* 
 * **hb-service:** Users can now remove individual accessories from the accessory cache, drop-down menu -> *Homebridge Settings* -> *Remove Single Cached Accessory* ([#202](https://github.com/oznu/homebridge-config-ui-x/issues/202))
+* **i18n:** Slovenian language translation added by [@fmandal](https://github.com/fmandal) ([#694](https://github.com/oznu/homebridge-config-ui-x/pull/694))
 
 ### Other Changes
 
-* **i18n:** Improvements to English language translation ([#689](https://github.com/oznu/homebridge-config-ui-x/issues/689))
-* **i18n:** Improvements to Czech language translation ([#691](https://github.com/oznu/homebridge-config-ui-x/issues/691))
+* **i18n:** Improvements to English language translation ([#689](https://github.com/oznu/homebridge-config-ui-x/pull/689))
+* **i18n:** Improvements to Czech language translation ([#691](https://github.com/oznu/homebridge-config-ui-x/pull/691))
+* **i18n:** Improvements to Polish language translation ([#693](https://github.com/oznu/homebridge-config-ui-x/pull/693))
 
 ### Bug Fixes
 
