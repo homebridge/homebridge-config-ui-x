@@ -3,13 +3,11 @@ import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { WsService } from '../../core/ws.service';
-import { AuthService } from '../../core/auth/auth.service';
-import { ResetHomebridgeModalComponent } from '../../core/reset-homebridge-modal/reset-homebridge-modal.component';
-import { BackupRestoreComponent } from '../../core/backup-restore/backup-restore.component';
-import { ManagePluginsService } from '../../core/manage-plugins/manage-plugins.service';
-import { ConfirmComponent } from '../../core/components/confirm/confirm.component';
-
+import { WsService } from '@/app/core/ws.service';
+import { AuthService } from '@/app/core/auth/auth.service';
+import { BackupRestoreComponent } from '@/app/core/backup-restore/backup-restore.component';
+import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
+import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
 
 @Component({
   selector: 'app-layout',
@@ -31,12 +29,6 @@ export class LayoutComponent implements OnInit {
   ngOnInit() {
     this.io.socket.on('reconnect', () => {
       this.$auth.checkToken();
-    });
-  }
-
-  resetHomebridgeState() {
-    this.$modal.open(ResetHomebridgeModalComponent, {
-      size: 'lg',
     });
   }
 

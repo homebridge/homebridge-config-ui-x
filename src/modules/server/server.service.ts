@@ -4,6 +4,8 @@ import * as bufferShim from 'buffer-shims';
 import * as qr from 'qr-image';
 import * as child_process from 'child_process';
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Categories } from '@oznu/hap-client/dist/hap-types';
+
 import { ConfigService } from '../../core/config/config.service';
 import { Logger } from '../../core/logger/logger.service';
 import { ConfigEditorService } from '../config-editor/config-editor.service';
@@ -103,6 +105,15 @@ export class ServerService {
       delete device.setupID;
 
       device._id = x.split('.')[1];
+      device._username = device._id.match(/.{1,2}/g).join(':');
+      device._main = this.configService.homebridgeConfig.bridge.username.toUpperCase() === device._username.toUpperCase();
+
+      try {
+        device._category = Object.entries(Categories).find(([name, value]) => value === device.category)[0].toLowerCase();
+      } catch (e) {
+        device._category = 'Other';
+      }
+
       return device;
     }));
   }

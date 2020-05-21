@@ -6,11 +6,12 @@ import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { debounceTime } from 'rxjs/operators';
 
-import { AuthService } from '../../core/auth/auth.service';
-import { ApiService } from '../../core/api.service';
+import { AuthService } from '@/app/core/auth/auth.service';
+import { ApiService } from '@/app/core/api.service';
 import { RemoveAllCachedAccessoriesModalComponent } from './remove-all-cached-accessories-modal/remove-all-cached-accessories-modal.component';
-import { ResetHomebridgeModalComponent } from '../../core/reset-homebridge-modal/reset-homebridge-modal.component';
+import { ResetHomebridgeModalComponent } from './reset-homebridge-modal/reset-homebridge-modal.component';
 import { RemoveSingleCachedAccessoryModalComponent } from './remove-single-cached-accessory-modal/remove-single-cached-accessory-modal.component';
+import { UnpairAccessoryModalComponent } from './unpair-accessory-modal/unpair-accessory-modal.component';
 
 @Component({
   selector: 'app-settings',
@@ -95,6 +96,12 @@ export class SettingsComponent implements OnInit {
 
   resetHomebridgeState() {
     this.$modal.open(ResetHomebridgeModalComponent, {
+      size: 'lg',
+    });
+  }
+
+  unpairAccessory() {
+    this.$modal.open(UnpairAccessoryModalComponent, {
       size: 'lg',
     });
   }

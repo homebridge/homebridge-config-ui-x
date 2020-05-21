@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
-import { ApiService } from '../../../core/api.service';
+import { ApiService } from '@/app/core/api.service';
 
 @Component({
   selector: 'app-remove-single-cached-accessory-modal',
@@ -21,15 +21,16 @@ export class RemoveSingleCachedAccessoryModalComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.$api.get('/server/cached-accessories').subscribe(
-      data => {
-        this.cachedAccessories = data;
-      },
-      err => {
-        this.toastr.error('Accessory cache could not be loaded. You may not have any cached accessories.', this.translate.instant('toast.title_error'));
-        this.activeModal.close();
-      },
-    );
+    this.loadCachedAccessories();
+  }
+
+  async loadCachedAccessories() {
+    try {
+      this.cachedAccessories = await this.$api.get('/server/cached-accessories').toPromise();
+    } catch (e) {
+      this.toastr.error('Accessory cache could not be loaded. You may not have any cached accessories.', this.translate.instant('toast.title_error'));
+      this.activeModal.close();
+    }
   }
 
   removeAccessory(uuid: string) {
@@ -38,9 +39,9 @@ export class RemoveSingleCachedAccessoryModalComponent implements OnInit {
     this.toastr.info(this.translate.instant('reset.toast_removing_cached_accessory_please_wait'));
 
     this.$api.delete(`/server/cached-accessories/${uuid}`).subscribe(
-      data => {
-        const itemIndex = this.cachedAccessories.findIndex(x => x.UUID = uuid);
-        this.cachedAccessories.splice(itemIndex, 1);
+      async data => {
+        await this.loadCachedAccessories();
+
         this.deleting = null;
 
         if (!this.cachedAccessories.length) {

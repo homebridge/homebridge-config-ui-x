@@ -5,14 +5,12 @@ import { ConvertTempPipe } from './pipes/convert-temp.pipe';
 import { ReplacePipe } from './pipes/replace.pipe';
 import { HrefTargetBlankDirective } from './directives/href-target-blank.directive';
 import { LongClickDirective } from './directives/longclick.directive';
-import { ResetHomebridgeModalComponent } from './reset-homebridge-modal/reset-homebridge-modal.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { BackupRestoreComponent } from './backup-restore/backup-restore.component';
 import { ConfirmComponent } from './components/confirm/confirm.component';
 
 @NgModule({
   entryComponents: [
-    ResetHomebridgeModalComponent,
     BackupRestoreComponent,
     ConfirmComponent,
   ],
@@ -22,7 +20,6 @@ import { ConfirmComponent } from './components/confirm/confirm.component';
     ReplacePipe,
     HrefTargetBlankDirective,
     LongClickDirective,
-    ResetHomebridgeModalComponent,
     BackupRestoreComponent,
     ConfirmComponent,
   ],
@@ -37,7 +34,6 @@ import { ConfirmComponent } from './components/confirm/confirm.component';
     ReplacePipe,
     HrefTargetBlankDirective,
     LongClickDirective,
-    ResetHomebridgeModalComponent,
   ],
 })
 export class CoreModule { }

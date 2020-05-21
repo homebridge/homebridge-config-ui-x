@@ -6,7 +6,8 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Notable Changes
 
-* **hb-service:** Users can now remove individual accessories from the accessory cache, *Homebridge Settings* -> *Remove Single Cached Accessory* ([#202](https://github.com/oznu/homebridge-config-ui-x/issues/202))
+* **Server:** Added the ability to unpair selected bridges / cameras / TVs without needed to reset the main Homebridge instance, this feature is available in from the drop down menu -> *Homebridge Settings* 
+* **hb-service:** Users can now remove individual accessories from the accessory cache, drop-down menu -> *Homebridge Settings* -> *Remove Single Cached Accessory* ([#202](https://github.com/oznu/homebridge-config-ui-x/issues/202))
 
 ### Other Changes
 

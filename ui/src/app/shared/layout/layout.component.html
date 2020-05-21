@@ -69,12 +69,8 @@
             </a>
             <div class="dropdown-divider"
               *ngIf="$auth.user.admin && ($auth.env.runningInDocker || $auth.env.runningInLinux)"></div>
-            <a class="dropdown-item waves-effect waves-light" routerLink="/settings"
-              *ngIf="($auth.env.runningInDocker || $auth.env.serviceMode) && $auth.user.admin">
+            <a class="dropdown-item waves-effect waves-light" routerLink="/settings" *ngIf="$auth.user.admin">
               Homebridge {{ 'menu.docker.label_settings' | translate }}
-            </a>
-            <a class="dropdown-item waves-effect waves-light" (click)="resetHomebridgeState()" *ngIf="$auth.user.admin">
-              {{ 'reset.label_reset_homebridge' | translate | titlecase }}
             </a>
             <a class="dropdown-item waves-effect waves-light" (click)="backupRestoreHomebridge()"
               *ngIf="$auth.user.admin">
