@@ -203,7 +203,7 @@
     "reset.title_clear_cached_accessories_single": "Wyczyść jedno z akcesoriów z pamici podręcznej",
     "reset.title_force_restart_hb_service": "Wymuś restart (hb-service)",
     "reset.title_force_restart_hb_service_short": "Zrestartuj",
-    "reset.title_reset": "Zresetuj",
+    "reset.title_reset": "Opcje resetowania",
     "reset.title_reset_homebridge_accessory": "Zresetuj akcesoria",
     "reset.title_unpair_bridges_cameras_tv_external_accessories": "Rozłącz Mostki / Kamery / TV / Zewnętrzne akcesoria",
     "reset.title_warning": "Ostrzeżenie",
