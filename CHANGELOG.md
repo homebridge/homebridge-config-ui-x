@@ -6,9 +6,9 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Notable Changes
 
-* **Server:** Added the ability to unpair selected bridges / cameras / TVs without needed to reset the main Homebridge instance, this feature is available in from the drop down menu -> *Homebridge Settings* 
+* **Server:** Added the ability to unpair selected bridges / cameras / TVs without needed to reset the main Homebridge instance, this feature is available from the drop down menu -> *Homebridge Settings* 
 * **hb-service:** Users can now remove individual accessories from the accessory cache, drop-down menu -> *Homebridge Settings* -> *Remove Single Cached Accessory* ([#202](https://github.com/oznu/homebridge-config-ui-x/issues/202))
-* **i18n:** Slovenian language translation added by [@fmandal](https://github.com/fmandal) ([#694](https://github.com/oznu/homebridge-config-ui-x/pull/694))
+* **i18n:** Slovenian language translation added by [@mitchoklemen](https://github.com/mitchoklemen) ([#694](https://github.com/oznu/homebridge-config-ui-x/pull/694))
 
 ### Other Changes
 
