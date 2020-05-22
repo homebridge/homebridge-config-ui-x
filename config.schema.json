@@ -520,8 +520,13 @@
           "description": "When running behind a reverse proxy you may need to enter the hostname you use to access the UI."
         },
         {
+          "type": "help",
+          "helpvalue": "<label class='control-label'>Custom Login Wallpaper</label><br><p class='help-block'>Custom login wallpaper can be set by adding a 'ui-wallpaper.jpg' file to your Homebridge storage directory, or by providing the full path to the .jpg file below:</p>"
+        },
+        {
           "key": "loginWallpaper",
-          "description": "Leave blank to use default wallpaper."
+          "notitle": true,
+          "placeholder": "eg. /home/pi/mywallpaper.jpg"
         }
       ]
     }

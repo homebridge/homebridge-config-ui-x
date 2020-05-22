@@ -303,7 +303,6 @@ export class ConfigService {
       const hash = crypto.createHash('sha256');
       hash.update(`${stat.birthtime}${stat.ctime}${stat.size}${stat.blocks}`);
       this.customWallpaperHash = hash.digest('hex') + '.jpg';
-      console.log(this.customWallpaperHash);
     } catch (e) {
       // do nothing
     }
