@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## NEXT 
+
+### Notable Changes
+
+**Login:** Custom wallpaper can now be added by added a `ui-wallpaper.jpg` file in your Homebridge storage directory (and leaving the `loginWallpaper` config option blank) ([#697](https://github.com/oznu/homebridge-config-ui-x/issues/690))
+**Login:** Custom wallpaper changes will now break the browser cache ([#700](https://github.com/oznu/homebridge-config-ui-x/issues/700))
+
 ## 4.20.0 (2020-05-21)
 
 ### Notable Changes
