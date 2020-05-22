@@ -82,22 +82,6 @@ async function bootstrap() {
     },
   });
 
-  // login page image
-  app.getHttpAdapter().get('/assets/snapshot.jpg', async (req, res) => {
-    if (configService.ui.loginWallpaper) {
-      if (!await fs.pathExists(configService.ui.loginWallpaper)) {
-        logger.error(`Custom Login Wallpaper does not exist: ${configService.ui.loginWallpaper}`);
-        return res.code(404).send('Not Found');
-      }
-      res.type('image/jpg');
-      res.header('Cache-Control', 'public,max-age=31536000,immutable');
-      res.send(await fs.readFile(path.resolve(configService.ui.loginWallpaper)));
-    } else {
-      res.header('Cache-Control', 'public,max-age=31536000,immutable');
-      res.sendFile('assets/snapshot.jpg');
-    }
-  });
-
   // set prefix
   app.setGlobalPrefix('/api');
 

@@ -48,6 +48,10 @@ export class ConfigService {
   // package.json
   public package = fs.readJsonSync(path.resolve(process.env.UIX_BASE_PATH, 'package.json'));
 
+  // custom wallpaper
+  public customWallpaperPath = path.resolve(this.storagePath, 'ui-wallpaper.jpg');
+  public customWallpaperHash: string;
+
   // set true to force the ui to restart on next restart request
   public hbServiceUiRestartRequired = false;
 
@@ -147,6 +151,7 @@ export class ConfigService {
     this.instanceId = this.getInstanceId();
 
     this.freezeUiSettings();
+    this.getCustomWallpaperHash();
   }
 
   /**
@@ -170,6 +175,7 @@ export class ConfigService {
         temperatureUnits: this.ui.tempUnits || 'c',
         lang: this.ui.lang === 'auto' ? null : this.ui.lang,
         instanceId: this.instanceId,
+        customWallpaperHash: this.customWallpaperHash,
       },
       formAuth: Boolean(this.ui.auth !== 'none'),
       theme: this.ui.theme || 'auto',
@@ -286,6 +292,28 @@ export class ConfigService {
    */
   private getInstanceId(): string {
     return crypto.createHash('sha256').update(this.secrets.secretKey).digest('hex');
+  }
+
+  /**
+   * Checks to see if custom wallpaper has been set, and generate a sha256 hash to use as the file name
+   */
+  private async getCustomWallpaperHash(): Promise<void> {
+    try {
+      const stat = await fs.stat(this.ui.loginWallpaper || this.customWallpaperPath);
+      const hash = crypto.createHash('sha256');
+      hash.update(`${stat.birthtime}${stat.ctime}${stat.size}${stat.blocks}`);
+      this.customWallpaperHash = hash.digest('hex') + '.jpg';
+      console.log(this.customWallpaperHash);
+    } catch (e) {
+      // do nothing
+    }
+  }
+
+  /**
+   * Stream the custom wallpaper
+   */
+  public streamCustomWallpaper(): fs.ReadStream {
+    return fs.createReadStream(this.ui.loginWallpaper || this.customWallpaperPath);
   }
 
 }

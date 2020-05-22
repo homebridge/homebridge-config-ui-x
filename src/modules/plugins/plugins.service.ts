@@ -491,6 +491,11 @@ export class PluginsService {
       configSchema.schema.properties.pin.default = this.configService.homebridgeConfig.bridge.pin;
     }
 
+    // add the display name from the config.json
+    if (plugin.displayName) {
+      configSchema.displayName = plugin.displayName;
+    }
+
     return configSchema;
   }
 

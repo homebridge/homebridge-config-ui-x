@@ -1,6 +1,7 @@
 <div class="modal-content hb-plugin-settings-modal">
   <div class="modal-header">
-    <h5 class="modal-title">{{'plugins.settings.title_settings' | translate}}: {{ pluginName }}</h5>
+    <h5 class="modal-title">{{'plugins.settings.title_settings' | translate}}:
+      {{ configSchema.displayName || pluginName }}</h5>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"
       (click)="activeModal.dismiss('Cross click')">
       <span aria-hidden="true">&times;</span>
@@ -12,7 +13,9 @@
         *ngIf="configSchema.headerDisplay"></markdown>
     </div>
 
-    <ngb-accordion [closeOthers]="true" [activeIds]="show || pluginConfig[0].__uuid__" *ngIf="pluginConfig.length">
+    <!-- MULTIPLE CONFIG BLOCKS-->
+    <ngb-accordion [closeOthers]="true" [activeIds]="show || pluginConfig[0].__uuid__"
+      *ngIf="pluginConfig.length && !configSchema.singular">
       <ngb-panel [id]="block.__uuid__" [title]="block.name" *ngFor="let block of pluginConfig">
         <ng-template ngbPanelContent>
           <json-schema-form *ngIf="configSchema.schema" [options]="jsonFormOptions" [schema]="configSchema.schema"
@@ -30,13 +33,33 @@
       </ngb-panel>
     </ngb-accordion>
 
+    <!-- SINGLE CONFIG BLOCK ONLY -->
+    <div *ngIf="pluginConfig.length && configSchema.singular" class="card card-body">
+      <div *ngFor="let block of pluginConfig">
+        <json-schema-form *ngIf="configSchema.schema" [options]="jsonFormOptions" [schema]="configSchema.schema"
+          [layout]="configSchema.layout" [form]="configSchema.form" [(ngModel)]="block.config" framework="bootstrap-4"
+          (onChanges)="block.onChange($event)" class="ng-bs4-validate">
+        </json-schema-form>
+
+        <app-homebridge-hue *ngIf="pluginName === 'homebridge-hue'"></app-homebridge-hue>
+
+        <div class="d-flex">
+          <a *ngIf="pluginName !== 'homebridge-config-ui-x'" class="ml-auto red-text"
+            (click)="removeBlock(block.__uuid__)" [ngbTooltip]="'Remove ' + configSchema.pluginType + '.'"
+            container="body">
+            <i class="fas fa-trash"></i>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
     <div class="mt-3">
       <markdown hrefTargetBlank class="plugin-md" [data]="configSchema.footerDisplay | interpolateMd"
         *ngIf="configSchema.footerDisplay"></markdown>
     </div>
   </div>
   <div class="modal-footer">
-    <app-homebridge-hue class="mr-auto" *ngIf="pluginName === 'homebridge-hue'"></app-homebridge-hue>
     <button type="button" class="btn btn-elegant mr-auto" data-dismiss="modal" (click)="addBlock()"
       *ngIf="!configSchema.singular || pluginConfig.length === 0">
       Add {{ configSchema.pluginType }} Block

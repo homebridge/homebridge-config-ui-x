@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, Header } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthDto } from './auth.dto';
 import { ConfigService } from '../config/config.service';
@@ -19,6 +19,13 @@ export class AuthController {
   @Get('/settings')
   getSettings() {
     return this.configService.uiSettings();
+  }
+
+  @Get('/wallpaper/:hash')
+  @Header('Content-Type', 'image/jpeg')
+  @Header('Cache-Control', 'public,max-age=31536000,immutable')
+  getCustomWallpaper() {
+    return this.configService.streamCustomWallpaper();
   }
 
   @Post('/noauth')

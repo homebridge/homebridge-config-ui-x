@@ -6,6 +6,8 @@ import { ToastrService } from 'ngx-toastr';
 import * as dayjs from 'dayjs';
 import { ApiService } from '../api.service';
 import { environment } from '../../../environments/environment';
+import { Observable, Subject } from 'rxjs';
+import { first } from 'rxjs/operators';
 
 interface UserInterface {
   username?: string;
@@ -30,11 +32,11 @@ interface EnvInterface {
   lang: string | null;
   temperatureUnits: string;
   instanceId: string;
+  customWallpaperHash: string;
 }
 
 @Injectable()
 export class AuthService {
-  public settingsLoaded = false;
   public env: EnvInterface = {} as EnvInterface;
   public uiVersion: string;
   public formAuth = true;
@@ -42,6 +44,11 @@ export class AuthService {
   public token: string;
   public user: UserInterface = {};
   private logoutTimer;
+
+  // track to see if settings have been loaded
+  private settingsLoadedSubject = new Subject();
+  public onSettingsLoaded = this.settingsLoadedSubject.pipe(first());
+  public settingsLoaded = false;
 
   constructor(
     private $jwtHelper: JwtHelperService,
@@ -157,6 +164,7 @@ export class AuthService {
         this.setUiVersion(data.env.packageVersion);
         this.setLang(this.env.lang);
         this.settingsLoaded = true;
+        this.settingsLoadedSubject.next();
       });
   }
 
