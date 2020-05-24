@@ -1,8 +1,11 @@
 import { Controller, UseGuards, Body, Post, Get, Param, Delete, Patch, ParseIntPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from '../../core/auth/auth.service';
 import { AdminGuard } from '../../core/auth/guards/admin.guard';
 
+@ApiTags('User Management')
+@ApiBearerAuth()
 @UseGuards(AuthGuard())
 @Controller('users')
 export class UsersController {

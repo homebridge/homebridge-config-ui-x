@@ -1,8 +1,11 @@
 import { Controller, Get, UseGuards, Put, Header, Delete, Param, HttpCode } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { ServerService } from './server.service';
 import { AdminGuard } from '../../core/auth/guards/admin.guard';
 
+@ApiTags('Homebridge')
+@ApiBearerAuth()
 @UseGuards(AuthGuard())
 @Controller('server')
 export class ServerController {

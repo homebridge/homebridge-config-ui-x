@@ -236,7 +236,7 @@ export class StatusService {
   /**
    * Check if homebridge is running on the local system
    */
-  private async checkHomebridgeStatus() {
+  public async checkHomebridgeStatus() {
     try {
       await axios.get(`http://localhost:${this.configService.homebridgeConfig.bridge.port}`, {
         validateStatus: () => true

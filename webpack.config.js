@@ -21,6 +21,8 @@ module.exports = {
     "@nestjs/platform-fastify": "@nestjs/platform-fastify",
     "@nestjs/platform-socket.io": "@nestjs/platform-socket.io",
     "@nestjs/websockets": "@nestjs/websockets",
+    "@nestjs/swagger": "@nestjs/swagger",
+    "fastify-swagger": "fastify-swagger",
     "reflect-metadata": "reflect-metadata",
     "rxjs": "rxjs",
     "class-transformer": "class-transformer",
@@ -64,6 +66,7 @@ module.exports = {
   plugins: [
     new webpack.IgnorePlugin(/@nestjs\/microservices/),
     new webpack.IgnorePlugin(/@nestjs\/platform-express/),
+    new webpack.IgnorePlugin(/swagger-ui-express/),
     new webpack.IgnorePlugin(/cache-manager/),
   ],
 };

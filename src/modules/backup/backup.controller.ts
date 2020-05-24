@@ -1,9 +1,12 @@
 import { Controller, Get, Post, Put, UseGuards, Res, Req, InternalServerErrorException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { BackupService } from './backup.service';
 import { AdminGuard } from '../../core/auth/guards/admin.guard';
 import { Logger } from '../../core/logger/logger.service';
 
+@ApiTags('Backup & Restore')
+@ApiBearerAuth()
 @UseGuards(AuthGuard())
 @Controller('backup')
 export class BackupController {

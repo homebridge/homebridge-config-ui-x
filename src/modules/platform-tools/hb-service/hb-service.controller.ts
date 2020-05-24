@@ -1,8 +1,11 @@
 import { Controller, UseGuards, Get, Put, Body } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { AdminGuard } from '../../../core/auth/guards/admin.guard';
 import { HbServiceService } from './hb-service.service';
 
+@ApiTags('Platform - HB Service')
+@ApiBearerAuth()
 @UseGuards(AuthGuard())
 @Controller('platform-tools/hb-service')
 export class HbServiceController {
