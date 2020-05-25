@@ -1,20 +1,13 @@
 import * as fs from 'fs-extra';
 import * as crypto from 'crypto';
 import * as jwt from 'jsonwebtoken';
+import { authenticator } from 'otplib';
 import { JwtService } from '@nestjs/jwt';
-import { Injectable, ForbiddenException, BadRequestException, UnauthorizedException, ConflictException } from '@nestjs/common';
+import { Injectable, ForbiddenException, BadRequestException, UnauthorizedException, ConflictException, NotFoundException, HttpException } from '@nestjs/common';
+import { WsException } from '@nestjs/websockets';
 import { ConfigService } from '../config/config.service';
 import { Logger } from '../logger/logger.service';
-import { WsException } from '@nestjs/websockets';
-
-export interface UserInterface {
-  id: number;
-  name: string;
-  username: string;
-  admin: boolean;
-  hashedPassword: string;
-  salt: string;
-}
+import { UserDto } from '../../modules/users/users.dto';
 
 @Injectable()
 export class AuthService {
@@ -31,9 +24,24 @@ export class AuthService {
    * @param username
    * @param password
    */
-  async authenticate(username: string, password: string): Promise<any> {
+  async authenticate(username: string, password: string, otp?: string): Promise<any> {
     try {
-      const user = await this.doLogin(username, password);
+      const user = await this.findByUsername(username);
+
+      if (!user) {
+        throw new ForbiddenException();
+      }
+
+      await this.checkPassword(user, password);
+
+      if (user.otpActive && !otp) {
+        throw new HttpException('OTP Code Required', 412);
+      }
+
+      if (user.otpActive && !authenticator.verify({ token: otp, secret: user.otpSecret })) {
+        throw new HttpException('OTP Code Invalid', 412);
+      }
+
       if (user) {
         return {
           username: user.username,
@@ -43,9 +51,17 @@ export class AuthService {
         };
       }
     } catch (e) {
-      this.logger.warn(`Failed login attempt`);
-      this.logger.warn(`If you've forgotten your password you can reset to the default ` +
-        `of admin/admin by deleting the "auth.json" file (${this.configService.authPath}) and then restarting Homebridge.`);
+      if (e instanceof ForbiddenException) {
+        this.logger.warn(`Failed login attempt`);
+        this.logger.warn(`If you've forgotten your password you can reset to the default ` +
+          `of admin/admin by deleting the "auth.json" file (${this.configService.authPath}) and then restarting Homebridge.`);
+        throw e;
+      }
+
+      if (e instanceof HttpException) {
+        throw e;
+      }
+
       throw new ForbiddenException();
     }
   }
@@ -55,8 +71,8 @@ export class AuthService {
    * @param username
    * @param password
    */
-  async signIn(username: string, password: string): Promise<any> {
-    const user = await this.authenticate(username, password);
+  async signIn(username: string, password: string, otp?: string): Promise<any> {
+    const user = await this.authenticate(username, password, otp);
     const token = await this.jwtService.sign(user);
 
     return {
@@ -64,6 +80,20 @@ export class AuthService {
       token_type: 'Bearer',
       expires_in: this.configService.ui.sessionTimeout,
     };
+  }
+
+  /**
+   * Verify as users username and password
+   * This will throw an error if the credentials are incorrect.
+   */
+  private async checkPassword(user: UserDto, password: string) {
+    const hashedPassword = await this.hashPassword(password, user.salt);
+
+    if (hashedPassword === user.hashedPassword) {
+      return user;
+    } else {
+      throw new ForbiddenException();
+    }
   }
 
   /**
@@ -115,51 +145,6 @@ export class AuthService {
       throw new WsException('Unauthorized');
     }
   }
-  /**
-   * Returns all the users
-   * @param strip if true, remove the users salt and hashed password from the response
-   */
-  async getUsers(strip?: boolean): Promise<UserInterface[]> {
-    const users: UserInterface[] = await fs.readJson(this.configService.authPath);
-
-    if (strip) {
-      for (const user of users) {
-        delete user.hashedPassword;
-        delete user.salt;
-      }
-    }
-
-    return users;
-  }
-
-  /**
-   * Return a user by it's id
-   * @param id
-   */
-  async findById(id: number): Promise<UserInterface> {
-    const users = await this.getUsers();
-    const user = users.find(x => x.id === id);
-    return user;
-  }
-
-  /**
-   * Return a user by it's username
-   * @param username
-   */
-  async findByUsername(username: string): Promise<UserInterface> {
-    const users = await this.getUsers();
-    const user = users.find(x => x.username === username);
-    return user;
-  }
-
-  /**
-   * Saves the user file
-   * @param users
-   */
-  private async saveUserFile(users: UserInterface[]) {
-    // update the auth.json
-    return await fs.writeJson(this.configService.authPath, users, { spaces: 4 });
-  }
 
   /**
    * Hash a password
@@ -185,111 +170,6 @@ export class AuthService {
         return resolve(buf.toString('hex'));
       });
     });
-  }
-
-  /**
-   * Verify as users username and password
-   * @param username
-   * @param password
-   */
-  private async doLogin(username: string, password: string) {
-    const user = await this.findByUsername(username);
-
-    if (!user) {
-      throw new ForbiddenException();
-    }
-
-    const hashedPassword = await this.hashPassword(password, user.salt);
-
-    if (hashedPassword === user.hashedPassword) {
-      return user;
-    } else {
-      throw new ForbiddenException();
-    }
-  }
-
-  /**
-   * Add a new user
-   * @param user
-   */
-  async addUser(user) {
-    const authfile = await this.getUsers();
-    const salt = await this.genSalt();
-
-    // user object
-    const newUser: UserInterface = {
-      id: authfile.length ? Math.max.apply(Math, authfile.map(x => x.id)) + 1 : 1,
-      username: user.username,
-      name: user.name,
-      hashedPassword: await this.hashPassword(user.password, salt),
-      salt,
-      admin: user.admin,
-    };
-
-    // check a user with the same username does not already exist
-    if (authfile.find(x => x.username.toLowerCase() === newUser.username.toLowerCase())) {
-      throw new ConflictException(`User with username '${newUser.username}' already exists.`);
-    }
-
-    // add the user to the authfile
-    authfile.push(newUser);
-
-    // update the auth.json
-    await this.saveUserFile(authfile);
-    this.logger.warn(`Added new user: ${user.username}`);
-  }
-
-  /**
-   * Remove a user
-   * @param id
-   */
-  async deleteUser(id: number) {
-    const authfile = await this.getUsers();
-
-    const index = authfile.findIndex(x => x.id === id);
-
-    if (index < 0) {
-      throw new BadRequestException('User Not Found');
-    }
-
-    // prevent deleting the only admin user
-    if (authfile[index].admin && authfile.filter(x => x.admin === true).length < 2) {
-      throw new BadRequestException('Cannot delete only admin user');
-    }
-
-    authfile.splice(index, 1);
-
-    // update the auth.json
-    await this.saveUserFile(authfile);
-    this.logger.warn(`Deleted user with ID ${id}`);
-  }
-
-  /**
-   * Updates a user
-   * @param userId
-   * @param update
-   */
-  async updateUser(id: number, update) {
-    const authfile = await this.getUsers();
-
-    const user = authfile.find(x => x.id === id);
-
-    if (!user) {
-      throw new BadRequestException('User Not Found');
-    }
-
-    user.name = update.name || user.name;
-    user.admin = (update.admin === undefined) ? user.admin : update.admin;
-
-    if (update.password) {
-      const salt = await this.genSalt();
-      user.hashedPassword = await this.hashPassword(update.password, salt);
-      user.salt = salt;
-    }
-
-    // update the auth.json
-    this.saveUserFile(authfile);
-    this.logger.log(`Updated user: ${user.username}`);
   }
 
   /**
@@ -329,5 +209,247 @@ export class AuthService {
     if (!authfile.find(x => x.admin === true || x.username === 'admin')) {
       await this.setupDefaultUser();
     }
+  }
+
+  /**
+   * Clean the user profile of se
+   */
+  desensitiseUserProfile(user: UserDto): UserDto {
+    return {
+      id: user.id,
+      name: user.name,
+      username: user.username,
+      admin: user.admin,
+      otpActive: user.otpActive || false
+    };
+  }
+
+  /**
+   * Returns all the users
+   * @param strip if true, remove the users salt and hashed password from the response
+   */
+  async getUsers(strip?: boolean): Promise<UserDto[]> {
+    const users: UserDto[] = await fs.readJson(this.configService.authPath);
+
+    if (strip) {
+      return users.map(this.desensitiseUserProfile);
+    }
+
+    return users;
+  }
+
+  /**
+   * Return a user by it's id
+   * @param id
+   */
+  async findById(id: number): Promise<UserDto> {
+    const users = await this.getUsers();
+    const user = users.find(x => x.id === id);
+    return user;
+  }
+
+  /**
+   * Return a user by it's username
+   * @param username
+   */
+  async findByUsername(username: string): Promise<UserDto> {
+    const users = await this.getUsers();
+    const user = users.find(x => x.username === username);
+    return user;
+  }
+
+  /**
+   * Saves the user file
+   * @param users
+   */
+  private async saveUserFile(users: UserDto[]) {
+    // update the auth.json
+    return await fs.writeJson(this.configService.authPath, users, { spaces: 4 });
+  }
+
+  /**
+   * Add a new user
+   * @param user
+   */
+  async addUser(user) {
+    const authfile = await this.getUsers();
+    const salt = await this.genSalt();
+
+    // user object
+    const newUser: UserDto = {
+      id: authfile.length ? Math.max.apply(Math, authfile.map(x => x.id)) + 1 : 1,
+      username: user.username,
+      name: user.name,
+      hashedPassword: await this.hashPassword(user.password, salt),
+      salt,
+      admin: user.admin,
+    };
+
+    // check a user with the same username does not already exist
+    if (authfile.find(x => x.username.toLowerCase() === newUser.username.toLowerCase())) {
+      throw new ConflictException(`User with username '${newUser.username}' already exists.`);
+    }
+
+    // add the user to the authfile
+    authfile.push(newUser);
+
+    // update the auth.json
+    await this.saveUserFile(authfile);
+    this.logger.warn(`Added new user: ${user.username}`);
+
+    return this.desensitiseUserProfile(newUser);
+  }
+
+  /**
+   * Remove a user
+   * @param id
+   */
+  async deleteUser(id: number) {
+    const authfile = await this.getUsers();
+
+    const index = authfile.findIndex(x => x.id === id);
+
+    if (index < 0) {
+      throw new BadRequestException('User Not Found');
+    }
+
+    // prevent deleting the only admin user
+    if (authfile[index].admin && authfile.filter(x => x.admin === true).length < 2) {
+      throw new BadRequestException('Cannot delete only admin user');
+    }
+
+    authfile.splice(index, 1);
+
+    // update the auth.json
+    await this.saveUserFile(authfile);
+    this.logger.warn(`Deleted user with ID ${id}`);
+  }
+
+  /**
+   * Updates a user
+   * @param userId
+   * @param update
+   */
+  async updateUser(id: number, update: UserDto) {
+    const authfile = await this.getUsers();
+
+    const user = authfile.find(x => x.id === id);
+
+    if (!user) {
+      throw new BadRequestException('User Not Found');
+    }
+
+    user.name = update.name || user.name;
+    user.admin = (update.admin === undefined) ? user.admin : update.admin;
+
+    if (update.password) {
+      const salt = await this.genSalt();
+      user.hashedPassword = await this.hashPassword(update.password, salt);
+      user.salt = salt;
+    }
+
+    // update the auth.json
+    this.saveUserFile(authfile);
+    this.logger.log(`Updated user: ${user.username}`);
+
+    return this.desensitiseUserProfile(user);
+  }
+
+  /**
+   * Change a users own password
+   */
+  async updateOwnPassword(username, currentPassword: string, newPassword: string) {
+    const authfile = await this.getUsers();
+    const user = authfile.find(x => x.username === username);
+
+    if (!user) {
+      throw new NotFoundException('User not found.');
+    }
+
+    // this will throw an error of the password is wrong
+    await this.checkPassword(user, currentPassword);
+
+    // generate a new salf
+    const salt = await this.genSalt();
+    user.hashedPassword = await this.hashPassword(newPassword, salt);
+    user.salt = salt;
+
+    await this.saveUserFile(authfile);
+
+    return this.desensitiseUserProfile(user);
+  }
+
+  /**
+   * Generate an OTP secret for a user
+   */
+  async setupOtp(username: string) {
+    const authfile = await this.getUsers();
+    const user = authfile.find(x => x.username === username);
+
+    if (!user) {
+      throw new NotFoundException('User not found.');
+    }
+
+    if (user.otpActive) {
+      throw new ForbiddenException('2FA has already been activated.');
+    }
+
+    user.otpSecret = authenticator.generateSecret();
+
+    await this.saveUserFile(authfile);
+
+    return {
+      timestamp: new Date(),
+      otpauth: authenticator.keyuri(user.username, 'Homebridge UI', user.otpSecret)
+    };
+  }
+
+  /**
+   * Activates the OTP requirement for a user after verifying the otp code
+   */
+  async activateOtp(username: string, code: string) {
+    const authfile = await this.getUsers();
+    const user = authfile.find(x => x.username === username);
+
+    if (!user) {
+      throw new NotFoundException('User not found.');
+    }
+
+    if (!user.otpSecret) {
+      throw new BadRequestException('2FA has not been setup.');
+    }
+
+    if (authenticator.verify({ token: code, secret: user.otpSecret })) {
+      user.otpActive = true;
+      await this.saveUserFile(authfile);
+      this.logger.warn(`Activated 2FA for '${user.username}'.`);
+      return this.desensitiseUserProfile(user);
+    } else {
+      throw new BadRequestException('OTP code not valid');
+    }
+  }
+
+  /**
+   * Deactivates the OTP requirement for a user after verifying their password
+   */
+  async deactivateOtp(username: string, password: string) {
+    const authfile = await this.getUsers();
+    const user = authfile.find(x => x.username === username);
+
+    if (!user) {
+      throw new NotFoundException('User not found.');
+    }
+
+    // this will throw an error if the password is not valid
+    await this.checkPassword(user, password);
+
+    user.otpActive = false;
+    delete user.otpSecret;
+
+    await this.saveUserFile(authfile);
+
+    this.logger.warn(`Deactivated 2FA for '${username}'.`);
+
+    return this.desensitiseUserProfile(user);
   }
 }

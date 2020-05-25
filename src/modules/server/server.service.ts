@@ -224,8 +224,7 @@ export class ServerService {
       throw new NotFoundException();
     }
 
-    const qrImg = qr.svgObject(setupCode, { type: 'svg' });
-    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23"><path d="${qrImg.path}"/></svg>`;
+    return qr.image(setupCode, { type: 'svg' });
   }
 
   /**

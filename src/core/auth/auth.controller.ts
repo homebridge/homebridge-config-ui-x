@@ -13,10 +13,10 @@ export class AuthController {
     private readonly configService: ConfigService,
   ) { }
 
-  @Post('login')
   @ApiOperation({ description: 'Exchange a username and password for an authentication token.' })
+  @Post('login')
   signIn(@Body() body: AuthDto) {
-    return this.authService.signIn(body.username, body.password);
+    return this.authService.signIn(body.username, body.password, body.otp);
   }
 
   @Get('/settings')
