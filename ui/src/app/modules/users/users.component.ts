@@ -4,10 +4,12 @@ import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 
+import { ApiService } from '@/app/core/api.service';
+import { AuthService } from '@/app/core/auth/auth.service';
 import { UsersAddComponent } from './users-add/users-add.component';
 import { UsersEditComponent } from './users-edit/users-edit.component';
-import { ApiService } from '../../core/api.service';
-
+import { UsersSetup2faComponent } from './users-setup2fa/users-setup2fa.component';
+import { UsersDisable2faComponent } from './users-disable2fa/users-disable2fa.component';
 
 @Component({
   selector: 'app-users',
@@ -22,6 +24,7 @@ export class UsersComponent implements OnInit {
     private modalService: NgbModal,
     private $api: ApiService,
     private $route: ActivatedRoute,
+    public $auth: AuthService,
   ) { }
 
   ngOnInit() {
@@ -73,6 +76,29 @@ export class UsersComponent implements OnInit {
         );
       },
     );
+  }
+
+  setup2fa(user) {
+    const ref = this.modalService.open(UsersSetup2faComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    });
+    ref.componentInstance.user = user;
+
+    ref.result.finally(() => {
+      this.reloadUsers();
+    });
+  }
+
+  disable2fa(user) {
+    const ref = this.modalService.open(UsersDisable2faComponent, {
+      backdrop: 'static',
+    });
+    ref.componentInstance.user = user;
+
+    ref.result.finally(() => {
+      this.reloadUsers();
+    });
   }
 
 }

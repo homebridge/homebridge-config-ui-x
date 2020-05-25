@@ -6,7 +6,8 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Notable Changes
 
-* **API:** Added Swagger API Documentation; you can access this via `/swagger`
+* **API:** Added Swagger API Documentation; you can access this via `/swagger` (this is the same API already in use by the web client)
+* **Auth:** Added the ability to secure your Homebridge UI user account with **Two Factor Authentication**, drop-down menu -> *User Accounts* -> *Setup 2FA*
 * **Login:** Custom wallpaper can now be added by added a `ui-wallpaper.jpg` file in your Homebridge storage directory (and leaving the `loginWallpaper` config option blank) ([#697](https://github.com/oznu/homebridge-config-ui-x/issues/690))
 * **Login:** Custom wallpaper changes will now break the browser cache ([#700](https://github.com/oznu/homebridge-config-ui-x/issues/700))
 * **i18n:** Portuguese language translation added by [@SamuelMagano](https://github.com/SamuelMagano) ([#698](https://github.com/oznu/homebridge-config-ui-x/pull/698))

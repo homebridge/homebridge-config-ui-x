@@ -1,0 +1,45 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title">{{ 'users.setup_2fa' | translate }}</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+      (click)="activeModal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+
+    <div *ngIf="timeDiffError" class="text-center">
+      <h3>{{ 'users.setup_2fa_cannot_setup_2fa' | translate }}</h3>
+      <p [translate]="'users.setup_2fa_server_time_out'" [translateParams]="{'timeDiffError': timeDiffError}"></p>
+    </div>
+
+    <ngb-alert type="info" [dismissible]="false">
+      {{ 'users.setup_2fa_warning' | translate }}
+    </ngb-alert>
+
+    <div *ngIf="!timeDiffError">
+      <p>{{ 'users.setup_2fa_scan_qr_code' | translate }}</p>
+    </div>
+
+    <div class="text-center w-100 d-flex justify-content-center ">
+      <div #qrcode style="width: 200px; height: 200px;"></div>
+    </div>
+
+    <div *ngIf="!timeDiffError" class="mt-4">
+      <p>{{ 'users.setup_2fa_enter_code' | translate }}</p>
+
+      <div class="form-group">
+        <input class="form-control" type="text" placeholder="eg. 123456" [formControl]="formGroup.controls['code']">
+      </div>
+    </div>
+
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')"
+      [translate]="'form.button_cancel'">Cancel</button>
+    <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="enable2fa()" *ngIf="!timeDiffError"
+      [disabled]="formGroup.invalid" [translate]="'users.setup_2fa_enable'">Enable 2FA</button>
+  </div>
+</div>

@@ -62,8 +62,8 @@ export class AuthService {
     this.getAppSettings();
   }
 
-  login(username: string, password: string) {
-    return this.$api.post('/auth/login', { username, password })
+  login(form: { username: string, password: string, ota?: string }) {
+    return this.$api.post('/auth/login', form)
       .toPromise()
       .then((resp) => {
         if (!this.validateToken(resp.access_token)) {

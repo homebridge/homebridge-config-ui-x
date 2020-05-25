@@ -35,11 +35,11 @@ export class AuthService {
       await this.checkPassword(user, password);
 
       if (user.otpActive && !otp) {
-        throw new HttpException('OTP Code Required', 412);
+        throw new HttpException('2FA Code Required', 412);
       }
 
       if (user.otpActive && !authenticator.verify({ token: otp, secret: user.otpSecret })) {
-        throw new HttpException('OTP Code Invalid', 412);
+        throw new HttpException('2FA Code Invalid', 412);
       }
 
       if (user) {
@@ -425,7 +425,7 @@ export class AuthService {
       this.logger.warn(`Activated 2FA for '${user.username}'.`);
       return this.desensitiseUserProfile(user);
     } else {
-      throw new BadRequestException('OTP code not valid');
+      throw new BadRequestException('2FA code is not valid.');
     }
   }
 

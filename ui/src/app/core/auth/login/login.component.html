@@ -5,28 +5,46 @@
     <form novalidate (ngSubmit)="onSubmit(form)" [formGroup]="form">
       <p class="h4 text-center mb-4">Homebridge</p>
 
-      <div class="md-form">
-        <i class="fas fa-user prefix grey-text"></i>
-        <input formControlName="username" type="text" id="form-username" autofocus autocomplete="username"
-          autocapitalize="none" tabindex="1" class="form-control pl-0 pr-0" [ngClass]="{
+      <div *ngIf="!twoFactorCodeRequired">
+
+        <div class="md-form">
+          <i class="fas fa-user prefix grey-text"></i>
+          <input formControlName="username" type="text" id="form-username" autofocus autocomplete="username"
+            autocapitalize="none" tabindex="1" class="form-control pl-0 pr-0" [ngClass]="{
             'is-invalid': form.controls.username.dirty && form.controls.username.errors
           }">
-        <label for="form-username" [translate]="'login.label_username'">Username</label>
-      </div>
+          <label for="form-username" [translate]="'login.label_username'">Username</label>
+        </div>
 
-      <div class="md-form">
-        <i class="fas fa-lock prefix grey-text"></i>
-        <input formControlName="password" type="password" id="form-pass" autocomplete="current-password" tabindex="2"
-          class="form-control pl-0 pr-0" [ngClass]="{
+        <div class="md-form">
+          <i class="fas fa-lock prefix grey-text"></i>
+          <input formControlName="password" type="password" id="form-pass" autocomplete="current-password" tabindex="2"
+            class="form-control pl-0 pr-0" [ngClass]="{
             'is-invalid': form.controls.password.dirty && form.controls.password.errors
           }">
-        <label for="form-pass" [translate]="'login.label_password'">Password</label>
+          <label for="form-pass" [translate]="'login.label_password'">Password</label>
+        </div>
+
+      </div>
+
+      <div *ngIf="twoFactorCodeRequired">
+        <p class="text-center">{{ 'users.setup_2fa_enter_code' | translate }}</p>
+        <div class="md-form">
+          <i class="fas fa-key prefix grey-text"></i>
+          <input formControlName="otp" type="text" id="form-ota" autocomplete="off" autocapitalize="none" tabindex="1"
+            class="form-control pl-0 pr-0" [ngClass]="{
+              'is-invalid': form.controls.otp.dirty && form.controls.otp.errors
+            }">
+          <label for="form-username" [translate]="'login.label_2fa_code'"></label>
+        </div>
       </div>
 
       <div class="text-center">
         <p class="red-text" *ngIf="invalidCredentials"><small
-            [translate]="'login.message_invalid_username_or_password'">Invalid Username and Password</small></p>
-        <button tabindex="3" class="btn btn-amber" type="submit" [translate]="'login.button_login'">Login</button>
+            [translate]="'login.message_invalid_username_or_password'"></small></p>
+        <p class="red-text" *ngIf="invalid2faCode"><small [translate]="'login.message_invalid_2fa_code'"></small></p>
+        <button tabindex="3" class="btn btn-amber" type="submit" [translate]="'login.button_login'"
+          [disabled]="form.invalid">Login</button>
       </div>
 
     </form>

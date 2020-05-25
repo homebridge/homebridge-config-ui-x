@@ -1,0 +1,29 @@
+<div class="modal-content" style="min-height: 300px;">
+  <div class="modal-header">
+    <h5 class="modal-title">{{ 'users.setup_2fa_disable' | translate }}</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+      (click)="activeModal.dismiss('Dismiss')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>{{ 'users.setup_2fa_disable_enter_current_password' | translate }}</p>
+
+    <div class="form-group">
+      <input class="form-control" type="password" [formControl]="formGroup.controls['password']"
+        [placeholder]="'users.label_password' | translate">
+    </div>
+    <p class="red-text" *ngIf="invalidCredentials"><small
+        [translate]="'login.message_invalid_username_or_password'">Invalid
+        Username and Password</small></p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-elegant mr-auto" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
+      {{ 'form.button_cancel' | translate }}
+    </button>
+    <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="disable2fa()"
+      [disabled]="formGroup.invalid">
+      {{ 'users.setup_2fa_disable' | translate }}
+    </button>
+  </div>
+</div>
