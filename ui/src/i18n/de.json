@@ -304,7 +304,7 @@
     "users.label_new_password": "Neues Kennwort",
     "users.label_password": "Passwort",
     "users.label_username": "Nutzername",
-    "users.setup_2fa": "2FA Einstellungen",
+    "users.setup_2fa": "2FA-Einstellungen",
     "users.setup_2fa_cannot_setup_2fa": "2FA kann nicht eingerichtet werden",
     "users.setup_2fa_disable": "2FA deaktivieren",
     "users.setup_2fa_disable_enter_current_password": "Gib dein aktuelles Passwort ein, um die Zwei-Faktor-Authentifizierung zu deaktivieren:",
