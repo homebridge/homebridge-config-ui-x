@@ -397,10 +397,11 @@ export class AuthService {
     user.otpSecret = authenticator.generateSecret();
 
     await this.saveUserFile(authfile);
+    const appName = `Homebridge UI (${this.configService.instanceId.slice(0, 7)})`;
 
     return {
       timestamp: new Date(),
-      otpauth: authenticator.keyuri(user.username, 'Homebridge UI', user.otpSecret)
+      otpauth: authenticator.keyuri(user.username, appName, user.otpSecret)
     };
   }
 
