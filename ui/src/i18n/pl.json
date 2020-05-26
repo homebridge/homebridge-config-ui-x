@@ -95,7 +95,7 @@
     "form.button_edit": "Edytuj",
     "form.button_save": "Zapisz",
     "login.button_login": "Zaloguj",
-    "login.label_2fa_code": "Two Factor Authentication Code",
+    "login.label_2fa_code": "Kod uwierzytelniania 2FA",
     "login.label_password": "Hasło",
     "login.label_username": "Nazwa",
     "login.message_invalid_2fa_code": "Wpisany kod nie jest poprawny lub wygasł.",
