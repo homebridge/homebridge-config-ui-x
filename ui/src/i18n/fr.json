@@ -95,7 +95,7 @@
     "form.button_edit": "Modifier",
     "form.button_save": "Enregistrer",
     "login.button_login": "Connexion",
-    "login.label_2fa_code": "Code d'authentification à 2 facteurs",
+    "login.label_2fa_code": "Code d'authentification à deux facteurs",
     "login.label_password": "Mot de passe",
     "login.label_username": "Nom d'utilisateur",
     "login.message_invalid_2fa_code": "Le code entré est incorrect ou a expiré.",
