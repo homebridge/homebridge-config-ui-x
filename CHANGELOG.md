@@ -14,7 +14,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Other Changes
 
-* **i18n:** Improvements to Polish language translation ([#695](https://github.com/oznu/homebridge-config-ui-x/pull/695),[#705](https://github.com/oznu/homebridge-config-ui-x/pull/705))
+* **i18n:** Improvements to Polish language translation ([#695](https://github.com/oznu/homebridge-config-ui-x/pull/695),[#705](https://github.com/oznu/homebridge-config-ui-x/pull/705),[#707](https://github.com/oznu/homebridge-config-ui-x/pull/707))
 * **i18n:** Improvements to Simplified Chinese language translations ([#696](https://github.com/oznu/homebridge-config-ui-x/pull/696))
 * **i18n:** Improvements to French language translations ([#699](https://github.com/oznu/homebridge-config-ui-x/pull/699))
 * **i18n:** Improvements to German language translations ([#704](https://github.com/oznu/homebridge-config-ui-x/pull/704))
