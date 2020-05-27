@@ -20,6 +20,10 @@ All notable changes to this project will be documented in this file. This projec
 * **i18n:** Improvements to German language translations ([#704](https://github.com/oznu/homebridge-config-ui-x/pull/704))
 * **i18n:** Improvements to Traditional Chinese language translations ([#713](https://github.com/oznu/homebridge-config-ui-x/pull/713))
 
+### Bug Fixes
+
+* **Plugins:** Fixed a bug that when checking if a plugin's `package.json` file exists before attempting to open it
+
 ## 4.20.0 (2020-05-21)
 
 ### Notable Changes

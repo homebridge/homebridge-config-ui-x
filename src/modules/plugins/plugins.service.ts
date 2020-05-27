@@ -81,8 +81,7 @@ export class PluginsService {
     // filter out non-homebridge plugins by name
     const homebridgePlugins = modules
       .filter(module => (module.name.indexOf('homebridge-') === 0) || this.isScopedPlugin(module.name))
-      .filter(async module => (await fs.pathExists(path.join(module.installPath, 'package.json')).catch(x => null)))
-      .filter(x => x);
+      .filter(module => fs.pathExistsSync(path.join(module.installPath, 'package.json')));
 
     await Promise.all(homebridgePlugins.map(async (pkg) => {
       try {
