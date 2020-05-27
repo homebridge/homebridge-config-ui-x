@@ -10,14 +10,15 @@ All notable changes to this project will be documented in this file. This projec
 * **Auth:** Added the ability to secure your Homebridge UI user account with **Two Factor Authentication**, drop-down menu -> *User Accounts* -> *Setup 2FA*
 * **Login:** Custom wallpaper can now be added by added a `ui-wallpaper.jpg` file in your Homebridge storage directory (and leaving the `loginWallpaper` config option blank) ([#697](https://github.com/oznu/homebridge-config-ui-x/issues/690))
 * **Login:** Custom wallpaper changes will now break the browser cache ([#700](https://github.com/oznu/homebridge-config-ui-x/issues/700))
-* **i18n:** Portuguese language translation added by [@SamuelMagano](https://github.com/SamuelMagano) ([#698](https://github.com/oznu/homebridge-config-ui-x/pull/698))
+* **i18n:** Portuguese language translation added by [@SamuelMagano](https://github.com/SamuelMagano) ([#698](https://github.com/oznu/homebridge-config-ui-x/pull/698),[#708](https://github.com/oznu/homebridge-config-ui-x/pull/708))
 
 ### Other Changes
 
 * **i18n:** Improvements to Polish language translation ([#695](https://github.com/oznu/homebridge-config-ui-x/pull/695),[#705](https://github.com/oznu/homebridge-config-ui-x/pull/705),[#707](https://github.com/oznu/homebridge-config-ui-x/pull/707))
 * **i18n:** Improvements to Simplified Chinese language translations ([#696](https://github.com/oznu/homebridge-config-ui-x/pull/696))
-* **i18n:** Improvements to French language translations ([#699](https://github.com/oznu/homebridge-config-ui-x/pull/699))
+* **i18n:** Improvements to French language translations ([#699](https://github.com/oznu/homebridge-config-ui-x/pull/699),[#711](https://github.com/oznu/homebridge-config-ui-x/pull/711))
 * **i18n:** Improvements to German language translations ([#704](https://github.com/oznu/homebridge-config-ui-x/pull/704))
+* **i18n:** Improvements to Traditional Chinese language translations ([#713](https://github.com/oznu/homebridge-config-ui-x/pull/713))
 
 ## 4.20.0 (2020-05-21)
 
