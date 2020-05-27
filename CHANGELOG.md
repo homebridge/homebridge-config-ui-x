@@ -22,7 +22,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Bug Fixes
 
-* **Plugins:** Fixed a bug that when checking if a plugin's `package.json` file exists before attempting to open it
+* **Plugins:** Fixed a bug that caused the UI to fail to check if a plugin's `package.json` file exists correctly before attempting to open it
 
 ## 4.20.0 (2020-05-21)
 
