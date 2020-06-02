@@ -256,6 +256,12 @@
             ]
           },
           {
+            "title": "Portuguese (pl)",
+            "enum": [
+              "pl"
+            ]
+          },
+          {
             "title": "Russian (ru)",
             "enum": [
               "ru"
