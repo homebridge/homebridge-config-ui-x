@@ -62,7 +62,7 @@
     "backup.message_backup_restored": "Резервная копия восстановлена",
     "backup.message_backup_warning": "Архивы резервных копий содержат конфиденциальную информацию и не должны передаваться другим лицам.",
     "backup.message_restore_failed": "Ошибка восстановления из резервной копии",
-    "backup.message_restore_help_one": "Восстановите резервную копию, созданную ранее с помощью Homebridge Config UI X. Ваша конфигурация Homebridge, кэшированные аксессуары, сопряжение с HomeKit и учетные записи пользователей Homebridge Config UI X будут восстановлены. Все плагины Homebridge, которые Вы установили, также будут загружены из репозитория npm.",
+    "backup.message_restore_help_one": "Восстановите резервную копию, созданную ранее с помощью Homebridge Config UI X. Ваша конфигурация Homebridge, кэшированные аксессуары, сопряжение с HomeKit и учетные записи пользователей Homebridge Config UI X будут восстановлены. Все плагины Homebridge, которые Вы установили, также будут загружены из репозитария npm.",
     "backup.message_restore_help_two": "Вам нужно будет войти в Homebridge Config UI X после восстановления с использованием учетных данных из восстановленного инстанса.",
     "backup.message_restore_warning": "Восстановление из резервной копии необратимо перезапишет текущую конфигурацию Homebridge.",
     "backup.title_backup": "Резервное копирование",
