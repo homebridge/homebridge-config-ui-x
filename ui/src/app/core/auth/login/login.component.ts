@@ -42,7 +42,7 @@ export class LoginComponent implements OnInit {
     const backgroundImageUrl = this.$auth.env.customWallpaperHash ?
       environment.api.base + '/auth/wallpaper/' + this.$auth.env.customWallpaperHash :
       '/assets/snapshot.jpg';
-    this.backgroundStyle = `url('${backgroundImageUrl}') no-repeat center center fixed`;
+    this.backgroundStyle = `url('${backgroundImageUrl}') center/cover`;
   }
 
   async onSubmit({ value, valid }) {
