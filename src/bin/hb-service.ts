@@ -238,11 +238,35 @@ export class HomebridgeServiceHelper {
    * Trucate the log file to prevent large log files
    */
   private async truncateLog() {
-    const logFile = await (await fs.readFile(this.logPath, 'utf8')).split('\n');
-    if (logFile.length > 5000) {
-      logFile.splice(0, (logFile.length - 5000));
+    if (!await fs.pathExists(this.logPath) || this.stdout) {
+      return;
     }
-    await fs.writeFile(this.logPath, logFile.join('\n'), {});
+
+    const maxSize = 1000000; // ~1 MB
+    const truncateSize = 200000; // ~0.2 MB
+
+    try {
+      const logStats = await fs.stat(this.logPath);
+
+      if (logStats.size < maxSize) {
+        return; // log file does not need truncating
+      }
+
+      // read out the last `truncatedSize` bytes to a buffer
+      const logStartPosition = logStats.size - truncateSize;
+      const logBuffer = Buffer.alloc(truncateSize);
+      const logFileHandle = await fs.open(this.logPath, 'r');
+      await fs.read(logFileHandle, logBuffer, 0, truncateSize, logStartPosition);
+      await fs.close(logFileHandle);
+
+      // truncate the existing file
+      await fs.truncate(this.logPath);
+
+      // re-write the truncated log file
+      this.log.write(logBuffer);
+    } catch (e) {
+      this.logger(`Failed to truncate log file: ${e.message}`, 'fail');
+    }
   }
 
   /**
@@ -785,9 +809,17 @@ export class HomebridgeServiceHelper {
       process.exit(1);
     }
 
-    // only print the last 1000 lines
-    const currentLog = (await fs.readFile(this.logPath, 'utf8')).split(os.EOL).slice(-1000).join(os.EOL);
-    process.stdout.write(currentLog);
+    const logStats = await fs.stat(this.logPath);
+    const logStartPosition = logStats.size <= 200000 ? 0 : logStats.size - 200000;
+    const logStream = fs.createReadStream(this.logPath, { start: logStartPosition });
+
+    logStream.on('data', (buffer) => {
+      process.stdout.write(buffer);
+    });
+
+    logStream.on('end', () => {
+      logStream.close();
+    });
 
     const tail = new Tail(this.logPath, {
       fromBeginning: false,

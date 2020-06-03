@@ -166,10 +166,19 @@ export class LogService {
       client.emit('stdout', color.red(`No log file exists at path: ${this.configService.ui.log.path}\n\r`));
     }
 
-    // read the first 500 lines of the log and emit to the client
+    // read the first 50000 bytes of the log and emit to the client
     try {
-      const logFile = (await fs.readFile(this.configService.ui.log.path, 'utf8')).split('\n').slice(-500).join('\n\r');
-      client.emit('stdout', logFile);
+      const logStats = await fs.stat(this.configService.ui.log.path);
+      const logStartPosition = logStats.size <= 50000 ? 0 : logStats.size - 50000;
+      const logStream = fs.createReadStream(this.configService.ui.log.path, { start: logStartPosition });
+
+      logStream.on('data', (buffer) => {
+        client.emit('stdout', buffer.toString('utf8').split('\n').join('\n\r'));
+      });
+
+      logStream.on('end', () => {
+        logStream.close();
+      });
     } catch (e) {
       client.emit('stdout', color.red(`Failed to read log file: ${e.message}\n\r`));
       return;

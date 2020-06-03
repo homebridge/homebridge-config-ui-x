@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Other Changes
 
+* **hb-service:** Improvements to the log viewer and log rotation management 
 * **i18n:** Improvements to Portuguese language translations ([#716](https://github.com/oznu/homebridge-config-ui-x/pull/716))
 * **i18n:** Improvements to Russian language translations ([#721](https://github.com/oznu/homebridge-config-ui-x/pull/721), [#724](https://github.com/oznu/homebridge-config-ui-x/pull/724))
 * **i18n:** Improvements to German language translations ([#730](https://github.com/oznu/homebridge-config-ui-x/pull/730))
