@@ -37,10 +37,11 @@
               </ng-container>
               <div class="form-group" *ngIf="twoFactorRequired">
                 <label for="ringVerificationCode">Verification Code</label>
-                <input formControlName="twoFactorAuthCode" type="text" class="form-control" id="ringVerificationCode"
-                  autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                <input formControlName="twoFactorAuthCode" type="number" class="form-control" id="ringVerificationCode"
+                  autocomplete="one-time-code" autocorrect="off" autocapitalize="off" spellcheck="false"
+                  inputmode="numeric" pattern="[0-9]*">
                 <small id="ringVerificationCodeHelp" class="form-text text-muted">
-                  Please enter the code sent to phone {{ phoneLastTwo }}
+                  Please enter the code sent to {{ codeSentTo }}
                 </small>
               </div>
               <div class="text-center">

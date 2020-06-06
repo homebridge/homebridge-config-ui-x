@@ -16,7 +16,7 @@ export class HomebridgeRingComponent implements OnInit {
   public linkAccountForm: FormGroup;
   public loginFailReason: string;
   public twoFactorRequired = false;
-  public phoneLastTwo: string;
+  public codeSentTo: string;
   public doingLogin = false;
 
   public justLinked = false;
@@ -87,7 +87,7 @@ export class HomebridgeRingComponent implements OnInit {
           // 2fa required
           this.twoFactorRequired = true;
           if (err.error && err.error.phone) {
-            this.phoneLastTwo = err.error.phone;
+            this.codeSentTo = err.error.phone;
           }
         } else {
           // other authentication error
