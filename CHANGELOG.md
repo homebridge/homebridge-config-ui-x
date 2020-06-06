@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file. This projec
 * **i18n:** Improvements to Russian language translations ([#721](https://github.com/oznu/homebridge-config-ui-x/pull/721), [#724](https://github.com/oznu/homebridge-config-ui-x/pull/724))
 * **i18n:** Improvements to German language translations ([#730](https://github.com/oznu/homebridge-config-ui-x/pull/730))
 * **Login:** Login wallpaper now properly covers larger screens ([#723](https://github.com/oznu/homebridge-config-ui-x/pull/723))
+* **Plugins:** Improvements to the [homebridge-ring](https://www.npmjs.com/package/homebridge-ring) plugin authorisation UI ([#734](https://github.com/oznu/homebridge-config-ui-x/pull/734))
 
 ## 4.21.0 (2020-05-27)
 
