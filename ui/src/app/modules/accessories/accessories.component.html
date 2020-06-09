@@ -79,6 +79,8 @@
               </app-valve>
               <app-irrigationsystem *ngSwitchCase="'IrrigationSystem'" [service]="service">Irrigation System
               </app-irrigationsystem>
+              <app-heatercooler *ngSwitchCase="'HeaterCooler'" [service]="service">Heater Cooler
+              </app-heatercooler>
               <app-unknown *ngSwitchDefault [service]="service">{{ service.humanType }}</app-unknown>
             </ng-container>
           </div>

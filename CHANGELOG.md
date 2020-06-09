@@ -2,11 +2,16 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-### NEXT
+### 4.22.0 (2020-06-09)
+
+### Notable Changes
+
+**Accessory Control:** Added support for [Heater Cooler](https://developers.homebridge.io/#/service/HeaterCooler) accessory type
+**Accessory Control:** Current temperature is now displayed with 1 decimal point ([#376](https://github.com/oznu/homebridge-config-ui-x/issues/376))
 
 ### Other Changes
 
-* **hb-service:** Improvements to the log viewer and log rotation management 
+* **hb-service:** Improvements to the log viewer and log rotation management ([#731](https://github.com/oznu/homebridge-config-ui-x/pull/731))
 * **i18n:** Improvements to Portuguese language translations ([#716](https://github.com/oznu/homebridge-config-ui-x/pull/716))
 * **i18n:** Improvements to Russian language translations ([#721](https://github.com/oznu/homebridge-config-ui-x/pull/721), [#724](https://github.com/oznu/homebridge-config-ui-x/pull/724))
 * **i18n:** Improvements to German language translations ([#730](https://github.com/oznu/homebridge-config-ui-x/pull/730))

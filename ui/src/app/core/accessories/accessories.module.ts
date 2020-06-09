@@ -44,6 +44,8 @@ import { ValveManageComponent } from './types/valve/valve.manage.component';
 import { IrrigationSystemComponent } from './types/irrigationsystem/irrigationsystem.component';
 import { AirpurifierComponent } from './types/airpurifier/airpurifier.component';
 import { AirpurifierManageComponent } from './types/airpurifier/airpurifier.manage.component';
+import { HeaterCoolerComponent } from './types/heatercooler/heatercooler.component';
+import { HeaterCoolerManageComponent } from './types/heatercooler/heatercooler.manage.component';
 
 import { InfoModalComponent } from './info-modal/info-modal.component';
 
@@ -59,6 +61,7 @@ import { InfoModalComponent } from './info-modal/info-modal.component';
     SecuritysystemManageComponent,
     ValveManageComponent,
     AirpurifierManageComponent,
+    HeaterCoolerManageComponent,
   ],
   declarations: [
     InfoModalComponent,
@@ -96,6 +99,8 @@ import { InfoModalComponent } from './info-modal/info-modal.component';
     IrrigationSystemComponent,
     AirpurifierComponent,
     AirpurifierManageComponent,
+    HeaterCoolerComponent,
+    HeaterCoolerManageComponent,
   ],
   imports: [
     CommonModule,
@@ -143,6 +148,8 @@ import { InfoModalComponent } from './info-modal/info-modal.component';
     IrrigationSystemComponent,
     AirpurifierComponent,
     AirpurifierManageComponent,
+    HeaterCoolerComponent,
+    HeaterCoolerManageComponent,
   ],
   providers: [
     AccessoriesService,
