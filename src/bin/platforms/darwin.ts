@@ -108,6 +108,7 @@ export class DarwinInstaller {
     try {
       this.checkForRoot();
       const npmGlobalPath = child_process.execSync('/bin/echo -n "$(npm --no-update-notifier -g prefix)/lib/node_modules"').toString('utf8');
+      const targetNodeVersion = child_process.execSync('node -v').toString('utf8').trim();
 
       child_process.execSync('npm rebuild --unsafe-perm node-pty-prebuilt-multiarch', {
         cwd: process.env.UIX_BASE_PATH,
@@ -116,7 +117,7 @@ export class DarwinInstaller {
 
       await this.setNpmPermissions(npmGlobalPath);
 
-      this.hbService.logger(`Rebuilt modules in ${process.env.UIX_BASE_PATH} for Node.js ${process.version}.`, 'succeed');
+      this.hbService.logger(`Rebuilt modules in ${process.env.UIX_BASE_PATH} for Node.js ${targetNodeVersion}.`, 'succeed');
     } catch (e) {
       console.error(e.toString());
       this.hbService.logger(`ERROR: Failed Operation`, 'fail');
@@ -191,6 +192,56 @@ export class DarwinInstaller {
       return realHomeDir;
     } catch (e) {
       return os.homedir();
+    }
+  }
+
+  /**
+   * Update Node.js
+   */
+  public async updateNodejs(job: { target: string, rebuild: boolean }) {
+    this.checkForRoot();
+
+    if (process.arch !== 'x64') {
+      this.hbService.logger(`Architecture not supported: ${process.arch}.`, 'fail');
+      process.exit(1);
+    }
+
+    const downloadUrl = `https://nodejs.org/dist/${job.target}/node-${job.target}-darwin-x64.tar.gz`;
+    const targetPath = path.dirname(path.dirname(process.execPath));
+
+    // only allow updates when installed using the offical Node.js installer
+    if (targetPath !== '/usr/local') {
+      this.hbService.logger(`Cannot update Node.js on your system. Non-standard installation path detected: ${targetPath}`, 'fail');
+      process.exit(1);
+    }
+
+    this.hbService.logger(`Target: ${targetPath}`);
+
+    try {
+      const archivePath = await this.hbService.downloadNodejs(downloadUrl);
+
+      const extractConfig = {
+        file: archivePath,
+        cwd: targetPath,
+        strip: 1,
+        preserveOwner: false,
+        unlink: true,
+      };
+
+      // extract
+      await this.hbService.extractNodejs(job.target, extractConfig);
+
+      // clean up
+      await fs.remove(archivePath);
+
+      // rebuild / fix perms
+      await this.rebuild();
+
+      // restart
+      await this.restart();
+    } catch (e) {
+      this.hbService.logger(`Failed to update Node.js: ${e.message}`, 'fail');
+      process.exit(1);
     }
   }
 

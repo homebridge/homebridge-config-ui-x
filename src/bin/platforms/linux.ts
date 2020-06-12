@@ -130,13 +130,14 @@ export class LinuxInstaller {
   public async rebuild() {
     try {
       this.checkForRoot();
+      const targetNodeVersion = child_process.execSync('node -v').toString('utf8').trim();
 
       child_process.execSync('npm rebuild --unsafe-perm node-pty-prebuilt-multiarch', {
         cwd: process.env.UIX_BASE_PATH,
         stdio: 'inherit',
       });
 
-      this.hbService.logger(`Rebuilt modules in ${process.env.UIX_BASE_PATH} for Node.js ${process.version}.`, 'succeed');
+      this.hbService.logger(`Rebuilt modules in ${process.env.UIX_BASE_PATH} for Node.js ${targetNodeVersion}.`, 'succeed');
     } catch (e) {
       console.error(e.toString());
       this.hbService.logger(`ERROR: Failed Operation`, 'fail');
@@ -174,6 +175,77 @@ export class LinuxInstaller {
       }
     } catch (e) {
       return null;
+    }
+  }
+
+  /**
+   * Update Node.js
+   */
+  public async updateNodejs(job: { target: string, rebuild: boolean }) {
+    this.checkForRoot();
+
+    // only glibc linux is supported
+    try {
+      child_process.execSync('getconf GNU_LIBC_VERSION');
+    } catch (e) {
+      this.hbService.logger(`Your version of Linux is not supported by this command.`, 'fail');
+      process.exit(1);
+    }
+
+    const targetPath = path.dirname(path.dirname(process.execPath));
+
+    if (!targetPath.startsWith('/usr')) {
+      this.hbService.logger(`Cannot update Node.js on your system. Non-standard installation path detected: ${targetPath}`, 'fail');
+      process.exit(1);
+    }
+
+    let downloadUrl;
+    switch (process.arch) {
+      case 'x64':
+        downloadUrl = `https://nodejs.org/dist/${job.target}/node-${job.target}-linux-x64.tar.gz`;
+        break;
+      case 'arm64':
+        downloadUrl = `https://nodejs.org/dist/${job.target}/node-${job.target}-linux-arm64.tar.gz`;
+        break;
+      case 'arm':
+        downloadUrl = `https://unofficial-builds.nodejs.org/download/release/${job.target}/node-${job.target}-linux-armv6l.tar.gz`;
+        break;
+      default:
+        this.hbService.logger(`Architecture not supported: ${process.arch}.`, 'fail');
+        process.exit(1);
+        break;
+    }
+
+    this.hbService.logger(`Target: ${targetPath}`);
+
+    try {
+      const archivePath = await this.hbService.downloadNodejs(downloadUrl);
+
+      const extractConfig = {
+        file: archivePath,
+        cwd: targetPath,
+        strip: 1,
+        preserveOwner: false,
+        unlink: true,
+      };
+
+      // extract
+      await this.hbService.extractNodejs(job.target, extractConfig);
+
+      // clean up
+      await fs.remove(archivePath);
+
+      // rebuild node modules if required
+      if (job.rebuild) {
+        this.hbService.logger(`Rebuilding for Node.js ${job.target}...`);
+        await this.rebuild();
+      }
+
+      // restart
+      await this.restart();
+    } catch (e) {
+      this.hbService.logger(`Failed to update Node.js: ${e.message}`, 'fail');
+      process.exit(1);
     }
   }
 

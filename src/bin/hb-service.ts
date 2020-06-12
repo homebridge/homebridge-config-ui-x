@@ -15,6 +15,8 @@ import * as tcpPortUsed from 'tcp-port-used';
 import * as si from 'systeminformation';
 import * as semver from 'semver';
 import * as ora from 'ora';
+import * as tar from 'tar';
+import axios from 'axios';
 import { Tail } from 'tail';
 
 import { Win32Installer } from './platforms/win32';
@@ -132,6 +134,10 @@ export class HomebridgeServiceHelper {
         this.tailLogs();
         break;
       }
+      case 'update-node': {
+        this.checkForNodejsUpdates(commander.args.length === 2 ? commander.args[1] : null);
+        break;
+      }
       case 'before-start': {
         // this currently does nothing, but may be used in the future
         process.exit(0);
@@ -150,6 +156,7 @@ export class HomebridgeServiceHelper {
         console.log('    rebuild                          rebuild npm modules (use after updating Node.js)');
         console.log('    run                              run homebridge daemon');
         console.log('    logs                             tails the homebridge service logs');
+        console.log('    update-node [version]            update Node.js');
 
         process.exit(1);
       }
@@ -939,6 +946,99 @@ export class HomebridgeServiceHelper {
       child_process.execSync(`chown -R ${this.uid}:${this.gid} "${this.storagePath}"`);
     } catch (e) {
       // do nothing
+    }
+  }
+
+  /**
+   * Check to see if Node.js version updates are available.
+   * Prefer LTS versions
+   * If current version is > LTS, update to the latest version while retaining the major version number
+   */
+  private async checkForNodejsUpdates(requestedVersion) {
+    const versionList = (await axios.get('https://nodejs.org/dist/index.json')).data;
+    const currentLts = versionList.filter(x => x.lts)[0];
+
+    if (requestedVersion) {
+      const wantedVersion = versionList.find(x => x.version === 'v' + requestedVersion);
+      if (wantedVersion) {
+        this.logger(`Installing Node.js ${wantedVersion.version} over ${process.version}...`, 'info');
+        return this.installer.updateNodejs({
+          target: wantedVersion.version,
+          rebuild: wantedVersion.modules !== process.versions.modules
+        });
+      } else {
+        this.logger(`v${requestedVersion} is not a valid Node.js version.`, 'info');
+        return { update: false };
+      }
+    }
+
+    if (semver.gt(currentLts.version, process.version)) {
+      this.logger(`Updating Node.js from ${process.version} to ${currentLts.version}...`, 'info');
+      return this.installer.updateNodejs({
+        target: currentLts.version,
+        rebuild: currentLts.modules !== process.versions.modules
+      });
+    }
+
+    const currentMajor = semver.parse(process.version).major;
+    const latestVersion = versionList.filter(x => semver.parse(x.version).major === currentMajor)[0];
+
+    if (semver.gt(latestVersion.version, process.version)) {
+      this.logger(`Updating Node.js from ${process.version} to ${latestVersion.version}...`, 'info');
+      return this.installer.updateNodejs({
+        target: latestVersion.version,
+        rebuild: latestVersion.modules !== process.versions.modules
+      });
+    }
+
+    this.logger(`Node.js ${process.version} already up-to-date.`);
+
+    return { update: false };
+  }
+
+  /**
+   * Download the Node.js binary to a temp file
+   */
+  public async downloadNodejs(downloadUrl: string): Promise<string> {
+    const spinner = ora(`Downloading ${downloadUrl}`).start();
+
+    try {
+      const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'node'));
+      const tempFilePath = path.join(tempDir, 'node.tar.gz');
+      const tempFile = fs.createWriteStream(tempFilePath);
+
+      await axios.get(downloadUrl, { responseType: 'stream' })
+        .then((response) => {
+          return new Promise((resolve, reject) => {
+            response.data.pipe(tempFile)
+              .on('finish', () => {
+                return resolve(tempFile);
+              })
+              .on('error', (err) => {
+                return reject(err);
+              });
+          });
+        });
+
+      spinner.succeed('Download complete.');
+      return tempFilePath;
+    } catch (e) {
+      spinner.fail(e.message);
+      setTimeout(() => {
+        process.exit(1);
+      }, 100);
+    }
+  }
+
+  public async extractNodejs(targetVersion: string, extractConfig) {
+    const spinner = ora(`Installing Node.js ${targetVersion}`).start();
+
+    try {
+      await tar.x(extractConfig);
+      spinner.succeed(`Installed Node.js ${targetVersion}`);
+    } catch (e) {
+      spinner.fail(e.message);
+      process.exit(1);
     }
   }
 

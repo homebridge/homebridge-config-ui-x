@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Notable Changes
 
 * **Accessory Control:** Added support for [Heater Cooler](https://developers.homebridge.io/#/service/HeaterCooler) accessory type
-* **Accessory Control:** Current temperature is now displayed with 1 decimal point ([#376](https://github.com/oznu/homebridge-config-ui-x/issues/376))
+* **Accessory Control:** Current temperature is now displayed with one decimal point ([#376](https://github.com/oznu/homebridge-config-ui-x/issues/376))
 
 ### Other Changes
 

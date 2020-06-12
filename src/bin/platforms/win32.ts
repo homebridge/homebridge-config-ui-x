@@ -138,6 +138,14 @@ export class Win32Installer {
   }
 
   /**
+   * Update Node.js
+   */
+  public updateNodejs(job: { target: string, rebuild: boolean }) {
+    this.hbService.logger('ERROR: This command is not supported on Windows.', 'fail');
+    this.hbService.logger(`Please download Node.js v${job.target} from https://nodejs.org/en/download/ and install manually.`, 'fail');
+  }
+
+  /**
    * Checks if the current user is an admin
    */
   private checkIsAdmin() {
