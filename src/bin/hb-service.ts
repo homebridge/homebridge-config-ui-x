@@ -1024,9 +1024,7 @@ export class HomebridgeServiceHelper {
       return tempFilePath;
     } catch (e) {
       spinner.fail(e.message);
-      setTimeout(() => {
-        process.exit(1);
-      }, 100);
+      process.exit(1);
     }
   }
 
