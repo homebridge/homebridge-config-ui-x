@@ -68,5 +68,6 @@ module.exports = {
     new webpack.IgnorePlugin(/@nestjs\/platform-express/),
     new webpack.IgnorePlugin(/swagger-ui-express/),
     new webpack.IgnorePlugin(/cache-manager/),
+    new webpack.IgnorePlugin(/osx-temperature-sensor/)
   ],
 };
