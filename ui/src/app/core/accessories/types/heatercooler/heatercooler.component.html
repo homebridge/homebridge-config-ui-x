@@ -14,10 +14,14 @@
     <div class="accessory-label grey-text"
       *ngIf="service.values.Active === 1 && service.getCharacteristic('CoolingThresholdTemperature') && service.getCharacteristic('HeatingThresholdTemperature')"
       [ngSwitch]="service.values.TargetHeaterCoolerState">
-      <span *ngSwitchCase="1">{{ service.values.HeatingThresholdTemperature | convertTemp }}&deg;</span>
-      <span *ngSwitchCase="2">{{ service.values.CoolingThresholdTemperature | convertTemp }}&deg;</span>
+      <span *ngSwitchCase="1">
+        {{ service.values.HeatingThresholdTemperature | convertTemp | number:'1.0-1' }}&deg;
+      </span>
+      <span *ngSwitchCase="2">
+        {{ service.values.CoolingThresholdTemperature | convertTemp | number:'1.0-1' }}&deg;
+      </span>
       <span *ngSwitchCase="0">
-        {{ service.values.HeatingThresholdTemperature | convertTemp }}&deg;-{{ service.values.CoolingThresholdTemperature | convertTemp }}&deg;
+        {{ service.values.HeatingThresholdTemperature | convertTemp | number:'1.0-1' }}&deg;-{{ service.values.CoolingThresholdTemperature | convertTemp | number:'1.0-1' }}&deg;
       </span>
     </div>
     <div class="accessory-label grey-text"

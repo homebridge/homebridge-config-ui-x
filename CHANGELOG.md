@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 4.23.0 (2020-06-18)
+
+### Bug Fixes
+
+* **Accessory Control:** Fahrenheit temperature display units are now rounded to one decimal place ([#741](https://github.com/oznu/homebridge-config-ui-x/issues/741))
+
+### Other Changes
+
+* **System:** (BETA) Added a command to `hb-service` to allow users to easily update their systems Node.js version to the latest LTS version
+  * The command will work out where you currently have Node.js installed, and how you installed it, so you don't end up with multiple versions of Node.js installed in different places
+  * The command can be used by all Homebridge users, not just those running Homebridge under `hb-service`
+  * Supports macOS (excluding brew / other non-standard installs) and most Linux distributions (binary or from [NodeSource repos](https://github.com/nodesource/distributions))
+  * Will not change your system unless it knows how to update safely
+  * Update to latest LTS: `hb-service update-node`
+  * Install specific version: `hb-service update-node 10.17.0` 
+
 ## 4.22.0 (2020-06-09)
 
 ### Notable Changes

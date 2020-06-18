@@ -12,7 +12,7 @@
       {{ 'accessories.control.label_off' | translate }}
     </div>
     <div class="accessory-label grey-text" *ngIf="service.values.TargetHeatingCoolingState">
-      {{ service.values.TargetTemperature | convertTemp }}&deg;
+      {{ service.values.TargetTemperature | convertTemp | number:'1.0-1' }}&deg;
     </div>
   </div>
 

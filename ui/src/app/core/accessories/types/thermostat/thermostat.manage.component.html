@@ -32,7 +32,7 @@
     </div>
 
     <h5>{{ 'accessories.control.label_target_temperature' | translate }}</h5>
-    <p>{{ targetTemperature.value | convertTemp }}&deg;</p>
+    <p>{{ targetTemperature.value | convertTemp | number:'1.0-1' }}&deg;</p>
 
     <nouislider [min]="targetTemperature.min" [max]="targetTemperature.max" [step]="targetTemperature.step"
       [(ngModel)]="targetTemperature.value" (ngModelChange)="onTemperatureStateChange()">

@@ -307,6 +307,7 @@ export class HomebridgeServiceHelper {
 
       // log os info
       this.logger(`OS: ${os.type()} ${os.release()} ${os.arch()}`);
+      this.logger(`Node.js ${process.version} ${process.execPath}`);
 
       // work out the homebridge binary path
       this.homebridgeBinary = await this.findHomebridgePath();

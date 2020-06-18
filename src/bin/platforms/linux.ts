@@ -188,7 +188,7 @@ export class LinuxInstaller {
     // check target path
     const targetPath = path.dirname(path.dirname(process.execPath));
 
-    if (!targetPath.startsWith('/usr')) {
+    if (targetPath !== '/usr' && targetPath !== '/usr/local') {
       this.hbService.logger(`Cannot update Node.js on your system. Non-standard installation path detected: ${targetPath}`, 'fail');
       process.exit(1);
     }
@@ -226,15 +226,20 @@ export class LinuxInstaller {
       process.exit(1);
     }
 
+    const uname = child_process.execSync('uname -m').toString().trim();
+
     let downloadUrl;
-    switch (process.arch) {
-      case 'x64':
+    switch (uname) {
+      case 'x86_64':
         downloadUrl = `https://nodejs.org/dist/${job.target}/node-${job.target}-linux-x64.tar.gz`;
         break;
-      case 'arm64':
+      case 'aarch64':
         downloadUrl = `https://nodejs.org/dist/${job.target}/node-${job.target}-linux-arm64.tar.gz`;
         break;
-      case 'arm':
+      case 'armv7l':
+        downloadUrl = `https://nodejs.org/dist/${job.target}/node-${job.target}-linux-armv7l.tar.gz`;
+        break;
+      case 'armv6l':
         downloadUrl = `https://unofficial-builds.nodejs.org/download/release/${job.target}/node-${job.target}-linux-armv6l.tar.gz`;
         break;
       default:
@@ -377,7 +382,7 @@ export class LinuxInstaller {
     try {
       const npmPath = child_process.execSync('which npm').toString('utf8').trim();
       const shutdownPath = child_process.execSync('which shutdown').toString('utf8').trim();
-      const sudoersEntry = `${this.hbService.asUser}    ALL=(ALL) NOPASSWD:SETENV: ${shutdownPath}, ${npmPath}`;
+      const sudoersEntry = `${this.hbService.asUser}    ALL=(ALL) NOPASSWD:SETENV: ${shutdownPath}, ${npmPath}, /usr/bin/npm, /usr/local/bin/npm`;
 
       // check if the sudoers file already contains the entry
       const sudoers = fs.readFileSync('/etc/sudoers', 'utf-8');
