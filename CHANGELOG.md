@@ -15,8 +15,8 @@ All notable changes to this project will be documented in this file. This projec
   * The command can be used by all Homebridge users, not just those running Homebridge under `hb-service`
   * Supports macOS (excluding brew / other non-standard installs) and most Linux distributions (binary or from [NodeSource repos](https://github.com/nodesource/distributions))
   * Will not change your system unless it knows how to update safely
-  * Update to latest LTS: `hb-service update-node`
-  * Install specific version: `hb-service update-node 10.17.0` 
+  * Update to latest LTS: `sudo hb-service update-node`
+  * Install specific version: `sudo hb-service update-node 10.17.0` 
 
 ## 4.22.0 (2020-06-09)
 
