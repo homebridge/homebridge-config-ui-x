@@ -208,7 +208,11 @@ export class LinuxInstaller {
     }
 
     // restart
-    await this.restart();
+    if (await fs.pathExists(this.systemdServicePath)) {
+      await this.restart();
+    } else {
+      this.hbService.logger(`Please restart Homebridge for the changes to take effect.`, 'warn');
+    }
   }
 
   /**

@@ -238,7 +238,11 @@ export class DarwinInstaller {
       await this.rebuild();
 
       // restart
-      await this.restart();
+      if (await fs.pathExists(this.plistPath)) {
+        await this.restart();
+      } else {
+        this.hbService.logger(`Please restart Homebridge for the changes to take effect.`, 'warn');
+      }
     } catch (e) {
       this.hbService.logger(`Failed to update Node.js: ${e.message}`, 'fail');
       process.exit(1);
