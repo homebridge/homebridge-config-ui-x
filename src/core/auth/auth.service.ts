@@ -5,18 +5,26 @@ import { authenticator } from 'otplib';
 import { JwtService } from '@nestjs/jwt';
 import { Injectable, ForbiddenException, BadRequestException, UnauthorizedException, ConflictException, NotFoundException, HttpException } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
+import * as NodeCache from 'node-cache';
 import { ConfigService } from '../config/config.service';
 import { Logger } from '../logger/logger.service';
 import { UserDto } from '../../modules/users/users.dto';
 
 @Injectable()
 export class AuthService {
+  private otpUsageCache = new NodeCache({ stdTTL: 90 });
+
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly logger: Logger,
   ) {
     this.setupAuthFile();
+
+    // otp options
+    authenticator.options = {
+      window: 1
+    };
   }
 
   /**
@@ -38,7 +46,7 @@ export class AuthService {
         throw new HttpException('2FA Code Required', 412);
       }
 
-      if (user.otpActive && !authenticator.verify({ token: otp, secret: user.otpSecret })) {
+      if (user.otpActive && !this.verifyOtpToken(user, otp)) {
         throw new HttpException('2FA Code Invalid', 412);
       }
 
@@ -452,5 +460,24 @@ export class AuthService {
     this.logger.warn(`Deactivated 2FA for '${username}'.`);
 
     return this.desensitiseUserProfile(user);
+  }
+
+  /**
+   * Verify an OTP token for a user and prevent it being used more than once
+   */
+  verifyOtpToken(user: UserDto, otp: string): boolean {
+    const otpCacheKey = user.username + otp;
+
+    if (this.otpUsageCache.get(otpCacheKey)) {
+      this.logger.warn(`[${user.username}] attempted to reuse one-time-password.`);
+      return false;
+    }
+
+    if (authenticator.verify({ token: otp, secret: user.otpSecret })) {
+      this.otpUsageCache.set(otpCacheKey, 'true');
+      return true;
+    }
+
+    return false;
   }
 }

@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## Next
+
+### Notable Changes
+
+* **Auth:** Two Factor Authentication codes are now only valid for a single login
+
 ## 4.23.0 (2020-06-18)
 
 ### Bug Fixes
