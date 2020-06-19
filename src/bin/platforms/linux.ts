@@ -223,10 +223,18 @@ export class LinuxInstaller {
     try {
       const glibcVersion = parseFloat(child_process.execSync('getconf GNU_LIBC_VERSION 2>/dev/null').toString().split('glibc')[1].trim());
       if (glibcVersion < 2.24) {
-        throw new Error('GLIBC Version to low.');
+        this.hbService.logger(`Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ` +
+          `Wanted: >=2.24. Installed: ${glibcVersion}`, 'fail');
+        process.exit(1);
       }
     } catch (e) {
-      this.hbService.logger(`Your version of Linux is not supported by this command.`, 'fail');
+      const osInfo = await si.osInfo();
+      if (osInfo.distro === 'Alpine Linux') {
+        this.hbService.logger('Updating Node.js on Alpine Linux / Docker is not supported by this command.', 'fail');
+        this.hbService.logger('To update Node.js you should pull down the latest version of the oznu/homebridge Docker image.', 'fail');
+      } else {
+        this.hbService.logger('Updating Node.js using this tool is not supported on your version of Linux.');
+      }
       process.exit(1);
     }
 
