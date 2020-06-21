@@ -5,6 +5,7 @@ import * as fastify from 'fastify';
 import * as fastifyMultipart from 'fastify-multipart';
 import * as helmet from 'helmet';
 import * as fs from 'fs-extra';
+import * as mdns from 'mdns';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
@@ -119,6 +120,18 @@ async function bootstrap() {
 
   // serve spa on all 404
   app.useGlobalFilters(new SpaFilter());
+
+  // advertise a http server on port
+  try {
+    const ad = mdns.createAdvertisement(mdns.tcp('http'), configService.ui.port, {
+      txtRecord: {
+        name: 'Homebridge Config UI X'
+      }
+    });
+    ad.start();
+  } catch (error) {
+    logger.error('Failed to advertise a HTTP server on port.');
+  }
 
   logger.warn(`Homebridge Config UI X v${configService.package.version} is listening on ${startupConfig.host} port ${configService.ui.port}`);
   await app.listen(configService.ui.port, startupConfig.host);
