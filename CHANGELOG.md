@@ -2,11 +2,17 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## Next
+## 4.23.1 (2020-06-26)
 
 ### Notable Changes
 
-* **Auth:** Two Factor Authentication codes are now only valid for a single login
+* **Auth:** Two Factor Authentication codes are now only valid for a single login only
+* **Auth:** Two Factor Authentication codes are now valid for a window of +1
+
+### Other Changes
+
+* **System:** The [`hb-service update-node`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command#update-nodejs) command now explains why it cannot run on *Alpine Linux*, rather than showing a generic message that the platform is not supported ([#745](https://github.com/oznu/homebridge-config-ui-x/issues/745))
+* Updated npm dependencies
 
 ## 4.23.0 (2020-06-18)
 
