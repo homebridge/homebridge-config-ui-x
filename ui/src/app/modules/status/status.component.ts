@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { GridsterConfig, GridsterItem } from 'angular-gridster2';
-import { Subject } from 'rxjs';
+import { Subject, TimeoutError } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 import { WsService } from '../../core/ws.service';
@@ -127,8 +127,22 @@ export class StatusComponent implements OnInit, OnDestroy {
     this.gridChangedEvent();
   }
 
+  isIos() {
+    try {
+      if (/iPad|iPhone|iPod/.test(navigator.platform)) {
+        return true;
+      } else {
+        return navigator.maxTouchPoints &&
+          navigator.maxTouchPoints > 2 &&
+          /MacIntel/.test(navigator.platform);
+      }
+    } catch (e) {
+      return false;
+    }
+  }
+
   isLayoutUnlocked() {
-    if (localStorage.getItem(`${this.$auth.env.instanceId}-dashboard-locked`) === 'true') {
+    if (localStorage.getItem(`${this.$auth.env.instanceId}-dashboard-locked`) === 'true' || this.isIos()) {
       return false;
     }
     return this.$auth.user.admin;

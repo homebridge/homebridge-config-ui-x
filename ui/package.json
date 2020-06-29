@@ -52,9 +52,9 @@
     "semver": "^7.3.2",
     "socket.io-client": "^2.3.0",
     "tslib": "^1.13.0",
-    "xterm": "^4.7.0",
-    "xterm-addon-fit": "^0.4.0",
-    "xterm-addon-web-links": "^0.4.0",
+    "xterm": "4.6.0",
+    "xterm-addon-fit": "0.4.0",
+    "xterm-addon-web-links": "0.4.0",
     "zone.js": "^0.10.3"
   },
   "devDependencies": {

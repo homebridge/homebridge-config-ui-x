@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 4.23.2 (2020-06-29)
+
+### Bug Fixes
+
+* **Log Viewer:** Fixed an issue that prevented scrolling back in Safari ([#755](https://github.com/oznu/homebridge-config-ui-x/issues/755))
+* **Dashboard:** Layout is locked by default on iPad Pro ([#756](https://github.com/oznu/homebridge-config-ui-x/issues/756))
+
 ## 4.23.1 (2020-06-26)
 
 ### Notable Changes
