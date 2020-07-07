@@ -232,6 +232,12 @@
             ]
           },
           {
+            "title": "Indonesian (id)",
+            "enum": [
+              "id"
+            ]
+          },
+          {
             "title": "Italian (it)",
             "enum": [
               "it"

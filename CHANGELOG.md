@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## NEXT
+
+### Notable Changes
+
+* **i18n:**  Bahasa Indonesia translation added by [@dwaan](https://github.com/dwaan) ([#760](https://github.com/oznu/homebridge-config-ui-x/pull/760))
+
 ## 4.23.2 (2020-06-29)
 
 ### Bug Fixes

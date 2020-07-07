@@ -19,6 +19,7 @@ import localeSv from '@angular/common/locales/sv';
 import localeNo from '@angular/common/locales/nb';
 import localeSl from '@angular/common/locales/sl';
 import localePt from '@angular/common/locales/pt';
+import localeId from '@angular/common/locales/id';
 
 registerLocaleData(localeEn);
 registerLocaleData(localeDe);
@@ -39,6 +40,7 @@ registerLocaleData(localeSv);
 registerLocaleData(localeNo);
 registerLocaleData(localeSl);
 registerLocaleData(localePt);
+registerLocaleData(localeId);
 
 export const supportedLocales = {
   'en': 'en',
@@ -60,4 +62,5 @@ export const supportedLocales = {
   'sv': 'sv',
   'no': 'nb', // Norwegian -> no -> nb
   'pt': 'pt',
+  'id': 'id',
 };
