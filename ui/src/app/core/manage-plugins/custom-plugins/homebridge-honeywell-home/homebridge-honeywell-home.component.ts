@@ -12,7 +12,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
 })
 export class HomebridgeHoneywellHomeComponent implements OnInit, OnDestroy {
   private linkDomain = 'https://homebridge-honeywell.iot.oz.nu';
-  private linkUrl = this.linkDomain + '/link-account';
+  public linkUrl = this.linkDomain + '/link-account';
   private popup;
   private originCheckInterval;
   public justLinked = false;
@@ -78,8 +78,11 @@ export class HomebridgeHoneywellHomeComponent implements OnInit, OnDestroy {
     const h = 700;
     const y = window.top.outerHeight / 2 + window.top.screenY - (h / 2);
     const x = window.top.outerWidth / 2 + window.top.screenX - (w / 2);
+
+    const urlToOpen = this.linkUrl + `?consumerKey=${encodeURIComponent(this.pluginConfig.consumerKey)}&consumerSecret=${encodeURIComponent(this.pluginConfig.consumerSecret)}`;
+
     this.popup = window.open(
-      this.linkUrl, 'oznu-google-smart-home-auth',
+      urlToOpen, 'oznu-google-smart-home-auth',
       'toolbar=no, location=no, directories=no, status=no, menubar=no scrollbars=no, resizable=no, copyhistory=no, ' +
       'width=' + w + ', height=' + h + ', top=' + y + ', left=' + x,
     );

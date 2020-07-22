@@ -14,7 +14,7 @@ export class CustomPluginsService {
   public plugins = {
     'homebridge-gsh': HomebridgeGoogleSmarthomeComponent,
     'homebridge-honeywell-home': HomebridgeHoneywellHomeComponent,
-    'homebridge-honeywell-roomsensors': HomebridgeHoneywellHomeComponent,
+    'homebridge-honeywell-home-roomsensors': HomebridgeHoneywellHomeComponent,
     'homebridge-ring': HomebridgeRingComponent,
   };
 

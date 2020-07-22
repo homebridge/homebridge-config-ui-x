@@ -2,11 +2,15 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## NEXT
+## 4.24.0 (2020-07-22)
 
 ### Notable Changes
 
-* **i18n:**  Bahasa Indonesia translation added by [@dwaan](https://github.com/dwaan) ([#760](https://github.com/oznu/homebridge-config-ui-x/pull/760))
+* **i18n:** Bahasa Indonesia translation added by [@dwaan](https://github.com/dwaan) ([#760](https://github.com/oznu/homebridge-config-ui-x/pull/760))
+
+### Bug Fixes
+
+* **Accessory Control:** Fixed an issue with HeaterCooler control ([#772](https://github.com/oznu/homebridge-config-ui-x/issues/772))
 
 ## 4.23.2 (2020-06-29)
 

@@ -41,6 +41,9 @@ export class BackupService {
         'node_modules',       // docker
         'startup.sh',         // docker
         '.docker.env',        // docker
+        'FFmpeg',             // ffmpeg
+        'fdk-aac',            // ffmpeg
+        '.git'                // git
       ].includes(path.basename(filePath))), // list of files not to include in the archive
     });
 

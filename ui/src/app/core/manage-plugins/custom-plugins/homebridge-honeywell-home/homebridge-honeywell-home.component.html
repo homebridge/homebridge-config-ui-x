@@ -13,10 +13,46 @@
       </markdown>
     </div>
 
-    <div class="text-center" *ngIf="!pluginConfig?.credentials?.refreshToken">
+    <!-- <div class="text-center" *ngIf="!pluginConfig?.credentials?.refreshToken">
       <button class="btn btn-primary btn-lg" (click)="linkAccount()"
         translate="plugins.settings.custom.homebridge-gsh.label_link_account"></button>
+    </div> -->
+
+    <div *ngIf="!pluginConfig?.credentials?.refreshToken">
+
+      <ol>
+        <li>Login / create an account at <a href="https://developer.honeywellhome.com/user" target="_blank"
+            rel="noreferrer noopener">https://developer.honeywellhome.com/user</a>.</li>
+        <li>Click <strong>Create New App</strong>.</li>
+        <li>Give your application a name, and enter the Callback URL exactly as it is displayed below.</li>
+        <li>Enter the generated consumer key and secret below.</li>
+        <li>Click <strong>{{ 'plugins.settings.custom.homebridge-gsh.label_link_account' | translate }}</strong>.</li>
+      </ol>
+
+      <div class="form-group">
+        <label for="inputAppName">App Name</label>
+        <input type="text" class="form-control" readonly [value]="'Homebridge'" id="inputAppName">
+      </div>
+      <div class="form-group">
+        <label for="inputCallbackUrl">Callback URL</label>
+        <input type="text" class="form-control" readonly [value]="linkUrl" id="inputCallbackUrl">
+      </div>
+      <div class="form-group">
+        <label for="inputConsumerKey">Consumer Key <span class="text-danger">*</span></label>
+        <input type="text" class="form-control" id="inputConsumerKey" [(ngModel)]="pluginConfig.consumerKey">
+      </div>
+      <div class="form-group">
+        <label for="inputConsumerSecret">Consumer Secret <span class="text-danger">*</span></label>
+        <input type="text" class="form-control" id="inputConsumerSecret" [(ngModel)]="pluginConfig.consumerSecret">
+      </div>
+
+      <div class="text-center">
+        <button class="btn btn-primary btn-lg" (click)="linkAccount()"
+          [disabled]="!pluginConfig.consumerSecret || !pluginConfig.consumerKey"
+          translate="plugins.settings.custom.homebridge-gsh.label_link_account"></button>
+      </div>
     </div>
+
 
     <div class="text-center mt-1" *ngIf="pluginConfig?.credentials?.refreshToken">
       <i class="fas fa-check-circle primary-text" style="font-size:50px;"></i>
@@ -36,10 +72,12 @@
       </markdown>
     </div>
 
-    <div *ngIf="pluginConfig && pluginConfig.credentials?.refreshToken" class="card p-2 pt-3 mt-4">
-      <json-schema-form [options]="jsonFormOptions" [schema]="schema.schema" [layout]="schema.layout"
-        [form]="schema.form" [(ngModel)]="pluginConfig" framework="bootstrap-4">
-      </json-schema-form>
+    <div class="">
+      <div *ngIf="pluginConfig && pluginConfig.credentials?.refreshToken" class="card p-2 pt-3 mt-4">
+        <json-schema-form [options]="jsonFormOptions" [schema]="schema.schema" [layout]="schema.layout"
+          [form]="schema.form" [(ngModel)]="pluginConfig" framework="bootstrap-4">
+        </json-schema-form>
+      </div>
     </div>
   </div>
 

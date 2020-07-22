@@ -67,6 +67,9 @@ export class HeaterCoolerManageComponent implements OnInit {
     if (this.targetMode === 'off') {
       this.service.getCharacteristic('Active').setValue(0);
     } else {
+      if (this.service.getCharacteristic('Active').value === 0) {
+        this.service.getCharacteristic('Active').setValue(1);
+      }
       this.service.getCharacteristic('TargetHeaterCoolerState').setValue(this.targetMode);
     }
 
