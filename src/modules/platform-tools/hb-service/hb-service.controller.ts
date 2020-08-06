@@ -1,4 +1,4 @@
-import { Controller, UseGuards, Get, Put, Body, Header } from '@nestjs/common';
+import { Controller, UseGuards, Get, Put, Body, Req } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { AdminGuard } from '../../../core/auth/guards/admin.guard';
@@ -32,8 +32,14 @@ export class HbServiceController {
   }
 
   @UseGuards(AdminGuard)
-  @Get('download-log-file')
+  @Get('log/download')
   downloadLogFile() {
     return this.hbServiceService.downloadLogFile();
+  }
+
+  @UseGuards(AdminGuard)
+  @Put('log/truncate')
+  truncateLogFile(@Req() req) {
+    return this.hbServiceService.truncateLogFile(req.user.username);
   }
 }

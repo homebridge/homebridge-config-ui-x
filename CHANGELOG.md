@@ -6,7 +6,8 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Notable Changes
 
-* **hb-service:** Users running Homebridge with [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) can now download their full log file from the log viewer tab ([#795](https://github.com/oznu/homebridge-config-ui-x/issues/795))
+* **hb-service:** Users running Homebridge with [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) can now download the full Homebridge log file from the Log Viewer tab ([#795](https://github.com/oznu/homebridge-config-ui-x/issues/795))
+* **hb-service:** Users running Homebridge with [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) can now truncate/empty the H omebridge log file from the Log Viewer tab
 
 ### Other Changes
 
