@@ -1,3 +1,7 @@
+<button class="btn btn-primary download-logs-button" (click)="downloadLogFile()" *ngIf="$auth.env.serviceMode">
+  <i class="fas fa-download"></i>
+</button>
+
 <div class="flex-column d-flex align-items-stretch h-100">
   <div #logoutput id="log-output" class="terminal align-self-end w-100 h-100 mb-1"></div>
 </div>

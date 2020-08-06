@@ -1,4 +1,4 @@
-import { Controller, UseGuards, Get, Put, Body } from '@nestjs/common';
+import { Controller, UseGuards, Get, Put, Body, Header } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { AdminGuard } from '../../../core/auth/guards/admin.guard';
@@ -29,5 +29,11 @@ export class HbServiceController {
   @Put('set-full-service-restart-flag')
   setFullServiceRestartFlag() {
     return this.hbServiceService.setFullServiceRestartFlag();
+  }
+
+  @UseGuards(AdminGuard)
+  @Get('download-log-file')
+  downloadLogFile() {
+    return this.hbServiceService.downloadLogFile();
   }
 }
