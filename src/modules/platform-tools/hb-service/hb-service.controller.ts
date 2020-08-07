@@ -1,6 +1,6 @@
-import { Controller, UseGuards, Get, Put, Body, Req } from '@nestjs/common';
+import { Controller, UseGuards, Get, Put, Body, Req, Query } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { AdminGuard } from '../../../core/auth/guards/admin.guard';
 import { HbServiceService } from './hb-service.service';
 
@@ -33,8 +33,9 @@ export class HbServiceController {
 
   @UseGuards(AdminGuard)
   @Get('log/download')
-  downloadLogFile() {
-    return this.hbServiceService.downloadLogFile();
+  @ApiQuery({ name: 'colour', enum: ['yes', 'no'], required: false })
+  downloadLogFile(@Query('colour') colour?: string) {
+    return this.hbServiceService.downloadLogFile((colour === 'yes'));
   }
 
   @UseGuards(AdminGuard)

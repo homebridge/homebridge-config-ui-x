@@ -74,7 +74,7 @@ export class HbServiceService {
   /**
    * Stream the full log file to the client
    */
-  async downloadLogFile() {
+  async downloadLogFile(shouldRemoveColour: boolean) {
     if (!await fs.pathExists(this.configService.ui.log.path)) {
       this.logger.error(`Cannot download log file: "${this.configService.ui.log.path}" does not exist.`);
       throw new BadRequestException(`Log file not found on disk.`);
@@ -84,6 +84,10 @@ export class HbServiceService {
     } catch (e) {
       this.logger.error(`Cannot download log file: Missing read permissions on "${this.configService.ui.log.path}".`);
       throw new BadRequestException('Cannot read log file. Check the log file permissions');
+    }
+
+    if (!shouldRemoveColour) {
+      return fs.createReadStream(this.configService.ui.log.path, { encoding: 'utf8' });
     }
 
     const removeColour = new stream.Transform({

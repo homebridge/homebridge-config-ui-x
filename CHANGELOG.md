@@ -12,7 +12,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Other Changes
 
-* **i18n:** Improvements to Italian language translations ([#716](https://github.com/oznu/homebridge-config-ui-x/pull/797))
+* **i18n:** Improvements to Italian language translations ([#716](https://github.com/oznu/homebridge-config-ui-x/pull/797),[#801](https://github.com/oznu/homebridge-config-ui-x/pull/801))
 
 ## 4.24.0 (2020-07-22)
 
