@@ -15,8 +15,8 @@
   <div class="hb-plugin-space-between" *ngFor="let plugin of installedPlugins">
     <!--Panel-->
     <div class="card card-body mb-3">
-      <div class="row">
-        <div class="col-sm-6">
+      <div class="d-flex flex-row justify-content-between">
+        <div class="">
           <p class="mb-0 primary-text" *ngIf="!plugin.updateAvailable && plugin.installedVersion"
             [translate]="'plugins.status_installed'">Installed</p>
           <p class="mb-0 grey-text" *ngIf="!plugin.installedVersion" [translate]="'plugins.status_not_installed'">
@@ -26,17 +26,21 @@
             Update Available
           </p>
         </div>
-        <div class="col-sm-6 d-none d-sm-block">
+        <div class="">
           <p class="mb-0 grey-text text-right" *ngIf="plugin.author && !plugin.verifiedPlugin">
             <a class="card-link grey-text" target="_blank" rel="noopener noreferrer"
               [href]="'https://www.npmjs.com/~' + plugin.author">@{{ plugin.author }}</a>
           </p>
           <p class="mb-0 grey-text text-right" *ngIf="plugin.verifiedPlugin">
+            <a class="card-link pink-text" *ngIf="plugin.funding" (click)="openFundingModal(plugin)">
+              <i class="fas fa-heart"></i>
+              {{ 'plugins.donate.button_donate' | translate }}
+            </a>
             <a class="card-link grey-text" target="_blank" rel="noopener noreferrer"
               href="https://github.com/homebridge/homebridge/wiki/verified-Plugins" ngbTooltip="@{{ plugin.author }}">
               <span class="card-link green-text">
                 <i class="fas fa-shield-alt"></i>
-                Verified
+                <span class="d-none d-sm-inline"> Verified</span>
               </span>
             </a>
           </p>

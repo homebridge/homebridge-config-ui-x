@@ -695,6 +695,9 @@ export class PluginsService {
       installPath,
     };
 
+    // only verified plugins can show donation links
+    plugin.funding = plugin.verifiedPlugin ? pjson.funding : undefined;
+
     // if the plugin is private, do not attempt to query npm
     if (pjson.private) {
       plugin.publicPackage = false;

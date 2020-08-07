@@ -9,11 +9,16 @@ import { PluginsRoutingModule } from './plugins-routing.module';
 import { InstalledPluginsComponent } from './installed-plugins/installed-plugins.component';
 import { SearchPluginsComponent } from './search-plugins/search-plugins.component';
 import { ManagePluginsModule } from '../../core/manage-plugins/manage-plugins.module';
+import { DonateModalComponent } from './donate-modal/donate-modal.component';
 
 @NgModule({
+  entryComponents: [
+    DonateModalComponent,
+  ],
   declarations: [
     InstalledPluginsComponent,
     SearchPluginsComponent,
+    DonateModalComponent,
   ],
   imports: [
     CommonModule,

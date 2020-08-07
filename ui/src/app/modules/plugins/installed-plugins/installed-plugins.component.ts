@@ -7,7 +7,8 @@ import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../../../core/auth/auth.service';
 import { ApiService } from '../../../core/api.service';
 import { ManagePluginsService } from '../../../core/manage-plugins/manage-plugins.service';
-
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { DonateModalComponent } from '../donate-modal/donate-modal.component';
 
 @Component({
   selector: 'app-plugins',
@@ -28,6 +29,7 @@ export class InstalledPluginsComponent implements OnInit, OnDestroy {
     private $router: Router,
     private $route: ActivatedRoute,
     public $fb: FormBuilder,
+    private $modal: NgbModal,
     private toastr: ToastrService,
     private translate: TranslateService,
   ) { }
@@ -75,6 +77,11 @@ export class InstalledPluginsComponent implements OnInit, OnDestroy {
           });
       }
     });
+  }
+
+  openFundingModal(plugin) {
+    const ref = this.$modal.open(DonateModalComponent);
+    ref.componentInstance.plugin = plugin;
   }
 
   onClearSearch() {
