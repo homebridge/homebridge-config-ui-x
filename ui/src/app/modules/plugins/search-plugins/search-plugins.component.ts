@@ -1,11 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 
-import { AuthService } from '../../../core/auth/auth.service';
-import { ApiService } from '../../../core/api.service';
-import { ManagePluginsService } from '../../../core/manage-plugins/manage-plugins.service';
+import { AuthService } from '@/app/core/auth/auth.service';
+import { ApiService } from '@/app/core/api.service';
+import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
+import { DonateModalComponent } from '../donate-modal/donate-modal.component';
 
 @Component({
   selector: 'app-plugins.search',
@@ -26,6 +28,7 @@ export class SearchPluginsComponent implements OnInit, OnDestroy {
     public $router: Router,
     private $route: ActivatedRoute,
     public $fb: FormBuilder,
+    private $modal: NgbModal,
     private $toastr: ToastrService,
   ) { }
 
@@ -73,6 +76,11 @@ export class SearchPluginsComponent implements OnInit, OnDestroy {
     } else {
       this.$router.navigate(['/plugins/search', value.query]);
     }
+  }
+
+  openFundingModal(plugin) {
+    const ref = this.$modal.open(DonateModalComponent);
+    ref.componentInstance.plugin = plugin;
   }
 
   ngOnDestroy() {
