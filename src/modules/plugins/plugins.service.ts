@@ -718,6 +718,7 @@ export class PluginsService {
     try {
       if (plugin.name.includes('@')) {
         // scoped plugins do not allow us to access the "latest" tag directly
+        // see https://github.com/npm/registry-issue-archive/issues/34
 
         // attempt to load from cache
         const fromCache = this.npmPluginCache.get(plugin.name);

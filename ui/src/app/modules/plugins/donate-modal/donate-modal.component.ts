@@ -60,6 +60,9 @@ export class DonateModalComponent implements OnInit {
         return 'fab fa-github';
       case 'patreon':
         return 'fab fa-patreon';
+      case 'kofi':
+      case 'ko-fi':
+        return 'fas fa-coffee';
       default:
         return 'fas fa-link';
     }
