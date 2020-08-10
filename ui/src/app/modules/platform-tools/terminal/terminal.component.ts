@@ -1,5 +1,5 @@
 import { Component, OnInit, HostListener, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
 import { TerminalService } from '../../../core/terminal.service';
 
 @Component({

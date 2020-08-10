@@ -1,8 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
 
-$image-path: '../../node_modules/mdbootstrap/img/';
-$roboto-font-path: '../../node_modules/mdbootstrap/font/roboto/';
-$fa-font-path:'../../node_modules/@fortawesome/fontawesome-free/webfonts';
+$image-path: "../../img";
+// $roboto-font-path: "../../node_modules/mdbootstrap/font/roboto/";
+// $fa-font-path:'../../node_modules/@fortawesome/fontawesome-free/webfonts';
 
 @import "~@fortawesome/fontawesome-free/scss/fontawesome.scss";
 @import "~@fortawesome/fontawesome-free/scss/solid.scss";
@@ -16,19 +16,20 @@ $fa-font-path:'../../node_modules/@fortawesome/fontawesome-free/webfonts';
 @import "~nouislider/distribute/nouislider.min.css";
 @import "~dragula/dist/dragula.min.css";
 
-@import './toastr.scss';
-@import './checkbox.scss';
-@import './accessories.scss';
-@import './json-schema-form.scss';
+@import "./toastr.scss";
+@import "./checkbox.scss";
+@import "./accessories.scss";
+@import "./json-schema-form.scss";
 
-@import './themes';
-@import './theme-dark.scss';
+@import "./themes";
+@import "./theme-dark.scss";
 
 /*
  * Base structure
  */
 
-html, body {
+html,
+body {
   height: 100%;
   -webkit-font-smoothing: subpixel-antialiased;
 }
@@ -57,10 +58,10 @@ body {
 
 .btn {
   font-weight: 400;
-  padding: .375rem .75rem;
+  padding: 0.375rem 0.75rem;
   font-size: 1rem;
   line-height: 1.5;
-  border-radius: .25rem;
+  border-radius: 0.25rem;
 }
 
 /* Prevent outlines around the close button when a modal opens */
@@ -129,16 +130,16 @@ button {
   vertical-align: middle;
   cursor: pointer;
   border-radius: 50%;
-  -webkit-box-shadow: 0 5px 11px 0 rgba(0,0,0,0.18), 0 4px 15px 0 rgba(0,0,0,0.15);
-  box-shadow: 0 5px 11px 0 rgba(0,0,0,0.18), 0 4px 15px 0 rgba(0,0,0,0.15);
+  -webkit-box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15);
+  box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15);
   -webkit-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out;
   width: 47px;
   height: 47px;
 
   &:hover {
-    -webkit-box-shadow: 0 8px 17px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
-    box-shadow: 0 8px 17px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    -webkit-box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   }
 }
 
@@ -147,13 +148,14 @@ button {
 }
 
 .card .card-text {
-  font-size: .9rem;
+  font-size: 0.9rem;
   color: #747373;
   font-weight: 400;
 }
 
-.md-form .form-control:disabled, .md-form .form-control[readonly] {
-  color: rgba(0,0,0,.46)
+.md-form .form-control:disabled,
+.md-form .form-control[readonly] {
+  color: rgba(0, 0, 0, 0.46);
 }
 
 .ng-bs4-validate {
@@ -165,20 +167,22 @@ button {
 }
 
 .dropdown-toggle::after {
-  display:none
+  display: none;
 }
 
-.no-scrollbars, .xterm-viewport {
-  &::-webkit-scrollbar { // chrome
-    display: none; 
+.no-scrollbars,
+.xterm-viewport {
+  &::-webkit-scrollbar {
+    // chrome
+    display: none;
   }
   scrollbar-width: none; // firefox
   -ms-overflow-style: none; // edge
 }
 
 .hb-monaco-editor-line-error {
-	background: red;
-	width: 5px !important;
+  background: red;
+  width: 5px !important;
   margin-left: 3px;
 }
 
@@ -193,9 +197,9 @@ button {
 }
 
 .hb-editor-block-error {
-  position:absolute;
-  background:rgba(255,231,186,0.88);
-  z-index:20
+  position: absolute;
+  background: rgba(255, 231, 186, 0.88);
+  z-index: 20;
 }
 
 .status-circle {
@@ -226,13 +230,12 @@ gridster-item {
   // box-shadow: 0 2px 5px 0 rgba(0,0,0,.16), 0 2px 10px 0 rgba(0,0,0,.12);
   color: #000000;
   background-color: #fff;
-  border-radius: .25rem;
+  border-radius: 0.25rem;
 }
 
 gridster-preview {
   background: rgba(224, 224, 224, 0.5);
 }
-
 
 .widget-value-parent-wrap {
   min-width: 100px;
@@ -243,7 +246,7 @@ gridster-preview {
     line-height: 1.2;
 
     @media (max-width: 1300px) {
-      font-size: 2.0rem;
+      font-size: 2rem;
     }
 
     @media (max-width: 1200px) {

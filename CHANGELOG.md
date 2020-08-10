@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## 4.25.0 (2020-08-10)
+## 4.25.1 (2020-08-10)
 
 ### Notable Changes
 
@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Other Changes
 
 * **i18n:** Improvements to Italian language translations ([#716](https://github.com/oznu/homebridge-config-ui-x/pull/797),[#801](https://github.com/oznu/homebridge-config-ui-x/pull/801),[#803](https://github.com/oznu/homebridge-config-ui-x/pull/803))
+* Updated npm dependencies
 
 ## 4.24.0 (2020-07-22)
 

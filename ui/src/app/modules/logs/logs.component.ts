@@ -1,7 +1,7 @@
 import { Component, OnInit, HostListener, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
 import { saveAs } from 'file-saver';
 import { ToastrService } from 'ngx-toastr';
 

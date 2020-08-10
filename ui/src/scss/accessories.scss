@@ -1,15 +1,16 @@
 /* Accessory Control Global CSS */
 
-.accessory-widget-box, .accessory-tab  {
+.accessory-widget-box,
+.accessory-tab {
   .accessory-box {
     background-color: #e0e0e0;
   }
 
   .switch-on {
-    background-color: #FFF;
-    
+    background-color: #fff;
+
     #accessoryIcon {
-      fill: #1976D2 !important;
+      fill: #1976d2 !important;
     }
   }
 }
@@ -23,7 +24,7 @@
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
   padding: 15px;
   //overflow: hidden;
-  
+
   @media (max-width: 575px) {
     height: 100px;
     width: 100px;
@@ -32,13 +33,13 @@
   }
 
   &:active {
-   transform: scale(1.15);
-   -webkit-transform: scale(1.15);
-   -ms-transform: scale(1.15);
+    transform: scale(1.15);
+    -webkit-transform: scale(1.15);
+    -ms-transform: scale(1.15);
   }
 
-  -webkit-transition: all .15s ease-in-out;
-  transition: all .15s ease-in-out;
+  -webkit-transition: all 0.15s ease-in-out;
+  transition: all 0.15s ease-in-out;
 }
 
 .accessory-svg {
@@ -87,14 +88,14 @@
 
 .accessory-label {
   font-size: 15px;
-   margin-top: 4px;
-   overflow: hidden;
-   text-overflow: ellipsis;
-   display: -webkit-box;
-   -webkit-box-orient: vertical;
-   -webkit-line-clamp: 2;
-   line-height: 1rem;
-   max-height: 1rem*2;
+  margin-top: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-height: 1rem;
+  max-height: 1rem * 2;
 
   @media (max-width: 575px) {
     margin-top: 0px;
@@ -102,7 +103,7 @@
     line-height: 17px;
     -webkit-line-clamp: 2;
     line-height: 1rem;
-    max-height: 1rem*2;
+    max-height: 1rem * 2;
   }
 }
 
@@ -113,7 +114,8 @@
     }
   }
 
-  &:hover, &:active {
+  &:hover,
+  &:active {
     .manage-accessory-button {
       opacity: 0.6;
     }
@@ -126,7 +128,8 @@
     margin-right: 15px;
     margin-top: 15px;
 
-    &:active, &:hover {
+    &:active,
+    &:hover {
       opacity: 1;
       transform: scale(1.2);
     }
@@ -135,10 +138,10 @@
 
 .noselect {
   -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
-       -moz-user-select: none; /* Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome and Opera */
 }

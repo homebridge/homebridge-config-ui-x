@@ -2,9 +2,8 @@ import { Component, OnInit, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ServiceTypeX } from '../../accessories.interfaces';
 
-import { Subject } from 'rxjs/Subject';
-import 'rxjs/add/operator/debounceTime';
-import 'rxjs/add/operator/distinctUntilChanged';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-thermostat-manage',
@@ -22,8 +21,10 @@ export class ThermostatManageComponent implements OnInit {
   ) {
 
     this.targetTemperatureChanged
-      .debounceTime(300)
-      .distinctUntilChanged()
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+      )
       .subscribe((value) => {
         this.service.getCharacteristic('TargetTemperature').setValue(this.targetTemperature.value);
       });

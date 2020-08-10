@@ -33,6 +33,22 @@
               "node_modules/popper.js/dist/umd/popper.min.js",
               "node_modules/mdbootstrap/js/bootstrap.min.js",
               "node_modules/mdbootstrap/js/mdb.js"
+            ],
+            "allowedCommonJsDependencies": [
+              "dragula",
+              "file-saver",
+              "qrcode",
+              "contra/emitter",
+              "crossvent",
+              "debug",
+              "socket.io-client",
+              "socket.io-parser",
+              "uuid/v4",
+              "nouislider",
+              "chart.js",
+              "inline-svg",
+              "semver",
+              "ajv"
             ]
           },
           "configurations": {

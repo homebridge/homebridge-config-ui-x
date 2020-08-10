@@ -1,7 +1,7 @@
 {
   "name": "homebridge-config-ui-x",
   "displayName": "Homebridge Config UI X",
-  "version": "4.25.0",
+  "version": "4.25.1-test.0",
   "description": "A web based management, configuration and control platform for Homebridge",
   "license": "MIT",
   "author": "oznu <dev@oz.nu>",
@@ -34,7 +34,7 @@
     "lint:ui": "npm run lint --prefix ui",
     "webpack": "webpack --config webpack.config.js",
     "install:ui": "npm install --prefix ui",
-    "prepublishOnly": "npm i --package-lock-only && npm audit && npm run lint && npm run build"
+    "prepublishOnly": "npm i --package-lock-only && npm run lint && npm run build"
   },
   "bundledDependencies": [
     "@nestjs/common",

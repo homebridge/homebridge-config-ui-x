@@ -11,8 +11,8 @@ export const environment = {
   },
   jwt: {
     tokenKey: 'access_token',
-    whitelistedDomains: ['localhost:8080'],
-    blacklistedRoutes: ['localhost:8080/api/auth/login'],
+    allowedDomains: ['localhost:8080'],
+    disallowedRoutes: ['localhost:8080/api/auth/login'],
   },
   apiHttpOptions: {
     withCredentials: true,
