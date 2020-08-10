@@ -4,12 +4,14 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as si from 'systeminformation';
 import * as semver from 'semver';
+import * as NodeCache from 'node-cache';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '../../core/config/config.service';
 import { Logger } from '../../core/logger/logger.service';
 
 @Injectable()
 export class StatusService {
+  private statusCache = new NodeCache({ stdTTL: 3600 });
   private dashboardLayout;
   private nodeJsVersionCache;
   private homebridgeStatus: 'up' | 'down';
@@ -250,11 +252,42 @@ export class StatusService {
   }
 
   /**
+   * Get / Cache the default interface
+   */
+  private async getDefaultInterface(): Promise<si.Systeminformation.NetworkInterfacesData> {
+    const cachedResult = this.statusCache.get('defaultInterface') as si.Systeminformation.NetworkInterfacesData;
+
+    if (cachedResult) {
+      return cachedResult;
+    }
+
+    const defaultInterfaceName = (os.platform() !== 'freebsd') ? await si.networkInterfaceDefault() : undefined;
+    const defaultInterface = defaultInterfaceName ? (await si.networkInterfaces()).find(x => x.iface === defaultInterfaceName) : undefined;
+
+    this.statusCache.set('defaultInterface', defaultInterface);
+    return defaultInterface;
+  }
+
+  /**
+   * Get / Cache the OS Information
+   */
+  private async getOsInfo(): Promise<si.Systeminformation.OsData> {
+    const cachedResult = this.statusCache.get('osInfo') as si.Systeminformation.OsData;
+
+    if (cachedResult) {
+      return cachedResult;
+    }
+
+    const osInfo = await si.osInfo();
+
+    this.statusCache.set('osInfo', osInfo);
+    return osInfo;
+  }
+
+  /**
    * Returns details about this Homebridge server
    */
   public async getHomebridgeServerInfo() {
-    const defaultInterface = (os.platform() !== 'freebsd') ? await si.networkInterfaceDefault() : await undefined;
-
     return {
       serviceUser: os.userInfo().username,
       homebridgeConfigJsonPath: this.configService.configPath,
@@ -264,9 +297,9 @@ export class StatusService {
       homebridgeRunningInDocker: this.configService.runningInDocker,
       homebridgeServiceMode: this.configService.serviceMode,
       nodeVersion: process.version,
-      os: await si.osInfo(),
+      os: await this.getOsInfo(),
       time: await si.time(),
-      network: defaultInterface ? (await si.networkInterfaces()).find(x => x.iface === defaultInterface) : {},
+      network: await this.getDefaultInterface() || {},
     };
   }
 
