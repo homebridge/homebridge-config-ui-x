@@ -49,7 +49,7 @@
     "class-validator": "^0.12.2",
     "commander": "^6.0.0",
     "dayjs": "^1.8.33",
-    "fastify": "2.15.0",
+    "fastify": "2.15.1",
     "fastify-multipart": "1.0.6",
     "fastify-static": "2.7.0",
     "fastify-swagger": "2.6.0",
