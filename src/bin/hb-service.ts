@@ -78,6 +78,7 @@ export class HomebridgeServiceHelper {
 
     commander
       .allowUnknownOption()
+      .storeOptionsAsProperties(true)
       .arguments('[install|uninstall|start|stop|restart|rebuild|run|logs]')
       .option('-P, --plugin-path <path>', '', (p) => { process.env.UIX_CUSTOM_PLUGIN_PATH = p; this.homebridgeOpts.push('-P', p); })
       .option('-U, --user-storage-path <path>', '', (p) => { this.storagePath = p; this.usingCustomStoragePath = true; })

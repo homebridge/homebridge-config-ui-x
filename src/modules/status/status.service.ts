@@ -13,7 +13,6 @@ import { Logger } from '../../core/logger/logger.service';
 export class StatusService {
   private statusCache = new NodeCache({ stdTTL: 3600 });
   private dashboardLayout;
-  private nodeJsVersionCache;
   private homebridgeStatus: 'up' | 'down';
 
   private cpuLoadHistory: number[] = [];
@@ -264,7 +263,10 @@ export class StatusService {
     const defaultInterfaceName = (os.platform() !== 'freebsd') ? await si.networkInterfaceDefault() : undefined;
     const defaultInterface = defaultInterfaceName ? (await si.networkInterfaces()).find(x => x.iface === defaultInterfaceName) : undefined;
 
-    this.statusCache.set('defaultInterface', defaultInterface);
+    if (defaultInterface) {
+      this.statusCache.set('defaultInterface', defaultInterface);
+    }
+
     return defaultInterface;
   }
 
@@ -280,7 +282,7 @@ export class StatusService {
 
     const osInfo = await si.osInfo();
 
-    this.statusCache.set('osInfo', osInfo);
+    this.statusCache.set('osInfo', osInfo, 86400);
     return osInfo;
   }
 
@@ -307,29 +309,34 @@ export class StatusService {
    * Checks the current version of Node.js and compares to the latest LTS
    */
   public async getNodeJsVersionInfo() {
-    if (this.nodeJsVersionCache) {
-      return this.nodeJsVersionCache;
+    const cachedResult = this.statusCache.get('nodeJsVersion');
+
+    if (cachedResult) {
+      return cachedResult;
     }
 
     try {
       const versionList = (await axios.get('https://nodejs.org/dist/index.json')).data;
       const currentLts = versionList.filter(x => x.lts)[0];
-      this.nodeJsVersionCache = {
+      const versionInformation = {
         currentVersion: process.version,
         latestVersion: currentLts.version,
         updateAvailable: semver.gt(currentLts.version, process.version),
         showUpdateWarning: semver.lt(process.version, '10.17.0'),
         installPath: path.dirname(process.execPath),
       };
-      return this.nodeJsVersionCache;
+      this.statusCache.set('nodeJsVersion', versionInformation, 86400);
+      return versionInformation;
     } catch (e) {
-      this.logger.warn('Failed to check for Node.js version updates');
-      return {
+      this.logger.log('Failed to check for Node.js version updates - check your internet connection.');
+      const versionInformation = {
         currentVersion: process.version,
         latestVersion: process.version,
         updateAvailable: false,
         showUpdateWarning: false,
       };
+      this.statusCache.set('nodeJsVersion', versionInformation, 3600);
+      return versionInformation;
     }
   }
 }

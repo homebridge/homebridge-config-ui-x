@@ -15,6 +15,7 @@ nest-cli.json
 .vscode
 .github
 scripts
+test
 
 # Logs
 logs
