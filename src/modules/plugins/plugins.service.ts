@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { HomebridgePlugin, IPackageJson, INpmSearchResults, INpmRegistryModule } from './types';
 import axios from 'axios';
 import * as os from 'os';
@@ -126,7 +126,14 @@ export class PluginsService {
     }
 
     const q = ((!query || !query.length) ? '' : query + '+') + 'keywords:homebridge-plugin+not:deprecated&size=30';
-    const searchResults: INpmSearchResults = (await this.http.get(`https://registry.npmjs.org/-/v1/search?text=${q}`)).data;
+    let searchResults: INpmSearchResults;
+
+    try {
+      searchResults = (await this.http.get(`https://registry.npmjs.org/-/v1/search?text=${q}`)).data;
+    } catch (e) {
+      this.logger.error(`Failed to search the npm registry - "${e.message}" - see https://git.io/JJSz6 for help.`);
+      throw new InternalServerErrorException(`Failed to search the npm registry - "${e.message}" - see logs.`);
+    }
 
     const result: HomebridgePlugin[] = searchResults.objects
       .filter(x => x.package.name.indexOf('homebridge-') === 0 || this.isScopedPlugin(x.package.name))
@@ -206,8 +213,7 @@ export class PluginsService {
       return [plugin];
     } catch (e) {
       if (e.statusCode !== 404) {
-        this.logger.error('Failed to search npm registry');
-        this.logger.error(e.message);
+        this.logger.error(`Failed to search the npm registry - "${e.message}" - see https://git.io/JJSz6 for help.`);
       }
       return [];
     }
@@ -335,7 +341,7 @@ export class PluginsService {
     const homebridgeInstalls = modules.filter(x => x.name === 'homebridge');
 
     if (homebridgeInstalls.length > 1) {
-      this.logger.warn('Multiple Instances Of Homebridge Found Installed');
+      this.logger.warn('Multiple Instances Of Homebridge Found Installed - see https://git.io/JJSgm for help.');
       homebridgeInstalls.forEach((instance) => {
         this.logger.warn(instance.installPath);
       });
@@ -343,7 +349,7 @@ export class PluginsService {
 
     if (!homebridgeInstalls.length) {
       this.configService.hbServiceUiRestartRequired = true;
-      this.logger.error('Unable To Find Homebridge Installation');
+      this.logger.error('Unable To Find Homebridge Installation - see https://git.io/JJSgZ for help.');
       throw new Error('Unable To Find Homebridge Installation');
     }
 
@@ -766,7 +772,7 @@ export class PluginsService {
       }
     } catch (e) {
       if (e.statusCode !== 404) {
-        this.logger.log(`[${plugin.name}] Failed to check registry.npmjs.org for updates: ${e.message}`);
+        this.logger.log(`[${plugin.name}] Failed to check registry.npmjs.org for updates: "${e.message}" - see https://git.io/JJSz6 for help.`);
       }
       plugin.publicPackage = false;
       plugin.latestVersion = null;

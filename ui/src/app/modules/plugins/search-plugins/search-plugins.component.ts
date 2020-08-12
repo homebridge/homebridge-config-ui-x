@@ -60,7 +60,8 @@ export class SearchPluginsComponent implements OnInit, OnDestroy {
         this.loading = false;
       },
       (err) => {
-        this.$toastr.error(`Failed search npm: ${err.message}`, 'Error');
+        this.loading = false;
+        this.$toastr.error(`${err.error.message || err.message}`, 'Error');
       },
     );
   }
