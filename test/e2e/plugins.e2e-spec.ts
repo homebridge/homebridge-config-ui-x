@@ -33,6 +33,9 @@ describe('PluginController (e2e)', () => {
     await fs.copy(path.resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
     await fs.copy(path.resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
 
+    await fs.remove(pluginsPath);
+    await fs.copy(path.resolve(__dirname, '../mocks', 'plugins'), pluginsPath, { recursive: true });
+
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [PluginsModule, AuthModule],
     }).compile();
@@ -52,13 +55,6 @@ describe('PluginController (e2e)', () => {
         password: 'admin'
       }
     })).json().access_token;
-
-
-    // ensure it's clean
-    await fs.remove(pluginsPath);
-
-    // copy mock plugins
-    await fs.copy(path.resolve(__dirname, '../mocks', 'plugins'), pluginsPath, { recursive: true });
   });
 
   it('GET /plugins', async () => {
