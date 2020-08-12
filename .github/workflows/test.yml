@@ -9,8 +9,13 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os: [ubuntu-latest]
         node-version: [10.x, 11.x, 12.x, 13.x, 14.x]
+        include:
+          - os: macos-latest
+            node: 12.x
+          - os: windows-latest
+            node: 12.x
 
     runs-on: ${{ matrix.os }}
 
