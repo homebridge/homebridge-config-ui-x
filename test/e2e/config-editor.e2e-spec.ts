@@ -6,7 +6,7 @@ import { AuthModule } from '../../src/core/auth/auth.module';
 import { ConfigEditorModule } from '../../src/modules/config-editor/config-editor.module';
 import { HomebridgeConfig } from '../../src/core/config/config.service';
 
-describe('StatusController (e2e)', () => {
+describe('ConfigEditorController (e2e)', () => {
   let app: NestFastifyApplication;
 
   let authFilePath: string;
