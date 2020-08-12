@@ -3,10 +3,8 @@ import * as fs from 'fs-extra';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastify';
 import { AuthModule } from '../../src/core/auth/auth.module';
-import { HbServiceService } from '../../src/modules/platform-tools/hb-service/hb-service.service';
 import { HbServiceModule } from '../../src/modules/platform-tools/hb-service/hb-service.module';
 import { ConfigService } from '../../src/core/config/config.service';
-import { config } from 'dotenv/types';
 
 describe('PlatformToolsHbService (e2e)', () => {
   let app: NestFastifyApplication;
@@ -15,11 +13,8 @@ describe('PlatformToolsHbService (e2e)', () => {
   let secretsFilePath: string;
   let envFilePath: string;
   let logFilePath: string;
-
   let authorization: string;
-
   let configService: ConfigService;
-  let hbServiceService: HbServiceService;
 
   beforeAll(async () => {
     process.env.UIX_BASE_PATH = path.resolve(__dirname, '../../');
@@ -47,7 +42,6 @@ describe('PlatformToolsHbService (e2e)', () => {
     await app.getHttpAdapter().getInstance().ready();
 
     configService = app.get(ConfigService);
-    hbServiceService = app.get(HbServiceService);
   });
 
   beforeEach(async () => {

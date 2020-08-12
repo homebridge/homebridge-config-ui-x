@@ -11,9 +11,7 @@ describe('PluginController (e2e)', () => {
 
   let authFilePath: string;
   let secretsFilePath: string;
-
   let pluginsPath: string;
-
   let authorization: string;
 
   beforeAll(async () => {

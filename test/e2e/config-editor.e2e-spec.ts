@@ -12,7 +12,6 @@ describe('ConfigEditorController (e2e)', () => {
   let authFilePath: string;
   let secretsFilePath: string;
   let configFilePath: string;
-
   let authorization: string;
 
   beforeAll(async () => {

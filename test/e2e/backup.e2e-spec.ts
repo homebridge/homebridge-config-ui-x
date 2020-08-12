@@ -11,11 +11,8 @@ describe('BackupController (e2e)', () => {
 
   let authFilePath: string;
   let secretsFilePath: string;
-
   let authorization: string;
-
   let backupService: BackupService;
-
   let postBackupRestoreRestartFn;
 
   beforeAll(async () => {

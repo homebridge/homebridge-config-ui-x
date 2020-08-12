@@ -14,9 +14,7 @@ describe('ServerController (e2e)', () => {
   let secretsFilePath: string;
   let accessoriesPath: string;
   let persistPath: string;
-
   let authorization: string;
-
   let configService: ConfigService;
   let serverService: ServerService;
 

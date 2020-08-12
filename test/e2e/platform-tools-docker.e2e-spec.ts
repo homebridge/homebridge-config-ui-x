@@ -12,11 +12,8 @@ describe('PlatformToolsDocker (e2e)', () => {
   let authFilePath: string;
   let secretsFilePath: string;
   let startupFilePath: string;
-
   let authorization: string;
-
   let restartDockerContainerFn;
-
   let dockerService: DockerService;
 
   beforeAll(async () => {

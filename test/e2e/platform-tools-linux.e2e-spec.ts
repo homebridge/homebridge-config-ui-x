@@ -11,12 +11,9 @@ describe('PlatformToolsLinux (e2e)', () => {
 
   let authFilePath: string;
   let secretsFilePath: string;
-
   let authorization: string;
-
   let restartHostFn;
   let shutdownHostFn;
-
   let linuxService: LinuxService;
 
   beforeAll(async () => {

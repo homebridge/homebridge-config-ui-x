@@ -10,7 +10,6 @@ describe('StatusController (e2e)', () => {
 
   let authFilePath: string;
   let secretsFilePath: string;
-
   let authorization: string;
 
   beforeAll(async () => {
