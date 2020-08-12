@@ -34,7 +34,7 @@
     "lint:ui": "npm run lint --prefix ui",
     "webpack": "webpack --config webpack.config.js",
     "install:ui": "npm install --prefix ui",
-    "test:e2e": "jest --forceExit --detectOpenHandles --verbose=true --config ./test/jest-e2e.json",
+    "test:e2e": "jest --forceExit --detectOpenHandles --verbose=true --silent --config ./test/jest-e2e.json",
     "prepublishOnly": "npm i --package-lock-only && npm run lint && npm run build"
   },
   "dependencies": {
@@ -92,7 +92,6 @@
     "prettier": "^2.0.5",
     "qr-image": "^3.2.0",
     "rimraf": "^3.0.2",
-    "supertest": "^4.0.2",
     "ts-jest": "^26.2.0",
     "ts-loader": "^8.0.2",
     "ts-node": "^8.10.2",
