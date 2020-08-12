@@ -1,3 +1,6 @@
 .uix-secrets
 auth.json
 config.json
+config.json.*
+persist
+accessories

@@ -5,7 +5,7 @@ import { IsString, IsNumber, IsNotEmpty, IsBoolean, IsOptional, Equals } from 'c
 export class UserDto {
   @IsNumber()
   @ApiProperty({ readOnly: true })
-  id: number;
+  id?: number;
 
   @IsString()
   @IsNotEmpty()

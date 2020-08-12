@@ -1,19 +1,29 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../src/app.module';
 import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastify';
+import { AppModule } from '../../src/app.module';
 
 describe('AppController (e2e)', () => {
   let app: NestFastifyApplication;
 
+  let authFilePath: string;
+  let secretsFilePath: string;
+
   beforeAll(async () => {
-    process.env.UIX_BASE_PATH = path.resolve(__dirname, '../');
-    process.env.UIX_CONFIG_PATH = path.resolve(__dirname, '.homebridge', 'config.json');
-    process.env.UIX_STORAGE_PATH = path.resolve(__dirname, '.homebridge');
+    process.env.UIX_BASE_PATH = path.resolve(__dirname, '../../');
+    process.env.UIX_STORAGE_PATH = path.resolve(__dirname, '../', '.homebridge');
+    process.env.UIX_CONFIG_PATH = path.resolve(process.env.UIX_STORAGE_PATH, 'config.json');
+
+    authFilePath = path.resolve(process.env.UIX_STORAGE_PATH, 'auth.json');
+    secretsFilePath = path.resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets');
 
     // setup test config
-    await fs.copy(path.resolve(process.env.UIX_STORAGE_PATH, 'config.test.json'), process.env.UIX_CONFIG_PATH);
+    await fs.copy(path.resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
+
+    // setup test auth file
+    await fs.copy(path.resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
+    await fs.copy(path.resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
@@ -22,8 +32,6 @@ describe('AppController (e2e)', () => {
     app = moduleFixture.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
     await app.init();
     await app.getHttpAdapter().getInstance().ready();
-
-    // await new Promise((resolve) => setTimeout(resolve, 2000));
   });
 
   it('GET /', async () => {

@@ -2,19 +2,29 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastify';
-import { AuthModule } from '../src/core/auth/auth.module';
-import { ConfigService } from '../src/core/config/config.service';
+import { AuthModule } from '../../src/core/auth/auth.module';
+import { ConfigService } from '../../src/core/config/config.service';
 
 describe('AuthController (e2e)', () => {
   let app: NestFastifyApplication;
 
+  let authFilePath: string;
+  let secretsFilePath: string;
+
   beforeAll(async () => {
-    process.env.UIX_BASE_PATH = path.resolve(__dirname, '../');
-    process.env.UIX_CONFIG_PATH = path.resolve(__dirname, '.homebridge', 'config.json');
-    process.env.UIX_STORAGE_PATH = path.resolve(__dirname, '.homebridge');
+    process.env.UIX_BASE_PATH = path.resolve(__dirname, '../../');
+    process.env.UIX_STORAGE_PATH = path.resolve(__dirname, '../', '.homebridge');
+    process.env.UIX_CONFIG_PATH = path.resolve(process.env.UIX_STORAGE_PATH, 'config.json');
+
+    authFilePath = path.resolve(process.env.UIX_STORAGE_PATH, 'auth.json');
+    secretsFilePath = path.resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets');
 
     // setup test config
-    await fs.copy(path.resolve(process.env.UIX_STORAGE_PATH, 'config.test.json'), process.env.UIX_CONFIG_PATH);
+    await fs.copy(path.resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
+
+    // remove any existing auth / secret files
+    await fs.remove(authFilePath);
+    await fs.remove(secretsFilePath);
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AuthModule],
@@ -24,13 +34,19 @@ describe('AuthController (e2e)', () => {
     await app.init();
     await app.getHttpAdapter().getInstance().ready();
 
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    // wait for initial auth to be setup
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   });
 
   afterEach(async () => {
     // restore auth mode after each test
     const configService: ConfigService = app.get(ConfigService);
     configService.ui.auth = 'form';
+  });
+
+  it('should create auth.json and .uix-secrets on launch', async () => {
+    expect(await fs.pathExists(authFilePath)).toEqual(true);
+    expect(await fs.pathExists(secretsFilePath)).toEqual(true);
   });
 
   it('POST /auth/login (valid login)', async () => {

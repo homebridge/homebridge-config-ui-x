@@ -178,7 +178,7 @@ export class ServerService {
           resolve();
         } else {
           this.logger.error(`Cannot find cached accessory with UUID: ${uuid}`);
-          reject();
+          reject(new NotFoundException());
         }
       });
     });
