@@ -13,14 +13,14 @@ export class AuthController {
     private readonly configService: ConfigService,
   ) { }
 
-  @ApiOperation({ description: 'Exchange a username and password for an authentication token.' })
+  @ApiOperation({ summary: 'Exchange a username and password for an authentication token.' })
   @Post('login')
   signIn(@Body() body: AuthDto) {
     return this.authService.signIn(body.username, body.password, body.otp);
   }
 
   @Get('/settings')
-  @ApiOperation({ description: 'Return settings required to load the UI before authentication.' })
+  @ApiOperation({ summary: 'Return settings required to load the UI before authentication.' })
   getSettings() {
     return this.configService.uiSettings();
   }
@@ -33,14 +33,14 @@ export class AuthController {
     return this.configService.streamCustomWallpaper();
   }
 
-  @ApiOperation({ description: 'This method can be used to obtain an access token ONLY when authentication has been disabled.' })
+  @ApiOperation({ summary: 'This method can be used to obtain an access token ONLY when authentication has been disabled.' })
   @Post('/noauth')
   getToken() {
     return this.authService.generateNoAuthToken();
   }
 
   @ApiBearerAuth()
-  @ApiOperation({ description: 'Check to see if an authentication token is still valid.' })
+  @ApiOperation({ summary: 'Check to see if an authentication token is still valid.' })
   @UseGuards(AuthGuard())
   @Get('/check')
   checkAuth() {
