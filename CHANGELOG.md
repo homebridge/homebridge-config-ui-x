@@ -8,6 +8,10 @@ All notable changes to this project will be documented in this file. This projec
 
 * Fix a bug that caused the UI not to load when it's debug mode was enabled ([#811](https://github.com/oznu/homebridge-config-ui-x/issues/811))
 
+### Other Changes
+
+* **i18n:** Improvements to Indonesian language translations ([#810](https://github.com/oznu/homebridge-config-ui-x/pull/810))
+
 ## 4.25.1 (2020-08-10)
 
 ### Node.js Version
