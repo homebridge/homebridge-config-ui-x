@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 4.25.2 (2020-08-14)
+
+### Bug Fixes
+
+* Fix a bug that caused the UI not to load when it's debug mode was enabled ([#811](https://github.com/oznu/homebridge-config-ui-x/issues/811))
+
 ## 4.25.1 (2020-08-10)
 
 ### Node.js Version
