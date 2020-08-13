@@ -1,9 +1,9 @@
-[![npm](https://badgen.net/npm/v/homebridge-config-ui-x/latest)](https://www.npmjs.com/package/homebridge-config-ui-x) 
+[![npm](https://badgen.net/npm/v/homebridge-config-ui-x/latest)](https://www.npmjs.com/package/homebridge-config-ui-x)
 [![npm](https://badgen.net/npm/dt/homebridge-config-ui-x)](https://www.npmjs.com/package/homebridge-config-ui-x)
 [![Discord](https://img.shields.io/discord/432663330281226270?color=728ED5&logo=discord&label=discord)](https://discord.gg/C87Pvq3)
 [![Donate](https://badgen.net/badge/donate/paypal/yellow)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZEW8TFQCU2MSJ&source=url)
 
-Supported Languages: :gb: :de: :fr: :poland: :czech_republic: :ru: :cn: :hungary: :jp: :es: :netherlands: :tr: :it: :bulgaria: :sweden: :norway: :slovenia: :portugal:
+Supported Languages: :gb: :de: :fr: :poland: :czech_republic: :ru: :cn: :hungary: :jp: :es: :netherlands: :tr: :it: :bulgaria: :sweden: :norway: :slovenia: :portugal: :indonesia:
 
 # Homebridge Config UI X
 
@@ -17,7 +17,7 @@ Supported Languages: :gb: :de: :fr: :poland: :czech_republic: :ru: :cn: :hungary
 * View and control Homebridge accessories
 * Restart Homebridge
 * Backup and Restore your Homebridge instance
-* and more... 
+* and more...
 
 Homebridge Config UI X also provides a tool called [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) which makes it easy to setup Homebridge as a service on Linux/Raspbian, macOS and Windows 10.
 
@@ -36,7 +36,7 @@ For detailed instructions on how to setup Homebridge with Homebridge Config UI X
 sudo npm install -g --unsafe-perm homebridge-config-ui-x
 ```
 
-Once you have installed and configured the plugin you can access the interface via http://localhost:8080. 
+Once you have installed and configured the plugin you can access the interface via http://localhost:8080.
 
 The default username is `admin` and the default password is `admin`.
 
