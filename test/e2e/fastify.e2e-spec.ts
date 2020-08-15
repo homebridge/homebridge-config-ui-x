@@ -3,18 +3,16 @@ import * as fs from 'fs-extra';
 import { ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastify';
-import { AuthModule } from '../../src/core/auth/auth.module';
-import { BackupModule } from '../../src/modules/backup/backup.module';
-import { BackupService } from '../../src/modules/backup/backup.service';
+import * as fastify from 'fastify';
+import * as fastifyMultipart from 'fastify-multipart';
+import * as helmet from 'helmet';
+import { AppModule } from '../../src/app.module';
 
-describe('BackupController (e2e)', () => {
+describe('FastifyOptions (e2e)', () => {
   let app: NestFastifyApplication;
 
   let authFilePath: string;
   let secretsFilePath: string;
-  let authorization: string;
-  let backupService: BackupService;
-  let postBackupRestoreRestartFn;
 
   beforeAll(async () => {
     process.env.UIX_BASE_PATH = path.resolve(__dirname, '../../');
@@ -32,62 +30,45 @@ describe('BackupController (e2e)', () => {
     await fs.copy(path.resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [BackupModule, AuthModule],
+      imports: [AppModule],
     }).compile();
 
-    app = moduleFixture.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
+    // setup fastify
+    const server = fastify({
+      logger: {
+        prettyPrint: true,
+      },
+    });
+
+    const fAdapter = new FastifyAdapter(server);
+
+    fAdapter.register(fastifyMultipart, {
+      limits: {
+        files: 1,
+      },
+    });
+
+    app = moduleFixture.createNestApplication<NestFastifyApplication>(fAdapter);
 
     app.useGlobalPipes(new ValidationPipe({
       whitelist: true,
       skipMissingProperties: true,
     }));
 
+    app.use(helmet());
+
     await app.init();
     await app.getHttpAdapter().getInstance().ready();
-
-    backupService = app.get(BackupService);
   });
 
-  beforeEach(async () => {
-    // mock functions
-    postBackupRestoreRestartFn = jest.fn();
-    backupService.postBackupRestoreRestart = postBackupRestoreRestartFn;
-
-    // get auth token before each test
-    authorization = 'bearer ' + (await app.inject({
-      method: 'POST',
-      path: '/auth/login',
-      payload: {
-        username: 'admin',
-        password: 'admin'
-      }
-    })).json().access_token;
-  });
-
-  it('GET /backup/download', async () => {
+  it('GET /', async () => {
     const res = await app.inject({
       method: 'GET',
-      path: '/backup/download',
-      headers: {
-        authorization,
-      }
+      path: '/'
     });
 
     expect(res.statusCode).toEqual(200);
-    expect(res.headers['content-type']).toEqual('application/octet-stream');
-  });
-
-  it('GET /backup/restart', async () => {
-    const res = await app.inject({
-      method: 'PUT',
-      path: '/backup/restart',
-      headers: {
-        authorization,
-      }
-    });
-
-    expect(res.statusCode).toEqual(200);
-    expect(postBackupRestoreRestartFn).toBeCalled();
+    expect(res.body).toEqual('Hello World!');
   });
 
   afterAll(async () => {

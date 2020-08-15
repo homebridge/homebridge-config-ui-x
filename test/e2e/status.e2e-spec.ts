@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import { ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastify';
 import { StatusModule } from '../../src/modules/status/status.module';
@@ -32,6 +33,12 @@ describe('StatusController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
+
+    app.useGlobalPipes(new ValidationPipe({
+      whitelist: true,
+      skipMissingProperties: true,
+    }));
+
     await app.init();
     await app.getHttpAdapter().getInstance().ready();
   });
