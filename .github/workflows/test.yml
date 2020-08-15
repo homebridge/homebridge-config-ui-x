@@ -31,8 +31,8 @@ jobs:
 
       - run: node dist/bin/hb-service.js -v
       - if: matrix.os == 'macos-latest'
-          run: sudo node dist/bin/hb-service.js install
+        run: sudo node dist/bin/hb-service.js install
       - if: matrix.os == 'ubuntu-latest'
-          run: sudo node dist/bin/hb-service.js install --user homebridge
+        run: sudo node dist/bin/hb-service.js install --user homebridge
       - if: matrix.os == 'windows-latest'
-          run: node dist/bin/hb-service.js install
+        run: node dist/bin/hb-service.js install
