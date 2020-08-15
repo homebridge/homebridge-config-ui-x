@@ -24,7 +24,7 @@ import { LinuxInstaller } from './platforms/linux';
 import { DarwinInstaller } from './platforms/darwin';
 
 export class HomebridgeServiceHelper {
-  public action: string;
+  public action: 'install' | 'uninstall' | 'start' | 'stop' | 'restart' | 'rebuild' | 'run' | 'logs' | 'update-node' | 'before-start';
   public selfPath = __filename;
   public serviceName = 'Homebridge';
   public storagePath;
@@ -606,37 +606,55 @@ export class HomebridgeServiceHelper {
       return await this.createDefaultConfig();
     }
 
+    let saveRequired = false;
+    let restartRequired = false;
+
     try {
-      let saveRequired = false;
       const currentConfig = await fs.readJson(process.env.UIX_CONFIG_PATH);
 
       // extract ui config
       if (!Array.isArray(currentConfig.platforms)) {
         currentConfig.platforms = [];
       }
-      const uiConfigBlock = currentConfig.platforms.find((x) => x.platform === 'config');
+      let uiConfigBlock = currentConfig.platforms.find((x) => x.platform === 'config');
 
-      // if doing an install, make sure the ui config is set
-      if (this.action === 'install') {
-        if (uiConfigBlock) {
-          // correct the port
-          if (uiConfigBlock.port !== this.uiPort) {
-            uiConfigBlock.port = this.uiPort;
-            this.logger(`WARNING: HOMEBRIDGE CONFIG UI PORT IN ${process.env.UIX_CONFIG_PATH} CHANGED TO ${this.uiPort}`, 'warn');
-          }
-          // delete unnecessary config
-          delete uiConfigBlock.restart;
-          delete uiConfigBlock.sudo;
-          delete uiConfigBlock.log;
-        } else {
-          this.logger(`Adding missing config ui block to ${process.env.UIX_CONFIG_PATH}`, 'info');
-          currentConfig.platforms.push({
-            name: 'Config',
-            port: this.uiPort,
-            platform: 'config',
-          });
-        }
+      // if the config block does not exist, then create it
+      if (!uiConfigBlock) {
+        this.logger(`Adding missing UI platform block to ${process.env.UIX_CONFIG_PATH}`, 'info');
+        uiConfigBlock = await this.createDefaultUiConfig();
+        currentConfig.platforms.push(uiConfigBlock);
         saveRequired = true;
+        restartRequired = true;
+      }
+
+      // ensure the port is set
+      if (this.action !== 'install' && typeof uiConfigBlock.port !== 'number') {
+        uiConfigBlock.port = await this.getLastKnownUiPort();
+        this.logger(`Added missing port number to UI config - ${uiConfigBlock.port}`, 'info');
+        saveRequired = true;
+        restartRequired = true;
+      }
+
+      // if doing an install, make sure the port number matches the value passed in by the user
+      if (this.action === 'install') {
+        // correct the port
+        if (uiConfigBlock.port !== this.uiPort) {
+          uiConfigBlock.port = this.uiPort;
+          this.logger(`WARNING: HOMEBRIDGE CONFIG UI PORT IN ${process.env.UIX_CONFIG_PATH} CHANGED TO ${this.uiPort}`, 'warn');
+        }
+        // delete unnecessary config
+        delete uiConfigBlock.restart;
+        delete uiConfigBlock.sudo;
+        delete uiConfigBlock.log;
+        saveRequired = true;
+      }
+
+      // ensure the ui port is defined and is a number
+      if (typeof uiConfigBlock.port !== 'number') {
+        uiConfigBlock.port = await this.getLastKnownUiPort();
+        this.logger(`Added missing port number to UI config - ${uiConfigBlock.port}`, 'info');
+        saveRequired = true;
+        restartRequired = true;
       }
 
       // check the bridge section exists
@@ -679,6 +697,14 @@ export class HomebridgeServiceHelper {
       this.logger(`Invalid config.json file has been backed up to ${backupFile}.`, 'warn');
       await fs.rename(process.env.UIX_CONFIG_PATH, backupFile);
       await this.createDefaultConfig();
+      restartRequired = true;
+    }
+
+    // if the port number potentially changed, we need to restart here when running the
+    // raspbian image so the nginx config will be updated
+    if (restartRequired && this.action === 'run' && await this.isRaspbianImage()) {
+      this.logger(`Restarting process after port number update.`, 'info');
+      process.exit(1);
     }
   }
 
@@ -719,9 +745,39 @@ export class HomebridgeServiceHelper {
   private async createDefaultUiConfig() {
     return {
       name: 'Config',
-      port: this.uiPort,
+      port: this.action === 'install' ? this.uiPort : await this.getLastKnownUiPort(),
       platform: 'config',
     };
+  }
+
+  /**
+   * Returns true if running on the Homebridge Rasbpian Image
+   */
+  private async isRaspbianImage(): Promise<boolean> {
+    return os.platform() === 'linux' && await fs.pathExists('/etc/hb-ui-port');
+  }
+
+  /**
+   * Check what the last known UI port was
+   * Used when the ui config block is deleted and needs to be recreated
+   */
+  private async getLastKnownUiPort() {
+    // check if we are running the raspbian image, the port will be stored in /etc/hb-ui-port
+    if (await this.isRaspbianImage()) {
+      const lastPort = parseInt((await fs.readFile('/etc/hb-ui-port', 'utf8')), 10);
+      if (!isNaN(lastPort) && lastPort <= 65535) {
+        return lastPort;
+      }
+    }
+
+    // check if the port is defined in an env var (docker)
+    const envPort = parseInt(process.env.HOMEBRIDGE_CONFIG_UI_PORT, 10);
+    if (!isNaN(envPort) && envPort <= 65535) {
+      return envPort;
+    }
+
+    // otherwise return the defaul port
+    return this.uiPort;
   }
 
   /**
@@ -1030,6 +1086,9 @@ export class HomebridgeServiceHelper {
     }
   }
 
+  /**
+   * Extract the Node.js tarball
+   */
   public async extractNodejs(targetVersion: string, extractConfig) {
     const spinner = ora(`Installing Node.js ${targetVersion}`).start();
 
