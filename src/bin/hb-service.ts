@@ -601,13 +601,14 @@ export class HomebridgeServiceHelper {
    * If the config is not valid json it will be backed up and replaced with the default.
    */
   public async configCheck() {
-    if (!await fs.pathExists(process.env.UIX_CONFIG_PATH)) {
-      this.logger(`Creating default config.json: ${process.env.UIX_CONFIG_PATH}`);
-      return await this.createDefaultConfig();
-    }
-
     let saveRequired = false;
     let restartRequired = false;
+
+    if (!await fs.pathExists(process.env.UIX_CONFIG_PATH)) {
+      this.logger(`Creating default config.json: ${process.env.UIX_CONFIG_PATH}`);
+      await this.createDefaultConfig();
+      restartRequired = true;
+    }
 
     try {
       const currentConfig = await fs.readJson(process.env.UIX_CONFIG_PATH);
