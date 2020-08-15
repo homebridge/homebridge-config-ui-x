@@ -29,3 +29,4 @@ jobs:
       - run: npm run lint:server
       - run: npm run test:e2e
       - run: node dist/bin/hb-service.js -v
+      - run: node dist/bin/hb-service.js install
