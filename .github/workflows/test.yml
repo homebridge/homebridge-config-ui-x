@@ -29,10 +29,11 @@ jobs:
       - run: npm run lint:server
       - run: npm run test:e2e
 
+      # test hb-service
       - run: node dist/bin/hb-service.js -v
-      - if: matrix.os == 'macos-latest'
-        run: sudo node dist/bin/hb-service.js install
-      - if: matrix.os == 'ubuntu-latest'
+      - if: runner.os == 'Linux'
         run: sudo node dist/bin/hb-service.js install --user homebridge
-      - if: matrix.os == 'windows-latest'
+      - if: runner.os == 'macOS'
+        run: sudo node dist/bin/hb-service.js install
+      - if: runner.os == 'Windows'
         run: node dist/bin/hb-service.js install
