@@ -8,7 +8,6 @@ export class ConvertTempPipe implements PipeTransform {
   ) { }
 
   transform(value: number, unit: 'c' | 'f' = this.$auth.env.temperatureUnits): number {
-    console.log(unit);
     if (unit === 'f') {
       return value * 1.8 + 32;
     }

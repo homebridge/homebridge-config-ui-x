@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## NEXT
+
+### Other Changes
+
+* **Dashboard:** CPU temperature unit of measure can now optionally be set to differ from the system default 
+
+
 ## 4.25.2 (2020-08-14)
 
 ### Bug Fixes
