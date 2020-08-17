@@ -11,7 +11,7 @@
       </div>
       <div class="text-center widget-value-parent-wrap" *ngIf="cpuTemperature.main > 0">
         <div class="widget-value mb-0">
-          {{ cpuTemperature.main | convertTemp | number:'1.0-0' }}&deg;{{ ($auth.env.temperatureUnits || 'C') | uppercase }}
+          {{ cpuTemperature.main | convertTemp:(widget.temperatureUnit || $auth.env.temperatureUnits) | number:'1.0-0' }}&deg;{{ (widget.temperatureUnit || $auth.env.temperatureUnits || 'C') | uppercase }}
         </div>
         <div class="widget-value-label grey-text" [translate]="'status.cpu.label_temp'">CPU Temp</div>
       </div>

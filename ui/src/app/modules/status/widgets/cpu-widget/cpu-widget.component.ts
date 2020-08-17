@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
 import { Subscription, interval } from 'rxjs';
 import { ChartOptions } from 'chart.js';
 import { Color, BaseChartDirective } from 'ng2-charts';
@@ -12,6 +12,8 @@ import { AuthService } from '../../../../core/auth/auth.service';
   styleUrls: ['./cpu-widget.component.scss'],
 })
 export class CpuWidgetComponent implements OnInit, OnDestroy {
+  @Input() public widget;
+
   private io = this.$ws.getExistingNamespace('status');
   private intervalSubscription: Subscription;
 

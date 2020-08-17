@@ -30,7 +30,7 @@ interface EnvInterface {
   dockerOfflineUpdate: boolean;
   serviceMode: boolean;
   lang: string | null;
-  temperatureUnits: string;
+  temperatureUnits: 'c' | 'f';
   instanceId: string;
   customWallpaperHash: string;
 }

@@ -56,6 +56,13 @@ export class WidgetControlComponent implements OnInit {
     'EEEE, MMM d',
   ];
 
+  // cpu
+  public temperatureUnits = [
+    { label: 'status.widget.label_temperature_units_system_default', value: '' },
+    { label: 'status.widget.label_temperature_units_celsius', value: 'c' },
+    { label: 'status.widget.label_temperature_units_fahrenheit', value: 'f' },
+  ];
+
   public searchCountryCodes = (text$: Observable<string>) =>
     text$.pipe(
       debounceTime(300),
