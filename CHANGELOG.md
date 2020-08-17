@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Other Changes
 
-* **Dashboard:** CPU temperature unit of measure can now optionally be set to differ from the system default 
+* **Dashboard:** CPU temperature unit of measure can now optionally be set to differ from the system default ([#783](https://github.com/oznu/homebridge-config-ui-x/issues/783))
 
 
 ## 4.25.2 (2020-08-14)
