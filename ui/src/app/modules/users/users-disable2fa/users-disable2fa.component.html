@@ -10,7 +10,7 @@
     <p>{{ 'users.setup_2fa_disable_enter_current_password' | translate }}</p>
 
     <div class="form-group">
-      <input class="form-control" type="password" [formControl]="formGroup.controls['password']"
+      <input class="form-control" type="password" autocomplete="current-password" [formControl]="formGroup.controls['password']"
         [placeholder]="'users.label_password' | translate">
     </div>
     <p class="red-text" *ngIf="invalidCredentials"><small
