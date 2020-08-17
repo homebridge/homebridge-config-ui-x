@@ -14,7 +14,7 @@
 
       <div class="md-form">
         <i class="fas fa-user prefix grey-text"></i>
-        <input formControlName="name" type="text" id="form-name" autocomplete="off" class="form-control pl-0 pr-0">
+        <input formControlName="name" type="text" id="form-name" autocomplete="name" class="form-control pl-0 pr-0">
         <label for="form-name" [ngClass]="{'active': page.title === 'users.title_edit_user'}"
           [translate]="'users.label_full_name'">Full Name</label>
       </div>
@@ -23,7 +23,7 @@
         <div class="col-md-6">
           <div class="md-form">
             <i class="fas fa-lock prefix grey-text"></i>
-            <input formControlName="password" type="password" autocomplete="off" id="form-pass"
+            <input formControlName="password" type="password" autocomplete="new-password" id="form-pass"
               class="form-control pl-0 pr-0" [ngClass]="{
                 'is-invalid': form.controls.password.dirty && form.controls.password.errors
               }">
@@ -32,7 +32,7 @@
         </div>
         <div class="col-md-6">
           <div class="md-form">
-            <input formControlName="passwordConfirm" type="password" autocomplete="off" id="form-pass-confirm"
+            <input formControlName="passwordConfirm" type="password" autocomplete="new-password" id="form-pass-confirm"
               class="form-control pl-0 pr-0" [ngClass]="{
                 'is-invalid': form.controls.passwordConfirm.dirty && form.controls.passwordConfirm.errors
               }">
