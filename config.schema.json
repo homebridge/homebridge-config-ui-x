@@ -515,7 +515,12 @@
       "title": "Advanced",
       "items": [
         "sudo",
-        "debug",
+        {
+          "key": "debug",
+          "condition": {
+            "functionBody": "return (model.debug === true)"
+          }
+        },
         "lang",
         "auth",
         {

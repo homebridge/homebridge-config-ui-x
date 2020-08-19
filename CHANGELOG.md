@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## NEXT
+## 4.26.0 (2020-08-19)
+
+### Bug Fixes 
+
+* **Plugins:** Fix an issue rendering the title of an array in a plugin's config.schema.json ([#777](https://github.com/oznu/homebridge-config-ui-x/issues/777))
 
 ### Other Changes
 
@@ -10,10 +14,6 @@ All notable changes to this project will be documented in this file. This projec
 * **Dashboard:** CPU temperature unit of measure can now optionally be set to differ from the system default ([#783](https://github.com/oznu/homebridge-config-ui-x/issues/783))
 * Updated npm dependencies
 * **Auth:** Improve two-factor authentication autocomplete ([#819](https://github.com/oznu/homebridge-config-ui-x/issues/819))
-
-### Bug Fixes 
-
-* **Plugins:** Fix an issue rendering the title of an array in a plugin's config.schema.json ([#777](https://github.com/oznu/homebridge-config-ui-x/issues/777))
 
 ## 4.25.2 (2020-08-14)
 
