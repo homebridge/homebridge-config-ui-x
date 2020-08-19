@@ -45,6 +45,7 @@ export class PluginsService {
 
   // create a cache for storing plugin package.json from npm
   private npmPluginCache = new NodeCache({ stdTTL: 300 });
+  private verifiedPluginsRetryTimeout: NodeJS.Timeout;
 
   constructor(
     private configService: ConfigService,
@@ -68,7 +69,11 @@ export class PluginsService {
       return config;
     });
 
+    // initial verified plugins load
     this.loadVerifiedPluginsList();
+
+    // update the verified plugins list every 12 hours
+    setInterval(this.loadVerifiedPluginsList.bind(this), 43200);
   }
 
   /**
@@ -893,11 +898,12 @@ export class PluginsService {
    * Loads the list of verified plugins from github
    */
   private async loadVerifiedPluginsList() {
+    clearTimeout(this.verifiedPluginsRetryTimeout);
     try {
       this.verifiedPlugins = (await this.http.get('https://raw.githubusercontent.com/homebridge/verified/master/verified-plugins.json')).data;
     } catch (e) {
       // try again in 60 seconds
-      setTimeout(() => {
+      this.verifiedPluginsRetryTimeout = setTimeout(() => {
         this.loadVerifiedPluginsList();
       }, 60000);
     }
