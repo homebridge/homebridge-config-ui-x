@@ -31,7 +31,8 @@
         <p class="text-center">{{ 'users.setup_2fa_enter_code' | translate }}</p>
         <div class="md-form">
           <i class="fas fa-key prefix grey-text"></i>
-          <input formControlName="otp" type="text" id="form-ota" autocomplete="off" autocapitalize="none" tabindex="1"
+          <input formControlName="otp" type="text" id="form-ota" autocomplete="one-time-code" autocapitalize="none" inputmode="numeric"
+  pattern="[0-9]*" tabindex="1"
             class="form-control pl-0 pr-0" [ngClass]="{
               'is-invalid': form.controls.otp.dirty && form.controls.otp.errors
             }">
