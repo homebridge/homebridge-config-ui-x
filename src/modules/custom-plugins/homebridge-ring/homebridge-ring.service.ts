@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException, HttpException, InternalServerErrorException } from '@nestjs/common';
-import { Logger } from '../../../../core/logger/logger.service';
+import { Logger } from '../../../core/logger/logger.service';
 import axios from 'axios';
 
 @Injectable()

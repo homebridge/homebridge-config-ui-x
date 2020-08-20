@@ -13,18 +13,21 @@ import { HomebridgeGoogleSmarthomeComponent } from './homebridge-google-smarthom
 import { HomebridgeHoneywellHomeComponent } from './homebridge-honeywell-home/homebridge-honeywell-home.component';
 import { HomebridgeRingComponent } from './homebridge-ring/homebridge-ring.component';
 import { HomebridgeHueComponent } from './homebridge-hue/homebridge-hue.component';
+import { HomebridgeNestCamComponent } from './homebridge-nest-cam/homebridge-nest-cam.component';
 
 @NgModule({
   entryComponents: [
     HomebridgeGoogleSmarthomeComponent,
     HomebridgeHoneywellHomeComponent,
     HomebridgeRingComponent,
+    HomebridgeNestCamComponent,
   ],
   declarations: [
     HomebridgeGoogleSmarthomeComponent,
     HomebridgeHoneywellHomeComponent,
     HomebridgeRingComponent,
     HomebridgeHueComponent,
+    HomebridgeNestCamComponent,
   ],
   imports: [
     CommonModule,

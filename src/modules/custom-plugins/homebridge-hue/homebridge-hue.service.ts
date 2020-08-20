@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { ConfigService } from '../../../../core/config/config.service';
+import { ConfigService } from '../../../core/config/config.service';
 
 @Injectable()
 export class HomebridgeHueService {

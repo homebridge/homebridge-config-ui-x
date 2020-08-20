@@ -1,7 +1,7 @@
 import { Controller, Post, UseGuards, Body } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
-import { AdminGuard } from '../../../../core/auth/guards/admin.guard';
+import { AdminGuard } from '../../../core/auth/guards/admin.guard';
 import { HomebridgeRingService } from './homebridge-ring.service';
 
 @ApiTags('Plugins')

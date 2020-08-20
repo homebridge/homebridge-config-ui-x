@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
-import { LoggerModule } from '../../../../core/logger/logger.module';
-import { ConfigModule } from '../../../../core/config/config.module';
+import { LoggerModule } from '../../../core/logger/logger.module';
+import { ConfigModule } from '../../../core/config/config.module';
 import { HomebridgeHueController } from './homebridge-hue.controller';
 import { HomebridgeHueService } from './homebridge-hue.service';
 
