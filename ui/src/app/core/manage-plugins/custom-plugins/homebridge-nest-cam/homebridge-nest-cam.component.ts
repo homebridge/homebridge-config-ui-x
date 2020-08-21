@@ -18,7 +18,11 @@ export class HomebridgeNestCamComponent implements OnInit, OnDestroy {
   public pluginConfig;
   public linkAccountForm: FormGroup;
 
+  public alreadyConfigured = false;
   public doingAccountLinking = false;
+  public accountLinkingError = false;
+  public accountLinkingErrorMessage = '';
+  public fieldErrorMessage = '';
   public waiting = false;
   public waitingMessage = '';
 
@@ -53,23 +57,65 @@ export class HomebridgeNestCamComponent implements OnInit, OnDestroy {
       this.pluginConfig = {
         platform: this.schema.pluginAlias,
       };
+      this.homebridgeConfig.platforms.push(this.pluginConfig);
     }
 
+    if (!this.showLinkAccount) {
+      this.alreadyConfigured = true;
+    }
+
+    this.io.socket.on('server_error', (payload) => {
+      this.accountLinkingError = true;
+      this.accountLinkingErrorMessage = payload.message;
+    });
+
+    this.io.socket.on('browser_closed', (payload) => {
+      if (this.doingAccountLinking === true) {
+        this.accountLinkingError = true;
+        this.accountLinkingErrorMessage = payload.message;
+      }
+    });
+
+    this.io.socket.on('disconnect', () => {
+      if (this.doingAccountLinking === true) {
+        this.accountLinkingError = true;
+        this.accountLinkingErrorMessage = 'Server Disconnected.';
+      }
+    });
+
     this.io.socket.on('username', () => {
+      this.fieldErrorMessage = '';
       this.linkAccountForm.controls.username.setValidators([Validators.required]);
+
+      if (this.currentStep === 'username') {
+        this.fieldErrorMessage = `Couldn't find your Google Account`;
+      }
+
       this.currentStep = 'username';
       this.waiting = false;
       this.waitingMessage = 'Logging in, please wait...';
     });
 
     this.io.socket.on('password', () => {
+      this.fieldErrorMessage = '';
       this.linkAccountForm.controls.password.setValidators([Validators.required]);
+
+      if (this.currentStep === 'password') {
+        this.fieldErrorMessage = `Wrong password. Try again.`;
+      }
+
       this.currentStep = 'password';
       this.waiting = false;
     });
 
     this.io.socket.on('totp', () => {
+      this.fieldErrorMessage = '';
       this.linkAccountForm.controls.totp.setValidators([Validators.required]);
+
+      if (this.currentStep === 'totp') {
+        this.fieldErrorMessage = `Wrong code. Try again.`;
+      }
+
       this.currentStep = 'totp';
       this.waiting = false;
     });
@@ -79,19 +125,34 @@ export class HomebridgeNestCamComponent implements OnInit, OnDestroy {
       this.currentStep = undefined;
       this.waiting = false;
       this.pluginConfig.googleAuth = credentials;
-      this.pluginConfig.doingAccountLinking = false;
+      this.doingAccountLinking = false;
 
-      this.pluginConfig.platform = this.schema.pluginAlias;
-      const existingConfig = this.homebridgeConfig.platforms.find(x => x.platform === this.schema.pluginAlias);
-      if (!existingConfig) {
-        this.homebridgeConfig.platforms.push(this.pluginConfig);
-      }
-
+      this.updateConfig();
       this.saveConfig();
     });
   }
 
+  get showLinkAccount(): boolean {
+    if (this.alreadyConfigured) {
+      return false;
+    }
+    if (this.pluginConfig?.googleAuth?.issueToken && this.pluginConfig?.googleAuth?.cookies) {
+      return false;
+    }
+    return !this.accountLinkingError;
+  }
+
+  linkAccountManually() {
+    this.updateConfig();
+    this.currentStep = undefined;
+    this.doingAccountLinking = false;
+    this.alreadyConfigured = true;
+    this.io.socket.emit('cancel');
+  }
+
   linkAccount() {
+    this.currentStep = undefined;
+
     this.linkAccountForm = new FormGroup({
       username: new FormControl(''),
       password: new FormControl(''),
@@ -112,11 +173,26 @@ export class HomebridgeNestCamComponent implements OnInit, OnDestroy {
     this.homebridgeConfig.platforms.splice(existingConfigIndex, 1);
 
     this.saveConfig();
+
+    this.alreadyConfigured = false;
+    this.doingAccountLinking = false;
+
+    if (this.accountLinkingError) {
+      this.activeModal.close();
+    }
   }
 
   nextStep() {
     this.waiting = true;
     this.io.socket.emit(this.currentStep, this.linkAccountForm.value);
+  }
+
+  updateConfig() {
+    this.pluginConfig.platform = this.schema.pluginAlias;
+    const existingConfig = this.homebridgeConfig.platforms.find(x => x.platform === this.schema.pluginAlias);
+    if (!existingConfig) {
+      this.homebridgeConfig.platforms.push(this.pluginConfig);
+    }
   }
 
   async saveConfig() {

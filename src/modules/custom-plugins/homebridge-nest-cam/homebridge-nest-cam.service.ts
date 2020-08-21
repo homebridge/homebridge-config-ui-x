@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { EventEmitter } from 'events';
 import * as path from 'path';
 import * as child_process from 'child_process';
+import * as fs from 'fs-extra';
 
 import { Logger } from '../../../core/logger/logger.service';
 import { PluginsService } from '../../plugins/plugins.service';
@@ -16,7 +17,8 @@ export class HomebridgeNestCamService {
     private logger: Logger,
   ) { }
 
-  async start(client: EventEmitter) {
+  async linkAccount(client: EventEmitter) {
+    let complete = false;
     const plugins = await this.pluginsService.getInstalledPlugins();
     const nestCamPlugin = plugins.find(x => x.name === 'homebridge-nest-cam');
 
@@ -26,21 +28,52 @@ export class HomebridgeNestCamService {
 
     const childProcessPath = path.join(nestCamPlugin.installPath, nestCamPlugin.name, 'dist/uix.js');
 
-    if (!this.child?.connected) {
-      this.logger.log(`Starting homebridge-nest-cam account linking script: ${childProcessPath}`);
-      this.child = child_process.fork(childProcessPath, ['-h']);
+    if (!await fs.pathExists(childProcessPath)) {
+      client.emit('server_error', {
+        key: 'not_supported',
+        message: 'Your version of homebridge-nest-cam does not support account linking using the Homebridge UI.'
+      });
+      return;
     }
 
-    client.on('disconnect', () => {
-      if (this.child) {
-        this.child.kill();
+    if (this.child?.connected) {
+      this.child.kill();
+    }
+
+    this.logger.log(`Starting homebridge-nest-cam account linking script: ${childProcessPath}`);
+    this.child = child_process.fork(childProcessPath, [], {
+      stdio: 'inherit',
+    });
+
+    const cleanup = () => {
+      complete = true;
+      if (this.child.connected) {
+        this.child.disconnect();
+        const childPid = this.child.pid;
+        setTimeout(() => {
+          try {
+            process.kill(childPid, 'SIGTERM');
+          } catch (e) { }
+        }, 5000);
       }
+      client.removeAllListeners('end');
+      client.removeAllListeners('username');
+      client.removeAllListeners('password');
+      client.removeAllListeners('totp');
+      client.removeAllListeners('cancel');
+    };
+
+    client.on('disconnect', () => {
+      cleanup();
     });
 
     client.on('end', () => {
-      if (this.child) {
-        this.child.kill();
-      }
+      cleanup();
+    });
+
+    client.on('cancel', () => {
+      console.log('got cancel event');
+      cleanup();
     });
 
     client.on('username', (payload) => {
@@ -60,11 +93,21 @@ export class HomebridgeNestCamService {
 
     // listen for messages from the child process
     this.child.addListener('message', (request: { action: string; payload?: any }) => {
+      // we don't want the child emitting errors to the client, so change the name
+      request.action = request.action === 'error' ? 'server_error' : request.action;
       client.emit(request.action, request.payload);
+
+      if (request.action === 'credentials') {
+        complete = true;
+        cleanup();
+      }
     });
 
-    this.child.on('close', () => {
-      console.log('child closed');
+    this.child.on('exit', () => {
+      if (!complete) {
+        client.emit('browser_closed', { message: 'The account linking process closed unexpectedly.' });
+        cleanup();
+      }
     });
   }
 }

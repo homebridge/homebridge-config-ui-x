@@ -13,7 +13,6 @@ export class HomebridgeNestCamGateway {
 
   @SubscribeMessage('link-account')
   connect(client: any) {
-    this.homebridgeNestCamService.start(client);
-
+    this.homebridgeNestCamService.linkAccount(client);
   }
 }
