@@ -80,7 +80,6 @@ export class HomebridgeNestCamService {
     });
 
     client.on('cancel', () => {
-      console.log('got cancel event');
       cleanup();
     });
 
@@ -112,6 +111,7 @@ export class HomebridgeNestCamService {
     });
 
     this.child.on('exit', () => {
+      this.logger.log('The homebridge-nest-cam account linking script exited.');
       if (!complete) {
         client.emit('browser_closed', { message: 'The account linking process closed unexpectedly.' });
         cleanup();
