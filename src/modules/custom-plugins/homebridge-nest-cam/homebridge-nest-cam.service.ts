@@ -42,7 +42,15 @@ export class HomebridgeNestCamService {
 
     this.logger.log(`Starting homebridge-nest-cam account linking script: ${childProcessPath}`);
     this.child = child_process.fork(childProcessPath, [], {
-      stdio: 'inherit',
+      silent: true
+    });
+
+    this.child.stdout.on('data', (data) => {
+      process.stdout.write(data);
+    });
+
+    this.child.stderr.on('data', (data) => {
+      process.stdout.write(data);
     });
 
     const cleanup = () => {
