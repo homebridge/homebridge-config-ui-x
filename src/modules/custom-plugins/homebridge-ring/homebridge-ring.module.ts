@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, HttpModule } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { LoggerModule } from '../../../core/logger/logger.module';
 import { ConfigModule } from '../../../core/config/config.module';
@@ -10,6 +10,7 @@ import { HomebridgeRingController } from './homebridge-ring.controller';
     PassportModule.register({ defaultStrategy: 'jwt' }),
     ConfigModule,
     LoggerModule,
+    HttpModule,
   ],
   providers: [
     HomebridgeRingService,

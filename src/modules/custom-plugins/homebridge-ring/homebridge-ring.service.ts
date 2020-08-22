@@ -1,19 +1,20 @@
-import { Injectable, UnauthorizedException, HttpException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, HttpException, InternalServerErrorException, HttpService } from '@nestjs/common';
 import { Logger } from '../../../core/logger/logger.service';
-import axios from 'axios';
+import { HomebridgeRingCredentialsDto } from './homebridge-ring.dto';
 
 @Injectable()
 export class HomebridgeRingService {
   constructor(
     private logger: Logger,
+    private httpService: HttpService,
   ) { }
 
   /**
    * Exchange the users Ring Credentials for a Refresh Token
    */
-  async exchangeCredentials(credentials) {
+  async exchangeCredentials(credentials: HomebridgeRingCredentialsDto) {
     try {
-      return (await axios.post('https://oauth.ring.com/oauth/token',
+      return (await this.httpService.post('https://oauth.ring.com/oauth/token',
         {
           client_id: 'ring_official_android',
           scope: 'client',
@@ -27,7 +28,7 @@ export class HomebridgeRingService {
             '2fa-support': 'true',
             '2fa-code': credentials.twoFactorAuthCode || '',
           }
-        })).data;
+        }).toPromise()).data;
     } catch (e) {
       if (e.response && e.response.status === 412) {
         // 2fa required

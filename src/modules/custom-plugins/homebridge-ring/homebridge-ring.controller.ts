@@ -3,6 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { AdminGuard } from '../../../core/auth/guards/admin.guard';
 import { HomebridgeRingService } from './homebridge-ring.service';
+import { HomebridgeRingCredentialsDto } from './homebridge-ring.dto';
 
 @ApiTags('Plugins')
 @ApiBearerAuth()
@@ -16,7 +17,7 @@ export class HomebridgeRingController {
 
   @UseGuards(AdminGuard)
   @Post('/exchange-credentials')
-  async exchangeCredentials(@Body() body) {
+  async exchangeCredentials(@Body() body: HomebridgeRingCredentialsDto) {
     return this.homebridgeRingService.exchangeCredentials(body);
   }
 }

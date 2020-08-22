@@ -46,7 +46,7 @@ export class HomebridgeRingComponent implements OnInit {
     this.linkAccountForm = this.formBuilder.group({
       email: ['', Validators.required],
       password: ['', Validators.required],
-      twoFactorAuthCode: [''],
+      twoFactorAuthCode: [undefined],
     });
 
     if (!this.homebridgeConfig.platforms) {

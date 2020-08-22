@@ -22,6 +22,9 @@
       <div class="text-center" *ngIf="!doingAccountLinking">
         <button class="btn btn-primary btn-lg" (click)="linkAccount()"
           translate="plugins.settings.custom.homebridge-gsh.label_link_account"></button>
+        <div class="mt-1 small">
+          <a (click)="linkAccountManually()" href="#" onclick="return false;">Or enter token manually...</a>
+        </div>
       </div>
 
       <div *ngIf="waiting" class="text-center mt-5 mb-5">
@@ -41,7 +44,7 @@
               <div class="form-group" *ngIf="currentStep === 'username'">
                 <label for="googleAccountUsername">Google Account Email or Phone:</label>
                 <input formControlName="username" type="text" class="form-control" id="googleAccountUsername"
-                  autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                  autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus="true"
                   [ngClass]="{'is-invalid': fieldErrorMessage}">
                 <div class="invalid-feedback" *ngIf="fieldErrorMessage">
                   {{ fieldErrorMessage }}
