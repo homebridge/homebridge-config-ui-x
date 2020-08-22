@@ -249,7 +249,7 @@
     "status.memory.label_used": "Utilizzata",
     "status.memory.title_memory": "Memoria",
     "status.message_code_scan_instructions": "Inquadra questo codice QR con la fotocamera del tuo dispositivo iOS per aggiungere questa istanza di Homebridge all'applicazione Apple Casa.",
-    "status.plugins_out_of_date": "Plugin non aggiornati",
+    "status.plugins_out_of_date": "Plugin da aggiornare",
     "status.services.label_console": "Console",
     "status.services.label_listening_on_port": "In ascolto sulla porta {{port}}",
     "status.services.label_not_running": "Non in esecuzione",
