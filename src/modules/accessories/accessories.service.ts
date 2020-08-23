@@ -1,13 +1,13 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { HapClient, ServiceType } from '@oznu/hap-client';
 import { ConfigService } from '../../core/config/config.service';
 import { Logger } from '../../core/logger/logger.service';
 
 @Injectable()
 export class AccessoriesService {
-  private hapClient: HapClient;
+  public hapClient: HapClient;
 
   constructor(
     private readonly configService: ConfigService,
@@ -110,7 +110,11 @@ export class AccessoriesService {
    * Load all the accessories from Homebridge
    * @param refreshServices
    */
-  private async loadAccessories(refreshServices?: boolean) {
+  public async loadAccessories(): Promise<ServiceType[]> {
+    if (!this.configService.homebridgeInsecureMode) {
+      throw new BadRequestException(`Homebridge must be running in insecure mode to access accessories.`);
+    }
+
     return this.hapClient.getAllServices()
       .then(services => {
         return services;
@@ -123,6 +127,96 @@ export class AccessoriesService {
         }
         return [];
       });
+  }
+
+  /**
+   * Get a single accessory and refresh it's characteristics
+   * @param uniqueId
+   */
+  public async getAccessory(uniqueId: string) {
+    const services = await this.loadAccessories();
+    const service = services.find(x => x.uniqueId === uniqueId);
+
+    if (!service) {
+      throw new BadRequestException(`Service with uniqueId of '${uniqueId}' not found.`);
+    }
+
+    try {
+      await service.refreshCharacteristics();
+      return service;
+    } catch (e) {
+      throw new BadRequestException(e.message);
+    }
+  }
+
+  /**
+   * Set a characteristics value
+   * @param uniqueId
+   * @param iid
+   * @param value
+   */
+  public async setAccessoryCharacteristic(uniqueId: string, characteristicType: string, value: number | boolean | string) {
+    const services = await this.loadAccessories();
+    const service = services.find(x => x.uniqueId === uniqueId);
+
+    if (!service) {
+      throw new BadRequestException(`Service with uniqueId of '${uniqueId}' not found.`);
+    }
+
+    const characteristic = service.getCharacteristic(characteristicType);
+
+    if (!characteristic || !characteristic.canWrite) {
+      const types = service.serviceCharacteristics.filter(x => x.canWrite).map(x => `'${x.type}'`).join(', ');
+      throw new BadRequestException(`Invalid characteristicType. Valid types are: ${types}.`);
+    }
+
+    // integers
+    if (['uint8', 'uint16', 'uint32', 'uint64'].includes(characteristic.format)) {
+      value = parseInt(value as string, 10);
+      if (characteristic.minValue !== undefined && value < characteristic.minValue) {
+        throw new BadRequestException(`Invalid value. The value must be between ${characteristic.minValue} and ${characteristic.maxValue}.`);
+      }
+      if (characteristic.maxValue !== undefined && value > characteristic.maxValue) {
+        throw new BadRequestException(`Invalid value. The value must be between ${characteristic.minValue} and ${characteristic.maxValue}.`);
+      }
+    }
+
+    // floats
+    if (characteristic.format === 'float') {
+      value = parseFloat(value as string);
+      console.log(value);
+      if (characteristic.minValue !== undefined && value < characteristic.minValue) {
+        throw new BadRequestException(`Invalid value. The value must be between ${characteristic.minValue} and ${characteristic.maxValue}.`);
+      }
+      if (characteristic.maxValue !== undefined && value > characteristic.maxValue) {
+        throw new BadRequestException(`Invalid value. The value must be between ${characteristic.minValue} and ${characteristic.maxValue}.`);
+      }
+    }
+
+    // booleans
+    if (characteristic.format === 'bool') {
+      if (typeof value === 'string') {
+        if (['true', '1'].includes(value.toLowerCase())) {
+          value = true;
+        } else if (['false', '0'].includes(value.toLowerCase())) {
+          value = false;
+        }
+      } else if (typeof value === 'number') {
+        value = value === 1 ? true : false;
+      }
+
+      if (typeof value !== 'boolean') {
+        throw new BadRequestException(`Invalid value. The value must be a boolean (true or false).`);
+      }
+    }
+
+    try {
+      await characteristic.setValue(value);
+      await service.refreshCharacteristics();
+      return service;
+    } catch (e) {
+      throw new BadRequestException(e.message);
+    }
   }
 
   /**
