@@ -20,4 +20,12 @@ if (!process.env.UIX_STORAGE_PATH) {
 
 process.env.UIX_CONFIG_PATH = path.resolve(process.env.UIX_STORAGE_PATH, 'config.json');
 
+console.log(`
+
+\u{1b}[33m*********** Homebridge Standalone Mode Is Depreciated **********\u{1b}[0m
+\u{1b}[33m*\u{1b}[0m Please swap to "service mode" using the \u{1b}[37mhb-service\u{1b}[0m command.  \u{1b}[33m*\u{1b}[0m
+\u{1b}[33m*\u{1b}[0m See https://git.io/JUvQr for instructions on how to migrate. \u{1b}[33m*\u{1b}[0m
+
+`);
+
 import('../main');
