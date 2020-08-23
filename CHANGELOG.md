@@ -12,6 +12,10 @@ All notable changes to this project will be documented in this file. This projec
 * **Plugins:** Partnered with [`homebridge-nest-cam`](https://github.com/Brandawg93/homebridge-nest-cam) to integrate the "issue token" retrieval process into the UI (may require plugin update)
 * **API:** Added REST API endpoints to list and control Homebridge accessories, see the [Swagger API documentation](https://github.com/oznu/homebridge-config-ui-x/wiki/API-Reference) for details.
 
+## Bug Fixes
+
+* **Plugins:** Plugins are now properly sorted in Firefox ([#762](https://github.com/oznu/homebridge-config-ui-x/issues/762))
+
 ## 4.26.0 (2020-08-19)
 
 ### Bug Fixes 

@@ -1,4 +1,3 @@
-
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiBearerAuth, ApiParam, ApiOperation } from '@nestjs/swagger';
@@ -10,7 +9,6 @@ import { AdminGuard } from '../../core/auth/guards/admin.guard';
 @UseGuards(AuthGuard())
 @Controller('plugins')
 export class PluginsController {
-
   constructor(
     private pluginsService: PluginsService,
   ) { }

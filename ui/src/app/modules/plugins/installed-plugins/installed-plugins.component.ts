@@ -55,7 +55,7 @@ export class InstalledPluginsComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.$api.get(`/plugins`).subscribe(
       (data: any) => {
-        this.installedPlugins = data.sort(x => !x.update);
+        this.installedPlugins = data;
         this.loading = false;
         this.checkRecentlyInstalled();
       },

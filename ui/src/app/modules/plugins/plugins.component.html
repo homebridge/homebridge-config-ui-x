@@ -22,8 +22,8 @@
           <p class="mb-0 grey-text" *ngIf="!plugin.installedVersion" [translate]="'plugins.status_not_installed'">
             Not Installed
           </p>
-          <p class="mb-0 primary-text" *ngIf="plugin.updateAvailable" [translate]="'plugins.status_update_available'">
-            Update Available
+          <p class="mb-0 primary-text" *ngIf="plugin.updateAvailable">
+            <i class="far fa-arrow-alt-circle-up"></i> {{ 'plugins.status_update_available' | translate }}
           </p>
         </div>
         <div class="">
