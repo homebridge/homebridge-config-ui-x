@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## NEXT
+
+### Other Changes
+
+* **i18n:** Improvements to Italian language translations ([#822](https://github.com/oznu/homebridge-config-ui-x/pull/822),[#825](https://github.com/oznu/homebridge-config-ui-x/pull/825))
+* **i18n:** Improvements to Simplified Chinese language translations ([#823](https://github.com/oznu/homebridge-config-ui-x/pull/822))
+* **i18n:** Improvements to Polish language translations ([#824](https://github.com/oznu/homebridge-config-ui-x/pull/824))
+* **Plugins:** Partnered with [`homebridge-nest-cam`](https://github.com/Brandawg93/homebridge-nest-cam) to integrate the "issue token" retrieval process into the UI (may require plugin update)
+
 ## 4.26.0 (2020-08-19)
 
 ### Bug Fixes 
