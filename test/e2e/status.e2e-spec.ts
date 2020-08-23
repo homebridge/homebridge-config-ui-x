@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import axios from 'axios';
 import { ValidationPipe, HttpService } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastify';
@@ -31,9 +32,12 @@ describe('StatusController (e2e)', () => {
     await fs.copy(path.resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
     await fs.copy(path.resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
 
+    // create httpService instance
+    httpService = new HttpService(axios.create({}));
+
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [StatusModule, AuthModule],
-    }).compile();
+    }).overrideProvider(HttpService).useValue(httpService).compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
 
@@ -44,10 +48,11 @@ describe('StatusController (e2e)', () => {
 
     await app.init();
     await app.getHttpAdapter().getInstance().ready();
-    httpService = app.get(HttpService);
   });
 
   beforeEach(async () => {
+    jest.resetAllMocks();
+
     // get auth token before each test
     authorization = 'bearer ' + (await app.inject({
       method: 'POST',

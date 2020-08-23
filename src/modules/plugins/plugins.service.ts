@@ -1,10 +1,9 @@
-import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, NotFoundException, InternalServerErrorException, HttpService } from '@nestjs/common';
 import { HomebridgePlugin, IPackageJson, INpmSearchResults, INpmRegistryModule } from './types';
 import axios from 'axios';
 import * as os from 'os';
 import * as _ from 'lodash';
 import * as path from 'path';
-import * as https from 'https';
 import * as fs from 'fs-extra';
 import * as child_process from 'child_process';
 import * as semver from 'semver';
@@ -34,20 +33,12 @@ export class PluginsService {
     'homebridge-tplink-smarthome': path.join(process.env.UIX_BASE_PATH, 'misc-schemas', 'homebridge-tplink-smarthome.json'),
   };
 
-  // setup http client with default options
-  private http = axios.create({
-    headers: {
-      'User-Agent': this.configService.package.name,
-    },
-    timeout: 5000,
-    httpsAgent: new https.Agent({ keepAlive: true })
-  });
-
   // create a cache for storing plugin package.json from npm
   private npmPluginCache = new NodeCache({ stdTTL: 300 });
   private verifiedPluginsRetryTimeout: NodeJS.Timeout;
 
   constructor(
+    private httpService: HttpService,
     private configService: ConfigService,
     private logger: Logger,
   ) {
@@ -58,7 +49,7 @@ export class PluginsService {
      * As the dns lookup timeout is not configurable in Node.js, this interceptor
      * will cancel the request after 15 seconds.
      */
-    this.http.interceptors.request.use((config) => {
+    this.httpService.axiosRef.interceptors.request.use((config) => {
       const source = axios.CancelToken.source();
       config.cancelToken = source.token;
 
@@ -134,7 +125,7 @@ export class PluginsService {
     let searchResults: INpmSearchResults;
 
     try {
-      searchResults = (await this.http.get(`https://registry.npmjs.org/-/v1/search?text=${q}`)).data;
+      searchResults = (await this.httpService.get(`https://registry.npmjs.org/-/v1/search?text=${q}`).toPromise()).data;
     } catch (e) {
       this.logger.error(`Failed to search the npm registry - "${e.message}" - see https://git.io/JJSz6 for help.`);
       throw new InternalServerErrorException(`Failed to search the npm registry - "${e.message}" - see logs.`);
@@ -182,7 +173,9 @@ export class PluginsService {
    */
   async searchNpmRegistrySingle(query: string): Promise<HomebridgePlugin[]> {
     try {
-      const pkg: INpmRegistryModule = (await (this.http.get(`https://registry.npmjs.org/${encodeURIComponent(query).replace('%40', '@')}`))).data;
+      const pkg: INpmRegistryModule = (await (
+        this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(query).replace('%40', '@')}`).toPromise()
+      )).data;
       if (!pkg.keywords || !pkg.keywords.includes('homebridge-plugin')) {
         return [];
       }
@@ -554,7 +547,7 @@ export class PluginsService {
 
     try {
       const repo = plugin.links.homepage.split('https://github.com/')[1].split('#readme')[0];
-      const release = (await this.http.get(`https://api.github.com/repos/${repo}/releases/latest`)).data;
+      const release = (await this.httpService.get(`https://api.github.com/repos/${repo}/releases/latest`).toPromise()).data;
       return {
         name: release.name,
         changelog: release.body,
@@ -735,7 +728,9 @@ export class PluginsService {
         const fromCache = this.npmPluginCache.get(plugin.name);
 
         // restore from cache, or load from npm
-        const pkg: INpmRegistryModule = fromCache || (await this.http.get(`https://registry.npmjs.org/${plugin.name.replace('%40', '@')}`)).data;
+        const pkg: INpmRegistryModule = fromCache || (
+          await this.httpService.get(`https://registry.npmjs.org/${plugin.name.replace('%40', '@')}`).toPromise()
+        ).data;
 
         // store in cache if it was not there already
         if (!fromCache) {
@@ -758,7 +753,9 @@ export class PluginsService {
         const fromCache = this.npmPluginCache.get(plugin.name);
 
         // restore from cache, or load from npm
-        const pkg: IPackageJson = fromCache || (await this.http.get(`https://registry.npmjs.org/${encodeURIComponent(plugin.name).replace('%40', '@')}/latest`)).data;
+        const pkg: IPackageJson = fromCache || (
+          await this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(plugin.name).replace('%40', '@')}/latest`).toPromise()
+        ).data;
 
         // store in cache if it was not there already
         if (!fromCache) {
@@ -900,7 +897,9 @@ export class PluginsService {
   private async loadVerifiedPluginsList() {
     clearTimeout(this.verifiedPluginsRetryTimeout);
     try {
-      this.verifiedPlugins = (await this.http.get('https://raw.githubusercontent.com/homebridge/verified/master/verified-plugins.json')).data;
+      this.verifiedPlugins = (
+        await this.httpService.get('https://raw.githubusercontent.com/homebridge/verified/master/verified-plugins.json').toPromise()
+      ).data;
     } catch (e) {
       // try again in 60 seconds
       this.verifiedPluginsRetryTimeout = setTimeout(() => {

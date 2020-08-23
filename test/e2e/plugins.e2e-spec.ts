@@ -1,14 +1,17 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { ValidationPipe } from '@nestjs/common';
+import axios, { AxiosResponse } from 'axios';
+import { ValidationPipe, HttpService } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastify';
+import { of } from 'rxjs';
 import { AuthModule } from '../../src/core/auth/auth.module';
 import { PluginsModule } from '../../src/modules/plugins/plugins.module';
 import { HomebridgePlugin } from '../../src/modules/plugins/types';
 
 describe('PluginController (e2e)', () => {
   let app: NestFastifyApplication;
+  let httpService: HttpService;
 
   let authFilePath: string;
   let secretsFilePath: string;
@@ -35,9 +38,12 @@ describe('PluginController (e2e)', () => {
     await fs.remove(pluginsPath);
     await fs.copy(path.resolve(__dirname, '../mocks', 'plugins'), pluginsPath, { recursive: true });
 
+    // create httpService instance
+    httpService = new HttpService(axios.create({}));
+
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [PluginsModule, AuthModule],
-    }).compile();
+    }).overrideProvider(HttpService).useValue(httpService).compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
 
@@ -51,6 +57,8 @@ describe('PluginController (e2e)', () => {
   });
 
   beforeEach(async () => {
+    jest.resetAllMocks();
+
     // get auth token before each test
     authorization = 'bearer ' + (await app.inject({
       method: 'POST',
@@ -130,6 +138,35 @@ describe('PluginController (e2e)', () => {
       }
     });
 
+    expect(res.statusCode).toEqual(200);
+  });
+
+  it('GET /plugins/release/:plugin-name', async () => {
+    const data = {
+      name: 'v1.0.0',
+      body: 'Hello!'
+    };
+
+    const response: AxiosResponse<any> = {
+      data,
+      headers: {},
+      config: { url: 'https://api.github.com/repos/oznu/homebridge-config-ui-x/releases/latest' },
+      status: 200,
+      statusText: 'OK',
+    };
+
+    jest.spyOn(httpService, 'get')
+      .mockImplementationOnce(() => of(response));
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/plugins/release/homebridge-config-ui-x',
+      headers: {
+        authorization,
+      }
+    });
+
+    expect(res.json()).toEqual({ name: data.name, changelog: data.body });
     expect(res.statusCode).toEqual(200);
   });
 
