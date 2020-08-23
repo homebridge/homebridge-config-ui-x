@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, HttpModule } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { StatusService } from './status.service';
 import { StatusGateway } from './status.gateway';
@@ -10,6 +10,7 @@ import { StatusController } from './status.controller';
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
+    HttpModule,
     LoggerModule,
     PluginsModule,
     ConfigModule,

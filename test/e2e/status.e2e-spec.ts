@@ -1,13 +1,16 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, HttpService } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastify';
+import { AxiosResponse, AxiosError } from 'axios';
+import { of, throwError } from 'rxjs';
 import { StatusModule } from '../../src/modules/status/status.module';
 import { AuthModule } from '../../src/core/auth/auth.module';
 
 describe('StatusController (e2e)', () => {
   let app: NestFastifyApplication;
+  let httpService: HttpService;
 
   let authFilePath: string;
   let secretsFilePath: string;
@@ -41,6 +44,7 @@ describe('StatusController (e2e)', () => {
 
     await app.init();
     await app.getHttpAdapter().getInstance().ready();
+    httpService = app.get(HttpService);
   });
 
   beforeEach(async () => {
@@ -98,7 +102,18 @@ describe('StatusController (e2e)', () => {
     expect(res.json()).toHaveProperty('processUptime');
   });
 
-  it('GET /status/homebridge', async () => {
+  it('GET /status/homebridge (homebridge up)', async () => {
+    const response: AxiosResponse<any> = {
+      data: {},
+      headers: {},
+      config: { url: 'http://localhost:51826' },
+      status: 404,
+      statusText: 'Not Found',
+    };
+
+    jest.spyOn(httpService, 'get')
+      .mockImplementationOnce(() => of(response));
+
     const res = await app.inject({
       method: 'GET',
       path: '/status/homebridge',
@@ -108,7 +123,33 @@ describe('StatusController (e2e)', () => {
     });
 
     expect(res.statusCode).toEqual(200);
-    expect(res.json()).toHaveProperty('status');
+    expect(res.json()).toEqual({ status: 'up' });
+  });
+
+  it('GET /status/homebridge (homebridge down)', async () => {
+    const response: AxiosError<any> = {
+      name: 'Connection Error',
+      message: 'Connection Error',
+      toJSON: () => { return {}; },
+      isAxiosError: true,
+      code: null,
+      response: null,
+      config: { url: 'http://localhost:51826' },
+    };
+
+    jest.spyOn(httpService, 'get')
+      .mockImplementationOnce(() => throwError(response));
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/status/homebridge',
+      headers: {
+        authorization,
+      }
+    });
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.json()).toEqual({ status: 'down' });
   });
 
   it('GET /status/server-information', async () => {
@@ -127,6 +168,28 @@ describe('StatusController (e2e)', () => {
   });
 
   it('GET /status/nodejs', async () => {
+    const data = [
+      {
+        'version': 'v14.8.0',
+        'lts': false,
+      },
+      {
+        'version': 'v12.18.0',
+        'lts': 'Erbium',
+      }
+    ];
+
+    const response: AxiosResponse<any> = {
+      data,
+      headers: {},
+      config: { url: 'https://nodejs.org/dist/index.json' },
+      status: 200,
+      statusText: 'OK',
+    };
+
+    jest.spyOn(httpService, 'get')
+      .mockImplementationOnce(() => of(response));
+
     const res = await app.inject({
       method: 'GET',
       path: '/status/nodejs',
@@ -137,6 +200,7 @@ describe('StatusController (e2e)', () => {
 
     expect(res.statusCode).toEqual(200);
     expect(res.json().currentVersion).toEqual(process.version);
+    expect(res.json().latestVersion).toEqual('v12.18.0');
   });
 
   afterAll(async () => {

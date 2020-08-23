@@ -1,11 +1,10 @@
-import axios from 'axios';
 import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as si from 'systeminformation';
 import * as semver from 'semver';
 import * as NodeCache from 'node-cache';
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpService } from '@nestjs/common';
 import { ConfigService } from '../../core/config/config.service';
 import { Logger } from '../../core/logger/logger.service';
 
@@ -21,6 +20,7 @@ export class StatusService {
   private memoryInfo: si.Systeminformation.MemData;
 
   constructor(
+    private httpService: HttpService,
     private logger: Logger,
     private configService: ConfigService,
   ) {
@@ -239,9 +239,9 @@ export class StatusService {
    */
   public async checkHomebridgeStatus() {
     try {
-      await axios.get(`http://localhost:${this.configService.homebridgeConfig.bridge.port}`, {
+      await this.httpService.get(`http://localhost:${this.configService.homebridgeConfig.bridge.port}`, {
         validateStatus: () => true
-      });
+      }).toPromise();
       this.homebridgeStatus = 'up';
     } catch (e) {
       this.homebridgeStatus = 'down';
@@ -316,7 +316,7 @@ export class StatusService {
     }
 
     try {
-      const versionList = (await axios.get('https://nodejs.org/dist/index.json')).data;
+      const versionList = (await this.httpService.get('https://nodejs.org/dist/index.json').toPromise()).data;
       const currentLts = versionList.filter(x => x.lts)[0];
       const versionInformation = {
         currentVersion: process.version,

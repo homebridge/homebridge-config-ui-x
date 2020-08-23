@@ -4,7 +4,7 @@ import { ValidationPipe, HttpService } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastify';
 import { of, throwError } from 'rxjs';
-import { AxiosResponse } from 'axios';
+import { AxiosResponse, AxiosError } from 'axios';
 import { AuthModule } from '../../src/core/auth/auth.module';
 import { CustomPluginsModule } from '../../src/modules/custom-plugins/custom-plugins.module';
 
@@ -132,18 +132,19 @@ describe('CustomPluginsController (e2e)', () => {
       phone: '**************'
     };
 
-    const response = {
+    const response: AxiosError<any> = {
+      name: 'Connection Error',
+      message: 'Connection Error',
+      toJSON: () => { return {}; },
+      isAxiosError: false,
       code: '412',
+      config: { url: 'https://oauth.ring.com/oauth/token' },
       response: {
         data,
         headers: {},
         config: { url: 'https://oauth.ring.com/oauth/token' },
         status: 412,
         statusText: '412 Precondition Failed',
-      },
-      payload: {
-        email: 'test@test.com',
-        password: 'test'
       }
     };
 
