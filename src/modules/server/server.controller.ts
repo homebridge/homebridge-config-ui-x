@@ -20,6 +20,12 @@ export class ServerController {
     return this.serverService.restartServer();
   }
 
+  @Get('/pairing')
+  @ApiOperation({ summary: 'Get the Homebridge HomeKit pairing information and status.' })
+  getBridgePairingInformation() {
+    return this.serverService.getBridgePairingInformation();
+  }
+
   @Get('/qrcode.svg')
   @ApiOperation({ summary: 'Return the paring QR code as an SVG.' })
   @Header('content-type', 'image/svg+xml')

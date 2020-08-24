@@ -33,7 +33,7 @@ export class ConfigService {
   public homebridgeNoTimestamps = Boolean(process.env.UIX_LOG_NO_TIMESTAMPS === '1');
 
   // server env
-  public minimumNodeVersion = '8.15.1';
+  public minimumNodeVersion = '10.17.0';
   public serviceMode = (process.env.UIX_SERVICE_MODE === '1');
   public runningInDocker = Boolean(process.env.HOMEBRIDGE_CONFIG_UI === '1');
   public runningInLinux = (!this.runningInDocker && os.platform() === 'linux');

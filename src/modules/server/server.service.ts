@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as bufferShim from 'buffer-shims';
 import * as qr from 'qr-image';
 import * as child_process from 'child_process';
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ServiceUnavailableException } from '@nestjs/common';
 import { Categories } from '@oznu/hap-client/dist/hap-types';
 
 import { ConfigService } from '../../core/config/config.service';
@@ -274,5 +274,23 @@ export class ServerService {
     }
 
     return 'X-HM://' + encodedPayload + accessoryInfo.setupID;
+  }
+
+  /**
+   * Return the current pairing information for the main bridge
+   */
+  public async getBridgePairingInformation() {
+    if (!await fs.pathExists(this.accessoryInfoPath)) {
+      return new ServiceUnavailableException('Pairing Information Not Available Yet');
+    }
+
+    const accessoryInfo = await fs.readJson(this.accessoryInfoPath);
+
+    return {
+      displayName: accessoryInfo.displayName,
+      pincode: accessoryInfo.pincode,
+      setupCode: await this.getSetupCode(),
+      isPaired: accessoryInfo.pairedClients && Object.keys(accessoryInfo.pairedClients).length > 0,
+    };
   }
 }

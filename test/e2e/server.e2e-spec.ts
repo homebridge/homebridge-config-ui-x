@@ -106,6 +106,40 @@ describe('ServerController (e2e)', () => {
     expect(res.headers['content-type']).toEqual('image/svg+xml');
   });
 
+  it('GET /server/pairing', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/pairing',
+      headers: {
+        authorization,
+      }
+    });
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.json()).toEqual({
+      displayName: 'Homebridge Test',
+      isPaired: false,
+      pincode: '874-99-441',
+      setupCode: 'X-HM://0024X0Z3L1FAP',
+    });
+  });
+
+  it('GET /server/pairing (not ready)', async () => {
+    // remove the persist folder
+    await fs.remove(persistPath);
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/pairing',
+      headers: {
+        authorization,
+      }
+    });
+
+    // should return 503 - Service Unavailable
+    expect(res.statusCode).toEqual(503);
+  });
+
   it('PUT /server/reset-homebridge-accessory', async () => {
     const res = await app.inject({
       method: 'PUT',

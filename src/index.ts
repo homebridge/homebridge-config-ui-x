@@ -31,8 +31,8 @@ class HomebridgeConfigUi {
       .option('-T, --no-timestamp', '', () => process.env.UIX_LOG_NO_TIMESTAMPS = '1')
       .parse(process.argv);
 
-    if (!semver.satisfies(process.version, '>=8.15.1')) {
-      const msg = `Node.js v8.15.1 higher is required. You may experience issues running this plugin running on ${process.version}.`;
+    if (!semver.satisfies(process.version, '>=10.17.0')) {
+      const msg = `Node.js v10.17.0 higher is required. You may experience issues running this plugin running on ${process.version}.`;
       log.error(msg);
       log.warn(msg);
     }
