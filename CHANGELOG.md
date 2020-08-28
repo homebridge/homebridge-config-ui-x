@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. This projec
 
 ## NEXT
 
+### Other Changes
+
+* **i18n:** Improvements to Dutch language translations ([#827](https://github.com/oznu/homebridge-config-ui-x/pull/827))
+
 ### Bug Fixes
 
 * **Plugins:** Settings GUI: Fixed a bug that caused the cursor to go to the end of the text input field when editing
