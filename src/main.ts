@@ -111,7 +111,6 @@ async function bootstrap() {
         }
       }
     })
-    .setBasePath('/api')
     .build();
 
   const document = SwaggerModule.createDocument(app, options);

@@ -20,13 +20,6 @@ export class SettingsPluginsModalComponent implements OnInit {
   public show;
   public saveInProgress: boolean;
 
-  public jsonFormOptions = {
-    addSubmit: false,
-    loadExternalAssets: false,
-    returnEmptyFields: false,
-    setSchemaDefaults: true,
-  };
-
   constructor(
     public activeModal: NgbActiveModal,
     private $api: ApiService,

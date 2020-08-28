@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## NEXT
+
+### Bug Fixes
+
+* **Plugins:** Settings GUI: Fixed a bug that caused the cursor to go to the end of the text input field when editing
+* **Plugins:** Fixed a bug that resulted in the verified plugins list being updated more frequently than it should have been
+
 ## 4.27.0 (2020-08-25)
 
 ### Other Changes
@@ -12,7 +19,7 @@ All notable changes to this project will be documented in this file. This projec
 * **i18n:** Improvements to Simplified Chinese language translations ([#823](https://github.com/oznu/homebridge-config-ui-x/pull/822))
 * **i18n:** Improvements to Polish language translations ([#824](https://github.com/oznu/homebridge-config-ui-x/pull/824))
 
-## Bug Fixes
+### Bug Fixes
 
 * **Plugins:** Plugins are now properly sorted in Firefox ([#762](https://github.com/oznu/homebridge-config-ui-x/issues/762))
 

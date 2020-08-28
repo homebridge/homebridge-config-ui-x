@@ -4,7 +4,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 import { NgxMdModule } from 'ngx-md';
-import { Bootstrap4FrameworkModule } from '@oznu/ngx-bs4-jsonform';
 
 import { CoreModule } from '../core.module';
 import { InterpolateMdPipe } from './interpolate-md.pipe';
@@ -36,7 +35,6 @@ import { NodeUpdateRequiredModalComponent } from './node-update-required-modal/n
     TranslateModule.forChild(),
     NgbModule,
     NgxMdModule,
-    Bootstrap4FrameworkModule,
     CoreModule,
     CustomPluginsModule,
   ],

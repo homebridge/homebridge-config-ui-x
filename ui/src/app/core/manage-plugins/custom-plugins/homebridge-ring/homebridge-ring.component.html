@@ -87,9 +87,7 @@
 
     <div *ngIf="pluginConfig?.refreshToken || (pluginConfig?.email && pluginConfig?.password)"
       class="card p-2 pt-3 mt-4">
-      <json-schema-form [options]="jsonFormOptions" [schema]="schema.schema" [layout]="schema.layout"
-        [form]="schema.form" [(ngModel)]="pluginConfig" framework="bootstrap-4">
-      </json-schema-form>
+      <app-schema-form [configSchema]="schema" [(data)]="pluginConfig"></app-schema-form>
     </div>
   </div>
 

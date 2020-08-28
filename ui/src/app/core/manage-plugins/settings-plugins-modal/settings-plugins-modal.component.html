@@ -18,10 +18,8 @@
       *ngIf="pluginConfig.length && !configSchema.singular">
       <ngb-panel [id]="block.__uuid__" [title]="block.name" *ngFor="let block of pluginConfig">
         <ng-template ngbPanelContent>
-          <json-schema-form *ngIf="configSchema.schema" [options]="jsonFormOptions" [schema]="configSchema.schema"
-            [layout]="configSchema.layout" [form]="configSchema.form" [(ngModel)]="block.config" framework="bootstrap-4"
-            (onChanges)="block.onChange($event)" class="ng-bs4-validate">
-          </json-schema-form>
+          <app-schema-form [configSchema]="configSchema" [data]="block.config" (dataChanged)="block.onChange($event)">
+          </app-schema-form>
           <div class="d-flex">
             <a *ngIf="pluginName !== 'homebridge-config-ui-x'" class="ml-auto red-text"
               (click)="removeBlock(block.__uuid__)" [ngbTooltip]="'Remove ' + configSchema.pluginType + '.'"
@@ -36,13 +34,9 @@
     <!-- SINGLE CONFIG BLOCK ONLY -->
     <div *ngIf="pluginConfig.length && configSchema.singular" class="card card-body">
       <div *ngFor="let block of pluginConfig">
-        <json-schema-form *ngIf="configSchema.schema" [options]="jsonFormOptions" [schema]="configSchema.schema"
-          [layout]="configSchema.layout" [form]="configSchema.form" [(ngModel)]="block.config" framework="bootstrap-4"
-          (onChanges)="block.onChange($event)" class="ng-bs4-validate">
-        </json-schema-form>
-
+        <app-schema-form [configSchema]="configSchema" [data]="block.config" (dataChanged)="block.onChange($event)">
+        </app-schema-form>
         <app-homebridge-hue *ngIf="pluginName === 'homebridge-hue'"></app-homebridge-hue>
-
         <div class="d-flex">
           <a *ngIf="pluginName !== 'homebridge-config-ui-x'" class="ml-auto red-text"
             (click)="removeBlock(block.__uuid__)" [ngbTooltip]="'Remove ' + configSchema.pluginType + '.'"

@@ -13,34 +13,36 @@ export class Logger implements LoggerService {
     }
   }
 
-  log(args) {
+  log(...args) {
     console.log(
       this.prefix,
-      args,
+      ...args,
     );
   }
-  error(args) {
+  error(...args) {
     console.error(
       this.prefix,
-      color.red(args),
+      ...args.map(x => color.red(x)),
     );
   }
-  warn(args) {
+  warn(...args) {
     console.warn(
       this.prefix,
-      color.yellow(args),
+      ...args.map(x => color.yellow(x)),
     );
   }
-  debug(args) {
-    console.debug(
-      this.prefix,
-      args,
-    );
+  debug(...args) {
+    if (process.env.UIX_DEBUG_LOGGING === '1') {
+      console.debug(
+        this.prefix,
+        ...args.map(x => color.green(x)),
+      );
+    }
   }
-  verbose(args) {
+  verbose(...args) {
     console.debug(
       this.prefix,
-      args,
+      ...args,
     );
   }
 }

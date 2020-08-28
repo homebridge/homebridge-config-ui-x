@@ -64,7 +64,7 @@ export class PluginsService {
     this.loadVerifiedPluginsList();
 
     // update the verified plugins list every 12 hours
-    setInterval(this.loadVerifiedPluginsList.bind(this), 43200);
+    setInterval(this.loadVerifiedPluginsList.bind(this), 60000 * 60 * 12);
   }
 
   /**
@@ -577,7 +577,7 @@ export class PluginsService {
         return [];
       }
     } catch (e) {
-      this.logger.debug(e);
+      this.logger.log(e);
       return [];
     }
   }
@@ -898,9 +898,12 @@ export class PluginsService {
     clearTimeout(this.verifiedPluginsRetryTimeout);
     try {
       this.verifiedPlugins = (
-        await this.httpService.get('https://raw.githubusercontent.com/homebridge/verified/master/verified-plugins.json').toPromise()
+        await this.httpService.get('https://raw.githubusercontent.com/homebridge/verified/master/verified-plugins.json', {
+          httpsAgent: null
+        }).toPromise()
       ).data;
     } catch (e) {
+      this.logger.debug('Error when trying to get verified plugin list:', e.message);
       // try again in 60 seconds
       this.verifiedPluginsRetryTimeout = setTimeout(() => {
         this.loadVerifiedPluginsList();

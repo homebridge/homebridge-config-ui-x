@@ -75,8 +75,10 @@ export async function getStartupConfig() {
   // preload debug settings
   if (ui.debug) {
     config.debug = true;
+    process.env.UIX_DEBUG_LOGGING = '1';
   } else {
     config.debug = false;
+    process.env.UIX_DEBUG_LOGGING = '0';
   }
 
   return config;
