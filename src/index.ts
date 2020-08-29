@@ -42,6 +42,9 @@ class HomebridgeConfigUi {
       this.serviceMode();
     } else if (config.standalone || process.env.UIX_SERVICE_MODE === '1' ||
       (process.env.HOMEBRIDGE_CONFIG_UI === '1' && semver.satisfies(process.env.CONFIG_UI_VERSION, '>=3.5.5', { includePrerelease: true }))) {
+      this.log.warn(`*********** Homebridge Standalone Mode Is Depreciated **********`);
+      this.log.warn(`* Please swap to "service mode" using the hb-service command.  *`);
+      this.log.warn(`* See https://git.io/JUvQr for instructions on how to migrate. *`);
       this.log(`Running in Standalone Mode.`);
     } else if (config.noFork) {
       this.noFork();

@@ -54,6 +54,8 @@ describe('CustomPluginsController (e2e)', () => {
   });
 
   beforeEach(async () => {
+    jest.resetAllMocks();
+
     // get auth token before each test
     authorization = 'bearer ' + (await app.inject({
       method: 'POST',
@@ -110,7 +112,7 @@ describe('CustomPluginsController (e2e)', () => {
       statusText: 'OK',
     };
 
-    jest.spyOn(httpService, 'post')
+    const mockPost = jest.spyOn(httpService, 'post')
       .mockImplementationOnce(() => of(response));
 
     const res = await app.inject({
@@ -125,6 +127,7 @@ describe('CustomPluginsController (e2e)', () => {
       }
     });
 
+    expect(mockPost).toBeCalledTimes(1);
     expect(res.statusCode).toEqual(201);
     expect(res.json()).toEqual(data);
   });
@@ -152,7 +155,7 @@ describe('CustomPluginsController (e2e)', () => {
       }
     };
 
-    jest.spyOn(httpService, 'post')
+    const mockPost = jest.spyOn(httpService, 'post')
       .mockImplementationOnce(() => throwError(response));
 
     const res = await app.inject({
@@ -167,8 +170,28 @@ describe('CustomPluginsController (e2e)', () => {
       }
     });
 
+    expect(mockPost).toBeCalledTimes(1);
     expect(res.statusCode).toEqual(412);
     expect(res.json()).toEqual(data);
+  });
+
+  it('POST /plugins/custom-plugins/homebridge-ring/exchange-credentials (missing payload property)', async () => {
+    const mockPost = jest.spyOn(httpService, 'post');
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/plugins/custom-plugins/homebridge-ring/exchange-credentials',
+      headers: {
+        authorization,
+      },
+      payload: {
+        email: 'test@test.com'
+      }
+    });
+
+    expect(res.statusCode).toEqual(400);
+    expect(mockPost).not.toBeCalled();
+    expect(res.body).toContain('password should not be null or undefined');
   });
 
   afterAll(async () => {

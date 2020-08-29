@@ -7,6 +7,8 @@ All notable changes to this project will be documented in this file. This projec
 ### Other Changes
 
 * **i18n:** Improvements to Dutch language translations ([#827](https://github.com/oznu/homebridge-config-ui-x/pull/827))
+* **i18n:** Improvements to French language translations ([#828](https://github.com/oznu/homebridge-config-ui-x/pull/828))
+* **i18n:** Improvements to English language translations ([#828](https://github.com/oznu/homebridge-config-ui-x/pull/828))
 
 ### Bug Fixes
 

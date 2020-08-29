@@ -325,6 +325,46 @@ describe('AccessoriesController (e2e)', () => {
     expect(res.statusCode).toEqual(400);
   });
 
+  it('PUT /accessories/:uniqueId (missing characteristic type)', async () => {
+    getCharacteristic.mockReturnValueOnce(null);
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/accessories/c8964091efa500870e34996208e670cf7dc362d244e0410220752459a5e78d1c',
+      headers: {
+        authorization,
+      },
+      payload: {
+        value: '12.6'
+      }
+    });
+
+    expect(getCharacteristic).not.toHaveBeenCalled();
+    expect(setValue).not.toHaveBeenCalled();
+    expect(res.statusCode).toEqual(400);
+    expect(res.body).toContain('characteristicType should not be null or undefined');
+  });
+
+  it('PUT /accessories/:uniqueId (missing value)', async () => {
+    getCharacteristic.mockReturnValueOnce(null);
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/accessories/c8964091efa500870e34996208e670cf7dc362d244e0410220752459a5e78d1c',
+      headers: {
+        authorization,
+      },
+      payload: {
+        characteristicType: 'TargetTemperature',
+      }
+    });
+
+    expect(getCharacteristic).not.toHaveBeenCalled();
+    expect(setValue).not.toHaveBeenCalled();
+    expect(res.statusCode).toEqual(400);
+    expect(res.body).toContain('value should not be null or undefined');
+  });
+
   afterAll(async () => {
     await app.close();
   });

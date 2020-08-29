@@ -84,6 +84,34 @@ describe('AuthController (e2e)', () => {
     expect(res.json()).not.toHaveProperty('access_token');
   });
 
+  it('POST /auth/login (missing password)', async () => {
+    const res = await app.inject({
+      method: 'POST',
+      path: '/auth/login',
+      payload: {
+        username: 'admin'
+      }
+    });
+
+    expect(res.statusCode).toEqual(400);
+    expect(res.body).toContain('password should not be null or undefined');
+    expect(res.json()).not.toHaveProperty('access_token');
+  });
+
+  it('POST /auth/login (missing username)', async () => {
+    const res = await app.inject({
+      method: 'POST',
+      path: '/auth/login',
+      payload: {
+        password: 'admin'
+      }
+    });
+
+    expect(res.statusCode).toEqual(400);
+    expect(res.body).toContain('username should not be null or undefined');
+    expect(res.json()).not.toHaveProperty('access_token');
+  });
+
   it('POST /auth/noauth (auth enabled)', async () => {
     const res = await app.inject({
       method: 'POST',
