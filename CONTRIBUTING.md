@@ -67,6 +67,14 @@ npm run watch
 
 You should now be able to navigate to `https://localhost:4200` in your browser which will connect to your `homebridge` instance running on port `8080`. The UI  will automatically reload whenever you make changes to the code.
 
+## Running Tests
+
+If you have made changes to the server side code, you should run the e2e test suite before creating a pull request:
+
+```
+npm run test:e2e
+```
+
 ## Contributing To Translations
 
 Additional language translations, or improvements to existing translations are most welcome.  Translations can be found here: 
