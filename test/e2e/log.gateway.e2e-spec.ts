@@ -164,6 +164,29 @@ describe('LogGateway (e2e)', () => {
     expect((logService as any).command).toEqual(['sudo', '-n', 'journalctl', '-o', 'cat', '-n', '500', '-f', '-u', 'homebridge']);
   });
 
+  it('ON /log/tail-log (powershell)', async () => {
+    // this test will only run on Windows
+    if (os.platform() !== 'win32') {
+      return;
+    }
+
+    // set log mode to file
+    configService.ui.log = { method: 'file', path: logFilePath };
+    logService.setLogMethod();
+
+    // check the log command is correct
+    expect((logService as any).useNative).toEqual(false);
+    expect((logService as any).command).toEqual(['powershell.exe', '-command', `Get-Content -Path '${logFilePath}' -Wait -Tail 200`]);
+
+    logGateway.connect(client, size);
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    expect(client.emit).toBeCalledWith('stdout', expect.stringContaining('line 1'));
+    expect(client.emit).toBeCalledWith('stdout', expect.stringContaining('line 2'));
+    expect(client.emit).toBeCalledWith('stdout', expect.stringContaining('line 3'));
+  });
+
   it('ON /log/tail-log (cleans up connections)', async () => {
     // set log mode to native
     configService.ui.log = { method: 'native', path: logFilePath };
