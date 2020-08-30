@@ -18,12 +18,21 @@ export class LogService {
   constructor(
     private configService: ConfigService,
   ) {
+    this.setLogMethod();
+  }
+
+  /**
+   * Set the log method
+   */
+  public setLogMethod() {
+    this.useNative = false;
     if (typeof this.configService.ui.log !== 'object') {
       this.logNotConfigured();
     } else if (this.configService.ui.log.method === 'file' && this.configService.ui.log.path) {
       this.logFromFile();
     } else if (this.configService.ui.log.method === 'native' && this.configService.ui.log.path) {
       this.useNative = true;
+      this.command = undefined;
     } else if (this.configService.ui.log.method === 'systemd') {
       this.logFromSystemd();
     } else if (this.configService.ui.log.method === 'custom' && this.configService.ui.log.command) {
