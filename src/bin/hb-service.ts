@@ -24,7 +24,7 @@ import { LinuxInstaller } from './platforms/linux';
 import { DarwinInstaller } from './platforms/darwin';
 
 export class HomebridgeServiceHelper {
-  public action: 'install' | 'uninstall' | 'start' | 'stop' | 'restart' | 'rebuild' | 'run' | 'logs' | 'update-node' | 'before-start';
+  public action: 'install' | 'uninstall' | 'start' | 'stop' | 'restart' | 'rebuild' | 'run' | 'logs' | 'update-node' | 'before-start' | 'status';
   public selfPath = __filename;
   public serviceName = 'Homebridge';
   public storagePath;
@@ -142,6 +142,10 @@ export class HomebridgeServiceHelper {
       case 'before-start': {
         // this currently does nothing, but may be used in the future
         process.exit(0);
+        break;
+      }
+      case 'status': {
+        this.checkStatus();
         break;
       }
       default: {
@@ -1098,6 +1102,26 @@ export class HomebridgeServiceHelper {
       spinner.succeed(`Installed Node.js ${targetVersion}`);
     } catch (e) {
       spinner.fail(e.message);
+      process.exit(1);
+    }
+  }
+
+  /**
+   * Check the current status of the Homebridge UI by calling it's API
+   */
+  private async checkStatus() {
+    this.logger(`Testing hb-service is running on port ${this.uiPort}...`);
+
+    try {
+      const res = await axios.get(`http://localhost:${this.uiPort}/api`);
+      if (res.data === 'Hello World!') {
+        this.logger('Homebridge UI Running', 'succeed');
+      } else {
+        this.logger('Unexpected Response', 'fail');
+        process.exit(1);
+      }
+    } catch (e) {
+      this.logger('Homebridge UI Not Running', 'fail');
       process.exit(1);
     }
   }

@@ -29,11 +29,21 @@ jobs:
       - run: npm run lint:server
       - run: npm run test:e2e
 
+      # remove dev deps
+      - run: npm clean-install --production
+
       # test hb-service
       - run: node dist/bin/hb-service.js -v
       - if: runner.os == 'Linux'
-        run: sudo node dist/bin/hb-service.js install --user homebridge
+        run: |
+          sudo node dist/bin/hb-service.js install --user homebridge
+          sleep 15
       - if: runner.os == 'macOS'
-        run: sudo node dist/bin/hb-service.js install
+        run: |
+          sudo node dist/bin/hb-service.js install
+          sleep 15
       - if: runner.os == 'Windows'
-        run: node dist/bin/hb-service.js install
+        run: |
+          node dist/bin/hb-service.js install
+          Start-Sleep -s 15
+      - run: node dist/bin/hb-service.js status --port 8581
