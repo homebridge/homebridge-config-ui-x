@@ -36,15 +36,20 @@ jobs:
       - run: node dist/bin/hb-service.js -v
       - if: runner.os == 'Linux'
         run: |
-          sudo node dist/bin/hb-service.js install --user homebridge
+          sudo npm link
+          sudo npm install -g homebridge
+          sudo hb-service install --user homebridge
           sleep 30
-          sudo cat /var/lib/homebridge/homebridge.log
       - if: runner.os == 'macOS'
         run: |
-          sudo node dist/bin/hb-service.js install
+          sudo npm link
+          sudo npm install -g homebridge
+          sudo hb-service install
           sleep 30
       - if: runner.os == 'Windows'
         run: |
-          node dist/bin/hb-service.js install
+          npm link
+          npm install -g homebridge
+          hb-service install
           Start-Sleep -s 30
       - run: node dist/bin/hb-service.js status --port 8581
