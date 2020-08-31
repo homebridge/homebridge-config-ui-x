@@ -161,6 +161,9 @@ describe('BackupController (e2e)', () => {
     expect(client.emit).toBeCalledWith('stdout', expect.stringContaining('Restoring backup'));
     expect(client.emit).toBeCalledWith('stdout', expect.stringContaining('Restore Complete'));
     expect(pluginsService.installPlugin).toBeCalledWith('homebridge-mock-plugin', client);
+
+    // ensure the temp restore directory was removed
+    expect(await fs.pathExists(restoreDirectory)).toEqual(false);
   });
 
   it('GET /backup/restart', async () => {
