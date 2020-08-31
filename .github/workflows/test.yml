@@ -38,7 +38,7 @@ jobs:
         run: |
           sudo node dist/bin/hb-service.js install --user homebridge
           sleep 30
-          sudo cat /var/log/homebridge.log
+          sudo cat /var/lib/homebridge/homebridge.log
       - if: runner.os == 'macOS'
         run: |
           sudo node dist/bin/hb-service.js install
