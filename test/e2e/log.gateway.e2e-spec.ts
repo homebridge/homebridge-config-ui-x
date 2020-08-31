@@ -111,7 +111,7 @@ describe('LogGateway (e2e)', () => {
 
     logGateway.connect(client, size);
 
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 250));
 
     expect(client.emit).toBeCalledWith('stdout', expect.stringContaining('line 1'));
     expect(client.emit).toBeCalledWith('stdout', expect.stringContaining('line 2'));
