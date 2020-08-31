@@ -37,13 +37,14 @@ jobs:
       - if: runner.os == 'Linux'
         run: |
           sudo node dist/bin/hb-service.js install --user homebridge
-          sleep 15
+          sleep 30
+          sudo cat /var/log/homebridge.log
       - if: runner.os == 'macOS'
         run: |
           sudo node dist/bin/hb-service.js install
-          sleep 15
+          sleep 30
       - if: runner.os == 'Windows'
         run: |
           node dist/bin/hb-service.js install
-          Start-Sleep -s 15
+          Start-Sleep -s 30
       - run: node dist/bin/hb-service.js status --port 8581
