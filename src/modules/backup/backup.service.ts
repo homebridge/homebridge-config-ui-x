@@ -4,8 +4,10 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as color from 'bash-color';
 import * as unzipper from 'unzipper';
+import { EventEmitter } from 'events';
 import * as child_process from 'child_process';
 import { Injectable, BadRequestException } from '@nestjs/common';
+
 import { PluginsService } from '../plugins/plugins.service';
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
 import { Logger } from '../../core/logger/logger.service';
@@ -133,10 +135,12 @@ export class BackupService {
   /**
    * Restores the uploaded backup
    */
-  async restoreFromBackup(payload, client) {
+  async restoreFromBackup(client: EventEmitter) {
     if (!this.restoreDirectory) {
       throw new BadRequestException();
     }
+
+    console.log(this.restoreDirectory);
 
     // check info.json exists
     if (!await fs.pathExists(path.resolve(this.restoreDirectory, 'info.json'))) {
@@ -267,7 +271,7 @@ export class BackupService {
   /**
    * Restore .hbfx backup file
    */
-  async restoreHbfxBackup(payload, client) {
+  async restoreHbfxBackup(client: EventEmitter) {
     if (!this.restoreDirectory) {
       throw new BadRequestException();
     }
