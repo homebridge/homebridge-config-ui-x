@@ -3,6 +3,7 @@ import * as fs from 'fs-extra';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationPipe } from '@nestjs/common';
 import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastify';
+
 import { AppModule } from '../../src/app.module';
 
 describe('AppController (e2e)', () => {

@@ -6,5 +6,5 @@
   "ignore": [
     "src/**/*.spec.ts"
   ],
-  "exec": "UIX_INSECURE_MODE=1 UIX_SERVICE_MODE=1 ts-node -r tsconfig-paths/register src/main.ts"
+  "exec": "UIX_INSECURE_MODE=1 UIX_SERVICE_MODE=1 HOMEBRIDGE_CONFIG_UI_TERMINAL=1 ts-node -r tsconfig-paths/register src/main.ts"
 }

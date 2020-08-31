@@ -1,13 +1,14 @@
 import * as os from 'os';
 import * as color from 'bash-color';
 import * as semver from 'semver';
-import * as pty from 'node-pty-prebuilt-multiarch';
 import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
 import { EventEmitter } from 'events';
 import { Injectable } from '@nestjs/common';
 import { Tail } from 'tail';
+
 import { ConfigService } from '../../core/config/config.service';
+import { NodePtyService } from '../../core/node-pty/node-pty.service';
 
 export type LogTermSize = { cols: number, rows: number };
 
@@ -20,6 +21,7 @@ export class LogService {
 
   constructor(
     private configService: ConfigService,
+    private nodePtyService: NodePtyService,
   ) {
     this.setLogMethod();
   }
@@ -79,7 +81,7 @@ export class LogService {
     const command = [...this.command];
 
     // spawn the process that will output the logs
-    const term = pty.spawn(command.shift(), command, {
+    const term = this.nodePtyService.spawn(command.shift(), command, {
       name: 'xterm-color',
       cols: size.cols,
       rows: size.rows,

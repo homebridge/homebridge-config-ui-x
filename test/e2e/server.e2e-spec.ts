@@ -3,6 +3,7 @@ import * as fs from 'fs-extra';
 import { ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastify';
+
 import { AuthModule } from '../../src/core/auth/auth.module';
 import { ServerModule } from '../../src/modules/server/server.module';
 import { ServerService } from '../../src/modules/server/server.service';

@@ -1,9 +1,16 @@
+import { EventEmitter } from 'events';
 import * as fs from 'fs-extra';
-import * as color from 'bash-color';
-import * as pty from 'node-pty-prebuilt-multiarch';
 import { Injectable } from '@nestjs/common';
+
 import { ConfigService } from '../../../core/config/config.service';
 import { Logger } from '../../../core/logger/logger.service';
+import { NodePtyService } from '../../../core/node-pty/node-pty.service';
+
+export type TermSize = { cols: number, rows: number };
+
+export interface WsEventEmitter extends EventEmitter {
+  disconnect: () => void;
+}
 
 @Injectable()
 export class TerminalService {
@@ -12,13 +19,14 @@ export class TerminalService {
   constructor(
     private configService: ConfigService,
     private logger: Logger,
+    private nodePtyService: NodePtyService,
   ) { }
 
   /**
    * Create a new terminal session
    * @param client
    */
-  async startSession(client, size) {
+  async startSession(client: WsEventEmitter, size: TermSize) {
     this.ending = false;
 
     // if terminal is not enabled, disconnect the client
@@ -34,7 +42,7 @@ export class TerminalService {
     const shell = await fs.pathExists('/bin/bash') ? '/bin/bash' : '/bin/sh';
 
     // spawn a new shell
-    const term = pty.spawn(shell, [], {
+    const term = this.nodePtyService.spawn(shell, [], {
       name: 'xterm-color',
       cols: size.cols,
       rows: size.rows,
@@ -64,7 +72,7 @@ export class TerminalService {
     });
 
     // capture resize events
-    client.on('resize', (resize) => {
+    client.on('resize', (resize: TermSize) => {
       try {
         term.resize(resize.cols, resize.rows);
       } catch (e) { }

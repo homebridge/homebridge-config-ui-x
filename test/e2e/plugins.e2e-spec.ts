@@ -4,6 +4,7 @@ import axios from 'axios';
 import { ValidationPipe, HttpService } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastify';
+
 import { AuthModule } from '../../src/core/auth/auth.module';
 import { PluginsModule } from '../../src/modules/plugins/plugins.module';
 import { HomebridgePlugin } from '../../src/modules/plugins/types';
@@ -21,7 +22,7 @@ describe('PluginController (e2e)', () => {
     process.env.UIX_BASE_PATH = path.resolve(__dirname, '../../');
     process.env.UIX_STORAGE_PATH = path.resolve(__dirname, '../', '.homebridge');
     process.env.UIX_CONFIG_PATH = path.resolve(process.env.UIX_STORAGE_PATH, 'config.json');
-    process.env.UIX_CUSTOM_PLUGIN_PATH = path.resolve(process.env.UIX_STORAGE_PATH, 'plugins');
+    process.env.UIX_CUSTOM_PLUGIN_PATH = path.resolve(process.env.UIX_STORAGE_PATH, 'plugins/node_modules');
 
     authFilePath = path.resolve(process.env.UIX_STORAGE_PATH, 'auth.json');
     secretsFilePath = path.resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets');

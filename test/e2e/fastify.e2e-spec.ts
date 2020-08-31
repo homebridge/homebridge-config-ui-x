@@ -6,6 +6,7 @@ import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastif
 import * as fastify from 'fastify';
 import * as fastifyMultipart from 'fastify-multipart';
 import * as helmet from 'helmet';
+
 import { AppModule } from '../../src/app.module';
 
 describe('FastifyOptions (e2e)', () => {

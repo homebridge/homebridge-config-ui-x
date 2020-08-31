@@ -4,6 +4,7 @@ import { authenticator } from 'otplib';
 import { ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastify';
+
 import { UsersModule } from '../../src/modules/users/users.module';
 import { UserDto, UserUpdatePasswordDto, UserActivateOtpDto, UserDeactivateOtpDto } from '../../src/modules/users/users.dto';
 

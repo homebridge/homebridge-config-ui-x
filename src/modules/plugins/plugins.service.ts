@@ -1,3 +1,4 @@
+import { EventEmitter } from 'events';
 import { Injectable, NotFoundException, InternalServerErrorException, HttpService } from '@nestjs/common';
 import { HomebridgePlugin, IPackageJson, INpmSearchResults, INpmRegistryModule } from './types';
 import axios from 'axios';
@@ -8,11 +9,11 @@ import * as fs from 'fs-extra';
 import * as child_process from 'child_process';
 import * as semver from 'semver';
 import * as color from 'bash-color';
-import * as pty from 'node-pty-prebuilt-multiarch';
 import * as NodeCache from 'node-cache';
 
 import { Logger } from '../../core/logger/logger.service';
 import { ConfigService } from '../../core/config/config.service';
+import { NodePtyService } from '../../core/node-pty/node-pty.service';
 
 @Injectable()
 export class PluginsService {
@@ -40,6 +41,7 @@ export class PluginsService {
   constructor(
     private httpService: HttpService,
     private configService: ConfigService,
+    private nodePtyService: NodePtyService,
     private logger: Logger,
   ) {
 
@@ -222,7 +224,7 @@ export class PluginsService {
    * @param pluginName
    * @param client
    */
-  async installPlugin(pluginName: string, client) {
+  async installPlugin(pluginName: string, client: EventEmitter) {
     await this.getInstalledPlugins();
 
     // install new plugins in the same location as this plugin
@@ -249,7 +251,7 @@ export class PluginsService {
    * @param pluginName
    * @param client
    */
-  async uninstallPlugin(pluginName: string, client) {
+  async uninstallPlugin(pluginName: string, client: EventEmitter) {
     await this.getInstalledPlugins();
     // find the plugin
     const plugin = this.installedPlugins.find(x => x.name === pluginName);
@@ -281,7 +283,7 @@ export class PluginsService {
    * @param pluginName
    * @param client
    */
-  async updatePlugin(pluginName: string, client) {
+  async updatePlugin(pluginName: string, client: EventEmitter) {
     if (pluginName === this.configService.name && this.configService.dockerOfflineUpdate) {
       await this.updateSelfOffline(client);
       return true;
@@ -361,7 +363,7 @@ export class PluginsService {
   /**
    * Updates the Homebridge package
    */
-  public async updateHomebridgePackage(client) {
+  public async updateHomebridgePackage(client: EventEmitter) {
     const homebridge = await this.getHomebridgePackage();
 
     // get the currently installed
@@ -412,7 +414,7 @@ export class PluginsService {
    * Sets a flag telling the system to update the package next time the UI is restarted
    * Dependend on OS support - currently only supported by the oznu/homebridge docker image
    */
-  public async updateSelfOffline(client) {
+  public async updateSelfOffline(client: EventEmitter) {
     client.emit('stdout', color.yellow(`${this.configService.name} has been scheduled to update on the next container restart.\n\r\n\r`));
     await new Promise(resolve => setTimeout(resolve, 800));
 
@@ -790,7 +792,7 @@ export class PluginsService {
    * @param cwd
    * @param client
    */
-  private async runNpmCommand(command: Array<string>, cwd: string, client) {
+  private async runNpmCommand(command: Array<string>, cwd: string, client: EventEmitter) {
     let timeoutTimer;
     command = command.filter(x => x.length);
 
@@ -839,7 +841,7 @@ export class PluginsService {
     }
 
     await new Promise((resolve, reject) => {
-      const term = pty.spawn(command.shift(), command, {
+      const term = this.nodePtyService.spawn(command.shift(), command, {
         name: 'xterm-color',
         cols: 80,
         rows: 30,

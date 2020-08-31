@@ -1,3 +1,4 @@
+import { EventEmitter } from 'events';
 import { UseGuards } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets';
 import * as color from 'bash-color';
@@ -15,7 +16,7 @@ export class PluginsGateway {
   ) { }
 
   @SubscribeMessage('install')
-  async installPlugin(client, payload) {
+  async installPlugin(client: EventEmitter, payload: string) {
     try {
       return await this.pluginsService.installPlugin(payload, client);
     } catch (e) {
@@ -26,7 +27,7 @@ export class PluginsGateway {
   }
 
   @SubscribeMessage('uninstall')
-  async uninstallPlugin(client, payload) {
+  async uninstallPlugin(client: EventEmitter, payload: string) {
     try {
       return await this.pluginsService.uninstallPlugin(payload, client);
     } catch (e) {
@@ -37,7 +38,7 @@ export class PluginsGateway {
   }
 
   @SubscribeMessage('update')
-  async updatePlugin(client, payload) {
+  async updatePlugin(client: EventEmitter, payload: string) {
     try {
       return await this.pluginsService.updatePlugin(payload, client);
     } catch (e) {
@@ -48,7 +49,7 @@ export class PluginsGateway {
   }
 
   @SubscribeMessage('homebridge-update')
-  async homebridgeUpdate(client, payload) {
+  async homebridgeUpdate(client: EventEmitter) {
     try {
       return await this.pluginsService.updateHomebridgePackage(client);
     } catch (e) {
