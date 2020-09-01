@@ -212,7 +212,7 @@
     "reset.message_your_homebridge_username_will_be_changed": "Dein Homebridge-Benutzername und Deine PIN werden geändert.",
     "reset.title_clear_cache": "Cache leeren",
     "reset.title_clear_cached_accessories": "Gecachte Geräte entfernen",
-    "reset.title_clear_cached_accessories_single": "Entfernen Sie ein einzelnes geachtes Gerät",
+    "reset.title_clear_cached_accessories_single": "Entfernen Sie ein einzelnes gecachtes Gerät",
     "reset.title_force_restart_hb_service": "Erzwinge Neustart des Dienstes",
     "reset.title_force_restart_hb_service_short": "Dienst neustarten",
     "reset.title_reset": "Zurücksetzen",
