@@ -2,13 +2,20 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## NEXT
+
+### Other Changes
+
+* **i18n:** Improvements to Spanish language translations ([#837](https://github.com/oznu/homebridge-config-ui-x/pull/837))
+* **i18n:** Improvements to German language translations ([#834](https://github.com/oznu/homebridge-config-ui-x/pull/834))
+
 ## 4.27.1 (2020-09-01)
 
 ### Other Changes
 
 * **i18n:** Improvements to Dutch language translations ([#827](https://github.com/oznu/homebridge-config-ui-x/pull/827))
 * **i18n:** Improvements to French language translations ([#828](https://github.com/oznu/homebridge-config-ui-x/pull/828))
-* **i18n:** Improvements to English language translations ([#828](https://github.com/oznu/homebridge-config-ui-x/pull/828))
+* **i18n:** Improvements to English language translations ([#829](https://github.com/oznu/homebridge-config-ui-x/pull/829))
 
 ### Bug Fixes
 
