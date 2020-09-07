@@ -100,6 +100,7 @@ export class HomebridgeServiceHelper {
 
     switch (this.action) {
       case 'install': {
+        this.nvmCheck();
         this.logger(`Installing ${this.serviceName} Service`);
         this.installer.install();
         break;
@@ -543,6 +544,22 @@ export class HomebridgeServiceHelper {
     if (parseInt(process.versions.modules, 10) < 64) {
       this.logger(`ERROR: Node.js v10.13.0 or greater is required. Current: ${process.version}.`, 'fail');
       process.exit(1);
+    }
+  }
+
+
+  /**
+   * Show a warning if the user is trying to install with NVM on Linux
+   */
+  private nvmCheck() {
+    if (process.execPath.includes('nvm') && os.platform() === 'linux') {
+      this.logger(
+        `WARNING: It looks like you are running Node.js via NVM (Node Version Manager).\n` +
+        `  Using hb-service with NVM may not work unless you have configured NVM for the\n` +
+        `  user this service will run as. See https://git.io/JUZ2g for instructions on how\n` +
+        `  to remove NVM, then follow the wiki instructions to install Node.js and Homebridge.`,
+        'warn'
+      );
     }
   }
 
