@@ -50,10 +50,9 @@ export class HomebridgeHoneywellHomeComponent implements OnInit, OnDestroy {
     if (!this.pluginConfig) {
       this.pluginConfig = {
         platform: this.schema.pluginAlias,
-        name: 'HoneywellHome',
+        name: this.schema.pluginAlias,
         options: {
-          ttl: 60,
-          verbose: false,
+          ttl: this.schema.pluginAlias,
         },
       };
     }
