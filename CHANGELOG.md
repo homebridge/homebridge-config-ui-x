@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Other Changes
 
+* **hb-service:** The Homebridge version is now reflected in the HB Supervisor logs after an update ([#848](https://github.com/oznu/homebridge-config-ui-x/issues/848))
 * **i18n:** Improvements to Spanish language translations ([#837](https://github.com/oznu/homebridge-config-ui-x/pull/837))
 * **i18n:** Improvements to German language translations ([#834](https://github.com/oznu/homebridge-config-ui-x/pull/834))
 

@@ -32,6 +32,7 @@ export class HomebridgeServiceHelper {
   public allowRunRoot = false;
   public asUser;
   private log: fs.WriteStream | NodeJS.WriteStream;
+  private homebridgeModulePath: string;
   private homebridgePackage: { version: string, bin: { homebridge: string } };
   private homebridgeBinary: string;
   private homebridge: child_process.ChildProcessWithoutNullStreams;
@@ -465,6 +466,7 @@ export class HomebridgeServiceHelper {
     this.logger(`Homebridge Process Ended. Code: ${code}, Signal: ${signal}`);
 
     this.checkForStaleHomebridgeProcess();
+    this.refreshHomebridgePackage();
 
     setTimeout(() => {
       this.logger('Restarting Homebridge...');
@@ -508,32 +510,48 @@ export class HomebridgeServiceHelper {
    * Finds the homebridge binary
    */
   private async findHomebridgePath() {
-    let homebridgeModulePath;
-
     // check the folder directly above
     const nodeModules = path.resolve(process.env.UIX_BASE_PATH, '..');
     if (await fs.pathExists(path.resolve(nodeModules, 'homebridge', 'package.json'))) {
-      homebridgeModulePath = path.resolve(nodeModules, 'homebridge');
+      this.homebridgeModulePath = path.resolve(nodeModules, 'homebridge');
     }
 
     // check the global npm modules directory
-    if (!homebridgeModulePath) {
-      const globaModules = await this.getNpmGlobalModulesDirectory();
-      if (globaModules && await fs.pathExists(path.resolve(globaModules, 'homebridge'))) {
-        homebridgeModulePath = path.resolve(globaModules, 'homebridge');
+    if (!this.homebridgeModulePath) {
+      const globalModules = await this.getNpmGlobalModulesDirectory();
+      if (globalModules && await fs.pathExists(path.resolve(globalModules, 'homebridge'))) {
+        this.homebridgeModulePath = path.resolve(globalModules, 'homebridge');
       }
     }
 
-    if (homebridgeModulePath) {
+    if (this.homebridgeModulePath) {
       try {
-        this.homebridgePackage = await fs.readJson(path.join(homebridgeModulePath, 'package.json'));
-        return path.resolve(homebridgeModulePath, this.homebridgePackage.bin.homebridge);
+        await this.refreshHomebridgePackage();
+        return path.resolve(this.homebridgeModulePath, this.homebridgePackage.bin.homebridge);
       } catch (e) {
         console.log(e);
       }
     }
 
     return null;
+  }
+
+  /**
+   * Refresh the homebridge package.json
+   */
+  private async refreshHomebridgePackage() {
+    try {
+      if (await fs.pathExists(this.homebridgeModulePath)) {
+        this.homebridgePackage = await fs.readJson(path.join(this.homebridgeModulePath, 'package.json'));
+      } else {
+        this.logger(`Homebridge not longer found at ${this.homebridgeModulePath}`, 'fail');
+        this.homebridgeModulePath = undefined;
+        this.homebridgeBinary = await this.findHomebridgePath();
+        this.logger(`Found New Homebridge Path: ${this.homebridgeBinary}`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   /**
