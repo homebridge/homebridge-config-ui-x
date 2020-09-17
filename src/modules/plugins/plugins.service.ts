@@ -115,6 +115,20 @@ export class PluginsService {
   }
 
   /**
+   * Lookup a single plugin in the npm registry
+   * @param pluginName
+   */
+  public async lookupPlugin(pluginName: string): Promise<HomebridgePlugin> {
+    const lookup = await this.searchNpmRegistrySingle(pluginName);
+
+    if (!lookup.length) {
+      throw new NotFoundException();
+    }
+
+    return lookup[0];
+  }
+
+  /**
    * Search the npm registry for homebridge plugins
    * @param query
    */
@@ -185,6 +199,7 @@ export class PluginsService {
       let plugin: HomebridgePlugin;
 
       // see if the plugin is already installed
+      if (!this.installedPlugins) await this.getInstalledPlugins();
       const isInstalled = this.installedPlugins.find(x => x.name === pkg.name);
       if (isInstalled) {
         plugin = isInstalled;

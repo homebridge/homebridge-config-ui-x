@@ -29,6 +29,14 @@ export class PluginsController {
   }
 
   @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Lookup a single plugin from the NPM registry' })
+  @ApiParam({ name: 'pluginName', type: 'string' })
+  @Get('lookup/:pluginName')
+  pluginLookup(@Param('pluginName') pluginName) {
+    return this.pluginsService.lookupPlugin(pluginName);
+  }
+
+  @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Get the config.schema.json for a plugin.' })
   @ApiParam({ name: 'pluginName', type: 'string' })
   @Get('config-schema/:pluginName')

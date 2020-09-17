@@ -116,6 +116,31 @@ describe('PluginController (e2e)', () => {
     expect(res.json().find(x => x.name === 'homebridge-daikin-esp8266')).toBeTruthy();
   });
 
+  it('GET /plugins/lookup/:pluginName (non-scoped)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/plugins/lookup/homebridge-daikin-esp8266',
+      headers: {
+        authorization,
+      }
+    });
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.json().name).toEqual('homebridge-daikin-esp8266');
+  });
+
+  it('GET /plugins/lookup/:pluginName (@scoped)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: `/plugins/lookup/${encodeURIComponent('@oznu/homebridge-esp8266-garage-door')}`,
+      headers: {
+        authorization,
+      }
+    });
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.json().name).toEqual('@oznu/homebridge-esp8266-garage-door');
+  });
 
   it('GET /plugins/config-schema/:plugin-name', async () => {
     const res = await app.inject({
