@@ -142,6 +142,18 @@ describe('PluginController (e2e)', () => {
     expect(res.json().name).toEqual('@oznu/homebridge-esp8266-garage-door');
   });
 
+  it('GET /plugins/lookup/:pluginName (not a homebridge plugin)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: `/plugins/lookup/npm`,
+      headers: {
+        authorization,
+      }
+    });
+
+    expect(res.statusCode).toEqual(404);
+  });
+
   it('GET /plugins/config-schema/:plugin-name', async () => {
     const res = await app.inject({
       method: 'GET',
