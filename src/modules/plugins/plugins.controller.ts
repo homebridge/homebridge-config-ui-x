@@ -24,8 +24,8 @@ export class PluginsController {
   @ApiOperation({ summary: 'Search the NPM registry for Homebridge plugins.' })
   @ApiParam({ name: 'query', type: 'string' })
   @Get('search/:query')
-  pluginsSearch(@Param() param) {
-    return this.pluginsService.searchNpmRegistry(param.query);
+  pluginsSearch(@Param('query') query) {
+    return this.pluginsService.searchNpmRegistry(query);
   }
 
   @UseGuards(AdminGuard)
@@ -40,23 +40,23 @@ export class PluginsController {
   @ApiOperation({ summary: 'Get the config.schema.json for a plugin.' })
   @ApiParam({ name: 'pluginName', type: 'string' })
   @Get('config-schema/:pluginName')
-  getPluginConfigSchema(@Param() param) {
-    return this.pluginsService.getPluginConfigSchema(param.pluginName);
+  getPluginConfigSchema(@Param('pluginName') pluginName) {
+    return this.pluginsService.getPluginConfigSchema(pluginName);
   }
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Get the CHANGELOG.md (post install) for a plugin.' })
   @ApiParam({ name: 'pluginName', type: 'string' })
   @Get('changelog/:pluginName')
-  getPluginChangeLog(@Param() param) {
-    return this.pluginsService.getPluginChangeLog(param.pluginName);
+  getPluginChangeLog(@Param('pluginName') pluginName) {
+    return this.pluginsService.getPluginChangeLog(pluginName);
   }
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Get the latest GitHub release notes for a plugin.' })
   @ApiParam({ name: 'pluginName', type: 'string' })
   @Get('release/:pluginName')
-  getPluginRelease(@Param() param) {
-    return this.pluginsService.getPluginRelease(param.pluginName);
+  getPluginRelease(@Param('pluginName') pluginName) {
+    return this.pluginsService.getPluginRelease(pluginName);
   }
 }
