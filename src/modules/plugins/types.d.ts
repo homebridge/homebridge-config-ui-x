@@ -23,6 +23,11 @@ export interface HomebridgePlugin {
   funding?: NpmFunding;
 }
 
+export interface HomebridgePluginVersions {
+  tags: Record<string, string>,
+  versions: Array<string>,
+}
+
 export interface IPackageJson {
   name: string;
   displayName?: string;

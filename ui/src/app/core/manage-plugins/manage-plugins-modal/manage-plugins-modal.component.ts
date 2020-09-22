@@ -82,7 +82,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   }
 
   install() {
-    this.io.request('install', this.pluginName).subscribe(
+    this.io.request('install', { name: this.pluginName, version: 'latest' }).subscribe(
       (data) => {
         this.$router.navigate(['/plugins'], {
           queryParams: { installed: this.pluginName },
@@ -98,7 +98,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   }
 
   uninstall() {
-    this.io.request('uninstall', this.pluginName).subscribe(
+    this.io.request('uninstall', { name: this.pluginName }).subscribe(
       (data) => {
         this.activeModal.close();
         this.$router.navigate(['/plugins']);
@@ -119,7 +119,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       return this.upgradeHomebridge();
     }
 
-    this.io.request('update', this.pluginName).subscribe(
+    this.io.request('update', { name: this.pluginName, version: 'latest' }).subscribe(
       (data) => {
         if (this.pluginName === 'homebridge-config-ui-x') {
           this.updateSelf = true;
@@ -138,7 +138,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   }
 
   upgradeHomebridge() {
-    this.io.request('homebridge-update').subscribe(
+    this.io.request('homebridge-update', { version: 'latest' }).subscribe(
       (data) => {
         this.$router.navigate(['/restart']);
         this.activeModal.close();

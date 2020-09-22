@@ -170,7 +170,36 @@ describe('PluginController (e2e)', () => {
       }
     });
 
-    expect(res.statusCode).toEqual(404);
+    expect(res.statusCode).toEqual(400);
+    expect(res.json().message).toEqual('Invalid plugin name.');
+  });
+
+  it('GET /plugins/lookup/:pluginName/versions (non-scoped)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/plugins/lookup/homebridge-daikin-esp8266/versions',
+      headers: {
+        authorization,
+      }
+    });
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.json()).toHaveProperty('tags');
+    expect(res.json()).toHaveProperty('versions');
+  });
+
+  it('GET /plugins/lookup/:pluginName/versions (@scoped)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: `/plugins/lookup/${encodeURIComponent('@oznu/homebridge-esp8266-garage-door')}/versions`,
+      headers: {
+        authorization,
+      }
+    });
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.json()).toHaveProperty('tags');
+    expect(res.json()).toHaveProperty('versions');
   });
 
   it('GET /plugins/config-schema/:plugin-name', async () => {

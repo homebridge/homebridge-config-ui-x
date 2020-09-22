@@ -37,6 +37,14 @@ export class PluginsController {
   }
 
   @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Get the available versions and tags for a single plugin from the NPM registry.' })
+  @ApiParam({ name: 'pluginName', type: 'string' })
+  @Get('lookup/:pluginName/versions')
+  getAvailablePluginVersions(@Param('pluginName') pluginName) {
+    return this.pluginsService.getAvailablePluginVersions(pluginName);
+  }
+
+  @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Get the config.schema.json for a plugin.' })
   @ApiParam({ name: 'pluginName', type: 'string' })
   @Get('config-schema/:pluginName')

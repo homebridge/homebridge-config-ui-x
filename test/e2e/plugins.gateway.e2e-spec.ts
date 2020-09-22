@@ -90,13 +90,40 @@ describe('PluginsGateway (e2e)', () => {
         return term;
       });
 
-    await pluginsGateway.installPlugin(client, 'homebridge-mock-plugin');
+    await pluginsGateway.installPlugin(client, { name: 'homebridge-mock-plugin' });
 
     // expect the npm command to be spawned
     if (os.platform() === 'win32') {
       expect(mockSpawn).toBeCalledWith(win32NpmPath, ['-g', 'install', 'homebridge-mock-plugin@latest'], expect.anything());
     } else {
       expect(mockSpawn).toBeCalledWith('npm', ['install', 'homebridge-mock-plugin@latest'], expect.anything());
+    }
+
+    // expect the terminal logs to be sent to the client
+    expect(client.emit).toBeCalledWith('stdout', expect.stringContaining('some log from terminal'));
+
+    // expect the method to let the client know the command succeeded
+    expect(client.emit).toBeCalledWith('stdout', expect.stringContaining('Command succeeded!'));
+  });
+
+  it('ON /plugins/install (custom version)', async () => {
+    const mockSpawn = jest.spyOn(nodePtyService, 'spawn')
+      .mockImplementation(() => {
+        const term = new EventEmitter();
+        setTimeout(() => {
+          term.emit('data', 'some log from terminal');
+          term.emit('exit', 0);
+        }, 10);
+        return term;
+      });
+
+    await pluginsGateway.installPlugin(client, { name: 'homebridge-mock-plugin', version: '3.2.5' });
+
+    // expect the npm command to be spawned
+    if (os.platform() === 'win32') {
+      expect(mockSpawn).toBeCalledWith(win32NpmPath, ['-g', 'install', 'homebridge-mock-plugin@3.2.5'], expect.anything());
+    } else {
+      expect(mockSpawn).toBeCalledWith('npm', ['install', 'homebridge-mock-plugin@3.2.5'], expect.anything());
     }
 
     // expect the terminal logs to be sent to the client
@@ -124,7 +151,7 @@ describe('PluginsGateway (e2e)', () => {
         return term;
       });
 
-    await pluginsGateway.installPlugin(client, 'homebridge-mock-plugin');
+    await pluginsGateway.installPlugin(client, { name: 'homebridge-mock-plugin', version: 'latest' });
 
     // expect the npm command to be spawned with sudo
     expect(mockSpawn).toBeCalledWith('sudo', ['-E', '-n', 'npm', 'install', 'homebridge-mock-plugin@latest'], expect.anything());
@@ -144,7 +171,7 @@ describe('PluginsGateway (e2e)', () => {
       });
 
     try {
-      await pluginsGateway.installPlugin(client, 'homebridge-mock-plugin');
+      await pluginsGateway.installPlugin(client, { name: 'homebridge-mock-plugin', version: 'latest' });
     } catch (e) { }
 
     // expect the npm command to be spawned
@@ -169,7 +196,7 @@ describe('PluginsGateway (e2e)', () => {
       });
 
     try {
-      await pluginsGateway.uninstallPlugin(client, 'homebridge-mock-plugin');
+      await pluginsGateway.uninstallPlugin(client, { name: 'homebridge-mock-plugin' });
     } catch (e) { }
 
     // expect the npm command to be spawned
@@ -183,6 +210,27 @@ describe('PluginsGateway (e2e)', () => {
     expect(client.emit).toBeCalledWith('stdout', expect.stringContaining('Command succeeded!'));
   });
 
+  it('ON /plugins/uninstall (prevent self uninstall)', async () => {
+    const mockSpawn = jest.spyOn(nodePtyService, 'spawn')
+      .mockImplementation(() => {
+        const term = new EventEmitter();
+        setTimeout(() => {
+          term.emit('exit', 0);
+        }, 10);
+        return term;
+      });
+
+    try {
+      await pluginsGateway.uninstallPlugin(client, { name: 'homebridge-config-ui-x' });
+    } catch (e) { }
+
+    // expect the npm command not to have to be spawned
+    expect(mockSpawn).not.toBeCalled();
+
+    // expect the method to let the client know the command succeeded
+    expect(client.emit).toBeCalledWith('stdout', expect.stringContaining('Cannot uninstall homebridge-config-ui-x'));
+  });
+
   it('ON /plugins/update', async () => {
     const mockSpawn = jest.spyOn(nodePtyService, 'spawn')
       .mockImplementation(() => {
@@ -194,7 +242,7 @@ describe('PluginsGateway (e2e)', () => {
       });
 
     try {
-      await pluginsGateway.updatePlugin(client, 'homebridge-mock-plugin');
+      await pluginsGateway.updatePlugin(client, { name: 'homebridge-mock-plugin', version: 'latest' });
     } catch (e) { }
 
     // expect the npm command to be spawned
@@ -202,6 +250,31 @@ describe('PluginsGateway (e2e)', () => {
       expect(mockSpawn).toBeCalledWith(win32NpmPath, ['-g', 'install', 'homebridge-mock-plugin@latest'], expect.anything());
     } else {
       expect(mockSpawn).toBeCalledWith('npm', ['install', 'homebridge-mock-plugin@latest'], expect.anything());
+    }
+
+    // expect the method to let the client know the command succeeded
+    expect(client.emit).toBeCalledWith('stdout', expect.stringContaining('Command succeeded!'));
+  });
+
+  it('ON /plugins/update (custom version)', async () => {
+    const mockSpawn = jest.spyOn(nodePtyService, 'spawn')
+      .mockImplementation(() => {
+        const term = new EventEmitter();
+        setTimeout(() => {
+          term.emit('exit', 0);
+        }, 10);
+        return term;
+      });
+
+    try {
+      await pluginsGateway.updatePlugin(client, { name: 'homebridge-mock-plugin', version: '3.4.6' });
+    } catch (e) { }
+
+    // expect the npm command to be spawned
+    if (os.platform() === 'win32') {
+      expect(mockSpawn).toBeCalledWith(win32NpmPath, ['-g', 'install', 'homebridge-mock-plugin@3.4.6'], expect.anything());
+    } else {
+      expect(mockSpawn).toBeCalledWith('npm', ['install', 'homebridge-mock-plugin@3.4.6'], expect.anything());
     }
 
     // expect the method to let the client know the command succeeded
@@ -228,7 +301,7 @@ describe('PluginsGateway (e2e)', () => {
       });
 
     try {
-      await pluginsGateway.homebridgeUpdate(client);
+      await pluginsGateway.homebridgeUpdate(client, {});
     } catch (e) { }
 
     // expect the npm command to be spawned
@@ -236,6 +309,41 @@ describe('PluginsGateway (e2e)', () => {
       expect(mockSpawn).toBeCalledWith(win32NpmPath, ['-g', 'install', 'homebridge@latest'], expect.anything());
     } else {
       expect(mockSpawn).toBeCalledWith('npm', ['install', 'homebridge@latest'], expect.objectContaining({
+        cwd: path.resolve(process.env.UIX_STORAGE_PATH, 'plugins')
+      }));
+    }
+    // expect the method to let the client know the command succeeded
+    expect(client.emit).toBeCalledWith('stdout', expect.stringContaining('Command succeeded!'));
+  });
+
+  it('ON /plugins/homebridge-update (custom version)', async () => {
+    // mock get homebridge package
+    pluginsService.getHomebridgePackage = async () => {
+      return {
+        name: 'homebridge',
+        publicPackage: true,
+        installPath: pluginsPath
+      };
+    };
+
+    const mockSpawn = jest.spyOn(nodePtyService, 'spawn')
+      .mockImplementation(() => {
+        const term = new EventEmitter();
+        setTimeout(() => {
+          term.emit('exit', 0);
+        }, 10);
+        return term;
+      });
+
+    try {
+      await pluginsGateway.homebridgeUpdate(client, { version: '1.2.5' });
+    } catch (e) { }
+
+    // expect the npm command to be spawned
+    if (os.platform() === 'win32') {
+      expect(mockSpawn).toBeCalledWith(win32NpmPath, ['-g', 'install', 'homebridge@1.2.5'], expect.anything());
+    } else {
+      expect(mockSpawn).toBeCalledWith('npm', ['install', 'homebridge@1.2.5'], expect.objectContaining({
         cwd: path.resolve(process.env.UIX_STORAGE_PATH, 'plugins')
       }));
     }

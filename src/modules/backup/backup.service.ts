@@ -9,6 +9,7 @@ import * as child_process from 'child_process';
 import { Injectable, BadRequestException } from '@nestjs/common';
 
 import { PluginsService } from '../plugins/plugins.service';
+import { HomebridgePlugin } from '../plugins/types';
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
 import { Logger } from '../../core/logger/logger.service';
 
@@ -189,15 +190,15 @@ export class BackupService {
 
     // restore plugins
     client.emit('stdout', color.cyan('\r\nRestoring plugins...\r\n'));
-    const plugins = (await fs.readJson(path.resolve(this.restoreDirectory, 'plugins.json')))
-      .filter(x => ![
+    const plugins: HomebridgePlugin[] = (await fs.readJson(path.resolve(this.restoreDirectory, 'plugins.json')))
+      .filter((x: HomebridgePlugin) => ![
         'homebridge-config-ui-x',
       ].includes(x.name) && x.publicPackage); // list of plugins not to restore
 
     for (const plugin of plugins) {
       try {
         client.emit('stdout', color.yellow(`\r\nInstalling ${plugin.name}...\r\n`));
-        await this.pluginsService.installPlugin(plugin.name, client);
+        await this.pluginsService.installPlugin(plugin.name, plugin.installedVersion || 'latest', client);
       } catch (e) {
         client.emit('stdout', color.red(`Failed to install ${plugin.name}.\r\n`));
       }
@@ -354,7 +355,7 @@ export class BackupService {
         }
         try {
           client.emit('stdout', color.yellow(`\r\nInstalling ${plugin}...\r\n`));
-          await this.pluginsService.installPlugin(plugin, client);
+          await this.pluginsService.installPlugin(plugin, 'latest', client);
         } catch (e) {
           client.emit('stdout', color.red(`Failed to install ${plugin}.\r\n`));
         }

@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
-import { Injectable, NotFoundException, InternalServerErrorException, HttpService } from '@nestjs/common';
-import { HomebridgePlugin, IPackageJson, INpmSearchResults, INpmRegistryModule } from './types';
+import { Injectable, NotFoundException, InternalServerErrorException, HttpService, BadRequestException } from '@nestjs/common';
+import { HomebridgePlugin, IPackageJson, INpmSearchResults, INpmRegistryModule, HomebridgePluginVersions } from './types';
 import axios from 'axios';
 import * as os from 'os';
 import * as _ from 'lodash';
@@ -17,6 +17,8 @@ import { NodePtyService } from '../../core/node-pty/node-pty.service';
 
 @Injectable()
 export class PluginsService {
+  private static readonly PLUGIN_IDENTIFIER_PATTERN = /^((@[\w-]*)\/)?(homebridge-[\w-]*)$/;
+
   private npm: Array<string> = this.getNpmPath();
   private paths: Array<string> = this.getBasePaths();
 
@@ -119,6 +121,10 @@ export class PluginsService {
    * @param pluginName
    */
   public async lookupPlugin(pluginName: string): Promise<HomebridgePlugin> {
+    if (!PluginsService.PLUGIN_IDENTIFIER_PATTERN.test(pluginName)) {
+      throw new BadRequestException('Invalid plugin name.');
+    }
+
     const lookup = await this.searchNpmRegistrySingle(pluginName);
 
     if (!lookup.length) {
@@ -126,6 +132,32 @@ export class PluginsService {
     }
 
     return lookup[0];
+  }
+
+  public async getAvailablePluginVersions(pluginName: string): Promise<HomebridgePluginVersions> {
+    if (!PluginsService.PLUGIN_IDENTIFIER_PATTERN.test(pluginName)) {
+      throw new BadRequestException('Invalid plugin name.');
+    }
+
+    try {
+      const fromCache = this.npmPluginCache.get(`lookup-${pluginName}`);
+
+      const pkg: INpmRegistryModule = fromCache || (await (
+        this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(pluginName).replace('%40', '@')}`).toPromise()
+      )).data;
+
+      if (!fromCache) {
+        this.npmPluginCache.set(`lookup-${pluginName}`, pkg, 60);
+      }
+
+      return {
+        tags: pkg['dist-tags'],
+        versions: Object.keys(pkg.versions),
+      };
+
+    } catch (e) {
+      throw new NotFoundException();
+    }
   }
 
   /**
@@ -190,9 +222,16 @@ export class PluginsService {
    */
   async searchNpmRegistrySingle(query: string): Promise<HomebridgePlugin[]> {
     try {
-      const pkg: INpmRegistryModule = (await (
+      const fromCache = this.npmPluginCache.get(`lookup-${query}`);
+
+      const pkg: INpmRegistryModule = fromCache || (await (
         this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(query).replace('%40', '@')}`).toPromise()
       )).data;
+
+      if (!fromCache) {
+        this.npmPluginCache.set(`lookup-${query}`, pkg, 60);
+      }
+
       if (!pkg.keywords || !pkg.keywords.includes('homebridge-plugin')) {
         return [];
       }
@@ -241,7 +280,7 @@ export class PluginsService {
    * @param pluginName
    * @param client
    */
-  async installPlugin(pluginName: string, client: EventEmitter) {
+  async installPlugin(pluginName: string, version: string, client: EventEmitter) {
     await this.getInstalledPlugins();
 
     // install new plugins in the same location as this plugin
@@ -258,7 +297,7 @@ export class PluginsService {
 
     installPath = path.resolve(installPath, '../');
 
-    await this.runNpmCommand([...this.npm, 'install', ...installOptions, `${pluginName}@latest`], installPath, client);
+    await this.runNpmCommand([...this.npm, 'install', ...installOptions, `${pluginName}@${version}`], installPath, client);
 
     return true;
   }
@@ -269,6 +308,10 @@ export class PluginsService {
    * @param client
    */
   async uninstallPlugin(pluginName: string, client: EventEmitter) {
+    if (pluginName === this.configService.name) {
+      throw new Error(`Cannot uninstall ${pluginName} from ${this.configService.name}.`);
+    }
+
     await this.getInstalledPlugins();
     // find the plugin
     const plugin = this.installedPlugins.find(x => x.name === pluginName);
@@ -300,7 +343,7 @@ export class PluginsService {
    * @param pluginName
    * @param client
    */
-  async updatePlugin(pluginName: string, client: EventEmitter) {
+  async updatePlugin(pluginName: string, version: string, client: EventEmitter) {
     if (pluginName === this.configService.name && this.configService.dockerOfflineUpdate) {
       await this.updateSelfOffline(client);
       return true;
@@ -334,7 +377,7 @@ export class PluginsService {
 
     installPath = path.resolve(installPath, '../');
 
-    await this.runNpmCommand([...this.npm, 'install', ...installOptions, `${pluginName}@latest`], installPath, client);
+    await this.runNpmCommand([...this.npm, 'install', ...installOptions, `${pluginName}@${version}`], installPath, client);
 
     return true;
   }
@@ -380,7 +423,7 @@ export class PluginsService {
   /**
    * Updates the Homebridge package
    */
-  public async updateHomebridgePackage(client: EventEmitter) {
+  public async updateHomebridgePackage(version: string, client: EventEmitter) {
     const homebridge = await this.getHomebridgePackage();
 
     // get the currently installed
@@ -396,7 +439,7 @@ export class PluginsService {
 
     installPath = path.resolve(installPath, '../');
 
-    await this.runNpmCommand([...this.npm, 'install', ...installOptions, `${homebridge.name}@latest`], installPath, client);
+    await this.runNpmCommand([...this.npm, 'install', ...installOptions, `${homebridge.name}@${version}`], installPath, client);
 
     return true;
   }
