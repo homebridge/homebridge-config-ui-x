@@ -158,6 +158,7 @@ export class PluginsService {
         const isInstalled = this.installedPlugins.find(x => x.name === plugin.name);
         if (isInstalled) {
           plugin = isInstalled;
+          plugin.lastUpdated = pkg.package.date;
           return plugin;
         }
 
@@ -203,6 +204,7 @@ export class PluginsService {
       const isInstalled = this.installedPlugins.find(x => x.name === pkg.name);
       if (isInstalled) {
         plugin = isInstalled;
+        plugin.lastUpdated = pkg.time.modified;
         return [plugin];
       }
 
