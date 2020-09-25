@@ -17,7 +17,7 @@ export class UsersResolver implements Resolve<any> {
   ) {
     return this.$api.get('/users').toPromise()
       .catch((err) => {
-        this.$toastr.error(err.message, 'Failed to Load USers');
+        this.$toastr.error(err.message, 'Failed to Load Users');
         this.$router.navigate(['/']);
       });
   }
