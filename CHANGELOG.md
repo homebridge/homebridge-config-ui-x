@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file. This projec
 * **i18n:** Improvements to Spanish language translations ([#837](https://github.com/oznu/homebridge-config-ui-x/pull/837))
 * **i18n:** Improvements to German language translations ([#834](https://github.com/oznu/homebridge-config-ui-x/pull/834))
 * **i18n:** Improvements to Swedish language translations ([#850](https://github.com/oznu/homebridge-config-ui-x/pull/850))
-* **API**: Added REST API endpoints to lookup a single plugin from NPM
+* **API**: Added REST API endpoints to lookup a single plugin from NPM, see the [Swagger API documentation](https://github.com/oznu/homebridge-config-ui-x/wiki/API-Reference) for details
 
 ### Bug Fixes 
 

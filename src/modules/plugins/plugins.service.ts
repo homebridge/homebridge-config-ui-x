@@ -687,8 +687,8 @@ export class PluginsService {
       const windowsNpmPath = [
         path.join(process.env.APPDATA, 'npm/npm.cmd'),
         path.join(process.env.ProgramFiles, 'nodejs/npm.cmd'),
-      ]
-        .filter(fs.existsSync);
+        path.join(process.env.NVM_SYMLINK || process.env.ProgramFiles + '/nodejs', 'npm.cmd'),
+      ].filter(fs.existsSync);
 
       if (windowsNpmPath.length) {
         return [windowsNpmPath[0], '-g'];
