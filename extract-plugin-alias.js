@@ -1,0 +1,110 @@
+/**
+ * This script "mocks" homebridge and is used to extract the plugin alias and type.
+ */
+
+const path = require('path');
+const EventEmitter = require('events').EventEmitter;
+
+let pluginAlias;
+let pluginType;
+
+const HomebridgeApiMock = {
+  registerPlatform(pluginIdentifier, platformName, constructor) {
+    pluginType = 'platform';
+    if (typeof platformName === 'function') {
+      constructor = platformName;
+      platformName = pluginIdentifier;
+      pluginAlias = platformName;
+    } else {
+      pluginAlias = platformName;
+    }
+  },
+  registerAccessory(pluginIdentifier, accessoryName, constructor) {
+    pluginType = 'accessory';
+    if (typeof accessoryName === 'function') {
+      constructor = accessoryName;
+      accessoryName = pluginIdentifier;
+      pluginAlias = accessoryName;
+    } else {
+      pluginAlias = accessoryName;
+    }
+  },
+  version: 2.5,
+  serverVersion: '1.2.3',
+  on: () => { },
+  emit: () => { },
+  hap: {
+    Characteristic: new class Characteristic extends EventEmitter {
+      constructor() {
+        super()
+      }
+    },
+    Service: {},
+    AccessoryLoader: {},
+    Accessory: {},
+    Bridge: {},
+    uuid: {
+      generate: () => { }
+    }
+  },
+  platformAccessory() {
+    return {
+      addService() { },
+      getService() { },
+      removeService() { },
+      context() { },
+      services() { }
+    };
+  },
+  registerPlatformAccessories() { },
+  unregisterPlatformAccessories() { },
+  publishExternalAccessories() { },
+  updatePlatformAccessories() { },
+  user: {
+    configPath() {
+      return path.join(process.cwd(), 'config.json');
+    },
+    storagePath() {
+      return process.cwd();
+    },
+    cachedAccessoryPath() {
+      return path.join(process.cwd(), 'accessories');
+    },
+    persistPath() {
+      return path.join(process.cwd(), 'persist');
+    }
+  }
+};
+
+function main() {
+  try {
+    let pluginInitializer;
+    const pluginPath = process.env.UIX_EXTRACT_PLUGIN_PATH;
+    const pluginModules = require(pluginPath);
+
+    if (typeof pluginModules === "function") {
+      pluginInitializer = pluginModules;
+    } else if (pluginModules && typeof pluginModules.default === "function") {
+      pluginInitializer = pluginModules.default;
+    } else {
+      throw new Error(`Plugin ${pluginPath} does not export a initializer function from main.`);
+    }
+
+    pluginInitializer(HomebridgeApiMock);
+
+    process.send({
+      pluginAlias: pluginAlias,
+      pluginType: pluginType,
+    });
+    process.exit();
+
+  } catch (e) {
+    process.exit(1);
+  }
+}
+
+main();
+
+setTimeout(() => {
+  process.exit(1);
+}, 2500);

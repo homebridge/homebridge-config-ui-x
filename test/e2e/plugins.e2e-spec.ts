@@ -226,6 +226,34 @@ describe('PluginController (e2e)', () => {
     expect(res.statusCode).toEqual(200);
   });
 
+  it('GET /plugins/alias/:plugin-name (with config.schema.json)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/plugins/alias/homebridge-mock-plugin',
+      headers: {
+        authorization,
+      }
+    });
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.json().pluginAlias).toEqual('ExampleHomebridgePlugin');
+    expect(res.json().pluginType).toEqual('platform');
+  });
+
+  it('GET /plugins/alias/:plugin-name (without config.schema.json)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/plugins/alias/homebridge-mock-plugin-two',
+      headers: {
+        authorization,
+      }
+    });
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.json().pluginAlias).toEqual('HomebridgeMockPluginTwo');
+    expect(res.json().pluginType).toEqual('accessory');
+  });
+
   afterAll(async () => {
     await app.close();
   });

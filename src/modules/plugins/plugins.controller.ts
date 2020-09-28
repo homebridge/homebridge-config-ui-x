@@ -67,4 +67,15 @@ export class PluginsController {
   getPluginRelease(@Param('pluginName') pluginName) {
     return this.pluginsService.getPluginRelease(pluginName);
   }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({
+    summary: 'Attempt to resolve the type (platform or accessory) and alias for a plugin.',
+    description: '**Warning**: pluginAlias and pluginType will be `null` if the type or alias could not be resolved.'
+  })
+  @ApiParam({ name: 'pluginName', type: 'string' })
+  @Get('alias/:pluginName')
+  getPluginAlias(@Param('pluginName') pluginName) {
+    return this.pluginsService.getPluginAlias(pluginName);
+  }
 }

@@ -38,6 +38,10 @@ export class PluginsService {
 
   // create a cache for storing plugin package.json from npm
   private npmPluginCache = new NodeCache({ stdTTL: 300 });
+
+  // create a cache for storing plugin alias
+  private pluginAliasCache = new NodeCache({ stdTTL: 86400 });
+
   private verifiedPluginsRetryTimeout: NodeJS.Timeout;
 
   constructor(
@@ -617,6 +621,66 @@ export class PluginsService {
     } catch (e) {
       throw new NotFoundException();
     }
+  }
+
+  /**
+   * Attempt to extract the alias from a plugin
+   */
+  public async getPluginAlias(pluginName: string) {
+    if (!this.installedPlugins) await this.getInstalledPlugins();
+    const plugin = this.installedPlugins.find(x => x.name === pluginName);
+
+    if (!plugin) {
+      throw new NotFoundException();
+    }
+
+    const fromCache = this.pluginAliasCache.get(pluginName);
+    if (fromCache as any) {
+      return fromCache;
+    }
+
+    const output = {
+      pluginAlias: null,
+      pluginType: null,
+    };
+
+    if (plugin.settingsSchema) {
+      const schema = await this.getPluginConfigSchema(pluginName);
+      output.pluginAlias = schema.pluginAlias;
+      output.pluginType = schema.pluginType;
+    } else {
+      try {
+        await new Promise((resolve, reject) => {
+          const child = child_process.fork(path.resolve(process.env.UIX_BASE_PATH, 'extract-plugin-alias.js'), {
+            env: {
+              UIX_EXTRACT_PLUGIN_PATH: path.resolve(plugin.installPath, plugin.name)
+            },
+            stdio: 'ignore',
+          });
+
+          child.once('message', (data: any) => {
+            if (data.pluginAlias && data.pluginType) {
+              output.pluginAlias = data.pluginAlias;
+              output.pluginType = data.pluginType;
+              resolve();
+            } else {
+              throw new Error('Invalid Response');
+            }
+          });
+
+          child.once('close', (code) => {
+            if (code !== 0) {
+              reject();
+            }
+          });
+        });
+      } catch (e) {
+        this.logger.debug('Failed to extract plugin alias:', e);
+      }
+    }
+
+    this.pluginAliasCache.set(pluginName, output);
+    return output;
   }
 
   /**
