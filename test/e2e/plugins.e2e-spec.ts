@@ -212,6 +212,8 @@ describe('PluginController (e2e)', () => {
     });
 
     expect(res.statusCode).toEqual(200);
+    expect(res.json().pluginAlias).toEqual('ExampleHomebridgePlugin');
+    expect(res.json().pluginType).toEqual('platform');
   });
 
   it('GET /plugins/changelog/:plugin-name', async () => {
@@ -224,6 +226,19 @@ describe('PluginController (e2e)', () => {
     });
 
     expect(res.statusCode).toEqual(200);
+    expect(res.json()).toHaveProperty('changelog');
+  });
+
+  it('GET /plugins/changelog/:plugin-name (changelog missing)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/plugins/changelog/homebridge-mock-plugin-two',
+      headers: {
+        authorization,
+      }
+    });
+
+    expect(res.statusCode).toEqual(404);
   });
 
   it('GET /plugins/alias/:plugin-name (with config.schema.json)', async () => {
