@@ -36,7 +36,14 @@ const HomebridgeApiMock = {
   hap: {
     Characteristic: new class Characteristic extends EventEmitter {
       constructor() {
-        super()
+        super();
+        return new Proxy(this, {
+          get() {
+            return {
+              UUID: '0000003E-0000-1000-8000-0026BB765291',
+            }
+          }
+        })
       }
     },
     Service: {},

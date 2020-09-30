@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { minVersion, gte } from 'semver';
 
+import { AuthService } from '../auth/auth.service';
+import { CustomPluginsService } from './custom-plugins/custom-plugins.service';
 import { ManagePluginsModalComponent } from './manage-plugins-modal/manage-plugins-modal.component';
 import { UninstallPluginsModalComponent } from './uninstall-plugins-modal/uninstall-plugins-modal.component';
 import { SettingsPluginsModalComponent } from './settings-plugins-modal/settings-plugins-modal.component';
-import { CustomPluginsService } from './custom-plugins/custom-plugins.service';
-import { AuthService } from '../auth/auth.service';
 import { NodeUpdateRequiredModalComponent } from './node-update-required-modal/node-update-required-modal.component';
+import { ManualPluginConfigModalComponent } from './manual-plugin-config-modal/manual-plugin-config-modal.component';
 
 @Injectable({
   providedIn: 'root',
@@ -64,12 +65,29 @@ export class ManagePluginsService {
     ref.componentInstance.pluginName = homebridgePkg.name;
   }
 
-  settings(pluginName) {
+  /**
+   * Used for plugins that have a config.schema.json
+   * @param pluginName
+   */
+  settings(pluginName: string) {
     if (this.customPluginsService.plugins[pluginName]) {
       return this.customPluginsService.openSettings(pluginName);
     }
 
     const ref = this.modalService.open(SettingsPluginsModalComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    });
+    ref.componentInstance.pluginName = pluginName;
+
+    return ref.result;
+  }
+
+  /**
+   * Used for plugins that do not have a config.schema.json
+   */
+  async manualPluginConfig(pluginName: string) {
+    const ref = this.modalService.open(ManualPluginConfigModalComponent, {
       size: 'lg',
       backdrop: 'static',
     });

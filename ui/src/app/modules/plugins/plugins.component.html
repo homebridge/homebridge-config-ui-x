@@ -79,6 +79,10 @@
           routerLink="/platform-tools/docker/settings">
           {{ 'plugins.button_settings' | translate | uppercase }}
         </a>
+        <a class="card-link" *ngIf="plugin.installedVersion && !plugin.settingsSchema"
+          (click)="$plugin.manualPluginConfig(plugin.name)">
+          {{ 'plugins.button_settings' | translate | uppercase }}
+        </a>
         <a class="card-link ml-auto grey-text" target="_blank" rel="noopener noreferrer"
           *ngIf="plugin.links.homepage || plugin.links.npm" [href]="plugin.links.homepage || plugin.links.npm"
           [ngbTooltip]="plugin.links.homepage || plugin.links.npm" container="body" placement="left">

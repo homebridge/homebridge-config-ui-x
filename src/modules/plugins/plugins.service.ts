@@ -664,7 +664,7 @@ export class PluginsService {
               output.pluginType = data.pluginType;
               resolve();
             } else {
-              throw new Error('Invalid Response');
+              reject('Invalid Response');
             }
           });
 
