@@ -5,3 +5,11 @@
     }
   }
 }
+
+::ng-deep body.config-ui-x-dark-mode {
+  .no-padding-card-body {
+    .card-body {
+      background-color: #1e1e1e;
+    }
+  }
+}

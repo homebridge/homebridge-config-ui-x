@@ -1,7 +1,9 @@
 <div class="modal-content hb-plugin-settings-modal">
   <div class="modal-header">
-    <h5 class="modal-title">{{'plugins.settings.title_settings' | translate}}:
-      {{ pluginName }}</h5>
+    <h5 class="modal-title">
+      {{ 'plugins.settings.title_settings' | translate }}:
+      {{ pluginName }}
+    </h5>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="activeModal.close()">
       <span aria-hidden="true">&times;</span>
     </button>
@@ -13,19 +15,20 @@
 
     <div *ngIf="!loading && !canConfigure">
       <ngb-alert type="info" [dismissible]="false">
-        This plugin must be configured manually using the Homebridge UI Config Editor.
+        {{ 'plugins.settings.message_manual_config_required' | translate }}
+        {{ 'plugins.settings.message_consult_documentation' | translate }}
       </ngb-alert>
 
       <div class="text-center">
         <button class="btn btn-primary" (click)="openFullConfigEditor()">
-          Open Config Editor
+          {{ 'plugins.settings.label_open_config_editor' | translate }}
         </button>
       </div>
     </div>
 
     <div *ngIf="canConfigure">
       <ngb-alert type="info" [dismissible]="false">
-        Please consult the plugin documentation for instructions on how to correctly configure this plugin.
+        {{ 'plugins.settings.message_consult_documentation' | translate }}
       </ngb-alert>
     </div>
 
@@ -61,7 +64,7 @@
   <div class=" modal-footer">
     <button type="button" class="btn btn-elegant mr-auto" data-dismiss="modal" (click)="addBlock()"
       *ngIf="canConfigure">
-      Add {{ pluginType }} Block
+      <i class="fa fa-plus"></i> Add {{ pluginType }}
     </button>
     <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.close()"
       [translate]="'form.button_close'">Close</button>
