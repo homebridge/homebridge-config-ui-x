@@ -30,13 +30,12 @@ export class ManagePluginsService {
     ref.componentInstance.pluginName = pluginName;
   }
 
-  uninstallPlugin(pluginName, settingsSchema) {
+  uninstallPlugin(plugin) {
     const ref = this.modalService.open(UninstallPluginsModalComponent, {
       backdrop: 'static',
     });
     ref.componentInstance.action = 'Uninstall';
-    ref.componentInstance.settingsSchema = settingsSchema;
-    ref.componentInstance.pluginName = pluginName;
+    ref.componentInstance.plugin = plugin;
   }
 
   async updatePlugin(plugin) {
@@ -86,12 +85,12 @@ export class ManagePluginsService {
   /**
    * Used for plugins that do not have a config.schema.json
    */
-  async manualPluginConfig(pluginName: string) {
+  async manualPluginConfig(plugin) {
     const ref = this.modalService.open(ManualPluginConfigModalComponent, {
       size: 'lg',
       backdrop: 'static',
     });
-    ref.componentInstance.pluginName = pluginName;
+    ref.componentInstance.plugin = plugin;
 
     return ref.result;
   }

@@ -15,7 +15,7 @@ import { MobileDetectService } from '@/app/core/mobile-detect.service';
   styleUrls: ['./manual-plugin-config-modal.component.scss'],
 })
 export class ManualPluginConfigModalComponent implements OnInit {
-  @Input() pluginName: string;
+  @Input() plugin;
 
   public pluginAlias: string;
   public pluginType: 'platform' | 'accessory';
@@ -64,7 +64,7 @@ export class ManualPluginConfigModalComponent implements OnInit {
   }
 
   loadPluginAlias() {
-    this.$api.get(`/plugins/alias/${encodeURIComponent(this.pluginName)}`).subscribe(
+    this.$api.get(`/plugins/alias/${encodeURIComponent(this.plugin.name)}`).subscribe(
       (result) => {
         if (result.pluginAlias && result.pluginType) {
           this.pluginAlias = result.pluginAlias;
@@ -109,12 +109,12 @@ export class ManualPluginConfigModalComponent implements OnInit {
     if (this.pluginType === 'platform') {
       return this.homebridgeConfig.platforms.filter((platform: any) => {
         return platform.platform === this.pluginAlias ||
-          platform.platform === this.pluginName + '.' + this.pluginAlias;
+          platform.platform === this.plugin.name + '.' + this.pluginAlias;
       });
     } else if (this.pluginType === 'accessory') {
       return this.homebridgeConfig.accessories.filter((accessory: any) => {
         return accessory.accessory === this.pluginAlias ||
-          accessory.accessory === this.pluginName + '.' + this.pluginAlias;
+          accessory.accessory === this.plugin.name + '.' + this.pluginAlias;
       });
     }
   }

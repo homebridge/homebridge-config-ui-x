@@ -12,11 +12,14 @@ import { ManagePluginsModalComponent } from '../manage-plugins-modal/manage-plug
   styleUrls: ['./uninstall-plugins-modal.component.scss'],
 })
 export class UninstallPluginsModalComponent implements OnInit {
-  @Input() pluginName;
+  @Input() plugin;
   @Input() action;
-  @Input() settingsSchema;
 
+  public loading = true;
   public removeConfig = false;
+
+  public pluginType: 'platform' | 'accessory';
+  public pluginAlias: string;
 
   constructor(
     private modalService: NgbModal,
@@ -26,9 +29,13 @@ export class UninstallPluginsModalComponent implements OnInit {
     private $api: ApiService,
   ) { }
 
-  ngOnInit() {
-    if (this.settingsSchema) {
-      this.removeConfig = true;
+  async ngOnInit() {
+    try {
+      const schema = this.plugin.settingsSchema ? await this.getSchema() : await this.getAlias();
+      this.pluginType = schema.pluginType;
+      this.pluginAlias = schema.pluginAlias;
+    } finally {
+      this.loading = false;
     }
   }
 
@@ -49,11 +56,18 @@ export class UninstallPluginsModalComponent implements OnInit {
       backdrop: 'static',
     });
     ref.componentInstance.action = 'Uninstall';
-    ref.componentInstance.pluginName = this.pluginName;
+    ref.componentInstance.pluginName = this.plugin.name;
+  }
+
+  async getSchema() {
+    return await this.$api.get(`/plugins/config-schema/${encodeURIComponent(this.plugin.name)}`).toPromise();
+  }
+
+  async getAlias() {
+    return await this.$api.get(`/plugins/alias/${encodeURIComponent(this.plugin.name)}`).toPromise();
   }
 
   async removePluginConfig() {
-    const configSchema = await this.$api.get(`/plugins/config-schema/${encodeURIComponent(this.pluginName)}`).toPromise();
     const homebridgeConfig = await this.$api.get('/config-editor').toPromise();
 
     if (!Array.isArray(homebridgeConfig.platforms)) {
@@ -64,20 +78,20 @@ export class UninstallPluginsModalComponent implements OnInit {
       homebridgeConfig.accessories = [];
     }
 
-    if (configSchema.pluginType === 'platform') {
+    if (this.pluginType === 'platform') {
       homebridgeConfig.platforms = homebridgeConfig.platforms.filter((platform) => {
         return !(
-          platform.platform === configSchema.pluginAlias ||
-          platform.platform === this.pluginName + '.' + configSchema.pluginAlias
+          platform.platform === this.pluginAlias ||
+          platform.platform === this.plugin.name + '.' + this.pluginAlias
         );
       });
     }
 
-    if (configSchema.pluginType === 'accessory') {
+    if (this.pluginType === 'accessory') {
       homebridgeConfig.accessories = homebridgeConfig.accessories.filter((accessory) => {
         return !(
-          accessory.accessory === configSchema.pluginAlias ||
-          accessory.accessory === this.pluginName + '.' + configSchema.pluginAlias
+          accessory.accessory === this.pluginAlias ||
+          accessory.accessory === this.plugin.name + '.' + this.pluginAlias
         );
       });
     }

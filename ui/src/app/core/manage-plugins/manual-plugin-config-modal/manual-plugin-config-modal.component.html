@@ -2,7 +2,7 @@
   <div class="modal-header">
     <h5 class="modal-title">
       {{ 'plugins.settings.title_settings' | translate }}:
-      {{ pluginName }}
+      {{ plugin.name }}
     </h5>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="activeModal.close()">
       <span aria-hidden="true">&times;</span>
@@ -39,7 +39,7 @@
         cardClass="no-padding-card-body">
         <ng-template ngbPanelHeader>
           <div class="d-flex align-items-center justify-content-between">
-            <h5 class="m-0">{{ block.name || pluginName }}</h5>
+            <h5 class="m-0">{{ block.name || plugin.name }}</h5>
             <div>
               <button class="btn btn-danger ml-2" *ngIf="show === 'configBlock.' + $index"
                 (click)="removeBlock($index)">
@@ -61,12 +61,20 @@
       </ngb-panel>
     </ngb-accordion>
   </div>
-  <div class=" modal-footer">
+  <div class="modal-footer">
     <button type="button" class="btn btn-elegant mr-auto" data-dismiss="modal" (click)="addBlock()"
       *ngIf="canConfigure">
       <i class="fa fa-plus"></i> Add {{ pluginType }}
     </button>
-    <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.close()"
+
+    <div class="d-none d-sm-inline ml-3 mr-3">
+      <a *ngIf="plugin.links.npm" [href]="plugin.links.npm" target="_blank" rel="noopener noreferrer"
+        class="pl-3 manage-plugin-config-external-icons"><i class="fab fa-npm"></i></a>
+      <a *ngIf="plugin.links.homepage" [href]="plugin.links.homepage" target="_blank" rel="noopener noreferrer"
+        class="manage-plugin-config-external-icons"><i class="fab fa-github"></i></a>
+    </div>
+
+    <button type="button" class="btn btn-elegant ml-auto" data-dismiss="modal" (click)="activeModal.close()"
       [translate]="'form.button_close'">Close</button>
     <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="save()" [disabled]="saveInProgress"
       *ngIf="canConfigure">

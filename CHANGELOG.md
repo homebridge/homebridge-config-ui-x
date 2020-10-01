@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 4.28.0 (2020-10-01)
+
+### Notable Changes
+
+* **Plugins:** The *Settings* action button will now appear on all plugins, even if they don't implement the [Plugin Settings GUI](https://developers.homebridge.io/#/config-schema)
+  * For most plugins that don't implement the [Plugin Settings GUI](https://developers.homebridge.io/#/config-schema), the user will now be shown a config editor where they can manage the config for just that plugin
+* **Plugins:** Dramatically increased the number of plugins which the UI can offer to automatically remove the config for when uninstalling the plugin
+
+### Other Changes
+
+* **API**: Added REST API endpoints to lookup the plugin type and plugin alias that are needed to configure the plugin, see the [Swagger API documentation](https://github.com/oznu/homebridge-config-ui-x/wiki/API-Reference) for details
+
 ## 4.27.2 (2020-09-25)
 
 ### Notable Changes
