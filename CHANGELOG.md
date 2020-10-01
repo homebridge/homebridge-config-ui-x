@@ -7,8 +7,8 @@ All notable changes to this project will be documented in this file. This projec
 ### Notable Changes
 
 * **Plugins:** The *Settings* action button will now appear on all plugins, even if they don't implement the [Plugin Settings GUI](https://developers.homebridge.io/#/config-schema)
-  * For most plugins that don't implement the [Plugin Settings GUI](https://developers.homebridge.io/#/config-schema), the user will now be shown a config editor where they can manage the config just that plugin
-* **Plugins:** Dramatically increased the number of plugins which the UI can offer to automatically remove the config for when uninstalling the plugin
+  * For most plugins that don't implement the [Plugin Settings GUI](https://developers.homebridge.io/#/config-schema), the user will now be shown a config editor where they can manage the config just for that plugin
+* **Plugins:** Dramatically increased the number of plugins which the Homebridge UI can offer to automatically remove the config for when uninstalling the plugin
 
 ### Other Changes
 
