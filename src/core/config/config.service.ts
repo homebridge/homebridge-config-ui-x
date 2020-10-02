@@ -144,7 +144,7 @@ export class ConfigService {
     }
 
     if (!this.ui.sessionTimeout) {
-      this.ui.sessionTimeout = 28800;
+      this.ui.sessionTimeout = this.ui.auth === 'none' ? 1296000 : 28800;
     }
 
     this.secrets = this.getSecrets();

@@ -9,6 +9,7 @@ import { LoginComponent } from './login/login.component';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
 import { AdminGuard } from './admin.guard';
+import { LoginGuard } from './login/login.guard';
 
 // token getter
 export function tokenGetter() {
@@ -38,6 +39,7 @@ export function tokenGetter() {
     AuthService,
     AuthGuard,
     AdminGuard,
+    LoginGuard,
   ],
   exports: [],
 })

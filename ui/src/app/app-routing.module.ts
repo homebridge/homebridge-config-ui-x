@@ -4,6 +4,7 @@ import { LayoutComponent } from './shared/layout/layout.component';
 import { AuthGuard } from './core/auth/auth.guard';
 import { AdminGuard } from './core/auth/admin.guard';
 import { LoginComponent } from './core/auth/login/login.component';
+import { LoginGuard } from './core/auth/login/login.guard';
 
 /*
  * The status and restart modules should not be lazy loaded
@@ -16,6 +17,7 @@ const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent,
+    canActivate: [LoginGuard],
   },
   {
     path: '',

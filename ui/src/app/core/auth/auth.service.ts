@@ -134,9 +134,10 @@ export class AuthService {
       const timeout = expires.diff(dayjs(), 'millisecond');
       // setTimeout only accepts a 32bit integer, if the number is larger than this, do not timeout
       if (timeout <= 2147483647) {
-        this.logoutTimer = setTimeout(() => {
+        this.logoutTimer = setTimeout(async () => {
           if (this.formAuth === false) {
-            this.noauth();
+            await this.noauth();
+            window.location.reload();
           } else {
             this.logout();
           }

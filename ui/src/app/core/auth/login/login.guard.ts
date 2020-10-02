@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
-
-import { AuthService } from './auth.service';
+import { AuthService } from '@/app/core/auth/auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class AuthGuard implements CanActivate {
+export class LoginGuard implements CanActivate {
   constructor(
     private $router: Router,
     private $auth: AuthService,
@@ -20,22 +19,13 @@ export class AuthGuard implements CanActivate {
       await this.$auth.onSettingsLoaded.toPromise();
     }
 
-    if (this.$auth.isLoggedIn()) {
-      return true;
-    } else {
-      // if using not using auth, get a token
-      if (this.$auth.formAuth === false) {
-        await this.$auth.noauth();
-        return true;
-      }
-
-      // store desired route in session storage
-      window.sessionStorage.setItem('target_route', state.url);
-
+    // if using not using auth, or already logged in, redirect back to home screen
+    if (this.$auth.formAuth === false || this.$auth.isLoggedIn()) {
       // redirect to login page
-      this.$router.navigate(['login']);
-
+      this.$router.navigate(['/']);
       return false;
     }
+
+    return true;
   }
 }

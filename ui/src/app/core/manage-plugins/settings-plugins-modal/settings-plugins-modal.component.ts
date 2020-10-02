@@ -203,7 +203,7 @@ export class SettingsPluginsModalComponent implements OnInit {
 
         // reload app settings if the config was changed for Homebridge Config UI X
         if (this.pluginName === 'homebridge-config-ui-x') {
-          this.$auth.getAppSettings();
+          this.$auth.getAppSettings().catch(/* do nothing */);
         }
       })
       .catch(err => {
