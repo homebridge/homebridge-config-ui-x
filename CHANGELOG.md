@@ -11,6 +11,8 @@ All notable changes to this project will be documented in this file. This projec
 * **i18n:** Improvements to German language translations ([#845](https://github.com/oznu/homebridge-config-ui-x/pull/845))
 * **i18n:** Improvements to Spanish language translations ([#867](https://github.com/oznu/homebridge-config-ui-x/pull/867))
 * **i18n:** Improvements to Traditional Chinese language translations ([#868](https://github.com/oznu/homebridge-config-ui-x/pull/868))
+* **i18n:** Improvements to Polish language translations ([#874](https://github.com/oznu/homebridge-config-ui-x/pull/874))
+
 
 ## 4.28.0 (2020-10-01)
 
