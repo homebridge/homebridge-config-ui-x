@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Other Changes
 
+* **Plugins:** The plugin-specific JSON config editor will now automatically correct invalid JSON in more scenarios
 * **Auth:** Some changes to the "No Authentication Required" mode ([#865](https://github.com/oznu/homebridge-config-ui-x/pull/865))
 * **i18n:** Improvements to German language translations ([#845](https://github.com/oznu/homebridge-config-ui-x/pull/845))
 * **i18n:** Improvements to Spanish language translations ([#867](https://github.com/oznu/homebridge-config-ui-x/pull/867))

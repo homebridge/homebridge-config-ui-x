@@ -39,7 +39,7 @@
         cardClass="no-padding-card-body">
         <ng-template ngbPanelHeader>
           <div class="d-flex align-items-center justify-content-between">
-            <h5 class="m-0">{{ block.name || plugin.name }}</h5>
+            <h5 class="m-0">{{ block.name || pluginAlias }}</h5>
             <div>
               <button class="btn btn-danger ml-2" *ngIf="show === 'configBlock.' + $index"
                 (click)="removeBlock($index)">

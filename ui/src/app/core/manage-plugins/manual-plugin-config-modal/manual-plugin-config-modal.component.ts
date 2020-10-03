@@ -56,6 +56,10 @@ export class ManualPluginConfigModalComponent implements OnInit {
     }
   }
 
+  get arrayKey() {
+    return this.pluginType === 'accessory' ? 'accessories' : 'platforms';
+  }
+
   async onEditorInit(editor) {
     this.monacoEditor = editor;
     window['editor'] = editor;
@@ -106,17 +110,10 @@ export class ManualPluginConfigModalComponent implements OnInit {
   }
 
   configBlocks(): Array<any> {
-    if (this.pluginType === 'platform') {
-      return this.homebridgeConfig.platforms.filter((platform: any) => {
-        return platform.platform === this.pluginAlias ||
-          platform.platform === this.plugin.name + '.' + this.pluginAlias;
-      });
-    } else if (this.pluginType === 'accessory') {
-      return this.homebridgeConfig.accessories.filter((accessory: any) => {
-        return accessory.accessory === this.pluginAlias ||
-          accessory.accessory === this.plugin.name + '.' + this.pluginAlias;
-      });
-    }
+    return this.homebridgeConfig[this.arrayKey].filter((block: any) => {
+      return block[this.pluginType] === this.pluginAlias ||
+        block[this.pluginType] === this.plugin.name + '.' + this.pluginAlias;
+    });
   }
 
   addBlock() {
@@ -125,26 +122,23 @@ export class ManualPluginConfigModalComponent implements OnInit {
       return;
     }
 
-    if (this.pluginType === 'platform') {
-      this.homebridgeConfig.platforms.push({
-        platform: this.pluginAlias,
-        name: this.pluginAlias,
-      });
-    } else if (this.pluginType === 'accessory') {
-      this.homebridgeConfig.accessories.push({
-        accessory: this.pluginAlias,
-        name: this.pluginAlias,
-      });
-    }
+    this.homebridgeConfig[this.arrayKey].push({
+      [this.pluginType]: this.pluginAlias,
+      name: this.pluginAlias,
+    });
 
     this.editBlock((this.configBlocks().length - 1));
   }
 
   saveCurrentBlock() {
     if (this.currentBlockIndex !== null && this.monacoEditor) {
-      const currentBlockString = this.monacoEditor.getModel().getValue();
-
+      let currentBlockString: string = this.monacoEditor.getModel().getValue().trim();
       let currentBlockNew;
+
+      // fix the object if the user has pasted an example that did not include the opening and closing brackets
+      if (currentBlockString.charAt(0) === `"` && currentBlockString.charAt(currentBlockString.length - 1) === ']') {
+        currentBlockString = '{' + currentBlockString + '}';
+      }
 
       try {
         currentBlockNew = JSON5.parse(currentBlockString);
@@ -164,11 +158,24 @@ export class ManualPluginConfigModalComponent implements OnInit {
         return false;
       }
 
-      if (this.pluginType === 'accessory' && !currentBlockNew.name) {
+      // fix the object if the user pasted an example that included the "accessories" or "platforms" array
+      if (
+        !currentBlockNew[this.pluginType]
+        && Array.isArray(currentBlockNew[this.arrayKey])
+        && currentBlockNew[this.arrayKey].length
+        && Object.keys(currentBlockNew).length === 1
+      ) {
+        currentBlockNew = currentBlockNew[this.arrayKey][0];
+      }
+
+      // accessory types need a valid name
+      if (this.pluginType === 'accessory' && (!currentBlockNew.name || typeof currentBlockNew.name !== 'string')) {
         this.$toastr.error(
-          this.translate.instant('Accessory must have a "name" attribute'),
+          this.translate.instant('Accessory must have a valid "name" attribute'),
           this.translate.instant('config.toast_title_config_syntax_error'),
         );
+        currentBlockNew.name = '';
+        this.monacoEditor.getModel().setValue(JSON.stringify(currentBlockNew, null, 4));
         return false;
       }
 
@@ -176,6 +183,7 @@ export class ManualPluginConfigModalComponent implements OnInit {
       Object.keys(currentBlock).forEach((x) => delete currentBlock[x]);
       Object.assign(currentBlock, currentBlockNew);
 
+      // ensure the plugin alias is set
       currentBlock[this.pluginType] = this.pluginAlias;
     }
 
@@ -195,16 +203,9 @@ export class ManualPluginConfigModalComponent implements OnInit {
   removeBlock(index: number) {
     const block = this.configBlocks()[index];
 
-    if (this.pluginType === 'accessory') {
-      const blockIndex = this.homebridgeConfig.accessories.findIndex((x) => x === block);
-      if (blockIndex > -1) {
-        this.homebridgeConfig.accessories.splice(blockIndex, 1);
-      }
-    } else if (this.pluginType === 'platform') {
-      const blockIndex = this.homebridgeConfig.platforms.findIndex((x) => x === block);
-      if (blockIndex > -1) {
-        this.homebridgeConfig.platforms.splice(blockIndex, 1);
-      }
+    const blockIndex = this.homebridgeConfig[this.arrayKey].findIndex((x) => x === block);
+    if (blockIndex > -1) {
+      this.homebridgeConfig[this.arrayKey].splice(blockIndex, 1);
     }
 
     this.currentBlockIndex = null;
