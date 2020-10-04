@@ -133,6 +133,32 @@ describe('PluginController (e2e)', () => {
     expect(res.json()[0]).toHaveProperty('lastUpdated');
   });
 
+  it('GET /plugins/search/:query (blacklisted - exact plugin name)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: `/plugins/search/homebridge-config-ui-rdp`,
+      headers: {
+        authorization,
+      }
+    });
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.json().filter(x => x.name === 'homebridge-config-ui-rdp')).toHaveLength(0);
+  });
+
+  it('GET /plugins/search/:query (blacklisted - search query', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: `/plugins/search/${encodeURIComponent('ui')}`,
+      headers: {
+        authorization,
+      }
+    });
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.json().filter(x => x.name === 'homebridge-config-ui-rdp')).toHaveLength(0);
+  });
+
   it('GET /plugins/lookup/:pluginName (non-scoped)', async () => {
     const res = await app.inject({
       method: 'GET',

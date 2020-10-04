@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import { Injectable, NotFoundException, InternalServerErrorException, HttpService, BadRequestException } from '@nestjs/common';
 import { HomebridgePlugin, IPackageJson, INpmSearchResults, INpmRegistryModule, HomebridgePluginVersions } from './types';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import * as os from 'os';
 import * as _ from 'lodash';
 import * as path from 'path';
@@ -43,6 +43,17 @@ export class PluginsService {
   private pluginAliasCache = new NodeCache({ stdTTL: 86400 });
 
   private verifiedPluginsRetryTimeout: NodeJS.Timeout;
+
+  // these plugins are legacy Homebridge UI plugins / forks of this UI and will cause conflicts
+  // or have post install scripts that alter the users system without user interaction
+  private searchResultBlacklist = [
+    'homebridge-config-ui',
+    'homebridge-config-ui-rdp',
+    'homebridge-rocket-smart-home-ui',
+    'homebridge-ui',
+    'homebridge-to-hoobs',
+    'homebridge-server'
+  ];
 
   constructor(
     private httpService: HttpService,
@@ -185,6 +196,7 @@ export class PluginsService {
 
     const result: HomebridgePlugin[] = searchResults.objects
       .filter(x => x.package.name.indexOf('homebridge-') === 0 || this.isScopedPlugin(x.package.name))
+      .filter(x => !this.searchResultBlacklist.includes(x.package.name))
       .map((pkg) => {
         let plugin: HomebridgePlugin = {
           name: pkg.package.name,
@@ -212,8 +224,12 @@ export class PluginsService {
         return plugin;
       });
 
-    if (!result.length && (query.indexOf('homebridge-') === 0 || this.isScopedPlugin(query))) {
-      return await this.searchNpmRegistrySingle(query);
+    if (
+      !result.length
+      && (query.indexOf('homebridge-') === 0 || this.isScopedPlugin(query))
+      && !this.searchResultBlacklist.includes(query.toLowerCase())
+    ) {
+      return await this.searchNpmRegistrySingle(query.toLowerCase());
     }
 
     return _.orderBy(result, ['verifiedPlugin'], ['desc']);
@@ -272,7 +288,7 @@ export class PluginsService {
 
       return [plugin];
     } catch (e) {
-      if (e.statusCode !== 404) {
+      if (e.response?.status !== 404) {
         this.logger.error(`Failed to search the npm registry - "${e.message}" - see https://git.io/JJSz6 for help.`);
       }
       return [];
@@ -899,7 +915,7 @@ export class PluginsService {
         plugin.engines = pkg.engines;
       }
     } catch (e) {
-      if (e.statusCode !== 404) {
+      if (e.response?.status !== 404) {
         this.logger.log(`[${plugin.name}] Failed to check registry.npmjs.org for updates: "${e.message}" - see https://git.io/JJSz6 for help.`);
       }
       plugin.publicPackage = false;
