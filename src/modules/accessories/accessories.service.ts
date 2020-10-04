@@ -120,7 +120,7 @@ export class AccessoriesService {
         return services;
       })
       .catch((e) => {
-        if (e.statusCode === 401) {
+        if (e.response?.status === 401) {
           this.logger.warn(`Homebridge must be running in insecure mode to view and control accessories from this plugin.`);
         } else {
           this.logger.error(`Failed load accessories from Homebridge: ${e.message}`);
