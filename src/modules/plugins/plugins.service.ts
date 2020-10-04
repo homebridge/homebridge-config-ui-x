@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import { Injectable, NotFoundException, InternalServerErrorException, HttpService, BadRequestException } from '@nestjs/common';
 import { HomebridgePlugin, IPackageJson, INpmSearchResults, INpmRegistryModule, HomebridgePluginVersions } from './types';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import * as os from 'os';
 import * as _ from 'lodash';
 import * as path from 'path';
