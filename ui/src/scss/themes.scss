@@ -82,6 +82,7 @@
 @include make-theme("teal", #009688, #00695c);
 @include make-theme("cyan", #00bcd4, #00838f);
 @include make-theme("deep-purple", #673ab7, #4527a0);
+@include make-theme("test-purple", #673ab7, #4527a0);
 
 .config-ui-x-navi-blue {
   .btn-primary {
