@@ -23,7 +23,7 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
   public monacoEditor;
   public editorOptions = {
     language: 'shell',
-    theme: this.$auth.theme.startsWith('dark-') ? 'vs-dark' : 'vs-light',
+    theme: this.$auth.darkModeEnabled ? 'vs-dark' : 'vs-light',
     automaticLayout: true,
   };
 

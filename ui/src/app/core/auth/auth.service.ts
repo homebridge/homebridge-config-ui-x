@@ -41,6 +41,7 @@ export class AuthService {
   public uiVersion: string;
   public formAuth = true;
   public theme: string;
+  public darkModeEnabled: string;
   public token: string;
   public user: UserInterface = {};
   private logoutTimer;
@@ -193,6 +194,7 @@ export class AuthService {
       //window.document.querySelector('body').classList.remove(`config-ui-x-${darkModeEnabled ? 'dark-' : ''}${darkMode && useDarkModeAccent ? 'accent-' : ''}${this.theme}`);
     }
     this.theme = theme;
+    this.darkModeEnabled = darkModeEnabled;
     window.document.querySelector('body').classList.add(`config-ui-x-${darkModeEnabled ? 'dark-' : ''}${darkModeEnabled && useDarkModeAccent ? 'accent-' : ''}${this.theme}`);
   }
 

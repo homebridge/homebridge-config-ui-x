@@ -44,7 +44,7 @@
         <p class="red-text" *ngIf="invalidCredentials"><small
             [translate]="'login.message_invalid_username_or_password'"></small></p>
         <p class="red-text" *ngIf="invalid2faCode"><small [translate]="'login.message_invalid_2fa_code'"></small></p>
-        <button tabindex="3" class="btn btn-amber" type="submit" [translate]="'login.button_login'"
+        <button tabindex="3" class="btn btn-primary" type="submit" [translate]="'login.button_login'"
           [disabled]="form.invalid">Login</button>
       </div>
 

@@ -1,4 +1,6 @@
+
 @mixin make-dark-theme($name, $darkModePrimary, $accentNavBar) {
+
   .config-ui-x-#{$name} {
     $backgroundColor: #000000;
     $secondaryBackground: #2b2b2b;
@@ -34,6 +36,13 @@
     .btn-primary,
     .btn-default {
       @extend .btn-amber !optional;
+      background-color: $darkModePrimary !important;
+    }
+
+    .btn-primary:active,
+    .btn-default:active {
+      @extend .btn-amber:active !optional;
+      background-color: rgba($darkModePrimary, .8) !important;
     }
 
     .bg-yellow {
@@ -250,7 +259,7 @@
     }
 
     .hb-widget-chart-background {
-      background-color: rgba(#ffa000, 0.2);
+      background-color: rgba($darkModePrimary, 0.2);
       display: none;
     }
 
