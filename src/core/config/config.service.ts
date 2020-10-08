@@ -63,6 +63,8 @@ export class ConfigService {
     host?: '::' | '0.0.0.0' | string;
     auth: 'form' | 'none';
     theme: string;
+    darkMode: string;
+    useDarkModeAccent: boolean;
     sudo?: boolean;
     restart?: string;
     lang?: string;
@@ -179,6 +181,8 @@ export class ConfigService {
       },
       formAuth: Boolean(this.ui.auth !== 'none'),
       theme: this.ui.theme || 'auto',
+      darkMode: this.ui.darkMode || 'auto',
+      useDarkModeAccent: this.ui.useDarkModeAccent || false,
       serverTimestamp: new Date().toISOString(),
     };
   }

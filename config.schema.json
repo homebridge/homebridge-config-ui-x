@@ -43,12 +43,12 @@
       "theme": {
         "title": "UI Theme",
         "type": "string",
-        "default": "auto",
+        "default": "default",
         "oneOf": [
           {
             "title": "Default",
             "enum": [
-              "auto"
+              "default"
             ]
           },
           {
@@ -140,15 +140,39 @@
             "enum": [
               "brown"
             ]
-          },
-          {
-            "title": "Dark Mode",
-            "enum": [
-              "dark-mode"
-            ]
           }
         ],
         "required": true
+      },
+      "darkMode": {
+        "title": "Dark mode",
+        "type": "string",
+        "default": "auto",
+        "required": true,
+        "oneOf": [
+          {
+            "title": "Auto",
+            "enum": [
+              "auto"
+            ]
+          },
+          {
+            "title": "Disabled",
+            "enum": [
+              "disabled"
+            ]
+          },
+          {
+            "title": "Enabled",
+            "enum": [
+              "enabled"
+            ]
+          }
+        ]
+      },
+      "useDarkModeAccent": {
+        "title": "Navbar uses accent color in dark mode",
+        "type": "boolean"
       },
       "restart": {
         "title": "Restart Command",
@@ -474,7 +498,9 @@
           "flex-flow": "column",
           "items": [
             "name",
-            "theme"
+            "theme",
+            "darkMode",
+            "useDarkModeAccent"
           ]
         },
         {

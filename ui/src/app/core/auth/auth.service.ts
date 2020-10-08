@@ -157,9 +157,10 @@ export class AuthService {
   getAppSettings() {
     return this.$api.get('/auth/settings').toPromise()
       .then((data: any) => {
+        console.log(data);
         this.formAuth = data.formAuth;
         this.env = data.env;
-        this.setTheme(data.theme || 'auto');
+        this.setTheme(data.theme || 'auto', data.darkMode || false, data.useDarkModeAccent || false);
         this.setTitle(this.env.homebridgeInstanceName);
         this.checkServerTime(data.serverTimestamp);
         this.setUiVersion(data.env.packageVersion);
@@ -169,24 +170,30 @@ export class AuthService {
       });
   }
 
-  setTheme(theme: string) {
-    if (theme === 'auto') {
+  setTheme(theme: string, darkMode: string, useDarkModeAccent: boolean) {
+    let darkModeEnabled;
+
+    if (darkMode === 'auto') {
       // select theme based on os dark mode preferences
       try {
-        if (matchMedia('(prefers-color-scheme: dark)').matches) {
-          theme = 'dark-mode';
-        } else {
-          theme = 'purple';
-        }
+        darkModeEnabled = matchMedia('(prefers-color-scheme: dark)').matches;
       } catch (e) {
-        theme = 'purple';
+        darkModeEnabled = false;
       }
+    } else {
+      darkModeEnabled = (darkMode === 'enabled');
     }
+
     if (this.theme) {
-      window.document.querySelector('body').classList.remove(`config-ui-x-${this.theme}`);
+      const el = window.document.querySelector('body');
+      const classes = el.className.split(' ').filter(c => !c.startsWith('config-ui-x-'));
+      el.className = classes.join(' ').trim();
+
+      //window.document.querySelector('body').className.split(" ").filter(c => !c.startsWith('config-ui-x-'));
+      //window.document.querySelector('body').classList.remove(`config-ui-x-${darkModeEnabled ? 'dark-' : ''}${darkMode && useDarkModeAccent ? 'accent-' : ''}${this.theme}`);
     }
     this.theme = theme;
-    window.document.querySelector('body').classList.add(`config-ui-x-${this.theme}`);
+    window.document.querySelector('body').classList.add(`config-ui-x-${darkModeEnabled ? 'dark-' : ''}${darkModeEnabled && useDarkModeAccent ? 'accent-' : ''}${this.theme}`);
   }
 
   setTitle(title: string) {
