@@ -189,9 +189,6 @@ export class AuthService {
       const el = window.document.querySelector('body');
       const classes = el.className.split(' ').filter(c => !c.startsWith('config-ui-x-'));
       el.className = classes.join(' ').trim();
-
-      //window.document.querySelector('body').className.split(" ").filter(c => !c.startsWith('config-ui-x-'));
-      //window.document.querySelector('body').classList.remove(`config-ui-x-${darkModeEnabled ? 'dark-' : ''}${darkMode && useDarkModeAccent ? 'accent-' : ''}${this.theme}`);
     }
     this.theme = theme;
     this.darkModeEnabled = darkModeEnabled;
