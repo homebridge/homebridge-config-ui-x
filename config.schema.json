@@ -41,16 +41,10 @@
         "required": true
       },
       "theme": {
-        "title": "UI Theme",
+        "title": "Color",
         "type": "string",
-        "default": "default",
+        "default": "purple",
         "oneOf": [
-          {
-            "title": "Default",
-            "enum": [
-              "default"
-            ]
-          },
           {
             "title": "Red",
             "enum": [
@@ -145,7 +139,7 @@
         "required": true
       },
       "darkMode": {
-        "title": "Dark mode",
+        "title": "Dark Mode",
         "type": "string",
         "default": "auto",
         "required": true,
@@ -171,7 +165,7 @@
         ]
       },
       "useDarkModeAccent": {
-        "title": "Navbar uses accent color in dark mode",
+        "title": "Highlight navbar in dark mode",
         "type": "boolean"
       },
       "restart": {
@@ -491,6 +485,7 @@
   "layout": [
     {
       "type": "flex",
+      "title": "General",
       "flex-flow": "row wrap",
       "items": [
         {
@@ -498,8 +493,28 @@
           "flex-flow": "column",
           "items": [
             "name",
+            "tempUnits"
+          ]
+        },
+        {
+          "type": "flex",
+          "flex-flow": "column",
+          "items": [
+            "port"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "flex",
+      "flex-flow": "row wrap",
+      "title": "Theme",
+      "items": [
+        {
+          "type": "flex",
+          "flex-flow": "column",
+          "items": [
             "theme",
-            "darkMode",
             "useDarkModeAccent"
           ]
         },
@@ -507,8 +522,7 @@
           "type": "flex",
           "flex-flow": "column",
           "items": [
-            "port",
-            "tempUnits"
+            "darkMode"
           ]
         }
       ]
