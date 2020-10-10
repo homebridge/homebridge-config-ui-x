@@ -263,7 +263,19 @@
             ]
           },
           {
-            "title": "Portuguese (pl)",
+            "title": "Portuguese (pt-BR)",
+            "enum": [
+              "pt-BR"
+            ]
+          },
+          {
+            "title": "Portuguese (pt)",
+            "enum": [
+              "pt"
+            ]
+          },
+          {
+            "title": "Polish (pl)",
             "enum": [
               "pl"
             ]
