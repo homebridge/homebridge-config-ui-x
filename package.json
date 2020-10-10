@@ -1,7 +1,7 @@
 {
   "name": "homebridge-config-ui-x",
   "displayName": "Homebridge Config UI X",
-  "version": "4.28.1-test.2",
+  "version": "4.29.0-test.4",
   "description": "A web based management, configuration and control platform for Homebridge",
   "license": "MIT",
   "author": "oznu <dev@oz.nu>",
@@ -29,6 +29,7 @@
     "build:server": "rimraf dist && tsc -p tsconfig.build.json && npm run webpack",
     "build:ui": "npm run build --prefix ui",
     "start": "ts-node -r tsconfig-paths/register src/main.ts",
+    "serve": "npm run watch",
     "lint": "npm run lint:server && npm run lint:ui",
     "lint:server": "tslint -p tsconfig.json -c tslint.json",
     "lint:ui": "npm run lint --prefix ui",

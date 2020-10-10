@@ -6,16 +6,32 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Notable Changes
 
+* **Plugins:** Added the ability to rollback to a previous version of a plugin, or install the beta/test version of a plugin
+* **Homebridge:** Added the ability to rollback to a previous version of Homebridge, or install the latest beta version of Homebridge ([#877](https://github.com/oznu/homebridge-config-ui-x/issues/877))
+  * Click the Homebridge version on the status dashboard to access this feature
+* **i18n:** Brazillian Portuguese (pt-BR) language added by [@zearthur99](https://github.com/zearthur99) ([#880](https://github.com/oznu/homebridge-config-ui-x/pull/880))
+  * The Homebridge UI is now available in 21 different languages!
+
+### Other Changes
+
+* **Plugins:** Minor cosmetic improvements to the plugins settings GUI
+* **i18n:** Improvements to French language translations ([#881](https://github.com/oznu/homebridge-config-ui-x/pull/881),[#882](https://github.com/oznu/homebridge-config-ui-x/pull/882))
+
+## 4.28.1 (2020-10-08)
+
+### Notable Changes
+
 * **Plugins:** The plugin-specific JSON config editor will now automatically correct invalid JSON in more scenarios
 
 ### Other Changes
 
-* **Auth:** Some changes to the "No Authentication Required" mode ([#865](https://github.com/oznu/homebridge-config-ui-x/pull/865))
+* **Auth:** Some changes to the "No Authentication Required" mode ([#865](https://github.com/oznu/homebridge-config-ui-x/issues/865))
 * **i18n:** Improvements to German language translations ([#845](https://github.com/oznu/homebridge-config-ui-x/pull/845))
 * **i18n:** Improvements to Spanish language translations ([#867](https://github.com/oznu/homebridge-config-ui-x/pull/867))
 * **i18n:** Improvements to Traditional Chinese language translations ([#868](https://github.com/oznu/homebridge-config-ui-x/pull/868))
 * **i18n:** Improvements to Polish language translations ([#874](https://github.com/oznu/homebridge-config-ui-x/pull/874))
 * **i18n:** Improvements to Italian language translations ([#876](https://github.com/oznu/homebridge-config-ui-x/pull/876))
+* **i18n:** Improvements to Simplified Chinese language translations ([#878](https://github.com/oznu/homebridge-config-ui-x/pull/878))
 
 ## 4.28.0 (2020-10-01)
 

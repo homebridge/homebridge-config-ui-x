@@ -41,11 +41,12 @@
           <div class="d-flex align-items-center justify-content-between">
             <h5 class="m-0">{{ block.name || pluginAlias }}</h5>
             <div>
-              <button class="btn btn-danger ml-2" *ngIf="show === 'configBlock.' + $index"
-                (click)="removeBlock($index)">
+              <button class="btn btn-danger ml-2" *ngIf="show === 'configBlock.' + $index" (click)="removeBlock($index)"
+                [ngbTooltip]="'form.button_delete' | translate" container="body">
                 <i class="fa fa-trash"></i>
               </button>
-              <button class="btn btn-primary ml-2" (click)="editBlock($index)">
+              <button class="btn btn-primary ml-2" (click)="editBlock($index)"
+                [ngbTooltip]="'form.button_edit' | translate" container="body">
                 <i class="fa fa-edit"></i>
               </button>
             </div>
@@ -71,7 +72,7 @@
       <a *ngIf="plugin.links.npm" [href]="plugin.links.npm" target="_blank" rel="noopener noreferrer"
         class="pl-3 manage-plugin-config-external-icons"><i class="fab fa-npm"></i></a>
       <a *ngIf="plugin.links.homepage" [href]="plugin.links.homepage" target="_blank" rel="noopener noreferrer"
-        class="manage-plugin-config-external-icons"><i class="fab fa-github"></i></a>
+        class="manage-plugin-config-external-icons"><i [ngClass]="plugin.links.homepage | externalLinkIcon"></i></a>
     </div>
 
     <button type="button" class="btn btn-elegant ml-auto" data-dismiss="modal" (click)="activeModal.close()"

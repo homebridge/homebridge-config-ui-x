@@ -1,14 +1,14 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 
-import { AuthService } from '../../auth/auth.service';
-import { ApiService } from '../../api.service';
-import { WsService } from '../../ws.service';
-import { Router } from '@angular/router';
+import { ApiService } from '@/app/core/api.service';
+import { AuthService } from '@/app/core/auth/auth.service';
+import { WsService } from '@/app/core/ws.service';
 
 @Component({
   selector: 'app-manage-plugins-modal',
@@ -17,6 +17,7 @@ import { Router } from '@angular/router';
 })
 export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   @Input() pluginName;
+  @Input() targetVersion = 'latest';
   @Input() action;
 
   private io = this.$ws.connectToNamespace('plugins');
@@ -74,7 +75,11 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
         this.pastTenseVerb = this.translate.instant('plugins.manage.label_uninstalled');
         break;
       case 'Update':
-        this.getReleaseNotes();
+        if (this.targetVersion === 'latest') {
+          this.getReleaseNotes();
+        } else {
+          this.update();
+        }
         this.presentTenseVerb = this.translate.instant('plugins.manage.label_update');
         this.pastTenseVerb = this.translate.instant('plugins.manage.label_updated');
         break;
@@ -82,11 +87,19 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   }
 
   install() {
-    this.io.request('install', { name: this.pluginName, version: 'latest' }).subscribe(
+    if (this.pluginName === 'homebridge') {
+      return this.upgradeHomebridge();
+    }
+
+    this.io.request('install', { name: this.pluginName, version: this.targetVersion }).subscribe(
       (data) => {
-        this.$router.navigate(['/plugins'], {
-          queryParams: { installed: this.pluginName },
-        });
+        if (this.$router.url !== '/plugins') {
+          this.$router.navigate(['/plugins'], {
+            queryParams: { installed: this.pluginName },
+          });
+        } else {
+          this.$router.navigate(['/plugins']);
+        }
         this.activeModal.close();
         this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);
       },
@@ -119,7 +132,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       return this.upgradeHomebridge();
     }
 
-    this.io.request('update', { name: this.pluginName, version: 'latest' }).subscribe(
+    this.io.request('update', { name: this.pluginName, version: this.targetVersion }).subscribe(
       (data) => {
         if (this.pluginName === 'homebridge-config-ui-x') {
           this.updateSelf = true;
@@ -138,7 +151,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   }
 
   upgradeHomebridge() {
-    this.io.request('homebridge-update', { version: 'latest' }).subscribe(
+    this.io.request('homebridge-update', { version: this.targetVersion }).subscribe(
       (data) => {
         this.$router.navigate(['/restart']);
         this.activeModal.close();

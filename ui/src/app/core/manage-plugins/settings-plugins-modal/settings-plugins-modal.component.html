@@ -1,7 +1,7 @@
 <div class="modal-content hb-plugin-settings-modal">
   <div class="modal-header">
     <h5 class="modal-title">{{'plugins.settings.title_settings' | translate}}:
-      {{ configSchema.displayName || pluginName }}</h5>
+      {{ configSchema.displayName || plugin.name }}</h5>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"
       (click)="activeModal.dismiss('Cross click')">
       <span aria-hidden="true">&times;</span>
@@ -16,17 +16,25 @@
     <!-- MULTIPLE CONFIG BLOCKS-->
     <ngb-accordion [closeOthers]="true" [activeIds]="show || pluginConfig[0].__uuid__"
       *ngIf="pluginConfig.length && !configSchema.singular">
-      <ngb-panel [id]="block.__uuid__" [title]="block.name" *ngFor="let block of pluginConfig">
+      <ngb-panel [id]="block.__uuid__" *ngFor="let block of pluginConfig">
+        <ng-template ngbPanelHeader let-opened="opened">
+          <div class="d-flex align-items-center justify-content-between">
+            <h5 class="m-0">{{ block.name }}</h5>
+            <div>
+              <button *ngIf="plugin.name !== 'homebridge-config-ui-x' && opened" class="btn btn-danger ml-2"
+                (click)="removeBlock(block.__uuid__)" [ngbTooltip]="'form.button_delete' | translate" container="body">
+                <i class="fa fa-trash"></i>
+              </button>
+              <button class="btn btn-primary ml-2" ngbPanelToggle [ngbTooltip]="'form.button_edit' | translate"
+                container="body">
+                <i class="fa fa-edit"></i>
+              </button>
+            </div>
+          </div>
+        </ng-template>
         <ng-template ngbPanelContent>
           <app-schema-form [configSchema]="configSchema" [data]="block.config" (dataChanged)="block.onChange($event)">
           </app-schema-form>
-          <div class="d-flex">
-            <a *ngIf="pluginName !== 'homebridge-config-ui-x'" class="ml-auto red-text"
-              (click)="removeBlock(block.__uuid__)" [ngbTooltip]="'Remove ' + configSchema.pluginType + '.'"
-              container="body">
-              <i class="fas fa-trash"></i>
-            </a>
-          </div>
         </ng-template>
       </ngb-panel>
     </ngb-accordion>
@@ -36,14 +44,7 @@
       <div *ngFor="let block of pluginConfig">
         <app-schema-form [configSchema]="configSchema" [data]="block.config" (dataChanged)="block.onChange($event)">
         </app-schema-form>
-        <app-homebridge-hue *ngIf="pluginName === 'homebridge-hue'"></app-homebridge-hue>
-        <div class="d-flex">
-          <a *ngIf="pluginName !== 'homebridge-config-ui-x'" class="ml-auto red-text"
-            (click)="removeBlock(block.__uuid__)" [ngbTooltip]="'Remove ' + configSchema.pluginType + '.'"
-            container="body">
-            <i class="fas fa-trash"></i>
-          </a>
-        </div>
+        <app-homebridge-hue *ngIf="plugin.name === 'homebridge-hue'"></app-homebridge-hue>
       </div>
 
     </div>
@@ -54,12 +55,25 @@
     </div>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-elegant mr-auto" data-dismiss="modal" (click)="addBlock()"
-      *ngIf="!configSchema.singular || pluginConfig.length === 0">
-      Add {{ configSchema.pluginType }} Block
+    <button *ngIf="!configSchema.singular || pluginConfig.length === 0" type="button" class="btn btn-elegant mr-auto"
+      data-dismiss="modal" (click)="addBlock()">
+      <i class="fa fa-plus"></i> Add {{ configSchema.pluginType }}
     </button>
-    <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')"
-      [translate]="'form.button_cancel'">Cancel</button>
+    <button *ngIf="plugin.name !== 'homebridge-config-ui-x' && configSchema.singular && pluginConfig.length > 0"
+      class="btn btn-danger ml-2 mr-auto" (click)="removeBlock(pluginConfig[0].__uuid__)"
+      [ngbTooltip]="'form.button_delete' | translate" container="body">
+      <i class="fa fa-trash"></i>
+    </button>
+
+    <div class="d-none d-sm-inline ml-3 mr-3" *ngIf="plugin.name !== 'homebridge-config-ui-x'">
+      <a *ngIf="plugin.links.npm" [href]="plugin.links.npm" target="_blank" rel="noopener noreferrer"
+        class="pl-3 manage-plugin-config-external-icons"><i class="fab fa-npm"></i></a>
+      <a *ngIf="plugin.links.homepage" [href]="plugin.links.homepage" target="_blank" rel="noopener noreferrer"
+        class="manage-plugin-config-external-icons"><i [ngClass]="plugin.links.homepage | externalLinkIcon"></i></a>
+    </div>
+
+    <button type="button" class="btn btn-elegant ml-auto" data-dismiss="modal"
+      (click)="activeModal.dismiss('Cross click')" [translate]="'form.button_cancel'">Cancel</button>
     <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="save()" [disabled]="saveInProgress">
       {{ 'form.button_save' | translate }} <i *ngIf="saveInProgress" class="fas fa-spinner fa-pulse"></i>
     </button>

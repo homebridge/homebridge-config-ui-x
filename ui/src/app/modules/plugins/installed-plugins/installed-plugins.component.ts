@@ -71,7 +71,7 @@ export class InstalledPluginsComponent implements OnInit, OnDestroy {
   checkRecentlyInstalled() {
     this.$route.queryParams.subscribe(async (params) => {
       if (params.installed && this.installedPlugins.find(x => x.name === params.installed && x.settingsSchema)) {
-        this.$plugin.settings(params.installed)
+        this.$plugin.settings(this.installedPlugins.find(x => x.name === params.installed))
           .finally(() => {
             this.$router.navigate(['/plugins']);
           });

@@ -9,6 +9,7 @@ import { UninstallPluginsModalComponent } from './uninstall-plugins-modal/uninst
 import { SettingsPluginsModalComponent } from './settings-plugins-modal/settings-plugins-modal.component';
 import { NodeUpdateRequiredModalComponent } from './node-update-required-modal/node-update-required-modal.component';
 import { ManualPluginConfigModalComponent } from './manual-plugin-config-modal/manual-plugin-config-modal.component';
+import { SelectPreviousVersionComponent } from './select-previous-version/select-previous-version.component';
 
 @Injectable({
   providedIn: 'root',
@@ -21,13 +22,14 @@ export class ManagePluginsService {
     private $auth: AuthService,
   ) { }
 
-  installPlugin(pluginName) {
+  installPlugin(pluginName, targetVersion = 'latest') {
     const ref = this.modalService.open(ManagePluginsModalComponent, {
       size: 'lg',
       backdrop: 'static',
     });
     ref.componentInstance.action = 'Install';
     ref.componentInstance.pluginName = pluginName;
+    ref.componentInstance.targetVersion = targetVersion;
   }
 
   uninstallPlugin(plugin) {
@@ -38,7 +40,7 @@ export class ManagePluginsService {
     ref.componentInstance.plugin = plugin;
   }
 
-  async updatePlugin(plugin) {
+  async updatePlugin(plugin, targetVersion = 'latest') {
     if (!await this.checkNodeVersion(plugin)) {
       return;
     }
@@ -49,9 +51,10 @@ export class ManagePluginsService {
     });
     ref.componentInstance.action = 'Update';
     ref.componentInstance.pluginName = plugin.name;
+    ref.componentInstance.targetVersion = targetVersion;
   }
 
-  async upgradeHomebridge(homebridgePkg) {
+  async upgradeHomebridge(homebridgePkg, targetVersion = 'latest') {
     if (!await this.checkNodeVersion(homebridgePkg)) {
       return;
     }
@@ -62,34 +65,47 @@ export class ManagePluginsService {
     });
     ref.componentInstance.action = 'Update';
     ref.componentInstance.pluginName = homebridgePkg.name;
+    ref.componentInstance.targetVersion = targetVersion;
   }
 
   /**
-   * Used for plugins that have a config.schema.json
-   * @param pluginName
+  * Open the version selector
+  * @param plugin
+  */
+  installPreviousVersion(plugin) {
+    const ref = this.modalService.open(SelectPreviousVersionComponent, {
+      backdrop: 'static',
+    });
+
+    ref.componentInstance.plugin = plugin;
+
+    return ref.result.then((targetVersion) => {
+      return plugin.installedVersion && plugin.name !== 'homebridge' ?
+        this.updatePlugin(plugin, targetVersion) :
+        this.installPlugin(plugin.name, targetVersion);
+    }).catch(() => {
+      // do nothing
+    });
+  }
+
+  /**
+   * Open the plugin settings modal
+   * @param plugin
    */
-  settings(pluginName: string) {
-    if (this.customPluginsService.plugins[pluginName]) {
-      return this.customPluginsService.openSettings(pluginName);
+  settings(plugin) {
+    if (this.customPluginsService.plugins[plugin.name]) {
+      return this.customPluginsService.openSettings(plugin.name);
     }
 
-    const ref = this.modalService.open(SettingsPluginsModalComponent, {
-      size: 'lg',
-      backdrop: 'static',
-    });
-    ref.componentInstance.pluginName = pluginName;
+    const ref = this.modalService.open(
+      plugin.settingsSchema ? SettingsPluginsModalComponent : ManualPluginConfigModalComponent,
+      {
+        size: 'lg',
+        backdrop: 'static',
+      },
+    );
 
-    return ref.result;
-  }
-
-  /**
-   * Used for plugins that do not have a config.schema.json
-   */
-  async manualPluginConfig(plugin) {
-    const ref = this.modalService.open(ManualPluginConfigModalComponent, {
-      size: 'lg',
-      backdrop: 'static',
-    });
+    ref.componentInstance.pluginName = plugin.name;
     ref.componentInstance.plugin = plugin;
 
     return ref.result;
