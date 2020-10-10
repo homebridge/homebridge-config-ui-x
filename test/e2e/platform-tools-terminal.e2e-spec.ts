@@ -101,7 +101,7 @@ describe('PlatformToolsTerminal (e2e)', () => {
   it('ON /platform-tools/terminal/start-session', async () => {
     terminalGateway.startTerminalSession(client, size);
 
-    await new Promise((resolve) => setTimeout(resolve, 10));
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     expect(nodePtyService.spawn).toBeCalled();
   });
@@ -109,7 +109,7 @@ describe('PlatformToolsTerminal (e2e)', () => {
   it('ON /platform-tools/terminal/start-session (cleanup)', async () => {
     terminalGateway.startTerminalSession(client, size);
 
-    await new Promise((resolve) => setTimeout(resolve, 10));
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     expect(nodePtyService.spawn).toBeCalled();
 
@@ -136,7 +136,7 @@ describe('PlatformToolsTerminal (e2e)', () => {
   it('ON /platform-tools/terminal/start-session (stdin)', async () => {
     terminalGateway.startTerminalSession(client, size);
 
-    await new Promise((resolve) => setTimeout(resolve, 10));
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     expect(nodePtyService.spawn).toBeCalled();
 
@@ -148,7 +148,7 @@ describe('PlatformToolsTerminal (e2e)', () => {
   it('ON /platform-tools/terminal/start-session (resize)', async () => {
     terminalGateway.startTerminalSession(client, size);
 
-    await new Promise((resolve) => setTimeout(resolve, 10));
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     expect(nodePtyService.spawn).toBeCalled();
 
