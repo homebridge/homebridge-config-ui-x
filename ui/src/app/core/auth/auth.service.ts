@@ -185,6 +185,11 @@ export class AuthService {
       darkModeEnabled = (darkMode === 'enabled');
     }
 
+    if (theme === 'dark-mode') { // Fallback from the legacy dark mode theme that no longer exists
+      theme = 'amber';
+      darkModeEnabled = true;
+    }
+
     if (this.theme) {
       const el = window.document.querySelector('body');
       const classes = el.className.split(' ').filter(c => !c.startsWith('config-ui-x-'));
