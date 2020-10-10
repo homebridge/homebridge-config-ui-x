@@ -8,6 +8,7 @@ import { MonacoEditorModule } from 'ngx-monaco-editor';
 
 import { CoreModule } from '../core.module';
 import { InterpolateMdPipe } from './interpolate-md.pipe';
+import { ExternalLinkIconPipe } from './external-link-icon.pipe';
 import { ManagePluginsService } from './manage-plugins.service';
 import { SettingsPluginsModalComponent } from './settings-plugins-modal/settings-plugins-modal.component';
 import { ManagePluginsModalComponent } from './manage-plugins-modal/manage-plugins-modal.component';
@@ -30,6 +31,7 @@ import { ManualPluginConfigModalComponent } from './manual-plugin-config-modal/m
     UninstallPluginsModalComponent,
     NodeUpdateRequiredModalComponent,
     InterpolateMdPipe,
+    ExternalLinkIconPipe,
     ManualPluginConfigModalComponent,
   ],
   imports: [

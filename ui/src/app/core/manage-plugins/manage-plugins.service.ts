@@ -65,31 +65,23 @@ export class ManagePluginsService {
   }
 
   /**
-   * Used for plugins that have a config.schema.json
+   * Open the plugin settings modal
    * @param pluginName
    */
-  settings(pluginName: string) {
-    if (this.customPluginsService.plugins[pluginName]) {
-      return this.customPluginsService.openSettings(pluginName);
+  settings(plugin) {
+    if (this.customPluginsService.plugins[plugin.name]) {
+      return this.customPluginsService.openSettings(plugin.name);
     }
 
-    const ref = this.modalService.open(SettingsPluginsModalComponent, {
-      size: 'lg',
-      backdrop: 'static',
-    });
-    ref.componentInstance.pluginName = pluginName;
+    const ref = this.modalService.open(
+      plugin.settingsSchema ? SettingsPluginsModalComponent : ManualPluginConfigModalComponent,
+      {
+        size: 'lg',
+        backdrop: 'static',
+      },
+    );
 
-    return ref.result;
-  }
-
-  /**
-   * Used for plugins that do not have a config.schema.json
-   */
-  async manualPluginConfig(plugin) {
-    const ref = this.modalService.open(ManualPluginConfigModalComponent, {
-      size: 'lg',
-      backdrop: 'static',
-    });
+    ref.componentInstance.pluginName = plugin.name;
     ref.componentInstance.plugin = plugin;
 
     return ref.result;

@@ -40,7 +40,11 @@ export class LayoutComponent implements OnInit {
   }
 
   openUiSettings() {
-    this.$plugins.settings('homebridge-config-ui-x');
+    this.$plugins.settings({
+      name: 'homebridge-config-ui-x',
+      settingsSchema: true,
+      links: {},
+    });
   }
 
   restartServer() {
