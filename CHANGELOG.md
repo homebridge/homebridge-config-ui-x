@@ -15,7 +15,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Other Changes
 
 * **Plugins:** Minor cosmetic improvements to the plugins settings GUI
-* **i18n:** Improvements to French language translations ([#881](https://github.com/oznu/homebridge-config-ui-x/pull/881))
+* **i18n:** Improvements to French language translations ([#881](https://github.com/oznu/homebridge-config-ui-x/pull/881),[#882](https://github.com/oznu/homebridge-config-ui-x/pull/882))
 
 ## 4.28.1 (2020-10-08)
 
