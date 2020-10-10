@@ -67,7 +67,6 @@
   }
 }
 
-@include make-theme("default", #ffa000, #dd8a00);
 @include make-theme("red", #f44336, #d32f2f);
 @include make-theme("pink", #e91e63, #c2185b);
 @include make-theme("purple", #9c27b0, #421367);

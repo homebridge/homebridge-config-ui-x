@@ -282,8 +282,6 @@
   @return $string
 }
 
-@include make-dark-theme("default", #ffa000, false);
-@include make-dark-theme("default", #ffa000, true);
 @include make-dark-theme("red", #f44336, false);
 @include make-dark-theme("red", #f44336, true);
 @include make-dark-theme("pink", #e91e63, false);
