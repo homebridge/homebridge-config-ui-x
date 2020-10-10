@@ -4,11 +4,14 @@ All notable changes to this project will be documented in this file. This projec
 
 ## NEXT
 
-### Other Changes
+### Notable Changes
 
-* **i18n:** Improvements to German language translations ([#845](https://github.com/oznu/homebridge-config-ui-x/pull/845))
 * **i18n:** Brazillian Portuguese (pt-BR) language added by [@zearthur99](https://github.com/zearthur99) ([#880](https://github.com/oznu/homebridge-config-ui-x/pull/880))
   * The Homebridge UI is now available in 21 different languages!
+
+### Other Changes
+
+* **i18n:** Improvements to French language translations ([#881](https://github.com/oznu/homebridge-config-ui-x/pull/881))
 
 ## 4.28.1 (2020-10-08)
 
