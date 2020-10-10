@@ -24,7 +24,7 @@
         color: #000000;
 
         &:hover {
-          color: $primary-dark;
+          color: $primary !important;
         }
       }
     }

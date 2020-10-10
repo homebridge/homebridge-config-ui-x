@@ -16,6 +16,7 @@ import { CustomPluginsModule } from './custom-plugins/custom-plugins.module';
 import { UninstallPluginsModalComponent } from './uninstall-plugins-modal/uninstall-plugins-modal.component';
 import { NodeUpdateRequiredModalComponent } from './node-update-required-modal/node-update-required-modal.component';
 import { ManualPluginConfigModalComponent } from './manual-plugin-config-modal/manual-plugin-config-modal.component';
+import { SelectPreviousVersionComponent } from './select-previous-version/select-previous-version.component';
 
 @NgModule({
   entryComponents: [
@@ -24,6 +25,7 @@ import { ManualPluginConfigModalComponent } from './manual-plugin-config-modal/m
     UninstallPluginsModalComponent,
     NodeUpdateRequiredModalComponent,
     ManualPluginConfigModalComponent,
+    SelectPreviousVersionComponent,
   ],
   declarations: [
     SettingsPluginsModalComponent,
@@ -33,6 +35,7 @@ import { ManualPluginConfigModalComponent } from './manual-plugin-config-modal/m
     InterpolateMdPipe,
     ExternalLinkIconPipe,
     ManualPluginConfigModalComponent,
+    SelectPreviousVersionComponent,
   ],
   imports: [
     CommonModule,

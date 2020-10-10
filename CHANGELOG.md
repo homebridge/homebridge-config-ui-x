@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Notable Changes
 
+* **Plugins:** Added the ability to rollback to a previous version of a plugin, or install the beta/test version of a plugin
 * **i18n:** Brazillian Portuguese (pt-BR) language added by [@zearthur99](https://github.com/zearthur99) ([#880](https://github.com/oznu/homebridge-config-ui-x/pull/880))
   * The Homebridge UI is now available in 21 different languages!
 

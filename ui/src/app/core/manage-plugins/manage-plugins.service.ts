@@ -9,6 +9,7 @@ import { UninstallPluginsModalComponent } from './uninstall-plugins-modal/uninst
 import { SettingsPluginsModalComponent } from './settings-plugins-modal/settings-plugins-modal.component';
 import { NodeUpdateRequiredModalComponent } from './node-update-required-modal/node-update-required-modal.component';
 import { ManualPluginConfigModalComponent } from './manual-plugin-config-modal/manual-plugin-config-modal.component';
+import { SelectPreviousVersionComponent } from './select-previous-version/select-previous-version.component';
 
 @Injectable({
   providedIn: 'root',
@@ -21,13 +22,14 @@ export class ManagePluginsService {
     private $auth: AuthService,
   ) { }
 
-  installPlugin(pluginName) {
+  installPlugin(pluginName, targetVersion = 'latest') {
     const ref = this.modalService.open(ManagePluginsModalComponent, {
       size: 'lg',
       backdrop: 'static',
     });
     ref.componentInstance.action = 'Install';
     ref.componentInstance.pluginName = pluginName;
+    ref.componentInstance.targetVersion = targetVersion;
   }
 
   uninstallPlugin(plugin) {
@@ -65,8 +67,26 @@ export class ManagePluginsService {
   }
 
   /**
+  * Open the version selector
+  * @param plugin
+  */
+  installPreviousVersion(plugin) {
+    const ref = this.modalService.open(SelectPreviousVersionComponent, {
+      backdrop: 'static',
+    });
+
+    ref.componentInstance.plugin = plugin;
+
+    return ref.result.then((targetVersion) => {
+      return this.installPlugin(plugin.name, targetVersion);
+    }).catch(() => {
+      // do nothing
+    });
+  }
+
+  /**
    * Open the plugin settings modal
-   * @param pluginName
+   * @param plugin
    */
   settings(plugin) {
     if (this.customPluginsService.plugins[plugin.name]) {
