@@ -27,8 +27,9 @@
           </a>
           <br>
           <span class="grey-text" *ngIf="homebridgePkg.installedVersion">
-            <span [translate]="'status.homebridge.label_version'">Version</span>
-            {{ homebridgePkg.installedVersion }}
+            <a (click)="$plugin.installPreviousVersion(homebridgePkg)" class="grey-text card-link">
+              v{{ homebridgePkg.installedVersion }}
+            </a>
           </span>
         </div>
 

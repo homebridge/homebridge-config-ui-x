@@ -75,7 +75,11 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
         this.pastTenseVerb = this.translate.instant('plugins.manage.label_uninstalled');
         break;
       case 'Update':
-        this.getReleaseNotes();
+        if (this.targetVersion === 'latest') {
+          this.getReleaseNotes();
+        } else {
+          this.update();
+        }
         this.presentTenseVerb = this.translate.instant('plugins.manage.label_update');
         this.pastTenseVerb = this.translate.instant('plugins.manage.label_updated');
         break;
@@ -83,6 +87,10 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   }
 
   install() {
+    if (this.pluginName === 'homebridge') {
+      return this.upgradeHomebridge();
+    }
+
     this.io.request('install', { name: this.pluginName, version: this.targetVersion }).subscribe(
       (data) => {
         if (this.$router.url !== '/plugins') {

@@ -40,7 +40,7 @@ export class ManagePluginsService {
     ref.componentInstance.plugin = plugin;
   }
 
-  async updatePlugin(plugin) {
+  async updatePlugin(plugin, targetVersion = 'latest') {
     if (!await this.checkNodeVersion(plugin)) {
       return;
     }
@@ -51,9 +51,10 @@ export class ManagePluginsService {
     });
     ref.componentInstance.action = 'Update';
     ref.componentInstance.pluginName = plugin.name;
+    ref.componentInstance.targetVersion = targetVersion;
   }
 
-  async upgradeHomebridge(homebridgePkg) {
+  async upgradeHomebridge(homebridgePkg, targetVersion = 'latest') {
     if (!await this.checkNodeVersion(homebridgePkg)) {
       return;
     }
@@ -64,6 +65,7 @@ export class ManagePluginsService {
     });
     ref.componentInstance.action = 'Update';
     ref.componentInstance.pluginName = homebridgePkg.name;
+    ref.componentInstance.targetVersion = targetVersion;
   }
 
   /**
@@ -78,7 +80,9 @@ export class ManagePluginsService {
     ref.componentInstance.plugin = plugin;
 
     return ref.result.then((targetVersion) => {
-      return this.installPlugin(plugin.name, targetVersion);
+      return plugin.installedVersion && plugin.name !== 'homebridge' ?
+        this.updatePlugin(plugin, targetVersion) :
+        this.installPlugin(plugin.name, targetVersion);
     }).catch(() => {
       // do nothing
     });

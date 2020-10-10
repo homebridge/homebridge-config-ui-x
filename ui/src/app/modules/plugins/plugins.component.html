@@ -76,14 +76,15 @@
         </a>
 
         <div class="ml-auto">
-          <a *ngIf="plugin.publicPackage" class="card-link grey-text" (click)="$plugin.installPreviousVersion(plugin)"
+          <a *ngIf="plugin.publicPackage" class="card-link grey-text ml-2"
+            (click)="$plugin.installPreviousVersion(plugin)"
             [ngbTooltip]="'plugins.manage.message_install_previous_version' | translate" container="body"
             placement="left">
-            <i class="fas fa-history"></i>
+            <i class="fas fa-history ml-1"></i>
           </a>
           <a class="card-link grey-text" target="_blank" rel="noopener noreferrer"
             *ngIf="plugin.links.homepage || plugin.links.npm" [href]="plugin.links.homepage || plugin.links.npm"
-            [ngbTooltip]="plugin.links.homepage || plugin.links.npm" container="body" placement="left">
+            [ngbTooltip]="plugin.links.homepage || plugin.links.npm" placement="left" container="body">
             <i class="fas fa-external-link-alt"></i>
           </a>
         </div>

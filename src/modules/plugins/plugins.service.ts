@@ -150,7 +150,7 @@ export class PluginsService {
   }
 
   public async getAvailablePluginVersions(pluginName: string): Promise<HomebridgePluginVersions> {
-    if (!PluginsService.PLUGIN_IDENTIFIER_PATTERN.test(pluginName)) {
+    if (!PluginsService.PLUGIN_IDENTIFIER_PATTERN.test(pluginName) && pluginName !== 'homebridge') {
       throw new BadRequestException('Invalid plugin name.');
     }
 

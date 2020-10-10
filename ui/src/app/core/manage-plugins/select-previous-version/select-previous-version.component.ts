@@ -4,7 +4,6 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ApiService } from '@/app/core/api.service';
 import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
-import { xor } from '@oznu/ngx-bs4-jsonform';
 
 @Component({
   selector: 'app-select-previous-version',
@@ -57,7 +56,7 @@ export class SelectPreviousVersionComponent implements OnInit {
       },
       (err) => {
         this.$toastr.error(`${err.error.message || err.message}`, this.$translate.instant('toast.title_error'));
-        this.activeModal.close();
+        this.activeModal.dismiss();
       },
     );
   }
