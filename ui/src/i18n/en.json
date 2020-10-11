@@ -163,7 +163,7 @@
     "plugins.manage.label_install": "Install",
     "plugins.manage.label_installed": "Installed",
     "plugins.manage.label_manual_update_required": "Manual Update Required",
-    "plugins.manage.label_online_updates_not_supported_on_windows": "Online updates are not supported on Windows. You will need to upgrade Homebridge Config UI X manually after stopping the Homebridge service.",
+    "plugins.manage.label_online_updates_not_supported_on_windows": "Online updates are not supported on Windows. You will need to upgrade Homebridge manually after stopping the Homebridge service.",
     "plugins.manage.label_uninstall": "Uninstall",
     "plugins.manage.label_uninstalled": "Removed",
     "plugins.manage.label_update": "Update",

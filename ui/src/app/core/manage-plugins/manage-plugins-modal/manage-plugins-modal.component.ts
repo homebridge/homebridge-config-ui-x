@@ -87,6 +87,10 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   }
 
   install() {
+    if (!this.onlineUpdateOk) {
+      return;
+    }
+
     if (this.pluginName === 'homebridge') {
       return this.upgradeHomebridge();
     }
@@ -126,6 +130,10 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   update() {
     // hide the release notes
     this.showReleaseNotes = false;
+
+    if (!this.onlineUpdateOk) {
+      return;
+    }
 
     // if this is updating homebridge, use an alternative workflow
     if (this.pluginName === 'homebridge') {
