@@ -364,7 +364,7 @@ export class PluginsService {
    * @param client
    */
   async updatePlugin(pluginName: string, version: string, client: EventEmitter) {
-    if (pluginName === this.configService.name && this.configService.dockerOfflineUpdate) {
+    if (pluginName === this.configService.name && this.configService.dockerOfflineUpdate && version === 'latest') {
       await this.updateSelfOffline(client);
       return true;
     }
