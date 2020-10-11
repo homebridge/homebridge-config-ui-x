@@ -9,6 +9,8 @@ All notable changes to this project will be documented in this file. This projec
 * **Plugins:** Added the ability to rollback to a previous version of a plugin, or install the beta/test version of a plugin
 * **Homebridge:** Added the ability to rollback to a previous version of Homebridge, or install the latest beta version of Homebridge ([#877](https://github.com/oznu/homebridge-config-ui-x/issues/877))
   * Click the Homebridge version on the status dashboard to access this feature
+* **Config Editor** Automatic backups of the `config.json` file are now saved to `./backups/config-backups/` ([#732](https://github.com/oznu/homebridge-config-ui-x/pull/732))
+  * Existing config backup files will be moved on next restart
 * **i18n:** Brazillian Portuguese (pt-BR) language added by [@zearthur99](https://github.com/zearthur99) ([#880](https://github.com/oznu/homebridge-config-ui-x/pull/880))
   * The Homebridge UI is now available in 21 different languages!
 

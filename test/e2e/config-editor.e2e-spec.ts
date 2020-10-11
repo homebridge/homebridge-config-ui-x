@@ -15,6 +15,7 @@ describe('ConfigEditorController (e2e)', () => {
   let secretsFilePath: string;
   let configFilePath: string;
   let authorization: string;
+  let backupFilePath: string;
 
   beforeAll(async () => {
     process.env.UIX_BASE_PATH = path.resolve(__dirname, '../../');
@@ -24,6 +25,7 @@ describe('ConfigEditorController (e2e)', () => {
     authFilePath = path.resolve(process.env.UIX_STORAGE_PATH, 'auth.json');
     secretsFilePath = path.resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets');
     configFilePath = process.env.UIX_CONFIG_PATH;
+    backupFilePath = path.resolve(process.env.UIX_STORAGE_PATH, 'backups', 'config-backups');
 
     // setup test config
     await fs.copy(path.resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
@@ -45,6 +47,9 @@ describe('ConfigEditorController (e2e)', () => {
 
     await app.init();
     await app.getHttpAdapter().getInstance().ready();
+
+    // wait for initial auth to be setup
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   });
 
   beforeEach(async () => {
@@ -60,6 +65,10 @@ describe('ConfigEditorController (e2e)', () => {
 
     // restore the default config before each test
     await fs.copy(path.resolve(__dirname, '../mocks', 'config.json'), configFilePath);
+  });
+
+  it('should create the config.json backup path', async () => {
+    expect(await fs.pathExists(backupFilePath)).toEqual(true);
   });
 
   it('GET /config-editor', async () => {
@@ -124,6 +133,8 @@ describe('ConfigEditorController (e2e)', () => {
   });
 
   it('GET /config-editor/backups', async () => {
+    const backupCount = (await fs.readdir(backupFilePath)).length;
+
     const res = await app.inject({
       method: 'GET',
       path: '/config-editor/backups',
@@ -133,6 +144,7 @@ describe('ConfigEditorController (e2e)', () => {
     });
 
     expect(res.statusCode).toEqual(200);
+    expect(res.json()).toHaveLength(backupCount);
   });
 
   it('GET /config-editor/backups/:backupId', async () => {

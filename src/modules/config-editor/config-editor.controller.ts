@@ -1,4 +1,4 @@
-import { Controller, UseGuards, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import { Controller, UseGuards, Get, Post, Body, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiParam } from '@nestjs/swagger';
 import { ConfigEditorService } from './config-editor.service';
@@ -39,8 +39,8 @@ export class ConfigEditorController {
   @ApiOperation({ summary: 'Return the Homebridge config.json file for the given backup ID.' })
   @ApiParam({ name: 'backupId', type: 'number' })
   @Get('/backups/:backupId(\\d+)')
-  getBackup(@Param() param) {
-    return this.configEditorService.getConfigBackup(param.backupId);
+  getBackup(@Param('backupId', ParseIntPipe) backupId) {
+    return this.configEditorService.getConfigBackup(backupId);
   }
 
   @UseGuards(AdminGuard)
