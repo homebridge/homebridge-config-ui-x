@@ -265,4 +265,14 @@
       stroke: #fff;
     }
   }
+
+  .uix-highlight-icon {
+    animation: uix-glow-icon-dark-mode 1s ease-in-out infinite alternate;
+  }
+
+  @keyframes uix-glow-icon-dark-mode {
+    from {
+      text-shadow: 0 0 5px $darkModePrimary, 0 0 10px $darkModePrimary, 0 0 15px $darkModePrimary;
+    }
+  }
 }

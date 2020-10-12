@@ -6,10 +6,11 @@ import { ToastrService } from 'ngx-toastr';
 import { NgxEditorModel } from 'ngx-monaco-editor';
 import * as JSON5 from 'json5';
 
-import { ApiService } from '../../core/api.service';
-import { AuthService } from '../../core/auth/auth.service';
-import { MobileDetectService } from '../../core/mobile-detect.service';
-import { MonacoEditorService } from '../../core/monaco-editor.service';
+import { ApiService } from '@/app/core/api.service';
+import { AuthService } from '@/app/core/auth/auth.service';
+import { NotificationService } from '@/app/core/notification.service';
+import { MobileDetectService } from '@/app/core/mobile-detect.service';
+import { MonacoEditorService } from '@/app/core/monaco-editor.service';
 import { ConfigRestoreBackupComponent } from './config-restore-backup/config.restore-backup.component';
 
 @Component({
@@ -40,6 +41,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     private $api: ApiService,
     private $md: MobileDetectService,
     private $monacoEditor: MonacoEditorService,
+    private $notification: NotificationService,
     public $toastr: ToastrService,
     private $route: ActivatedRoute,
     private translate: TranslateService,
@@ -190,6 +192,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     return this.$api.post('/config-editor', config)
       .toPromise()
       .then(data => {
+        this.$notification.configUpdated.next();
         this.$toastr.success(this.translate.instant('config.toast_config_saved'), this.translate.instant('toast.title_success'));
         this.homebridgeConfig = JSON.stringify(data, null, 4);
       })

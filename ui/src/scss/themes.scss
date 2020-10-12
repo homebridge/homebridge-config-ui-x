@@ -64,6 +64,16 @@
         stroke: $primary;
       }
     }
+
+    .uix-highlight-icon {
+      animation: uix-glow-icon 1s ease-in-out infinite alternate;
+    }
+
+    @keyframes uix-glow-icon {
+      from {
+        text-shadow: 0 0 5px #fff, 0 0 10px #fff;
+      }
+    }
   }
 }
 

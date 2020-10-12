@@ -1,10 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbPopover } from '@ng-bootstrap/ng-bootstrap';
+import { throttleTime } from 'rxjs/operators';
 
 import { WsService } from '@/app/core/ws.service';
 import { AuthService } from '@/app/core/auth/auth.service';
+import { NotificationService } from '@/app/core/notification.service';
+
 import { BackupRestoreComponent } from '@/app/core/backup-restore/backup-restore.component';
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
@@ -17,11 +21,15 @@ import { ConfirmComponent } from '@/app/core/components/confirm/confirm.componen
 export class LayoutComponent implements OnInit {
   private io = this.$ws.connectToNamespace('app');
 
+  @ViewChild('restartHomebridgeIcon') restartHomebridgeIcon: ElementRef;
+  @ViewChild('restartHelpPopover') public restartHelpPopover: NgbPopover;
+
   constructor(
     public translate: TranslateService,
     private $ws: WsService,
     public $auth: AuthService,
     private $plugins: ManagePluginsService,
+    private $notification: NotificationService,
     private $modal: NgbModal,
     private $router: Router,
   ) { }
@@ -29,6 +37,32 @@ export class LayoutComponent implements OnInit {
   ngOnInit() {
     this.io.socket.on('reconnect', () => {
       this.$auth.checkToken();
+    });
+
+    this.$notification.configUpdated.pipe(throttleTime(60000)).subscribe(() => {
+      // highlight the homebridge restart icon
+      const element = (this.restartHomebridgeIcon.nativeElement as HTMLElement);
+      element.classList.add('uix-highlight-icon');
+      setTimeout(() => {
+        element.classList.remove('uix-highlight-icon');
+      }, 15000);
+
+      // popup message next to homebridge restart icon
+      const scrollListener = () => {
+        console.log('listening to scroll');
+        this.restartHelpPopover.close();
+        window.removeEventListener('scroll', scrollListener);
+      };
+
+      window.addEventListener('scroll', scrollListener);
+
+      if (window.innerWidth >= 992) {
+        this.restartHelpPopover.open();
+        setTimeout(() => {
+          window.removeEventListener('scroll', scrollListener);
+          this.restartHelpPopover.close();
+        }, 5000);
+      }
     });
   }
 

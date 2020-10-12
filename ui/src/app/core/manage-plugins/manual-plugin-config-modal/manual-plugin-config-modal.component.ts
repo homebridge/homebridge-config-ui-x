@@ -8,6 +8,7 @@ import * as JSON5 from 'json5';
 import { ApiService } from '@/app/core/api.service';
 import { AuthService } from '@/app/core/auth/auth.service';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
+import { NotificationService } from '@/app/core/notification.service';
 
 @Component({
   selector: 'app-manual-plugin-config-modal',
@@ -40,6 +41,7 @@ export class ManualPluginConfigModalComponent implements OnInit {
     public activeModal: NgbActiveModal,
     private $api: ApiService,
     private $auth: AuthService,
+    private $notification: NotificationService,
     private $toastr: ToastrService,
     private translate: TranslateService,
     private $router: Router,
@@ -227,6 +229,8 @@ export class ManualPluginConfigModalComponent implements OnInit {
           this.translate.instant('plugins.settings.toast_restart_required'),
           this.translate.instant('plugins.settings.toast_plugin_config_saved'),
         );
+
+        this.$notification.configUpdated.next();
         this.activeModal.close();
       })
       .catch(err => {
