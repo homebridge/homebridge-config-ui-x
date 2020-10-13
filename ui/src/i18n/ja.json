@@ -231,6 +231,8 @@
     "reset.toast_failed_to_reset": "ホームページの再読み込みに失敗しました。ログを確認してください。",
     "reset.toast_removing_cached_accessory_please_wait": "Removing accessory from cache, please wait...",
     "restart.label_restart_command_executed": "再起動コマンドが実行されました",
+    "restart.message_homebridge_service_ready": "Homebridge Server Ready",
+    "restart.message_homebridge_ui_online": "Homebridge UI Online",
     "restart.message_please_wait_while_server_restarts": "このページはサーバーがオンラインに復帰すると自動でリダイレクトします。しばらくお待ちください。",
     "restart.message_server_is_taking_long_time_to_restart": "サーバーの再起動に時間がかかっています。手動でサーバーを再起動する必要がある可能性があります。",
     "restart.title_restart": "再起動しています",

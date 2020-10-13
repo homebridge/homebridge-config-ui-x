@@ -37,7 +37,7 @@ export class ServerService {
       process.emit('message', 'restartHomebridge', undefined);
       // reset the pool of discovered homebridge instances
       this.accessoriesService.resetInstancePool();
-      return { ok: true, command: 'SIGTERM' };
+      return { ok: true, command: 'SIGTERM', restartingUI: false };
     }
 
     setTimeout(() => {
@@ -54,7 +54,7 @@ export class ServerService {
       }
     }, 500);
 
-    return { ok: true, command: this.configService.ui.restart };
+    return { ok: true, command: this.configService.ui.restart, restartingUI: true };
   }
 
   /**

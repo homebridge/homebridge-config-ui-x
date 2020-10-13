@@ -230,6 +230,8 @@
     "reset.toast_failed_to_reset": "Gagal mengatur-ulang Homebridge. Lihat catatan.",
     "reset.toast_removing_cached_accessory_please_wait": "Menghapus aksesoris dari cache, harap tunggu...",
     "restart.label_restart_command_executed": "Perintah mengulang kembali Dieksekusi",
+    "restart.message_homebridge_service_ready": "Homebridge Server Ready",
+    "restart.message_homebridge_ui_online": "Homebridge UI Online",
     "restart.message_please_wait_while_server_restarts": "Harap tunggu, halaman ini akan secara otomatis mengarahkan ulang ketika server kembali online.",
     "restart.message_server_is_taking_long_time_to_restart": "Mengulang kembali server membutuhkan waktu lebih lama. Anda mungkin perlu menjalankan layanan Homebridge secara manual.",
     "restart.title_restart": "Mengulang Kembali Homebridge",

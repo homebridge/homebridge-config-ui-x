@@ -231,6 +231,8 @@
     "reset.toast_failed_to_reset": "Homebridge konnte nicht zurückgesetzt werden. Siehe Protokoll.",
     "reset.toast_removing_cached_accessory_please_wait": "Gerät aus dem Cache entfernen, bitte warten ...",
     "restart.label_restart_command_executed": "Neustart angestoßen",
+    "restart.message_homebridge_service_ready": "Homebridge Server Ready",
+    "restart.message_homebridge_ui_online": "Homebridge UI Online",
     "restart.message_please_wait_while_server_restarts": "Bitte warte, du wirst automatisch umgeleitet, wenn der Server wieder online ist.",
     "restart.message_server_is_taking_long_time_to_restart": "Der Neustart des Servers dauert länger als gewöhnlich. Möglicherweise muss der Homebridge-Dienst manuell gestartet werden.",
     "restart.title_restart": "Homebridge neustarten",

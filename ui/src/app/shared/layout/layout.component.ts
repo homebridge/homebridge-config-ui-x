@@ -22,7 +22,6 @@ export class LayoutComponent implements OnInit {
   private io = this.$ws.connectToNamespace('app');
 
   @ViewChild('restartHomebridgeIcon') restartHomebridgeIcon: ElementRef;
-  @ViewChild('restartHelpPopover') public restartHelpPopover: NgbPopover;
 
   constructor(
     public translate: TranslateService,
@@ -39,29 +38,20 @@ export class LayoutComponent implements OnInit {
       this.$auth.checkToken();
     });
 
-    this.$notification.configUpdated.pipe(throttleTime(60000)).subscribe(() => {
+    this.$notification.configUpdated.pipe(throttleTime(15000)).subscribe(() => {
       // highlight the homebridge restart icon
       const element = (this.restartHomebridgeIcon.nativeElement as HTMLElement);
       element.classList.add('uix-highlight-icon');
       setTimeout(() => {
         element.classList.remove('uix-highlight-icon');
-      }, 15000);
+      }, 14900);
+    });
 
-      // popup message next to homebridge restart icon
-      const scrollListener = () => {
-        console.log('listening to scroll');
-        this.restartHelpPopover.close();
-        window.removeEventListener('scroll', scrollListener);
-      };
-
-      window.addEventListener('scroll', scrollListener);
-
-      if (window.innerWidth >= 992) {
-        this.restartHelpPopover.open();
-        setTimeout(() => {
-          window.removeEventListener('scroll', scrollListener);
-          this.restartHelpPopover.close();
-        }, 5000);
+    this.$notification.restartTriggered.subscribe(() => {
+      // ensure restart icon is not highlighted when restart is triggered
+      const element = (this.restartHomebridgeIcon?.nativeElement as HTMLElement);
+      if (element) {
+        element.classList.remove('uix-highlight-icon');
       }
     });
   }

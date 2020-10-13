@@ -36,8 +36,7 @@
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" placement="bottom"
           ngbTooltip="{{'menu.tooltip_restart' | translate}}" container="body">
-          <a class="nav-link" routerLink="/restart" [ngbPopover]="'plugins.settings.toast_restart_required' | translate"
-            triggers="manual" #restartHelpPopover="ngbPopover" container="body" placement="left">
+          <a class="nav-link" routerLink="/restart">
             <i #restartHomebridgeIcon class="fas fa-power-off nav-menu-icon"></i>
           </a>
         </li>

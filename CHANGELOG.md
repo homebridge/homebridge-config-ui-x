@@ -11,7 +11,9 @@ All notable changes to this project will be documented in this file. This projec
   * Click the Homebridge version on the status dashboard to access this feature
 * **Config Editor:** Automatic backups of the `config.json` file are now saved to `./backups/config-backups/` to reduce clutter in the Homebridge storage folder ([#732](https://github.com/oznu/homebridge-config-ui-x/pull/732))
   * Existing config backup files will be moved on next restart
-* **System:** Made it more obvious when Homebridge needs to be restarted, and which button to click to restart Homebridge
+* **Restart:** Made it more obvious which button to click when you need to restart Homebridge
+* **Restart:** The restart page now shows separate statues for the UI and Homebridge
+* **Restart:** Users running with [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) will now be prompted to view the Homebridge logs if the Homebridge service is taking a long time to come back online after a restart
 * **i18n:** Brazillian Portuguese (pt-BR) language added by [@zearthur99](https://github.com/zearthur99) ([#880](https://github.com/oznu/homebridge-config-ui-x/pull/880))
   * The Homebridge UI is now available in 21 different languages!
 

@@ -230,6 +230,8 @@
     "reset.toast_failed_to_reset": "Failed to reset Homebridge. See Logs.",
     "reset.toast_removing_cached_accessory_please_wait": "Removing accessory from cache, please wait...",
     "restart.label_restart_command_executed": "Restart Command Executed",
+    "restart.message_homebridge_service_ready": "Homebridge Server Ready",
+    "restart.message_homebridge_ui_online": "Homebridge UI Online",
     "restart.message_please_wait_while_server_restarts": "Please wait, this page will automatically redirect when the server is back online.",
     "restart.message_server_is_taking_long_time_to_restart": "Server restart is taking a long time. You may need to bring up the Homebridge service manually.",
     "restart.title_restart": "Restarting Homebridge",

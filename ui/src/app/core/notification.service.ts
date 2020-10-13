@@ -6,4 +6,5 @@ import { Subject } from 'rxjs';
 })
 export class NotificationService {
   readonly configUpdated = new Subject();
+  readonly restartTriggered = new Subject();
 }
