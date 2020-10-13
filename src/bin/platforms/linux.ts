@@ -128,15 +128,28 @@ export class LinuxInstaller {
   /**
    * Rebuilds the Node.js modules for Homebridge Config UI X
    */
-  public async rebuild() {
+  public async rebuild(all: boolean = false) {
     try {
       this.checkForRoot();
+      const npmGlobalPath = child_process.execSync('/bin/echo -n "$(npm --no-update-notifier -g prefix)/lib/node_modules"').toString('utf8');
       const targetNodeVersion = child_process.execSync('node -v').toString('utf8').trim();
 
       child_process.execSync('npm rebuild --unsafe-perm node-pty-prebuilt-multiarch', {
         cwd: process.env.UIX_BASE_PATH,
         stdio: 'inherit',
       });
+
+      if (all === true) {
+        // rebuild all modules
+        try {
+          child_process.execSync('npm rebuild --unsafe-perm', {
+            cwd: npmGlobalPath,
+            stdio: 'inherit',
+          });
+        } catch (e) {
+          this.hbService.logger('Could not rebuild all modules - check Homebridge logs.', 'warn');
+        }
+      }
 
       this.hbService.logger(`Rebuilt modules in ${process.env.UIX_BASE_PATH} for Node.js ${targetNodeVersion}.`, 'succeed');
     } catch (e) {
@@ -204,7 +217,7 @@ export class LinuxInstaller {
     // rebuild node modules if required
     if (job.rebuild) {
       this.hbService.logger(`Rebuilding for Node.js ${job.target}...`);
-      await this.rebuild();
+      await this.rebuild(true);
     }
 
     // restart

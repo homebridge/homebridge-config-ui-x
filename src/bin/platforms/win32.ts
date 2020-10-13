@@ -104,7 +104,7 @@ export class Win32Installer {
   /**
    * Rebuilds the Node.js modules for Homebridge Config UI X
    */
-  public async rebuild() {
+  public async rebuild(all: boolean = false) {
     this.checkIsAdmin();
 
     try {
