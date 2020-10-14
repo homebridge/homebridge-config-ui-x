@@ -9,6 +9,10 @@ All notable changes to this project will be documented in this file. This projec
 * **i18n:** Catalan (ca) language added by [@bwp91](https://github.com/bwp91) ([#892](https://github.com/oznu/homebridge-config-ui-x/pull/892))
   * The Homebridge UI is now available in 22 different languages!
 
+### Bug Fixes
+
+* **Config Editor:** Fixed a bug that prevented the purging of config.json backups ([#898](https://github.com/oznu/homebridge-config-ui-x/issues/898))
+
 ### Other Changes
 
 * **i18n:** Improvements to Slovenian language translations ([#889](https://github.com/oznu/homebridge-config-ui-x/pull/889))

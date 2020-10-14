@@ -170,6 +170,9 @@ describe('ConfigEditorController (e2e)', () => {
   });
 
   it('DELETE /config-editor/backups', async () => {
+    const originalbackupCount = (await fs.readdir(backupFilePath)).length;
+    expect(originalbackupCount).toBeGreaterThan(0);
+
     const res = await app.inject({
       method: 'DELETE',
       path: '/config-editor/backups',
@@ -178,6 +181,9 @@ describe('ConfigEditorController (e2e)', () => {
       },
     });
 
+    const newbackupCount = (await fs.readdir(backupFilePath)).length;
+
+    expect(newbackupCount).toEqual(0);
     expect(res.statusCode).toEqual(200);
   });
 

@@ -154,7 +154,7 @@ export class ConfigEditorService {
 
     // delete each backup file
     await backups.forEach(async (backupFile) => {
-      await fs.unlink(path.resolve(this.configService.storagePath, backupFile.file));
+      await fs.unlink(path.resolve(this.configService.configBackupPath, backupFile.file));
     });
   }
 
