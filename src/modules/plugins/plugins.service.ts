@@ -33,7 +33,7 @@ export class PluginsService {
 
   // misc schemas
   private miscSchemas = {
-    'homebridge-tplink-smarthome': path.join(process.env.UIX_BASE_PATH, 'misc-schemas', 'homebridge-tplink-smarthome.json'),
+    // 'homebridge-abcd': path.join(process.env.UIX_BASE_PATH, 'misc-schemas', 'abcd'),
   };
 
   // create a cache for storing plugin package.json from npm
