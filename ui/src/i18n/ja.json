@@ -183,7 +183,7 @@
     "plugins.node_update.title": "Node.js Version",
     "plugins.node_update.update_anyway": "Update Anyway",
     "plugins.node_update_homebridge_upgrade_and_try_again": "Please upgrade Node.js before updating Homebridge.",
-    "plugins.placeholder_search_plugin": "インストールするプラグインを検索しています...",
+    "plugins.placeholder_search_plugin": "インストールするプラグインを検索...",
     "plugins.settings.custom.homebridge-gsh.label_account_linked": "Account Linked",
     "plugins.settings.custom.homebridge-gsh.label_link_account": "Link Account",
     "plugins.settings.custom.homebridge-gsh.label_unlink_account": "Unlink Account",
