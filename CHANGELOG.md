@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## NEXT
+
+### Notable Changes
+
+* **i18n:** Catalan (ca) language added by [@bwp91](https://github.com/bwp91) ([#892](https://github.com/oznu/homebridge-config-ui-x/pull/892))
+  * The Homebridge UI is now available in 22 different languages!
+
+### Other Changes
+
+* **i18n:** Improvements to Slovenian language translations ([#889](https://github.com/oznu/homebridge-config-ui-x/pull/889))
+* **i18n:** Improvements to Simplified Chinese language translations ([#890](https://github.com/oznu/homebridge-config-ui-x/pull/890))
+* **i18n:** Improvements to Spanish language translations ([#891](https://github.com/oznu/homebridge-config-ui-x/pull/891))
+* **i18n:** Improvements to French language translations ([#893](https://github.com/oznu/homebridge-config-ui-x/pull/893))
+* **i18n:** Improvements to Italian language translations ([#894](https://github.com/oznu/homebridge-config-ui-x/pull/894))
+* **i18n:** Improvements to German language translations ([#895](https://github.com/oznu/homebridge-config-ui-x/pull/895))
+* **i18n:** Improvements to Japanese language translations ([#897](https://github.com/oznu/homebridge-config-ui-x/pull/897))
+
 ## 4.29.0 (2020-10-13)
 
 ### Notable Changes
