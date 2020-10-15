@@ -12,8 +12,8 @@ export class HomebridgeRingCredentialsDto {
   @ApiProperty({ required: true })
   password: string;
 
-  @IsNumber()
+  @IsString()
   @IsOptional()
   @ApiProperty({ required: false })
-  twoFactorAuthCode?: number;
+  twoFactorAuthCode?: string;
 }
