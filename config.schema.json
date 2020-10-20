@@ -46,7 +46,7 @@
         "default": "auto",
         "oneOf": [
           {
-            "title": "Default",
+            "title": "Default (Auto Dark Mode)",
             "enum": [
               "auto"
             ]
@@ -142,9 +142,75 @@
             ]
           },
           {
-            "title": "Dark Mode",
+            "title": "Dark Mode - HomeKit Orange",
             "enum": [
               "dark-mode"
+            ]
+          },
+          {
+            "title": "Dark Mode - Red",
+            "enum": [
+              "dark-mode-red"
+            ]
+          },
+          {
+            "title": "Dark Mode - Pink",
+            "enum": [
+              "dark-mode-pink"
+            ]
+          },
+          {
+            "title": "Dark Mode - Purple",
+            "enum": [
+              "dark-mode-purple"
+            ]
+          },
+          {
+            "title": "Dark Mode - Indigo",
+            "enum": [
+              "dark-mode-indigo"
+            ]
+          },
+          {
+            "title": "Dark Mode - Blue",
+            "enum": [
+              "dark-mode-blue"
+            ]
+          },
+          {
+            "title": "Dark Mode - Blue Grey",
+            "enum": [
+              "dark-mode-blue-grey"
+            ]
+          },
+          {
+            "title": "Dark Mode - Green",
+            "enum": [
+              "dark-mode-green"
+            ]
+          },
+          {
+            "title": "Dark Mode - Grey",
+            "enum": [
+              "dark-mode-grey"
+            ]
+          },
+          {
+            "title": "Dark Mode - Brown",
+            "enum": [
+              "dark-mode-brown"
+            ]
+          },
+          {
+            "title": "Dark Mode - Teal",
+            "enum": [
+              "dark-mode-teal"
+            ]
+          },
+          {
+            "title": "Dark Mode - Cyan",
+            "enum": [
+              "dark-mode-cyan"
             ]
           }
         ],

@@ -70,9 +70,10 @@
 
     <div class="d-none d-sm-inline ml-3 mr-3">
       <a *ngIf="plugin.links.npm" [href]="plugin.links.npm" target="_blank" rel="noopener noreferrer"
-        class="pl-3 manage-plugin-config-external-icons"><i class="fab fa-npm"></i></a>
+        class="pl-3 manage-plugin-config-external-icons dark-mode-highlight"><i class="fab fa-npm"></i></a>
       <a *ngIf="plugin.links.homepage" [href]="plugin.links.homepage" target="_blank" rel="noopener noreferrer"
-        class="manage-plugin-config-external-icons"><i [ngClass]="plugin.links.homepage | externalLinkIcon"></i></a>
+        class="manage-plugin-config-external-icons dark-mode-highlight">
+        <i [ngClass]="plugin.links.homepage | externalLinkIcon"></i></a>
     </div>
 
     <button type="button" class="btn btn-elegant ml-auto" data-dismiss="modal" (click)="activeModal.close()"

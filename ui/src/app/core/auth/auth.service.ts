@@ -182,11 +182,17 @@ export class AuthService {
         theme = 'purple';
       }
     }
+
+    const bodySelector = window.document.querySelector('body');
     if (this.theme) {
-      window.document.querySelector('body').classList.remove(`config-ui-x-${this.theme}`);
+      bodySelector.classList.remove(`config-ui-x-${this.theme}`);
+      bodySelector.classList.remove(`dark-mode`);
     }
     this.theme = theme;
-    window.document.querySelector('body').classList.add(`config-ui-x-${this.theme}`);
+    bodySelector.classList.add(`config-ui-x-${this.theme}`);
+    if (this.theme.startsWith('dark-mode')) {
+      bodySelector.classList.add(`dark-mode`);
+    }
   }
 
   setTitle(title: string) {

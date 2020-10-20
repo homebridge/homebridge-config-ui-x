@@ -31,9 +31,8 @@
         <p class="text-center">{{ 'users.setup_2fa_enter_code' | translate }}</p>
         <div class="md-form">
           <i class="fas fa-key prefix grey-text"></i>
-          <input formControlName="otp" type="text" id="form-ota" autocomplete="one-time-code" autocapitalize="none" inputmode="numeric"
-  pattern="[0-9]*" tabindex="1"
-            class="form-control pl-0 pr-0" [ngClass]="{
+          <input formControlName="otp" type="text" id="form-ota" autocomplete="one-time-code" autocapitalize="none"
+            inputmode="numeric" pattern="[0-9]*" tabindex="1" class="form-control pl-0 pr-0" [ngClass]="{
               'is-invalid': form.controls.otp.dirty && form.controls.otp.errors
             }">
           <label for="form-username" [translate]="'login.label_2fa_code'"></label>
@@ -44,7 +43,7 @@
         <p class="red-text" *ngIf="invalidCredentials"><small
             [translate]="'login.message_invalid_username_or_password'"></small></p>
         <p class="red-text" *ngIf="invalid2faCode"><small [translate]="'login.message_invalid_2fa_code'"></small></p>
-        <button tabindex="3" class="btn btn-amber" type="submit" [translate]="'login.button_login'"
+        <button tabindex="3" class="btn btn-primary" type="submit" [translate]="'login.button_login'"
           [disabled]="form.invalid">Login</button>
       </div>
 
