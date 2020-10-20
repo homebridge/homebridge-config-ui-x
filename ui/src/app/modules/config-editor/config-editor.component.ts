@@ -384,6 +384,14 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                     type: 'string',
                     description: 'The bridge model to be displayed  in HomeKit',
                   },
+                  bind: {
+                    description: 'A string or an array of strings with the name(s) of the network interface(s) Homebridge should bind to.',
+                    type: ['string', 'array'],
+                    items: {
+                      type: 'string',
+                      description: 'Network Interface name that Homebridge should bind to.',
+                    },
+                  },
                 },
                 default: { name: 'Homebridge', username: '0E:89:49:64:91:86', port: 51173, pin: '630-27-655' },
               },
