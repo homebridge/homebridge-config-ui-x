@@ -33,7 +33,7 @@ export class PluginsService {
 
   // misc schemas
   private miscSchemas = {
-    'homebridge-tplink-smarthome': path.join(process.env.UIX_BASE_PATH, 'misc-schemas', 'homebridge-tplink-smarthome.json'),
+    // 'homebridge-abcd': path.join(process.env.UIX_BASE_PATH, 'misc-schemas', 'abcd'),
   };
 
   // create a cache for storing plugin package.json from npm
@@ -364,7 +364,7 @@ export class PluginsService {
    * @param client
    */
   async updatePlugin(pluginName: string, version: string, client: EventEmitter) {
-    if (pluginName === this.configService.name && this.configService.dockerOfflineUpdate) {
+    if (pluginName === this.configService.name && this.configService.dockerOfflineUpdate && version === 'latest') {
       await this.updateSelfOffline(client);
       return true;
     }

@@ -30,16 +30,16 @@
       Manual Update Required
     </h4>
     <p [translate]="'plugins.manage.label_online_updates_not_supported_on_windows'">
-      Online updates are not supported on Windows. You will need to upgrade Homebridge Config UI X
+      Online updates are not supported on Windows. You will need to upgrade Homebridge
       manually after stopping the Homebridge service.
     </p>
     <div *ngIf="$auth.env.serviceMode">
       <p>
-        To upgrade Homebridge run open a <strong>Node.js command prompt as an Administrator</strong> and run the
+        To upgrade the package run open a <strong>Node.js command prompt as an Administrator</strong> and run the
         following commands:
       </p>
       <pre class="p-2" style="background-color: #efefef;">hb-service stop
-npm install -g homebridge@latest homebridge-config-ui-x@latest
+npm install -g {{ pluginName }}@{{targetVersion}}
 hb-service start</pre>
     </div>
     <hr>

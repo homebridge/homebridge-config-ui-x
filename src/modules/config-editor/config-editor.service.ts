@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Logger } from '../../core/logger/logger.service';
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
 
@@ -9,7 +9,17 @@ export class ConfigEditorService {
   constructor(
     private readonly configService: ConfigService,
     private readonly logger: Logger,
-  ) { }
+  ) {
+    this.start();
+  }
+
+  /**
+   * Executed when the UI starts
+   */
+  private async start() {
+    await this.ensureBackupPathExists();
+    await this.migrateConfigBackups();
+  }
 
   /**
    * Returns the config file
@@ -70,7 +80,15 @@ export class ConfigEditorService {
     }
 
     // create backup of existing config
-    await fs.rename(this.configService.configPath, `${this.configService.configPath}.${now.getTime()}`);
+    try {
+      await fs.rename(this.configService.configPath, path.resolve(this.configService.configBackupPath, 'config.json.' + now.getTime().toString()));
+    } catch (e) {
+      if (e.code === 'ENOENT') {
+        this.ensureBackupPathExists();
+      } else {
+        this.logger.warn('Could not create a backup of the config.json file to', this.configService.configBackupPath, e.message);
+      }
+    }
 
     // save config file
     fs.writeJsonSync(this.configService.configPath, config, { spaces: 4 });
@@ -89,10 +107,10 @@ export class ConfigEditorService {
    * List config backups
    */
   public async listConfigBackups() {
-    const dirContents = await fs.readdir(this.configService.storagePath);
+    const dirContents = await fs.readdir(this.configService.configBackupPath);
 
     const backups = dirContents
-      .filter(x => x.indexOf('config.json.') === 0)
+      .filter(x => x.match(/^config.json.[0-9]{09,15}/))
       .sort()
       .reverse()
       .map(x => {
@@ -116,14 +134,16 @@ export class ConfigEditorService {
    * Returns a config backup
    * @param backupId
    */
-  public async getConfigBackup(backupId: string) {
+  public async getConfigBackup(backupId: number) {
+    const requestedBackupPath = path.resolve(this.configService.configBackupPath, 'config.json.' + backupId);
+
     // check backup file exists
-    if (!await fs.pathExists(this.configService.configPath + '.' + parseInt(backupId, 10))) {
-      throw new Error(`Backup ${backupId} Not Found`);
+    if (!await fs.pathExists(requestedBackupPath)) {
+      throw new NotFoundException(`Backup ${backupId} Not Found`);
     }
 
     // read source backup
-    return await fs.readFile(this.configService.configPath + '.' + parseInt(backupId, 10));
+    return await fs.readFile(requestedBackupPath);
   }
 
   /**
@@ -134,8 +154,55 @@ export class ConfigEditorService {
 
     // delete each backup file
     await backups.forEach(async (backupFile) => {
-      await fs.unlink(path.resolve(this.configService.storagePath, backupFile.file));
+      await fs.unlink(path.resolve(this.configService.configBackupPath, backupFile.file));
     });
+  }
+
+  /**
+   * Ensure the backup file path exists
+   */
+  private async ensureBackupPathExists() {
+    try {
+      await fs.ensureDir(this.configService.configBackupPath);
+    } catch (e) {
+      this.logger.error('Could not create directory for config backups:', this.configService.configBackupPath, e.message);
+      this.logger.error('Config backups will continue to use', this.configService.storagePath);
+      this.configService.configBackupPath = this.configService.storagePath;
+    }
+  }
+
+  /**
+   * This is a one-time script to move config.json.xxxxx backup files to the new location ./backups/config
+   */
+  private async migrateConfigBackups() {
+    try {
+      if (this.configService.configBackupPath === this.configService.storagePath) {
+        this.logger.error('Skipping migration of existing config.json backups...');
+        return;
+      }
+
+      const dirContents = await fs.readdir(this.configService.storagePath);
+
+      const backups = dirContents
+        .filter(x => x.match(/^config.json.[0-9]{09,15}/))
+        .sort()
+        .reverse();
+
+      // move the last 100 to the new location
+      for (const backupFileName of backups.splice(0, 100)) {
+        const sourcePath = path.resolve(this.configService.storagePath, backupFileName);
+        const targetPath = path.resolve(this.configService.configBackupPath, backupFileName);
+        await fs.move(sourcePath, targetPath, { overwrite: true });
+      }
+
+      // delete the rest
+      for (const backupFileName of backups) {
+        const sourcePath = path.resolve(this.configService.storagePath, backupFileName);
+        await fs.remove(sourcePath);
+      }
+    } catch (e) {
+      this.logger.warn('An error occured while migrating config.json backups to new location', e.message);
+    }
   }
 
   /**

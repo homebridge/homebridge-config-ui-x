@@ -4,8 +4,9 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 
-import { ApiService } from '../../../../core/api.service';
-import { AuthService } from '../../../../core/auth/auth.service';
+import { ApiService } from '@/app/core/api.service';
+import { AuthService } from '@/app/core/auth/auth.service';
+import { NotificationService } from '@/app/core/notification.service';
 
 @Component({
   selector: 'app-homebridge-ring',
@@ -39,6 +40,7 @@ export class HomebridgeRingComponent implements OnInit {
     private translate: TranslateService,
     private $api: ApiService,
     public $auth: AuthService,
+    private $notification: NotificationService,
     private $toastr: ToastrService,
   ) { }
 
@@ -133,6 +135,7 @@ export class HomebridgeRingComponent implements OnInit {
 
     await this.saveConfig();
     this.activeModal.close();
+    this.$notification.configUpdated.next();
   }
 
   close() {

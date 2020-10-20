@@ -87,6 +87,10 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   }
 
   install() {
+    if (!this.onlineUpdateOk) {
+      return;
+    }
+
     if (this.pluginName === 'homebridge') {
       return this.upgradeHomebridge();
     }
@@ -127,6 +131,10 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
     // hide the release notes
     this.showReleaseNotes = false;
 
+    if (!this.onlineUpdateOk) {
+      return;
+    }
+
     // if this is updating homebridge, use an alternative workflow
     if (this.pluginName === 'homebridge') {
       return this.upgradeHomebridge();
@@ -136,7 +144,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       (data) => {
         if (this.pluginName === 'homebridge-config-ui-x') {
           this.updateSelf = true;
-          if (this.$auth.env.dockerOfflineUpdate) {
+          if (this.$auth.env.dockerOfflineUpdate && this.targetVersion === 'latest') {
             this.$router.navigate(['/platform-tools/docker/restart-container']);
             this.activeModal.close();
             return;

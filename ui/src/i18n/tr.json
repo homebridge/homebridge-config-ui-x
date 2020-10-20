@@ -231,6 +231,8 @@
     "reset.toast_failed_to_reset": "Homebridge sıfırlanamadı. Logları görüntüle",
     "reset.toast_removing_cached_accessory_please_wait": "Removing accessory from cache, please wait...",
     "restart.label_restart_command_executed": "Yeniden Başlatma Komutu Çalıştırıldı",
+    "restart.message_homebridge_service_ready": "Homebridge Server Ready",
+    "restart.message_homebridge_ui_online": "Homebridge UI Online",
     "restart.message_please_wait_while_server_restarts": "Lütfen bekleyin, sunucu tekrar çevrimiçi olduğunda bu sayfa otomatik olarak yönlendirilecektir.",
     "restart.message_server_is_taking_long_time_to_restart": "Sunucunun yeniden başlatılması uzun zaman alıyor. Homebridge servisini el ile ayağa kaldırmanız gerekebilir.",
     "restart.title_restart": "Homebridge yeniden başlatılıyor",

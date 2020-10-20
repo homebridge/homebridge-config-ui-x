@@ -175,6 +175,51 @@ describe('CustomPluginsController (e2e)', () => {
     expect(res.json()).toEqual(data);
   });
 
+  it('POST /plugins/custom-plugins/homebridge-ring/exchange-credentials (with 2fa code)', async () => {
+    const data = {
+      access_token: 'access_token_mock',
+      refresh_token: 'refresh_token_mock',
+      expires_in: 3600,
+      scope: 'client',
+      token_type: 'Bearer'
+    };
+
+    const response: AxiosResponse<any> = {
+      data,
+      headers: {},
+      config: { url: 'https://oauth.ring.com/oauth/token' },
+      status: 200,
+      statusText: 'OK',
+    };
+
+    const mockPost = jest.spyOn(httpService, 'post')
+      .mockImplementationOnce(() => of(response));
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/plugins/custom-plugins/homebridge-ring/exchange-credentials',
+      headers: {
+        authorization,
+      },
+      payload: {
+        email: 'test@test.com',
+        password: 'test',
+        twoFactorAuthCode: '067104'
+      }
+    });
+
+    expect(mockPost).toBeCalledWith('https://oauth.ring.com/oauth/token', expect.anything(), {
+      headers: {
+        'content-type': 'application/json',
+        '2fa-support': 'true',
+        '2fa-code': '067104',
+      }
+    });
+    expect(mockPost).toBeCalledTimes(1);
+    expect(res.statusCode).toEqual(201);
+    expect(res.json()).toEqual(data);
+  });
+
   it('POST /plugins/custom-plugins/homebridge-ring/exchange-credentials (missing payload property)', async () => {
     const mockPost = jest.spyOn(httpService, 'post');
 

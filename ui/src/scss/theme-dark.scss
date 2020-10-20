@@ -331,4 +331,29 @@
     background-color: rgba(#000070, 0.2);
     display: none;
   }
+
+  .alert-info {
+    background-color: rgba(#ffa000, 0.1);
+    border-color: rgba(#ffa000, 0.1);
+    color: $darkModePrimary;
+  }
+
+  .animate_loader {
+    .spinner_outer {
+      stroke: $darkModePrimary;
+    }
+    .spinner_inner {
+      stroke: #fff;
+    }
+  }
+
+  .uix-highlight-icon {
+    animation: uix-glow-icon-dark-mode 1s ease-in-out infinite alternate;
+  }
+
+  @keyframes uix-glow-icon-dark-mode {
+    from {
+      text-shadow: 0 0 5px $darkModePrimary, 0 0 10px $darkModePrimary, 0 0 15px $darkModePrimary;
+    }
+  }
 }

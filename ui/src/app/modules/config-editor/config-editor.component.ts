@@ -6,10 +6,11 @@ import { ToastrService } from 'ngx-toastr';
 import { NgxEditorModel } from 'ngx-monaco-editor';
 import * as JSON5 from 'json5';
 
-import { ApiService } from '../../core/api.service';
-import { AuthService } from '../../core/auth/auth.service';
-import { MobileDetectService } from '../../core/mobile-detect.service';
-import { MonacoEditorService } from '../../core/monaco-editor.service';
+import { ApiService } from '@/app/core/api.service';
+import { AuthService } from '@/app/core/auth/auth.service';
+import { NotificationService } from '@/app/core/notification.service';
+import { MobileDetectService } from '@/app/core/mobile-detect.service';
+import { MonacoEditorService } from '@/app/core/monaco-editor.service';
 import { ConfigRestoreBackupComponent } from './config-restore-backup/config.restore-backup.component';
 
 @Component({
@@ -40,6 +41,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     private $api: ApiService,
     private $md: MobileDetectService,
     private $monacoEditor: MonacoEditorService,
+    private $notification: NotificationService,
     public $toastr: ToastrService,
     private $route: ActivatedRoute,
     private translate: TranslateService,
@@ -190,6 +192,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     return this.$api.post('/config-editor', config)
       .toPromise()
       .then(data => {
+        this.$notification.configUpdated.next();
         this.$toastr.success(this.translate.instant('config.toast_config_saved'), this.translate.instant('toast.title_success'));
         this.homebridgeConfig = JSON.stringify(data, null, 4);
       })
@@ -381,17 +384,25 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                     type: 'string',
                     description: 'The bridge model to be displayed  in HomeKit',
                   },
+                  bind: {
+                    description: 'A string or an array of strings with the name(s) of the network interface(s) Homebridge should bind to.',
+                    type: ['string', 'array'],
+                    items: {
+                      type: 'string',
+                      description: 'Network Interface name that Homebridge should bind to.',
+                    },
+                  },
                 },
                 default: { name: 'Homebridge', username: '0E:89:49:64:91:86', port: 51173, pin: '630-27-655' },
               },
               mdns: {
                 type: 'object',
-                description: 'Tell Homebridge to listen on a specific IP address. This is useful if your server has multiple interfaces.',
+                description: 'Tell Homebridge to listen on a specific interface or IP address. This is useful if your server has multiple interfaces.',
                 required: ['interface'],
                 properties: {
                   interface: {
                     type: 'string',
-                    description: 'The IP address of the interface you want Homebridge to listen on.',
+                    description: 'The interface or IP address of the interface you want Homebridge to listen on.',
                   },
                 },
                 default: { interface: '' },

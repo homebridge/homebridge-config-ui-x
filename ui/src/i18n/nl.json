@@ -231,6 +231,8 @@
     "reset.toast_failed_to_reset": "Kon Homebridge niet resetten. Zie Logs.",
     "reset.toast_removing_cached_accessory_please_wait": "Accessoire van cache aan het verwijderen, even geduld...",
     "restart.label_restart_command_executed": "Herstart Commando Uitgevoerd",
+    "restart.message_homebridge_service_ready": "Homebridge Server Ready",
+    "restart.message_homebridge_ui_online": "Homebridge UI Online",
     "restart.message_please_wait_while_server_restarts": "Even geduld aub, deze pagina zal automatisch doorverwijzen wanneer de server weer online is.",
     "restart.message_server_is_taking_long_time_to_restart": "Het opnieuw opstarten van de server duurt te lang. Mogelijk moet u de Homebridge-service handmatig starten.",
     "restart.title_restart": "Homebridge Herstarten",

@@ -231,6 +231,8 @@
     "reset.toast_failed_to_reset": "無法重置 Homebridge、請參閱日誌。",
     "reset.toast_removing_cached_accessory_please_wait": "正由暫存中移除配件，請稍候...",
     "restart.label_restart_command_executed": "正在執行重新啟動命令",
+    "restart.message_homebridge_service_ready": "Homebridge Server Ready",
+    "restart.message_homebridge_ui_online": "Homebridge UI Online",
     "restart.message_please_wait_while_server_restarts": "請稍候，此頁面將在重新啟動完成後自動重整。",
     "restart.message_server_is_taking_long_time_to_restart": "伺服器重新啟動已超時。您可能需要手動啟動 Homebridge 服務。",
     "restart.title_restart": "Homebridge 正在重新啟動",

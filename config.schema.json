@@ -215,6 +215,12 @@
             ]
           },
           {
+            "title": "Catalan (ca)",
+            "enum": [
+              "ca"
+            ]
+          },
+          {
             "title": "Czech (cs)",
             "enum": [
               "cs"

@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 
 import { WsService } from '@/app/core/ws.service';
 import { ApiService } from '@/app/core/api.service';
+import { NotificationService } from '@/app/core/notification.service';
 
 @Component({
   selector: 'app-homebridge-nest-cam',
@@ -45,6 +46,7 @@ export class HomebridgeNestCamComponent implements OnInit, OnDestroy {
     private $toastr: ToastrService,
     private $ws: WsService,
     private $api: ApiService,
+    private $notification: NotificationService,
   ) { }
 
   ngOnInit(): void {
@@ -215,6 +217,7 @@ export class HomebridgeNestCamComponent implements OnInit, OnDestroy {
 
     await this.saveConfig();
     this.activeModal.close();
+    this.$notification.configUpdated.next();
   }
 
   close() {

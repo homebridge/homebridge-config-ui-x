@@ -231,6 +231,8 @@
     "reset.toast_failed_to_reset": "Det gick inte att återställa Homebridge. Se loggar.",
     "reset.toast_removing_cached_accessory_please_wait": "Ta bort tillbehöret från cache, vänta ...",
     "restart.label_restart_command_executed": "Starta om kommandot körs",
+    "restart.message_homebridge_service_ready": "Homebridge Server Ready",
+    "restart.message_homebridge_ui_online": "Homebridge UI Online",
     "restart.message_please_wait_while_server_restarts": "Vänta, denna sida omdirigeras automatiskt när servern är online igen.",
     "restart.message_server_is_taking_long_time_to_restart": "Omstart av servern tar lång tid. Du kan behöva hämta upp Homebridge-tjänsten manuellt.",
     "restart.title_restart": "Starta om Homebridge",

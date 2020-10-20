@@ -8,6 +8,8 @@ import { debounceTime } from 'rxjs/operators';
 
 import { AuthService } from '@/app/core/auth/auth.service';
 import { ApiService } from '@/app/core/api.service';
+import { NotificationService } from '@/app/core/notification.service';
+
 import { RemoveAllCachedAccessoriesModalComponent } from './remove-all-cached-accessories-modal/remove-all-cached-accessories-modal.component';
 import { ResetHomebridgeModalComponent } from './reset-homebridge-modal/reset-homebridge-modal.component';
 import { RemoveSingleCachedAccessoryModalComponent } from './remove-single-cached-accessory-modal/remove-single-cached-accessory-modal.component';
@@ -25,6 +27,7 @@ export class SettingsComponent implements OnInit {
   constructor(
     public $auth: AuthService,
     private $api: ApiService,
+    private $notification: NotificationService,
     public $fb: FormBuilder,
     public $toastr: ToastrService,
     private $modal: NgbModal,
@@ -65,6 +68,7 @@ export class SettingsComponent implements OnInit {
         this.translate.instant('platform.docker.settings.toast_title_settings_saved'),
       );
       this.saved = true;
+      this.$notification.configUpdated.next();
     });
   }
 
@@ -91,6 +95,7 @@ export class SettingsComponent implements OnInit {
   saveServiceModeSettings(data = this.serviceForm.value) {
     this.$api.put('/platform-tools/hb-service/homebridge-startup-settings', data).subscribe(() => {
       this.saved = true;
+      this.$notification.configUpdated.next();
     });
   }
 

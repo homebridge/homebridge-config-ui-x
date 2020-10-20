@@ -4,6 +4,7 @@ import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
+import { take } from 'rxjs/operators';
 
 import { AuthService } from '@/app/core/auth/auth.service';
 import { ApiService } from '@/app/core/api.service';
@@ -69,7 +70,7 @@ export class InstalledPluginsComponent implements OnInit, OnDestroy {
   }
 
   checkRecentlyInstalled() {
-    this.$route.queryParams.subscribe(async (params) => {
+    this.$route.queryParams.pipe(take(1)).subscribe(async (params) => {
       if (params.installed && this.installedPlugins.find(x => x.name === params.installed && x.settingsSchema)) {
         this.$plugin.settings(this.installedPlugins.find(x => x.name === params.installed))
           .finally(() => {
