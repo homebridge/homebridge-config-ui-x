@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Bug Fixes
 
+* **System:** Early support for Node.js 15 and npm v7, however please stay on the current LTS version of Node.js (currently 12.19.0)
 * **Config Editor:** Fixed a bug that prevented the purging of config.json backups ([#898](https://github.com/oznu/homebridge-config-ui-x/issues/898))
 * **Ring Plugin:** Fixed an issue that prevented two factor authentication codes with leading zeros from being accepted when linking a Ring Account ([#dgreif/ring#471](https://github.com/dgreif/ring/issues/471))
 

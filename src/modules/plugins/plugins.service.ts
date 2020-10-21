@@ -317,6 +317,11 @@ export class PluginsService {
 
     installPath = path.resolve(installPath, '../');
 
+    // set global flag
+    if (!this.configService.customPluginPath || os.platform() === 'win32') {
+      installOptions.push('-g');
+    }
+
     await this.runNpmCommand([...this.npm, 'install', ...installOptions, `${pluginName}@${version}`], installPath, client);
 
     return true;
@@ -351,6 +356,11 @@ export class PluginsService {
     }
 
     installPath = path.resolve(installPath, '../');
+
+    // set global flag
+    if (plugin.globalInstall || os.platform() === 'win32') {
+      installOptions.push('-g');
+    }
 
     await this.runNpmCommand([...this.npm, 'uninstall', ...installOptions, pluginName], installPath, client);
     await this.ensureCustomPluginDirExists();
@@ -396,6 +406,11 @@ export class PluginsService {
     }
 
     installPath = path.resolve(installPath, '../');
+
+    // set global flag
+    if (plugin.globalInstall || os.platform() === 'win32') {
+      installOptions.push('-g');
+    }
 
     await this.runNpmCommand([...this.npm, 'install', ...installOptions, `${pluginName}@${version}`], installPath, client);
 
@@ -458,6 +473,11 @@ export class PluginsService {
     }
 
     installPath = path.resolve(installPath, '../');
+
+    // set global flag
+    if (homebridge.globalInstall || os.platform() === 'win32') {
+      installOptions.push('-g');
+    }
 
     await this.runNpmCommand([...this.npm, 'install', ...installOptions, `${homebridge.name}@${version}`], installPath, client);
 
@@ -771,7 +791,7 @@ export class PluginsService {
       ].filter(fs.existsSync);
 
       if (windowsNpmPath.length) {
-        return [windowsNpmPath[0], '-g'];
+        return [windowsNpmPath[0]];
       } else {
         this.logger.error(`ERROR: Cannot find npm binary. You will not be able to manage plugins or update homebridge.`);
         this.logger.error(`ERROR: You might be able to fix this problem by running: npm install -g npm`);
@@ -959,10 +979,6 @@ export class PluginsService {
       client.emit('stdout', color.yellow(`You may experience issues while running on Node.js ${process.version}.\n\r\n\r`));
     }
 
-    client.emit('stdout', color.cyan(`USER: ${os.userInfo().username}\n\r`));
-    client.emit('stdout', color.cyan(`DIR: ${cwd}\n\r`));
-    client.emit('stdout', color.cyan(`CMD: ${command.join(' ')}\n\r\n\r`));
-
     // setup the environment for the call
     const env = {};
     Object.assign(env, process.env);
@@ -973,12 +989,24 @@ export class PluginsService {
       npm_config_prefer_online: 'true',
     });
 
+    // set global prefix for unix based systems
+    if (command.includes('-g') && path.basename(cwd) === 'lib') {
+      cwd = path.dirname(cwd);
+      Object.assign(env, {
+        npm_config_prefix: cwd,
+      });
+    }
+
     // on windows we want to ensure the global prefix is the same as the install path
     if (os.platform() === 'win32') {
       Object.assign(env, {
         npm_config_prefix: cwd,
       });
     }
+
+    client.emit('stdout', color.cyan(`USER: ${os.userInfo().username}\n\r`));
+    client.emit('stdout', color.cyan(`DIR: ${cwd}\n\r`));
+    client.emit('stdout', color.cyan(`CMD: ${command.join(' ')}\n\r\n\r`));
 
     await new Promise((resolve, reject) => {
       const term = this.nodePtyService.spawn(command.shift(), command, {
