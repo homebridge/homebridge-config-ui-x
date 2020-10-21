@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file. This projec
 
 * **i18n:** Catalan (ca) language added by [@bwp91](https://github.com/bwp91) ([#892](https://github.com/oznu/homebridge-config-ui-x/pull/892))
   * The Homebridge UI is now available in 22 different languages!
-* **Themes:** Added 11 more dark mode themes with various colour accents ([#883](https://github.com/oznu/homebridge-config-ui-x/pull/883)
+* **Themes:** Added 11 more dark mode themes with various colour accents ([#883](https://github.com/oznu/homebridge-config-ui-x/pull/883))
 
 ### Bug Fixes
 

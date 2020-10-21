@@ -11,7 +11,7 @@ Supported Languages: :gb: :de: :fr: :poland: :czech_republic: :ru: :cn: :hungary
 
 * Install and configure Homebridge plugins
 * Edit the Homebridge `config.json` with advanced JSON syntax checking and structure validation
-* Visual configuration for over 160 plugins (no manual config.json editing required)
+* Visual configuration for over 400 plugins (no manual config.json editing required)
 * Monitor your Homebridge server via a fully customisable widget-based dashboard
 * View the Homebridge logs
 * View and control Homebridge accessories

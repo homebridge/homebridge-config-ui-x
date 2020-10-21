@@ -25,7 +25,7 @@
 
     .dark-mode-highlight {
       color: $darkModePrimary !important;
-      opacity: 1;
+      opacity: 1 !important;
     }
 
     .hb-uix-switch input:checked ~ .hb-uix-slider {
