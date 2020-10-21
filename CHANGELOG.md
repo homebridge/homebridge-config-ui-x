@@ -8,11 +8,11 @@ All notable changes to this project will be documented in this file. This projec
 
 * **i18n:** Catalan (ca) language added by [@bwp91](https://github.com/bwp91) ([#892](https://github.com/oznu/homebridge-config-ui-x/pull/892))
   * The Homebridge UI is now available in 22 different languages!
-* **Themes:** Added 11 more dark mode themes with various colour accents ([#883](https://github.com/oznu/homebridge-config-ui-x/pull/883))
+* **Themes:** Added 11 more dark mode theme options with various colour accents ([#883](https://github.com/oznu/homebridge-config-ui-x/pull/883))
 
 ### Bug Fixes
 
-* **System:** Early support for Node.js 15 and npm v7, however please stay on the current LTS version of Node.js (currently 12.19.0)
+* **System:** Initial support for Node.js v15 and npm v7, however please stay on the current LTS version of Node.js (currently v12.19.0) ([#904](https://github.com/oznu/homebridge-config-ui-x/issues/904))
 * **Config Editor:** Fixed a bug that prevented the purging of config.json backups ([#898](https://github.com/oznu/homebridge-config-ui-x/issues/898))
 * **Ring Plugin:** Fixed an issue that prevented two factor authentication codes with leading zeros from being accepted when linking a Ring Account ([#dgreif/ring#471](https://github.com/dgreif/ring/issues/471))
 

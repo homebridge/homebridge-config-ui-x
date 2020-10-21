@@ -31,7 +31,7 @@ export class ServerService {
   public async restartServer() {
     this.logger.log('Homebridge restart request received');
 
-    if (this.configService.serviceMode && !(await this.configService.uiRestartRequired())) {
+    if (this.configService.serviceMode && !(await this.configService.uiRestartRequired() || await this.nodeVersionChanged())) {
       this.logger.log('UI / Bridge settings have not changed; only restarting Homebridge process');
       // emit restart request to hb-service
       process.emit('message', 'restartHomebridge', undefined);
@@ -292,5 +292,32 @@ export class ServerService {
       setupCode: await this.getSetupCode(),
       isPaired: accessoryInfo.pairedClients && Object.keys(accessoryInfo.pairedClients).length > 0,
     };
+  }
+
+  /**
+   * Check if the system Node.js version has changed
+   */
+  private async nodeVersionChanged(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      let result: boolean = false;
+
+      const child = child_process.spawn(process.execPath, ['-v']);
+
+      child.stdout.once('data', (data) => {
+        if (data.toString().trim() === process.version) {
+          result = false;
+        } else {
+          result = true;
+        }
+      });
+
+      child.on('error', () => {
+        result = true;
+      });
+
+      child.on('close', () => {
+        return resolve(result);
+      });
+    });
   }
 }

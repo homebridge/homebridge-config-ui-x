@@ -40,13 +40,9 @@ module.exports = {
     "ora": "ora"
   },
   node: {
-    console: false,
     global: false,
-    process: false,
-    Buffer: false,
     __filename: false,
     __dirname: false,
-    setImmediate: false,
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],

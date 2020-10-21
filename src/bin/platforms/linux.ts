@@ -366,7 +366,7 @@ export class LinuxInstaller {
   private checkForRoot() {
     if (process.getuid() !== 0) {
       this.hbService.logger('ERROR: This command must be executed using sudo on Linux', 'fail');
-      this.hbService.logger(`EXAMPLE: sudo hb-service ${this.hbService.action} --user ${this.hbService.asUser || 'your-user'}`, 'fail');
+      this.hbService.logger(`EXAMPLE: sudo hb-service ${this.hbService.action}`, 'fail');
       process.exit(1);
     }
     if (this.hbService.action === 'install' && !this.hbService.asUser) {
