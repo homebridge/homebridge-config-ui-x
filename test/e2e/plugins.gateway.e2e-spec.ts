@@ -94,7 +94,7 @@ describe('PluginsGateway (e2e)', () => {
 
     // expect the npm command to be spawned
     if (os.platform() === 'win32') {
-      expect(mockSpawn).toBeCalledWith(win32NpmPath, ['-g', 'install', 'homebridge-mock-plugin@latest'], expect.anything());
+      expect(mockSpawn).toBeCalledWith(win32NpmPath, ['install', '-g', 'homebridge-mock-plugin@latest'], expect.anything());
     } else {
       expect(mockSpawn).toBeCalledWith('npm', ['install', 'homebridge-mock-plugin@latest'], expect.anything());
     }
@@ -121,7 +121,7 @@ describe('PluginsGateway (e2e)', () => {
 
     // expect the npm command to be spawned
     if (os.platform() === 'win32') {
-      expect(mockSpawn).toBeCalledWith(win32NpmPath, ['-g', 'install', 'homebridge-mock-plugin@3.2.5'], expect.anything());
+      expect(mockSpawn).toBeCalledWith(win32NpmPath, ['install', '-g', 'homebridge-mock-plugin@3.2.5'], expect.anything());
     } else {
       expect(mockSpawn).toBeCalledWith('npm', ['install', 'homebridge-mock-plugin@3.2.5'], expect.anything());
     }
@@ -176,7 +176,7 @@ describe('PluginsGateway (e2e)', () => {
 
     // expect the npm command to be spawned
     if (os.platform() === 'win32') {
-      expect(mockSpawn).toBeCalledWith(win32NpmPath, ['-g', 'install', 'homebridge-mock-plugin@latest'], expect.anything());
+      expect(mockSpawn).toBeCalledWith(win32NpmPath, ['install', '-g', 'homebridge-mock-plugin@latest'], expect.anything());
     } else {
       expect(mockSpawn).toBeCalledWith('npm', ['install', 'homebridge-mock-plugin@latest'], expect.anything());
     }
@@ -201,7 +201,7 @@ describe('PluginsGateway (e2e)', () => {
 
     // expect the npm command to be spawned
     if (os.platform() === 'win32') {
-      expect(mockSpawn).toBeCalledWith(win32NpmPath, ['-g', 'uninstall', 'homebridge-mock-plugin'], expect.anything());
+      expect(mockSpawn).toBeCalledWith(win32NpmPath, ['uninstall', '-g', 'homebridge-mock-plugin'], expect.anything());
     } else {
       expect(mockSpawn).toBeCalledWith('npm', ['uninstall', 'homebridge-mock-plugin'], expect.anything());
     }
@@ -247,7 +247,7 @@ describe('PluginsGateway (e2e)', () => {
 
     // expect the npm command to be spawned
     if (os.platform() === 'win32') {
-      expect(mockSpawn).toBeCalledWith(win32NpmPath, ['-g', 'install', 'homebridge-mock-plugin@latest'], expect.anything());
+      expect(mockSpawn).toBeCalledWith(win32NpmPath, ['install', '-g', 'homebridge-mock-plugin@latest'], expect.anything());
     } else {
       expect(mockSpawn).toBeCalledWith('npm', ['install', 'homebridge-mock-plugin@latest'], expect.anything());
     }
@@ -272,7 +272,7 @@ describe('PluginsGateway (e2e)', () => {
 
     // expect the npm command to be spawned
     if (os.platform() === 'win32') {
-      expect(mockSpawn).toBeCalledWith(win32NpmPath, ['-g', 'install', 'homebridge-mock-plugin@3.4.6'], expect.anything());
+      expect(mockSpawn).toBeCalledWith(win32NpmPath, ['install', '-g', 'homebridge-mock-plugin@3.4.6'], expect.anything());
     } else {
       expect(mockSpawn).toBeCalledWith('npm', ['install', 'homebridge-mock-plugin@3.4.6'], expect.anything());
     }
@@ -306,7 +306,7 @@ describe('PluginsGateway (e2e)', () => {
 
     // expect the npm command to be spawned
     if (os.platform() === 'win32') {
-      expect(mockSpawn).toBeCalledWith(win32NpmPath, ['-g', 'install', 'homebridge@latest'], expect.anything());
+      expect(mockSpawn).toBeCalledWith(win32NpmPath, ['install', '-g', 'homebridge@latest'], expect.anything());
     } else {
       expect(mockSpawn).toBeCalledWith('npm', ['install', 'homebridge@latest'], expect.objectContaining({
         cwd: path.resolve(process.env.UIX_STORAGE_PATH, 'plugins')
@@ -341,7 +341,7 @@ describe('PluginsGateway (e2e)', () => {
 
     // expect the npm command to be spawned
     if (os.platform() === 'win32') {
-      expect(mockSpawn).toBeCalledWith(win32NpmPath, ['-g', 'install', 'homebridge@1.2.5'], expect.anything());
+      expect(mockSpawn).toBeCalledWith(win32NpmPath, ['install', '-g', 'homebridge@1.2.5'], expect.anything());
     } else {
       expect(mockSpawn).toBeCalledWith('npm', ['install', 'homebridge@1.2.5'], expect.objectContaining({
         cwd: path.resolve(process.env.UIX_STORAGE_PATH, 'plugins')
