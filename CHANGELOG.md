@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## NEXT
+
+### Notable Changes
+
+* **hb-service:** Added full support for Enterprise / Red Hat / CentOS / Fedora Linux distributions
+
 ## 4.30.0 (2020-10-21)
 
 ### Notable Changes
