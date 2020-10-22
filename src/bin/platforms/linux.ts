@@ -453,11 +453,52 @@ export class LinuxInstaller {
    * Opens the port in the firewall if required
    */
   private async createFirewallRules() {
-    // check firewall-cmd is present on the system (enterprise linux)
-    if (!await fs.pathExists('/usr/bin/firewall-cmd')) {
-      return;
+    // check ufw is present on the system (debian based linux)
+    if (await fs.pathExists('/usr/sbin/ufw')) {
+      return await this.createUfwRules();
     }
 
+    // check firewall-cmd is present on the system (enterprise linux)
+    if (await fs.pathExists('/usr/bin/firewall-cmd')) {
+      return await this.createFirewallCmdRules();
+    }
+  }
+
+  /**
+   * Use ufw to create firewall rules
+   * ufw is used on ubuntu based systems
+   */
+  private async createUfwRules() {
+    try {
+      // check the firewall is active before doing anything
+      const status = child_process.execSync('/bin/echo -n "$(ufw status)" 2> /dev/null').toString('utf8');
+      if (!status.includes('Status: active')) {
+        return;
+      }
+
+      // load the current config to get the Homebridge port
+      const currentConfig = await fs.readJson(process.env.UIX_CONFIG_PATH);
+      const bridgePort = currentConfig.bridge?.port;
+
+      // add ui rule
+      child_process.execSync(`ufw allow ${this.hbService.uiPort}/tcp 2> /dev/null`);
+      this.hbService.logger(`Added firewall rule to allow inbound traffic on port ${this.hbService.uiPort}/tcp`, 'info');
+
+      // add bridge rule
+      if (bridgePort) {
+        child_process.execSync(`ufw allow ${bridgePort}/tcp 2> /dev/null`);
+        this.hbService.logger(`Added firewall rule to allow inbound traffic on port ${bridgePort}/tcp`, 'info');
+      }
+    } catch (e) {
+      this.hbService.logger(`WARNING: failed to allow ports through firewall.`, 'warn');
+    }
+  }
+
+  /**
+   * User firewall-cmd to create firewall rules
+   * firewall-cmd is used on enterprise / centos / fedora linux
+   */
+  private async createFirewallCmdRules() {
     try {
       // check the firewall is running before doing anything
       const status = child_process.execSync('/bin/echo -n "$(firewall-cmd --state)" 2> /dev/null').toString('utf8');
