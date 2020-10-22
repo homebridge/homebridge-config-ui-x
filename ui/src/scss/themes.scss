@@ -29,6 +29,21 @@
       }
     }
 
+    .nav-tabs {
+      border-bottom: 1px solid $primary;
+      .nav-link {
+        &.active {
+          color: #ffffff;
+          background-color: $primary;
+          border-color: $primary;
+        }
+        &:hover,
+        &:focus {
+          border-color: $primary !important;
+        }
+      }
+    }
+
     .hb-uix-switch {
       .hb-uix-slider {
         border-color: $primary !important;
