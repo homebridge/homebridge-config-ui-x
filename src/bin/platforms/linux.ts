@@ -48,6 +48,7 @@ export class LinuxInstaller {
       await this.createRunPartsPath();
       await this.reloadSystemd();
       await this.enableService();
+      await this.createFirewallRules();
       await this.start();
       await this.hbService.printPostInstallInstructions();
     } catch (e) {
@@ -386,6 +387,7 @@ export class LinuxInstaller {
     } catch (e) {
       // if not create the user
       child_process.execSync(`useradd -m --system ${this.hbService.asUser}`);
+      this.hbService.logger(`Created service user: ${this.hbService.asUser}`, 'info');
     }
 
     try {
@@ -443,6 +445,44 @@ export class LinuxInstaller {
       } catch (e) {
         this.hbService.logger(`WARNING: Failed to set permissions`, 'warn');
       }
+    }
+  }
+
+
+  /**
+   * Opens the port in the firewall if required
+   */
+  private async createFirewallRules() {
+    // check firewall-cmd is present on the system (enterprise linux)
+    if (!await fs.pathExists('/usr/bin/firewall-cmd')) {
+      return;
+    }
+
+    try {
+      // check the firewall is running before doing anything
+      const status = child_process.execSync('/bin/echo -n "$(firewall-cmd --state)" 2> /dev/null').toString('utf8');
+      if (status !== 'running') {
+        return;
+      }
+      // load the current config to get the Homebridge port
+      const currentConfig = await fs.readJson(process.env.UIX_CONFIG_PATH);
+      const bridgePort = currentConfig.bridge?.port;
+
+      // add ui rule
+      child_process.execSync(`firewall-cmd --permanent --add-port=${this.hbService.uiPort}/tcp 2> /dev/null`);
+      this.hbService.logger(`Added firewall rule to allow inbound traffic on port ${this.hbService.uiPort}/tcp`, 'info');
+
+      // add bridge rule
+      if (bridgePort) {
+        child_process.execSync(`firewall-cmd --permanent --add-port=${bridgePort}/tcp 2> /dev/null`);
+        this.hbService.logger(`Added firewall rule to allow inbound traffic on port ${bridgePort}/tcp`, 'info');
+      }
+
+      // reload the firewall
+      child_process.execSync(`firewall-cmd --reload 2> /dev/null`);
+      this.hbService.logger(`Firewall reloaded`, 'info');
+    } catch (e) {
+      this.hbService.logger(`WARNING: failed to allow ports through firewall.`, 'warn');
     }
   }
 
