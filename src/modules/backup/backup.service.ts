@@ -7,10 +7,10 @@ import * as unzipper from 'unzipper';
 import * as child_process from 'child_process';
 import * as dayjs from 'dayjs';
 import { EventEmitter } from 'events';
-import { scheduleJob } from 'node-schedule';
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 
 import { PluginsService } from '../plugins/plugins.service';
+import { SchedulerService } from '../../core/scheduler/scheduler.service';
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
 import { Logger } from '../../core/logger/logger.service';
 import { HomebridgePlugin } from '../plugins/types';
@@ -22,6 +22,7 @@ export class BackupService {
   constructor(
     private readonly configService: ConfigService,
     private readonly pluginsService: PluginsService,
+    private readonly schedulerService: SchedulerService,
     private readonly logger: Logger,
   ) {
     this.scheduleInstanceBackups();
@@ -31,7 +32,7 @@ export class BackupService {
    * Schedule the job to create an instance backup at recurring intervals
    */
   private scheduleInstanceBackups() {
-    scheduleJob('instance-backup', '15 1 * * *', () => {
+    this.schedulerService.scheduleJob('instance-backup', '15 1 * * *', () => {
       this.logger.log('Running scheduled instance backup...');
       this.runScheduledBackupJob();
     });
@@ -131,7 +132,7 @@ export class BackupService {
       const backups = await this.listScheduledBackups();
 
       for (const backup of backups) {
-        if (dayjs().diff(dayjs(backup.timestamp), 'day') > 7) {
+        if (dayjs().diff(dayjs(backup.timestamp), 'day') >= 7) {
           await fs.remove(path.resolve(this.configService.instanceBackupPath, backup.fileName));
         }
       }

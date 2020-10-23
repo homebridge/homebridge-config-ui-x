@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as dayjs from 'dayjs';
 import { EventEmitter } from 'events';
 import { ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -13,6 +14,7 @@ import { BackupService } from '../../src/modules/backup/backup.service';
 import { BackupGateway } from '../../src/modules/backup/backup.gateway';
 import { PluginsService } from '../../src/modules/plugins/plugins.service';
 import { ConfigService } from '../../src/core/config/config.service';
+import { SchedulerService } from '../../src/core/scheduler/scheduler.service';
 
 describe('BackupController (e2e)', () => {
   let app: NestFastifyApplication;
@@ -26,6 +28,7 @@ describe('BackupController (e2e)', () => {
   let backupService: BackupService;
   let backupGateway: BackupGateway;
   let pluginsService: PluginsService;
+  let schedulerService: SchedulerService;
   let postBackupRestoreRestartFn;
 
   beforeAll(async () => {
@@ -71,6 +74,7 @@ describe('BackupController (e2e)', () => {
     backupGateway = app.get(BackupGateway);
     pluginsService = app.get(PluginsService);
     configService = app.get(ConfigService);
+    schedulerService = app.get(SchedulerService);
   });
 
   beforeEach(async () => {
@@ -87,6 +91,48 @@ describe('BackupController (e2e)', () => {
         password: 'admin'
       }
     })).json().access_token;
+  });
+
+  it('should schedule a job to backup instance', async () => {
+    expect(schedulerService.scheduledJobs).toHaveProperty('instance-backup');
+  });
+
+  it('should remove scheduled instance backups older than 7 days', async () => {
+    // empty the instance backup path
+    await fs.remove(configService.instanceBackupPath);
+    await fs.ensureDir(configService.instanceBackupPath);
+
+    // create some fake backups
+    const backupDates = [
+      dayjs().subtract(10, 'day').toDate(),
+      dayjs().subtract(9, 'day').toDate(),
+      dayjs().subtract(8, 'day').toDate(),
+      dayjs().subtract(7, 'day').toDate(),
+      dayjs().subtract(6, 'day').toDate(),
+      dayjs().subtract(5, 'day').toDate(),
+      dayjs().subtract(4, 'day').toDate(),
+      dayjs().subtract(3, 'day').toDate(),
+      dayjs().subtract(2, 'day').toDate(),
+      dayjs().subtract(1, 'day').toDate(),
+    ];
+
+    const instanceId = configService.homebridgeConfig.bridge.username.replace(/:/g, '');
+
+    for (const fakeBackupDate of backupDates) {
+      const backupFileName = `homebridge-backup-${instanceId}.${fakeBackupDate.getTime().toString()}.tar.gz`;
+      await fs.writeFile(path.resolve(configService.instanceBackupPath, backupFileName), 'xyz');
+    }
+
+    // do a sanity check before hand
+    const backupsBeforeCleanup = await fs.readdir(configService.instanceBackupPath);
+    expect(backupsBeforeCleanup).toHaveLength(10);
+
+    // run backup job
+    await backupService.runScheduledBackupJob();
+
+    // there should only be 7 backups on disk
+    const backupsAfterJob = await fs.readdir(configService.instanceBackupPath);
+    expect(backupsAfterJob).toHaveLength(7);
   });
 
   it('GET /backup/download', async () => {
@@ -205,7 +251,7 @@ describe('BackupController (e2e)', () => {
     // empty the instance backup path
     await fs.emptyDir(configService.instanceBackupPath);
 
-    // run th scheduled backup job
+    // run the scheduled backup job
     await backupService.runScheduledBackupJob();
 
     const res = await app.inject({

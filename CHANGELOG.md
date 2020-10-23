@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Notable Changes
 
+* **Backup/Restore:** Full instance backups are now automatically made daily (01:15) and stored in your Homebridge config folder (`./backups/instance-backups`)
+  * Backup archives will be kept for 7 days before being removed
+  * Added [REST API endpoints](https://github.com/oznu/homebridge-config-ui-x/wiki/API-Reference) for getting the list of automated backups, and downloading an existing backup archive
+  * See the [Homebridge Backup and Restore](https://github.com/homebridge/homebridge/wiki/Backup-and-Restore) wiki article for further information about instance backups
 * **hb-service:** Added full support for Enterprise / Red Hat / CentOS / Fedora Linux distributions
 
 ## 4.30.0 (2020-10-21)
