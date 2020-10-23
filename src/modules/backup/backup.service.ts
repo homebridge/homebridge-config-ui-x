@@ -7,7 +7,7 @@ import * as unzipper from 'unzipper';
 import * as child_process from 'child_process';
 import * as dayjs from 'dayjs';
 import { EventEmitter } from 'events';
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 
 import { PluginsService } from '../plugins/plugins.service';
 import { SchedulerService } from '../../core/scheduler/scheduler.service';
@@ -104,14 +104,35 @@ export class BackupService {
   }
 
   /**
+   * Ensures the scheduled backup path exists and is writable
+   */
+  async ensureScheduledBackupPath() {
+    if (this.configService.ui.scheduledBackupPath) {
+      // if using a custom backup path, check it exists
+      if (!await fs.pathExists(this.configService.instanceBackupPath)) {
+        throw new Error(`Custom instance backup path does not exists: ${this.configService.instanceBackupPath}`);
+      }
+
+      try {
+        await fs.access(this.configService.instanceBackupPath, fs.constants.W_OK | fs.constants.R_OK);
+      } catch (e) {
+        throw new Error(`Custom instance backup path is not writable / readable by service: ${e.message}`);
+      }
+    } else {
+      // when not using a custom backup path, just ensure it exists
+      return await fs.ensureDir(this.configService.instanceBackupPath);
+    }
+  }
+
+  /**
    * Runs the job to create a a scheduled backup
    */
   async runScheduledBackupJob() {
     // ensure backup path exists
     try {
-      await fs.ensureDir(this.configService.instanceBackupPath);
+      await this.ensureScheduledBackupPath();
     } catch (e) {
-      this.logger.warn('Failed to create instance backup path:', e.message);
+      this.logger.warn('Could not run scheduled backup:', e.message);
       return;
     }
 
@@ -147,10 +168,10 @@ export class BackupService {
   async listScheduledBackups() {
     // ensure backup path exists
     try {
-      await fs.ensureDir(this.configService.instanceBackupPath);
+      await this.ensureScheduledBackupPath();
     } catch (e) {
-      this.logger.warn('Failed to create instance backup path:', e.message);
-      return [];
+      this.logger.warn('Could get scheduled backups:', e.message);
+      throw new InternalServerErrorException(e.message);
     }
 
     const dirContents = await fs.readdir(this.configService.instanceBackupPath, { withFileTypes: true });

@@ -533,6 +533,11 @@
         "title": "Reverse Proxy Hostname",
         "type": "string",
         "pattern": "^[^{}/ :\\\\]+(?::\\d+)?$"
+      },
+      "scheduledBackupPath": {
+        "title": "Scheduled backup destination path",
+        "description": "The full path to where the service should save daily scheduled backups archives",
+        "type": "string"
       }
     }
   },

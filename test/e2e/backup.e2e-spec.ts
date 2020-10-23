@@ -23,6 +23,8 @@ describe('BackupController (e2e)', () => {
   let secretsFilePath: string;
   let authorization: string;
   let tempBackupPath: string;
+  let instanceBackupPath: string;
+  let customInstanceBackupPath: string;
 
   let configService: ConfigService;
   let backupService: BackupService;
@@ -40,6 +42,8 @@ describe('BackupController (e2e)', () => {
     authFilePath = path.resolve(process.env.UIX_STORAGE_PATH, 'auth.json');
     secretsFilePath = path.resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets');
     tempBackupPath = path.resolve(process.env.UIX_STORAGE_PATH, 'backup.tar.gz');
+    instanceBackupPath = path.resolve(process.env.UIX_STORAGE_PATH, 'backups/instance-backups');
+    customInstanceBackupPath = path.resolve(process.env.UIX_STORAGE_PATH, 'backups/instance-backups-custom');
 
     // setup test config
     await fs.copy(path.resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
@@ -81,6 +85,10 @@ describe('BackupController (e2e)', () => {
     // mock functions
     postBackupRestoreRestartFn = jest.fn();
     backupService.postBackupRestoreRestart = postBackupRestoreRestartFn;
+
+    // restore default settings
+    delete configService.ui.scheduledBackupPath;
+    configService.instanceBackupPath = instanceBackupPath;
 
     // get auth token before each test
     authorization = 'bearer ' + (await app.inject({
@@ -133,6 +141,43 @@ describe('BackupController (e2e)', () => {
     // there should only be 7 backups on disk
     const backupsAfterJob = await fs.readdir(configService.instanceBackupPath);
     expect(backupsAfterJob).toHaveLength(7);
+  });
+
+  it('it saves scheduled backups to the custom path if set and exists', async () => {
+    // cleanup
+    await fs.remove(customInstanceBackupPath);
+
+    configService.ui.scheduledBackupPath = customInstanceBackupPath;
+    configService.instanceBackupPath = customInstanceBackupPath;
+
+    // ensure the directory exists, custom backup paths are not automatically created
+    await fs.ensureDir(customInstanceBackupPath);
+
+    // run backup job
+    await backupService.runScheduledBackupJob();
+
+    const backups = await fs.readdir(customInstanceBackupPath);
+
+    expect(backups).toHaveLength(1);
+  });
+
+  it('it throws an error if the custom scheduled backup path does not exist', async () => {
+    // cleanup
+    await fs.remove(customInstanceBackupPath);
+
+    configService.ui.scheduledBackupPath = customInstanceBackupPath;
+    configService.instanceBackupPath = customInstanceBackupPath;
+
+    expect(backupService.ensureScheduledBackupPath()).rejects.toThrowError('Custom instance backup path does not exists');
+  });
+
+  it('it creates the non-custom scheduled backup path if it does not exist', async () => {
+    // cleanup
+    await fs.remove(instanceBackupPath);
+
+    await backupService.ensureScheduledBackupPath();
+
+    expect(await fs.pathExists(instanceBackupPath)).toEqual(true);
   });
 
   it('GET /backup/download', async () => {

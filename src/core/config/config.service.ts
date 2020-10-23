@@ -97,6 +97,7 @@ export class ConfigService {
     proxyHost?: string;
     sessionTimeout?: number;
     homebridgePackagePath?: string;
+    scheduledBackupPath?: string;
   };
 
   private bridgeFreeze: this['homebridgeConfig']['bridge'];
@@ -147,6 +148,12 @@ export class ConfigService {
 
     if (!this.ui.sessionTimeout) {
       this.ui.sessionTimeout = this.ui.auth === 'none' ? 1296000 : 28800;
+    }
+
+    if (this.ui.scheduledBackupPath) {
+      this.instanceBackupPath = this.ui.scheduledBackupPath;
+    } else {
+      this.instanceBackupPath = path.resolve(this.storagePath, 'backups/instance-backups');
     }
 
     this.secrets = this.getSecrets();
