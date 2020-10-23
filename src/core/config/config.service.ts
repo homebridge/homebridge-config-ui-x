@@ -30,6 +30,7 @@ export class ConfigService {
   public authPath = path.resolve(this.storagePath, 'auth.json');
   public accessoryLayoutPath = path.resolve(this.storagePath, 'accessories', 'uiAccessoriesLayout.json');
   public configBackupPath = path.resolve(this.storagePath, 'backups/config-backups');
+  public instanceBackupPath = path.resolve(this.storagePath, 'backups/instance-backups');
   public homebridgeInsecureMode = Boolean(process.env.UIX_INSECURE_MODE === '1');
   public homebridgeNoTimestamps = Boolean(process.env.UIX_LOG_NO_TIMESTAMPS === '1');
 

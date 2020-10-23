@@ -12,6 +12,7 @@ import { BackupModule } from '../../src/modules/backup/backup.module';
 import { BackupService } from '../../src/modules/backup/backup.service';
 import { BackupGateway } from '../../src/modules/backup/backup.gateway';
 import { PluginsService } from '../../src/modules/plugins/plugins.service';
+import { ConfigService } from '../../src/core/config/config.service';
 
 describe('BackupController (e2e)', () => {
   let app: NestFastifyApplication;
@@ -21,6 +22,7 @@ describe('BackupController (e2e)', () => {
   let authorization: string;
   let tempBackupPath: string;
 
+  let configService: ConfigService;
   let backupService: BackupService;
   let backupGateway: BackupGateway;
   let pluginsService: PluginsService;
@@ -68,6 +70,7 @@ describe('BackupController (e2e)', () => {
     backupService = app.get(BackupService);
     backupGateway = app.get(BackupGateway);
     pluginsService = app.get(PluginsService);
+    configService = app.get(ConfigService);
   });
 
   beforeEach(async () => {
@@ -177,6 +180,81 @@ describe('BackupController (e2e)', () => {
 
     expect(res.statusCode).toEqual(200);
     expect(postBackupRestoreRestartFn).toBeCalled();
+  });
+
+  it('GET /backup/scheduled-backups (path missing)', async () => {
+    // empty the instance backup path
+    await fs.remove(configService.instanceBackupPath);
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/backup/scheduled-backups',
+      headers: {
+        authorization,
+      }
+    });
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.json()).toHaveLength(0);
+
+    // the path should have been re-created
+    expect(await fs.pathExists(configService.instanceBackupPath)).toEqual(true);
+  });
+
+  it('GET /backup/scheduled-backups', async () => {
+    // empty the instance backup path
+    await fs.emptyDir(configService.instanceBackupPath);
+
+    // run th scheduled backup job
+    await backupService.runScheduledBackupJob();
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/backup/scheduled-backups',
+      headers: {
+        authorization,
+      }
+    });
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.json()).toHaveLength(1);
+    expect(res.json()[0]).toHaveProperty('id');
+    expect(res.json()[0]).toHaveProperty('fileName');
+    expect(res.json()[0]).toHaveProperty('timestamp');
+  });
+
+  it('GET /backup/scheduled-backups/:backupId', async () => {
+    const scheduledBackups = (await app.inject({
+      method: 'GET',
+      path: '/backup/scheduled-backups',
+      headers: {
+        authorization,
+      }
+    })).json();
+
+    const res = await app.inject({
+      method: 'GET',
+      path: `/backup/scheduled-backups/${scheduledBackups[0].id}`,
+      headers: {
+        authorization,
+      }
+    });
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.headers['content-type']).toEqual('application/octet-stream');
+  });
+
+  it('GET /backup/scheduled-backups/:backupId (not found)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: `/backup/scheduled-backups/xxxxxxxxxxxx`,
+      headers: {
+        authorization,
+      }
+    });
+
+    expect(res.statusCode).toEqual(404);
+    expect(res.headers['content-type']).not.toEqual('application/octet-stream');
   });
 
   afterAll(async () => {

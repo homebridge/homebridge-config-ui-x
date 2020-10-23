@@ -4,14 +4,16 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as color from 'bash-color';
 import * as unzipper from 'unzipper';
-import { EventEmitter } from 'events';
 import * as child_process from 'child_process';
-import { Injectable, BadRequestException } from '@nestjs/common';
+import * as dayjs from 'dayjs';
+import { EventEmitter } from 'events';
+import { scheduleJob } from 'node-schedule';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 
 import { PluginsService } from '../plugins/plugins.service';
-import { HomebridgePlugin } from '../plugins/types';
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
 import { Logger } from '../../core/logger/logger.service';
+import { HomebridgePlugin } from '../plugins/types';
 
 @Injectable()
 export class BackupService {
@@ -21,16 +23,28 @@ export class BackupService {
     private readonly configService: ConfigService,
     private readonly pluginsService: PluginsService,
     private readonly logger: Logger,
-  ) { }
+  ) {
+    this.scheduleInstanceBackups();
+  }
 
   /**
-   * Create a backup archive of the current homebridge instance
+   * Schedule the job to create an instance backup at recurring intervals
    */
-  async downloadBackup(reply) {
+  private scheduleInstanceBackups() {
+    scheduleJob('instance-backup', '15 1 * * *', () => {
+      this.logger.log('Running scheduled instance backup...');
+      this.runScheduledBackupJob();
+    });
+  }
+
+  /**
+   * Creates the .tar.gz instance backup of the curent Homebridge instance
+   */
+  private async createBackup() {
     // prepare a temp working directory
+    const instanceId = this.configService.homebridgeConfig.bridge.username.replace(/:/g, '');
     const backupDir = await fs.mkdtemp(path.join(os.tmpdir(), 'homebridge-backup-'));
-    const backupFileName = 'homebridge-backup' + '-' +
-      this.configService.homebridgeConfig.bridge.username.replace(/:/g, '') + '.tar.gz';
+    const backupFileName = 'homebridge-backup' + '-' + instanceId + '.tar.gz';
     const backupPath = path.resolve(backupDir, backupFileName);
 
     this.logger.log(`Creating temporary backup archive at ${backupPath}`);
@@ -38,6 +52,7 @@ export class BackupService {
     // create a copy of the storage directory in the temp path
     await fs.copy(this.configService.storagePath, path.resolve(backupDir, 'storage'), {
       filter: (filePath) => (![
+        'instance-backups',   // scheduled backups
         'nssm.exe',           // windows hb-service
         'homebridge.log',     // hb-service
         'logs',               // docker
@@ -78,6 +93,114 @@ export class BackupService {
     }, [
       'storage', 'plugins.json', 'info.json',
     ]);
+
+    return {
+      instanceId,
+      backupDir,
+      backupPath,
+      backupFileName,
+    };
+  }
+
+  /**
+   * Runs the job to create a a scheduled backup
+   */
+  async runScheduledBackupJob() {
+    // ensure backup path exists
+    try {
+      await fs.ensureDir(this.configService.instanceBackupPath);
+    } catch (e) {
+      this.logger.warn('Failed to create instance backup path:', e.message);
+      return;
+    }
+
+    // create the backup
+    try {
+      const { backupDir, backupPath, instanceId } = await this.createBackup();
+      await fs.copy(backupPath, path.resolve(
+        this.configService.instanceBackupPath,
+        'homebridge-backup-' + instanceId + '.' + new Date().getTime().toString() + '.tar.gz'
+      ));
+      await fs.remove(path.resolve(backupDir));
+    } catch (e) {
+      this.logger.warn('Failed to create scheduled instance backup:', e.message);
+    }
+
+    // remove backups older than 7 days
+    try {
+      const backups = await this.listScheduledBackups();
+
+      for (const backup of backups) {
+        if (dayjs().diff(dayjs(backup.timestamp), 'minute') > 7) {
+          await fs.remove(path.resolve(this.configService.instanceBackupPath, backup.fileName));
+        }
+      }
+    } catch (e) {
+      this.logger.warn('Failed to remove old backups:', e.message);
+    }
+  }
+
+  /**
+   * List the instance backups saved on disk
+   */
+  async listScheduledBackups() {
+    // ensure backup path exists
+    try {
+      await fs.ensureDir(this.configService.instanceBackupPath);
+    } catch (e) {
+      this.logger.warn('Failed to create instance backup path:', e.message);
+      return [];
+    }
+
+    const dirContents = await fs.readdir(this.configService.instanceBackupPath, { withFileTypes: true });
+
+    return dirContents
+      .filter(x => x.isFile() && x.name.match(/^homebridge-backup-[0-9A-Za-z]{12}.[0-9]{09,15}.tar.gz/))
+      .map(x => {
+        const split = x.name.split('.');
+        const instanceId = split[0].split('-')[2];
+        if (split.length === 4 && !isNaN(split[1] as any)) {
+          return {
+            id: instanceId + '.' + split[1],
+            instanceId: split[0].split('-')[2],
+            timestamp: new Date(parseInt(split[1], 10)),
+            fileName: x.name,
+          };
+        } else {
+          return null;
+        }
+      })
+      .filter((x => x !== null))
+      .sort((a, b) => {
+        if (a.id > b.id) {
+          return -1;
+        } else if (a.id < b.id) {
+          return -2;
+        } else {
+          return 0;
+        }
+      });
+  }
+
+  /**
+   * Downloads a scheduled backup .tar.gz
+   */
+  async getScheduledBackup(backupId: string) {
+    const backupPath = path.resolve(this.configService.instanceBackupPath, 'homebridge-backup-' + backupId + '.tar.gz');
+
+    // check the file exists
+    if (!await fs.pathExists(backupPath)) {
+      return new NotFoundException();
+    }
+
+    return fs.createReadStream(backupPath);
+  }
+
+  /**
+   * Create and download backup archive of the current homebridge instance
+   */
+  async downloadBackup(reply) {
+    const { backupDir, backupPath, backupFileName } = await this.createBackup();
 
     // remove temp files (called when download finished)
     async function cleanup() {
@@ -344,7 +467,8 @@ export class BackupService {
       'ring': 'homebridge-ring',
       'roborock': 'homebridge-roborock',
       'shelly': 'homebridge-shelly',
-      'wink': 'homebridge-wink3'
+      'wink': 'homebridge-wink3',
+      'homebridge-tuya-web': '@milo526/homebridge-tuya-web'
     };
 
     // install plugins

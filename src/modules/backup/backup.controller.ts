@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Put, UseGuards, Res, Req, InternalServerErrorException } from '@nestjs/common';
+import { Controller, Get, Post, Put, UseGuards, Res, Req, InternalServerErrorException, Header, Param } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiConsumes } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiConsumes, ApiParam } from '@nestjs/swagger';
 
 import { BackupService } from './backup.service';
 import { AdminGuard } from '../../core/auth/guards/admin.guard';
@@ -28,6 +28,21 @@ export class BackupController {
       this.logger.error('Backup Failed ' + e);
       throw new InternalServerErrorException(e.message);
     }
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'List available system generated instance backups.' })
+  @Get('/scheduled-backups')
+  async listScheduledBackups() {
+    return this.backupService.listScheduledBackups();
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Download a system generated instance backup.' })
+  @ApiParam({ name: 'backupId', type: 'string' })
+  @Get('/scheduled-backups/:backupId')
+  async getScheduledBackup(@Param('backupId') backupId) {
+    return this.backupService.getScheduledBackup(backupId);
   }
 
   @UseGuards(AdminGuard)
