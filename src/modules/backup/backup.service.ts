@@ -131,7 +131,7 @@ export class BackupService {
       const backups = await this.listScheduledBackups();
 
       for (const backup of backups) {
-        if (dayjs().diff(dayjs(backup.timestamp), 'minute') > 7) {
+        if (dayjs().diff(dayjs(backup.timestamp), 'day') > 7) {
           await fs.remove(path.resolve(this.configService.instanceBackupPath, backup.fileName));
         }
       }
