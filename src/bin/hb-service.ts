@@ -1059,7 +1059,7 @@ export class HomebridgeServiceHelper {
     const currentLts = versionList.filter(x => x.lts)[0];
 
     if (requestedVersion) {
-      const wantedVersion = versionList.find(x => x.version === 'v' + requestedVersion);
+      const wantedVersion = versionList.find(x => x.version.startsWith('v' + requestedVersion));
       if (wantedVersion) {
         this.logger(`Installing Node.js ${wantedVersion.version} over ${process.version}...`, 'info');
         return this.installer.updateNodejs({
