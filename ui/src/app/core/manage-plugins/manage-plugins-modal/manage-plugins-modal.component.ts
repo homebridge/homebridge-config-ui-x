@@ -9,6 +9,7 @@ import { FitAddon } from 'xterm-addon-fit';
 import { ApiService } from '@/app/core/api.service';
 import { AuthService } from '@/app/core/auth/auth.service';
 import { WsService } from '@/app/core/ws.service';
+import { NotificationService } from '@/app/core/notification.service';
 
 @Component({
   selector: 'app-manage-plugins-modal',
@@ -45,6 +46,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
     public $auth: AuthService,
     private $api: ApiService,
     private $ws: WsService,
+    private $notification: NotificationService,
     private $router: Router,
   ) {
     this.term.loadAddon(this.fitAddon);
@@ -153,6 +155,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
         this.$router.navigate(['/plugins']);
         this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);
         this.getChangeLog();
+        this.$notification.configUpdated.next();
       },
       (err) => { },
     );

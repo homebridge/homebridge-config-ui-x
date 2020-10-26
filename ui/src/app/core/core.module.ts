@@ -9,12 +9,14 @@ import { ReplacePipe } from './pipes/replace.pipe';
 import { HrefTargetBlankDirective } from './directives/href-target-blank.directive';
 import { LongClickDirective } from './directives/longclick.directive';
 import { BackupRestoreComponent } from './backup-restore/backup-restore.component';
+import { ScheduledBackupsComponent } from './backup-restore/scheduled-backups/scheduled-backups.component';
 import { ConfirmComponent } from './components/confirm/confirm.component';
 import { SchemaFormComponent } from './components/schema-form/schema-form.component';
 
 @NgModule({
   entryComponents: [
     BackupRestoreComponent,
+    ScheduledBackupsComponent,
     ConfirmComponent,
   ],
   declarations: [
@@ -25,6 +27,7 @@ import { SchemaFormComponent } from './components/schema-form/schema-form.compon
     HrefTargetBlankDirective,
     LongClickDirective,
     BackupRestoreComponent,
+    ScheduledBackupsComponent,
     ConfirmComponent,
   ],
   imports: [

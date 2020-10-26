@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file. This projec
 
 * **Backup/Restore:** Full instance backups are now automatically made daily (01:15) and stored in your Homebridge config folder (`./backups/instance-backups`)
   * Backup archives will be kept for 7 days before being removed
+  * Users can download these scheduled backups by opening the existing [Backup / Restore](https://github.com/homebridge/homebridge/wiki/Backup-and-Restore) tool.
   * Users can customise the directory that backups are saved to by setting the [`scheduledBackupPath`](https://github.com/oznu/homebridge-config-ui-x/wiki/Config-Options#scheduledbackuppath) option - this allows you to have the automated backups archives saved to a network share or backup drive
   * Added [REST API endpoints](https://github.com/oznu/homebridge-config-ui-x/wiki/API-Reference) for getting the list of automated backups, and downloading an existing backup archive
   * See the [Homebridge Backup and Restore](https://github.com/homebridge/homebridge/wiki/Backup-and-Restore) wiki article for further information about instance backups

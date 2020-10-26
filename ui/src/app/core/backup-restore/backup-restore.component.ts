@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { saveAs } from 'file-saver';
 import { Terminal } from 'xterm';
@@ -10,6 +10,7 @@ import { ToastrService } from 'ngx-toastr';
 
 import { ApiService } from '../api.service';
 import { WsService } from '../ws.service';
+import { ScheduledBackupsComponent } from './scheduled-backups/scheduled-backups.component';
 
 @Component({
   selector: 'app-backup-restore',
@@ -34,6 +35,7 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
   constructor(
     private $route: Router,
     public activeModal: NgbActiveModal,
+    private $modal: NgbModal,
     private translate: TranslateService,
     public $toastr: ToastrService,
     private $api: ApiService,
@@ -178,6 +180,23 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
 
       },
     );
+  }
+
+  openScheduledBackups() {
+    this.activeModal.close();
+    const ref = this.$modal.open(ScheduledBackupsComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    });
+
+    ref.result.then(() => {
+      this.$modal.open(BackupRestoreComponent, {
+        size: 'lg',
+        backdrop: 'static',
+      });
+    }).catch(() => {
+      // do nothing
+    });
   }
 
   ngOnDestroy() {
