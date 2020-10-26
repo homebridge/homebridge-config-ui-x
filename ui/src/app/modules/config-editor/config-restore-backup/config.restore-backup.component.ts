@@ -9,11 +9,12 @@ import { ApiService } from '../../../core/api.service';
   templateUrl: './config.restore-backup.component.html',
 })
 export class ConfigRestoreBackupComponent implements OnInit {
+  public loading = true;
   public backupList: {
     id: string,
     timestamp: string,
     file: string,
-  }[];
+  }[] = [];
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -24,8 +25,14 @@ export class ConfigRestoreBackupComponent implements OnInit {
 
   ngOnInit() {
     this.$api.get('/config-editor/backups').subscribe(
-      (data: any[]) => this.backupList = data,
-      (err) => this.$toastr.error(err.error.message, this.translate.instant('config.restore.toast_failed_to_load_backups')),
+      (data: any[]) => {
+        this.loading = false;
+        this.backupList = data;
+      },
+      (err) => {
+        this.loading = false;
+        this.$toastr.error(err.error.message, this.translate.instant('config.restore.toast_failed_to_load_backups'));
+      },
     );
   }
 

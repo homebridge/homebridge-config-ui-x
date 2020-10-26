@@ -9,7 +9,10 @@
     </button>
   </div>
   <div class="modal-body">
-    <table class="table table-borderless table-hover table-sm" *ngIf="backupList && backupList.length">
+    <div *ngIf="loading" class="text-center primary-text">
+      <i class="fa fa-cog fa-spin" style="font-size: 72px;"></i>
+    </div>
+    <table class="table table-borderless table-hover table-sm" *ngIf="!loading && backupList && backupList.length">
       <tbody>
         <tr *ngFor="let backup of backupList">
           <td class="w-100">{{ backup.timestamp | date:'medium' }}</td>
@@ -20,13 +23,13 @@
         </tr>
       </tbody>
     </table>
-    <div *ngIf="!backupList || !backupList.length">
+    <div *ngIf="!loading && (!backupList || !backupList.length)">
       <h3 class="text-center" [translate]="'config.restore.message_no_backups'">No Backups</h3>
     </div>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-elegant mr-auto" (click)="deleteAllBackups()"
-      [translate]="'config.restore.button_remote_all_backups'">Remove All Backups</button>
+    <button *ngIf="!loading && backupList.length" type="button" class="btn btn-elegant mr-auto"
+      (click)="deleteAllBackups()" [translate]="'config.restore.button_remote_all_backups'">Remove All Backups</button>
     <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')"
       [translate]="'form.button_cancel'">Cancel</button>
   </div>
