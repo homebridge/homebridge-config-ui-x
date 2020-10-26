@@ -59,13 +59,14 @@
           rel="noopener noreferrer">
           NPM
         </a> -->
+
+        <a class="card-link" *ngIf="plugin.installedVersion" (click)="$plugin.settings(plugin)">
+          {{ 'plugins.button_settings' | translate | uppercase }}
+        </a>
         <a class="card-link" *ngIf="plugin.updateAvailable" (click)="$plugin.updatePlugin(plugin)" placement="bottom"
           ngbTooltip="{{'plugins.tooltip_update_plugin_to' | translate:plugin }}" container="body"
           [translate]="'plugins.button_update'">
           {{ 'plugins.button_update' | translate | uppercase }}
-        </a>
-        <a class="card-link" *ngIf="plugin.installedVersion" (click)="$plugin.settings(plugin)">
-          {{ 'plugins.button_settings' | translate | uppercase }}
         </a>
         <a class="card-link" *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x'"
           (click)="$plugin.uninstallPlugin(plugin)">
