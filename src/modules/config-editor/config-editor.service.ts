@@ -96,8 +96,7 @@ export class ConfigEditorService {
     this.logger.log('Changes to config.json saved.');
 
     // parse the config for ui settings
-    const configCopy = {};
-    Object.assign(configCopy, config);
+    const configCopy = JSON.parse(JSON.stringify(config));
     this.configService.parseConfig(configCopy);
 
     return config;
