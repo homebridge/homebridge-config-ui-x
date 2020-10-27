@@ -8,8 +8,8 @@
     <div class="col-sm-6 text-right">
       <button class="btn btn-elegant waves-effect" (click)="onRestore()"
         [translate]="'config.button_restore'">Restore</button>
-      <button class="btn btn-elegant waves-effect" (click)="onExportConfig()"
-        [translate]="'config.button_backup'">Backup</button>
+      <button class="btn btn-elegant waves-effect" (click)="onExportConfig()" container="body"
+        ngbTooltip="{{ 'logs.label_download' | translate }}"><i class="fas fa-download"></i></button>
       <button class="btn btn-danger waves-effect" (click)="onCancelRestore()" [disabled]="saveInProgress"
         *ngIf="originalConfig" translate="form.button_cancel">Cancel</button>
       <button class="btn btn-primary waves-effect" (click)="onSave()" [disabled]="saveInProgress">
