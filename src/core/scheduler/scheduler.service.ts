@@ -5,4 +5,5 @@ import * as schedule from 'node-schedule';
 export class SchedulerService {
   public readonly scheduleJob = schedule.scheduleJob;
   public readonly scheduledJobs = schedule.scheduledJobs;
+  public readonly RecurrenceRule = schedule.RecurrenceRule;
 }

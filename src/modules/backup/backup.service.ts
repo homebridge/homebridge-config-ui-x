@@ -32,7 +32,14 @@ export class BackupService {
    * Schedule the job to create an instance backup at recurring intervals
    */
   private scheduleInstanceBackups() {
-    this.schedulerService.scheduleJob('instance-backup', '15 1 * * *', () => {
+    const scheduleRule = new this.schedulerService.RecurrenceRule();
+    scheduleRule.hour = 1;
+    scheduleRule.minute = 15;
+    scheduleRule.second = Math.floor(Math.random() * 59) + 1;
+
+    this.logger.debug('Next automated backup scheduled for:', scheduleRule.nextInvocationDate(new Date()).toString());
+
+    this.schedulerService.scheduleJob('instance-backup', scheduleRule, () => {
       this.logger.log('Running scheduled instance backup...');
       this.runScheduledBackupJob();
     });

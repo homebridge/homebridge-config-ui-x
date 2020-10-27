@@ -47,6 +47,7 @@
               "nouislider",
               "chart.js",
               "inline-svg",
+              "ng-inline-svg",
               "semver",
               "ajv"
             ]

@@ -2,7 +2,7 @@ import { LoggerService } from '@nestjs/common';
 import * as color from 'bash-color';
 
 export class Logger implements LoggerService {
-  private pluginName = (process.env.UIX_PLUGIN_NAME || 'homebridge-config-ui-x');
+  private pluginName = ('Homebridge UI');
   private useTimestamps = (process.env.UIX_LOG_NO_TIMESTAMPS !== '1');
 
   private get prefix() {
