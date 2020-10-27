@@ -1,4 +1,17 @@
-table.table-sm th, table.table-sm td {
+table.table-sm th,
+table.table-sm td {
   padding-top: 0.3rem;
   padding-bottom: 0.3rem;
+}
+
+.system-info-link {
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+::ng-deep body.dark-mode {
+  .system-info-link {
+    color: #ffffff !important;
+  }
 }
