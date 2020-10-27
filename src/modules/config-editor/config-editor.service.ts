@@ -1,16 +1,20 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as dayjs from 'dayjs';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Logger } from '../../core/logger/logger.service';
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
+import { SchedulerService } from '../../core/scheduler/scheduler.service';
 
 @Injectable()
 export class ConfigEditorService {
   constructor(
     private readonly configService: ConfigService,
+    private readonly schedulerService: SchedulerService,
     private readonly logger: Logger,
   ) {
     this.start();
+    this.scheduleConfigBackupCleanup();
   }
 
   /**
@@ -19,6 +23,23 @@ export class ConfigEditorService {
   private async start() {
     await this.ensureBackupPathExists();
     await this.migrateConfigBackups();
+  }
+
+  /**
+   * Schedule the job to cleanup old config.json backup files
+   */
+  private scheduleConfigBackupCleanup() {
+    const scheduleRule = new this.schedulerService.RecurrenceRule();
+    scheduleRule.hour = 1;
+    scheduleRule.minute = 10;
+    scheduleRule.second = Math.floor(Math.random() * 59) + 1;
+
+    this.logger.debug('Next config.json backup cleanup scheduled for:', scheduleRule.nextInvocationDate(new Date()).toString());
+
+    this.schedulerService.scheduleJob('cleanup-config-backups', scheduleRule, () => {
+      this.logger.log('Running job to cleanup config.json backup files older than 60 days...');
+      this.cleanupConfigBackups();
+    });
   }
 
   /**
@@ -167,6 +188,23 @@ export class ConfigEditorService {
       this.logger.error('Could not create directory for config backups:', this.configService.configBackupPath, e.message);
       this.logger.error('Config backups will continue to use', this.configService.storagePath);
       this.configService.configBackupPath = this.configService.storagePath;
+    }
+  }
+
+  /**
+   * Remove config.json backup files older than 60 days
+   */
+  public async cleanupConfigBackups() {
+    try {
+      const backups = await this.listConfigBackups();
+
+      for (const backup of backups) {
+        if (dayjs().diff(dayjs(backup.timestamp), 'day') >= 60) {
+          await fs.remove(path.resolve(this.configService.configBackupPath, backup.file));
+        }
+      }
+    } catch (e) {
+      this.logger.warn('Failed to cleanup old config.json backup files:', e.message);
     }
   }
 

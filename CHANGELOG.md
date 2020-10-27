@@ -13,7 +13,8 @@ All notable changes to this project will be documented in this file. This projec
   * Users can download these scheduled backups by opening the existing [Backup / Restore](https://github.com/homebridge/homebridge/wiki/Backup-and-Restore) tool
   * Added [REST API endpoints](https://github.com/oznu/homebridge-config-ui-x/wiki/API-Reference) for getting the list of automated backups, and downloading an existing backup archive
   * See the [Homebridge Backup and Restore](https://github.com/homebridge/homebridge/wiki/Backup-and-Restore) wiki article for further information about instance backups
-* **Config Editor:** When loading a previous version of the config, a diff will be shown to highlight the changes from the current config and the one that will be restored ([#910](https://github.com/oznu/homebridge-config-ui-x/issues/910))
+* **Config Editor:** When loading a previous version of the config.json, a diff will be shown to highlight the changes from the current config and the one that will be restored ([#910](https://github.com/oznu/homebridge-config-ui-x/issues/910))
+* **Config Editor:** Previous versions of the config.json file more than 60 days old will be periodically be removed to remove the need for manual maintenance ([#732](https://github.com/oznu/homebridge-config-ui-x/issues/732))
 * **hb-service:** Added full support for Enterprise / Red Hat / CentOS / Fedora Linux distributions
 
 ## 4.30.0 (2020-10-21)

@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as dayjs from 'dayjs';
 import { ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastify';
@@ -7,6 +8,8 @@ import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastif
 import { AuthModule } from '../../src/core/auth/auth.module';
 import { ConfigEditorModule } from '../../src/modules/config-editor/config-editor.module';
 import { HomebridgeConfig } from '../../src/core/config/config.service';
+import { SchedulerService } from '../../src/core/scheduler/scheduler.service';
+import { ConfigEditorService } from '../../src/modules/config-editor/config-editor.service';
 
 describe('ConfigEditorController (e2e)', () => {
   let app: NestFastifyApplication;
@@ -16,6 +19,9 @@ describe('ConfigEditorController (e2e)', () => {
   let configFilePath: string;
   let authorization: string;
   let backupFilePath: string;
+
+  let schedulerService: SchedulerService;
+  let configEditorService: ConfigEditorService;
 
   beforeAll(async () => {
     process.env.UIX_BASE_PATH = path.resolve(__dirname, '../../');
@@ -48,7 +54,10 @@ describe('ConfigEditorController (e2e)', () => {
     await app.init();
     await app.getHttpAdapter().getInstance().ready();
 
-    // wait for initial auth to be setup
+    schedulerService = app.get(SchedulerService);
+    configEditorService = app.get(ConfigEditorService);
+
+    // wait for initial paths to be setup
     await new Promise((resolve) => setTimeout(resolve, 1000));
   });
 
@@ -69,6 +78,50 @@ describe('ConfigEditorController (e2e)', () => {
 
   it('should create the config.json backup path', async () => {
     expect(await fs.pathExists(backupFilePath)).toEqual(true);
+  });
+
+  it('should schedule a job to remove old config.json backups', async () => {
+    expect(schedulerService.scheduledJobs).toHaveProperty('cleanup-config-backups');
+  });
+
+  it('should remove config.json backups older than 60 days', async () => {
+    // empty the instance backup path
+    await fs.ensureDir(backupFilePath);
+    await fs.emptyDir(backupFilePath);
+
+    // create some fake backups
+    const backupDates = [
+      dayjs().subtract(600, 'day').toDate(),
+      dayjs().subtract(90, 'day').toDate(),
+      dayjs().subtract(80, 'day').toDate(),
+      dayjs().subtract(70, 'day').toDate(),
+      dayjs().subtract(65, 'day').toDate(),
+      dayjs().subtract(60, 'day').toDate(),
+      dayjs().subtract(20, 'day').toDate(),
+      dayjs().subtract(10, 'day').toDate(),
+      dayjs().subtract(6, 'day').toDate(),
+      dayjs().subtract(5, 'day').toDate(),
+      dayjs().subtract(0, 'day').toDate(),
+    ];
+
+    for (const fakeBackupDate of backupDates) {
+      const backupFileName = `config.json.${fakeBackupDate.getTime().toString()}`;
+      await fs.writeFile(path.resolve(backupFilePath, backupFileName), 'xyz');
+    }
+
+    // do a sanity check before hand
+    const backupsBeforeCleanup = await fs.readdir(backupFilePath);
+    expect(backupsBeforeCleanup).toHaveLength(11);
+
+    // run cleanup job
+    await configEditorService.cleanupConfigBackups();
+
+    // there should only be 5 backups on disk now
+    const backupsAfterJob = await fs.readdir(backupFilePath);
+    expect(backupsAfterJob).toHaveLength(5);
+
+    // empty the directory again
+    await fs.emptyDir(backupFilePath);
   });
 
   it('GET /config-editor', async () => {
