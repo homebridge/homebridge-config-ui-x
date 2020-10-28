@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## NEXT
+## 4.31.0 (2020-10-28)
 
 ### Notable Changes
 
@@ -19,7 +19,7 @@ All notable changes to this project will be documented in this file. This projec
 
 * **Config Editor:** When loading a previous version of the config.json, a diff will be shown to highlight the changes from the current config and the one that will be restored ([#910](https://github.com/oznu/homebridge-config-ui-x/issues/910))
 * **Config Editor:** Previous versions of the config.json file more than 60 days old will be periodically be deleted to remove the need for manual maintenance ([#732](https://github.com/oznu/homebridge-config-ui-x/issues/732))
-* **User Accounts:** You can now change the login username of existing accounts
+* **User Accounts:** You can now change the login username of existing user accounts
 * **i18n:** Improvements to French language translations ([#916](https://github.com/oznu/homebridge-config-ui-x/pull/916))
 * **i18n:** Improvements to Spanish language translations ([#917](https://github.com/oznu/homebridge-config-ui-x/pull/917))
 * **i18n:** Improvements to Polish language translations ([#918](https://github.com/oznu/homebridge-config-ui-x/pull/918))
