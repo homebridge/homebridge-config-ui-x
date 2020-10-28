@@ -5,7 +5,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { ApiService } from '../../../core/api.service';
+import { ApiService } from '@/app/core/api.service';
+import { AuthService } from '@/app/core/auth/auth.service';
 
 @Component({
   selector: 'app-users-edit',
@@ -13,22 +14,28 @@ import { ApiService } from '../../../core/api.service';
 })
 export class UsersEditComponent implements OnInit {
   @Input() user;
-  form: FormGroup;
-  page = {
+
+  public form: FormGroup;
+  public page = {
     title: 'users.title_edit_user',
     save: 'form.button_save',
     password: 'users.label_new_password',
   };
+
+  public isCurrentUser = false;
 
   constructor(
     public activeModal: NgbActiveModal,
     public toastr: ToastrService,
     private translate: TranslateService,
     private $api: ApiService,
+    private $auth: AuthService,
     public $fb: FormBuilder,
   ) { }
 
   ngOnInit() {
+    this.isCurrentUser = this.$auth.user.username === this.user.username;
+
     this.form = this.$fb.group({
       username: ['', Validators.required],
       name: ['', Validators.required],
@@ -36,8 +43,8 @@ export class UsersEditComponent implements OnInit {
       passwordConfirm: [''],
       admin: [true],
     }, {
-        validator: this.matchPassword,
-      });
+      validator: this.matchPassword,
+    });
 
     this.form.patchValue(this.user);
   }
@@ -57,9 +64,13 @@ export class UsersEditComponent implements OnInit {
       data => {
         this.activeModal.close();
         this.toastr.success(this.translate.instant('users.toast_updated_user'), this.translate.instant('toast.title_success'));
+
+        if (this.isCurrentUser && value.username !== this.$auth.user.username) {
+          this.$auth.logout();
+        }
       },
       err => {
-        this.toastr.error(this.translate.instant('users.toast_failed_to_add_user'), this.translate.instant('toast.title_error'));
+        this.toastr.error(err.error.message || this.translate.instant('users.toast_failed_to_add_user'), this.translate.instant('toast.title_error'));
       },
     );
   }

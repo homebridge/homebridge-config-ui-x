@@ -144,6 +144,69 @@ describe('UsersController (e2e)', () => {
     expect((await fs.readJson(authFilePath))[0].name).toEqual('New Name');
   });
 
+  it('PATCH /users/:userId (change username)', async () => {
+    const payload: UserDto = {
+      name: 'New Name',
+      username: 'newUsername',
+      admin: true,
+    };
+
+    const res = await app.inject({
+      method: 'PATCH',
+      path: '/users/1',
+      headers: {
+        authorization
+      },
+      payload,
+    });
+
+    expect(res.statusCode).toEqual(200);
+
+    expect(res.json()).toEqual({
+      id: 1,
+      name: 'New Name',
+      username: 'newUsername',
+      admin: true,
+      otpActive: false,
+    });
+
+    expect((await fs.readJson(authFilePath))[0].name).toEqual('New Name');
+    expect((await fs.readJson(authFilePath))[0].username).toEqual('newUsername');
+  });
+
+  it('PATCH /users/:userId (change username - conflict)', async () => {
+    const payload: UserDto = {
+      name: 'Tester',
+      username: 'test',
+      password: 'test',
+      admin: false,
+    };
+
+    // create a new user
+    const newUser: UserDto = (await app.inject({
+      method: 'POST',
+      path: '/users',
+      headers: {
+        authorization
+      },
+      payload,
+    })).json();
+
+    const res = await app.inject({
+      method: 'PATCH',
+      path: `/users/${newUser.id}`,
+      headers: {
+        authorization
+      },
+      payload: {
+        username: 'admin' // try change to existing username
+      },
+    });
+
+    expect(res.statusCode).toEqual(409);
+    expect(res.json().message).toContain('already exists');
+  });
+
   it('DELETE /users/:userId', async () => {
     const payload: UserDto = {
       name: 'Tester',
@@ -179,6 +242,41 @@ describe('UsersController (e2e)', () => {
 
     // check the user was deleted from the auth.json file
     expect(await fs.readJson(authFilePath)).toHaveLength(1);
+  });
+
+  it('DELETE /users/:userId (do not allow deletion of only admin)', async () => {
+    // create a new non-admin user
+    const payload: UserDto = {
+      name: 'Tester',
+      username: 'test',
+      password: 'test',
+      admin: false,
+    };
+
+    await app.inject({
+      method: 'POST',
+      path: '/users',
+      headers: {
+        authorization
+      },
+      payload,
+    });
+
+    // check the user was saved to the auth.json file as a sanity check
+    expect(await fs.readJson(authFilePath)).toHaveLength(2);
+
+    // delete user #1 (admin)
+    const res = await app.inject({
+      method: 'DELETE',
+      path: `/users/1`,
+      headers: {
+        authorization
+      },
+      payload,
+    });
+
+    expect(res.statusCode).toEqual(400);
+    expect(res.json().message).toContain('Cannot delete only admin user');
   });
 
   it('POST /users/change-password', async () => {

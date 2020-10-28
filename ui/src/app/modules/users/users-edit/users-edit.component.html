@@ -6,8 +6,8 @@
 
       <div class="md-form">
         <i class="fas fa-user-shield prefix grey-text"></i>
-        <input formControlName="username" [attr.disabled]="(page.title === 'users.title_edit_user') ? true : null"
-          type="text" id="form-username" autocomplete="off" autocapitalize="none" class="form-control pl-0 pr-0">
+        <input formControlName="username" type="text" id="form-username" autocomplete="off" autocapitalize="none"
+          class="form-control pl-0 pr-0">
         <label for="form-username" [ngClass]="{'active': page.title === 'users.title_edit_user'}"
           [translate]="'users.label_username'">Username</label>
       </div>

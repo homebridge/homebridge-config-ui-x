@@ -347,6 +347,15 @@ export class AuthService {
       throw new BadRequestException('User Not Found');
     }
 
+    if (user.username !== update.username) {
+      if (authfile.find(x => x.username.toLowerCase() === update.username.toLowerCase())) {
+        throw new ConflictException(`User with username '${update.username}' already exists.`);
+      }
+
+      this.logger.log(`Updated user: Changed username from '${user.username}' to '${update.username}'`);
+      user.username = update.username;
+    }
+
     user.name = update.name || user.name;
     user.admin = (update.admin === undefined) ? user.admin : update.admin;
 
