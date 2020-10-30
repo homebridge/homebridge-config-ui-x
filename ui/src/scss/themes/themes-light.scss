@@ -1,0 +1,129 @@
+/* Homebridge Config UI X Themes */
+
+@mixin make-theme($name, $primary, $primary-dark) {
+  .config-ui-x-#{$name} {
+    .bg-primary {
+      background-color: $primary-dark !important;
+    }
+
+    .primary-text {
+      color: $primary;
+    }
+
+    .btn-primary,
+    .btn-default {
+      @extend .btn-#{$name} !optional;
+    }
+
+    .badge-primary {
+      background-color: $primary-dark !important;
+    }
+
+    a {
+      &.card-link {
+        color: #000000;
+
+        &:hover {
+          color: $primary !important;
+        }
+      }
+    }
+
+    .nav-tabs {
+      border-bottom: 1px solid $primary;
+      .nav-link {
+        &.active {
+          color: #ffffff;
+          background-color: $primary;
+          border-color: $primary;
+        }
+        &:hover,
+        &:focus {
+          border-color: $primary !important;
+        }
+      }
+    }
+
+    .hb-uix-switch {
+      .hb-uix-slider {
+        border-color: $primary !important;
+      }
+
+      input:checked ~ .hb-uix-slider {
+        background-color: $primary !important;
+      }
+    }
+
+    .qr-code-container {
+      svg {
+        fill: $primary-dark;
+      }
+    }
+
+    .hb-widget-chart-background {
+      background-color: rgba($primary-dark, 0.2);
+      display: none;
+    }
+
+    .alert-info {
+      background-color: rgba($primary-dark, 0.1);
+      border-color: rgba($primary-dark, 0.1);
+      color: $primary;
+    }
+
+    .animate_loader {
+      .spinner_outer {
+        stroke: $primary-dark;
+      }
+      .spinner_inner {
+        stroke: $primary;
+      }
+    }
+
+    .uix-highlight-icon {
+      animation: uix-glow-icon 1s ease-in-out infinite alternate;
+    }
+
+    @keyframes uix-glow-icon {
+      from {
+        text-shadow: 0 0 5px #fff, 0 0 10px #fff;
+      }
+    }
+  }
+}
+
+@include make-theme("red", #f44336, #d32f2f);
+@include make-theme("pink", #e91e63, #c2185b);
+@include make-theme("purple", #9c27b0, #421367);
+@include make-theme("indigo", #3f51b5, #303f9f);
+@include make-theme("blue", #2196f3, #1976d2);
+@include make-theme("blue-grey", #607d8b, #455a64);
+@include make-theme("navi-blue", #000099, #000070);
+@include make-theme("green", #4caf50, #388e3c);
+@include make-theme("orange", #ff9800, #ef6c00);
+@include make-theme("grey", #9e9e9e, #616161);
+@include make-theme("brown", #795548, #4e342e);
+@include make-theme("amber", #ffc107, #ff8f00);
+@include make-theme("teal", #009688, #00695c);
+@include make-theme("cyan", #00bcd4, #00838f);
+@include make-theme("deep-purple", #673ab7, #4527a0);
+
+.config-ui-x-navi-blue {
+  .btn-primary {
+    background-color: #000099 !important;
+  }
+
+  .badge-primary {
+    background-color: #000070 !important;
+  }
+  .widget-control-button {
+    &.primary-text {
+      color: #2196f3;
+    }
+  }
+
+  .hb-widget-chart-background {
+    background-color: rgba(#000070, 0.2);
+    display: none;
+  }
+}
