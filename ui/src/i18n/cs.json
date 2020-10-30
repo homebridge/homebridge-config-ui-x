@@ -68,7 +68,7 @@
     "backup.message_restore_help_two": "Po provedení obnovy se budete muset přihlásit k Homebridge Config UI X pomocí původních přihlašovacích údajů.",
     "backup.message_restore_warning": "Obnovení ze zálohy nevratně přepíše stávající konfiguraci Homebridge.",
     "backup.message_scheduled_backup_none_yet": "No scheduled backups have been created yet. The next automated backup is scheduled to be taken at {{ backupTime }} server time.",
-    "backup.message_scheduled_backup_time": "A full backup of Homebridge instance is automatically created every day at {{ backupTime }} and kept for {{ dayCount }} days.",
+    "backup.message_scheduled_backup_time": "A full backup of the Homebridge instance is automatically created every day at {{ backupTime }} and kept for {{ dayCount }} days.",
     "backup.title_backup": "Záloha",
     "backup.title_backup_restore": "Záloha / Obnovení",
     "backup.title_restore": "Obnovení",

@@ -68,7 +68,7 @@
     "backup.message_restore_help_two": "You will need to login to Homebridge Config UI X after doing a restore using the credentials from the restored instance.",
     "backup.message_restore_warning": "Restoring from a backup will irreversibly overwrite the current Homebridge configuration.",
     "backup.message_scheduled_backup_none_yet": "No scheduled backups have been created yet. The next automated backup is scheduled to be taken at {{ backupTime }} server time.",
-    "backup.message_scheduled_backup_time": "A full backup of Homebridge instance is automatically created every day at {{ backupTime }} and kept for {{ dayCount }} days.",
+    "backup.message_scheduled_backup_time": "A full backup of the Homebridge instance is automatically created every day at {{ backupTime }} and kept for {{ dayCount }} days.",
     "backup.title_backup": "Backup",
     "backup.title_backup_restore": "Backup / Restore",
     "backup.title_restore": "Restore",

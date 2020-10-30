@@ -68,7 +68,7 @@
     "backup.message_restore_help_two": "Anda harus masuk ke Homebridge Config UI X setelah melakukan pemulihan menggunakan kredensial dari instance yang dipulihkan.",
     "backup.message_restore_warning": "Mengembalikan dari cadangan akan menimpa konfigurasi Homebridge saat ini dan tidak dapat dikembalikan.",
     "backup.message_scheduled_backup_none_yet": "No scheduled backups have been created yet. The next automated backup is scheduled to be taken at {{ backupTime }} server time.",
-    "backup.message_scheduled_backup_time": "A full backup of Homebridge instance is automatically created every day at {{ backupTime }} and kept for {{ dayCount }} days.",
+    "backup.message_scheduled_backup_time": "A full backup of the Homebridge instance is automatically created every day at {{ backupTime }} and kept for {{ dayCount }} days.",
     "backup.title_backup": "Cadangan",
     "backup.title_backup_restore": "Cadangan / Pulihkan",
     "backup.title_restore": "Pulihkan",

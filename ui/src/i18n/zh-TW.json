@@ -68,7 +68,7 @@
     "backup.message_restore_help_two": "於回復後，使用備份中的憑證時，將會需要登入 Homebridge Config UI X。",
     "backup.message_restore_warning": "從備份恢復將會完全覆蓋現有的 Homebridge 設定。",
     "backup.message_scheduled_backup_none_yet": "No scheduled backups have been created yet. The next automated backup is scheduled to be taken at {{ backupTime }} server time.",
-    "backup.message_scheduled_backup_time": "A full backup of Homebridge instance is automatically created every day at {{ backupTime }} and kept for {{ dayCount }} days.",
+    "backup.message_scheduled_backup_time": "A full backup of the Homebridge instance is automatically created every day at {{ backupTime }} and kept for {{ dayCount }} days.",
     "backup.title_backup": "備份",
     "backup.title_backup_restore": "備份 / 回復",
     "backup.title_restore": "回復",

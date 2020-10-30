@@ -68,7 +68,7 @@
     "backup.message_restore_help_two": "Du musst dich nach der Wiederherstellung mit den Anmeldedaten aus der wiederhergestellten Instanz bei Homebridge Config UI X anmelden.",
     "backup.message_restore_warning": "Durch das Wiederherstellen von einem Backup wird die aktuelle Homebridge-Konfiguration unwiderruflich überschreiben.",
     "backup.message_scheduled_backup_none_yet": "No scheduled backups have been created yet. The next automated backup is scheduled to be taken at {{ backupTime }} server time.",
-    "backup.message_scheduled_backup_time": "A full backup of Homebridge instance is automatically created every day at {{ backupTime }} and kept for {{ dayCount }} days.",
+    "backup.message_scheduled_backup_time": "A full backup of the Homebridge instance is automatically created every day at {{ backupTime }} and kept for {{ dayCount }} days.",
     "backup.title_backup": "Backup",
     "backup.title_backup_restore": "Backup / Wiederherstellen",
     "backup.title_restore": "Wiederherstellen",

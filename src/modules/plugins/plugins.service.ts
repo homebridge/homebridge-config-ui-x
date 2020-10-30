@@ -158,7 +158,11 @@ export class PluginsService {
       const fromCache = this.npmPluginCache.get(`lookup-${pluginName}`);
 
       const pkg: INpmRegistryModule = fromCache || (await (
-        this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(pluginName).replace('%40', '@')}`).toPromise()
+        this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(pluginName).replace('%40', '@')}`, {
+          headers: {
+            'accept': 'application/vnd.npm.install-v1+json' // only return minimal information
+          }
+        }).toPromise()
       )).data;
 
       if (!fromCache) {
