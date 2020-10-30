@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## NEXT
+
+### Bug Fixes
+
+* **Themes:** When using dark mode, `readonly` inputs in a Plugin's Settings GUI are now distinguishable from editable inputs 
+
+### Other Changes
+
+* **i18n:** Improvements to Catalan language translations ([#919](https://github.com/oznu/homebridge-config-ui-x/pull/919))
+
 ## 4.31.0 (2020-10-28)
 
 ### Notable Changes
