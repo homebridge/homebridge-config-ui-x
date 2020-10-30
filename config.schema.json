@@ -18,7 +18,8 @@
         "type": "integer",
         "default": 8080,
         "maximum": 65535,
-        "required": true
+        "required": true,
+        "readonly": true
       },
       "auth": {
         "title": "Homebridge Config UI X Authentication",
