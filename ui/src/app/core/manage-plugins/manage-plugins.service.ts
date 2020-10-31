@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { minVersion, gte } from 'semver';
+import { ToastrService } from 'ngx-toastr';
 
 import { AuthService } from '../auth/auth.service';
+import { ApiService } from '../api.service';
 import { CustomPluginsService } from './custom-plugins/custom-plugins.service';
 import { ManagePluginsModalComponent } from './manage-plugins-modal/manage-plugins-modal.component';
 import { UninstallPluginsModalComponent } from './uninstall-plugins-modal/uninstall-plugins-modal.component';
@@ -20,6 +22,8 @@ export class ManagePluginsService {
     private modalService: NgbModal,
     private customPluginsService: CustomPluginsService,
     private $auth: AuthService,
+    private $api: ApiService,
+    private $toastr: ToastrService,
   ) { }
 
   installPlugin(pluginName, targetVersion = 'latest') {
@@ -92,11 +96,28 @@ export class ManagePluginsService {
    * Open the plugin settings modal
    * @param plugin
    */
-  settings(plugin) {
-    if (this.customPluginsService.plugins[plugin.name]) {
-      return this.customPluginsService.openSettings(plugin.name);
+  async settings(plugin) {
+    // load the plugins schema
+    let schema;
+    if (plugin.settingsSchema) {
+      try {
+        schema = await this.loadConfigSchema(plugin.name);
+      } catch (e) {
+        this.$toastr.error('Failed to load plugins config schema.');
+        return;
+      }
     }
 
+    // open the custom ui if the plugin has one
+    if (schema && schema.customUi) {
+      return this.customPluginsService.openCustomSettingsUi(plugin, schema);
+    }
+
+    if (this.customPluginsService.plugins[plugin.name]) {
+      return this.customPluginsService.openSettings(plugin, schema);
+    }
+
+    // open the standard ui
     const ref = this.modalService.open(
       plugin.settingsSchema ? SettingsPluginsModalComponent : ManualPluginConfigModalComponent,
       {
@@ -105,10 +126,16 @@ export class ManagePluginsService {
       },
     );
 
-    ref.componentInstance.pluginName = plugin.name;
+    ref.componentInstance.schema = schema;
     ref.componentInstance.plugin = plugin;
 
-    return ref.result;
+    return ref.result.catch(() => {
+      // do nothing
+    });
+  }
+
+  private async loadConfigSchema(pluginName) {
+    return this.$api.get(`/plugins/config-schema/${encodeURIComponent(pluginName)}`).toPromise();
   }
 
   private async checkNodeVersion(plugin): Promise<boolean> {

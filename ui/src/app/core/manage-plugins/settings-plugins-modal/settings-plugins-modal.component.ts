@@ -15,12 +15,12 @@ import { NotificationService } from '@/app/core/notification.service';
 })
 export class SettingsPluginsModalComponent implements OnInit {
   @Input() plugin;
+  @Input() schema;
 
   public pluginAlias: string;
   public pluginType: 'platform' | 'accessory';
 
   public homebridgeConfig: any;
-  public configSchema: any = {};
   public pluginConfig = [];
   public form: any = {};
   public show;
@@ -36,7 +36,9 @@ export class SettingsPluginsModalComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.loadConfigSchema();
+    this.pluginAlias = this.schema.pluginAlias;
+    this.pluginType = this.schema.pluginType;
+    this.loadHomebridgeConfig();
   }
 
   get arrayKey() {
@@ -60,12 +62,12 @@ export class SettingsPluginsModalComponent implements OnInit {
 
     const blockConfig = {
       __uuid__: __uuid__,
-      name: 'New ' + this.configSchema.pluginAlias + ' #' + (this.pluginConfig.length + 1),
-      onChange: this.blockChanged(__uuid__, this.configSchema.pluginAlias),
+      name: 'New ' + this.schema.pluginAlias + ' #' + (this.pluginConfig.length + 1),
+      onChange: this.blockChanged(__uuid__, this.schema.pluginAlias),
     };
 
     const baseConfig = {
-      [this.pluginType]: this.configSchema.pluginAlias,
+      [this.pluginType]: this.schema.pluginAlias,
       __uuid__: __uuid__,
     };
 
@@ -83,17 +85,6 @@ export class SettingsPluginsModalComponent implements OnInit {
     this.homebridgeConfig[this.arrayKey].splice(homebridgeConfigIndex, 1);
   }
 
-  loadConfigSchema() {
-    this.$api.get(`/plugins/config-schema/${encodeURIComponent(this.plugin.name)}`).subscribe(
-      (schema) => {
-        this.pluginAlias = schema.pluginAlias;
-        this.pluginType = schema.pluginType;
-        this.configSchema = schema;
-        this.loadHomebridgeConfig();
-      },
-    );
-  }
-
   loadHomebridgeConfig() {
     this.$api.get('/config-editor').subscribe(
       (config) => {
@@ -109,8 +100,8 @@ export class SettingsPluginsModalComponent implements OnInit {
 
         this.homebridgeConfig[this.arrayKey].forEach((block: any) => {
           if (
-            block[this.pluginType] === this.configSchema.pluginAlias ||
-            block[this.pluginType] === this.plugin.name + '.' + this.configSchema.pluginAlias
+            block[this.pluginType] === this.schema.pluginAlias ||
+            block[this.pluginType] === this.plugin.name + '.' + this.schema.pluginAlias
           ) {
             block.__uuid__ = uuid();
 
@@ -175,7 +166,7 @@ export class SettingsPluginsModalComponent implements OnInit {
    * Homebridge Hue - ensure users object is preserved
    */
   homebridgeHueFix(platform) {
-    this.configSchema.schema.properties.users = {
+    this.schema.schema.properties.users = {
       type: 'object',
       properties: {},
     };
@@ -185,7 +176,7 @@ export class SettingsPluginsModalComponent implements OnInit {
     }
 
     for (const key of Object.keys(platform.users)) {
-      this.configSchema.schema.properties.users.properties[key] = {
+      this.schema.schema.properties.users.properties[key] = {
         type: 'string',
       };
     }

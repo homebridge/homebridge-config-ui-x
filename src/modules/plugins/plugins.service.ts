@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import { Injectable, NotFoundException, InternalServerErrorException, HttpService, BadRequestException } from '@nestjs/common';
-import { HomebridgePlugin, IPackageJson, INpmSearchResults, INpmRegistryModule, HomebridgePluginVersions } from './types';
+import { HomebridgePlugin, IPackageJson, INpmSearchResults, INpmRegistryModule, HomebridgePluginVersions, HomebridgePluginUiMetadata } from './types';
 import axios from 'axios';
 import * as os from 'os';
 import * as _ from 'lodash';
@@ -721,6 +721,27 @@ export class PluginsService {
 
     this.pluginAliasCache.set(pluginName, output);
     return output;
+  }
+
+  /**
+   * Returns the custom ui path for a plugin
+   */
+  public async getPluginUiMetadata(pluginName: string): Promise<HomebridgePluginUiMetadata> {
+    if (!this.installedPlugins) await this.getInstalledPlugins();
+    const plugin = this.installedPlugins.find(x => x.name === pluginName);
+
+    const publicPath = path.resolve(plugin.installPath, plugin.name, 'homebridge-ui', 'public');
+    const serverPath = path.resolve(plugin.installPath, plugin.name, 'homebridge-ui', 'server.js');
+
+    if (fs.pathExists(path.resolve(publicPath, 'index.html'))) {
+      return {
+        serverPath,
+        publicPath,
+        plugin,
+      };
+    }
+
+    throw new Error('Plugin does not provide a custom UI');
   }
 
   /**

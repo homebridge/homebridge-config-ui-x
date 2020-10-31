@@ -132,3 +132,9 @@ export interface INpmSearchResults {
 }
 
 export type NpmFunding = { type: string, url: string } | string | Array<{ type: string, url: string } | string>;
+
+export type HomebridgePluginUiMetadata = {
+  publicPath: string;
+  serverPath: string;
+  plugin: HomebridgePlugin;
+}

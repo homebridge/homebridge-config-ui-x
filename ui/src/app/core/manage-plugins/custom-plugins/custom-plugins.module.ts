@@ -9,6 +9,7 @@ import { NgxMdModule } from 'ngx-md';
 import { CoreModule } from '../../core.module';
 import { CustomPluginsService } from './custom-plugins.service';
 
+import { CustomPluginsComponent } from './custom-plugins.component';
 import { HomebridgeGoogleSmarthomeComponent } from './homebridge-google-smarthome/homebridge-google-smarthome.component';
 import { HomebridgeHoneywellHomeComponent } from './homebridge-honeywell-home/homebridge-honeywell-home.component';
 import { HomebridgeRingComponent } from './homebridge-ring/homebridge-ring.component';
@@ -17,12 +18,14 @@ import { HomebridgeNestCamComponent } from './homebridge-nest-cam/homebridge-nes
 
 @NgModule({
   entryComponents: [
+    CustomPluginsComponent,
     HomebridgeGoogleSmarthomeComponent,
     HomebridgeHoneywellHomeComponent,
     HomebridgeRingComponent,
     HomebridgeNestCamComponent,
   ],
   declarations: [
+    CustomPluginsComponent,
     HomebridgeGoogleSmarthomeComponent,
     HomebridgeHoneywellHomeComponent,
     HomebridgeRingComponent,

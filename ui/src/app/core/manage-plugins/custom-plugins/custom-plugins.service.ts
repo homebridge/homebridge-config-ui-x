@@ -6,6 +6,7 @@ import { HomebridgeGoogleSmarthomeComponent } from './homebridge-google-smarthom
 import { HomebridgeHoneywellHomeComponent } from './homebridge-honeywell-home/homebridge-honeywell-home.component';
 import { HomebridgeRingComponent } from './homebridge-ring/homebridge-ring.component';
 import { HomebridgeNestCamComponent } from './homebridge-nest-cam/homebridge-nest-cam.component';
+import { CustomPluginsComponent } from './custom-plugins.component';
 
 @Injectable({
   providedIn: 'root',
@@ -28,14 +29,13 @@ export class CustomPluginsService {
     private $api: ApiService,
   ) { }
 
-  async openSettings(pluginName: string) {
-    const schema = await this.loadConfigSchema(pluginName);
+  async openSettings(plugin, schema) {
     const homebridgeConfig = await this.loadHomebridgeConfig();
-    const ref = this.modalService.open(this.plugins[pluginName], {
+    const ref = this.modalService.open(this.plugins[plugin.name], {
       backdrop: 'static',
       size: 'lg',
     });
-    ref.componentInstance.pluginName = pluginName;
+    ref.componentInstance.pluginName = plugin.name;
     ref.componentInstance.schema = schema;
     ref.componentInstance.homebridgeConfig = homebridgeConfig;
 
@@ -44,8 +44,21 @@ export class CustomPluginsService {
     });
   }
 
-  async loadConfigSchema(pluginName) {
-    return this.$api.get(`/plugins/config-schema/${encodeURIComponent(pluginName)}`).toPromise();
+  async openCustomSettingsUi(plugin, schema) {
+    const homebridgeConfig = await this.loadHomebridgeConfig();
+
+    const ref = this.modalService.open(CustomPluginsComponent, {
+      backdrop: 'static',
+      size: 'lg',
+    });
+
+    ref.componentInstance.plugin = plugin;
+    ref.componentInstance.schema = schema;
+    ref.componentInstance.homebridgeConfig = homebridgeConfig;
+
+    return ref.result.catch(() => {
+      // do nothing
+    });
   }
 
   async loadHomebridgeConfig() {
