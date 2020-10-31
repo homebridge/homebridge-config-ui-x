@@ -14,8 +14,8 @@ export class PluginsSettingsUiController {
   @Get('/:pluginName/*')
   @ApiOperation({ summary: 'Returns the HTML assets for a plugin\'s custom UI' })
   @ApiParam({ name: 'pluginName', type: 'string' })
-  async serveCustomUiAsset(@Res() res, @Param('pluginName') pluginName, @Param('*') file, @Query('origin') origin: string) {
-    return await this.pluginSettingsUiService.serveCustomUiAsset(res, pluginName, file, origin);
+  async serveCustomUiAsset(@Res() reply, @Param('pluginName') pluginName, @Param('*') file, @Query('origin') origin: string) {
+    return await this.pluginSettingsUiService.serveCustomUiAsset(reply, pluginName, file, origin);
   }
 
 }

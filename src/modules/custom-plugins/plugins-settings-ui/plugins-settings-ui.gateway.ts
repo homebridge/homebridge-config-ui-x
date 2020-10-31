@@ -7,7 +7,7 @@ import { PluginsSettingsUiService } from './plugins-settings-ui.service';
 
 @UseGuards(WsAdminGuard)
 @WebSocketGateway({ namespace: 'plugins/settings-ui' })
-export class PluginSettingsUiGateway {
+export class PluginsSettingsUiGateway {
 
   constructor(
     private pluginSettingsUiService: PluginsSettingsUiService,

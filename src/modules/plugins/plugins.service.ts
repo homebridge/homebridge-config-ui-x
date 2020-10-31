@@ -733,7 +733,7 @@ export class PluginsService {
     const publicPath = path.resolve(plugin.installPath, plugin.name, 'homebridge-ui', 'public');
     const serverPath = path.resolve(plugin.installPath, plugin.name, 'homebridge-ui', 'server.js');
 
-    if (fs.pathExists(path.resolve(publicPath, 'index.html'))) {
+    if (await fs.pathExists(path.resolve(publicPath, 'index.html'))) {
       return {
         serverPath,
         publicPath,

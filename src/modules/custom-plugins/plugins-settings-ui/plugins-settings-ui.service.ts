@@ -24,7 +24,7 @@ export class PluginsSettingsUiService {
   /**
    * Serve Custom HTML Assets for a plugin
    */
-  async serveCustomUiAsset(res, pluginName: string, assetPath: string, origin: string) {
+  async serveCustomUiAsset(reply, pluginName: string, assetPath: string, origin: string) {
     try {
       if (!assetPath) {
         assetPath = 'index.html';
@@ -37,26 +37,28 @@ export class PluginsSettingsUiService {
       const filePath = path.join(pluginUi.publicPath, safeSuffix);
 
       if (!filePath.startsWith(path.resolve(pluginUi.publicPath))) {
-        throw new NotFoundException();
+        return reply.code(404).send('Not Found');
       }
 
       // this will severely limit the ability for this page to do anything if loaded outside of the UI
-      res.header('Content-Security-Policy', '');
+      reply.header('Content-Security-Policy', '');
 
       if (assetPath === 'index.html') {
-        return res
+        return reply
           .type('text/html')
           .send(await this.buildIndexHtml(pluginUi, origin));
       }
 
       if (await fs.pathExists(filePath)) {
-        return res.sendFile(path.basename(filePath), path.dirname(filePath));
+        return reply.sendFile(path.basename(filePath), path.dirname(filePath));
       } else {
         this.loggerService.warn('Asset Not Found:', pluginName + '/' + assetPath);
-        throw new NotFoundException();
+        return reply.code(404).send('Not Found');
       }
     } catch (e) {
-      console.log(e);
+      e.message === 'Not Found' ? reply.code(404) : reply.code(500);
+      this.loggerService.error(`[${pluginName}]`, e.message);
+      return reply.send(e.message);
     }
   }
 
@@ -116,32 +118,21 @@ export class PluginsSettingsUiService {
     const pluginUi: HomebridgePluginUiMetadata = (this.pluginUiMetadataCache.get(pluginName) as any)
       || (await this.getPluginUiMetadata(pluginName));
 
+    // check the plugin has a server side script
     if (!await fs.pathExists(path.resolve(pluginUi.serverPath))) {
       client.emit('ready', { server: false });
       return;
     }
 
+    // launch the server side script
     const child = child_process.fork(pluginUi.serverPath, [], {
       silent: true,
-    });
-
-    const cleanup = () => {
-      this.loggerService.log(`[${pluginName}]`, 'Terminating child process...');
-
-      const childPid = child.pid;
-      if (child.connected) {
-        child.disconnect();
+      env: {
+        HOMEBRIDGE_STORAGE_PATH: this.configService.storagePath,
+        HOMEBRIDGE_CONFIG_PATH: this.configService.configPath,
+        HOMEBRIDGE_UI_VERSION: this.configService.package.version,
       }
-      setTimeout(() => {
-        try {
-          process.kill(childPid, 'SIGTERM');
-        } catch (e) { }
-      }, 5000);
-
-      client.removeAllListeners('end');
-      client.removeAllListeners('disconnect');
-      client.removeAllListeners('request');
-    };
+    });
 
     child.stdout.on('data', (data) => {
       this.loggerService.log(`[${pluginName}]`, data.toString().trim());
@@ -161,6 +152,25 @@ export class PluginsSettingsUiService {
         client.emit(response.action, response.payload);
       }
     });
+
+    // function to handle cleanup
+    const cleanup = () => {
+      this.loggerService.log(`[${pluginName}]`, 'Terminating child process...');
+
+      const childPid = child.pid;
+      if (child.connected) {
+        child.disconnect();
+      }
+      setTimeout(() => {
+        try {
+          process.kill(childPid, 'SIGTERM');
+        } catch (e) { }
+      }, 5000);
+
+      client.removeAllListeners('end');
+      client.removeAllListeners('disconnect');
+      client.removeAllListeners('request');
+    };
 
     client.on('disconnect', () => {
       cleanup();
