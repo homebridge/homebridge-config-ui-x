@@ -90,7 +90,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
     });
 
     expect(res.statusCode).toEqual(200);
-    expect(res.body).toContain('http://example.com/assets/plugin-settings-ui-lib.js');
+    expect(res.body).toContain('http://example.com/assets/plugin-ui-utils/ui.js');
   });
 
   it('GET /plugins/settings-ui/:plugin-name/index.html (no custom ui for plugin)', async () => {

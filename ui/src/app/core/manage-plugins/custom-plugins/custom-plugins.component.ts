@@ -4,7 +4,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 
 import { environment } from '@/environments/environment';
-import { AuthService } from '@/app/core/auth/auth.service';
 import { ApiService } from '@/app/core/api.service';
 import { WsService } from '@/app/core/ws.service';
 import { NotificationService } from '@/app/core/notification.service';
@@ -38,7 +37,6 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     private $translate: TranslateService,
     private $toastr: ToastrService,
     private $api: ApiService,
-    private $auth: AuthService,
     private $ws: WsService,
     private $notification: NotificationService,
   ) { }
