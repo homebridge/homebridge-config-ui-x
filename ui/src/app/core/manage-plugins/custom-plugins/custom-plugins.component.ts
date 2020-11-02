@@ -120,7 +120,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
           break;
         }
         case 'i18n.translations': {
-          // this.requestResponse(e, this.$translate.getTranslation(this.$translate.currentLang));
+          this.requestResponse(e, this.$translate.store.translations[this.$translate.currentLang]);
           break;
         }
         case 'close': {
