@@ -115,6 +115,14 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
           this.handleUpdateConfig(e, e.data.pluginConfig);
           break;
         }
+        case 'i18n.lang': {
+          this.requestResponse(e, this.$translate.currentLang);
+          break;
+        }
+        case 'i18n.translations': {
+          // this.requestResponse(e, this.$translate.getTranslation(this.$translate.currentLang));
+          break;
+        }
         case 'close': {
           this.activeModal.close();
           break;
