@@ -28,6 +28,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
 
   public loading = true;
   public saveInProgress = false;
+  public pluginSpinner = false;
 
   private basePath: string;
   private iframe: HTMLIFrameElement;
@@ -46,21 +47,32 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     this.pluginAlias = this.schema.pluginAlias;
     this.pluginType = this.schema.pluginType;
 
-    this.io.connected.subscribe(() => {
+    // start accessory subscription
+    if (this.io.connected) {
       this.io.socket.emit('start', this.plugin.name);
-    });
+      setTimeout(() => {
+        this.io.connected.subscribe(() => {
+          this.io.socket.emit('start', this.plugin.name);
+        });
+      }, 1000);
+    } else {
+      this.io.connected.subscribe(() => {
+        this.io.socket.emit('start', this.plugin.name);
+      });
+    }
 
     this.io.socket.on('response', (data) => {
       data.action = 'response';
-      this.iframe.contentWindow.postMessage(data, environment.api.socket);
+      this.iframe.contentWindow.postMessage(data, environment.api.origin);
     });
 
     this.io.socket.on('stream', (data) => {
       data.action = 'stream';
-      this.iframe.contentWindow.postMessage(data, environment.api.socket);
+      this.iframe.contentWindow.postMessage(data, environment.api.origin);
     });
 
     this.io.socket.on('ready', (data) => {
+      this.loading = false;
       this.loadUi();
     });
 
@@ -75,22 +87,22 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
 
   loadUi() {
     this.iframe = this.customPluginUiElementTarget.nativeElement as HTMLIFrameElement;
-    this.iframe.src = environment.api.base + this.basePath + '/index.html?origin=' + encodeURIComponent(location.origin);
+    this.iframe.src = environment.api.base + this.basePath +
+      '/index.html?origin=' + encodeURIComponent(location.origin) + '&v=' + encodeURIComponent(this.plugin.installedVersion);
   }
 
   handleMessage = (e: MessageEvent) => {
-    if (e.origin === window.origin || e.origin === environment.api.socket) {
+    if (e.origin === environment.api.origin || e.origin === window.origin) {
       switch (e.data.action) {
         case 'loaded':
           this.injectDefaultStyles(e);
           this.confirmReady(e);
-          this.loading = false;
           break;
         case 'request': {
           this.handleRequest(e);
           break;
         }
-        case 'scollHeight':
+        case 'scrollHeight':
           this.setiFrameHeight(e);
           break;
         case 'config.get': {
@@ -121,6 +133,12 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
         case 'toast.info':
           this.$toastr.info(e.data.message, e.data.title);
           break;
+        case 'spinner.show':
+          this.pluginSpinner = true;
+          break;
+        case 'spinner.hide':
+          this.pluginSpinner = false;
+          break;
         default:
           console.log(e);
       }
@@ -132,7 +150,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   }
 
   setiFrameHeight(event: MessageEvent) {
-    this.iframe.style.height = (event.data.scrollHeight + 10) + 'px';
+    this.iframe.style.height = (event.data.scrollHeight) + 10 + 'px';
   }
 
   handleRequest(event: MessageEvent) {
@@ -186,6 +204,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     // add custom css
     const customStyles = `
       body {
+        height: unset !important;
         background-color: ${darkMode ? '#242424' : '#FFFFFF'} !important;
         color: ${darkMode ? '#FFFFFF' : '#000000'};
         padding: 5px !important;

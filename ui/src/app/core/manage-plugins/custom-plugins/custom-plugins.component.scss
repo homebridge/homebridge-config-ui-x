@@ -7,3 +7,18 @@
   background-color: transparent;
   border: 0;
 }
+
+.loading-overlay {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+::ng-deep body.dark-mode {
+  .loading-overlay {
+    background-color: rgba(36, 36, 36, 0.7);
+  }
+}

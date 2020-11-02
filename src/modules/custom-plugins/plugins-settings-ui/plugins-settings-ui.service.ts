@@ -95,7 +95,7 @@ export class PluginsSettingsUiService {
             serverEnv: ${JSON.stringify(this.configService.uiSettings())},
           };
           </script>
-          <script src="${origin || 'http://localhost:4200'}/assets/plugin-settings-ui-lib.js"></script>
+          <script src="${origin || 'http://localhost:4200'}/assets/plugin-ui-utils/ui.js?v=${this.configService.package.version}"></script>
           <script>
             window.addEventListener('load', () => {
               window.parent.postMessage({action: 'loaded'}, '*');

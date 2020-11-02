@@ -4,6 +4,7 @@ export const environment = {
   api: {
     base: '/api',
     socket: `${(window.location.protocol) === 'http:' ? 'ws://' : 'wss://'}${window.location.host}`,
+    origin: window.location.origin,
   },
   jwt: {
     tokenKey: 'access_token',
