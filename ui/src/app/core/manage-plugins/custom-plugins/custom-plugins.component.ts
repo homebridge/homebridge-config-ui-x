@@ -45,6 +45,15 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     this.pluginAlias = this.schema.pluginAlias;
     this.pluginType = this.schema.pluginType;
 
+    // ensure homebridge config has platform and accessories arrays
+    if (!Array.isArray(this.homebridgeConfig.platforms)) {
+      this.homebridgeConfig.platforms = [];
+    }
+
+    if (!Array.isArray(this.homebridgeConfig.accessories)) {
+      this.homebridgeConfig.accessories = [];
+    }
+
     // start accessory subscription
     if (this.io.connected) {
       this.io.socket.emit('start', this.plugin.name);
@@ -113,6 +122,10 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
         }
         case 'config.update': {
           this.handleUpdateConfig(e, e.data.pluginConfig);
+          break;
+        }
+        case 'config.schema': {
+          this.requestResponse(e, this.schema);
           break;
         }
         case 'i18n.lang': {
