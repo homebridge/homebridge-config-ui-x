@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file. This projec
 
 ## NEXT
 
+### Notable Changes
+
+* **Plugins:** (BETA) Added the ability for plugin developers to create fully custom configuration user interfaces for their plugins
+  * This is an optional feature developers can use if they need more advanced functionality than the current config.schema.json generated form provides
+  * Developers can use standard HTML / CSS and JavaScript (or even a front end framework like Vue, Angular or React) to build their user interfaces
+  * Developers can also create a server-side script which accepts requests from their plugin user interface
+  * See [the documentation](https://github.com/homebridge/plugin-ui-utils#readme) for further information
+
 ### Bug Fixes
 
 * **Themes:** When using dark mode, `readonly` inputs in a Plugin's Settings GUI are now distinguishable from editable inputs 
@@ -11,6 +19,9 @@ All notable changes to this project will be documented in this file. This projec
 ### Other Changes
 
 * **i18n:** Improvements to Catalan language translations ([#919](https://github.com/oznu/homebridge-config-ui-x/pull/919))
+* **i18n:** Improvements to Simplified Chinese language translations ([#927](https://github.com/oznu/homebridge-config-ui-x/pull/927))
+* **i18n:** Improvements to Italian language translations ([#928](https://github.com/oznu/homebridge-config-ui-x/pull/928))
+* **i18n:** Improvements to Polish language translations ([#929](https://github.com/oznu/homebridge-config-ui-x/pull/929))
 
 ## 4.31.0 (2020-10-28)
 
