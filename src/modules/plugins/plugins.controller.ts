@@ -25,7 +25,7 @@ export class PluginsController {
   @ApiParam({ name: 'query', type: 'string' })
   @Get('search/:query')
   pluginsSearch(@Param('query') query) {
-    return this.pluginsService.searchNpmRegistry(query);
+    return this.pluginsService.searchNpmRegistry(query.trim());
   }
 
   @UseGuards(AdminGuard)

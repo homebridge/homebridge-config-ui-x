@@ -29,7 +29,7 @@
 
       </span>
       <button class="btn btn-primary waves-effect m-0" [translate]="'reset.title_clear_cached_accessories'"
-        (click)="selectNetworkInterfaces()">
+        (click)="selectNetworkInterfaces()" [disabled]="!availableNetworkAdapters.length">
         <i class="fas fa-cog"></i>
       </button>
     </li>
@@ -129,8 +129,7 @@
         <i class="fas fa-info-circle primary-text"
           ngbTooltip="{{ 'reset.message_unpair_bridges_cameras_tv_external_accessories' | translate }}"></i>
       </span>
-      <button class="btn btn-primary waves-effect m-0" [translate]="'reset.title_clear_cached_accessories'"
-        (click)="unpairAccessory()">
+      <button class="btn btn-primary waves-effect m-0" (click)="unpairAccessory()">
         <i class="fas fa-flip-horizontal fa-external-link-square-alt"></i>
       </button>
     </li>
@@ -140,8 +139,7 @@
         <i class="fas fa-info-circle primary-text"
           ngbTooltip="{{ 'reset.message_reset_will_unpair_from_homekit' | translate }}"></i>
       </span>
-      <button class="btn btn-primary waves-effect m-0" [translate]="'reset.title_clear_cached_accessories'"
-        (click)="resetHomebridgeState()">
+      <button class="btn btn-primary waves-effect m-0" (click)="resetHomebridgeState()">
         <i class="fas fa-flip-horizontal fa-external-link-square-alt"></i>
       </button>
     </li>

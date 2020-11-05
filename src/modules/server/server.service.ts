@@ -1,8 +1,10 @@
-import * as si from 'systeminformation';
+import * as os from 'os';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as bufferShim from 'buffer-shims';
 import * as qr from 'qr-image';
+import * as si from 'systeminformation';
+import * as NodeCache from 'node-cache';
 import * as child_process from 'child_process';
 import { Injectable, NotFoundException, BadRequestException, ServiceUnavailableException } from '@nestjs/common';
 import { Categories } from '@oznu/hap-client/dist/hap-types';
@@ -14,6 +16,8 @@ import { AccessoriesService } from '../accessories/accessories.service';
 
 @Injectable()
 export class ServerService {
+  private serverServiceCache = new NodeCache({ stdTTL: 300 });
+
   private accessoryId = this.configService.homebridgeConfig.bridge.username.split(':').join('');
   private accessoryInfoPath = path.join(this.configService.storagePath, 'persist', `AccessoryInfo.${this.accessoryId}.json`);
 
@@ -298,13 +302,21 @@ export class ServerService {
   /**
    * Returns a list of network adapters on the current host
    */
-  public async getSystemNetworkInterfaces() {
-    return (await si.networkInterfaces()).filter((adapter) => {
+  public async getSystemNetworkInterfaces(): Promise<si.Systeminformation.NetworkInterfacesData[]> {
+    const fromCache: si.Systeminformation.NetworkInterfacesData[] = this.serverServiceCache.get(`network-interfaces`);
+
+    const networkInterfaces = fromCache || (await si.networkInterfaces()).filter((adapter) => {
       return !adapter.internal
-        && (adapter.ip4 || (adapter.ip6 && adapter.ip6subnet !== 'ffff:ffff:ffff:ffff::'))
         && adapter.mac
-        && adapter.operstate === 'up';
+        && (adapter.ip4 || (adapter.ip6 && adapter.ip6subnet !== 'ffff:ffff:ffff:ffff::'))
+        && (adapter.operstate === 'up' || os.platform() === 'freebsd');
     });
+
+    if (!fromCache) {
+      this.serverServiceCache.set(`network-interfaces`, networkInterfaces);
+    }
+
+    return networkInterfaces;
   }
 
   /**
