@@ -10,6 +10,7 @@ import { ResetHomebridgeModalComponent } from './reset-homebridge-modal/reset-ho
 import { UnpairAccessoryModalComponent } from './unpair-accessory-modal/unpair-accessory-modal.component';
 import { RemoveAllCachedAccessoriesModalComponent } from './remove-all-cached-accessories-modal/remove-all-cached-accessories-modal.component';
 import { RemoveSingleCachedAccessoryModalComponent } from './remove-single-cached-accessory-modal/remove-single-cached-accessory-modal.component';
+import { SelectNetworkInterfacesComponent } from './select-network-interfaces/select-network-interfaces.component';
 
 @NgModule({
   entryComponents: [
@@ -17,6 +18,7 @@ import { RemoveSingleCachedAccessoryModalComponent } from './remove-single-cache
     UnpairAccessoryModalComponent,
     RemoveAllCachedAccessoriesModalComponent,
     RemoveSingleCachedAccessoryModalComponent,
+    SelectNetworkInterfacesComponent,
   ],
   declarations: [
     SettingsComponent,
@@ -24,6 +26,7 @@ import { RemoveSingleCachedAccessoryModalComponent } from './remove-single-cache
     UnpairAccessoryModalComponent,
     RemoveAllCachedAccessoriesModalComponent,
     RemoveSingleCachedAccessoryModalComponent,
+    SelectNetworkInterfacesComponent,
   ],
   imports: [
     CommonModule,

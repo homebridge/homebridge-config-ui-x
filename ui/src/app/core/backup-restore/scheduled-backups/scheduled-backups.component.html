@@ -17,7 +17,7 @@
         <span><strong translate="backup.label_archive_name"></strong></span>
         <span><strong translate="backup.label_backup_time"></strong></span>
       </li>
-      <li *ngFor="let backup of scheduledBackups" class="mt-2 d-flex flex-row justify-content-between">
+      <li *ngFor="let backup of scheduledBackups" class="mt-2 d-flex flex-wrap flex-row justify-content-between">
         <span>
           <a href="javascript:void(0);" (click)="download(backup)">
             <i class="fas fa-download"></i> {{ backup.fileName}}

@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { debounceTime } from 'rxjs/operators';
+import * as semver from 'semver';
 
 import { AuthService } from '@/app/core/auth/auth.service';
 import { ApiService } from '@/app/core/api.service';
@@ -14,6 +15,7 @@ import { RemoveAllCachedAccessoriesModalComponent } from './remove-all-cached-ac
 import { ResetHomebridgeModalComponent } from './reset-homebridge-modal/reset-homebridge-modal.component';
 import { RemoveSingleCachedAccessoryModalComponent } from './remove-single-cached-accessory-modal/remove-single-cached-accessory-modal.component';
 import { UnpairAccessoryModalComponent } from './unpair-accessory-modal/unpair-accessory-modal.component';
+import { SelectNetworkInterfacesComponent } from './select-network-interfaces/select-network-interfaces.component';
 
 @Component({
   selector: 'app-settings',
@@ -23,6 +25,10 @@ import { UnpairAccessoryModalComponent } from './unpair-accessory-modal/unpair-a
 export class SettingsComponent implements OnInit {
   public serviceForm: FormGroup;
   public saved = false;
+
+  public showNetworking = false;
+  public availableNetworkAdapters: Record<string, any> = [];
+  public bridgeNetworkAdapters: Record<string, any> = [];
 
   constructor(
     public $auth: AuthService,
@@ -37,6 +43,7 @@ export class SettingsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.initNetworkingOptions();
     if (this.$auth.env.serviceMode) {
       this.initServiceModeForm();
     } else if (this.$auth.env.runningInDocker) {
@@ -132,6 +139,81 @@ export class SettingsComponent implements OnInit {
         this.$toastr.error(err.message, 'Failed to set force setvice restart flag.');
       },
     );
+  }
+
+  async initNetworkingOptions() {
+    try {
+      const homebridgePackage = await this.$api.get('/status/homebridge-version').toPromise();
+      if (semver.gte(homebridgePackage.installedVersion, '1.3.0-beta.0', { includePrerelease: true })) {
+        this.showNetworking = true;
+        this.getNetworkInterfaces();
+      }
+    } catch (e) {
+
+    }
+  }
+
+  async getNetworkInterfaces() {
+    return Promise.all([
+      this.$api.get('/server/network-interfaces/system').toPromise(),
+      this.$api.get('/server/network-interfaces/bridge').toPromise(),
+    ]).then(([system, adapters]) => {
+      this.availableNetworkAdapters = system;
+      this.buildBridgeNetworkAdapterList(adapters);
+    });
+  }
+
+  async setNetworkInterfaces(adapters: string[]) {
+    this.$api.put('/server/network-interfaces/bridge', { adapters })
+      .subscribe(
+        () => {
+          this.saved = true;
+          this.$notification.configUpdated.next();
+        },
+        (err) => {
+          this.$toastr.error(err.message, 'Failed to set network adapters.');
+        },
+      );
+  }
+
+  buildBridgeNetworkAdapterList(adapters: string[]) {
+    if (!adapters.length) {
+      this.bridgeNetworkAdapters = [];
+      return;
+    }
+
+    this.bridgeNetworkAdapters = adapters.map((interfaceName) => {
+      const i = this.availableNetworkAdapters.find((x => x.iface === interfaceName));
+      if (i) {
+        i.selected = true;
+        i.missing = false;
+        return i;
+      } else {
+        return {
+          iface: interfaceName,
+          missing: true,
+        };
+      }
+    });
+  }
+
+
+  selectNetworkInterfaces() {
+    const ref = this.$modal.open(SelectNetworkInterfacesComponent, {
+      size: 'lg',
+    });
+
+    ref.componentInstance.availableNetworkAdapters = this.availableNetworkAdapters;
+    ref.componentInstance.bridgeNetworkAdapters = this.bridgeNetworkAdapters;
+
+    ref.result
+      .then((adapters: string[]) => {
+        this.buildBridgeNetworkAdapterList(adapters);
+        this.setNetworkInterfaces(adapters);
+      })
+      .catch(() => {
+        // do nothing
+      });
   }
 
 }

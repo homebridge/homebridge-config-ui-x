@@ -294,4 +294,84 @@ describe('ServerController (e2e)', () => {
   afterAll(async () => {
     await app.close();
   });
+
+  it('GET /server/network-interfaces/system', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/network-interfaces/system',
+      headers: {
+        authorization,
+      }
+    });
+
+    expect(res.statusCode).toEqual(200);
+    expect(Array.isArray(res.json())).toEqual(true);
+  });
+
+  it('GET /server/network-interfaces/bridge', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/network-interfaces/bridge',
+      headers: {
+        authorization,
+      }
+    });
+
+    expect(res.statusCode).toEqual(200);
+    expect(Array.isArray(res.json())).toEqual(true);
+  });
+
+  it('PUT /server/network-interfaces/bridge', async () => {
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/server/network-interfaces/bridge',
+      headers: {
+        authorization,
+      },
+      payload: {
+        adapters: ['en0']
+      }
+    });
+
+    expect(res.statusCode).toEqual(200);
+
+    // check the value was saved
+    const config = await fs.readJson(configService.configPath);
+    expect(config.bridge.bind).toEqual(['en0']);
+  });
+
+  it('PUT /server/network-interfaces/bridge (no adapters)', async () => {
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/server/network-interfaces/bridge',
+      headers: {
+        authorization,
+      },
+      payload: {
+        adapters: []
+      }
+    });
+
+    expect(res.statusCode).toEqual(200);
+
+    // check the value was saved
+    const config = await fs.readJson(configService.configPath);
+    expect(config.bridge.bind).toBeUndefined();
+  });
+
+  it('PUT /server/network-interfaces/bridge (bad payload)', async () => {
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/server/network-interfaces/bridge',
+      headers: {
+        authorization,
+      },
+      payload: {
+        adapters: 'en0'
+      }
+    });
+
+    expect(res.statusCode).toEqual(400);
+    expect(res.body).toContain('adapters must be an array');
+  });
 });

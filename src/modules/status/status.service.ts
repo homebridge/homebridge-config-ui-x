@@ -5,8 +5,10 @@ import * as si from 'systeminformation';
 import * as semver from 'semver';
 import * as NodeCache from 'node-cache';
 import { Injectable, HttpService } from '@nestjs/common';
-import { ConfigService } from '../../core/config/config.service';
+
 import { Logger } from '../../core/logger/logger.service';
+import { ConfigService } from '../../core/config/config.service';
+import { PluginsService } from '../plugins/plugins.service';
 
 @Injectable()
 export class StatusService {
@@ -23,6 +25,7 @@ export class StatusService {
     private httpService: HttpService,
     private logger: Logger,
     private configService: ConfigService,
+    private pluginsService: PluginsService,
   ) {
 
     // systeminformation cpu data is not supported in FreeBSD Jail Shells
@@ -303,6 +306,13 @@ export class StatusService {
       time: await si.time(),
       network: await this.getDefaultInterface() || {},
     };
+  }
+
+  /**
+   * Return the Homebridge package
+   */
+  public async getHomebridgeVersion() {
+    return this.pluginsService.getHomebridgePackage();
   }
 
   /**

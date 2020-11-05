@@ -1,3 +1,4 @@
+import * as si from 'systeminformation';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as bufferShim from 'buffer-shims';
@@ -6,8 +7,8 @@ import * as child_process from 'child_process';
 import { Injectable, NotFoundException, BadRequestException, ServiceUnavailableException } from '@nestjs/common';
 import { Categories } from '@oznu/hap-client/dist/hap-types';
 
-import { ConfigService } from '../../core/config/config.service';
 import { Logger } from '../../core/logger/logger.service';
+import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
 import { ConfigEditorService } from '../config-editor/config-editor.service';
 import { AccessoriesService } from '../accessories/accessories.service';
 
@@ -292,6 +293,60 @@ export class ServerService {
       setupCode: await this.getSetupCode(),
       isPaired: accessoryInfo.pairedClients && Object.keys(accessoryInfo.pairedClients).length > 0,
     };
+  }
+
+  /**
+   * Returns a list of network adapters on the current host
+   */
+  public async getSystemNetworkInterfaces() {
+    return (await si.networkInterfaces()).filter((adapter) => {
+      return !adapter.internal
+        && (adapter.ip4 || (adapter.ip6 && adapter.ip6subnet !== 'ffff:ffff:ffff:ffff::'))
+        && adapter.mac
+        && adapter.operstate === 'up';
+    });
+  }
+
+  /**
+   * Returns a list of network adapters the bridge is currently configured to listen on
+   */
+  public async getHomebridgeNetworkInterfaces() {
+    const config = await this.configEditorService.getConfigFile();
+
+    if (!config.bridge?.bind) {
+      return [];
+    }
+
+    if (Array.isArray(config.bridge?.bind)) {
+      return config.bridge.bind;
+    }
+
+    if (typeof config.bridge?.bind === 'string') {
+      return [config.bridge.bind];
+    }
+
+    return [];
+  }
+
+  /**
+   * Set the bridge interfaces
+   */
+  public async setHomebridgeNetworkInterfaces(adapters: string[]) {
+    const config = await this.configEditorService.getConfigFile();
+
+    if (!config.bridge) {
+      config.bridge = {} as HomebridgeConfig['bridge'];
+    }
+
+    if (!adapters.length) {
+      delete config.bridge.bind;
+    } else {
+      config.bridge.bind = adapters;
+    }
+
+    await this.configEditorService.updateConfigFile(config);
+
+    return;
   }
 
   /**

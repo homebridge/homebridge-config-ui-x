@@ -12,6 +12,7 @@ export interface HomebridgeConfig {
     pin: string;
     name: string;
     port: number;
+    bind?: string | string[];
   };
   platforms: any[];
   accessories: any[];

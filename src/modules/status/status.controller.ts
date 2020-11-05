@@ -38,6 +38,12 @@ export class StatusController {
     };
   }
 
+  @ApiOperation({ summary: 'Return the current Homebridge version / package information.' })
+  @Get('/homebridge-version')
+  async getHomebridgeVersion() {
+    return this.statusService.getHomebridgeVersion();
+  }
+
   @ApiOperation({ summary: 'Return general information about the host environment.' })
   @Get('/server-information')
   async getHomebridgeServerInfo() {
