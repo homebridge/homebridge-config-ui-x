@@ -34,6 +34,10 @@
         </app-airqualitysensor>
         <app-windowcovering *ngSwitchCase="'WindowCovering'" [service]="service">Window Covering
         </app-windowcovering>
+        <app-window *ngSwitchCase="'Window'" [service]="service">Window
+        </app-window>
+        <app-door *ngSwitchCase="'Door'" [service]="service">Door
+        </app-door>
         <app-television *ngSwitchCase="'Television'" [service]="service">Television
         </app-television>
         <app-securitysystem *ngSwitchCase="'SecuritySystem'" [service]="service">Security System
