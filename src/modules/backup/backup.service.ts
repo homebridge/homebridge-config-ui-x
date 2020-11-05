@@ -357,11 +357,16 @@ export class BackupService {
     }
 
     // load restored config
-    const restoredConfig = await fs.readJson(this.configService.configPath);
+    const restoredConfig: HomebridgeConfig = await fs.readJson(this.configService.configPath);
 
     // ensure the bridge port does not change
     if (restoredConfig.bridge) {
       restoredConfig.bridge.port = this.configService.homebridgeConfig.bridge.port;
+    }
+
+    // check the bridge.bind config contains valid interface names
+    if (restoredConfig.bridge.bind) {
+      this.checkBridgeBindConfig(restoredConfig);
     }
 
     // ensure platforms in an array
@@ -535,6 +540,11 @@ export class BackupService {
     // correct bridge name
     targetConfig.bridge.name = 'Homebridge ' + targetConfig.bridge.username.substr(targetConfig.bridge.username.length - 5).replace(/:/g, '');
 
+    // check the bridge.bind config contains valid interface names
+    if (targetConfig.bridge.bind) {
+      this.checkBridgeBindConfig(targetConfig);
+    }
+
     // add config ui platform
     targetConfig.platforms.push(this.configService.ui);
 
@@ -629,5 +639,32 @@ export class BackupService {
     }, 500);
 
     return { status: 0 };
+  }
+
+  /**
+   * Checks the bridge.bind options are valid for the current system when restoring.
+   */
+  private checkBridgeBindConfig(restoredConfig: HomebridgeConfig) {
+    if (restoredConfig.bridge.bind) {
+      // if it's a string, convert to an array
+      if (typeof restoredConfig.bridge.bind === 'string') {
+        restoredConfig.bridge.bind = [restoredConfig.bridge.bind];
+      }
+
+      // if it's still not an array, delete it
+      if (!Array.isArray(restoredConfig.bridge.bind)) {
+        delete restoredConfig.bridge.bind;
+        return;
+      }
+
+      // check each interface exists on the new host
+      const networkInterfaces = os.networkInterfaces();
+      restoredConfig.bridge.bind = restoredConfig.bridge.bind.filter((x) => networkInterfaces[x]);
+
+      // if empty delete
+      if (!restoredConfig.bridge.bind) {
+        delete restoredConfig.bridge.bind;
+      }
+    }
   }
 }
