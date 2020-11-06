@@ -74,7 +74,8 @@ export class BackupService {
         '.docker.env',        // docker
         'FFmpeg',             // ffmpeg
         'fdk-aac',            // ffmpeg
-        '.git'                // git
+        '.git',               // git
+        'recordings'          // homebridge-camera-ui recordings path
       ].includes(path.basename(filePath))), // list of files not to include in the archive
     });
 
