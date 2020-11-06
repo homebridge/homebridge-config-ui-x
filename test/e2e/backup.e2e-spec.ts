@@ -88,6 +88,7 @@ describe('BackupController (e2e)', () => {
 
     // restore default settings
     delete configService.ui.scheduledBackupPath;
+    delete configService.ui.scheduledBackupDisable;
     configService.instanceBackupPath = instanceBackupPath;
 
     // get auth token before each test
@@ -103,6 +104,23 @@ describe('BackupController (e2e)', () => {
 
   it('should schedule a job to backup instance', async () => {
     expect(schedulerService.scheduledJobs).toHaveProperty('instance-backup');
+  });
+
+  it('should not schedule a job to backup instance if scheduled backups are disabled', async () => {
+    // disable scheduled backups
+    configService.ui.scheduledBackupDisable = true;
+
+    // remove the job create on app creation
+    schedulerService.cancelJob('instance-backup');
+
+    // sanity check
+    expect(schedulerService.scheduledJobs).not.toHaveProperty('instance-backup');
+
+    // run the scheduler creation function
+    backupService.scheduleInstanceBackups();
+
+    // still should not have a job
+    expect(schedulerService.scheduledJobs).not.toHaveProperty('instance-backup');
   });
 
   it('should remove scheduled instance backups older than 7 days', async () => {

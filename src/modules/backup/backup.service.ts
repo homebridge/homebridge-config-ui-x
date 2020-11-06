@@ -31,7 +31,12 @@ export class BackupService {
   /**
    * Schedule the job to create an instance backup at recurring intervals
    */
-  private scheduleInstanceBackups() {
+  public scheduleInstanceBackups() {
+    if (this.configService.ui.scheduledBackupDisable === true) {
+      this.logger.debug('Scheduled backups disabled.');
+      return;
+    }
+
     const scheduleRule = new this.schedulerService.RecurrenceRule();
     scheduleRule.hour = 1;
     scheduleRule.minute = 15;

@@ -99,6 +99,7 @@ export class ConfigService {
     sessionTimeout?: number;
     homebridgePackagePath?: string;
     scheduledBackupPath?: string;
+    scheduledBackupDisable?: boolean;
   };
 
   private bridgeFreeze: this['homebridgeConfig']['bridge'];

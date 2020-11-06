@@ -18,6 +18,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Other Changes
 
+* **Backup/Restore:** Added the [`scheduledBackupDisable`](https://github.com/oznu/homebridge-config-ui-x/wiki/Config-Options#scheduledbackupdisable) option to allow users to disable the automated daily instance backups ([#938](https://github.com/oznu/homebridge-config-ui-x/issues/938))
 * **i18n:** Improvements to Catalan language translations ([#919](https://github.com/oznu/homebridge-config-ui-x/pull/919))
 * **i18n:** Improvements to Simplified Chinese language translations ([#927](https://github.com/oznu/homebridge-config-ui-x/pull/927))
 * **i18n:** Improvements to Italian language translations ([#928](https://github.com/oznu/homebridge-config-ui-x/pull/928))
