@@ -336,7 +336,7 @@
     "users.label_new_password": "新密码",
     "users.label_password": "密码",
     "users.label_username": "用户名",
-    "users.setup_2fa": "Setup 2FA",
+    "users.setup_2fa": "设置两步验证",
     "users.setup_2fa_cannot_setup_2fa": "无法设置两步验证",
     "users.setup_2fa_disable": "禁用两步验证",
     "users.setup_2fa_disable_enter_current_password": "输入您现在的密码以禁用两步验证：",
