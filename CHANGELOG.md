@@ -20,9 +20,11 @@ All notable changes to this project will be documented in this file. This projec
 
 * **Backup/Restore:** Added the [`scheduledBackupDisable`](https://github.com/oznu/homebridge-config-ui-x/wiki/Config-Options#scheduledbackupdisable) option to allow users to disable the automated daily instance backups ([#938](https://github.com/oznu/homebridge-config-ui-x/issues/938))
 * **i18n:** Improvements to Catalan language translations ([#919](https://github.com/oznu/homebridge-config-ui-x/pull/919))
-* **i18n:** Improvements to Simplified Chinese language translations ([#927](https://github.com/oznu/homebridge-config-ui-x/pull/927))
+* **i18n:** Improvements to Simplified Chinese language translations ([#927](https://github.com/oznu/homebridge-config-ui-x/pull/927),[#936](https://github.com/oznu/homebridge-config-ui-x/pull/936))
 * **i18n:** Improvements to Italian language translations ([#928](https://github.com/oznu/homebridge-config-ui-x/pull/928))
-* **i18n:** Improvements to Polish language translations ([#929](https://github.com/oznu/homebridge-config-ui-x/pull/929))
+* **i18n:** Improvements to Polish language translations ([#929](https://github.com/oznu/homebridge-config-ui-x/pull/929),[#935](https://github.com/oznu/homebridge-config-ui-x/pull/935))
+* **i18n:** Improvements to French language translations ([#937](https://github.com/oznu/homebridge-config-ui-x/pull/937))
+* **i18n:** Improvements to Spanish language translations ([#939](https://github.com/oznu/homebridge-config-ui-x/pull/939))
 * **Homebridge:** Added the ability to select which interfaces Homebridge should advertise and listen on (this feature will appear in *Homebridge Settings* when the upcoming release of Homebridge v1.3.0 is installed)
 
 ## 4.31.0 (2020-10-28)
