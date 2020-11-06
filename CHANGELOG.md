@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file. This projec
   * Developers can use standard HTML / CSS and JavaScript (or even a front end framework like Vue, Angular or React) to build their user interfaces
   * Developers can also create a server-side script which accepts requests from their plugin user interface
   * See [the documentation](https://github.com/homebridge/plugin-ui-utils#readme) for further information
+* **Homebridge:** Added the ability to select which interfaces Homebridge should advertise and listen on (this feature will appear in *Homebridge Settings* when the upcoming release of Homebridge v1.3.0 is installed)
 
 ### Bug Fixes
 
@@ -25,7 +26,6 @@ All notable changes to this project will be documented in this file. This projec
 * **i18n:** Improvements to Polish language translations ([#929](https://github.com/oznu/homebridge-config-ui-x/pull/929),[#935](https://github.com/oznu/homebridge-config-ui-x/pull/935))
 * **i18n:** Improvements to French language translations ([#937](https://github.com/oznu/homebridge-config-ui-x/pull/937))
 * **i18n:** Improvements to Spanish language translations ([#939](https://github.com/oznu/homebridge-config-ui-x/pull/939))
-* **Homebridge:** Added the ability to select which interfaces Homebridge should advertise and listen on (this feature will appear in *Homebridge Settings* when the upcoming release of Homebridge v1.3.0 is installed)
 
 ## 4.31.0 (2020-10-28)
 

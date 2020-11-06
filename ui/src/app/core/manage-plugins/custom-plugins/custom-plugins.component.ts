@@ -177,9 +177,20 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   }
 
   handleUpdateConfig(event: MessageEvent, pluginConfig: Array<any>) {
+    // ensure the update contains an array
     if (!Array.isArray(pluginConfig)) {
+      this.$toastr.error('Plugin config must be an array.', 'Invalid Config Update');
       return this.requestResponse(event, { message: 'Plugin config must be an array.' }, false);
     }
+
+    // validate each block in the array
+    for (const block of pluginConfig) {
+      if (typeof block !== 'object' || Array.isArray(block)) {
+        this.$toastr.error('Plugin config must be an array of objects.', 'Invalid Config Update');
+        return this.requestResponse(event, { message: 'Plugin config must be an array of objects.' }, false);
+      }
+    }
+
     this.updateConfigBlocks(pluginConfig);
     return this.requestResponse(event, this.getConfigBlocks());
   }
