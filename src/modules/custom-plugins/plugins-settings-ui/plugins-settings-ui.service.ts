@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as NodeCache from 'node-cache';
 import * as child_process from 'child_process';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpService, Injectable, NotFoundException } from '@nestjs/common';
 
 import { Logger } from '../../../core/logger/logger.service';
 import { ConfigService } from '../../../core/config/config.service';
@@ -19,6 +19,7 @@ export class PluginsSettingsUiService {
     private loggerService: Logger,
     private pluginsService: PluginsService,
     private configService: ConfigService,
+    private httpService: HttpService,
   ) { }
 
   /**
@@ -49,6 +50,10 @@ export class PluginsSettingsUiService {
           .send(await this.buildIndexHtml(pluginUi, origin));
       }
 
+      if (pluginUi.devServer) {
+        return this.serveAssetsFromDevServer(reply, pluginUi, assetPath);
+      }
+
       if (await fs.pathExists(filePath)) {
         return reply.sendFile(path.basename(filePath), path.dirname(filePath));
       } else {
@@ -77,10 +82,38 @@ export class PluginsSettingsUiService {
   }
 
   /**
+   * Serve assets from the custom ui dev server (only for private packages in development)
+   */
+  async serveAssetsFromDevServer(reply, pluginUi: HomebridgePluginUiMetadata, assetPath: string) {
+    return this.httpService.get(pluginUi.devServer + '/' + assetPath, { responseType: 'text' }).toPromise()
+      .then((response) => {
+        for (const [key, value] of Object.entries(response.headers)) {
+          reply.header(key, value);
+        }
+        reply.send(response.data);
+      })
+      .catch(() => {
+        return reply.code(404).send('Not Found');
+      });
+  }
+
+  /**
+   * Return the index.html body for the custom plugin ui
+   */
+  async getIndexHtmlBody(pluginUi: HomebridgePluginUiMetadata) {
+    if (pluginUi.devServer) {
+      // dev server is only enabled for private plugins
+      return (await this.httpService.get(pluginUi.devServer, { responseType: 'text' }).toPromise()).data;
+    } else {
+      return await fs.readFile(path.join(pluginUi.publicPath, 'index.html'), 'utf8');
+    }
+  }
+
+  /**
    * Build the entrypoint html file for the plugin custom ui
    */
   async buildIndexHtml(pluginUi: HomebridgePluginUiMetadata, origin: string) {
-    const body = await fs.readFile(path.join(pluginUi.publicPath, 'index.html'), 'utf8');
+    const body = await this.getIndexHtmlBody(pluginUi);
 
     const htmlDocument = `
       <!doctype html>

@@ -204,6 +204,7 @@ export class PluginsService {
       .map((pkg) => {
         let plugin: HomebridgePlugin = {
           name: pkg.package.name,
+          private: false,
         };
 
         // see if the plugin is already installed
@@ -273,6 +274,7 @@ export class PluginsService {
 
       plugin = {
         name: pkg.name,
+        private: false,
         description: (pkg.description) ?
           pkg.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkg.name,
         verifiedPlugin: this.verifiedPlugins.includes(pkg.name),
@@ -740,9 +742,11 @@ export class PluginsService {
 
     const publicPath = path.resolve(customUiPath, 'public');
     const serverPath = path.resolve(customUiPath, 'server.js');
+    const devServer = plugin.private ? schema.customUiDevServer : null;
 
-    if (await fs.pathExists(path.resolve(publicPath, 'index.html'))) {
+    if (await fs.pathExists(path.resolve(publicPath, 'index.html')) || devServer) {
       return {
+        devServer,
         serverPath,
         publicPath,
         plugin,
@@ -884,6 +888,7 @@ export class PluginsService {
   private async parsePackageJson(pjson: IPackageJson, installPath: string): Promise<HomebridgePlugin> {
     const plugin: HomebridgePlugin = {
       name: pjson.name,
+      private: pjson.private || false,
       displayName: pjson.displayName,
       description: (pjson.description) ?
         pjson.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pjson.name,

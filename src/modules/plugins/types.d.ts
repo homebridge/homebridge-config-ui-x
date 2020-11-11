@@ -1,5 +1,6 @@
 export interface HomebridgePlugin {
   name: string;
+  private: boolean;
   displayName?: string;
   description?: string;
   verifiedPlugin?: boolean;
@@ -134,6 +135,7 @@ export interface INpmSearchResults {
 export type NpmFunding = { type: string, url: string } | string | Array<{ type: string, url: string } | string>;
 
 export type HomebridgePluginUiMetadata = {
+  devServer: null | string;
   publicPath: string;
   serverPath: string;
   plugin: HomebridgePlugin;

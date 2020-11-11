@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { HttpModule, Module } from '@nestjs/common';
 
 import { ConfigModule } from '../../../core/config/config.module';
 import { LoggerModule } from '../../../core/logger/logger.module';
@@ -12,6 +12,7 @@ import { PluginsSettingsUiService } from './plugins-settings-ui.service';
     ConfigModule,
     LoggerModule,
     PluginsModule,
+    HttpModule,
   ],
   providers: [
     PluginsSettingsUiService,
