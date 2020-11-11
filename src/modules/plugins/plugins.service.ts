@@ -729,9 +729,17 @@ export class PluginsService {
   public async getPluginUiMetadata(pluginName: string): Promise<HomebridgePluginUiMetadata> {
     if (!this.installedPlugins) await this.getInstalledPlugins();
     const plugin = this.installedPlugins.find(x => x.name === pluginName);
+    const fullPath = path.resolve(plugin.installPath, plugin.name);
 
-    const publicPath = path.resolve(plugin.installPath, plugin.name, 'homebridge-ui', 'public');
-    const serverPath = path.resolve(plugin.installPath, plugin.name, 'homebridge-ui', 'server.js');
+    const schema = await fs.readJson(path.resolve(fullPath, 'config.schema.json'));
+    const customUiPath = path.resolve(fullPath, schema.customUiPath || 'homebridge-ui');
+
+    if (!customUiPath.startsWith(fullPath)) {
+      throw new Error('Custom UI path is outside the plugin root.');
+    }
+
+    const publicPath = path.resolve(customUiPath, 'public');
+    const serverPath = path.resolve(customUiPath, 'server.js');
 
     if (await fs.pathExists(path.resolve(publicPath, 'index.html'))) {
       return {

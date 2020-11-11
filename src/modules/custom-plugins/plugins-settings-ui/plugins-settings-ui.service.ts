@@ -71,7 +71,7 @@ export class PluginsSettingsUiService {
       this.pluginUiMetadataCache.set(pluginName, pluginUi);
       return pluginUi;
     } catch (e) {
-      this.loggerService.warn('Plugin Custom UI Not Found:', pluginName);
+      this.loggerService.warn(`[${pluginName}] Custom UI:`, e.message);
       throw new NotFoundException();
     }
   }
