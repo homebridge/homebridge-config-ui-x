@@ -86,6 +86,8 @@ describe('PluginController (e2e)', () => {
 
     expect(mockPlugin).toBeTruthy();
     expect(mockPlugin.settingsSchema).toEqual(true);
+    expect(mockPlugin.private).toEqual(true);
+    expect(mockPlugin.publicPackage).toEqual(false);
   });
 
   it('GET /plugins/search/:query (keyword)', async () => {
@@ -101,6 +103,7 @@ describe('PluginController (e2e)', () => {
     expect(res.json().length).toBeGreaterThan(0);
     expect(res.json().find(x => x.name === 'homebridge-gsh')).toBeTruthy();
     expect(res.json()[0]).toHaveProperty('lastUpdated');
+    expect(res.json()[0]).toHaveProperty('private');
   });
 
   it('GET /plugins/search/:query (exact plugin name)', async () => {
@@ -116,6 +119,8 @@ describe('PluginController (e2e)', () => {
     expect(res.json()).toHaveLength(1);
     expect(res.json().find(x => x.name === 'homebridge-daikin-esp8266')).toBeTruthy();
     expect(res.json()[0]).toHaveProperty('lastUpdated');
+    expect(res.json()[0]).toHaveProperty('private');
+    expect(res.json()[0].private).toEqual(false);
   });
 
   it('GET /plugins/search/:query (exact plugin name - @scoped)', async () => {
@@ -131,6 +136,8 @@ describe('PluginController (e2e)', () => {
     expect(res.json()).toHaveLength(1);
     expect(res.json().find(x => x.name === '@oznu/homebridge-esp8266-garage-door')).toBeTruthy();
     expect(res.json()[0]).toHaveProperty('lastUpdated');
+    expect(res.json()[0]).toHaveProperty('private');
+    expect(res.json()[0].private).toEqual(false);
   });
 
   it('GET /plugins/search/:query (blacklisted - exact plugin name)', async () => {
@@ -171,6 +178,8 @@ describe('PluginController (e2e)', () => {
     expect(res.statusCode).toEqual(200);
     expect(res.json().name).toEqual('homebridge-daikin-esp8266');
     expect(res.json()).toHaveProperty('lastUpdated');
+    expect(res.json()).toHaveProperty('private');
+    expect(res.json().private).toEqual(false);
   });
 
   it('GET /plugins/lookup/:pluginName (@scoped)', async () => {
@@ -185,6 +194,8 @@ describe('PluginController (e2e)', () => {
     expect(res.statusCode).toEqual(200);
     expect(res.json().name).toEqual('@oznu/homebridge-esp8266-garage-door');
     expect(res.json()).toHaveProperty('lastUpdated');
+    expect(res.json()).toHaveProperty('private');
+    expect(res.json().private).toEqual(false);
   });
 
   it('GET /plugins/lookup/:pluginName (not a homebridge plugin)', async () => {

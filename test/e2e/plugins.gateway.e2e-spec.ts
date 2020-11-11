@@ -286,6 +286,7 @@ describe('PluginsGateway (e2e)', () => {
     pluginsService.getHomebridgePackage = async () => {
       return {
         name: 'homebridge',
+        private: false,
         publicPackage: true,
         installPath: pluginsPath
       };
@@ -321,6 +322,7 @@ describe('PluginsGateway (e2e)', () => {
     pluginsService.getHomebridgePackage = async () => {
       return {
         name: 'homebridge',
+        private: false,
         publicPackage: true,
         installPath: pluginsPath
       };
