@@ -11,6 +11,7 @@ import { CoreModule } from '../core.module';
 import { AccessoriesService } from './accessories.service';
 
 import { SwitchComponent } from './types/switch/switch.component';
+import { StatelessprogrammableswitchComponent } from './types/statelessprogrammableswitch/statelessprogrammableswitch.component';
 import { ThermostatComponent } from './types/thermostat/thermostat.component';
 import { ThermostatManageComponent } from './types/thermostat/thermostat.manage.component';
 import { OutletComponent } from './types/outlet/outlet.component';
@@ -72,6 +73,7 @@ import { InfoModalComponent } from './info-modal/info-modal.component';
   declarations: [
     InfoModalComponent,
     SwitchComponent,
+    StatelessprogrammableswitchComponent,
     ThermostatComponent,
     ThermostatManageComponent,
     OutletComponent,
@@ -125,6 +127,7 @@ import { InfoModalComponent } from './info-modal/info-modal.component';
   ],
   exports: [
     SwitchComponent,
+    StatelessprogrammableswitchComponent,
     ThermostatComponent,
     ThermostatManageComponent,
     OutletComponent,

@@ -50,6 +50,8 @@
         </app-irrigationsystem>
         <app-heatercooler *ngSwitchCase="'HeaterCooler'" [service]="service">Heater Cooler
         </app-heatercooler>
+        <app-statelessprogrammableswitch *ngSwitchCase="'StatelessProgrammableSwitch'" [service]="service">Stateless Programmable Switch
+        </app-statelessprogrammableswitch>
         <app-unknown *ngSwitchDefault [service]="service">{{ service.humanType }}</app-unknown>
       </ng-container>
     </div>
