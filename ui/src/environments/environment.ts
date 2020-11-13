@@ -5,6 +5,7 @@
 
 export const environment = {
   production: false,
+  serverTarget: require('../../../package.json').version,
   api: {
     base: 'http://localhost:8080/api',
     socket: 'http://localhost:8080',

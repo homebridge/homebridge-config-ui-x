@@ -154,6 +154,8 @@
     "platform.linux.shutdown.confirmation": "Are you sure you want to shutdown your operating system?",
     "platform.linux.shutdown.message_server_will_power_down": "Sunucu kısa bir süre sonra kapanacak",
     "platform.linux.shutdown.title_shutting_down_server": "Sunucu kapatılıyor",
+    "platform.version.message_service_restart_required": "WARNING: Homebridge UI v{{ uiVersion }} has been installed, but the server service is still running v{{ serverVersion }}.",
+    "platform.version.title_service_restart_required": "Service Restart Required",
     "plugins.button_install": "Yükle",
     "plugins.button_settings": "Ayarlar",
     "plugins.button_uninstall": "Kaldır",

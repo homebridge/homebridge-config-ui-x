@@ -154,6 +154,8 @@
     "platform.linux.shutdown.confirmation": "Är du säker på att du vill stänga av ditt operativsystem?",
     "platform.linux.shutdown.message_server_will_power_down": "Servern stängs av inom kort.",
     "platform.linux.shutdown.title_shutting_down_server": "Stänga av servern",
+    "platform.version.message_service_restart_required": "WARNING: Homebridge UI v{{ uiVersion }} has been installed, but the server service is still running v{{ serverVersion }}.",
+    "platform.version.title_service_restart_required": "Service Restart Required",
     "plugins.button_install": "Installera",
     "plugins.button_settings": "inställningar",
     "plugins.button_uninstall": "Avinstallera",

@@ -4,10 +4,11 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import * as dayjs from 'dayjs';
-import { ApiService } from '../api.service';
-import { environment } from '../../../environments/environment';
-import { Observable, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { first } from 'rxjs/operators';
+
+import { environment } from '@/environments/environment';
+import { ApiService } from '../api.service';
 
 interface UserInterface {
   username?: string;

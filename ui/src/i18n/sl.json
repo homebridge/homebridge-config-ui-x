@@ -154,6 +154,8 @@
     "platform.linux.shutdown.confirmation": "Ali ste prepričani, da želite izklopiti svoj operacijski sistem?",
     "platform.linux.shutdown.message_server_will_power_down": "Strežnik se bo kmalu izklopil.",
     "platform.linux.shutdown.title_shutting_down_server": "Zaustavitev strežnika",
+    "platform.version.message_service_restart_required": "WARNING: Homebridge UI v{{ uiVersion }} has been installed, but the server service is still running v{{ serverVersion }}.",
+    "platform.version.title_service_restart_required": "Service Restart Required",
     "plugins.button_install": "Namestitev",
     "plugins.button_settings": "Nastavitve",
     "plugins.button_uninstall": "Odstranitev",

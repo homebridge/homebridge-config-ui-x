@@ -1,4 +1,5 @@
 export const environment = {
+  serverTarget: require('../../../package.json').version,
   production: true,
   socket: '',
   api: {

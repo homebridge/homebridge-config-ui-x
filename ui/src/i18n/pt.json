@@ -154,6 +154,8 @@
     "platform.linux.shutdown.confirmation": "Tem a certeza que deseja desligar o sistema operativo?",
     "platform.linux.shutdown.message_server_will_power_down": "O servidor irá desligar brevemente.",
     "platform.linux.shutdown.title_shutting_down_server": "A Desligar o Servidor",
+    "platform.version.message_service_restart_required": "WARNING: Homebridge UI v{{ uiVersion }} has been installed, but the server service is still running v{{ serverVersion }}.",
+    "platform.version.title_service_restart_required": "Service Restart Required",
     "plugins.button_install": "Instalar",
     "plugins.button_settings": "Definições",
     "plugins.button_uninstall": "Desinstalar",

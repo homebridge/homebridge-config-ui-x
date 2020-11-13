@@ -154,6 +154,8 @@
     "platform.linux.shutdown.confirmation": "Anda yakin ingin mematikan sistem operasi anda?",
     "platform.linux.shutdown.message_server_will_power_down": "Server akan segera dimatikan.",
     "platform.linux.shutdown.title_shutting_down_server": "Mematikan Server",
+    "platform.version.message_service_restart_required": "WARNING: Homebridge UI v{{ uiVersion }} has been installed, but the server service is still running v{{ serverVersion }}.",
+    "platform.version.title_service_restart_required": "Service Restart Required",
     "plugins.button_install": "Pasang",
     "plugins.button_settings": "Pengaturan",
     "plugins.button_uninstall": "Copot",

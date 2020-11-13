@@ -154,6 +154,8 @@
     "platform.linux.shutdown.confirmation": "Weet je zeker dat je je besturingssysteem wilt uitschakelen?",
     "platform.linux.shutdown.message_server_will_power_down": "De server zal binnenkort worden uitgeschakeld.",
     "platform.linux.shutdown.title_shutting_down_server": "Server Afsluiten",
+    "platform.version.message_service_restart_required": "WARNING: Homebridge UI v{{ uiVersion }} has been installed, but the server service is still running v{{ serverVersion }}.",
+    "platform.version.title_service_restart_required": "Service Restart Required",
     "plugins.button_install": "Installeer",
     "plugins.button_settings": "Instellingen",
     "plugins.button_uninstall": "De-installeer",

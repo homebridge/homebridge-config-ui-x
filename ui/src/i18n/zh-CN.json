@@ -154,6 +154,8 @@
     "platform.linux.shutdown.confirmation": "您确定想要关闭操作系统吗？",
     "platform.linux.shutdown.message_server_will_power_down": "服务器很快就会关机。",
     "platform.linux.shutdown.title_shutting_down_server": "正在关闭服务器",
+    "platform.version.message_service_restart_required": "WARNING: Homebridge UI v{{ uiVersion }} has been installed, but the server service is still running v{{ serverVersion }}.",
+    "platform.version.title_service_restart_required": "Service Restart Required",
     "plugins.button_install": "安装",
     "plugins.button_settings": "设置",
     "plugins.button_uninstall": "卸载",

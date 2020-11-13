@@ -154,6 +154,8 @@
     "platform.linux.shutdown.confirmation": "Bist du sicher, dass du dein Betriebssystem herunterfahren willst?",
     "platform.linux.shutdown.message_server_will_power_down": "Der Server wird in Kürze heruntergefahren.",
     "platform.linux.shutdown.title_shutting_down_server": "Herunterfahren des Servers",
+    "platform.version.message_service_restart_required": "WARNING: Homebridge UI v{{ uiVersion }} has been installed, but the server service is still running v{{ serverVersion }}.",
+    "platform.version.title_service_restart_required": "Service Restart Required",
     "plugins.button_install": "Installieren",
     "plugins.button_settings": "Einstellungen",
     "plugins.button_uninstall": "Deinstallieren",

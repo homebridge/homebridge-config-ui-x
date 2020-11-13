@@ -154,6 +154,8 @@
     "platform.linux.shutdown.confirmation": "Estàs segur que vols apagar el sistema operatiu?",
     "platform.linux.shutdown.message_server_will_power_down": "El servidor s'apagarà aviat.",
     "platform.linux.shutdown.title_shutting_down_server": "Apagant el servidor",
+    "platform.version.message_service_restart_required": "WARNING: Homebridge UI v{{ uiVersion }} has been installed, but the server service is still running v{{ serverVersion }}.",
+    "platform.version.title_service_restart_required": "Service Restart Required",
     "plugins.button_install": "Instal·lar",
     "plugins.button_settings": "Ajustos",
     "plugins.button_uninstall": "Desinstal·lar",

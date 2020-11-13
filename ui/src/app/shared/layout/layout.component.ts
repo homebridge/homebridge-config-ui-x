@@ -2,9 +2,10 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { NgbPopover } from '@ng-bootstrap/ng-bootstrap';
+import { lt } from 'semver';
 import { throttleTime } from 'rxjs/operators';
 
+import { environment } from '@/environments/environment';
 import { WsService } from '@/app/core/ws.service';
 import { AuthService } from '@/app/core/auth/auth.service';
 import { NotificationService } from '@/app/core/notification.service';
@@ -54,6 +55,8 @@ export class LayoutComponent implements OnInit {
         element.classList.remove('uix-highlight-icon');
       }
     });
+
+    this.compareServerUiVersion();
   }
 
   backupRestoreHomebridge() {
@@ -99,6 +102,30 @@ export class LayoutComponent implements OnInit {
       .finally(() => {
         // do nothing
       });
+  }
+
+  async compareServerUiVersion() {
+    if (!this.$auth.settingsLoaded) {
+      await this.$auth.onSettingsLoaded.toPromise();
+    }
+
+    if (lt(this.$auth.uiVersion, environment.serverTarget, { includePrerelease: true })) {
+      console.log(`Server restart required. UI Version: ${environment.serverTarget} - Server Version: ${this.$auth.uiVersion} `);
+      const ref = this.$modal.open(ConfirmComponent);
+
+      ref.componentInstance.title = this.translate.instant('platform.version.title_service_restart_required');
+      ref.componentInstance.confirmButtonLabel = this.translate.instant('plugins.manage.button_restart_now');
+      ref.componentInstance.message = this.translate.instant('platform.version.message_service_restart_required', {
+        serverVersion: this.$auth.uiVersion,
+        uiVersion: environment.serverTarget,
+      });
+
+      ref.result.then(() => {
+        this.$router.navigate(['/restart']);
+      }).catch(() => {
+        // do nothing
+      });
+    }
   }
 
 }

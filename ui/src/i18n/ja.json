@@ -154,6 +154,8 @@
     "platform.linux.shutdown.confirmation": "Are you sure you want to shutdown your operating system?",
     "platform.linux.shutdown.message_server_will_power_down": "サーバーはまもなく停止します",
     "platform.linux.shutdown.title_shutting_down_server": "サーバーを終了しています",
+    "platform.version.message_service_restart_required": "WARNING: Homebridge UI v{{ uiVersion }} has been installed, but the server service is still running v{{ serverVersion }}.",
+    "platform.version.title_service_restart_required": "Service Restart Required",
     "plugins.button_install": "インストール",
     "plugins.button_settings": "設定",
     "plugins.button_uninstall": "アンインストール",

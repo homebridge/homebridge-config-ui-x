@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
-import { AuthService } from './core/auth/auth.service';
-import { Router, NavigationEnd } from '@angular/router';
+import { AuthService } from '@/app/core/auth/auth.service';
 
 @Component({
   selector: 'app-root',
