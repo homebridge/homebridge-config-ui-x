@@ -1,16 +1,18 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as dayjs from 'dayjs';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Logger } from '../../core/logger/logger.service';
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
 import { SchedulerService } from '../../core/scheduler/scheduler.service';
+import { PluginsService } from '../plugins/plugins.service';
 
 @Injectable()
 export class ConfigEditorService {
   constructor(
     private readonly configService: ConfigService,
     private readonly schedulerService: SchedulerService,
+    private readonly pluginsService: PluginsService,
     private readonly logger: Logger,
   ) {
     this.start();
@@ -46,7 +48,19 @@ export class ConfigEditorService {
    * Returns the config file
    */
   public async getConfigFile(): Promise<HomebridgeConfig> {
-    return await fs.readJson(this.configService.configPath);
+    const config = await fs.readJson(this.configService.configPath);
+
+    // ensure accessories is an array
+    if (!config.accessories || !Array.isArray(config.accessories)) {
+      config.accessories = [];
+    }
+
+    // ensure platforms is an array
+    if (!config.platforms || !Array.isArray(config.platforms)) {
+      config.platforms = [];
+    }
+
+    return config;
   }
 
   /**
@@ -83,11 +97,13 @@ export class ConfigEditorService {
       config.bridge.pin = this.generatePin();
     }
 
-    if (!config.accessories) {
+    // ensure accessories is an array
+    if (!config.accessories || !Array.isArray(config.accessories)) {
       config.accessories = [];
     }
 
-    if (!config.platforms) {
+    // ensure platforms is an array
+    if (!config.platforms || !Array.isArray(config.platforms)) {
       config.platforms = [];
     }
 
@@ -121,6 +137,80 @@ export class ConfigEditorService {
     this.configService.parseConfig(configCopy);
 
     return config;
+  }
+
+  /**
+   * Return the config for a specific plugin
+   */
+  public async getConfigForPlugin(pluginName: string) {
+    return Promise.all([
+      await this.pluginsService.getPluginAlias(pluginName),
+      await this.getConfigFile()
+    ]).then(([plugin, config]) => {
+      if (!plugin.pluginAlias) {
+        return new BadRequestException('Plugin alias could not be determined.');
+      }
+
+      const arrayKey = plugin.pluginType === 'accessory' ? 'accessories' : 'platforms';
+
+      return config[arrayKey].filter((block) => {
+        return block[plugin.pluginType] === plugin.pluginAlias ||
+          block[plugin.pluginType] === pluginName + '.' + plugin.pluginAlias;
+      });
+    });
+  }
+
+  /**
+   * Return the config for a specific plugin
+   */
+  public async updateConfigForPlugin(pluginName: string, pluginConfig: Record<string, any>[]) {
+    return Promise.all([
+      await this.pluginsService.getPluginAlias(pluginName),
+      await this.getConfigFile()
+    ]).then(async ([plugin, config]) => {
+      if (!plugin.pluginAlias) {
+        return new BadRequestException('Plugin alias could not be determined.');
+      }
+
+      const arrayKey = plugin.pluginType === 'accessory' ? 'accessories' : 'platforms';
+
+      // ensure the update contains an array
+      if (!Array.isArray(pluginConfig)) {
+        throw new BadRequestException('Plugin Config must be an array.');
+      }
+
+      // validate each block in the array
+      for (const block of pluginConfig) {
+        if (typeof block !== 'object' || Array.isArray(block)) {
+          throw new BadRequestException('Plugin config must be an array of objects.');
+        }
+        block[plugin.pluginType] = plugin.pluginAlias;
+      }
+
+      let positionIndices: number;
+
+      // remove the existing config blocks
+      config[arrayKey] = config[arrayKey].filter((block, index) => {
+        if (block[plugin.pluginType] === plugin.pluginAlias || block[plugin.pluginType] === pluginName + '.' + plugin.pluginAlias) {
+          positionIndices = index;
+          return false;
+        } else {
+          return true;
+        }
+      });
+
+      // replace with the provided config, trying to put it back in the same location
+      if (positionIndices !== undefined) {
+        config[arrayKey].splice(positionIndices, 0, ...pluginConfig);
+      } else {
+        config[arrayKey].push(...pluginConfig);
+      }
+
+      // save the config file
+      await this.updateConfigFile(config);
+
+      return pluginConfig;
+    });
   }
 
   /**

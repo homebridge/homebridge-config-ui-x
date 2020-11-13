@@ -14,8 +14,8 @@ export interface HomebridgeConfig {
     port: number;
     bind?: string | string[];
   };
-  platforms: any[];
-  accessories: any[];
+  platforms: Record<string, any>[];
+  accessories: Record<string, any>[];
   plugins?: string[];
 }
 
@@ -126,7 +126,7 @@ export class ConfigService {
       this.homebridgeConfig.bridge = {} as this['homebridgeConfig']['bridge'];
     }
 
-    this.ui = Array.isArray(this.homebridgeConfig.platforms) ? this.homebridgeConfig.platforms.find(x => x.platform === 'config') : undefined;
+    this.ui = Array.isArray(this.homebridgeConfig.platforms) ? this.homebridgeConfig.platforms.find(x => x.platform === 'config') : undefined as any;
 
     if (!this.ui) {
       this.ui = {

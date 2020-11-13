@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events';
 import { Injectable, NotFoundException, InternalServerErrorException, HttpService, BadRequestException } from '@nestjs/common';
-import { HomebridgePlugin, IPackageJson, INpmSearchResults, INpmRegistryModule, HomebridgePluginVersions, HomebridgePluginUiMetadata } from './types';
+import { HomebridgePlugin, IPackageJson, INpmSearchResults, INpmRegistryModule } from './types';
+import { HomebridgePluginVersions, HomebridgePluginUiMetadata, PluginAlias } from './types';
 import axios from 'axios';
 import * as os from 'os';
 import * as _ from 'lodash';
@@ -668,7 +669,7 @@ export class PluginsService {
   /**
    * Attempt to extract the alias from a plugin
    */
-  public async getPluginAlias(pluginName: string) {
+  public async getPluginAlias(pluginName: string): Promise<PluginAlias> {
     if (!this.installedPlugins) await this.getInstalledPlugins();
     const plugin = this.installedPlugins.find(x => x.name === pluginName);
 
@@ -676,7 +677,7 @@ export class PluginsService {
       throw new NotFoundException();
     }
 
-    const fromCache = this.pluginAliasCache.get(pluginName);
+    const fromCache: PluginAlias | undefined = this.pluginAliasCache.get(pluginName);
     if (fromCache as any) {
       return fromCache;
     }

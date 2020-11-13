@@ -19,6 +19,7 @@ describe('ConfigEditorController (e2e)', () => {
   let configFilePath: string;
   let authorization: string;
   let backupFilePath: string;
+  let pluginsPath: string;
 
   let schedulerService: SchedulerService;
   let configEditorService: ConfigEditorService;
@@ -27,11 +28,13 @@ describe('ConfigEditorController (e2e)', () => {
     process.env.UIX_BASE_PATH = path.resolve(__dirname, '../../');
     process.env.UIX_STORAGE_PATH = path.resolve(__dirname, '../', '.homebridge');
     process.env.UIX_CONFIG_PATH = path.resolve(process.env.UIX_STORAGE_PATH, 'config.json');
+    process.env.UIX_CUSTOM_PLUGIN_PATH = path.resolve(process.env.UIX_STORAGE_PATH, 'plugins/node_modules');
 
     authFilePath = path.resolve(process.env.UIX_STORAGE_PATH, 'auth.json');
     secretsFilePath = path.resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets');
     configFilePath = process.env.UIX_CONFIG_PATH;
     backupFilePath = path.resolve(process.env.UIX_STORAGE_PATH, 'backups', 'config-backups');
+    pluginsPath = process.env.UIX_CUSTOM_PLUGIN_PATH;
 
     // setup test config
     await fs.copy(path.resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
@@ -39,6 +42,10 @@ describe('ConfigEditorController (e2e)', () => {
     // setup test auth file
     await fs.copy(path.resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
     await fs.copy(path.resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
+
+    // copy test plugins
+    await fs.remove(pluginsPath);
+    await fs.copy(path.resolve(__dirname, '../mocks', 'plugins'), pluginsPath, { recursive: true });
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [ConfigEditorModule, AuthModule],
@@ -183,6 +190,271 @@ describe('ConfigEditorController (e2e)', () => {
     expect(savedConfig.platforms).toHaveLength(0);
     expect(savedConfig.accessories).toHaveLength(0);
     expect(savedConfig).not.toHaveProperty('plugins');
+  });
+
+  it('POST /config-editor (rewrite platforms & accessories as arrays)', async () => {
+    const currentConfig = await fs.readJson(configFilePath);
+
+    currentConfig.accessories = 'not an array';
+    currentConfig.platforms = 'not an array';
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/config-editor',
+      headers: {
+        authorization,
+      },
+      payload: currentConfig,
+    });
+
+    expect(res.statusCode).toEqual(201);
+
+    // check the updates were saved to disk and mistakes corrected
+    const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
+    expect(Array.isArray(savedConfig.platforms)).toEqual(true);
+    expect(Array.isArray(savedConfig.accessories)).toEqual(true);
+    expect(savedConfig.platforms).toHaveLength(0);
+    expect(savedConfig.accessories).toHaveLength(0);
+  });
+
+  it('GET /config-editor/plugin/:pluginName', async () => {
+    const currentConfig: HomebridgeConfig = await fs.readJson(configFilePath);
+
+    currentConfig.platforms = [
+      {
+        platform: 'not it'
+      },
+      {
+        platform: 'ExampleHomebridgePlugin'
+      },
+      {
+        platform: 'another not it'
+      }
+    ];
+
+    await fs.writeJson(configFilePath, currentConfig);
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/config-editor/plugin/homebridge-mock-plugin',
+      headers: {
+        authorization,
+      }
+    });
+
+    expect(res.statusCode).toEqual(200);
+
+    // it should only return the ExampleHomebridgePlugin config
+    expect(res.json()).toHaveLength(1);
+    expect(res.json()[0].platform).toEqual('ExampleHomebridgePlugin');
+  });
+
+  it('GET /config-editor/plugin/:pluginName', async () => {
+    const currentConfig: HomebridgeConfig = await fs.readJson(configFilePath);
+
+    currentConfig.platforms = [];
+
+    await fs.writeJson(configFilePath, currentConfig);
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/config-editor/plugin/homebridge-mock-plugin',
+      headers: {
+        authorization,
+      },
+      payload: {}
+    });
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.json()).toHaveLength(0);
+  });
+
+  it('GET /config-editor/plugin/:pluginName (plugin not found)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/config-editor/plugin/homebridge-fake-example-plugin',
+      headers: {
+        authorization,
+      }
+    });
+
+    expect(res.statusCode).toEqual(404);
+  });
+
+  it('POST /config-editor/plugin/:pluginName', async () => {
+    // empty platforms
+    const currentConfig: HomebridgeConfig = await fs.readJson(configFilePath);
+    currentConfig.platforms = [];
+    await fs.writeJson(configFilePath, currentConfig);
+
+    const mockConfig = [
+      {
+        platform: 'ExampleHomebridgePlugin'
+      }
+    ];
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/config-editor/plugin/homebridge-mock-plugin',
+      headers: {
+        authorization,
+      },
+      payload: mockConfig,
+    });
+
+    expect(res.statusCode).toEqual(201);
+
+    const updatedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
+    expect(updatedConfig.platforms).toHaveLength(1);
+    expect(updatedConfig.platforms).toEqual(mockConfig);
+  });
+
+  it('POST /config-editor/plugin/:pluginName (retain index position)', async () => {
+    // empty platforms
+    const currentConfig: HomebridgeConfig = await fs.readJson(configFilePath);
+    currentConfig.platforms = [
+      {
+        platform: 'not it 0 '
+      },
+      {
+        platform: 'not it 1'
+      },
+      {
+        platform: 'ExampleHomebridgePlugin'
+      },
+      {
+        platform: 'not it 3'
+      },
+    ];
+    await fs.writeJson(configFilePath, currentConfig);
+
+    const mockConfig = [
+      {
+        platform: 'ExampleHomebridgePlugin'
+      }
+    ];
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/config-editor/plugin/homebridge-mock-plugin',
+      headers: {
+        authorization,
+      },
+      payload: mockConfig,
+    });
+
+    expect(res.statusCode).toEqual(201);
+
+    const updatedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
+    expect(updatedConfig.platforms).toHaveLength(4);
+    expect(updatedConfig.platforms[2]).toEqual(mockConfig[0]);
+  });
+
+  it('POST /config-editor/plugin/:pluginName (remove config)', async () => {
+    // empty platforms
+    const currentConfig: HomebridgeConfig = await fs.readJson(configFilePath);
+    currentConfig.platforms = [
+      {
+        platform: 'not it 0 '
+      },
+      {
+        platform: 'not it 1'
+      },
+      {
+        platform: 'ExampleHomebridgePlugin'
+      },
+      {
+        platform: 'not it 3'
+      },
+    ];
+    await fs.writeJson(configFilePath, currentConfig);
+
+    const mockConfig = [];
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/config-editor/plugin/homebridge-mock-plugin',
+      headers: {
+        authorization,
+      },
+      payload: mockConfig,
+    });
+
+    expect(res.statusCode).toEqual(201);
+
+    const updatedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
+    expect(updatedConfig.platforms).toHaveLength(3);
+  });
+
+  it('POST /config-editor/plugin/:pluginName (set alias)', async () => {
+    // empty platforms
+    const currentConfig: HomebridgeConfig = await fs.readJson(configFilePath);
+    currentConfig.platforms = [];
+    await fs.writeJson(configFilePath, currentConfig);
+
+    const mockConfig = [
+      {
+        name: 'test',
+        testing: true,
+      }
+    ];
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/config-editor/plugin/homebridge-mock-plugin',
+      headers: {
+        authorization,
+      },
+      payload: mockConfig,
+    });
+
+    expect(res.statusCode).toEqual(201);
+
+    const updatedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
+    expect(updatedConfig.platforms).toHaveLength(1);
+    expect(updatedConfig.platforms[0].platform).toEqual('ExampleHomebridgePlugin');
+  });
+
+  it('POST /config-editor/plugin/:pluginName (enforce array body)', async () => {
+    const mockConfig = {
+      name: 'test',
+      testing: true,
+    };
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/config-editor/plugin/homebridge-mock-plugin',
+      headers: {
+        authorization,
+      },
+      payload: mockConfig,
+    });
+
+    expect(res.statusCode).toEqual(400);
+    expect(res.body).toContain('Plugin Config must be an array.');
+  });
+
+  it('POST /config-editor/plugin/:pluginName (ensure block is object and not array)', async () => {
+    const mockConfig = [
+      [
+        {
+          name: 'test',
+          testing: true,
+        }
+      ]
+    ];
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/config-editor/plugin/homebridge-mock-plugin',
+      headers: {
+        authorization,
+      },
+      payload: mockConfig,
+    });
+
+    expect(res.statusCode).toEqual(400);
+    expect(res.body).toContain('Plugin config must be an array of objects.');
   });
 
   it('GET /config-editor/backups', async () => {

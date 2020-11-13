@@ -140,3 +140,8 @@ export type HomebridgePluginUiMetadata = {
   serverPath: string;
   plugin: HomebridgePlugin;
 }
+
+export type PluginAlias = {
+  pluginAlias: null | string;
+  pluginType: null | 'platform' | 'accessory';
+}
