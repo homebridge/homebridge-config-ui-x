@@ -20,7 +20,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
 
   @Input() plugin;
   @Input() schema;
-  @Input() homebridgeConfig;
+  @Input() pluginConfig: Record<string, any>[];
 
   public pluginAlias: string;
   public pluginType: 'platform' | 'accessory';
@@ -44,15 +44,6 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.pluginAlias = this.schema.pluginAlias;
     this.pluginType = this.schema.pluginType;
-
-    // ensure homebridge config has platform and accessories arrays
-    if (!Array.isArray(this.homebridgeConfig.platforms)) {
-      this.homebridgeConfig.platforms = [];
-    }
-
-    if (!Array.isArray(this.homebridgeConfig.accessories)) {
-      this.homebridgeConfig.accessories = [];
-    }
 
     // start accessory subscription
     if (this.io.connected) {
@@ -117,7 +108,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
           break;
         }
         case 'config.save': {
-          this.requestResponse(e, this.saveHomebridgeConfig());
+          this.requestResponse(e, this.savePluginConfig());
           break;
         }
         case 'config.update': {
@@ -244,27 +235,19 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   }
 
   getConfigBlocks(): Array<any> {
-    return this.homebridgeConfig[this.arrayKey].filter((block: any) => {
-      return block[this.pluginType] === this.pluginAlias ||
-        block[this.pluginType] === this.plugin.name + '.' + this.pluginAlias;
-    });
+    return this.pluginConfig;
   }
 
-  updateConfigBlocks(pluginConfig: Array<any>) {
-    this.homebridgeConfig[this.arrayKey] = this.homebridgeConfig[this.arrayKey].filter((block: any) => {
-      return block[this.pluginType] !== this.pluginAlias &&
-        block[this.pluginType] !== this.plugin.name + '.' + this.pluginAlias;
-    });
-
+  updateConfigBlocks(pluginConfig: Record<string, any>[]) {
     for (const block of pluginConfig) {
       block[this.pluginType] = this.pluginAlias;
     }
-    this.homebridgeConfig[this.arrayKey].push(...pluginConfig);
+    this.pluginConfig = pluginConfig;
   }
 
-  async saveHomebridgeConfig(exit = false) {
+  async savePluginConfig(exit = false) {
     this.saveInProgress = true;
-    return await this.$api.post('/config-editor', this.homebridgeConfig)
+    return await this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig)
       .toPromise()
       .then(data => {
         this.$toastr.success(
@@ -287,7 +270,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
 
   deletePluginConfig() {
     this.updateConfigBlocks([]);
-    this.saveHomebridgeConfig(true);
+    this.savePluginConfig(true);
   }
 
   ngOnDestroy() {

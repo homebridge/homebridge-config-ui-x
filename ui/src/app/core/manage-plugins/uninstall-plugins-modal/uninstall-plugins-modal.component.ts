@@ -31,7 +31,7 @@ export class UninstallPluginsModalComponent implements OnInit {
 
   async ngOnInit() {
     try {
-      const schema = this.plugin.settingsSchema ? await this.getSchema() : await this.getAlias();
+      const schema = await this.getAlias();
       this.pluginType = schema.pluginType;
       this.pluginAlias = schema.pluginAlias;
     } finally {
@@ -59,44 +59,12 @@ export class UninstallPluginsModalComponent implements OnInit {
     ref.componentInstance.pluginName = this.plugin.name;
   }
 
-  async getSchema() {
-    return await this.$api.get(`/plugins/config-schema/${encodeURIComponent(this.plugin.name)}`).toPromise();
-  }
-
   async getAlias() {
     return await this.$api.get(`/plugins/alias/${encodeURIComponent(this.plugin.name)}`).toPromise();
   }
 
   async removePluginConfig() {
-    const homebridgeConfig = await this.$api.get('/config-editor').toPromise();
-
-    if (!Array.isArray(homebridgeConfig.platforms)) {
-      homebridgeConfig.platforms = [];
-    }
-
-    if (!Array.isArray(homebridgeConfig.accessories)) {
-      homebridgeConfig.accessories = [];
-    }
-
-    if (this.pluginType === 'platform') {
-      homebridgeConfig.platforms = homebridgeConfig.platforms.filter((platform) => {
-        return !(
-          platform.platform === this.pluginAlias ||
-          platform.platform === this.plugin.name + '.' + this.pluginAlias
-        );
-      });
-    }
-
-    if (this.pluginType === 'accessory') {
-      homebridgeConfig.accessories = homebridgeConfig.accessories.filter((accessory) => {
-        return !(
-          accessory.accessory === this.pluginAlias ||
-          accessory.accessory === this.plugin.name + '.' + this.pluginAlias
-        );
-      });
-    }
-
-    await this.$api.post('/config-editor', homebridgeConfig).toPromise();
+    await this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, []).toPromise();
 
     this.$toastr.success(
       this.translate.instant('plugins.settings.toast_plugin_config_saved'),

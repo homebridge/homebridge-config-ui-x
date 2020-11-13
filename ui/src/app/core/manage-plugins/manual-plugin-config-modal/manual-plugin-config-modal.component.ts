@@ -25,7 +25,7 @@ export class ManualPluginConfigModalComponent implements OnInit {
   public canConfigure = false;
   public show = '';
 
-  public homebridgeConfig;
+  public pluginConfig: Record<string, any>[];
   public currentBlock: string;
   public currentBlockIndex: number | null = null;
   public saveInProgress = false;
@@ -87,22 +87,14 @@ export class ManualPluginConfigModalComponent implements OnInit {
   }
 
   loadHomebridgeConfig() {
-    this.$api.get('/config-editor').subscribe(
+    this.$api.get(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`).subscribe(
       (config) => {
-        this.homebridgeConfig = config;
-
-        if (!Array.isArray(this.homebridgeConfig.platforms)) {
-          this.homebridgeConfig.platforms = [];
-        }
-
-        if (!Array.isArray(this.homebridgeConfig.accessories)) {
-          this.homebridgeConfig.accessories = [];
-        }
+        this.pluginConfig = config;
 
         this.canConfigure = true;
         this.loading = false;
 
-        if (this.configBlocks().length) {
+        if (this.pluginConfig.length) {
           this.editBlock(0);
         } else {
           this.addBlock();
@@ -111,12 +103,9 @@ export class ManualPluginConfigModalComponent implements OnInit {
     );
   }
 
-  configBlocks(): Array<any> {
-    return this.homebridgeConfig[this.arrayKey].filter((block: any) => {
-      return block[this.pluginType] === this.pluginAlias ||
-        block[this.pluginType] === this.plugin.name + '.' + this.pluginAlias;
-    });
-  }
+  // configBlocks(): Array<any> {
+  //   return this.pluginConfig;
+  // }
 
   addBlock() {
     if (!this.saveCurrentBlock()) {
@@ -124,12 +113,12 @@ export class ManualPluginConfigModalComponent implements OnInit {
       return;
     }
 
-    this.homebridgeConfig[this.arrayKey].push({
+    this.pluginConfig.push({
       [this.pluginType]: this.pluginAlias,
       name: this.pluginAlias,
     });
 
-    this.editBlock((this.configBlocks().length - 1));
+    this.editBlock((this.pluginConfig.length - 1));
   }
 
   saveCurrentBlock() {
@@ -181,7 +170,7 @@ export class ManualPluginConfigModalComponent implements OnInit {
         return false;
       }
 
-      const currentBlock = this.configBlocks()[this.currentBlockIndex];
+      const currentBlock = this.pluginConfig[this.currentBlockIndex];
       Object.keys(currentBlock).forEach((x) => delete currentBlock[x]);
       Object.assign(currentBlock, currentBlockNew);
 
@@ -199,15 +188,15 @@ export class ManualPluginConfigModalComponent implements OnInit {
 
     this.show = 'configBlock.' + index;
     this.currentBlockIndex = index;
-    this.currentBlock = JSON.stringify(this.configBlocks()[this.currentBlockIndex], null, 4);
+    this.currentBlock = JSON.stringify(this.pluginConfig[this.currentBlockIndex], null, 4);
   }
 
   removeBlock(index: number) {
-    const block = this.configBlocks()[index];
+    const block = this.pluginConfig[index];
 
-    const blockIndex = this.homebridgeConfig[this.arrayKey].findIndex((x) => x === block);
+    const blockIndex = this.pluginConfig.findIndex((x) => x === block);
     if (blockIndex > -1) {
-      this.homebridgeConfig[this.arrayKey].splice(blockIndex, 1);
+      this.pluginConfig.splice(blockIndex, 1);
     }
 
     this.currentBlockIndex = null;
@@ -222,7 +211,7 @@ export class ManualPluginConfigModalComponent implements OnInit {
       return;
     }
 
-    return this.$api.post('/config-editor', this.homebridgeConfig)
+    return this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig)
       .toPromise()
       .then(data => {
         this.$toastr.success(

@@ -21,7 +21,7 @@ export class HomebridgeRingComponent implements OnInit {
   public doingLogin = false;
 
   public justLinked = false;
-  public pluginConfig;
+  public ringConfig: Record<string, any>;
 
   public jsonFormOptions = {
     addSubmit: false,
@@ -30,9 +30,9 @@ export class HomebridgeRingComponent implements OnInit {
     setSchemaDefaults: true,
   };
 
-  @Input() public pluginName;
+  @Input() public plugin;
   @Input() public schema;
-  @Input() homebridgeConfig;
+  @Input() pluginConfig: Record<string, any>[];
 
   constructor(
     public formBuilder: FormBuilder,
@@ -51,17 +51,11 @@ export class HomebridgeRingComponent implements OnInit {
       twoFactorAuthCode: [undefined],
     });
 
-    if (!this.homebridgeConfig.platforms) {
-      this.homebridgeConfig.platforms = [];
+    if (!this.pluginConfig.length) {
+      this.pluginConfig.push({ platform: this.schema.pluginAlias, name: 'Ring' });
     }
-    this.pluginConfig = this.homebridgeConfig.platforms.find(x => x.platform === this.schema.pluginAlias);
 
-    if (!this.pluginConfig) {
-      this.pluginConfig = {
-        platform: this.schema.pluginAlias,
-        name: 'Ring',
-      };
-    }
+    this.ringConfig = this.pluginConfig[0];
   }
 
 
@@ -70,12 +64,10 @@ export class HomebridgeRingComponent implements OnInit {
     this.loginFailReason = undefined;
     return this.$api.post('/plugins/custom-plugins/homebridge-ring/exchange-credentials', this.linkAccountForm.value).subscribe(
       async (data) => {
+        this.ringConfig.refreshToken = data.refresh_token;
 
-        this.pluginConfig.refreshToken = data.refresh_token;
-
-        const existingConfig = this.homebridgeConfig.platforms.find(x => x.platform === this.schema.pluginAlias);
-        if (!existingConfig) {
-          this.homebridgeConfig.platforms.push(this.pluginConfig);
+        if (!this.pluginConfig.length) {
+          this.pluginConfig.push(this.ringConfig);
         }
 
         await this.saveConfig();
@@ -104,18 +96,16 @@ export class HomebridgeRingComponent implements OnInit {
   }
 
   unlinkAccount() {
-    this.pluginConfig = {
+    this.ringConfig = {
       platform: this.schema.pluginAlias,
     };
 
-    const existingConfigIndex = this.homebridgeConfig.platforms.findIndex(x => x.platform === this.schema.pluginAlias);
-    this.homebridgeConfig.platforms.splice(existingConfigIndex, 1);
-
+    this.pluginConfig.splice(0, this.pluginConfig.length);
     this.saveConfig();
   }
 
   async saveConfig() {
-    return this.$api.post('/config-editor', this.homebridgeConfig).toPromise()
+    return this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig).toPromise()
       .then((result) => {
         this.justLinked = true;
         this.$toastr.success(
@@ -129,9 +119,8 @@ export class HomebridgeRingComponent implements OnInit {
   }
 
   async saveAndClose() {
-    this.pluginConfig.platform = this.schema.pluginAlias;
-    const existingConfigIndex = this.homebridgeConfig.platforms.findIndex(x => x.platform === this.schema.pluginAlias);
-    this.homebridgeConfig.platforms[existingConfigIndex] = this.pluginConfig;
+    this.ringConfig.platform = this.schema.pluginAlias;
+    this.pluginConfig[0] = this.ringConfig;
 
     await this.saveConfig();
     this.activeModal.close();

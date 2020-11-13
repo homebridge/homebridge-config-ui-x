@@ -26,13 +26,13 @@
 
   <div class="modal-body" *ngIf="$auth.env.enableAccessories">
     <p [innerHTML]="'plugins.settings.custom.homebridge-gsh.message_about' | translate"></p>
-    <p *ngIf="!pluginConfig.token" translate="plugins.settings.custom.homebridge-gsh.message_account_link_required"></p>
-    <div class="text-center" *ngIf="!pluginConfig.token">
+    <p *ngIf="!gshConfig.token" translate="plugins.settings.custom.homebridge-gsh.message_account_link_required"></p>
+    <div class="text-center" *ngIf="!gshConfig.token">
       <button class="btn btn-primary btn-lg" (click)="linkAccount()"
         translate="plugins.settings.custom.homebridge-gsh.label_link_account"></button>
     </div>
 
-    <div class="text-center mt-1" *ngIf="pluginConfig.token">
+    <div class="text-center mt-1" *ngIf="gshConfig.token">
       <i class="fas fa-check-circle primary-text" style="font-size:50px;"></i>
       <h4 class="mt-2">
         {{ linkType | titlecase }}
@@ -46,23 +46,23 @@
       </div>
     </div>
 
-    <div class="mt-3" *ngIf="pluginConfig && pluginConfig.token">
+    <div class="mt-3" *ngIf="gshConfig && gshConfig.token">
       <markdown hrefTargetBlank class="plugin-md" [data]="schema.footerDisplay" *ngIf="schema.footerDisplay">
       </markdown>
     </div>
 
-    <div *ngIf="pluginConfig && pluginConfig.token" class="card p-2 pt-3 mt-4">
-      <app-schema-form [configSchema]="schema" [(data)]="pluginConfig"></app-schema-form>
+    <div *ngIf="gshConfig && gshConfig.token" class="card p-2 pt-3 mt-4">
+      <app-schema-form [configSchema]="schema" [(data)]="gshConfig"></app-schema-form>
     </div>
   </div>
 
   <div class="modal-footer">
     <button type="button" class="btn btn-elegant mr-auto" data-dismiss="modal" (click)="unlinkAccount()"
-      *ngIf="pluginConfig.token" translate="plugins.settings.custom.homebridge-gsh.label_unlink_account">
+      *ngIf="gshConfig.token" translate="plugins.settings.custom.homebridge-gsh.label_unlink_account">
     </button>
     <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="close()"
       [translate]="'form.button_close'">Close</button>
-    <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="saveAndClose()"
-      *ngIf="pluginConfig.token" [translate]="'form.button_save'">Save</button>
+    <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="saveAndClose()" *ngIf="gshConfig.token"
+      [translate]="'form.button_save'">Save</button>
   </div>
 </div>

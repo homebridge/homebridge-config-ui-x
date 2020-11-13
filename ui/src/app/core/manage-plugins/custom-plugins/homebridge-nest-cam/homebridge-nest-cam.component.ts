@@ -16,7 +16,7 @@ import { NotificationService } from '@/app/core/notification.service';
 export class HomebridgeNestCamComponent implements OnInit, OnDestroy {
   private io = this.$ws.connectToNamespace('plugins/custom-plugins/homebridge-nest-cam');
 
-  public pluginConfig;
+  public nestConfig;
   public linkAccountForm: FormGroup;
 
   public alreadyConfigured = false;
@@ -36,9 +36,9 @@ export class HomebridgeNestCamComponent implements OnInit, OnDestroy {
     setSchemaDefaults: true,
   };
 
-  @Input() public pluginName;
+  @Input() public plugin;
   @Input() public schema;
-  @Input() homebridgeConfig;
+  @Input() pluginConfig: Record<string, any>[];
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -50,17 +50,11 @@ export class HomebridgeNestCamComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    if (!this.homebridgeConfig.platforms) {
-      this.homebridgeConfig.platforms = [];
+    if (!this.pluginConfig.length) {
+      this.pluginConfig.push({ platform: this.schema.pluginAlias });
     }
-    this.pluginConfig = this.homebridgeConfig.platforms.find(x => x.platform === this.schema.pluginAlias);
 
-    if (!this.pluginConfig) {
-      this.pluginConfig = {
-        platform: this.schema.pluginAlias,
-      };
-      this.homebridgeConfig.platforms.push(this.pluginConfig);
-    }
+    this.nestConfig = this.pluginConfig[0];
 
     if (!this.showLinkAccount) {
       this.alreadyConfigured = true;
@@ -126,7 +120,7 @@ export class HomebridgeNestCamComponent implements OnInit, OnDestroy {
       this.linkAccountForm.controls.totp.setValidators([Validators.required]);
       this.currentStep = undefined;
       this.waiting = false;
-      this.pluginConfig.googleAuth = credentials;
+      this.nestConfig.googleAuth = credentials;
       this.doingAccountLinking = false;
 
       this.updateConfig();
@@ -138,7 +132,7 @@ export class HomebridgeNestCamComponent implements OnInit, OnDestroy {
     if (this.alreadyConfigured) {
       return false;
     }
-    if (this.pluginConfig?.googleAuth?.issueToken && this.pluginConfig?.googleAuth?.cookies) {
+    if (this.nestConfig?.googleAuth?.issueToken && this.nestConfig?.googleAuth?.cookies) {
       return false;
     }
     return !this.accountLinkingError;
@@ -169,10 +163,8 @@ export class HomebridgeNestCamComponent implements OnInit, OnDestroy {
   }
 
   unlinkAccount() {
-    delete this.pluginConfig.googleAuth;
-
-    const existingConfigIndex = this.homebridgeConfig.platforms.findIndex(x => x.platform === this.schema.pluginAlias);
-    this.homebridgeConfig.platforms.splice(existingConfigIndex, 1);
+    delete this.nestConfig.googleAuth;
+    this.pluginConfig.splice(0, this.pluginConfig.length);
 
     this.saveConfig();
 
@@ -190,15 +182,14 @@ export class HomebridgeNestCamComponent implements OnInit, OnDestroy {
   }
 
   updateConfig() {
-    this.pluginConfig.platform = this.schema.pluginAlias;
-    const existingConfig = this.homebridgeConfig.platforms.find(x => x.platform === this.schema.pluginAlias);
-    if (!existingConfig) {
-      this.homebridgeConfig.platforms.push(this.pluginConfig);
+    this.nestConfig.platform = this.schema.pluginAlias;
+    if (!this.pluginConfig.length) {
+      this.pluginConfig.push(this.nestConfig);
     }
   }
 
   async saveConfig() {
-    return this.$api.post('/config-editor', this.homebridgeConfig).toPromise()
+    return this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig).toPromise()
       .then((result) => {
         this.$toastr.success(
           this.translate.instant('plugins.settings.toast_restart_required'),
@@ -211,9 +202,8 @@ export class HomebridgeNestCamComponent implements OnInit, OnDestroy {
   }
 
   async saveAndClose() {
-    this.pluginConfig.platform = this.schema.pluginAlias;
-    const existingConfigIndex = this.homebridgeConfig.platforms.findIndex(x => x.platform === this.schema.pluginAlias);
-    this.homebridgeConfig.platforms[existingConfigIndex] = this.pluginConfig;
+    this.nestConfig.platform = this.schema.pluginAlias;
+    this.pluginConfig[0] = this.nestConfig;
 
     await this.saveConfig();
     this.activeModal.close();

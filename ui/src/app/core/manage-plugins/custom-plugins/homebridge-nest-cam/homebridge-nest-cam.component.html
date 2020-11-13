@@ -1,6 +1,6 @@
 <div class="modal-content hb-plugin-settings-modal">
   <div class="modal-header">
-    <h5 class="modal-title">{{ pluginName }}</h5>
+    <h5 class="modal-title">{{ plugin.name }}</h5>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"
       (click)="activeModal.dismiss('Cross click')">
       <span aria-hidden="true">&times;</span>
@@ -109,7 +109,7 @@
     </div>
 
     <div *ngIf="!showLinkAccount" class="card p-2 pt-3 mt-4">
-      <app-schema-form [configSchema]="schema" [(data)]="pluginConfig"></app-schema-form>
+      <app-schema-form [configSchema]="schema" [(data)]="nestConfig"></app-schema-form>
     </div>
 
     <div class="mt-3" *ngIf="!showLinkAccount">
@@ -127,6 +127,6 @@
       [translate]="'form.button_close'">Close</button>
     <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="saveAndClose()"
       [translate]="'form.button_save'" *ngIf="!showLinkAccount"
-      [disabled]="!pluginConfig?.googleAuth?.issueToken || !pluginConfig?.googleAuth?.cookies">Save</button>
+      [disabled]="!nestConfig?.googleAuth?.issueToken || !nestConfig?.googleAuth?.cookies">Save</button>
   </div>
 </div>

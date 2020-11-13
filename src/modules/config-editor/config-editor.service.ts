@@ -161,7 +161,7 @@ export class ConfigEditorService {
   }
 
   /**
-   * Return the config for a specific plugin
+   * Update the config for a specific plugin
    */
   public async updateConfigForPlugin(pluginName: string, pluginConfig: Record<string, any>[]) {
     return Promise.all([

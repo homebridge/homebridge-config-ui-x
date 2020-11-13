@@ -8,6 +8,12 @@ import { ApiService } from '@/app/core/api.service';
 import { AuthService } from '@/app/core/auth/auth.service';
 import { NotificationService } from '@/app/core/notification.service';
 
+export interface PluginConfigBlock {
+  config: Record<string, any>;
+  name: string;
+  __uuid__: string;
+}
+
 @Component({
   selector: 'app-settings-plugins-modal',
   templateUrl: './settings-plugins-modal.component.html',
@@ -20,10 +26,9 @@ export class SettingsPluginsModalComponent implements OnInit {
   public pluginAlias: string;
   public pluginType: 'platform' | 'accessory';
 
-  public homebridgeConfig: any;
-  public pluginConfig = [];
+  public pluginConfig: PluginConfigBlock[] = [];
   public form: any = {};
-  public show;
+  public show = '';
   public saveInProgress: boolean;
 
   constructor(
@@ -38,108 +43,46 @@ export class SettingsPluginsModalComponent implements OnInit {
   ngOnInit() {
     this.pluginAlias = this.schema.pluginAlias;
     this.pluginType = this.schema.pluginType;
-    this.loadHomebridgeConfig();
+    this.loadPluginConfig();
   }
 
   get arrayKey() {
     return this.pluginType === 'accessory' ? 'accessories' : 'platforms';
   }
 
-  blockChanged(__uuid__, blockName) {
-    return (config) => {
-      config.__uuid__ = __uuid__;
-      config[this.pluginType] = blockName;
-      const index = this.homebridgeConfig[this.arrayKey].findIndex(x => x.__uuid__ === __uuid__);
-      this.homebridgeConfig[this.arrayKey][index] = config;
-    };
-  }
-
-  addBlock() {
-    if (!this.homebridgeConfig[this.arrayKey]) {
-      this.homebridgeConfig[this.arrayKey] = [];
-    }
-    const __uuid__ = uuid();
-
-    const blockConfig = {
-      __uuid__: __uuid__,
-      name: 'New ' + this.schema.pluginAlias + ' #' + (this.pluginConfig.length + 1),
-      onChange: this.blockChanged(__uuid__, this.schema.pluginAlias),
-    };
-
-    const baseConfig = {
-      [this.pluginType]: this.schema.pluginAlias,
-      __uuid__: __uuid__,
-    };
-
-    this.homebridgeConfig[this.arrayKey].push(baseConfig);
-    this.pluginConfig.push(blockConfig);
-
-    this.show = __uuid__;
-  }
-
-  removeBlock(__uuid__) {
-    const pluginConfigIndex = this.pluginConfig.findIndex(x => x.__uuid__ === __uuid__);
-    this.pluginConfig.splice(pluginConfigIndex, 1);
-
-    const homebridgeConfigIndex = this.homebridgeConfig[this.arrayKey].findIndex(x => x.__uuid__ === __uuid__);
-    this.homebridgeConfig[this.arrayKey].splice(homebridgeConfigIndex, 1);
-  }
-
-  loadHomebridgeConfig() {
-    this.$api.get('/config-editor').subscribe(
-      (config) => {
-        this.homebridgeConfig = config;
-
-        if (!Array.isArray(this.homebridgeConfig.platforms)) {
-          this.homebridgeConfig.platforms = [];
+  loadPluginConfig() {
+    this.$api.get(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`).subscribe(
+      (pluginConfig) => {
+        for (const block of pluginConfig) {
+          const pluginConfigBlock = {
+            __uuid__: uuid(),
+            name: block.name || this.schema.pluginAlias,
+            config: block,
+          };
+          this.pluginConfig.push(pluginConfigBlock);
         }
-
-        if (!Array.isArray(this.homebridgeConfig.accessories)) {
-          this.homebridgeConfig.accessories = [];
-        }
-
-        this.homebridgeConfig[this.arrayKey].forEach((block: any) => {
-          if (
-            block[this.pluginType] === this.schema.pluginAlias ||
-            block[this.pluginType] === this.plugin.name + '.' + this.schema.pluginAlias
-          ) {
-            block.__uuid__ = uuid();
-
-            // Homebridge Hue - ensure users object is preserved
-            if (this.plugin.name === 'homebridge-hue') {
-              this.homebridgeHueFix(block);
-            }
-
-            const blockConfig: any = {
-              config: block,
-              onChange: this.blockChanged(block.__uuid__, block[this.pluginType]),
-              __uuid__: block.__uuid__,
-              name: block.name || block[this.pluginType],
-            };
-
-            this.pluginConfig.push(blockConfig);
-          }
-        });
 
         if (!this.pluginConfig.length) {
           this.addBlock();
+        } else {
+          this.show = this.pluginConfig[0].__uuid__;
         }
+
+        if (this.plugin.name === 'homebridge-hue' && this.pluginConfig.length) {
+          this.homebridgeHueFix(this.pluginConfig[0].config);
+        }
+      },
+      (err) => {
+        this.$toastr.error('Failed to load config: ' + err.error?.message, this.translate.instant('toast.title_error'));
       },
     );
   }
 
-  async save() {
+  save() {
     this.saveInProgress = true;
+    const configBlocks = this.pluginConfig.map(x => x.config);
 
-    this.homebridgeConfig.platforms.forEach((platform: any) => {
-      delete platform.__uuid__;
-    });
-
-    this.homebridgeConfig.accessories.forEach((accessory: any) => {
-      delete accessory.__uuid__;
-    });
-
-    await this.$api.post('/config-editor', this.homebridgeConfig)
+    return this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, configBlocks)
       .toPromise()
       .then((done) => {
         this.$toastr.success(
@@ -156,10 +99,37 @@ export class SettingsPluginsModalComponent implements OnInit {
         }
       })
       .catch(err => {
-        this.$toastr.error(this.translate.instant('config.toast_failed_to_save_config'), this.translate.instant('toast.title_error'));
+        this.$toastr.error(this.translate.instant('config.toast_failed_to_save_config') + ': ' + err.error?.message, this.translate.instant('toast.title_error'));
+      })
+      .finally(() => {
+        this.saveInProgress = false;
       });
+  }
 
-    this.saveInProgress = false;
+  blockChanged() {
+    for (const block of this.pluginConfig) {
+      block.name = block.config.name || block.name;
+    }
+  }
+
+  addBlock() {
+    const __uuid__ = uuid();
+
+    this.pluginConfig.push({
+      __uuid__: __uuid__,
+      name: this.schema.pluginAlias,
+      config: {
+        [this.pluginType]: this.schema.pluginAlias,
+      },
+    });
+
+    this.show = __uuid__;
+    this.blockChanged();
+  }
+
+  removeBlock(__uuid__) {
+    const pluginConfigIndex = this.pluginConfig.findIndex(x => x.__uuid__ === __uuid__);
+    this.pluginConfig.splice(pluginConfigIndex, 1);
   }
 
   /**

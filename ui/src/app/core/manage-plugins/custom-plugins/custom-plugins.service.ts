@@ -30,14 +30,14 @@ export class CustomPluginsService {
   ) { }
 
   async openSettings(plugin, schema) {
-    const homebridgeConfig = await this.loadHomebridgeConfig();
+    const pluginConfig = await this.loadPluginConfig(plugin.name);
     const ref = this.modalService.open(this.plugins[plugin.name], {
       backdrop: 'static',
       size: 'lg',
     });
-    ref.componentInstance.pluginName = plugin.name;
+    ref.componentInstance.plugin = plugin;
     ref.componentInstance.schema = schema;
-    ref.componentInstance.homebridgeConfig = homebridgeConfig;
+    ref.componentInstance.pluginConfig = pluginConfig;
 
     return ref.result.catch(() => {
       // do nothing
@@ -45,8 +45,7 @@ export class CustomPluginsService {
   }
 
   async openCustomSettingsUi(plugin, schema) {
-    const homebridgeConfig = await this.loadHomebridgeConfig();
-
+    const pluginConfig = await this.loadPluginConfig(plugin.name);
     const ref = this.modalService.open(CustomPluginsComponent, {
       backdrop: 'static',
       size: 'lg',
@@ -54,14 +53,14 @@ export class CustomPluginsService {
 
     ref.componentInstance.plugin = plugin;
     ref.componentInstance.schema = schema;
-    ref.componentInstance.homebridgeConfig = homebridgeConfig;
+    ref.componentInstance.pluginConfig = pluginConfig;
 
     return ref.result.catch(() => {
       // do nothing
     });
   }
 
-  async loadHomebridgeConfig() {
-    return this.$api.get('/config-editor').toPromise();
+  private async loadPluginConfig(pluginName: string) {
+    return this.$api.get(`/config-editor/plugin/${encodeURIComponent(pluginName)}`).toPromise();
   }
 }

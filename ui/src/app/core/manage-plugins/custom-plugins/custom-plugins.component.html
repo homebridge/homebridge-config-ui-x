@@ -42,7 +42,7 @@
     <div style="min-width: 25%;" class="text-right">
       <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.close()"
         [translate]="'form.button_close'" [disabled]="saveInProgress">Close</button>
-      <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="saveHomebridgeConfig(true)"
+      <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="savePluginConfig(true)"
         [disabled]="saveInProgress">
         {{ 'form.button_save' | translate }} <i *ngIf="saveInProgress" class="fas fa-spinner fa-pulse"></i>
       </button>
