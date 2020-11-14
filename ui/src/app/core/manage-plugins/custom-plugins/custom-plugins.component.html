@@ -17,9 +17,16 @@
       <i class="fa fa-cog fa-spin" style="font-size: 72px;"></i>
     </div>
 
-    <iframe width="100%" height="1px;" #custompluginui sandbox="allow-same-origin allow-popups allow-scripts"
+    <iframe width="100%" height="1px;" #custompluginui
+      sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-downloads"
       style="border: 0;">
     </iframe>
+
+    <div *ngIf="pluginConfig.length && schema.singular && showSchemaForm" class="card card-body">
+      <app-schema-form [configSchema]="schema" [(data)]="pluginConfig[0]"
+        (dataChanged)="schemaFormUpdatedSubject.next($event)">
+      </app-schema-form>
+    </div>
   </div>
 
   <div class="modal-footer justify-content-between">

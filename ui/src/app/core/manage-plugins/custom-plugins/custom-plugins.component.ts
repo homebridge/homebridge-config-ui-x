@@ -2,6 +2,8 @@ import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@ang
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
+import { Subject } from 'rxjs';
+import { debounceTime, skip } from 'rxjs/operators';
 
 import { environment } from '@/environments/environment';
 import { ApiService } from '@/app/core/api.service';
@@ -28,9 +30,15 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   public loading = true;
   public saveInProgress = false;
   public pluginSpinner = false;
+  public showSchemaForm = false;
 
   private basePath: string;
   private iframe: HTMLIFrameElement;
+
+  private schemaFormRecentlyUpdated = false;
+  private schemaFormRecentlyRefreshed = false;
+  private schemaFormRefreshSubject = new Subject();
+  public schemaFormUpdatedSubject = new Subject();
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -73,6 +81,15 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
       this.loading = false;
       this.loadUi();
     });
+
+    this.schemaFormRefreshSubject.pipe(
+      debounceTime(250),
+    ).subscribe(this.schemaFormRefresh.bind(this));
+
+    this.schemaFormUpdatedSubject.pipe(
+      debounceTime(250),
+      skip(1),
+    ).subscribe(this.schemaFormUpdated.bind(this));
 
     this.basePath = `/plugins/settings-ui/${encodeURIComponent(this.plugin.name)}`;
 
@@ -117,6 +134,15 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
         }
         case 'config.schema': {
           this.requestResponse(e, this.schema);
+          break;
+        }
+        case 'schema.show': {
+          console.log('got show request');
+          this.showSchemaForm = true;
+          break;
+        }
+        case 'schema.hide': {
+          this.showSchemaForm = false;
           break;
         }
         case 'i18n.lang': {
@@ -168,6 +194,9 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   }
 
   handleUpdateConfig(event: MessageEvent, pluginConfig: Array<any>) {
+    // refresh the schema form
+    this.schemaFormRefreshSubject.next();
+
     // ensure the update contains an array
     if (!Array.isArray(pluginConfig)) {
       this.$toastr.error('Plugin config must be an array.', 'Invalid Config Update');
@@ -245,6 +274,49 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     this.pluginConfig = pluginConfig;
   }
 
+  /**
+   * Called when changes are made to the schema form content
+   * These changes are emitted to the custom ui
+   */
+  schemaFormUpdated() {
+    if (!this.iframe || !this.iframe.contentWindow) {
+      return;
+    }
+
+    if (this.schemaFormRecentlyRefreshed) {
+      this.schemaFormRecentlyRefreshed = false;
+      return;
+    }
+
+    this.schemaFormRecentlyUpdated = true;
+
+    this.iframe.contentWindow.postMessage({
+      action: 'stream',
+      event: 'configChanged',
+      data: this.pluginConfig,
+    }, environment.api.origin);
+  }
+
+  /**
+   * Called when changes sent from the custom ui config
+   * Updates the schema form with the new values
+   */
+  schemaFormRefresh() {
+    if (this.schemaFormRecentlyUpdated) {
+      this.schemaFormRecentlyUpdated = false;
+      return;
+    }
+
+    this.schemaFormRecentlyRefreshed = true;
+
+    if (this.showSchemaForm) {
+      this.showSchemaForm = false;
+      setTimeout(() => {
+        this.showSchemaForm = true;
+      });
+    }
+  }
+
   async savePluginConfig(exit = false) {
     this.saveInProgress = true;
     return await this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig)
@@ -276,5 +348,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     window.removeEventListener('message', this.handleMessage);
     this.io.end();
+    this.schemaFormRefreshSubject.complete();
+    this.schemaFormUpdatedSubject.complete();
   }
 }
