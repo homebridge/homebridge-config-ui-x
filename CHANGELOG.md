@@ -7,11 +7,16 @@ All notable changes to this project will be documented in this file. This projec
 ### Notable Changes
 
 * **Accessory Control:** [@Feilner](https://github.com/Feilner) added support for **Door** and **Window** accessory control in the UI ([#945](https://github.com/oznu/homebridge-config-ui-x/pull/945))
+* **Accessory Control:** [@Feilner](https://github.com/Feilner) added accessory icons for Stateless Programmable Switches ([#951](https://github.com/oznu/homebridge-config-ui-x/pull/951))
+* **Plugins:** (BETA) Plugin developers using [custom plugin user interfaces](https://github.com/homebridge/plugin-ui-utils) now have the option to toggle the display of the schema-generated config form below their plugin's custom user interface 
 
 ### Other Changes
 
 * **i18n:** Improvements to Simplified Chinese language translations ([#942](https://github.com/oznu/homebridge-config-ui-x/pull/942))
 * **i18n:** Improvements to German language translations ([#946](https://github.com/oznu/homebridge-config-ui-x/pull/946))
+* **i18n:** Improvements to Spanish language translations ([#950](https://github.com/oznu/homebridge-config-ui-x/pull/950))
+* **API**: Added REST API endpoints to lookup and update the config for a single plugin, see the [Swagger API documentation](https://github.com/oznu/homebridge-config-ui-x/wiki/API-Reference) for details
+* **System**: Display a warning in the UI when the client (browser) is running a newer version than the server - this can happen if the service is not restarted after updating the Homebridge UI 
 
 ## 4.32.0 (2020-11-06)
 
