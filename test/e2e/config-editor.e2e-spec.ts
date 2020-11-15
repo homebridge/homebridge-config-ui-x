@@ -192,6 +192,270 @@ describe('ConfigEditorController (e2e)', () => {
     expect(savedConfig).not.toHaveProperty('plugins');
   });
 
+  it('POST /config-editor (convert bridge.port to number)', async () => {
+    const currentConfig = await fs.readJson(configFilePath);
+
+    currentConfig.bridge.port = '12345';
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/config-editor',
+      headers: {
+        authorization,
+      },
+      payload: currentConfig,
+    });
+
+    expect(res.statusCode).toEqual(201);
+
+    // check the updates were saved to disk and mistakes corrected
+    const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
+    expect(typeof savedConfig.bridge.port).toEqual('number');
+    expect(savedConfig.bridge.port).toEqual(12345);
+  });
+
+  it('POST /config-editor (correct bridge.port if invalid value is provided)', async () => {
+    const currentConfig = await fs.readJson(configFilePath);
+
+    currentConfig.bridge.port = {
+      not: 'valid'
+    };
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/config-editor',
+      headers: {
+        authorization,
+      },
+      payload: currentConfig,
+    });
+
+    expect(res.statusCode).toEqual(201);
+
+    // check the updates were saved to disk and mistakes corrected
+    const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
+    expect(typeof savedConfig.bridge.port).toEqual('number');
+    expect(savedConfig.bridge.port).toBeGreaterThanOrEqual(51000);
+    expect(savedConfig.bridge.port).toBeLessThanOrEqual(52000);
+  });
+
+  it('POST /config-editor (accept bridge.port if a valid value is provided)', async () => {
+    const currentConfig = await fs.readJson(configFilePath);
+
+    currentConfig.bridge.port = 8080;
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/config-editor',
+      headers: {
+        authorization,
+      },
+      payload: currentConfig,
+    });
+
+    expect(res.statusCode).toEqual(201);
+
+    // check the updates were saved to disk and mistakes corrected
+    const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
+    expect(savedConfig.bridge.port).toEqual(8080);
+  });
+
+  it('POST /config-editor (correct bridge.port if port is out of range)', async () => {
+    const currentConfig = await fs.readJson(configFilePath);
+
+    currentConfig.bridge.port = 1000000000;
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/config-editor',
+      headers: {
+        authorization,
+      },
+      payload: currentConfig,
+    });
+
+    expect(res.statusCode).toEqual(201);
+
+    // check the updates were saved to disk and mistakes corrected
+    const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
+    expect(typeof savedConfig.bridge.port).toEqual('number');
+    expect(savedConfig.bridge.port).toBeGreaterThanOrEqual(51000);
+    expect(savedConfig.bridge.port).toBeLessThanOrEqual(52000);
+  });
+
+  it('POST /config-editor (correct bridge.username if an invalid value is provided)', async () => {
+    const currentConfig = await fs.readJson(configFilePath);
+    const originalUsername = currentConfig.bridge.username;
+
+    currentConfig.bridge.username = 'blah blah';
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/config-editor',
+      headers: {
+        authorization,
+      },
+      payload: currentConfig,
+    });
+
+    expect(res.statusCode).toEqual(201);
+
+    // check the updates were saved to disk and mistakes corrected
+    const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
+    expect(savedConfig.bridge.username).toEqual(originalUsername);
+  });
+
+  it('POST /config-editor (accept bridge.username if valid value is provided)', async () => {
+    const currentConfig = await fs.readJson(configFilePath);
+
+    currentConfig.bridge.username = '0E:B8:2B:20:76:08';
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/config-editor',
+      headers: {
+        authorization,
+      },
+      payload: currentConfig,
+    });
+
+    expect(res.statusCode).toEqual(201);
+
+    // check the updates were saved to disk and mistakes corrected
+    const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
+    expect(savedConfig.bridge.username).toEqual('0E:B8:2B:20:76:08');
+  });
+
+  it('POST /config-editor (correct bridge.pin if an invalid value is provided)', async () => {
+    const currentConfig = await fs.readJson(configFilePath);
+    const originalPin = currentConfig.bridge.pin;
+
+    currentConfig.bridge.pin = 'blah blah';
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/config-editor',
+      headers: {
+        authorization,
+      },
+      payload: currentConfig,
+    });
+
+    expect(res.statusCode).toEqual(201);
+
+    // check the updates were saved to disk and mistakes corrected
+    const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
+    expect(savedConfig.bridge.pin).toEqual(originalPin);
+  });
+
+  it('POST /config-editor (accept bridge.pin if a valid value is provided)', async () => {
+    const currentConfig = await fs.readJson(configFilePath);
+
+    currentConfig.bridge.pin = '111-11-111';
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/config-editor',
+      headers: {
+        authorization,
+      },
+      payload: currentConfig,
+    });
+
+    expect(res.statusCode).toEqual(201);
+
+    // check the updates were saved to disk and mistakes corrected
+    const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
+    expect(savedConfig.bridge.pin).toEqual('111-11-111');
+  });
+
+  it('POST /config-editor (correct bridge.name if an invalid value is provided)', async () => {
+    const currentConfig = await fs.readJson(configFilePath);
+
+    currentConfig.bridge.name = 12345;
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/config-editor',
+      headers: {
+        authorization,
+      },
+      payload: currentConfig,
+    });
+
+    expect(res.statusCode).toEqual(201);
+
+    // check the updates were saved to disk and mistakes corrected
+    const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
+    expect(typeof savedConfig.bridge.name).toEqual('string');
+    expect(savedConfig.bridge.name).toContain('Homebridge');
+  });
+
+  it('POST /config-editor (accept bridge.name if a valid value is provided)', async () => {
+    const currentConfig = await fs.readJson(configFilePath);
+
+    currentConfig.bridge.name = 'Homebridge Test!';
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/config-editor',
+      headers: {
+        authorization,
+      },
+      payload: currentConfig,
+    });
+
+    expect(res.statusCode).toEqual(201);
+
+    // check the updates were saved to disk and mistakes corrected
+    const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
+    expect(savedConfig.bridge.name).toEqual('Homebridge Test!');
+  });
+
+  it('POST /config-editor (remove plugins array if empty)', async () => {
+    const currentConfig = await fs.readJson(configFilePath);
+
+    currentConfig.plugins = [];
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/config-editor',
+      headers: {
+        authorization,
+      },
+      payload: currentConfig,
+    });
+
+    expect(res.statusCode).toEqual(201);
+
+    // check the updates were saved to disk and mistakes corrected
+    const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
+    expect(savedConfig.plugins).toBeUndefined();
+  });
+
+  it('POST /config-editor (do not remove plugins array if not empty)', async () => {
+    const currentConfig = await fs.readJson(configFilePath);
+
+    currentConfig.plugins = [
+      'homebridge-mock-plugin'
+    ];
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/config-editor',
+      headers: {
+        authorization,
+      },
+      payload: currentConfig,
+    });
+
+    expect(res.statusCode).toEqual(201);
+
+    // check the updates were saved to disk and mistakes corrected
+    const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
+    expect(savedConfig.plugins).toEqual(currentConfig.plugins);
+  });
+
   it('POST /config-editor (rewrite platforms & accessories as arrays)', async () => {
     const currentConfig = await fs.readJson(configFilePath);
 

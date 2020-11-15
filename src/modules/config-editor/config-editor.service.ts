@@ -77,24 +77,49 @@ export class ConfigEditorService {
       config.bridge = {} as HomebridgeConfig['bridge'];
     }
 
-    if (!config.bridge.name) {
-      config.bridge.name = 'Homebridge';
-    }
-
+    // if bridge.port is a string, try and convert to a number
     if (typeof config.bridge.port === 'string') {
       config.bridge.port = parseInt(config.bridge.port, 10);
     }
 
+    // ensure the bridge.port is valid
     if (!config.bridge.port || typeof config.bridge.port !== 'number' || config.bridge.port > 65533 || config.bridge.port < 1025) {
       config.bridge.port = Math.floor(Math.random() * (52000 - 51000 + 1) + 51000);
     }
 
+    // ensure bridge.username exists
     if (!config.bridge.username) {
       config.bridge.username = this.generateUsername();
     }
 
+    // ensure the username matches the required pattern
+    const usernamePattern = /^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$/;
+    if (!usernamePattern.test(config.bridge.username)) {
+      if (usernamePattern.test(this.configService.homebridgeConfig.bridge.username)) {
+        config.bridge.username = this.configService.homebridgeConfig.bridge.username;
+      } else {
+        config.bridge.username = this.generateUsername();
+      }
+    }
+
+    // ensure bridge.pin exists
     if (!config.bridge.pin) {
       config.bridge.pin = this.generatePin();
+    }
+
+    // ensure the pin matches the required pattern
+    const pinPattern = /^([0-9]{3}-[0-9]{2}-[0-9]{3})$/;
+    if (!pinPattern.test(config.bridge.pin)) {
+      if (pinPattern.test(this.configService.homebridgeConfig.bridge.pin)) {
+        config.bridge.pin = this.configService.homebridgeConfig.bridge.pin;
+      } else {
+        config.bridge.pin = this.generatePin();
+      }
+    }
+
+    // ensure the bridge.name exists and is a string
+    if (!config.bridge.name || typeof config.bridge.name !== 'string') {
+      config.bridge.name = 'Homebridge ' + config.bridge.username.substr(config.bridge.username.length - 5).replace(/:/g, '');
     }
 
     // ensure accessories is an array

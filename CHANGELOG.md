@@ -8,7 +8,10 @@ All notable changes to this project will be documented in this file. This projec
 
 * **Accessory Control:** [@Feilner](https://github.com/Feilner) added support for **Door** and **Window** accessory control in the UI ([#945](https://github.com/oznu/homebridge-config-ui-x/pull/945))
 * **Accessory Control:** [@Feilner](https://github.com/Feilner) added accessory icons for Stateless Programmable Switches ([#951](https://github.com/oznu/homebridge-config-ui-x/pull/951))
-* **Plugins:** (BETA) Plugin developers using [custom plugin user interfaces](https://github.com/homebridge/plugin-ui-utils) now have the option to toggle the display of the schema-generated config form below their plugin's custom user interface 
+* **Plugins:** (BETA) The following features have been added to assist plugin developers building [custom plugin user interfaces](https://github.com/homebridge/plugin-ui-utils):
+  * Added an option to toggle the display of the schema-generated config form below the plugin's custom user interface - [see docs](https://github.com/homebridge/plugin-ui-utils#homebridgeshowschemaform)
+  * Added the ability to load the plugin's custom ui from a local development server (such as the Angular/Vue/Webpack dev servers) - [see docs](https://github.com/homebridge/plugin-ui-utils/blob/master/DEVELOPMENT.md)
+  * Added the ability to customise the location of the plugin's custom ui assets using the `customUiPath` property in the `config.schema.json`
 
 ### Other Changes
 

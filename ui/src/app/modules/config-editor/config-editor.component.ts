@@ -417,7 +417,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
               },
               mdns: {
                 type: 'object',
-                description: 'Tell Homebridge to listen on a specific interface or IP address. This is useful if your server has multiple interfaces.',
+                description: 'Tell Homebridge to listen on a specific interface or IP address. This is useful if your server has multiple interfaces.\n\nDepreciated as of Homebridge v1.3.0 - use bridge.bind instead.',
                 required: ['interface'],
                 properties: {
                   interface: {
