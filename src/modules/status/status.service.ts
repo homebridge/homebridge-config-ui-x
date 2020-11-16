@@ -34,10 +34,14 @@ export class StatusService {
       this.getCpuTemp = this.getCpuTempAlt;
     }
 
-    setInterval(async () => {
-      this.getCpuLoadPoint();
-      this.getMemoryUsagePoint();
-    }, 10000);
+    if (this.configService.ui.disableServerMetricsMonitoring !== true) {
+      setInterval(async () => {
+        this.getCpuLoadPoint();
+        this.getMemoryUsagePoint();
+      }, 10000);
+    } else {
+      this.logger.warn('Server metrics monitoring disabled.');
+    }
   }
 
   /**

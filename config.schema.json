@@ -542,6 +542,10 @@
       "scheduledBackupDisable": {
         "title": "Disable Scheduled Backups",
         "type": "boolean"
+      },
+      "disableServerMetricsMonitoring": {
+        "title": "Disable Server Metrics Monitoring",
+        "description": "When enabled, the Homebridge UI will not collect or report cpu / memory stats"
       }
     }
   },

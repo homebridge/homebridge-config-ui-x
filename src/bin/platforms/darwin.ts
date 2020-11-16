@@ -273,6 +273,10 @@ export class DarwinInstaller {
         uid,
         gid,
       });
+      child_process.execSync(`test -w "$(dirname $(which npm))"`, {
+        uid,
+        gid,
+      });
     } catch (e) {
       await this.setNpmPermissions(npmGlobalPath);
     }

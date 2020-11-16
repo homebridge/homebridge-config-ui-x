@@ -100,6 +100,7 @@ export class ConfigService {
     homebridgePackagePath?: string;
     scheduledBackupPath?: string;
     scheduledBackupDisable?: boolean;
+    disableServerMetricsMonitoring?: boolean;
   };
 
   private bridgeFreeze: this['homebridgeConfig']['bridge'];
