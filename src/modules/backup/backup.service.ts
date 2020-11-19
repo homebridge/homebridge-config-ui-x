@@ -408,6 +408,9 @@ export class BackupService {
 
     client.emit('stdout', color.green('\r\nRestore Complete!\r\n'));
 
+    // ensure ui is restarted on next restart
+    this.configService.hbServiceUiRestartRequired = true;
+
     return { status: 0 };
   }
 
@@ -561,6 +564,9 @@ export class BackupService {
     await this.removeRestoreDirectory();
 
     client.emit('stdout', color.green('\r\nRestore Complete!\r\n'));
+
+    // ensure ui is restarted on next restart
+    this.configService.hbServiceUiRestartRequired = true;
 
     return { status: 0 };
   }

@@ -15,6 +15,10 @@ All notable changes to this project will be documented in this file. This projec
 * **i18n:** Improvements to French language translations ([#955](https://github.com/oznu/homebridge-config-ui-x/pull/955))
 * **i18n:** Improvements to Italian language translations ([#957](https://github.com/oznu/homebridge-config-ui-x/pull/957))
 
+### Bug Fixes
+
+* **Backup/Restore:** Ensure the UI is restarted along with the bridge after restoring a backup regardless of how the user triggers a restart ([#963](https://github.com/oznu/homebridge-config-ui-x/pull/963))
+
 ## 4.33.0 (2020-11-15)
 
 ### Notable Changes
