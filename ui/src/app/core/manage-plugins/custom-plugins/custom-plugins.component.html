@@ -27,6 +27,11 @@
         (dataChanged)="schemaFormUpdatedSubject.next($event)">
       </app-schema-form>
     </div>
+
+    <div *ngIf="formId" class="card card-body">
+      <app-schema-form [configSchema]="formSchema" [(data)]="formData" (dataChanged)="formUpdatedSubject.next($event)">
+      </app-schema-form>
+    </div>
   </div>
 
   <div class="modal-footer justify-content-between">

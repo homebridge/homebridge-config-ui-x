@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. This projec
 
 ## NEXT
 
+### Notable Changes
+
+* **Plugins:** (BETA) Plugin developers building [custom plugin user interfaces](https://github.com/homebridge/plugin-ui-utils) can now create arbitrary standalone forms using a schema. [See docs](https://github.com/homebridge/plugin-ui-utils#homebridgecreateform).
+
 ### Other Changes
 
 * **i18n:** Improvements to Simplified Chinese language translations ([#952](https://github.com/oznu/homebridge-config-ui-x/pull/952))
