@@ -6,13 +6,14 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Notable Changes
 
-* **Plugins:** (BETA) Plugin developers building [custom plugin user interfaces](https://github.com/homebridge/plugin-ui-utils) can now create arbitrary standalone forms using a schema. [See docs](https://github.com/homebridge/plugin-ui-utils#homebridgecreateform).
+* **Plugins:** (BETA) Plugin developers building [custom plugin user interfaces](https://github.com/homebridge/plugin-ui-utils) can now create arbitrary standalone forms using a schema - [see docs](https://github.com/homebridge/plugin-ui-utils#homebridgecreateform)
 
 ### Other Changes
 
 * **i18n:** Improvements to Simplified Chinese language translations ([#952](https://github.com/oznu/homebridge-config-ui-x/pull/952))
 * **i18n:** Improvements to Catalan language translations ([#953](https://github.com/oznu/homebridge-config-ui-x/pull/953))
 * **i18n:** Improvements to French language translations ([#955](https://github.com/oznu/homebridge-config-ui-x/pull/955))
+* **i18n:** Improvements to Italian language translations ([#957](https://github.com/oznu/homebridge-config-ui-x/pull/957))
 
 ## 4.33.0 (2020-11-15)
 
