@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file. This projec
 * **i18n:** Improvements to Catalan language translations ([#953](https://github.com/oznu/homebridge-config-ui-x/pull/953))
 * **i18n:** Improvements to French language translations ([#955](https://github.com/oznu/homebridge-config-ui-x/pull/955))
 * **i18n:** Improvements to Italian language translations ([#957](https://github.com/oznu/homebridge-config-ui-x/pull/957))
+* **i18n:** Improvements to Polish language translations ([#962](https://github.com/oznu/homebridge-config-ui-x/pull/962))
 
 ### Bug Fixes
 
