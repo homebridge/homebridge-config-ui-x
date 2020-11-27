@@ -222,6 +222,7 @@
     "reset.message_reset_will_unpair_from_homekit": "초기화를 진행하면 Apple HomeKit 설정에서 이 Homebridge 인스턴스의 페어링이 해제됩니다.",
     "reset.message_unpair_bridges_cameras_tv_external_accessories": "이 작업을 통해 선택된 Bridge / 카메라 / TV 또는 다른 외부 액세서리의 페어링을 해제할 수 있습니다.",
     "reset.message_your_homebridge_username_will_be_changed": "Homebridge 사용자명과 PIN이 변경됩니다.",
+	"reset.title_clear_cache": "캐시 지우기",
     "reset.title_clear_cached_accessories": "모든 캐시된 액세서리 제거",
     "reset.title_clear_cached_accessories_single": "캐시된 액세서리 제거",
     "reset.title_force_restart_hb_service": "강제 서비스 재시작",
