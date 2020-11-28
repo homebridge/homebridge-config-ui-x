@@ -419,9 +419,17 @@ export class PluginsService {
       installOptions.push('-g');
     }
 
-    await this.runNpmCommand([...this.npm, 'install', ...installOptions, `${pluginName}@${version}`], installPath, client);
-
-    return true;
+    try {
+      await this.runNpmCommand([...this.npm, 'install', ...installOptions, `${pluginName}@${version}`], installPath, client);
+      return true;
+    } catch (e) {
+      if (pluginName === this.configService.name) {
+        client.emit('stdout', color.yellow(`\r\nCleaning up npm cache, please wait...\r\n`));
+        await this.cleanNpmCache();
+        client.emit('stdout', color.yellow(`npm cache cleared, please try updating ${this.configService.name} again.\r\n`));
+      }
+      throw e;
+    }
   }
 
   /**
@@ -992,6 +1000,9 @@ export class PluginsService {
    * @param client
    */
   private async runNpmCommand(command: Array<string>, cwd: string, client: EventEmitter) {
+    // remove synology @eaDir folders from the node_modules
+    await this.removeSynologyMetadata();
+
     let timeoutTimer;
     command = command.filter(x => x.length);
 
@@ -1098,6 +1109,49 @@ export class PluginsService {
         this.logger.error(e.message);
       }
     }
+  }
+
+  /**
+   * Remove the Synology @eaDir directories from the plugin folder
+   */
+  private async removeSynologyMetadata() {
+    if (!this.configService.customPluginPath) {
+      return;
+    }
+
+    const offendingPath = path.resolve(this.configService.customPluginPath, '@eaDir');
+
+    try {
+      if (!await fs.pathExists(offendingPath)) {
+        await fs.remove(offendingPath);
+      }
+    } catch (e) {
+      this.logger.error(`Failed to remove ${offendingPath}`, e.message);
+      return;
+    }
+  }
+
+  /**
+   * Clean the npm cache
+   * npm cache clean --force
+   */
+  private async cleanNpmCache() {
+    const command: string[] = [...this.npm, 'cache', 'clean', '--force'];
+
+    if (this.configService.ui.sudo) {
+      command.unshift('sudo', '-E', '-n');
+    }
+
+    return new Promise((resolve) => {
+      const child = child_process.spawn(command.shift(), command);
+
+      child.on('exit', (code) => {
+        this.logger.log(`npm cache clear command executed with exit code`, code);
+        resolve();
+      });
+
+      child.on('error', () => { });
+    });
   }
 
   /**

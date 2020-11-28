@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 4.34.1 (2020-11-26)
+
+### Bug Fixes
+
+* **Plugins:** (BETA) [Custom plugin user interfaces](https://github.com/homebridge/plugin-ui-utils) now work correctly in older browsers that do not support the `EventTarget` constructor
+* **Plugins:** Ensure `@eaDir` folders are removed from the `/homebridge/node_modules` folder when running with Docker on Synology DSM ([#970](https://github.com/oznu/homebridge-config-ui-x/issues/970))
+* **Plugins:** Attempt to automatically clear the npm cache if a UI update fails ([#923](https://github.com/oznu/homebridge-config-ui-x/issues/923))
+* **System:** Lock the axios dependency to 0.19.2 ([#969](https://github.com/oznu/homebridge-config-ui-x/issues/969))
+
 ## 4.34.0 (2020-11-20)
 
 ### Notable Changes

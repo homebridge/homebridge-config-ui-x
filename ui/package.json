@@ -19,7 +19,7 @@
     "@angular/platform-browser-dynamic": "^10.2.2",
     "@angular/router": "^10.2.2",
     "@auth0/angular-jwt": "^5.0.1",
-    "@homebridge/plugin-ui-utils": "0.0.16",
+    "@homebridge/plugin-ui-utils": "0.0.17",
     "@ng-bootstrap/ng-bootstrap": "^7.0.0",
     "@ngx-translate/core": "^13.0.0",
     "@ngx-translate/http-loader": "^6.0.0",
