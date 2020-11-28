@@ -323,6 +323,12 @@
             ]
           },
           {
+            "title": "Korean (ko)",
+            "enum": [
+              "ko"
+            ]
+          },
+          {
             "title": "Dutch (nl)",
             "enum": [
               "nl"

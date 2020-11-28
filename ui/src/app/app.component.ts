@@ -15,7 +15,7 @@ export class AppComponent {
     private $auth: AuthService,
   ) {
     // this array needs to be updated each time a new translation is added
-    const languages = ['en', 'de', 'fr', 'pl', 'cs', 'ru', 'zh-CN', 'zh-TW', 'hu', 'ja', 'es', 'nl', 'tr', 'it', 'bg', 'sv', 'no', 'sl', 'pt-BR', 'pt', 'id', 'ca'];
+    const languages = ['en', 'de', 'fr', 'pl', 'cs', 'ru', 'zh-CN', 'zh-TW', 'hu', 'ja', 'es', 'nl', 'tr', 'it', 'bg', 'sv', 'no', 'sl', 'pt-BR', 'pt', 'id', 'ca', 'ko'];
 
     console.log('Browser Culture Lang:', translate.getBrowserCultureLang());
     console.log('Browser Lang:', translate.getBrowserLang());
