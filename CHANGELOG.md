@@ -2,16 +2,20 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## 4.34.1 (2020-11-26)
+## 4.35.0 (2020-11-30)
 
 ### Notable Changes
 
 * **i18n:** Korean (ko) language added by [@thankee](https://github.com/thankee) ([#976](https://github.com/oznu/homebridge-config-ui-x/pull/976))
   * The Homebridge UI is now available in 23 different languages!
 
+### Other Changes
+
+* **i18n:** Improvements to Japanese language translations ([#978](https://github.com/oznu/homebridge-config-ui-x/pull/978))
+
 ### Bug Fixes
 
-* **Plugins:** (BETA) [Custom plugin user interfaces](https://github.com/homebridge/plugin-ui-utils) now work correctly in older browsers that do not support the `EventTarget` constructor
+* **Plugins:** [Custom plugin user interfaces](https://github.com/homebridge/plugin-ui-utils) now work correctly in older browsers that do not support the `EventTarget` constructor
 * **Plugins:** Ensure `@eaDir` folders are removed from the `/homebridge/node_modules` folder when running with Docker on Synology DSM ([#970](https://github.com/oznu/homebridge-config-ui-x/issues/970))
 * **Plugins:** Attempt to automatically clear the npm cache if a UI update fails ([#923](https://github.com/oznu/homebridge-config-ui-x/issues/923))
 * **System:** Lockdown the systeminformation dependency version ([#969](https://github.com/oznu/homebridge-config-ui-x/issues/969))
