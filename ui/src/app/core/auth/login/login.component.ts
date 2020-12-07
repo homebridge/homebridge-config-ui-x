@@ -1,6 +1,7 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
+import { debounceTime } from 'rxjs/operators';
 
 import { AuthService } from '../auth.service';
 import { environment } from '@/environments/environment';
@@ -19,6 +20,9 @@ export class LoginComponent implements OnInit {
   public inProgress = false;
   private targetRoute;
 
+  @ViewChild('password')
+  private passwordRef;
+
   constructor(
     private $router: Router,
     public $auth: AuthService,
@@ -29,6 +33,16 @@ export class LoginComponent implements OnInit {
       username: new FormControl('', [Validators.required]),
       password: new FormControl('', [Validators.required]),
     });
+
+    this.form.valueChanges
+      .pipe(debounceTime(500))
+      .subscribe((changes) => {
+        let passVal = this.passwordRef.nativeElement.value;
+
+        if (passVal !== changes.password) {
+          this.form.controls.password.setValue(passVal);
+        }
+      });
 
     this.targetRoute = window.sessionStorage.getItem('target_route') || '';
     this.setBackground();

@@ -18,7 +18,7 @@
 
         <div class="md-form">
           <i class="fas fa-lock prefix grey-text"></i>
-          <input formControlName="password" type="password" id="form-pass" autocomplete="current-password" tabindex="2"
+          <input #password formControlName="password" type="password" id="form-pass" autocomplete="current-password" tabindex="2"
             class="form-control pl-0 pr-0" [ngClass]="{
             'is-invalid': form.controls.password.dirty && form.controls.password.errors
           }">
