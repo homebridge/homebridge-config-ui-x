@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 4.36.0 (2020-12-07)
+
+### Notable Changes
+
+* **Homebridge:** Users running Homebridge v1.2.x will now be prompted to update to [Homebridge v1.2.4](https://github.com/homebridge/homebridge/releases/tag/v1.2.4)
+
+### Other Changes
+
+* **i18n:** Improvements to Japanese language translations ([#980](https://github.com/oznu/homebridge-config-ui-x/pull/980))
+
+### Bug Fixes
+
+* **Auth:** Fix an issue that prevented the "Login" button from being enabled when auto filling credentials on iOS ([#993](https://github.com/oznu/homebridge-config-ui-x/pull/993))
+
+### Tip
+
+You can switch the version of Homebridge you are running by clicking the current Homebridge version on the dashboard:
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/3979615/96521915-15936700-12be-11eb-9826-f19b201d20db.gif">
+</p>
+
 ## 4.35.0 (2020-11-30)
 
 ### Notable Changes

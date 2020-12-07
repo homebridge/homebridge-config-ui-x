@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { debounceTime } from 'rxjs/operators';
@@ -12,6 +12,8 @@ import { environment } from '@/environments/environment';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
+  @ViewChild('password') private passwordInput;
+
   public form: FormGroup;
   public backgroundStyle: string;
   public invalidCredentials = false;
@@ -19,9 +21,6 @@ export class LoginComponent implements OnInit {
   public twoFactorCodeRequired = false;
   public inProgress = false;
   private targetRoute;
-
-  @ViewChild('password')
-  private passwordRef;
 
   constructor(
     private $router: Router,
@@ -37,10 +36,9 @@ export class LoginComponent implements OnInit {
     this.form.valueChanges
       .pipe(debounceTime(500))
       .subscribe((changes) => {
-        let passVal = this.passwordRef.nativeElement.value;
-
-        if (passVal !== changes.password) {
-          this.form.controls.password.setValue(passVal);
+        const passwordInputValue = this.passwordInput.nativeElement.value;
+        if (passwordInputValue !== changes.password) {
+          this.form.controls.password.setValue(passwordInputValue);
         }
       });
 
