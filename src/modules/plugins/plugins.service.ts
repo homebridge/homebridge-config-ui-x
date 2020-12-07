@@ -467,6 +467,26 @@ export class PluginsService {
     const pjson: IPackageJson = await fs.readJson(path.join(homebridgeModule.installPath, 'package.json'));
     const homebridge = await this.parsePackageJson(pjson, homebridgeModule.path);
 
+    if (!homebridge.latestVersion) {
+      return homebridge;
+    }
+
+    // patch for homebridge 1.2.x to allow updates to newer versions of 1.2.x without 1.2.x being set to "latest"
+    const homebridgeVersion = semver.parse(homebridge.installedVersion);
+
+    if (
+      homebridgeVersion.major === 1 &&
+      homebridgeVersion.minor === 2 &&
+      semver.gt(homebridge.installedVersion, homebridge.latestVersion, { includePrerelease: true })
+    ) {
+      const versions = await this.getAvailablePluginVersions('homebridge');
+      if (versions.tags['release-1.2.x'] && semver.gt(versions.tags['release-1.2.x'], homebridge.installedVersion)) {
+        homebridge.updateAvailable = true;
+        homebridge.latestVersion = versions.tags['release-1.2.x'];
+      }
+    }
+    // end patch
+
     return homebridge;
   }
 
@@ -475,6 +495,10 @@ export class PluginsService {
    */
   public async updateHomebridgePackage(version: string, client: EventEmitter) {
     const homebridge = await this.getHomebridgePackage();
+
+    if (version === 'latest' && homebridge.latestVersion) {
+      version = homebridge.latestVersion;
+    }
 
     // get the currently installed
     let installPath = homebridge.installPath;
