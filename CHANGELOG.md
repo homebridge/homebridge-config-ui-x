@@ -16,14 +16,6 @@ All notable changes to this project will be documented in this file. This projec
 
 * **Auth:** Fix an issue that prevented the "Login" button from being enabled when auto filling credentials on iOS ([#993](https://github.com/oznu/homebridge-config-ui-x/pull/993))
 
-### Tip
-
-You can switch the version of Homebridge you are running by clicking the current Homebridge version on the dashboard:
-
-<p align="center">
-<img src="https://user-images.githubusercontent.com/3979615/96521915-15936700-12be-11eb-9826-f19b201d20db.gif">
-</p>
-
 ## 4.35.0 (2020-11-30)
 
 ### Notable Changes
