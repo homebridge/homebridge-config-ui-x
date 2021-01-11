@@ -180,7 +180,7 @@ export class ServerService {
           cachedAccessories.splice(accessoryIndex, 1);
           await fs.writeJson(cachedAccessoriesPath, cachedAccessories);
           this.logger.warn(`Removed cached accessory with UUID: ${uuid}`);
-          resolve();
+          resolve(true);
         } else {
           this.logger.error(`Cannot find cached accessory with UUID: ${uuid}`);
           reject(new NotFoundException());

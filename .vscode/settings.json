@@ -5,5 +5,5 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.tslint": true
   },
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
 }
