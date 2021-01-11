@@ -72,5 +72,5 @@ export const supportedLocales = {
   'id': 'id',
   'ca': 'ca',
   'ko': 'ko',
-  'mk': 'mk'
+  'mk': 'mk',
 };
