@@ -1,7 +1,9 @@
-:host /deep/ a {
-  &.grey-text {
-    &:hover {
-      text-decoration: underline;
+::ng-deep {
+  a {
+    &.grey-text {
+      &:hover {
+        text-decoration: underline;
+      }
     }
   }
 }
@@ -32,7 +34,8 @@ gridster {
 }
 
 .widget-item {
-  &:hover, &:active {
+  &:hover,
+  &:active {
     .widget-control-button {
       opacity: 1;
     }
@@ -52,7 +55,8 @@ gridster {
   -o-transition: opacity 200ms ease-in;
   transition: opacity 200ms ease-in;
 
-  &:hover, &:active {
+  &:hover,
+  &:active {
     opacity: 1;
   }
 
@@ -63,12 +67,16 @@ gridster {
 
 gridster {
   &.mobile {
-
-    #HomebridgeStatusWidgetComponent, #SystemInfoWidgetComponent, #WeatherWidgetComponent, #ClockWidgetComponent  {
+    #HomebridgeStatusWidgetComponent,
+    #SystemInfoWidgetComponent,
+    #WeatherWidgetComponent,
+    #ClockWidgetComponent {
       height: unset !important;
     }
 
-    #CpuWidgetComponent, #MemoryWidgetComponent, #UptimeWidgetComponent {
+    #CpuWidgetComponent,
+    #MemoryWidgetComponent,
+    #UptimeWidgetComponent {
       height: unset !important;
       padding-bottom: 10px;
     }
@@ -85,6 +93,6 @@ gridster {
 
   #AccessoriesWidgetComponent {
     background-color: inherit;
-    border: 2px solid rgba(#e0e0e0, 0.5); 
+    border: 2px solid rgba(#e0e0e0, 0.5);
   }
 }
