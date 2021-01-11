@@ -335,6 +335,12 @@
             ]
           },
           {
+            "title": "Macedonian (mk)",
+            "enum": [
+              "mk"
+            ]
+          },
+          {
             "title": "Norwegian (no)",
             "enum": [
               "no"
