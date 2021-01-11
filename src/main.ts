@@ -52,7 +52,9 @@ async function bootstrap() {
   app.use(helmet({
     hsts: false,
     frameguard: false,
-    referrerPolicy: true,
+    referrerPolicy: {
+      policy: 'no-referrer'
+    },
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ['\'self\''],
