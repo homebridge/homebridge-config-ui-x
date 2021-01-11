@@ -9,6 +9,10 @@ All notable changes to this project will be documented in this file. This projec
 * **i18n:** Macedonian (mk) language added by [@dimovskidamjan](https://github.com/dimovskidamjan) ([#1011](https://github.com/oznu/homebridge-config-ui-x/pull/1011))
   * The Homebridge UI is now available in 24 different languages!
 
+### Other Changes
+
+* **i18n:** Improvements to Portuguese language translations ([#1014](https://github.com/oznu/homebridge-config-ui-x/pull/1014))
+
 ## 4.36.0 (2020-12-07)
 
 ### Notable Changes
