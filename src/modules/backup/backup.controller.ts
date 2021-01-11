@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Put, UseGuards, Res, Req, InternalServerErrorException, Header, Param } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiConsumes, ApiParam } from '@nestjs/swagger';
+import { FastifyReply } from 'fastify';
 
 import { BackupService } from './backup.service';
 import { AdminGuard } from '../../core/auth/guards/admin.guard';
@@ -63,7 +64,7 @@ export class BackupController {
       },
     },
   })
-  restoreBackup(@Req() req, @Res() res) {
+  restoreBackup(@Req() req, @Res() res: FastifyReply) {
     req.multipart(async (field, file, filename, encoding, mimetype) => {
       this.backupService.uploadBackupRestore(file);
     }, (err) => {
@@ -92,7 +93,7 @@ export class BackupController {
     },
   })
   @Post('/restore/hbfx')
-  restoreHbfx(@Req() req, @Res() res) {
+  restoreHbfx(@Req() req, @Res() res: FastifyReply) {
     req.multipart(async (field, file, filename, encoding, mimetype) => {
       this.backupService.uploadHbfxRestore(file);
     }, (err) => {

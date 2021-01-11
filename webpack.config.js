@@ -22,6 +22,8 @@ module.exports = {
     "@nestjs/platform-socket.io": "@nestjs/platform-socket.io",
     "@nestjs/websockets": "@nestjs/websockets",
     "@nestjs/swagger": "@nestjs/swagger",
+    "@nestjs/jwt": "@nestjs/jwt",
+    "@nestjs/passport": "@nestjs/passport",
     "fastify-swagger": "fastify-swagger",
     "reflect-metadata": "reflect-metadata",
     "rxjs": "rxjs",

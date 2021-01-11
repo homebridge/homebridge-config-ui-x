@@ -1,8 +1,8 @@
 import './self-check';
 
 import * as path from 'path';
-import * as fastify from 'fastify';
-import * as fastifyMultipart from 'fastify-multipart';
+import { fastify, FastifyReply, FastifyRequest } from 'fastify';
+import fastifyMultipart from 'fastify-multipart';
 import * as helmet from 'helmet';
 import * as fs from 'fs-extra';
 import { NestFactory } from '@nestjs/core';
@@ -67,7 +67,7 @@ async function bootstrap() {
   }));
 
   // serve index.html without a cache
-  app.getHttpAdapter().get('/', async (req, res) => {
+  app.getHttpAdapter().get('/', async (req: FastifyRequest, res: FastifyReply) => {
     res.type('text/html');
     res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.header('Pragma', 'no-cache');

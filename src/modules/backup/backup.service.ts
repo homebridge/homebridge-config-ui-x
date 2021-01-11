@@ -8,6 +8,7 @@ import * as child_process from 'child_process';
 import * as dayjs from 'dayjs';
 import { EventEmitter } from 'events';
 import { Injectable, BadRequestException, NotFoundException, InternalServerErrorException } from '@nestjs/common';
+import { FastifyReply } from 'fastify';
 
 import { PluginsService } from '../plugins/plugins.service';
 import { SchedulerService } from '../../core/scheduler/scheduler.service';
@@ -234,7 +235,7 @@ export class BackupService {
   /**
    * Create and download backup archive of the current homebridge instance
    */
-  async downloadBackup(reply) {
+  async downloadBackup(reply: FastifyReply) {
     const { backupDir, backupPath, backupFileName } = await this.createBackup();
 
     // remove temp files (called when download finished)
@@ -244,19 +245,19 @@ export class BackupService {
     }
 
     // set download headers
-    reply.res.setHeader('Content-type', 'application/octet-stream');
-    reply.res.setHeader('Content-disposition', 'attachment; filename=' + backupFileName);
-    reply.res.setHeader('File-Name', backupFileName);
+    reply.raw.setHeader('Content-type', 'application/octet-stream');
+    reply.raw.setHeader('Content-disposition', 'attachment; filename=' + backupFileName);
+    reply.raw.setHeader('File-Name', backupFileName);
 
     // for dev only
     if (reply.request.hostname === 'localhost:8080') {
-      reply.res.setHeader('access-control-allow-origin', 'http://localhost:4200');
+      reply.raw.setHeader('access-control-allow-origin', 'http://localhost:4200');
     }
 
     // start download
     fs.createReadStream(backupPath)
       .on('close', cleanup.bind(this))
-      .pipe(reply.res);
+      .pipe(reply.raw);
   }
 
   /**

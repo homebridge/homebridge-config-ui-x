@@ -5,7 +5,7 @@ import { EventEmitter } from 'events';
 import { ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastify';
-import * as fastifyMultipart from 'fastify-multipart';
+import fastifyMultipart from 'fastify-multipart';
 import * as FormData from 'form-data';
 
 import { AuthModule } from '../../src/core/auth/auth.module';

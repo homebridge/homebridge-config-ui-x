@@ -3,9 +3,8 @@ import * as fs from 'fs-extra';
 import { ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastify';
-import * as fastify from 'fastify';
-import * as fastifyMultipart from 'fastify-multipart';
-import * as helmet from 'helmet';
+import { fastify } from 'fastify';
+import fastifyMultipart from 'fastify-multipart';
 
 import { AppModule } from '../../src/app.module';
 
@@ -55,8 +54,6 @@ describe('FastifyOptions (e2e)', () => {
       whitelist: true,
       skipMissingProperties: true,
     }));
-
-    app.use(helmet());
 
     await app.init();
     await app.getHttpAdapter().getInstance().ready();
