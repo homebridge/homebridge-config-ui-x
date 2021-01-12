@@ -40,6 +40,8 @@
         </app-door>
         <app-television *ngSwitchCase="'Television'" [service]="service">Television
         </app-television>
+        <app-batteryservice *ngSwitchCase="'BatteryService'" [service]="service">BatteryService
+        </app-batteryservice>
         <app-securitysystem *ngSwitchCase="'SecuritySystem'" [service]="service">Security System
         </app-securitysystem>
         <app-leaksensor *ngSwitchCase="'LeakSensor'" [service]="service">Leak Sensor
@@ -50,7 +52,8 @@
         </app-irrigationsystem>
         <app-heatercooler *ngSwitchCase="'HeaterCooler'" [service]="service">Heater Cooler
         </app-heatercooler>
-        <app-statelessprogrammableswitch *ngSwitchCase="'StatelessProgrammableSwitch'" [service]="service">Stateless Programmable Switch
+        <app-statelessprogrammableswitch *ngSwitchCase="'StatelessProgrammableSwitch'" [service]="service">Stateless
+          Programmable Switch
         </app-statelessprogrammableswitch>
         <app-unknown *ngSwitchDefault [service]="service">{{ service.humanType }}</app-unknown>
       </ng-container>
