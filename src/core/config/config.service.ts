@@ -14,6 +14,10 @@ export interface HomebridgeConfig {
     port: number;
     bind?: string | string[];
   };
+  mdns?: {
+    legacyAdvertiser?: boolean;
+    interface?: string | string[];
+  };
   platforms: Record<string, any>[];
   accessories: Record<string, any>[];
   plugins?: string[];

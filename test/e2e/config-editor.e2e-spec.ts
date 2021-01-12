@@ -481,6 +481,74 @@ describe('ConfigEditorController (e2e)', () => {
     expect(savedConfig.accessories).toHaveLength(0);
   });
 
+  it('POST /config-editor (remove config.mdns if not valid object)', async () => {
+    const currentConfig = await fs.readJson(configFilePath);
+    currentConfig.mdns = 'blah';
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/config-editor',
+      headers: {
+        authorization,
+      },
+      payload: currentConfig,
+    });
+
+    expect(res.statusCode).toEqual(201);
+
+    // check the updates were saved to disk and mistakes corrected
+    const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
+    expect(savedConfig.mdns).toBeUndefined();
+  });
+
+  it('POST /config-editor (retain config.mdns if valid object)', async () => {
+    const currentConfig = await fs.readJson(configFilePath);
+    currentConfig.mdns = {
+      legacyAdvertiser: false
+    };
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/config-editor',
+      headers: {
+        authorization,
+      },
+      payload: currentConfig,
+    });
+
+    expect(res.statusCode).toEqual(201);
+
+    // check the updates were saved to disk and mistakes corrected
+    const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
+    expect(savedConfig.mdns).toEqual({
+      legacyAdvertiser: false
+    });
+  });
+
+  it('POST /config-editor (correct config.mdns if non-boolean is passed)', async () => {
+    const currentConfig = await fs.readJson(configFilePath);
+    currentConfig.mdns = {
+      legacyAdvertiser: 'some value'
+    };
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/config-editor',
+      headers: {
+        authorization,
+      },
+      payload: currentConfig,
+    });
+
+    expect(res.statusCode).toEqual(201);
+
+    // check the updates were saved to disk and mistakes corrected
+    const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
+    expect(savedConfig.mdns).toEqual({
+      legacyAdvertiser: false
+    });
+  });
+
   it('GET /config-editor/plugin/:pluginName', async () => {
     const currentConfig: HomebridgeConfig = await fs.readJson(configFilePath);
 

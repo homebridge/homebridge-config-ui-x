@@ -13,6 +13,7 @@ import { Logger } from '../../core/logger/logger.service';
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
 import { ConfigEditorService } from '../config-editor/config-editor.service';
 import { AccessoriesService } from '../accessories/accessories.service';
+import { HomebridgeMdnsSettingDto } from './server.dto';
 
 @Injectable()
 export class ServerService {
@@ -338,6 +339,36 @@ export class ServerService {
     }
 
     return [];
+  }
+
+  /**
+   * Return the current setting for the config.mdns.legacyAdvertiser value
+   */
+  public async getHomebridgeMdnsSetting(): Promise<HomebridgeMdnsSettingDto> {
+    const config = await this.configEditorService.getConfigFile();
+
+    if (config.mdns?.legacyAdvertiser === undefined) {
+      return { legacyAdvertiser: true };
+    } else {
+      return { legacyAdvertiser: config.mdns.legacyAdvertiser };
+    }
+  }
+
+  /**
+   * Return the current setting for the config.mdns.legacyAdvertiser value
+   */
+  public async setHomebridgeMdnsSetting(setting: HomebridgeMdnsSettingDto) {
+    const config = await this.configEditorService.getConfigFile();
+
+    if (config.mdns !== 'object') {
+      config.mdns = {};
+    }
+
+    config.mdns.legacyAdvertiser = setting.legacyAdvertiser;
+
+    await this.configEditorService.updateConfigFile(config);
+
+    return;
   }
 
   /**

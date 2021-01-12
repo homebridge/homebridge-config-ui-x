@@ -141,6 +141,15 @@ export class ConfigEditorService {
       delete config.plugins;
     }
 
+    // ensure config.mdns is valid
+    if (config.mdns && typeof config.mdns !== 'object') {
+      delete config.mdns;
+    }
+
+    if (config.mdns && config.mdns.legacyAdvertiser && typeof config.mdns.legacyAdvertiser !== 'boolean') {
+      config.mdns.legacyAdvertiser = false;
+    }
+
     // create backup of existing config
     try {
       await fs.rename(this.configService.configPath, path.resolve(this.configService.configBackupPath, 'config.json.' + now.getTime().toString()));

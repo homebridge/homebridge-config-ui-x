@@ -4,7 +4,7 @@ import { ApiTags, ApiBearerAuth, ApiParam, ApiOperation } from '@nestjs/swagger'
 
 import { ServerService } from './server.service';
 import { AdminGuard } from '../../core/auth/guards/admin.guard';
-import { HomebridgeNetworkInterfacesDto } from './server.dto';
+import { HomebridgeMdnsSettingDto, HomebridgeNetworkInterfacesDto } from './server.dto';
 
 @ApiTags('Homebridge')
 @ApiBearerAuth()
@@ -100,5 +100,19 @@ export class ServerController {
   @Put('/network-interfaces/bridge')
   setHomebridgeNetworkInterfaces(@Body() body: HomebridgeNetworkInterfacesDto) {
     return this.serverService.setHomebridgeNetworkInterfaces(body.adapters);
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Return the current mdns advertiser settings.' })
+  @Get('/mdns-advertiser')
+  getHomebridgeMdnsSetting(): Promise<HomebridgeMdnsSettingDto> {
+    return this.serverService.getHomebridgeMdnsSetting();
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Set the mdns advertiser settings.' })
+  @Put('/mdns-advertiser')
+  setHomebridgeMdnsSetting(@Body() body: HomebridgeMdnsSettingDto) {
+    return this.serverService.setHomebridgeMdnsSetting(body);
   }
 }

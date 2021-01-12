@@ -7,7 +7,7 @@ import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastif
 import { AuthModule } from '../../src/core/auth/auth.module';
 import { ServerModule } from '../../src/modules/server/server.module';
 import { ServerService } from '../../src/modules/server/server.service';
-import { ConfigService } from '../../src/core/config/config.service';
+import { ConfigService, HomebridgeConfig } from '../../src/core/config/config.service';
 
 describe('ServerController (e2e)', () => {
   let app: NestFastifyApplication;
@@ -373,5 +373,81 @@ describe('ServerController (e2e)', () => {
 
     expect(res.statusCode).toEqual(400);
     expect(res.body).toContain('adapters must be an array');
+  });
+
+  it('GET /server/mdns-advertiser (not set - default true)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/mdns-advertiser',
+      headers: {
+        authorization,
+      }
+    });
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.json()).toEqual({ legacyAdvertiser: true });
+  });
+
+  it('GET /server/mdns-advertiser (set to false)', async () => {
+    const config: HomebridgeConfig = await fs.readJson(configService.configPath);
+    config.mdns = { legacyAdvertiser: false };
+    await fs.writeJson(configService.configPath, config);
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/mdns-advertiser',
+      headers: {
+        authorization,
+      }
+    });
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.json()).toEqual({ legacyAdvertiser: false });
+  });
+
+  it('PUT /server/mdns-advertiser (true)', async () => {
+    const initialConfig: HomebridgeConfig = await fs.readJson(configService.configPath);
+    delete initialConfig.mdns;
+    await fs.writeJson(configService.configPath, initialConfig);
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/server/mdns-advertiser',
+      headers: {
+        authorization,
+      },
+      payload: {
+        legacyAdvertiser: true
+      }
+    });
+
+    expect(res.statusCode).toEqual(200);
+
+    // check the value was saved
+    const config = await fs.readJson(configService.configPath);
+    expect(config.mdns?.legacyAdvertiser).toEqual(true);
+  });
+
+  it('PUT /server/mdns-advertiser (false)', async () => {
+    const initialConfig: HomebridgeConfig = await fs.readJson(configService.configPath);
+    delete initialConfig.mdns;
+    await fs.writeJson(configService.configPath, initialConfig);
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/server/mdns-advertiser',
+      headers: {
+        authorization,
+      },
+      payload: {
+        legacyAdvertiser: false
+      }
+    });
+
+    expect(res.statusCode).toEqual(200);
+
+    // check the value was saved
+    const config = await fs.readJson(configService.configPath);
+    expect(config.mdns?.legacyAdvertiser).toEqual(false);
   });
 });
