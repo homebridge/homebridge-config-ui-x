@@ -58,7 +58,7 @@ export class InstalledPluginsComponent implements OnInit, OnDestroy {
 
     // check if the homebridge version supports disabled plugins
     this.canDisablePlugins = this.$auth.env.homebridgeVersion ?
-      gt(this.$auth.env.homebridgeVersion, '1.2.99999', { includePrerelease: true }) : false;
+      gt(this.$auth.env.homebridgeVersion, '1.3.0-beta.46', { includePrerelease: true }) : false;
   }
 
   loadInstalledPlugins() {
