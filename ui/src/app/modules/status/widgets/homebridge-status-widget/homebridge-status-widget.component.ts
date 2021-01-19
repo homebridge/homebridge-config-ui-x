@@ -58,6 +58,7 @@ export class HomebridgeStatusWidgetComponent implements OnInit {
     return this.io.request('homebridge-version-check').toPromise()
       .then((response) => {
         this.homebridgePkg = response;
+        this.$auth.env.homebridgeVersion = response.installedVersion;
       })
       .catch((err) => {
         this.$toastr.error(err.message);

@@ -789,6 +789,62 @@ describe('ConfigEditorController (e2e)', () => {
     expect(res.body).toContain('Plugin config must be an array of objects.');
   });
 
+  it('PUT /config-editor/plugin/:pluginName/disable', async () => {
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/config-editor/plugin/homebridge-mock-plugin/disable',
+      headers: {
+        authorization,
+      },
+      payload: {}
+    });
+
+    expect(res.statusCode).toEqual(200);
+
+    const config: HomebridgeConfig = await fs.readJson(configFilePath);
+    expect(Array.isArray(config.disabledPlugins)).toEqual(true);
+    expect(config.disabledPlugins).toContainEqual('homebridge-mock-plugin');
+  });
+
+  it('PUT /config-editor/plugin/:pluginName/disable (self)', async () => {
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/config-editor/plugin/homebridge-config-ui-x/disable',
+      headers: {
+        authorization,
+      },
+      payload: {}
+    });
+
+    expect(res.statusCode).toEqual(400);
+  });
+
+  it('PUT /config-editor/plugin/:pluginName/enable', async () => {
+    const initialConfig: HomebridgeConfig = await fs.readJson(configFilePath);
+    initialConfig.disabledPlugins = [
+      'homebridge-mock-plugin',
+      'homebridge-example-plugin'
+    ];
+    await fs.writeJson(configFilePath, initialConfig);
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/config-editor/plugin/homebridge-mock-plugin/enable',
+      headers: {
+        authorization,
+      },
+      payload: {}
+    });
+
+    expect(res.statusCode).toEqual(200);
+
+    const config: HomebridgeConfig = await fs.readJson(configFilePath);
+    expect(Array.isArray(config.disabledPlugins)).toEqual(true);
+    expect(config.disabledPlugins).toHaveLength(1);
+    expect(config.disabledPlugins).not.toContainEqual('homebridge-mock-plugin');
+    expect(config.disabledPlugins).toContainEqual('homebridge-example-plugin');
+  });
+
   it('GET /config-editor/backups', async () => {
     const backupCount = (await fs.readdir(backupFilePath)).length;
 

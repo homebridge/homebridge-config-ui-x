@@ -13,7 +13,7 @@ import * as color from 'bash-color';
 import * as NodeCache from 'node-cache';
 
 import { Logger } from '../../core/logger/logger.service';
-import { ConfigService } from '../../core/config/config.service';
+import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
 import { NodePtyService } from '../../core/node-pty/node-pty.service';
 
 @Injectable()
@@ -93,6 +93,7 @@ export class PluginsService {
   public async getInstalledPlugins(): Promise<HomebridgePlugin[]> {
     const plugins: HomebridgePlugin[] = [];
     const modules = await this.getInstalledModules();
+    const disabledPlugins = await this.getDisabledPlugins();
 
     // filter out non-homebridge plugins by name
     const homebridgePlugins = modules
@@ -106,6 +107,9 @@ export class PluginsService {
         if (pjson.keywords && pjson.keywords.includes('homebridge-plugin')) {
           // parse the package.json for each plugin
           const plugin = await this.parsePackageJson(pjson, pkg.path);
+
+          // check if the plugin has been disabled
+          plugin.disabled = disabledPlugins.includes(plugin.name);
 
           // filter out duplicate plugins and give preference to non-global plugins
           if (!plugins.find(x => plugin.name === x.name)) {
@@ -487,6 +491,8 @@ export class PluginsService {
     }
     // end patch
 
+    this.configService.homebridgeVersion = homebridge.installedVersion;
+
     return homebridge;
   }
 
@@ -737,7 +743,7 @@ export class PluginsService {
             if (data.pluginAlias && data.pluginType) {
               output.pluginAlias = data.pluginAlias;
               output.pluginType = data.pluginType;
-              resolve();
+              resolve(null);
             } else {
               reject('Invalid Response');
             }
@@ -787,6 +793,22 @@ export class PluginsService {
     }
 
     throw new Error('Plugin does not provide a custom UI');
+  }
+
+  /**
+   * Return an array of disabled plugins
+   */
+  private async getDisabledPlugins(): Promise<string[]> {
+    try {
+      const config: HomebridgeConfig = await fs.readJson(this.configService.configPath);
+      if (Array.isArray(config.disabledPlugins)) {
+        return config.disabledPlugins;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      return [];
+    }
   }
 
   /**
@@ -1101,7 +1123,7 @@ export class PluginsService {
         if (code === 0) {
           clearTimeout(timeoutTimer);
           client.emit('stdout', color.green(`\n\rCommand succeeded!.\n\r`));
-          resolve();
+          resolve(null);
         } else {
           clearTimeout(timeoutTimer);
           reject('Command failed. Please review log for details.');
@@ -1171,7 +1193,7 @@ export class PluginsService {
 
       child.on('exit', (code) => {
         this.logger.log(`npm cache clear command executed with exit code`, code);
-        resolve();
+        resolve(null);
       });
 
       child.on('error', () => { });

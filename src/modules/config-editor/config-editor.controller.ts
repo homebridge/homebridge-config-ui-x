@@ -1,4 +1,4 @@
-import { Controller, UseGuards, Get, Post, Body, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import { Controller, UseGuards, Get, Post, Body, Param, Delete, ParseIntPipe, Put } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { ConfigEditorService } from './config-editor.service';
@@ -47,6 +47,26 @@ export class ConfigEditorController {
   @ApiBody({ description: 'Array of plugin config blocks', type: 'json', isArray: true })
   updateConfigForPlugin(@Param('pluginName') pluginName: string, @Body() body) {
     return this.configEditorService.updateConfigForPlugin(pluginName, body);
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({
+    summary: 'Mark the plugin as disabled.',
+  })
+  @ApiParam({ name: 'pluginName', type: 'string' })
+  @Put('plugin/:pluginName/disable')
+  disablePlugin(@Param('pluginName') pluginName) {
+    return this.configEditorService.disablePlugin(pluginName);
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({
+    summary: 'Mark the plugin as enabled.',
+  })
+  @ApiParam({ name: 'pluginName', type: 'string' })
+  @Put('plugin/:pluginName/enable')
+  enablePlugin(@Param('pluginName') pluginName) {
+    return this.configEditorService.enablePlugin(pluginName);
   }
 
   @UseGuards(AdminGuard)

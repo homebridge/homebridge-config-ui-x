@@ -21,6 +21,7 @@ export interface HomebridgeConfig {
   platforms: Record<string, any>[];
   accessories: Record<string, any>[];
   plugins?: string[];
+  disabledPlugins?: string[];
 }
 
 @Injectable()
@@ -38,6 +39,7 @@ export class ConfigService {
   public instanceBackupPath = path.resolve(this.storagePath, 'backups/instance-backups');
   public homebridgeInsecureMode = Boolean(process.env.UIX_INSECURE_MODE === '1');
   public homebridgeNoTimestamps = Boolean(process.env.UIX_LOG_NO_TIMESTAMPS === '1');
+  public homebridgeVersion: string;
 
   // server env
   public minimumNodeVersion = '10.17.0';
@@ -179,6 +181,7 @@ export class ConfigService {
         ableToConfigureSelf: this.ableToConfigureSelf,
         enableAccessories: this.homebridgeInsecureMode,
         enableTerminalAccess: this.enableTerminalAccess,
+        homebridgeVersion: this.homebridgeVersion || null,
         homebridgeInstanceName: this.homebridgeConfig.bridge.name,
         nodeVersion: process.version,
         packageName: this.package.name,

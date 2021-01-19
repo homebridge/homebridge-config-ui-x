@@ -12,6 +12,7 @@ export interface HomebridgePlugin {
   installPath?: string;
   globalInstall?: boolean;
   settingsSchema?: boolean;
+  disabled?: boolean;
   links?: {
     npm?: string;
     homepage?: string;

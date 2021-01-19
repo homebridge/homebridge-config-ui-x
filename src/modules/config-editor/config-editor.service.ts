@@ -150,6 +150,11 @@ export class ConfigEditorService {
       config.mdns.legacyAdvertiser = false;
     }
 
+    // ensure config.disabledPlugins is an array
+    if (config.disabledPlugins && !Array.isArray(config.disabledPlugins)) {
+      delete config.disabledPlugins;
+    }
+
     // create backup of existing config
     try {
       await fs.rename(this.configService.configPath, path.resolve(this.configService.configBackupPath, 'config.json.' + now.getTime().toString()));
@@ -245,6 +250,46 @@ export class ConfigEditorService {
 
       return pluginConfig;
     });
+  }
+
+  /**
+   * Mark a plugin as disabled
+   */
+  public async disablePlugin(pluginName: string) {
+    if (pluginName === this.configService.name) {
+      throw new BadRequestException('Disabling this plugin is now allowed.');
+    }
+
+    const config = await this.getConfigFile();
+
+    if (!Array.isArray(config.disabledPlugins)) {
+      config.disabledPlugins = [];
+    }
+
+    config.disabledPlugins.push(pluginName);
+
+    await this.updateConfigFile(config);
+
+    return config.disabledPlugins;
+  }
+
+  /**
+   * Mark a plugin as enabled
+   */
+  public async enablePlugin(pluginName: string) {
+    const config = await this.getConfigFile();
+
+    if (!Array.isArray(config.disabledPlugins)) {
+      config.disabledPlugins = [];
+    }
+
+    const idx = config.disabledPlugins.findIndex(x => x === pluginName);
+
+    config.disabledPlugins.splice(idx, 1);
+
+    await this.updateConfigFile(config);
+
+    return config.disabledPlugins;
   }
 
   /**

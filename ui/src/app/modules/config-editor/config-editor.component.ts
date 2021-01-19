@@ -171,7 +171,9 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
         // handled in validator function
       } else if (config.accessories && Array.isArray(config.accessories) && !this.validateSection(config.accessories, 'accessory')) {
         // handled in validator function
-      } else if (config.plugins && Array.isArray(config.plugins) && !this.validatePlugins(config.plugins)) {
+      } else if (config.plugins && Array.isArray(config.plugins) && !this.validatePlugins(config.plugins, 'plugins')) {
+        // handled in validator function
+      } else if (config.disabledPlugins && Array.isArray(config.disabledPlugins) && !this.validatePlugins(config.disabledPlugins, 'disabledPlugins')) {
         // handled in validator function
       } else {
         await this.saveConfig(config);
@@ -306,10 +308,10 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     return true;
   }
 
-  validatePlugins(plugins: any[]) {
+  validatePlugins(plugins: any[], key) {
     for (const item of plugins) {
       if (typeof item !== 'string') {
-        this.$toastr.error(`Each item in the plugins array must be a string.`);
+        this.$toastr.error(`Each item in the ${key} array must be a string.`);
         return false;
       }
     }
@@ -405,7 +407,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                     description: 'The bridge model to be displayed  in HomeKit',
                   },
                   bind: {
-                    description: 'A string or an array of strings with the name(s) of the network interface(s) Homebridge should bind to.',
+                    description: 'A string or an array of strings with the name(s) of the network interface(s) Homebridge should bind to.\n\nRequires Homebridge v1.3 or later.',
                     type: ['string', 'array'],
                     items: {
                       type: 'string',
@@ -437,6 +439,15 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                   description: 'The full plugin npm package name.\nExample: homebridge-dummy',
                 },
                 default: ['homebridge-config-ui-x'],
+              },
+              disabledPlugins: {
+                type: 'array',
+                description: 'An array of plugins that should be disabled.\n\nRequires Homebridge v1.3 or later.',
+                items: {
+                  type: 'string',
+                  description: 'The full plugin npm package name.\nExample: homebridge-dummy',
+                },
+                default: [],
               },
               ports: {
                 type: 'object',

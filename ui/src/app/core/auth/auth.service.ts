@@ -23,6 +23,7 @@ interface EnvInterface {
   enableAccessories: boolean;
   enableTerminalAccess: boolean;
   homebridgeInstanceName: string;
+  homebridgeVersion?: string;
   nodeVersion: string;
   packageName: string;
   packageVersion: string;
