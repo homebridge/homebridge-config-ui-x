@@ -1,7 +1,7 @@
 {
   "name": "homebridge-config-ui-x",
   "displayName": "Homebridge UI",
-  "version": "4.37.0-test.3",
+  "version": "4.37.0-test.4",
   "description": "A web based management, configuration and control platform for Homebridge",
   "license": "MIT",
   "author": "oznu <dev@oz.nu>",
@@ -47,6 +47,7 @@
     "@nestjs/platform-socket.io": "7.6.5",
     "@nestjs/swagger": "4.7.9",
     "@nestjs/websockets": "7.6.5",
+    "@oznu/hap-client": "1.7.0",
     "axios": "0.21.1",
     "class-transformer": "^0.3.1",
     "class-validator": "^0.12.2",
@@ -76,7 +77,6 @@
   },
   "devDependencies": {
     "@nestjs/testing": "7.6.5",
-    "@oznu/hap-client": "^1.7.0",
     "@types/fs-extra": "^9.0.6",
     "@types/jest": "^26.0.20",
     "@types/node": "^14.14.20",
