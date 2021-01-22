@@ -178,7 +178,7 @@
     "plugins.manage.label_update": "Mettre à jour",
     "plugins.manage.label_updated": "Mis à jour",
     "plugins.manage.label_upgrade": "Mettre à niveau",
-    "plugins.manage.message_confirm_disable": "Etes-vous sûr de vouloir désactiver {{ pluginName }}? Any accessories exposed by this plugin will be removed from HomeKit.",
+    "plugins.manage.message_confirm_disable": "Etes-vous sûr de vouloir désactiver {{ pluginName }}? Tous les accessoires exposés par ce plugin seront supprimés d'HomeKit.",
     "plugins.manage.message_confirm_enable": "Etes-vous sûr de vouloir activer {{ pluginName }}?",
     "plugins.manage.message_install_previous_version": "Installer une Version Précédente",
     "plugins.manage.message_restart_required": "Redémarrage et Rafraîchissement requis",
