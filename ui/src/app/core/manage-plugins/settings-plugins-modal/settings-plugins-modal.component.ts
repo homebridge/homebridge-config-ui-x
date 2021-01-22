@@ -99,7 +99,10 @@ export class SettingsPluginsModalComponent implements OnInit {
         }
       })
       .catch(err => {
-        this.$toastr.error(this.translate.instant('config.toast_failed_to_save_config') + ': ' + err.error?.message, this.translate.instant('toast.title_error'));
+        this.$toastr.error(
+          this.translate.instant('config.toast_failed_to_save_config') + ': ' + err.error?.message,
+          this.translate.instant('toast.title_error'),
+        );
       })
       .finally(() => {
         this.saveInProgress = false;
@@ -113,10 +116,11 @@ export class SettingsPluginsModalComponent implements OnInit {
   }
 
   addBlock() {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     const __uuid__ = uuid();
 
     this.pluginConfig.push({
-      __uuid__: __uuid__,
+      __uuid__,
       name: this.schema.pluginAlias,
       config: {
         [this.pluginType]: this.schema.pluginAlias,

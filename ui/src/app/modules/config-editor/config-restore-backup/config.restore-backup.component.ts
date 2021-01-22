@@ -11,9 +11,9 @@ import { ApiService } from '../../../core/api.service';
 export class ConfigRestoreBackupComponent implements OnInit {
   public loading = true;
   public backupList: {
-    id: string,
-    timestamp: string,
-    file: string,
+    id: string;
+    timestamp: string;
+    file: string;
   }[] = [];
 
   constructor(

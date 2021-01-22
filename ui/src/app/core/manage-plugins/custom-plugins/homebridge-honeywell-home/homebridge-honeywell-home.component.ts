@@ -60,10 +60,10 @@ export class HomebridgeHoneywellHomeComponent implements OnInit, OnDestroy {
     try {
       const data = JSON.parse(e.data);
       this.addCredentials(data);
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      console.error(error);
     }
-  }
+  };
 
   linkAccount() {
     const w = 450;
@@ -71,7 +71,9 @@ export class HomebridgeHoneywellHomeComponent implements OnInit, OnDestroy {
     const y = window.top.outerHeight / 2 + window.top.screenY - (h / 2);
     const x = window.top.outerWidth / 2 + window.top.screenX - (w / 2);
 
-    const urlToOpen = this.linkUrl + `?consumerKey=${encodeURIComponent(this.honeywellConfig.consumerKey)}&consumerSecret=${encodeURIComponent(this.honeywellConfig.consumerSecret)}`;
+    const urlToOpen = this.linkUrl +
+      `?consumerKey=${encodeURIComponent(this.honeywellConfig.consumerKey)}` +
+      `&consumerSecret=${encodeURIComponent(this.honeywellConfig.consumerSecret)}`;
 
     this.popup = window.open(
       urlToOpen, 'oznu-google-smart-home-auth',

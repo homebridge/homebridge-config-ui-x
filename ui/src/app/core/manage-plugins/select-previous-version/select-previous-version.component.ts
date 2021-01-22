@@ -14,7 +14,7 @@ export class SelectPreviousVersionComponent implements OnInit {
   @Input() plugin;
 
   public loading = true;
-  public versions: Array<{ name: string, version: string }> = [];
+  public versions: Array<{ name: string; version: string }> = [];
   public selectedVersion: string;
 
   constructor(
@@ -37,14 +37,12 @@ export class SelectPreviousVersionComponent implements OnInit {
           tagVersions[result.tags[key]] = key;
         }
 
-        const versions = result.versions.filter(x => {
-          return tagVersions[x] || !x.includes('-');
-        }).reverse();
+        const versions = result.versions.filter(x => tagVersions[x] || !x.includes('-')).reverse();
 
         for (const version of versions.slice(0, 20)) {
           this.versions.push({
             name: 'v' + version + (tagVersions[version] ? ' - ' + tagVersions[version] : ''),
-            version: version,
+            version,
           });
         }
 

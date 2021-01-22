@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { GridsterConfig, GridsterItem } from 'angular-gridster2';
-import { Subject, TimeoutError } from 'rxjs';
+import { Subject } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 import { WsService } from '../../core/ws.service';
@@ -88,7 +88,7 @@ export class StatusComponent implements OnInit, OnDestroy {
     this.io.socket.on('homebridge-status', (data) => {
       // check if client is up-to-date
       if (data.packageVersion && data.packageVersion !== this.$auth.uiVersion) {
-        // tslint:disable-next-line:deprecation
+        // eslint-disable-next-line import/no-deprecated
         window.location.reload(true);
       }
     });

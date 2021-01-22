@@ -67,10 +67,10 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
       if (data.token) {
         this.processToken(data.token);
       }
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      console.error(error);
     }
-  }
+  };
 
   linkAccount() {
     const w = 450;

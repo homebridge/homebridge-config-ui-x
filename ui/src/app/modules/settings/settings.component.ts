@@ -11,9 +11,13 @@ import { AuthService } from '@/app/core/auth/auth.service';
 import { ApiService } from '@/app/core/api.service';
 import { NotificationService } from '@/app/core/notification.service';
 
-import { RemoveAllCachedAccessoriesModalComponent } from './remove-all-cached-accessories-modal/remove-all-cached-accessories-modal.component';
+import {
+  RemoveAllCachedAccessoriesModalComponent,
+} from './remove-all-cached-accessories-modal/remove-all-cached-accessories-modal.component';
 import { ResetHomebridgeModalComponent } from './reset-homebridge-modal/reset-homebridge-modal.component';
-import { RemoveSingleCachedAccessoryModalComponent } from './remove-single-cached-accessory-modal/remove-single-cached-accessory-modal.component';
+import {
+  RemoveSingleCachedAccessoryModalComponent,
+} from './remove-single-cached-accessory-modal/remove-single-cached-accessory-modal.component';
 import { UnpairAccessoryModalComponent } from './unpair-accessory-modal/unpair-accessory-modal.component';
 import { SelectNetworkInterfacesComponent } from './select-network-interfaces/select-network-interfaces.component';
 

@@ -11,9 +11,9 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class WidgetAddComponent implements OnInit {
   @Input() dashboard;
-  @Input() resetLayout: Function;
-  @Input() lockLayout: Function;
-  @Input() unlockLayout: Function;
+  @Input() resetLayout: () => void;
+  @Input() lockLayout: () => void;
+  @Input() unlockLayout: () => void;
   @Input() public isLayoutUnlocked: boolean;
 
   private allWidgets = [

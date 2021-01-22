@@ -15,9 +15,7 @@ export class InfoModalComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.accessoryInformation = Object.entries(this.service.accessoryInformation).map(([key, value]) => {
-      return { key, value };
-    });
+    this.accessoryInformation = Object.entries(this.service.accessoryInformation).map(([key, value]) => ({ key, value }));
   }
 
 }

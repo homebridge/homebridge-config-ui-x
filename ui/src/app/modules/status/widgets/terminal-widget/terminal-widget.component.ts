@@ -64,8 +64,8 @@ export class TerminalWidgetComponent implements OnInit, OnDestroy {
   }
 
   getTerminalHeight(): number {
-    const widgetContainerHeight = (<HTMLElement>this.widgetContainerElement.nativeElement).offsetHeight;
-    const titleHeight = (<HTMLElement>this.titleElement.nativeElement).offsetHeight;
+    const widgetContainerHeight = (this.widgetContainerElement.nativeElement as HTMLElement).offsetHeight;
+    const titleHeight = (this.titleElement.nativeElement as HTMLElement).offsetHeight;
     return widgetContainerHeight - titleHeight;
   }
 

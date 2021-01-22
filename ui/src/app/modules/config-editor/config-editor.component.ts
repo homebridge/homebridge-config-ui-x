@@ -173,7 +173,11 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
         // handled in validator function
       } else if (config.plugins && Array.isArray(config.plugins) && !this.validatePlugins(config.plugins, 'plugins')) {
         // handled in validator function
-      } else if (config.disabledPlugins && Array.isArray(config.disabledPlugins) && !this.validatePlugins(config.disabledPlugins, 'disabledPlugins')) {
+      } else if (
+        config.disabledPlugins &&
+        Array.isArray(config.disabledPlugins) &&
+        !this.validatePlugins(config.disabledPlugins, 'disabledPlugins')
+      ) {
         // handled in validator function
       } else {
         await this.saveConfig(config);
@@ -342,7 +346,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
         );
 
         this.editorDecoractions = this.monacoEditor.deltaDecorations(this.editorDecoractions, [
-          { range: range, options: { isWholeLine: true, linesDecorationsClassName: 'hb-monaco-editor-line-error' } },
+          { range, options: { isWholeLine: true, linesDecorationsClassName: 'hb-monaco-editor-line-error' } },
         ]);
       }
     }, 200);
@@ -381,13 +385,15 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                   },
                   username: {
                     type: 'string',
-                    description: 'Homebridge username must be 6 pairs of colon-separated hexadecimal characters (A-F 0-9).\nYou should change this pin if you need to re-pair your instance with HomeKit.\nExample: 0E:89:49:64:91:86',
+                    description: 'Homebridge username must be 6 pairs of colon-separated hexadecimal characters (A-F 0-9).' +
+                      '\nYou should change this pin if you need to re-pair your instance with HomeKit.\nExample: 0E:89:49:64:91:86',
                     default: '0E:89:49:64:91:86',
                     pattern: '^([A-Fa-f0-9]{2}:){5}[A-Fa-f0-9]{2}$',
                   },
                   port: {
                     type: 'number',
-                    description: 'The port Homebridge listens on.\nIf running more than one instance of Homebridge on the same server make sure each instance is given a unique port.',
+                    description: 'The port Homebridge listens on.\nIf running more than one instance of Homebridge ' +
+                      'on the same server make sure each instance is given a unique port.',
                     default: 51173,
                     minimum: 1025,
                     maximum: 65534,
@@ -407,7 +413,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                     description: 'The bridge model to be displayed  in HomeKit',
                   },
                   bind: {
-                    description: 'A string or an array of strings with the name(s) of the network interface(s) Homebridge should bind to.\n\nRequires Homebridge v1.3 or later.',
+                    description: 'A string or an array of strings with the name(s) of the network interface(s) ' +
+                      'Homebridge should bind to.\n\nRequires Homebridge v1.3 or later.',
                     type: ['string', 'array'],
                     items: {
                       type: 'string',
@@ -422,7 +429,9 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                 properties: {
                   interface: {
                     type: 'string',
-                    description: 'The interface or IP address of the interface you want Homebridge to listen on. This is useful if your server has multiple interfaces. \n\nDepreciated as of Homebridge v1.3.0 - use bridge.bind instead.',
+                    description: 'The interface or IP address of the interface you want Homebridge to listen on. ' +
+                      'This is useful if your server has multiple interfaces. ' +
+                      '\n\nDepreciated as of Homebridge v1.3.0 - use bridge.bind instead.',
                   },
                   legacyAdvertiser: {
                     type: 'boolean',
@@ -474,7 +483,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
               },
               platforms: {
                 type: 'array',
-                description: 'Plugins that expose a "Platform" should have there config entered in this array.\nSeperate each plugin config block using a comma.',
+                description: 'Plugins that expose a "Platform" should have there config entered in this array.' +
+                  '\nSeperate each plugin config block using a comma.',
                 items: {
                   type: 'object',
                   required: ['platform'],
@@ -515,7 +525,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
               },
               accessories: {
                 type: 'array',
-                description: 'Plugins that expose a "Accessory" should have there config entered in this array.\nSeperate each plugin config block using a comma.',
+                description: 'Plugins that expose a "Accessory" should have there config entered in this array.' +
+                  '\nSeperate each plugin config block using a comma.',
                 items: {
                   type: 'object',
                   required: ['accessory', 'name'],

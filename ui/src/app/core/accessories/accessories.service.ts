@@ -25,12 +25,12 @@ export class AccessoriesService {
       iid: number;
       uuid: string;
       uniqueId: string;
-      hidden?: boolean,
-      onDashboard?: boolean
+      hidden?: boolean;
+      onDashboard?: boolean;
     }>;
   }[];
   public accessories: { services: ServiceType[] } = { services: [] };
-  public rooms: Array<{ name: string, services: ServiceTypeX[] }> = [];
+  public rooms: Array<{ name: string; services: ServiceTypeX[] }> = [];
   private roomsOrdered = false;
 
   private hiddenTypes = [
@@ -104,12 +104,10 @@ export class AccessoriesService {
     this.accessoryLayout = await this.io.request('get-layout', { user: this.$auth.user.username }).toPromise();
 
     // build empty room layout
-    this.rooms = this.accessoryLayout.map((room) => {
-      return {
+    this.rooms = this.accessoryLayout.map((room) => ({
         name: room.name,
         services: [],
-      };
-    });
+      }));
   }
 
   /**
@@ -227,11 +225,9 @@ export class AccessoriesService {
    */
   public saveLayout() {
     // generate layout schema to save to disk
-    this.accessoryLayout = this.rooms.map((room) => {
-      return {
+    this.accessoryLayout = this.rooms.map((room) => ({
         name: room.name,
-        services: room.services.map((service) => {
-          return {
+        services: room.services.map((service) => ({
             uniqueId: service.uniqueId,
             aid: service.aid,
             iid: service.iid,
@@ -239,10 +235,8 @@ export class AccessoriesService {
             customName: service.customName || undefined,
             hidden: service.hidden || undefined,
             onDashboard: service.onDashboard || undefined,
-          };
-        }),
-      };
-    }).filter(room => room.services.length);
+          })),
+      })).filter(room => room.services.length);
 
     // send update request to server
     this.io.request('save-layout', { user: this.$auth.user.username, layout: this.accessoryLayout })
@@ -266,20 +260,18 @@ export class AccessoriesService {
             return null;
           }
 
-          characteristic.setValue = (value: number | string | boolean) => {
-            return new Promise((resolve, reject) => {
+          characteristic.setValue = (value: number | string | boolean) => new Promise((resolve, reject) => {
               this.io.socket.emit('accessory-control', {
                 set: {
                   uniqueId: service.uniqueId,
                   aid: service.aid,
                   siid: service.iid,
                   iid: characteristic.iid,
-                  value: value,
+                  value,
                 },
               });
               return resolve();
             });
-          };
 
           return characteristic;
         };

@@ -200,7 +200,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
           console.log(e);
       }
     }
-  }
+  };
 
   confirmReady(event) {
     event.source.postMessage({ action: 'ready' }, event.origin);

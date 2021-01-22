@@ -67,8 +67,8 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
   }
 
   /**
-    * Called when the monaco editor is ready
-    */
+   * Called when the monaco editor is ready
+   */
   onEditorInit(editor) {
     this.monacoEditor = editor;
     this.monacoEditor.getModel().setValue(this.startupScript);

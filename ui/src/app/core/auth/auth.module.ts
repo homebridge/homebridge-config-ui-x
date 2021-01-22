@@ -12,9 +12,7 @@ import { AdminGuard } from './admin.guard';
 import { LoginGuard } from './login/login.guard';
 
 // token getter
-export function tokenGetter() {
-  return localStorage.getItem(environment.jwt.tokenKey);
-}
+export const tokenGetter = () => localStorage.getItem(environment.jwt.tokenKey);
 
 @NgModule({
   declarations: [
@@ -28,7 +26,7 @@ export function tokenGetter() {
     JwtModule.forRoot({
       config: {
         authScheme: 'bearer ',
-        tokenGetter: tokenGetter,
+        tokenGetter,
         skipWhenExpired: true,
         allowedDomains: environment.jwt.allowedDomains,
         disallowedRoutes: environment.jwt.disallowedRoutes,

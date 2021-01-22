@@ -16,9 +16,7 @@ export class ConfigEditorResolver implements Resolve<any> {
     state: RouterStateSnapshot,
   ) {
     return this.$api.get('/config-editor').toPromise()
-      .then((json) => {
-        return JSON.stringify(json, null, 4);
-      })
+      .then((json) => JSON.stringify(json, null, 4))
       .catch((err) => {
         this.$toastr.error(err.message, 'Failed to Load Config');
         this.$router.navigate(['/']);

@@ -46,11 +46,11 @@ export class UsersEditComponent implements OnInit {
     this.form.patchValue(this.user);
   }
 
-  matchPassword(AC: AbstractControl) {
-    const password = AC.get('password').value;
-    const passwordConfirm = AC.get('passwordConfirm').value;
+  matchPassword(abstractControl: AbstractControl) {
+    const password = abstractControl.get('password').value;
+    const passwordConfirm = abstractControl.get('passwordConfirm').value;
     if (password !== passwordConfirm) {
-      AC.get('passwordConfirm').setErrors({ matchPassword: true });
+      abstractControl.get('passwordConfirm').setErrors({ matchPassword: true });
     } else {
       return null;
     }
@@ -67,7 +67,10 @@ export class UsersEditComponent implements OnInit {
         }
       },
       err => {
-        this.toastr.error(err.error.message || this.translate.instant('users.toast_failed_to_add_user'), this.translate.instant('toast.title_error'));
+        this.toastr.error(
+          err.error.message ||
+          this.translate.instant('users.toast_failed_to_add_user'), this.translate.instant('toast.title_error'),
+        );
       },
     );
   }

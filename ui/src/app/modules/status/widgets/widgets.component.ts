@@ -1,5 +1,7 @@
-import { Component, OnInit, Input, ComponentFactoryResolver, ApplicationRef, Injector, ElementRef, EmbeddedViewRef, OnDestroy } from '@angular/core';
-import { Subject } from 'rxjs';
+import {
+  Component, OnInit, Input, ComponentFactoryResolver,
+  ApplicationRef, Injector, ElementRef, EmbeddedViewRef, OnDestroy,
+} from '@angular/core';
 
 import { HapQrcodeWidgetComponent } from './hap-qrcode-widget/hap-qrcode-widget.component';
 import { HomebridgeLogsWidgetComponent } from './homebridge-logs-widget/homebridge-logs-widget.component';

@@ -77,7 +77,7 @@ export class WidgetControlComponent implements OnInit {
             })),
       ),
       tap(() => this.searching = false),
-    )
+    );
 
   public searchCountryCodeFormatter = (result: any) => result.name + ', ' + result.country;
 
@@ -106,16 +106,12 @@ export class WidgetControlComponent implements OnInit {
           },
         }),
       }).pipe(
-        map((response: any) => {
-          return response.list.map((item) => {
-            return {
+        map((response: any) => response.list.map((item) => ({
               id: item.id,
               name: item.name,
               country: item.sys.country,
               coord: item.coord,
-            };
-          });
-        }),
+            }))),
       );
   }
 

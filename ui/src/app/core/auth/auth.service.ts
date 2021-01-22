@@ -64,7 +64,7 @@ export class AuthService {
     this.getAppSettings();
   }
 
-  login(form: { username: string, password: string, ota?: string }) {
+  login(form: { username: string; password: string; ota?: string }) {
     return this.$api.post('/auth/login', form)
       .toPromise()
       .then((resp) => {
@@ -216,6 +216,7 @@ export class AuthService {
   /**
    * Check to make sure the server time is roughly the same as the client time.
    * A warning is shown if the time difference is >= 4 hours.
+   *
    * @param timestamp
    */
   checkServerTime(timestamp: string) {

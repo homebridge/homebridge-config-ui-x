@@ -8,7 +8,7 @@ import { AuthService } from './auth/auth.service';
 export interface IoNamespace {
   connected?: Subject<any>;
   socket: SocketIOClient.Socket;
-  request: (resource: string, payload?: string | object | Array<any>) => Observable<any>;
+  request: (resource: string, payload?: string | Record<string, any> | Array<any>) => Observable<any>;
   end?: () => void;
 }
 
@@ -24,6 +24,7 @@ export class WsService {
 
   /**
    * Wrapper function to reuse the same connecting
+   *
    * @param namespace
    */
   public connectToNamespace(namespace: string): IoNamespace {
@@ -81,6 +82,7 @@ export class WsService {
 
   /**
    * Establish a connection to the namespace
+   *
    * @param namespace
    */
   private establishConnectionToNamespace(namespace: string): IoNamespace {
@@ -90,18 +92,16 @@ export class WsService {
       },
     });
 
-    function request(resource, payload): Observable<any> {
-      return new Observable((observer) => {
-        socket.emit(resource, payload, (resp) => {
-          if (typeof resp === 'object' && resp.error) {
-            observer.error(resp);
-          } else {
-            observer.next(resp);
-          }
-          observer.complete();
-        });
+    const request = (resource, payload): Observable<any> => new Observable((observer) => {
+      socket.emit(resource, payload, (resp) => {
+        if (typeof resp === 'object' && resp.error) {
+          observer.error(resp);
+        } else {
+          observer.next(resp);
+        }
+        observer.complete();
       });
-    }
+    });
 
     return {
       socket,

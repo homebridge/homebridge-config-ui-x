@@ -5,7 +5,8 @@
   ],
   "linterOptions": {
     "exclude": [
-      "migration/*.ts"
+      "migration/*.ts",
+      "ui/**/*.ts"
     ]
   },
   "jsRules": {

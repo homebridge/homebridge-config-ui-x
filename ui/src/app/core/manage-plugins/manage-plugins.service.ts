@@ -73,9 +73,10 @@ export class ManagePluginsService {
   }
 
   /**
-  * Open the version selector
-  * @param plugin
-  */
+   * Open the version selector
+   *
+   * @param plugin
+   */
   installPreviousVersion(plugin) {
     const ref = this.modalService.open(SelectPreviousVersionComponent, {
       backdrop: 'static',
@@ -83,17 +84,16 @@ export class ManagePluginsService {
 
     ref.componentInstance.plugin = plugin;
 
-    return ref.result.then((targetVersion) => {
-      return plugin.installedVersion && plugin.name !== 'homebridge' ?
+    return ref.result.then((targetVersion) => plugin.installedVersion && plugin.name !== 'homebridge' ?
         this.updatePlugin(plugin, targetVersion) :
-        this.installPlugin(plugin.name, targetVersion);
-    }).catch(() => {
+        this.installPlugin(plugin.name, targetVersion)).catch(() => {
       // do nothing
     });
   }
 
   /**
    * Open the plugin settings modal
+   *
    * @param plugin
    */
   async settings(plugin) {
