@@ -178,7 +178,7 @@
     "plugins.manage.label_update": "업데이트",
     "plugins.manage.label_updated": "업데이트됨",
     "plugins.manage.label_upgrade": "업그레이드",
-    "plugins.manage.message_confirm_disable": "Are you sure you want to disable {{ pluginName }}?",
+    "plugins.manage.message_confirm_disable": "Are you sure you want to disable {{ pluginName }}? Any accessories exposed by this plugin will be removed from HomeKit.",
     "plugins.manage.message_confirm_enable": "Are you sure you want to enable {{ pluginName }}?",
     "plugins.manage.message_install_previous_version": "이전 버전 설치",
     "plugins.manage.message_restart_required": "재시작 및 새로고침 필요",

@@ -178,7 +178,7 @@
     "plugins.manage.label_update": "Aktualizuj",
     "plugins.manage.label_updated": "Zaktualizowano",
     "plugins.manage.label_upgrade": "Aktualizacja",
-    "plugins.manage.message_confirm_disable": "Jesteś pewny że chcesz wyłączyć {{ pluginName }}?",
+    "plugins.manage.message_confirm_disable": "Jesteś pewny że chcesz wyłączyć {{ pluginName }}? Any accessories exposed by this plugin will be removed from HomeKit.",
     "plugins.manage.message_confirm_enable": "Jesteś pewny że chcesz załączyć {{ pluginName }}?",
     "plugins.manage.message_install_previous_version": "Zainstaluj poprzednią wersję",
     "plugins.manage.message_restart_required": "Wymagane ponowne uruchomienie i odświeżenie",

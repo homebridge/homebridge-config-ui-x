@@ -178,7 +178,7 @@
     "plugins.manage.label_update": "更新",
     "plugins.manage.label_updated": "更新済",
     "plugins.manage.label_upgrade": "更新",
-    "plugins.manage.message_confirm_disable": "Are you sure you want to disable {{ pluginName }}?",
+    "plugins.manage.message_confirm_disable": "Are you sure you want to disable {{ pluginName }}? Any accessories exposed by this plugin will be removed from HomeKit.",
     "plugins.manage.message_confirm_enable": "Are you sure you want to enable {{ pluginName }}?",
     "plugins.manage.message_install_previous_version": "以前のバージョンをインストール",
     "plugins.manage.message_restart_required": "再起動と更新が必要です",
