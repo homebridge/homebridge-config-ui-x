@@ -5,6 +5,7 @@ module.exports = {
     sourceType: 'module',
   },
   ignorePatterns: [
+    "ui/",
     'ui/**/*',
     'dist/**/*',
   ],
