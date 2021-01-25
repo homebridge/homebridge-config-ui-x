@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsBoolean, IsDefined, IsString } from 'class-validator';
 
-// tslint:disable-next-line: max-classes-per-file
 export class HomebridgeNetworkInterfacesDto {
   @IsArray()
   @IsString({ each: true })
@@ -9,7 +8,6 @@ export class HomebridgeNetworkInterfacesDto {
   adapters: string[];
 }
 
-// tslint:disable-next-line: max-classes-per-file
 export class HomebridgeMdnsSettingDto {
   @IsBoolean()
   @IsDefined()

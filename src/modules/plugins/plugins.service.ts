@@ -939,7 +939,6 @@ export class PluginsService {
 
     // add the paths used by require()
     // we need to use 'eval' on require to bypass webpack
-    // tslint:disable-next-line: no-eval
     paths = paths.concat(eval('require').main.paths);
 
     if (this.configService.customPluginPath) {

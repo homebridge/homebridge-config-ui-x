@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsNumber, IsNotEmpty, IsBoolean, IsOptional, Equals } from 'class-validator';
 
-// tslint:disable-next-line: max-classes-per-file
 export class UserDto {
   @IsNumber()
   @ApiProperty({ readOnly: true })
@@ -40,7 +39,6 @@ export class UserDto {
   otpActive?: boolean;
 }
 
-// tslint:disable-next-line: max-classes-per-file
 export class UserUpdatePasswordDto {
   @IsString()
   @IsNotEmpty()
@@ -53,7 +51,6 @@ export class UserUpdatePasswordDto {
   newPassword: string;
 }
 
-// tslint:disable-next-line: max-classes-per-file
 export class UserActivateOtpDto {
   @IsString()
   @IsNotEmpty()
@@ -61,7 +58,6 @@ export class UserActivateOtpDto {
   code: string;
 }
 
-// tslint:disable-next-line: max-classes-per-file
 export class UserDeactivateOtpDto {
   @IsString()
   @IsNotEmpty()
