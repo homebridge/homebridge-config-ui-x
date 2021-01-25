@@ -53,7 +53,7 @@ export class PluginsService {
     'homebridge-rocket-smart-home-ui',
     'homebridge-ui',
     'homebridge-to-hoobs',
-    'homebridge-server'
+    'homebridge-server',
   ];
 
   constructor(
@@ -165,8 +165,8 @@ export class PluginsService {
       const pkg: INpmRegistryModule = fromCache || (await (
         this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(pluginName).replace('%40', '@')}`, {
           headers: {
-            'accept': 'application/vnd.npm.install-v1+json' // only return minimal information
-          }
+            'accept': 'application/vnd.npm.install-v1+json', // only return minimal information
+          },
         }).toPromise()
       )).data;
 
@@ -392,10 +392,10 @@ export class PluginsService {
 
     // show a warning if updating homebridge-config-ui-x on Raspberry Pi 1 / Zero
     if (pluginName === this.configService.name && os.cpus().length === 1 && os.arch() === 'arm') {
-      client.emit('stdout', color.yellow(`***************************************************************\r\n`));
+      client.emit('stdout', color.yellow('***************************************************************\r\n'));
       client.emit('stdout', color.yellow(`Please be patient while ${this.configService.name} updates.\r\n`));
-      client.emit('stdout', color.yellow(`This process may take 5-15 minutes to complete on your device.\r\n`));
-      client.emit('stdout', color.yellow(`***************************************************************\r\n\r\n`));
+      client.emit('stdout', color.yellow('This process may take 5-15 minutes to complete on your device.\r\n'));
+      client.emit('stdout', color.yellow('***************************************************************\r\n\r\n'));
     }
 
     await this.getInstalledPlugins();
@@ -428,7 +428,7 @@ export class PluginsService {
       return true;
     } catch (e) {
       if (pluginName === this.configService.name) {
-        client.emit('stdout', color.yellow(`\r\nCleaning up npm cache, please wait...\r\n`));
+        client.emit('stdout', color.yellow('\r\nCleaning up npm cache, please wait...\r\n'));
         await this.cleanNpmCache();
         client.emit('stdout', color.yellow(`npm cache cleared, please try updating ${this.configService.name} again.\r\n`));
       }
@@ -563,14 +563,14 @@ export class PluginsService {
     client.emit('stdout', color.yellow(`${this.configService.name} has been scheduled to update on the next container restart.\n\r\n\r`));
     await new Promise(resolve => setTimeout(resolve, 800));
 
-    client.emit('stdout', color.yellow(`The Docker container will now try and restart.\n\r\n\r`));
+    client.emit('stdout', color.yellow('The Docker container will now try and restart.\n\r\n\r'));
     await new Promise(resolve => setTimeout(resolve, 800));
 
-    client.emit('stdout', color.yellow(`If you have not started the Docker container with `) +
-      color.red('--restart=always') + color.yellow(` you may\n\rneed to manually start the container again.\n\r\n\r`));
+    client.emit('stdout', color.yellow('If you have not started the Docker container with ') +
+      color.red('--restart=always') + color.yellow(' you may\n\rneed to manually start the container again.\n\r\n\r'));
     await new Promise(resolve => setTimeout(resolve, 800));
 
-    client.emit('stdout', color.yellow(`This process may take several minutes. Please be patient.\n\r`));
+    client.emit('stdout', color.yellow('This process may take several minutes. Please be patient.\n\r'));
     await new Promise(resolve => setTimeout(resolve, 10000));
 
     await fs.createFile('/homebridge/.uix-upgrade-on-restart');
@@ -652,7 +652,7 @@ export class PluginsService {
         type: 'object',
         notitle: true,
         condition: {
-          functionBody: 'return false'
+          functionBody: 'return false',
         },
         properties: {
           name: {
@@ -676,8 +676,8 @@ export class PluginsService {
           },
           model: {
             type: 'string',
-          }
-        }
+          },
+        },
       };
     }
 
@@ -769,7 +769,7 @@ export class PluginsService {
         await new Promise((resolve, reject) => {
           const child = child_process.fork(path.resolve(process.env.UIX_BASE_PATH, 'extract-plugin-alias.js'), {
             env: {
-              UIX_EXTRACT_PLUGIN_PATH: path.resolve(plugin.installPath, plugin.name)
+              UIX_EXTRACT_PLUGIN_PATH: path.resolve(plugin.installPath, plugin.name),
             },
             stdio: 'ignore',
           });
@@ -849,7 +849,7 @@ export class PluginsService {
   /**
    * Load any @scoped homebridge modules
    */
-  private async getInstalledScopedModules(requiredPath, scope): Promise<Array<{ name: string, path: string, installPath: string }>> {
+  private async getInstalledScopedModules(requiredPath, scope): Promise<Array<{ name: string; path: string; installPath: string }>> {
     try {
       if ((await fs.stat(path.join(requiredPath, scope))).isDirectory()) {
         const scopedModules = await fs.readdir(path.join(requiredPath, scope));
@@ -874,7 +874,7 @@ export class PluginsService {
   /**
    * Returns a list of modules installed
    */
-  private async getInstalledModules(): Promise<Array<{ name: string, path: string, installPath: string }>> {
+  private async getInstalledModules(): Promise<Array<{ name: string; path: string; installPath: string }>> {
     const allModules = [];
     // loop over each possible path to find installed plugins
     for (const requiredPath of this.paths) {
@@ -920,8 +920,8 @@ export class PluginsService {
       if (windowsNpmPath.length) {
         return [windowsNpmPath[0]];
       } else {
-        this.logger.error(`ERROR: Cannot find npm binary. You will not be able to manage plugins or update homebridge.`);
-        this.logger.error(`ERROR: You might be able to fix this problem by running: npm install -g npm`);
+        this.logger.error('ERROR: Cannot find npm binary. You will not be able to manage plugins or update homebridge.');
+        this.logger.error('ERROR: You might be able to fix this problem by running: npm install -g npm');
       }
 
     }
@@ -1097,9 +1097,9 @@ export class PluginsService {
       } catch (e) {
         client.emit('stdout', color.yellow(`The user "${os.userInfo().username}" does not have write access to the target directory:\n\r\n\r`));
         client.emit('stdout', `${path.resolve(cwd, 'node_modules')}\n\r\n\r`);
-        client.emit('stdout', color.yellow(`This may cause the operation to fail.\n\r`));
-        client.emit('stdout', color.yellow(`See the docs for details on how to enable sudo mode:\n\r`));
-        client.emit('stdout', color.yellow(`https://github.com/oznu/homebridge-config-ui-x#sudo-mode\n\r\n\r`));
+        client.emit('stdout', color.yellow('This may cause the operation to fail.\n\r'));
+        client.emit('stdout', color.yellow('See the docs for details on how to enable sudo mode:\n\r'));
+        client.emit('stdout', color.yellow('https://github.com/oznu/homebridge-config-ui-x#sudo-mode\n\r\n\r'));
       }
     }
 
@@ -1157,7 +1157,7 @@ export class PluginsService {
       term.on('exit', (code) => {
         if (code === 0) {
           clearTimeout(timeoutTimer);
-          client.emit('stdout', color.green(`\n\rCommand succeeded!.\n\r`));
+          client.emit('stdout', color.green('\n\rCommand succeeded!.\n\r'));
           resolve(null);
         } else {
           clearTimeout(timeoutTimer);
@@ -1186,7 +1186,7 @@ export class PluginsService {
       try {
         await fs.ensureDir(this.configService.customPluginPath);
       } catch (e) {
-        this.logger.error(`Failed to recreate custom plugin directory`);
+        this.logger.error('Failed to recreate custom plugin directory');
         this.logger.error(e.message);
       }
     }
@@ -1227,11 +1227,13 @@ export class PluginsService {
       const child = child_process.spawn(command.shift(), command);
 
       child.on('exit', (code) => {
-        this.logger.log(`npm cache clear command executed with exit code`, code);
+        this.logger.log('npm cache clear command executed with exit code', code);
         resolve(null);
       });
 
-      child.on('error', () => { });
+      child.on('error', () => {
+        // do nothing
+      });
     });
   }
 
@@ -1243,7 +1245,7 @@ export class PluginsService {
     try {
       this.verifiedPlugins = (
         await this.httpService.get('https://raw.githubusercontent.com/homebridge/verified/master/verified-plugins.json', {
-          httpsAgent: null
+          httpsAgent: null,
         }).toPromise()
       ).data;
     } catch (e) {

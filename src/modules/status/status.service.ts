@@ -247,7 +247,7 @@ export class StatusService {
   public async checkHomebridgeStatus() {
     try {
       await this.httpService.get(`http://localhost:${this.configService.homebridgeConfig.bridge.port}`, {
-        validateStatus: () => true
+        validateStatus: () => true,
       }).toPromise();
       this.homebridgeStatus = 'up';
     } catch (e) {

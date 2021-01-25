@@ -112,7 +112,7 @@ export class AccessoriesService {
    */
   public async loadAccessories(): Promise<ServiceType[]> {
     if (!this.configService.homebridgeInsecureMode) {
-      throw new BadRequestException(`Homebridge must be running in insecure mode to access accessories.`);
+      throw new BadRequestException('Homebridge must be running in insecure mode to access accessories.');
     }
 
     return this.hapClient.getAllServices()
@@ -121,7 +121,7 @@ export class AccessoriesService {
       })
       .catch((e) => {
         if (e.response?.status === 401) {
-          this.logger.warn(`Homebridge must be running in insecure mode to view and control accessories from this plugin.`);
+          this.logger.warn('Homebridge must be running in insecure mode to view and control accessories from this plugin.');
         } else {
           this.logger.error(`Failed load accessories from Homebridge: ${e.message}`);
         }
@@ -206,7 +206,7 @@ export class AccessoriesService {
       }
 
       if (typeof value !== 'boolean') {
-        throw new BadRequestException(`Invalid value. The value must be a boolean (true or false).`);
+        throw new BadRequestException('Invalid value. The value must be a boolean (true or false).');
       }
     }
 
@@ -245,7 +245,7 @@ export class AccessoriesService {
    * @param user
    * @param layout
    */
-  public async saveAccessoryLayout(user: string, layout: object) {
+  public async saveAccessoryLayout(user: string, layout: Record<string, unknown>) {
     let accessoryLayout;
 
     try {

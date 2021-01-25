@@ -21,6 +21,6 @@ import { StatusController } from './status.controller';
   ],
   controllers: [
     StatusController,
-  ]
+  ],
 })
 export class StatusModule { }

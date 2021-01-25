@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastify';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 
 import { AuthModule } from '../../src/core/auth/auth.module';
 import { LinuxModule } from '../../src/modules/platform-tools/linux/linux.module';
@@ -63,8 +63,8 @@ describe('PlatformToolsLinux (e2e)', () => {
       path: '/auth/login',
       payload: {
         username: 'admin',
-        password: 'admin'
-      }
+        password: 'admin',
+      },
     })).json().access_token;
   });
 
@@ -74,11 +74,11 @@ describe('PlatformToolsLinux (e2e)', () => {
       path: '/platform-tools/linux/restart-host',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
-    expect(restartHostFn).toBeCalled();
+    expect(restartHostFn).toHaveBeenCalled();
   });
 
   it('GET /platform-tools/linux/shutdown-host', async () => {
@@ -87,11 +87,11 @@ describe('PlatformToolsLinux (e2e)', () => {
       path: '/platform-tools/linux/shutdown-host',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
-    expect(shutdownHostFn).toBeCalled();
+    expect(shutdownHostFn).toHaveBeenCalled();
   });
 
   afterAll(async () => {

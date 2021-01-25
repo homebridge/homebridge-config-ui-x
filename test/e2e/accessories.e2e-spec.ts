@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastify';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 
 import { AuthModule } from '../../src/core/auth/auth.module';
 import { AccessoriesModule } from '../../src/modules/accessories/accessories.module';
@@ -60,8 +60,8 @@ describe('AccessoriesController (e2e)', () => {
         intCharacteristic,
         floatCharacteristic,
       ],
-      'uniqueId': 'c8964091efa500870e34996208e670cf7dc362d244e0410220752459a5e78d1c'
-    }
+      'uniqueId': 'c8964091efa500870e34996208e670cf7dc362d244e0410220752459a5e78d1c',
+    },
   ];
 
   beforeAll(async () => {
@@ -116,8 +116,8 @@ describe('AccessoriesController (e2e)', () => {
       path: '/auth/login',
       payload: {
         username: 'admin',
-        password: 'admin'
-      }
+        password: 'admin',
+      },
     })).json().access_token;
   });
 
@@ -127,10 +127,10 @@ describe('AccessoriesController (e2e)', () => {
       path: '/accessories',
       headers: {
         authorization,
-      }
+      },
     });
 
-    expect(jest.spyOn(accessoriesService.hapClient, 'getAllServices')).toBeCalled();
+    expect(jest.spyOn(accessoriesService.hapClient, 'getAllServices')).toHaveBeenCalled();
     expect(res.statusCode).toEqual(200);
     expect(res.json()).toHaveLength(1);
   });
@@ -143,7 +143,7 @@ describe('AccessoriesController (e2e)', () => {
       path: '/accessories',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(400);
@@ -155,7 +155,7 @@ describe('AccessoriesController (e2e)', () => {
       path: '/accessories/layout',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -167,7 +167,7 @@ describe('AccessoriesController (e2e)', () => {
       path: '/accessories/c8964091efa500870e34996208e670cf7dc362d244e0410220752459a5e78d1c',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -180,7 +180,7 @@ describe('AccessoriesController (e2e)', () => {
       path: '/accessories/xxxx',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(400);
@@ -197,11 +197,11 @@ describe('AccessoriesController (e2e)', () => {
       },
       payload: {
         characteristicType: 'On',
-        value: 'true'
-      }
+        value: 'true',
+      },
     });
 
-    expect(getCharacteristic).toBeCalled();
+    expect(getCharacteristic).toHaveBeenCalled();
     expect(setValue).toHaveBeenCalledWith(true);
     expect(res.statusCode).toEqual(200);
   });
@@ -217,11 +217,11 @@ describe('AccessoriesController (e2e)', () => {
       },
       payload: {
         characteristicType: 'On',
-        value: 'not a boolean'
-      }
+        value: 'not a boolean',
+      },
     });
 
-    expect(getCharacteristic).toBeCalled();
+    expect(getCharacteristic).toHaveBeenCalled();
     expect(setValue).not.toHaveBeenCalled();
     expect(res.statusCode).toEqual(400);
   });
@@ -237,11 +237,11 @@ describe('AccessoriesController (e2e)', () => {
       },
       payload: {
         characteristicType: 'Active',
-        value: 1
-      }
+        value: 1,
+      },
     });
 
-    expect(getCharacteristic).toBeCalled();
+    expect(getCharacteristic).toHaveBeenCalled();
     expect(setValue).toHaveBeenCalledWith(1);
     expect(res.statusCode).toEqual(200);
   });
@@ -257,11 +257,11 @@ describe('AccessoriesController (e2e)', () => {
       },
       payload: {
         characteristicType: 'Active',
-        value: 22
-      }
+        value: 22,
+      },
     });
 
-    expect(getCharacteristic).toBeCalled();
+    expect(getCharacteristic).toHaveBeenCalled();
     expect(setValue).not.toHaveBeenCalled();
     expect(res.statusCode).toEqual(400);
   });
@@ -277,11 +277,11 @@ describe('AccessoriesController (e2e)', () => {
       },
       payload: {
         characteristicType: 'TargetTemperature',
-        value: '22.5'
-      }
+        value: '22.5',
+      },
     });
 
-    expect(getCharacteristic).toBeCalled();
+    expect(getCharacteristic).toHaveBeenCalled();
     expect(setValue).toHaveBeenCalledWith(22.5);
     expect(res.statusCode).toEqual(200);
   });
@@ -297,11 +297,11 @@ describe('AccessoriesController (e2e)', () => {
       },
       payload: {
         characteristicType: 'TargetTemperature',
-        value: '12.6'
-      }
+        value: '12.6',
+      },
     });
 
-    expect(getCharacteristic).toBeCalled();
+    expect(getCharacteristic).toHaveBeenCalled();
     expect(setValue).not.toHaveBeenCalled();
     expect(res.statusCode).toEqual(400);
   });
@@ -317,11 +317,11 @@ describe('AccessoriesController (e2e)', () => {
       },
       payload: {
         characteristicType: 'NotReal',
-        value: '12.6'
-      }
+        value: '12.6',
+      },
     });
 
-    expect(getCharacteristic).toBeCalledWith('NotReal');
+    expect(getCharacteristic).toHaveBeenCalledWith('NotReal');
     expect(setValue).not.toHaveBeenCalled();
     expect(res.statusCode).toEqual(400);
   });
@@ -336,8 +336,8 @@ describe('AccessoriesController (e2e)', () => {
         authorization,
       },
       payload: {
-        value: '12.6'
-      }
+        value: '12.6',
+      },
     });
 
     expect(getCharacteristic).not.toHaveBeenCalled();
@@ -357,7 +357,7 @@ describe('AccessoriesController (e2e)', () => {
       },
       payload: {
         characteristicType: 'TargetTemperature',
-      }
+      },
     });
 
     expect(getCharacteristic).not.toHaveBeenCalled();

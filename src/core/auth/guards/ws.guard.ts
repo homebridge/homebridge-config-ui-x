@@ -1,4 +1,5 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '../../config/config.service';
 import { UserDto } from '../../../modules/users/users.dto';
@@ -12,7 +13,7 @@ export class WsGuard implements CanActivate {
   async canActivate(context: ExecutionContext) {
     const client = context.switchToWs().getClient();
     try {
-      const user = jwt.verify(client.handshake.query.token, this.configService.secrets.secretKey) as UserDto;
+      jwt.verify(client.handshake.query.token, this.configService.secrets.secretKey) as UserDto;
       return true;
     } catch (e) {
       client.disconnect();

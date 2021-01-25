@@ -19,18 +19,21 @@ export class Logger implements LoggerService {
       ...args,
     );
   }
+
   error(...args) {
     console.error(
       this.prefix,
       ...args.map(x => color.red(x)),
     );
   }
+
   warn(...args) {
     console.warn(
       this.prefix,
       ...args.map(x => color.yellow(x)),
     );
   }
+
   debug(...args) {
     if (process.env.UIX_DEBUG_LOGGING === '1') {
       console.debug(
@@ -39,6 +42,7 @@ export class Logger implements LoggerService {
       );
     }
   }
+
   verbose(...args) {
     console.debug(
       this.prefix,

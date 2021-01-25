@@ -27,7 +27,7 @@ export class HomebridgeRingService {
             'content-type': 'application/json',
             '2fa-support': 'true',
             '2fa-code': credentials.twoFactorAuthCode || '',
-          }
+          },
         }).toPromise()).data;
     } catch (e) {
       if (e.response && e.response.status === 412) {

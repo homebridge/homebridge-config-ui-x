@@ -10,7 +10,7 @@ import { Tail } from 'tail';
 import { ConfigService } from '../../core/config/config.service';
 import { NodePtyService } from '../../core/node-pty/node-pty.service';
 
-export type LogTermSize = { cols: number, rows: number };
+export type LogTermSize = { cols: number; rows: number };
 
 @Injectable()
 export class LogService {
@@ -64,12 +64,12 @@ export class LogService {
       client.emit('stdout', color.cyan(`CMD: ${this.command.join(' ')}\r\n\r\n`));
       this.tailLog(client, size);
     } else if (this.useNative) {
-      client.emit('stdout', color.cyan(`Loading logs using native method...\r\n`));
+      client.emit('stdout', color.cyan('Loading logs using native method...\r\n'));
       client.emit('stdout', color.cyan(`File: ${this.configService.ui.log.path}\r\n\r\n`));
       this.tailLogFromFileNative(client);
     } else {
-      client.emit('stdout', color.red(`Cannot show logs. "log" option is not configured correctly in your Homebridge config.json file.\r\n\r\n`));
-      client.emit('stdout', color.cyan(`See https://github.com/oznu/homebridge-config-ui-x#log-viewer-configuration for instructions.\r\n`));
+      client.emit('stdout', color.red('Cannot show logs. "log" option is not configured correctly in your Homebridge config.json file.\r\n\r\n'));
+      client.emit('stdout', color.cyan('See https://github.com/oznu/homebridge-config-ui-x#log-viewer-configuration for instructions.\r\n'));
     }
   }
 
@@ -100,8 +100,8 @@ export class LogService {
         if (!this.ending) {
           client.emit('stdout', '\n\r');
           client.emit('stdout', color.red(`The log tail command "${command.join(' ')}" exited with code ${code.exitCode}.\n\r`));
-          client.emit('stdout', color.red(`Please check the command in your config.json is correct.\n\r\n\r`));
-          client.emit('stdout', color.cyan(`See https://github.com/oznu/homebridge-config-ui-x#log-viewer-configuration for instructions.\r\n`));
+          client.emit('stdout', color.red('Please check the command in your config.json is correct.\n\r\n\r'));
+          client.emit('stdout', color.cyan('See https://github.com/oznu/homebridge-config-ui-x#log-viewer-configuration for instructions.\r\n'));
         }
       } catch (e) {
         // the client socket probably closed
@@ -109,7 +109,7 @@ export class LogService {
     });
 
     // handle resize events
-    client.on('resize', (resize: { rows: number, cols: number }) => {
+    client.on('resize', (resize: { rows: number; cols: number }) => {
       try {
         term.resize(resize.cols, resize.rows);
       } catch (e) { }
@@ -212,11 +212,11 @@ export class LogService {
 
     // watch for lines and emit to client
     const onLine = (line) => {
-      client.emit('stdout', line + `\n\r`);
+      client.emit('stdout', line + '\n\r');
     };
 
     const onError = (err) => {
-      client.emit('stdout', err.message + `\n\r`);
+      client.emit('stdout', err.message + '\n\r');
     };
 
     this.nativeTail.on('line', onLine);

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, UseGuards, Res, Req, InternalServerErrorException, Header, Param } from '@nestjs/common';
+import { Controller, Get, Post, Put, UseGuards, Res, Req, InternalServerErrorException, Param } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiConsumes, ApiParam } from '@nestjs/swagger';
 import { FastifyReply } from 'fastify';
@@ -50,7 +50,7 @@ export class BackupController {
   @Post('/restore')
   @ApiOperation({
     summary: 'Upload a .tar.gz of the Homebridge instance.',
-    description: 'NOTE: This endpoint does not trigger the restore process.'
+    description: 'NOTE: This endpoint does not trigger the restore process.',
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -78,7 +78,7 @@ export class BackupController {
   @UseGuards(AdminGuard)
   @ApiOperation({
     summary: 'Upload a .hbfx backup file created by third party apps.',
-    description: 'NOTE: This endpoint does not trigger the restore process.'
+    description: 'NOTE: This endpoint does not trigger the restore process.',
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({

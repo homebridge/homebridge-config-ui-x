@@ -23,7 +23,7 @@ export class AuthService {
 
     // otp options
     authenticator.options = {
-      window: 1
+      window: 1,
     };
   }
 
@@ -60,8 +60,8 @@ export class AuthService {
       }
     } catch (e) {
       if (e instanceof ForbiddenException) {
-        this.logger.warn(`Failed login attempt`);
-        this.logger.warn(`If you've forgotten your password you can reset to the default ` +
+        this.logger.warn('Failed login attempt');
+        this.logger.warn('If you\'ve forgotten your password you can reset to the default ' +
           `of admin/admin by deleting the "auth.json" file (${this.configService.authPath}) and then restarting Homebridge.`);
         throw e;
       }
@@ -190,7 +190,7 @@ export class AuthService {
       name: 'Administrator',
       admin: true,
     });
-    this.logger.log(`Username and password have been set to default:`);
+    this.logger.log('Username and password have been set to default:');
     this.logger.log('Username: admin');
     this.logger.log('Password: admin');
   }
@@ -228,7 +228,7 @@ export class AuthService {
       name: user.name,
       username: user.username,
       admin: user.admin,
-      otpActive: user.otpActive || false
+      otpActive: user.otpActive || false,
     };
   }
 
@@ -285,7 +285,7 @@ export class AuthService {
 
     // user object
     const newUser: UserDto = {
-      id: authfile.length ? Math.max.apply(Math, authfile.map(x => x.id)) + 1 : 1,
+      id: authfile.length ? Math.max(...authfile.map(x => x.id)) + 1 : 1,
       username: user.username,
       name: user.name,
       hashedPassword: await this.hashPassword(user.password, salt),
@@ -418,7 +418,7 @@ export class AuthService {
 
     return {
       timestamp: new Date(),
-      otpauth: authenticator.keyuri(user.username, appName, user.otpSecret)
+      otpauth: authenticator.keyuri(user.username, appName, user.otpSecret),
     };
   }
 

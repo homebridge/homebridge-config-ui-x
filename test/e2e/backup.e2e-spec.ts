@@ -4,7 +4,7 @@ import * as dayjs from 'dayjs';
 import { EventEmitter } from 'events';
 import { ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastify';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import fastifyMultipart from 'fastify-multipart';
 import * as FormData from 'form-data';
 
@@ -97,8 +97,8 @@ describe('BackupController (e2e)', () => {
       path: '/auth/login',
       payload: {
         username: 'admin',
-        password: 'admin'
-      }
+        password: 'admin',
+      },
     })).json().access_token;
   });
 
@@ -161,7 +161,7 @@ describe('BackupController (e2e)', () => {
     expect(backupsAfterJob).toHaveLength(7);
   });
 
-  it('it saves scheduled backups to the custom path if set and exists', async () => {
+  it('saves scheduled backups to the custom path if set and exists', async () => {
     // cleanup
     await fs.remove(customInstanceBackupPath);
 
@@ -179,17 +179,17 @@ describe('BackupController (e2e)', () => {
     expect(backups).toHaveLength(1);
   });
 
-  it('it throws an error if the custom scheduled backup path does not exist', async () => {
+  it('throws an error if the custom scheduled backup path does not exist', async () => {
     // cleanup
     await fs.remove(customInstanceBackupPath);
 
     configService.ui.scheduledBackupPath = customInstanceBackupPath;
     configService.instanceBackupPath = customInstanceBackupPath;
 
-    expect(backupService.ensureScheduledBackupPath()).rejects.toThrowError('Custom instance backup path does not exists');
+    await expect(backupService.ensureScheduledBackupPath()).rejects.toThrow('Custom instance backup path does not exists');
   });
 
-  it('it creates the non-custom scheduled backup path if it does not exist', async () => {
+  it('creates the non-custom scheduled backup path if it does not exist', async () => {
     // cleanup
     await fs.remove(instanceBackupPath);
 
@@ -204,7 +204,7 @@ describe('BackupController (e2e)', () => {
       path: '/backup/download',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -218,7 +218,7 @@ describe('BackupController (e2e)', () => {
       path: '/backup/download',
       headers: {
         authorization,
-      }
+      },
     });
 
     // save the backup to disk
@@ -270,9 +270,9 @@ describe('BackupController (e2e)', () => {
     // start restore
     await backupGateway.doRestore(client);
 
-    expect(client.emit).toBeCalledWith('stdout', expect.stringContaining('Restoring backup'));
-    expect(client.emit).toBeCalledWith('stdout', expect.stringContaining('Restore Complete'));
-    expect(pluginsService.installPlugin).toBeCalledWith('homebridge-mock-plugin', expect.anything(), client);
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Restoring backup'));
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Restore Complete'));
+    expect(pluginsService.installPlugin).toHaveBeenCalledWith('homebridge-mock-plugin', expect.anything(), client);
 
     // ensure the temp restore directory was removed
     expect(await fs.pathExists(restoreDirectory)).toEqual(false);
@@ -284,11 +284,11 @@ describe('BackupController (e2e)', () => {
       path: '/backup/restart',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
-    expect(postBackupRestoreRestartFn).toBeCalled();
+    expect(postBackupRestoreRestartFn).toHaveBeenCalled();
   });
 
   it('GET /backup/scheduled-backups (path missing)', async () => {
@@ -300,7 +300,7 @@ describe('BackupController (e2e)', () => {
       path: '/backup/scheduled-backups',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -322,7 +322,7 @@ describe('BackupController (e2e)', () => {
       path: '/backup/scheduled-backups',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -338,7 +338,7 @@ describe('BackupController (e2e)', () => {
       path: '/backup/scheduled-backups',
       headers: {
         authorization,
-      }
+      },
     })).json();
 
     const res = await app.inject({
@@ -346,7 +346,7 @@ describe('BackupController (e2e)', () => {
       path: `/backup/scheduled-backups/${scheduledBackups[0].id}`,
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -356,10 +356,10 @@ describe('BackupController (e2e)', () => {
   it('GET /backup/scheduled-backups/:backupId (not found)', async () => {
     const res = await app.inject({
       method: 'GET',
-      path: `/backup/scheduled-backups/xxxxxxxxxxxx`,
+      path: '/backup/scheduled-backups/xxxxxxxxxxxx',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(404);

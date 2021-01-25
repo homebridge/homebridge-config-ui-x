@@ -7,7 +7,6 @@ import * as fs from 'fs-extra';
 import { Logger } from '../../../core/logger/logger.service';
 import { PluginsService } from '../../plugins/plugins.service';
 
-
 @Injectable()
 export class HomebridgeNestCamService {
   private child: child_process.ChildProcess;
@@ -31,7 +30,7 @@ export class HomebridgeNestCamService {
     if (!await fs.pathExists(childProcessPath)) {
       client.emit('server_error', {
         key: 'not_supported',
-        message: 'Your version of homebridge-nest-cam does not support account linking using the Homebridge UI.'
+        message: 'Your version of homebridge-nest-cam does not support account linking using the Homebridge UI.',
       });
       return;
     }
@@ -42,7 +41,7 @@ export class HomebridgeNestCamService {
 
     this.logger.log(`Starting homebridge-nest-cam account linking script: ${childProcessPath}`);
     this.child = child_process.fork(childProcessPath, [], {
-      silent: true
+      silent: true,
     });
 
     this.child.stdout.on('data', (data) => {

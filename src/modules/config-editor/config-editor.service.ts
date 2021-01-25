@@ -184,7 +184,7 @@ export class ConfigEditorService {
   public async getConfigForPlugin(pluginName: string) {
     return Promise.all([
       await this.pluginsService.getPluginAlias(pluginName),
-      await this.getConfigFile()
+      await this.getConfigFile(),
     ]).then(([plugin, config]) => {
       if (!plugin.pluginAlias) {
         return new BadRequestException('Plugin alias could not be determined.');
@@ -205,7 +205,7 @@ export class ConfigEditorService {
   public async updateConfigForPlugin(pluginName: string, pluginConfig: Record<string, any>[]) {
     return Promise.all([
       await this.pluginsService.getPluginAlias(pluginName),
-      await this.getConfigFile()
+      await this.getConfigFile(),
     ]).then(async ([plugin, config]) => {
       if (!plugin.pluginAlias) {
         return new BadRequestException('Plugin alias could not be determined.');

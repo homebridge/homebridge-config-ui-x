@@ -3,7 +3,7 @@ import * as fs from 'fs-extra';
 import axios from 'axios';
 import { ValidationPipe, HttpService } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastify';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 
 import { AuthModule } from '../../src/core/auth/auth.module';
 import { PluginsModule } from '../../src/modules/plugins/plugins.module';
@@ -65,8 +65,8 @@ describe('PluginController (e2e)', () => {
       path: '/auth/login',
       payload: {
         username: 'admin',
-        password: 'admin'
-      }
+        password: 'admin',
+      },
     })).json().access_token;
   });
 
@@ -76,7 +76,7 @@ describe('PluginController (e2e)', () => {
       path: '/plugins',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -96,7 +96,7 @@ describe('PluginController (e2e)', () => {
       path: '/plugins/search/google',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -112,7 +112,7 @@ describe('PluginController (e2e)', () => {
       path: '/plugins/search/homebridge-daikin-esp8266',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -129,7 +129,7 @@ describe('PluginController (e2e)', () => {
       path: `/plugins/search/${encodeURIComponent('@oznu/homebridge-esp8266-garage-door')}`,
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -143,10 +143,10 @@ describe('PluginController (e2e)', () => {
   it('GET /plugins/search/:query (blacklisted - exact plugin name)', async () => {
     const res = await app.inject({
       method: 'GET',
-      path: `/plugins/search/homebridge-config-ui-rdp`,
+      path: '/plugins/search/homebridge-config-ui-rdp',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -159,7 +159,7 @@ describe('PluginController (e2e)', () => {
       path: `/plugins/search/${encodeURIComponent('ui')}`,
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -172,7 +172,7 @@ describe('PluginController (e2e)', () => {
       path: '/plugins/lookup/homebridge-daikin-esp8266',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -188,7 +188,7 @@ describe('PluginController (e2e)', () => {
       path: `/plugins/lookup/${encodeURIComponent('@oznu/homebridge-esp8266-garage-door')}`,
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -201,10 +201,10 @@ describe('PluginController (e2e)', () => {
   it('GET /plugins/lookup/:pluginName (not a homebridge plugin)', async () => {
     const res = await app.inject({
       method: 'GET',
-      path: `/plugins/lookup/npm`,
+      path: '/plugins/lookup/npm',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(400);
@@ -217,7 +217,7 @@ describe('PluginController (e2e)', () => {
       path: '/plugins/lookup/homebridge-daikin-esp8266/versions',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -231,7 +231,7 @@ describe('PluginController (e2e)', () => {
       path: `/plugins/lookup/${encodeURIComponent('@oznu/homebridge-esp8266-garage-door')}/versions`,
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -245,7 +245,7 @@ describe('PluginController (e2e)', () => {
       path: '/plugins/config-schema/homebridge-mock-plugin',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -259,7 +259,7 @@ describe('PluginController (e2e)', () => {
       path: '/plugins/changelog/homebridge-mock-plugin',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -272,7 +272,7 @@ describe('PluginController (e2e)', () => {
       path: '/plugins/changelog/homebridge-mock-plugin-two',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(404);
@@ -284,7 +284,7 @@ describe('PluginController (e2e)', () => {
       path: '/plugins/alias/homebridge-mock-plugin',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -298,7 +298,7 @@ describe('PluginController (e2e)', () => {
       path: '/plugins/alias/homebridge-mock-plugin-two',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);

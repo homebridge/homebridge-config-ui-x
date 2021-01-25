@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsOptional, IsDefined } from 'class-validator';
+import { IsString, IsOptional, IsDefined } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class HomebridgeRingCredentialsDto {

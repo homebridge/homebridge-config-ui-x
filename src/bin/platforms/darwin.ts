@@ -38,7 +38,7 @@ export class DarwinInstaller {
       await this.hbService.printPostInstallInstructions();
     } catch (e) {
       console.error(e.toString());
-      this.hbService.logger(`ERROR: Failed Operation`, 'fail');
+      this.hbService.logger('ERROR: Failed Operation', 'fail');
     }
   }
 
@@ -58,7 +58,7 @@ export class DarwinInstaller {
       }
     } catch (e) {
       console.error(e.toString());
-      this.hbService.logger(`ERROR: Failed Operation`, 'fail');
+      this.hbService.logger('ERROR: Failed Operation', 'fail');
     }
   }
 
@@ -104,7 +104,7 @@ export class DarwinInstaller {
   /**
    * Rebuilds the Node.js modules for Homebridge Config UI X
    */
-  public async rebuild(all: boolean = false) {
+  public async rebuild(all = false) {
     try {
       this.checkForRoot();
       const npmGlobalPath = child_process.execSync('/bin/echo -n "$(npm --no-update-notifier -g prefix)/lib/node_modules"').toString('utf8');
@@ -132,14 +132,14 @@ export class DarwinInstaller {
       this.hbService.logger(`Rebuilt modules in ${process.env.UIX_BASE_PATH} for Node.js ${targetNodeVersion}.`, 'succeed');
     } catch (e) {
       console.error(e.toString());
-      this.hbService.logger(`ERROR: Failed Operation`, 'fail');
+      this.hbService.logger('ERROR: Failed Operation', 'fail');
     }
   }
 
   /**
    * Returns the users uid and gid.
    */
-  public async getId(): Promise<{ uid: number, gid: number }> {
+  public async getId(): Promise<{ uid: number; gid: number }> {
     if (process.getuid() === 0 && this.hbService.asUser || process.env.SUDO_USER) {
       const uid = child_process.execSync(`id -u ${this.hbService.asUser || process.env.SUDO_USER}`).toString('utf8');
       const gid = child_process.execSync(`id -g ${this.hbService.asUser || process.env.SUDO_USER}`).toString('utf8');
@@ -210,7 +210,7 @@ export class DarwinInstaller {
   /**
    * Update Node.js
    */
-  public async updateNodejs(job: { target: string, rebuild: boolean }) {
+  public async updateNodejs(job: { target: string; rebuild: boolean }) {
     this.checkForRoot();
 
     if (process.arch !== 'x64') {
@@ -253,7 +253,7 @@ export class DarwinInstaller {
       if (await fs.pathExists(this.plistPath)) {
         await this.restart();
       } else {
-        this.hbService.logger(`Please restart Homebridge for the changes to take effect.`, 'warn');
+        this.hbService.logger('Please restart Homebridge for the changes to take effect.', 'warn');
       }
     } catch (e) {
       this.hbService.logger(`Failed to update Node.js: ${e.message}`, 'fail');
@@ -273,7 +273,7 @@ export class DarwinInstaller {
         uid,
         gid,
       });
-      child_process.execSync(`test -w "$(dirname $(which npm))"`, {
+      child_process.execSync('test -w "$(dirname $(which npm))"', {
         uid,
         gid,
       });
@@ -291,12 +291,12 @@ export class DarwinInstaller {
       child_process.execSync(`chown -R ${this.user}:admin "$(dirname $(which npm))"`);
     } catch (e) {
       this.hbService.logger(`ERROR: User "${this.user}" does not have write access to the global npm modules path.`, 'fail');
-      this.hbService.logger(`You can fix this issue by running the following commands:`, 'fail');
+      this.hbService.logger('You can fix this issue by running the following commands:', 'fail');
       console.log('');
       console.log(`sudo chown -R ${this.user}:admin "${npmGlobalPath}"`);
       console.log(`sudo chown -R ${this.user}:admin "$(dirname $(which npm))"`);
       console.log('');
-      this.hbService.logger(`Once you have done this run the hb-service install command again to complete your installation.`, 'fail');
+      this.hbService.logger('Once you have done this run the hb-service install command again to complete your installation.', 'fail');
       process.exit(1);
     }
   }
@@ -306,44 +306,44 @@ export class DarwinInstaller {
    */
   private async createLaunchAgent() {
     const plistFileContents = [
-      `<?xml version="1.0" encoding="UTF-8"?>`,
-      `<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">`,
-      `<plist version="1.0">`,
-      `<dict>`,
-      `    <key>RunAtLoad</key>`,
-      `        <true/>`,
-      `    <key>KeepAlive</key>`,
-      `        <true/>`,
-      `    <key>Label</key>`,
+      '<?xml version="1.0" encoding="UTF-8"?>',
+      '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">',
+      '<plist version="1.0">',
+      '<dict>',
+      '    <key>RunAtLoad</key>',
+      '        <true/>',
+      '    <key>KeepAlive</key>',
+      '        <true/>',
+      '    <key>Label</key>',
       `        <string>${this.plistName}</string>`,
-      `    <key>ProgramArguments</key>`,
-      `        <array>`,
+      '    <key>ProgramArguments</key>',
+      '        <array>',
       `             <string>${process.execPath}</string>`,
       `             <string>${this.hbService.selfPath}</string>`,
-      `             <string>run</string>`,
-      `             <string>-I</string>`,
-      `             <string>-U</string>`,
+      '             <string>run</string>',
+      '             <string>-I</string>',
+      '             <string>-U</string>',
       `             <string>${this.hbService.storagePath}</string>`,
-      `        </array>`,
-      `    <key>WorkingDirectory</key>`,
+      '        </array>',
+      '    <key>WorkingDirectory</key>',
       `         <string>${this.hbService.storagePath}</string>`,
-      `    <key>StandardOutPath</key>`,
+      '    <key>StandardOutPath</key>',
       `        <string>${this.hbService.storagePath}/homebridge.log</string>`,
-      `    <key>StandardErrorPath</key>`,
+      '    <key>StandardErrorPath</key>',
       `        <string>${this.hbService.storagePath}/homebridge.log</string>`,
-      `    <key>UserName</key>`,
+      '    <key>UserName</key>',
       `        <string>${this.user}</string>`,
-      `    <key>EnvironmentVariables</key>`,
-      `        <dict>`,
-      `            <key>PATH</key>`,
+      '    <key>EnvironmentVariables</key>',
+      '        <dict>',
+      '            <key>PATH</key>',
       `                <string>${process.env.PATH}</string>`,
-      `            <key>HOME</key>`,
+      '            <key>HOME</key>',
       `                <string>${this.getUserHomeDir()}</string>`,
-      `            <key>UIX_STORAGE_PATH</key>`,
+      '            <key>UIX_STORAGE_PATH</key>',
       `                <string>${this.hbService.storagePath}</string>`,
-      `        </dict>`,
-      `</dict>`,
-      `</plist>`,
+      '        </dict>',
+      '</dict>',
+      '</plist>',
     ].filter(x => x).join('\n');
 
     await fs.writeFile(this.plistPath, plistFileContents);

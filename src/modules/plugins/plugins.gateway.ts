@@ -15,7 +15,7 @@ import { WsAdminGuard } from '../../core/auth/guards/ws-admin-guard';
   exceptionFactory: ((err) => {
     console.error(err);
     return new WsException(err);
-  })
+  }),
 }))
 export class PluginsGateway {
 

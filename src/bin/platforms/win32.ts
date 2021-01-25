@@ -38,7 +38,7 @@ export class Win32Installer {
       await this.hbService.printPostInstallInstructions();
     } catch (e) {
       console.error(e.toString());
-      this.hbService.logger(`ERROR: Failed Operation`, 'fail');
+      this.hbService.logger('ERROR: Failed Operation', 'fail');
     }
   }
 
@@ -56,7 +56,7 @@ export class Win32Installer {
       this.hbService.logger(`Removed ${this.hbService.serviceName} Service`, 'succeed');
     } catch (e) {
       console.error(e.toString());
-      this.hbService.logger(`ERROR: Failed Operation`, 'fail');
+      this.hbService.logger('ERROR: Failed Operation', 'fail');
     }
   }
 
@@ -104,7 +104,7 @@ export class Win32Installer {
   /**
    * Rebuilds the Node.js modules for Homebridge Config UI X
    */
-  public async rebuild(all: boolean = false) {
+  public async rebuild(all = false) {
     this.checkIsAdmin();
 
     try {
@@ -116,14 +116,14 @@ export class Win32Installer {
       this.hbService.logger(`Rebuilt modules in ${process.env.UIX_BASE_PATH} for Node.js ${process.version}.`, 'succeed');
     } catch (e) {
       console.error(e.toString());
-      this.hbService.logger(`ERROR: Failed Operation`, 'fail');
+      this.hbService.logger('ERROR: Failed Operation', 'fail');
     }
   }
 
   /**
    * Returns the users uid and gid. Not used on Windows
    */
-  public async getId(): Promise<{ uid: number, gid: number }> {
+  public async getId(): Promise<{ uid: number; gid: number }> {
     return {
       uid: 0,
       gid: 0,
@@ -140,7 +140,7 @@ export class Win32Installer {
   /**
    * Update Node.js
    */
-  public updateNodejs(job: { target: string, rebuild: boolean }) {
+  public updateNodejs(job: { target: string; rebuild: boolean }) {
     this.hbService.logger('ERROR: This command is not supported on Windows.', 'fail');
     this.hbService.logger(`Please download Node.js v${job.target} from https://nodejs.org/en/download/ and install manually.`, 'fail');
   }
@@ -153,7 +153,7 @@ export class Win32Installer {
       child_process.execSync('fsutil dirty query %systemdrive% >nul');
     } catch (e) {
       this.hbService.logger('ERROR: This command must be run as an Administrator', 'fail');
-      this.hbService.logger(`Node.js command prompt shortcut -> Right Click -> Run as administrator`, 'fail');
+      this.hbService.logger('Node.js command prompt shortcut -> Right Click -> Run as administrator', 'fail');
       process.exit(1);
     }
   }
@@ -179,7 +179,7 @@ export class Win32Installer {
       axios({
         method: 'GET',
         url: downloadUrl,
-        responseType: 'stream'
+        responseType: 'stream',
       }).then((response) => {
         response.data.pipe(nssmFile)
           .on('finish', () => {
@@ -204,7 +204,7 @@ export class Win32Installer {
    */
   private async configureFirewall() {
     // firewall commands
-    const cleanFirewallCmd = `netsh advfirewall firewall Delete rule name="Homebridge"`;
+    const cleanFirewallCmd = 'netsh advfirewall firewall Delete rule name="Homebridge"';
     const openFirewallCmd = `netsh advfirewall firewall add rule name="Homebridge" dir=in action=allow program="${process.execPath}"`;
 
     // try and remove any existing rules so there are not any duplicates
@@ -218,7 +218,7 @@ export class Win32Installer {
     try {
       child_process.execSync(openFirewallCmd);
     } catch (e) {
-      this.hbService.logger(`Failed to configure firewall rule for Homebridge.`, 'warn');
+      this.hbService.logger('Failed to configure firewall rule for Homebridge.', 'warn');
       this.hbService.logger(e);
     }
   }

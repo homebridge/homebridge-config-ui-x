@@ -53,7 +53,7 @@ export class LinuxInstaller {
       await this.hbService.printPostInstallInstructions();
     } catch (e) {
       console.error(e.toString());
-      this.hbService.logger(`ERROR: Failed Operation`, 'fail');
+      this.hbService.logger('ERROR: Failed Operation', 'fail');
     }
   }
 
@@ -78,7 +78,7 @@ export class LinuxInstaller {
       this.hbService.logger(`Removed ${this.hbService.serviceName} Service`, 'succeed');
     } catch (e) {
       console.error(e.toString());
-      this.hbService.logger(`ERROR: Failed Operation`, 'fail');
+      this.hbService.logger('ERROR: Failed Operation', 'fail');
     }
   }
 
@@ -129,7 +129,7 @@ export class LinuxInstaller {
   /**
    * Rebuilds the Node.js modules for Homebridge Config UI X
    */
-  public async rebuild(all: boolean = false) {
+  public async rebuild(all = false) {
     try {
       this.checkForRoot();
       const npmGlobalPath = child_process.execSync('/bin/echo -n "$(npm --no-update-notifier -g prefix)/lib/node_modules"').toString('utf8');
@@ -155,14 +155,14 @@ export class LinuxInstaller {
       this.hbService.logger(`Rebuilt modules in ${process.env.UIX_BASE_PATH} for Node.js ${targetNodeVersion}.`, 'succeed');
     } catch (e) {
       console.error(e.toString());
-      this.hbService.logger(`ERROR: Failed Operation`, 'fail');
+      this.hbService.logger('ERROR: Failed Operation', 'fail');
     }
   }
 
   /**
    * Returns the users uid and gid.
    */
-  public async getId(): Promise<{ uid: number, gid: number }> {
+  public async getId(): Promise<{ uid: number; gid: number }> {
     if (process.getuid() === 0 && this.hbService.asUser) {
       const uid = child_process.execSync(`id -u ${this.hbService.asUser}`).toString('utf8');
       const gid = child_process.execSync(`id -g ${this.hbService.asUser}`).toString('utf8');
@@ -184,7 +184,7 @@ export class LinuxInstaller {
   public getPidOfPort(port: number) {
     try {
       if (this.hbService.docker) {
-        return child_process.execSync(`pidof homebridge`).toString('utf8').trim();
+        return child_process.execSync('pidof homebridge').toString('utf8').trim();
       } else {
         return child_process.execSync(`fuser ${port}/tcp 2>/dev/null`).toString('utf8').trim();
       }
@@ -196,7 +196,7 @@ export class LinuxInstaller {
   /**
    * Update Node.js
    */
-  public async updateNodejs(job: { target: string, rebuild: boolean }) {
+  public async updateNodejs(job: { target: string; rebuild: boolean }) {
     this.checkForRoot();
 
     // check target path
@@ -225,19 +225,19 @@ export class LinuxInstaller {
     if (await fs.pathExists(this.systemdServicePath)) {
       await this.restart();
     } else {
-      this.hbService.logger(`Please restart Homebridge for the changes to take effect.`, 'warn');
+      this.hbService.logger('Please restart Homebridge for the changes to take effect.', 'warn');
     }
   }
 
   /**
    * Update Node.js from the tarball archives
    */
-  private async updateNodeFromTarball(job: { target: string, rebuild: boolean }, targetPath: string) {
+  private async updateNodeFromTarball(job: { target: string; rebuild: boolean }, targetPath: string) {
     // only glibc linux >=2.24 is supported
     try {
       const glibcVersion = parseFloat(child_process.execSync('getconf GNU_LIBC_VERSION 2>/dev/null').toString().split('glibc')[1].trim());
       if (glibcVersion < 2.24) {
-        this.hbService.logger(`Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ` +
+        this.hbService.logger('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
           `Wanted: >=2.24. Installed: ${glibcVersion}`, 'fail');
         process.exit(1);
       }
@@ -301,8 +301,8 @@ export class LinuxInstaller {
   /**
    * Update the NodeSource repo and use it to update Node.js
    */
-  private async updateNodeFromNodesource(job: { target: string, rebuild: boolean }) {
-    this.hbService.logger(`Updating from NodeSource...`);
+  private async updateNodeFromNodesource(job: { target: string; rebuild: boolean }) {
+    this.hbService.logger('Updating from NodeSource...');
 
     try {
       const majorVersion = semver.parse(job.target).major;
@@ -313,13 +313,13 @@ export class LinuxInstaller {
 
       // remove current node.js if downgrading
       if (majorVersion < semver.parse(process.version).major) {
-        child_process.execSync(`apt-get remove -y nodejs`, {
+        child_process.execSync('apt-get remove -y nodejs', {
           stdio: 'inherit',
         });
       }
 
       // update node.js
-      child_process.execSync(`apt-get install -y nodejs`, {
+      child_process.execSync('apt-get install -y nodejs', {
         stdio: 'inherit',
       });
     } catch (e) {
@@ -443,11 +443,10 @@ export class LinuxInstaller {
           child_process.execSync(`chown -R ${serviceUser}: "${storagePath}"`);
         }
       } catch (e) {
-        this.hbService.logger(`WARNING: Failed to set permissions`, 'warn');
+        this.hbService.logger('WARNING: Failed to set permissions', 'warn');
       }
     }
   }
-
 
   /**
    * Opens the port in the firewall if required
@@ -490,7 +489,7 @@ export class LinuxInstaller {
         this.hbService.logger(`Added firewall rule to allow inbound traffic on port ${bridgePort}/tcp`, 'info');
       }
     } catch (e) {
-      this.hbService.logger(`WARNING: failed to allow ports through firewall.`, 'warn');
+      this.hbService.logger('WARNING: failed to allow ports through firewall.', 'warn');
     }
   }
 
@@ -520,10 +519,10 @@ export class LinuxInstaller {
       }
 
       // reload the firewall
-      child_process.execSync(`firewall-cmd --reload 2> /dev/null`);
-      this.hbService.logger(`Firewall reloaded`, 'info');
+      child_process.execSync('firewall-cmd --reload 2> /dev/null');
+      this.hbService.logger('Firewall reloaded', 'info');
     } catch (e) {
-      this.hbService.logger(`WARNING: failed to allow ports through firewall.`, 'warn');
+      this.hbService.logger('WARNING: failed to allow ports through firewall.', 'warn');
     }
   }
 
@@ -537,14 +536,14 @@ export class LinuxInstaller {
 
     const permissionScriptPath = path.resolve(this.runPartsPath, '10-fix-permissions');
     const permissionScript = [
-      `#!/bin/sh`,
-      ``,
-      `# Ensure the storage path permissions are correct`,
-      `if [ -n "$UIX_STORAGE_PATH" ] && [ -n "$USER" ]; then`,
-      `  echo "Ensuring $UIX_STORAGE_PATH is owned by $USER"`,
-      `  [ -d $UIX_STORAGE_PATH ] || mkdir -p $UIX_STORAGE_PATH`,
-      `  chown -R $USER: $UIX_STORAGE_PATH`,
-      `fi`,
+      '#!/bin/sh',
+      '',
+      '# Ensure the storage path permissions are correct',
+      'if [ -n "$UIX_STORAGE_PATH" ] && [ -n "$USER" ]; then',
+      '  echo "Ensuring $UIX_STORAGE_PATH is owned by $USER"',
+      '  [ -d $UIX_STORAGE_PATH ] || mkdir -p $UIX_STORAGE_PATH',
+      '  chown -R $USER: $UIX_STORAGE_PATH',
+      'fi',
     ].filter(x => x !== null).join('\n');
 
     await fs.writeFile(permissionScriptPath, permissionScript);
@@ -559,10 +558,10 @@ export class LinuxInstaller {
       `HOMEBRIDGE_OPTS=-I -U "${this.hbService.storagePath}"`,
       `UIX_STORAGE_PATH="${this.hbService.storagePath}"`,
       '',
-      `# To enable web terminals via homebridge-config-ui-x uncomment the following line`,
-      `HOMEBRIDGE_CONFIG_UI_TERMINAL=1`,
+      '# To enable web terminals via homebridge-config-ui-x uncomment the following line',
+      'HOMEBRIDGE_CONFIG_UI_TERMINAL=1',
       '',
-      `DISABLE_OPENCOLLECTIVE=true`,
+      'DISABLE_OPENCOLLECTIVE=true',
     ].filter(x => x !== null).join('\n');
 
     await fs.writeFile(this.systemdEnvPath, envFile);
@@ -573,28 +572,28 @@ export class LinuxInstaller {
    */
   private async createSystemdService() {
     const serviceFile = [
-      `[Unit]`,
+      '[Unit]',
       `Description=${this.hbService.serviceName}`,
-      `Wants=network-online.target`,
-      `After=syslog.target network-online.target`,
+      'Wants=network-online.target',
+      'After=syslog.target network-online.target',
       '',
-      `[Service]`,
-      `Type=simple`,
+      '[Service]',
+      'Type=simple',
       `User=${this.hbService.asUser}`,
-      `PermissionsStartOnly=true`,
+      'PermissionsStartOnly=true',
       `WorkingDirectory=${this.hbService.storagePath}`,
       `EnvironmentFile=/etc/default/${this.systemdServiceName}`,
       `ExecStartPre=-run-parts ${this.runPartsPath}`,
       `ExecStartPre=-${this.hbService.selfPath} before-start $HOMEBRIDGE_OPTS`,
       `ExecStart=${this.hbService.selfPath} run $HOMEBRIDGE_OPTS`,
-      `Restart=always`,
-      `RestartSec=3`,
-      `KillMode=process`,
-      `CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_CHOWN CAP_FOWNER CAP_DAC_OVERRIDE CAP_AUDIT_WRITE CAP_SYS_ADMIN`,
-      `AmbientCapabilities=CAP_NET_RAW CAP_NET_BIND_SERVICE`,
+      'Restart=always',
+      'RestartSec=3',
+      'KillMode=process',
+      'CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_CHOWN CAP_FOWNER CAP_DAC_OVERRIDE CAP_AUDIT_WRITE CAP_SYS_ADMIN',
+      'AmbientCapabilities=CAP_NET_RAW CAP_NET_BIND_SERVICE',
       '',
-      `[Install]`,
-      `WantedBy=multi-user.target`,
+      '[Install]',
+      'WantedBy=multi-user.target',
     ].filter(x => x !== null).join('\n');
 
     await fs.writeFile(this.systemdServicePath, serviceFile);

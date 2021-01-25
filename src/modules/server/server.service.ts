@@ -55,7 +55,7 @@ export class ServerService {
           }
         });
       } else {
-        this.logger.log(`No restart command defined, killing process...`);
+        this.logger.log('No restart command defined, killing process...');
         process.kill(process.pid, 'SIGTERM');
       }
     }, 500);
@@ -87,10 +87,9 @@ export class ServerService {
     await fs.remove(path.resolve(this.configService.storagePath, 'accessories'));
     await fs.remove(path.resolve(this.configService.storagePath, 'persist'));
 
-    this.logger.log(`Homebridge Reset: "persist" directory removed.`);
-    this.logger.log(`Homebridge Reset: "accessories" directory removed.`);
+    this.logger.log('Homebridge Reset: "persist" directory removed.');
+    this.logger.log('Homebridge Reset: "accessories" directory removed.');
   }
-
 
   /**
    * Return a list of the device pairings in the homebridge persist folder
@@ -304,7 +303,7 @@ export class ServerService {
    * Returns a list of network adapters on the current host
    */
   public async getSystemNetworkInterfaces(): Promise<si.Systeminformation.NetworkInterfacesData[]> {
-    const fromCache: si.Systeminformation.NetworkInterfacesData[] = this.serverServiceCache.get(`network-interfaces`);
+    const fromCache: si.Systeminformation.NetworkInterfacesData[] = this.serverServiceCache.get('network-interfaces');
 
     const networkInterfaces = fromCache || (await si.networkInterfaces()).filter((adapter) => {
       return !adapter.internal
@@ -314,7 +313,7 @@ export class ServerService {
     });
 
     if (!fromCache) {
-      this.serverServiceCache.set(`network-interfaces`, networkInterfaces);
+      this.serverServiceCache.set('network-interfaces', networkInterfaces);
     }
 
     return networkInterfaces;
@@ -397,7 +396,7 @@ export class ServerService {
    */
   private async nodeVersionChanged(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      let result: boolean = false;
+      let result = false;
 
       const child = child_process.spawn(process.execPath, ['-v']);
 

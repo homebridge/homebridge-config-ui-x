@@ -3,14 +3,16 @@
   "editor.insertSpaces": true,
   "files.eol": "\n",
   "editor.codeActionsOnSave": {
-    "source.fixAll.tslint": true
+    "source.fixAll.eslint": true
   },
   "editor.formatOnSave": true,
   "eslint.workingDirectories": [
+    ".",
     "./ui"
   ],
   "eslint.options": {
     "extensions": [
+      ".js",
       ".ts",
       ".html"
     ]

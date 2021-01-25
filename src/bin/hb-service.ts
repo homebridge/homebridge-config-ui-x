@@ -33,7 +33,7 @@ export class HomebridgeServiceHelper {
   public asUser;
   private log: fs.WriteStream | NodeJS.WriteStream;
   private homebridgeModulePath: string;
-  private homebridgePackage: { version: string, bin: { homebridge: string } };
+  private homebridgePackage: { version: string; bin: { homebridge: string } };
   private homebridgeBinary: string;
   private homebridge: child_process.ChildProcessWithoutNullStreams;
   private homebridgeStopped = true;
@@ -338,7 +338,7 @@ export class HomebridgeServiceHelper {
 
     // delay the launch of homebridge on Raspberry Pi 1/Zero by 20 seconds
     if (os.cpus().length === 1 && os.arch() === 'arm') {
-      this.logger(`Delaying Homebridge startup by 20 seconds on low powered server`);
+      this.logger('Delaying Homebridge startup by 20 seconds on low powered server');
       setTimeout(() => {
         this.runHomebridge();
       }, 20000);
@@ -567,17 +567,16 @@ export class HomebridgeServiceHelper {
     }
   }
 
-
   /**
    * Show a warning if the user is trying to install with NVM on Linux
    */
   private nvmCheck() {
     if (process.execPath.includes('nvm') && os.platform() === 'linux') {
       this.logger(
-        `WARNING: It looks like you are running Node.js via NVM (Node Version Manager).\n` +
-        `  Using hb-service with NVM may not work unless you have configured NVM for the\n` +
-        `  user this service will run as. See https://git.io/JUZ2g for instructions on how\n` +
-        `  to remove NVM, then follow the wiki instructions to install Node.js and Homebridge.`,
+        'WARNING: It looks like you are running Node.js via NVM (Node Version Manager).\n' +
+        '  Using hb-service with NVM may not work unless you have configured NVM for the\n' +
+        '  user this service will run as. See https://git.io/JUZ2g for instructions on how\n' +
+        '  to remove NVM, then follow the wiki instructions to install Node.js and Homebridge.',
         'warn'
       );
     }
@@ -590,7 +589,7 @@ export class HomebridgeServiceHelper {
     const defaultAdapter = await si.networkInterfaceDefault();
     const defaultInterface = (await si.networkInterfaces()).find(x => x.iface === defaultAdapter);
 
-    console.log(`\nManage Homebridge by going to one of the following in your browser:\n`);
+    console.log('\nManage Homebridge by going to one of the following in your browser:\n');
 
     console.log(`* http://localhost:${this.uiPort}`);
 
@@ -602,8 +601,8 @@ export class HomebridgeServiceHelper {
       console.log(`* http://[${defaultInterface.ip6}]:${this.uiPort}`);
     }
 
-    console.log(`\nDefault Username: admin`);
-    console.log(`Default Password: admin\n`);
+    console.log('\nDefault Username: admin');
+    console.log('Default Password: admin\n');
 
     this.logger('Homebridge Setup Complete', 'succeed');
   }
@@ -615,7 +614,7 @@ export class HomebridgeServiceHelper {
     const inUse = await tcpPortUsed.check(this.uiPort);
     if (inUse) {
       this.logger(`ERROR: Port ${this.uiPort} is already in use by another process on this host.`, 'fail');
-      this.logger(`You can specify another port using the --port flag, eg.`, 'fail');
+      this.logger('You can specify another port using the --port flag, eg.', 'fail');
       this.logger(`EXAMPLE: hb-service ${this.action} --port 8581`, 'fail');
       process.exit(1);
     }
@@ -702,7 +701,7 @@ export class HomebridgeServiceHelper {
       // check the bridge section exists
       if (!currentConfig.bridge) {
         currentConfig.bridge = await this.generateBridgeConfig();
-        this.logger(`Added missing Homebridge bridge section to the config.json`, 'info');
+        this.logger('Added missing Homebridge bridge section to the config.json', 'info');
         saveRequired = true;
       }
 
@@ -724,7 +723,7 @@ export class HomebridgeServiceHelper {
       if (currentConfig.plugins && Array.isArray(currentConfig.plugins)) {
         if (!currentConfig.plugins.includes('homebridge-config-ui-x')) {
           currentConfig.plugins.push('homebridge-config-ui-x');
-          this.logger(`Added homebridge-config-ui-x to the plugins array in the config.json`, 'info');
+          this.logger('Added homebridge-config-ui-x to the plugins array in the config.json', 'info');
           saveRequired = true;
         }
       }
@@ -745,7 +744,7 @@ export class HomebridgeServiceHelper {
     // if the port number potentially changed, we need to restart here when running the
     // raspbian image so the nginx config will be updated
     if (restartRequired && this.action === 'run' && await this.isRaspbianImage()) {
-      this.logger(`Restarting process after port number update.`, 'info');
+      this.logger('Restarting process after port number update.', 'info');
       process.exit(1);
     }
   }
@@ -1064,7 +1063,7 @@ export class HomebridgeServiceHelper {
         this.logger(`Installing Node.js ${wantedVersion.version} over ${process.version}...`, 'info');
         return this.installer.updateNodejs({
           target: wantedVersion.version,
-          rebuild: wantedVersion.modules !== process.versions.modules
+          rebuild: wantedVersion.modules !== process.versions.modules,
         });
       } else {
         this.logger(`v${requestedVersion} is not a valid Node.js version.`, 'info');
@@ -1076,7 +1075,7 @@ export class HomebridgeServiceHelper {
       this.logger(`Updating Node.js from ${process.version} to ${currentLts.version}...`, 'info');
       return this.installer.updateNodejs({
         target: currentLts.version,
-        rebuild: currentLts.modules !== process.versions.modules
+        rebuild: currentLts.modules !== process.versions.modules,
       });
     }
 
@@ -1087,7 +1086,7 @@ export class HomebridgeServiceHelper {
       this.logger(`Updating Node.js from ${process.version} to ${latestVersion.version}...`, 'info');
       return this.installer.updateNodejs({
         target: latestVersion.version,
-        rebuild: latestVersion.modules !== process.versions.modules
+        rebuild: latestVersion.modules !== process.versions.modules,
       });
     }
 

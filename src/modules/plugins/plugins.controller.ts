@@ -71,7 +71,7 @@ export class PluginsController {
   @UseGuards(AdminGuard)
   @ApiOperation({
     summary: 'Attempt to resolve the type (platform or accessory) and alias for a plugin.',
-    description: '**Warning**: pluginAlias and pluginType will be `null` if the type or alias could not be resolved.'
+    description: '**Warning**: pluginAlias and pluginType will be `null` if the type or alias could not be resolved.',
   })
   @ApiParam({ name: 'pluginName', type: 'string' })
   @Get('alias/:pluginName')

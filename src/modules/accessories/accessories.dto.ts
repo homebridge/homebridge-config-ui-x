@@ -7,7 +7,7 @@ export class AccessorySetCharacteristicDto {
   @IsString()
   characteristicType: string;
 
-  @ApiProperty({ required: true, type: 'string', title: 'Accepts a string, boolean, or integer value.', })
+  @ApiProperty({ required: true, type: 'string', title: 'Accepts a string, boolean, or integer value.' })
   @IsDefined()
   @IsNotEmpty()
   value: string | boolean | number;

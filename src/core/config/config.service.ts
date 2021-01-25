@@ -90,7 +90,7 @@ export class ConfigService {
     accessoryControl?: {
       debug?: boolean;
       instanceBlacklist?: string[];
-    }
+    };
     temp?: string;
     tempUnits?: string;
     loginWallpaper?: string;

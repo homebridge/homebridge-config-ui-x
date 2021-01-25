@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastify';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 
 import { AuthModule } from '../../src/core/auth/auth.module';
 import { ServerModule } from '../../src/modules/server/server.module';
@@ -64,8 +64,8 @@ describe('ServerController (e2e)', () => {
       path: '/auth/login',
       payload: {
         username: 'admin',
-        password: 'admin'
-      }
+        password: 'admin',
+      },
     })).json().access_token;
 
     // ensure it's clean
@@ -77,7 +77,6 @@ describe('ServerController (e2e)', () => {
     await fs.copy(path.resolve(__dirname, '../mocks', 'accessories'), accessoriesPath, { recursive: true });
   });
 
-
   it('PUT /server/restart', async () => {
     const mockRestartServer = jest.fn();
     serverService.restartServer = mockRestartServer;
@@ -87,11 +86,11 @@ describe('ServerController (e2e)', () => {
       path: '/server/restart',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
-    expect(mockRestartServer).toBeCalled();
+    expect(mockRestartServer).toHaveBeenCalled();
   });
 
   it('GET /server/qrcode.svg', async () => {
@@ -100,7 +99,7 @@ describe('ServerController (e2e)', () => {
       path: '/server/qrcode.svg',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -113,7 +112,7 @@ describe('ServerController (e2e)', () => {
       path: '/server/pairing',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -134,7 +133,7 @@ describe('ServerController (e2e)', () => {
       path: '/server/pairing',
       headers: {
         authorization,
-      }
+      },
     });
 
     // should return 503 - Service Unavailable
@@ -147,7 +146,7 @@ describe('ServerController (e2e)', () => {
       path: '/server/reset-homebridge-accessory',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -166,7 +165,7 @@ describe('ServerController (e2e)', () => {
       path: '/server/reset-cached-accessories',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -181,7 +180,7 @@ describe('ServerController (e2e)', () => {
       path: '/server/reset-cached-accessories',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(400);
@@ -196,7 +195,7 @@ describe('ServerController (e2e)', () => {
       path: '/server/cached-accessories',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -224,7 +223,7 @@ describe('ServerController (e2e)', () => {
       path: `/server/cached-accessories/${cachedAccessories[0].UUID}`,
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(204);
@@ -255,7 +254,7 @@ describe('ServerController (e2e)', () => {
       path: '/server/cached-accessories/xxxxxxxx',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(404);
@@ -272,7 +271,7 @@ describe('ServerController (e2e)', () => {
       path: '/server/pairings',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -285,7 +284,7 @@ describe('ServerController (e2e)', () => {
       path: '/server/pairings/67E41F0EA05D',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(204);
@@ -301,7 +300,7 @@ describe('ServerController (e2e)', () => {
       path: '/server/network-interfaces/system',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -314,7 +313,7 @@ describe('ServerController (e2e)', () => {
       path: '/server/network-interfaces/bridge',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -329,8 +328,8 @@ describe('ServerController (e2e)', () => {
         authorization,
       },
       payload: {
-        adapters: ['en0']
-      }
+        adapters: ['en0'],
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -348,8 +347,8 @@ describe('ServerController (e2e)', () => {
         authorization,
       },
       payload: {
-        adapters: []
-      }
+        adapters: [],
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -367,8 +366,8 @@ describe('ServerController (e2e)', () => {
         authorization,
       },
       payload: {
-        adapters: 'en0'
-      }
+        adapters: 'en0',
+      },
     });
 
     expect(res.statusCode).toEqual(400);
@@ -381,7 +380,7 @@ describe('ServerController (e2e)', () => {
       path: '/server/mdns-advertiser',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -398,7 +397,7 @@ describe('ServerController (e2e)', () => {
       path: '/server/mdns-advertiser',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -417,8 +416,8 @@ describe('ServerController (e2e)', () => {
         authorization,
       },
       payload: {
-        legacyAdvertiser: true
-      }
+        legacyAdvertiser: true,
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -440,8 +439,8 @@ describe('ServerController (e2e)', () => {
         authorization,
       },
       payload: {
-        legacyAdvertiser: false
-      }
+        legacyAdvertiser: false,
+      },
     });
 
     expect(res.statusCode).toEqual(200);

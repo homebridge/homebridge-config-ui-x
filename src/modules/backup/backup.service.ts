@@ -76,7 +76,7 @@ export class BackupService {
         'FFmpeg',             // ffmpeg
         'fdk-aac',            // ffmpeg
         '.git',               // git
-        'recordings'          // homebridge-camera-ui recordings path
+        'recordings',          // homebridge-camera-ui recordings path
       ].includes(path.basename(filePath))), // list of files not to include in the archive
     });
 
@@ -331,7 +331,7 @@ export class BackupService {
     client.emit('stdout', `Created: ${backupInfo.timestamp}\r\n`);
 
     // start restore
-    this.logger.warn(`Starting backup restore...`);
+    this.logger.warn('Starting backup restore...');
     client.emit('stdout', color.cyan('\r\nRestoring backup...\r\n\r\n'));
     await new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -344,7 +344,7 @@ export class BackupService {
         return true;
       },
     });
-    client.emit('stdout', color.yellow(`File restore complete.\r\n`));
+    client.emit('stdout', color.yellow('File restore complete.\r\n'));
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     // restore plugins
@@ -465,7 +465,7 @@ export class BackupService {
     client.emit('stdout', `Version: v${backupInfo.version}\r\n`);
 
     // start restore
-    this.logger.warn(`Starting hbfx restore...`);
+    this.logger.warn('Starting hbfx restore...');
     client.emit('stdout', color.cyan('\r\nRestoring hbfx backup...\r\n\r\n'));
     await new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -477,7 +477,7 @@ export class BackupService {
           'access.json',
           'dashboard.json',
           'layout.json',
-          'config.json'
+          'config.json',
         ].includes(path.basename(filePath))) {
           return false;
         }
@@ -512,7 +512,7 @@ export class BackupService {
       'roborock': 'homebridge-roborock',
       'shelly': 'homebridge-shelly',
       'wink': 'homebridge-wink3',
-      'homebridge-tuya-web': '@milo526/homebridge-tuya-web'
+      'homebridge-tuya-web': '@milo526/homebridge-tuya-web',
     };
 
     // install plugins
@@ -621,7 +621,7 @@ export class BackupService {
           // try get pid by name
           const getPidByName = (): number => {
             try {
-              return parseInt(child_process.execSync(`pidof homebridge`).toString('utf8').trim(), 10);
+              return parseInt(child_process.execSync('pidof homebridge').toString('utf8').trim(), 10);
             } catch (e) {
               return null;
             }

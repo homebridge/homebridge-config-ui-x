@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastify';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 
 import { AuthModule } from '../../src/core/auth/auth.module';
 import { HbServiceModule } from '../../src/modules/platform-tools/hb-service/hb-service.module';
@@ -63,7 +63,7 @@ describe('PlatformToolsHbService (e2e)', () => {
     configService.serviceMode = true;
     configService.ui.log = {
       method: 'file',
-      path: logFilePath
+      path: logFilePath,
     };
 
     // get auth token before each test
@@ -72,8 +72,8 @@ describe('PlatformToolsHbService (e2e)', () => {
       path: '/auth/login',
       payload: {
         username: 'admin',
-        password: 'admin'
-      }
+        password: 'admin',
+      },
     })).json().access_token;
   });
 
@@ -83,7 +83,7 @@ describe('PlatformToolsHbService (e2e)', () => {
       path: '/platform-tools/hb-service/homebridge-startup-settings',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -97,7 +97,7 @@ describe('PlatformToolsHbService (e2e)', () => {
       path: '/platform-tools/hb-service/homebridge-startup-settings',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -109,7 +109,7 @@ describe('PlatformToolsHbService (e2e)', () => {
       'HOMEBRIDGE_KEEP_ORPHANS': true,
       'HOMEBRIDGE_INSECURE': false,
       'ENV_DEBUG': '*',
-      'ENV_NODE_OPTIONS': '--inspect'
+      'ENV_NODE_OPTIONS': '--inspect',
     };
 
     const res = await app.inject({

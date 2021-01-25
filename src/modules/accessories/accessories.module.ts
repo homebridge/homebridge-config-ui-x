@@ -21,6 +21,6 @@ import { LoggerModule } from '../../core/logger/logger.module';
   ],
   controllers: [
     AccessoriesController,
-  ]
+  ],
 })
 export class AccessoriesModule { }

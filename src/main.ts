@@ -53,7 +53,7 @@ async function bootstrap() {
     hsts: false,
     frameguard: false,
     referrerPolicy: {
-      policy: 'no-referrer'
+      policy: 'no-referrer',
     },
     contentSecurityPolicy: {
       directives: {
@@ -109,9 +109,9 @@ async function bootstrap() {
       flows: {
         password: {
           tokenUrl: '/api/auth/login',
-          scopes: null
-        }
-      }
+          scopes: null,
+        },
+      },
     })
     .build();
 

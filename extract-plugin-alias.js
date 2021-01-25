@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+
 /**
  * This script "mocks" homebridge and is used to extract the plugin alias and type.
  */
@@ -31,8 +33,8 @@ const HomebridgeApiMock = {
   },
   version: 2.5,
   serverVersion: '1.2.3',
-  on: () => { },
-  emit: () => { },
+  on: () => { /** mock */ },
+  emit: () => { /** mock */ },
   hap: {
     Characteristic: new class Characteristic extends EventEmitter {
       constructor() {
@@ -41,9 +43,9 @@ const HomebridgeApiMock = {
           get() {
             return {
               UUID: '0000003E-0000-1000-8000-0026BB765291',
-            }
+            };
           }
-        })
+        });
       }
     },
     Service: {},
@@ -51,22 +53,22 @@ const HomebridgeApiMock = {
     Accessory: {},
     Bridge: {},
     uuid: {
-      generate: () => { }
+      generate: () => { /** mock */ }
     }
   },
   platformAccessory() {
     return {
-      addService() { },
-      getService() { },
-      removeService() { },
-      context() { },
-      services() { }
+      addService() { /** mock */ },
+      getService() { /** mock */ },
+      removeService() { /** mock */ },
+      context() { /** mock */ },
+      services() { /** mock */ }
     };
   },
-  registerPlatformAccessories() { },
-  unregisterPlatformAccessories() { },
-  publishExternalAccessories() { },
-  updatePlatformAccessories() { },
+  registerPlatformAccessories() { /** mock */ },
+  unregisterPlatformAccessories() { /** mock */ },
+  publishExternalAccessories() { /** mock */ },
+  updatePlatformAccessories() { /** mock */ },
   user: {
     configPath() {
       return path.join(process.cwd(), 'config.json');
@@ -89,9 +91,9 @@ function main() {
     const pluginPath = process.env.UIX_EXTRACT_PLUGIN_PATH;
     const pluginModules = require(pluginPath);
 
-    if (typeof pluginModules === "function") {
+    if (typeof pluginModules === 'function') {
       pluginInitializer = pluginModules;
-    } else if (pluginModules && typeof pluginModules.default === "function") {
+    } else if (pluginModules && typeof pluginModules.default === 'function') {
       pluginInitializer = pluginModules.default;
     } else {
       throw new Error(`Plugin ${pluginPath} does not export a initializer function from main.`);
