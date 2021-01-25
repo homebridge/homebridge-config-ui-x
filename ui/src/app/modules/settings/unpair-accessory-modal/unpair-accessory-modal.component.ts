@@ -3,7 +3,6 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
 import { ApiService } from '@/app/core/api.service';
-import { xor } from '@oznu/ngx-bs4-jsonform';
 
 @Component({
   selector: 'app-unpair-accessory-modal',

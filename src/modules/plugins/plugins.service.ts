@@ -646,6 +646,41 @@ export class PluginsService {
       configSchema.displayName = plugin.displayName;
     }
 
+    // inject schema for _bridge setting (this is hidden, but prevents it getting removed)
+    if (configSchema.schema) {
+      configSchema.schema.properties._bridge = {
+        type: 'object',
+        notitle: true,
+        condition: {
+          functionBody: 'return false'
+        },
+        properties: {
+          name: {
+            type: 'string',
+          },
+          username: {
+            type: 'string',
+          },
+          pin: {
+            type: 'string',
+          },
+          port: {
+            type: 'integer',
+            maximum: 65535,
+          },
+          setupID: {
+            type: 'string',
+          },
+          manufacturer: {
+            type: 'string',
+          },
+          model: {
+            type: 'string',
+          }
+        }
+      };
+    }
+
     return configSchema;
   }
 
