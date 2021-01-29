@@ -36,12 +36,16 @@ export class RemoveSingleCachedAccessoryModalComponent implements OnInit {
     }
   }
 
-  removeAccessory(uuid: string) {
-    this.deleting = uuid;
+  removeAccessory(item) {
+    this.deleting = item.UUID;
 
     this.toastr.info(this.translate.instant('reset.toast_removing_cached_accessory_please_wait'));
 
-    this.$api.delete(`/server/cached-accessories/${uuid}`).subscribe(
+    this.$api.delete(`/server/cached-accessories/${item.UUID}`, {
+      params: {
+        cacheFile: item.$cacheFile,
+      },
+    }).subscribe(
       async data => {
         await this.loadCachedAccessories();
 

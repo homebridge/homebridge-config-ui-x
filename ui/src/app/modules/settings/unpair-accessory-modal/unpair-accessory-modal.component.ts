@@ -29,7 +29,7 @@ export class UnpairAccessoryModalComponent implements OnInit {
       this.pairings = (await this.$api.get('/server/pairings').toPromise())
         .sort((a, b) => b._main ? 1 : -1);
     } catch (e) {
-      this.toastr.error('Paired accessories cloud not be loaded.', this.translate.instant('toast.title_error'));
+      this.toastr.error('Paired accessories could not be loaded.', this.translate.instant('toast.title_error'));
       this.activeModal.close();
     }
   }

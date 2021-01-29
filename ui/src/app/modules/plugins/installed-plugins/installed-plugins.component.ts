@@ -27,6 +27,7 @@ export class InstalledPluginsComponent implements OnInit, OnDestroy {
   private navigationSubscription;
 
   public canDisablePlugins = false;
+  public canManageBridgeSettings = false;
 
   constructor(
     public $auth: AuthService,
@@ -59,6 +60,10 @@ export class InstalledPluginsComponent implements OnInit, OnDestroy {
     // check if the homebridge version supports disabled plugins
     this.canDisablePlugins = this.$auth.env.homebridgeVersion ?
       gt(this.$auth.env.homebridgeVersion, '1.3.0-beta.46', { includePrerelease: true }) : false;
+
+    // check if the homebridge version supports external bridges
+    this.canManageBridgeSettings = this.$auth.env.homebridgeVersion ?
+      gt(this.$auth.env.homebridgeVersion, '1.3.0-experimental.6', { includePrerelease: true }) : false;
   }
 
   loadInstalledPlugins() {

@@ -1,6 +1,5 @@
 import { IsDefined, IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
 
-// tslint:disable-next-line: max-classes-per-file
 export class PluginActionDto {
   @IsDefined()
   @IsNotEmpty()
@@ -13,7 +12,6 @@ export class PluginActionDto {
   version?: string;
 }
 
-// tslint:disable-next-line: max-classes-per-file
 export class HomebridgeUpdateActionDto {
   @IsOptional()
   @IsString()

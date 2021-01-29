@@ -23,14 +23,15 @@
     </div>
 
     <div class="text-center w-100 d-flex justify-content-center ">
-      <div #qrcode style="width: 200px; height: 200px;"></div>
+      <app-qrcode [data]="otpString"></app-qrcode>
     </div>
 
     <div *ngIf="!timeDiffError" class="mt-4">
       <p>{{ 'users.setup_2fa_enter_code' | translate }}</p>
 
       <div class="form-group">
-        <input class="form-control" type="text" placeholder="eg. 123456" [formControl]="formGroup.controls['code']" autocomplete="one-time-code" autocapitalize="none" inputmode="numeric" pattern="[0-9]*">
+        <input class="form-control" type="text" placeholder="eg. 123456" [formControl]="formGroup.controls['code']"
+          autocomplete="one-time-code" autocapitalize="none" inputmode="numeric" pattern="[0-9]*">
       </div>
     </div>
 

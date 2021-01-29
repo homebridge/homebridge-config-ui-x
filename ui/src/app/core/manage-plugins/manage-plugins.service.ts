@@ -12,6 +12,7 @@ import { SettingsPluginsModalComponent } from './settings-plugins-modal/settings
 import { NodeUpdateRequiredModalComponent } from './node-update-required-modal/node-update-required-modal.component';
 import { ManualPluginConfigModalComponent } from './manual-plugin-config-modal/manual-plugin-config-modal.component';
 import { SelectPreviousVersionComponent } from './select-previous-version/select-previous-version.component';
+import { BridgePluginsModalComponent } from './bridge-plugins-modal/bridge-plugins-modal.component';
 
 @Injectable({
   providedIn: 'root',
@@ -85,10 +86,36 @@ export class ManagePluginsService {
     ref.componentInstance.plugin = plugin;
 
     return ref.result.then((targetVersion) => plugin.installedVersion && plugin.name !== 'homebridge' ?
-        this.updatePlugin(plugin, targetVersion) :
-        this.installPlugin(plugin.name, targetVersion)).catch(() => {
-      // do nothing
+      this.updatePlugin(plugin, targetVersion) :
+      this.installPlugin(plugin.name, targetVersion)).catch(() => {
+        // do nothing
+      });
+  }
+
+  /**
+   * Open the version selector
+   *
+   * @param plugin
+   */
+  async bridgeSettings(plugin) {
+    // load the plugins schema
+    let schema;
+    if (plugin.settingsSchema) {
+      try {
+        schema = await this.loadConfigSchema(plugin.name);
+      } catch (e) {
+        this.$toastr.error('Failed to load plugins config schema.');
+        return;
+      }
+    }
+
+    const ref = this.modalService.open(BridgePluginsModalComponent, {
+      size: 'lg',
+      backdrop: 'static',
     });
+
+    ref.componentInstance.schema = schema;
+    ref.componentInstance.plugin = plugin;
   }
 
   /**

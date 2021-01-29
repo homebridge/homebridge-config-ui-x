@@ -101,26 +101,44 @@ export class ServerService {
       .filter(x => x.match(/AccessoryInfo\.([A-F,a-f,0-9]+)\.json/));
 
     return Promise.all(devices.map(async (x) => {
-      const device = await fs.readJson(path.join(persistPath, x));
-
-      // filter out some properties
-      delete device.signSk;
-      delete device.signPk;
-      delete device.configHash;
-      delete device.setupID;
-
-      device._id = x.split('.')[1];
-      device._username = device._id.match(/.{1,2}/g).join(':');
-      device._main = this.configService.homebridgeConfig.bridge.username.toUpperCase() === device._username.toUpperCase();
-
-      try {
-        device._category = Object.entries(Categories).find(([name, value]) => value === device.category)[0].toLowerCase();
-      } catch (e) {
-        device._category = 'Other';
-      }
-
-      return device;
+      return await this.getDevicePairingById(x.split('.')[1]);
     }));
+  }
+
+  /**
+   * Return a single device paring
+   * @param deviceId 
+   */
+  public async getDevicePairingById(deviceId: string) {
+    const persistPath = path.join(this.configService.storagePath, 'persist');
+
+    let device;
+    try {
+      device = await fs.readJson(path.join(persistPath, `AccessoryInfo.${deviceId}.json`));
+    } catch (e) {
+      throw new NotFoundException();
+    }
+
+    device._id = deviceId;
+    device._username = device._id.match(/.{1,2}/g).join(':');
+    device._main = this.configService.homebridgeConfig.bridge.username.toUpperCase() === device._username.toUpperCase();
+    device._isParied = device.pairedClients && Object.keys(device.pairedClients).length > 0;
+    device._setupCode = this.generateSetupCode(device);
+
+    // filter out some properties
+    delete device.signSk;
+    delete device.signPk;
+    delete device.configHash;
+    delete device.pairedClients;
+    delete device.pairedClientsPermission;
+
+    try {
+      device._category = Object.entries(Categories).find(([name, value]) => value === device.category)[0].toLowerCase();
+    } catch (e) {
+      device._category = 'Other';
+    }
+
+    return device;
   }
 
   /**
@@ -146,34 +164,45 @@ export class ServerService {
   }
 
   /**
-   * Returns the cached accessories
+   * Returns all cached accessories
    */
   public async getCachedAccessories() {
-    const cachedAccessoriesFile = path.join(this.configService.storagePath, 'accessories', 'cachedAccessories');
+    const cachedAccessoriesDir = path.join(this.configService.storagePath, 'accessories');
 
-    if (!await fs.pathExists(cachedAccessoriesFile)) {
-      throw new NotFoundException();
-    }
+    const cachedAccessoryFiles = (await fs.readdir(cachedAccessoriesDir))
+      .filter(x => x.match(/cachedAccessories\.([A-F,0-9]+)/) || x === 'cachedAccessories');
 
-    return await fs.readJson(cachedAccessoriesFile);
+    const cachedAccessories = [];
+
+    await Promise.all(cachedAccessoryFiles.map(async (x) => {
+      const accessories = await fs.readJson(path.join(cachedAccessoriesDir, x));
+      for (const accessory of accessories) {
+        accessory.$cacheFile = x;
+        cachedAccessories.push(accessory);
+      }
+    }));
+
+    return cachedAccessories;
   }
 
   /**
    * Remove a single cached accessory
    */
-  public async deleteCachedAccessory(uuid: string) {
+  public async deleteCachedAccessory(uuid: string, cacheFile: string) {
+    cacheFile = cacheFile || 'cachedAccessories';
+
     if (!this.configService.serviceMode) {
       this.logger.error('The reset accessories cache command is only available in service mode');
       throw new BadRequestException('This command is only available in service mode');
     }
 
-    const cachedAccessoriesPath = path.resolve(this.configService.storagePath, 'accessories', 'cachedAccessories');
+    const cachedAccessoriesPath = path.resolve(this.configService.storagePath, 'accessories', cacheFile);
 
     this.logger.warn(`Sent request to hb-service to remove cached accessory with UUID: ${uuid}`);
 
     return await new Promise((resolve, reject) => {
       process.emit('message', 'deleteSingleCachedAccessory', async () => {
-        const cachedAccessories = await this.getCachedAccessories() as Array<any>;
+        const cachedAccessories = await fs.readJson(cachedAccessoriesPath) as Array<any>;
         const accessoryIndex = cachedAccessories.findIndex(x => x.UUID === uuid);
 
         if (accessoryIndex > -1) {
@@ -198,17 +227,23 @@ export class ServerService {
       throw new BadRequestException('This command is only available in service mode');
     }
 
+    const cachedAccessoriesDir = path.join(this.configService.storagePath, 'accessories');
+    const cachedAccessoryPaths = (await fs.readdir(cachedAccessoriesDir))
+      .filter(x => x.match(/cachedAccessories\.([A-F,0-9]+)/) || x === 'cachedAccessories')
+      .map(x => path.resolve(cachedAccessoriesDir, x));
+
     const cachedAccessoriesPath = path.resolve(this.configService.storagePath, 'accessories', 'cachedAccessories');
 
     this.logger.warn('Sent request to clear cached accesories to hb-service');
 
     process.emit('message', 'clearCachedAccessories', async () => {
       try {
-        if (await fs.pathExists(cachedAccessoriesPath)) {
-          this.logger.log('Clearing Cached Homebridge Accessories...');
-          await fs.unlink(cachedAccessoriesPath);
-          this.logger.warn(`Removed ${cachedAccessoriesPath}`);
-
+        this.logger.log('Clearing Cached Homebridge Accessories...');
+        for (const cachedAccessoriesPath of cachedAccessoryPaths) {
+          if (await fs.pathExists(cachedAccessoriesPath)) {
+            await fs.unlink(cachedAccessoriesPath);
+            this.logger.warn(`Removed ${cachedAccessoriesPath}`);
+          }
         }
       } catch (e) {
         this.logger.error(`Failed to clear Homebridge Accessories Cache at ${cachedAccessoriesPath}`);
@@ -239,7 +274,12 @@ export class ServerService {
     if (this.setupCode) {
       return this.setupCode;
     } else {
-      this.setupCode = await this.generateSetupCode();
+      if (!await fs.pathExists(this.accessoryInfoPath)) {
+        return null;
+      }
+
+      const accessoryInfo = await fs.readJson(this.accessoryInfoPath);
+      this.setupCode = this.generateSetupCode(accessoryInfo);
       return this.setupCode;
     }
   }
@@ -247,13 +287,7 @@ export class ServerService {
   /**
    * Generates the setup code
    */
-  private async generateSetupCode(): Promise<string> {
-    if (!await fs.pathExists(this.accessoryInfoPath)) {
-      return null;
-    }
-
-    const accessoryInfo = await fs.readJson(this.accessoryInfoPath);
-
+  private generateSetupCode(accessoryInfo): string {
     // this code is from https://github.com/KhaosT/HAP-NodeJS/blob/master/lib/Accessory.js#L369
     const buffer = bufferShim.alloc(8);
     const setupCode = parseInt(accessoryInfo.pincode.replace(/-/g, ''), 10);

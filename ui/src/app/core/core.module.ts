@@ -13,6 +13,7 @@ import { BackupRestoreComponent } from './backup-restore/backup-restore.componen
 import { ScheduledBackupsComponent } from './backup-restore/scheduled-backups/scheduled-backups.component';
 import { ConfirmComponent } from './components/confirm/confirm.component';
 import { SchemaFormComponent } from './components/schema-form/schema-form.component';
+import { QrcodeComponent } from './components/qrcode/qrcode.component';
 
 @NgModule({
   entryComponents: [
@@ -31,6 +32,7 @@ import { SchemaFormComponent } from './components/schema-form/schema-form.compon
     BackupRestoreComponent,
     ScheduledBackupsComponent,
     ConfirmComponent,
+    QrcodeComponent,
   ],
   imports: [
     CommonModule,
@@ -41,6 +43,7 @@ import { SchemaFormComponent } from './components/schema-form/schema-form.compon
   exports: [
     SpinnerComponent,
     SchemaFormComponent,
+    QrcodeComponent,
     ConvertTempPipe,
     ReplacePipe,
     ExternalLinkIconPipe,

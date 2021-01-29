@@ -3,6 +3,7 @@ import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
+import { gt } from 'semver';
 
 import { AuthService } from '@/app/core/auth/auth.service';
 import { ApiService } from '@/app/core/api.service';
@@ -20,6 +21,9 @@ export class SearchPluginsComponent implements OnInit, OnDestroy {
   public installedPlugins: any = [];
   public loading = true;
   private navigationSubscription;
+
+  public canDisablePlugins = false;
+  public canManageBridgeSettings = false;
 
   constructor(
     public $auth: AuthService,
@@ -50,6 +54,13 @@ export class SearchPluginsComponent implements OnInit, OnDestroy {
       }
     });
 
+    // check if the homebridge version supports disabled plugins
+    this.canDisablePlugins = this.$auth.env.homebridgeVersion ?
+      gt(this.$auth.env.homebridgeVersion, '1.3.0-beta.46', { includePrerelease: true }) : false;
+
+    // check if the homebridge version supports external bridges
+    this.canManageBridgeSettings = this.$auth.env.homebridgeVersion ?
+      gt(this.$auth.env.homebridgeVersion, '1.3.0-experimental.6', { includePrerelease: true }) : false;
   }
 
   search() {

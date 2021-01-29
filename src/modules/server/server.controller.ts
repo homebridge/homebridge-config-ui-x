@@ -1,6 +1,6 @@
-import { Controller, Get, UseGuards, Put, Header, Delete, Param, HttpCode, Body } from '@nestjs/common';
+import { Controller, Get, UseGuards, Put, Header, Delete, Param, HttpCode, Body, Query } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags, ApiBearerAuth, ApiParam, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiParam, ApiOperation, ApiQuery } from '@nestjs/swagger';
 
 import { ServerService } from './server.service';
 import { AdminGuard } from '../../core/auth/guards/admin.guard';
@@ -59,10 +59,11 @@ export class ServerController {
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Remove a single Homebridge cached accessory (hb-service only).' })
   @ApiParam({ name: 'uuid' })
+  @ApiQuery({ name: 'cacheFile' })
   @Delete('/cached-accessories/:uuid')
   @HttpCode(204)
-  deleteCachedAccessory(@Param('uuid') uuid: string) {
-    return this.serverService.deleteCachedAccessory(uuid);
+  deleteCachedAccessory(@Param('uuid') uuid: string, @Query('cacheFile') cacheFile?: string) {
+    return this.serverService.deleteCachedAccessory(uuid, cacheFile);
   }
 
   @UseGuards(AdminGuard)
@@ -70,6 +71,13 @@ export class ServerController {
   @Get('/pairings')
   getDevicePairings() {
     return this.serverService.getDevicePairings();
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Get a single device paring' })
+  @Get('/pairings/:deviceId')
+  getDevicePairingById(@Param('deviceId') deviceId: string) {
+    return this.serverService.getDevicePairingById(deviceId);
   }
 
   @UseGuards(AdminGuard)

@@ -84,6 +84,10 @@
               <button ngbDropdownItem *ngIf="plugin.publicPackage" (click)="$plugin.installPreviousVersion(plugin)">
                 <i class="fas fa-history"></i> {{ 'plugins.manage.message_install_previous_version' | translate }}
               </button>
+              <button ngbDropdownItem (click)="$plugin.bridgeSettings(plugin)"
+                *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x' && canManageBridgeSettings">
+                <i class="fas fa-project-diagram"></i> Bridge Settings
+              </button>
               <button ngbDropdownItem (click)="disablePlugin(plugin)"
                 *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x' && !plugin.disabled && canDisablePlugins">
                 <i class="far fa-times-circle"></i> {{ 'plugins.manage.disable' | translate }}
