@@ -22,6 +22,13 @@ export class ServerController {
     return this.serverService.restartServer();
   }
 
+  @UseGuards(AdminGuard)
+  @Put('/restart/:deviceId')
+  @ApiOperation({ summary: 'Restart a child bridge instance.' })
+  restartChildBridge(@Param('deviceId') deviceId: string) {
+    return this.serverService.restartChildBridge(deviceId);
+  }
+
   @Get('/pairing')
   @ApiOperation({ summary: 'Get the Homebridge HomeKit pairing information and status.' })
   getBridgePairingInformation() {

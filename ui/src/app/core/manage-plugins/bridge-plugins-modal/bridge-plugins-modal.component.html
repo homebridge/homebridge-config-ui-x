@@ -46,7 +46,7 @@
               </ngb-alert>
             </div>
             <div *ngIf="deviceInfo[item._bridge?.username]">
-              <div *ngIf="deviceInfo[item._bridge?.username]._isParied === false" class="w-100 d-flex flex-column">
+              <div *ngIf="deviceInfo[item._bridge?.username]._isPaired === false" class="w-100 d-flex flex-column">
                 <app-qrcode [data]="deviceInfo[item._bridge?.username]._setupCode" class="mr-auto ml-auto"></app-qrcode>
 
                 <p class="grey-text  mr-auto ml-auto text-center" style="max-width: 400px;"
@@ -54,11 +54,25 @@
                   Scan this code with the camera on your iOS device to add to Apple Home.
                 </p>
               </div>
-              <div *ngIf="deviceInfo[item._bridge?.username]._isParied === true" class="text-center">
-                <i class="fa fa-check-circle primary-text" style="font-size: 50px;"></i>
-                <p class="mt-2">
-                  Bridge Paired
-                </p>
+              <div *ngIf="deviceInfo[item._bridge?.username]._isPaired=== true">
+                <div class="text-center">
+                  <i class="fa fa-check-circle primary-text" style="font-size: 50px;"></i>
+                  <p class="mt-2">
+                    Bridge Paired
+                  </p>
+                </div>
+              </div>
+
+              <div class="text-right">
+                <button *ngIf="$auth.env.serviceMode" class="btn btn-primary waves-effect mr-0"
+                  [disabled]="restartInProgress[item._bridge?.username]"
+                  ngbTooltip="{{'menu.tooltip_restart' | translate}}" container="body" openDelay="150"
+                  (click)="restartChildBridge(item._bridge?.username)">
+                  <i class="fas fa-fw nav-menu-icon" [ngClass]="{
+                    'fa-power-off': !restartInProgress[item._bridge?.username],
+                    'fa-spinner fa-pulse': restartInProgress[item._bridge?.username]
+                  }"></i>
+                </button>
               </div>
             </div>
           </div>

@@ -49,7 +49,14 @@ export class PluginsController {
   @ApiParam({ name: 'pluginName', type: 'string' })
   @Get('config-schema/:pluginName')
   getPluginConfigSchema(@Param('pluginName') pluginName) {
-    return this.pluginsService.getPluginConfigSchema(pluginName);
+    console.log('did get called');
+    try {
+      return this.pluginsService.getPluginConfigSchema(pluginName);
+    } catch (e) {
+      console.log('did throw error');
+      console.error(e);
+    }
+    return;
   }
 
   @UseGuards(AdminGuard)

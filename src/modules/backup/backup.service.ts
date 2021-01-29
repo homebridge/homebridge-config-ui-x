@@ -76,7 +76,8 @@ export class BackupService {
         'FFmpeg',             // ffmpeg
         'fdk-aac',            // ffmpeg
         '.git',               // git
-        'recordings',          // homebridge-camera-ui recordings path
+        'recordings',         // homebridge-camera-ui recordings path
+        '.homebridge.sock',   // homebridge ipc socket
       ].includes(path.basename(filePath))), // list of files not to include in the archive
     });
 

@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 
 import { ApiService } from '@/app/core/api.service';
+import { AuthService } from '@/app/core/auth/auth.service';
 
 @Component({
   selector: 'app-bridge-plugins-modal',
@@ -14,14 +15,17 @@ export class BridgePluginsModalComponent implements OnInit {
   @Input() plugin;
   @Input() schema;
 
-  public saveInProgress = false;
   public configBlocks: any[] = [];
   public enabledBlocks: Record<number, boolean> = {};
   public usernameCache: Map<number, string> = new Map();
   public deviceInfo: Map<string, any> = new Map();
 
+  public saveInProgress = false;
+  public restartInProgress: Record<string, boolean> = {};
+
   constructor(
     public activeModal: NgbActiveModal,
+    public $auth: AuthService,
     private $api: ApiService,
     private $toastr: ToastrService,
     private $translate: TranslateService,
@@ -84,6 +88,27 @@ export class BridgePluginsModalComponent implements OnInit {
       );
     } finally {
       this.saveInProgress = false;
+    }
+  }
+
+  async restartChildBridge(username: string) {
+    this.restartInProgress[username] = true;
+    try {
+      await this.$api.put(`/server/restart/${username.replace(/:/g, '')}`, {}).toPromise();
+      this.$toastr.success(
+        'Child bridge restart requested.',
+        this.$translate.instant('toast.title_success'),
+      );
+    } catch (err) {
+      this.$toastr.error(
+        'Failed to restart bridge: ' + err.error?.message,
+        this.$translate.instant('toast.title_error'),
+      );
+      this.restartInProgress[username] = false;
+    } finally {
+      setTimeout(() => {
+        this.restartInProgress[username] = false;
+      }, 12000);
     }
   }
 

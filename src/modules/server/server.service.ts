@@ -122,7 +122,7 @@ export class ServerService {
     device._id = deviceId;
     device._username = device._id.match(/.{1,2}/g).join(':');
     device._main = this.configService.homebridgeConfig.bridge.username.toUpperCase() === device._username.toUpperCase();
-    device._isParied = device.pairedClients && Object.keys(device.pairedClients).length > 0;
+    device._isPaired = device.pairedClients && Object.keys(device.pairedClients).length > 0;
     device._setupCode = this.generateSetupCode(device);
 
     // filter out some properties
@@ -252,6 +252,31 @@ export class ServerService {
     });
 
     return;
+  }
+
+  /**
+   * Restart a single child bridge
+   */
+  public restartChildBridge(deviceId: string) {
+    if (!this.configService.serviceMode) {
+      this.logger.error('The restart child bridge command is only available in service mode');
+      throw new BadRequestException('This command is only available in service mode');
+    }
+
+    if (deviceId.length === 12) {
+      deviceId = deviceId.match(/.{1,2}/g).join(':');
+    }
+
+    return new Promise((resolve, reject) => {
+      process.emit('message', 'getHomebridgeChildProcess', (homebridge: child_process.ChildProcess) => {
+        if (homebridge && homebridge.connected) {
+          homebridge.send({ id: 'restartChildBridge', data: deviceId.toUpperCase() });
+          resolve(true);
+        } else {
+          reject(new ServiceUnavailableException('The Homebridge Service Is Unavailable'));
+        }
+      });
+    });
   }
 
   /**

@@ -647,7 +647,7 @@ export class PluginsService {
     }
 
     // inject schema for _bridge setting (this is hidden, but prevents it getting removed)
-    if (configSchema.schema) {
+    if (configSchema.schema && configSchema.schema.properties) {
       configSchema.schema.properties._bridge = {
         type: 'object',
         notitle: true,

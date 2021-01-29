@@ -289,7 +289,7 @@ describe('ServerController (e2e)', () => {
 
     expect(res.statusCode).toEqual(200);
     expect(res.json()._setupCode).toBeDefined();
-    expect(res.json()._isParied).toEqual(false);
+    expect(res.json()._isPaired).toEqual(false);
     expect(res.json()._username).toEqual('67:E4:1F:0E:A0:5D');
   });
 

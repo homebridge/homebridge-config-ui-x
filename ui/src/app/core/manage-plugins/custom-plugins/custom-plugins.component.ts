@@ -148,6 +148,10 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
           this.requestResponse(e, this.schema);
           break;
         }
+        case 'cachedAccessories.get': {
+          this.handleGetCachedAccessories(e);
+          break;
+        }
         case 'schema.show': {
           this.formEnd(); // do not show other forms at the same time
           this.showSchemaForm = true;
@@ -371,6 +375,14 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
       event: this.formId,
       data,
     }, environment.api.origin);
+  }
+
+  /**
+   * Handle the event to get a list of cached accessories
+   */
+  async handleGetCachedAccessories(event) {
+    const cachedAccessories = await this.$api.get('/server/cached-accessories').toPromise();
+    return this.requestResponse(event, cachedAccessories.filter(x => x.plugin === this.plugin.name));
   }
 
   async savePluginConfig(exit = false) {

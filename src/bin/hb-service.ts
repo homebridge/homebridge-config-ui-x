@@ -363,6 +363,9 @@ export class HomebridgeServiceHelper {
         case 'postBackupRestoreRestart': {
           return this.postBackupRestoreRestart();
         }
+        case 'getHomebridgeChildProcess': {
+          return this.getHomebridgeChildProcess(callback);
+        }
       }
     });
   }
@@ -1034,6 +1037,10 @@ export class HomebridgeServiceHelper {
     setTimeout(() => {
       process.kill(process.pid, 'SIGKILL');
     }, 500);
+  }
+
+  private getHomebridgeChildProcess(callback) {
+    callback(this.homebridge);
   }
 
   /**
