@@ -82,23 +82,24 @@
             </a>
             <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
               <button ngbDropdownItem *ngIf="plugin.publicPackage" (click)="$plugin.installPreviousVersion(plugin)">
-                <i class="fas fa-history"></i> {{ 'plugins.manage.message_install_previous_version' | translate }}
+                <i class="fas fa-fw  fa-history"></i> {{ 'plugins.manage.message_install_previous_version' | translate
+                }}
               </button>
               <button ngbDropdownItem (click)="$plugin.bridgeSettings(plugin)"
                 *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x' && canManageBridgeSettings">
-                <i class="fas fa-project-diagram"></i> Bridge Settings
+                <i class="fas fa-fw  fa-project-diagram"></i> Bridge Settings
               </button>
               <button ngbDropdownItem (click)="disablePlugin(plugin)"
                 *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x' && !plugin.disabled && canDisablePlugins">
-                <i class="far fa-times-circle"></i> {{ 'plugins.manage.disable' | translate }}
+                <i class="far fa-fw  fa-times-circle"></i> {{ 'plugins.manage.disable' | translate }}
               </button>
               <button ngbDropdownItem (click)="enablePlugin(plugin)"
                 *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x' && plugin.disabled">
-                <i class="far fa-check-circle"></i> {{ 'plugins.manage.enable' | translate }}
+                <i class="far fa-fw  fa-check-circle"></i> {{ 'plugins.manage.enable' | translate }}
               </button>
               <button ngbDropdownItem *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x'"
                 (click)="$plugin.uninstallPlugin(plugin)">
-                <i class="fas fa-trash"></i> {{ 'plugins.button_uninstall' | translate }}
+                <i class="fas fa-fw fa-trash"></i> {{ 'plugins.button_uninstall' | translate }}
               </button>
             </div>
           </span>
