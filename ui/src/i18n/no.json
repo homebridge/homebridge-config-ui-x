@@ -251,6 +251,7 @@
     "restart.toast_server_restart_error": "En feil oppsto med å sende omstartkommandoen til serveren",
     "restart.toast_server_restarted": "Serveren har startet på nytt",
     "restart.toast_sever_restart_timeout": "Serveren bruker lang tid på å komme tilbake online",
+    "settings.legacy_mdns_option": "Use Legacy mDNS Advertiser",
     "settings.manage_cache.help": "If an accessory you no longer have is still being displayed in HomeKit, you may need to remove it from the cache. You can choose to remove a single accessory from the cache, or remove all cached accessories.",
     "settings.network.label_interface_name": "Interface Name",
     "settings.network.label_ip_address": "IP Address",

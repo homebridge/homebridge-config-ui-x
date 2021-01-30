@@ -8,8 +8,6 @@ All notable changes to this project will be documented in this file. This projec
 
 * **i18n:** Macedonian (mk) language added by [@dimovskidamjan](https://github.com/dimovskidamjan) ([#1011](https://github.com/oznu/homebridge-config-ui-x/pull/1011))
   * The Homebridge UI is now available in 24 different languages!
-* **Homebridge:** Added the ability to swap between the `ciao` and `bonjour-hap` mdns advertisers (this feature will appear in *Homebridge Settings* when the upcoming release of Homebridge v1.3.0 is installed)
-* **Plugins:** Added the ability to disable plugins without having to uninstall them or remove their config from the Homebridge `config.json` file (this feature requires Homebridge v1.3.0 or later) ([#287](https://github.com/oznu/homebridge-config-ui-x/issues/287),[#790](https://github.com/oznu/homebridge-config-ui-x/issues/790),[#791](https://github.com/oznu/homebridge-config-ui-x/issues/791),[#864](https://github.com/oznu/homebridge-config-ui-x/issues/864),[#931](https://github.com/oznu/homebridge-config-ui-x/issues/931),[#990](https://github.com/oznu/homebridge-config-ui-x/issues/990),[#1029](https://github.com/oznu/homebridge-config-ui-x/issues/1029))
 
 ### Other Changes
 
@@ -19,6 +17,13 @@ All notable changes to this project will be documented in this file. This projec
 * **i18n:** Improvements to Catalan language translations ([#1042](https://github.com/oznu/homebridge-config-ui-x/pull/1042))
 * **i18n:** Improvements to Spanish language translations ([#1039](https://github.com/oznu/homebridge-config-ui-x/pull/1039))
 * **i18n:** Improvements to Turkish language translations ([#1041](https://github.com/oznu/homebridge-config-ui-x/pull/1041))
+
+### Homebridge v1.3.0 Features
+
+These features will appear in once Homebridge v1.3.0 or later is installed (currently in beta):
+
+* **Homebridge:** Added the ability to swap between the `ciao` and `bonjour-hap` mdns advertisers.
+* **Plugins:** Added the ability to disable plugins without having to uninstall them or remove their config from the Homebridge `config.json` file ([#287](https://github.com/oznu/homebridge-config-ui-x/issues/287),[#790](https://github.com/oznu/homebridge-config-ui-x/issues/790),[#791](https://github.com/oznu/homebridge-config-ui-x/issues/791),[#864](https://github.com/oznu/homebridge-config-ui-x/issues/864),[#931](https://github.com/oznu/homebridge-config-ui-x/issues/931),[#990](https://github.com/oznu/homebridge-config-ui-x/issues/990),[#1029](https://github.com/oznu/homebridge-config-ui-x/issues/1029))
 
 ### Bug Fixes
 

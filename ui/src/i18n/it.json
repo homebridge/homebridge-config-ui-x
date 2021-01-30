@@ -250,6 +250,7 @@
     "restart.toast_server_restart_error": "Si è verificato un errore durante l'invio del comando di riavvio al sistema",
     "restart.toast_server_restarted": "Sistema riavviato",
     "restart.toast_sever_restart_timeout": "Il sistema impiega molto tempo per tornare online",
+    "settings.legacy_mdns_option": "Use Legacy mDNS Advertiser",
     "settings.manage_cache.help": "Se un accessorio che non c'è più appare ancora in HomeKit potrebbe essere necessario cancellarlo dalla cache. È possibile scegliere di cancellare un singolo accessorio dalla cache, oppure tutti quelli memorizzati.",
     "settings.network.label_interface_name": "Nome dell'interfaccia",
     "settings.network.label_ip_address": "Indirizzo IP",

@@ -250,6 +250,7 @@
     "restart.toast_server_restart_error": "Terjadi kesalahan saat mengirim perintah mengulang kembali ke server",
     "restart.toast_server_restarted": "Server Dimulai Kembali",
     "restart.toast_sever_restart_timeout": "Server membutuhkan waktu lebih lama untuk kembali online",
+    "settings.legacy_mdns_option": "Use Legacy mDNS Advertiser",
     "settings.manage_cache.help": "Jika aksesoris yang tidak lagi Anda miliki masih ditampilkan di HomeKit, Anda mungkin perlu menghapusnya dari cache. Anda dapat memilih untuk menghapus satu aksesoris dari cache, atau menghapus semua aksesoris yang di-cache.",
     "settings.network.label_interface_name": "Interface Name",
     "settings.network.label_ip_address": "IP Address",

@@ -251,6 +251,7 @@
     "restart.toast_server_restart_error": "Beim Senden des Neustartbefehls an den Server ist ein Fehler aufgetreten",
     "restart.toast_server_restarted": "Server wurde neu gestartet",
     "restart.toast_sever_restart_timeout": "Der Server braucht lange, um wieder online zu gehen",
+    "settings.legacy_mdns_option": "Use Legacy mDNS Advertiser",
     "settings.manage_cache.help": "Wenn ein nicht mehr vorhandenes Gerät noch in HomeKit angezeigt wird, musst du es möglicherweise aus dem Cache entfernen. Du kannst entweder ein einzelnes Gerät oder alle zwischengespeicherten Geräte aus dem Cache entfernen.",
     "settings.network.label_interface_name": "Schnittstellen-Name",
     "settings.network.label_ip_address": "IP-Adresse",

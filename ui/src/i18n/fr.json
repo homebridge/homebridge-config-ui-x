@@ -251,6 +251,7 @@
     "restart.toast_server_restart_error": "Une erreur est survenue lors de l'envoi de la commande de redémarrage au serveur",
     "restart.toast_server_restarted": "Serveur redémarré",
     "restart.toast_sever_restart_timeout": "Le serveur met beaucoup de temps à revenir en ligne",
+    "settings.legacy_mdns_option": "Use Legacy mDNS Advertiser",
     "settings.manage_cache.help": "Si un accessoire que vous ne possédez plus est encore affiché dans HomeKit, vous pourriez avoir besoin de le supprimer du cache. Vous pouvez choisir de supprimer un seul accessoire ou bien la totalité des accessoires du cache.",
     "settings.network.label_interface_name": "Nom de l'Interface",
     "settings.network.label_ip_address": "Adresse IP",

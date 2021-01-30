@@ -251,6 +251,7 @@
     "restart.toast_server_restart_error": "재시작 명령을 서버로 보내는 중에 오류가 발생했습니다",
     "restart.toast_server_restarted": "서버 재시작됨",
     "restart.toast_sever_restart_timeout": "서버가 다시 온라인 상태로 돌아오는데 많은 시간이 소요되고 있습니다",
+    "settings.legacy_mdns_option": "Use Legacy mDNS Advertiser",
     "settings.manage_cache.help": "더 이상 가지고 있지 않은 액세서리가 HomeKit에 계속 표시되는 경우 캐시에서 제거해야 할 수 있습니다. 캐시에서 해당 액세서리만 제거하거나 또는 모든 캐시된 액세서리 제거를 선택할 수도 있습니다",
     "settings.network.label_interface_name": "인터페이스 이름",
     "settings.network.label_ip_address": "IP 주소",
