@@ -464,4 +464,19 @@ describe('ServerController (e2e)', () => {
     const config = await fs.readJson(configService.configPath);
     expect(config.mdns?.legacyAdvertiser).toEqual(false);
   });
+
+  it('GET /server/port/new', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/port/new',
+      headers: {
+        authorization,
+      },
+    });
+
+    expect(res.statusCode).toEqual(200);
+    expect(typeof res.json().port).toEqual('number');
+    expect(res.json().port).toBeGreaterThanOrEqual(30000);
+    expect(res.json().port).toBeLessThanOrEqual(60000);
+  });
 });
