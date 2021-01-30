@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## 4.37.0 (2020-01-30)
+## 4.37.0 (2021-01-30)
 
 ### Notable Changes
 
@@ -21,6 +21,10 @@ All notable changes to this project will be documented in this file. This projec
 * **i18n:** Improvements to Turkish language translations ([#1041](https://github.com/oznu/homebridge-config-ui-x/pull/1041))
 * **i18n:** Improvements to Traditional Chinese language translations ([#1045](https://github.com/oznu/homebridge-config-ui-x/pull/1045))
 
+### Bug Fixes
+
+* **Dashboard:** The battery accessory type is now correctly displayed in the Accessories widget ([#998](https://github.com/oznu/homebridge-config-ui-x/issues/998))
+
 ### Homebridge v1.3.0 Features
 
 These features will appear in once Homebridge v1.3.0 or later is installed (currently in beta):
@@ -28,9 +32,6 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 * **Homebridge:** Added the ability to swap between the `ciao` and `bonjour-hap` mdns advertisers.
 * **Plugins:** Added the ability to disable plugins without having to uninstall them or remove their config from the Homebridge `config.json` file ([#287](https://github.com/oznu/homebridge-config-ui-x/issues/287),[#790](https://github.com/oznu/homebridge-config-ui-x/issues/790),[#791](https://github.com/oznu/homebridge-config-ui-x/issues/791),[#864](https://github.com/oznu/homebridge-config-ui-x/issues/864),[#931](https://github.com/oznu/homebridge-config-ui-x/issues/931),[#990](https://github.com/oznu/homebridge-config-ui-x/issues/990),[#1029](https://github.com/oznu/homebridge-config-ui-x/issues/1029))
 
-### Bug Fixes
-
-* **Dashboard:** The battery accessory type is now correctly displayed in the Accessories widget ([#998](https://github.com/oznu/homebridge-config-ui-x/issues/998))
 
 ## 4.36.0 (2020-12-07)
 
