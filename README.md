@@ -248,9 +248,9 @@ This shows you the Homebridge accessories for all the Homebridge instances on yo
 The following browsers are supported by this plugin:
 
 * Chrome - latest
+* Edge - latest
 * Firefox - latest
 * Safari - 2 most recent major versions
-* Edge - 2 most recent major versions
 * iOS - 2 most recent major versions
 
 MS Internet Explorer (any version) is not supported!
