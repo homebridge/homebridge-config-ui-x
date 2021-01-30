@@ -24,7 +24,10 @@ export class ServerController {
 
   @UseGuards(AdminGuard)
   @Put('/restart/:deviceId')
-  @ApiOperation({ summary: 'Restart a child bridge instance.' })
+  @ApiOperation({
+    summary: 'Restart a child bridge instance.',
+    description: 'This method is only supported on setups running hb-service.'
+  })
   restartChildBridge(@Param('deviceId') deviceId: string) {
     return this.serverService.restartChildBridge(deviceId);
   }
@@ -94,6 +97,13 @@ export class ServerController {
   @HttpCode(204)
   deleteDevicePairing(@Param('deviceId') deviceId: string) {
     return this.serverService.deleteDevicePairing(deviceId);
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Return a random, unused port.' })
+  @Get('/port/new')
+  lookupUnusedPort() {
+    return this.serverService.lookupUnusedPort();
   }
 
   @UseGuards(AdminGuard)

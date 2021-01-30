@@ -53,7 +53,7 @@ export class BridgePluginsModalComponent implements OnInit {
     );
   }
 
-  toggleExternalBridge(block, enable: boolean, index: number) {
+  async toggleExternalBridge(block, enable: boolean, index: number) {
     if (!enable) {
       delete block._bridge;
       return;
@@ -61,10 +61,23 @@ export class BridgePluginsModalComponent implements OnInit {
 
     block._bridge = {
       username: this.usernameCache.get(index) || this.generateUsername(),
+      port: await this.getUnusedPort(),
     };
 
     this.usernameCache.set(index, block._bridge.username);
     this.getDeviceInfo(block._bridge.username);
+  }
+
+  async getUnusedPort() {
+    this.saveInProgress = true;
+    try {
+      const lookup = await this.$api.get(`/server/port/new`).toPromise();
+      return lookup.port;
+    } catch (e) {
+      return Math.floor(Math.random() * (60000 - 30000 + 1) + 30000);
+    } finally {
+      this.saveInProgress = false;
+    }
   }
 
   async getDeviceInfo(username: string) {

@@ -6,6 +6,7 @@ import * as qr from 'qr-image';
 import * as si from 'systeminformation';
 import * as NodeCache from 'node-cache';
 import * as child_process from 'child_process';
+import * as tcpPortUsed from 'tcp-port-used';
 import { Injectable, NotFoundException, BadRequestException, ServiceUnavailableException } from '@nestjs/common';
 import { Categories } from '@oznu/hap-client/dist/hap-types';
 
@@ -257,7 +258,7 @@ export class ServerService {
   /**
    * Restart a single child bridge
    */
-  public restartChildBridge(deviceId: string) {
+  public async restartChildBridge(deviceId: string) {
     if (!this.configService.serviceMode) {
       this.logger.error('The restart child bridge command is only available in service mode');
       throw new BadRequestException('This command is only available in service mode');
@@ -267,7 +268,7 @@ export class ServerService {
       deviceId = deviceId.match(/.{1,2}/g).join(':');
     }
 
-    return new Promise((resolve, reject) => {
+    await new Promise((resolve, reject) => {
       process.emit('message', 'getHomebridgeChildProcess', (homebridge: child_process.ChildProcess) => {
         if (homebridge && homebridge.connected) {
           homebridge.send({ id: 'restartChildBridge', data: deviceId.toUpperCase() });
@@ -277,6 +278,13 @@ export class ServerService {
         }
       });
     });
+
+    // reset the pool of discovered homebridge instances
+    this.accessoriesService.resetInstancePool();
+
+    return {
+      ok: true
+    };
   }
 
   /**
@@ -448,6 +456,20 @@ export class ServerService {
     await this.configEditorService.updateConfigFile(config);
 
     return;
+  }
+
+  /**
+   * Generate a random, unused port and return it
+   */
+  public async lookupUnusedPort() {
+    const randomPort = () => Math.floor(Math.random() * (60000 - 30000 + 1) + 30000);
+
+    let port = randomPort();
+    while (await tcpPortUsed.check(port)) {
+      port = randomPort();
+    }
+
+    return { port };
   }
 
   /**
