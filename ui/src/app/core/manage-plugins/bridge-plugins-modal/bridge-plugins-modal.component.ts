@@ -109,7 +109,7 @@ export class BridgePluginsModalComponent implements OnInit {
     try {
       await this.$api.put(`/server/restart/${username.replace(/:/g, '')}`, {}).toPromise();
       this.$toastr.success(
-        'Child bridge restart requested.',
+        this.$translate.instant('child_bridge.toast_restart_requested'),
         this.$translate.instant('toast.title_success'),
       );
     } catch (err) {

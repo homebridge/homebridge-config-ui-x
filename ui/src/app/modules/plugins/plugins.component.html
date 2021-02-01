@@ -82,12 +82,12 @@
             </a>
             <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
               <button ngbDropdownItem *ngIf="plugin.publicPackage" (click)="$plugin.installPreviousVersion(plugin)">
-                <i class="fas fa-fw fa-history"></i> {{ 'plugins.manage.message_install_previous_version' | translate
-                }}
+                <i class="fas fa-fw fa-history"></i>
+                {{ 'plugins.manage.message_install_previous_version' | translate }}
               </button>
               <button ngbDropdownItem (click)="$plugin.bridgeSettings(plugin)"
                 *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x' && canManageBridgeSettings">
-                <i class="fas fa-fw fa-project-diagram"></i> Bridge Settings
+                <i class="fas fa-fw fa-project-diagram"></i> {{ 'child_bridge.label_bridge_settings' | translate }}
               </button>
               <button ngbDropdownItem (click)="disablePlugin(plugin)"
                 *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x' && !plugin.disabled && canDisablePlugins">
