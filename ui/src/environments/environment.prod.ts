@@ -10,7 +10,7 @@ export const environment = {
   jwt: {
     tokenKey: 'access_token',
     allowedDomains: [document.location.host],
-    disallowedRoutes: [`${document.location.host}/api/auth/login`],
+    disallowedRoutes: [`${window.location.protocol}//${document.location.host}/api/auth/login`],
   },
   apiHttpOptions: {},
   owm: {

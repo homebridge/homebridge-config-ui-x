@@ -14,7 +14,7 @@ export const environment = {
   jwt: {
     tokenKey: 'access_token',
     allowedDomains: ['localhost:8080'],
-    disallowedRoutes: ['localhost:8080/api/auth/login'],
+    disallowedRoutes: ['http://localhost:8080/api/auth/login'],
   },
   apiHttpOptions: {
     withCredentials: true,
