@@ -38,7 +38,7 @@ export class HomebridgeIpcService extends EventEmitter {
   /**
    * Send a message to the homebridge child process
    */
-  private sendMessage(type: string, data: unknown) {
+  private sendMessage(type: string, data?: unknown) {
     if (this.homebridge && this.homebridge.connected) {
       this.homebridge.send({ id: type, data: data });
     } else {
@@ -62,7 +62,7 @@ export class HomebridgeIpcService extends EventEmitter {
       };
 
       this.once(responseEvent, listener);
-      this.homebridge.send({ id: requestEvent });
+      this.sendMessage(requestEvent);
     });
   }
 

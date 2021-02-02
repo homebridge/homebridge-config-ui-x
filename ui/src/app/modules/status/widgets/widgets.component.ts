@@ -14,6 +14,7 @@ import { SystemInfoWidgetComponent } from './system-info-widget/system-info-widg
 import { WeatherWidgetComponent } from './weather-widget/weather-widget.component';
 import { AccessoriesWidgetComponent } from './accessories-widget/accessories-widget.component';
 import { ClockWidgetComponent } from './clock-widget/clock-widget.component';
+import { ChildBridgeWidgetComponent } from './child-bridge-widget/child-bridge-widget.component';
 
 @Component({
   selector: 'app-widgets',
@@ -34,6 +35,7 @@ export class WidgetsComponent implements OnInit, OnDestroy {
     WeatherWidgetComponent,
     AccessoriesWidgetComponent,
     ClockWidgetComponent,
+    ChildBridgeWidgetComponent,
   };
 
   private componentRef;

@@ -44,6 +44,14 @@ export class WidgetAddComponent implements OnInit {
       hideOnMobile: false,
     },
     {
+      name: 'Child Bridge Status',
+      component: 'ChildBridgeWidgetComponent',
+      hidden: !this.$auth.env.serviceMode,
+      cols: 5,
+      rows: 9,
+      mobileOrder: 35,
+    },
+    {
       name: this.translate.instant('status.cpu.title_cpu'),
       component: 'CpuWidgetComponent',
       hidden: false,

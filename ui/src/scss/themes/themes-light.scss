@@ -29,6 +29,13 @@
       }
     }
 
+    .icon-button {
+      cursor: pointer;
+      &:hover {
+        color: $primary !important;
+      }
+    }
+
     .nav-tabs {
       border-bottom: 1px solid $primary;
       .nav-link {

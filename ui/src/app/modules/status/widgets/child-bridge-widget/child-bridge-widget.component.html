@@ -1,0 +1,28 @@
+<div class="flex-column d-flex align-items-stretch h-100 w-100 pb-1 overflow-auto no-scrollbars">
+  <div style="cursor: move;" class="drag-handler pl-2 pt-1 pb-1 pr-2">
+    {{ 'child_bridge.label_child_bridges' | translate }}
+  </div>
+  <div class="d-flex flex-wrap w-100 pl-2 pr-2">
+
+    <ul class="list-group w-100 gridster-item-content">
+      <li class="list-group-item pl-2 pr-2 d-flex flex-row justify-content-between" *ngFor="let bridge of childBridges">
+        <div class="flex-child">
+
+          <i class="fas fa-circle mr-1" [ngClass]="{
+          'green-text': bridge.status === 'ok',
+          'text-warning': bridge.status === 'pending',
+          'red-text': bridge.status === 'down'
+        }"></i>
+          {{ bridge.name }}
+        </div>
+
+        <div style="min-width: 48px;" class="grey-text text-right">
+          <i *ngIf="!bridge.restartInProgress" class="fa-fw icon-button fas fa-power-off"
+            (click)="restartChildBridge(bridge)" ngbTooltip="{{'menu.tooltip_restart' | translate}}" container="body"
+            openDelay="150" [placement]="['left', 'top', 'bottom']"></i>
+          <i *ngIf="bridge.restartInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
