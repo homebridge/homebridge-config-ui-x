@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Other Changes
 
-* **i18n:** Improvements to Polish language translations ([#1047](https://github.com/oznu/homebridge-config-ui-x/pull/1047))
+* **i18n:** Improvements to Polish language translations ([#1047](https://github.com/oznu/homebridge-config-ui-x/pull/1047),[#1049](https://github.com/oznu/homebridge-config-ui-x/pull/1049))
 
 ## 4.37.0 (2021-01-30)
 

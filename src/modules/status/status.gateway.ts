@@ -121,6 +121,11 @@ export class StatusGateway {
     }
   }
 
+  @SubscribeMessage('monitor-server-status')
+  async serverStatus(client, payload) {
+    this.statusService.watchStats(client);
+  }
+
   @SubscribeMessage('get-homebridge-child-bridge-status')
   async getChildBridges(client, payload) {
     try {
@@ -130,9 +135,9 @@ export class StatusGateway {
     }
   }
 
-  @SubscribeMessage('monitor-server-status')
-  async serverStatus(client, payload) {
-    this.statusService.watchStats(client);
+  @SubscribeMessage('monitor-child-bridge-status')
+  async watchChildBridgeStatus(client, payload) {
+    this.statusService.watchChildBridgeStatus(client);
   }
 
 }

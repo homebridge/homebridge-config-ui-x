@@ -27,6 +27,7 @@ import { WidgetAddComponent } from './widget-add/widget-add.component';
 import { WeatherWidgetComponent } from './widgets/weather-widget/weather-widget.component';
 import { AccessoriesWidgetComponent } from './widgets/accessories-widget/accessories-widget.component';
 import { ClockWidgetComponent } from './widgets/clock-widget/clock-widget.component';
+import { ChildBridgeWidgetComponent } from './widgets/child-bridge-widget/child-bridge-widget.component';
 
 @NgModule({
   entryComponents: [
@@ -43,6 +44,7 @@ import { ClockWidgetComponent } from './widgets/clock-widget/clock-widget.compon
     WeatherWidgetComponent,
     AccessoriesWidgetComponent,
     ClockWidgetComponent,
+    ChildBridgeWidgetComponent,
   ],
   declarations: [
     StatusComponent,
@@ -60,6 +62,7 @@ import { ClockWidgetComponent } from './widgets/clock-widget/clock-widget.compon
     WeatherWidgetComponent,
     AccessoriesWidgetComponent,
     ClockWidgetComponent,
+    ChildBridgeWidgetComponent,
   ],
   imports: [
     CommonModule,

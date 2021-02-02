@@ -76,6 +76,7 @@
     "backup.title_scheduled_backups": "Scheduled Backups",
     "child_bridge.label_bridge_paired": "Bridge Paired",
     "child_bridge.label_bridge_settings": "Bridge Settings",
+    "child_bridge.label_child_bridges": "Child Bridges",
     "child_bridge.message_about": "Homebridge allows you to run your plugin's platform or accessory as an isolated child bridge. This can improve the general responsiveness and reliability of Homebridge.",
     "child_bridge.message_child_bridges_must_be_paired_seperately": "Each child bridge platform or accessory will need to be paired with HomeKit seperately.",
     "child_bridge.message_must_configure_plugin_first": "You need to configure this plugin before you can manage it's bridge settings.",

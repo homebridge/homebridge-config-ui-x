@@ -109,6 +109,13 @@
       }
     }
 
+    .icon-button {
+      cursor: pointer;
+      &:hover {
+        color: $darkModePrimary !important;
+      }
+    }
+
     hr {
       border-color: $darkModePrimary;
       background-color: $darkModePrimary;
