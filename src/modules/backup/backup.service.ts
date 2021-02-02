@@ -13,6 +13,7 @@ import { FastifyReply } from 'fastify';
 import { PluginsService } from '../plugins/plugins.service';
 import { SchedulerService } from '../../core/scheduler/scheduler.service';
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
+import { HomebridgeIpcService } from '../..//core/homebridge-ipc/homebridge-ipc.service';
 import { Logger } from '../../core/logger/logger.service';
 import { HomebridgePlugin } from '../plugins/types';
 
@@ -24,6 +25,7 @@ export class BackupService {
     private readonly configService: ConfigService,
     private readonly pluginsService: PluginsService,
     private readonly schedulerService: SchedulerService,
+    private readonly homebridgeIpcService: HomebridgeIpcService,
     private readonly logger: Logger,
   ) {
     this.scheduleInstanceBackups();
@@ -581,7 +583,15 @@ export class BackupService {
     setTimeout(() => {
       // if running in service mode
       if (this.configService.serviceMode) {
-        return process.emit('message', 'postBackupRestoreRestart', undefined);
+        // kill homebridge
+        this.homebridgeIpcService.killHomebridge();
+
+        // kill self
+        setTimeout(() => {
+          process.kill(process.pid, 'SIGKILL');
+        }, 500);
+
+        return;
       }
 
       // if running in docker

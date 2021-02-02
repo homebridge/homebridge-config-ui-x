@@ -210,14 +210,6 @@ describe('ServerController (e2e)', () => {
     let cachedAccessories = await fs.readJson(path.resolve(accessoriesPath, 'cachedAccessories'));
     expect(cachedAccessories).toHaveLength(1);
 
-    const listener = (event, callback) => {
-      if (event === 'deleteSingleCachedAccessory') {
-        callback();
-      }
-    };
-
-    process.addListener('message', listener);
-
     const res = await app.inject({
       method: 'DELETE',
       path: `/server/cached-accessories/${cachedAccessories[0].UUID}`,
@@ -227,7 +219,6 @@ describe('ServerController (e2e)', () => {
     });
 
     expect(res.statusCode).toEqual(204);
-    process.removeListener('message', listener);
 
     // check the cached accessory was removed
     cachedAccessories = await fs.readJson(path.resolve(accessoriesPath, 'cachedAccessories'));
@@ -242,13 +233,6 @@ describe('ServerController (e2e)', () => {
     let cachedAccessories = await fs.readJson(path.resolve(accessoriesPath, 'cachedAccessories'));
     expect(cachedAccessories).toHaveLength(1);
 
-    const listener = (event, callback) => {
-      if (event === 'deleteSingleCachedAccessory') {
-        callback();
-      }
-    };
-    process.addListener('message', listener);
-
     const res = await app.inject({
       method: 'DELETE',
       path: '/server/cached-accessories/xxxxxxxx',
@@ -258,7 +242,6 @@ describe('ServerController (e2e)', () => {
     });
 
     expect(res.statusCode).toEqual(404);
-    process.removeListener('message', listener);
 
     // check the cached accessory was not removed
     cachedAccessories = await fs.readJson(path.resolve(accessoriesPath, 'cachedAccessories'));

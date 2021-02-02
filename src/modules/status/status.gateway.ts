@@ -121,6 +121,15 @@ export class StatusGateway {
     }
   }
 
+  @SubscribeMessage('get-homebridge-child-bridge-status')
+  async getChildBridges(client, payload) {
+    try {
+      return await this.statusService.getChildBridges();
+    } catch (e) {
+      return new WsException(e.message);
+    }
+  }
+
   @SubscribeMessage('monitor-server-status')
   async serverStatus(client, payload) {
     this.statusService.watchStats(client);

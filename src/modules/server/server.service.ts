@@ -7,11 +7,12 @@ import * as si from 'systeminformation';
 import * as NodeCache from 'node-cache';
 import * as child_process from 'child_process';
 import * as tcpPortUsed from 'tcp-port-used';
-import { Injectable, NotFoundException, BadRequestException, ServiceUnavailableException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ServiceUnavailableException, InternalServerErrorException } from '@nestjs/common';
 import { Categories } from '@oznu/hap-client/dist/hap-types';
 
 import { Logger } from '../../core/logger/logger.service';
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
+import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service';
 import { ConfigEditorService } from '../config-editor/config-editor.service';
 import { AccessoriesService } from '../accessories/accessories.service';
 import { HomebridgeMdnsSettingDto } from './server.dto';
@@ -29,6 +30,7 @@ export class ServerService {
     private readonly configService: ConfigService,
     private readonly configEditorService: ConfigEditorService,
     private readonly accessoriesService: AccessoriesService,
+    private readonly homebridgeIpcService: HomebridgeIpcService,
     private readonly logger: Logger,
   ) { }
 
@@ -40,8 +42,9 @@ export class ServerService {
 
     if (this.configService.serviceMode && !(await this.configService.uiRestartRequired() || await this.nodeVersionChanged())) {
       this.logger.log('UI / Bridge settings have not changed; only restarting Homebridge process');
-      // emit restart request to hb-service
-      process.emit('message', 'restartHomebridge', undefined);
+      // restart homebridge by killing child process
+      this.homebridgeIpcService.restartHomebridge();
+
       // reset the pool of discovered homebridge instances
       this.accessoriesService.resetInstancePool();
       return { ok: true, command: 'SIGTERM', restartingUI: false };
@@ -199,24 +202,24 @@ export class ServerService {
 
     const cachedAccessoriesPath = path.resolve(this.configService.storagePath, 'accessories', cacheFile);
 
-    this.logger.warn(`Sent request to hb-service to remove cached accessory with UUID: ${uuid}`);
+    this.logger.warn(`Shutting down Homebridge before removing cached accessory: ${uuid}`);
 
-    return await new Promise((resolve, reject) => {
-      process.emit('message', 'deleteSingleCachedAccessory', async () => {
-        const cachedAccessories = await fs.readJson(cachedAccessoriesPath) as Array<any>;
-        const accessoryIndex = cachedAccessories.findIndex(x => x.UUID === uuid);
+    // wait for homebridge to stop.
+    await this.homebridgeIpcService.restartAndWaitForClose();
 
-        if (accessoryIndex > -1) {
-          cachedAccessories.splice(accessoryIndex, 1);
-          await fs.writeJson(cachedAccessoriesPath, cachedAccessories);
-          this.logger.warn(`Removed cached accessory with UUID: ${uuid}`);
-          resolve(true);
-        } else {
-          this.logger.error(`Cannot find cached accessory with UUID: ${uuid}`);
-          reject(new NotFoundException());
-        }
-      });
-    });
+    const cachedAccessories = await fs.readJson(cachedAccessoriesPath) as Array<any>;
+    const accessoryIndex = cachedAccessories.findIndex(x => x.UUID === uuid);
+
+    if (accessoryIndex > -1) {
+      cachedAccessories.splice(accessoryIndex, 1);
+      await fs.writeJson(cachedAccessoriesPath, cachedAccessories);
+      this.logger.warn(`Removed cached accessory with UUID: ${uuid}`);
+    } else {
+      this.logger.error(`Cannot find cached accessory with UUID: ${uuid}`);
+      throw new NotFoundException();
+    }
+
+    return { ok: true };
   }
 
   /**
@@ -235,24 +238,26 @@ export class ServerService {
 
     const cachedAccessoriesPath = path.resolve(this.configService.storagePath, 'accessories', 'cachedAccessories');
 
-    this.logger.warn('Sent request to clear cached accesories to hb-service');
+    // wait for homebridge to stop.
+    await this.homebridgeIpcService.restartAndWaitForClose();
 
-    process.emit('message', 'clearCachedAccessories', async () => {
-      try {
-        this.logger.log('Clearing Cached Homebridge Accessories...');
-        for (const cachedAccessoriesPath of cachedAccessoryPaths) {
-          if (await fs.pathExists(cachedAccessoriesPath)) {
-            await fs.unlink(cachedAccessoriesPath);
-            this.logger.warn(`Removed ${cachedAccessoriesPath}`);
-          }
+    this.logger.warn('Shutting down Homebridge before removing cached accessories');
+
+    try {
+      this.logger.log('Clearing Cached Homebridge Accessories...');
+      for (const cachedAccessoriesPath of cachedAccessoryPaths) {
+        if (await fs.pathExists(cachedAccessoriesPath)) {
+          await fs.unlink(cachedAccessoriesPath);
+          this.logger.warn(`Removed ${cachedAccessoriesPath}`);
         }
-      } catch (e) {
-        this.logger.error(`Failed to clear Homebridge Accessories Cache at ${cachedAccessoriesPath}`);
-        console.error(e);
       }
-    });
+    } catch (e) {
+      this.logger.error(`Failed to clear Homebridge Accessories Cache at ${cachedAccessoriesPath}`);
+      console.error(e);
+      throw new InternalServerErrorException('Failed to clear Homebridge accessory cache - see logs.');
+    }
 
-    return;
+    return { ok: true };
   }
 
   /**
@@ -268,16 +273,7 @@ export class ServerService {
       deviceId = deviceId.match(/.{1,2}/g).join(':');
     }
 
-    await new Promise((resolve, reject) => {
-      process.emit('message', 'getHomebridgeChildProcess', (homebridge: child_process.ChildProcess) => {
-        if (homebridge && homebridge.connected) {
-          homebridge.send({ id: 'restartChildBridge', data: deviceId.toUpperCase() });
-          resolve(true);
-        } else {
-          reject(new ServiceUnavailableException('The Homebridge Service Is Unavailable'));
-        }
-      });
-    });
+    await this.homebridgeIpcService.restartChildBridge(deviceId);
 
     // reset the pool of discovered homebridge instances
     this.accessoriesService.resetInstancePool();

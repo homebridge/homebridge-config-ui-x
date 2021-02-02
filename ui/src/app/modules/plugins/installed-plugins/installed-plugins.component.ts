@@ -63,7 +63,7 @@ export class InstalledPluginsComponent implements OnInit, OnDestroy {
 
     // check if the homebridge version supports external bridges
     this.canManageBridgeSettings = this.$auth.env.homebridgeVersion ?
-      gt(this.$auth.env.homebridgeVersion, '1.3.0-experimental.6', { includePrerelease: true }) : false;
+      gt(this.$auth.env.homebridgeVersion, '1.3.0-beta.47', { includePrerelease: true }) : false;
   }
 
   loadInstalledPlugins() {

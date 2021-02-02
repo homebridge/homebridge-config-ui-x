@@ -23,6 +23,8 @@ import { Win32Installer } from './platforms/win32';
 import { LinuxInstaller } from './platforms/linux';
 import { DarwinInstaller } from './platforms/darwin';
 
+import type { HomebridgeIpcService } from '../core/homebridge-ipc/homebridge-ipc.service';
+
 export class HomebridgeServiceHelper {
   public action: 'install' | 'uninstall' | 'start' | 'stop' | 'restart' | 'rebuild' | 'run' | 'logs' | 'update-node' | 'before-start' | 'status';
   public selfPath = __filename;
@@ -52,6 +54,9 @@ export class HomebridgeServiceHelper {
   public uiPort = 8581;
 
   private installer: Win32Installer | LinuxInstaller | DarwinInstaller;
+
+  // ui services
+  private ipcService: HomebridgeIpcService;
 
   get logPath(): string {
     return path.resolve(this.storagePath, 'homebridge.log');
@@ -337,6 +342,9 @@ export class HomebridgeServiceHelper {
     // start homebridge
     this.startExitHandler();
 
+    // start the ui
+    await this.runUi();
+
     // delay the launch of homebridge on Raspberry Pi 1/Zero by 20 seconds
     if (os.cpus().length === 1 && os.arch() === 'arm') {
       this.logger('Delaying Homebridge startup by 20 seconds on low powered server');
@@ -346,29 +354,6 @@ export class HomebridgeServiceHelper {
     } else {
       this.runHomebridge();
     }
-
-    // start the ui
-    this.runUi();
-
-    process.addListener('message', (event, callback) => {
-      switch (event) {
-        case 'clearCachedAccessories': {
-          return this.clearHomebridgeCachedAccessories(callback);
-        }
-        case 'deleteSingleCachedAccessory': {
-          return this.clearHomebridgeCachedAccessories(callback);
-        }
-        case 'restartHomebridge': {
-          return this.restartHomebridge();
-        }
-        case 'postBackupRestoreRestart': {
-          return this.postBackupRestoreRestart();
-        }
-        case 'getHomebridgeChildProcess': {
-          return this.getHomebridgeChildProcess(callback);
-        }
-      }
-    });
   }
 
   /**
@@ -447,6 +432,9 @@ export class HomebridgeServiceHelper {
       childProcessOpts,
     );
 
+    // let the ipc service know of the new process
+    this.ipcService.setHomebridgeProcess(this.homebridge);
+
     this.logger(`Started Homebridge v${this.homebridgePackage.version} with PID: ${this.homebridge.pid}`);
 
     this.homebridge.stdout.on('data', (data) => {
@@ -485,7 +473,14 @@ export class HomebridgeServiceHelper {
    */
   private async runUi() {
     try {
-      await import('../main');
+      // import main module
+      const main = await import('../main');
+
+      // load the nest js instance
+      const ui = await main.app;
+
+      // extract services
+      this.ipcService = ui.get('HomebridgeIpcService');
     } catch (e) {
       this.logger('ERROR: The user interface threw an unhandled error');
       console.error(e);
@@ -992,56 +987,6 @@ export class HomebridgeServiceHelper {
     } catch (e) {
       this.logger(`Failed to load startup options ${e.message}`);
     }
-  }
-
-  /**
-   * Clears the Homebridge Cached Accessories
-   */
-  private clearHomebridgeCachedAccessories(callback) {
-    if (this.homebridge && !this.homebridgeStopped) {
-      this.homebridge.once('close', callback);
-      this.restartHomebridge();
-    } else {
-      callback();
-    }
-  }
-
-  /**
-   * Standard SIGTERM restart for Homebridge
-   */
-  private restartHomebridge() {
-    if (this.homebridge) {
-      this.logger('Sending SIGTERM to Homebridge');
-      this.homebridge.kill('SIGTERM');
-
-      setTimeout(() => {
-        if (!this.homebridgeStopped) {
-          try {
-            this.logger('Sending SIGKILL to Homebridge');
-            this.homebridge.kill('SIGKILL');
-          } catch (e) { }
-        }
-      }, 7000);
-    }
-  }
-
-  /**
-   * Send SIGKILL to Homebridge after a restore is completed to prevent the
-   * Homebridge cached accessories being regenerated
-   */
-  private postBackupRestoreRestart() {
-    if (this.homebridge) {
-      this.logger('Sending SIGKILL to Homebridge');
-      this.homebridge.kill('SIGKILL');
-    }
-
-    setTimeout(() => {
-      process.kill(process.pid, 'SIGKILL');
-    }, 500);
-  }
-
-  private getHomebridgeChildProcess(callback) {
-    callback(this.homebridge);
   }
 
   /**
