@@ -2,8 +2,9 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Subject } from 'rxjs';
 import { connect } from 'socket.io-client';
-import { environment } from '../../environments/environment';
-import { AuthService } from './auth/auth.service';
+
+import { environment } from '@/environments/environment';
+import { AuthService } from '@/app/core/auth/auth.service';
 
 export interface IoNamespace {
   connected?: Subject<any>;

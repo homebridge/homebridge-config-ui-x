@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef, Input, OnDestroy } from '@ang
 import { Subject } from 'rxjs';
 import { ITerminalOptions } from 'xterm';
 
-import { LogService } from '../../../../core/log.service';
+import { LogService } from '@/app/core/log.service';
 
 @Component({
   selector: 'app-homebridge-logs-widget',

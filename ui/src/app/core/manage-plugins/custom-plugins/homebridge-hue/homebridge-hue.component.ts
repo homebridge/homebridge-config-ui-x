@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { saveAs } from 'file-saver';
-import { ApiService } from '../../../../core/api.service';
+
+import { ApiService } from '@/app/core/api.service';
 
 @Component({
   selector: 'app-homebridge-hue',

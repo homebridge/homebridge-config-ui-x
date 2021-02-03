@@ -7,6 +7,7 @@ import { throttleTime } from 'rxjs/operators';
 
 import { environment } from '@/environments/environment';
 import { WsService } from '@/app/core/ws.service';
+import { SettingsService } from '@/app/core/settings.service';
 import { AuthService } from '@/app/core/auth/auth.service';
 import { NotificationService } from '@/app/core/notification.service';
 
@@ -28,6 +29,7 @@ export class LayoutComponent implements OnInit {
     public translate: TranslateService,
     private $ws: WsService,
     public $auth: AuthService,
+    public $settings: SettingsService,
     private $plugins: ManagePluginsService,
     private $notification: NotificationService,
     private $modal: NgbModal,
@@ -105,18 +107,18 @@ export class LayoutComponent implements OnInit {
   }
 
   async compareServerUiVersion() {
-    if (!this.$auth.settingsLoaded) {
-      await this.$auth.onSettingsLoaded.toPromise();
+    if (!this.$settings.settingsLoaded) {
+      await this.$settings.onSettingsLoaded.toPromise();
     }
 
-    if (lt(this.$auth.uiVersion, environment.serverTarget, { includePrerelease: true })) {
-      console.log(`Server restart required. UI Version: ${environment.serverTarget} - Server Version: ${this.$auth.uiVersion} `);
+    if (lt(this.$settings.uiVersion, environment.serverTarget, { includePrerelease: true })) {
+      console.log(`Server restart required. UI Version: ${environment.serverTarget} - Server Version: ${this.$settings.uiVersion} `);
       const ref = this.$modal.open(ConfirmComponent);
 
       ref.componentInstance.title = this.translate.instant('platform.version.title_service_restart_required');
       ref.componentInstance.confirmButtonLabel = this.translate.instant('menu.tooltip_restart');
       ref.componentInstance.message = this.translate.instant('platform.version.message_service_restart_required', {
-        serverVersion: this.$auth.uiVersion,
+        serverVersion: this.$settings.uiVersion,
         uiVersion: environment.serverTarget,
       });
 

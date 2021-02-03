@@ -5,7 +5,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { gt } from 'semver';
 
-import { AuthService } from '@/app/core/auth/auth.service';
+import { SettingsService } from '@/app/core/settings.service';
 import { ApiService } from '@/app/core/api.service';
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { DonateModalComponent } from '../donate-modal/donate-modal.component';
@@ -26,7 +26,7 @@ export class SearchPluginsComponent implements OnInit, OnDestroy {
   public canManageBridgeSettings = false;
 
   constructor(
-    public $auth: AuthService,
+    public $settings: SettingsService,
     private $api: ApiService,
     public $plugin: ManagePluginsService,
     public $router: Router,
@@ -55,12 +55,12 @@ export class SearchPluginsComponent implements OnInit, OnDestroy {
     });
 
     // check if the homebridge version supports disabled plugins
-    this.canDisablePlugins = this.$auth.env.homebridgeVersion ?
-      gt(this.$auth.env.homebridgeVersion, '1.3.0-beta.46', { includePrerelease: true }) : false;
+    this.canDisablePlugins = this.$settings.env.homebridgeVersion ?
+      gt(this.$settings.env.homebridgeVersion, '1.3.0-beta.46', { includePrerelease: true }) : false;
 
     // check if the homebridge version supports external bridges
-    this.canManageBridgeSettings = this.$auth.env.homebridgeVersion ?
-      gt(this.$auth.env.homebridgeVersion, '1.3.0-beta.47', { includePrerelease: true }) : false;
+    this.canManageBridgeSettings = this.$settings.env.homebridgeVersion ?
+      gt(this.$settings.env.homebridgeVersion, '1.3.0-beta.47', { includePrerelease: true }) : false;
   }
 
   search() {

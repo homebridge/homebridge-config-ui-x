@@ -7,7 +7,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { debounceTime } from 'rxjs/operators';
 import * as semver from 'semver';
 
-import { AuthService } from '@/app/core/auth/auth.service';
+import { SettingsService } from '@/app/core/settings.service';
 import { ApiService } from '@/app/core/api.service';
 import { NotificationService } from '@/app/core/notification.service';
 
@@ -36,7 +36,7 @@ export class SettingsComponent implements OnInit {
   public bridgeNetworkAdapters: Record<string, any> = [];
 
   constructor(
-    public $auth: AuthService,
+    public $settings: SettingsService,
     private $api: ApiService,
     private $notification: NotificationService,
     public $fb: FormBuilder,
@@ -49,9 +49,9 @@ export class SettingsComponent implements OnInit {
 
   ngOnInit() {
     this.initNetworkingOptions();
-    if (this.$auth.env.serviceMode) {
+    if (this.$settings.env.serviceMode) {
       this.initServiceModeForm();
-    } else if (this.$auth.env.runningInDocker) {
+    } else if (this.$settings.env.runningInDocker) {
       this.initDockerForm();
     }
   }

@@ -7,7 +7,7 @@ import { NgxMdModule } from 'ngx-md';
 import { InlineSVGModule } from 'ng-inline-svg';
 import { NouisliderModule } from 'ng2-nouislider';
 
-import { CoreModule } from '../core.module';
+import { CoreModule } from '@/app/core/core.module';
 import { AccessoriesService } from './accessories.service';
 
 import { SwitchComponent } from './types/switch/switch.component';

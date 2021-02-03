@@ -6,7 +6,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { NgxMdModule } from 'ngx-md';
 import { MonacoEditorModule } from 'ngx-monaco-editor';
 
-import { CoreModule } from '../core.module';
+import { CoreModule } from '@/app/core/core.module';
 import { InterpolateMdPipe } from './interpolate-md.pipe';
 import { ManagePluginsService } from './manage-plugins.service';
 import { SettingsPluginsModalComponent } from './settings-plugins-modal/settings-plugins-modal.component';

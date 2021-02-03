@@ -8,11 +8,11 @@ import { GridsterModule } from 'angular-gridster2';
 import { DragulaModule } from 'ng2-dragula';
 import { ChartsModule } from 'ng2-charts';
 
-import { CoreModule } from '../../core/core.module';
-import { StatusComponent } from './status.component';
-import { ManagePluginsModule } from '../../core/manage-plugins/manage-plugins.module';
-import { AccessoriesCoreModule } from '../../core/accessories/accessories.module';
+import { CoreModule } from '@/app/core/core.module';
+import { ManagePluginsModule } from '@/app/core/manage-plugins/manage-plugins.module';
+import { AccessoriesCoreModule } from '@/app/core/accessories/accessories.module';
 
+import { StatusComponent } from './status.component';
 import { WidgetsComponent } from './widgets/widgets.component';
 import { WidgetControlComponent } from './widget-control/widget-control.component';
 import { HapQrcodeWidgetComponent } from './widgets/hap-qrcode-widget/hap-qrcode-widget.component';

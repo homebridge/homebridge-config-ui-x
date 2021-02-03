@@ -3,8 +3,9 @@ import { FormGroup, Validators, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { debounceTime } from 'rxjs/operators';
 
-import { AuthService } from '../auth.service';
 import { environment } from '@/environments/environment';
+import { SettingsService } from '@/app/core/settings.service';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-login',
@@ -25,6 +26,7 @@ export class LoginComponent implements OnInit {
   constructor(
     private $router: Router,
     public $auth: AuthService,
+    public $settings: SettingsService,
   ) { }
 
   ngOnInit() {
@@ -47,12 +49,12 @@ export class LoginComponent implements OnInit {
   }
 
   async setBackground() {
-    if (!this.$auth.settingsLoaded) {
-      await this.$auth.onSettingsLoaded.toPromise();
+    if (!this.$settings.settingsLoaded) {
+      await this.$settings.onSettingsLoaded.toPromise();
     }
 
-    const backgroundImageUrl = this.$auth.env.customWallpaperHash ?
-      environment.api.base + '/auth/wallpaper/' + this.$auth.env.customWallpaperHash :
+    const backgroundImageUrl = this.$settings.env.customWallpaperHash ?
+      environment.api.base + '/auth/wallpaper/' + this.$settings.env.customWallpaperHash :
       '/assets/snapshot.jpg';
     this.backgroundStyle = `url('${backgroundImageUrl}') center/cover`;
   }

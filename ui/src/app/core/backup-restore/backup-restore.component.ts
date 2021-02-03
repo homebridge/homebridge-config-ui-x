@@ -8,8 +8,8 @@ import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 import { ToastrService } from 'ngx-toastr';
 
-import { ApiService } from '../api.service';
-import { WsService } from '../ws.service';
+import { ApiService } from '@/app/core/api.service';
+import { WsService } from '@/app/core/ws.service';
 import { ScheduledBackupsComponent } from './scheduled-backups/scheduled-backups.component';
 
 @Component({
