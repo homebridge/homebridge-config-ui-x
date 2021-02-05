@@ -150,9 +150,11 @@ export class ServerService {
    */
   public async deleteDevicePairing(id: string) {
     const persistPath = path.join(this.configService.storagePath, 'persist');
+    const cachedAccessoriesDir = path.join(this.configService.storagePath, 'accessories');
 
     const accessoryInfo = path.join(persistPath, 'AccessoryInfo.' + id + '.json');
     const identifierCache = path.join(persistPath, 'IdentifierCache.' + id + '.json');
+    const cachedAccessories = path.join(cachedAccessoriesDir, 'cachedAccessories.' + id);
 
     if (await fs.pathExists(accessoryInfo)) {
       await fs.unlink(accessoryInfo);
@@ -162,6 +164,11 @@ export class ServerService {
     if (await fs.pathExists(identifierCache)) {
       await fs.unlink(identifierCache);
       this.logger.warn(`Removed ${identifierCache}`);
+    }
+
+    if (await fs.pathExists(cachedAccessories)) {
+      await fs.unlink(cachedAccessories);
+      this.logger.warn(`Removed ${cachedAccessories}`);
     }
 
     return;

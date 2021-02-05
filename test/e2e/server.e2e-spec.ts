@@ -288,10 +288,6 @@ describe('ServerController (e2e)', () => {
     expect(res.statusCode).toEqual(204);
   });
 
-  afterAll(async () => {
-    await app.close();
-  });
-
   it('GET /server/network-interfaces/system', async () => {
     const res = await app.inject({
       method: 'GET',
@@ -461,5 +457,9 @@ describe('ServerController (e2e)', () => {
     expect(typeof res.json().port).toEqual('number');
     expect(res.json().port).toBeGreaterThanOrEqual(30000);
     expect(res.json().port).toBeLessThanOrEqual(60000);
+  });
+
+  afterAll(async () => {
+    await app.close();
   });
 });
