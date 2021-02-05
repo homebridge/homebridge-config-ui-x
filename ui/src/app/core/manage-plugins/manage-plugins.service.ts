@@ -3,8 +3,8 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { minVersion, gte } from 'semver';
 import { ToastrService } from 'ngx-toastr';
 
-import { AuthService } from '../auth/auth.service';
-import { ApiService } from '../api.service';
+import { SettingsService } from '@/app/core/settings.service';
+import { ApiService } from '@/app/core/api.service';
 import { CustomPluginsService } from './custom-plugins/custom-plugins.service';
 import { ManagePluginsModalComponent } from './manage-plugins-modal/manage-plugins-modal.component';
 import { UninstallPluginsModalComponent } from './uninstall-plugins-modal/uninstall-plugins-modal.component';
@@ -22,7 +22,7 @@ export class ManagePluginsService {
   constructor(
     private modalService: NgbModal,
     private customPluginsService: CustomPluginsService,
-    private $auth: AuthService,
+    private $settings: SettingsService,
     private $api: ApiService,
     private $toastr: ToastrService,
   ) { }
@@ -167,7 +167,7 @@ export class ManagePluginsService {
 
   private async checkNodeVersion(plugin): Promise<boolean> {
     if (plugin.engines && plugin.engines.node) {
-      if (gte(this.$auth.env.nodeVersion, minVersion(plugin.engines.node), { includePrerelease: true })) {
+      if (gte(this.$settings.env.nodeVersion, minVersion(plugin.engines.node), { includePrerelease: true })) {
         return true;
       }
 

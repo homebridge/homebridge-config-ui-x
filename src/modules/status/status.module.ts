@@ -5,6 +5,7 @@ import { StatusGateway } from './status.gateway';
 import { PluginsModule } from '../plugins/plugins.module';
 import { ConfigModule } from '../../core/config/config.module';
 import { LoggerModule } from '../../core/logger/logger.module';
+import { HomebridgeIpcModule } from '../../core/homebridge-ipc/homebridge-ipc.module';
 import { StatusController } from './status.controller';
 
 @Module({
@@ -14,6 +15,7 @@ import { StatusController } from './status.controller';
     LoggerModule,
     PluginsModule,
     ConfigModule,
+    HomebridgeIpcModule,
   ],
   providers: [
     StatusService,

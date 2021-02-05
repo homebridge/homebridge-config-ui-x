@@ -6,7 +6,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { Bootstrap4FrameworkModule } from '@oznu/ngx-bs4-jsonform';
 import { NgxMdModule } from 'ngx-md';
 
-import { CoreModule } from '../../core.module';
+import { CoreModule } from '@/app/core/core.module';
 import { CustomPluginsService } from './custom-plugins.service';
 
 import { CustomPluginsComponent } from './custom-plugins.component';

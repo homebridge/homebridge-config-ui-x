@@ -2,18 +2,23 @@ import { Component } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
-import { AuthService } from '@/app/core/auth/auth.service';
+import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
 })
 export class AppComponent {
+  public langdir = 'ltr';
+
   constructor(
     router: Router,
     translate: TranslateService,
-    private $auth: AuthService,
+    $settings: SettingsService,
   ) {
+    console.log('Browser Culture Lang:', translate.getBrowserCultureLang());
+    console.log('Browser Lang:', translate.getBrowserLang());
+
     // this array needs to be updated each time a new translation is added
     const languages = [
       'en',
@@ -42,8 +47,19 @@ export class AppComponent {
       'mk',
     ];
 
-    console.log('Browser Culture Lang:', translate.getBrowserCultureLang());
-    console.log('Browser Lang:', translate.getBrowserLang());
+    // which langs should use RTL
+    const rtlLanguages = [
+      'he',
+    ];
+
+    // watch for lang changes
+    translate.onLangChange.subscribe(() => {
+      if (rtlLanguages.includes(translate.currentLang)) {
+        $settings.rtl = true;
+      } else {
+        $settings.rtl = false;
+      }
+    });
 
     const browserLang = languages.find(x => x === translate.getBrowserLang() || x === translate.getBrowserCultureLang());
 

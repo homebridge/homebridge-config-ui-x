@@ -3,8 +3,8 @@ import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 
-import { ApiService } from '../../api.service';
-import { ManagePluginsModalComponent } from '../manage-plugins-modal/manage-plugins-modal.component';
+import { ApiService } from '@/app/core/api.service';
+import { ManagePluginsModalComponent } from '@/app/core/manage-plugins/manage-plugins-modal/manage-plugins-modal.component';
 
 @Component({
   selector: 'app-uninstall-plugins-modal',

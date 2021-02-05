@@ -1,99 +1,47 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-import { take } from 'rxjs/operators';
-
-import { AuthService } from '@/app/core/auth/auth.service';
-import { ApiService } from '@/app/core/api.service';
-import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
-import { DonateModalComponent } from '../donate-modal/donate-modal.component';
-import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
-import { NotificationService } from '@/app/core/notification.service';
 import { gt } from 'semver';
 
+import { SettingsService } from '@/app/core/settings.service';
+import { ApiService } from '@/app/core/api.service';
+import { NotificationService } from '@/app/core/notification.service';
+import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
+import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
+import { DonateModalComponent } from '@/app/modules/plugins/donate-modal/donate-modal.component';
+
 @Component({
-  selector: 'app-plugins',
-  templateUrl: '../plugins.component.html',
-  styleUrls: ['../plugins.component.scss'],
+  selector: 'app-plugin-card',
+  templateUrl: './plugin-card.component.html',
+  styleUrls: ['./plugin-card.component.scss'],
 })
-export class InstalledPluginsComponent implements OnInit, OnDestroy {
-  public form: FormGroup;
-  public installedPlugins: any = [];
-  public loading = true;
-  public searchQuery: string;
-  private navigationSubscription;
+export class PluginCardComponent implements OnInit {
+  @Input() plugin;
 
   public canDisablePlugins = false;
   public canManageBridgeSettings = false;
 
   constructor(
-    public $auth: AuthService,
-    private $api: ApiService,
     public $plugin: ManagePluginsService,
-    private $router: Router,
-    private $route: ActivatedRoute,
-    public $fb: FormBuilder,
+    private $settings: SettingsService,
+    private $api: ApiService,
+    private $notification: NotificationService,
+    private $translate: TranslateService,
     private $modal: NgbModal,
     private $toastr: ToastrService,
-    private $translate: TranslateService,
-    private $notification: NotificationService,
   ) { }
 
-  ngOnInit() {
-    this.navigationSubscription = this.$router.events.subscribe((e: any) => {
-      // If it is a NavigationEnd event re-initalise the component
-      if (e instanceof NavigationEnd) {
-        this.loadInstalledPlugins();
-      }
-    });
-
-    this.form = this.$fb.group({
-      query: ['', Validators.required],
-    });
-
-    // load list of installed plugins
-    this.loadInstalledPlugins();
-
+  ngOnInit(): void {
     // check if the homebridge version supports disabled plugins
-    this.canDisablePlugins = this.$auth.env.homebridgeVersion ?
-      gt(this.$auth.env.homebridgeVersion, '1.3.0-beta.46', { includePrerelease: true }) : false;
+    this.canDisablePlugins = this.$settings.env.homebridgeVersion ?
+      gt(this.$settings.env.homebridgeVersion, '1.3.0-beta.46', { includePrerelease: true }) : false;
 
     // check if the homebridge version supports external bridges
-    this.canManageBridgeSettings = this.$auth.env.homebridgeVersion ?
-      gt(this.$auth.env.homebridgeVersion, '1.3.0-experimental.6', { includePrerelease: true }) : false;
+    this.canManageBridgeSettings = this.$settings.env.homebridgeVersion ?
+      gt(this.$settings.env.homebridgeVersion, '1.3.0-beta.47', { includePrerelease: true }) : false;
   }
 
-  loadInstalledPlugins() {
-    this.installedPlugins = [];
-    this.loading = true;
-    this.$api.get(`/plugins`).subscribe(
-      (data: any) => {
-        this.installedPlugins = data;
-        this.loading = false;
-        this.checkRecentlyInstalled();
-      },
-      (err) => {
-        this.$toastr.error(
-          `${this.$translate.instant('plugins.toast_failed_to_load_plugins')}: ${err.message}`,
-          this.$translate.instant('toast.title_error'),
-        );
-      },
-    );
-  }
-
-  checkRecentlyInstalled() {
-    this.$route.queryParams.pipe(take(1)).subscribe(async (params) => {
-      if (params.installed && this.installedPlugins.find(x => x.name === params.installed && x.settingsSchema)) {
-        this.$plugin.settings(this.installedPlugins.find(x => x.name === params.installed))
-          .finally(() => {
-            this.$router.navigate(['/plugins']);
-          });
-      }
-    });
-  }
 
   openFundingModal(plugin) {
     const ref = this.$modal.open(DonateModalComponent);
@@ -150,18 +98,5 @@ export class InstalledPluginsComponent implements OnInit, OnDestroy {
     });
   }
 
-  onClearSearch() {
-    this.form.setValue({ query: '' });
-  }
-
-  onSubmit({ value, valid }) {
-    this.$router.navigate(['/plugins/search', value.query]);
-  }
-
-  ngOnDestroy() {
-    if (this.navigationSubscription) {
-      this.navigationSubscription.unsubscribe();
-    }
-  }
 
 }

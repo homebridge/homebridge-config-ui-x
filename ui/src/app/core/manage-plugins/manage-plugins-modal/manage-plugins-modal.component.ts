@@ -7,7 +7,7 @@ import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 
 import { ApiService } from '@/app/core/api.service';
-import { AuthService } from '@/app/core/auth/auth.service';
+import { SettingsService } from '@/app/core/settings.service';
 import { WsService } from '@/app/core/ws.service';
 import { NotificationService } from '@/app/core/notification.service';
 
@@ -43,7 +43,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
     public activeModal: NgbActiveModal,
     public $toastr: ToastrService,
     private translate: TranslateService,
-    public $auth: AuthService,
+    private $settings: SettingsService,
     private $api: ApiService,
     private $ws: WsService,
     private $notification: NotificationService,
@@ -63,7 +63,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
 
     this.toastSuccess = this.translate.instant('toast.title_success');
 
-    this.onlineUpdateOk = !(['homebridge', 'homebridge-config-ui-x'].includes(this.pluginName) && this.$auth.env.platform === 'win32');
+    this.onlineUpdateOk = !(['homebridge', 'homebridge-config-ui-x'].includes(this.pluginName) && this.$settings.env.platform === 'win32');
 
     switch (this.action) {
       case 'Install':
@@ -99,13 +99,9 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
 
     this.io.request('install', { name: this.pluginName, version: this.targetVersion }).subscribe(
       (data) => {
-        if (this.$router.url !== '/plugins') {
-          this.$router.navigate(['/plugins'], {
-            queryParams: { installed: this.pluginName },
-          });
-        } else {
-          this.$router.navigate(['/plugins']);
-        }
+        this.$router.navigate(['/plugins'], {
+          queryParams: { installed: this.pluginName },
+        });
         this.activeModal.close();
         this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);
       },
@@ -146,7 +142,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       (data) => {
         if (this.pluginName === 'homebridge-config-ui-x') {
           this.updateSelf = true;
-          if (this.$auth.env.dockerOfflineUpdate && this.targetVersion === 'latest') {
+          if (this.$settings.env.dockerOfflineUpdate && this.targetVersion === 'latest') {
             this.$router.navigate(['/platform-tools/docker/restart-container']);
             this.activeModal.close();
             return;

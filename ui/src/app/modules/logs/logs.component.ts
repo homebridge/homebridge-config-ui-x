@@ -1,14 +1,14 @@
 import { Component, OnInit, HostListener, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject } from 'rxjs';
 import { saveAs } from 'file-saver';
 import { ToastrService } from 'ngx-toastr';
 
-import { AuthService } from '@/app/core/auth/auth.service';
+import { SettingsService } from '@/app/core/settings.service';
 import { ApiService } from '@/app/core/api.service';
 import { LogService } from '@/app/core/log.service';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
 
 @Component({
@@ -21,7 +21,7 @@ export class LogsComponent implements OnInit, OnDestroy {
   private resizeEvent = new Subject();
 
   constructor(
-    public $auth: AuthService,
+    public $settings: SettingsService,
     private $api: ApiService,
     private $log: LogService,
     private $toastr: ToastrService,

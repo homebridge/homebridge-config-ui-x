@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 
 import { ApiService } from '@/app/core/api.service';
-import { AuthService } from '@/app/core/auth/auth.service';
+import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
   selector: 'app-bridge-plugins-modal',
@@ -25,7 +25,7 @@ export class BridgePluginsModalComponent implements OnInit {
 
   constructor(
     public activeModal: NgbActiveModal,
-    public $auth: AuthService,
+    public $settings: SettingsService,
     private $api: ApiService,
     private $toastr: ToastrService,
     private $translate: TranslateService,
@@ -109,7 +109,7 @@ export class BridgePluginsModalComponent implements OnInit {
     try {
       await this.$api.put(`/server/restart/${username.replace(/:/g, '')}`, {}).toPromise();
       this.$toastr.success(
-        'Child bridge restart requested.',
+        this.$translate.instant('child_bridge.toast_restart_requested'),
         this.$translate.instant('toast.title_success'),
       );
     } catch (err) {

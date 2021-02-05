@@ -3,8 +3,8 @@ import { interval, Subscription } from 'rxjs';
 import { ChartOptions } from 'chart.js';
 import { Color, BaseChartDirective } from 'ng2-charts';
 
-import { WsService } from '../../../../core/ws.service';
-import { AuthService } from '../../../../core/auth/auth.service';
+import { WsService } from '@/app/core/ws.service';
+import { AuthService } from '@/app/core/auth/auth.service';
 
 @Component({
   selector: 'app-memory-widget',

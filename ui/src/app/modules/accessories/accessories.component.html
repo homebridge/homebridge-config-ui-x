@@ -1,4 +1,4 @@
-<div *ngIf="$auth.env.enableAccessories">
+<div *ngIf="$settings.env.enableAccessories">
   <div class="row mb-3">
     <div class="col-sm-6">
       <h3 class="primary-text m-0">
@@ -85,7 +85,8 @@
               </app-irrigationsystem>
               <app-heatercooler *ngSwitchCase="'HeaterCooler'" [service]="service">Heater Cooler
               </app-heatercooler>
-              <app-statelessprogrammableswitch *ngSwitchCase="'StatelessProgrammableSwitch'" [service]="service">Stateless Programmable Switch
+              <app-statelessprogrammableswitch *ngSwitchCase="'StatelessProgrammableSwitch'" [service]="service">
+                Stateless Programmable Switch
               </app-statelessprogrammableswitch>
               <app-unknown *ngSwitchDefault [service]="service">{{ service.humanType }}</app-unknown>
             </ng-container>
@@ -100,7 +101,7 @@
   </div>
 </div>
 
-<div *ngIf="!$auth.env.enableAccessories">
+<div *ngIf="!$settings.env.enableAccessories">
   <div class="row">
     <div class="col-md-12 text-center">
       <h3 class="primary-text" [translate]="'accessories.title_accessory_control_disabled'">Homebridge Accessory Control

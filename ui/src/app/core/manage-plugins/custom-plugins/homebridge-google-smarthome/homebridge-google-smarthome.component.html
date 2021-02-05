@@ -7,8 +7,8 @@
     </button>
   </div>
 
-  <div class="modal-body" *ngIf="!$auth.env.enableAccessories">
-    <div *ngIf="!$auth.env.enableAccessories">
+  <div class="modal-body" *ngIf="!$settings.env.enableAccessories">
+    <div *ngIf="!$settings.env.enableAccessories">
       <div class="alert alert-warning" role="alert">
         <p [innerHTML]="'accessories.message_must_use_insecure_mode' | translate">To control your accessories you must
           be running Homebridge in <strong>insecure</strong> mode.</p>
@@ -24,7 +24,7 @@
     </div>
   </div>
 
-  <div class="modal-body" *ngIf="$auth.env.enableAccessories">
+  <div class="modal-body" *ngIf="$settings.env.enableAccessories">
     <p [innerHTML]="'plugins.settings.custom.homebridge-gsh.message_about' | translate"></p>
     <p *ngIf="!gshConfig.token" translate="plugins.settings.custom.homebridge-gsh.message_account_link_required"></p>
     <div class="text-center" *ngIf="!gshConfig.token">

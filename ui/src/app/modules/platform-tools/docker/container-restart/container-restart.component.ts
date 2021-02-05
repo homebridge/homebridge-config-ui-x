@@ -3,9 +3,9 @@ import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 
-import { ApiService } from '../../../../core/api.service';
-import { WsService } from '../../../../core/ws.service';
-import { AuthService } from '../../../../core/auth/auth.service';
+import { ApiService } from '@/app/core/api.service';
+import { WsService } from '@/app/core/ws.service';
+import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
   selector: 'app-container-restart',
@@ -23,7 +23,7 @@ export class ContainerRestartComponent implements OnInit, OnDestroy {
   constructor(
     private $api: ApiService,
     private $ws: WsService,
-    private $auth: AuthService,
+    private $settings: SettingsService,
     public $toastr: ToastrService,
     private translate: TranslateService,
     private $router: Router,
@@ -32,7 +32,7 @@ export class ContainerRestartComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.io.connected.subscribe(() => {
       this.io.socket.emit('monitor-server-status');
-      this.$auth.getAppSettings().catch(/* do nothing */);
+      this.$settings.getAppSettings().catch(/* do nothing */);
     });
 
     this.$api.put('/platform-tools/docker/restart-container', {}).subscribe(

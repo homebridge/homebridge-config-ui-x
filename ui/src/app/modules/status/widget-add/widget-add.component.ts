@@ -1,8 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-
-import { AuthService } from '../../../core/auth/auth.service';
 import { TranslateService } from '@ngx-translate/core';
+
+import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
   selector: 'app-widget-add',
@@ -37,11 +37,19 @@ export class WidgetAddComponent implements OnInit {
     {
       name: this.translate.instant('accessories.title_accessories'),
       component: 'AccessoriesWidgetComponent',
-      hidden: !this.$auth.env.enableAccessories,
+      hidden: !this.$settings.env.enableAccessories,
       cols: 7,
       rows: 9,
       mobileOrder: 30,
       hideOnMobile: false,
+    },
+    {
+      name: 'Child Bridge Status',
+      component: 'ChildBridgeWidgetComponent',
+      hidden: !this.$settings.env.serviceMode,
+      cols: 5,
+      rows: 9,
+      mobileOrder: 35,
     },
     {
       name: this.translate.instant('status.cpu.title_cpu'),
@@ -95,7 +103,7 @@ export class WidgetAddComponent implements OnInit {
     {
       name: 'Homebridge ' + this.translate.instant('menu.docker.label_terminal'),
       component: 'TerminalWidgetComponent',
-      hidden: !this.$auth.env.enableTerminalAccess,
+      hidden: !this.$settings.env.enableTerminalAccess,
       cols: 7,
       rows: 6,
       mobileOrder: 1000,
@@ -116,7 +124,7 @@ export class WidgetAddComponent implements OnInit {
   constructor(
     public activeModal: NgbActiveModal,
     private translate: TranslateService,
-    private $auth: AuthService,
+    private $settings: SettingsService,
   ) { }
 
   ngOnInit() {

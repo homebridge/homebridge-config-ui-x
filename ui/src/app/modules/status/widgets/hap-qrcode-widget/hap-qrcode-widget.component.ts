@@ -1,7 +1,8 @@
 import { Component, OnInit, ElementRef, ViewChild, Input } from '@angular/core';
-import { ApiService } from '../../../../core/api.service';
-import { WsService } from '../../../../core/ws.service';
 import { Subject } from 'rxjs';
+
+import { ApiService } from '@/app/core/api.service';
+import { WsService } from '@/app/core/ws.service';
 
 @Component({
   selector: 'app-hap-qrcode-widget',

@@ -5,7 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 
 import { ApiService } from '@/app/core/api.service';
 import { WsService } from '@/app/core/ws.service';
-import { AuthService } from '@/app/core/auth/auth.service';
+import { SettingsService } from '@/app/core/settings.service';
 import { NotificationService } from '@/app/core/notification.service';
 
 @Component({
@@ -30,7 +30,7 @@ export class RestartComponent implements OnInit, OnDestroy {
   constructor(
     private $api: ApiService,
     private $ws: WsService,
-    private $auth: AuthService,
+    private $settings: SettingsService,
     private $notification: NotificationService,
     public $toastr: ToastrService,
     private translate: TranslateService,
@@ -42,7 +42,7 @@ export class RestartComponent implements OnInit, OnDestroy {
 
     this.io.connected.subscribe(() => {
       this.io.socket.emit('monitor-server-status');
-      this.$auth.getAppSettings().catch(/* do nothing */);
+      this.$settings.getAppSettings().catch(/* do nothing */);
     });
 
     this.$api.put('/server/restart', {}).subscribe(

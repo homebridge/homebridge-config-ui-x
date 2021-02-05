@@ -18,7 +18,7 @@ import { getStartupConfig } from './core/config/config.startup';
 
 process.env.UIX_BASE_PATH = path.resolve(__dirname, '../');
 
-async function bootstrap() {
+async function bootstrap(): Promise<NestFastifyApplication> {
   const startupConfig = await getStartupConfig();
 
   const server = fastify({
@@ -123,5 +123,8 @@ async function bootstrap() {
 
   logger.warn(`Homebridge Config UI X v${configService.package.version} is listening on ${startupConfig.host} port ${configService.ui.port}`);
   await app.listen(configService.ui.port, startupConfig.host);
+
+  return app;
 }
-bootstrap();
+
+export const app = bootstrap();

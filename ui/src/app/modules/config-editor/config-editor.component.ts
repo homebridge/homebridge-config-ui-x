@@ -7,7 +7,7 @@ import { NgxEditorModel } from 'ngx-monaco-editor';
 import * as JSON5 from 'json5';
 
 import { ApiService } from '@/app/core/api.service';
-import { AuthService } from '@/app/core/auth/auth.service';
+import { SettingsService } from '@/app/core/settings.service';
 import { NotificationService } from '@/app/core/notification.service';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { MonacoEditorService } from '@/app/core/monaco-editor.service';
@@ -27,7 +27,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   public monacoEditor;
   public editorOptions = {
     language: 'json',
-    theme: this.$auth.theme.startsWith('dark-mode') ? 'vs-dark' : 'vs-light',
+    theme: this.$settings.theme.startsWith('dark-mode') ? 'vs-dark' : 'vs-light',
     automaticLayout: true,
   };
 
@@ -38,7 +38,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   private visualViewPortEventCallback: () => void;
 
   constructor(
-    private $auth: AuthService,
+    private $settings: SettingsService,
     private $api: ApiService,
     private $md: MobileDetectService,
     private $monacoEditor: MonacoEditorService,

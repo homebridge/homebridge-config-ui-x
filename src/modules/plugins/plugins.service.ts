@@ -646,39 +646,43 @@ export class PluginsService {
       configSchema.displayName = plugin.displayName;
     }
 
-    // inject schema for _bridge setting (this is hidden, but prevents it getting removed)
-    if (configSchema.schema && configSchema.schema.properties) {
-      configSchema.schema.properties._bridge = {
-        type: 'object',
-        notitle: true,
-        condition: {
-          functionBody: 'return false',
+    // inject schema for _bridge child bridge setting (this is hidden, but prevents it getting removed)
+    const childBridgeSchema = {
+      type: 'object',
+      notitle: true,
+      condition: {
+        functionBody: 'return false',
+      },
+      properties: {
+        name: {
+          type: 'string',
         },
-        properties: {
-          name: {
-            type: 'string',
-          },
-          username: {
-            type: 'string',
-          },
-          pin: {
-            type: 'string',
-          },
-          port: {
-            type: 'integer',
-            maximum: 65535,
-          },
-          setupID: {
-            type: 'string',
-          },
-          manufacturer: {
-            type: 'string',
-          },
-          model: {
-            type: 'string',
-          },
+        username: {
+          type: 'string',
         },
-      };
+        pin: {
+          type: 'string',
+        },
+        port: {
+          type: 'integer',
+          maximum: 65535,
+        },
+        setupID: {
+          type: 'string',
+        },
+        manufacturer: {
+          type: 'string',
+        },
+        model: {
+          type: 'string',
+        },
+      },
+    };
+
+    if (configSchema.schema && typeof configSchema.schema.properties === 'object') {
+      configSchema.schema.properties._bridge = childBridgeSchema;
+    } else if (typeof configSchema.schema === 'object') {
+      configSchema.schema._bridge = childBridgeSchema;
     }
 
     return configSchema;

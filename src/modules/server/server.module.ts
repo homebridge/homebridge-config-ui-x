@@ -6,6 +6,7 @@ import { ServerController } from './server.controller';
 import { LoggerModule } from '../../core/logger/logger.module';
 import { ConfigEditorModule } from '../config-editor/config-editor.module';
 import { AccessoriesModule } from '../accessories/accessories.module';
+import { HomebridgeIpcModule } from '../../core/homebridge-ipc/homebridge-ipc.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { AccessoriesModule } from '../accessories/accessories.module';
     LoggerModule,
     ConfigEditorModule,
     AccessoriesModule,
+    HomebridgeIpcModule,
   ],
   providers: [
     ServerService,

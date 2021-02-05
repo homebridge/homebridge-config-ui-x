@@ -4,10 +4,11 @@ import * as fs from 'fs-extra';
 import * as si from 'systeminformation';
 import * as semver from 'semver';
 import * as NodeCache from 'node-cache';
-import { Injectable, HttpService } from '@nestjs/common';
+import { Injectable, HttpService, BadRequestException } from '@nestjs/common';
 
 import { Logger } from '../../core/logger/logger.service';
 import { ConfigService } from '../../core/config/config.service';
+import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service';
 import { PluginsService } from '../plugins/plugins.service';
 
 @Injectable()
@@ -26,6 +27,7 @@ export class StatusService {
     private logger: Logger,
     private configService: ConfigService,
     private pluginsService: PluginsService,
+    private homebridgeIpcService: HomebridgeIpcService,
   ) {
 
     // systeminformation cpu data is not supported in FreeBSD Jail Shells
@@ -255,6 +257,40 @@ export class StatusService {
     }
 
     return this.homebridgeStatus;
+  }
+
+  /**
+   * Return an array of child bridges
+   */
+  public async getChildBridges() {
+    if (!this.configService.serviceMode) {
+      throw new BadRequestException('This command is only available in service mode');
+    }
+
+    return this.homebridgeIpcService.getChildBridgeMetadata();
+  }
+
+  /**
+ * Socket Handler - Per Client
+ * Start watching for child bridge status events
+ * @param client
+ */
+  public async watchChildBridgeStatus(client) {
+    const listener = (data) => {
+      client.emit('child-bridge-status-update', data);
+    };
+
+    this.homebridgeIpcService.on('childBridgeStatusUpdate', listener);
+
+    // cleanup on disconnect
+    const onEnd = () => {
+      client.removeAllListeners('end');
+      client.removeAllListeners('disconnect');
+      this.homebridgeIpcService.removeListener('childBridgeStatusUpdate', listener);
+    };
+
+    client.on('end', onEnd.bind(this));
+    client.on('disconnect', onEnd.bind(this));
   }
 
   /**

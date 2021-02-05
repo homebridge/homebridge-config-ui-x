@@ -5,7 +5,7 @@ import { WebLinksAddon } from 'xterm-addon-web-links';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
-import { WsService, IoNamespace } from './ws.service';
+import { WsService, IoNamespace } from '@/app/core/ws.service';
 
 @Injectable({
   providedIn: 'root',

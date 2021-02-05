@@ -5,7 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import * as uuid from 'uuid/v4';
 
 import { ApiService } from '@/app/core/api.service';
-import { AuthService } from '@/app/core/auth/auth.service';
+import { SettingsService } from '@/app/core/settings.service';
 import { NotificationService } from '@/app/core/notification.service';
 
 export interface PluginConfigBlock {
@@ -34,7 +34,7 @@ export class SettingsPluginsModalComponent implements OnInit {
   constructor(
     public activeModal: NgbActiveModal,
     private $api: ApiService,
-    private $auth: AuthService,
+    private $settings: SettingsService,
     private $notification: NotificationService,
     private $toastr: ToastrService,
     private translate: TranslateService,
@@ -95,7 +95,7 @@ export class SettingsPluginsModalComponent implements OnInit {
 
         // reload app settings if the config was changed for Homebridge Config UI X
         if (this.plugin.name === 'homebridge-config-ui-x') {
-          this.$auth.getAppSettings().catch(/* do nothing */);
+          this.$settings.getAppSettings().catch(/* do nothing */);
         }
       })
       .catch(err => {
