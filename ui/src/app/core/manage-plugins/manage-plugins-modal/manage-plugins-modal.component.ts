@@ -99,13 +99,9 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
 
     this.io.request('install', { name: this.pluginName, version: this.targetVersion }).subscribe(
       (data) => {
-        if (this.$router.url !== '/plugins') {
-          this.$router.navigate(['/plugins'], {
-            queryParams: { installed: this.pluginName },
-          });
-        } else {
-          this.$router.navigate(['/plugins']);
-        }
+        this.$router.navigate(['/plugins'], {
+          queryParams: { installed: this.pluginName },
+        });
         this.activeModal.close();
         this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);
       },
