@@ -239,7 +239,6 @@
     "reset.message_reset_will_unpair_from_homekit": "Zresetowanie spowoduje odłączenie tego mostka z konfiguracji Apple HomeKit.",
     "reset.message_unpair_bridges_cameras_tv_external_accessories": "Ta czynność odłączy wybrane urządzenia takie jak mostki / kamery / TV lub inne zewnętrzne akcesoria.",
     "reset.message_your_homebridge_username_will_be_changed": "Nazwa użytkownika i kod PIN zostaną zmienione.",
-    "reset.title_clear_cache": "Wyczyść",
     "reset.title_clear_cached_accessories": "Wyczyść wszystkie akcesoria z pamięci podręcznej",
     "reset.title_clear_cached_accessories_single": "Wyczyść jedno z akcesoriów z pamięci podręcznej",
     "reset.title_force_restart_hb_service": "Wymuś restart (hb-service)",

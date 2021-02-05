@@ -239,7 +239,6 @@
     "reset.message_reset_will_unpair_from_homekit": "執行重置將使此 Homebridge 橋接器取消與 iOS 裝置中「家庭」App 配對。",
     "reset.message_unpair_bridges_cameras_tv_external_accessories": "此動作將允許解除所選擇之橋接器 / 攝影機 / 電視或其他外部配件之配對。",
     "reset.message_your_homebridge_username_will_be_changed": "您的 Homebridge 橋接器的 username 和 Pin 將被變更。",
-    "reset.title_clear_cache": "清除暫存",
     "reset.title_clear_cached_accessories": "清除暫存配件",
     "reset.title_clear_cached_accessories_single": "移除單一暫存配件",
     "reset.title_force_restart_hb_service": "服務強制重啟",

@@ -239,7 +239,6 @@
     "reset.message_reset_will_unpair_from_homekit": "Ponastavitev bo odstranila ta primerek Homebridge iz vaše nastavitve Apple HomeKit.",
     "reset.message_unpair_bridges_cameras_tv_external_accessories": "S tem dejanjem lahko prekinete seznanitev z izbranimi mostovi / kamerami / televizorji ali drugo zunanjo dodatno opremo.",
     "reset.message_your_homebridge_username_will_be_changed": "Uporabniško ime in pin bo spremenjen v Homebridge-u.",
-    "reset.title_clear_cache": "Počisti predpomnilnik",
     "reset.title_clear_cached_accessories": "Počisti predpomnilnik dodatne oprema",
     "reset.title_clear_cached_accessories_single": "Odstranite pripomoček z enim predpomnilnikom",
     "reset.title_force_restart_hb_service": "Prisilno zaženite servisni ponovni zagon",

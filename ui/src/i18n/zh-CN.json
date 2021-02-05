@@ -239,7 +239,6 @@
     "reset.message_reset_will_unpair_from_homekit": "运行重置将使本 Homebridge 实例与 Apple HomeKit 取消配对。",
     "reset.message_unpair_bridges_cameras_tv_external_accessories": "此操作将允许您解绑网桥、摄像头、电视或其他外部配件。",
     "reset.message_your_homebridge_username_will_be_changed": "您的 Homebridge 用户名和 pin 已更改。",
-    "reset.title_clear_cache": "Clear Cache",
     "reset.title_clear_cached_accessories": "清除已缓存的配件",
     "reset.title_clear_cached_accessories_single": "清除单个配件缓存",
     "reset.title_force_restart_hb_service": "强制重启服务",

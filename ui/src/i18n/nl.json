@@ -239,7 +239,6 @@
     "reset.message_reset_will_unpair_from_homekit": "Een reset zal dit Homebridge-exemplaar ontkoppelen van uw Apple HomeKit-installatie.",
     "reset.message_unpair_bridges_cameras_tv_external_accessories": "Deze actie laat je geselecteerde Bruggen / Camera's / TVs of andere externe accessories ontkoppelen.",
     "reset.message_your_homebridge_username_will_be_changed": "Uw Homebridge-gebruikersnaam en pin worden gewijzigd.",
-    "reset.title_clear_cache": "Maak de cache leeg",
     "reset.title_clear_cached_accessories": "Maak de cached accessories leeg",
     "reset.title_clear_cached_accessories_single": "Verwijder een enkel cachec accessoire",
     "reset.title_force_restart_hb_service": "Forceer Service Herstart",

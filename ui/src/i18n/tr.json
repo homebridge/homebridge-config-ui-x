@@ -239,7 +239,6 @@
     "reset.message_reset_will_unpair_from_homekit": "Sıfırlama işlemi, bu Homebridge kurulumunu Apple HomeKit kurulumunuzdan kaldıracaktır.",
     "reset.message_unpair_bridges_cameras_tv_external_accessories": "Bu işlev seçili Köprü / Kamera / TV ve diğer harici aksesuarların eşleşmesini kaldırmanıza olanak sağlar.",
     "reset.message_your_homebridge_username_will_be_changed": "Homebridge kullanıcı adı ve parolanız değiştirilecektir.",
-    "reset.title_clear_cache": "Ön Belleği Temizle",
     "reset.title_clear_cached_accessories": "Ön Belleğe Alınmış Tüm Aksesuarları Kaldır",
     "reset.title_clear_cached_accessories_single": "Ön Belleğe Alınmış Tek Bir Aksesuarı Kaldır",
     "reset.title_force_restart_hb_service": "Serivi Yeniden Başlatmaya Zorla",

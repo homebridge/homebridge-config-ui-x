@@ -239,7 +239,6 @@
     "reset.message_reset_will_unpair_from_homekit": "A resetelés elveszíti a párosítást a Homebridge és az Apple HomeKit között.",
     "reset.message_unpair_bridges_cameras_tv_external_accessories": "This action allows you to unpair selected Bridges / Cameras / TVs or other external accessories.",
     "reset.message_your_homebridge_username_will_be_changed": "A Homebridge felhasználó neve és pinje hamarosan megváltozik.",
-    "reset.title_clear_cache": "Clear Cache",
     "reset.title_clear_cached_accessories": "Remove All Cached Accessories",
     "reset.title_clear_cached_accessories_single": "Remove Single Cached Accessory",
     "reset.title_force_restart_hb_service": "Force Service Restart",

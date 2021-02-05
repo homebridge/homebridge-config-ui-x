@@ -239,7 +239,6 @@
     "reset.message_reset_will_unpair_from_homekit": "Сброс приведет к разрыву пары этого инстанса Homebridge и Apple HomeKit.",
     "reset.message_unpair_bridges_cameras_tv_external_accessories": "Это действие позволит разорвать пару с выбранными мостами / камерами / телевизорами или другими внешними аксессуарами.",
     "reset.message_your_homebridge_username_will_be_changed": "Имя пользователя и PIN-код Вашего Homebridge будут изменены.",
-    "reset.title_clear_cache": "Очистить кэш",
     "reset.title_clear_cached_accessories": "Очистить кэшированные аксессуары",
     "reset.title_clear_cached_accessories_single": "Удалить кэшированный аксессуар",
     "reset.title_force_restart_hb_service": "Принудительно перезапустить службу",

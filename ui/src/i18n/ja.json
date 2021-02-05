@@ -239,7 +239,6 @@
     "reset.message_reset_will_unpair_from_homekit": "初期化すると、このHomebridgeインスタンスがApple HomeKitの設定から解除されます。",
     "reset.message_unpair_bridges_cameras_tv_external_accessories": "この操作で、選択したブリッジ/カメラ/テレビやその他外部アクセサリのペアリングを解除することができます。",
     "reset.message_your_homebridge_username_will_be_changed": "Homebridgeユーザー名とPINコードを変更します",
-    "reset.title_clear_cache": "キャッシュを削除",
     "reset.title_clear_cached_accessories": "全てのキャッシュされたアクセサリを削除",
     "reset.title_clear_cached_accessories_single": "1つのキャッシュされたアクセサリを削除",
     "reset.title_force_restart_hb_service": "サービスを強制再起動する",

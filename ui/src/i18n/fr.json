@@ -239,7 +239,6 @@
     "reset.message_reset_will_unpair_from_homekit": "Une réinitialisation va délier cette instance Homebridge de votre configuration Apple Homekit.",
     "reset.message_unpair_bridges_cameras_tv_external_accessories": "Cette action vous permettra de désappairer les Ponts / Caméras / TVs ou accessoires externes sélectionnés.",
     "reset.message_your_homebridge_username_will_be_changed": "Votre nom d'utilisateur et PIN Homebridge seront modifiés.",
-    "reset.title_clear_cache": "Vider le Cache",
     "reset.title_clear_cached_accessories": "Supprimer tous les Accessoires en cache",
     "reset.title_clear_cached_accessories_single": "Supprimer un seul Accessoire du cache",
     "reset.title_force_restart_hb_service": "Forcer le redémarrage du Service",

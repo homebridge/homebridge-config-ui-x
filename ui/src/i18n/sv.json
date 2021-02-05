@@ -239,7 +239,6 @@
     "reset.message_reset_will_unpair_from_homekit": "En återställning kommer att koppla bort denna Homebridge-instans från din Apple HomeKit-installation.",
     "reset.message_unpair_bridges_cameras_tv_external_accessories": "Denna åtgärd låter dig koppla från valda broar / kameror / TV-apparater eller andra externa tillbehör.",
     "reset.message_your_homebridge_username_will_be_changed": "Ditt användarnamn och pin för Homebridge kommer att ändras.",
-    "reset.title_clear_cache": "Töm Cache",
     "reset.title_clear_cached_accessories": "Ta bort alla cachade tillbehör",
     "reset.title_clear_cached_accessories_single": "Ta bort enstaka cachade tillbehör",
     "reset.title_force_restart_hb_service": "Tvinga omstart av tjänst",

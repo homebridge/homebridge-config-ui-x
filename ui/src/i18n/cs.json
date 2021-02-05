@@ -239,7 +239,6 @@
     "reset.message_reset_will_unpair_from_homekit": "Reset odpáruje tento Homebridge most z vašeho nastavení Apple HomeKit.",
     "reset.message_unpair_bridges_cameras_tv_external_accessories": "Tato akce vám umožní odpárovat vybrané Mosty / Kamery / Televize nebo jiné externí příslušenství.",
     "reset.message_your_homebridge_username_will_be_changed": "Vaše Homebridge uživatelské jméno a PIN budou změněny.",
-    "reset.title_clear_cache": "Vyčistit cache",
     "reset.title_clear_cached_accessories": "Vyčistit cache pro příslušenství",
     "reset.title_clear_cached_accessories_single": "Odstranit cache jednoho příslušenství",
     "reset.title_force_restart_hb_service": "Vynucený restart služby",
