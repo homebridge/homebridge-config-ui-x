@@ -44,6 +44,9 @@ export class SettingsService {
   public uiVersion: string;
   public theme: string;
 
+  // set true if current translation is RLT
+  public rtl = false;
+
   // track to see if settings have been loaded
   private settingsLoadedSubject = new Subject();
   public onSettingsLoaded = this.settingsLoadedSubject.pipe(first());

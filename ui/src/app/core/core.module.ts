@@ -14,6 +14,7 @@ import { ScheduledBackupsComponent } from './backup-restore/scheduled-backups/sc
 import { ConfirmComponent } from './components/confirm/confirm.component';
 import { SchemaFormComponent } from './components/schema-form/schema-form.component';
 import { QrcodeComponent } from './components/qrcode/qrcode.component';
+import { RtlDirective } from './directives/rtl.directive';
 
 @NgModule({
   entryComponents: [
@@ -29,6 +30,7 @@ import { QrcodeComponent } from './components/qrcode/qrcode.component';
     ExternalLinkIconPipe,
     HrefTargetBlankDirective,
     LongClickDirective,
+    RtlDirective,
     BackupRestoreComponent,
     ScheduledBackupsComponent,
     ConfirmComponent,
@@ -49,6 +51,7 @@ import { QrcodeComponent } from './components/qrcode/qrcode.component';
     ExternalLinkIconPipe,
     HrefTargetBlankDirective,
     LongClickDirective,
+    RtlDirective,
   ],
 })
 export class CoreModule { }
