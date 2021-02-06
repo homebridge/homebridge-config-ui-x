@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file. This projec
 
 * **i18n:** Improvements to Polish language translations ([#1047](https://github.com/oznu/homebridge-config-ui-x/pull/1047),[#1049](https://github.com/oznu/homebridge-config-ui-x/pull/1049),[#1058](https://github.com/oznu/homebridge-config-ui-x/pull/1058))
 * **i18n:** Improvements to Spanish language translations ([#1055](https://github.com/oznu/homebridge-config-ui-x/pull/1047))
-* **Homebridge:** The dashboard will now show when a newer beta release is available if you currently have a beta version of Homebridge installed
+* **Homebridge:** The dashboard will now show when a newer beta release is available (only for users currently running a beta version of Homebridge)
 
 ### Bug Fixes
 
