@@ -477,15 +477,6 @@ export class PluginsService {
 
     const homebridgeVersion = semver.parse(homebridge.installedVersion);
 
-    // show beta updates if the user is currently running a beta release
-    if (homebridgeVersion.prerelease[0] === 'beta') {
-      const versions = await this.getAvailablePluginVersions('homebridge');
-      if (versions.tags['beta'] && semver.gt(versions.tags['beta'], homebridge.installedVersion, { includePrerelease: true })) {
-        homebridge.updateAvailable = true;
-        homebridge.latestVersion = versions.tags['beta'];
-      }
-    }
-
     // patch for homebridge 1.2.x to allow updates to newer versions of 1.2.x without 1.2.x being set to "latest"
     if (
       homebridgeVersion.major === 1 &&
@@ -499,6 +490,18 @@ export class PluginsService {
       }
     }
     // end patch
+
+    // show beta updates if the user is currently running a beta release
+    if (
+      homebridgeVersion.prerelease[0] === 'beta' &&
+      semver.gt(homebridge.installedVersion, homebridge.latestVersion, { includePrerelease: true })
+    ) {
+      const versions = await this.getAvailablePluginVersions('homebridge');
+      if (versions.tags['beta'] && semver.gt(versions.tags['beta'], homebridge.installedVersion, { includePrerelease: true })) {
+        homebridge.updateAvailable = true;
+        homebridge.latestVersion = versions.tags['beta'];
+      }
+    }
 
     this.configService.homebridgeVersion = homebridge.installedVersion;
 
