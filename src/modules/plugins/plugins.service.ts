@@ -475,9 +475,9 @@ export class PluginsService {
       return homebridge;
     }
 
-    // patch for homebridge 1.2.x to allow updates to newer versions of 1.2.x without 1.2.x being set to "latest"
     const homebridgeVersion = semver.parse(homebridge.installedVersion);
 
+    // patch for homebridge 1.2.x to allow updates to newer versions of 1.2.x without 1.2.x being set to "latest"
     if (
       homebridgeVersion.major === 1 &&
       homebridgeVersion.minor === 2 &&
@@ -490,6 +490,18 @@ export class PluginsService {
       }
     }
     // end patch
+
+    // show beta updates if the user is currently running a beta release
+    if (
+      homebridgeVersion.prerelease[0] === 'beta' &&
+      semver.gt(homebridge.installedVersion, homebridge.latestVersion, { includePrerelease: true })
+    ) {
+      const versions = await this.getAvailablePluginVersions('homebridge');
+      if (versions.tags['beta'] && semver.gt(versions.tags['beta'], homebridge.installedVersion, { includePrerelease: true })) {
+        homebridge.updateAvailable = true;
+        homebridge.latestVersion = versions.tags['beta'];
+      }
+    }
 
     this.configService.homebridgeVersion = homebridge.installedVersion;
 
@@ -719,6 +731,16 @@ export class PluginsService {
     const plugin = pluginName === 'homebridge' ? await this.getHomebridgePackage() : this.installedPlugins.find(x => x.name === pluginName);
     if (!plugin) {
       throw new NotFoundException();
+    }
+
+    // if loading a homebridge beta returned pre-defined help text
+    if (plugin.name === 'homebridge' && plugin.latestVersion?.includes('beta')) {
+      return {
+        name: 'v' + plugin.latestVersion,
+        changelog: 'Thank you for helping improve Homebridge by testing the beta build of Homebridge.\n\n\n' +
+          'To see what needs testing or to report issues: https://github.com/homebridge/homebridge/issues\n\n\n' +
+          'See the commit history for recent changes: https://github.com/homebridge/homebridge/commits/beta'
+      };
     }
 
     // plugin must have a homepage to workout Git Repo

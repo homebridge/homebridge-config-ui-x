@@ -2,12 +2,25 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## NEXT
+## 4.38.0 (2021-02-06)
 
 ### Other Changes
 
 * **i18n:** Improvements to Polish language translations ([#1047](https://github.com/oznu/homebridge-config-ui-x/pull/1047),[#1049](https://github.com/oznu/homebridge-config-ui-x/pull/1049),[#1058](https://github.com/oznu/homebridge-config-ui-x/pull/1058))
 * **i18n:** Improvements to Spanish language translations ([#1055](https://github.com/oznu/homebridge-config-ui-x/pull/1047))
+* **Homebridge:** The dashboard will now show when a newer beta release is available if you currently have a beta version of Homebridge installed
+
+### Bug Fixes
+
+* Fixed an issue that would prevent the UI from rendering in some older browsers when it was accessed via an IP address
+
+### Homebridge v1.3.0 Features
+
+These features will appear in once Homebridge v1.3.0 or later is installed ([currently in beta](https://github.com/homebridge/homebridge/wiki/Homebridge-Beta-Testing)):
+
+* **Plugins:** Added the ability to configure, manage, and restart [child bridges](https://github.com/homebridge/homebridge/wiki/Child-Bridges)
+  * Child bridges allow you to run any plugin's platform or accessory as an isolated child bridge without having to manage multiple Homebridge instances
+* **Dashboard:** Added a new [Child Bridge Status](https://github.com/homebridge/homebridge/wiki/Child-Bridges#hb-service-features) widget the dashboard for [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) users that shows the current status of a child bridge (down, pending, ready) and allows you to restart an individual child bridge
 
 ## 4.37.0 (2021-01-30)
 
