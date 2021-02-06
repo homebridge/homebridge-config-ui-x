@@ -30,7 +30,7 @@
       </span>
       <button class="btn btn-primary waves-effect m-0" [translate]="'reset.title_clear_cached_accessories'"
         (click)="selectNetworkInterfaces()" [disabled]="!availableNetworkAdapters.length">
-        <i class="fas fa-cog"></i>
+        <i class="fas fa-cog" [ngClass]="{ 'fa-pulse': !availableNetworkAdapters.length }"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
