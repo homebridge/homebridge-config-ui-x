@@ -161,6 +161,25 @@ export class ManagePluginsService {
     });
   }
 
+  /**
+   * Open the json config modal
+   */
+  async jsonEditor(plugin) {
+    const ref = this.modalService.open(
+      ManualPluginConfigModalComponent,
+      {
+        size: 'lg',
+        backdrop: 'static',
+      },
+    );
+
+    ref.componentInstance.plugin = plugin;
+
+    return ref.result.catch(() => {
+      // do nothing
+    });
+  }
+
   private async loadConfigSchema(pluginName) {
     return this.$api.get(`/plugins/config-schema/${encodeURIComponent(pluginName)}`).toPromise();
   }

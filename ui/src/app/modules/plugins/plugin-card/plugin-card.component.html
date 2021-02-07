@@ -74,6 +74,10 @@
             *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x' && canManageBridgeSettings">
             <i class="fas fa-fw fa-project-diagram"></i> {{ 'child_bridge.label_bridge_settings' | translate }}
           </button>
+          <button ngbDropdownItem (click)="$plugin.jsonEditor(plugin)"
+            *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x'">
+            <i class="fas fa-fw fa-code"></i> JSON Config Editor
+          </button>
           <button ngbDropdownItem (click)="disablePlugin(plugin)"
             *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x' && !plugin.disabled && canDisablePlugins">
             <i class="far fa-fw fa-times-circle"></i> {{ 'plugins.manage.disable' | translate }}

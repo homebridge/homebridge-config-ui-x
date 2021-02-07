@@ -42,7 +42,8 @@ module.exports = {
     'systeminformation': 'systeminformation',
     'tcp-port-used': 'tcp-port-used',
     'tar': 'tar',
-    'ora': 'ora'
+    'ora': 'ora',
+    'p-limit': 'p-limit'
   },
   node: {
     global: false,
