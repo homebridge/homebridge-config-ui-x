@@ -11,6 +11,7 @@ import * as child_process from 'child_process';
 import * as semver from 'semver';
 import * as color from 'bash-color';
 import * as NodeCache from 'node-cache';
+import * as pLimit from 'p-limit';
 
 import { Logger } from '../../core/logger/logger.service';
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
@@ -100,28 +101,33 @@ export class PluginsService {
       .filter(module => (module.name.indexOf('homebridge-') === 0) || this.isScopedPlugin(module.name))
       .filter(module => fs.pathExistsSync(path.join(module.installPath, 'package.json')));
 
+    // limit lookup concurrency to number of cpu cores
+    const limit = pLimit(os.cpus().length);
+
     await Promise.all(homebridgePlugins.map(async (pkg) => {
-      try {
-        const pjson: IPackageJson = await fs.readJson(path.join(pkg.installPath, 'package.json'));
-        // check each plugin has the 'homebridge-plugin' keyword
-        if (pjson.keywords && pjson.keywords.includes('homebridge-plugin')) {
-          // parse the package.json for each plugin
-          const plugin = await this.parsePackageJson(pjson, pkg.path);
+      return limit(async () => {
+        try {
+          const pjson: IPackageJson = await fs.readJson(path.join(pkg.installPath, 'package.json'));
+          // check each plugin has the 'homebridge-plugin' keyword
+          if (pjson.keywords && pjson.keywords.includes('homebridge-plugin')) {
+            // parse the package.json for each plugin
+            const plugin = await this.parsePackageJson(pjson, pkg.path);
 
-          // check if the plugin has been disabled
-          plugin.disabled = disabledPlugins.includes(plugin.name);
+            // check if the plugin has been disabled
+            plugin.disabled = disabledPlugins.includes(plugin.name);
 
-          // filter out duplicate plugins and give preference to non-global plugins
-          if (!plugins.find(x => plugin.name === x.name)) {
-            plugins.push(plugin);
-          } else if (!plugin.globalInstall && plugins.find(x => plugin.name === x.name && x.globalInstall === true)) {
-            const index = plugins.findIndex(x => plugin.name === x.name && x.globalInstall === true);
-            plugins[index] = plugin;
+            // filter out duplicate plugins and give preference to non-global plugins
+            if (!plugins.find(x => plugin.name === x.name)) {
+              plugins.push(plugin);
+            } else if (!plugin.globalInstall && plugins.find(x => plugin.name === x.name && x.globalInstall === true)) {
+              const index = plugins.findIndex(x => plugin.name === x.name && x.globalInstall === true);
+              plugins[index] = plugin;
+            }
           }
+        } catch (e) {
+          this.logger.error(`Failed to parse plugin "${pkg.name}": ${e.message}`);
         }
-      } catch (e) {
-        this.logger.error(`Failed to parse plugin "${pkg.name}": ${e.message}`);
-      }
+      });
     }));
 
     this.installedPlugins = plugins;
