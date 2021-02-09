@@ -8,7 +8,7 @@
   </div>
   <div class="modal-body">
 
-    <p translate="backup.message_scheduled_backup_time"
+    <p translate="backup.message_scheduled_backup_time" *ngIf="backupTime"
       [translateParams]="{backupTime: backupTime | date:'shortTime', dayCount: 7}">
     </p>
 

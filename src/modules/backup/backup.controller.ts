@@ -32,6 +32,13 @@ export class BackupController {
   }
 
   @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Return the date and time of the next scheduled backup.' })
+  @Get('/scheduled-backups/next')
+  async getNextBackupTime() {
+    return this.backupService.getNextBackupTime();
+  }
+
+  @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'List available system generated instance backups.' })
   @Get('/scheduled-backups')
   async listScheduledBackups() {

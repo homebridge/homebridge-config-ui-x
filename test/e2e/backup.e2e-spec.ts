@@ -366,6 +366,41 @@ describe('BackupController (e2e)', () => {
     expect(res.headers['content-type']).not.toEqual('application/octet-stream');
   });
 
+  it('GET /backup/scheduled-backups/next', async () => {
+    // run the scheduler creation function (to make sure it's enabled after previous tests)
+    backupService.scheduleInstanceBackups();
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/backup/scheduled-backups/next',
+      headers: {
+        authorization,
+      },
+    });
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.json()).toHaveProperty('next');
+    expect(res.json().next).not.toBeFalsy();
+    expect(dayjs(res.json().next).isValid()).toEqual(true);
+  });
+
+  it('GET /backup/scheduled-backups/next (backups disabled)', async () => {
+    // disable scheduled backups
+    configService.ui.scheduledBackupDisable = true;
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/backup/scheduled-backups/next',
+      headers: {
+        authorization,
+      },
+    });
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.json()).toHaveProperty('next');
+    expect(res.json().next).toEqual(false);
+  });
+
   afterAll(async () => {
     await app.close();
   });

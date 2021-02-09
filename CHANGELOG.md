@@ -6,8 +6,9 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Other Changes
 
-* **Plugins:** Added the ability to view and the raw JSON config for any individual plugin
+* **Plugins:** Added the ability to view and edit the raw JSON config for an individual plugin
 * **Plugins:** Limited the plugin update check concurrency to the number of CPU cores, this should reduce the chance of an update check timeout for users on low powered devices (such as the Raspberry Pi Zero W)
+* **Backups:** Scheduled backups now happen at a random time between 12am and 6am in your server's local timezone (instead of 1:15am) - the next backup time will be show in the UI on the Scheduled Backups modal
 
 ## 4.38.0 (2021-02-06)
 

@@ -3,7 +3,6 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { saveAs } from 'file-saver';
-import * as dayjs from 'dayjs';
 
 import { ApiService } from '@/app/core/api.service';
 
@@ -14,7 +13,7 @@ import { ApiService } from '@/app/core/api.service';
 })
 export class ScheduledBackupsComponent implements OnInit {
   public scheduledBackups = [];
-  public backupTime = dayjs().set('h', 1).set('minute', 15);
+  public backupTime: string;
   public errorMessage = '';
 
   constructor(
@@ -26,6 +25,7 @@ export class ScheduledBackupsComponent implements OnInit {
 
   ngOnInit(): void {
     this.getScheduledBackups();
+    this.getNextBackup();
   }
 
   getScheduledBackups() {
@@ -35,6 +35,17 @@ export class ScheduledBackupsComponent implements OnInit {
       },
       (err) => {
         this.errorMessage = err.error.message || err.message;
+      },
+    );
+  }
+
+  getNextBackup() {
+    this.$api.get('/backup/scheduled-backups/next').subscribe(
+      (data) => {
+        this.backupTime = data.next;
+      },
+      (err) => {
+        console.error(err);
       },
     );
   }

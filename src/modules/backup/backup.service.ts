@@ -41,11 +41,9 @@ export class BackupService {
     }
 
     const scheduleRule = new this.schedulerService.RecurrenceRule();
-    scheduleRule.hour = 1;
-    scheduleRule.minute = 15;
-    scheduleRule.second = Math.floor(Math.random() * 59) + 1;
-
-    this.logger.debug('Next automated backup scheduled for:', scheduleRule.nextInvocationDate(new Date()).toString());
+    scheduleRule.hour = Math.floor(Math.random() * 7);
+    scheduleRule.minute = Math.floor(Math.random() * 59);
+    scheduleRule.second = Math.floor(Math.random() * 59);
 
     this.schedulerService.scheduleJob('instance-backup', scheduleRule, () => {
       this.logger.log('Running scheduled instance backup...');
@@ -176,6 +174,21 @@ export class BackupService {
       }
     } catch (e) {
       this.logger.warn('Failed to remove old backups:', e.message);
+    }
+  }
+
+  /**
+   * Get the time the next backup will run
+   */
+  async getNextBackupTime() {
+    if (this.configService.ui.scheduledBackupDisable === true) {
+      return {
+        next: false
+      };
+    } else {
+      return {
+        next: this.schedulerService.scheduledJobs['instance-backup'].nextInvocation(),
+      };
     }
   }
 
