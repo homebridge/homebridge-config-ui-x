@@ -180,6 +180,7 @@
     "plugins.manage.button_restart_now": "Reinicializar Homebridge Agora",
     "plugins.manage.disable": "Desativar",
     "plugins.manage.enable": "Ativar",
+    "plugins.manage.json_config": "JSON Config",
     "plugins.manage.label_homebridge_upgraded": "Homebridge Atualizado",
     "plugins.manage.label_install": "Instalar",
     "plugins.manage.label_installed": "Instalado",

@@ -76,7 +76,7 @@
           </button>
           <button ngbDropdownItem (click)="$plugin.jsonEditor(plugin)"
             *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x'">
-            <i class="fas fa-fw fa-code"></i> JSON Config Editor
+            <i class="fas fa-fw fa-code"></i> {{ 'plugins.manage.json_config' | translate }}
           </button>
           <button ngbDropdownItem (click)="disablePlugin(plugin)"
             *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x' && !plugin.disabled && canDisablePlugins">

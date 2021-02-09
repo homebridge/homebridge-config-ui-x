@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Other Changes
 
+* **Plugins:** Added the ability to view and the raw JSON config for any individual plugin
 * **Plugins:** Limited the plugin update check concurrency to the number of CPU cores, this should reduce the chance of an update check timeout for users on low powered devices (such as the Raspberry Pi Zero W)
 
 ## 4.38.0 (2021-02-06)

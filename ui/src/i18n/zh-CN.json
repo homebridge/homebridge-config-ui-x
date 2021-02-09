@@ -180,6 +180,7 @@
     "plugins.manage.button_restart_now": "立即重启 Homebridge",
     "plugins.manage.disable": "Disable",
     "plugins.manage.enable": "Enable",
+    "plugins.manage.json_config": "JSON Config",
     "plugins.manage.label_homebridge_upgraded": "Homebridge 已升级",
     "plugins.manage.label_install": "安装",
     "plugins.manage.label_installed": "已安装",

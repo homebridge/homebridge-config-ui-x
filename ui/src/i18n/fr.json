@@ -180,6 +180,7 @@
     "plugins.manage.button_restart_now": "Redémarrer Homebridge maintenant",
     "plugins.manage.disable": "Désactiver",
     "plugins.manage.enable": "Activer",
+    "plugins.manage.json_config": "JSON Config",
     "plugins.manage.label_homebridge_upgraded": "Homebridge mis à niveau",
     "plugins.manage.label_install": "Installer",
     "plugins.manage.label_installed": "Installé",

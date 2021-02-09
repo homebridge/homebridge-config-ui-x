@@ -155,6 +155,7 @@ export class ServerService {
     const accessoryInfo = path.join(persistPath, 'AccessoryInfo.' + id + '.json');
     const identifierCache = path.join(persistPath, 'IdentifierCache.' + id + '.json');
     const cachedAccessories = path.join(cachedAccessoriesDir, 'cachedAccessories.' + id);
+    const cachedAccessoriesBackup = path.join(cachedAccessoriesDir, '.cachedAccessories.' + id + '.bak');
 
     if (await fs.pathExists(accessoryInfo)) {
       await fs.unlink(accessoryInfo);
@@ -171,6 +172,11 @@ export class ServerService {
       this.logger.warn(`Removed ${cachedAccessories}`);
     }
 
+    if (await fs.pathExists(cachedAccessoriesBackup)) {
+      await fs.unlink(cachedAccessoriesBackup);
+      this.logger.warn(`Removed ${cachedAccessoriesBackup}`);
+    }
+
     return;
   }
 
@@ -181,7 +187,7 @@ export class ServerService {
     const cachedAccessoriesDir = path.join(this.configService.storagePath, 'accessories');
 
     const cachedAccessoryFiles = (await fs.readdir(cachedAccessoriesDir))
-      .filter(x => x.match(/cachedAccessories\.([A-F,0-9]+)/) || x === 'cachedAccessories');
+      .filter(x => x.match(/^cachedAccessories\.([A-F,0-9]+)$/) || x === 'cachedAccessories');
 
     const cachedAccessories = [];
 
@@ -240,7 +246,7 @@ export class ServerService {
 
     const cachedAccessoriesDir = path.join(this.configService.storagePath, 'accessories');
     const cachedAccessoryPaths = (await fs.readdir(cachedAccessoriesDir))
-      .filter(x => x.match(/cachedAccessories\.([A-F,0-9]+)/) || x === 'cachedAccessories')
+      .filter(x => x.match(/cachedAccessories\.([A-F,0-9]+)/) || x === 'cachedAccessories' || x === '.cachedAccessories.bak')
       .map(x => path.resolve(cachedAccessoriesDir, x));
 
     const cachedAccessoriesPath = path.resolve(this.configService.storagePath, 'accessories', 'cachedAccessories');
