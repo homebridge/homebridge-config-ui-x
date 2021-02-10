@@ -187,7 +187,7 @@ export class BackupService {
       };
     } else {
       return {
-        next: this.schedulerService.scheduledJobs['instance-backup'].nextInvocation(),
+        next: this.schedulerService.scheduledJobs['instance-backup']?.nextInvocation() || false,
       };
     }
   }

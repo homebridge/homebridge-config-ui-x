@@ -380,7 +380,7 @@ describe('BackupController (e2e)', () => {
 
     expect(res.statusCode).toEqual(200);
     expect(res.json()).toHaveProperty('next');
-    expect(res.json().next).not.toBeFalsy();
+    expect(res.json().next).not.toEqual(false);
     expect(dayjs(res.json().next).isValid()).toEqual(true);
   });
 

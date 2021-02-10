@@ -67,16 +67,19 @@ function main() {
 }
 
 function tryRebuildNodePtyModule() {
+  const modulePath = path.dirname(path.dirname(require.resolve('node-pty-prebuilt-multiarch')));
+
   logger.warn('[node-pty] Trying to rebuild automatically...');
+  logger.warn(`[node-pty] Path: ${modulePath}`);
   try {
-    child_process.execSync('npm rebuild node-pty-prebuilt-multiarch --unsafe-perm', {
-      cwd: path.dirname(__dirname),
+    child_process.execSync('npm run install --unsafe-perm', {
+      cwd: modulePath,
       stdio: 'ignore',
     });
   } catch (e) {
     if (os.platform() !== 'win32') {
-      child_process.execSync('sudo -E -n npm rebuild node-pty-prebuilt-multiarch --unsafe-perm', {
-        cwd: path.dirname(__dirname),
+      child_process.execSync('sudo -E -n run install --unsafe-perm', {
+        cwd: modulePath,
         stdio: 'ignore',
       });
     } else {
