@@ -4,16 +4,14 @@ All notable changes to this project will be documented in this file. This projec
 
 ## NEXT
 
-### Notable Changes
-
-* **Plugins:** Added the ability to view and edit the raw JSON config for an individual plugin
-
 ### Other Changes
 
+* **Plugins:** Added the ability to view and edit the raw JSON config for an individual plugin (accessed via the spanner drop down on the plugin tile)
 * **Plugins:** Limited the plugin update check concurrency to the number of CPU cores, this should reduce the chance of an update check timeout for users on low powered devices (such as the Raspberry Pi Zero W)
 * **Backups:** Scheduled backups now happen at a random time between 12am and 6am in your server's local timezone (instead of 1:15am) - the next backup time will be shown in the UI on the Scheduled Backups modal
 * **i18n:** Improvements to Simplified Chinese language translations ([#1062](https://github.com/oznu/homebridge-config-ui-x/pull/1062))
 * **i18n:** Improvements to Portuguese language translations ([#1069](https://github.com/oznu/homebridge-config-ui-x/pull/1069))
+* **i18n:** Improvements to Polish language translations ([#1072](https://github.com/oznu/homebridge-config-ui-x/pull/1072))
 
 ### Bug Fixes
 
