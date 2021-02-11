@@ -128,7 +128,11 @@ export class HomebridgeIpcService extends EventEmitter {
    * Request a list of child bridges from the Homebridge process
    */
   public async getChildBridgeMetadata() {
-    return await this.requestResponse('childBridgeMetadataRequest', 'childBridgeMetadataResponse');
+    try {
+      return await this.requestResponse('childBridgeMetadataRequest', 'childBridgeMetadataResponse');
+    } catch (e) {
+      return [];
+    }
   }
 
 }
