@@ -75,7 +75,7 @@
             <i class="fas fa-fw fa-project-diagram"></i> {{ 'child_bridge.label_bridge_settings' | translate }}
           </button>
           <button ngbDropdownItem (click)="$plugin.jsonEditor(plugin)"
-            *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x'">
+            *ngIf="!isMobile && plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x'">
             <i class="fas fa-fw fa-code"></i> {{ 'plugins.manage.json_config' | translate }}
           </button>
           <button ngbDropdownItem (click)="disablePlugin(plugin)"

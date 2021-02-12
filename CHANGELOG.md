@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file. This projec
 * **i18n:** Improvements to Simplified Chinese language translations ([#1062](https://github.com/oznu/homebridge-config-ui-x/pull/1062))
 * **i18n:** Improvements to Portuguese language translations ([#1069](https://github.com/oznu/homebridge-config-ui-x/pull/1069))
 * **i18n:** Improvements to Polish language translations ([#1072](https://github.com/oznu/homebridge-config-ui-x/pull/1072))
+* **i18n:** Improvements to French language translations ([#1074](https://github.com/oznu/homebridge-config-ui-x/pull/1074))
 
 ### Bug Fixes
 

@@ -8,6 +8,7 @@ import { SettingsService } from '@/app/core/settings.service';
 import { ApiService } from '@/app/core/api.service';
 import { NotificationService } from '@/app/core/notification.service';
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
+import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
 import { DonateModalComponent } from '@/app/modules/plugins/donate-modal/donate-modal.component';
 
@@ -22,6 +23,8 @@ export class PluginCardComponent implements OnInit {
   public canDisablePlugins = false;
   public canManageBridgeSettings = false;
 
+  public isMobile = this.$md.detect.mobile();
+
   constructor(
     public $plugin: ManagePluginsService,
     private $settings: SettingsService,
@@ -30,6 +33,7 @@ export class PluginCardComponent implements OnInit {
     private $translate: TranslateService,
     private $modal: NgbModal,
     private $toastr: ToastrService,
+    private $md: MobileDetectService,
   ) { }
 
   ngOnInit(): void {
