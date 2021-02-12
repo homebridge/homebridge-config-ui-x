@@ -260,7 +260,7 @@ export class HomebridgeServiceHelper {
    * Trucate the log file to prevent large log files
    */
   private async truncateLog() {
-    if (!await fs.pathExists(this.logPath) || this.stdout) {
+    if (!await fs.pathExists(this.logPath)) {
       return;
     }
 
@@ -277,15 +277,15 @@ export class HomebridgeServiceHelper {
       // read out the last `truncatedSize` bytes to a buffer
       const logStartPosition = logStats.size - truncateSize;
       const logBuffer = Buffer.alloc(truncateSize);
-      const logFileHandle = await fs.open(this.logPath, 'r');
+      const logFileHandle = await fs.open(this.logPath, 'a+');
       await fs.read(logFileHandle, logBuffer, 0, truncateSize, logStartPosition);
-      await fs.close(logFileHandle);
 
       // truncate the existing file
-      await fs.truncate(this.logPath);
+      await fs.ftruncate(logFileHandle);
 
       // re-write the truncated log file
-      this.log.write(logBuffer);
+      await fs.write(logFileHandle, logBuffer);
+      await fs.close(logFileHandle);
     } catch (e) {
       this.logger(`Failed to truncate log file: ${e.message}`, 'fail');
     }
