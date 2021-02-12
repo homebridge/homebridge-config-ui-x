@@ -12,6 +12,16 @@
   "bugs": {
     "url": "https://github.com/oznu/homebridge-config-ui-x/issues"
   },
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/oznu"
+    },
+    {
+      "type": "paypal",
+      "url": "https://paypal.me/oznu"
+    }
+  ],
   "main": "./dist/index.js",
   "bin": {
     "homebridge-config-ui-x": "./dist/bin/standalone.js",
