@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigEditorService } from './config-editor.service';
 import { ConfigEditorController } from './config-editor.controller';
@@ -13,7 +13,7 @@ import { PluginsModule } from '../plugins/plugins.module';
     LoggerModule,
     ConfigModule,
     SchedulerModule,
-    forwardRef(() => PluginsModule),
+    PluginsModule,
   ],
   providers: [
     ConfigEditorService,

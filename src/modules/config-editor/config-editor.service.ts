@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as dayjs from 'dayjs';
-import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Logger } from '../../core/logger/logger.service';
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
 import { SchedulerService } from '../../core/scheduler/scheduler.service';
@@ -13,7 +13,6 @@ export class ConfigEditorService {
     private readonly logger: Logger,
     private readonly configService: ConfigService,
     private readonly schedulerService: SchedulerService,
-    @Inject(forwardRef(() => PluginsService))
     private readonly pluginsService: PluginsService,
   ) {
     this.start();

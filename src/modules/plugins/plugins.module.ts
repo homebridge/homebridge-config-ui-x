@@ -1,5 +1,5 @@
 import * as https from 'https';
-import { Module, HttpModule, forwardRef } from '@nestjs/common';
+import { Module, HttpModule } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 
 import { PluginsService } from './plugins.service';
@@ -8,7 +8,6 @@ import { PluginsController } from './plugins.controller';
 import { PluginsGateway } from './plugins.gateway';
 import { ConfigModule } from '../../core/config/config.module';
 import { NodePtyModule } from '../../core/node-pty/node-pty.module';
-import { ConfigEditorModule } from '../config-editor/config-editor.module';
 
 @Module({
   imports: [
@@ -23,7 +22,6 @@ import { ConfigEditorModule } from '../config-editor/config-editor.module';
     NodePtyModule,
     ConfigModule,
     LoggerModule,
-    forwardRef(() => ConfigEditorModule),
   ],
   providers: [
     PluginsService,

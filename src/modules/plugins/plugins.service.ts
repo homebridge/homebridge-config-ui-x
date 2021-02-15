@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { Injectable, NotFoundException, InternalServerErrorException, HttpService, BadRequestException, Inject, forwardRef } from '@nestjs/common';
+import { Injectable, NotFoundException, InternalServerErrorException, HttpService, BadRequestException } from '@nestjs/common';
 import { HomebridgePlugin, IPackageJson, INpmSearchResults, INpmRegistryModule } from './types';
 import { HomebridgePluginVersions, HomebridgePluginUiMetadata, PluginAlias } from './types';
 import axios from 'axios';
@@ -16,7 +16,6 @@ import * as pLimit from 'p-limit';
 import { Logger } from '../../core/logger/logger.service';
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
 import { NodePtyService } from '../../core/node-pty/node-pty.service';
-import { ConfigEditorService } from '../config-editor/config-editor.service';
 
 @Injectable()
 export class PluginsService {
@@ -63,8 +62,6 @@ export class PluginsService {
     private nodePtyService: NodePtyService,
     private logger: Logger,
     private configService: ConfigService,
-    @Inject(forwardRef(() => ConfigEditorService))
-    private configEditorService: ConfigEditorService,
   ) {
 
     /**
@@ -550,10 +547,13 @@ export class PluginsService {
       const installedVersion = semver.parse(homebridge.installedVersion);
       const targetVersion = semver.parse(version);
       if (installedVersion.minor === 2 && targetVersion.minor > 2) {
-        const config = await this.configEditorService.getConfigFile();
-        config.bridge.advertiser = 'ciao';
-        delete config.mdns;
-        await this.configEditorService.updateConfigFile(config);
+        try {
+          const config: HomebridgeConfig = await fs.readJson(this.configService.configPath);
+          config.bridge.advertiser = 'ciao';
+          await fs.writeJsonSync(this.configService.configPath, config);
+        } catch (e) {
+          this.logger.warn('Could not update config.json', e.message);
+        }
       }
     }
     // end 1.2.x -> 1.3.0 upgrade
