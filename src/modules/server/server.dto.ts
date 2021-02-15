@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsBoolean, IsDefined, IsString } from 'class-validator';
+import { IsArray, IsDefined, IsIn, IsString } from 'class-validator';
 
 export class HomebridgeNetworkInterfacesDto {
   @IsArray()
@@ -9,8 +9,9 @@ export class HomebridgeNetworkInterfacesDto {
 }
 
 export class HomebridgeMdnsSettingDto {
-  @IsBoolean()
+  @IsString()
   @IsDefined()
+  @IsIn(['ciao', 'bonjour-hap'])
   @ApiProperty()
-  legacyAdvertiser: boolean;
+  advertiser: 'ciao' | 'bonjour-hap';
 }

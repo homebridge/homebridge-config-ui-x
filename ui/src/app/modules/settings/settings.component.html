@@ -26,7 +26,6 @@
             {{ adapter.iface }}
           </span>
         </span>
-
       </span>
       <button class="btn btn-primary waves-effect m-0" [translate]="'reset.title_clear_cached_accessories'"
         (click)="selectNetworkInterfaces()" [disabled]="!availableNetworkAdapters.length">
@@ -35,11 +34,14 @@
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span>
-        {{ 'settings.legacy_mdns_option' | translate }}
+        {{ 'settings.mdns_advertiser' | translate }}
+        <i class="fas fa-info-circle primary-text" ngbTooltip="{{ 'settings.mdns_advertiser_help' | translate }}"></i>
       </span>
-      <div class="material-switch pull-right">
-        <input id="homebridgeLegacyMdnsAdvertiser" [formControl]="legacyMdnsFormControl" type="checkbox" />
-        <label for="homebridgeLegacyMdnsAdvertiser" class="badge-primary"></label>
+      <div>
+        <select class="custom-select" [formControl]="legacyMdnsFormControl">
+          <option value="bonjour-hap">Bonjour HAP</option>
+          <option value="ciao">Ciao</option>
+        </select>
       </div>
     </li>
   </ul>

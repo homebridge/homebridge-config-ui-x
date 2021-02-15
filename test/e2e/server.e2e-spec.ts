@@ -368,22 +368,9 @@ describe('ServerController (e2e)', () => {
     expect(res.body).toContain('adapters must be an array');
   });
 
-  it('GET /server/mdns-advertiser (not set - default true)', async () => {
-    const res = await app.inject({
-      method: 'GET',
-      path: '/server/mdns-advertiser',
-      headers: {
-        authorization,
-      },
-    });
-
-    expect(res.statusCode).toEqual(200);
-    expect(res.json()).toEqual({ legacyAdvertiser: true });
-  });
-
-  it('GET /server/mdns-advertiser (set to false)', async () => {
+  it('GET /server/mdns-advertiser (when not set - default to bonjour-hap)', async () => {
     const config: HomebridgeConfig = await fs.readJson(configService.configPath);
-    config.mdns = { legacyAdvertiser: false };
+    delete config.bridge.advertiser;
     await fs.writeJson(configService.configPath, config);
 
     const res = await app.inject({
@@ -395,10 +382,50 @@ describe('ServerController (e2e)', () => {
     });
 
     expect(res.statusCode).toEqual(200);
-    expect(res.json()).toEqual({ legacyAdvertiser: false });
+    expect(res.json()).toEqual({ advertiser: 'bonjour-hap' });
   });
 
-  it('PUT /server/mdns-advertiser (true)', async () => {
+  it('GET /server/mdns-advertiser (when set to ciao)', async () => {
+    const config: HomebridgeConfig = await fs.readJson(configService.configPath);
+    config.bridge.advertiser = 'ciao';
+    await fs.writeJson(configService.configPath, config);
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/mdns-advertiser',
+      headers: {
+        authorization,
+      },
+    });
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.json()).toEqual({ advertiser: 'ciao' });
+  });
+
+  it('PUT /server/mdns-advertiser (bonjour-hap)', async () => {
+    const initialConfig: HomebridgeConfig = await fs.readJson(configService.configPath);
+    delete initialConfig.bridge.advertiser;
+    await fs.writeJson(configService.configPath, initialConfig);
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/server/mdns-advertiser',
+      headers: {
+        authorization,
+      },
+      payload: {
+        advertiser: 'bonjour-hap',
+      },
+    });
+
+    expect(res.statusCode).toEqual(200);
+
+    // check the value was saved
+    const config = await fs.readJson(configService.configPath);
+    expect(config.bridge.advertiser).toEqual('bonjour-hap');
+  });
+
+  it('PUT /server/mdns-advertiser (ciao)', async () => {
     const initialConfig: HomebridgeConfig = await fs.readJson(configService.configPath);
     delete initialConfig.mdns;
     await fs.writeJson(configService.configPath, initialConfig);
@@ -410,7 +437,7 @@ describe('ServerController (e2e)', () => {
         authorization,
       },
       payload: {
-        legacyAdvertiser: true,
+        advertiser: 'ciao',
       },
     });
 
@@ -418,10 +445,10 @@ describe('ServerController (e2e)', () => {
 
     // check the value was saved
     const config = await fs.readJson(configService.configPath);
-    expect(config.mdns?.legacyAdvertiser).toEqual(true);
+    expect(config.bridge.advertiser).toEqual('ciao');
   });
 
-  it('PUT /server/mdns-advertiser (false)', async () => {
+  it('PUT /server/mdns-advertiser (invalid value)', async () => {
     const initialConfig: HomebridgeConfig = await fs.readJson(configService.configPath);
     delete initialConfig.mdns;
     await fs.writeJson(configService.configPath, initialConfig);
@@ -433,15 +460,11 @@ describe('ServerController (e2e)', () => {
         authorization,
       },
       payload: {
-        legacyAdvertiser: false,
+        advertiser: 'xxxxxxx',
       },
     });
 
-    expect(res.statusCode).toEqual(200);
-
-    // check the value was saved
-    const config = await fs.readJson(configService.configPath);
-    expect(config.mdns?.legacyAdvertiser).toEqual(false);
+    expect(res.statusCode).toEqual(400);
   });
 
   it('GET /server/port/new', async () => {

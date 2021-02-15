@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as dayjs from 'dayjs';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Logger } from '../../core/logger/logger.service';
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
 import { SchedulerService } from '../../core/scheduler/scheduler.service';
@@ -10,10 +10,11 @@ import { PluginsService } from '../plugins/plugins.service';
 @Injectable()
 export class ConfigEditorService {
   constructor(
+    private readonly logger: Logger,
     private readonly configService: ConfigService,
     private readonly schedulerService: SchedulerService,
+    @Inject(forwardRef(() => PluginsService))
     private readonly pluginsService: PluginsService,
-    private readonly logger: Logger,
   ) {
     this.start();
     this.scheduleConfigBackupCleanup();
@@ -49,6 +50,11 @@ export class ConfigEditorService {
    */
   public async getConfigFile(): Promise<HomebridgeConfig> {
     const config = await fs.readJson(this.configService.configPath);
+
+    // ensure bridge is an object
+    if (!config.bridge || typeof config.bridge !== 'object') {
+      config.bridge = {};
+    }
 
     // ensure accessories is an array
     if (!config.accessories || !Array.isArray(config.accessories)) {
@@ -144,10 +150,6 @@ export class ConfigEditorService {
     // ensure config.mdns is valid
     if (config.mdns && typeof config.mdns !== 'object') {
       delete config.mdns;
-    }
-
-    if (config.mdns && config.mdns.legacyAdvertiser && typeof config.mdns.legacyAdvertiser !== 'boolean') {
-      config.mdns.legacyAdvertiser = false;
     }
 
     // ensure config.disabledPlugins is an array

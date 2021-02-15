@@ -12,10 +12,10 @@ export interface HomebridgeConfig {
     pin: string;
     name: string;
     port: number;
+    advertiser?: 'ciao' | 'bonjour-hap';
     bind?: string | string[];
   };
   mdns?: {
-    legacyAdvertiser?: boolean;
     interface?: string | string[];
   };
   platforms: Record<string, any>[];

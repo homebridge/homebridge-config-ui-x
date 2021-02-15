@@ -417,29 +417,27 @@ export class ServerService {
   }
 
   /**
-   * Return the current setting for the config.mdns.legacyAdvertiser value
+   * Return the current setting for the config.bridge.advertiser value
    */
   public async getHomebridgeMdnsSetting(): Promise<HomebridgeMdnsSettingDto> {
     const config = await this.configEditorService.getConfigFile();
 
-    if (config.mdns?.legacyAdvertiser === undefined) {
-      return { legacyAdvertiser: true };
-    } else {
-      return { legacyAdvertiser: config.mdns.legacyAdvertiser };
+    if (!config.bridge.advertiser) {
+      config.bridge.advertiser = 'bonjour-hap';
     }
+
+    return {
+      advertiser: config.bridge.advertiser
+    };
   }
 
   /**
-   * Return the current setting for the config.mdns.legacyAdvertiser value
+   * Return the current setting for the config.bridge.advertiser value
    */
   public async setHomebridgeMdnsSetting(setting: HomebridgeMdnsSettingDto) {
     const config = await this.configEditorService.getConfigFile();
 
-    if (config.mdns !== 'object') {
-      config.mdns = {};
-    }
-
-    config.mdns.legacyAdvertiser = setting.legacyAdvertiser;
+    config.bridge.advertiser = setting.advertiser;
 
     await this.configEditorService.updateConfigFile(config);
 

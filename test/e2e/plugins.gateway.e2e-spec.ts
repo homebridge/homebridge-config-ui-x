@@ -10,6 +10,7 @@ import { PluginsModule } from '../../src/modules/plugins/plugins.module';
 import { PluginsService } from '../../src/modules/plugins/plugins.service';
 import { PluginsGateway } from '../../src/modules/plugins/plugins.gateway';
 import { NodePtyService } from '../../src/core/node-pty/node-pty.service';
+import { ConfigEditorService } from '../../src/modules/config-editor/config-editor.service';
 
 describe('PluginsGateway (e2e)', () => {
   let app: NestFastifyApplication;
@@ -21,6 +22,7 @@ describe('PluginsGateway (e2e)', () => {
   let configService: ConfigService;
   let pluginsService: PluginsService;
   let pluginsGateway: PluginsGateway;
+  let configEditorService: ConfigEditorService;
   let client: EventEmitter;
 
   let win32NpmPath: string;
@@ -61,6 +63,7 @@ describe('PluginsGateway (e2e)', () => {
     configService = app.get(ConfigService);
     pluginsService = app.get(PluginsService);
     pluginsGateway = app.get(PluginsGateway);
+    configEditorService = app.get(ConfigEditorService);
 
     win32NpmPath = (pluginsService as any).getNpmPath()[0];
   });
@@ -351,6 +354,70 @@ describe('PluginsGateway (e2e)', () => {
     }
     // expect the method to let the client know the command succeeded
     expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Command succeeded!'));
+  });
+
+  it('ON /plugins/homebridge-update (1.2.x -> 1.3.x)', async () => {
+    // mock get homebridge package
+    pluginsService.getHomebridgePackage = async () => {
+      return {
+        name: 'homebridge',
+        private: false,
+        publicPackage: true,
+        installPath: pluginsPath,
+        latestVersion: '1.3.0',
+        installedVersion: '1.2.5'
+      };
+    };
+
+    jest.spyOn(nodePtyService, 'spawn')
+      .mockImplementation(() => {
+        const term = new EventEmitter();
+        setTimeout(() => {
+          term.emit('exit', 0);
+        }, 10);
+        return term;
+      });
+
+    const getConfigFileMock = jest.spyOn(configEditorService, 'getConfigFile');
+
+    try {
+      await pluginsGateway.homebridgeUpdate(client, { version: 'latest' });
+    } catch (e) { }
+
+    // the save config method should have been called
+    expect(getConfigFileMock).toHaveBeenCalled();
+  });
+
+  it('ON /plugins/homebridge-update (1.1.x -> 1.3.x)', async () => {
+    // mock get homebridge package
+    pluginsService.getHomebridgePackage = async () => {
+      return {
+        name: 'homebridge',
+        private: false,
+        publicPackage: true,
+        installPath: pluginsPath,
+        latestVersion: '1.3.0',
+        installedVersion: '1.1.7'
+      };
+    };
+
+    jest.spyOn(nodePtyService, 'spawn')
+      .mockImplementation(() => {
+        const term = new EventEmitter();
+        setTimeout(() => {
+          term.emit('exit', 0);
+        }, 10);
+        return term;
+      });
+
+    const getConfigFileMock = jest.spyOn(configEditorService, 'getConfigFile');
+
+    try {
+      await pluginsGateway.homebridgeUpdate(client, { version: 'latest' });
+    } catch (e) { }
+
+    // the save config method should not have been called
+    expect(getConfigFileMock).not.toHaveBeenCalled();
   });
 
   afterAll(async () => {

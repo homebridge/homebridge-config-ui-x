@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigEditorService } from './config-editor.service';
 import { ConfigEditorController } from './config-editor.controller';
@@ -12,8 +12,8 @@ import { PluginsModule } from '../plugins/plugins.module';
     PassportModule.register({ defaultStrategy: 'jwt' }),
     LoggerModule,
     ConfigModule,
-    PluginsModule,
     SchedulerModule,
+    forwardRef(() => PluginsModule),
   ],
   providers: [
     ConfigEditorService,

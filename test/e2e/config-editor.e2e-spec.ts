@@ -503,9 +503,7 @@ describe('ConfigEditorController (e2e)', () => {
 
   it('POST /config-editor (retain config.mdns if valid object)', async () => {
     const currentConfig = await fs.readJson(configFilePath);
-    currentConfig.mdns = {
-      legacyAdvertiser: false,
-    };
+    currentConfig.mdns = {};
 
     const res = await app.inject({
       method: 'POST',
@@ -520,33 +518,7 @@ describe('ConfigEditorController (e2e)', () => {
 
     // check the updates were saved to disk and mistakes corrected
     const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
-    expect(savedConfig.mdns).toEqual({
-      legacyAdvertiser: false,
-    });
-  });
-
-  it('POST /config-editor (correct config.mdns if non-boolean is passed)', async () => {
-    const currentConfig = await fs.readJson(configFilePath);
-    currentConfig.mdns = {
-      legacyAdvertiser: 'some value',
-    };
-
-    const res = await app.inject({
-      method: 'POST',
-      path: '/config-editor',
-      headers: {
-        authorization,
-      },
-      payload: currentConfig,
-    });
-
-    expect(res.statusCode).toEqual(201);
-
-    // check the updates were saved to disk and mistakes corrected
-    const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
-    expect(savedConfig.mdns).toEqual({
-      legacyAdvertiser: false,
-    });
+    expect(savedConfig.mdns).toEqual({});
   });
 
   it('GET /config-editor/plugin/:pluginName', async () => {

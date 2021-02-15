@@ -164,18 +164,18 @@ export class SettingsComponent implements OnInit {
       this.$api.get('/server/network-interfaces/system').toPromise(),
       this.$api.get('/server/network-interfaces/bridge').toPromise(),
       this.$api.get('/server/mdns-advertiser').toPromise(),
-    ]).then(([system, adapters, mdnsSettings]) => {
+    ]).then(([system, adapters, mdnsAdvertiser]) => {
       this.availableNetworkAdapters = system;
       this.buildBridgeNetworkAdapterList(adapters);
-      this.legacyMdnsFormControl.patchValue(mdnsSettings.legacyAdvertiser);
-      this.legacyMdnsFormControl.valueChanges.subscribe((legacyAdvertiser: boolean) => {
-        this.setHomebridgeMdnsSetting(legacyAdvertiser);
+      this.legacyMdnsFormControl.patchValue(mdnsAdvertiser.advertiser);
+      this.legacyMdnsFormControl.valueChanges.subscribe((advertiser: string) => {
+        this.setHomebridgeMdnsSetting(advertiser);
       });
     });
   }
 
-  async setHomebridgeMdnsSetting(legacyAdvertiser: boolean) {
-    this.$api.put('/server/mdns-advertiser', { legacyAdvertiser })
+  async setHomebridgeMdnsSetting(advertiser: string) {
+    this.$api.put('/server/mdns-advertiser', { advertiser })
       .subscribe(
         () => {
           this.saved = true;

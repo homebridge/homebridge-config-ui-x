@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { Injectable, NotFoundException, InternalServerErrorException, HttpService, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, InternalServerErrorException, HttpService, BadRequestException, Inject, forwardRef } from '@nestjs/common';
 import { HomebridgePlugin, IPackageJson, INpmSearchResults, INpmRegistryModule } from './types';
 import { HomebridgePluginVersions, HomebridgePluginUiMetadata, PluginAlias } from './types';
 import axios from 'axios';
@@ -16,6 +16,7 @@ import * as pLimit from 'p-limit';
 import { Logger } from '../../core/logger/logger.service';
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
 import { NodePtyService } from '../../core/node-pty/node-pty.service';
+import { ConfigEditorService } from '../config-editor/config-editor.service';
 
 @Injectable()
 export class PluginsService {
@@ -59,9 +60,11 @@ export class PluginsService {
 
   constructor(
     private httpService: HttpService,
-    private configService: ConfigService,
     private nodePtyService: NodePtyService,
     private logger: Logger,
+    private configService: ConfigService,
+    @Inject(forwardRef(() => ConfigEditorService))
+    private configEditorService: ConfigEditorService,
   ) {
 
     /**
@@ -541,6 +544,19 @@ export class PluginsService {
     if (homebridge.globalInstall || os.platform() === 'win32') {
       installOptions.push('-g');
     }
+
+    // 1.2.x -> 1.3.0 upgrade set ciao as bridge advertiser
+    if (homebridge.installedVersion && version) {
+      const installedVersion = semver.parse(homebridge.installedVersion);
+      const targetVersion = semver.parse(version);
+      if (installedVersion.minor === 2 && targetVersion.minor > 2) {
+        const config = await this.configEditorService.getConfigFile();
+        config.bridge.advertiser = 'ciao';
+        delete config.mdns;
+        await this.configEditorService.updateConfigFile(config);
+      }
+    }
+    // end 1.2.x -> 1.3.0 upgrade
 
     await this.runNpmCommand([...this.npm, 'install', ...installOptions, `${homebridge.name}@${version}`], installPath, client);
 

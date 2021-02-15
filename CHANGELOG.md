@@ -2,13 +2,13 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## NEXT
+## 4.39.0 (2021-02-15)
 
 ### Other Changes
 
-* **Plugins:** Added the ability to view and edit the raw JSON config for an individual plugin (accessed via the spanner drop down on the plugin tile)
-* **Plugins:** Limited the plugin update check concurrency to the number of CPU cores, this should reduce the chance of an update check timeout for users on low powered devices (such as the Raspberry Pi Zero W)
-* **Backups:** Scheduled backups now happen at a random time between 12am and 6am in your server's local timezone (instead of 1:15am) - the next backup time will be shown in the UI on the Scheduled Backups modal
+* **Plugins:** Added the ability to view and edit the raw JSON config for an individual plugin (accessed via the spanner drop down on the plugin tile, non-mobile devices only)
+* **Plugins:** Limited the plugin update check concurrency to the number of CPU cores, this should reduce the chance of an update check timeout for users on low powered devices (such as the Raspberry Pi Zero W) ([#1020](https://github.com/issues/homebridge-config-ui-x/pull/1020))
+* **Backups:** Scheduled backups now happen at a random time between 12am and 6am in your server's local timezone (instead of 1:15am) - the next backup time will be shown in the UI on the Scheduled Backups modal ([#1020](https://github.com/issues/homebridge-config-ui-x/pull/1020))
 * **i18n:** Improvements to Simplified Chinese language translations ([#1062](https://github.com/oznu/homebridge-config-ui-x/pull/1062))
 * **i18n:** Improvements to Portuguese language translations ([#1069](https://github.com/oznu/homebridge-config-ui-x/pull/1069))
 * **i18n:** Improvements to Polish language translations ([#1072](https://github.com/oznu/homebridge-config-ui-x/pull/1072))
@@ -16,7 +16,13 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Bug Fixes
 
-* **Accessory Control:** Irrigation systems now only show as running when they are running ([#1056](https://github.com/oznu/homebridge-config-ui-x/pull/1056))
+* **Accessory Control:** Irrigation systems now only show as running when they are running ([#1056](https://github.com/issues/homebridge-config-ui-x/pull/1056))
+
+### Homebridge v1.3.0 Features
+
+These features will appear in once Homebridge v1.3.0 or later is installed (currently in beta):
+
+* **Homebridge:** Added the ability to swap between the `ciao` and `bonjour-hap` mdns advertisers
 
 ## 4.38.0 (2021-02-06)
 
@@ -65,7 +71,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed ([cur
 
 These features will appear in once Homebridge v1.3.0 or later is installed (currently in beta):
 
-* **Homebridge:** Added the ability to swap between the `ciao` and `bonjour-hap` mdns advertisers.
+* **Homebridge:** Added the ability to swap between the `ciao` and `bonjour-hap` mdns advertisers
 * **Plugins:** Added the ability to disable plugins without having to uninstall them or remove their config from the Homebridge `config.json` file ([#287](https://github.com/oznu/homebridge-config-ui-x/issues/287),[#790](https://github.com/oznu/homebridge-config-ui-x/issues/790),[#791](https://github.com/oznu/homebridge-config-ui-x/issues/791),[#864](https://github.com/oznu/homebridge-config-ui-x/issues/864),[#931](https://github.com/oznu/homebridge-config-ui-x/issues/931),[#990](https://github.com/oznu/homebridge-config-ui-x/issues/990),[#1029](https://github.com/oznu/homebridge-config-ui-x/issues/1029))
 
 
