@@ -67,7 +67,8 @@ function main() {
 }
 
 function tryRebuildNodePtyModule() {
-  const modulePath = path.dirname(path.dirname(require.resolve('node-pty-prebuilt-multiarch')));
+  // using eval('require') here so it does not break with webpack
+  const modulePath = path.dirname(path.dirname(eval('require').resolve('node-pty-prebuilt-multiarch')));
 
   logger.warn('[node-pty] Trying to rebuild automatically...');
   logger.warn(`[node-pty] Path: ${modulePath}`);
