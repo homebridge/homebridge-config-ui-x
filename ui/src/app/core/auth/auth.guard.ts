@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 
+import { SettingsService } from '@/app/core/settings.service';
 import { AuthService } from './auth.service';
 
 @Injectable({
@@ -10,21 +11,22 @@ export class AuthGuard implements CanActivate {
   constructor(
     private $router: Router,
     private $auth: AuthService,
+    private $settings: SettingsService,
   ) { }
 
   async canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Promise<boolean> {
     // ensure app settings are loaded
-    if (!this.$auth.settingsLoaded) {
-      await this.$auth.getAppSettings();
+    if (!this.$settings.settingsLoaded) {
+      await this.$settings.onSettingsLoaded.toPromise();
     }
 
     if (this.$auth.isLoggedIn()) {
       return true;
     } else {
       // if using not using auth, get a token
-      if (this.$auth.formAuth === false) {
+      if (this.$settings.formAuth === false) {
         await this.$auth.noauth();
         return true;
       }

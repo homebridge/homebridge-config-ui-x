@@ -2,17 +2,22 @@
   position: relative;
   display: inline-block;
   width: 50px;
-  padding: 6% 0;
+  height: 50px;
+  line-height: 50px;
   border-radius: 50%;
-  font-size: 24px;
+  font-size: 15px;
   text-align: center;
-  margin-bottom:6px;
+  margin-bottom: 6px;
   background-color: grey;
   color: lightgrey;
+}
 
+.temperature-circle-collapse {
   @media (max-width: 575px) {
     width: 31px;
-    font-size: 14px;
+    height: 31px;
+    line-height: 31px;
+    font-size: 10px;
     margin-bottom: 7px;
   }
 }

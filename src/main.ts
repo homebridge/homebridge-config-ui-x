@@ -1,12 +1,14 @@
 import './self-check';
 
 import * as path from 'path';
-import * as fastify from 'fastify';
+import { fastify, FastifyReply, FastifyRequest } from 'fastify';
+import fastifyMultipart from 'fastify-multipart';
 import * as helmet from 'helmet';
 import * as fs from 'fs-extra';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
 import { Logger } from './core/logger/logger.service';
@@ -16,7 +18,7 @@ import { getStartupConfig } from './core/config/config.startup';
 
 process.env.UIX_BASE_PATH = path.resolve(__dirname, '../');
 
-async function bootstrap() {
+async function bootstrap(): Promise<NestFastifyApplication> {
   const startupConfig = await getStartupConfig();
 
   const server = fastify({
@@ -26,9 +28,17 @@ async function bootstrap() {
     } : false,
   });
 
+  const fAdapter = new FastifyAdapter(server);
+
+  fAdapter.register(fastifyMultipart, {
+    limits: {
+      files: 1,
+    },
+  });
+
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter(server),
+    fAdapter,
     {
       logger: startupConfig.debug ? new Logger() : false,
       httpsOptions: startupConfig.httpsOptions,
@@ -42,7 +52,9 @@ async function bootstrap() {
   app.use(helmet({
     hsts: false,
     frameguard: false,
-    referrerPolicy: true,
+    referrerPolicy: {
+      policy: 'no-referrer',
+    },
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ['\'self\''],
@@ -57,7 +69,7 @@ async function bootstrap() {
   }));
 
   // serve index.html without a cache
-  app.getHttpAdapter().get('/', async (req, res) => {
+  app.getHttpAdapter().get('/', async (req: FastifyRequest, res: FastifyReply) => {
     res.type('text/html');
     res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.header('Pragma', 'no-cache');
@@ -71,22 +83,6 @@ async function bootstrap() {
     setHeaders(res) {
       res.setHeader('Cache-Control', 'public,max-age=31536000,immutable');
     },
-  });
-
-  // login page image
-  app.getHttpAdapter().get('/assets/snapshot.jpg', async (req, res) => {
-    if (configService.ui.loginWallpaper) {
-      if (!await fs.pathExists(configService.ui.loginWallpaper)) {
-        logger.error(`Custom Login Wallpaper does not exist: ${configService.ui.loginWallpaper}`);
-        return res.code(404).send('Not Found');
-      }
-      res.type('image/jpg');
-      res.header('Cache-Control', 'public,max-age=31536000,immutable');
-      res.send(await fs.readFile(path.resolve(configService.ui.loginWallpaper)));
-    } else {
-      res.header('Cache-Control', 'public,max-age=31536000,immutable');
-      res.sendFile('assets/snapshot.jpg');
-    }
   });
 
   // set prefix
@@ -104,10 +100,31 @@ async function bootstrap() {
     skipMissingProperties: true,
   }));
 
+  // setup swagger api doc generator
+  const options = new DocumentBuilder()
+    .setTitle('Homebridge UI API Reference')
+    .setVersion(configService.package.version)
+    .addBearerAuth({
+      type: 'oauth2',
+      flows: {
+        password: {
+          tokenUrl: '/api/auth/login',
+          scopes: null,
+        },
+      },
+    })
+    .build();
+
+  const document = SwaggerModule.createDocument(app, options);
+  SwaggerModule.setup('swagger', app, document);
+
   // serve spa on all 404
   app.useGlobalFilters(new SpaFilter());
 
   logger.warn(`Homebridge Config UI X v${configService.package.version} is listening on ${startupConfig.host} port ${configService.ui.port}`);
   await app.listen(configService.ui.port, startupConfig.host);
+
+  return app;
 }
-bootstrap();
+
+export const app = bootstrap();

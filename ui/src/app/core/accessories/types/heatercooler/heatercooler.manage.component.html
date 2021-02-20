@@ -1,0 +1,66 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title" [innerText]="service.customName || service.serviceName"></h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+      (click)="activeModal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body text-center">
+
+    <div class="temperature-circle mb-3"
+      [innerText]="(service.values.CurrentTemperature | convertTemp | number:'1.0-1') + '°'" [ngClass]="{
+          'cooling': service.values.CurrentHeaterCoolerState === 3 && service.values.Active === 1,
+          'heating': service.values.CurrentHeaterCoolerState === 2 && service.values.Active === 1,
+          'no-current-state': service.values.CurrentHeaterCoolerState < 2 && service.values.Active === 1
+        }"></div>
+
+    <div class="thermostat-mode-control btn-group-vertical btn-group-toggle d-flex justify-content-center mb-4"
+      ngbRadioGroup name="radioBasic" [(ngModel)]="targetMode" (change)="onTargetStateChange()">
+      <label ngbButtonLabel class="btn-primary  m-0">
+        <input ngbButton type="radio" [value]="0"> {{ 'accessories.control.label_auto' | translate }}
+      </label>
+      <label ngbButtonLabel class="btn-primary  m-0">
+        <input ngbButton type="radio" [value]="1"> {{ 'accessories.control.label_heat' | translate }}
+      </label>
+      <label ngbButtonLabel class="btn-primary  m-0">
+        <input ngbButton type="radio" [value]="2"> {{ 'accessories.control.label_cool' | translate }}
+      </label>
+      <label ngbButtonLabel class="btn-primary m-0">
+        <input ngbButton type="radio" [value]="'off'"> {{ 'accessories.control.label_off' | translate }}
+      </label>
+    </div>
+
+    <div *ngIf="service.values.Active === 1 && HeatingThresholdTemperature && CoolingThresholdTemperature">
+      <h5>{{ 'accessories.control.label_target_temperature' | translate }}</h5>
+
+      <div [ngSwitch]="targetMode">
+        <div *ngSwitchCase="0">
+          <p>
+            {{ autoTemp[0] | convertTemp | number:'1.0-1' }}&deg; -
+            {{ autoTemp[1] | convertTemp | number:'1.0-1' }}&deg;
+          </p>
+          <nouislider [min]="HeatingThresholdTemperature.minValue" [max]="CoolingThresholdTemperature.maxValue"
+            [step]="CoolingThresholdTemperature.minStep" [(ngModel)]="autoTemp"
+            (ngModelChange)="onTemperatureStateChange()">
+          </nouislider>
+        </div>
+        <div *ngSwitchCase="1">
+          <p>{{ targetHeatingTemp | convertTemp | number:'1.0-1' }}&deg;</p>
+          <nouislider [min]="HeatingThresholdTemperature.minValue" [max]="HeatingThresholdTemperature.maxValue"
+            [step]="HeatingThresholdTemperature.minStep" [(ngModel)]="targetHeatingTemp"
+            (ngModelChange)="onTemperatureStateChange()">
+          </nouislider>
+        </div>
+        <div *ngSwitchCase="2">
+          <p>{{ targetCoolingTemp | convertTemp | number:'1.0-1' }}&deg;</p>
+          <nouislider [min]="CoolingThresholdTemperature.minValue" [max]="CoolingThresholdTemperature.maxValue"
+            [step]="CoolingThresholdTemperature.minStep" [(ngModel)]="targetCoolingTemp"
+            (ngModelChange)="onTemperatureStateChange()">
+          </nouislider>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

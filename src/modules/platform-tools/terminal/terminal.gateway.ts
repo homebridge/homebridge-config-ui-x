@@ -1,7 +1,8 @@
 import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { UseGuards } from '@nestjs/common';
+
 import { WsAdminGuard } from '../../../core/auth/guards/ws-admin-guard';
-import { TerminalService } from './terminal.service';
+import { TerminalService, WsEventEmitter, TermSize } from './terminal.service';
 
 @UseGuards(WsAdminGuard)
 @WebSocketGateway({ namespace: 'platform-tools/terminal' })
@@ -11,7 +12,7 @@ export class TerminalGateway {
   ) { }
 
   @SubscribeMessage('start-session')
-  startTerminalSession(client: any, payload: any) {
+  startTerminalSession(client: WsEventEmitter, payload: TermSize) {
     return this.terminalService.startSession(client, payload);
   }
 }

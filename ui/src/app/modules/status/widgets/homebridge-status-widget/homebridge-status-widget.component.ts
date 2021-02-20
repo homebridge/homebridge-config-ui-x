@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { WsService } from '../../../../core/ws.service';
-import { AuthService } from '../../../../core/auth/auth.service';
-import { ManagePluginsService } from '../../../../core//manage-plugins/manage-plugins.service';
+
+import { WsService } from '@/app/core/ws.service';
+import { SettingsService } from '@/app/core/settings.service';
+import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 
 @Component({
   selector: 'app-homebridge-status-widget',
@@ -10,6 +11,8 @@ import { ManagePluginsService } from '../../../../core//manage-plugins/manage-pl
   styleUrls: ['./homebridge-status-widget.component.scss'],
 })
 export class HomebridgeStatusWidgetComponent implements OnInit {
+  @Input() widget;
+
   private io = this.$ws.getExistingNamespace('status');
 
   public homebridgePkg = {} as any;
@@ -18,7 +21,7 @@ export class HomebridgeStatusWidgetComponent implements OnInit {
 
   constructor(
     private $ws: WsService,
-    public $auth: AuthService,
+    private $settings: SettingsService,
     public $toastr: ToastrService,
     public $plugin: ManagePluginsService,
   ) { }
@@ -56,6 +59,7 @@ export class HomebridgeStatusWidgetComponent implements OnInit {
     return this.io.request('homebridge-version-check').toPromise()
       .then((response) => {
         this.homebridgePkg = response;
+        this.$settings.env.homebridgeVersion = response.installedVersion;
       })
       .catch((err) => {
         this.$toastr.error(err.message);

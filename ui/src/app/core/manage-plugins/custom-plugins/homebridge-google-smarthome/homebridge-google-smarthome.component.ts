@@ -3,8 +3,10 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { ToastrService } from 'ngx-toastr';
-import { ApiService } from '../../../../core/api.service';
-import { AuthService } from '../../../../core/auth/auth.service';
+
+import { ApiService } from '@/app/core/api.service';
+import { SettingsService } from '@/app/core/settings.service';
+import { NotificationService } from '@/app/core/notification.service';
 
 @Component({
   selector: 'app-homebridge-google-smarthome',
@@ -17,7 +19,7 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
   private popup;
   private originCheckInterval;
   public justLinked = false;
-  public pluginConfig;
+  public gshConfig: Record<string, any>;
   public linkType: string;
 
   public jsonFormOptions = {
@@ -27,16 +29,17 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
     setSchemaDefaults: true,
   };
 
-  @Input() public pluginName;
+  @Input() public plugin;
   @Input() public schema;
-  @Input() homebridgeConfig;
+  @Input() pluginConfig: Record<string, any>[];
 
   constructor(
     public activeModal: NgbActiveModal,
     private translate: TranslateService,
     private $jwtHelper: JwtHelperService,
     private $api: ApiService,
-    public $auth: AuthService,
+    public $settings: SettingsService,
+    private $notification: NotificationService,
     private $toastr: ToastrService,
   ) {
     // listen for sign in events from the link account popup
@@ -44,18 +47,11 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    if (!this.homebridgeConfig.platforms) {
-      this.homebridgeConfig.platforms = [];
+    if (!this.pluginConfig.length) {
+      this.pluginConfig.push({ name: 'Google Smart Home', platform: this.schema.pluginAlias });
     }
 
-    this.pluginConfig = this.homebridgeConfig.platforms.find(x => x.platform === this.schema.pluginAlias);
-
-    if (!this.pluginConfig) {
-      this.pluginConfig = {
-        name: 'Google Smart Home',
-        platform: this.schema.pluginAlias,
-      };
-    }
+    this.gshConfig = this.pluginConfig[0];
 
     this.parseToken();
   }
@@ -71,10 +67,10 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
       if (data.token) {
         this.processToken(data.token);
       }
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      console.error(error);
     }
-  }
+  };
 
   linkAccount() {
     const w = 450;
@@ -94,14 +90,12 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
   }
 
   unlinkAccount() {
-    this.pluginConfig = {
+    this.gshConfig = {
       name: 'Google Smart Home',
       platform: this.schema.pluginAlias,
     };
 
-    const existingConfigIndex = this.homebridgeConfig.platforms.findIndex(x => x.platform === this.schema.pluginAlias);
-    this.homebridgeConfig.platforms.splice(existingConfigIndex, 1);
-
+    this.pluginConfig.splice(0, this.pluginConfig.length);
     this.saveConfig();
   }
 
@@ -110,12 +104,11 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
     if (this.popup) {
       this.popup.close();
     }
-    this.pluginConfig.token = token;
-    this.pluginConfig.notice = 'Keep your token a secret!';
+    this.gshConfig.token = token;
+    this.gshConfig.notice = 'Keep your token a secret!';
 
-    const existingConfig = this.homebridgeConfig.platforms.find(x => x.platform === this.schema.pluginAlias);
-    if (!existingConfig) {
-      this.homebridgeConfig.platforms.push(this.pluginConfig);
+    if (!this.pluginConfig.length) {
+      this.pluginConfig.push(this.gshConfig);
     }
 
     this.parseToken();
@@ -123,19 +116,19 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
   }
 
   parseToken() {
-    if (this.pluginConfig.token) {
+    if (this.gshConfig.token) {
       try {
-        const decoded = this.$jwtHelper.decodeToken(this.pluginConfig.token);
+        const decoded = this.$jwtHelper.decodeToken(this.gshConfig.token);
         this.linkType = decoded.id.split('|')[0].split('-')[0];
       } catch (e) {
         this.$toastr.error('Invalid account linking token in config.json', this.translate.instant('toast.title_error'));
-        delete this.pluginConfig.token;
+        delete this.gshConfig.token;
       }
     }
   }
 
   saveConfig() {
-    return this.$api.post('/config-editor', this.homebridgeConfig).toPromise()
+    return this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig).toPromise()
       .then((result) => {
         this.justLinked = true;
         this.$toastr.success(
@@ -149,12 +142,13 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
   }
 
   async saveAndClose() {
-    this.pluginConfig.platform = this.schema.pluginAlias;
-    const existingConfigIndex = this.homebridgeConfig.platforms.findIndex(x => x.platform === this.schema.pluginAlias);
-    this.homebridgeConfig.platforms[existingConfigIndex] = this.pluginConfig;
+    this.gshConfig.platform = this.schema.pluginAlias;
+    this.pluginConfig[0] = this.gshConfig;
+
 
     await this.saveConfig();
     this.activeModal.close();
+    this.$notification.configUpdated.next();
   }
 
   close() {

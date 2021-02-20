@@ -1,18 +1,20 @@
 import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import * as rp from 'request-promise-native';
-import * as tcpPortUsed from 'tcp-port-used';
 import * as si from 'systeminformation';
 import * as semver from 'semver';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '../../core/config/config.service';
+import * as NodeCache from 'node-cache';
+import { Injectable, HttpService, BadRequestException } from '@nestjs/common';
+
 import { Logger } from '../../core/logger/logger.service';
+import { ConfigService } from '../../core/config/config.service';
+import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service';
+import { PluginsService } from '../plugins/plugins.service';
 
 @Injectable()
 export class StatusService {
+  private statusCache = new NodeCache({ stdTTL: 3600 });
   private dashboardLayout;
-  private nodeJsVersionCache;
   private homebridgeStatus: 'up' | 'down';
 
   private cpuLoadHistory: number[] = [];
@@ -21,8 +23,11 @@ export class StatusService {
   private memoryInfo: si.Systeminformation.MemData;
 
   constructor(
+    private httpService: HttpService,
     private logger: Logger,
     private configService: ConfigService,
+    private pluginsService: PluginsService,
+    private homebridgeIpcService: HomebridgeIpcService,
   ) {
 
     // systeminformation cpu data is not supported in FreeBSD Jail Shells
@@ -31,10 +36,14 @@ export class StatusService {
       this.getCpuTemp = this.getCpuTempAlt;
     }
 
-    setInterval(async () => {
-      this.getCpuLoadPoint();
-      this.getMemoryUsagePoint();
-    }, 10000);
+    if (this.configService.ui.disableServerMetricsMonitoring !== true) {
+      setInterval(async () => {
+        this.getCpuLoadPoint();
+        this.getMemoryUsagePoint();
+      }, 10000);
+    } else {
+      this.logger.warn('Server metrics monitoring disabled.');
+    }
   }
 
   /**
@@ -72,7 +81,31 @@ export class StatusService {
    * Get the current CPU temperature using systeminformation.cpuTemperature
    */
   private async getCpuTemp() {
-    return await si.cpuTemperature();
+    const cpuTempData = await si.cpuTemperature();
+
+    if (cpuTempData.main === -1 && this.configService.ui.temp) {
+      return this.getCpuTempLegacy();
+    }
+
+    return cpuTempData;
+  }
+
+  /**
+   * The old way of getting the cpu temp
+   */
+  private async getCpuTempLegacy() {
+    try {
+      const tempData = await fs.readFile(this.configService.ui.temp, 'utf-8');
+      const cpuTemp = parseInt(tempData, 10) / 1000;
+      return {
+        main: cpuTemp,
+        cores: [],
+        max: cpuTemp,
+      };
+    } catch (e) {
+      this.logger.error(`Failed to read temp from ${this.configService.ui.temp} - ${e.message}`);
+      return this.getCpuTempAlt();
+    }
   }
 
   /**
@@ -213,12 +246,11 @@ export class StatusService {
   /**
    * Check if homebridge is running on the local system
    */
-  private async checkHomebridgeStatus() {
+  public async checkHomebridgeStatus() {
     try {
-      await rp.get(`http://localhost:${this.configService.homebridgeConfig.bridge.port}`, {
-        resolveWithFullResponse: true,
-        simple: false, // <- This prevents the promise from failing on a 404
-      });
+      await this.httpService.get(`http://localhost:${this.configService.homebridgeConfig.bridge.port}`, {
+        validateStatus: () => true,
+      }).toPromise();
       this.homebridgeStatus = 'up';
     } catch (e) {
       this.homebridgeStatus = 'down';
@@ -228,11 +260,79 @@ export class StatusService {
   }
 
   /**
+   * Return an array of child bridges
+   */
+  public async getChildBridges() {
+    if (!this.configService.serviceMode) {
+      throw new BadRequestException('This command is only available in service mode');
+    }
+
+    return this.homebridgeIpcService.getChildBridgeMetadata();
+  }
+
+  /**
+ * Socket Handler - Per Client
+ * Start watching for child bridge status events
+ * @param client
+ */
+  public async watchChildBridgeStatus(client) {
+    const listener = (data) => {
+      client.emit('child-bridge-status-update', data);
+    };
+
+    this.homebridgeIpcService.on('childBridgeStatusUpdate', listener);
+
+    // cleanup on disconnect
+    const onEnd = () => {
+      client.removeAllListeners('end');
+      client.removeAllListeners('disconnect');
+      this.homebridgeIpcService.removeListener('childBridgeStatusUpdate', listener);
+    };
+
+    client.on('end', onEnd.bind(this));
+    client.on('disconnect', onEnd.bind(this));
+  }
+
+  /**
+   * Get / Cache the default interface
+   */
+  private async getDefaultInterface(): Promise<si.Systeminformation.NetworkInterfacesData> {
+    const cachedResult = this.statusCache.get('defaultInterface') as si.Systeminformation.NetworkInterfacesData;
+
+    if (cachedResult) {
+      return cachedResult;
+    }
+
+    const defaultInterfaceName = (os.platform() !== 'freebsd') ? await si.networkInterfaceDefault() : undefined;
+    const defaultInterface = defaultInterfaceName ? (await si.networkInterfaces()).find(x => x.iface === defaultInterfaceName) : undefined;
+
+    if (defaultInterface) {
+      this.statusCache.set('defaultInterface', defaultInterface);
+    }
+
+    return defaultInterface;
+  }
+
+  /**
+   * Get / Cache the OS Information
+   */
+  private async getOsInfo(): Promise<si.Systeminformation.OsData> {
+    const cachedResult = this.statusCache.get('osInfo') as si.Systeminformation.OsData;
+
+    if (cachedResult) {
+      return cachedResult;
+    }
+
+    const osInfo = await si.osInfo();
+
+    this.statusCache.set('osInfo', osInfo, 86400);
+    return osInfo;
+  }
+
+  /**
    * Returns details about this Homebridge server
    */
   public async getHomebridgeServerInfo() {
-    const defaultInterface = (os.platform() !== 'freebsd') ? await si.networkInterfaceDefault() : await undefined;
-
     return {
       serviceUser: os.userInfo().username,
       homebridgeConfigJsonPath: this.configService.configPath,
@@ -242,39 +342,51 @@ export class StatusService {
       homebridgeRunningInDocker: this.configService.runningInDocker,
       homebridgeServiceMode: this.configService.serviceMode,
       nodeVersion: process.version,
-      os: await si.osInfo(),
+      os: await this.getOsInfo(),
       time: await si.time(),
-      network: defaultInterface ? (await si.networkInterfaces()).find(x => x.iface === defaultInterface) : {},
+      network: await this.getDefaultInterface() || {},
     };
+  }
+
+  /**
+   * Return the Homebridge package
+   */
+  public async getHomebridgeVersion() {
+    return this.pluginsService.getHomebridgePackage();
   }
 
   /**
    * Checks the current version of Node.js and compares to the latest LTS
    */
   public async getNodeJsVersionInfo() {
-    if (this.nodeJsVersionCache) {
-      return this.nodeJsVersionCache;
+    const cachedResult = this.statusCache.get('nodeJsVersion');
+
+    if (cachedResult) {
+      return cachedResult;
     }
 
     try {
-      const versionList = await rp.get('https://nodejs.org/dist/index.json', { json: true });
+      const versionList = (await this.httpService.get('https://nodejs.org/dist/index.json').toPromise()).data;
       const currentLts = versionList.filter(x => x.lts)[0];
-      this.nodeJsVersionCache = {
+      const versionInformation = {
         currentVersion: process.version,
         latestVersion: currentLts.version,
         updateAvailable: semver.gt(currentLts.version, process.version),
-        showUpdateWarning: semver.lt(process.version, '10.0.0'),
+        showUpdateWarning: semver.lt(process.version, '12.13.0'),
         installPath: path.dirname(process.execPath),
       };
-      return this.nodeJsVersionCache;
+      this.statusCache.set('nodeJsVersion', versionInformation, 86400);
+      return versionInformation;
     } catch (e) {
-      this.logger.warn('Failed to check for Node.js version updates');
-      return {
+      this.logger.log('Failed to check for Node.js version updates - check your internet connection.');
+      const versionInformation = {
         currentVersion: process.version,
         latestVersion: process.version,
         updateAvailable: false,
         showUpdateWarning: false,
       };
+      this.statusCache.set('nodeJsVersion', versionInformation, 3600);
+      return versionInformation;
     }
   }
 }

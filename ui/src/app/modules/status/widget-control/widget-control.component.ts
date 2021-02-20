@@ -5,6 +5,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { Observable, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, tap, switchMap, catchError } from 'rxjs/operators';
 
+import { environment } from '@/environments/environment';
+
 @Component({
   selector: 'app-widget-control',
   templateUrl: './widget-control.component.html',
@@ -54,6 +56,13 @@ export class WidgetControlComponent implements OnInit {
     'EEEE, MMM d',
   ];
 
+  // cpu
+  public temperatureUnits = [
+    { label: 'status.widget.label_temperature_units_system_default', value: '' },
+    { label: 'status.widget.label_temperature_units_celsius', value: 'c' },
+    { label: 'status.widget.label_temperature_units_fahrenheit', value: 'f' },
+  ];
+
   public searchCountryCodes = (text$: Observable<string>) =>
     text$.pipe(
       debounceTime(300),
@@ -68,7 +77,7 @@ export class WidgetControlComponent implements OnInit {
             })),
       ),
       tap(() => this.searching = false),
-    )
+    );
 
   public searchCountryCodeFormatter = (result: any) => result.name + ', ' + result.country;
 
@@ -85,28 +94,24 @@ export class WidgetControlComponent implements OnInit {
 
   findOpenWeatherMapCity(query: string) {
     return this.$http
-      .get('https://openweathermap.org/data/2.5/find', {
+      .get('https://api.openweathermap.org/data/2.5/find', {
         params: new HttpParams({
           fromObject: {
             q: query,
             type: 'like',
             sort: 'population',
             cnt: '30',
-            appid: 'b6907d289e10d714a6e88b30761fae22',
+            appid: environment.owm.appid,
             lang: this.$translate.currentLang,
           },
         }),
       }).pipe(
-        map((response: any) => {
-          return response.list.map((item) => {
-            return {
+        map((response: any) => response.list.map((item) => ({
               id: item.id,
               name: item.name,
               country: item.sys.country,
               coord: item.coord,
-            };
-          });
-        }),
+            }))),
       );
   }
 

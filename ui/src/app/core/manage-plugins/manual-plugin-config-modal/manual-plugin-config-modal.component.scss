@@ -1,0 +1,25 @@
+::ng-deep {
+  .no-padding-card-body {
+    .card-body {
+      padding: 0px 0px 0px 0px !important;
+    }
+  }
+}
+
+::ng-deep body.dark-mode {
+  .no-padding-card-body {
+    .card-body {
+      background-color: #1e1e1e;
+    }
+  }
+}
+
+.manage-plugin-config-external-icons {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #000;
+  opacity: 0.5;
+  background-color: transparent;
+  border: 0;
+}

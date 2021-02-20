@@ -2,6 +2,7 @@
   "pluginAlias": "config",
   "pluginType": "platform",
   "singular": true,
+  "footerDisplay": "[REST API Documentation <i class='fas fa-external-link-alt'></i>](/swagger)",
   "schema": {
     "type": "object",
     "properties": {
@@ -45,7 +46,7 @@
         "default": "auto",
         "oneOf": [
           {
-            "title": "Default",
+            "title": "Default (Auto Dark Mode)",
             "enum": [
               "auto"
             ]
@@ -141,9 +142,75 @@
             ]
           },
           {
-            "title": "Dark Mode",
+            "title": "Dark Mode - HomeKit Orange",
             "enum": [
               "dark-mode"
+            ]
+          },
+          {
+            "title": "Dark Mode - Red",
+            "enum": [
+              "dark-mode-red"
+            ]
+          },
+          {
+            "title": "Dark Mode - Pink",
+            "enum": [
+              "dark-mode-pink"
+            ]
+          },
+          {
+            "title": "Dark Mode - Purple",
+            "enum": [
+              "dark-mode-purple"
+            ]
+          },
+          {
+            "title": "Dark Mode - Indigo",
+            "enum": [
+              "dark-mode-indigo"
+            ]
+          },
+          {
+            "title": "Dark Mode - Blue",
+            "enum": [
+              "dark-mode-blue"
+            ]
+          },
+          {
+            "title": "Dark Mode - Blue Grey",
+            "enum": [
+              "dark-mode-blue-grey"
+            ]
+          },
+          {
+            "title": "Dark Mode - Green",
+            "enum": [
+              "dark-mode-green"
+            ]
+          },
+          {
+            "title": "Dark Mode - Grey",
+            "enum": [
+              "dark-mode-grey"
+            ]
+          },
+          {
+            "title": "Dark Mode - Brown",
+            "enum": [
+              "dark-mode-brown"
+            ]
+          },
+          {
+            "title": "Dark Mode - Teal",
+            "enum": [
+              "dark-mode-teal"
+            ]
+          },
+          {
+            "title": "Dark Mode - Cyan",
+            "enum": [
+              "dark-mode-cyan"
             ]
           }
         ],
@@ -151,6 +218,10 @@
       },
       "restart": {
         "title": "Restart Command",
+        "type": "string"
+      },
+      "temp": {
+        "title": "Path to OS Temp File",
         "type": "string"
       },
       "tempUnits": {
@@ -169,6 +240,164 @@
             "title": "Fahrenheit",
             "enum": [
               "f"
+            ]
+          }
+        ]
+      },
+      "lang": {
+        "title": "Language",
+        "type": "string",
+        "default": "auto",
+        "required": true,
+        "oneOf": [
+          {
+            "title": "Automatic (Use Browser Settings)",
+            "enum": [
+              "auto"
+            ]
+          },
+          {
+            "title": "Bulgarian (bg)",
+            "enum": [
+              "bg"
+            ]
+          },
+          {
+            "title": "Catalan (ca)",
+            "enum": [
+              "ca"
+            ]
+          },
+          {
+            "title": "Czech (cs)",
+            "enum": [
+              "cs"
+            ]
+          },
+          {
+            "title": "German (de)",
+            "enum": [
+              "de"
+            ]
+          },
+          {
+            "title": "English (en)",
+            "enum": [
+              "en"
+            ]
+          },
+          {
+            "title": "Spanish (es)",
+            "enum": [
+              "es"
+            ]
+          },
+          {
+            "title": "French (fr)",
+            "enum": [
+              "fr"
+            ]
+          },
+          {
+            "title": "Hungarian (hu)",
+            "enum": [
+              "hu"
+            ]
+          },
+          {
+            "title": "Indonesian (id)",
+            "enum": [
+              "id"
+            ]
+          },
+          {
+            "title": "Italian (it)",
+            "enum": [
+              "it"
+            ]
+          },
+          {
+            "title": "Japanese (ja)",
+            "enum": [
+              "ja"
+            ]
+          },
+          {
+            "title": "Korean (ko)",
+            "enum": [
+              "ko"
+            ]
+          },
+          {
+            "title": "Dutch (nl)",
+            "enum": [
+              "nl"
+            ]
+          },
+          {
+            "title": "Macedonian (mk)",
+            "enum": [
+              "mk"
+            ]
+          },
+          {
+            "title": "Norwegian (no)",
+            "enum": [
+              "no"
+            ]
+          },
+          {
+            "title": "Portuguese (pt-BR)",
+            "enum": [
+              "pt-BR"
+            ]
+          },
+          {
+            "title": "Portuguese (pt)",
+            "enum": [
+              "pt"
+            ]
+          },
+          {
+            "title": "Polish (pl)",
+            "enum": [
+              "pl"
+            ]
+          },
+          {
+            "title": "Russian (ru)",
+            "enum": [
+              "ru"
+            ]
+          },
+          {
+            "title": "Slovenian (sl)",
+            "enum": [
+              "sl"
+            ]
+          },
+          {
+            "title": "Swedish (sv)",
+            "enum": [
+              "sv"
+            ]
+          },
+          {
+            "title": "Turkish (tr)",
+            "enum": [
+              "tr"
+            ]
+          },
+          {
+            "title": "Chinese - Simplified (zh-CN)",
+            "enum": [
+              "zh-CN"
+            ]
+          },
+          {
+            "title": "Chinese - Traditional (zh-TW)",
+            "enum": [
+              "zh-TW"
             ]
           }
         ]
@@ -202,8 +431,11 @@
         "type": "boolean"
       },
       "sessionTimeout": {
-        "title": "Session timeout in seconds",
-        "type": "integer"
+        "title": "Session Timeout (in seconds)",
+        "type": "integer",
+        "placeholder": 28800,
+        "minimum": 600,
+        "maximum": 86400000
       },
       "log": {
         "type": "object",
@@ -281,7 +513,7 @@
         "type": "object",
         "properties": {
           "debug": {
-            "title": " Enable / disable debug level logging for accessory control",
+            "title": " Enable / disable debug level logging for accessory control via the web UI",
             "type": "boolean"
           },
           "instanceBlacklist": {
@@ -313,6 +545,19 @@
         "title": "Reverse Proxy Hostname",
         "type": "string",
         "pattern": "^[^{}/ :\\\\]+(?::\\d+)?$"
+      },
+      "scheduledBackupPath": {
+        "title": "Scheduled backup destination path",
+        "description": "The full path to where the service should save daily scheduled backups archives",
+        "type": "string"
+      },
+      "scheduledBackupDisable": {
+        "title": "Disable Scheduled Backups",
+        "type": "boolean"
+      },
+      "disableServerMetricsMonitoring": {
+        "title": "Disable Server Metrics Monitoring",
+        "description": "When enabled, the Homebridge UI will not collect or report cpu / memory stats"
       }
     }
   },
@@ -340,6 +585,7 @@
       ]
     },
     {
+      "ref": "log",
       "type": "fieldset",
       "expandable": true,
       "title": "Log Viewer Setup",
@@ -373,47 +619,24 @@
       ]
     },
     {
-      "type": "fieldset",
-      "title": "Accessory Control Settings",
-      "expandable": true,
-      "expanded": false,
-      "items": [
-        "accessoryControl.debug",
-        {
-          "type": "help",
-          "helpvalue": "<h6>Instance Blacklist</h6><em class='primary-text'>Enter the usernames of any other Homebridge instances on your network that you do not want to be able to control from this instance.</em>"
-        },
-        {
-          "nodescription": true,
-          "notitle": true,
-          "key": "accessoryControl.instanceBlacklist",
-          "type": "array",
-          "items": [
-            {
-              "type": "div",
-              "displayFlex": true,
-              "flex-direction": "row",
-              "items": [
-                {
-                  "key": "accessoryControl.instanceBlacklist[]",
-                  "flex": "1 1 50px",
-                  "notitle": true,
-                  "placeholder": "Enter homebridge username..."
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
+      "ref": "advanced",
       "type": "fieldset",
       "expandable": true,
       "title": "Advanced",
       "items": [
         "sudo",
-        "debug",
+        {
+          "key": "debug",
+          "condition": {
+            "functionBody": "return (model.debug === true)"
+          }
+        },
+        "lang",
         "auth",
+        {
+          "key": "sessionTimeout",
+          "type": "number"
+        },
         {
           "key": "restart",
           "description": "If no restart command is set the process will terminate with a non-zero exit code."
@@ -424,12 +647,13 @@
           "description": "When running behind a reverse proxy you may need to enter the hostname you use to access the UI."
         },
         {
-          "key": "loginWallpaper",
-          "description": "Leave blank to use default wallpaper."
+          "type": "help",
+          "helpvalue": "<label class='control-label'>Custom Login Wallpaper</label><br><p class='help-block'>Custom login wallpaper can be set by adding a 'ui-wallpaper.jpg' file to your Homebridge storage directory, or by providing the full path to the .jpg file below:</p>"
         },
         {
-          "key": "homebridgePackagePath",
-          "description": "Leave blank unless you have not installed Homebridge as a global module."
+          "key": "loginWallpaper",
+          "notitle": true,
+          "placeholder": "eg. /home/pi/mywallpaper.jpg"
         }
       ]
     }

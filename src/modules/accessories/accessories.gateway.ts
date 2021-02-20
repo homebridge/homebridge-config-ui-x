@@ -1,4 +1,4 @@
-import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
+import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets';
 import { UseGuards } from '@nestjs/common';
 import { WsGuard } from '../../core/auth/guards/ws.guard';
 import { AccessoriesService } from './accessories.service';
@@ -22,6 +22,10 @@ export class AccessoriesGateway {
 
   @SubscribeMessage('save-layout')
   async saveAccessoryLayout(client: any, payload: any) {
-    return await this.accessoriesService.saveAccessoryLayout(payload.user, payload.layout);
+    try {
+      return await this.accessoriesService.saveAccessoryLayout(payload.user, payload.layout);
+    } catch (e) {
+      return new WsException(e);
+    }
   }
 }

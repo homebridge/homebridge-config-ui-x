@@ -1,0 +1,37 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title" [innerText]="service.customName || service.serviceName"></h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+      (click)="activeModal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body text-center">
+
+    <h5>
+      <strong>
+        {{ 'accessories.control.label_fan' | translate }}
+        {{ (service.values.Active ? 'accessories.control.label_on' : 'accessories.control.label_off') | translate }}
+      </strong>
+    </h5>
+
+    <div class="fan-mode-control btn-group btn-group-toggle d-flex justify-content-center mb-4 mt-4" ngbRadioGroup
+      name="radioBasic" [(ngModel)]="targetMode" (change)="onTargetStateChange()">
+      <label ngbButtonLabel class="btn-primary">
+        <input ngbButton type="radio" [value]="0"> {{ 'accessories.control.label_off' | translate }}
+      </label>
+      <label ngbButtonLabel class="btn-primary">
+        <input ngbButton type="radio" [value]="1"> {{ 'accessories.control.label_on' | translate }}
+      </label>
+    </div>
+
+    <div *ngIf="targetRotationSpeed">
+      <h5 class="mb-0">{{ 'accessories.control.label_rotation_speed' | translate }}</h5>
+      <p>{{ targetRotationSpeed.value }}%</p>
+      <nouislider [min]="targetRotationSpeed.min" [max]="targetRotationSpeed.max" [step]="targetRotationSpeed.step"
+        [(ngModel)]="targetRotationSpeed.value" (ngModelChange)="onTargetRotationSpeedChange()">
+      </nouislider>
+    </div>
+
+  </div>
+</div>

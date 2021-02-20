@@ -6,8 +6,8 @@ import { TranslateModule } from '@ngx-translate/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { DragulaModule } from 'ng2-dragula';
 
-import { CoreModule } from '../../core/core.module';
-import { AccessoriesCoreModule } from '../../core/accessories/accessories.module';
+import { CoreModule } from '@/app/core/core.module';
+import { AccessoriesCoreModule } from '@/app/core/accessories/accessories.module';
 import { AccessoriesRoutingModule } from './accessories-routing.module';
 import { DragHerePlaceholderComponent } from './drag-here-placeholder/drag-here-placeholder.component';
 import { AddRoomModalComponent } from './add-room-modal/add-room-modal.component';

@@ -1,0 +1,12 @@
+::ng-deep {
+  .switch-off {
+    svg {
+      .valve_off_hidden {
+        display: none;
+      }
+      .valve_off_grey {
+        fill: #808080;
+      }
+    }
+  }
+}

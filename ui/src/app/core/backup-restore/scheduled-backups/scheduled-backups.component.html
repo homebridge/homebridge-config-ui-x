@@ -1,0 +1,60 @@
+<div class="modal-content hb-backup-modal">
+  <div class="modal-header">
+    <h5 class="modal-title" translate="backup.title_scheduled_backups"></h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+      (click)="activeModal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+
+    <p translate="backup.message_scheduled_backup_time" *ngIf="backupTime"
+      [translateParams]="{backupTime: backupTime | date:'shortTime', dayCount: 7}">
+    </p>
+
+    <ul class="list-group" *ngIf="scheduledBackups && scheduledBackups.length">
+      <li class="mt-2 d-flex flex-row justify-content-between">
+        <span><strong translate="backup.label_archive_name"></strong></span>
+        <span><strong translate="backup.label_backup_time"></strong></span>
+      </li>
+      <li *ngFor="let backup of scheduledBackups" class="mt-2 d-flex flex-wrap flex-row justify-content-between">
+        <span>
+          <a href="javascript:void(0);" (click)="download(backup)">
+            <i class="fas fa-download"></i> {{ backup.fileName}}
+          </a>
+        </span>
+        <span>
+          {{ backup.timestamp | date:'medium' }}
+        </span>
+      </li>
+    </ul>
+
+    <div *ngIf="!scheduledBackups.length && !errorMessage">
+      <div class="alert alert-info" role="alert" translate="backup.message_scheduled_backup_none_yet"
+        [translateParams]="{backupTime: backupTime | date:'shortTime'}">
+      </div>
+    </div>
+
+    <div *ngIf="errorMessage">
+      <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">{{ 'toast.title_error' | translate }}</h4>
+        <p>
+          {{ errorMessage }}
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-elegant mr-auto" (click)="openBackupRestore()">
+      <i class="fas fa-arrow-left"></i> {{ 'backup.title_backup_restore' | translate }}
+    </button>
+
+    <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')"
+      [translate]="'form.button_close'">
+      Close
+    </button>
+  </div>
+
+</div>

@@ -14,7 +14,7 @@
             "outputPath": "dist",
             "index": "src/index.html",
             "main": "src/main.ts",
-            "tsConfig": "src/tsconfig.app.json",
+            "tsConfig": "tsconfig.app.json",
             "polyfills": "src/polyfills.ts",
             "assets": [
               "src/assets",
@@ -23,6 +23,11 @@
                 "glob": "**/*",
                 "input": "node_modules/ngx-monaco-editor/assets/monaco",
                 "output": "./assets/monaco/"
+              },
+              {
+                "glob": "ui.js*",
+                "input": "node_modules/@homebridge/plugin-ui-utils/dist",
+                "output": "./assets/plugin-ui-utils/"
               }
             ],
             "styles": [
@@ -33,14 +38,37 @@
               "node_modules/popper.js/dist/umd/popper.min.js",
               "node_modules/mdbootstrap/js/bootstrap.min.js",
               "node_modules/mdbootstrap/js/mdb.js"
+            ],
+            "allowedCommonJsDependencies": [
+              "dragula",
+              "file-saver",
+              "qrcode",
+              "contra/emitter",
+              "crossvent",
+              "debug",
+              "socket.io-client",
+              "socket.io-parser",
+              "uuid/v4",
+              "nouislider",
+              "chart.js",
+              "inline-svg",
+              "ng-inline-svg",
+              "semver",
+              "ajv"
             ]
           },
           "configurations": {
             "production": {
+              "crossOrigin": "use-credentials",
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
@@ -73,29 +101,22 @@
           }
         },
         "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
+          "builder": "@angular-eslint/builder:lint",
           "options": {
-            "tsConfig": [
-              "src/tsconfig.app.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
             ]
           }
         }
       }
-    },
-    "ui-e2e": {
-      "root": "",
-      "sourceRoot": "",
-      "projectType": "application"
     }
   },
   "defaultProject": "ui",
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app",
-      "styleext": "scss"
+      "style": "scss"
     },
     "@schematics/angular:directive": {
       "prefix": "app"

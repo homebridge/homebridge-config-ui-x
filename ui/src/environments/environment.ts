@@ -5,16 +5,21 @@
 
 export const environment = {
   production: false,
+  serverTarget: require('../../../package.json').version,
   api: {
     base: 'http://localhost:8080/api',
     socket: 'http://localhost:8080',
+    origin: 'http://localhost:8080',
   },
   jwt: {
     tokenKey: 'access_token',
-    whitelistedDomains: ['localhost:8080'],
-    blacklistedRoutes: ['localhost:8080/api/auth/login'],
+    allowedDomains: ['localhost:8080'],
+    disallowedRoutes: ['http://localhost:8080/api/auth/login'],
   },
   apiHttpOptions: {
     withCredentials: true,
+  },
+  owm: {
+    appid: 'fec67b55f7f74deaa28df89ba6a60821',
   },
 };

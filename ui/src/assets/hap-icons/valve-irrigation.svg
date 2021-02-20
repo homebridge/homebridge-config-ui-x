@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="456px" height="348px" viewBox="0 0 456 348" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Group</title>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group" transform="translate(0.933594, 0.000000)">
+            <circle id="Oval" class="valve_off_hidden" fill="#2D98D3" cx="414.066406" cy="178" r="15"></circle>
+            <circle id="Oval" class="valve_off_hidden" fill="#2D98D3" cx="84.0664062" cy="52" r="15"></circle>
+            <circle id="Oval" class="valve_off_hidden" fill="#2D98D3" cx="40.0664062" cy="178" r="15"></circle>
+            <circle id="Oval" class="valve_off_hidden" fill="#2D98D3" cx="348.566406" cy="177.5" r="21.5"></circle>
+            <circle id="Oval" class="valve_off_hidden" fill="#2D98D3" cx="227.066406" cy="15" r="15"></circle>
+            <circle id="Oval" class="valve_off_hidden" fill="#2D98D3" cx="370.066406" cy="52" r="15"></circle>
+            <circle id="Oval" class="valve_off_hidden" fill="#2D98D3" cx="105.566406" cy="177.5" r="21.5" ></circle>
+            <circle id="Oval" class="valve_off_hidden" fill="#2D98D3" cx="135.566406" cy="101.5" r="21.5"></circle>
+            <circle id="Oval" class="valve_off_hidden" fill="#2D98D3" cx="319.566406" cy="100.5" r="21.5"></circle>
+            <circle id="Oval" class="valve_off_hidden" fill="#2D98D3" cx="227.566406" cy="79.5" r="21.5"></circle>
+            <polygon class="valve_off_grey" id="Path" fill="#42D653" points="0 347.554688 454.617187 347.554688 454.617188 271.222656 425.945312 309.388672 390.386719 271.222656 360.625 309.388672 324.054688 271.222656 295.980469 309.388672 260.863281 271.222656 227.308594 309.388672 194.144531 271.222656 162.945312 309.388672 128.582031 271.222656 97.9023438 309.388672 62.71875 271.222656 32.515625 309.388672 0 271.222656"></polygon>
+            <rect class="valve_off_grey"  id="Rectangle" fill="#CF74E6" x="173.066406" y="129" width="108" height="63" rx="3"></rect>
+            <rect class="valve_off_grey"  id="Rectangle" fill="#CF74E6" x="192.066406" y="190" width="71" height="30" rx="3"></rect>
+            <polygon class="valve_off_grey"  id="Path-2" fill="#CF74E6" points="210.066406 220 210.066406 266.637695 226.990234 285.363281 244.229492 266.637695 244.229492 220"></polygon>
+        </g>
+    </g>
+</svg>

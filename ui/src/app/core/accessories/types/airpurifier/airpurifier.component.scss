@@ -1,0 +1,13 @@
+::ng-deep {
+  .switch-off {
+    svg {
+      .airpurifier_off_grey {
+        stroke: #808080;
+        fill: #808080;
+      }
+      .airpurifier_off_lgrey {
+        fill: #D9D9D9
+      }
+    }
+  }
+}

@@ -5,9 +5,9 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DragulaService } from 'ng2-dragula';
 import { Subscription } from 'rxjs';
 
-import { AuthService } from '../../core/auth/auth.service';
-import { AccessoriesService } from '../../core//accessories/accessories.service';
-import { MobileDetectService } from '../../core/mobile-detect.service';
+import { SettingsService } from '@/app/core/settings.service';
+import { AccessoriesService } from '@/app/core/accessories/accessories.service';
+import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { AddRoomModalComponent } from './add-room-modal/add-room-modal.component';
 
 @Component({
@@ -24,7 +24,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     private dragulaService: DragulaService,
     public $toastr: ToastrService,
     private modalService: NgbModal,
-    public $auth: AuthService,
+    public $settings: SettingsService,
     private $md: MobileDetectService,
     private translate: TranslateService,
     private $accessories: AccessoriesService,
@@ -76,6 +76,10 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
         name: roomName,
         services: [],
       });
+
+      if (this.isMobile) {
+        this.toggleLayoutLock();
+      }
     })
       .catch(() => { /* modal dismissed */ });
   }

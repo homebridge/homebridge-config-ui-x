@@ -2,18 +2,20 @@ import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
-import { ApiService } from '../../../core/api.service';
+
+import { ApiService } from '@/app/core/api.service';
 
 @Component({
   selector: 'app-config.restore-backup',
   templateUrl: './config.restore-backup.component.html',
 })
 export class ConfigRestoreBackupComponent implements OnInit {
+  public loading = true;
   public backupList: {
-    id: string,
-    timestamp: string,
-    file: string,
-  }[];
+    id: string;
+    timestamp: string;
+    file: string;
+  }[] = [];
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -24,8 +26,14 @@ export class ConfigRestoreBackupComponent implements OnInit {
 
   ngOnInit() {
     this.$api.get('/config-editor/backups').subscribe(
-      (data: any[]) => this.backupList = data,
-      (err) => this.$toastr.error(err.error.message, this.translate.instant('config.restore.toast_failed_to_load_backups')),
+      (data: any[]) => {
+        this.loading = false;
+        this.backupList = data;
+      },
+      (err) => {
+        this.loading = false;
+        this.$toastr.error(err.error.message, this.translate.instant('config.restore.toast_failed_to_load_backups'));
+      },
     );
   }
 

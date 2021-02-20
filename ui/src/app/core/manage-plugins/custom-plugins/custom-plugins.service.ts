@@ -5,6 +5,8 @@ import { ApiService } from '../../api.service';
 import { HomebridgeGoogleSmarthomeComponent } from './homebridge-google-smarthome/homebridge-google-smarthome.component';
 import { HomebridgeHoneywellHomeComponent } from './homebridge-honeywell-home/homebridge-honeywell-home.component';
 import { HomebridgeRingComponent } from './homebridge-ring/homebridge-ring.component';
+import { HomebridgeNestCamComponent } from './homebridge-nest-cam/homebridge-nest-cam.component';
+import { CustomPluginsComponent } from './custom-plugins.component';
 
 @Injectable({
   providedIn: 'root',
@@ -15,6 +17,7 @@ export class CustomPluginsService {
     'homebridge-gsh': HomebridgeGoogleSmarthomeComponent,
     'homebridge-honeywell-home': HomebridgeHoneywellHomeComponent,
     'homebridge-ring': HomebridgeRingComponent,
+    'homebridge-nest-cam': HomebridgeNestCamComponent,
   };
 
   constructor(
@@ -22,27 +25,38 @@ export class CustomPluginsService {
     private $api: ApiService,
   ) { }
 
-  async openSettings(pluginName: string) {
-    const schema = await this.loadConfigSchema(pluginName);
-    const homebridgeConfig = await this.loadHomebridgeConfig();
-    const ref = this.modalService.open(this.plugins[pluginName], {
+  async openSettings(plugin, schema) {
+    const pluginConfig = await this.loadPluginConfig(plugin.name);
+    const ref = this.modalService.open(this.plugins[plugin.name], {
       backdrop: 'static',
       size: 'lg',
     });
-    ref.componentInstance.pluginName = pluginName;
+    ref.componentInstance.plugin = plugin;
     ref.componentInstance.schema = schema;
-    ref.componentInstance.homebridgeConfig = homebridgeConfig;
+    ref.componentInstance.pluginConfig = pluginConfig;
 
     return ref.result.catch(() => {
       // do nothing
     });
   }
 
-  async loadConfigSchema(pluginName) {
-    return this.$api.get(`/plugins/config-schema/${encodeURIComponent(pluginName)}`).toPromise();
+  async openCustomSettingsUi(plugin, schema) {
+    const pluginConfig = await this.loadPluginConfig(plugin.name);
+    const ref = this.modalService.open(CustomPluginsComponent, {
+      backdrop: 'static',
+      size: 'lg',
+    });
+
+    ref.componentInstance.plugin = plugin;
+    ref.componentInstance.schema = schema;
+    ref.componentInstance.pluginConfig = pluginConfig;
+
+    return ref.result.catch(() => {
+      // do nothing
+    });
   }
 
-  async loadHomebridgeConfig() {
-    return this.$api.get('/config-editor').toPromise();
+  private async loadPluginConfig(pluginName: string) {
+    return this.$api.get(`/config-editor/plugin/${encodeURIComponent(pluginName)}`).toPromise();
   }
 }

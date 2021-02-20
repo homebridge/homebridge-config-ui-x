@@ -1,0 +1,9 @@
+::ng-deep body.dark-mode {
+  .switch-off {
+    svg {
+      .contact_sensor_split_line {
+        fill: #2b2b2b;
+      }
+    }
+  }
+}

@@ -5,10 +5,11 @@ import { GridsterConfig, GridsterItem } from 'angular-gridster2';
 import { Subject } from 'rxjs';
 import { take } from 'rxjs/operators';
 
-import { WsService } from '../../core/ws.service';
-import { AuthService } from '../../core/auth/auth.service';
-import { MobileDetectService } from '../../core/mobile-detect.service';
-import { ManagePluginsService } from '../../core/manage-plugins/manage-plugins.service';
+import { WsService } from '@/app/core/ws.service';
+import { AuthService } from '@/app/core/auth/auth.service';
+import { SettingsService } from '@/app/core/settings.service';
+import { MobileDetectService } from '@/app/core/mobile-detect.service';
+import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { WidgetControlComponent } from './widget-control/widget-control.component';
 import { WidgetAddComponent } from './widget-add/widget-add.component';
 
@@ -35,6 +36,7 @@ export class StatusComponent implements OnInit, OnDestroy {
     private $modal: NgbModal,
     private $ws: WsService,
     public $auth: AuthService,
+    public $settings: SettingsService,
     public $plugin: ManagePluginsService,
     public $md: MobileDetectService,
   ) { }
@@ -87,8 +89,8 @@ export class StatusComponent implements OnInit, OnDestroy {
 
     this.io.socket.on('homebridge-status', (data) => {
       // check if client is up-to-date
-      if (data.packageVersion && data.packageVersion !== this.$auth.uiVersion) {
-        // tslint:disable-next-line:deprecation
+      if (data.packageVersion && data.packageVersion !== this.$settings.uiVersion) {
+        // eslint-disable-next-line import/no-deprecated
         window.location.reload(true);
       }
     });
@@ -127,22 +129,36 @@ export class StatusComponent implements OnInit, OnDestroy {
     this.gridChangedEvent();
   }
 
+  isIos() {
+    try {
+      if (/iPad|iPhone|iPod/.test(navigator.platform)) {
+        return true;
+      } else {
+        return navigator.maxTouchPoints &&
+          navigator.maxTouchPoints > 2 &&
+          /MacIntel/.test(navigator.platform);
+      }
+    } catch (e) {
+      return false;
+    }
+  }
+
   isLayoutUnlocked() {
-    if (localStorage.getItem(`${this.$auth.env.instanceId}-dashboard-locked`) === 'true') {
+    if (localStorage.getItem(`${this.$settings.env.instanceId}-dashboard-locked`) === 'true' || this.isIos()) {
       return false;
     }
     return this.$auth.user.admin;
   }
 
   lockLayout() {
-    localStorage.setItem(`${this.$auth.env.instanceId}-dashboard-locked`, 'true');
+    localStorage.setItem(`${this.$settings.env.instanceId}-dashboard-locked`, 'true');
     this.options.draggable.enabled = false;
     this.options.resizable.enabled = false;
     this.options.api.optionsChanged();
   }
 
   unlockLayout() {
-    localStorage.removeItem(`${this.$auth.env.instanceId}-dashboard-locked`);
+    localStorage.removeItem(`${this.$settings.env.instanceId}-dashboard-locked`);
     this.options.draggable.enabled = true;
     this.options.resizable.enabled = true;
     this.options.api.optionsChanged();

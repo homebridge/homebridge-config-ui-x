@@ -1,0 +1,32 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title" translate="plugins.donate.tile_donate_to"
+      [translateParams]="{author: plugin.author || plugin.name}">
+    </h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+      (click)="activeModal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <form>
+    <div class="modal-body">
+      <ul class="list-group">
+        <li class="list-group-item" *ngFor="let option of fundingOptions">
+          <a [href]="option.url" target="_blank" rel="noopener noreferrer" class="text-break-all">
+            <i [ngClass]="getIconClass(option.type)" class="mr-2 primary-text fa-fw"></i>
+            {{ option.url }}
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div class="modal-footer">
+      <div class="w-100 text-right">
+        <p class="small mb-0">
+          <a class="font-italic" href="https://github.com/oznu/homebridge-config-ui-x/wiki/Developers:-Donation-Links"
+            target="_blank" rel="noopener noreferrer" translate="plugins.donate.message_learn_more">
+          </a>
+        </p>
+      </div>
+    </div>
+  </form>
+</div>

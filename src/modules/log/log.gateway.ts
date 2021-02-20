@@ -1,7 +1,9 @@
-import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
-import { WsGuard } from '../../core/auth/guards/ws.guard';
+import { EventEmitter } from 'events';
 import { UseGuards } from '@nestjs/common';
-import { LogService } from './log.service';
+import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
+
+import { WsGuard } from '../../core/auth/guards/ws.guard';
+import { LogService, LogTermSize } from './log.service';
 
 @UseGuards(WsGuard)
 @WebSocketGateway({ namespace: 'log' })
@@ -11,7 +13,7 @@ export class LogGateway {
   ) { }
 
   @SubscribeMessage('tail-log')
-  connect(client: any, payload: any) {
+  connect(client: EventEmitter, payload: LogTermSize) {
     this.logService.connect(client, payload);
   }
 }

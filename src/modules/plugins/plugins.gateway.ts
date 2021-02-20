@@ -1,12 +1,22 @@
-import { UseGuards } from '@nestjs/common';
+import { EventEmitter } from 'events';
+import { UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets';
 import * as color from 'bash-color';
+
 import { PluginsService } from './plugins.service';
+import { PluginActionDto, HomebridgeUpdateActionDto } from './plugins.dto';
 import { Logger } from '../../core/logger/logger.service';
 import { WsAdminGuard } from '../../core/auth/guards/ws-admin-guard';
 
 @UseGuards(WsAdminGuard)
 @WebSocketGateway({ namespace: '/plugins' })
+@UsePipes(new ValidationPipe({
+  whitelist: true,
+  exceptionFactory: ((err) => {
+    console.error(err);
+    return new WsException(err);
+  }),
+}))
 export class PluginsGateway {
 
   constructor(
@@ -15,9 +25,9 @@ export class PluginsGateway {
   ) { }
 
   @SubscribeMessage('install')
-  async installPlugin(client, payload) {
+  async installPlugin(client: EventEmitter, payload: PluginActionDto) {
     try {
-      return await this.pluginsService.installPlugin(payload, client);
+      return await this.pluginsService.installPlugin(payload.name, payload.version || 'latest', client);
     } catch (e) {
       this.logger.error(e);
       client.emit('stdout', '\n\r' + color.red(e.toString()) + '\n\r');
@@ -26,9 +36,9 @@ export class PluginsGateway {
   }
 
   @SubscribeMessage('uninstall')
-  async uninstallPlugin(client, payload) {
+  async uninstallPlugin(client: EventEmitter, payload: PluginActionDto) {
     try {
-      return await this.pluginsService.uninstallPlugin(payload, client);
+      return await this.pluginsService.uninstallPlugin(payload.name, client);
     } catch (e) {
       this.logger.error(e);
       client.emit('stdout', '\n\r' + color.red(e.toString()) + '\n\r');
@@ -37,9 +47,9 @@ export class PluginsGateway {
   }
 
   @SubscribeMessage('update')
-  async updatePlugin(client, payload) {
+  async updatePlugin(client: EventEmitter, payload: PluginActionDto) {
     try {
-      return await this.pluginsService.updatePlugin(payload, client);
+      return await this.pluginsService.updatePlugin(payload.name, payload.version || 'latest', client);
     } catch (e) {
       this.logger.error(e);
       client.emit('stdout', '\n\r' + color.red(e.toString()) + '\n\r');
@@ -48,11 +58,13 @@ export class PluginsGateway {
   }
 
   @SubscribeMessage('homebridge-update')
-  async homebridgeUpdate(client, payload) {
+  async homebridgeUpdate(client: EventEmitter, payload: HomebridgeUpdateActionDto) {
     try {
-      return await this.pluginsService.updateHomebridgePackage(client);
+      return await this.pluginsService.updateHomebridgePackage(payload.version || 'latest', client);
     } catch (e) {
-      return new WsException(e.message);
+      this.logger.error(e);
+      client.emit('stdout', '\n\r' + color.red(e.toString()) + '\n\r');
+      return new WsException(e);
     }
   }
 }

@@ -1,12 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { TimerObservable } from 'rxjs/observable/TimerObservable';
 import { ToastrService } from 'ngx-toastr';
 
-import { ApiService } from '../../../../core/api.service';
-import { WsService } from '../../../../core/ws.service';
-import { AuthService } from '../../../../core/auth/auth.service';
+import { ApiService } from '@/app/core/api.service';
+import { WsService } from '@/app/core/ws.service';
+import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
   selector: 'app-container-restart',
@@ -15,8 +14,8 @@ import { AuthService } from '../../../../core/auth/auth.service';
 export class ContainerRestartComponent implements OnInit, OnDestroy {
   private io = this.$ws.connectToNamespace('status');
 
-  checkTimeout;
-  checkDelay;
+  checkTimeout: NodeJS.Timeout;
+  checkDelay: NodeJS.Timeout;
   resp: any = {};
   timeout = false;
   error: any = false;
@@ -24,7 +23,7 @@ export class ContainerRestartComponent implements OnInit, OnDestroy {
   constructor(
     private $api: ApiService,
     private $ws: WsService,
-    private $auth: AuthService,
+    private $settings: SettingsService,
     public $toastr: ToastrService,
     private translate: TranslateService,
     private $router: Router,
@@ -33,7 +32,7 @@ export class ContainerRestartComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.io.connected.subscribe(() => {
       this.io.socket.emit('monitor-server-status');
-      this.$auth.getAppSettings().catch(/* do nothing */);
+      this.$settings.getAppSettings().catch(/* do nothing */);
     });
 
     this.$api.put('/platform-tools/docker/restart-container', {}).subscribe(
@@ -50,7 +49,7 @@ export class ContainerRestartComponent implements OnInit, OnDestroy {
   }
 
   checkIfServerUp() {
-    this.checkDelay = TimerObservable.create(10000).subscribe(() => {
+    this.checkDelay = setTimeout(() => {
       // listen to homebridge-status events to see when it's back online
       this.io.socket.on('homebridge-status', (data) => {
         if (data.status === 'up') {
@@ -61,26 +60,21 @@ export class ContainerRestartComponent implements OnInit, OnDestroy {
           this.$router.navigate(['/']);
         }
       });
-    });
+    }, 10000);
 
-    this.checkTimeout = TimerObservable.create(60000).subscribe(() => {
+    this.checkTimeout = setTimeout(() => {
       this.$toastr.warning(this.translate.instant('restart.toast_sever_restart_timeout'), this.translate.instant('toast.title_warning'), {
         timeOut: 10000,
       });
       this.timeout = true;
-    });
+    }, 60000);
   }
 
   ngOnDestroy() {
     this.io.end();
 
-    if (this.checkDelay) {
-      this.checkDelay.unsubscribe();
-    }
-
-    if (this.checkTimeout) {
-      this.checkTimeout.unsubscribe();
-    }
+    clearTimeout(this.checkDelay);
+    clearTimeout(this.checkTimeout);
   }
 
 }

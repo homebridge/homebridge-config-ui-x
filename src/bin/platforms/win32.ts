@@ -1,6 +1,6 @@
 import * as os from 'os';
+import axios from 'axios';
 import * as path from 'path';
-import * as request from 'request';
 import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
 
@@ -38,7 +38,7 @@ export class Win32Installer {
       await this.hbService.printPostInstallInstructions();
     } catch (e) {
       console.error(e.toString());
-      this.hbService.logger(`ERROR: Failed Operation`);
+      this.hbService.logger('ERROR: Failed Operation', 'fail');
     }
   }
 
@@ -53,10 +53,10 @@ export class Win32Installer {
 
     try {
       child_process.execSync(`sc delete ${this.hbService.serviceName}`);
-      this.hbService.logger(`Removed ${this.hbService.serviceName} Service.`);
+      this.hbService.logger(`Removed ${this.hbService.serviceName} Service`, 'succeed');
     } catch (e) {
       console.error(e.toString());
-      this.hbService.logger(`ERROR: Failed Operation`);
+      this.hbService.logger('ERROR: Failed Operation', 'fail');
     }
   }
 
@@ -69,9 +69,9 @@ export class Win32Installer {
     try {
       this.hbService.logger(`Starting ${this.hbService.serviceName} Service...`);
       child_process.execSync(`sc start ${this.hbService.serviceName}`);
-      this.hbService.logger(`${this.hbService.serviceName} Started`);
+      this.hbService.logger(`${this.hbService.serviceName} Started`, 'succeed');
     } catch (e) {
-      this.hbService.logger(`Failed to start ${this.hbService.serviceName}`);
+      this.hbService.logger(`Failed to start ${this.hbService.serviceName}`, 'fail');
     }
   }
 
@@ -84,9 +84,9 @@ export class Win32Installer {
     try {
       this.hbService.logger(`Stopping ${this.hbService.serviceName} Service...`);
       child_process.execSync(`sc stop ${this.hbService.serviceName}`);
-      this.hbService.logger(`${this.hbService.serviceName} Stopped`);
+      this.hbService.logger(`${this.hbService.serviceName} Stopped`, 'succeed');
     } catch (e) {
-      this.hbService.logger(`Failed to stop ${this.hbService.serviceName}`);
+      this.hbService.logger(`Failed to stop ${this.hbService.serviceName}`, 'fail');
     }
   }
 
@@ -104,26 +104,26 @@ export class Win32Installer {
   /**
    * Rebuilds the Node.js modules for Homebridge Config UI X
    */
-  public async rebuild() {
+  public async rebuild(all = false) {
     this.checkIsAdmin();
 
     try {
-      child_process.execSync('npm rebuild --unsafe-perm node-pty-prebuilt-multiarch', {
+      child_process.execSync('npm rebuild --unsafe-perm', {
         cwd: process.env.UIX_BASE_PATH,
         stdio: 'inherit',
       });
 
-      this.hbService.logger(`Rebuilt modules in ${process.env.UIX_BASE_PATH} for Node.js ${process.version}.`);
+      this.hbService.logger(`Rebuilt modules in ${process.env.UIX_BASE_PATH} for Node.js ${process.version}.`, 'succeed');
     } catch (e) {
       console.error(e.toString());
-      this.hbService.logger(`ERROR: Failed Operation`);
+      this.hbService.logger('ERROR: Failed Operation', 'fail');
     }
   }
 
   /**
    * Returns the users uid and gid. Not used on Windows
    */
-  public async getId(): Promise<{ uid: number, gid: number }> {
+  public async getId(): Promise<{ uid: number; gid: number }> {
     return {
       uid: 0,
       gid: 0,
@@ -138,14 +138,22 @@ export class Win32Installer {
   }
 
   /**
+   * Update Node.js
+   */
+  public updateNodejs(job: { target: string; rebuild: boolean }) {
+    this.hbService.logger('ERROR: This command is not supported on Windows.', 'fail');
+    this.hbService.logger(`Please download Node.js v${job.target} from https://nodejs.org/en/download/ and install manually.`, 'fail');
+  }
+
+  /**
    * Checks if the current user is an admin
    */
   private checkIsAdmin() {
     try {
       child_process.execSync('fsutil dirty query %systemdrive% >nul');
     } catch (e) {
-      this.hbService.logger('ERROR: This command must be run as an Administrator');
-      this.hbService.logger(`Node.js command prompt shortcut -> Right Click -> Run as administrator`);
+      this.hbService.logger('ERROR: This command must be run as an Administrator', 'fail');
+      this.hbService.logger('Node.js command prompt shortcut -> Right Click -> Run as administrator', 'fail');
       process.exit(1);
     }
   }
@@ -168,17 +176,26 @@ export class Win32Installer {
     this.hbService.logger(`Downloading NSSM from ${downloadUrl}`);
 
     return new Promise((resolve, reject) => {
-      request({
-        url: downloadUrl,
+      axios({
         method: 'GET',
-        encoding: null,
-      }).pipe(nssmFile)
-        .on('finish', () => {
-          return resolve(nssmPath);
-        })
-        .on('error', (err) => {
-          return reject(err);
-        });
+        url: downloadUrl,
+        responseType: 'stream',
+      }).then((response) => {
+        response.data.pipe(nssmFile)
+          .on('finish', () => {
+            return resolve(nssmPath);
+          })
+          .on('error', (err) => {
+            return reject(err);
+          });
+      }).catch(async (e) => {
+        // cleanup
+        nssmFile.close();
+        await fs.remove(nssmPath);
+
+        this.hbService.logger(`Failed to download nssm: ${e.message}`, 'fail');
+        process.exit(0);
+      });
     });
   }
 
@@ -187,7 +204,7 @@ export class Win32Installer {
    */
   private async configureFirewall() {
     // firewall commands
-    const cleanFirewallCmd = `netsh advfirewall firewall Delete rule name="Homebridge"`;
+    const cleanFirewallCmd = 'netsh advfirewall firewall Delete rule name="Homebridge"';
     const openFirewallCmd = `netsh advfirewall firewall add rule name="Homebridge" dir=in action=allow program="${process.execPath}"`;
 
     // try and remove any existing rules so there are not any duplicates
@@ -201,7 +218,7 @@ export class Win32Installer {
     try {
       child_process.execSync(openFirewallCmd);
     } catch (e) {
-      this.hbService.logger(`Failed to configure firewall rule for Homebridge.`);
+      this.hbService.logger('Failed to configure firewall rule for Homebridge.', 'warn');
       this.hbService.logger(e);
     }
   }

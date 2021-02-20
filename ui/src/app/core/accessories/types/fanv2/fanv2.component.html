@@ -1,0 +1,13 @@
+<div class="accessory-box" [ngClass]="{'switch-on': service.values.Active}" appLongclick (longclick)="onLongClick()"
+  (shortclick)="onClick()">
+  <div class="d-flex flex-column h-100">
+    <img src="/assets/hap-icons/fan-off.svg" alt="Fan" class="accessory-img" *ngIf="!service.values.Active">
+    <img src="/assets/hap-icons/fan-on.svg" alt="Fan" class="accessory-img spin" *ngIf="service.values.Active">
+    <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
+    <div class="accessory-label grey-text" *ngIf="!service.values.RotationSpeed || !service.values.Active"
+      [innerText]="(service.values.Active ? 'accessories.control.label_on' : 'accessories.control.label_off') | translate">
+    </div>
+    <div class="accessory-label grey-text" *ngIf="service.values.RotationSpeed && service.values.Active">
+      {{ service.values.RotationSpeed }}%</div>
+  </div>
+</div>

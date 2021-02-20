@@ -1,0 +1,19 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title" [innerText]="service.customName || service.values.ConfiguredName || service.serviceName">
+    </h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+      (click)="activeModal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="form-group">
+      <label [translate]="'accessories.control.label_default_running_time'">Default Running Time</label>
+      <select class="form-control" [(ngModel)]="targetSetDuration" (change)="onSetDurationChange()">
+        <option *ngFor="let duration of availableSetDurations" [value]="duration.seconds">{{ duration.label }}
+        </option>
+      </select>
+    </div>
+  </div>
+</div>

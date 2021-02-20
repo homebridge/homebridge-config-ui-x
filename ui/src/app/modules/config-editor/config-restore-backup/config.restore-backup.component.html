@@ -1,27 +1,36 @@
 <div class="modal-content">
   <div class="modal-header">
-    <h5 class="modal-title" [translate]="'config.restore.title_restore_homebridge_backup'">Restore Homebridge Config Backup</h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+    <h5 class="modal-title" [translate]="'config.restore.title_restore_homebridge_backup'">
+      Restore Homebridge Config Backup
+    </h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+      (click)="activeModal.dismiss('Cross click')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body">
-    <table class="table table-borderless table-hover" *ngIf="backupList && backupList.length">
+    <div *ngIf="loading" class="text-center primary-text">
+      <i class="fa fa-cog fa-spin" style="font-size: 72px;"></i>
+    </div>
+    <table class="table table-borderless table-hover table-sm" *ngIf="!loading && backupList && backupList.length">
       <tbody>
         <tr *ngFor="let backup of backupList">
-          <td class="w-100">{{ backup.timestamp | date:'full' }}</td>
+          <td class="w-100">{{ backup.timestamp | date:'medium' }}</td>
           <td nowrap>
-            <a class="card-link" (click)="restore(backup.id)">{{'config.restore.message_copy_to_editor' | translate}} <i class="fas fa-arrow-right"></i></a>
+            <a class="card-link" (click)="restore(backup.id)">{{'config.restore.message_copy_to_editor' | translate}} <i
+                class="fas fa-arrow-right"></i></a>
           </td>
         </tr>
       </tbody>
     </table>
-    <div *ngIf="!backupList || !backupList.length">
+    <div *ngIf="!loading && (!backupList || !backupList.length)">
       <h3 class="text-center" [translate]="'config.restore.message_no_backups'">No Backups</h3>
     </div>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-elegant mr-auto" (click)="deleteAllBackups()" [translate]="'config.restore.button_remote_all_backups'">Remove All Backups</button>
-    <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')" [translate]="'form.button_cancel'">Cancel</button>
+    <button *ngIf="!loading && backupList.length" type="button" class="btn btn-elegant mr-auto"
+      (click)="deleteAllBackups()" [translate]="'config.restore.button_remote_all_backups'">Remove All Backups</button>
+    <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')"
+      [translate]="'form.button_cancel'">Cancel</button>
   </div>
 </div>

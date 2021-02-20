@@ -1,0 +1,25 @@
+::ng-deep {
+  .switch-off {
+    svg {
+      .leak_sensor_droplet {
+        fill: #e0e0e0;
+      }
+      .leak_sensor_trigger_lines {
+        display: none;
+      }
+      .leak_sensor_background {
+        fill: #808080;
+      }
+    }
+  }
+}
+
+::ng-deep body.dark-mode {
+  .switch-off {
+    svg {
+      .leak_sensor_droplet {
+        fill: #2b2b2b;
+      }
+    }
+  }
+}

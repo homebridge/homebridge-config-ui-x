@@ -1,0 +1,24 @@
+<div class="accessory-box" [ngClass]="{'switch-on': service.values.TargetPosition}" appLongclick
+  (longclick)="onLongClick()" (shortclick)="onClick()">
+  <div class="d-flex flex-column h-100">
+    <div *ngIf="!service.values.TargetPosition" [inlineSVG]="'/assets/hap-icons/window-closed.svg'"
+      aria-label="Window " class="accessory-svg"></div>
+    <div *ngIf="service.values.TargetPosition" [inlineSVG]="'/assets/hap-icons/window-open.svg'"
+      aria-label="Window " class="accessory-svg"></div>
+    <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
+    <div class="accessory-label grey-text" *ngIf="service.values.PositionState === 2">
+      <span *ngIf="service.values.CurrentPosition === 0">{{ 'accessories.control.label_closed' | translate }}</span>
+      <span *ngIf="service.values.CurrentPosition > 0 && service.values.CurrentPosition < 100">
+        {{ service.values.CurrentPosition }}% {{ 'accessories.control.label_open' | translate }}
+      </span>
+      <span *ngIf="service.values.CurrentPosition === 100">{{ 'accessories.control.label_open' | translate }}</span>
+    </div>
+    <div class="accessory-label red-text" *ngIf="service.values.PositionState === 1">
+      {{ 'accessories.control.label_opening' | translate }}...
+    </div>
+    <div class="accessory-label red-text" *ngIf="service.values.PositionState === 0">
+      {{ 'accessories.control.label_closing' | translate }}...
+    </div>
+  </div>
+</div>
+

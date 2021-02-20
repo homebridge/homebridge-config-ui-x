@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Resolve, RouterStateSnapshot, ActivatedRouteSnapshot, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { ApiService } from '../../core/api.service';
+
+import { ApiService } from '@/app/core/api.service';
 
 @Injectable()
 export class ConfigEditorResolver implements Resolve<any> {
@@ -16,9 +17,7 @@ export class ConfigEditorResolver implements Resolve<any> {
     state: RouterStateSnapshot,
   ) {
     return this.$api.get('/config-editor').toPromise()
-      .then((json) => {
-        return JSON.stringify(json, null, 4);
-      })
+      .then((json) => JSON.stringify(json, null, 4))
       .catch((err) => {
         this.$toastr.error(err.message, 'Failed to Load Config');
         this.$router.navigate(['/']);

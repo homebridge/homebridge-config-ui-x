@@ -4,10 +4,10 @@ import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { NgxEditorModel } from 'ngx-monaco-editor';
 
-import { AuthService } from '../../../../core/auth/auth.service';
-import { ApiService } from '../../../../core/api.service';
-import { MobileDetectService } from '../../../../core/mobile-detect.service';
-import { MonacoEditorService } from '../../../../core/monaco-editor.service';
+import { SettingsService } from '@/app/core/settings.service';
+import { ApiService } from '@/app/core/api.service';
+import { MobileDetectService } from '@/app/core/mobile-detect.service';
+import { MonacoEditorService } from '@/app/core/monaco-editor.service';
 
 @Component({
   selector: 'app-startup-script',
@@ -23,7 +23,7 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
   public monacoEditor;
   public editorOptions = {
     language: 'shell',
-    theme: this.$auth.theme === 'dark-mode' ? 'vs-dark' : 'vs-light',
+    theme: this.$settings.theme.startsWith('dark-mode') ? 'vs-dark' : 'vs-light',
     automaticLayout: true,
   };
 
@@ -33,7 +33,7 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
   private visualViewPortEventCallback: () => void;
 
   constructor(
-    private $auth: AuthService,
+    private $settings: SettingsService,
     private $api: ApiService,
     private $md: MobileDetectService,
     private $monacoEditor: MonacoEditorService,
@@ -67,8 +67,8 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
   }
 
   /**
-    * Called when the monaco editor is ready
-    */
+   * Called when the monaco editor is ready
+   */
   onEditorInit(editor) {
     this.monacoEditor = editor;
     this.monacoEditor.getModel().setValue(this.startupScript);

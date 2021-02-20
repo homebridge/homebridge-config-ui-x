@@ -2,9 +2,8 @@ import { Component, OnInit, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ServiceTypeX } from '../../accessories.interfaces';
 
-import { Subject } from 'rxjs/Subject';
-import 'rxjs/add/operator/debounceTime';
-import 'rxjs/add/operator/distinctUntilChanged';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-fan-manage',
@@ -21,8 +20,10 @@ export class FanManageComponent implements OnInit {
     public activeModal: NgbActiveModal,
   ) {
     this.targetRotationSpeedChanged
-      .debounceTime(300)
-      .distinctUntilChanged()
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+      )
       .subscribe((value) => {
         this.service.getCharacteristic('RotationSpeed').setValue(this.targetRotationSpeed.value);
 

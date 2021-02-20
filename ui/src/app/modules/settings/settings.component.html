@@ -1,21 +1,66 @@
 <div class="d-flex justify-content-between">
-  <h3 class="primary-text m-0">Homebridge Settings</h3>
+  <h3 class="primary-text m-0">
+    <span class="d-none d-md-inline">Homebridge</span> Settings
+  </h3>
   <button class="btn btn-primary waves-effect m-0" *ngIf="saved" routerLink="/restart"
     [translate]="'platform.docker.settings.button_restart_required'">Restart Required</button>
 </div>
 
-<form class="mt-3" novalidate [formGroup]="serviceForm" *ngIf="$auth.env.runningInDocker || $auth.env.serviceMode">
+<!-- ALL USERS Homebridge v1.3+ -->
+<div class="mb-3" *ngIf="showNetworking">
+  <h5 class="primary-text mt-3" translate="settings.network.title_network"></h5>
 
-  <h5 class="primary-text">Startup Options</h5>
+  <ul class="list-group mt-2">
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span class="pr-2">
+        <div>{{ 'settings.network.title_network_interfaces' | translate }}
+          <i class="fas fa-info-circle primary-text"
+            ngbTooltip="{{ 'settings.network.message_network_interface_one' | translate }}"></i>
+        </div>
 
-  <div class="row mt-3" *ngIf="$auth.env.runningInDocker">
+        <span *ngFor="let adapter of bridgeNetworkAdapters">
+          <span class="badge badge-pill mr-1"
+            [ngbTooltip]="adapter.missing ? 'Not Connected' : adapter.ip4 || adapter.ip6" placement="bottom-left"
+            openDelay="150" [ngClass]="{'badge-danger': adapter.missing, 'badge-info': !adapter.missing}">
+            <i class="fas fa-exclamation-triangle" *ngIf="adapter.missing"></i>
+            {{ adapter.iface }}
+          </span>
+        </span>
+      </span>
+      <button class="btn btn-primary waves-effect m-0" [translate]="'reset.title_clear_cached_accessories'"
+        (click)="selectNetworkInterfaces()" [disabled]="!availableNetworkAdapters.length">
+        <i class="fas fa-cog" [ngClass]="{ 'fa-pulse': !availableNetworkAdapters.length }"></i>
+      </button>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.mdns_advertiser' | translate }}
+        <i class="fas fa-info-circle primary-text" ngbTooltip="{{ 'settings.mdns_advertiser_help' | translate }}"></i>
+      </span>
+      <div>
+        <select class="custom-select" [formControl]="legacyMdnsFormControl">
+          <option value="bonjour-hap">Bonjour HAP</option>
+          <option value="ciao">Ciao</option>
+        </select>
+      </div>
+    </li>
+  </ul>
+</div>
+
+<!-- SERVICE MODE USERS ONLY -->
+<form class="mt-3 mb-3" novalidate [formGroup]="serviceForm"
+  *ngIf="$settings.env.runningInDocker || $settings.env.serviceMode">
+
+  <h5 class="primary-text">{{ 'settings.title_startup_options' | translate }}</h5>
+
+  <div class="row mt-3" *ngIf="$settings.env.runningInDocker">
     <div class="col-md-12">
-      <div class="alert alert-danger" role="alert" *ngIf="!$auth.env.ableToConfigureSelf">
+      <div class="alert alert-danger" role="alert" *ngIf="!$settings.env.ableToConfigureSelf">
         {{'platform.docker.settings.message_image_upgrade_required' | translate}} <a target="_blank"
           rel="noopener noreferrer"
           href="https://github.com/oznu/docker-homebridge">https://github.com/oznu/docker-homebridge</a>
       </div>
-      <div class="alert alert-warning" role="alert" [translate]="'platform.docker.settings.message_env_warning'">
+      <div class="alert alert-info" role="alert" [translate]="'platform.docker.settings.message_env_warning'">
         Changing these values will override the corresponding environment variables you may have set with the docker run
         command.
       </div>
@@ -30,9 +75,9 @@
         <label for="homebridgeDebugMode" class="badge-primary"></label>
       </div>
     </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="$auth.env.runningInDocker">
+    <li class="list-group-item d-flex justify-content-between align-items-center">
       <span>
-        Homebridge Insecure Mode
+        Homebridge "Insecure" Mode
         <span class="d-none d-md-inline"> / Enable Accessory Control </span>
         <code>-I</code>
       </span>
@@ -41,17 +86,17 @@
         <label for="homebridgeInsecureMode" class="badge-primary"></label>
       </div>
     </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="$auth.env.serviceMode">
-      <span>Remove accessories of uninstalled plugins <code>-R</code></span>
+    <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="$settings.env.serviceMode">
+      <span>Keep accessories of uninstalled plugins <code>-K</code></span>
       <div class="material-switch pull-right">
-        <input id="homebridgeRemoveOrphans" formControlName="HOMEBRIDGE_REMOVE_ORPHANS" type="checkbox" />
-        <label for="homebridgeRemoveOrphans" class="badge-primary"></label>
+        <input id="homebridgeKeepOrphans" formControlName="HOMEBRIDGE_KEEP_ORPHANS" type="checkbox" />
+        <label for="homebridgeKeepOrphans" class="badge-primary"></label>
       </div>
     </li>
   </ul>
 
-  <div class="mt-3" *ngIf="$auth.env.serviceMode">
-    <h5 class="primary-text">Environment Variables</h5>
+  <div class="mt-3" *ngIf="$settings.env.serviceMode">
+    <h5 class="primary-text">{{ 'settings.title_environment_variables' | translate }}</h5>
 
     <ul class="list-group mt-2">
       <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -79,44 +124,86 @@
     </ul>
   </div>
 
-  <div class="mt-3" *ngIf="$auth.env.serviceMode">
-    <h5 class="primary-text">Actions</h5>
+</form>
 
-    <ul class="list-group mt-2">
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <span class="d-none d-sm-inline">
-          {{ 'reset.title_clear_cached_accessories' | translate }}
-          <i class="fas fa-info-circle primary-text"
-            ngbTooltip="{{ 'reset.message_remove_cached_accessories' | translate }}"></i>
-        </span>
-        <button class="btn btn-primary waves-effect m-0" [translate]="'reset.title_clear_cached_accessories'"
-          (click)="resetCachedAccessories()">
-          <span class="d-none d-sm-inline">
-            {{ 'reset.title_clear_cache' | translate }}
-          </span>
-          <span class="d-sm-none">
-            {{ 'reset.title_clear_cached_accessories' | translate }}
-          </span>
-        </button>
-      </li>
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <span class="d-none d-sm-inline">
-          {{ 'reset.title_reset_homebridge_accessory' | translate | titlecase }}
-          <i class="fas fa-info-circle primary-text"
-            ngbTooltip="{{ 'reset.message_reset_will_unpair_from_homekit' | translate }}"></i>
-        </span>
-        <button class="btn btn-primary waves-effect m-0" [translate]="'reset.title_clear_cached_accessories'"
-          (click)="resetHomebridgeState()">
-          <span class="d-none d-sm-inline">
-            {{ 'reset.title_reset' | translate }}
-          </span>
-          <span class="d-sm-none">
-            {{ 'reset.title_reset_homebridge_accessory' | translate | titlecase }}
-          </span>
-        </button>
-      </li>
-    </ul>
+<!-- ALL USERS -->
+<div class="mb-3">
+  <h5 class="primary-text mt-3">{{ 'reset.title_reset' | translate }}</h5>
 
+  <div class="alert alert-info" role="alert">
+    {{ 'settings.reset.help' | translate }}
   </div>
 
-</form>
+  <ul class="list-group mt-2">
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span class="pr-2">
+        {{ 'reset.title_unpair_bridges_cameras_tv_external_accessories' | translate }}
+        <i class="fas fa-info-circle primary-text"
+          ngbTooltip="{{ 'reset.message_unpair_bridges_cameras_tv_external_accessories' | translate }}"></i>
+      </span>
+      <button class="btn btn-primary waves-effect m-0" (click)="unpairAccessory()">
+        <i class="fas fa-flip-horizontal fa-external-link-square-alt"></i>
+      </button>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span class="pr-2">
+        {{ 'reset.title_reset_homebridge_accessory' | translate | titlecase }}
+        <i class="fas fa-info-circle primary-text"
+          ngbTooltip="{{ 'reset.message_reset_will_unpair_from_homekit' | translate }}"></i>
+      </span>
+      <button class="btn btn-primary waves-effect m-0" (click)="resetHomebridgeState()">
+        <i class="fas fa-flip-horizontal fa-external-link-square-alt"></i>
+      </button>
+    </li>
+  </ul>
+</div>
+
+<!-- SERVICE MODE USERS ONLY -->
+<div *ngIf="$settings.env.serviceMode" class="mb-3">
+
+  <h5 class="primary-text mt-3">{{ 'settings.title_manage_cached_accessories' | translate }}</h5>
+
+  <div class="alert alert-info" role="alert">
+    {{ 'settings.manage_cache.help' | translate }}
+  </div>
+
+  <ul class="list-group mt-2">
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span class="pr-2">
+        {{ 'reset.title_clear_cached_accessories_single' | translate }}
+        <i class="fas fa-info-circle primary-text"
+          ngbTooltip="{{ 'reset.message_remove_cached_accessories_single' | translate }}"></i>
+      </span>
+      <button class="btn btn-primary waves-effect m-0" [translate]="'reset.title_clear_cached_accessories_single'"
+        (click)="removeSingleCachedAccessories()">
+        <i class="fas fa-flip-horizontal fa-external-link-square-alt"></i>
+      </button>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span class="pr-2">
+        {{ 'reset.title_clear_cached_accessories' | translate }}
+        <i class="fas fa-info-circle primary-text"
+          ngbTooltip="{{ 'reset.message_remove_cached_accessories' | translate }}"></i>
+      </span>
+      <button class="btn btn-primary waves-effect m-0" [translate]="'reset.title_clear_cached_accessories'"
+        (click)="removeAllCachedAccessories()">
+        <i class="fas fa-flip-horizontal fa-external-link-square-alt"></i>
+      </button>
+    </li>
+  </ul>
+
+  <h5 class="primary-text mt-3">{{ 'settings.title_actions' | translate }}</h5>
+
+  <ul class="list-group mt-2">
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span class="pr-2">
+        {{ 'reset.title_force_restart_hb_service' | translate }}
+        <i class="fas fa-info-circle primary-text"
+          ngbTooltip="{{ 'reset.message_force_restart_hb_help_text' | translate }}"></i>
+      </span>
+      <button class="btn btn-primary waves-effect m-0" (click)="forceRestartService()">
+        <i class="fas fa-sync"></i>
+      </button>
+    </li>
+  </ul>
+</div>

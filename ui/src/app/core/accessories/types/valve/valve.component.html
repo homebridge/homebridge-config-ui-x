@@ -1,0 +1,25 @@
+<div class="accessory-box" [ngClass]="{'switch-on': service.values.Active, 'switch-off': !service.values.Active}"
+  appLongclick (longclick)="onLongClick()" (shortclick)="onClick()">
+  <div class="d-flex flex-column h-100">
+    <div *ngIf="service.values.ValveType === 0" [inlineSVG]="'/assets/hap-icons/valve-generic.svg'" aria-label="Valve"
+      class="accessory-svg"></div>
+    <div *ngIf="service.values.ValveType === 1" [inlineSVG]="'/assets/hap-icons/valve-irrigation.svg'"
+      aria-label="Valve" class="accessory-svg"></div>
+    <div *ngIf="service.values.ValveType === 2" [inlineSVG]="'/assets/hap-icons/valve-generic.svg'" aria-label="Valve"
+      class="accessory-svg"></div>
+    <div *ngIf="service.values.ValveType === 3" [inlineSVG]="'/assets/hap-icons/valve-generic.svg'" aria-label="Valve"
+      class="accessory-svg"></div>
+    <div class="accessory-label mt-auto">
+      {{ service.customName || service.values.ConfiguredName || service.serviceName }}
+    </div>
+    <div class="accessory-label grey-text" *ngIf="service.values.Active && remainingDuration">
+      {{ remainingDuration }}
+    </div>
+    <div class="accessory-label grey-text" *ngIf="service.values.Active && !remainingDuration">
+      {{ 'accessories.control.label_running' | translate }}
+    </div>
+    <div class="accessory-label grey-text" *ngIf="!service.values.Active">
+      {{ 'accessories.control.label_off' | translate }}
+    </div>
+  </div>
+</div>

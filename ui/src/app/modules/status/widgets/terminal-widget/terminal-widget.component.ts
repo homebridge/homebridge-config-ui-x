@@ -1,7 +1,8 @@
 import { Component, OnInit, ViewChild, ElementRef, Input, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ITerminalOptions } from 'xterm';
-import { TerminalService } from '../../../../core/terminal.service';
+
+import { TerminalService } from '@/app/core/terminal.service';
 
 @Component({
   selector: 'app-terminal-widget',
@@ -64,8 +65,8 @@ export class TerminalWidgetComponent implements OnInit, OnDestroy {
   }
 
   getTerminalHeight(): number {
-    const widgetContainerHeight = (<HTMLElement>this.widgetContainerElement.nativeElement).offsetHeight;
-    const titleHeight = (<HTMLElement>this.titleElement.nativeElement).offsetHeight;
+    const widgetContainerHeight = (this.widgetContainerElement.nativeElement as HTMLElement).offsetHeight;
+    const titleHeight = (this.titleElement.nativeElement as HTMLElement).offsetHeight;
     return widgetContainerHeight - titleHeight;
   }
 

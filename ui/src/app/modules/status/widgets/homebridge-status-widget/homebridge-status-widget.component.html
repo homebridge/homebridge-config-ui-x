@@ -19,7 +19,7 @@
             [translate]="'status.homebridge.label_up_to_date'">
             Up To Date
           </span>
-          <a (click)="$plugin.upgradeHomebridge()" href="JavaScript:Void(0)" class="primary-text"
+          <a (click)="$plugin.upgradeHomebridge(homebridgePkg)" href="JavaScript:void(0)" class="primary-text"
             *ngIf="homebridgePkg.installedVersion && homebridgePkg.updateAvailable"
             [translate]="'status.homebridge.label_update_available'" [translateParams]="homebridgePkg"
             ngbTooltip="{{'plugins.button_upgrade' | translate}} Homebridge">
@@ -27,8 +27,9 @@
           </a>
           <br>
           <span class="grey-text" *ngIf="homebridgePkg.installedVersion">
-            <span [translate]="'status.homebridge.label_version'">Version</span>
-            {{ homebridgePkg.installedVersion }}
+            <a (click)="$plugin.installPreviousVersion(homebridgePkg)" class="grey-text card-link">
+              v{{ homebridgePkg.installedVersion }}
+            </a>
           </span>
         </div>
 
@@ -44,11 +45,16 @@
         <div class="align-self-center">
           <span>Homebridge</span>
           <br>
-          <span class="grey-text" *ngIf="homebridgeStatus.status === 'up'"
+          <span class="grey-text" *ngIf="homebridgeStatus.status === 'up' && !widget.hidePort"
             [translate]="'status.services.label_running_on_port'"
+            [translateParams]="{port: homebridgeStatus.port}">Running</span>
+          <span class="grey-text" *ngIf="homebridgeStatus.status === 'up' && widget.hidePort"
+            [translate]="'status.services.label_running'"
             [translateParams]="{port: homebridgeStatus.port}">Listening</span>
-          <span class="grey-text" *ngIf="homebridgeStatus.status !== 'up'"
-            [translate]="'status.services.label_not_running'">Not running</span>
+          <a routerLink="/logs" class="primary-text" *ngIf="homebridgeStatus.status !== 'up'">
+            {{ 'status.services.label_not_running' | translate}} -
+            {{ 'menu.tooltip_view_logs' | translate }}
+          </a>
         </div>
       </div>
     </div>
@@ -66,10 +72,10 @@
           <a routerLink="/plugins" class="primary-text" *ngIf="homebridgePluginStatus.length">
             {{ homebridgePluginStatus.length }} {{ 'status.plugins_out_of_date' | translate }}
           </a>
-          <span class="grey-text " *ngIf="!homebridgePluginStatus.length"
+          <a class="grey-text card-link" routerLink="/plugins" *ngIf="!homebridgePluginStatus.length"
             [translate]="'status.services.label_not_running'">
             {{ 'status.homebridge.label_up_to_date' | translate }}
-          </span>
+          </a>
         </div>
       </div>
     </div>
