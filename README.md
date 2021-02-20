@@ -1,5 +1,5 @@
-[![npm](https://badgen.net/npm/v/homebridge-config-ui-x/latest)](https://www.npmjs.com/package/homebridge-config-ui-x)
-[![npm](https://badgen.net/npm/dt/homebridge-config-ui-x)](https://www.npmjs.com/package/homebridge-config-ui-x)
+[![npm](https://badgen.net/npm/v/homebridge-config-ui-x/latest?icon=npm&label)](https://www.npmjs.com/package/homebridge-config-ui-x)
+[![npm](https://badgen.net/npm/dt/homebridge-config-ui-x?label=downloads)](https://www.npmjs.com/package/homebridge-config-ui-x)
 [![Discord](https://badgen.net/discord/online-members/C87Pvq3?icon=discord&label=discord)](https://discord.gg/C87Pvq3)
 [![Donate](https://badgen.net/badge/donate/paypal/yellow)](https://paypal.me/oznu)
 
