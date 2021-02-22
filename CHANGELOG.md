@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file. This projec
 
 ## NEXT
 
+### Other Changes
+
+* **i18n:** Improvements to Polish language translations ([#1078](https://github.com/oznu/homebridge-config-ui-x/pull/1078))
+* **i18n:** Improvements to Spanish language translations ([#1079](https://github.com/oznu/homebridge-config-ui-x/pull/1079))
+* **i18n:** Improvements to German language translations ([#1081](https://github.com/oznu/homebridge-config-ui-x/pull/1081),[#1090](https://github.com/oznu/homebridge-config-ui-x/pull/1090))
+* **i18n:** Improvements to French language translations ([#1084](https://github.com/oznu/homebridge-config-ui-x/pull/1084))
+* **i18n:** Improvements to Catalan language translations ([#1087](https://github.com/oznu/homebridge-config-ui-x/pull/1087))
+* **i18n:** Improvements to Portuguese language translations ([#1094](https://github.com/oznu/homebridge-config-ui-x/pull/1094))
+
 ### Bug Fixes
 
 * Fixed an issue running the UI on Linux systems without outdated `libstdc++` libraries ([#1086](https://github.com/oznu/homebridge-config-ui-x/issues/1086))
