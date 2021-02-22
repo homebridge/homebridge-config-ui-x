@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { AppGateway } from './app.gateway';
 import { ConfigModule } from './core/config/config.module';
 import { PluginsModule } from './modules/plugins/plugins.module';
+import { CustomPluginsModule } from './modules/custom-plugins/custom-plugins.module';
 import { UsersModule } from './modules/users/users.module';
 import { StatusModule } from './modules/status/status.module';
 import { LogModule } from './modules/log/log.module';
@@ -22,6 +23,7 @@ import { BackupModule } from './modules/backup/backup.module';
     AuthModule,
     ServerModule,
     PluginsModule,
+    CustomPluginsModule,
     UsersModule,
     StatusModule,
     AccessoriesModule,

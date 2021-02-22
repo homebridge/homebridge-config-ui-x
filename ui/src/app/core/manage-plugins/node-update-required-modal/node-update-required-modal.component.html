@@ -1,0 +1,56 @@
+<div class="modal-content" style="min-height: 300px;">
+  <div class="modal-header">
+    <h5 class="modal-title">{{'plugins.node_update.title' | translate}}</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+      (click)="activeModal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body d-flex flex-row flex-grow-1 align-items-center w-100 text-center">
+
+    <!-- plugins -->
+    <div class="w-100" *ngIf="plugin.name !== 'homebridge'">
+      <i class="fab fa-node primary-text" style="font-size: 100px;"></i>
+      <p class="mt-4" translate="plugins.node_update.node_version_too_low"
+        [translateParams]="{pluginName: plugin.name, minVersion: minVersion, installedVersion: installedVersion}">
+      </p>
+      <p translate="plugins.node_update.are_you_sure_you_want_to_update" [translateParams]="{pluginName: plugin.name}">
+      </p>
+      <p>
+        <a href="https://git.io/JTKEF" target="_blank" rel="noopener noreferrer">
+          How To Update Node.js <i class="fa fa-external-link-alt"></i>
+        </a>
+      </p>
+    </div>
+
+    <!-- homebridge -->
+    <div class="w-100" *ngIf="plugin.name === 'homebridge'">
+      <i class="fab fa-node primary-text" style="font-size: 100px;"></i>
+      <p class="mt-4" translate="plugins.node_update.homebridge_node_version_too_low"
+        [translateParams]="{minVersion: minVersion, installedVersion: installedVersion, latestVersion: plugin.latestVersion}">
+      </p>
+      <p translate="plugins.node_update_homebridge_upgrade_and_try_again">
+      </p>
+      <p>
+        <a href="https://git.io/JTKEF" target="_blank" rel="noopener noreferrer">
+          How To Update Node.js <i class="fa fa-external-link-alt"></i>
+        </a>
+      </p>
+    </div>
+
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-elegant mr-auto" data-dismiss="modal"
+      (click)="activeModal.dismiss('Cross click')">
+      {{'form.button_cancel' | translate}}
+    </button>
+    <button *ngIf="plugin.name !== 'homebridge'" type="button" class="btn btn-danger" data-dismiss="modal"
+      (click)="activeModal.close(true);">
+      {{'plugins.node_update.update_anyway' | translate}}
+    </button>
+    <button *ngIf="plugin.name === 'homebridge'" type="button" class="btn btn-danger" data-dismiss="modal"
+      (click)="activeModal.dismiss('Cross click')">
+      {{'form.button_close' | translate}}
+    </button>
+  </div>
+</div>

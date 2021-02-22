@@ -6,9 +6,32 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { SettingsRoutingModule } from './settings-routing.module';
 import { SettingsComponent } from './settings.component';
+import { ResetHomebridgeModalComponent } from './reset-homebridge-modal/reset-homebridge-modal.component';
+import { UnpairAccessoryModalComponent } from './unpair-accessory-modal/unpair-accessory-modal.component';
+import {
+  RemoveAllCachedAccessoriesModalComponent,
+} from './remove-all-cached-accessories-modal/remove-all-cached-accessories-modal.component';
+import {
+  RemoveSingleCachedAccessoryModalComponent,
+} from './remove-single-cached-accessory-modal/remove-single-cached-accessory-modal.component';
+import { SelectNetworkInterfacesComponent } from './select-network-interfaces/select-network-interfaces.component';
 
 @NgModule({
-  declarations: [SettingsComponent],
+  entryComponents: [
+    ResetHomebridgeModalComponent,
+    UnpairAccessoryModalComponent,
+    RemoveAllCachedAccessoriesModalComponent,
+    RemoveSingleCachedAccessoryModalComponent,
+    SelectNetworkInterfacesComponent,
+  ],
+  declarations: [
+    SettingsComponent,
+    ResetHomebridgeModalComponent,
+    UnpairAccessoryModalComponent,
+    RemoveAllCachedAccessoriesModalComponent,
+    RemoveSingleCachedAccessoryModalComponent,
+    SelectNetworkInterfacesComponent,
+  ],
   imports: [
     CommonModule,
     FormsModule,

@@ -1,0 +1,58 @@
+/** Gridster **/
+gridster-item {
+  font-weight: 400;
+  border: 0;
+  // box-shadow: 0 2px 5px 0 rgba(0,0,0,.16), 0 2px 10px 0 rgba(0,0,0,.12);
+  color: #000000;
+  background-color: #fff;
+  border-radius: 0.25rem;
+}
+
+gridster-preview {
+  background: rgba(224, 224, 224, 0.5);
+}
+
+.widget-value-parent-wrap {
+  min-width: 100px;
+
+  .widget-value {
+    font-size: 2.5rem;
+    font-weight: 300;
+    line-height: 1.2;
+
+    @media (max-width: 1300px) {
+      font-size: 2rem;
+    }
+
+    @media (max-width: 1200px) {
+      font-size: 1.5rem;
+    }
+  }
+
+  .widget-value-label {
+    @media (max-width: 850px) {
+      font-size: 13px;
+    }
+  }
+}
+
+.status-circle {
+  color: #ffffff;
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  padding: 7px 0;
+  margin-top: 5px;
+  font-size: 24px;
+  line-height: 1;
+  text-align: center;
+}
+
+.qr-code-container {
+  svg {
+    position: inline;
+    height: 100%;
+    max-height: 100%;
+    max-width: 100%;
+  }
+}

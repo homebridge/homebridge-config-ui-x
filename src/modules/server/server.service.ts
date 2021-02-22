@@ -1,15 +1,26 @@
+import * as os from 'os';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as bufferShim from 'buffer-shims';
 import * as qr from 'qr-image';
+import * as si from 'systeminformation';
+import * as NodeCache from 'node-cache';
 import * as child_process from 'child_process';
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-import { ConfigService } from '../../core/config/config.service';
+import * as tcpPortUsed from 'tcp-port-used';
+import { Injectable, NotFoundException, BadRequestException, ServiceUnavailableException, InternalServerErrorException } from '@nestjs/common';
+import { Categories } from '@oznu/hap-client/dist/hap-types';
+
 import { Logger } from '../../core/logger/logger.service';
+import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
+import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service';
 import { ConfigEditorService } from '../config-editor/config-editor.service';
+import { AccessoriesService } from '../accessories/accessories.service';
+import { HomebridgeMdnsSettingDto } from './server.dto';
 
 @Injectable()
 export class ServerService {
+  private serverServiceCache = new NodeCache({ stdTTL: 300 });
+
   private accessoryId = this.configService.homebridgeConfig.bridge.username.split(':').join('');
   private accessoryInfoPath = path.join(this.configService.storagePath, 'persist', `AccessoryInfo.${this.accessoryId}.json`);
 
@@ -18,6 +29,8 @@ export class ServerService {
   constructor(
     private readonly configService: ConfigService,
     private readonly configEditorService: ConfigEditorService,
+    private readonly accessoriesService: AccessoriesService,
+    private readonly homebridgeIpcService: HomebridgeIpcService,
     private readonly logger: Logger,
   ) { }
 
@@ -27,10 +40,14 @@ export class ServerService {
   public async restartServer() {
     this.logger.log('Homebridge restart request received');
 
-    if (this.configService.serviceMode && !(await this.configService.uiRestartRequired())) {
+    if (this.configService.serviceMode && !(await this.configService.uiRestartRequired() || await this.nodeVersionChanged())) {
       this.logger.log('UI / Bridge settings have not changed; only restarting Homebridge process');
-      process.emit('message', 'restartHomebridge', undefined);
-      return { ok: true, command: 'SIGTERM' };
+      // restart homebridge by killing child process
+      this.homebridgeIpcService.restartHomebridge();
+
+      // reset the pool of discovered homebridge instances
+      this.accessoriesService.resetInstancePool();
+      return { ok: true, command: 'SIGTERM', restartingUI: false };
     }
 
     setTimeout(() => {
@@ -42,12 +59,12 @@ export class ServerService {
           }
         });
       } else {
-        this.logger.log(`No restart command defined, killing process...`);
+        this.logger.log('No restart command defined, killing process...');
         process.kill(process.pid, 'SIGTERM');
       }
     }, 500);
 
-    return { ok: true, command: this.configService.ui.restart };
+    return { ok: true, command: this.configService.ui.restart, restartingUI: true };
   }
 
   /**
@@ -74,21 +91,209 @@ export class ServerService {
     await fs.remove(path.resolve(this.configService.storagePath, 'accessories'));
     await fs.remove(path.resolve(this.configService.storagePath, 'persist'));
 
-    this.logger.log(`Homebridge Reset: "persist" directory removed.`);
-    this.logger.log(`Homebridge Reset: "accessories" directory removed.`);
+    this.logger.log('Homebridge Reset: "persist" directory removed.');
+    this.logger.log('Homebridge Reset: "accessories" directory removed.');
+  }
+
+  /**
+   * Return a list of the device pairings in the homebridge persist folder
+   */
+  public async getDevicePairings() {
+    const persistPath = path.join(this.configService.storagePath, 'persist');
+
+    const devices = (await fs.readdir(persistPath))
+      .filter(x => x.match(/AccessoryInfo\.([A-F,a-f,0-9]+)\.json/));
+
+    return Promise.all(devices.map(async (x) => {
+      return await this.getDevicePairingById(x.split('.')[1]);
+    }));
+  }
+
+  /**
+   * Return a single device paring
+   * @param deviceId 
+   */
+  public async getDevicePairingById(deviceId: string) {
+    const persistPath = path.join(this.configService.storagePath, 'persist');
+
+    let device;
+    try {
+      device = await fs.readJson(path.join(persistPath, `AccessoryInfo.${deviceId}.json`));
+    } catch (e) {
+      throw new NotFoundException();
+    }
+
+    device._id = deviceId;
+    device._username = device._id.match(/.{1,2}/g).join(':');
+    device._main = this.configService.homebridgeConfig.bridge.username.toUpperCase() === device._username.toUpperCase();
+    device._isPaired = device.pairedClients && Object.keys(device.pairedClients).length > 0;
+    device._setupCode = this.generateSetupCode(device);
+
+    // filter out some properties
+    delete device.signSk;
+    delete device.signPk;
+    delete device.configHash;
+    delete device.pairedClients;
+    delete device.pairedClientsPermission;
+
+    try {
+      device._category = Object.entries(Categories).find(([name, value]) => value === device.category)[0].toLowerCase();
+    } catch (e) {
+      device._category = 'Other';
+    }
+
+    return device;
+  }
+
+  /**
+   * Remove a device pairing
+   */
+  public async deleteDevicePairing(id: string) {
+    const persistPath = path.join(this.configService.storagePath, 'persist');
+    const cachedAccessoriesDir = path.join(this.configService.storagePath, 'accessories');
+
+    const accessoryInfo = path.join(persistPath, 'AccessoryInfo.' + id + '.json');
+    const identifierCache = path.join(persistPath, 'IdentifierCache.' + id + '.json');
+    const cachedAccessories = path.join(cachedAccessoriesDir, 'cachedAccessories.' + id);
+    const cachedAccessoriesBackup = path.join(cachedAccessoriesDir, '.cachedAccessories.' + id + '.bak');
+
+    if (await fs.pathExists(accessoryInfo)) {
+      await fs.unlink(accessoryInfo);
+      this.logger.warn(`Removed ${accessoryInfo}`);
+    }
+
+    if (await fs.pathExists(identifierCache)) {
+      await fs.unlink(identifierCache);
+      this.logger.warn(`Removed ${identifierCache}`);
+    }
+
+    if (await fs.pathExists(cachedAccessories)) {
+      await fs.unlink(cachedAccessories);
+      this.logger.warn(`Removed ${cachedAccessories}`);
+    }
+
+    if (await fs.pathExists(cachedAccessoriesBackup)) {
+      await fs.unlink(cachedAccessoriesBackup);
+      this.logger.warn(`Removed ${cachedAccessoriesBackup}`);
+    }
+
+    return;
+  }
+
+  /**
+   * Returns all cached accessories
+   */
+  public async getCachedAccessories() {
+    const cachedAccessoriesDir = path.join(this.configService.storagePath, 'accessories');
+
+    const cachedAccessoryFiles = (await fs.readdir(cachedAccessoriesDir))
+      .filter(x => x.match(/^cachedAccessories\.([A-F,0-9]+)$/) || x === 'cachedAccessories');
+
+    const cachedAccessories = [];
+
+    await Promise.all(cachedAccessoryFiles.map(async (x) => {
+      const accessories = await fs.readJson(path.join(cachedAccessoriesDir, x));
+      for (const accessory of accessories) {
+        accessory.$cacheFile = x;
+        cachedAccessories.push(accessory);
+      }
+    }));
+
+    return cachedAccessories;
+  }
+
+  /**
+   * Remove a single cached accessory
+   */
+  public async deleteCachedAccessory(uuid: string, cacheFile: string) {
+    cacheFile = cacheFile || 'cachedAccessories';
+
+    if (!this.configService.serviceMode) {
+      this.logger.error('The reset accessories cache command is only available in service mode');
+      throw new BadRequestException('This command is only available in service mode');
+    }
+
+    const cachedAccessoriesPath = path.resolve(this.configService.storagePath, 'accessories', cacheFile);
+
+    this.logger.warn(`Shutting down Homebridge before removing cached accessory: ${uuid}`);
+
+    // wait for homebridge to stop.
+    await this.homebridgeIpcService.restartAndWaitForClose();
+
+    const cachedAccessories = await fs.readJson(cachedAccessoriesPath) as Array<any>;
+    const accessoryIndex = cachedAccessories.findIndex(x => x.UUID === uuid);
+
+    if (accessoryIndex > -1) {
+      cachedAccessories.splice(accessoryIndex, 1);
+      await fs.writeJson(cachedAccessoriesPath, cachedAccessories);
+      this.logger.warn(`Removed cached accessory with UUID: ${uuid}`);
+    } else {
+      this.logger.error(`Cannot find cached accessory with UUID: ${uuid}`);
+      throw new NotFoundException();
+    }
+
+    return { ok: true };
   }
 
   /**
    * Clears the Homebridge Accessory Cache
    */
   public async resetCachedAccessories() {
-    if (this.configService.serviceMode) {
-      this.logger.warn('Sent request to clear cached accesories to hb-service');
-      process.emit('message', 'clearCachedAccessories', undefined);
-    } else {
+    if (!this.configService.serviceMode) {
       this.logger.error('The reset accessories cache command is only available in service mode');
       throw new BadRequestException('This command is only available in service mode');
     }
+
+    const cachedAccessoriesDir = path.join(this.configService.storagePath, 'accessories');
+    const cachedAccessoryPaths = (await fs.readdir(cachedAccessoriesDir))
+      .filter(x => x.match(/cachedAccessories\.([A-F,0-9]+)/) || x === 'cachedAccessories' || x === '.cachedAccessories.bak')
+      .map(x => path.resolve(cachedAccessoriesDir, x));
+
+    const cachedAccessoriesPath = path.resolve(this.configService.storagePath, 'accessories', 'cachedAccessories');
+
+    // wait for homebridge to stop.
+    await this.homebridgeIpcService.restartAndWaitForClose();
+
+    this.logger.warn('Shutting down Homebridge before removing cached accessories');
+
+    try {
+      this.logger.log('Clearing Cached Homebridge Accessories...');
+      for (const cachedAccessoriesPath of cachedAccessoryPaths) {
+        if (await fs.pathExists(cachedAccessoriesPath)) {
+          await fs.unlink(cachedAccessoriesPath);
+          this.logger.warn(`Removed ${cachedAccessoriesPath}`);
+        }
+      }
+    } catch (e) {
+      this.logger.error(`Failed to clear Homebridge Accessories Cache at ${cachedAccessoriesPath}`);
+      console.error(e);
+      throw new InternalServerErrorException('Failed to clear Homebridge accessory cache - see logs.');
+    }
+
+    return { ok: true };
+  }
+
+  /**
+   * Restart a single child bridge
+   */
+  public async restartChildBridge(deviceId: string) {
+    if (!this.configService.serviceMode) {
+      this.logger.error('The restart child bridge command is only available in service mode');
+      throw new BadRequestException('This command is only available in service mode');
+    }
+
+    if (deviceId.length === 12) {
+      deviceId = deviceId.match(/.{1,2}/g).join(':');
+    }
+
+    await this.homebridgeIpcService.restartChildBridge(deviceId);
+
+    // reset the pool of discovered homebridge instances
+    this.accessoriesService.resetInstancePool();
+
+    return {
+      ok: true
+    };
   }
 
   /**
@@ -101,8 +306,7 @@ export class ServerService {
       throw new NotFoundException();
     }
 
-    const qrImg = qr.svgObject(setupCode, { type: 'svg' });
-    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23"><path d="${qrImg.path}"/></svg>`;
+    return qr.image(setupCode, { type: 'svg' });
   }
 
   /**
@@ -112,7 +316,12 @@ export class ServerService {
     if (this.setupCode) {
       return this.setupCode;
     } else {
-      this.setupCode = await this.generateSetupCode();
+      if (!await fs.pathExists(this.accessoryInfoPath)) {
+        return null;
+      }
+
+      const accessoryInfo = await fs.readJson(this.accessoryInfoPath);
+      this.setupCode = this.generateSetupCode(accessoryInfo);
       return this.setupCode;
     }
   }
@@ -120,13 +329,7 @@ export class ServerService {
   /**
    * Generates the setup code
    */
-  private async generateSetupCode(): Promise<string> {
-    if (!await fs.pathExists(this.accessoryInfoPath)) {
-      return null;
-    }
-
-    const accessoryInfo = await fs.readJson(this.accessoryInfoPath);
-
+  private generateSetupCode(accessoryInfo): string {
     // this code is from https://github.com/KhaosT/HAP-NodeJS/blob/master/lib/Accessory.js#L369
     const buffer = bufferShim.alloc(8);
     const setupCode = parseInt(accessoryInfo.pincode.replace(/-/g, ''), 10);
@@ -152,5 +355,154 @@ export class ServerService {
     }
 
     return 'X-HM://' + encodedPayload + accessoryInfo.setupID;
+  }
+
+  /**
+   * Return the current pairing information for the main bridge
+   */
+  public async getBridgePairingInformation() {
+    if (!await fs.pathExists(this.accessoryInfoPath)) {
+      return new ServiceUnavailableException('Pairing Information Not Available Yet');
+    }
+
+    const accessoryInfo = await fs.readJson(this.accessoryInfoPath);
+
+    return {
+      displayName: accessoryInfo.displayName,
+      pincode: accessoryInfo.pincode,
+      setupCode: await this.getSetupCode(),
+      isPaired: accessoryInfo.pairedClients && Object.keys(accessoryInfo.pairedClients).length > 0,
+    };
+  }
+
+  /**
+   * Returns a list of network adapters on the current host
+   */
+  public async getSystemNetworkInterfaces(): Promise<si.Systeminformation.NetworkInterfacesData[]> {
+    const fromCache: si.Systeminformation.NetworkInterfacesData[] = this.serverServiceCache.get('network-interfaces');
+
+    const networkInterfaces = fromCache || (await si.networkInterfaces()).filter((adapter) => {
+      return !adapter.internal
+        && adapter.mac
+        && (adapter.ip4 || (adapter.ip6 && adapter.ip6subnet !== 'ffff:ffff:ffff:ffff::'))
+        && (adapter.operstate === 'up' || os.platform() === 'freebsd');
+    });
+
+    if (!fromCache) {
+      this.serverServiceCache.set('network-interfaces', networkInterfaces);
+    }
+
+    return networkInterfaces;
+  }
+
+  /**
+   * Returns a list of network adapters the bridge is currently configured to listen on
+   */
+  public async getHomebridgeNetworkInterfaces() {
+    const config = await this.configEditorService.getConfigFile();
+
+    if (!config.bridge?.bind) {
+      return [];
+    }
+
+    if (Array.isArray(config.bridge?.bind)) {
+      return config.bridge.bind;
+    }
+
+    if (typeof config.bridge?.bind === 'string') {
+      return [config.bridge.bind];
+    }
+
+    return [];
+  }
+
+  /**
+   * Return the current setting for the config.bridge.advertiser value
+   */
+  public async getHomebridgeMdnsSetting(): Promise<HomebridgeMdnsSettingDto> {
+    const config = await this.configEditorService.getConfigFile();
+
+    if (!config.bridge.advertiser) {
+      config.bridge.advertiser = 'bonjour-hap';
+    }
+
+    return {
+      advertiser: config.bridge.advertiser
+    };
+  }
+
+  /**
+   * Return the current setting for the config.bridge.advertiser value
+   */
+  public async setHomebridgeMdnsSetting(setting: HomebridgeMdnsSettingDto) {
+    const config = await this.configEditorService.getConfigFile();
+
+    config.bridge.advertiser = setting.advertiser;
+
+    await this.configEditorService.updateConfigFile(config);
+
+    return;
+  }
+
+  /**
+   * Set the bridge interfaces
+   */
+  public async setHomebridgeNetworkInterfaces(adapters: string[]) {
+    const config = await this.configEditorService.getConfigFile();
+
+    if (!config.bridge) {
+      config.bridge = {} as HomebridgeConfig['bridge'];
+    }
+
+    if (!adapters.length) {
+      delete config.bridge.bind;
+    } else {
+      config.bridge.bind = adapters;
+    }
+
+    await this.configEditorService.updateConfigFile(config);
+
+    return;
+  }
+
+  /**
+   * Generate a random, unused port and return it
+   */
+  public async lookupUnusedPort() {
+    const randomPort = () => Math.floor(Math.random() * (60000 - 30000 + 1) + 30000);
+
+    let port = randomPort();
+    while (await tcpPortUsed.check(port)) {
+      port = randomPort();
+    }
+
+    return { port };
+  }
+
+  /**
+   * Check if the system Node.js version has changed
+   */
+  private async nodeVersionChanged(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      let result = false;
+
+      const child = child_process.spawn(process.execPath, ['-v']);
+
+      child.stdout.once('data', (data) => {
+        if (data.toString().trim() === process.version) {
+          result = false;
+        } else {
+          result = true;
+        }
+      });
+
+      child.on('error', () => {
+        result = true;
+      });
+
+      child.on('close', () => {
+        return resolve(result);
+      });
+    });
   }
 }

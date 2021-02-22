@@ -23,7 +23,7 @@
     <p [translate]="'backup.message_restore_help_one'"></p>
     <p [translate]="'backup.message_restore_help_two'"></p>
     <div class="custom-file">
-      <input type="file" class="custom-file-input" id="restoreFileUpload" accept="application/gzip, .gz"
+      <input type="file" class="custom-file-input" id="restoreFileUpload" accept="application/gzip, .gz, .hbfx"
         (change)="handleRestoreFileInput($event.target.files)">
       <label class="custom-file-label"
         for="restoreFileUpload">{{ selectedFile?.name || 'backup.label_choose_backup_file_to_restore' | translate }}</label>
@@ -33,8 +33,10 @@
       <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="onRestoreBackupClick()"
         [disabled]="clicked">
         <span *ngIf="clicked">
-          <i class="fa fa-circle-notch fa-spin"></i>
-          {{ 'backup.label_uploading' | translate }}
+          <i *ngIf="!uploadPercent || uploadPercent === 100" class="fa fa-circle-notch fa-spin"></i>
+          <span *ngIf="uploadPercent && uploadPercent !== 100">{{ uploadPercent }}% - </span>
+          <span *ngIf="uploadPercent === 100"> Extracting Archive</span>
+          <span *ngIf="uploadPercent !== 100"> {{ 'backup.label_uploading' | translate }}</span>
         </span>
         <span *ngIf="!clicked" [translate]="'backup.button_restore_backup'"></span>
       </button>
@@ -44,8 +46,11 @@
   <div [hidden]="!restoreStarted" id="plugin-log-output" class="modal-body"></div>
 
   <div class="modal-footer" *ngIf="!restoreStarted || restoreFailed === true">
+    <button type="button" class="btn btn-elegant mr-auto" (click)="openScheduledBackups()">
+      <i class="far fa-clock"></i> {{ 'backup.title_scheduled_backups' | translate }}
+    </button>
     <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')"
-      [translate]="'form.button_close'">Close</button>
+      [translate]="'form.button_close'" [disabled]="clicked">Close</button>
   </div>
 
   <div class="modal-footer" *ngIf="!restoreInProgress && restoreStarted">

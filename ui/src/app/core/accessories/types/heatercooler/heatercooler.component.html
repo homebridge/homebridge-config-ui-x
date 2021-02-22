@@ -1,0 +1,33 @@
+<div class="accessory-box" [ngClass]="{'switch-on': service.values.Active === 1}" appLongclick
+  (longclick)="onLongClick()" (shortclick)="onClick()">
+  <div class="d-flex flex-column h-100">
+    <div class="temperature-circle temperature-circle-collapse"
+      [innerText]="(service.values.CurrentTemperature | convertTemp | number:'1.0-1') + '°'" [ngClass]="{
+      'cooling': service.values.CurrentHeaterCoolerState === 3 && service.values.Active === 1,
+      'heating': service.values.CurrentHeaterCoolerState === 2 && service.values.Active === 1,
+      'no-current-state': service.values.CurrentHeaterCoolerState < 2 && service.values.Active === 1
+    }"></div>
+    <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
+    <div class="accessory-label grey-text" *ngIf="service.values.Active === 0">
+      {{ 'accessories.control.label_off' | translate }}
+    </div>
+    <div class="accessory-label grey-text"
+      *ngIf="service.values.Active === 1 && service.getCharacteristic('CoolingThresholdTemperature') && service.getCharacteristic('HeatingThresholdTemperature')"
+      [ngSwitch]="service.values.TargetHeaterCoolerState">
+      <span *ngSwitchCase="1">
+        {{ service.values.HeatingThresholdTemperature | convertTemp | number:'1.0-1' }}&deg;
+      </span>
+      <span *ngSwitchCase="2">
+        {{ service.values.CoolingThresholdTemperature | convertTemp | number:'1.0-1' }}&deg;
+      </span>
+      <span *ngSwitchCase="0">
+        {{ service.values.HeatingThresholdTemperature | convertTemp | number:'1.0-1' }}&deg;-{{ service.values.CoolingThresholdTemperature | convertTemp | number:'1.0-1' }}&deg;
+      </span>
+    </div>
+    <div class="accessory-label grey-text"
+      *ngIf="service.values.Active === 1 && (!service.getCharacteristic('CoolingThresholdTemperature') || !service.getCharacteristic('HeatingThresholdTemperature'))">
+      {{ 'accessories.control.label_on' | translate }}
+    </div>
+  </div>
+
+</div>

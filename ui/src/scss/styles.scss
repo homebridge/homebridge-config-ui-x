@@ -1,8 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 
-$image-path: '../../node_modules/mdbootstrap/img/';
-$roboto-font-path: '../../node_modules/mdbootstrap/font/roboto/';
-$fa-font-path:'../../node_modules/@fortawesome/fontawesome-free/webfonts';
+$image-path: "../../img";
 
 @import "~@fortawesome/fontawesome-free/scss/fontawesome.scss";
 @import "~@fortawesome/fontawesome-free/scss/solid.scss";
@@ -16,244 +14,21 @@ $fa-font-path:'../../node_modules/@fortawesome/fontawesome-free/webfonts';
 @import "~nouislider/distribute/nouislider.min.css";
 @import "~dragula/dist/dragula.min.css";
 
-@import './toastr.scss';
-@import './checkbox.scss';
-@import './accessories.scss';
-@import './json-schema-form.scss';
+@import "./base/checkbox.scss";
+@import "./base/layout.scss";
+@import "./base/buttons.scss";
+@import "./base/form.scss";
+@import "./base/background.scss";
 
-@import './themes';
-@import './theme-dark.scss';
+@import "./components/toastr.scss";
+@import "./components/accessories.scss";
+@import "./components/json-schema-form.scss";
+@import "./components//material-switch.scss";
 
-/*
- * Base structure
- */
+@import "./components/spinner.scss";
+@import "./components/widgets.scss";
+@import "./components/terminal.scss";
+@import "./components/editor.scss";
 
-html, body {
-  height: 100%;
-  -webkit-font-smoothing: subpixel-antialiased;
-}
-
-body {
-  background-color: #f4f4f4;
-}
-
-/* Move down content because we have a fixed navbar that is 5.5rem tall */
-body {
-  padding-top: 5.5rem;
-}
-
-@media only screen and (max-width: 600px) {
-  body {
-    padding-top: 4rem;
-  }
-}
-
-#plugin-log-output {
-  min-height: 400px;
-  background-color: #000000;
-  padding: 5px 5px 5px 5px;
-  overflow: hidden;
-}
-
-.btn {
-  font-weight: 400;
-  padding: .375rem .75rem;
-  font-size: 1rem;
-  line-height: 1.5;
-  border-radius: .25rem;
-}
-
-/* Prevent outlines around the close button when a modal opens */
-button {
-  &.close {
-    &:focus {
-      outline: none;
-    }
-  }
-}
-
-/* icon spinner from font-awesome */
-.spin {
-  -webkit-animation: fa-spin 2s infinite linear;
-  animation: fa-spin 2s infinite linear;
-}
-
-@-webkit-keyframes fa-spin {
-  0% {
-    -webkit-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
-  100% {
-    -webkit-transform: rotate(359deg);
-    transform: rotate(359deg);
-  }
-}
-@keyframes fa-spin {
-  0% {
-    -webkit-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
-  100% {
-    -webkit-transform: rotate(359deg);
-    transform: rotate(359deg);
-  }
-}
-
-.bg-status-green {
-  background-color: #1aa531;
-}
-
-.bg-blue {
-  background-color: #1976d2 !important;
-}
-
-.bg-red {
-  background-color: #d32f2f !important;
-}
-
-.bg-yellow {
-  background-color: #fbc02d !important;
-}
-
-.bg-black {
-  background-color: #000000 !important;
-}
-
-.btn-floating {
-  position: relative;
-  z-index: 1;
-  display: inline-block;
-  padding: 0;
-  margin: 10px;
-  overflow: hidden;
-  vertical-align: middle;
-  cursor: pointer;
-  border-radius: 50%;
-  -webkit-box-shadow: 0 5px 11px 0 rgba(0,0,0,0.18), 0 4px 15px 0 rgba(0,0,0,0.15);
-  box-shadow: 0 5px 11px 0 rgba(0,0,0,0.18), 0 4px 15px 0 rgba(0,0,0,0.15);
-  -webkit-transition: all 0.2s ease-in-out;
-  transition: all 0.2s ease-in-out;
-  width: 47px;
-  height: 47px;
-
-  &:hover {
-    -webkit-box-shadow: 0 8px 17px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
-    box-shadow: 0 8px 17px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
-  }
-}
-
-.help-block {
-  color: #9e9e9e !important;
-}
-
-.card .card-text {
-  font-size: .9rem;
-  color: #747373;
-  font-weight: 400;
-}
-
-.md-form .form-control:disabled, .md-form .form-control[readonly] {
-  color: rgba(0,0,0,.46)
-}
-
-.ng-bs4-validate {
-  .form-group {
-    input.ng-touched.ng-dirty.ng-invalid {
-      @extend .form-control.is-invalid;
-    }
-  }
-}
-
-.dropdown-toggle::after {
-  display:none
-}
-
-.no-scrollbars, .xterm-viewport {
-  &::-webkit-scrollbar { // chrome
-    display: none; 
-  }
-  scrollbar-width: none; // firefox
-  -ms-overflow-style: none; // edge
-}
-
-.hb-monaco-editor-line-error {
-	background: red;
-	width: 5px !important;
-  margin-left: 3px;
-}
-
-.hb-plain-text-editor {
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
-  border: none;
-  white-space: pre;
-  font-family: monospace;
-  overflow-wrap: normal;
-  overflow-x: scroll;
-  font-size: 16px;
-}
-
-.hb-editor-block-error {
-  position:absolute;
-  background:rgba(255,231,186,0.88);
-  z-index:20
-}
-
-.status-circle {
-  color: #ffffff;
-  width: 40px;
-  height: 40px;
-  border-radius: 20px;
-  padding: 7px 0;
-  margin-top: 5px;
-  font-size: 24px;
-  line-height: 1;
-  text-align: center;
-}
-
-.qr-code-container {
-  svg {
-    position: inline;
-    height: 100%;
-    max-height: 100%;
-    max-width: 100%;
-  }
-}
-
-/** Gridster **/
-gridster-item {
-  font-weight: 400;
-  border: 0;
-  // box-shadow: 0 2px 5px 0 rgba(0,0,0,.16), 0 2px 10px 0 rgba(0,0,0,.12);
-  color: #000000;
-  background-color: #fff;
-  border-radius: .25rem;
-}
-
-gridster-preview {
-  background: rgba(224, 224, 224, 0.5);
-}
-
-
-.widget-value-parent-wrap {
-  min-width: 100px;
-
-  .widget-value {
-    font-size: 2.5rem;
-    font-weight: 300;
-    line-height: 1.2;
-
-    @media (max-width: 1300px) {
-      font-size: 2.0rem;
-    }
-
-    @media (max-width: 1200px) {
-      font-size: 1.5rem;
-    }
-  }
-
-  .widget-value-label {
-    @media (max-width: 850px) {
-      font-size: 13px;
-    }
-  }
-}
+@import "./themes/themes-light.scss";
+@import "./themes/themes-dark.scss";

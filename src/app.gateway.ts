@@ -6,6 +6,4 @@ import { WsGuard } from './core/auth/guards/ws.guard';
 @WebSocketGateway({ namespace: 'app' })
 export class AppGateway {
 
-  constructor() { }
-
 }

@@ -1,14 +1,15 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 
-import { AuthService } from '../../auth/auth.service';
-import { ApiService } from '../../api.service';
-import { WsService } from '../../ws.service';
-import { Router } from '@angular/router';
+import { ApiService } from '@/app/core/api.service';
+import { SettingsService } from '@/app/core/settings.service';
+import { WsService } from '@/app/core/ws.service';
+import { NotificationService } from '@/app/core/notification.service';
 
 @Component({
   selector: 'app-manage-plugins-modal',
@@ -17,6 +18,7 @@ import { Router } from '@angular/router';
 })
 export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   @Input() pluginName;
+  @Input() targetVersion = 'latest';
   @Input() action;
 
   private io = this.$ws.connectToNamespace('plugins');
@@ -41,9 +43,10 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
     public activeModal: NgbActiveModal,
     public $toastr: ToastrService,
     private translate: TranslateService,
-    public $auth: AuthService,
+    private $settings: SettingsService,
     private $api: ApiService,
     private $ws: WsService,
+    private $notification: NotificationService,
     private $router: Router,
   ) {
     this.term.loadAddon(this.fitAddon);
@@ -60,7 +63,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
 
     this.toastSuccess = this.translate.instant('toast.title_success');
 
-    this.onlineUpdateOk = !(['homebridge', 'homebridge-config-ui-x'].includes(this.pluginName) && this.$auth.env.platform === 'win32');
+    this.onlineUpdateOk = !(['homebridge', 'homebridge-config-ui-x'].includes(this.pluginName) && this.$settings.env.platform === 'win32');
 
     switch (this.action) {
       case 'Install':
@@ -74,20 +77,27 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
         this.pastTenseVerb = this.translate.instant('plugins.manage.label_uninstalled');
         break;
       case 'Update':
-        this.getReleaseNotes();
+        if (this.targetVersion === 'latest') {
+          this.getReleaseNotes();
+        } else {
+          this.update();
+        }
         this.presentTenseVerb = this.translate.instant('plugins.manage.label_update');
         this.pastTenseVerb = this.translate.instant('plugins.manage.label_updated');
-        break;
-      case 'Upgrade':
-        this.upgradeHomebridge();
-        this.presentTenseVerb = this.translate.instant('plugins.manage.label_upgrade');
-        this.pastTenseVerb = this.translate.instant('plugins.manage.label_homebridge_upgraded');
         break;
     }
   }
 
   install() {
-    this.io.request('install', this.pluginName).subscribe(
+    if (!this.onlineUpdateOk) {
+      return;
+    }
+
+    if (this.pluginName === 'homebridge') {
+      return this.upgradeHomebridge();
+    }
+
+    this.io.request('install', { name: this.pluginName, version: this.targetVersion }).subscribe(
       (data) => {
         this.$router.navigate(['/plugins'], {
           queryParams: { installed: this.pluginName },
@@ -103,7 +113,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   }
 
   uninstall() {
-    this.io.request('uninstall', this.pluginName).subscribe(
+    this.io.request('uninstall', { name: this.pluginName }).subscribe(
       (data) => {
         this.activeModal.close();
         this.$router.navigate(['/plugins']);
@@ -116,12 +126,23 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   }
 
   update() {
+    // hide the release notes
     this.showReleaseNotes = false;
-    this.io.request('update', this.pluginName).subscribe(
+
+    if (!this.onlineUpdateOk) {
+      return;
+    }
+
+    // if this is updating homebridge, use an alternative workflow
+    if (this.pluginName === 'homebridge') {
+      return this.upgradeHomebridge();
+    }
+
+    this.io.request('update', { name: this.pluginName, version: this.targetVersion }).subscribe(
       (data) => {
         if (this.pluginName === 'homebridge-config-ui-x') {
           this.updateSelf = true;
-          if (this.$auth.env.dockerOfflineUpdate) {
+          if (this.$settings.env.dockerOfflineUpdate && this.targetVersion === 'latest') {
             this.$router.navigate(['/platform-tools/docker/restart-container']);
             this.activeModal.close();
             return;
@@ -130,13 +151,14 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
         this.$router.navigate(['/plugins']);
         this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);
         this.getChangeLog();
+        this.$notification.configUpdated.next();
       },
       (err) => { },
     );
   }
 
   upgradeHomebridge() {
-    this.io.request('homebridge-update').subscribe(
+    this.io.request('homebridge-update', { version: this.targetVersion }).subscribe(
       (data) => {
         this.$router.navigate(['/restart']);
         this.activeModal.close();

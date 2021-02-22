@@ -1,0 +1,90 @@
+<div class="modal-content hb-plugin-settings-modal">
+  <div class="modal-header">
+    <h5 class="modal-title">
+      {{ 'plugins.settings.title_settings' | translate }}:
+      {{ plugin.name }}
+    </h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="activeModal.close()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div *ngIf="loading" class="text-center primary-text">
+      <i class="fa fa-cog fa-spin" style="font-size: 72px;"></i>
+    </div>
+
+    <div *ngIf="!loading && !canConfigure">
+      <ngb-alert type="info" [dismissible]="false">
+        {{ 'plugins.settings.message_manual_config_required' | translate }}
+        {{ 'plugins.settings.message_consult_documentation' | translate }}
+      </ngb-alert>
+
+      <div class="text-center">
+        <button class="btn btn-primary" (click)="openFullConfigEditor()">
+          {{ 'plugins.settings.label_open_config_editor' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="canConfigure">
+      <ngb-alert type="info" [dismissible]="false">
+        {{ 'plugins.settings.message_consult_documentation' | translate }}
+      </ngb-alert>
+    </div>
+
+    <!-- MULTIPLE CONFIG BLOCKS-->
+    <ngb-accordion [closeOthers]="true" *ngIf="!loading && canConfigure" [activeIds]="show"
+      (panelChange)="blockChanged()">
+      <ngb-panel *ngFor="let block of pluginConfig; let $index = index" opened="true" [id]="'configBlock.' + $index"
+        cardClass="no-padding-card-body">
+        <ng-template ngbPanelHeader>
+          <div class="d-flex align-items-center justify-content-between">
+            <h5 class="m-0">{{ block.name || pluginAlias }}</h5>
+            <div>
+              <button class="btn btn-danger ml-2" *ngIf="show === 'configBlock.' + $index" (click)="removeBlock($index)"
+                [ngbTooltip]="'form.button_delete' | translate" container="body" openDelay="150">
+                <i class="fa fa-trash"></i>
+              </button>
+              <button class="btn btn-primary ml-2" (click)="editBlock($index)"
+                [ngbTooltip]="'form.button_edit' | translate" container="body" openDelay="150">
+                <i class="fa fa-edit"></i>
+              </button>
+            </div>
+          </div>
+        </ng-template>
+        <ng-template ngbPanelContent *ngIf="show === 'configBlock.' + $index">
+          <div class="flex-column d-flex" style="height: 400px;">
+            <ngx-monaco-editor class="flex-grow-1 h-100 w-100 mt-3" [options]="editorOptions" [(ngModel)]="currentBlock"
+              (onInit)="onEditorInit($event)">
+            </ngx-monaco-editor>
+          </div>
+        </ng-template>
+      </ngb-panel>
+    </ngb-accordion>
+  </div>
+  <div class="modal-footer justify-content-between">
+    <div style="min-width: 25%;" class="text-left">
+      <button type="button" class="btn btn-elegant mr-auto" data-dismiss="modal" (click)="addBlock()"
+        *ngIf="canConfigure">
+        <i class="fa fa-plus"></i> Add {{ pluginType }}
+      </button>
+    </div>
+
+    <div style="min-width: 25%;" class="d-none d-lg-inline text-center">
+      <a *ngIf="plugin.links.npm" [href]="plugin.links.npm" target="_blank" rel="noopener noreferrer"
+        class="pr-3 manage-plugin-config-external-icons dark-mode-highlight"><i class="fab fa-npm"></i></a>
+      <a *ngIf="plugin.links.homepage" [href]="plugin.links.homepage" target="_blank" rel="noopener noreferrer"
+        class="manage-plugin-config-external-icons dark-mode-highlight">
+        <i [ngClass]="plugin.links.homepage | externalLinkIcon"></i></a>
+    </div>
+
+    <div style="min-width: 25%;" class="text-right">
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.close()"
+        [translate]="'form.button_close'">Close</button>
+      <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="save()" [disabled]="saveInProgress"
+        *ngIf="canConfigure">
+        {{ 'form.button_save' | translate }} <i *ngIf="saveInProgress" class="fas fa-spinner fa-pulse"></i>
+      </button>
+    </div>
+  </div>
+</div>

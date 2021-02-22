@@ -40,7 +40,7 @@ export class LongClickDirective implements OnDestroy {
   @HostListener('touchstart', ['$event'])
   @HostListener('mousedown', ['$event'])
   public onMouseDown(event: MouseEvent): void {
-    // tslint:disable-next-line:deprecation
+    // eslint-disable-next-line import/no-deprecated
     if (event.which > 1) {
       return;
     }

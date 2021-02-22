@@ -1,0 +1,16 @@
+{
+  "private": true,
+  "version": "1.0.0",
+  "displayName": "Homebridge Mock Plugin",
+  "name": "homebridge-mock-plugin",
+  "description": "This is not a real plugin",
+  "license": "Apache-2.0",
+  "engines": {
+    "homebridge": ">0.4.53"
+  },
+  "keywords": [
+    "homebridge-plugin"
+  ],
+  "dependencies": {},
+  "devDependencies": {}
+}

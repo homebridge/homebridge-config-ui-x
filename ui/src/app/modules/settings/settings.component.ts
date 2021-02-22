@@ -1,15 +1,25 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { debounceTime } from 'rxjs/operators';
+import * as semver from 'semver';
 
-import { AuthService } from '../../core/auth/auth.service';
-import { ApiService } from '../../core/api.service';
-import { ResetCachedAccessoriesModalComponent } from '../../core/reset-cached-accessories-modal/reset-cached-accessories-modal.component';
-import { ResetHomebridgeModalComponent } from '../../core/reset-homebridge-modal/reset-homebridge-modal.component';
+import { SettingsService } from '@/app/core/settings.service';
+import { ApiService } from '@/app/core/api.service';
+import { NotificationService } from '@/app/core/notification.service';
+
+import {
+  RemoveAllCachedAccessoriesModalComponent,
+} from './remove-all-cached-accessories-modal/remove-all-cached-accessories-modal.component';
+import { ResetHomebridgeModalComponent } from './reset-homebridge-modal/reset-homebridge-modal.component';
+import {
+  RemoveSingleCachedAccessoryModalComponent,
+} from './remove-single-cached-accessory-modal/remove-single-cached-accessory-modal.component';
+import { UnpairAccessoryModalComponent } from './unpair-accessory-modal/unpair-accessory-modal.component';
+import { SelectNetworkInterfacesComponent } from './select-network-interfaces/select-network-interfaces.component';
 
 @Component({
   selector: 'app-settings',
@@ -18,11 +28,17 @@ import { ResetHomebridgeModalComponent } from '../../core/reset-homebridge-modal
 })
 export class SettingsComponent implements OnInit {
   public serviceForm: FormGroup;
+  public legacyMdnsFormControl = new FormControl(false);
   public saved = false;
 
+  public showNetworking = false;
+  public availableNetworkAdapters: Record<string, any> = [];
+  public bridgeNetworkAdapters: Record<string, any> = [];
+
   constructor(
-    public $auth: AuthService,
+    public $settings: SettingsService,
     private $api: ApiService,
+    private $notification: NotificationService,
     public $fb: FormBuilder,
     public $toastr: ToastrService,
     private $modal: NgbModal,
@@ -32,9 +48,10 @@ export class SettingsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    if (this.$auth.env.serviceMode) {
+    this.initNetworkingOptions();
+    if (this.$settings.env.serviceMode) {
       this.initServiceModeForm();
-    } else if (this.$auth.env.runningInDocker) {
+    } else if (this.$settings.env.runningInDocker) {
       this.initDockerForm();
     }
   }
@@ -44,6 +61,7 @@ export class SettingsComponent implements OnInit {
       HOMEBRIDGE_DEBUG: [false],
       HOMEBRIDGE_INSECURE: [false],
     });
+
 
     this.$api.get('/platform-tools/docker/env').subscribe(
       (data) => {
@@ -63,13 +81,14 @@ export class SettingsComponent implements OnInit {
         this.translate.instant('platform.docker.settings.toast_title_settings_saved'),
       );
       this.saved = true;
+      this.$notification.configUpdated.next();
     });
   }
 
   initServiceModeForm() {
     this.serviceForm = this.$fb.group({
       HOMEBRIDGE_DEBUG: [false],
-      HOMEBRIDGE_REMOVE_ORPHANS: [false],
+      HOMEBRIDGE_KEEP_ORPHANS: [false],
       HOMEBRIDGE_INSECURE: [true],
       ENV_DEBUG: [null],
       ENV_NODE_OPTIONS: [null],
@@ -89,6 +108,7 @@ export class SettingsComponent implements OnInit {
   saveServiceModeSettings(data = this.serviceForm.value) {
     this.$api.put('/platform-tools/hb-service/homebridge-startup-settings', data).subscribe(() => {
       this.saved = true;
+      this.$notification.configUpdated.next();
     });
   }
 
@@ -98,8 +118,20 @@ export class SettingsComponent implements OnInit {
     });
   }
 
-  resetCachedAccessories() {
-    this.$modal.open(ResetCachedAccessoriesModalComponent, {
+  unpairAccessory() {
+    this.$modal.open(UnpairAccessoryModalComponent, {
+      size: 'lg',
+    });
+  }
+
+  removeAllCachedAccessories() {
+    this.$modal.open(RemoveAllCachedAccessoriesModalComponent, {
+      size: 'lg',
+    });
+  }
+
+  removeSingleCachedAccessories() {
+    this.$modal.open(RemoveSingleCachedAccessoryModalComponent, {
       size: 'lg',
     });
   }
@@ -113,6 +145,99 @@ export class SettingsComponent implements OnInit {
         this.$toastr.error(err.message, 'Failed to set force setvice restart flag.');
       },
     );
+  }
+
+  async initNetworkingOptions() {
+    try {
+      const homebridgePackage = await this.$api.get('/status/homebridge-version').toPromise();
+      if (semver.gte(homebridgePackage.installedVersion, '1.3.0-beta.0', { includePrerelease: true })) {
+        this.showNetworking = true;
+        this.getNetworkSettings();
+      }
+    } catch (e) {
+
+    }
+  }
+
+  async getNetworkSettings() {
+    return Promise.all([
+      this.$api.get('/server/network-interfaces/system').toPromise(),
+      this.$api.get('/server/network-interfaces/bridge').toPromise(),
+      this.$api.get('/server/mdns-advertiser').toPromise(),
+    ]).then(([system, adapters, mdnsAdvertiser]) => {
+      this.availableNetworkAdapters = system;
+      this.buildBridgeNetworkAdapterList(adapters);
+      this.legacyMdnsFormControl.patchValue(mdnsAdvertiser.advertiser);
+      this.legacyMdnsFormControl.valueChanges.subscribe((advertiser: string) => {
+        this.setHomebridgeMdnsSetting(advertiser);
+      });
+    });
+  }
+
+  async setHomebridgeMdnsSetting(advertiser: string) {
+    this.$api.put('/server/mdns-advertiser', { advertiser })
+      .subscribe(
+        () => {
+          this.saved = true;
+          this.$notification.configUpdated.next();
+        },
+        (err) => {
+          this.$toastr.error(err.message, 'Failed to set mdns advertiser.');
+        },
+      );
+  }
+
+  async setNetworkInterfaces(adapters: string[]) {
+    this.$api.put('/server/network-interfaces/bridge', { adapters })
+      .subscribe(
+        () => {
+          this.saved = true;
+          this.$notification.configUpdated.next();
+        },
+        (err) => {
+          this.$toastr.error(err.message, 'Failed to set network adapters.');
+        },
+      );
+  }
+
+  buildBridgeNetworkAdapterList(adapters: string[]) {
+    if (!adapters.length) {
+      this.bridgeNetworkAdapters = [];
+      return;
+    }
+
+    this.bridgeNetworkAdapters = adapters.map((interfaceName) => {
+      const i = this.availableNetworkAdapters.find((x => x.iface === interfaceName));
+      if (i) {
+        i.selected = true;
+        i.missing = false;
+        return i;
+      } else {
+        return {
+          iface: interfaceName,
+          missing: true,
+        };
+      }
+    });
+  }
+
+
+  selectNetworkInterfaces() {
+    const ref = this.$modal.open(SelectNetworkInterfacesComponent, {
+      size: 'lg',
+    });
+
+    ref.componentInstance.availableNetworkAdapters = this.availableNetworkAdapters;
+    ref.componentInstance.bridgeNetworkAdapters = this.bridgeNetworkAdapters;
+
+    ref.result
+      .then((adapters: string[]) => {
+        this.buildBridgeNetworkAdapterList(adapters);
+        this.setNetworkInterfaces(adapters);
+      })
+      .catch(() => {
+        // do nothing
+      });
   }
 
 }

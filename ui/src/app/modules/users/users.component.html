@@ -1,9 +1,11 @@
 <div class="row mb-3">
   <div class="col-sm-9 d-none d-sm-block">
-    <h3 class="primary-text m-0"><span class="d-none d-md-inline">Homebridge Config UI</span> {{'users.title_users' | translate}}</h3>
+    <h3 class="primary-text m-0"><span class="d-none d-md-inline">Homebridge Config UI</span>
+      {{'users.title_users' | translate}}</h3>
   </div>
   <div class="col-sm-3 text-right">
-    <button class="btn btn-primary waves-effect m-0" (click)="openAddNewUser()" [translate]="'users.button_add_user'">Add User</button>
+    <button class="btn btn-primary waves-effect m-0" (click)="openAddNewUser()"
+      [translate]="'users.button_add_user'">Add User</button>
   </div>
 </div>
 
@@ -12,10 +14,22 @@
     <div class="card card-body">
       <div class="d-flex flex-row align-items-center">
         <h4 class="mr-auto mt-0 mb-0" [innerText]="user.name"></h4>
-        <button class="btn btn-elegant btn-sml mt-0 mb-0" (click)="deleteUser(user.id)" [translate]="'form.button_delete'">Delete</button>
-        <button class="btn btn-primary mt-0 mb-0" (click)="openEditUser(user)" [translate]="'form.button_edit'">Edit</button>
+        <button class="btn btn-elegant btn-sml mt-0 mb-0" (click)="deleteUser(user.id)"
+          [translate]="'form.button_delete'" *ngIf="$auth.user.username !== user.username">
+          Delete
+        </button>
+        <button class="btn btn-primary mt-0 mb-0" (click)="setup2fa(user)" [translate]="'users.setup_2fa'"
+          *ngIf="$auth.user.username === user.username && !user.otpActive">
+          Setup 2FA
+        </button>
+        <button class="btn btn-primary mt-0 mb-0" (click)="disable2fa(user)" [translate]="'users.setup_2fa_disable'"
+          *ngIf="$auth.user.username === user.username && user.otpActive">
+          Disable 2FA
+        </button>
+        <button class="btn btn-primary mt-0 mb-0" (click)="openEditUser(user)" [translate]="'form.button_edit'">
+          Edit
+        </button>
       </div>
     </div>
   </div>
 </div>
-

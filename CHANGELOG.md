@@ -2,13 +2,610 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-
 ## NEXT
 
 ### Other Changes
 
+* **i18n:** Improvements to Polish language translations ([#1078](https://github.com/oznu/homebridge-config-ui-x/pull/1078))
+* **i18n:** Improvements to Spanish language translations ([#1079](https://github.com/oznu/homebridge-config-ui-x/pull/1079))
+* **i18n:** Improvements to German language translations ([#1081](https://github.com/oznu/homebridge-config-ui-x/pull/1081),[#1090](https://github.com/oznu/homebridge-config-ui-x/pull/1090))
+* **i18n:** Improvements to French language translations ([#1084](https://github.com/oznu/homebridge-config-ui-x/pull/1084))
+* **i18n:** Improvements to Catalan language translations ([#1087](https://github.com/oznu/homebridge-config-ui-x/pull/1087))
+* **i18n:** Improvements to Portuguese language translations ([#1094](https://github.com/oznu/homebridge-config-ui-x/pull/1094))
+
+### Bug Fixes
+
+* Fixed an issue running the UI on Linux systems without outdated `libstdc++` libraries ([#1086](https://github.com/oznu/homebridge-config-ui-x/issues/1086))
+
+## 4.39.0 (2021-02-15)
+
+### Other Changes
+
+* **Plugins:** Added the ability to view and edit the raw JSON config for an individual plugin (accessed via the spanner drop down on the plugin tile, non-mobile devices only)
+* **Plugins:** Limited the plugin update check concurrency to the number of CPU cores, this should reduce the chance of an update check timeout for users on low powered devices (such as the Raspberry Pi Zero W) ([#1020](https://github.com/oznu/homebridge-config-ui-x/issues/1020))
+* **Backups:** Scheduled backups now happen at a random time between 12am and 6am in your server's local timezone (instead of 1:15am) - the next backup time will be shown in the UI on the Scheduled Backups modal ([#1020](https://github.com/oznu/homebridge-config-ui-x/issues/1020))
+* **i18n:** Improvements to Simplified Chinese language translations ([#1062](https://github.com/oznu/homebridge-config-ui-x/pull/1062))
+* **i18n:** Improvements to Portuguese language translations ([#1069](https://github.com/oznu/homebridge-config-ui-x/pull/1069))
+* **i18n:** Improvements to Polish language translations ([#1072](https://github.com/oznu/homebridge-config-ui-x/pull/1072))
+* **i18n:** Improvements to French language translations ([#1074](https://github.com/oznu/homebridge-config-ui-x/pull/1074))
+
+### Bug Fixes
+
+* **Accessory Control:** Irrigation systems now only show as running when they are running ([#1056](https://github.com/oznu/homebridge-config-ui-x/issues/1056))
+
+### Homebridge v1.3.0 Features
+
+These features will appear in once Homebridge v1.3.0 or later is installed (currently in beta):
+
+* **Homebridge:** Added the ability to swap between the `ciao` and `bonjour-hap` mdns advertisers
+
+## 4.38.0 (2021-02-06)
+
+### Other Changes
+
+* **i18n:** Improvements to Polish language translations ([#1047](https://github.com/oznu/homebridge-config-ui-x/pull/1047),[#1049](https://github.com/oznu/homebridge-config-ui-x/pull/1049),[#1058](https://github.com/oznu/homebridge-config-ui-x/pull/1058))
+* **i18n:** Improvements to Spanish language translations ([#1055](https://github.com/oznu/homebridge-config-ui-x/pull/1047))
+* **Homebridge:** The dashboard will now show when a newer beta release is available (only for users currently running a beta version of Homebridge)
+
+### Bug Fixes
+
+* Fixed an issue that would prevent the UI from rendering in some older browsers when it was accessed via an IP address
+
+### Homebridge v1.3.0 Features
+
+These features will appear in once Homebridge v1.3.0 or later is installed ([currently in beta](https://github.com/homebridge/homebridge/wiki/Homebridge-Beta-Testing)):
+
+* **Plugins:** Added the ability to configure, manage, and restart [child bridges](https://github.com/homebridge/homebridge/wiki/Child-Bridges)
+  * Child bridges allow you to run any plugin's platform or accessory as an isolated child bridge without having to manage multiple Homebridge instances
+* **Dashboard:** Added a new [Child Bridge Status](https://github.com/homebridge/homebridge/wiki/Child-Bridges#hb-service-features) widget the dashboard for [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) users that shows the current status of a child bridge (down, pending, ready) and allows you to restart an individual child bridge
+
+## 4.37.0 (2021-01-30)
+
+### Notable Changes
+
+* **i18n:** Macedonian (mk) language added by [@dimovskidamjan](https://github.com/dimovskidamjan) ([#1011](https://github.com/oznu/homebridge-config-ui-x/pull/1011))
+  * The Homebridge UI is now available in 24 different languages!
+* **Plugins:** The following features have been added to assist plugin developers building [custom plugin user interfaces](https://github.com/homebridge/plugin-ui-utils):
+  * Added an option to retrive a list of cached accessories for the plugin using the `homebridge.getCachedAccessories` method
+
+### Other Changes
+
+* **i18n:** Improvements to Portuguese language translations ([#1014](https://github.com/oznu/homebridge-config-ui-x/pull/1014),[#1034](https://github.com/oznu/homebridge-config-ui-x/pull/1034),[#1038](https://github.com/oznu/homebridge-config-ui-x/pull/1038))
+* **i18n:** Improvements to Polish language translations ([#1032](https://github.com/oznu/homebridge-config-ui-x/pull/1032),[#1036](https://github.com/oznu/homebridge-config-ui-x/pull/1036))
+* **i18n:** Improvements to French language translations ([#1035](https://github.com/oznu/homebridge-config-ui-x/pull/1035),[#1037](https://github.com/oznu/homebridge-config-ui-x/pull/1037))
+* **i18n:** Improvements to Catalan language translations ([#1042](https://github.com/oznu/homebridge-config-ui-x/pull/1042))
+* **i18n:** Improvements to Spanish language translations ([#1039](https://github.com/oznu/homebridge-config-ui-x/pull/1039))
+* **i18n:** Improvements to Turkish language translations ([#1041](https://github.com/oznu/homebridge-config-ui-x/pull/1041))
+* **i18n:** Improvements to Traditional Chinese language translations ([#1045](https://github.com/oznu/homebridge-config-ui-x/pull/1045))
+
+### Bug Fixes
+
+* **Dashboard:** The battery accessory type is now correctly displayed in the Accessories widget ([#998](https://github.com/oznu/homebridge-config-ui-x/issues/998))
+
+### Homebridge v1.3.0 Features
+
+These features will appear in once Homebridge v1.3.0 or later is installed (currently in beta):
+
+* **Homebridge:** Added the ability to swap between the `ciao` and `bonjour-hap` mdns advertisers
+* **Plugins:** Added the ability to disable plugins without having to uninstall them or remove their config from the Homebridge `config.json` file ([#287](https://github.com/oznu/homebridge-config-ui-x/issues/287),[#790](https://github.com/oznu/homebridge-config-ui-x/issues/790),[#791](https://github.com/oznu/homebridge-config-ui-x/issues/791),[#864](https://github.com/oznu/homebridge-config-ui-x/issues/864),[#931](https://github.com/oznu/homebridge-config-ui-x/issues/931),[#990](https://github.com/oznu/homebridge-config-ui-x/issues/990),[#1029](https://github.com/oznu/homebridge-config-ui-x/issues/1029))
+
+
+## 4.36.0 (2020-12-07)
+
+### Notable Changes
+
+* **Homebridge:** Users running Homebridge v1.2.x will now be prompted to update to [Homebridge v1.2.4](https://github.com/homebridge/homebridge/releases/tag/v1.2.4)
+
+### Other Changes
+
+* **i18n:** Improvements to Japanese language translations ([#980](https://github.com/oznu/homebridge-config-ui-x/pull/980))
+
+### Bug Fixes
+
+* **Auth:** Fix an issue that prevented the "Login" button from being enabled when auto filling credentials on iOS ([#993](https://github.com/oznu/homebridge-config-ui-x/pull/993))
+
+## 4.35.0 (2020-11-30)
+
+### Notable Changes
+
+* **i18n:** Korean (ko) language added by [@thankee](https://github.com/thankee) ([#976](https://github.com/oznu/homebridge-config-ui-x/pull/976))
+  * The Homebridge UI is now available in 23 different languages!
+
+### Other Changes
+
+* **i18n:** Improvements to Japanese language translations ([#978](https://github.com/oznu/homebridge-config-ui-x/pull/978))
+
+### Bug Fixes
+
+* **Plugins:** [Custom plugin user interfaces](https://github.com/homebridge/plugin-ui-utils) now work correctly in older browsers that do not support the `EventTarget` constructor
+* **Plugins:** Ensure `@eaDir` folders are removed from the `/homebridge/node_modules` folder when running with Docker on Synology DSM ([#970](https://github.com/oznu/homebridge-config-ui-x/issues/970))
+* **Plugins:** Attempt to automatically clear the npm cache if a UI update fails ([#923](https://github.com/oznu/homebridge-config-ui-x/issues/923))
+* **System:** Lockdown the systeminformation dependency version ([#969](https://github.com/oznu/homebridge-config-ui-x/issues/969))
+
+## 4.34.0 (2020-11-20)
+
+### Notable Changes
+
+* **Plugins:** (BETA) Plugin developers building [custom plugin user interfaces](https://github.com/homebridge/plugin-ui-utils) can now create arbitrary standalone forms using a schema - [see docs](https://github.com/homebridge/plugin-ui-utils#homebridgecreateform)
+
+### Other Changes
+
+* **i18n:** Improvements to Simplified Chinese language translations ([#952](https://github.com/oznu/homebridge-config-ui-x/pull/952))
+* **i18n:** Improvements to Catalan language translations ([#953](https://github.com/oznu/homebridge-config-ui-x/pull/953))
+* **i18n:** Improvements to French language translations ([#955](https://github.com/oznu/homebridge-config-ui-x/pull/955))
+* **i18n:** Improvements to Italian language translations ([#957](https://github.com/oznu/homebridge-config-ui-x/pull/957))
+* **i18n:** Improvements to Polish language translations ([#962](https://github.com/oznu/homebridge-config-ui-x/pull/962))
+
+### Bug Fixes
+
+* **Backup/Restore:** Ensure the UI is restarted along with the bridge after restoring a backup regardless of how the user triggers a restart ([#963](https://github.com/oznu/homebridge-config-ui-x/pull/963))
+
+## 4.33.0 (2020-11-15)
+
+### Notable Changes
+
+* **Accessory Control:** [@Feilner](https://github.com/Feilner) added support for **Door** and **Window** accessory control in the UI ([#945](https://github.com/oznu/homebridge-config-ui-x/pull/945))
+* **Accessory Control:** [@Feilner](https://github.com/Feilner) added accessory icons for Stateless Programmable Switches ([#951](https://github.com/oznu/homebridge-config-ui-x/pull/951))
+* **Plugins:** (BETA) The following features have been added to assist plugin developers building [custom plugin user interfaces](https://github.com/homebridge/plugin-ui-utils):
+  * Added an option to toggle the display of the schema-generated config form below the plugin's custom user interface - [see docs](https://github.com/homebridge/plugin-ui-utils#homebridgeshowschemaform)
+  * Added the ability to load the plugin's custom ui from a local development server (such as the Angular/Vue/Webpack dev servers) - [see docs](https://github.com/homebridge/plugin-ui-utils/blob/master/DEVELOPMENT.md)
+  * Added the ability to customise the location of the plugin's custom ui assets using the `customUiPath` property in the `config.schema.json`
+
+### Other Changes
+
+* **i18n:** Improvements to Simplified Chinese language translations ([#942](https://github.com/oznu/homebridge-config-ui-x/pull/942))
+* **i18n:** Improvements to German language translations ([#946](https://github.com/oznu/homebridge-config-ui-x/pull/946))
+* **i18n:** Improvements to Spanish language translations ([#950](https://github.com/oznu/homebridge-config-ui-x/pull/950))
+* **API**: Added REST API endpoints to lookup and update the config for a single plugin, see the [Swagger API documentation](https://github.com/oznu/homebridge-config-ui-x/wiki/API-Reference) for details
+* **System**: Display a warning in the UI when the client (browser) is running a newer version than the server - this can happen if the service is not restarted after updating the Homebridge UI 
+
+## 4.32.0 (2020-11-06)
+
+### Notable Changes
+
+* **Plugins:** (BETA) Added the ability for plugin developers to create fully custom configuration user interfaces for their plugins
+  * This is an optional feature developers can use if they need more advanced functionality than the current config.schema.json generated form provides
+  * Developers can use standard HTML / CSS and JavaScript (or even a front end framework like Vue, Angular or React) to build their user interfaces
+  * Developers can also create a server-side script which accepts requests from their plugin user interface
+  * See [the documentation](https://github.com/homebridge/plugin-ui-utils#readme) for further information
+* **Homebridge:** Added the ability to select which interfaces Homebridge should advertise and listen on (this feature will appear in *Homebridge Settings* when the upcoming release of Homebridge v1.3.0 is installed)
+
+### Bug Fixes
+
+* **Themes:** When using dark mode, `readonly` inputs in a Plugin's Settings GUI are now distinguishable from editable inputs 
+
+### Other Changes
+
+* **Backup/Restore:** Added the [`scheduledBackupDisable`](https://github.com/oznu/homebridge-config-ui-x/wiki/Config-Options#scheduledbackupdisable) option to allow users to disable the automated daily instance backups ([#938](https://github.com/oznu/homebridge-config-ui-x/issues/938))
+* **i18n:** Improvements to Catalan language translations ([#919](https://github.com/oznu/homebridge-config-ui-x/pull/919))
+* **i18n:** Improvements to Simplified Chinese language translations ([#927](https://github.com/oznu/homebridge-config-ui-x/pull/927),[#936](https://github.com/oznu/homebridge-config-ui-x/pull/936))
+* **i18n:** Improvements to Italian language translations ([#928](https://github.com/oznu/homebridge-config-ui-x/pull/928))
+* **i18n:** Improvements to Polish language translations ([#929](https://github.com/oznu/homebridge-config-ui-x/pull/929),[#935](https://github.com/oznu/homebridge-config-ui-x/pull/935))
+* **i18n:** Improvements to French language translations ([#937](https://github.com/oznu/homebridge-config-ui-x/pull/937))
+* **i18n:** Improvements to Spanish language translations ([#939](https://github.com/oznu/homebridge-config-ui-x/pull/939))
+
+## 4.31.0 (2020-10-28)
+
+### Notable Changes
+
+* **Backup/Restore:** Full instance backups are now automatically made daily (01:15) ([#660](https://github.com/oznu/homebridge-config-ui-x/issues/660))
+  * Backup archives will be kept for 7 days before being removed
+  * Backup archives will stored in your Homebridge config folder (`./backups/instance-backups`)
+  * Users can customise the directory that backups are saved to by setting the [`scheduledBackupPath`](https://github.com/oznu/homebridge-config-ui-x/wiki/Config-Options#scheduledbackuppath) option - this allows you to have the automated backups archives saved to a network share or backup drive
+  * Users can download these scheduled backups by opening the existing [Backup / Restore](https://github.com/homebridge/homebridge/wiki/Backup-and-Restore) tool
+  * Added [REST API endpoints](https://github.com/oznu/homebridge-config-ui-x/wiki/API-Reference) for getting the list of automated backups, and downloading an existing backup archive
+  * See the [Homebridge Backup and Restore](https://github.com/homebridge/homebridge/wiki/Backup-and-Restore) wiki article for further information about instance backups
+* **hb-service:** Added full support for Enterprise / Red Hat / CentOS / Fedora Linux distributions - [wiki guide here](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Red-Hat%2C-CentOS-or-Fedora-Linux)
+
+### Other Changes
+
+* **Config Editor:** When loading a previous version of the config.json, a diff will be shown to highlight the changes from the current config and the one that will be restored ([#910](https://github.com/oznu/homebridge-config-ui-x/issues/910))
+* **Config Editor:** Previous versions of the config.json file more than 60 days old will be periodically be deleted to remove the need for manual maintenance ([#732](https://github.com/oznu/homebridge-config-ui-x/issues/732))
+* **User Accounts:** You can now change the login username of existing user accounts
+* **i18n:** Improvements to French language translations ([#916](https://github.com/oznu/homebridge-config-ui-x/pull/916))
+* **i18n:** Improvements to Spanish language translations ([#917](https://github.com/oznu/homebridge-config-ui-x/pull/917))
+* **i18n:** Improvements to Polish language translations ([#918](https://github.com/oznu/homebridge-config-ui-x/pull/918))
+
+## 4.30.0 (2020-10-21)
+
+### Notable Changes
+
+* **i18n:** Catalan (ca) language added by [@bwp91](https://github.com/bwp91) ([#892](https://github.com/oznu/homebridge-config-ui-x/pull/892))
+  * The Homebridge UI is now available in 22 different languages!
+* **Themes:** Added 11 more dark mode theme options with various colour accents ([#883](https://github.com/oznu/homebridge-config-ui-x/pull/883))
+
+### Bug Fixes
+
+* **System:** Initial support for Node.js v15 and npm v7, however please stay on the current LTS version of Node.js (currently v12.19.0) ([#904](https://github.com/oznu/homebridge-config-ui-x/issues/904))
+* **Config Editor:** Fixed a bug that prevented the purging of config.json backups ([#898](https://github.com/oznu/homebridge-config-ui-x/issues/898))
+* **Ring Plugin:** Fixed an issue that prevented two factor authentication codes with leading zeros from being accepted when linking a Ring Account ([#dgreif/ring#471](https://github.com/dgreif/ring/issues/471))
+
+### Other Changes
+
+* **Config Editor:** Updated the config editor hover help text to let users know it's possible to define an interface or an IP for the mdns interface ([#899](https://github.com/oznu/homebridge-config-ui-x/pull/899))
+* **i18n:** Improvements to Slovenian language translations ([#889](https://github.com/oznu/homebridge-config-ui-x/pull/889))
+* **i18n:** Improvements to Simplified Chinese language translations ([#890](https://github.com/oznu/homebridge-config-ui-x/pull/890))
+* **i18n:** Improvements to Spanish language translations ([#891](https://github.com/oznu/homebridge-config-ui-x/pull/891),[#900](https://github.com/oznu/homebridge-config-ui-x/pull/900))
+* **i18n:** Improvements to French language translations ([#893](https://github.com/oznu/homebridge-config-ui-x/pull/893))
+* **i18n:** Improvements to Italian language translations ([#894](https://github.com/oznu/homebridge-config-ui-x/pull/894))
+* **i18n:** Improvements to German language translations ([#895](https://github.com/oznu/homebridge-config-ui-x/pull/895))
+* **i18n:** Improvements to Japanese language translations ([#897](https://github.com/oznu/homebridge-config-ui-x/pull/897))
+
+## 4.29.0 (2020-10-13)
+
+### Notable Changes
+
+* **Plugins:** Added the ability to rollback to a previous version of a plugin, or install the beta/test version of a plugin
+* **Homebridge:** Added the ability to rollback to a previous version of Homebridge, or install the latest beta version of Homebridge ([#877](https://github.com/oznu/homebridge-config-ui-x/issues/877))
+  * Click the Homebridge version on the status dashboard to access this feature
+* **Config Editor:** Automatic backups of the `config.json` file are now saved to `./backups/config-backups/` to reduce clutter in the Homebridge storage folder ([#732](https://github.com/oznu/homebridge-config-ui-x/pull/732))
+  * Existing config backup files will be moved on next restart
+* **Restart:** Made it more obvious which button to click when you need to restart Homebridge
+* **Restart:** The restart page now shows separate statues for the UI and Homebridge
+* **Restart:** Users running with [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) will now be prompted to view the Homebridge logs if the Homebridge service is taking a long time to come back online after a restart
+* **i18n:** Brazillian Portuguese (pt-BR) language added by [@zearthur99](https://github.com/zearthur99) ([#880](https://github.com/oznu/homebridge-config-ui-x/pull/880))
+  * The Homebridge UI is now available in 21 different languages!
+
+### Other Changes
+
+* **Plugins:** Minor cosmetic improvements to the plugins settings GUI
+* **i18n:** Improvements to French language translations ([#881](https://github.com/oznu/homebridge-config-ui-x/pull/881),[#882](https://github.com/oznu/homebridge-config-ui-x/pull/882))
+* **i18n:** Improvements to Polish language translations ([#884](https://github.com/oznu/homebridge-config-ui-x/pull/884),[#886](https://github.com/oznu/homebridge-config-ui-x/pull/886))
+
+## 4.28.1 (2020-10-08)
+
+### Notable Changes
+
+* **Plugins:** The plugin-specific JSON config editor will now automatically correct invalid JSON in more scenarios
+
+### Other Changes
+
+* **Auth:** Some changes to the "No Authentication Required" mode ([#865](https://github.com/oznu/homebridge-config-ui-x/issues/865))
+* **i18n:** Improvements to German language translations ([#845](https://github.com/oznu/homebridge-config-ui-x/pull/845))
+* **i18n:** Improvements to Spanish language translations ([#867](https://github.com/oznu/homebridge-config-ui-x/pull/867))
+* **i18n:** Improvements to Traditional Chinese language translations ([#868](https://github.com/oznu/homebridge-config-ui-x/pull/868))
+* **i18n:** Improvements to Polish language translations ([#874](https://github.com/oznu/homebridge-config-ui-x/pull/874))
+* **i18n:** Improvements to Italian language translations ([#876](https://github.com/oznu/homebridge-config-ui-x/pull/876))
+* **i18n:** Improvements to Simplified Chinese language translations ([#878](https://github.com/oznu/homebridge-config-ui-x/pull/878))
+
+## 4.28.0 (2020-10-01)
+
+### Notable Changes
+
+* **Plugins:** The *Settings* action button will now appear on all plugins, even if they don't implement the [Plugin Settings GUI](https://developers.homebridge.io/#/config-schema)
+  * For most plugins that don't implement the [Plugin Settings GUI](https://developers.homebridge.io/#/config-schema), the user will now be shown a config editor where they can manage the config just for that plugin
+* **Plugins:** Dramatically increased the number of plugins which the Homebridge UI can offer to automatically remove the config for when uninstalling the plugin
+
+### Other Changes
+
+* **API**: Added REST API endpoints to lookup the plugin type and plugin alias that are needed to configure the plugin, see the [Swagger API documentation](https://github.com/oznu/homebridge-config-ui-x/wiki/API-Reference) for details
+
+## 4.27.2 (2020-09-25)
+
+### Notable Changes
+
+* **Backup/Restore**: When restoring a backup, the original plugin version will be preserved
+
+### Other Changes
+
+* **i18n:** Improvements to Spanish language translations ([#837](https://github.com/oznu/homebridge-config-ui-x/pull/837))
+* **i18n:** Improvements to German language translations ([#834](https://github.com/oznu/homebridge-config-ui-x/pull/834))
+* **i18n:** Improvements to Swedish language translations ([#850](https://github.com/oznu/homebridge-config-ui-x/pull/850))
+* **API**: Added REST API endpoints to lookup a single plugin from NPM, see the [Swagger API documentation](https://github.com/oznu/homebridge-config-ui-x/wiki/API-Reference) for details
+
+### Bug Fixes 
+
+* **hb-service:** The Homebridge version is now reflected in the HB Supervisor logs after an update ([#848](https://github.com/oznu/homebridge-config-ui-x/issues/848))
+* **User Management:** Fixed a typo in the toast error message when loading users ([#859](https://github.com/oznu/homebridge-config-ui-x/pull/859))
+* **Plugins:** Resolved an issue discovering the `npm` path on certain Windows installations ([#851](https://github.com/oznu/homebridge-config-ui-x/pull/851))
+
+## 4.27.1 (2020-09-01)
+
+### Other Changes
+
+* **i18n:** Improvements to Dutch language translations ([#827](https://github.com/oznu/homebridge-config-ui-x/pull/827))
+* **i18n:** Improvements to French language translations ([#828](https://github.com/oznu/homebridge-config-ui-x/pull/828))
+* **i18n:** Improvements to English language translations ([#829](https://github.com/oznu/homebridge-config-ui-x/pull/829))
+
+### Bug Fixes
+
+* **Plugins:** Settings GUI: Fixed a bug that caused the cursor to go to the end of the text input field when editing
+* **Plugins:** Fixed a bug that resulted in the verified plugins list being updated more frequently than it should have been
+
+## 4.27.0 (2020-08-25)
+
+### Other Changes
+
+* **Plugins:** Partnered with [`homebridge-nest-cam`](https://github.com/Brandawg93/homebridge-nest-cam) to integrate the "issue token" retrieval process into the UI (may require plugin update)
+* **API:** Added REST API endpoints to list and control Homebridge accessories, see the [Swagger API documentation](https://github.com/oznu/homebridge-config-ui-x/wiki/API-Reference) for details
+* **i18n:** Improvements to Italian language translations ([#822](https://github.com/oznu/homebridge-config-ui-x/pull/822),[#825](https://github.com/oznu/homebridge-config-ui-x/pull/825))
+* **i18n:** Improvements to Simplified Chinese language translations ([#823](https://github.com/oznu/homebridge-config-ui-x/pull/822))
+* **i18n:** Improvements to Polish language translations ([#824](https://github.com/oznu/homebridge-config-ui-x/pull/824))
+
+### Bug Fixes
+
+* **Plugins:** Plugins are now properly sorted in Firefox ([#762](https://github.com/oznu/homebridge-config-ui-x/issues/762))
+
+## 4.26.0 (2020-08-19)
+
+### Bug Fixes 
+
+* **Plugins:** Fix an issue rendering the title of an array in a plugin's config.schema.json ([#777](https://github.com/oznu/homebridge-config-ui-x/issues/777))
+
+### Other Changes
+
+* **hb-service:** Further improvements towards ensuring the UI is always accessible
+* **Dashboard:** CPU temperature unit of measure can now optionally be set to differ from the system default ([#783](https://github.com/oznu/homebridge-config-ui-x/issues/783))
+* Updated npm dependencies
+* **Auth:** Improve two-factor authentication autocomplete ([#819](https://github.com/oznu/homebridge-config-ui-x/issues/819))
+
+## 4.25.2 (2020-08-14)
+
+### Bug Fixes
+
+* Fix a bug that caused the UI not to load when it's debug mode was enabled ([#811](https://github.com/oznu/homebridge-config-ui-x/issues/811))
+
+### Other Changes
+
+* **i18n:** Improvements to Indonesian language translations ([#810](https://github.com/oznu/homebridge-config-ui-x/pull/810))
+
+## 4.25.1 (2020-08-10)
+
+### Node.js Version
+
+* Dropped support for Node.js < 10.17.0
+* Node.js versions 13.0.0 through 13.6.0 are not supported
+
+### Notable Changes
+
+* **Plugins:** Added the ability for developers of [verified](https://github.com/homebridge/homebridge/wiki/Verified-Plugins) plugins to [display ways users can support them](https://github.com/oznu/homebridge-config-ui-x/wiki/Developers:-Donation-Links) if they wish
+* **hb-service:** Additional log management features for users running Homebridge with [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) only:
+  * Download the full Homebridge log file from the Log Viewer tab ([#795](https://github.com/oznu/homebridge-config-ui-x/issues/795))
+  * Truncate/empty the Homebridge log file from the Log Viewer tab
+
+### Other Changes
+
+* **i18n:** Improvements to Italian language translations ([#716](https://github.com/oznu/homebridge-config-ui-x/pull/797),[#801](https://github.com/oznu/homebridge-config-ui-x/pull/801),[#803](https://github.com/oznu/homebridge-config-ui-x/pull/803))
+* **API:** [Swagger API documentation](https://github.com/oznu/homebridge-config-ui-x/wiki/API-Reference) is now complete ([#776](https://github.com/oznu/homebridge-config-ui-x/issues/776))
+* Updated npm dependencies
+
+## 4.24.0 (2020-07-22)
+
+### Notable Changes
+
+* **i18n:** Bahasa Indonesia translation added by [@dwaan](https://github.com/dwaan) ([#760](https://github.com/oznu/homebridge-config-ui-x/pull/760))
+
+### Bug Fixes
+
+* **Accessory Control:** Fixed an issue with HeaterCooler control ([#772](https://github.com/oznu/homebridge-config-ui-x/issues/772))
+
+## 4.23.2 (2020-06-29)
+
+### Bug Fixes
+
+* **Log Viewer:** Fixed an issue that prevented scrolling back in Safari ([#755](https://github.com/oznu/homebridge-config-ui-x/issues/755))
+* **Dashboard:** Layout is locked by default on iPad Pro ([#756](https://github.com/oznu/homebridge-config-ui-x/issues/756))
+
+## 4.23.1 (2020-06-26)
+
+### Notable Changes
+
+* **Auth:** Two Factor Authentication codes are now only valid for a single login only
+* **Auth:** Two Factor Authentication codes are now valid for a window of +1
+
+### Other Changes
+
+* **System:** The [`hb-service update-node`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command#update-nodejs) command now explains why it cannot run on *Alpine Linux*, rather than showing a generic message that the platform is not supported ([#745](https://github.com/oznu/homebridge-config-ui-x/issues/745))
+* Updated npm dependencies
+
+## 4.23.0 (2020-06-18)
+
+### Bug Fixes
+
+* **Accessory Control:** Fahrenheit temperature display units are now rounded to one decimal place ([#741](https://github.com/oznu/homebridge-config-ui-x/issues/741))
+
+### Other Changes
+
+* **System:** (BETA) Added a command to `hb-service` to allow users to easily update their systems Node.js version to the latest LTS version
+  * The command will work out where you currently have Node.js installed, and how you installed it, so you don't end up with multiple versions of Node.js installed in different places
+  * The command can be used by all Homebridge users, not just those running Homebridge under `hb-service`
+  * Supports macOS (excluding brew / other non-standard installs) and most Linux distributions (binary or from [NodeSource repos](https://github.com/nodesource/distributions))
+  * Will not change your system unless it knows how to update safely
+  * Update to latest LTS: `sudo hb-service update-node`
+  * Install specific version: `sudo hb-service update-node 10.17.0` 
+
+## 4.22.0 (2020-06-09)
+
+### Notable Changes
+
+* **Accessory Control:** Added support for [Heater Cooler](https://developers.homebridge.io/#/service/HeaterCooler) accessory type
+* **Accessory Control:** Current temperature is now displayed with one decimal point ([#376](https://github.com/oznu/homebridge-config-ui-x/issues/376))
+
+### Other Changes
+
+* **Plugins:** Improvements to the [homebridge-ring](https://www.npmjs.com/package/homebridge-ring) plugin authorisation UI ([#734](https://github.com/oznu/homebridge-config-ui-x/pull/734))
+* Updated npm dependencies
+* **hb-service:** Improvements to the log viewer and log rotation management ([#731](https://github.com/oznu/homebridge-config-ui-x/pull/731))
+* **i18n:** Improvements to Portuguese language translations ([#716](https://github.com/oznu/homebridge-config-ui-x/pull/716))
+* **i18n:** Improvements to Russian language translations ([#721](https://github.com/oznu/homebridge-config-ui-x/pull/721), [#724](https://github.com/oznu/homebridge-config-ui-x/pull/724))
+* **i18n:** Improvements to German language translations ([#730](https://github.com/oznu/homebridge-config-ui-x/pull/730))
+* **Login:** Login wallpaper now properly covers larger screens ([#723](https://github.com/oznu/homebridge-config-ui-x/pull/723))
+
+## 4.21.0 (2020-05-27)
+
+### Notable Changes
+
+* **API:** Added Swagger API Documentation; you can access this via `/swagger` (this is the same API already in use by the web client)
+* **Auth:** Added the ability to secure your Homebridge UI user account with **Two Factor Authentication**, drop-down menu -> *User Accounts* -> *Setup 2FA*
+* **Login:** Custom wallpaper can now be added by added a `ui-wallpaper.jpg` file in your Homebridge storage directory (and leaving the `loginWallpaper` config option blank) ([#697](https://github.com/oznu/homebridge-config-ui-x/issues/690))
+* **Login:** Custom wallpaper changes will now break the browser cache ([#700](https://github.com/oznu/homebridge-config-ui-x/issues/700))
+* **i18n:** Portuguese language translation added by [@SamuelMagano](https://github.com/SamuelMagano) ([#698](https://github.com/oznu/homebridge-config-ui-x/pull/698), [#708](https://github.com/oznu/homebridge-config-ui-x/pull/708))
+
+### Other Changes
+
+* **i18n:** Improvements to Polish language translation ([#695](https://github.com/oznu/homebridge-config-ui-x/pull/695), [#705](https://github.com/oznu/homebridge-config-ui-x/pull/705), [#707](https://github.com/oznu/homebridge-config-ui-x/pull/707))
+* **i18n:** Improvements to Simplified Chinese language translations ([#696](https://github.com/oznu/homebridge-config-ui-x/pull/696))
+* **i18n:** Improvements to French language translations ([#699](https://github.com/oznu/homebridge-config-ui-x/pull/699), [#711](https://github.com/oznu/homebridge-config-ui-x/pull/711))
+* **i18n:** Improvements to German language translations ([#704](https://github.com/oznu/homebridge-config-ui-x/pull/704))
+* **i18n:** Improvements to Traditional Chinese language translations ([#713](https://github.com/oznu/homebridge-config-ui-x/pull/713))
+
+### Bug Fixes
+
+* **Plugins:** Fixed a bug that caused the UI to fail to check if a plugin's `package.json` file exists correctly before attempting to open it
+
+## 4.20.0 (2020-05-21)
+
+### Notable Changes
+
+* **Server:** Added the ability to unpair selected bridges / cameras / TVs without needed to reset the main Homebridge instance, this feature is available from the drop down menu -> *Homebridge Settings* 
+* **hb-service:** Users can now remove individual accessories from the accessory cache, drop-down menu -> *Homebridge Settings* -> *Remove Single Cached Accessory* ([#202](https://github.com/oznu/homebridge-config-ui-x/issues/202))
+* **i18n:** Slovenian language translation added by [@mitchoklemen](https://github.com/mitchoklemen) ([#694](https://github.com/oznu/homebridge-config-ui-x/pull/694))
+
+### Other Changes
+
+* **i18n:** Improvements to English language translation ([#689](https://github.com/oznu/homebridge-config-ui-x/pull/689))
+* **i18n:** Improvements to Czech language translation ([#691](https://github.com/oznu/homebridge-config-ui-x/pull/691))
+* **i18n:** Improvements to Polish language translation ([#693](https://github.com/oznu/homebridge-config-ui-x/pull/693))
+
+### Bug Fixes
+
+* **hb-service:** Fix a bug that caused strange behaviour on boot for users running macOS with home folders mounted on a remote network share ([#680](https://github.com/oznu/homebridge-config-ui-x/issues/680))
+* **Accessory Control:** Fixed an issue where the accessory name would sometimes not be displayed correctly ([#690](https://github.com/oznu/homebridge-config-ui-x/issues/690))
+
+## 4.19.0 (2020-05-14)
+
+### Notable Changes
+
+* **Plugins:** Plugin "update available" status is now cached for 5 minutes to reduce the number of outbound calls to the npm registry and decrease load times for the plugins tab for those with slower internet connections
+* **Plugins:** If the initial attempt to load the "Verified Plugins" list fails, the UI will now try again after 60 seconds
+* **Plugins:** Added the ability for developers to customise the "Add Item" button label in the settings ui ([#668](https://github.com/oznu/homebridge-config-ui-x/issues/668))
+* **Plugins:** Added a "clear query" button to the right of the search box ([#674](https://github.com/oznu/homebridge-config-ui-x/issues/674))
+* **Plugins:** Users of `homebridge-hue` can now download the debug dump file from the UI ([#676](https://github.com/oznu/homebridge-config-ui-x/issues/676))
+* **Backup/Restore:** Added the ability to restore a `.hbfx` backup file
+
+### Other Changes
+
+* **i18n:** Improvements to Simplified Chinese language translations ([#672](https://github.com/oznu/homebridge-config-ui-x/pull/672),[#684](https://github.com/oznu/homebridge-config-ui-x/pull/684))
+* **i18n:** Improvements to Italian language translations ([#678](https://github.com/oznu/homebridge-config-ui-x/pull/678))
+
+## 4.18.0 (2020-05-07)
+
+### Other Changes
+
+* **Plugins:** Developers can now interpolate the current hostname into their header and footer markdown ([#661](https://github.com/oznu/homebridge-config-ui-x/pull/661))
+* **Plugins:** Fixed an issue with select boxes in the plugin settings GUI ([#665](https://github.com/oznu/homebridge-config-ui-x/pull/665))
+* **i18n:** Improvements to Polish language translations ([#656](https://github.com/oznu/homebridge-config-ui-x/pull/656))
+* **i18n:** Improvements to Traditional Chinese language translations ([#659](https://github.com/oznu/homebridge-config-ui-x/pull/659))
+* **i18n:** Improvements to German language translations ([#662](https://github.com/oznu/homebridge-config-ui-x/pull/662))
+* Updated npm dependencies
+
+### Bug Fixes
+
+* **Plugins:** Fixed a bug that prevented the plugins from loading when there was an bad file in the global node_modules directory ([#657](https://github.com/oznu/homebridge-config-ui-x/issues/657))
+
+## 4.17.1 (2020-04-29)
+
+### Notable Changes
+
+* **hb-service:** Add support for configuring the new *Keep Orphans* flag, `-K` ([#642](https://github.com/oznu/homebridge-config-ui-x/pull/642))
+
+### Other Changes
+
+* **i18n:** Improvements to Traditional Chinese language translations ([#630](https://github.com/oznu/homebridge-config-ui-x/pull/630))
+* **i18n:** Improvements to Spanish language translations ([#635](https://github.com/oznu/homebridge-config-ui-x/pull/635))
+* **Docker:** Fixed an issue that prevented plugins from being installed/updated when using the Debian/Ubuntu versions of the [oznu/homebridge](https://github.com/oznu/docker-homebridge) Docker image
+
+### Bug Fixes
+
+* **Homebridge Updates:** If Homebridge fails to update the error logs will now be displayed on the screen
+* **Accessory Control:** The accessory layout will now be unlocked when adding a new room ([#643](https://github.com/oznu/homebridge-config-ui-x/issues/643))
+
+## 4.16.0 (2020-04-21)
+
+### Notable Changes
+
+* **Accessory Control:** Added support for Valves and Irrigation Systems ([#47](https://github.com/oznu/homebridge-config-ui-x/issues/47#issuecomment-614660136))
+* **Accessory Control:** Added support for Fan V2 ([#47](https://github.com/oznu/homebridge-config-ui-x/issues/47))
+* **Accessory Control:** Added support for Air Purifiers ([#47](https://github.com/oznu/homebridge-config-ui-x/issues/47))
+* **Accessory Control:** [@NicoFR75](https://github.com/NicoFR75) added support for Light Sensors ([#623](https://github.com/oznu/homebridge-config-ui-x/pull/623))
+
+### Other Changes
+
+* **i18n:** Improvements to German language translations ([#613](https://github.com/oznu/homebridge-config-ui-x/pull/613), [#614](https://github.com/oznu/homebridge-config-ui-x/pull/614))
+* **i18n:** Improvements to Polish language translations ([#615](https://github.com/oznu/homebridge-config-ui-x/pull/615), [#620](https://github.com/oznu/homebridge-config-ui-x/pull/620))
+* **i18n:** Improvements to Russian language translations ([#617](https://github.com/oznu/homebridge-config-ui-x/pull/617))
+* Updated npm dependencies
+
+### Bug Fixes
+
+* **Accessory Control:** Added support for HAP short-form UUIDs ([#624](https://github.com/oznu/homebridge-config-ui-x/pull/624))
+
+## 4.15.0 (2020-04-14)
+
+### Notable Changes
+
+* **Plugins:** A warning message will now be show when updating a plugin that requires a newer version of Node.js than the user currently has installed
+* **Homebridge:** The next release of Homebridge will require Node.js v10.17.0 or later, the UI will prevent Homebridge from updating if the user's Node.js version is lower than this
+
+### Other Changes
+
+* **Accessory Control:** Accessories from other Homebridge instances will no longer be displayed unless the other instance has the same PIN set
+* **i18n:** Improvements to Polish language translations ([#608](https://github.com/oznu/homebridge-config-ui-x/pull/608))
+* **i18n:** Improvements to Russian language translations ([#609](https://github.com/oznu/homebridge-config-ui-x/pull/609))
+* Updated npm dependencies
+
+## 4.14.0 (2020-04-08)
+
+### Notable Changes
+
+* **Config Editor:** The config editor will now automatically correct some common JSON syntax errors on save such as removing trailing commas at the end of arrays and objects, removing comments, ensuring keys are quoted, and ensuring strings are quoted with double quotes instead of single quotes
+
+### Other Changes
+
+* **Linux:** Users are now prompted for confirmation before shutting down or restarting the host server
+* **hb-service:** Linux only: systemd will now really ensure the network is online before starting Homebridge ([#605](https://github.com/oznu/homebridge-config-ui-x/pull/605))
+* **i18n:** Improvements to German language translations ([#599](https://github.com/oznu/homebridge-config-ui-x/pull/599))
+* Updated npm dependencies
+
+### Bug Fixes
+
+* **Plugins:** Fixed a bug that caused the plugin page not to load if the DNS lookup took a long time to timeout ([#598](https://github.com/oznu/homebridge-config-ui-x/issues/598))
+
+## 4.13.3 (2020-03-31)
+
+### Other Changes
+
+* **Plugins:** The service will not longer attempt to check if updates are available for plugins that have `"private": true` set in their `package.json` file
+* Updated npm dependencies
+
+### Bug Fixes
+
+* **hb-service:** Fixed a bug in the macOS installer that resulted in the wrong storage path being set in some circumstances ([homebridge#2464](https://github.com/homebridge/homebridge/issues/2464))
+
+## 4.13.2 (2020-03-25)
+
+### Other Changes
+
+* Updated npm dependencies
+
+### Bug Fixes
+
+* **System:** When updating Homebridge, the release notes will now be shown prior to the update occuring
+* **hb-service:** improved discovery of Homebridge install path
+
+## 4.13.0 (2020-03-18)
+
+### Notable Changes
+
+* **Plugins:** Added support for scoped npm modules as Homebridge plugins, this means you can install plugins from npm such as `@username/homebridge-plugin`. Requires Homebridge update ([homebridge#2447](https://github.com/homebridge/homebridge/pull/2447))
+
+### Other Changes
+
 * **i18n:** The display of dates (in the Clock widget for example) are now localised ([#528](https://github.com/oznu/homebridge-config-ui-x/issues/528))
+* **Accessory Control:** If controlling an accessory fails, the error message is now shown in the UI as a toast notification
 * **hb-service:** Linux only: Updated the generated systemd unit file, `homebridge.service`, to allow the UI to listen on ports below 1024 (requires service re-install for existing [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) users) ([#584](https://github.com/oznu/homebridge-config-ui-x/pull/584))
+* **i18n:** Improvements to Traditional Chinese language translations ([#585](https://github.com/oznu/homebridge-config-ui-x/pull/585))
+* **i18n:** Improvements to Dutch language translations ([#588](https://github.com/oznu/homebridge-config-ui-x/pull/588))
 * Updated the loading spinner to match the set theme
 * Updated npm dependencies
 * Update UI to use Angular 9
@@ -44,10 +641,6 @@ All notable changes to this project will be documented in this file. This projec
 ### Backup / Restore Feature
 
 This release comes with a new feature that allows users to backup and restore their entire Homebridge instance.
-
-<p align="center">
-  <img width="600px" src="https://user-images.githubusercontent.com/3979615/75332950-5f67b100-58d9-11ea-9da8-72faf2145892.png">
-</p>
 
 The backup and restore process works in such a way that users should be able to use the feature roll back to a previous state, or transfer their current Homebridge setup to a new server without the need to re-pair with HomeKit.
 

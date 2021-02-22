@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="111px" height="117px" viewBox="0 0 111 117" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
+    <title>Water-tap-01</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Water-tap-01" fill-rule="nonzero">
+            <path d="M72.6672694,67 L95,67 L95,44.6666667 C95,32.2974359 85.0361664,22.3333333 72.6672694,22.3333333 L50.3345389,22.3333333 L50.3345389,11.1666667 L67.1699819,11.1666667 L67.1699819,0 L22.5045208,0 L22.5045208,11.1666667 L39.3399638,11.1666667 L39.3399638,22.3333333 L0,22.3333333 L0,44.6666667 L72.6672694,44.6666667 L72.6672694,67 Z" id="XMLID_3_" class="valve_off_grey" fill="#CBCBCB"></path>
+            <circle id="XMLID_4_" class="valve_off_hidden" fill="#2D98D3" cx="83.5" cy="84.5" r="5.5"></circle>
+            <circle id="XMLID_5_" class="valve_off_hidden" fill="#2D98D3" cx="72.5" cy="98.5" r="5.5"></circle>
+            <circle id="XMLID_6_" class="valve_off_hidden" fill="#2D98D3" cx="94.5" cy="98.5" r="5.5"></circle>
+            <circle id="XMLID_7_" class="valve_off_hidden" fill="#2D98D3" cx="83.5" cy="111.5" r="5.5"></circle>
+            <circle id="XMLID_8_" class="valve_off_hidden" fill="#2D98D3" cx="61.5" cy="111.5" r="5.5"></circle>
+            <circle id="XMLID_9_" class="valve_off_hidden" fill="#2D98D3" cx="105.5" cy="111.5" r="5.5"></circle>
+        </g>
+    </g>
+</svg>

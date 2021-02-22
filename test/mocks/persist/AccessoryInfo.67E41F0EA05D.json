@@ -1,0 +1,12 @@
+{
+  "displayName": "Homebridge Test",
+  "category": 2,
+  "pincode": "874-99-441",
+  "signSk": "fb7ecc3daa9b495d5867b49268af7568d52c4ab708e334809932976340d7a11f25e05221aa6ad3dbf4d7213e112db08752e6d94820e49038c58bc564b688626f",
+  "signPk": "25e05221aa6ad3dbf4d7213e112db08752e6d94820e49038c58bc564b688626f",
+  "pairedClients": {},
+  "pairedClientsPermission": {},
+  "configVersion": 3,
+  "configHash": "931c04550644c661cbd40132194ac76b042d13a0",
+  "setupID": "1FAP"
+}

@@ -1,0 +1,24 @@
+/*
+ * Base Layout
+ */
+
+html,
+body {
+  height: 100%;
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+body {
+  background-color: #f4f4f4;
+  padding-top: 5.5rem;
+}
+
+.help-block {
+  color: #9e9e9e !important;
+}
+
+.card .card-text {
+  font-size: 0.9rem;
+  color: #747373;
+  font-weight: 400;
+}

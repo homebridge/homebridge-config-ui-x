@@ -13,21 +13,29 @@ import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
 import * as tcpPortUsed from 'tcp-port-used';
 import * as si from 'systeminformation';
+import * as semver from 'semver';
 import * as ora from 'ora';
+import * as tar from 'tar';
+import axios from 'axios';
 import { Tail } from 'tail';
 
 import { Win32Installer } from './platforms/win32';
 import { LinuxInstaller } from './platforms/linux';
 import { DarwinInstaller } from './platforms/darwin';
 
+import type { HomebridgeIpcService } from '../core/homebridge-ipc/homebridge-ipc.service';
+
 export class HomebridgeServiceHelper {
-  public action: string;
+  public action: 'install' | 'uninstall' | 'start' | 'stop' | 'restart' | 'rebuild' | 'run' | 'logs' | 'update-node' | 'before-start' | 'status';
   public selfPath = __filename;
   public serviceName = 'Homebridge';
   public storagePath;
+  public usingCustomStoragePath = false;
   public allowRunRoot = false;
   public asUser;
   private log: fs.WriteStream | NodeJS.WriteStream;
+  private homebridgeModulePath: string;
+  private homebridgePackage: { version: string; bin: { homebridge: string } };
   private homebridgeBinary: string;
   private homebridge: child_process.ChildProcessWithoutNullStreams;
   private homebridgeStopped = true;
@@ -46,6 +54,9 @@ export class HomebridgeServiceHelper {
   public uiPort = 8581;
 
   private installer: Win32Installer | LinuxInstaller | DarwinInstaller;
+
+  // ui services
+  private ipcService: HomebridgeIpcService;
 
   get logPath(): string {
     return path.resolve(this.storagePath, 'homebridge.log');
@@ -73,12 +84,14 @@ export class HomebridgeServiceHelper {
 
     commander
       .allowUnknownOption()
-      .arguments('<install|uninstall|start|stop|restart|rebuild|run|logs>')
-      .option('-P, --plugin-path [path]', '', (p) => { process.env.UIX_CUSTOM_PLUGIN_PATH = p; this.homebridgeOpts.push('-P', p); })
-      .option('-U, --user-storage-path [path]', '', (p) => this.storagePath = p)
-      .option('-S, --service-name [service name]', 'The name of the homebridge service to install or control', (p) => this.serviceName = p)
-      .option('--port [port]', 'The port to set to the Homebridge UI when installing as a service', (p) => this.uiPort = parseInt(p, 10))
-      .option('--user [user]', 'The user account the Homebridge service will be installed as (Linux, macOS only)', (p) => this.asUser = p)
+      .storeOptionsAsProperties(true)
+      .arguments('[install|uninstall|start|stop|restart|rebuild|run|logs]')
+      .option('-P, --plugin-path <path>', '', (p) => { process.env.UIX_CUSTOM_PLUGIN_PATH = p; this.homebridgeOpts.push('-P', p); })
+      .option('-U, --user-storage-path <path>', '', (p) => { this.storagePath = p; this.usingCustomStoragePath = true; })
+      .option('-S, --service-name <service name>', 'The name of the homebridge service to install or control', (p) => this.serviceName = p)
+      .option('-T, --no-timestamp', '', () => this.homebridgeOpts.push('-T'))
+      .option('--port <port>', 'The port to set to the Homebridge UI when installing as a service', (p) => this.uiPort = parseInt(p, 10))
+      .option('--user <user>', 'The user account the Homebridge service will be installed as (Linux, macOS only)', (p) => this.asUser = p)
       .option('--stdout', '', () => this.stdout = true)
       .option('--allow-root', '', () => this.allowRunRoot = true)
       .option('--docker', '', () => this.docker = true)
@@ -94,6 +107,7 @@ export class HomebridgeServiceHelper {
 
     switch (this.action) {
       case 'install': {
+        this.nvmCheck();
         this.logger(`Installing ${this.serviceName} Service`);
         this.installer.install();
         break;
@@ -118,7 +132,7 @@ export class HomebridgeServiceHelper {
       }
       case 'rebuild': {
         this.logger(`Rebuilding for Node.js ${process.version}...`);
-        this.installer.rebuild();
+        this.installer.rebuild(commander.args.includes('--all'));
         break;
       }
       case 'run': {
@@ -129,9 +143,17 @@ export class HomebridgeServiceHelper {
         this.tailLogs();
         break;
       }
+      case 'update-node': {
+        this.checkForNodejsUpdates(commander.args.length === 2 ? commander.args[1] : null);
+        break;
+      }
       case 'before-start': {
         // this currently does nothing, but may be used in the future
         process.exit(0);
+        break;
+      }
+      case 'status': {
+        this.checkStatus();
         break;
       }
       default: {
@@ -144,9 +166,12 @@ export class HomebridgeServiceHelper {
         console.log('    start                            start the homebridge service');
         console.log('    stop                             stop the homebridge service');
         console.log('    restart                          restart the homebridge service');
-        console.log('    rebuild                          rebuild npm modules (use after updating Node.js)');
+        console.log('    rebuild                          rebuild ui');
+        console.log('    rebuild --all                    rebuild all npm modules (use after updating Node.js)');
         console.log('    run                              run homebridge daemon');
         console.log('    logs                             tails the homebridge service logs');
+        console.log('    update-node [version]            update Node.js');
+        console.log('\nSee the wiki for help with hb-service: https://git.io/JTtHK \n');
 
         process.exit(1);
       }
@@ -235,11 +260,35 @@ export class HomebridgeServiceHelper {
    * Trucate the log file to prevent large log files
    */
   private async truncateLog() {
-    const logFile = await (await fs.readFile(this.logPath, 'utf8')).split('\n');
-    if (logFile.length > 5000) {
-      logFile.splice(0, (logFile.length - 5000));
+    if (!await fs.pathExists(this.logPath)) {
+      return;
     }
-    await fs.writeFile(this.logPath, logFile.join('\n'), {});
+
+    const maxSize = 1000000; // ~1 MB
+    const truncateSize = 200000; // ~0.2 MB
+
+    try {
+      const logStats = await fs.stat(this.logPath);
+
+      if (logStats.size < maxSize) {
+        return; // log file does not need truncating
+      }
+
+      // read out the last `truncatedSize` bytes to a buffer
+      const logStartPosition = logStats.size - truncateSize;
+      const logBuffer = Buffer.alloc(truncateSize);
+      const logFileHandle = await fs.open(this.logPath, 'a+');
+      await fs.read(logFileHandle, logBuffer, 0, truncateSize, logStartPosition);
+
+      // truncate the existing file
+      await fs.ftruncate(logFileHandle);
+
+      // re-write the truncated log file
+      await fs.write(logFileHandle, logBuffer);
+      await fs.close(logFileHandle);
+    } catch (e) {
+      this.logger(`Failed to truncate log file: ${e.message}`, 'fail');
+    }
   }
 
   /**
@@ -271,12 +320,16 @@ export class HomebridgeServiceHelper {
       // verify the config
       await this.configCheck();
 
-      // load startup options if they exist
-      await this.loadHomebridgeStartupOptions();
+      // log os info
+      this.logger(`OS: ${os.type()} ${os.release()} ${os.arch()}`);
+      this.logger(`Node.js ${process.version} ${process.execPath}`);
 
       // work out the homebridge binary path
       this.homebridgeBinary = await this.findHomebridgePath();
       this.logger(`Homebridge Path: ${this.homebridgeBinary}`);
+
+      // load startup options if they exist
+      await this.loadHomebridgeStartupOptions();
 
       // get the standalone ui binary on this system
       this.uiBinary = path.resolve(process.env.UIX_BASE_PATH, 'dist', 'bin', 'standalone.js');
@@ -289,32 +342,18 @@ export class HomebridgeServiceHelper {
     // start homebridge
     this.startExitHandler();
 
+    // start the ui
+    await this.runUi();
+
     // delay the launch of homebridge on Raspberry Pi 1/Zero by 20 seconds
     if (os.cpus().length === 1 && os.arch() === 'arm') {
-      this.logger(`Delaying Homebridge startup by 20 seconds on low powered server`);
+      this.logger('Delaying Homebridge startup by 20 seconds on low powered server');
       setTimeout(() => {
         this.runHomebridge();
       }, 20000);
     } else {
       this.runHomebridge();
     }
-
-    // start the ui
-    this.runUi();
-
-    process.addListener('message', (event) => {
-      switch (event) {
-        case 'clearCachedAccessories': {
-          return this.clearHomebridgeCachedAccessories();
-        }
-        case 'restartHomebridge': {
-          return this.restartHomebridge();
-        }
-        case 'postBackupRestoreRestart': {
-          return this.postBackupRestoreRestart();
-        }
-      }
-    });
   }
 
   /**
@@ -332,7 +371,7 @@ export class HomebridgeServiceHelper {
           this.homebridge.kill('SIGKILL');
         } catch (e) { }
         process.exit(1282);
-      }, 5100);
+      }, 7000);
     };
 
     process.on('SIGTERM', exitHandler);
@@ -393,7 +432,12 @@ export class HomebridgeServiceHelper {
       childProcessOpts,
     );
 
-    this.logger(`Started Homebridge with PID: ${this.homebridge.pid}`);
+    // let the ipc service know of the new process
+    if (this.ipcService) {
+      this.ipcService.setHomebridgeProcess(this.homebridge);
+    }
+
+    this.logger(`Started Homebridge v${this.homebridgePackage.version} with PID: ${this.homebridge.pid}`);
 
     this.homebridge.stdout.on('data', (data) => {
       this.log.write(data);
@@ -418,6 +462,7 @@ export class HomebridgeServiceHelper {
     this.logger(`Homebridge Process Ended. Code: ${code}, Signal: ${signal}`);
 
     this.checkForStaleHomebridgeProcess();
+    this.refreshHomebridgePackage();
 
     setTimeout(() => {
       this.logger('Restarting Homebridge...');
@@ -430,7 +475,14 @@ export class HomebridgeServiceHelper {
    */
   private async runUi() {
     try {
-      await import('../main');
+      // import main module
+      const main = await import('../main');
+
+      // load the nest js instance
+      const ui = await main.app;
+
+      // extract services
+      this.ipcService = ui.get('HomebridgeIpcService');
     } catch (e) {
       this.logger('ERROR: The user interface threw an unhandled error');
       console.error(e);
@@ -461,32 +513,48 @@ export class HomebridgeServiceHelper {
    * Finds the homebridge binary
    */
   private async findHomebridgePath() {
-    let homebridgeModulePath;
-
     // check the folder directly above
     const nodeModules = path.resolve(process.env.UIX_BASE_PATH, '..');
-    if (await fs.pathExists(path.resolve(nodeModules, 'homebridge'))) {
-      homebridgeModulePath = path.resolve(nodeModules, 'homebridge');
+    if (await fs.pathExists(path.resolve(nodeModules, 'homebridge', 'package.json'))) {
+      this.homebridgeModulePath = path.resolve(nodeModules, 'homebridge');
     }
 
     // check the global npm modules directory
-    if (!homebridgeModulePath) {
-      const globaModules = await this.getNpmGlobalModulesDirectory();
-      if (globaModules && await fs.pathExists(path.resolve(globaModules, 'homebridge'))) {
-        homebridgeModulePath = path.resolve(globaModules, 'homebridge');
+    if (!this.homebridgeModulePath) {
+      const globalModules = await this.getNpmGlobalModulesDirectory();
+      if (globalModules && await fs.pathExists(path.resolve(globalModules, 'homebridge'))) {
+        this.homebridgeModulePath = path.resolve(globalModules, 'homebridge');
       }
     }
 
-    if (homebridgeModulePath) {
+    if (this.homebridgeModulePath) {
       try {
-        const homebridgePackage = await fs.readJson(path.join(homebridgeModulePath, 'package.json'));
-        return path.resolve(homebridgeModulePath, homebridgePackage.bin.homebridge);
+        await this.refreshHomebridgePackage();
+        return path.resolve(this.homebridgeModulePath, this.homebridgePackage.bin.homebridge);
       } catch (e) {
         console.log(e);
       }
     }
 
     return null;
+  }
+
+  /**
+   * Refresh the homebridge package.json
+   */
+  private async refreshHomebridgePackage() {
+    try {
+      if (await fs.pathExists(this.homebridgeModulePath)) {
+        this.homebridgePackage = await fs.readJson(path.join(this.homebridgeModulePath, 'package.json'));
+      } else {
+        this.logger(`Homebridge not longer found at ${this.homebridgeModulePath}`, 'fail');
+        this.homebridgeModulePath = undefined;
+        this.homebridgeBinary = await this.findHomebridgePath();
+        this.logger(`Found New Homebridge Path: ${this.homebridgeBinary}`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   /**
@@ -501,13 +569,28 @@ export class HomebridgeServiceHelper {
   }
 
   /**
+   * Show a warning if the user is trying to install with NVM on Linux
+   */
+  private nvmCheck() {
+    if (process.execPath.includes('nvm') && os.platform() === 'linux') {
+      this.logger(
+        'WARNING: It looks like you are running Node.js via NVM (Node Version Manager).\n' +
+        '  Using hb-service with NVM may not work unless you have configured NVM for the\n' +
+        '  user this service will run as. See https://git.io/JUZ2g for instructions on how\n' +
+        '  to remove NVM, then follow the wiki instructions to install Node.js and Homebridge.',
+        'warn'
+      );
+    }
+  }
+
+  /**
    * Prints usage information to the screen after installations
    */
   public async printPostInstallInstructions() {
     const defaultAdapter = await si.networkInterfaceDefault();
     const defaultInterface = (await si.networkInterfaces()).find(x => x.iface === defaultAdapter);
 
-    console.log(`\nManage Homebridge by going to one of the following in your browser:\n`);
+    console.log('\nManage Homebridge by going to one of the following in your browser:\n');
 
     console.log(`* http://localhost:${this.uiPort}`);
 
@@ -519,8 +602,8 @@ export class HomebridgeServiceHelper {
       console.log(`* http://[${defaultInterface.ip6}]:${this.uiPort}`);
     }
 
-    console.log(`\nDefault Username: admin`);
-    console.log(`Default Password: admin\n`);
+    console.log('\nDefault Username: admin');
+    console.log('Default Password: admin\n');
 
     this.logger('Homebridge Setup Complete', 'succeed');
   }
@@ -532,8 +615,8 @@ export class HomebridgeServiceHelper {
     const inUse = await tcpPortUsed.check(this.uiPort);
     if (inUse) {
       this.logger(`ERROR: Port ${this.uiPort} is already in use by another process on this host.`, 'fail');
-      this.logger(`You can specify another port using the --port flag, eg.`, 'fail');
-      this.logger(`hb-service ${this.action} --port 8581`, 'fail');
+      this.logger('You can specify another port using the --port flag, eg.', 'fail');
+      this.logger(`EXAMPLE: hb-service ${this.action} --port 8581`, 'fail');
       process.exit(1);
     }
   }
@@ -542,6 +625,11 @@ export class HomebridgeServiceHelper {
    * Ensures the storage path defined exists
    */
   public async storagePathCheck() {
+    if (os.platform() === 'darwin' && !await fs.pathExists(path.dirname(this.storagePath))) {
+      this.logger(`Cannot create Homebridge storage directory, base path does not exist: ${path.dirname(this.storagePath)}`, 'fail');
+      process.exit(1);
+    }
+
     if (!await fs.pathExists(this.storagePath)) {
       this.logger(`Creating Homebridge directory: ${this.storagePath}`);
       await fs.mkdirp(this.storagePath);
@@ -554,46 +642,95 @@ export class HomebridgeServiceHelper {
    * If the config is not valid json it will be backed up and replaced with the default.
    */
   public async configCheck() {
+    let saveRequired = false;
+    let restartRequired = false;
+
     if (!await fs.pathExists(process.env.UIX_CONFIG_PATH)) {
       this.logger(`Creating default config.json: ${process.env.UIX_CONFIG_PATH}`);
-      return await this.createDefaultConfig();
+      await this.createDefaultConfig();
+      restartRequired = true;
     }
 
     try {
       const currentConfig = await fs.readJson(process.env.UIX_CONFIG_PATH);
 
-      // if doing an install, make sure the ui config is set
+      // extract ui config
+      if (!Array.isArray(currentConfig.platforms)) {
+        currentConfig.platforms = [];
+      }
+      let uiConfigBlock = currentConfig.platforms.find((x) => x.platform === 'config');
+
+      // if the config block does not exist, then create it
+      if (!uiConfigBlock) {
+        this.logger(`Adding missing UI platform block to ${process.env.UIX_CONFIG_PATH}`, 'info');
+        uiConfigBlock = await this.createDefaultUiConfig();
+        currentConfig.platforms.push(uiConfigBlock);
+        saveRequired = true;
+        restartRequired = true;
+      }
+
+      // ensure the port is set
+      if (this.action !== 'install' && typeof uiConfigBlock.port !== 'number') {
+        uiConfigBlock.port = await this.getLastKnownUiPort();
+        this.logger(`Added missing port number to UI config - ${uiConfigBlock.port}`, 'info');
+        saveRequired = true;
+        restartRequired = true;
+      }
+
+      // if doing an install, make sure the port number matches the value passed in by the user
       if (this.action === 'install') {
-        if (!Array.isArray(currentConfig.platforms)) {
-          currentConfig.platforms = [];
+        // correct the port
+        if (uiConfigBlock.port !== this.uiPort) {
+          uiConfigBlock.port = this.uiPort;
+          this.logger(`WARNING: HOMEBRIDGE CONFIG UI PORT IN ${process.env.UIX_CONFIG_PATH} CHANGED TO ${this.uiPort}`, 'warn');
         }
-        const uiConfigBlock = currentConfig.platforms.find((x) => x.platform === 'config');
-        if (uiConfigBlock) {
-          // correct the port
-          if (uiConfigBlock.port !== this.uiPort) {
-            uiConfigBlock.port = this.uiPort;
-            this.logger(`WARNING: HOMEBRIDGE CONFIG UI PORT IN ${process.env.UIX_CONFIG_PATH} CHANGED TO ${this.uiPort}`, 'warn');
-          }
-          // delete unnecessary config
-          delete uiConfigBlock.restart;
-          delete uiConfigBlock.sudo;
-          delete uiConfigBlock.log;
-        } else {
-          this.logger(`Adding missing config ui block to ${process.env.UIX_CONFIG_PATH}`);
-          currentConfig.platforms.push({
-            name: 'Config',
-            port: this.uiPort,
-            platform: 'config',
-          });
-        }
-        await fs.writeJSON(process.env.UIX_CONFIG_PATH, currentConfig, { spaces: 4 });
+        // delete unnecessary config
+        delete uiConfigBlock.restart;
+        delete uiConfigBlock.sudo;
+        delete uiConfigBlock.log;
+        saveRequired = true;
+      }
+
+      // ensure the ui port is defined and is a number
+      if (typeof uiConfigBlock.port !== 'number') {
+        uiConfigBlock.port = await this.getLastKnownUiPort();
+        this.logger(`Added missing port number to UI config - ${uiConfigBlock.port}`, 'info');
+        saveRequired = true;
+        restartRequired = true;
+      }
+
+      // check the bridge section exists
+      if (!currentConfig.bridge) {
+        currentConfig.bridge = await this.generateBridgeConfig();
+        this.logger('Added missing Homebridge bridge section to the config.json', 'info');
+        saveRequired = true;
       }
 
       // ensure port is set in bridge config
-      if (currentConfig.bridge && !currentConfig.bridge.port) {
+      if (!currentConfig.bridge.port) {
         currentConfig.bridge.port = await this.generatePort();
+        this.logger(`Added port to the Homebridge bridge section of the config.json: ${currentConfig.bridge.port}`, 'info');
+        saveRequired = true;
+      }
+
+      // ensure bridge port is not the same as the UI port
+      if ((uiConfigBlock && currentConfig.bridge.port === uiConfigBlock.port) || currentConfig.bridge.port === 8080) {
+        currentConfig.bridge.port = await this.generatePort();
+        this.logger(`Bridge port must not be the same as the UI port. Changing bridge port to ${currentConfig.bridge.port}.`, 'info');
+        saveRequired = true;
+      }
+
+      // ensure homebridge-config-ui-x is enabled if the plugins array is set
+      if (currentConfig.plugins && Array.isArray(currentConfig.plugins)) {
+        if (!currentConfig.plugins.includes('homebridge-config-ui-x')) {
+          currentConfig.plugins.push('homebridge-config-ui-x');
+          this.logger('Added homebridge-config-ui-x to the plugins array in the config.json', 'info');
+          saveRequired = true;
+        }
+      }
+
+      if (saveRequired) {
         await fs.writeJSON(process.env.UIX_CONFIG_PATH, currentConfig, { spaces: 4 });
-        this.logger(`Added missing port to Homebridge bridge block: ${currentConfig.bridge.port}`);
       }
 
     } catch (e) {
@@ -602,6 +739,14 @@ export class HomebridgeServiceHelper {
       this.logger(`Invalid config.json file has been backed up to ${backupFile}.`, 'warn');
       await fs.rename(process.env.UIX_CONFIG_PATH, backupFile);
       await this.createDefaultConfig();
+      restartRequired = true;
+    }
+
+    // if the port number potentially changed, we need to restart here when running the
+    // raspbian image so the nginx config will be updated
+    if (restartRequired && this.action === 'run' && await this.isRaspbianImage()) {
+      this.logger('Restarting process after port number update.', 'info');
+      process.exit(1);
     }
   }
 
@@ -609,28 +754,72 @@ export class HomebridgeServiceHelper {
    * Creates the default config.json
    */
   public async createDefaultConfig() {
+    await fs.writeJson(process.env.UIX_CONFIG_PATH, {
+      bridge: await this.generateBridgeConfig(),
+      accessories: [],
+      platforms: [
+        await this.createDefaultUiConfig(),
+      ],
+    }, { spaces: 4 });
+    await this.chownPath(process.env.UIX_CONFIG_PATH);
+  }
+
+  /**
+   * Create a default Homebridge bridge config
+   */
+  private async generateBridgeConfig() {
     const username = this.generateUsername();
     const port = await this.generatePort();
     const name = 'Homebridge ' + username.substr(username.length - 5).replace(/:/g, '');
     const pin = this.generatePin();
 
-    await fs.writeJson(process.env.UIX_CONFIG_PATH, {
-      bridge: {
-        name,
-        username,
-        port,
-        pin,
-      },
-      accessories: [],
-      platforms: [
-        {
-          name: 'Config',
-          port: this.uiPort,
-          platform: 'config',
-        },
-      ],
-    }, { spaces: 4 });
-    await this.chownPath(process.env.UIX_CONFIG_PATH);
+    return {
+      name,
+      username,
+      port,
+      pin,
+    };
+  }
+
+  /**
+   * Create the default ui config
+   */
+  private async createDefaultUiConfig() {
+    return {
+      name: 'Config',
+      port: this.action === 'install' ? this.uiPort : await this.getLastKnownUiPort(),
+      platform: 'config',
+    };
+  }
+
+  /**
+   * Returns true if running on the Homebridge Rasbpian Image
+   */
+  private async isRaspbianImage(): Promise<boolean> {
+    return os.platform() === 'linux' && await fs.pathExists('/etc/hb-ui-port');
+  }
+
+  /**
+   * Check what the last known UI port was
+   * Used when the ui config block is deleted and needs to be recreated
+   */
+  private async getLastKnownUiPort() {
+    // check if we are running the raspbian image, the port will be stored in /etc/hb-ui-port
+    if (await this.isRaspbianImage()) {
+      const lastPort = parseInt((await fs.readFile('/etc/hb-ui-port', 'utf8')), 10);
+      if (!isNaN(lastPort) && lastPort <= 65535) {
+        return lastPort;
+      }
+    }
+
+    // check if the port is defined in an env var (docker)
+    const envPort = parseInt(process.env.HOMEBRIDGE_CONFIG_UI_PORT, 10);
+    if (!isNaN(envPort) && envPort <= 65535) {
+      return envPort;
+    }
+
+    // otherwise return the defaul port
+    return this.uiPort;
   }
 
   /**
@@ -727,9 +916,17 @@ export class HomebridgeServiceHelper {
       process.exit(1);
     }
 
-    // only print the last 1000 lines
-    const currentLog = (await fs.readFile(this.logPath, 'utf8')).split(os.EOL).slice(-1000).join(os.EOL);
-    process.stdout.write(currentLog);
+    const logStats = await fs.stat(this.logPath);
+    const logStartPosition = logStats.size <= 200000 ? 0 : logStats.size - 200000;
+    const logStream = fs.createReadStream(this.logPath, { start: logStartPosition });
+
+    logStream.on('data', (buffer) => {
+      process.stdout.write(buffer);
+    });
+
+    logStream.on('end', () => {
+      logStream.close();
+    });
 
     const tail = new Tail(this.logPath, {
       fromBeginning: false,
@@ -762,9 +959,11 @@ export class HomebridgeServiceHelper {
           this.homebridgeOpts.push('-D');
         }
 
-        // check if remove orphans should be enabled
-        if (homebridgeStartupOptions.removeOrphans && !this.homebridgeOpts.includes('-R')) {
-          this.homebridgeOpts.push('-R');
+        // check if keep orphans should be enabled, only for Homebridge v1.0.2 and later
+        if (this.homebridgePackage && semver.gte(this.homebridgePackage.version, '1.0.2', { includePrerelease: true })) {
+          if (homebridgeStartupOptions.keepOrphans && !this.homebridgeOpts.includes('-K')) {
+            this.homebridgeOpts.push('-K');
+          }
         }
 
         // insecure mode is enabled by default, allow it to be removed if set to false
@@ -793,66 +992,6 @@ export class HomebridgeServiceHelper {
   }
 
   /**
-   * Clears the Homebridge Cached Accessories
-   */
-  private clearHomebridgeCachedAccessories() {
-    const cachedAccessoriesPath = path.resolve(this.storagePath, 'accessories', 'cachedAccessories');
-
-    const clearAccessoriesCache = () => {
-      try {
-        if (fs.existsSync(cachedAccessoriesPath)) {
-          this.logger('Clearing Cached Homebridge Accessories...');
-          fs.unlinkSync(cachedAccessoriesPath);
-        }
-      } catch (e) {
-        this.logger(`ERROR: Failed to clear Homebridge Accessories Cache at ${cachedAccessoriesPath}`);
-        console.error(e);
-      }
-    };
-
-    if (this.homebridge && !this.homebridgeStopped) {
-      this.homebridge.once('close', clearAccessoriesCache);
-      this.restartHomebridge();
-    } else {
-      clearAccessoriesCache();
-    }
-  }
-
-  /**
-   * Standard SIGTERM restart for Homebridge
-   */
-  private restartHomebridge() {
-    if (this.homebridge) {
-      this.logger('Sending SIGTERM to Homebridge');
-      this.homebridge.kill('SIGTERM');
-
-      setTimeout(() => {
-        if (!this.homebridgeStopped) {
-          try {
-            this.logger('Sending SIGKILL to Homebridge');
-            this.homebridge.kill('SIGKILL');
-          } catch (e) { }
-        }
-      }, 5100);
-    }
-  }
-
-  /**
-   * Send SIGKILL to Homebridge after a restore is completed to prevent the
-   * Homebridge cached accessories being regenerated
-   */
-  private postBackupRestoreRestart() {
-    if (this.homebridge) {
-      this.logger('Sending SIGKILL to Homebridge');
-      this.homebridge.kill('SIGKILL');
-    }
-
-    setTimeout(() => {
-      process.kill(process.pid, 'SIGKILL');
-    }, 500);
-  }
-
-  /**
    * Fix the permission on the docker storage directory
    * This is only used when running in the oznu/docker-homebridge docker container
    */
@@ -861,6 +1000,120 @@ export class HomebridgeServiceHelper {
       child_process.execSync(`chown -R ${this.uid}:${this.gid} "${this.storagePath}"`);
     } catch (e) {
       // do nothing
+    }
+  }
+
+  /**
+   * Check to see if Node.js version updates are available.
+   * Prefer LTS versions
+   * If current version is > LTS, update to the latest version while retaining the major version number
+   */
+  private async checkForNodejsUpdates(requestedVersion) {
+    const versionList = (await axios.get('https://nodejs.org/dist/index.json')).data;
+    const currentLts = versionList.filter(x => x.lts)[0];
+
+    if (requestedVersion) {
+      const wantedVersion = versionList.find(x => x.version.startsWith('v' + requestedVersion));
+      if (wantedVersion) {
+        this.logger(`Installing Node.js ${wantedVersion.version} over ${process.version}...`, 'info');
+        return this.installer.updateNodejs({
+          target: wantedVersion.version,
+          rebuild: wantedVersion.modules !== process.versions.modules,
+        });
+      } else {
+        this.logger(`v${requestedVersion} is not a valid Node.js version.`, 'info');
+        return { update: false };
+      }
+    }
+
+    if (semver.gt(currentLts.version, process.version)) {
+      this.logger(`Updating Node.js from ${process.version} to ${currentLts.version}...`, 'info');
+      return this.installer.updateNodejs({
+        target: currentLts.version,
+        rebuild: currentLts.modules !== process.versions.modules,
+      });
+    }
+
+    const currentMajor = semver.parse(process.version).major;
+    const latestVersion = versionList.filter(x => semver.parse(x.version).major === currentMajor)[0];
+
+    if (semver.gt(latestVersion.version, process.version)) {
+      this.logger(`Updating Node.js from ${process.version} to ${latestVersion.version}...`, 'info');
+      return this.installer.updateNodejs({
+        target: latestVersion.version,
+        rebuild: latestVersion.modules !== process.versions.modules,
+      });
+    }
+
+    this.logger(`Node.js ${process.version} already up-to-date.`);
+
+    return { update: false };
+  }
+
+  /**
+   * Download the Node.js binary to a temp file
+   */
+  public async downloadNodejs(downloadUrl: string): Promise<string> {
+    const spinner = ora(`Downloading ${downloadUrl}`).start();
+
+    try {
+      const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'node'));
+      const tempFilePath = path.join(tempDir, 'node.tar.gz');
+      const tempFile = fs.createWriteStream(tempFilePath);
+
+      await axios.get(downloadUrl, { responseType: 'stream' })
+        .then((response) => {
+          return new Promise((resolve, reject) => {
+            response.data.pipe(tempFile)
+              .on('finish', () => {
+                return resolve(tempFile);
+              })
+              .on('error', (err) => {
+                return reject(err);
+              });
+          });
+        });
+
+      spinner.succeed('Download complete.');
+      return tempFilePath;
+    } catch (e) {
+      spinner.fail(e.message);
+      process.exit(1);
+    }
+  }
+
+  /**
+   * Extract the Node.js tarball
+   */
+  public async extractNodejs(targetVersion: string, extractConfig) {
+    const spinner = ora(`Installing Node.js ${targetVersion}`).start();
+
+    try {
+      await tar.x(extractConfig);
+      spinner.succeed(`Installed Node.js ${targetVersion}`);
+    } catch (e) {
+      spinner.fail(e.message);
+      process.exit(1);
+    }
+  }
+
+  /**
+   * Check the current status of the Homebridge UI by calling it's API
+   */
+  private async checkStatus() {
+    this.logger(`Testing hb-service is running on port ${this.uiPort}...`);
+
+    try {
+      const res = await axios.get(`http://localhost:${this.uiPort}/api`);
+      if (res.data === 'Hello World!') {
+        this.logger('Homebridge UI Running', 'succeed');
+      } else {
+        this.logger('Unexpected Response', 'fail');
+        process.exit(1);
+      }
+    } catch (e) {
+      this.logger('Homebridge UI Not Running', 'fail');
+      process.exit(1);
     }
   }
 

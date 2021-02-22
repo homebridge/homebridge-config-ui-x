@@ -1,21 +1,23 @@
-[![npm](https://img.shields.io/npm/v/homebridge-config-ui-x.svg)](https://www.npmjs.com/package/homebridge-config-ui-x) 
-[![npm](https://img.shields.io/npm/dt/homebridge-config-ui-x.svg)](https://www.npmjs.com/package/homebridge-config-ui-x)
-[![Donate](https://img.shields.io/badge/donate-paypal-yellowgreen.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZEW8TFQCU2MSJ&source=url)
+[![npm](https://badgen.net/npm/v/homebridge-config-ui-x/latest?icon=npm&label)](https://www.npmjs.com/package/homebridge-config-ui-x)
+[![npm](https://badgen.net/npm/dt/homebridge-config-ui-x?label=downloads)](https://www.npmjs.com/package/homebridge-config-ui-x)
+[![Discord](https://badgen.net/discord/online-members/C87Pvq3?icon=discord&label=discord)](https://discord.gg/C87Pvq3)
+[![Donate](https://badgen.net/badge/donate/paypal/yellow)](https://paypal.me/oznu)
 
-Supported Languages: :gb: :de: :fr: :poland: :czech_republic: :ru: :cn: :hungary: :jp: :es: :netherlands: :tr: :it: :bulgaria: :sweden: :norway:
+Supported Languages: :gb: :de: :fr: :poland: :czech_republic: :ru: :cn: :hungary: :jp: :es: :netherlands: :tr: :it: :bulgaria: :sweden: :norway: :slovenia: :brazil: :portugal: :indonesia: :kr: :macedonia:
 
 # Homebridge Config UI X
 
-[Homebridge Config UI X](https://www.npmjs.com/package/homebridge-config-ui-x) is a web based management tool for [Homebridge](https://github.com/nfarina/homebridge) that allows you to manage all aspects of your Homebridge setup.
+[Homebridge Config UI X](https://www.npmjs.com/package/homebridge-config-ui-x) is a web based management tool for [Homebridge](https://github.com/homebridge/homebridge) that allows you to manage all aspects of your Homebridge setup.
 
 * Install and configure Homebridge plugins
 * Edit the Homebridge `config.json` with advanced JSON syntax checking and structure validation
+* Visual configuration for over 450 plugins (no manual config.json editing required)
 * Monitor your Homebridge server via a fully customisable widget-based dashboard
 * View the Homebridge logs
 * View and control Homebridge accessories
 * Restart Homebridge
 * Backup and Restore your Homebridge instance
-* and more... 
+* and more...
 
 Homebridge Config UI X also provides a tool called [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) which makes it easy to setup Homebridge as a service on Linux/Raspbian, macOS and Windows 10.
 
@@ -23,192 +25,26 @@ Homebridge Config UI X also provides a tool called [`hb-service`](https://github
 
 # Installation Instructions
 
-For detailed instructions on how to setup Homebridge with Homebridge Config UI X as a service see the guides on the wiki:
+For detailed instructions on how to setup Node.js and Homebridge with Homebridge Config UI X as a service see the guides on the wiki:
 
-* [Setup Homebridge as service on Linux / Raspbian](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-&-Systemd-(Raspbian,-Ubuntu,-Debian))
-* [Setup Homebridge as service on Windows 10](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-on-Windows-10)
-* [Setup Homebridge as service on macOS](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-UI-on-macOS)
+* <img src="https://user-images.githubusercontent.com/3979615/78118327-9853f200-7452-11ea-88aa-5e57ebcf3070.png" alt="homebridge-raspbian-image" height="16px" width="16px"/> [Official Homebridge Raspberry Pi Image](https://github.com/homebridge/homebridge-raspbian-image/wiki/Getting-Started)
+* <img src="https://user-images.githubusercontent.com/3979615/59594350-07b45b80-9137-11e9-85fd-e75093ba91a4.png" alt="raspbian" height="16px" width="16px"/> [Raspberry Pi (Raspbian)](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Raspbian)
+* <img src="https://user-images.githubusercontent.com/3979615/59595664-93c78280-9139-11e9-83dc-4d6f9405e788.png" alt="linux" height="16px" width="16px"/> [Debian or Ubuntu Linux](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Debian-or-Ubuntu-Linux)
+* <img src="https://user-images.githubusercontent.com/3979615/59595664-93c78280-9139-11e9-83dc-4d6f9405e788.png" alt="linux" height="16px" width="16px"/> [Red Hat, CentOS or Fedora Linux](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Red-Hat%2C-CentOS-or-Fedora-Linux)
+* <img src="https://user-images.githubusercontent.com/3979615/59594157-b015f000-9136-11e9-93cb-c9d9773ec9e8.png" alt="macos" height="16px" width="16px"/> [macOS](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-macOS)
+* <img src="https://user-images.githubusercontent.com/3979615/59593218-e0f52580-9134-11e9-8b77-585755af5d99.png" alt="windows" height="16px" width="16px"/> [Windows 10](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Windows-10)
+* <img src="https://user-images.githubusercontent.com/3979615/59594527-56fa8c00-9137-11e9-937b-32092dfcff41.png" alt="docker" height="16px" width="16px"/> [Docker (Linux)](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Docker)
+* <img src="https://user-images.githubusercontent.com/3979615/78118531-dc46f700-7452-11ea-95e5-977f79d1904f.png" alt="synology-dsm" height="16px" width="16px"/> [Setup Homebridge on a Synology NAS](https://github.com/oznu/homebridge-syno-spk#how-to-install)
 
-```
-sudo npm install -g --unsafe-perm homebridge-config-ui-x
-```
-
-Once you have installed and configured the plugin you can access the interface via http://localhost:8080. 
+If your platform is not listed above, or you want to use your own service manager, see the [Manual Configuration](https://github.com/oznu/homebridge-config-ui-x/wiki/Manual-Configuration) wiki article for instructions on setting up the Homebridge UI to run as a Homebridge plugin instead of a service.
 
 The default username is `admin` and the default password is `admin`.
-
-*Docker users should set the environment variable `HOMEBRIDGE_CONFIG_UI=1` to enable the UI. No further manual installation or configuration is required. [See wiki for details](https://github.com/oznu/homebridge-config-ui-x/wiki/Enabling-UI-with-Docker).*
-
-# Configuration
-
-Add this to your homebridge `config.json` file
-
-```json
-"platforms": [
-    {
-      "platform": "config",
-      "name": "Config",
-      "port": 8080,
-      "sudo": false
-    }
-]
-```
-
-**Optional Settings**
-
-* `log` - [See below for details](#log-viewer-configuration).
-* `sudo` - [See below for details](#sudo-mode).
-* `restart` - The command to run when a restart request is sent from the browser. If not populated it will just terminate the Homebridge process and let your process manager (like systemd) restart it.
-* `theme` - [See wiki for details](https://github.com/oznu/homebridge-config-ui-x/wiki/Themes)
-* `ssl` - [See below for details](#enabling-ssl)
-
-All config options are [listed here](https://github.com/oznu/homebridge-config-ui-x/wiki/Config-Options).
-
-## Accessory Control
-
-The plugin allows you to view and control some types of Homebridge accessories from your web browser.
-
-To [enable accessory control](https://github.com/oznu/homebridge-config-ui-x/wiki/Enabling-Accessory-Control) you must be running Homebridge in insecure mode:
-
-```
-homebridge -I
-```
-
-Not all accessory types are supported. See [this issue](https://github.com/oznu/homebridge-config-ui-x/issues/47) for a full list of supported accessory types.
-
-**Controlling Multiple Instances**
-
-*Homebridge Config UI X's* Accessory Control feature allows you to control the accessories from multiple instances of Homebridge. To make this work all instances you want to control must have the same PIN, be on the same network, and be running in insecure mode. Your other instances are automatically discovered, however you can blacklist instances you don't want to control using the plugin settings.
-
-## Log Viewer Configuration
-
-*Homebridge Config UI X* allows you to view the homebridge process logs in the browser. These logs can be loaded from a file or from a command.
-
-### Logs From File
-
-Example loading logs from a file, change `/var/log/homebridge.log` to the actual location of your log file:
-
-```json
-"platforms": [
-    {
-      "platform": "config",
-      "name": "Config",
-      "port": 8080,
-      "log": {
-        "method": "file",
-        "path": "/var/log/homebridge.log"
-      }
-    }
-]
-```
-
-*Make sure the user which is running the Homebridge process has the correct permissions to read the log file. You may need to enable the [sudo option](#sudo-mode) to avoid permission errors if you are not running Homebridge as root.*
-
-### Logs From Systemd
-
-If you're using `systemd` to manage the Homebridge process then you can just set the `method` to `systemd`:
-
-```json
-"platforms": [
-    {
-      "platform": "config",
-      "name": "Config",
-      "port": 8080,
-      "restart": "sudo -n systemctl restart homebridge",
-      "log": {
-        "method": "systemd",
-        "service": "homebridge"
-      }
-    }
-]
-```
-
-*You may need to enable the [sudo option](#sudo-mode) to avoid permission errors if you are not running Homebridge as root.*
-
-### Logs From Custom Command
-
-The `log` option can alternatively specify a command to spawn that will stream the logs to the client. This command should stream the logs to `stdout`:
-
-```json
-"platforms": [
-    {
-      "platform": "config",
-      "name": "Config",
-      "port": 8080,
-      "log": {
-        "method": "custom",
-        "command": "sudo -n tail -n 100 -f /var/log/homebridge.log"
-      }
-    }
-]
-```
-
-## Sudo Mode
-
-Many operations performed by *Homebridge Config UI X*, such as installing plugins, upgrading Homebridge and viewing the logs can require root permissions. You can run the Homebridge service as root or you can enable the `sudo` option in the config.
-
-```json
-"platforms": [
-    {
-      "platform": "config",
-      "name": "Config",
-      "port": 8080,
-      "sudo": true
-    }
-]
-```
-
-When `sudo` mode is enabled *Homebridge Config UI X* will use `sudo` when executing installing, removing or upgrading plugins, viewing the logs using the [Logs From File](#logs-from-file) or [Logs From Systemd](#logs-from-systemd) method, and when upgrading Homebridge. It will not be used for [Logs From Custom Command](#logs-from-custom-command) or custom restart commands.
-
-### Password-less sudo required
-
-For `sudo` mode to work password-less sudo is required. You can enable password-less sudo by adding this entry to the bottom of your `/etc/sudoers` file (use `visudo` to edit the file!):
-
-```
-homebridge    ALL=(ALL) NOPASSWD: ALL
-```
-
-*Replace `homebridge` with the actual user you are running Homebridge as.*
-
-## Enabling SSL
-
-You can run this plugin over an encrypted HTTPS connection by configuring the `ssl` options.
-
-```json
-"platforms": [
-    {
-      "platform": "config",
-      "name": "Config",
-      "port": 8080,
-      "ssl": {
-        "key": "/path/to/privkey.pem",
-        "cert": "/path/to/fullchain.pem"
-      }
-    }
-]
-```
-
-Or if using a **PKCS#12** certificate you can setup SSL like this:
-
-```json
-"platforms": [
-    {
-      "platform": "config",
-      "name": "Config",
-      "port": 8080,
-      "ssl": {
-        "pfx": "/path/to/cert.pfx",
-        "passphrase": "sample"
-      }
-    }
-]
-```
 
 # Usage
 
 ### Status Screen
 
-This shows an overview of your Homebridge system. The dashboard is widget based and completely customisable.
+This shows an overview of your Homebridge system. The dashboard is widget based and completely customisable with a number of themes available.
 
 ![Status](screenshots/homebridge-config-ui-x-status.png?2020-01-07)
 
@@ -218,7 +54,7 @@ This shows you the currently installed plugins and allows you to install, remove
 
 ![Plugin](screenshots/homebridge-config-ui-x-darkmode-plugins.png?2020-01-07)
 
-You can configure supported plugins using the graphical settings editor, removing the need to manually edit the `config.json`. Over 65 popular plugins have implimented support for this feature.
+You can configure supported plugins using the graphical settings editor, removing the need to manually edit the `config.json`. Over 165 popular plugins have implemented support for this feature.
 
 ![Plugin Settings](screenshots/homebridge-config-ui-x-darkmode-alexa-settings.png?2020-01-07)
 
@@ -245,9 +81,9 @@ This shows you the Homebridge accessories for all the Homebridge instances on yo
 The following browsers are supported by this plugin:
 
 * Chrome - latest
+* Edge - latest
 * Firefox - latest
 * Safari - 2 most recent major versions
-* Edge - 2 most recent major versions
 * iOS - 2 most recent major versions
 
 MS Internet Explorer (any version) is not supported!
@@ -256,7 +92,7 @@ MS Internet Explorer (any version) is not supported!
 
 While this plugin should work on Node.js 8+, only the following versions of Node.js are officially supported:
 
-* node v10.15.3 or higher
+* node v10.17.0 or higher
 * npm v6.4.1 or higher
 
 You can check your current versions using these commands:
@@ -297,8 +133,6 @@ If the Accessories tab is not show then you are not running Homebridge in insecu
 
 This plugin supports the [oznu/homebridge](https://github.com/oznu/docker-homebridge) Docker image. You must enable the UI using the method described in [the wiki](https://github.com/oznu/homebridge-config-ui-x/wiki/Enabling-UI-with-Docker).
 
-#### 4. Ask on Slack
+#### 4. Ask on Discord
 
-[![Slack Status](https://slackin-znyruquwmv.now.sh/badge.svg)](https://slackin-znyruquwmv.now.sh)
-
-Join the [Homebridge Slack](https://slackin-znyruquwmv.now.sh/) chat and ask in the [#ui](https://homebridgeteam.slack.com/messages/C9NH0CUTY) channel.
+Join the [Official Homebridge Discord](https://discord.gg/C87Pvq3) community and ask in the [#ui](https://discord.gg/C87Pvq3) channel.

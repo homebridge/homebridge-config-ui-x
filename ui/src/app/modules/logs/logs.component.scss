@@ -1,0 +1,20 @@
+.log-buttons {
+  position: fixed;
+  top: 80px;
+  right: 10px;
+  z-index: 1000;
+
+  button {
+    opacity: 0.4;
+    -webkit-transition: opacity 200ms ease-in;
+    -moz-transition: opacity 200ms ease-in;
+    -ms-transition: opacity 200ms ease-in;
+    -o-transition: opacity 200ms ease-in;
+    transition: opacity 200ms ease-in;
+
+    &:hover,
+    &:active {
+      opacity: 1;
+    }
+  }
+}

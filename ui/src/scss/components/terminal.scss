@@ -1,0 +1,16 @@
+#plugin-log-output {
+  min-height: 400px;
+  background-color: #000000;
+  padding: 5px 5px 5px 5px;
+  overflow: hidden;
+}
+
+.no-scrollbars,
+.xterm-viewport {
+  &::-webkit-scrollbar {
+    // chrome
+    display: none;
+  }
+  scrollbar-width: none; // firefox
+  -ms-overflow-style: none; // edge
+}

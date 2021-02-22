@@ -1,0 +1,11 @@
+[
+  {
+    "plugin": "homebridge-daikin-esp8266",
+    "platform": "daikin-esp8266-platform",
+    "context": {},
+    "displayName": "68C63A9FAC91",
+    "UUID": "59c27511-d7df-4c7b-907d-d62bd700b2df",
+    "category": 1,
+    "services": []
+  }
+]
