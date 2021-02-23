@@ -87,11 +87,19 @@
       {{ 'child_bridge.message_must_configure_plugin_first' | translate }}
     </ngb-alert>
 
-    <ngb-alert *ngIf="!canConfigure" type="info" [dismissible]="false">
-      <i class="fa fa-info-circle"></i>
-      {{ 'plugins.settings.message_manual_config_required' | translate }}
-      {{ 'plugins.settings.message_consult_documentation' | translate }}
-    </ngb-alert>
+    <div *ngIf="!canConfigure" class="mb-2">
+      <ngb-alert type="info" [dismissible]="false">
+        <i class="fa fa-info-circle"></i>
+        {{ 'plugins.settings.message_manual_config_required' | translate }}
+        {{ 'plugins.settings.message_consult_documentation' | translate }}
+      </ngb-alert>
+
+      <div class="text-center">
+        <button class="btn btn-primary" (click)="openFullConfigEditor()">
+          {{ 'plugins.settings.label_open_config_editor' | translate }}
+        </button>
+      </div>
+    </div>
 
     <p>
       <a href="https://github.com/homebridge/homebridge/wiki/Child-Bridges" target="_blank" rel="noopener noreferrer"

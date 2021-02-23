@@ -52,6 +52,8 @@ const HomebridgeApiMock = {
     AccessoryLoader: {},
     Accessory: {},
     Bridge: {},
+    Categories: {},
+    Units: {},
     uuid: {
       generate: () => { /** mock */ }
     }
