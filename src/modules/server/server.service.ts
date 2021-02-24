@@ -383,9 +383,7 @@ export class ServerService {
 
     const networkInterfaces = fromCache || (await si.networkInterfaces()).filter((adapter) => {
       return !adapter.internal
-        && adapter.mac
-        && (adapter.ip4 || (adapter.ip6 && adapter.ip6subnet !== 'ffff:ffff:ffff:ffff::'))
-        && (adapter.operstate === 'up' || os.platform() === 'freebsd');
+        && (adapter.ip4 || (adapter.ip6));
     });
 
     if (!fromCache) {
