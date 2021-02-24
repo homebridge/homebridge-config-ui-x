@@ -1,13 +1,16 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as NodeCache from 'node-cache';
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { HapClient, ServiceType } from '@oznu/hap-client';
+
 import { ConfigService } from '../../core/config/config.service';
 import { Logger } from '../../core/logger/logger.service';
 
 @Injectable()
 export class AccessoriesService {
   public hapClient: HapClient;
+  public accessoriesCache = new NodeCache({ stdTTL: 3600 });
 
   constructor(
     private readonly configService: ConfigService,
@@ -34,14 +37,23 @@ export class AccessoriesService {
 
     let services;
 
-    const loadAllAccessories = async () => {
+    const loadAllAccessories = async (refresh: boolean) => {
+      if (!refresh) {
+        const cached = this.accessoriesCache.get<any[]>('services');
+        if (cached && cached.length) {
+          client.emit('accessories-data', cached);
+        }
+      }
+
       services = await this.loadAccessories();
       this.refreshCharacteristics(services);
+      client.emit('accessories-ready-for-control');
       client.emit('accessories-data', services);
+      this.accessoriesCache.set('services', services);
     };
 
     // initial load
-    await loadAllAccessories();
+    await loadAllAccessories(false);
 
     // handling incoming requests
     const requestHandler = async (msg?) => {
@@ -77,7 +89,7 @@ export class AccessoriesService {
 
     // load a second time in case anything was missed
     const secondaryLoadTimeout = setTimeout(async () => {
-      await loadAllAccessories();
+      await loadAllAccessories(true);
     }, 3000);
 
     // clean up on disconnect

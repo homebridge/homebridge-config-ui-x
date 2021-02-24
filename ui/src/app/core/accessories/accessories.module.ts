@@ -53,6 +53,7 @@ import { HeaterCoolerComponent } from './types/heatercooler/heatercooler.compone
 import { HeaterCoolerManageComponent } from './types/heatercooler/heatercooler.manage.component';
 
 import { InfoModalComponent } from './info-modal/info-modal.component';
+import { AccessoryTileComponent } from './accessory-tile/accessory-tile.component';
 
 @NgModule({
   entryComponents: [
@@ -71,6 +72,7 @@ import { InfoModalComponent } from './info-modal/info-modal.component';
     HeaterCoolerManageComponent,
   ],
   declarations: [
+    AccessoryTileComponent,
     InfoModalComponent,
     SwitchComponent,
     StatelessprogrammableswitchComponent,
@@ -126,47 +128,7 @@ import { InfoModalComponent } from './info-modal/info-modal.component';
     CoreModule,
   ],
   exports: [
-    SwitchComponent,
-    StatelessprogrammableswitchComponent,
-    ThermostatComponent,
-    ThermostatManageComponent,
-    OutletComponent,
-    FanComponent,
-    FanManageComponent,
-    Fanv2Component,
-    Fanv2ManageComponent,
-    UnknownComponent,
-    LightbulbComponent,
-    LightbulbManageComponent,
-    LightsensorComponent,
-    LockmechanismComponent,
-    TemperaturesensorComponent,
-    GaragedooropenerComponent,
-    MotionsensorComponent,
-    OccupancysensorComponent,
-    HumiditysensorComponent,
-    AirqualitysensorComponent,
-    WindowcoveringComponent,
-    WindowcoveringManageComponent,
-    WindowComponent,
-    WindowManageComponent,
-    DoorComponent,
-    DoorManageComponent,
-    TelevisionComponent,
-    ContactsensorComponent,
-    BatteryserviceComponent,
-    SpeakerComponent,
-    SpeakerManageComponent,
-    SecuritysystemComponent,
-    SecuritysystemManageComponent,
-    LeaksensorComponent,
-    ValveComponent,
-    ValveManageComponent,
-    IrrigationSystemComponent,
-    AirpurifierComponent,
-    AirpurifierManageComponent,
-    HeaterCoolerComponent,
-    HeaterCoolerManageComponent,
+    AccessoryTileComponent,
   ],
   providers: [
     AccessoriesService,
