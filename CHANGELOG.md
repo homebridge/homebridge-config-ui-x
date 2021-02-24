@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Bug Fixes
 
+* Fixed an issue where Homebridge accessories were not showing up in the UI after upgrading to Homebridge v1.3.x ([#1093](https://github.com/oznu/homebridge-config-ui-x/issues/1093))
 * Fixed an issue running the UI on Linux systems without outdated `libstdc++` libraries ([#1086](https://github.com/oznu/homebridge-config-ui-x/issues/1086))
 
 ## 4.39.0 (2021-02-15)
