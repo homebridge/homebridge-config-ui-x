@@ -10,7 +10,7 @@ import { Logger } from '../../core/logger/logger.service';
 @Injectable()
 export class AccessoriesService {
   public hapClient: HapClient;
-  public accessoriesCache = new NodeCache({ stdTTL: 3600 });
+  public accessoriesCache = new NodeCache({ stdTTL: 0 });
 
   constructor(
     private readonly configService: ConfigService,

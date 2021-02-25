@@ -1,4 +1,4 @@
-import { IsDefined, IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
+import { IsDefined, IsNotEmpty, IsNumber, IsOptional, IsString, Matches } from 'class-validator';
 
 export class PluginActionDto {
   @IsDefined()
@@ -10,10 +10,26 @@ export class PluginActionDto {
   @IsOptional()
   @IsString()
   version?: string;
+
+  @IsOptional()
+  @IsNumber()
+  termCols?: number;
+
+  @IsOptional()
+  @IsNotEmpty()
+  termRows?: number;
 }
 
 export class HomebridgeUpdateActionDto {
   @IsOptional()
   @IsString()
   version?: string;
+
+  @IsOptional()
+  @IsNumber()
+  termCols?: number;
+
+  @IsOptional()
+  @IsNotEmpty()
+  termRows?: number;
 }

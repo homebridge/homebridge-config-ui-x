@@ -16,6 +16,7 @@ import * as pLimit from 'p-limit';
 import { Logger } from '../../core/logger/logger.service';
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
 import { NodePtyService } from '../../core/node-pty/node-pty.service';
+import { HomebridgeUpdateActionDto, PluginActionDto } from './plugins.dto';
 
 @Injectable()
 export class PluginsService {
@@ -317,7 +318,8 @@ export class PluginsService {
    * @param pluginName
    * @param client
    */
-  async installPlugin(pluginName: string, version: string, client: EventEmitter) {
+  async installPlugin(pluginAction: PluginActionDto, client: EventEmitter) {
+    pluginAction.version = pluginAction.version || 'latest';
     await this.getInstalledPlugins();
 
     // install new plugins in the same location as this plugin
@@ -339,7 +341,13 @@ export class PluginsService {
       installOptions.push('-g');
     }
 
-    await this.runNpmCommand([...this.npm, 'install', ...installOptions, `${pluginName}@${version}`], installPath, client);
+    await this.runNpmCommand(
+      [...this.npm, 'install', ...installOptions, `${pluginAction.name}@${pluginAction.version}`],
+      installPath,
+      client,
+      pluginAction.termCols,
+      pluginAction.termRows
+    );
 
     return true;
   }
@@ -349,16 +357,16 @@ export class PluginsService {
    * @param pluginName
    * @param client
    */
-  async uninstallPlugin(pluginName: string, client: EventEmitter) {
-    if (pluginName === this.configService.name) {
-      throw new Error(`Cannot uninstall ${pluginName} from ${this.configService.name}.`);
+  async uninstallPlugin(pluginAction: PluginActionDto, client: EventEmitter) {
+    if (pluginAction.name === this.configService.name) {
+      throw new Error(`Cannot uninstall ${pluginAction.name} from ${this.configService.name}.`);
     }
 
     await this.getInstalledPlugins();
     // find the plugin
-    const plugin = this.installedPlugins.find(x => x.name === pluginName);
+    const plugin = this.installedPlugins.find(x => x.name === pluginAction.name);
     if (!plugin) {
-      throw new Error(`Plugin "${pluginName}" Not Found`);
+      throw new Error(`Plugin "${pluginAction.name}" Not Found`);
     }
 
     // get the currently installed
@@ -379,7 +387,13 @@ export class PluginsService {
       installOptions.push('-g');
     }
 
-    await this.runNpmCommand([...this.npm, 'uninstall', ...installOptions, pluginName], installPath, client);
+    await this.runNpmCommand(
+      [...this.npm, 'uninstall', ...installOptions, pluginAction.name],
+      installPath,
+      client,
+      pluginAction.termCols,
+      pluginAction.termRows
+    );
     await this.ensureCustomPluginDirExists();
 
     return true;
@@ -390,14 +404,15 @@ export class PluginsService {
    * @param pluginName
    * @param client
    */
-  async updatePlugin(pluginName: string, version: string, client: EventEmitter) {
-    if (pluginName === this.configService.name && this.configService.dockerOfflineUpdate && version === 'latest') {
+  async updatePlugin(pluginAction: PluginActionDto, client: EventEmitter) {
+    pluginAction.version = pluginAction.version || 'latest';
+    if (pluginAction.name === this.configService.name && this.configService.dockerOfflineUpdate && pluginAction.version === 'latest') {
       await this.updateSelfOffline(client);
       return true;
     }
 
     // show a warning if updating homebridge-config-ui-x on Raspberry Pi 1 / Zero
-    if (pluginName === this.configService.name && os.cpus().length === 1 && os.arch() === 'arm') {
+    if (pluginAction.name === this.configService.name && os.cpus().length === 1 && os.arch() === 'arm') {
       client.emit('stdout', color.yellow('***************************************************************\r\n'));
       client.emit('stdout', color.yellow(`Please be patient while ${this.configService.name} updates.\r\n`));
       client.emit('stdout', color.yellow('This process may take 5-15 minutes to complete on your device.\r\n'));
@@ -406,9 +421,9 @@ export class PluginsService {
 
     await this.getInstalledPlugins();
     // find the plugin
-    const plugin = this.installedPlugins.find(x => x.name === pluginName);
+    const plugin = this.installedPlugins.find(x => x.name === pluginAction.name);
     if (!plugin) {
-      throw new Error(`Plugin "${pluginName}" Not Found`);
+      throw new Error(`Plugin "${pluginAction.name}" Not Found`);
     }
 
     // get the currently installed
@@ -430,10 +445,16 @@ export class PluginsService {
     }
 
     try {
-      await this.runNpmCommand([...this.npm, 'install', ...installOptions, `${pluginName}@${version}`], installPath, client);
+      await this.runNpmCommand(
+        [...this.npm, 'install', ...installOptions, `${pluginAction.name}@${pluginAction.version}`],
+        installPath,
+        client,
+        pluginAction.termCols,
+        pluginAction.termRows
+      );
       return true;
     } catch (e) {
-      if (pluginName === this.configService.name) {
+      if (pluginAction.name === this.configService.name) {
         client.emit('stdout', color.yellow('\r\nCleaning up npm cache, please wait...\r\n'));
         await this.cleanNpmCache();
         client.emit('stdout', color.yellow(`npm cache cleared, please try updating ${this.configService.name} again.\r\n`));
@@ -517,11 +538,12 @@ export class PluginsService {
   /**
    * Updates the Homebridge package
    */
-  public async updateHomebridgePackage(version: string, client: EventEmitter) {
+  public async updateHomebridgePackage(homebridgeUpdateAction: HomebridgeUpdateActionDto, client: EventEmitter) {
     const homebridge = await this.getHomebridgePackage();
 
-    if (version === 'latest' && homebridge.latestVersion) {
-      version = homebridge.latestVersion;
+    homebridgeUpdateAction.version = homebridgeUpdateAction.version || 'latest';
+    if (homebridgeUpdateAction.version === 'latest' && homebridge.latestVersion) {
+      homebridgeUpdateAction.version = homebridge.latestVersion;
     }
 
     // get the currently installed
@@ -543,9 +565,9 @@ export class PluginsService {
     }
 
     // 1.2.x -> 1.3.0 upgrade set ciao as bridge advertiser
-    if (homebridge.installedVersion && version) {
+    if (homebridge.installedVersion && homebridgeUpdateAction.version) {
       const installedVersion = semver.parse(homebridge.installedVersion);
-      const targetVersion = semver.parse(version);
+      const targetVersion = semver.parse(homebridgeUpdateAction.version);
       if (installedVersion.minor === 2 && targetVersion.minor > 2) {
         try {
           const config: HomebridgeConfig = await fs.readJson(this.configService.configPath);
@@ -558,7 +580,13 @@ export class PluginsService {
     }
     // end 1.2.x -> 1.3.0 upgrade
 
-    await this.runNpmCommand([...this.npm, 'install', ...installOptions, `${homebridge.name}@${version}`], installPath, client);
+    await this.runNpmCommand(
+      [...this.npm, 'install', ...installOptions, `${homebridge.name}@${homebridgeUpdateAction.version}`],
+      installPath,
+      client,
+      homebridgeUpdateAction.termCols,
+      homebridgeUpdateAction.termRows,
+    );
 
     return true;
   }
@@ -1127,7 +1155,7 @@ export class PluginsService {
    * @param cwd
    * @param client
    */
-  private async runNpmCommand(command: Array<string>, cwd: string, client: EventEmitter) {
+  private async runNpmCommand(command: Array<string>, cwd: string, client: EventEmitter, cols?: number, rows?: number) {
     // remove synology @eaDir folders from the node_modules
     await this.removeSynologyMetadata();
 
@@ -1189,8 +1217,8 @@ export class PluginsService {
     await new Promise((resolve, reject) => {
       const term = this.nodePtyService.spawn(command.shift(), command, {
         name: 'xterm-color',
-        cols: 80,
-        rows: 30,
+        cols: cols || 80,
+        rows: rows || 30,
         cwd,
         env,
       });

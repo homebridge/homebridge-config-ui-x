@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## NEXT
+## 4.39.1 (2021-02-25)
 
 ### Other Changes
 
@@ -13,10 +13,12 @@ All notable changes to this project will be documented in this file. This projec
 * **i18n:** Improvements to Catalan language translations ([#1087](https://github.com/oznu/homebridge-config-ui-x/pull/1087))
 * **i18n:** Improvements to Portuguese language translations ([#1094](https://github.com/oznu/homebridge-config-ui-x/pull/1094))
 * **i18n:** Improvements to Dutch language translations ([#1095](https://github.com/oznu/homebridge-config-ui-x/pull/1095))
+* **Plugins:** Plugin install/update/uninstall logs are now more readable on mobile devices ([#1097](https://github.com/oznu/homebridge-config-ui-x/issues/1097))
 
 ### Bug Fixes
 
 * Fixed an issue where Homebridge accessories were not showing up in the UI after upgrading to Homebridge v1.3.x ([#1093](https://github.com/oznu/homebridge-config-ui-x/issues/1093))
+* Fixed an issue where some valid network interfaces were not showing up in the network interface selector ([#1096](https://github.com/oznu/homebridge-config-ui-x/issues/1096))
 * Fixed an issue running the UI on Linux systems without outdated `libstdc++` libraries ([#1086](https://github.com/oznu/homebridge-config-ui-x/issues/1086))
 
 ## 4.39.0 (2021-02-15)
