@@ -799,13 +799,13 @@ export class PluginsService {
     }
 
     // make sure the repo is GitHub
-    if (!plugin.links.homepage.match(/https:\/\/github.com/)) {
+    const repoMatch = plugin.links.homepage.match(/https:\/\/github.com\/([^\/]+)\/([^\/#]+)/);
+    if (!repoMatch) {
       throw new NotFoundException();
     }
 
     try {
-      const repo = plugin.links.homepage.split('https://github.com/')[1].split('#readme')[0];
-      const release = (await this.httpService.get(`https://api.github.com/repos/${repo}/releases/latest`).toPromise()).data;
+      const release = (await this.httpService.get(`https://api.github.com/repos/${repoMatch[1]}/${repoMatch[2]}/releases/latest`).toPromise()).data;
       return {
         name: release.name,
         changelog: release.body,
