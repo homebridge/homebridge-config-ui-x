@@ -51,7 +51,8 @@ import { AirpurifierComponent } from './types/airpurifier/airpurifier.component'
 import { AirpurifierManageComponent } from './types/airpurifier/airpurifier.manage.component';
 import { HeaterCoolerComponent } from './types/heatercooler/heatercooler.component';
 import { HeaterCoolerManageComponent } from './types/heatercooler/heatercooler.manage.component';
-
+import { HumidifierDehumidifierComponent } from './types/humidifierdehumidifier/humidifierdehumidifier.component';
+import { HumidifierDehumidifierManageComponent } from './types/humidifierdehumidifier/humidifierdehumidifier.manage.component';
 import { InfoModalComponent } from './info-modal/info-modal.component';
 import { AccessoryTileComponent } from './accessory-tile/accessory-tile.component';
 
@@ -115,6 +116,8 @@ import { AccessoryTileComponent } from './accessory-tile/accessory-tile.componen
     AirpurifierManageComponent,
     HeaterCoolerComponent,
     HeaterCoolerManageComponent,
+    HumidifierDehumidifierComponent,
+    HumidifierDehumidifierManageComponent,
   ],
   imports: [
     CommonModule,
