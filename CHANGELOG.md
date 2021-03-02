@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+# NEXT
+
+### Notable Changes
+
+* **Accessory Control:** [@Feilner](https://github.com/Feilner) added support for **Humidifier** / **Dehumidifier** accessory control in the UI ([#1100](https://github.com/oznu/homebridge-config-ui-x/pull/1100))
+
+### Other Changes
+
+* **Plugins:** Better checking for release notes before an update ([#1103](https://github.com/oznu/homebridge-config-ui-x/pull/1103))
+
 ## 4.39.1 (2021-02-25)
 
 ### Other Changes
