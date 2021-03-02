@@ -48,7 +48,18 @@ const HomebridgeApiMock = {
         });
       }
     },
-    Service: {},
+    Service: new class Service extends EventEmitter {
+      constructor() {
+        super();
+        return new Proxy(this, {
+          get() {
+            return {
+              UUID: '0000003E-0000-1000-8000-0026BB765291',
+            };
+          }
+        });
+      }
+    },
     AccessoryLoader: {},
     Accessory: {},
     Bridge: {},
