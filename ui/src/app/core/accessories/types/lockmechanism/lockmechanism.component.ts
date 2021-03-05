@@ -15,7 +15,7 @@ export class LockmechanismComponent implements OnInit {
   }
 
   onClick() {
-    this.service.getCharacteristic('LockTargetState').setValue(!this.service.values.LockTargetState);
+    this.service.getCharacteristic('LockTargetState').setValue(this.service.values.LockTargetState ? 0 : 1);
   }
 
 }
