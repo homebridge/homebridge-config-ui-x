@@ -11,6 +11,9 @@ All notable changes to this project will be documented in this file. This projec
 ### Other Changes
 
 * **Plugins:** Better checking for release notes before an update ([#1103](https://github.com/oznu/homebridge-config-ui-x/pull/1103))
+* **i18n:** Improvements to French language translations ([#1110](https://github.com/oznu/homebridge-config-ui-x/pull/1110))
+* **i18n:** Improvements to Polish language translations ([#1111](https://github.com/oznu/homebridge-config-ui-x/pull/1111))
+* **i18n:** Improvements to Portuguese language translations ([#1112](https://github.com/oznu/homebridge-config-ui-x/pull/1112))
 
 ## 4.39.1 (2021-02-25)
 
