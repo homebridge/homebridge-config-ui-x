@@ -43,6 +43,7 @@ export class SettingsService {
   public formAuth = true;
   public uiVersion: string;
   public theme: string;
+  public serverTimeOffset = 0;
 
   // set true if current translation is RLT
   public rtl = false;
@@ -127,9 +128,10 @@ export class SettingsService {
   checkServerTime(timestamp: string) {
     const serverTime = dayjs(timestamp);
     const diff = serverTime.diff(dayjs(), 'hour');
+    this.serverTimeOffset = diff * 60 * 60;
     if (diff >= 4 || diff <= -4) {
-      const msg = 'The date and time on your Homebridge server is different to your browser. This may cause login issues.';
-      console.error(msg);
+      const msg = 'The date and time on your Homebridge server is different to your browser. This may cause unexpected issues.';
+      console.error(msg, 'Server time offset of', this.serverTimeOffset, 'seconds applied.');
       this.$toastr.warning(msg);
     }
   }

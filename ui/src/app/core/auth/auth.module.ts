@@ -27,7 +27,7 @@ export const tokenGetter = () => localStorage.getItem(environment.jwt.tokenKey);
       config: {
         authScheme: 'bearer ',
         tokenGetter,
-        skipWhenExpired: true,
+        skipWhenExpired: false,
         allowedDomains: environment.jwt.allowedDomains,
         disallowedRoutes: environment.jwt.disallowedRoutes,
       },
