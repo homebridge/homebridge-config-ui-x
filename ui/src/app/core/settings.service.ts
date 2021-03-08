@@ -129,10 +129,14 @@ export class SettingsService {
     const serverTime = dayjs(timestamp);
     const diff = serverTime.diff(dayjs(), 'hour');
     this.serverTimeOffset = diff * 60 * 60;
-    if (diff >= 4 || diff <= -4) {
-      const msg = 'The date and time on your Homebridge server is different to your browser. This may cause unexpected issues.';
+    if (diff >= 8 || diff <= -8) {
+      const msg = 'The date and time on your Homebridge server seems to be incorrect. This may cause unexpected issues.';
+      const toastMsg = msg + ' ' + '<br><br><u>Click here for more information.</u>';
       console.error(msg, 'Server time offset of', this.serverTimeOffset, 'seconds applied.');
-      this.$toastr.warning(msg);
+      const toast = this.$toastr.warning(toastMsg, null, { timeOut: 20000, enableHtml: true, tapToDismiss: false });
+      toast.onTap.subscribe(() => {
+        window.open('https://git.io/JqTFs', '_blank');
+      });
     }
   }
 }

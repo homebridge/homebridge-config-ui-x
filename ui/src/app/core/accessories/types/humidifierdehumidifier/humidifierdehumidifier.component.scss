@@ -8,6 +8,7 @@
   font-size: 15px;
   text-align: center;
   margin-bottom: 6px;
+  margin-top: 9px;
   background-color: grey;
   color: lightgrey;
   transform: rotate(45deg);
@@ -20,6 +21,7 @@
     line-height: 31px;
     font-size: 10px;
     margin-bottom: 7px;
+    margin-top: 5px;
   }
 }
 
@@ -29,19 +31,19 @@
 
 .humidifying {
   background-color: #33b5e5;
-  color: #FFF;
+  color: #fff;
 }
 
 .dehumidifying {
-  background-color: #FF8800;
-  color: #FFF;
+  background-color: #ff8800;
+  color: #fff;
 }
 
 .no-current-state {
   background-color: #42d672;
-  color: #FFF;
-  -webkit-transition: all .15 ease-in-out;
-  transition: all .15 ease-in-out;
+  color: #fff;
+  -webkit-transition: all 0.15 ease-in-out;
+  transition: all 0.15 ease-in-out;
 }
 
 .humidity-mode-control {
