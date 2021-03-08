@@ -15,7 +15,7 @@ export class GaragedooropenerComponent implements OnInit {
   }
 
   onClick() {
-    this.service.getCharacteristic('TargetDoorState').setValue(!this.service.values.TargetDoorState);
+    this.service.getCharacteristic('TargetDoorState').setValue(this.service.values.TargetDoorState ? 0 : 1);
   }
 
 }

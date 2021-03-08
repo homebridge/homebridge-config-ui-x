@@ -54,7 +54,7 @@
         </ng-template>
         <ng-template ngbPanelContent *ngIf="show === 'configBlock.' + $index">
           <div class="flex-column d-flex" style="height: 400px;">
-            <ngx-monaco-editor class="flex-grow-1 h-100 w-100 mt-3" [options]="editorOptions" ([ngModel])="currentBlock"
+            <ngx-monaco-editor class="flex-grow-1 h-100 w-100 mt-3" [options]="editorOptions" [(ngModel)]="currentBlock"
               (onInit)="onEditorInit($event)">
             </ngx-monaco-editor>
           </div>

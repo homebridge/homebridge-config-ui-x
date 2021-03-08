@@ -1,10 +1,12 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+
+import { AuthGuard } from '@/app/core/auth/auth.guard';
+import { AdminGuard } from '@/app/core/auth/admin.guard';
+import { LoginComponent } from '@/app/core/auth/login/login.component';
+import { LoginGuard } from '@/app/core/auth/login/login.guard';
+
 import { LayoutComponent } from './shared/layout/layout.component';
-import { AuthGuard } from './core/auth/auth.guard';
-import { AdminGuard } from './core/auth/admin.guard';
-import { LoginComponent } from './core/auth/login/login.component';
-import { LoginGuard } from './core/auth/login/login.guard';
 
 /*
  * The status and restart modules should not be lazy loaded
@@ -107,7 +109,11 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { scrollPositionRestoration: 'enabled', onSameUrlNavigation: 'reload' })],
+  imports: [RouterModule.forRoot(routes, {
+    scrollPositionRestoration: 'enabled',
+    onSameUrlNavigation: 'reload',
+    relativeLinkResolution: 'legacy',
+  })],
   exports: [RouterModule],
 })
 export class AppRoutingModule { }

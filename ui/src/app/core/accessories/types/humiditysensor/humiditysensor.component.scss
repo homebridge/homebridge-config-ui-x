@@ -1,0 +1,30 @@
+.humidity-drop {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
+  border-radius: 5% 55% 70% 55%;
+  font-size: 15px;
+  text-align: center;
+  margin-bottom: 6px;
+  margin-top: 9px;
+  background-color: grey;
+  color: lightgrey;
+  transform: rotate(45deg);
+}
+
+.humidity-drop-collapse {
+  @media (max-width: 575px) {
+    width: 31px;
+    height: 31px;
+    line-height: 31px;
+    font-size: 10px;
+    margin-bottom: 7px;
+    margin-top: 5px;
+  }
+}
+
+.humidity-drop-text {
+  transform: rotate(-45deg);
+}

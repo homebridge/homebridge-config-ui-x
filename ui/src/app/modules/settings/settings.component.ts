@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -7,13 +7,17 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { debounceTime } from 'rxjs/operators';
 import * as semver from 'semver';
 
-import { AuthService } from '@/app/core/auth/auth.service';
+import { SettingsService } from '@/app/core/settings.service';
 import { ApiService } from '@/app/core/api.service';
 import { NotificationService } from '@/app/core/notification.service';
 
-import { RemoveAllCachedAccessoriesModalComponent } from './remove-all-cached-accessories-modal/remove-all-cached-accessories-modal.component';
+import {
+  RemoveAllCachedAccessoriesModalComponent,
+} from './remove-all-cached-accessories-modal/remove-all-cached-accessories-modal.component';
 import { ResetHomebridgeModalComponent } from './reset-homebridge-modal/reset-homebridge-modal.component';
-import { RemoveSingleCachedAccessoryModalComponent } from './remove-single-cached-accessory-modal/remove-single-cached-accessory-modal.component';
+import {
+  RemoveSingleCachedAccessoryModalComponent,
+} from './remove-single-cached-accessory-modal/remove-single-cached-accessory-modal.component';
 import { UnpairAccessoryModalComponent } from './unpair-accessory-modal/unpair-accessory-modal.component';
 import { SelectNetworkInterfacesComponent } from './select-network-interfaces/select-network-interfaces.component';
 
@@ -24,6 +28,7 @@ import { SelectNetworkInterfacesComponent } from './select-network-interfaces/se
 })
 export class SettingsComponent implements OnInit {
   public serviceForm: FormGroup;
+  public legacyMdnsFormControl = new FormControl(false);
   public saved = false;
 
   public showNetworking = false;
@@ -31,7 +36,7 @@ export class SettingsComponent implements OnInit {
   public bridgeNetworkAdapters: Record<string, any> = [];
 
   constructor(
-    public $auth: AuthService,
+    public $settings: SettingsService,
     private $api: ApiService,
     private $notification: NotificationService,
     public $fb: FormBuilder,
@@ -44,9 +49,9 @@ export class SettingsComponent implements OnInit {
 
   ngOnInit() {
     this.initNetworkingOptions();
-    if (this.$auth.env.serviceMode) {
+    if (this.$settings.env.serviceMode) {
       this.initServiceModeForm();
-    } else if (this.$auth.env.runningInDocker) {
+    } else if (this.$settings.env.runningInDocker) {
       this.initDockerForm();
     }
   }
@@ -56,6 +61,7 @@ export class SettingsComponent implements OnInit {
       HOMEBRIDGE_DEBUG: [false],
       HOMEBRIDGE_INSECURE: [false],
     });
+
 
     this.$api.get('/platform-tools/docker/env').subscribe(
       (data) => {
@@ -146,21 +152,39 @@ export class SettingsComponent implements OnInit {
       const homebridgePackage = await this.$api.get('/status/homebridge-version').toPromise();
       if (semver.gte(homebridgePackage.installedVersion, '1.3.0-beta.0', { includePrerelease: true })) {
         this.showNetworking = true;
-        this.getNetworkInterfaces();
+        this.getNetworkSettings();
       }
     } catch (e) {
 
     }
   }
 
-  async getNetworkInterfaces() {
+  async getNetworkSettings() {
     return Promise.all([
       this.$api.get('/server/network-interfaces/system').toPromise(),
       this.$api.get('/server/network-interfaces/bridge').toPromise(),
-    ]).then(([system, adapters]) => {
+      this.$api.get('/server/mdns-advertiser').toPromise(),
+    ]).then(([system, adapters, mdnsAdvertiser]) => {
       this.availableNetworkAdapters = system;
       this.buildBridgeNetworkAdapterList(adapters);
+      this.legacyMdnsFormControl.patchValue(mdnsAdvertiser.advertiser);
+      this.legacyMdnsFormControl.valueChanges.subscribe((advertiser: string) => {
+        this.setHomebridgeMdnsSetting(advertiser);
+      });
     });
+  }
+
+  async setHomebridgeMdnsSetting(advertiser: string) {
+    this.$api.put('/server/mdns-advertiser', { advertiser })
+      .subscribe(
+        () => {
+          this.saved = true;
+          this.$notification.configUpdated.next();
+        },
+        (err) => {
+          this.$toastr.error(err.message, 'Failed to set mdns advertiser.');
+        },
+      );
   }
 
   async setNetworkInterfaces(adapters: string[]) {

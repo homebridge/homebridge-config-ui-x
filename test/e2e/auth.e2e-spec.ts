@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastify';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 
 import { AuthModule } from '../../src/core/auth/auth.module';
 import { ConfigService } from '../../src/core/config/config.service';
@@ -63,8 +63,8 @@ describe('AuthController (e2e)', () => {
       path: '/auth/login',
       payload: {
         username: 'admin',
-        password: 'admin'
-      }
+        password: 'admin',
+      },
     });
 
     expect(res.statusCode).toEqual(201);
@@ -77,8 +77,8 @@ describe('AuthController (e2e)', () => {
       path: '/auth/login',
       payload: {
         username: 'admin',
-        password: 'not-the-real-password'
-      }
+        password: 'not-the-real-password',
+      },
     });
 
     expect(res.statusCode).toEqual(403);
@@ -90,8 +90,8 @@ describe('AuthController (e2e)', () => {
       method: 'POST',
       path: '/auth/login',
       payload: {
-        username: 'admin'
-      }
+        username: 'admin',
+      },
     });
 
     expect(res.statusCode).toEqual(400);
@@ -104,8 +104,8 @@ describe('AuthController (e2e)', () => {
       method: 'POST',
       path: '/auth/login',
       payload: {
-        password: 'admin'
-      }
+        password: 'admin',
+      },
     });
 
     expect(res.statusCode).toEqual(400);
@@ -116,7 +116,7 @@ describe('AuthController (e2e)', () => {
   it('POST /auth/noauth (auth enabled)', async () => {
     const res = await app.inject({
       method: 'POST',
-      path: '/auth/noauth'
+      path: '/auth/noauth',
     });
 
     expect(res.statusCode).toEqual(401);
@@ -130,7 +130,7 @@ describe('AuthController (e2e)', () => {
 
     const res = await app.inject({
       method: 'POST',
-      path: '/auth/noauth'
+      path: '/auth/noauth',
     });
 
     expect(res.statusCode).toEqual(201);
@@ -143,16 +143,16 @@ describe('AuthController (e2e)', () => {
       path: '/auth/login',
       payload: {
         username: 'admin',
-        password: 'admin'
-      }
+        password: 'admin',
+      },
     })).json().access_token;
 
     const res = await app.inject({
       method: 'GET',
       path: '/auth/check',
       headers: {
-        authorization: `bearer ${accessToken}`
-      }
+        authorization: `bearer ${accessToken}`,
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -164,8 +164,8 @@ describe('AuthController (e2e)', () => {
       method: 'GET',
       path: '/auth/check',
       headers: {
-        authorization: 'bearer xxxxxxxx'
-      }
+        authorization: 'bearer xxxxxxxx',
+      },
     });
 
     expect(res.statusCode).toEqual(401);
@@ -174,7 +174,7 @@ describe('AuthController (e2e)', () => {
   it('GET /auth/settings', async () => {
     const res = await app.inject({
       method: 'GET',
-      path: '/auth/settings'
+      path: '/auth/settings',
     });
 
     expect(res.statusCode).toEqual(200);

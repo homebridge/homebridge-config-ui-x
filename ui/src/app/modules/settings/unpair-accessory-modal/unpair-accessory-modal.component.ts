@@ -3,7 +3,6 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
 import { ApiService } from '@/app/core/api.service';
-import { xor } from '@oznu/ngx-bs4-jsonform';
 
 @Component({
   selector: 'app-unpair-accessory-modal',
@@ -28,11 +27,9 @@ export class UnpairAccessoryModalComponent implements OnInit {
   async loadParings() {
     try {
       this.pairings = (await this.$api.get('/server/pairings').toPromise())
-        .sort((a, b) => {
-          return b._main ? 1 : -1;
-        });
+        .sort((a, b) => b._main ? 1 : -1);
     } catch (e) {
-      this.toastr.error('Paired accessories cloud not be loaded.', this.translate.instant('toast.title_error'));
+      this.toastr.error('Paired accessories could not be loaded.', this.translate.instant('toast.title_error'));
       this.activeModal.close();
     }
   }

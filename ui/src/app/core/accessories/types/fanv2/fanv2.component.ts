@@ -20,7 +20,7 @@ export class Fanv2Component implements OnInit {
   }
 
   onClick() {
-    this.service.getCharacteristic('Active').setValue(!this.service.values.Active);
+    this.service.getCharacteristic('Active').setValue(this.service.values.Active ? 0 : 1);
 
     // set the brightness to 100% if on 0% when turned on
     if (!this.service.values.On && 'RotationSpeed' in this.service.values && !this.service.values.RotationSpeed) {

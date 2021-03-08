@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastify';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 
 import { AuthModule } from '../../src/core/auth/auth.module';
 import { DockerService } from '../../src/modules/platform-tools/docker/docker.service';
@@ -65,8 +65,8 @@ describe('PlatformToolsDocker (e2e)', () => {
       path: '/auth/login',
       payload: {
         username: 'admin',
-        password: 'admin'
-      }
+        password: 'admin',
+      },
     })).json().access_token;
   });
 
@@ -78,7 +78,7 @@ describe('PlatformToolsDocker (e2e)', () => {
       path: '/platform-tools/docker/startup-script',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -109,11 +109,11 @@ describe('PlatformToolsDocker (e2e)', () => {
       path: '/platform-tools/docker/restart-container',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
-    expect(restartDockerContainerFn).toBeCalled();
+    expect(restartDockerContainerFn).toHaveBeenCalled();
   });
 
   afterAll(async () => {

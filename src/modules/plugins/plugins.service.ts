@@ -11,10 +11,12 @@ import * as child_process from 'child_process';
 import * as semver from 'semver';
 import * as color from 'bash-color';
 import * as NodeCache from 'node-cache';
+import * as pLimit from 'p-limit';
 
 import { Logger } from '../../core/logger/logger.service';
-import { ConfigService } from '../../core/config/config.service';
+import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
 import { NodePtyService } from '../../core/node-pty/node-pty.service';
+import { HomebridgeUpdateActionDto, PluginActionDto } from './plugins.dto';
 
 @Injectable()
 export class PluginsService {
@@ -53,14 +55,14 @@ export class PluginsService {
     'homebridge-rocket-smart-home-ui',
     'homebridge-ui',
     'homebridge-to-hoobs',
-    'homebridge-server'
+    'homebridge-server',
   ];
 
   constructor(
     private httpService: HttpService,
-    private configService: ConfigService,
     private nodePtyService: NodePtyService,
     private logger: Logger,
+    private configService: ConfigService,
   ) {
 
     /**
@@ -93,31 +95,40 @@ export class PluginsService {
   public async getInstalledPlugins(): Promise<HomebridgePlugin[]> {
     const plugins: HomebridgePlugin[] = [];
     const modules = await this.getInstalledModules();
+    const disabledPlugins = await this.getDisabledPlugins();
 
     // filter out non-homebridge plugins by name
     const homebridgePlugins = modules
       .filter(module => (module.name.indexOf('homebridge-') === 0) || this.isScopedPlugin(module.name))
       .filter(module => fs.pathExistsSync(path.join(module.installPath, 'package.json')));
 
-    await Promise.all(homebridgePlugins.map(async (pkg) => {
-      try {
-        const pjson: IPackageJson = await fs.readJson(path.join(pkg.installPath, 'package.json'));
-        // check each plugin has the 'homebridge-plugin' keyword
-        if (pjson.keywords && pjson.keywords.includes('homebridge-plugin')) {
-          // parse the package.json for each plugin
-          const plugin = await this.parsePackageJson(pjson, pkg.path);
+    // limit lookup concurrency to number of cpu cores
+    const limit = pLimit(os.cpus().length);
 
-          // filter out duplicate plugins and give preference to non-global plugins
-          if (!plugins.find(x => plugin.name === x.name)) {
-            plugins.push(plugin);
-          } else if (!plugin.globalInstall && plugins.find(x => plugin.name === x.name && x.globalInstall === true)) {
-            const index = plugins.findIndex(x => plugin.name === x.name && x.globalInstall === true);
-            plugins[index] = plugin;
+    await Promise.all(homebridgePlugins.map(async (pkg) => {
+      return limit(async () => {
+        try {
+          const pjson: IPackageJson = await fs.readJson(path.join(pkg.installPath, 'package.json'));
+          // check each plugin has the 'homebridge-plugin' keyword
+          if (pjson.keywords && pjson.keywords.includes('homebridge-plugin')) {
+            // parse the package.json for each plugin
+            const plugin = await this.parsePackageJson(pjson, pkg.path);
+
+            // check if the plugin has been disabled
+            plugin.disabled = disabledPlugins.includes(plugin.name);
+
+            // filter out duplicate plugins and give preference to non-global plugins
+            if (!plugins.find(x => plugin.name === x.name)) {
+              plugins.push(plugin);
+            } else if (!plugin.globalInstall && plugins.find(x => plugin.name === x.name && x.globalInstall === true)) {
+              const index = plugins.findIndex(x => plugin.name === x.name && x.globalInstall === true);
+              plugins[index] = plugin;
+            }
           }
+        } catch (e) {
+          this.logger.error(`Failed to parse plugin "${pkg.name}": ${e.message}`);
         }
-      } catch (e) {
-        this.logger.error(`Failed to parse plugin "${pkg.name}": ${e.message}`);
-      }
+      });
     }));
 
     this.installedPlugins = plugins;
@@ -161,8 +172,8 @@ export class PluginsService {
       const pkg: INpmRegistryModule = fromCache || (await (
         this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(pluginName).replace('%40', '@')}`, {
           headers: {
-            'accept': 'application/vnd.npm.install-v1+json' // only return minimal information
-          }
+            'accept': 'application/vnd.npm.install-v1+json', // only return minimal information
+          },
         }).toPromise()
       )).data;
 
@@ -307,7 +318,8 @@ export class PluginsService {
    * @param pluginName
    * @param client
    */
-  async installPlugin(pluginName: string, version: string, client: EventEmitter) {
+  async installPlugin(pluginAction: PluginActionDto, client: EventEmitter) {
+    pluginAction.version = pluginAction.version || 'latest';
     await this.getInstalledPlugins();
 
     // install new plugins in the same location as this plugin
@@ -329,7 +341,13 @@ export class PluginsService {
       installOptions.push('-g');
     }
 
-    await this.runNpmCommand([...this.npm, 'install', ...installOptions, `${pluginName}@${version}`], installPath, client);
+    await this.runNpmCommand(
+      [...this.npm, 'install', ...installOptions, `${pluginAction.name}@${pluginAction.version}`],
+      installPath,
+      client,
+      pluginAction.termCols,
+      pluginAction.termRows
+    );
 
     return true;
   }
@@ -339,16 +357,16 @@ export class PluginsService {
    * @param pluginName
    * @param client
    */
-  async uninstallPlugin(pluginName: string, client: EventEmitter) {
-    if (pluginName === this.configService.name) {
-      throw new Error(`Cannot uninstall ${pluginName} from ${this.configService.name}.`);
+  async uninstallPlugin(pluginAction: PluginActionDto, client: EventEmitter) {
+    if (pluginAction.name === this.configService.name) {
+      throw new Error(`Cannot uninstall ${pluginAction.name} from ${this.configService.name}.`);
     }
 
     await this.getInstalledPlugins();
     // find the plugin
-    const plugin = this.installedPlugins.find(x => x.name === pluginName);
+    const plugin = this.installedPlugins.find(x => x.name === pluginAction.name);
     if (!plugin) {
-      throw new Error(`Plugin "${pluginName}" Not Found`);
+      throw new Error(`Plugin "${pluginAction.name}" Not Found`);
     }
 
     // get the currently installed
@@ -369,7 +387,13 @@ export class PluginsService {
       installOptions.push('-g');
     }
 
-    await this.runNpmCommand([...this.npm, 'uninstall', ...installOptions, pluginName], installPath, client);
+    await this.runNpmCommand(
+      [...this.npm, 'uninstall', ...installOptions, pluginAction.name],
+      installPath,
+      client,
+      pluginAction.termCols,
+      pluginAction.termRows
+    );
     await this.ensureCustomPluginDirExists();
 
     return true;
@@ -380,25 +404,26 @@ export class PluginsService {
    * @param pluginName
    * @param client
    */
-  async updatePlugin(pluginName: string, version: string, client: EventEmitter) {
-    if (pluginName === this.configService.name && this.configService.dockerOfflineUpdate && version === 'latest') {
+  async updatePlugin(pluginAction: PluginActionDto, client: EventEmitter) {
+    pluginAction.version = pluginAction.version || 'latest';
+    if (pluginAction.name === this.configService.name && this.configService.dockerOfflineUpdate && pluginAction.version === 'latest') {
       await this.updateSelfOffline(client);
       return true;
     }
 
     // show a warning if updating homebridge-config-ui-x on Raspberry Pi 1 / Zero
-    if (pluginName === this.configService.name && os.cpus().length === 1 && os.arch() === 'arm') {
-      client.emit('stdout', color.yellow(`***************************************************************\r\n`));
+    if (pluginAction.name === this.configService.name && os.cpus().length === 1 && os.arch() === 'arm') {
+      client.emit('stdout', color.yellow('***************************************************************\r\n'));
       client.emit('stdout', color.yellow(`Please be patient while ${this.configService.name} updates.\r\n`));
-      client.emit('stdout', color.yellow(`This process may take 5-15 minutes to complete on your device.\r\n`));
-      client.emit('stdout', color.yellow(`***************************************************************\r\n\r\n`));
+      client.emit('stdout', color.yellow('This process may take 5-15 minutes to complete on your device.\r\n'));
+      client.emit('stdout', color.yellow('***************************************************************\r\n\r\n'));
     }
 
     await this.getInstalledPlugins();
     // find the plugin
-    const plugin = this.installedPlugins.find(x => x.name === pluginName);
+    const plugin = this.installedPlugins.find(x => x.name === pluginAction.name);
     if (!plugin) {
-      throw new Error(`Plugin "${pluginName}" Not Found`);
+      throw new Error(`Plugin "${pluginAction.name}" Not Found`);
     }
 
     // get the currently installed
@@ -419,9 +444,23 @@ export class PluginsService {
       installOptions.push('-g');
     }
 
-    await this.runNpmCommand([...this.npm, 'install', ...installOptions, `${pluginName}@${version}`], installPath, client);
-
-    return true;
+    try {
+      await this.runNpmCommand(
+        [...this.npm, 'install', ...installOptions, `${pluginAction.name}@${pluginAction.version}`],
+        installPath,
+        client,
+        pluginAction.termCols,
+        pluginAction.termRows
+      );
+      return true;
+    } catch (e) {
+      if (pluginAction.name === this.configService.name) {
+        client.emit('stdout', color.yellow('\r\nCleaning up npm cache, please wait...\r\n'));
+        await this.cleanNpmCache();
+        client.emit('stdout', color.yellow(`npm cache cleared, please try updating ${this.configService.name} again.\r\n`));
+      }
+      throw e;
+    }
   }
 
   /**
@@ -459,14 +498,53 @@ export class PluginsService {
     const pjson: IPackageJson = await fs.readJson(path.join(homebridgeModule.installPath, 'package.json'));
     const homebridge = await this.parsePackageJson(pjson, homebridgeModule.path);
 
+    if (!homebridge.latestVersion) {
+      return homebridge;
+    }
+
+    const homebridgeVersion = semver.parse(homebridge.installedVersion);
+
+    // patch for homebridge 1.2.x to allow updates to newer versions of 1.2.x without 1.2.x being set to "latest"
+    if (
+      homebridgeVersion.major === 1 &&
+      homebridgeVersion.minor === 2 &&
+      semver.gt(homebridge.installedVersion, homebridge.latestVersion, { includePrerelease: true })
+    ) {
+      const versions = await this.getAvailablePluginVersions('homebridge');
+      if (versions.tags['release-1.2.x'] && semver.gt(versions.tags['release-1.2.x'], homebridge.installedVersion)) {
+        homebridge.updateAvailable = true;
+        homebridge.latestVersion = versions.tags['release-1.2.x'];
+      }
+    }
+    // end patch
+
+    // show beta updates if the user is currently running a beta release
+    if (
+      homebridgeVersion.prerelease[0] === 'beta' &&
+      semver.gt(homebridge.installedVersion, homebridge.latestVersion, { includePrerelease: true })
+    ) {
+      const versions = await this.getAvailablePluginVersions('homebridge');
+      if (versions.tags['beta'] && semver.gt(versions.tags['beta'], homebridge.installedVersion, { includePrerelease: true })) {
+        homebridge.updateAvailable = true;
+        homebridge.latestVersion = versions.tags['beta'];
+      }
+    }
+
+    this.configService.homebridgeVersion = homebridge.installedVersion;
+
     return homebridge;
   }
 
   /**
    * Updates the Homebridge package
    */
-  public async updateHomebridgePackage(version: string, client: EventEmitter) {
+  public async updateHomebridgePackage(homebridgeUpdateAction: HomebridgeUpdateActionDto, client: EventEmitter) {
     const homebridge = await this.getHomebridgePackage();
+
+    homebridgeUpdateAction.version = homebridgeUpdateAction.version || 'latest';
+    if (homebridgeUpdateAction.version === 'latest' && homebridge.latestVersion) {
+      homebridgeUpdateAction.version = homebridge.latestVersion;
+    }
 
     // get the currently installed
     let installPath = homebridge.installPath;
@@ -486,7 +564,29 @@ export class PluginsService {
       installOptions.push('-g');
     }
 
-    await this.runNpmCommand([...this.npm, 'install', ...installOptions, `${homebridge.name}@${version}`], installPath, client);
+    // 1.2.x -> 1.3.0 upgrade set ciao as bridge advertiser
+    if (homebridge.installedVersion && homebridgeUpdateAction.version) {
+      const installedVersion = semver.parse(homebridge.installedVersion);
+      const targetVersion = semver.parse(homebridgeUpdateAction.version);
+      if (installedVersion.minor === 2 && targetVersion.minor > 2) {
+        try {
+          const config: HomebridgeConfig = await fs.readJson(this.configService.configPath);
+          config.bridge.advertiser = 'ciao';
+          await fs.writeJsonSync(this.configService.configPath, config);
+        } catch (e) {
+          this.logger.warn('Could not update config.json', e.message);
+        }
+      }
+    }
+    // end 1.2.x -> 1.3.0 upgrade
+
+    await this.runNpmCommand(
+      [...this.npm, 'install', ...installOptions, `${homebridge.name}@${homebridgeUpdateAction.version}`],
+      installPath,
+      client,
+      homebridgeUpdateAction.termCols,
+      homebridgeUpdateAction.termRows,
+    );
 
     return true;
   }
@@ -525,14 +625,14 @@ export class PluginsService {
     client.emit('stdout', color.yellow(`${this.configService.name} has been scheduled to update on the next container restart.\n\r\n\r`));
     await new Promise(resolve => setTimeout(resolve, 800));
 
-    client.emit('stdout', color.yellow(`The Docker container will now try and restart.\n\r\n\r`));
+    client.emit('stdout', color.yellow('The Docker container will now try and restart.\n\r\n\r'));
     await new Promise(resolve => setTimeout(resolve, 800));
 
-    client.emit('stdout', color.yellow(`If you have not started the Docker container with `) +
-      color.red('--restart=always') + color.yellow(` you may\n\rneed to manually start the container again.\n\r\n\r`));
+    client.emit('stdout', color.yellow('If you have not started the Docker container with ') +
+      color.red('--restart=always') + color.yellow(' you may\n\rneed to manually start the container again.\n\r\n\r'));
     await new Promise(resolve => setTimeout(resolve, 800));
 
-    client.emit('stdout', color.yellow(`This process may take several minutes. Please be patient.\n\r`));
+    client.emit('stdout', color.yellow('This process may take several minutes. Please be patient.\n\r'));
     await new Promise(resolve => setTimeout(resolve, 10000));
 
     await fs.createFile('/homebridge/.uix-upgrade-on-restart');
@@ -608,6 +708,45 @@ export class PluginsService {
       configSchema.displayName = plugin.displayName;
     }
 
+    // inject schema for _bridge child bridge setting (this is hidden, but prevents it getting removed)
+    const childBridgeSchema = {
+      type: 'object',
+      notitle: true,
+      condition: {
+        functionBody: 'return false',
+      },
+      properties: {
+        name: {
+          type: 'string',
+        },
+        username: {
+          type: 'string',
+        },
+        pin: {
+          type: 'string',
+        },
+        port: {
+          type: 'integer',
+          maximum: 65535,
+        },
+        setupID: {
+          type: 'string',
+        },
+        manufacturer: {
+          type: 'string',
+        },
+        model: {
+          type: 'string',
+        },
+      },
+    };
+
+    if (configSchema.schema && typeof configSchema.schema.properties === 'object') {
+      configSchema.schema.properties._bridge = childBridgeSchema;
+    } else if (typeof configSchema.schema === 'object') {
+      configSchema.schema._bridge = childBridgeSchema;
+    }
+
     return configSchema;
   }
 
@@ -644,19 +783,29 @@ export class PluginsService {
       throw new NotFoundException();
     }
 
+    // if loading a homebridge beta returned pre-defined help text
+    if (plugin.name === 'homebridge' && plugin.latestVersion?.includes('beta')) {
+      return {
+        name: 'v' + plugin.latestVersion,
+        changelog: 'Thank you for helping improve Homebridge by testing the beta build of Homebridge.\n\n\n' +
+          'To see what needs testing or to report issues: https://github.com/homebridge/homebridge/issues\n\n\n' +
+          'See the commit history for recent changes: https://github.com/homebridge/homebridge/commits/beta'
+      };
+    }
+
     // plugin must have a homepage to workout Git Repo
     if (!plugin.links.homepage) {
       throw new NotFoundException();
     }
 
     // make sure the repo is GitHub
-    if (!plugin.links.homepage.match(/https:\/\/github.com/)) {
+    const repoMatch = plugin.links.homepage.match(/https:\/\/github.com\/([^\/]+)\/([^\/#]+)/);
+    if (!repoMatch) {
       throw new NotFoundException();
     }
 
     try {
-      const repo = plugin.links.homepage.split('https://github.com/')[1].split('#readme')[0];
-      const release = (await this.httpService.get(`https://api.github.com/repos/${repo}/releases/latest`).toPromise()).data;
+      const release = (await this.httpService.get(`https://api.github.com/repos/${repoMatch[1]}/${repoMatch[2]}/releases/latest`).toPromise()).data;
       return {
         name: release.name,
         changelog: release.body,
@@ -696,7 +845,7 @@ export class PluginsService {
         await new Promise((resolve, reject) => {
           const child = child_process.fork(path.resolve(process.env.UIX_BASE_PATH, 'extract-plugin-alias.js'), {
             env: {
-              UIX_EXTRACT_PLUGIN_PATH: path.resolve(plugin.installPath, plugin.name)
+              UIX_EXTRACT_PLUGIN_PATH: path.resolve(plugin.installPath, plugin.name),
             },
             stdio: 'ignore',
           });
@@ -705,7 +854,7 @@ export class PluginsService {
             if (data.pluginAlias && data.pluginType) {
               output.pluginAlias = data.pluginAlias;
               output.pluginType = data.pluginType;
-              resolve();
+              resolve(null);
             } else {
               reject('Invalid Response');
             }
@@ -758,9 +907,25 @@ export class PluginsService {
   }
 
   /**
+   * Return an array of disabled plugins
+   */
+  private async getDisabledPlugins(): Promise<string[]> {
+    try {
+      const config: HomebridgeConfig = await fs.readJson(this.configService.configPath);
+      if (Array.isArray(config.disabledPlugins)) {
+        return config.disabledPlugins;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /**
    * Load any @scoped homebridge modules
    */
-  private async getInstalledScopedModules(requiredPath, scope): Promise<Array<{ name: string, path: string, installPath: string }>> {
+  private async getInstalledScopedModules(requiredPath, scope): Promise<Array<{ name: string; path: string; installPath: string }>> {
     try {
       if ((await fs.stat(path.join(requiredPath, scope))).isDirectory()) {
         const scopedModules = await fs.readdir(path.join(requiredPath, scope));
@@ -785,7 +950,7 @@ export class PluginsService {
   /**
    * Returns a list of modules installed
    */
-  private async getInstalledModules(): Promise<Array<{ name: string, path: string, installPath: string }>> {
+  private async getInstalledModules(): Promise<Array<{ name: string; path: string; installPath: string }>> {
     const allModules = [];
     // loop over each possible path to find installed plugins
     for (const requiredPath of this.paths) {
@@ -831,8 +996,8 @@ export class PluginsService {
       if (windowsNpmPath.length) {
         return [windowsNpmPath[0]];
       } else {
-        this.logger.error(`ERROR: Cannot find npm binary. You will not be able to manage plugins or update homebridge.`);
-        this.logger.error(`ERROR: You might be able to fix this problem by running: npm install -g npm`);
+        this.logger.error('ERROR: Cannot find npm binary. You will not be able to manage plugins or update homebridge.');
+        this.logger.error('ERROR: You might be able to fix this problem by running: npm install -g npm');
       }
 
     }
@@ -850,7 +1015,6 @@ export class PluginsService {
 
     // add the paths used by require()
     // we need to use 'eval' on require to bypass webpack
-    // tslint:disable-next-line: no-eval
     paths = paths.concat(eval('require').main.paths);
 
     if (this.configService.customPluginPath) {
@@ -991,7 +1155,10 @@ export class PluginsService {
    * @param cwd
    * @param client
    */
-  private async runNpmCommand(command: Array<string>, cwd: string, client: EventEmitter) {
+  private async runNpmCommand(command: Array<string>, cwd: string, client: EventEmitter, cols?: number, rows?: number) {
+    // remove synology @eaDir folders from the node_modules
+    await this.removeSynologyMetadata();
+
     let timeoutTimer;
     command = command.filter(x => x.length);
 
@@ -1005,9 +1172,9 @@ export class PluginsService {
       } catch (e) {
         client.emit('stdout', color.yellow(`The user "${os.userInfo().username}" does not have write access to the target directory:\n\r\n\r`));
         client.emit('stdout', `${path.resolve(cwd, 'node_modules')}\n\r\n\r`);
-        client.emit('stdout', color.yellow(`This may cause the operation to fail.\n\r`));
-        client.emit('stdout', color.yellow(`See the docs for details on how to enable sudo mode:\n\r`));
-        client.emit('stdout', color.yellow(`https://github.com/oznu/homebridge-config-ui-x#sudo-mode\n\r\n\r`));
+        client.emit('stdout', color.yellow('This may cause the operation to fail.\n\r'));
+        client.emit('stdout', color.yellow('See the docs for details on how to enable sudo mode:\n\r'));
+        client.emit('stdout', color.yellow('https://github.com/oznu/homebridge-config-ui-x#sudo-mode\n\r\n\r'));
       }
     }
 
@@ -1050,8 +1217,8 @@ export class PluginsService {
     await new Promise((resolve, reject) => {
       const term = this.nodePtyService.spawn(command.shift(), command, {
         name: 'xterm-color',
-        cols: 80,
-        rows: 30,
+        cols: cols || 80,
+        rows: rows || 30,
         cwd,
         env,
       });
@@ -1065,8 +1232,8 @@ export class PluginsService {
       term.on('exit', (code) => {
         if (code === 0) {
           clearTimeout(timeoutTimer);
-          client.emit('stdout', color.green(`\n\rCommand succeeded!.\n\r`));
-          resolve();
+          client.emit('stdout', color.green('\n\rCommand succeeded!.\n\r'));
+          resolve(null);
         } else {
           clearTimeout(timeoutTimer);
           reject('Command failed. Please review log for details.');
@@ -1094,10 +1261,55 @@ export class PluginsService {
       try {
         await fs.ensureDir(this.configService.customPluginPath);
       } catch (e) {
-        this.logger.error(`Failed to recreate custom plugin directory`);
+        this.logger.error('Failed to recreate custom plugin directory');
         this.logger.error(e.message);
       }
     }
+  }
+
+  /**
+   * Remove the Synology @eaDir directories from the plugin folder
+   */
+  private async removeSynologyMetadata() {
+    if (!this.configService.customPluginPath) {
+      return;
+    }
+
+    const offendingPath = path.resolve(this.configService.customPluginPath, '@eaDir');
+
+    try {
+      if (!await fs.pathExists(offendingPath)) {
+        await fs.remove(offendingPath);
+      }
+    } catch (e) {
+      this.logger.error(`Failed to remove ${offendingPath}`, e.message);
+      return;
+    }
+  }
+
+  /**
+   * Clean the npm cache
+   * npm cache clean --force
+   */
+  private async cleanNpmCache() {
+    const command: string[] = [...this.npm, 'cache', 'clean', '--force'];
+
+    if (this.configService.ui.sudo) {
+      command.unshift('sudo', '-E', '-n');
+    }
+
+    return new Promise((resolve) => {
+      const child = child_process.spawn(command.shift(), command);
+
+      child.on('exit', (code) => {
+        this.logger.log('npm cache clear command executed with exit code', code);
+        resolve(null);
+      });
+
+      child.on('error', () => {
+        // do nothing
+      });
+    });
   }
 
   /**
@@ -1108,7 +1320,7 @@ export class PluginsService {
     try {
       this.verifiedPlugins = (
         await this.httpService.get('https://raw.githubusercontent.com/homebridge/verified/master/verified-plugins.json', {
-          httpsAgent: null
+          httpsAgent: null,
         }).toPromise()
       ).data;
     } catch (e) {

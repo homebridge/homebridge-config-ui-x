@@ -6,7 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import * as JSON5 from 'json5';
 
 import { ApiService } from '@/app/core/api.service';
-import { AuthService } from '@/app/core/auth/auth.service';
+import { SettingsService } from '@/app/core/settings.service';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { NotificationService } from '@/app/core/notification.service';
 
@@ -33,14 +33,14 @@ export class ManualPluginConfigModalComponent implements OnInit {
   public monacoEditor;
   public editorOptions = {
     language: 'json',
-    theme: this.$auth.theme.startsWith('dark-mode') ? 'vs-dark' : 'vs-light',
+    theme: this.$settings.theme.startsWith('dark-mode') ? 'vs-dark' : 'vs-light',
     automaticLayout: true,
   };
 
   constructor(
     public activeModal: NgbActiveModal,
     private $api: ApiService,
-    private $auth: AuthService,
+    private $settings: SettingsService,
     private $notification: NotificationService,
     private $toastr: ToastrService,
     private translate: TranslateService,

@@ -1,7 +1,8 @@
 <div class="accessory-box">
   <div class="d-flex flex-column h-100">
-    <div [inlineSVG]="'/assets/hap-icons/humidity.svg'" aria-label="Humidity Sensor" class="accessory-svg"></div>
+    <div class="humidity-drop humidity-drop-collapse">
+      <div class="humidity-drop-text" [innerText]="(service.values.CurrentRelativeHumidity) + '%'"></div>
+    </div>
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
-    <div class="accessory-label grey-text">{{ service.values.CurrentRelativeHumidity }}%</div>
   </div>
 </div>

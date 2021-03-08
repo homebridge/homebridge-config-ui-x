@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef, Input, OnDestroy } from '@ang
 import { Subject } from 'rxjs';
 import { ITerminalOptions } from 'xterm';
 
-import { LogService } from '../../../../core/log.service';
+import { LogService } from '@/app/core/log.service';
 
 @Component({
   selector: 'app-homebridge-logs-widget',
@@ -66,8 +66,8 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
   }
 
   getTerminalHeight(): number {
-    const widgetContainerHeight = (<HTMLElement>this.widgetContainerElement.nativeElement).offsetHeight;
-    const titleHeight = (<HTMLElement>this.titleElement.nativeElement).offsetHeight;
+    const widgetContainerHeight = (this.widgetContainerElement.nativeElement as HTMLElement).offsetHeight;
+    const titleHeight = (this.titleElement.nativeElement as HTMLElement).offsetHeight;
     return widgetContainerHeight - titleHeight;
   }
 

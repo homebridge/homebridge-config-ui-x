@@ -77,7 +77,7 @@ export class HbServiceService {
   async downloadLogFile(shouldRemoveColour: boolean) {
     if (!await fs.pathExists(this.configService.ui.log.path)) {
       this.logger.error(`Cannot download log file: "${this.configService.ui.log.path}" does not exist.`);
-      throw new BadRequestException(`Log file not found on disk.`);
+      throw new BadRequestException('Log file not found on disk.');
     }
     try {
       await fs.access(this.configService.ui.log.path, fs.constants.R_OK);
@@ -93,7 +93,7 @@ export class HbServiceService {
     const removeColour = new stream.Transform({
       transform(chunk, encoding, callback) {
         callback(null, chunk.toString('utf8').replace(/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]/g, ''));
-      }
+      },
     });
 
     return fs.createReadStream(this.configService.ui.log.path, { encoding: 'utf8' })
@@ -106,7 +106,7 @@ export class HbServiceService {
   async truncateLogFile(username?: string) {
     if (!await fs.pathExists(this.configService.ui.log.path)) {
       this.logger.error(`Cannot truncate log file: "${this.configService.ui.log.path}" does not exist.`);
-      throw new BadRequestException(`Log file not found on disk.`);
+      throw new BadRequestException('Log file not found on disk.');
     }
     try {
       await fs.access(this.configService.ui.log.path, fs.constants.R_OK | fs.constants.W_OK);

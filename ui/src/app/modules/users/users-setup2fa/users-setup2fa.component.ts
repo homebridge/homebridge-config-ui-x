@@ -4,7 +4,6 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import * as dayjs from 'dayjs';
-import * as QRCode from 'qrcode';
 
 import { ApiService } from '@/app/core/api.service';
 
@@ -40,7 +39,6 @@ export class UsersSetup2faComponent implements OnInit {
         this.checkTimeDiff(data.timestamp);
         if (!this.timeDiffError) {
           this.otpString = data.otpauth;
-          this.renderQrCode();
         }
       },
       err => {
@@ -60,11 +58,6 @@ export class UsersSetup2faComponent implements OnInit {
       return;
     }
     this.timeDiffError = null;
-  }
-
-  async renderQrCode() {
-    const qrcodeSvg = await QRCode.toString(this.otpString, { type: 'svg' });
-    this.qrcodeElement.nativeElement.innerHTML = qrcodeSvg;
   }
 
   enable2fa() {

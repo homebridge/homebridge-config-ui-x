@@ -5,7 +5,7 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 import { ToastrService } from 'ngx-toastr';
 
 import { ApiService } from '@/app/core/api.service';
-import { AuthService } from '@/app/core/auth/auth.service';
+import { SettingsService } from '@/app/core/settings.service';
 import { NotificationService } from '@/app/core/notification.service';
 
 @Component({
@@ -38,7 +38,7 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
     private translate: TranslateService,
     private $jwtHelper: JwtHelperService,
     private $api: ApiService,
-    public $auth: AuthService,
+    public $settings: SettingsService,
     private $notification: NotificationService,
     private $toastr: ToastrService,
   ) {
@@ -67,10 +67,10 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
       if (data.token) {
         this.processToken(data.token);
       }
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      console.error(error);
     }
-  }
+  };
 
   linkAccount() {
     const w = 450;

@@ -13,6 +13,8 @@ import { BackupRestoreComponent } from './backup-restore/backup-restore.componen
 import { ScheduledBackupsComponent } from './backup-restore/scheduled-backups/scheduled-backups.component';
 import { ConfirmComponent } from './components/confirm/confirm.component';
 import { SchemaFormComponent } from './components/schema-form/schema-form.component';
+import { QrcodeComponent } from './components/qrcode/qrcode.component';
+import { RtlDirective } from './directives/rtl.directive';
 
 @NgModule({
   entryComponents: [
@@ -28,9 +30,11 @@ import { SchemaFormComponent } from './components/schema-form/schema-form.compon
     ExternalLinkIconPipe,
     HrefTargetBlankDirective,
     LongClickDirective,
+    RtlDirective,
     BackupRestoreComponent,
     ScheduledBackupsComponent,
     ConfirmComponent,
+    QrcodeComponent,
   ],
   imports: [
     CommonModule,
@@ -41,11 +45,13 @@ import { SchemaFormComponent } from './components/schema-form/schema-form.compon
   exports: [
     SpinnerComponent,
     SchemaFormComponent,
+    QrcodeComponent,
     ConvertTempPipe,
     ReplacePipe,
     ExternalLinkIconPipe,
     HrefTargetBlankDirective,
     LongClickDirective,
+    RtlDirective,
   ],
 })
 export class CoreModule { }

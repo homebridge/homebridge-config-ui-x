@@ -28,17 +28,24 @@ export class RemoveSingleCachedAccessoryModalComponent implements OnInit {
     try {
       this.cachedAccessories = await this.$api.get('/server/cached-accessories').toPromise();
     } catch (e) {
-      this.toastr.error('Accessory cache could not be loaded. You may not have any cached accessories.', this.translate.instant('toast.title_error'));
+      this.toastr.error(
+        'Accessory cache could not be loaded. You may not have any cached accessories.',
+        this.translate.instant('toast.title_error'),
+      );
       this.activeModal.close();
     }
   }
 
-  removeAccessory(uuid: string) {
-    this.deleting = uuid;
+  removeAccessory(item) {
+    this.deleting = item.UUID;
 
     this.toastr.info(this.translate.instant('reset.toast_removing_cached_accessory_please_wait'));
 
-    this.$api.delete(`/server/cached-accessories/${uuid}`).subscribe(
+    this.$api.delete(`/server/cached-accessories/${item.UUID}`, {
+      params: {
+        cacheFile: item.$cacheFile,
+      },
+    }).subscribe(
       async data => {
         await this.loadCachedAccessories();
 
@@ -52,7 +59,10 @@ export class RemoveSingleCachedAccessoryModalComponent implements OnInit {
       },
       err => {
         this.deleting = null;
-        this.toastr.error(this.translate.instant('reset.toast_failed_to_delete_cached_accessory'), this.translate.instant('toast.title_error'));
+        this.toastr.error(this.translate.instant(
+          'reset.toast_failed_to_delete_cached_accessory'),
+          this.translate.instant('toast.title_error'),
+        );
       },
     );
   }

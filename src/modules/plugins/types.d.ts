@@ -12,6 +12,7 @@ export interface HomebridgePlugin {
   installPath?: string;
   globalInstall?: boolean;
   settingsSchema?: boolean;
+  disabled?: boolean;
   links?: {
     npm?: string;
     homepage?: string;
@@ -25,8 +26,8 @@ export interface HomebridgePlugin {
 }
 
 export interface HomebridgePluginVersions {
-  tags: Record<string, string>,
-  versions: Array<string>,
+  tags: Record<string, string>;
+  versions: Array<string>;
 }
 
 export interface IPackageJson {
@@ -36,7 +37,7 @@ export interface IPackageJson {
   description?: string;
   keywords?: string[];
   homepage?: string;
-  bugs?: string | { email?: string, url?: string };
+  bugs?: string | { email?: string; url?: string };
   license?: string;
   author?: string | INpmPerson;
   maintainers?: INpmPerson[];
@@ -45,7 +46,7 @@ export interface IPackageJson {
   files?: string[];
   main?: string;
   bin?: string | { [key: string]: string };
-  repository?: string | { type: string; url: string; };
+  repository?: string | { type: string; url: string };
   scripts?: { [key: string]: string };
   dependencies?: { [key: string]: string };
   devDependencies?: { [key: string]: string };
@@ -81,22 +82,22 @@ export interface INpmSearchResultItem {
       homebridge?: string;
       repository?: string;
       bugs?: string;
-    },
-    author: INpmPerson,
-    publisher: INpmPerson,
-    maintainers: INpmPerson[],
-  },
+    };
+    author: INpmPerson;
+    publisher: INpmPerson;
+    maintainers: INpmPerson[];
+  };
   flags: {
-    unstable: boolean,
-  },
+    unstable: boolean;
+  };
   score: {
     final: number;
     detail: {
       quality: number;
       popularity: number;
       maintenance: number;
-    }
-  },
+    };
+  };
   searchScore: number;
 }
 
@@ -107,22 +108,22 @@ export interface INpmRegistryModule {
   'dist-tags': {
     latest: string;
     [key: string]: string;
-  },
+  };
   versions: {
     [key: string]: IPackageJson;
-  },
+  };
   time: {
     created: string;
     modified: string;
     [key: string]: string;
-  },
-  maintainers: INpmPerson[],
+  };
+  maintainers: INpmPerson[];
   description: string;
   homepage: string;
   keywords: string[];
-  repository: { type: string; url: string; };
+  repository: { type: string; url: string };
   author: INpmPerson;
-  bugs: { email?: string, url?: string };
+  bugs: { email?: string; url?: string };
   license: string;
   readme: string;
   readmeFilename: string;
@@ -132,16 +133,16 @@ export interface INpmSearchResults {
   objects: INpmSearchResultItem[];
 }
 
-export type NpmFunding = { type: string, url: string } | string | Array<{ type: string, url: string } | string>;
+export type NpmFunding = { type: string; url: string } | string | Array<{ type: string; url: string } | string>;
 
 export type HomebridgePluginUiMetadata = {
   devServer: null | string;
   publicPath: string;
   serverPath: string;
   plugin: HomebridgePlugin;
-}
+};
 
 export type PluginAlias = {
   pluginAlias: null | string;
   pluginType: null | 'platform' | 'accessory';
-}
+};

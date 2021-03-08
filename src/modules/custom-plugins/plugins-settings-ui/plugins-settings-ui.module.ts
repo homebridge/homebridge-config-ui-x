@@ -20,6 +20,6 @@ import { PluginsSettingsUiService } from './plugins-settings-ui.service';
   ],
   controllers: [
     PluginsSettingsUiController,
-  ]
+  ],
 })
 export class PluginsSettingsUiModule { }

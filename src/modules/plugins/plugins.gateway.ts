@@ -15,7 +15,7 @@ import { WsAdminGuard } from '../../core/auth/guards/ws-admin-guard';
   exceptionFactory: ((err) => {
     console.error(err);
     return new WsException(err);
-  })
+  }),
 }))
 export class PluginsGateway {
 
@@ -25,9 +25,9 @@ export class PluginsGateway {
   ) { }
 
   @SubscribeMessage('install')
-  async installPlugin(client: EventEmitter, payload: PluginActionDto) {
+  async installPlugin(client: EventEmitter, pluginAction: PluginActionDto) {
     try {
-      return await this.pluginsService.installPlugin(payload.name, payload.version || 'latest', client);
+      return await this.pluginsService.installPlugin(pluginAction, client);
     } catch (e) {
       this.logger.error(e);
       client.emit('stdout', '\n\r' + color.red(e.toString()) + '\n\r');
@@ -36,9 +36,9 @@ export class PluginsGateway {
   }
 
   @SubscribeMessage('uninstall')
-  async uninstallPlugin(client: EventEmitter, payload: PluginActionDto) {
+  async uninstallPlugin(client: EventEmitter, pluginAction: PluginActionDto) {
     try {
-      return await this.pluginsService.uninstallPlugin(payload.name, client);
+      return await this.pluginsService.uninstallPlugin(pluginAction, client);
     } catch (e) {
       this.logger.error(e);
       client.emit('stdout', '\n\r' + color.red(e.toString()) + '\n\r');
@@ -47,9 +47,9 @@ export class PluginsGateway {
   }
 
   @SubscribeMessage('update')
-  async updatePlugin(client: EventEmitter, payload: PluginActionDto) {
+  async updatePlugin(client: EventEmitter, pluginAction: PluginActionDto) {
     try {
-      return await this.pluginsService.updatePlugin(payload.name, payload.version || 'latest', client);
+      return await this.pluginsService.updatePlugin(pluginAction, client);
     } catch (e) {
       this.logger.error(e);
       client.emit('stdout', '\n\r' + color.red(e.toString()) + '\n\r');
@@ -58,9 +58,9 @@ export class PluginsGateway {
   }
 
   @SubscribeMessage('homebridge-update')
-  async homebridgeUpdate(client: EventEmitter, payload: HomebridgeUpdateActionDto) {
+  async homebridgeUpdate(client: EventEmitter, homebridgeUpdateAction: HomebridgeUpdateActionDto) {
     try {
-      return await this.pluginsService.updateHomebridgePackage(payload.version || 'latest', client);
+      return await this.pluginsService.updateHomebridgePackage(homebridgeUpdateAction, client);
     } catch (e) {
       this.logger.error(e);
       client.emit('stdout', '\n\r' + color.red(e.toString()) + '\n\r');

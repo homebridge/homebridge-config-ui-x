@@ -13,6 +13,9 @@
   "collectCoverageFrom": [
     "**/*.ts"
   ],
+  "setupFiles": [
+    "./test/setup.ts"
+  ],
   "coveragePathIgnorePatterns": [
     "/ui/",
     "/test/",

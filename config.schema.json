@@ -323,9 +323,21 @@
             ]
           },
           {
+            "title": "Korean (ko)",
+            "enum": [
+              "ko"
+            ]
+          },
+          {
             "title": "Dutch (nl)",
             "enum": [
               "nl"
+            ]
+          },
+          {
+            "title": "Macedonian (mk)",
+            "enum": [
+              "mk"
             ]
           },
           {

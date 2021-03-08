@@ -7,7 +7,7 @@ import { NgxEditorModel } from 'ngx-monaco-editor';
 import * as JSON5 from 'json5';
 
 import { ApiService } from '@/app/core/api.service';
-import { AuthService } from '@/app/core/auth/auth.service';
+import { SettingsService } from '@/app/core/settings.service';
 import { NotificationService } from '@/app/core/notification.service';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { MonacoEditorService } from '@/app/core/monaco-editor.service';
@@ -27,7 +27,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   public monacoEditor;
   public editorOptions = {
     language: 'json',
-    theme: this.$auth.theme.startsWith('dark-mode') ? 'vs-dark' : 'vs-light',
+    theme: this.$settings.theme.startsWith('dark-mode') ? 'vs-dark' : 'vs-light',
     automaticLayout: true,
   };
 
@@ -38,7 +38,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   private visualViewPortEventCallback: () => void;
 
   constructor(
-    private $auth: AuthService,
+    private $settings: SettingsService,
     private $api: ApiService,
     private $md: MobileDetectService,
     private $monacoEditor: MonacoEditorService,
@@ -171,7 +171,13 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
         // handled in validator function
       } else if (config.accessories && Array.isArray(config.accessories) && !this.validateSection(config.accessories, 'accessory')) {
         // handled in validator function
-      } else if (config.plugins && Array.isArray(config.plugins) && !this.validatePlugins(config.plugins)) {
+      } else if (config.plugins && Array.isArray(config.plugins) && !this.validatePlugins(config.plugins, 'plugins')) {
+        // handled in validator function
+      } else if (
+        config.disabledPlugins &&
+        Array.isArray(config.disabledPlugins) &&
+        !this.validatePlugins(config.disabledPlugins, 'disabledPlugins')
+      ) {
         // handled in validator function
       } else {
         await this.saveConfig(config);
@@ -306,10 +312,10 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     return true;
   }
 
-  validatePlugins(plugins: any[]) {
+  validatePlugins(plugins: any[], key) {
     for (const item of plugins) {
       if (typeof item !== 'string') {
-        this.$toastr.error(`Each item in the plugins array must be a string.`);
+        this.$toastr.error(`Each item in the ${key} array must be a string.`);
         return false;
       }
     }
@@ -340,7 +346,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
         );
 
         this.editorDecoractions = this.monacoEditor.deltaDecorations(this.editorDecoractions, [
-          { range: range, options: { isWholeLine: true, linesDecorationsClassName: 'hb-monaco-editor-line-error' } },
+          { range, options: { isWholeLine: true, linesDecorationsClassName: 'hb-monaco-editor-line-error' } },
         ]);
       }
     }, 200);
@@ -379,13 +385,15 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                   },
                   username: {
                     type: 'string',
-                    description: 'Homebridge username must be 6 pairs of colon-separated hexadecimal characters (A-F 0-9).\nYou should change this pin if you need to re-pair your instance with HomeKit.\nExample: 0E:89:49:64:91:86',
+                    description: 'Homebridge username must be 6 pairs of colon-separated hexadecimal characters (A-F 0-9).' +
+                      '\nYou should change this pin if you need to re-pair your instance with HomeKit.\nExample: 0E:89:49:64:91:86',
                     default: '0E:89:49:64:91:86',
                     pattern: '^([A-Fa-f0-9]{2}:){5}[A-Fa-f0-9]{2}$',
                   },
                   port: {
                     type: 'number',
-                    description: 'The port Homebridge listens on.\nIf running more than one instance of Homebridge on the same server make sure each instance is given a unique port.',
+                    description: 'The port Homebridge listens on.\nIf running more than one instance of Homebridge ' +
+                      'on the same server make sure each instance is given a unique port.',
                     default: 51173,
                     minimum: 1025,
                     maximum: 65534,
@@ -405,7 +413,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                     description: 'The bridge model to be displayed  in HomeKit',
                   },
                   bind: {
-                    description: 'A string or an array of strings with the name(s) of the network interface(s) Homebridge should bind to.',
+                    description: 'A string or an array of strings with the name(s) of the network interface(s) ' +
+                      'Homebridge should bind to.\n\nRequires Homebridge v1.3 or later.',
                     type: ['string', 'array'],
                     items: {
                       type: 'string',
@@ -417,15 +426,19 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
               },
               mdns: {
                 type: 'object',
-                description: 'Tell Homebridge to listen on a specific interface or IP address. This is useful if your server has multiple interfaces.\n\nDepreciated as of Homebridge v1.3.0 - use bridge.bind instead.',
-                required: ['interface'],
                 properties: {
                   interface: {
                     type: 'string',
-                    description: 'The interface or IP address of the interface you want Homebridge to listen on.',
+                    description: 'The interface or IP address of the interface you want Homebridge to listen on. ' +
+                      'This is useful if your server has multiple interfaces. ' +
+                      '\n\nDepreciated as of Homebridge v1.3.0 - use bridge.bind instead.',
+                  },
+                  legacyAdvertiser: {
+                    type: 'boolean',
+                    description: 'Set to `false` to use the new mdns library, ciao.',
                   },
                 },
-                default: { interface: '' },
+                default: { legacyAdvertiser: false },
               },
               plugins: {
                 type: 'array',
@@ -435,6 +448,15 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                   description: 'The full plugin npm package name.\nExample: homebridge-dummy',
                 },
                 default: ['homebridge-config-ui-x'],
+              },
+              disabledPlugins: {
+                type: 'array',
+                description: 'An array of plugins that should be disabled.\n\nRequires Homebridge v1.3 or later.',
+                items: {
+                  type: 'string',
+                  description: 'The full plugin npm package name.\nExample: homebridge-dummy',
+                },
+                default: [],
               },
               ports: {
                 type: 'object',
@@ -461,7 +483,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
               },
               platforms: {
                 type: 'array',
-                description: 'Plugins that expose a "Platform" should have there config entered in this array.\nSeperate each plugin config block using a comma.',
+                description: 'Plugins that expose a "Platform" should have there config entered in this array.' +
+                  '\nSeperate each plugin config block using a comma.',
                 items: {
                   type: 'object',
                   required: ['platform'],
@@ -502,7 +525,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
               },
               accessories: {
                 type: 'array',
-                description: 'Plugins that expose a "Accessory" should have there config entered in this array.\nSeperate each plugin config block using a comma.',
+                description: 'Plugins that expose a "Accessory" should have there config entered in this array.' +
+                  '\nSeperate each plugin config block using a comma.',
                 items: {
                   type: 'object',
                   required: ['accessory', 'name'],

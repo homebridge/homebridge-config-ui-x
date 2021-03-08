@@ -3,7 +3,7 @@ import * as fs from 'fs-extra';
 import * as dayjs from 'dayjs';
 import { ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastify';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 
 import { AuthModule } from '../../src/core/auth/auth.module';
 import { ConfigEditorModule } from '../../src/modules/config-editor/config-editor.module';
@@ -75,8 +75,8 @@ describe('ConfigEditorController (e2e)', () => {
       path: '/auth/login',
       payload: {
         username: 'admin',
-        password: 'admin'
-      }
+        password: 'admin',
+      },
     })).json().access_token;
 
     // restore the default config before each test
@@ -137,7 +137,7 @@ describe('ConfigEditorController (e2e)', () => {
       path: '/config-editor',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -218,7 +218,7 @@ describe('ConfigEditorController (e2e)', () => {
     const currentConfig = await fs.readJson(configFilePath);
 
     currentConfig.bridge.port = {
-      not: 'valid'
+      not: 'valid',
     };
 
     const res = await app.inject({
@@ -437,7 +437,7 @@ describe('ConfigEditorController (e2e)', () => {
     const currentConfig = await fs.readJson(configFilePath);
 
     currentConfig.plugins = [
-      'homebridge-mock-plugin'
+      'homebridge-mock-plugin',
     ];
 
     const res = await app.inject({
@@ -481,19 +481,59 @@ describe('ConfigEditorController (e2e)', () => {
     expect(savedConfig.accessories).toHaveLength(0);
   });
 
+  it('POST /config-editor (remove config.mdns if not valid object)', async () => {
+    const currentConfig = await fs.readJson(configFilePath);
+    currentConfig.mdns = 'blah';
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/config-editor',
+      headers: {
+        authorization,
+      },
+      payload: currentConfig,
+    });
+
+    expect(res.statusCode).toEqual(201);
+
+    // check the updates were saved to disk and mistakes corrected
+    const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
+    expect(savedConfig.mdns).toBeUndefined();
+  });
+
+  it('POST /config-editor (retain config.mdns if valid object)', async () => {
+    const currentConfig = await fs.readJson(configFilePath);
+    currentConfig.mdns = {};
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/config-editor',
+      headers: {
+        authorization,
+      },
+      payload: currentConfig,
+    });
+
+    expect(res.statusCode).toEqual(201);
+
+    // check the updates were saved to disk and mistakes corrected
+    const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
+    expect(savedConfig.mdns).toEqual({});
+  });
+
   it('GET /config-editor/plugin/:pluginName', async () => {
     const currentConfig: HomebridgeConfig = await fs.readJson(configFilePath);
 
     currentConfig.platforms = [
       {
-        platform: 'not it'
+        platform: 'not it',
       },
       {
-        platform: 'ExampleHomebridgePlugin'
+        platform: 'ExampleHomebridgePlugin',
       },
       {
-        platform: 'another not it'
-      }
+        platform: 'another not it',
+      },
     ];
 
     await fs.writeJson(configFilePath, currentConfig);
@@ -503,7 +543,7 @@ describe('ConfigEditorController (e2e)', () => {
       path: '/config-editor/plugin/homebridge-mock-plugin',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -513,7 +553,7 @@ describe('ConfigEditorController (e2e)', () => {
     expect(res.json()[0].platform).toEqual('ExampleHomebridgePlugin');
   });
 
-  it('GET /config-editor/plugin/:pluginName', async () => {
+  it('GET /config-editor/plugin/:pluginName (no config)', async () => {
     const currentConfig: HomebridgeConfig = await fs.readJson(configFilePath);
 
     currentConfig.platforms = [];
@@ -526,7 +566,7 @@ describe('ConfigEditorController (e2e)', () => {
       headers: {
         authorization,
       },
-      payload: {}
+      payload: {},
     });
 
     expect(res.statusCode).toEqual(200);
@@ -539,7 +579,7 @@ describe('ConfigEditorController (e2e)', () => {
       path: '/config-editor/plugin/homebridge-fake-example-plugin',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(404);
@@ -553,8 +593,8 @@ describe('ConfigEditorController (e2e)', () => {
 
     const mockConfig = [
       {
-        platform: 'ExampleHomebridgePlugin'
-      }
+        platform: 'ExampleHomebridgePlugin',
+      },
     ];
 
     const res = await app.inject({
@@ -578,24 +618,24 @@ describe('ConfigEditorController (e2e)', () => {
     const currentConfig: HomebridgeConfig = await fs.readJson(configFilePath);
     currentConfig.platforms = [
       {
-        platform: 'not it 0 '
+        platform: 'not it 0 ',
       },
       {
-        platform: 'not it 1'
+        platform: 'not it 1',
       },
       {
-        platform: 'ExampleHomebridgePlugin'
+        platform: 'ExampleHomebridgePlugin',
       },
       {
-        platform: 'not it 3'
+        platform: 'not it 3',
       },
     ];
     await fs.writeJson(configFilePath, currentConfig);
 
     const mockConfig = [
       {
-        platform: 'ExampleHomebridgePlugin'
-      }
+        platform: 'ExampleHomebridgePlugin',
+      },
     ];
 
     const res = await app.inject({
@@ -619,16 +659,16 @@ describe('ConfigEditorController (e2e)', () => {
     const currentConfig: HomebridgeConfig = await fs.readJson(configFilePath);
     currentConfig.platforms = [
       {
-        platform: 'not it 0 '
+        platform: 'not it 0 ',
       },
       {
-        platform: 'not it 1'
+        platform: 'not it 1',
       },
       {
-        platform: 'ExampleHomebridgePlugin'
+        platform: 'ExampleHomebridgePlugin',
       },
       {
-        platform: 'not it 3'
+        platform: 'not it 3',
       },
     ];
     await fs.writeJson(configFilePath, currentConfig);
@@ -660,7 +700,7 @@ describe('ConfigEditorController (e2e)', () => {
       {
         name: 'test',
         testing: true,
-      }
+      },
     ];
 
     const res = await app.inject({
@@ -704,8 +744,8 @@ describe('ConfigEditorController (e2e)', () => {
         {
           name: 'test',
           testing: true,
-        }
-      ]
+        },
+      ],
     ];
 
     const res = await app.inject({
@@ -719,6 +759,62 @@ describe('ConfigEditorController (e2e)', () => {
 
     expect(res.statusCode).toEqual(400);
     expect(res.body).toContain('Plugin config must be an array of objects.');
+  });
+
+  it('PUT /config-editor/plugin/:pluginName/disable', async () => {
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/config-editor/plugin/homebridge-mock-plugin/disable',
+      headers: {
+        authorization,
+      },
+      payload: {},
+    });
+
+    expect(res.statusCode).toEqual(200);
+
+    const config: HomebridgeConfig = await fs.readJson(configFilePath);
+    expect(Array.isArray(config.disabledPlugins)).toEqual(true);
+    expect(config.disabledPlugins).toContainEqual('homebridge-mock-plugin');
+  });
+
+  it('PUT /config-editor/plugin/:pluginName/disable (self)', async () => {
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/config-editor/plugin/homebridge-config-ui-x/disable',
+      headers: {
+        authorization,
+      },
+      payload: {},
+    });
+
+    expect(res.statusCode).toEqual(400);
+  });
+
+  it('PUT /config-editor/plugin/:pluginName/enable', async () => {
+    const initialConfig: HomebridgeConfig = await fs.readJson(configFilePath);
+    initialConfig.disabledPlugins = [
+      'homebridge-mock-plugin',
+      'homebridge-example-plugin',
+    ];
+    await fs.writeJson(configFilePath, initialConfig);
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/config-editor/plugin/homebridge-mock-plugin/enable',
+      headers: {
+        authorization,
+      },
+      payload: {},
+    });
+
+    expect(res.statusCode).toEqual(200);
+
+    const config: HomebridgeConfig = await fs.readJson(configFilePath);
+    expect(Array.isArray(config.disabledPlugins)).toEqual(true);
+    expect(config.disabledPlugins).toHaveLength(1);
+    expect(config.disabledPlugins).not.toContainEqual('homebridge-mock-plugin');
+    expect(config.disabledPlugins).toContainEqual('homebridge-example-plugin');
   });
 
   it('GET /config-editor/backups', async () => {
@@ -775,7 +871,6 @@ describe('ConfigEditorController (e2e)', () => {
     expect(newbackupCount).toEqual(0);
     expect(res.statusCode).toEqual(200);
   });
-
 
   afterAll(async () => {
     await app.close();

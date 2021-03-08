@@ -19,18 +19,20 @@ export class AccessoriesService {
   public layoutSaved = new Subject();
   public accessoryData = new Subject();
 
+  public readyForControl = false;
+
   public accessoryLayout: {
     name: string; services: Array<{
       aid: number;
       iid: number;
       uuid: string;
       uniqueId: string;
-      hidden?: boolean,
-      onDashboard?: boolean
+      hidden?: boolean;
+      onDashboard?: boolean;
     }>;
   }[];
   public accessories: { services: ServiceType[] } = { services: [] };
-  public rooms: Array<{ name: string, services: ServiceTypeX[] }> = [];
+  public rooms: Array<{ name: string; services: ServiceTypeX[] }> = [];
   private roomsOrdered = false;
 
   private hiddenTypes = [
@@ -51,6 +53,8 @@ export class AccessoriesService {
    * Start the accessory control session
    */
   public async start() {
+    this.readyForControl = false;
+
     // connect to the socket endpoint
     this.io = this.$ws.connectToNamespace('accessories');
 
@@ -95,6 +99,12 @@ export class AccessoriesService {
     this.io.socket.on('accessory-control-failure', (message) => {
       this.$toastr.error(message);
     });
+
+    // when the system is ready for accessory control
+    this.io.socket.on('accessories-ready-for-control', (message) => {
+      console.log('ready for control');
+      this.readyForControl = true;
+    });
   }
 
   /**
@@ -104,12 +114,10 @@ export class AccessoriesService {
     this.accessoryLayout = await this.io.request('get-layout', { user: this.$auth.user.username }).toPromise();
 
     // build empty room layout
-    this.rooms = this.accessoryLayout.map((room) => {
-      return {
-        name: room.name,
-        services: [],
-      };
-    });
+    this.rooms = this.accessoryLayout.map((room) => ({
+      name: room.name,
+      services: [],
+    }));
   }
 
   /**
@@ -227,22 +235,18 @@ export class AccessoriesService {
    */
   public saveLayout() {
     // generate layout schema to save to disk
-    this.accessoryLayout = this.rooms.map((room) => {
-      return {
-        name: room.name,
-        services: room.services.map((service) => {
-          return {
-            uniqueId: service.uniqueId,
-            aid: service.aid,
-            iid: service.iid,
-            uuid: service.uuid,
-            customName: service.customName || undefined,
-            hidden: service.hidden || undefined,
-            onDashboard: service.onDashboard || undefined,
-          };
-        }),
-      };
-    }).filter(room => room.services.length);
+    this.accessoryLayout = this.rooms.map((room) => ({
+      name: room.name,
+      services: room.services.map((service) => ({
+        uniqueId: service.uniqueId,
+        aid: service.aid,
+        iid: service.iid,
+        uuid: service.uuid,
+        customName: service.customName || undefined,
+        hidden: service.hidden || undefined,
+        onDashboard: service.onDashboard || undefined,
+      })),
+    })).filter(room => room.services.length);
 
     // send update request to server
     this.io.request('save-layout', { user: this.$auth.user.username, layout: this.accessoryLayout })
@@ -266,20 +270,22 @@ export class AccessoriesService {
             return null;
           }
 
-          characteristic.setValue = (value: number | string | boolean) => {
-            return new Promise((resolve, reject) => {
-              this.io.socket.emit('accessory-control', {
-                set: {
-                  uniqueId: service.uniqueId,
-                  aid: service.aid,
-                  siid: service.iid,
-                  iid: characteristic.iid,
-                  value: value,
-                },
-              });
-              return resolve();
+          characteristic.setValue = (value: number | string | boolean) => new Promise((resolve, reject) => {
+            if (!this.readyForControl) {
+              resolve(undefined);
+            }
+
+            this.io.socket.emit('accessory-control', {
+              set: {
+                uniqueId: service.uniqueId,
+                aid: service.aid,
+                siid: service.iid,
+                iid: characteristic.iid,
+                value,
+              },
             });
-          };
+            return resolve(undefined);
+          });
 
           return characteristic;
         };

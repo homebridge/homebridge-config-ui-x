@@ -18,11 +18,11 @@ export async function getStartupConfig() {
   const config = {} as {
     host?: '::' | '0.0.0.0' | string;
     httpsOptions?: {
-      key?: Buffer,
-      cert?: Buffer,
-      pfx?: Buffer,
-      passphrase?: string,
-    },
+      key?: Buffer;
+      cert?: Buffer;
+      pfx?: Buffer;
+      passphrase?: string;
+    };
     cspWsOveride?: string;
     debug?: boolean;
   };
@@ -62,7 +62,7 @@ export async function getStartupConfig() {
         passphrase: ui.ssl.passphrase,
       };
     } catch (e) {
-      logger.error(`WARNING: COULD NOT START SERVER WITH SSL ENABLED`);
+      logger.error('WARNING: COULD NOT START SERVER WITH SSL ENABLED');
       logger.error(e);
     }
   }

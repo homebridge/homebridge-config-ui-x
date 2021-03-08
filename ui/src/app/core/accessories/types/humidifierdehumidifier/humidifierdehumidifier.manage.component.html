@@ -1,0 +1,68 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title" [innerText]="service.customName || service.serviceName"></h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+      (click)="activeModal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body text-center">
+
+    <div class="humidity-drop mb-3"
+      [ngClass]="{
+      'dehumidifying': service.values.CurrentHumidifierDehumidifierState === 3 && service.values.Active === 1,
+      'humidifying': service.values.CurrentHumidifierDehumidifierState === 2 && service.values.Active === 1,
+      'no-current-state': service.values.CurrentHumidifierDehumidifierState === 1 && service.values.Active === 1
+      }">
+        <div class="humidity-drop-text"
+          [innerText]="(service.values.CurrentRelativeHumidity) + '%'"></div></div>
+
+    <div class="humidity-mode-control btn-group-vertical btn-group-toggle d-flex justify-content-center mb-4"
+      ngbRadioGroup name="radioBasic" [(ngModel)]="targetMode" (change)="onTargetStateChange()">
+      <label ngbButtonLabel class="btn-primary  m-0">
+        <input ngbButton type="radio" [value]="0"> {{ 'accessories.control.label_auto' | translate }}
+      </label>
+      <label ngbButtonLabel class="btn-primary  m-0">
+        <input ngbButton type="radio" [value]="1"> {{ 'accessories.control.label_humidifying' | translate }}
+      </label>
+      <label ngbButtonLabel class="btn-primary  m-0">
+        <input ngbButton type="radio" [value]="2"> {{ 'accessories.control.label_dehumidifying' | translate }}
+      </label>
+      <label ngbButtonLabel class="btn-primary m-0">
+        <input ngbButton type="radio" [value]="'off'"> {{ 'accessories.control.label_off' | translate }}
+      </label>
+    </div>
+
+    <div *ngIf="service.values.Active === 1 && RelativeHumidityHumidifierThreshold && RelativeHumidityDehumidifierThreshold">
+      <h5>{{ 'accessories.control.label_target_humidity' | translate }}</h5>
+
+      <div [ngSwitch]="targetMode">
+        <div *ngSwitchCase="0">
+          <p>
+            {{ autoHumidity[0] }}% -
+            {{ autoHumidity[1] }}%
+          </p>
+          <nouislider [min]="RelativeHumidityHumidifierThreshold.minValue" [max]="RelativeHumidityDehumidifierThreshold.maxValue"
+            [step]="RelativeHumidityDehumidifierThreshold.minStep" [(ngModel)]="autoHumidity"
+            (ngModelChange)="onHumidityStateChange()">
+          </nouislider>
+        </div>
+        <div *ngSwitchCase="1">
+          <p>{{ targetHumidifierHumidity }}%</p>
+          <nouislider [min]="RelativeHumidityHumidifierThreshold.minValue" [max]="RelativeHumidityHumidifierThreshold.maxValue"
+            [step]="RelativeHumidityHumidifierThreshold.minStep" [(ngModel)]="targetHumidifierHumidity"
+            (ngModelChange)="onHumidityStateChange()">
+          </nouislider>
+        </div>
+        <div *ngSwitchCase="2">
+          <p>{{ targetDehumidifierHumidity }}%</p>
+          <nouislider [min]="RelativeHumidityDehumidifierThreshold.minValue" [max]="RelativeHumidityDehumidifierThreshold.maxValue"
+            [step]="RelativeHumidityDehumidifierThreshold.minStep" [(ngModel)]="targetDehumidifierHumidity"
+            (ngModelChange)="onHumidityStateChange()">
+          </nouislider>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

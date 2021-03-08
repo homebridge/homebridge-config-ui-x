@@ -4,7 +4,7 @@ import axios, { AxiosResponse, AxiosError } from 'axios';
 import { of, throwError } from 'rxjs';
 import { ValidationPipe, HttpService } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastify';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 
 import { StatusModule } from '../../src/modules/status/status.module';
 import { AuthModule } from '../../src/core/auth/auth.module';
@@ -59,8 +59,8 @@ describe('StatusController (e2e)', () => {
       path: '/auth/login',
       payload: {
         username: 'admin',
-        password: 'admin'
-      }
+        password: 'admin',
+      },
     })).json().access_token;
   });
 
@@ -70,7 +70,7 @@ describe('StatusController (e2e)', () => {
       path: '/status/cpu',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -85,7 +85,7 @@ describe('StatusController (e2e)', () => {
       path: '/status/ram',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -99,7 +99,7 @@ describe('StatusController (e2e)', () => {
       path: '/status/uptime',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -124,7 +124,7 @@ describe('StatusController (e2e)', () => {
       path: '/status/homebridge',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -150,7 +150,7 @@ describe('StatusController (e2e)', () => {
       path: '/status/homebridge',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -163,7 +163,7 @@ describe('StatusController (e2e)', () => {
       path: '/status/server-information',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -181,7 +181,7 @@ describe('StatusController (e2e)', () => {
       {
         'version': 'v12.18.0',
         'lts': 'Erbium',
-      }
+      },
     ];
 
     const response: AxiosResponse<any> = {
@@ -200,7 +200,7 @@ describe('StatusController (e2e)', () => {
       path: '/status/nodejs',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);

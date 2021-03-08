@@ -1,9 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
+import { debounceTime } from 'rxjs/operators';
 
-import { AuthService } from '../auth.service';
 import { environment } from '@/environments/environment';
+import { SettingsService } from '@/app/core/settings.service';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-login',
@@ -11,6 +13,8 @@ import { environment } from '@/environments/environment';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
+  @ViewChild('password') private passwordInput;
+
   public form: FormGroup;
   public backgroundStyle: string;
   public invalidCredentials = false;
@@ -22,6 +26,7 @@ export class LoginComponent implements OnInit {
   constructor(
     private $router: Router,
     public $auth: AuthService,
+    public $settings: SettingsService,
   ) { }
 
   ngOnInit() {
@@ -30,17 +35,26 @@ export class LoginComponent implements OnInit {
       password: new FormControl('', [Validators.required]),
     });
 
+    this.form.valueChanges
+      .pipe(debounceTime(500))
+      .subscribe((changes) => {
+        const passwordInputValue = this.passwordInput.nativeElement.value;
+        if (passwordInputValue !== changes.password) {
+          this.form.controls.password.setValue(passwordInputValue);
+        }
+      });
+
     this.targetRoute = window.sessionStorage.getItem('target_route') || '';
     this.setBackground();
   }
 
   async setBackground() {
-    if (!this.$auth.settingsLoaded) {
-      await this.$auth.onSettingsLoaded.toPromise();
+    if (!this.$settings.settingsLoaded) {
+      await this.$settings.onSettingsLoaded.toPromise();
     }
 
-    const backgroundImageUrl = this.$auth.env.customWallpaperHash ?
-      environment.api.base + '/auth/wallpaper/' + this.$auth.env.customWallpaperHash :
+    const backgroundImageUrl = this.$settings.env.customWallpaperHash ?
+      environment.api.base + '/auth/wallpaper/' + this.$settings.env.customWallpaperHash :
       '/assets/snapshot.jpg';
     this.backgroundStyle = `url('${backgroundImageUrl}') center/cover`;
   }

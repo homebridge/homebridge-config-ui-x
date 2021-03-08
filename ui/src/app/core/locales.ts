@@ -21,6 +21,8 @@ import localeSl from '@angular/common/locales/sl';
 import localePt from '@angular/common/locales/pt';
 import localeId from '@angular/common/locales/id';
 import localeCa from '@angular/common/locales/ca';
+import localeKo from '@angular/common/locales/ko';
+import localeMk from '@angular/common/locales/mk';
 
 registerLocaleData(localeEn);
 registerLocaleData(localeDe);
@@ -43,28 +45,32 @@ registerLocaleData(localeSl);
 registerLocaleData(localePt);
 registerLocaleData(localeId);
 registerLocaleData(localeCa);
+registerLocaleData(localeKo);
+registerLocaleData(localeMk);
 
 export const supportedLocales = {
-  'en': 'en',
-  'de': 'de',
-  'fr': 'fr',
-  'pl': 'pl',
-  'cs': 'cs',
-  'ru': 'ru',
+  en: 'en',
+  de: 'de',
+  fr: 'fr',
+  pl: 'pl',
+  cs: 'cs',
+  ru: 'ru',
   'zh-CN': 'zh-Hans', // Chinese Simplified -> zh-cn -> zh-Hans
   'zh-TW': 'zh-Hant', // Chinese Traditional -> zh-tw -> zh-Hant
-  'hu': 'hu',
-  'ja': 'ja',
-  'es': 'es',
-  'nl': 'nl',
-  'tr': 'tr',
-  'it': 'it',
-  'bg': 'bg',
-  'sl': 'sl',
-  'sv': 'sv',
-  'no': 'nb', // Norwegian -> no -> nb
-  'pt': 'pt',
+  hu: 'hu',
+  ja: 'ja',
+  es: 'es',
+  nl: 'nl',
+  tr: 'tr',
+  it: 'it',
+  bg: 'bg',
+  sl: 'sl',
+  sv: 'sv',
+  no: 'nb', // Norwegian -> no -> nb
+  pt: 'pt',
   'pt-BR': 'pt',
-  'id': 'id',
-  'ca': 'ca',
+  id: 'id',
+  ca: 'ca',
+  ko: 'ko',
+  mk: 'mk',
 };

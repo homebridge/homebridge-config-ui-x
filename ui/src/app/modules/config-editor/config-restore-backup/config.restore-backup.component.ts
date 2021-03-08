@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
-import { ApiService } from '../../../core/api.service';
+
+import { ApiService } from '@/app/core/api.service';
 
 @Component({
   selector: 'app-config.restore-backup',
@@ -11,9 +12,9 @@ import { ApiService } from '../../../core/api.service';
 export class ConfigRestoreBackupComponent implements OnInit {
   public loading = true;
   public backupList: {
-    id: string,
-    timestamp: string,
-    file: string,
+    id: string;
+    timestamp: string;
+    file: string;
   }[] = [];
 
   constructor(

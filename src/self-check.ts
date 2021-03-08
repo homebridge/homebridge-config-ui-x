@@ -1,3 +1,11 @@
+/**
+ * Pollyfill for Node.js 11.x that does not support `globalThis`
+ * This should be removed when support for < Node.js 12 is dropped
+ */
+if (!global.globalThis && (process.versions.modules === '67' || process.versions.modules === '64')) {
+  (global as any).globalThis = global;
+}
+
 import * as os from 'os';
 import * as path from 'path';
 import * as child_process from 'child_process';
@@ -59,16 +67,20 @@ function main() {
 }
 
 function tryRebuildNodePtyModule() {
+  // using eval('require') here so it does not break with webpack
+  const modulePath = path.dirname(path.dirname(eval('require').resolve('node-pty-prebuilt-multiarch')));
+
   logger.warn('[node-pty] Trying to rebuild automatically...');
+  logger.warn(`[node-pty] Path: ${modulePath}`);
   try {
-    child_process.execSync('npm rebuild node-pty-prebuilt-multiarch --unsafe-perm', {
-      cwd: path.dirname(__dirname),
+    child_process.execSync('npm run install --unsafe-perm', {
+      cwd: modulePath,
       stdio: 'ignore',
     });
   } catch (e) {
     if (os.platform() !== 'win32') {
-      child_process.execSync('sudo -E -n npm rebuild node-pty-prebuilt-multiarch --unsafe-perm', {
-        cwd: path.dirname(__dirname),
+      child_process.execSync('sudo -E -n run install --unsafe-perm', {
+        cwd: modulePath,
         stdio: 'ignore',
       });
     } else {

@@ -1,13 +1,16 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as NodeCache from 'node-cache';
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { HapClient, ServiceType } from '@oznu/hap-client';
+
 import { ConfigService } from '../../core/config/config.service';
 import { Logger } from '../../core/logger/logger.service';
 
 @Injectable()
 export class AccessoriesService {
   public hapClient: HapClient;
+  public accessoriesCache = new NodeCache({ stdTTL: 0 });
 
   constructor(
     private readonly configService: ConfigService,
@@ -34,14 +37,23 @@ export class AccessoriesService {
 
     let services;
 
-    const loadAllAccessories = async () => {
+    const loadAllAccessories = async (refresh: boolean) => {
+      if (!refresh) {
+        const cached = this.accessoriesCache.get<any[]>('services');
+        if (cached && cached.length) {
+          client.emit('accessories-data', cached);
+        }
+      }
+
       services = await this.loadAccessories();
       this.refreshCharacteristics(services);
+      client.emit('accessories-ready-for-control');
       client.emit('accessories-data', services);
+      this.accessoriesCache.set('services', services);
     };
 
     // initial load
-    await loadAllAccessories();
+    await loadAllAccessories(false);
 
     // handling incoming requests
     const requestHandler = async (msg?) => {
@@ -77,7 +89,7 @@ export class AccessoriesService {
 
     // load a second time in case anything was missed
     const secondaryLoadTimeout = setTimeout(async () => {
-      await loadAllAccessories();
+      await loadAllAccessories(true);
     }, 3000);
 
     // clean up on disconnect
@@ -112,7 +124,7 @@ export class AccessoriesService {
    */
   public async loadAccessories(): Promise<ServiceType[]> {
     if (!this.configService.homebridgeInsecureMode) {
-      throw new BadRequestException(`Homebridge must be running in insecure mode to access accessories.`);
+      throw new BadRequestException('Homebridge must be running in insecure mode to access accessories.');
     }
 
     return this.hapClient.getAllServices()
@@ -121,7 +133,7 @@ export class AccessoriesService {
       })
       .catch((e) => {
         if (e.response?.status === 401) {
-          this.logger.warn(`Homebridge must be running in insecure mode to view and control accessories from this plugin.`);
+          this.logger.warn('Homebridge must be running in insecure mode to view and control accessories from this plugin.');
         } else {
           this.logger.error(`Failed load accessories from Homebridge: ${e.message}`);
         }
@@ -206,7 +218,7 @@ export class AccessoriesService {
       }
 
       if (typeof value !== 'boolean') {
-        throw new BadRequestException(`Invalid value. The value must be a boolean (true or false).`);
+        throw new BadRequestException('Invalid value. The value must be a boolean (true or false).');
       }
     }
 
@@ -245,7 +257,7 @@ export class AccessoriesService {
    * @param user
    * @param layout
    */
-  public async saveAccessoryLayout(user: string, layout: object) {
+  public async saveAccessoryLayout(user: string, layout: Record<string, unknown>) {
     let accessoryLayout;
 
     try {

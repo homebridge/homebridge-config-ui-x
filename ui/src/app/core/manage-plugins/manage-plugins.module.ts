@@ -6,7 +6,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { NgxMdModule } from 'ngx-md';
 import { MonacoEditorModule } from 'ngx-monaco-editor';
 
-import { CoreModule } from '../core.module';
+import { CoreModule } from '@/app/core/core.module';
 import { InterpolateMdPipe } from './interpolate-md.pipe';
 import { ManagePluginsService } from './manage-plugins.service';
 import { SettingsPluginsModalComponent } from './settings-plugins-modal/settings-plugins-modal.component';
@@ -16,6 +16,7 @@ import { UninstallPluginsModalComponent } from './uninstall-plugins-modal/uninst
 import { NodeUpdateRequiredModalComponent } from './node-update-required-modal/node-update-required-modal.component';
 import { ManualPluginConfigModalComponent } from './manual-plugin-config-modal/manual-plugin-config-modal.component';
 import { SelectPreviousVersionComponent } from './select-previous-version/select-previous-version.component';
+import { BridgePluginsModalComponent } from './bridge-plugins-modal/bridge-plugins-modal.component';
 
 @NgModule({
   entryComponents: [
@@ -25,6 +26,7 @@ import { SelectPreviousVersionComponent } from './select-previous-version/select
     NodeUpdateRequiredModalComponent,
     ManualPluginConfigModalComponent,
     SelectPreviousVersionComponent,
+    BridgePluginsModalComponent,
   ],
   declarations: [
     SettingsPluginsModalComponent,
@@ -34,6 +36,7 @@ import { SelectPreviousVersionComponent } from './select-previous-version/select
     InterpolateMdPipe,
     ManualPluginConfigModalComponent,
     SelectPreviousVersionComponent,
+    BridgePluginsModalComponent,
   ],
   imports: [
     CommonModule,

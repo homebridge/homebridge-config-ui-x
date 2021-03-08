@@ -30,15 +30,22 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   public loading = true;
   public saveInProgress = false;
   public pluginSpinner = false;
-  public showSchemaForm = false;
 
   private basePath: string;
   private iframe: HTMLIFrameElement;
 
+  // main config schema forms
+  public showSchemaForm = false;
   private schemaFormRecentlyUpdated = false;
   private schemaFormRecentlyRefreshed = false;
   private schemaFormRefreshSubject = new Subject();
   public schemaFormUpdatedSubject = new Subject();
+
+  // other forms
+  public formId;
+  public formSchema;
+  public formData;
+  public formUpdatedSubject = new Subject();
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -91,6 +98,11 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
       skip(1),
     ).subscribe(this.schemaFormUpdated.bind(this));
 
+    this.formUpdatedSubject.pipe(
+      debounceTime(100),
+      skip(1),
+    ).subscribe(this.formUpdated.bind(this));
+
     this.basePath = `/plugins/settings-ui/${encodeURIComponent(this.plugin.name)}`;
 
     window.addEventListener('message', this.handleMessage, false);
@@ -136,13 +148,26 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
           this.requestResponse(e, this.schema);
           break;
         }
+        case 'cachedAccessories.get': {
+          this.handleGetCachedAccessories(e);
+          break;
+        }
         case 'schema.show': {
-          console.log('got show request');
+          this.formEnd(); // do not show other forms at the same time
           this.showSchemaForm = true;
           break;
         }
         case 'schema.hide': {
           this.showSchemaForm = false;
+          break;
+        }
+        case 'form.create': {
+          this.showSchemaForm = false; // hide the schema generated form
+          this.formCreate(e.data.formId, e.data.schema, e.data.data);
+          break;
+        }
+        case 'form.end': {
+          this.formEnd();
           break;
         }
         case 'i18n.lang': {
@@ -179,7 +204,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
           console.log(e);
       }
     }
-  }
+  };
 
   confirmReady(event) {
     event.source.postMessage({ action: 'ready' }, event.origin);
@@ -317,6 +342,49 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Create a new other-form
+   */
+  async formCreate(formId: string, schema, data) {
+    // need to clear out existing forms
+    await this.formEnd();
+
+    this.formId = formId;
+    this.formSchema = schema;
+    this.formData = data;
+  }
+
+  /**
+   * Removes the current other-form
+   */
+  async formEnd() {
+    if (this.formId) {
+      this.formId = undefined;
+      this.formSchema = undefined;
+      this.formData = undefined;
+      await new Promise((resolve) => setTimeout(resolve));
+    }
+  }
+
+  /**
+   * Called when a other-form type is updated
+   */
+  formUpdated(data) {
+    this.iframe.contentWindow.postMessage({
+      action: 'stream',
+      event: this.formId,
+      data,
+    }, environment.api.origin);
+  }
+
+  /**
+   * Handle the event to get a list of cached accessories
+   */
+  async handleGetCachedAccessories(event) {
+    const cachedAccessories = await this.$api.get('/server/cached-accessories').toPromise();
+    return this.requestResponse(event, cachedAccessories.filter(x => x.plugin === this.plugin.name));
+  }
+
   async savePluginConfig(exit = false) {
     this.saveInProgress = true;
     return await this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig)
@@ -350,5 +418,6 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     this.io.end();
     this.schemaFormRefreshSubject.complete();
     this.schemaFormUpdatedSubject.complete();
+    this.formUpdatedSubject.complete();
   }
 }

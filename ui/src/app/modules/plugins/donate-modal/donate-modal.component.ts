@@ -9,7 +9,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 export class DonateModalComponent implements OnInit {
   @Input() plugin;
 
-  public fundingOptions: { type: string, url: string }[];
+  public fundingOptions: { type: string; url: string }[];
 
   constructor(
     public activeModal: NgbActiveModal,

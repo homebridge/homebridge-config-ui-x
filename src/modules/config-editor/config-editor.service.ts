@@ -10,10 +10,10 @@ import { PluginsService } from '../plugins/plugins.service';
 @Injectable()
 export class ConfigEditorService {
   constructor(
+    private readonly logger: Logger,
     private readonly configService: ConfigService,
     private readonly schedulerService: SchedulerService,
     private readonly pluginsService: PluginsService,
-    private readonly logger: Logger,
   ) {
     this.start();
     this.scheduleConfigBackupCleanup();
@@ -49,6 +49,11 @@ export class ConfigEditorService {
    */
   public async getConfigFile(): Promise<HomebridgeConfig> {
     const config = await fs.readJson(this.configService.configPath);
+
+    // ensure bridge is an object
+    if (!config.bridge || typeof config.bridge !== 'object') {
+      config.bridge = {};
+    }
 
     // ensure accessories is an array
     if (!config.accessories || !Array.isArray(config.accessories)) {
@@ -141,6 +146,16 @@ export class ConfigEditorService {
       delete config.plugins;
     }
 
+    // ensure config.mdns is valid
+    if (config.mdns && typeof config.mdns !== 'object') {
+      delete config.mdns;
+    }
+
+    // ensure config.disabledPlugins is an array
+    if (config.disabledPlugins && !Array.isArray(config.disabledPlugins)) {
+      delete config.disabledPlugins;
+    }
+
     // create backup of existing config
     try {
       await fs.rename(this.configService.configPath, path.resolve(this.configService.configBackupPath, 'config.json.' + now.getTime().toString()));
@@ -170,7 +185,7 @@ export class ConfigEditorService {
   public async getConfigForPlugin(pluginName: string) {
     return Promise.all([
       await this.pluginsService.getPluginAlias(pluginName),
-      await this.getConfigFile()
+      await this.getConfigFile(),
     ]).then(([plugin, config]) => {
       if (!plugin.pluginAlias) {
         return new BadRequestException('Plugin alias could not be determined.');
@@ -191,7 +206,7 @@ export class ConfigEditorService {
   public async updateConfigForPlugin(pluginName: string, pluginConfig: Record<string, any>[]) {
     return Promise.all([
       await this.pluginsService.getPluginAlias(pluginName),
-      await this.getConfigFile()
+      await this.getConfigFile(),
     ]).then(async ([plugin, config]) => {
       if (!plugin.pluginAlias) {
         return new BadRequestException('Plugin alias could not be determined.');
@@ -236,6 +251,46 @@ export class ConfigEditorService {
 
       return pluginConfig;
     });
+  }
+
+  /**
+   * Mark a plugin as disabled
+   */
+  public async disablePlugin(pluginName: string) {
+    if (pluginName === this.configService.name) {
+      throw new BadRequestException('Disabling this plugin is now allowed.');
+    }
+
+    const config = await this.getConfigFile();
+
+    if (!Array.isArray(config.disabledPlugins)) {
+      config.disabledPlugins = [];
+    }
+
+    config.disabledPlugins.push(pluginName);
+
+    await this.updateConfigFile(config);
+
+    return config.disabledPlugins;
+  }
+
+  /**
+   * Mark a plugin as enabled
+   */
+  public async enablePlugin(pluginName: string) {
+    const config = await this.getConfigFile();
+
+    if (!Array.isArray(config.disabledPlugins)) {
+      config.disabledPlugins = [];
+    }
+
+    const idx = config.disabledPlugins.findIndex(x => x === pluginName);
+
+    config.disabledPlugins.splice(idx, 1);
+
+    await this.updateConfigFile(config);
+
+    return config.disabledPlugins;
   }
 
   /**

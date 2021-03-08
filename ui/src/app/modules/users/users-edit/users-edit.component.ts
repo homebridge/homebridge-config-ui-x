@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AbstractControl } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
@@ -30,30 +30,27 @@ export class UsersEditComponent implements OnInit {
     private translate: TranslateService,
     private $api: ApiService,
     private $auth: AuthService,
-    public $fb: FormBuilder,
   ) { }
 
   ngOnInit() {
     this.isCurrentUser = this.$auth.user.username === this.user.username;
 
-    this.form = this.$fb.group({
-      username: ['', Validators.required],
-      name: ['', Validators.required],
-      password: ['', Validators.minLength(4)],
-      passwordConfirm: [''],
-      admin: [true],
-    }, {
-      validator: this.matchPassword,
-    });
+    this.form = new FormGroup({
+      username: new FormControl('', [Validators.required]),
+      name: new FormControl('', [Validators.required]),
+      password: new FormControl(''),
+      passwordConfirm: new FormControl(''),
+      admin: new FormControl(true),
+    }, this.matchPassword);
 
     this.form.patchValue(this.user);
   }
 
-  matchPassword(AC: AbstractControl) {
-    const password = AC.get('password').value;
-    const passwordConfirm = AC.get('passwordConfirm').value;
+  matchPassword(abstractControl: AbstractControl) {
+    const password = abstractControl.get('password').value;
+    const passwordConfirm = abstractControl.get('passwordConfirm').value;
     if (password !== passwordConfirm) {
-      AC.get('passwordConfirm').setErrors({ matchPassword: true });
+      abstractControl.get('passwordConfirm').setErrors({ matchPassword: true });
     } else {
       return null;
     }
@@ -70,7 +67,10 @@ export class UsersEditComponent implements OnInit {
         }
       },
       err => {
-        this.toastr.error(err.error.message || this.translate.instant('users.toast_failed_to_add_user'), this.translate.instant('toast.title_error'));
+        this.toastr.error(
+          err.error.message ||
+          this.translate.instant('users.toast_failed_to_add_user'), this.translate.instant('toast.title_error'),
+        );
       },
     );
   }

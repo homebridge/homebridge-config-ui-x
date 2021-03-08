@@ -64,7 +64,7 @@ export class ValveComponent implements OnInit, OnDestroy {
   }
 
   onClick() {
-    this.service.getCharacteristic('Active').setValue(!this.service.values.Active);
+    this.service.getCharacteristic('Active').setValue(this.service.values.Active ? 0 : 1);
   }
 
   onLongClick() {

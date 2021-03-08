@@ -3,7 +3,7 @@ import * as fs from 'fs-extra';
 import { authenticator } from 'otplib';
 import { ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastify';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 
 import { UsersModule } from '../../src/modules/users/users.module';
 import { UserDto, UserUpdatePasswordDto, UserActivateOtpDto, UserDeactivateOtpDto } from '../../src/modules/users/users.dto';
@@ -52,8 +52,8 @@ describe('UsersController (e2e)', () => {
       path: '/auth/login',
       payload: {
         username: 'admin',
-        password: 'admin'
-      }
+        password: 'admin',
+      },
     })).json().access_token;
   });
 
@@ -67,8 +67,8 @@ describe('UsersController (e2e)', () => {
       method: 'GET',
       path: '/users',
       headers: {
-        authorization
-      }
+        authorization,
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -96,7 +96,7 @@ describe('UsersController (e2e)', () => {
       method: 'POST',
       path: '/users',
       headers: {
-        authorization
+        authorization,
       },
       payload,
     });
@@ -126,7 +126,7 @@ describe('UsersController (e2e)', () => {
       method: 'PATCH',
       path: '/users/1',
       headers: {
-        authorization
+        authorization,
       },
       payload,
     });
@@ -155,7 +155,7 @@ describe('UsersController (e2e)', () => {
       method: 'PATCH',
       path: '/users/1',
       headers: {
-        authorization
+        authorization,
       },
       payload,
     });
@@ -187,7 +187,7 @@ describe('UsersController (e2e)', () => {
       method: 'POST',
       path: '/users',
       headers: {
-        authorization
+        authorization,
       },
       payload,
     })).json();
@@ -196,10 +196,10 @@ describe('UsersController (e2e)', () => {
       method: 'PATCH',
       path: `/users/${newUser.id}`,
       headers: {
-        authorization
+        authorization,
       },
       payload: {
-        username: 'admin' // try change to existing username
+        username: 'admin', // try change to existing username
       },
     });
 
@@ -220,7 +220,7 @@ describe('UsersController (e2e)', () => {
       method: 'POST',
       path: '/users',
       headers: {
-        authorization
+        authorization,
       },
       payload,
     })).json();
@@ -233,7 +233,7 @@ describe('UsersController (e2e)', () => {
       method: 'DELETE',
       path: `/users/${newUser.id}`,
       headers: {
-        authorization
+        authorization,
       },
       payload,
     });
@@ -257,7 +257,7 @@ describe('UsersController (e2e)', () => {
       method: 'POST',
       path: '/users',
       headers: {
-        authorization
+        authorization,
       },
       payload,
     });
@@ -268,9 +268,9 @@ describe('UsersController (e2e)', () => {
     // delete user #1 (admin)
     const res = await app.inject({
       method: 'DELETE',
-      path: `/users/1`,
+      path: '/users/1',
       headers: {
-        authorization
+        authorization,
       },
       payload,
     });
@@ -282,14 +282,14 @@ describe('UsersController (e2e)', () => {
   it('POST /users/change-password', async () => {
     const payload: UserUpdatePasswordDto = {
       currentPassword: 'admin',
-      newPassword: 'newpassword'
+      newPassword: 'newpassword',
     };
 
     const res = await app.inject({
       method: 'POST',
       path: '/users/change-password',
       headers: {
-        authorization
+        authorization,
       },
       payload,
     });
@@ -302,8 +302,8 @@ describe('UsersController (e2e)', () => {
       path: '/auth/login',
       payload: {
         username: 'admin',
-        password: 'newpassword'
-      }
+        password: 'newpassword',
+      },
     });
 
     expect(testLoginWithNewPassword.statusCode).toEqual(201);
@@ -314,8 +314,8 @@ describe('UsersController (e2e)', () => {
       path: '/auth/login',
       payload: {
         username: 'admin',
-        password: 'admin'
-      }
+        password: 'admin',
+      },
     });
 
     expect(testLoginWithOldPassword.statusCode).toEqual(403);
@@ -326,7 +326,7 @@ describe('UsersController (e2e)', () => {
       method: 'POST',
       path: '/users/otp/setup',
       headers: {
-        authorization
+        authorization,
       },
     });
 
@@ -344,7 +344,7 @@ describe('UsersController (e2e)', () => {
       method: 'POST',
       path: '/users/otp/setup',
       headers: {
-        authorization
+        authorization,
       },
     });
 
@@ -359,7 +359,7 @@ describe('UsersController (e2e)', () => {
       method: 'POST',
       path: '/users/otp/activate',
       headers: {
-        authorization
+        authorization,
       },
       payload,
     });
@@ -376,8 +376,8 @@ describe('UsersController (e2e)', () => {
       path: '/auth/login',
       payload: {
         username: 'admin',
-        password: 'admin'
-      }
+        password: 'admin',
+      },
     });
 
     expect(testLoginWithoutOtp.statusCode).toEqual(412);
@@ -394,7 +394,7 @@ describe('UsersController (e2e)', () => {
         username: 'admin',
         password: 'admin',
         otp,
-      }
+      },
     });
 
     expect(testLoginWithOtp.statusCode).toEqual(201);
@@ -407,7 +407,7 @@ describe('UsersController (e2e)', () => {
         username: 'admin',
         password: 'admin',
         otp,
-      }
+      },
     });
 
     expect(testLoginWithOtpReplay.statusCode).toEqual(412);
@@ -423,14 +423,14 @@ describe('UsersController (e2e)', () => {
     await fs.writeJson(authFilePath, authFile);
 
     const payload: UserDeactivateOtpDto = {
-      password: 'admin'
+      password: 'admin',
     };
 
     const res = await app.inject({
       method: 'POST',
       path: '/users/otp/deactivate',
       headers: {
-        authorization
+        authorization,
       },
       payload,
     });
@@ -451,14 +451,14 @@ describe('UsersController (e2e)', () => {
     await fs.writeJson(authFilePath, authFile);
 
     const payload: UserDeactivateOtpDto = {
-      password: 'not-the-password'
+      password: 'not-the-password',
     };
 
     const res = await app.inject({
       method: 'POST',
       path: '/users/otp/deactivate',
       headers: {
-        authorization
+        authorization,
       },
       payload,
     });

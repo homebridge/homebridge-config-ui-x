@@ -1,4 +1,4 @@
-<div class="accessory-box" [ngClass]="{'switch-on': service.values.Active, 'switch-off': !service.values.Active}"
+<div class="accessory-box" [ngClass]="{'switch-on': service.values.InUse, 'switch-off': !service.values.InUse}"
   appLongclick>
   <div class="d-flex flex-column h-100">
     <div [inlineSVG]="'/assets/hap-icons/irrigation-system.svg'" aria-label="IrrigationValve" class="accessory-svg">
@@ -6,10 +6,10 @@
     <div class="accessory-label mt-auto">
       {{ service.customName || service.values.ConfiguredName || service.serviceName }}
     </div>
-    <div class="accessory-label grey-text" *ngIf="service.values.Active">
+    <div class="accessory-label grey-text" *ngIf="service.values.InUse">
       {{ 'accessories.control.label_running' | translate }}
     </div>
-    <div class="accessory-label grey-text" *ngIf="!service.values.Active">
+    <div class="accessory-label grey-text" *ngIf="!service.values.InUse">
       {{ 'accessories.control.label_off' | translate }}
     </div>
   </div>

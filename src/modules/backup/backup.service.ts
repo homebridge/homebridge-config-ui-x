@@ -8,10 +8,12 @@ import * as child_process from 'child_process';
 import * as dayjs from 'dayjs';
 import { EventEmitter } from 'events';
 import { Injectable, BadRequestException, NotFoundException, InternalServerErrorException } from '@nestjs/common';
+import { FastifyReply } from 'fastify';
 
 import { PluginsService } from '../plugins/plugins.service';
 import { SchedulerService } from '../../core/scheduler/scheduler.service';
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
+import { HomebridgeIpcService } from '../..//core/homebridge-ipc/homebridge-ipc.service';
 import { Logger } from '../../core/logger/logger.service';
 import { HomebridgePlugin } from '../plugins/types';
 
@@ -23,6 +25,7 @@ export class BackupService {
     private readonly configService: ConfigService,
     private readonly pluginsService: PluginsService,
     private readonly schedulerService: SchedulerService,
+    private readonly homebridgeIpcService: HomebridgeIpcService,
     private readonly logger: Logger,
   ) {
     this.scheduleInstanceBackups();
@@ -38,11 +41,9 @@ export class BackupService {
     }
 
     const scheduleRule = new this.schedulerService.RecurrenceRule();
-    scheduleRule.hour = 1;
-    scheduleRule.minute = 15;
-    scheduleRule.second = Math.floor(Math.random() * 59) + 1;
-
-    this.logger.debug('Next automated backup scheduled for:', scheduleRule.nextInvocationDate(new Date()).toString());
+    scheduleRule.hour = Math.floor(Math.random() * 7);
+    scheduleRule.minute = Math.floor(Math.random() * 59);
+    scheduleRule.second = Math.floor(Math.random() * 59);
 
     this.schedulerService.scheduleJob('instance-backup', scheduleRule, () => {
       this.logger.log('Running scheduled instance backup...');
@@ -75,7 +76,8 @@ export class BackupService {
         'FFmpeg',             // ffmpeg
         'fdk-aac',            // ffmpeg
         '.git',               // git
-        'recordings'          // homebridge-camera-ui recordings path
+        'recordings',         // homebridge-camera-ui recordings path
+        '.homebridge.sock',   // homebridge ipc socket
       ].includes(path.basename(filePath))), // list of files not to include in the archive
     });
 
@@ -176,6 +178,21 @@ export class BackupService {
   }
 
   /**
+   * Get the time the next backup will run
+   */
+  async getNextBackupTime() {
+    if (this.configService.ui.scheduledBackupDisable === true) {
+      return {
+        next: false
+      };
+    } else {
+      return {
+        next: this.schedulerService.scheduledJobs['instance-backup']?.nextInvocation() || false,
+      };
+    }
+  }
+
+  /**
    * List the instance backups saved on disk
    */
   async listScheduledBackups() {
@@ -234,7 +251,7 @@ export class BackupService {
   /**
    * Create and download backup archive of the current homebridge instance
    */
-  async downloadBackup(reply) {
+  async downloadBackup(reply: FastifyReply) {
     const { backupDir, backupPath, backupFileName } = await this.createBackup();
 
     // remove temp files (called when download finished)
@@ -244,19 +261,19 @@ export class BackupService {
     }
 
     // set download headers
-    reply.res.setHeader('Content-type', 'application/octet-stream');
-    reply.res.setHeader('Content-disposition', 'attachment; filename=' + backupFileName);
-    reply.res.setHeader('File-Name', backupFileName);
+    reply.raw.setHeader('Content-type', 'application/octet-stream');
+    reply.raw.setHeader('Content-disposition', 'attachment; filename=' + backupFileName);
+    reply.raw.setHeader('File-Name', backupFileName);
 
     // for dev only
     if (reply.request.hostname === 'localhost:8080') {
-      reply.res.setHeader('access-control-allow-origin', 'http://localhost:4200');
+      reply.raw.setHeader('access-control-allow-origin', 'http://localhost:4200');
     }
 
     // start download
     fs.createReadStream(backupPath)
       .on('close', cleanup.bind(this))
-      .pipe(reply.res);
+      .pipe(reply.raw);
   }
 
   /**
@@ -330,7 +347,7 @@ export class BackupService {
     client.emit('stdout', `Created: ${backupInfo.timestamp}\r\n`);
 
     // start restore
-    this.logger.warn(`Starting backup restore...`);
+    this.logger.warn('Starting backup restore...');
     client.emit('stdout', color.cyan('\r\nRestoring backup...\r\n\r\n'));
     await new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -343,7 +360,7 @@ export class BackupService {
         return true;
       },
     });
-    client.emit('stdout', color.yellow(`File restore complete.\r\n`));
+    client.emit('stdout', color.yellow('File restore complete.\r\n'));
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     // restore plugins
@@ -356,7 +373,7 @@ export class BackupService {
     for (const plugin of plugins) {
       try {
         client.emit('stdout', color.yellow(`\r\nInstalling ${plugin.name}...\r\n`));
-        await this.pluginsService.installPlugin(plugin.name, plugin.installedVersion || 'latest', client);
+        await this.pluginsService.installPlugin({ name: plugin.name, version: plugin.installedVersion }, client);
       } catch (e) {
         client.emit('stdout', color.red(`Failed to install ${plugin.name}.\r\n`));
       }
@@ -407,6 +424,9 @@ export class BackupService {
     await this.removeRestoreDirectory();
 
     client.emit('stdout', color.green('\r\nRestore Complete!\r\n'));
+
+    // ensure ui is restarted on next restart
+    this.configService.hbServiceUiRestartRequired = true;
 
     return { status: 0 };
   }
@@ -461,7 +481,7 @@ export class BackupService {
     client.emit('stdout', `Version: v${backupInfo.version}\r\n`);
 
     // start restore
-    this.logger.warn(`Starting hbfx restore...`);
+    this.logger.warn('Starting hbfx restore...');
     client.emit('stdout', color.cyan('\r\nRestoring hbfx backup...\r\n\r\n'));
     await new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -473,7 +493,7 @@ export class BackupService {
           'access.json',
           'dashboard.json',
           'layout.json',
-          'config.json'
+          'config.json',
         ].includes(path.basename(filePath))) {
           return false;
         }
@@ -508,7 +528,7 @@ export class BackupService {
       'roborock': 'homebridge-roborock',
       'shelly': 'homebridge-shelly',
       'wink': 'homebridge-wink3',
-      'homebridge-tuya-web': '@milo526/homebridge-tuya-web'
+      'homebridge-tuya-web': '@milo526/homebridge-tuya-web',
     };
 
     // install plugins
@@ -519,7 +539,7 @@ export class BackupService {
         }
         try {
           client.emit('stdout', color.yellow(`\r\nInstalling ${plugin}...\r\n`));
-          await this.pluginsService.installPlugin(plugin, 'latest', client);
+          await this.pluginsService.installPlugin({ name: plugin, version: 'latest' }, client);
         } catch (e) {
           client.emit('stdout', color.red(`Failed to install ${plugin}.\r\n`));
         }
@@ -562,6 +582,9 @@ export class BackupService {
 
     client.emit('stdout', color.green('\r\nRestore Complete!\r\n'));
 
+    // ensure ui is restarted on next restart
+    this.configService.hbServiceUiRestartRequired = true;
+
     return { status: 0 };
   }
 
@@ -573,7 +596,15 @@ export class BackupService {
     setTimeout(() => {
       // if running in service mode
       if (this.configService.serviceMode) {
-        return process.emit('message', 'postBackupRestoreRestart', undefined);
+        // kill homebridge
+        this.homebridgeIpcService.killHomebridge();
+
+        // kill self
+        setTimeout(() => {
+          process.kill(process.pid, 'SIGKILL');
+        }, 500);
+
+        return;
       }
 
       // if running in docker
@@ -614,7 +645,7 @@ export class BackupService {
           // try get pid by name
           const getPidByName = (): number => {
             try {
-              return parseInt(child_process.execSync(`pidof homebridge`).toString('utf8').trim(), 10);
+              return parseInt(child_process.execSync('pidof homebridge').toString('utf8').trim(), 10);
             } catch (e) {
               return null;
             }

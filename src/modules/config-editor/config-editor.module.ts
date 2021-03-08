@@ -12,8 +12,8 @@ import { PluginsModule } from '../plugins/plugins.module';
     PassportModule.register({ defaultStrategy: 'jwt' }),
     LoggerModule,
     ConfigModule,
-    PluginsModule,
     SchedulerModule,
+    PluginsModule,
   ],
   providers: [
     ConfigEditorService,

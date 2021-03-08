@@ -3,8 +3,8 @@ import { Subscription, interval } from 'rxjs';
 import { ChartOptions } from 'chart.js';
 import { Color, BaseChartDirective } from 'ng2-charts';
 
-import { WsService } from '../../../../core/ws.service';
-import { AuthService } from '../../../../core/auth/auth.service';
+import { WsService } from '@/app/core/ws.service';
+import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
   selector: 'app-cpu-widget',
@@ -67,7 +67,7 @@ export class CpuWidgetComponent implements OnInit, OnDestroy {
 
   constructor(
     private $ws: WsService,
-    public $auth: AuthService,
+    public $settings: SettingsService,
   ) { }
 
   ngOnInit() {

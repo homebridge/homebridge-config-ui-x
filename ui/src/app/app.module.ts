@@ -8,16 +8,16 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MonacoEditorModule } from 'ngx-monaco-editor';
 import { DragulaModule } from 'ng2-dragula';
 
-import { AppRoutingModule } from './app-routing.module';
+import { CoreModule } from '@/app/core/core.module';
+import { AuthModule } from '@/app/core/auth/auth.module';
+import { onMonacoLoad } from '@/app/core/monaco-editor.service';
+import { supportedLocales } from '@/app/core/locales';
+
 import { AppComponent } from './app.component';
+import { AppRoutingModule } from './app-routing.module';
 import { LayoutComponent } from './shared/layout/layout.component';
-import { CoreModule } from './core/core.module';
-import { AuthModule } from './core/auth/auth.module';
 import { RestartModule } from './modules/restart/restart.module';
 import { StatusModule } from './modules/status/status.module';
-
-import { onMonacoLoad } from './core/monaco-editor.service';
-import { supportedLocales } from './core/locales';
 
 @NgModule({
   declarations: [

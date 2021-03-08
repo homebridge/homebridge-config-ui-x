@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { EventEmitter } from 'events';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastify';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 
 import { LogModule } from '../../src/modules/log/log.module';
 import { LogGateway } from '../../src/modules/log/log.gateway';
@@ -90,9 +90,9 @@ describe('LogGateway (e2e)', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 100));
 
-    expect(client.emit).toBeCalledWith('stdout', expect.stringContaining('line 1'));
-    expect(client.emit).toBeCalledWith('stdout', expect.stringContaining('line 2'));
-    expect(client.emit).toBeCalledWith('stdout', expect.stringContaining('line 3'));
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('line 1'));
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('line 2'));
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('line 3'));
   });
 
   it('ON /log/tail-log (tail)', async () => {
@@ -113,9 +113,9 @@ describe('LogGateway (e2e)', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    expect(client.emit).toBeCalledWith('stdout', expect.stringContaining('line 1'));
-    expect(client.emit).toBeCalledWith('stdout', expect.stringContaining('line 2'));
-    expect(client.emit).toBeCalledWith('stdout', expect.stringContaining('line 3'));
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('line 1'));
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('line 2'));
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('line 3'));
   });
 
   it('ON /log/tail-log (tail - with sudo)', async () => {
@@ -183,9 +183,9 @@ describe('LogGateway (e2e)', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    expect(client.emit).toBeCalledWith('stdout', expect.stringContaining('line 1'));
-    expect(client.emit).toBeCalledWith('stdout', expect.stringContaining('line 2'));
-    expect(client.emit).toBeCalledWith('stdout', expect.stringContaining('line 3'));
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('line 1'));
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('line 2'));
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('line 3'));
   });
 
   it('ON /log/tail-log (cleans up connections)', async () => {
@@ -198,7 +198,7 @@ describe('LogGateway (e2e)', () => {
     await new Promise((resolve) => setTimeout(resolve, 100));
 
     // ensure the log is working
-    expect(client.emit).toBeCalledWith('stdout', expect.stringContaining('line 1'));
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('line 1'));
 
     // initial listeners
     expect((logService as any).nativeTail.listenerCount('line')).toEqual(1);
@@ -221,7 +221,7 @@ describe('LogGateway (e2e)', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 100));
 
-    expect(client.emit).toBeCalledWith('stdout', expect.stringContaining('Cannot show logs.'));
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Cannot show logs.'));
   });
 
   afterAll(async () => {

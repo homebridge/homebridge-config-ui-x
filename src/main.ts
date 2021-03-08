@@ -1,8 +1,8 @@
 import './self-check';
 
 import * as path from 'path';
-import * as fastify from 'fastify';
-import * as fastifyMultipart from 'fastify-multipart';
+import { fastify, FastifyReply, FastifyRequest } from 'fastify';
+import fastifyMultipart from 'fastify-multipart';
 import * as helmet from 'helmet';
 import * as fs from 'fs-extra';
 import { NestFactory } from '@nestjs/core';
@@ -18,7 +18,7 @@ import { getStartupConfig } from './core/config/config.startup';
 
 process.env.UIX_BASE_PATH = path.resolve(__dirname, '../');
 
-async function bootstrap() {
+async function bootstrap(): Promise<NestFastifyApplication> {
   const startupConfig = await getStartupConfig();
 
   const server = fastify({
@@ -52,7 +52,9 @@ async function bootstrap() {
   app.use(helmet({
     hsts: false,
     frameguard: false,
-    referrerPolicy: true,
+    referrerPolicy: {
+      policy: 'no-referrer',
+    },
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ['\'self\''],
@@ -67,7 +69,7 @@ async function bootstrap() {
   }));
 
   // serve index.html without a cache
-  app.getHttpAdapter().get('/', async (req, res) => {
+  app.getHttpAdapter().get('/', async (req: FastifyRequest, res: FastifyReply) => {
     res.type('text/html');
     res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.header('Pragma', 'no-cache');
@@ -107,9 +109,9 @@ async function bootstrap() {
       flows: {
         password: {
           tokenUrl: '/api/auth/login',
-          scopes: null
-        }
-      }
+          scopes: null,
+        },
+      },
     })
     .build();
 
@@ -121,5 +123,8 @@ async function bootstrap() {
 
   logger.warn(`Homebridge Config UI X v${configService.package.version} is listening on ${startupConfig.host} port ${configService.ui.port}`);
   await app.listen(configService.ui.port, startupConfig.host);
+
+  return app;
 }
-bootstrap();
+
+export const app = bootstrap();

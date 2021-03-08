@@ -2,12 +2,12 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastify';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 
 import { AuthModule } from '../../src/core/auth/auth.module';
 import { ServerModule } from '../../src/modules/server/server.module';
 import { ServerService } from '../../src/modules/server/server.service';
-import { ConfigService } from '../../src/core/config/config.service';
+import { ConfigService, HomebridgeConfig } from '../../src/core/config/config.service';
 
 describe('ServerController (e2e)', () => {
   let app: NestFastifyApplication;
@@ -64,8 +64,8 @@ describe('ServerController (e2e)', () => {
       path: '/auth/login',
       payload: {
         username: 'admin',
-        password: 'admin'
-      }
+        password: 'admin',
+      },
     })).json().access_token;
 
     // ensure it's clean
@@ -77,7 +77,6 @@ describe('ServerController (e2e)', () => {
     await fs.copy(path.resolve(__dirname, '../mocks', 'accessories'), accessoriesPath, { recursive: true });
   });
 
-
   it('PUT /server/restart', async () => {
     const mockRestartServer = jest.fn();
     serverService.restartServer = mockRestartServer;
@@ -87,11 +86,11 @@ describe('ServerController (e2e)', () => {
       path: '/server/restart',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
-    expect(mockRestartServer).toBeCalled();
+    expect(mockRestartServer).toHaveBeenCalled();
   });
 
   it('GET /server/qrcode.svg', async () => {
@@ -100,7 +99,7 @@ describe('ServerController (e2e)', () => {
       path: '/server/qrcode.svg',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -113,7 +112,7 @@ describe('ServerController (e2e)', () => {
       path: '/server/pairing',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -134,7 +133,7 @@ describe('ServerController (e2e)', () => {
       path: '/server/pairing',
       headers: {
         authorization,
-      }
+      },
     });
 
     // should return 503 - Service Unavailable
@@ -147,7 +146,7 @@ describe('ServerController (e2e)', () => {
       path: '/server/reset-homebridge-accessory',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -166,7 +165,7 @@ describe('ServerController (e2e)', () => {
       path: '/server/reset-cached-accessories',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -181,7 +180,7 @@ describe('ServerController (e2e)', () => {
       path: '/server/reset-cached-accessories',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(400);
@@ -196,7 +195,7 @@ describe('ServerController (e2e)', () => {
       path: '/server/cached-accessories',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -211,24 +210,15 @@ describe('ServerController (e2e)', () => {
     let cachedAccessories = await fs.readJson(path.resolve(accessoriesPath, 'cachedAccessories'));
     expect(cachedAccessories).toHaveLength(1);
 
-    const listener = (event, callback) => {
-      if (event === 'deleteSingleCachedAccessory') {
-        callback();
-      }
-    };
-
-    process.addListener('message', listener);
-
     const res = await app.inject({
       method: 'DELETE',
       path: `/server/cached-accessories/${cachedAccessories[0].UUID}`,
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(204);
-    process.removeListener('message', listener);
 
     // check the cached accessory was removed
     cachedAccessories = await fs.readJson(path.resolve(accessoriesPath, 'cachedAccessories'));
@@ -243,23 +233,15 @@ describe('ServerController (e2e)', () => {
     let cachedAccessories = await fs.readJson(path.resolve(accessoriesPath, 'cachedAccessories'));
     expect(cachedAccessories).toHaveLength(1);
 
-    const listener = (event, callback) => {
-      if (event === 'deleteSingleCachedAccessory') {
-        callback();
-      }
-    };
-    process.addListener('message', listener);
-
     const res = await app.inject({
       method: 'DELETE',
       path: '/server/cached-accessories/xxxxxxxx',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(404);
-    process.removeListener('message', listener);
 
     // check the cached accessory was not removed
     cachedAccessories = await fs.readJson(path.resolve(accessoriesPath, 'cachedAccessories'));
@@ -272,11 +254,26 @@ describe('ServerController (e2e)', () => {
       path: '/server/pairings',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
     expect(res.json()).toHaveLength(1);
+  });
+
+  it('GET /server/pairings/:deviceId', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/pairings/67E41F0EA05D',
+      headers: {
+        authorization,
+      },
+    });
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.json()._setupCode).toBeDefined();
+    expect(res.json()._isPaired).toEqual(false);
+    expect(res.json()._username).toEqual('67:E4:1F:0E:A0:5D');
   });
 
   it('DELETE /server/pairings/:deviceId', async () => {
@@ -285,14 +282,10 @@ describe('ServerController (e2e)', () => {
       path: '/server/pairings/67E41F0EA05D',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(204);
-  });
-
-  afterAll(async () => {
-    await app.close();
   });
 
   it('GET /server/network-interfaces/system', async () => {
@@ -301,7 +294,7 @@ describe('ServerController (e2e)', () => {
       path: '/server/network-interfaces/system',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -314,7 +307,7 @@ describe('ServerController (e2e)', () => {
       path: '/server/network-interfaces/bridge',
       headers: {
         authorization,
-      }
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -329,8 +322,8 @@ describe('ServerController (e2e)', () => {
         authorization,
       },
       payload: {
-        adapters: ['en0']
-      }
+        adapters: ['en0'],
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -348,8 +341,8 @@ describe('ServerController (e2e)', () => {
         authorization,
       },
       payload: {
-        adapters: []
-      }
+        adapters: [],
+      },
     });
 
     expect(res.statusCode).toEqual(200);
@@ -367,11 +360,129 @@ describe('ServerController (e2e)', () => {
         authorization,
       },
       payload: {
-        adapters: 'en0'
-      }
+        adapters: 'en0',
+      },
     });
 
     expect(res.statusCode).toEqual(400);
     expect(res.body).toContain('adapters must be an array');
+  });
+
+  it('GET /server/mdns-advertiser (when not set - default to bonjour-hap)', async () => {
+    const config: HomebridgeConfig = await fs.readJson(configService.configPath);
+    delete config.bridge.advertiser;
+    await fs.writeJson(configService.configPath, config);
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/mdns-advertiser',
+      headers: {
+        authorization,
+      },
+    });
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.json()).toEqual({ advertiser: 'bonjour-hap' });
+  });
+
+  it('GET /server/mdns-advertiser (when set to ciao)', async () => {
+    const config: HomebridgeConfig = await fs.readJson(configService.configPath);
+    config.bridge.advertiser = 'ciao';
+    await fs.writeJson(configService.configPath, config);
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/mdns-advertiser',
+      headers: {
+        authorization,
+      },
+    });
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.json()).toEqual({ advertiser: 'ciao' });
+  });
+
+  it('PUT /server/mdns-advertiser (bonjour-hap)', async () => {
+    const initialConfig: HomebridgeConfig = await fs.readJson(configService.configPath);
+    delete initialConfig.bridge.advertiser;
+    await fs.writeJson(configService.configPath, initialConfig);
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/server/mdns-advertiser',
+      headers: {
+        authorization,
+      },
+      payload: {
+        advertiser: 'bonjour-hap',
+      },
+    });
+
+    expect(res.statusCode).toEqual(200);
+
+    // check the value was saved
+    const config = await fs.readJson(configService.configPath);
+    expect(config.bridge.advertiser).toEqual('bonjour-hap');
+  });
+
+  it('PUT /server/mdns-advertiser (ciao)', async () => {
+    const initialConfig: HomebridgeConfig = await fs.readJson(configService.configPath);
+    delete initialConfig.mdns;
+    await fs.writeJson(configService.configPath, initialConfig);
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/server/mdns-advertiser',
+      headers: {
+        authorization,
+      },
+      payload: {
+        advertiser: 'ciao',
+      },
+    });
+
+    expect(res.statusCode).toEqual(200);
+
+    // check the value was saved
+    const config = await fs.readJson(configService.configPath);
+    expect(config.bridge.advertiser).toEqual('ciao');
+  });
+
+  it('PUT /server/mdns-advertiser (invalid value)', async () => {
+    const initialConfig: HomebridgeConfig = await fs.readJson(configService.configPath);
+    delete initialConfig.mdns;
+    await fs.writeJson(configService.configPath, initialConfig);
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/server/mdns-advertiser',
+      headers: {
+        authorization,
+      },
+      payload: {
+        advertiser: 'xxxxxxx',
+      },
+    });
+
+    expect(res.statusCode).toEqual(400);
+  });
+
+  it('GET /server/port/new', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/port/new',
+      headers: {
+        authorization,
+      },
+    });
+
+    expect(res.statusCode).toEqual(200);
+    expect(typeof res.json().port).toEqual('number');
+    expect(res.json().port).toBeGreaterThanOrEqual(30000);
+    expect(res.json().port).toBeLessThanOrEqual(60000);
+  });
+
+  afterAll(async () => {
+    await app.close();
   });
 });

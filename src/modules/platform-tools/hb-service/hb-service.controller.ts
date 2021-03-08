@@ -1,10 +1,9 @@
 import { Controller, UseGuards, Get, Put, Body, Req, Query } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags, ApiBearerAuth, ApiQuery, ApiOperation, ApiBody } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiQuery, ApiOperation } from '@nestjs/swagger';
 import { AdminGuard } from '../../../core/auth/guards/admin.guard';
 import { HbServiceService } from './hb-service.service';
 import { HbServiceStartupSettings } from './hb-service.dto';
-import { description } from 'commander';
 
 @ApiTags('Platform - HB Service')
 @ApiBearerAuth()
@@ -32,7 +31,7 @@ export class HbServiceController {
   @UseGuards(AdminGuard)
   @ApiOperation({
     summary: 'Request the UI does a full restart next time a restart for Homebridge is sent.',
-    description: 'When running under hb-service the UI will only restart if it detects it needs to.'
+    description: 'When running under hb-service the UI will only restart if it detects it needs to.',
   })
   @Put('set-full-service-restart-flag')
   setFullServiceRestartFlag() {

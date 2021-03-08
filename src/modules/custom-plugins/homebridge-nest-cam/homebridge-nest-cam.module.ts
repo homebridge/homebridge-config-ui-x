@@ -15,7 +15,7 @@ import { PluginsModule } from '../../plugins/plugins.module';
   ],
   providers: [
     HomebridgeNestCamService,
-    HomebridgeNestCamGateway
-  ]
+    HomebridgeNestCamGateway,
+  ],
 })
 export class HomebridgeNestCamModule { }

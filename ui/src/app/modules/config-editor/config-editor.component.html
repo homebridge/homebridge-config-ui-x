@@ -3,15 +3,15 @@
   <div class="row">
     <div class="col-sm-6 d-none d-sm-block">
       <h3 class="primary-text m-0">
-        <span class="d-none d-md-inline">Homebridge</span> {{'config.title_config' | translate}}</h3>
+        <span class="d-none d-md-inline">Homebridge</span> {{'config.title_config' | translate}}
+      </h3>
     </div>
     <div class="col-sm-6 text-right">
-      <button class="btn btn-elegant waves-effect" (click)="onRestore()"
-        [translate]="'config.button_restore'">Restore</button>
+      <button class="btn btn-elegant waves-effect" (click)="onRestore()" [translate]="'config.button_restore'"></button>
       <button class="btn btn-elegant waves-effect" (click)="onExportConfig()" container="body"
         ngbTooltip="{{ 'logs.label_download' | translate }}"><i class="fas fa-download"></i></button>
       <button class="btn btn-danger waves-effect" (click)="onCancelRestore()" [disabled]="saveInProgress"
-        *ngIf="originalConfig" translate="form.button_cancel">Cancel</button>
+        *ngIf="originalConfig" translate="form.button_cancel"></button>
       <button class="btn btn-primary waves-effect" (click)="onSave()" [disabled]="saveInProgress">
         {{ 'form.button_save' | translate }} <i *ngIf="saveInProgress" class="fas fa-spinner fa-pulse"></i>
       </button>

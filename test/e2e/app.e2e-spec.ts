@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationPipe } from '@nestjs/common';
-import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastify';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 
 import { AppModule } from '../../src/app.module';
 
@@ -45,7 +45,7 @@ describe('AppController (e2e)', () => {
   it('GET /', async () => {
     const res = await app.inject({
       method: 'GET',
-      path: '/'
+      path: '/',
     });
 
     expect(res.statusCode).toEqual(200);

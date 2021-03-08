@@ -164,7 +164,7 @@ export class PluginsSettingsUiService {
         HOMEBRIDGE_STORAGE_PATH: this.configService.storagePath,
         HOMEBRIDGE_CONFIG_PATH: this.configService.configPath,
         HOMEBRIDGE_UI_VERSION: this.configService.package.version,
-      }
+      },
     });
 
     child.stdout.on('data', (data) => {
@@ -179,7 +179,7 @@ export class PluginsSettingsUiService {
       this.loggerService.log(`[${pluginName}]`, 'Child process ended');
     });
 
-    child.addListener('message', (response: { action: string, payload: any }) => {
+    child.addListener('message', (response: { action: string; payload: any }) => {
       if (typeof response === 'object' && response.action) {
         response.action = response.action === 'error' ? 'server_error' : response.action;
         client.emit(response.action, response.payload);

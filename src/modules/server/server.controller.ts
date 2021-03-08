@@ -1,10 +1,10 @@
-import { Controller, Get, UseGuards, Put, Header, Delete, Param, HttpCode, Body } from '@nestjs/common';
+import { Controller, Get, UseGuards, Put, Header, Delete, Param, HttpCode, Body, Query } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags, ApiBearerAuth, ApiParam, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiParam, ApiOperation, ApiQuery } from '@nestjs/swagger';
 
 import { ServerService } from './server.service';
 import { AdminGuard } from '../../core/auth/guards/admin.guard';
-import { HomebridgeNetworkInterfacesDto } from './server.dto';
+import { HomebridgeMdnsSettingDto, HomebridgeNetworkInterfacesDto } from './server.dto';
 
 @ApiTags('Homebridge')
 @ApiBearerAuth()
@@ -20,6 +20,16 @@ export class ServerController {
   @ApiOperation({ summary: 'Restart the Homebridge instance.' })
   restartServer() {
     return this.serverService.restartServer();
+  }
+
+  @UseGuards(AdminGuard)
+  @Put('/restart/:deviceId')
+  @ApiOperation({
+    summary: 'Restart a child bridge instance.',
+    description: 'This method is only supported on setups running hb-service.'
+  })
+  restartChildBridge(@Param('deviceId') deviceId: string) {
+    return this.serverService.restartChildBridge(deviceId);
   }
 
   @Get('/pairing')
@@ -59,10 +69,11 @@ export class ServerController {
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Remove a single Homebridge cached accessory (hb-service only).' })
   @ApiParam({ name: 'uuid' })
+  @ApiQuery({ name: 'cacheFile' })
   @Delete('/cached-accessories/:uuid')
   @HttpCode(204)
-  deleteCachedAccessory(@Param('uuid') uuid: string) {
-    return this.serverService.deleteCachedAccessory(uuid);
+  deleteCachedAccessory(@Param('uuid') uuid: string, @Query('cacheFile') cacheFile?: string) {
+    return this.serverService.deleteCachedAccessory(uuid, cacheFile);
   }
 
   @UseGuards(AdminGuard)
@@ -73,12 +84,26 @@ export class ServerController {
   }
 
   @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Get a single device paring' })
+  @Get('/pairings/:deviceId')
+  getDevicePairingById(@Param('deviceId') deviceId: string) {
+    return this.serverService.getDevicePairingById(deviceId);
+  }
+
+  @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Remove a single paired accessory (hb-service only).' })
   @ApiParam({ name: 'deviceId' })
   @Delete('/pairings/:deviceId')
   @HttpCode(204)
   deleteDevicePairing(@Param('deviceId') deviceId: string) {
     return this.serverService.deleteDevicePairing(deviceId);
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Return a random, unused port.' })
+  @Get('/port/new')
+  lookupUnusedPort() {
+    return this.serverService.lookupUnusedPort();
   }
 
   @UseGuards(AdminGuard)
@@ -100,5 +125,19 @@ export class ServerController {
   @Put('/network-interfaces/bridge')
   setHomebridgeNetworkInterfaces(@Body() body: HomebridgeNetworkInterfacesDto) {
     return this.serverService.setHomebridgeNetworkInterfaces(body.adapters);
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Return the current mdns advertiser settings.' })
+  @Get('/mdns-advertiser')
+  getHomebridgeMdnsSetting(): Promise<HomebridgeMdnsSettingDto> {
+    return this.serverService.getHomebridgeMdnsSetting();
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Set the mdns advertiser settings.' })
+  @Put('/mdns-advertiser')
+  setHomebridgeMdnsSetting(@Body() body: HomebridgeMdnsSettingDto) {
+    return this.serverService.setHomebridgeMdnsSetting(body);
   }
 }

@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { EventEmitter } from 'events';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FastifyAdapter, NestFastifyApplication, } from '@nestjs/platform-fastify';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import type { IPty } from 'node-pty-prebuilt-multiarch';
 
 import { ConfigService } from '../../src/core/config/config.service';
@@ -16,6 +16,7 @@ class MockWsEventEmmiter extends EventEmitter implements WsEventEmitter {
   constructor() {
     super();
   }
+
   disconnect = jest.fn();
 }
 
@@ -94,8 +95,8 @@ describe('PlatformToolsTerminal (e2e)', () => {
 
     terminalGateway.startTerminalSession(client, size);
 
-    expect(client.disconnect).toBeCalled();
-    expect(nodePtyService.spawn).not.toBeCalled();
+    expect(client.disconnect).toHaveBeenCalled();
+    expect(nodePtyService.spawn).not.toHaveBeenCalled();
   });
 
   it('ON /platform-tools/terminal/start-session', async () => {
@@ -103,7 +104,7 @@ describe('PlatformToolsTerminal (e2e)', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 100));
 
-    expect(nodePtyService.spawn).toBeCalled();
+    expect(nodePtyService.spawn).toHaveBeenCalled();
   });
 
   it('ON /platform-tools/terminal/start-session (cleanup)', async () => {
@@ -111,7 +112,7 @@ describe('PlatformToolsTerminal (e2e)', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 100));
 
-    expect(nodePtyService.spawn).toBeCalled();
+    expect(nodePtyService.spawn).toHaveBeenCalled();
 
     // check initial listeners
     expect(client.listenerCount('stdin')).toEqual(1);
@@ -129,8 +130,8 @@ describe('PlatformToolsTerminal (e2e)', () => {
     expect(client.listenerCount('disconnect')).toEqual(0);
 
     // check the terminal was exited
-    expect(mockTerm.onExit).toBeCalled();
-    expect(mockTerm.kill).toBeCalled();
+    expect(mockTerm.onExit).toHaveBeenCalled();
+    expect(mockTerm.kill).toHaveBeenCalled();
   });
 
   it('ON /platform-tools/terminal/start-session (stdin)', async () => {
@@ -138,11 +139,11 @@ describe('PlatformToolsTerminal (e2e)', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 100));
 
-    expect(nodePtyService.spawn).toBeCalled();
+    expect(nodePtyService.spawn).toHaveBeenCalled();
 
     // send stdin
     client.emit('stdin', 'help');
-    expect(mockTerm.write).toBeCalledWith('help');
+    expect(mockTerm.write).toHaveBeenCalledWith('help');
   });
 
   it('ON /platform-tools/terminal/start-session (resize)', async () => {
@@ -150,11 +151,11 @@ describe('PlatformToolsTerminal (e2e)', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 100));
 
-    expect(nodePtyService.spawn).toBeCalled();
+    expect(nodePtyService.spawn).toHaveBeenCalled();
 
     // send stdin
     client.emit('resize', { cols: 20, rows: 25 });
-    expect(mockTerm.resize).toBeCalledWith(20, 25);
+    expect(mockTerm.resize).toHaveBeenCalledWith(20, 25);
   });
 
   afterAll(async () => {

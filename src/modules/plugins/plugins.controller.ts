@@ -49,7 +49,13 @@ export class PluginsController {
   @ApiParam({ name: 'pluginName', type: 'string' })
   @Get('config-schema/:pluginName')
   getPluginConfigSchema(@Param('pluginName') pluginName) {
-    return this.pluginsService.getPluginConfigSchema(pluginName);
+    try {
+      return this.pluginsService.getPluginConfigSchema(pluginName);
+    } catch (e) {
+      console.log('did throw error');
+      console.error(e);
+    }
+    return;
   }
 
   @UseGuards(AdminGuard)
@@ -71,7 +77,7 @@ export class PluginsController {
   @UseGuards(AdminGuard)
   @ApiOperation({
     summary: 'Attempt to resolve the type (platform or accessory) and alias for a plugin.',
-    description: '**Warning**: pluginAlias and pluginType will be `null` if the type or alias could not be resolved.'
+    description: '**Warning**: pluginAlias and pluginType will be `null` if the type or alias could not be resolved.',
   })
   @ApiParam({ name: 'pluginName', type: 'string' })
   @Get('alias/:pluginName')

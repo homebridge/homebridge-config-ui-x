@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Put, UseGuards, Res, Req, InternalServerErrorException, Header, Param } from '@nestjs/common';
+import { Controller, Get, Post, Put, UseGuards, Res, Req, InternalServerErrorException, Param } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiConsumes, ApiParam } from '@nestjs/swagger';
+import { FastifyReply } from 'fastify';
 
 import { BackupService } from './backup.service';
 import { AdminGuard } from '../../core/auth/guards/admin.guard';
@@ -31,6 +32,13 @@ export class BackupController {
   }
 
   @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Return the date and time of the next scheduled backup.' })
+  @Get('/scheduled-backups/next')
+  async getNextBackupTime() {
+    return this.backupService.getNextBackupTime();
+  }
+
+  @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'List available system generated instance backups.' })
   @Get('/scheduled-backups')
   async listScheduledBackups() {
@@ -49,7 +57,7 @@ export class BackupController {
   @Post('/restore')
   @ApiOperation({
     summary: 'Upload a .tar.gz of the Homebridge instance.',
-    description: 'NOTE: This endpoint does not trigger the restore process.'
+    description: 'NOTE: This endpoint does not trigger the restore process.',
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -63,7 +71,7 @@ export class BackupController {
       },
     },
   })
-  restoreBackup(@Req() req, @Res() res) {
+  restoreBackup(@Req() req, @Res() res: FastifyReply) {
     req.multipart(async (field, file, filename, encoding, mimetype) => {
       this.backupService.uploadBackupRestore(file);
     }, (err) => {
@@ -77,7 +85,7 @@ export class BackupController {
   @UseGuards(AdminGuard)
   @ApiOperation({
     summary: 'Upload a .hbfx backup file created by third party apps.',
-    description: 'NOTE: This endpoint does not trigger the restore process.'
+    description: 'NOTE: This endpoint does not trigger the restore process.',
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -92,7 +100,7 @@ export class BackupController {
     },
   })
   @Post('/restore/hbfx')
-  restoreHbfx(@Req() req, @Res() res) {
+  restoreHbfx(@Req() req, @Res() res: FastifyReply) {
     req.multipart(async (field, file, filename, encoding, mimetype) => {
       this.backupService.uploadHbfxRestore(file);
     }, (err) => {
