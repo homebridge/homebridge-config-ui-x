@@ -23,7 +23,7 @@ export const enum HomebridgeStatus {
 export class StatusService {
   private statusCache = new NodeCache({ stdTTL: 3600 });
   private dashboardLayout;
-  private homebridgeStatus: HomebridgeStatus = HomebridgeStatus.PENDING;
+  private homebridgeStatus: HomebridgeStatus = HomebridgeStatus.DOWN;
   private homebridgeStatusChange = new Subject<HomebridgeStatus>();
 
   private cpuLoadHistory: number[] = [];

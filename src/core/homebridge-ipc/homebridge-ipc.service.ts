@@ -36,6 +36,10 @@ export class HomebridgeIpcService extends EventEmitter {
         this.emit(message.id, message.data);
       }
     });
+
+    this.homebridge.on('close', () => {
+      this.emit('serverStatusUpdate', { status: 'down' });
+    });
   }
 
   /**

@@ -298,6 +298,7 @@
     "status.services.label_not_running": "Non in esecuzione",
     "status.services.label_running": "In esecuzione",
     "status.services.label_running_on_port": "In esecuzione sulla porta {{port}}",
+    "status.services.label_starting": "Starting...",
     "status.services.title_services": "Servizi",
     "status.title_server_status": "Stato del sistema",
     "status.uptime.label_days": "Giorni",

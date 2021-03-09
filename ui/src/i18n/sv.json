@@ -298,6 +298,7 @@
     "status.services.label_not_running": "Körs inte",
     "status.services.label_running": "Kör",
     "status.services.label_running_on_port": "Kör på port {{port}}",
+    "status.services.label_starting": "Starting...",
     "status.services.title_services": "Tjänster",
     "status.title_server_status": "Serverstatus",
     "status.uptime.label_days": "Dagar",

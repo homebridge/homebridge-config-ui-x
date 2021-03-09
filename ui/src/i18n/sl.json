@@ -298,6 +298,7 @@
     "status.services.label_not_running": "Ne deluje",
     "status.services.label_running": "Proces deluje",
     "status.services.label_running_on_port": "Deluje na portu {{port}}",
+    "status.services.label_starting": "Starting...",
     "status.services.title_services": "Storitve",
     "status.title_server_status": "Status strežnika",
     "status.uptime.label_days": "Dni",

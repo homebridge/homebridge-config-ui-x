@@ -298,6 +298,7 @@
     "status.services.label_not_running": "未啟動",
     "status.services.label_running": "執行中",
     "status.services.label_running_on_port": "以通訊埠 {{port}} 執行",
+    "status.services.label_starting": "Starting...",
     "status.services.title_services": "服務",
     "status.title_server_status": "伺服器狀態",
     "status.uptime.label_days": "天",
