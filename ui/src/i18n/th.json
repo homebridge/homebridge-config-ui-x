@@ -298,6 +298,7 @@
     "status.services.label_not_running": "ไม่ทำงาน",
     "status.services.label_running": "กำลังทำงาน",
     "status.services.label_running_on_port": "กำลังทำงานบนพอร์ต {{port}}",
+    "status.services.label_starting": "Starting...",
     "status.services.title_services": "บริการ",
     "status.title_server_status": "สถานะเซิร์ฟเวอร์",
     "status.uptime.label_days": "วัน",
