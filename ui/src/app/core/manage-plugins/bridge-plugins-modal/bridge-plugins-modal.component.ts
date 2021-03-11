@@ -15,6 +15,7 @@ export class BridgePluginsModalComponent implements OnInit {
   @Input() plugin;
   @Input() schema;
 
+  public canConfigure = true;
   public configBlocks: any[] = [];
   public enabledBlocks: Record<number, boolean> = {};
   public usernameCache: Map<number, string> = new Map();
@@ -48,7 +49,7 @@ export class BridgePluginsModalComponent implements OnInit {
         }
       },
       (err) => {
-        this.$toastr.error('Failed to load config: ' + err.error?.message, this.$translate.instant('toast.title_error'));
+        this.canConfigure = false;
       },
     );
   }

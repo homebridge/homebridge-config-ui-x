@@ -373,7 +373,7 @@ export class BackupService {
     for (const plugin of plugins) {
       try {
         client.emit('stdout', color.yellow(`\r\nInstalling ${plugin.name}...\r\n`));
-        await this.pluginsService.installPlugin(plugin.name, plugin.installedVersion || 'latest', client);
+        await this.pluginsService.installPlugin({ name: plugin.name, version: plugin.installedVersion }, client);
       } catch (e) {
         client.emit('stdout', color.red(`Failed to install ${plugin.name}.\r\n`));
       }
@@ -539,7 +539,7 @@ export class BackupService {
         }
         try {
           client.emit('stdout', color.yellow(`\r\nInstalling ${plugin}...\r\n`));
-          await this.pluginsService.installPlugin(plugin, 'latest', client);
+          await this.pluginsService.installPlugin({ name: plugin, version: 'latest' }, client);
         } catch (e) {
           client.emit('stdout', color.red(`Failed to install ${plugin}.\r\n`));
         }

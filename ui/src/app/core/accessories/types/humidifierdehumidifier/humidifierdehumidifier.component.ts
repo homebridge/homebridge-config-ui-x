@@ -2,14 +2,14 @@ import { Component, OnInit, Input } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ServiceTypeX } from '../../accessories.interfaces';
 
-import { HeaterCoolerManageComponent } from './heatercooler.manage.component';
+import { HumidifierDehumidifierManageComponent } from './humidifierdehumidifier.manage.component';
 
 @Component({
-  selector: 'app-heatercooler',
-  templateUrl: './heatercooler.component.html',
-  styleUrls: ['./heatercooler.component.scss'],
+  selector: 'app-humidifierdehumidifier',
+  templateUrl: './humidifierdehumidifier.component.html',
+  styleUrls: ['./humidifierdehumidifier.component.scss'],
 })
-export class HeaterCoolerComponent implements OnInit {
+export class HumidifierDehumidifierComponent implements OnInit {
   @Input() public service: ServiceTypeX;
   model = 1;
 
@@ -25,7 +25,7 @@ export class HeaterCoolerComponent implements OnInit {
   }
 
   onLongClick() {
-    const ref = this.modalService.open(HeaterCoolerManageComponent, {
+    const ref = this.modalService.open(HumidifierDehumidifierManageComponent, {
       size: 'sm',
     });
     ref.componentInstance.service = this.service;

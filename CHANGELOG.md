@@ -4,8 +4,53 @@ All notable changes to this project will be documented in this file. This projec
 
 ## NEXT
 
+### Other Changes 
+
+* **i18n:** Thai (th) language added by [@tomzt](https://github.com/tomzt) ([#1114](https://github.com/oznu/homebridge-config-ui-x/pull/1114))
+  * The Homebridge UI is now available in 25 different languages!
+* **i18n:** Improvements to Slovenian language translations ([#1116](https://github.com/oznu/homebridge-config-ui-x/pull/1116))
+* **i18n:** Improvements to Indonesian language translations ([#1117](https://github.com/oznu/homebridge-config-ui-x/pull/1117))
+* **i18n:** Improvements to French language translations ([#1121](https://github.com/oznu/homebridge-config-ui-x/pull/1121))
+* **i18n:** Improvements to Spanish language translations ([#1122](https://github.com/oznu/homebridge-config-ui-x/pull/1122))
+* **i18n:** Improvements to Portuguese language translations ([#1124](https://github.com/oznu/homebridge-config-ui-x/pull/1124))
+
+* **Dashboard:** The current Homebridge status will now instantly reflect the current Homebridge status (when combined with hb-service and Homebridge v1.3.3 or later)
+
+### API Changes
+
+* The `/api/status/homebridge` endpoint can now return an additional status of `pending`.
+
+## 4.40.0 (2021-03-08)
+
+### Notable Changes
+
+* **Accessory Control:** [@Feilner](https://github.com/Feilner) added support for **Humidifier** / **Dehumidifier** accessory control in the UI ([#1100](https://github.com/oznu/homebridge-config-ui-x/pull/1100))
+
+### Other Changes
+
+* **Plugins:** Better checking for release notes before an update ([#1103](https://github.com/oznu/homebridge-config-ui-x/pull/1103))
+* **System:** Handle the server time being different from the client (browser) time
+* **i18n:** Improvements to French language translations ([#1110](https://github.com/oznu/homebridge-config-ui-x/pull/1110))
+* **i18n:** Improvements to Polish language translations ([#1111](https://github.com/oznu/homebridge-config-ui-x/pull/1111))
+* **i18n:** Improvements to Portuguese language translations ([#1112](https://github.com/oznu/homebridge-config-ui-x/pull/1112))
+
+## 4.39.1 (2021-02-25)
+
+### Other Changes
+
+* **i18n:** Improvements to Polish language translations ([#1078](https://github.com/oznu/homebridge-config-ui-x/pull/1078))
+* **i18n:** Improvements to Spanish language translations ([#1079](https://github.com/oznu/homebridge-config-ui-x/pull/1079))
+* **i18n:** Improvements to German language translations ([#1081](https://github.com/oznu/homebridge-config-ui-x/pull/1081),[#1090](https://github.com/oznu/homebridge-config-ui-x/pull/1090))
+* **i18n:** Improvements to French language translations ([#1084](https://github.com/oznu/homebridge-config-ui-x/pull/1084))
+* **i18n:** Improvements to Catalan language translations ([#1087](https://github.com/oznu/homebridge-config-ui-x/pull/1087))
+* **i18n:** Improvements to Portuguese language translations ([#1094](https://github.com/oznu/homebridge-config-ui-x/pull/1094))
+* **i18n:** Improvements to Dutch language translations ([#1095](https://github.com/oznu/homebridge-config-ui-x/pull/1095))
+* **Plugins:** Plugin install/update/uninstall logs are now more readable on mobile devices ([#1097](https://github.com/oznu/homebridge-config-ui-x/issues/1097))
+
 ### Bug Fixes
 
+* Fixed an issue where Homebridge accessories were not showing up in the UI after upgrading to Homebridge v1.3.x ([#1093](https://github.com/oznu/homebridge-config-ui-x/issues/1093))
+* Fixed an issue where some valid network interfaces were not showing up in the network interface selector ([#1096](https://github.com/oznu/homebridge-config-ui-x/issues/1096))
 * Fixed an issue running the UI on Linux systems without outdated `libstdc++` libraries ([#1086](https://github.com/oznu/homebridge-config-ui-x/issues/1086))
 
 ## 4.39.0 (2021-02-15)

@@ -20,7 +20,7 @@ export class TelevisionComponent implements OnInit {
   }
 
   onClick() {
-    this.service.getCharacteristic('Active').setValue(!this.service.values.Active);
+    this.service.getCharacteristic('Active').setValue(this.service.values.Active ? 0 : 1);
   }
 
 }

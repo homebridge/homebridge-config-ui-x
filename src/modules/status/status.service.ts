@@ -4,6 +4,7 @@ import * as fs from 'fs-extra';
 import * as si from 'systeminformation';
 import * as semver from 'semver';
 import * as NodeCache from 'node-cache';
+import { Subject, Subscription } from 'rxjs';
 import { Injectable, HttpService, BadRequestException } from '@nestjs/common';
 
 import { Logger } from '../../core/logger/logger.service';
@@ -11,11 +12,19 @@ import { ConfigService } from '../../core/config/config.service';
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service';
 import { PluginsService } from '../plugins/plugins.service';
 
+export const enum HomebridgeStatus {
+  PENDING = 'pending',
+  OK = 'ok',
+  UP = 'up',
+  DOWN = 'down',
+}
+
 @Injectable()
 export class StatusService {
   private statusCache = new NodeCache({ stdTTL: 3600 });
   private dashboardLayout;
-  private homebridgeStatus: 'up' | 'down';
+  private homebridgeStatus: HomebridgeStatus = HomebridgeStatus.DOWN;
+  private homebridgeStatusChange = new Subject<HomebridgeStatus>();
 
   private cpuLoadHistory: number[] = [];
   private memoryUsageHistory: number[] = [];
@@ -43,6 +52,13 @@ export class StatusService {
       }, 10000);
     } else {
       this.logger.warn('Server metrics monitoring disabled.');
+    }
+
+    if (this.configService.serviceMode) {
+      this.homebridgeIpcService.on('serverStatusUpdate', (data: { status: HomebridgeStatus }) => {
+        this.homebridgeStatus = data.status === HomebridgeStatus.OK ? HomebridgeStatus.UP : data.status;
+        this.homebridgeStatusChange.next(this.homebridgeStatus);
+      });
     }
   }
 
@@ -213,17 +229,34 @@ export class StatusService {
    * @param client
    */
   public async watchStats(client) {
+    let homebridgeStatusChangeSub: Subscription;
+    let homebridgeStatusInterval: NodeJS.Timeout;
+
     client.emit('homebridge-status', await this.getHomebridgeStats());
 
-    const homebridgeStatusInterval = setInterval(async () => {
-      client.emit('homebridge-status', await this.getHomebridgeStats());
-    }, 10000);
+    // ipc status events are only available in Homebridge 1.3.3 or later - and when running in service mode
+    if (this.configService.serviceMode && semver.gt(this.configService.homebridgeVersion, '1.3.3-beta.5', { includePrerelease: true })) {
+      homebridgeStatusChangeSub = this.homebridgeStatusChange.subscribe(async (status) => {
+        client.emit('homebridge-status', await this.getHomebridgeStats());
+      });
+    } else {
+      homebridgeStatusInterval = setInterval(async () => {
+        client.emit('homebridge-status', await this.getHomebridgeStats());
+      }, 10000);
+    }
 
     // cleanup on disconnect
     const onEnd = () => {
       client.removeAllListeners('end');
       client.removeAllListeners('disconnect');
-      clearInterval(homebridgeStatusInterval);
+
+      if (homebridgeStatusInterval) {
+        clearInterval(homebridgeStatusInterval);
+      }
+
+      if (homebridgeStatusChangeSub) {
+        homebridgeStatusChangeSub.unsubscribe();
+      }
     };
 
     client.on('end', onEnd.bind(this));
@@ -247,13 +280,17 @@ export class StatusService {
    * Check if homebridge is running on the local system
    */
   public async checkHomebridgeStatus() {
+    if (this.configService.serviceMode && semver.gt(this.configService.homebridgeVersion, '1.3.3-beta.5', { includePrerelease: true })) {
+      return this.homebridgeStatus;
+    }
+
     try {
       await this.httpService.get(`http://localhost:${this.configService.homebridgeConfig.bridge.port}`, {
         validateStatus: () => true,
       }).toPromise();
-      this.homebridgeStatus = 'up';
+      this.homebridgeStatus = HomebridgeStatus.UP;
     } catch (e) {
-      this.homebridgeStatus = 'down';
+      this.homebridgeStatus = HomebridgeStatus.DOWN;
     }
 
     return this.homebridgeStatus;

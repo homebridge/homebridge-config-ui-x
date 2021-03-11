@@ -43,6 +43,7 @@ export class SettingsService {
   public formAuth = true;
   public uiVersion: string;
   public theme: string;
+  public serverTimeOffset = 0;
 
   // set true if current translation is RLT
   public rtl = false;
@@ -127,10 +128,15 @@ export class SettingsService {
   checkServerTime(timestamp: string) {
     const serverTime = dayjs(timestamp);
     const diff = serverTime.diff(dayjs(), 'hour');
-    if (diff >= 4 || diff <= -4) {
-      const msg = 'The date and time on your Homebridge server is different to your browser. This may cause login issues.';
-      console.error(msg);
-      this.$toastr.warning(msg);
+    this.serverTimeOffset = diff * 60 * 60;
+    if (diff >= 8 || diff <= -8) {
+      const msg = 'The date and time on your Homebridge server seems to be incorrect. This may cause unexpected issues.';
+      const toastMsg = msg + ' ' + '<br><br><u>Click here for more information.</u>';
+      console.error(msg, 'Server time offset of', this.serverTimeOffset, 'seconds applied.');
+      const toast = this.$toastr.warning(toastMsg, null, { timeOut: 20000, enableHtml: true, tapToDismiss: false });
+      toast.onTap.subscribe(() => {
+        window.open('https://git.io/JqTFs', '_blank');
+      });
     }
   }
 }

@@ -30,7 +30,10 @@ export class StatusController {
     return this.statusService.getServerUptimeInfo();
   }
 
-  @ApiOperation({ summary: 'Return the current Homebridge status (up or down).' })
+  @ApiOperation({
+    summary: 'Return the current Homebridge status.',
+    description: 'Possible Homebridge statuses are `up`, `pending` or `down`.'
+  })
   @Get('/homebridge')
   async checkHomebridgeStatus() {
     return {

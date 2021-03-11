@@ -16,7 +16,7 @@ export class UninstallPluginsModalComponent implements OnInit {
   @Input() action;
 
   public loading = true;
-  public removeConfig = false;
+  public removeConfig = true;
 
   public pluginType: 'platform' | 'accessory';
   public pluginAlias: string;
@@ -40,7 +40,7 @@ export class UninstallPluginsModalComponent implements OnInit {
   }
 
   async doUninstall() {
-    if (this.removeConfig) {
+    if (this.removeConfig && this.pluginType && this.pluginAlias) {
       try {
         await this.removePluginConfig();
       } catch (e) {

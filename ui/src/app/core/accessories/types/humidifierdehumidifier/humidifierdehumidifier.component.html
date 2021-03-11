@@ -1,0 +1,35 @@
+<div class="accessory-box" [ngClass]="{'switch-on': service.values.Active === 1}" appLongclick
+  (longclick)="onLongClick()" (shortclick)="onClick()">
+  <div class="d-flex flex-column h-100">
+    <div class="humidity-drop humidity-drop-collapse" 
+      [ngClass]="{
+      'dehumidifying': service.values.CurrentHumidifierDehumidifierState === 3 && service.values.Active === 1,
+      'humidifying': service.values.CurrentHumidifierDehumidifierState === 2 && service.values.Active === 1,
+      'no-current-state': service.values.CurrentHumidifierDehumidifierState === 1 && service.values.Active === 1
+      }">
+      <div class="humidity-drop-text" [innerText]="(service.values.CurrentRelativeHumidity) + '%'"></div>
+    </div>
+    <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
+    <div class="accessory-label grey-text" *ngIf="service.values.Active === 0">
+      {{ 'accessories.control.label_off' | translate }}
+    </div>
+    <div class="accessory-label grey-text"
+      *ngIf="service.values.Active === 1 && service.getCharacteristic('RelativeHumidityDehumidifierThreshold') && service.getCharacteristic('RelativeHumidityHumidifierThreshold')"
+      [ngSwitch]="service.values.TargetHumidifierDehumidifierState">
+      <span *ngSwitchCase="1">
+        {{ service.values.RelativeHumidityHumidifierThreshold }}%
+      </span>
+      <span *ngSwitchCase="2">
+        {{ service.values.RelativeHumidityDehumidifierThreshold }}%
+      </span>
+      <span *ngSwitchCase="0">
+        {{ service.values.RelativeHumidityHumidifierThreshold }}%-{{ service.values.RelativeHumidityDehumidifierThreshold }}%
+      </span>
+    </div>
+    <div class="accessory-label grey-text"
+      *ngIf="service.values.Active === 1 && (!service.getCharacteristic('RelativeHumidityDehumidifierThreshold') || !service.getCharacteristic('RelativeHumidityHumidifierThreshold'))">
+      {{ 'accessories.control.label_on' | translate }}
+    </div>
+  </div>
+
+</div>

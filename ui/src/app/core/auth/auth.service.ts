@@ -59,7 +59,10 @@ export class AuthService {
     window.location.reload();
   }
 
-  loadToken() {
+  async loadToken() {
+    if (!this.$settings.settingsLoaded) {
+      await this.$settings.onSettingsLoaded.toPromise();
+    }
     const token = window.localStorage.getItem(environment.jwt.tokenKey);
     if (token) {
       this.validateToken(token);
@@ -68,7 +71,7 @@ export class AuthService {
 
   validateToken(token: string) {
     try {
-      if (this.$jwtHelper.isTokenExpired(token)) {
+      if (this.$jwtHelper.isTokenExpired(token, this.$settings.serverTimeOffset)) {
         this.logout();
       }
       this.user = this.$jwtHelper.decodeToken(token);
@@ -95,9 +98,9 @@ export class AuthService {
 
   setLogoutTimer() {
     clearTimeout(this.logoutTimer);
-    if (!this.$jwtHelper.isTokenExpired(this.token)) {
+    if (!this.$jwtHelper.isTokenExpired(this.token, this.$settings.serverTimeOffset)) {
       const expires = dayjs(this.$jwtHelper.getTokenExpirationDate(this.token));
-      const timeout = expires.diff(dayjs(), 'millisecond');
+      const timeout = expires.diff(dayjs().add(this.$settings.serverTimeOffset, 's'), 'millisecond');
       // setTimeout only accepts a 32bit integer, if the number is larger than this, do not timeout
       if (timeout <= 2147483647) {
         this.logoutTimer = setTimeout(async () => {
@@ -117,6 +120,6 @@ export class AuthService {
       console.error('Token does not match instance');
       return false;
     }
-    return (this.user && this.token && !this.$jwtHelper.isTokenExpired(this.token));
+    return (this.user && this.token && !this.$jwtHelper.isTokenExpired(this.token, this.$settings.serverTimeOffset));
   }
 }
