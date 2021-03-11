@@ -298,7 +298,7 @@
     "status.services.label_not_running": "Parado",
     "status.services.label_running": "A executar",
     "status.services.label_running_on_port": "A executar na porta {{port}}",
-    "status.services.label_starting": "Starting...",
+    "status.services.label_starting": "A iniciar...",
     "status.services.title_services": "Seviços",
     "status.title_server_status": "Estado do Servidor",
     "status.uptime.label_days": "Dias",
