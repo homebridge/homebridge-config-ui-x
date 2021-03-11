@@ -383,6 +383,12 @@
             ]
           },
           {
+            "title": "Thai (th)",
+            "enum": [
+              "th"
+            ]
+          },
+          {
             "title": "Turkish (tr)",
             "enum": [
               "tr"
