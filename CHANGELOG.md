@@ -8,6 +8,12 @@ All notable changes to this project will be documented in this file. This projec
 
 * **i18n:** Thai (th) language added by [@tomzt](https://github.com/tomzt) ([#1114](https://github.com/oznu/homebridge-config-ui-x/pull/1114))
   * The Homebridge UI is now available in 25 different languages!
+* **i18n:** Improvements to Slovenian language translations ([#1116](https://github.com/oznu/homebridge-config-ui-x/pull/1116))
+* **i18n:** Improvements to Indonesian language translations ([#1117](https://github.com/oznu/homebridge-config-ui-x/pull/1117))
+* **i18n:** Improvements to French language translations ([#1121](https://github.com/oznu/homebridge-config-ui-x/pull/1121))
+* **i18n:** Improvements to Spanish language translations ([#1122](https://github.com/oznu/homebridge-config-ui-x/pull/1122))
+* **i18n:** Improvements to Portuguese language translations ([#1124](https://github.com/oznu/homebridge-config-ui-x/pull/1124))
+
 * **Dashboard:** The current Homebridge status will now instantly reflect the current Homebridge status (when combined with hb-service and Homebridge v1.3.3 or later)
 
 ### API Changes
