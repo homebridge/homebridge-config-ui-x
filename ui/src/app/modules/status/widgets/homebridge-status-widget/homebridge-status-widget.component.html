@@ -41,7 +41,7 @@
         <div class="mb-0 p-3 hb-status-icon">
           <i class="fas primary-text" [ngClass]="{
             'fa-exclamation-circle red-text': homebridgeStatus.status === 'down',
-            'fa-cog fa-spin text-warning': homebridgeStatus.status === 'pending',
+            'fa-cog fa-spin': homebridgeStatus.status === 'pending',
             'fa-check-circle': homebridgeStatus.status === 'up'
           }"></i>
         </div>
