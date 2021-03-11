@@ -298,6 +298,7 @@
     "status.services.label_not_running": "Nieuruchomiony",
     "status.services.label_running": "Uruchomiony",
     "status.services.label_running_on_port": "Uruchomiony na porcie {{port}}",
+    "status.services.label_starting": "Starting...",
     "status.services.title_services": "Usługi",
     "status.title_server_status": "Status serwera",
     "status.uptime.label_days": "d",

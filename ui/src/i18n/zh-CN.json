@@ -298,6 +298,7 @@
     "status.services.label_not_running": "未运行",
     "status.services.label_running": "运行中",
     "status.services.label_running_on_port": "运行于端口 {{port}}",
+    "status.services.label_starting": "Starting...",
     "status.services.title_services": "服务",
     "status.title_server_status": "服务器状态",
     "status.uptime.label_days": "日",

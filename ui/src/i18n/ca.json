@@ -298,6 +298,7 @@
     "status.services.label_not_running": "Sense executar-se",
     "status.services.label_running": "Executant-se",
     "status.services.label_running_on_port": "Executant-se en el port {{ port }}",
+    "status.services.label_starting": "Starting...",
     "status.services.title_services": "Servicios",
     "status.title_server_status": "Estado del servidor",
     "status.uptime.label_days": "Dies",

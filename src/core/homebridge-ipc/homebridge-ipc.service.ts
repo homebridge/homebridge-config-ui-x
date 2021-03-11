@@ -1,6 +1,7 @@
 import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { ChildProcess } from 'child_process';
 import { EventEmitter } from 'events';
+import { ConfigService } from '../config/config.service';
 import { Logger } from '../logger/logger.service';
 
 @Injectable()
@@ -10,10 +11,12 @@ export class HomebridgeIpcService extends EventEmitter {
   private permittedEvents = [
     'childBridgeMetadataResponse',
     'childBridgeStatusUpdate',
+    'serverStatusUpdate'
   ];
 
   constructor(
-    private logger: Logger
+    private logger: Logger,
+    private configService: ConfigService,
   ) {
     super();
   }
@@ -33,6 +36,17 @@ export class HomebridgeIpcService extends EventEmitter {
         this.emit(message.id, message.data);
       }
     });
+
+    this.homebridge.on('close', () => {
+      this.emit('serverStatusUpdate', { status: 'down' });
+    });
+  }
+
+  /**
+   * Set the current homebridge version
+   */
+  public setHomebridgeVersion(version: string) {
+    this.configService.homebridgeVersion = version;
   }
 
   /**

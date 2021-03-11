@@ -435,6 +435,7 @@ export class HomebridgeServiceHelper {
     // let the ipc service know of the new process
     if (this.ipcService) {
       this.ipcService.setHomebridgeProcess(this.homebridge);
+      this.ipcService.setHomebridgeVersion(this.homebridgePackage.version);
     }
 
     this.logger(`Started Homebridge v${this.homebridgePackage.version} with PID: ${this.homebridge.pid}`);

@@ -2,7 +2,17 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-# NEXT
+## NEXT
+
+### Other Changes 
+
+* **Dashboard:** The current Homebridge status will now instantly reflect the current Homebridge status (when combined with Homebridge v1.3.3 or later)
+
+### API Changes
+
+* The `/api/status/homebridge` endpoint can now return an additional status of `pending`.
+
+## 4.40.0 (2021-03-08)
 
 ### Notable Changes
 
