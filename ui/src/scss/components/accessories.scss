@@ -114,10 +114,12 @@
     }
   }
 
-  &:hover,
-  &:active {
-    .manage-accessory-button {
-      opacity: 0.6;
+  @media (hover: hover) {
+    &:hover,
+    &:active {
+      .manage-accessory-button {
+        opacity: 0.6;
+      }
     }
   }
 
@@ -128,10 +130,12 @@
     margin-right: 15px;
     margin-top: 15px;
 
-    &:active,
-    &:hover {
-      opacity: 1;
-      transform: scale(1.2);
+    @media (hover: hover) {
+      &:active,
+      &:hover {
+        opacity: 1;
+        transform: scale(1.2);
+      }
     }
   }
 
