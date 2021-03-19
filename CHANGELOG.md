@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Other Changes 
 
+* **Dashboard:** The current Homebridge status will now instantly reflect the current Homebridge status (when combined with hb-service and Homebridge v1.3.3 or later)
 * **i18n:** Thai (th) language added by [@tomzt](https://github.com/tomzt) ([#1114](https://github.com/oznu/homebridge-config-ui-x/pull/1114))
   * The Homebridge UI is now available in 25 different languages!
 * **i18n:** Improvements to Slovenian language translations ([#1116](https://github.com/oznu/homebridge-config-ui-x/pull/1116))
@@ -18,9 +19,6 @@ All notable changes to this project will be documented in this file. This projec
 * **i18n:** Improvements to English language translations ([#1130](https://github.com/oznu/homebridge-config-ui-x/pull/1130))
 * **i18n:** Improvements to Traditional Chinese language translations ([#1133](https://github.com/oznu/homebridge-config-ui-x/pull/1133))
 * **i18n:** Improvements to Simplified Chinese language translations ([#1135](https://github.com/oznu/homebridge-config-ui-x/pull/1135))
-
-
-* **Dashboard:** The current Homebridge status will now instantly reflect the current Homebridge status (when combined with hb-service and Homebridge v1.3.3 or later)
 
 ### API Changes
 

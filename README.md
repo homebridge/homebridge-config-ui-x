@@ -127,7 +127,7 @@ Make sure you are running [supported versions of node and npm](#supported-nodejs
 
 #### 2. Accessories tab missing
 
-If the Accessories tab is not show then you are not running Homebridge in insecure mode. See the [Enabling Accessory Control](https://github.com/oznu/homebridge-config-ui-x/wiki/Enabling-Accessory-Control) wiki for details. If you have just enabled insecure mode make sure you have restarted Homebridge and refreshed the page in your browser.
+If the Accessories tab is not shown then you are not running Homebridge in insecure mode. See the [Enabling Accessory Control](https://github.com/oznu/homebridge-config-ui-x/wiki/Enabling-Accessory-Control) wiki for details. If you have just enabled insecure mode make sure you have restarted Homebridge and refreshed the page in your browser.
 
 #### 3. Running in Docker
 
