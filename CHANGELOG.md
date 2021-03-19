@@ -16,6 +16,8 @@ All notable changes to this project will be documented in this file. This projec
 * **i18n:** Improvements to Polish language translations ([#1125](https://github.com/oznu/homebridge-config-ui-x/pull/1125))
 * **i18n:** Improvements to German language translations ([#1127](https://github.com/oznu/homebridge-config-ui-x/pull/1127))
 * **i18n:** Improvements to English language translations ([#1130](https://github.com/oznu/homebridge-config-ui-x/pull/1130))
+* **i18n:** Improvements to Traditional Chinese language translations ([#1133](https://github.com/oznu/homebridge-config-ui-x/pull/1133))
+* **i18n:** Improvements to Simplified Chinese language translations ([#1135](https://github.com/oznu/homebridge-config-ui-x/pull/1135))
 
 
 * **Dashboard:** The current Homebridge status will now instantly reflect the current Homebridge status (when combined with hb-service and Homebridge v1.3.3 or later)
