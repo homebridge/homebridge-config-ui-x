@@ -52,7 +52,7 @@ export class RestartLinuxComponent implements OnInit, OnDestroy {
     this.checkDelay = setTimeout(() => {
       // listen to homebridge-status events to see when it's back online
       this.io.socket.on('homebridge-status', (data) => {
-        if (data.status === 'up') {
+        if (data.status === 'up' || data.status === 'pending') {
           this.$toastr.success(
             this.translate.instant('platform.linux.restart.toast_server_restarted'),
             this.translate.instant('toast.title_success'),
