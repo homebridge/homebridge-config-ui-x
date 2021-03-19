@@ -1,8 +1,10 @@
 ::ng-deep {
   a {
     &.grey-text {
-      &:hover {
-        text-decoration: underline;
+      @media (hover: hover) {
+        &:hover {
+          text-decoration: underline;
+        }
       }
     }
   }
@@ -34,10 +36,12 @@ gridster {
 }
 
 .widget-item {
-  &:hover,
-  &:active {
-    .widget-control-button {
-      opacity: 1;
+  @media (hover: hover) {
+    &:hover,
+    &:active {
+      .widget-control-button {
+        opacity: 1;
+      }
     }
   }
 }
@@ -55,9 +59,11 @@ gridster {
   -o-transition: opacity 200ms ease-in;
   transition: opacity 200ms ease-in;
 
-  &:hover,
-  &:active {
-    opacity: 1;
+  @media (hover: hover) {
+    &:hover,
+    &:active {
+      opacity: 1;
+    }
   }
 
   @media (max-width: 1023px) {

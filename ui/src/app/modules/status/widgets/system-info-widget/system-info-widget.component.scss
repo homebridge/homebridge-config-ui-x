@@ -5,8 +5,10 @@ table.table-sm td {
 }
 
 .system-info-link {
-  &:hover {
-    text-decoration: underline;
+  @media (hover: hover) {
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }
 
