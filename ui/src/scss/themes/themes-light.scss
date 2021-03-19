@@ -22,17 +22,21 @@
     a {
       &.card-link {
         color: #000000;
-
-        &:hover {
-          color: $primary !important;
+        
+        @media (hover: hover) {
+          &:hover {
+            color: $primary !important;
+          }
         }
       }
     }
 
     .icon-button {
       cursor: pointer;
-      &:hover {
-        color: $primary !important;
+      @media (hover: hover) {
+        &:hover {
+          color: $primary !important;
+        }
       }
     }
 
@@ -44,7 +48,11 @@
           background-color: $primary;
           border-color: $primary;
         }
-        &:hover,
+        @media (hover: hover) {
+          &:hover {
+            border-color: $primary !important;
+          }
+        }
         &:focus {
           border-color: $primary !important;
         }

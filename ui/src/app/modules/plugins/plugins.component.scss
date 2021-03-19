@@ -9,12 +9,14 @@
   padding: 10px;
   margin-bottom: 15px;
 
-  &:focus,
-  &:hover {
-    border: 1px solid #000000;
+  
+  @media (hover: hover) {
+    &:hover {
+      border: 1px solid #000000;
+    }
   }
-
   &:focus {
+    border: 1px solid #000000;
     box-shadow: 0 1px 0 0 #000000;
   }
 }
