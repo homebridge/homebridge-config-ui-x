@@ -109,7 +109,7 @@ export class ServerService {
   }
 
   /**
-   * Return a single device paring
+   * Return a single device pairing
    * @param deviceId 
    */
   public async getDevicePairingById(deviceId: string) {
