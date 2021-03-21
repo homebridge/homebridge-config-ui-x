@@ -45,7 +45,10 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   public formId;
   public formSchema;
   public formData;
+  public formSubmitButtonLabel;
+  public formCancelButtonLabel;
   public formUpdatedSubject = new Subject();
+  public formActionSubject = new Subject();
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -102,6 +105,8 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
       debounceTime(100),
       skip(1),
     ).subscribe(this.formUpdated.bind(this));
+
+    this.formActionSubject.subscribe(this.formActionEvent.bind(this));
 
     this.basePath = `/plugins/settings-ui/${encodeURIComponent(this.plugin.name)}`;
 
@@ -163,7 +168,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
         }
         case 'form.create': {
           this.showSchemaForm = false; // hide the schema generated form
-          this.formCreate(e.data.formId, e.data.schema, e.data.data);
+          this.formCreate(e.data.formId, e.data.schema, e.data.data, e.data.submitButton, e.data.cancelButton);
           break;
         }
         case 'form.end': {
@@ -345,13 +350,15 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   /**
    * Create a new other-form
    */
-  async formCreate(formId: string, schema, data) {
+  async formCreate(formId: string, schema, data, submitButton?: string, cancelButton?: string) {
     // need to clear out existing forms
     await this.formEnd();
 
     this.formId = formId;
     this.formSchema = schema;
     this.formData = data;
+    this.formSubmitButtonLabel = submitButton;
+    this.formCancelButtonLabel = cancelButton;
   }
 
   /**
@@ -362,6 +369,8 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
       this.formId = undefined;
       this.formSchema = undefined;
       this.formData = undefined;
+      this.formSubmitButtonLabel = undefined;
+      this.formCancelButtonLabel = undefined;
       await new Promise((resolve) => setTimeout(resolve));
     }
   }
@@ -373,7 +382,26 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     this.iframe.contentWindow.postMessage({
       action: 'stream',
       event: this.formId,
-      data,
+      data: {
+        formEvent: 'change',
+        formData: data,
+      },
+    }, environment.api.origin);
+  }
+
+  /**
+   * Fired when a custom form is cancelled or submitted
+   *
+   * @param action
+   */
+  formActionEvent(formEvent: 'cancel' | 'submit') {
+    this.iframe.contentWindow.postMessage({
+      action: 'stream',
+      event: this.formId,
+      data: {
+        formEvent,
+        formData: this.formData,
+      },
     }, environment.api.origin);
   }
 

@@ -31,6 +31,15 @@
     <div *ngIf="formId" class="card card-body">
       <app-schema-form [configSchema]="formSchema" [(data)]="formData" (dataChanged)="formUpdatedSubject.next($event)">
       </app-schema-form>
+
+      <div class="text-right custom-form-action-buttons">
+        <button class="btn btn-elegant" *ngIf="formCancelButtonLabel" (click)="formActionSubject.next('cancel')">
+          {{ formCancelButtonLabel }}
+        </button>
+        <button class="btn btn-primary" *ngIf="formSubmitButtonLabel" (click)="formActionSubject.next('submit')">
+          {{ formSubmitButtonLabel }}
+        </button>
+      </div>
     </div>
   </div>
 
