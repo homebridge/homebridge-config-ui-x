@@ -4,9 +4,14 @@ All notable changes to this project will be documented in this file. This projec
 
 ## 4.41.0 (2021-03-22)
 
+## Notable Changes
+
+* **Dashboard:** The Homebridge status shown on the dashboard will now instantly reflect the current Homebridge status
+  * As additional status of ***Starting*** has been added, which is show when the Homebridge process has been spawned, but not yet fully loaded
+  * These changes will only be enabled when combined with [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) and Homebridge v1.3.3 or later
+
 ### Other Changes 
 
-* **Dashboard:** The current Homebridge status will now instantly reflect the current Homebridge status (when combined with hb-service and Homebridge v1.3.3 or later)
 * **i18n:** Thai (th) language added by [@tomzt](https://github.com/tomzt) ([#1114](https://github.com/oznu/homebridge-config-ui-x/pull/1114))
   * The Homebridge UI is now available in 25 different languages!
 * **i18n:** Improvements to Slovenian language translations ([#1116](https://github.com/oznu/homebridge-config-ui-x/pull/1116))
