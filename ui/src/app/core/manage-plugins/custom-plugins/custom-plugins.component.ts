@@ -45,8 +45,9 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   public formId;
   public formSchema;
   public formData;
-  public formSubmitButtonLabel;
-  public formCancelButtonLabel;
+  public formSubmitButtonLabel: string;
+  public formCancelButtonLabel: string;
+  public formValid = true;
   public formUpdatedSubject = new Subject();
   public formActionSubject = new Subject();
 
@@ -387,6 +388,13 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
         formData: data,
       },
     }, environment.api.origin);
+  }
+
+  /**
+   * Fired when the form changes with a boolean indicating if the form is valid
+   */
+  formValidEvent(isValid: boolean) {
+    this.formValid = isValid;
   }
 
   /**
