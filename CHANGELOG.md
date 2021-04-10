@@ -2,12 +2,20 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## NEXT
+
+### Other Changes
+
+* **i18n:** Improvements to Catalan language translations ([#1138](https://github.com/oznu/homebridge-config-ui-x/pull/1138))
+* **i18n:** Improvements to Brazillian Portuguese language translations ([#1139](https://github.com/oznu/homebridge-config-ui-x/pull/1139))
+* **i18n:** Improvements to Thai language translations ([#1141](https://github.com/oznu/homebridge-config-ui-x/pull/1141))
+
 ## 4.41.0 (2021-03-22)
 
 ## Notable Changes
 
 * **Dashboard:** The Homebridge status shown on the dashboard will now instantly reflect the current Homebridge status
-  * As additional status of ***Starting*** has been added, which is show when the Homebridge process has been spawned, but not yet fully loaded
+  * As additional status of ***Starting*** has been added, which is shown when the Homebridge process has been spawned, but not yet fully loaded
   * These changes will only be enabled when combined with [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) and Homebridge v1.3.3 or later
 
 ### Other Changes 
