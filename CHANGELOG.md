@@ -2,13 +2,16 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## NEXT
+## 4.41.1 (2021-04-27)
 
 ### Other Changes
 
 * **i18n:** Improvements to Catalan language translations ([#1138](https://github.com/oznu/homebridge-config-ui-x/pull/1138))
 * **i18n:** Improvements to Brazillian Portuguese language translations ([#1139](https://github.com/oznu/homebridge-config-ui-x/pull/1139))
 * **i18n:** Improvements to Thai language translations ([#1141](https://github.com/oznu/homebridge-config-ui-x/pull/1141))
+* **i18n:** Improvements to Simplified Chinese language translations ([#1153](https://github.com/oznu/homebridge-config-ui-x/pull/1153))
+* **Accessory Control:** Updated accessory categories ([#1154](https://github.com/oznu/homebridge-config-ui-x/issues/1154))
+* **System:** Preliminary support for Node.js 16 (please continue to use Node.js v14.16.1 LTS for now)
 
 ## 4.41.0 (2021-03-22)
 

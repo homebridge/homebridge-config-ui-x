@@ -395,6 +395,7 @@ export class LinuxInstaller {
       const osInfo = await si.osInfo();
       if (osInfo.distro === 'Raspbian GNU/Linux') {
         child_process.execSync(`usermod -a -G audio,bluetooth,dialout,gpio,video ${this.hbService.asUser} 2> /dev/null`);
+        child_process.execSync(`usermod -a -G input,i2c,spi ${this.hbService.asUser} 2> /dev/null`);
       }
     } catch (e) {
       // do nothing
