@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 4.41.2 (2021-07-30)
+
+### Other Changes 
+
+* **i18n:** Ukrainian (ua) language added by [@xrust83](https://github.com/xrust83) ([#1190](https://github.com/oznu/homebridge-config-ui-x/pull/1190))
+  * The Homebridge UI is now available in 26 different languages!
+* **i18n:** Improvements to Thai language translations ([#1159](https://github.com/oznu/homebridge-config-ui-x/pull/1159))
+* **i18n:** Improvements to Italian language translations ([#1166](https://github.com/oznu/homebridge-config-ui-x/pull/1166))
+
 ## 4.41.1 (2021-04-27)
 
 ### Other Changes

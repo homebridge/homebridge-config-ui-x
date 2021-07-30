@@ -395,6 +395,12 @@
             ]
           },
           {
+            "title": "Ukrainian (uk)",
+            "enum": [
+              "uk"
+            ]
+          },
+          {
             "title": "Chinese - Simplified (zh-CN)",
             "enum": [
               "zh-CN"

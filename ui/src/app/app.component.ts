@@ -46,6 +46,7 @@ export class AppComponent {
       'ko',
       'mk',
       'th',
+      'uk',
     ];
 
     // which langs should use RTL
