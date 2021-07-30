@@ -5,7 +5,8 @@ import * as si from 'systeminformation';
 import * as semver from 'semver';
 import * as NodeCache from 'node-cache';
 import { Subject, Subscription } from 'rxjs';
-import { Injectable, HttpService, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 
 import { Logger } from '../../core/logger/logger.service';
 import { ConfigService } from '../../core/config/config.service';

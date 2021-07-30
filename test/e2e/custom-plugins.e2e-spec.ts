@@ -2,7 +2,8 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { of, throwError } from 'rxjs';
 import axios, { AxiosResponse, AxiosError } from 'axios';
-import { ValidationPipe, HttpService } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 

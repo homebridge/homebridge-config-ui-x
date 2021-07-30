@@ -4,7 +4,12 @@ import { WsGuard } from '../../../core/auth/guards/ws.guard';
 import { HomebridgeNestCamService } from './homebridge-nest-cam.service';
 
 @UseGuards(WsGuard)
-@WebSocketGateway({ namespace: 'plugins/custom-plugins/homebridge-nest-cam' })
+@WebSocketGateway({
+  namespace: 'plugins/custom-plugins/homebridge-nest-cam', allowEIO3: true, cors: {
+    origin: ['http://localhost:8080', 'http://localhost:4200'],
+    credentials: true
+  }
+})
 export class HomebridgeNestCamGateway {
 
   constructor(

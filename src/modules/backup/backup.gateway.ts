@@ -8,7 +8,12 @@ import { WsAdminGuard } from '../../core/auth/guards/ws-admin-guard';
 import { BackupService } from './backup.service';
 
 @UseGuards(WsAdminGuard)
-@WebSocketGateway({ namespace: '/backup' })
+@WebSocketGateway({
+  namespace: '/backup', allowEIO3: true, cors: {
+    origin: ['http://localhost:8080', 'http://localhost:4200'],
+    credentials: true
+  }
+})
 export class BackupGateway {
   constructor(
     private backupService: BackupService,

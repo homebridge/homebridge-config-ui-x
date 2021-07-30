@@ -5,7 +5,12 @@ import { WsAdminGuard } from '../../../core/auth/guards/ws-admin-guard';
 import { TerminalService, WsEventEmitter, TermSize } from './terminal.service';
 
 @UseGuards(WsAdminGuard)
-@WebSocketGateway({ namespace: 'platform-tools/terminal' })
+@WebSocketGateway({
+  namespace: 'platform-tools/terminal', allowEIO3: true, cors: {
+    origin: ['http://localhost:8080', 'http://localhost:4200'],
+    credentials: true
+  }
+})
 export class TerminalGateway {
   constructor(
     private readonly terminalService: TerminalService,

@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
-import { Injectable, NotFoundException, InternalServerErrorException, HttpService, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, InternalServerErrorException, BadRequestException } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 import { HomebridgePlugin, IPackageJson, INpmSearchResults, INpmRegistryModule } from './types';
 import { HomebridgePluginVersions, HomebridgePluginUiMetadata, PluginAlias } from './types';
 import axios from 'axios';

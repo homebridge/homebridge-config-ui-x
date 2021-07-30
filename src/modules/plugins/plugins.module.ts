@@ -1,5 +1,6 @@
 import * as https from 'https';
-import { Module, HttpModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
+import { HttpModule } from '@nestjs/axios';
 import { PassportModule } from '@nestjs/passport';
 
 import { PluginsService } from './plugins.service';

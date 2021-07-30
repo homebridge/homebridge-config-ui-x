@@ -1,11 +1,17 @@
 import { UseGuards } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets';
+
 import { PluginsService } from '../plugins/plugins.service';
 import { StatusService } from './status.service';
 import { WsGuard } from '../../core/auth/guards/ws.guard';
 
 @UseGuards(WsGuard)
-@WebSocketGateway({ namespace: 'status' })
+@WebSocketGateway({
+  namespace: 'status', allowEIO3: true, cors: {
+    origin: ['http://localhost:8080', 'http://localhost:4200'],
+    credentials: true
+  }
+})
 export class StatusGateway {
 
   constructor(

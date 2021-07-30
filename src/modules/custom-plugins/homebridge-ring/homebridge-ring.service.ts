@@ -1,4 +1,6 @@
-import { Injectable, UnauthorizedException, HttpException, InternalServerErrorException, HttpService } from '@nestjs/common';
+import { Injectable, UnauthorizedException, HttpException, InternalServerErrorException } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+
 import { Logger } from '../../../core/logger/logger.service';
 import { HomebridgeRingCredentialsDto } from './homebridge-ring.dto';
 

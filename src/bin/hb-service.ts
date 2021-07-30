@@ -23,7 +23,7 @@ import { Win32Installer } from './platforms/win32';
 import { LinuxInstaller } from './platforms/linux';
 import { DarwinInstaller } from './platforms/darwin';
 
-import type { HomebridgeIpcService } from '../core/homebridge-ipc/homebridge-ipc.service';
+import { HomebridgeIpcService } from '../core/homebridge-ipc/homebridge-ipc.service';
 
 export class HomebridgeServiceHelper {
   public action: 'install' | 'uninstall' | 'start' | 'stop' | 'restart' | 'rebuild' | 'run' | 'logs' | 'update-node' | 'before-start' | 'status';
@@ -483,7 +483,8 @@ export class HomebridgeServiceHelper {
       const ui = await main.app;
 
       // extract services
-      this.ipcService = ui.get('HomebridgeIpcService');
+      const { HomebridgeIpcService } = await import('../core/homebridge-ipc/homebridge-ipc.service');
+      this.ipcService = ui.get(HomebridgeIpcService);
     } catch (e) {
       this.logger('ERROR: The user interface threw an unhandled error');
       console.error(e);

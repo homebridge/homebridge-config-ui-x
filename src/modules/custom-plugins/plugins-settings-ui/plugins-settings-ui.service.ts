@@ -3,7 +3,8 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as NodeCache from 'node-cache';
 import * as child_process from 'child_process';
-import { HttpService, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 
 import { Logger } from '../../../core/logger/logger.service';
 import { ConfigService } from '../../../core/config/config.service';
