@@ -66,7 +66,7 @@ export class StatusService {
    * Looks up the cpu current load % and stores the last 60 points
    */
   private async getCpuLoadPoint() {
-    const currentLoad = (await si.currentLoad()).currentload;
+    const currentLoad = (await si.currentLoad()).currentLoad;
     this.cpuLoadHistory = this.cpuLoadHistory.slice(-60);
     this.cpuLoadHistory.push(currentLoad);
   }
