@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file. This projec
   * The Homebridge UI is now available in 26 different languages!
 * **i18n:** Improvements to Thai language translations ([#1159](https://github.com/oznu/homebridge-config-ui-x/pull/1159))
 * **i18n:** Improvements to Italian language translations ([#1166](https://github.com/oznu/homebridge-config-ui-x/pull/1166))
+* Updated npm dependencies
 
 ## 4.41.1 (2021-04-27)
 

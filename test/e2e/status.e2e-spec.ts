@@ -171,7 +171,7 @@ describe('StatusController (e2e)', () => {
     expect(res.json()).toHaveProperty('serviceUser');
     expect(res.json().homebridgeConfigJsonPath).toEqual(process.env.UIX_CONFIG_PATH);
     expect(res.json().homebridgeStoragePath).toEqual(process.env.UIX_STORAGE_PATH);
-  });
+  }, 30000);
 
   it('GET /status/nodejs', async () => {
     const data = [
