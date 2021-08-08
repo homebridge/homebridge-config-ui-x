@@ -3,7 +3,6 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ApiService } from '../../api.service';
 import { HomebridgeGoogleSmarthomeComponent } from './homebridge-google-smarthome/homebridge-google-smarthome.component';
-import { HomebridgeHoneywellHomeComponent } from './homebridge-honeywell-home/homebridge-honeywell-home.component';
 import { CustomPluginsComponent } from './custom-plugins.component';
 
 @Injectable({
@@ -13,7 +12,6 @@ export class CustomPluginsService {
 
   public plugins = {
     'homebridge-gsh': HomebridgeGoogleSmarthomeComponent,
-    'homebridge-honeywell-home': HomebridgeHoneywellHomeComponent,
   };
 
   constructor(

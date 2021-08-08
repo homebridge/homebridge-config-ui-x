@@ -11,19 +11,16 @@ import { CustomPluginsService } from './custom-plugins.service';
 
 import { CustomPluginsComponent } from './custom-plugins.component';
 import { HomebridgeGoogleSmarthomeComponent } from './homebridge-google-smarthome/homebridge-google-smarthome.component';
-import { HomebridgeHoneywellHomeComponent } from './homebridge-honeywell-home/homebridge-honeywell-home.component';
 import { HomebridgeHueComponent } from './homebridge-hue/homebridge-hue.component';
 
 @NgModule({
   entryComponents: [
     CustomPluginsComponent,
     HomebridgeGoogleSmarthomeComponent,
-    HomebridgeHoneywellHomeComponent,
   ],
   declarations: [
     CustomPluginsComponent,
     HomebridgeGoogleSmarthomeComponent,
-    HomebridgeHoneywellHomeComponent,
     HomebridgeHueComponent,
   ],
   imports: [
