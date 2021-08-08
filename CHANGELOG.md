@@ -2,11 +2,20 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## NEXT
+
+### Other Changes 
+
+* **i18n:** Improvements to Ukrainian language translations ([#1197](https://github.com/oznu/homebridge-config-ui-x/pull/1197))
+* **i18n:** Improvements to Thai language translations ([#1200](https://github.com/oznu/homebridge-config-ui-x/pull/1200))
+* **Plugins:** The following features have been added to assist plugin developers building [custom plugin user interfaces](https://github.com/homebridge/plugin-ui-utils):
+  * The "loading" spinner is now correctly shown on top of schema generated forms ([#1198](https://github.com/oznu/homebridge-config-ui-x/pull/1198))
+
 ## 4.41.2 (2021-07-30)
 
 ### Other Changes 
 
-* **i18n:** Ukrainian (ua) language added by [@xrust83](https://github.com/xrust83) ([#1190](https://github.com/oznu/homebridge-config-ui-x/pull/1190))
+* **i18n:** Ukrainian (uk) language added by [@xrust83](https://github.com/xrust83) ([#1190](https://github.com/oznu/homebridge-config-ui-x/pull/1190))
   * The Homebridge UI is now available in 26 different languages!
 * **i18n:** Improvements to Thai language translations ([#1159](https://github.com/oznu/homebridge-config-ui-x/pull/1159))
 * **i18n:** Improvements to Italian language translations ([#1166](https://github.com/oznu/homebridge-config-ui-x/pull/1166))
