@@ -8,6 +8,7 @@
     "properties": {
       "name": {
         "title": "Name",
+        "type": "string",
         "default": "Config",
         "minLength": 1,
         "required": true

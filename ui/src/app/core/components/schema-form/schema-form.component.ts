@@ -19,6 +19,7 @@ export class SchemaFormComponent implements OnInit {
     loadExternalAssets: false,
     returnEmptyFields: false,
     setSchemaDefaults: true,
+    autocomplete: false,
   };
 
   constructor() { }
