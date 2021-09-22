@@ -59,7 +59,7 @@
     "@nestjs/swagger": "5.0.9",
     "@nestjs/websockets": "8.0.5",
     "@oznu/hap-client": "1.8.0",
-    "axios": "0.21.1",
+    "axios": "0.21.2",
     "class-transformer": "^0.3.2",
     "class-validator": "^0.13.1",
     "commander": "6.2.1",
