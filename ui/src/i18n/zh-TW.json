@@ -80,7 +80,7 @@
     "child_bridge.label_bridge_paired": "Bridge 已配對",
     "child_bridge.label_bridge_settings": "Bridge 設定",
     "child_bridge.label_child_bridges": "子 Bridges",
-    "child_bridge.message_about": "Homebridge 允許以獨立的子 Bridge 模式執行 Plugin 平台或配件，將有助於改善 Himebridge 的回應速度與穩定度。",
+    "child_bridge.message_about": "Homebridge 允許以獨立的子 Bridge 模式執行 Plugin 平台或配件，將有助於改善 Homebridge 的回應速度與穩定度。",
     "child_bridge.message_child_bridges_must_be_paired_seperately": "每一個子 Bridge 平台或配件將需要分別與 Homekit 進行配對。",
     "child_bridge.message_must_configure_plugin_first": "於管理該 Bridge 設定之前，需要先設定此 Plugin。",
     "child_bridge.message_restart_homebridge": "重新啟動 Homebridge 以完成此子 Bridge 設定。",
