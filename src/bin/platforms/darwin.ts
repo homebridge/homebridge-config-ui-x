@@ -240,6 +240,9 @@ export class DarwinInstaller {
         unlink: true,
       };
 
+      // remove npm package as this can cause issues when overwritten by the node tarball
+      await this.hbService.removeNpmPackage(path.resolve(targetPath, 'lib', 'node_modules', 'npm'));
+
       // extract
       await this.hbService.extractNodejs(job.target, extractConfig);
 

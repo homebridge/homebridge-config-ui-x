@@ -1099,6 +1099,24 @@ export class HomebridgeServiceHelper {
   }
 
   /**
+   * Remove npm package
+   */
+  public async removeNpmPackage(npmInstallPath: string) {
+    if (!await fs.pathExists(npmInstallPath)) {
+      return;
+    }
+
+    const spinner = ora(`Cleaning up npm at ${npmInstallPath}...`).start();
+
+    try {
+      await fs.remove(npmInstallPath);
+      spinner.succeed(`Cleaned up npm at at ${npmInstallPath}`);
+    } catch (e) {
+      spinner.fail(e.message);
+    }
+  }
+
+  /**
    * Check the current status of the Homebridge UI by calling it's API
    */
   private async checkStatus() {

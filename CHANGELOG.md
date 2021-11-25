@@ -4,10 +4,15 @@ All notable changes to this project will be documented in this file. This projec
 
 ## NEXT
 
+### Bug Fixes
+
+* **System:** Added a fix to the [`hb-service update-node`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command#update-nodejs) command to prevent it breaking npm when uprading from Node 14 to 16
+
 ### Other Changes 
 
 * **i18n:** Improvements to Ukrainian language translations ([#1197](https://github.com/oznu/homebridge-config-ui-x/pull/1197))
 * **i18n:** Improvements to Thai language translations ([#1200](https://github.com/oznu/homebridge-config-ui-x/pull/1200))
+* **i18n:** Improvements to Traditional Chinese language translations ([#1240](https://github.com/oznu/homebridge-config-ui-x/pull/1240))
 * **Plugins:** The following features have been added to assist plugin developers building [custom plugin user interfaces](https://github.com/homebridge/plugin-ui-utils):
   * The "loading" spinner is now correctly shown on top of schema generated forms ([#1198](https://github.com/oznu/homebridge-config-ui-x/pull/1198))
 
