@@ -78,7 +78,7 @@ This shows you the Homebridge accessories for all the Homebridge instances on yo
 
 # Supported Browsers
 
-The following browsers are supported by this plugin:
+The following browsers are supported by the Homebridge UI:
 
 * Chrome - latest
 * Edge - latest
@@ -90,9 +90,9 @@ MS Internet Explorer (any version) is not supported!
 
 # Supported Node.js and Npm Versions
 
-While this plugin should work on Node.js 8+, only the following versions of Node.js are officially supported:
+While the Homebridge UI should work on Node.js 10+, only the following versions of Node.js are officially supported:
 
-* node v10.17.0 or higher
+* node v12.13.0 or higher
 * npm v6.4.1 or higher
 
 You can check your current versions using these commands:
@@ -113,7 +113,7 @@ Please see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 #### 1. Errors during installation
 
-Make sure you installed the package with `sudo` and used the  `--unsafe-perm` flag. Most installation errors can be fixed by removing the plugin and reinstalling:
+Make sure you installed the package with `sudo` and used the  `--unsafe-perm` flag. Most installation errors can be fixed by removing the Homebridge UI and reinstalling:
 
 ```shell
 # cleanup
@@ -131,7 +131,7 @@ If the Accessories tab is not shown then you are not running Homebridge in insec
 
 #### 3. Running in Docker
 
-This plugin supports the [oznu/homebridge](https://github.com/oznu/docker-homebridge) Docker image. You must enable the UI using the method described in [the wiki](https://github.com/oznu/homebridge-config-ui-x/wiki/Enabling-UI-with-Docker).
+The Homebridge UI supports the [oznu/homebridge](https://github.com/oznu/docker-homebridge) Docker image. You must enable the UI using the method described in [the wiki](https://github.com/oznu/homebridge-config-ui-x/wiki/Enabling-UI-with-Docker).
 
 #### 4. Ask on Discord
 
