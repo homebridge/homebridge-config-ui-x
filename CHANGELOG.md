@@ -2,11 +2,11 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## NEXT
+## 4.41.3 (2021-11-25)
 
 ### Bug Fixes
 
-* **System:** Added a fix to the [`hb-service update-node`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command#update-nodejs) command to prevent it breaking npm when uprading from Node 14 to 16
+* **System:** Added a fix to the [`hb-service update-node`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command#update-nodejs) command to prevent it breaking npm when upgrading from Node 14 to 16
 
 ### Other Changes 
 
