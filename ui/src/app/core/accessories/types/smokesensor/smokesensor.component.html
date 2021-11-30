@@ -1,0 +1,16 @@
+<div class="accessory-box" [ngClass]="{
+  'switch-on': service.values.SmokeDetected,
+  'switch-off': !service.values.SmokeDetected
+}">
+  <div class="d-flex flex-column h-100">
+    <div *ngIf="!service.values.SmokeDetected" [inlineSVG]="'/assets/hap-icons/smokesensor-idle.svg'" aria-label="Smoke"
+      class="accessory-svg"></div>
+    <div *ngIf="service.values.SmokeDetected" [inlineSVG]="'/assets/hap-icons/smokesensor-alarm.svg'" aria-label="Smoke"
+      class="accessory-svg"></div>
+    <div [inlineSVG]="'/assets/hap-icons/smokesensor.svg'" aria-label="Switch" class="accessory-svg"></div>
+    <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
+    <div class="accessory-label red-text" *ngIf="service.values.SmokeDetected">
+      {{ 'accessories.control.label_triggered' | translate }}
+    </div>
+  </div>
+</div>

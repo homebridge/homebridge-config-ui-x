@@ -44,6 +44,7 @@ import { SpeakerManageComponent } from './types/speaker/speaker.manage.component
 import { SecuritysystemComponent } from './types/securitysystem/securitysystem.component';
 import { SecuritysystemManageComponent } from './types/securitysystem/securitysystem.manage.component';
 import { LeaksensorComponent } from './types/leaksensor/leaksensor.component';
+import { SmokesensorComponent } from './types/smokesensor/smokesensor.component';
 import { ValveComponent } from './types/valve/valve.component';
 import { ValveManageComponent } from './types/valve/valve.manage.component';
 import { IrrigationSystemComponent } from './types/irrigationsystem/irrigationsystem.component';
@@ -109,6 +110,7 @@ import { AccessoryTileComponent } from './accessory-tile/accessory-tile.componen
     SecuritysystemComponent,
     SecuritysystemManageComponent,
     LeaksensorComponent,
+    SmokesensorComponent,
     ValveComponent,
     ValveManageComponent,
     IrrigationSystemComponent,
