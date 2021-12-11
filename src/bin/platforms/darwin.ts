@@ -214,7 +214,7 @@ export class DarwinInstaller {
   public async updateNodejs(job: { target: string; rebuild: boolean }) {
     this.checkForRoot();
 
-    if (['x64', 'arm64'].includes(process.arch)) {
+    if (!['x64', 'arm64'].includes(process.arch)) {
       this.hbService.logger(`Architecture not supported: ${process.arch}.`, 'fail');
       process.exit(1);
     }
