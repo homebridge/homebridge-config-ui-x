@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## NEXT
+
+### Other Changes 
+
+* **System:** Updated the [`hb-service update-node`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command#update-nodejs) command to allow updating Node.js on Apple M1 ([#1246](https://github.com/oznu/homebridge-config-ui-x/issues/1246))
+
 ## 4.41.3 (2021-11-25)
 
 ### Bug Fixes
