@@ -1,5 +1,5 @@
 <div class="accessory-box" [ngClass]="{'switch-on': !service.values.Mute}" appLongclick (longclick)="onLongClick()"
-  (shortclick)="onClick()">
+  (shortclick)="onClick()" tabindex="0">
   <div class="d-flex flex-column h-100">
     <div [inlineSVG]="'/assets/hap-icons/speaker.svg'" aria-label="Speaker" class="accessory-svg"></div>
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>

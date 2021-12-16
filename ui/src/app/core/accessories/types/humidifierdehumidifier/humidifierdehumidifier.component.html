@@ -1,8 +1,7 @@
 <div class="accessory-box" [ngClass]="{'switch-on': service.values.Active === 1}" appLongclick
-  (longclick)="onLongClick()" (shortclick)="onClick()">
+  (longclick)="onLongClick()" (shortclick)="onClick()" tabindex="0">
   <div class="d-flex flex-column h-100">
-    <div class="humidity-drop humidity-drop-collapse" 
-      [ngClass]="{
+    <div class="humidity-drop humidity-drop-collapse" [ngClass]="{
       'dehumidifying': service.values.CurrentHumidifierDehumidifierState === 3 && service.values.Active === 1,
       'humidifying': service.values.CurrentHumidifierDehumidifierState === 2 && service.values.Active === 1,
       'no-current-state': service.values.CurrentHumidifierDehumidifierState === 1 && service.values.Active === 1
@@ -23,7 +22,8 @@
         {{ service.values.RelativeHumidityDehumidifierThreshold }}%
       </span>
       <span *ngSwitchCase="0">
-        {{ service.values.RelativeHumidityHumidifierThreshold }}%-{{ service.values.RelativeHumidityDehumidifierThreshold }}%
+        {{ service.values.RelativeHumidityHumidifierThreshold }}%-{{
+        service.values.RelativeHumidityDehumidifierThreshold }}%
       </span>
     </div>
     <div class="accessory-label grey-text"

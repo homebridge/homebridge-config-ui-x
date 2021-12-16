@@ -6,7 +6,7 @@ import { OnDestroy, Directive, EventEmitter, HostListener, Input, Output } from 
 export class LongClickDirective implements OnDestroy {
   @Input() public duration = 350;
   @Output() public longclick: EventEmitter<MouseEvent> = new EventEmitter();
-  @Output() public shortclick: EventEmitter<MouseEvent> = new EventEmitter();
+  @Output() public shortclick: EventEmitter<MouseEvent | KeyboardEvent> = new EventEmitter();
 
   private downTimeout;
   private done = false;
@@ -15,6 +15,11 @@ export class LongClickDirective implements OnDestroy {
 
   ngOnDestroy() {
     clearInterval(this.downTimeout);
+  }
+
+  @HostListener('keyup.enter', ['$event'])
+  public onEnter(event: KeyboardEvent) {
+    this.shortclick.emit(event);
   }
 
   @HostListener('mouseup', ['$event'])

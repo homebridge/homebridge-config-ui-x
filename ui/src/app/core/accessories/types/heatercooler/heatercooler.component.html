@@ -1,5 +1,5 @@
 <div class="accessory-box" [ngClass]="{'switch-on': service.values.Active === 1}" appLongclick
-  (longclick)="onLongClick()" (shortclick)="onClick()">
+  (longclick)="onLongClick()" (shortclick)="onClick()" tabindex="0">
   <div class="d-flex flex-column h-100">
     <div class="temperature-circle temperature-circle-collapse"
       [innerText]="(service.values.CurrentTemperature | convertTemp | number:'1.0-1') + '°'" [ngClass]="{
@@ -21,7 +21,8 @@
         {{ service.values.CoolingThresholdTemperature | convertTemp | number:'1.0-1' }}&deg;
       </span>
       <span *ngSwitchCase="0">
-        {{ service.values.HeatingThresholdTemperature | convertTemp | number:'1.0-1' }}&deg;-{{ service.values.CoolingThresholdTemperature | convertTemp | number:'1.0-1' }}&deg;
+        {{ service.values.HeatingThresholdTemperature | convertTemp | number:'1.0-1' }}&deg;-{{
+        service.values.CoolingThresholdTemperature | convertTemp | number:'1.0-1' }}&deg;
       </span>
     </div>
     <div class="accessory-label grey-text"

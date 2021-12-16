@@ -22,7 +22,7 @@
     a {
       &.card-link {
         color: #000000;
-        
+
         @media (hover: hover) {
           &:hover {
             color: $primary !important;
@@ -67,6 +67,10 @@
       input:checked ~ .hb-uix-slider {
         background-color: $primary !important;
       }
+    }
+
+    .rendux-input:checked + label {
+      background: $primary-dark !important;
     }
 
     .qr-code-container {

@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Other Changes 
 
+* Accessibility improvements ([#1226](https://github.com/oznu/homebridge-config-ui-x/issues/1226))
 * Increase timeout for requests made to npm from 5 seconds to 10 seconds.
 
 ## 4.41.4 (2021-12-12)

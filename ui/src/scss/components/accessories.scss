@@ -132,7 +132,8 @@
 
     @media (hover: hover) {
       &:active,
-      &:hover {
+      &:hover,
+      &:focus {
         opacity: 1;
         transform: scale(1.2);
       }

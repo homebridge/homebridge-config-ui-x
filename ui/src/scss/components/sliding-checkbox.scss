@@ -1,0 +1,54 @@
+/** From https://codepen.io/hey-nick/pen/ppWpbE **/
+
+.rendux-input {
+  opacity: 0;
+  position: absolute;
+}
+
+.rendux-label {
+  display: inline-block;
+  outline: 0;
+  width: 2.8em;
+  height: 1.5em;
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+  background: #fbfbfb;
+  border-radius: 1.5em;
+  padding: 2px;
+  transition: all 0.4s ease;
+  border: 1px solid #e8eae9;
+  margin-bottom: 0px;
+}
+.rendux-input:hover + label::after,
+.rendux-input:focus + label::after,
+.rendux-input:active + label::after {
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 4px 0 rgba(0, 0, 0, 0.08), inset 0px 0px 0px 1.5px #9c9c9c;
+}
+.rendux-label::after {
+  left: 0;
+  position: relative;
+  display: block;
+  content: "";
+  width: 50%;
+  height: 100%;
+  border-radius: 2em;
+  background: #fbfbfb;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), padding 0.3s ease, margin 0.3s ease;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 4px 0 rgba(0, 0, 0, 0.08);
+}
+.rendux-input:checked + label::after {
+  left: 50%;
+}
+.rendux-input:checked + label {
+  background: #86d993;
+}
+.rendux-input:checked:active + label {
+  box-shadow: none;
+}
+.rendux-input:checked:active + label::after {
+  margin-left: -0.8em;
+}
+.rendux-input:active + label::after {
+  padding-right: 0.8em;
+}

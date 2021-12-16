@@ -32,6 +32,16 @@
       background-color: $darkModePrimary;
     }
 
+    .rendux-label {
+      background: #898989 !important;
+      border-color: #898989 !important;
+    }
+
+    .rendux-input:checked + label {
+      background: $darkModePrimary !important;
+      border-color: $darkModePrimary !important;
+    }
+
     .btn-primary,
     .btn-default {
       @extend .btn-#{$baseBtn} !optional;
@@ -112,7 +122,7 @@
       }
 
       color: $darkModePrimary;
-      
+
       @media (hover: hover) {
         &:hover {
           text-decoration: underline;
