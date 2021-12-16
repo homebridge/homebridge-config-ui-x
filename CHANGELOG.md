@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+# NEXT
+
+### Bug Fixes
+
+* Fixed a type error on startup on low powered ARM devices (such as the Raspberry Pi Zero W) ([#1251](https://github.com/oznu/homebridge-config-ui-x/issues/1251))
+
+### Other Changes 
+
+* Increase timeout for requests made to npm from 5 seconds to 10 seconds.
+
 ## 4.41.4 (2021-12-12)
 
 ### Other Changes 

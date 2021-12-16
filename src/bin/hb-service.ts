@@ -345,6 +345,11 @@ export class HomebridgeServiceHelper {
     // start the ui
     await this.runUi();
 
+    // tell the ui what homebridge we are running initialy (this is refreshed when Homebridge is restarted)
+    if (this.ipcService && this.homebridgePackage) {
+      this.ipcService.setHomebridgeVersion(this.homebridgePackage.version);
+    }
+
     // delay the launch of homebridge on Raspberry Pi 1/Zero by 20 seconds
     if (os.cpus().length === 1 && os.arch() === 'arm') {
       this.logger('Delaying Homebridge startup by 20 seconds on low powered server');
