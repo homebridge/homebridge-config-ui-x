@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-# NEXT
+# 4.41.5 (2021-12-18)
 
 ### Bug Fixes
 
