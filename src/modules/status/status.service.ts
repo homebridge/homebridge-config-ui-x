@@ -378,6 +378,7 @@ export class StatusService {
       homebridgeInsecureMode: this.configService.homebridgeInsecureMode,
       homebridgeCustomPluginPath: this.configService.customPluginPath,
       homebridgeRunningInDocker: this.configService.runningInDocker,
+      homebridgeRunniongInSynologyPackage: this.configService.runningInSynologyPackage,
       homebridgeServiceMode: this.configService.serviceMode,
       nodeVersion: process.version,
       os: await this.getOsInfo(),
