@@ -1,25 +1,13 @@
 ::ng-deep {
   .switch-off {
     svg {
-      .leak_sensor_droplet {
-        fill: #e0e0e0;
-      }
       .smoke_sensor_trigger_lines {
         display: none;
       }
-      .smoke_sensor_background {
+      .smoke_sensor_box {
         fill: #808080;
       }
     }
   }
 }
 
-::ng-deep body.dark-mode {
-  .switch-off {
-    svg {
-      .smoke_sensor_droplet {
-        fill: #2b2b2b;
-      }
-    }
-  }
-}
