@@ -341,6 +341,7 @@
     "status.widget.systeminfo.label_service_mode": "Tryb serwisowy",
     "status.widget.systeminfo.label_service_user": "Użytkownik",
     "status.widget.systeminfo.label_storage_path": "Ścieżka zapisu",
+    "status.widget.systeminfo.label_synology_package": "Synology Package",
     "status.widget.systeminfo.label_timezone": "Strefa czasowa",
     "status.widget.title_manage_widget": "Ustawienia widżetu",
     "status.widget.uptime.label_process": "Procesy",

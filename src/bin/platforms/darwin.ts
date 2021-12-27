@@ -2,6 +2,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
+import * as semver from 'semver';
 
 import { HomebridgeServiceHelper } from '../hb-service';
 
@@ -213,12 +214,17 @@ export class DarwinInstaller {
   public async updateNodejs(job: { target: string; rebuild: boolean }) {
     this.checkForRoot();
 
-    if (process.arch !== 'x64') {
+    if (!['x64', 'arm64'].includes(process.arch)) {
       this.hbService.logger(`Architecture not supported: ${process.arch}.`, 'fail');
       process.exit(1);
     }
 
-    const downloadUrl = `https://nodejs.org/dist/${job.target}/node-${job.target}-darwin-x64.tar.gz`;
+    if (process.arch === 'arm64' && semver.lt(job.target, '16.0.0')) {
+      this.hbService.logger('macOS M1 / arm64 support is only available from Node.js 16 onwards', 'fail');
+      process.exit(1);
+    }
+
+    const downloadUrl = `https://nodejs.org/dist/${job.target}/node-${job.target}-darwin-${process.arch}.tar.gz`;
     const targetPath = path.dirname(path.dirname(process.execPath));
 
     // only allow updates when installed using the offical Node.js installer

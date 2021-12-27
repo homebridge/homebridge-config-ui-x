@@ -13,10 +13,11 @@
             <i class="fas fa-cog"></i>
           </button>
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="accessory-dropdown-menu">
-            <a class="dropdown-item" (click)="addRoom()" [translate]="'accessories.button_add_room'">Add Room</a>
-            <a class="dropdown-item" (click)="hideHidden = !hideHidden"
+            <a href="javascript:void(0)" class="dropdown-item" (click)="addRoom()"
+              [translate]="'accessories.button_add_room'">Add Room</a>
+            <a href="javascript:void(0)" class="dropdown-item" (click)="hideHidden = !hideHidden"
               [translate]="'accessories.button_toggle_hidden'">Toggle Hidden</a>
-            <a class="dropdown-item" (click)="toggleLayoutLock()"
+            <a href="javascript:void(0)" class="dropdown-item" (click)="toggleLayoutLock()"
               [translate]="'accessories.button_toggle_layout_lock'">Toggle Layout Lock</a>
           </div>
         </div>

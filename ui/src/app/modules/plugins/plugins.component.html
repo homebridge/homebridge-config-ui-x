@@ -3,10 +3,12 @@
 <div class="row">
   <div class="col-md-12">
     <form novalidate (ngSubmit)="onSubmit(form)" [formGroup]="form">
-      <i class="hb-npm-search-clear far fa-times-circle" *ngIf="form.controls['query'].value"
-        (click)="onClearSearch()"></i>
-      <input type="text" class="hb-npm-search" tabindex="1"
-        [placeholder]="'plugins.placeholder_search_plugin' | translate" formControlName="query">
+      <input type="text" class="hb-npm-search" [placeholder]="'plugins.placeholder_search_plugin' | translate"
+        formControlName="query">
+      <a class="hb-npm-search-clear" href="javascript:void(0)" (click)="onClearSearch()">
+        <i class="far fa-times-circle" *ngIf="form.controls['query'].value"></i>
+      </a>
+
     </form>
   </div>
 </div>

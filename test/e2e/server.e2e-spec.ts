@@ -299,7 +299,7 @@ describe('ServerController (e2e)', () => {
 
     expect(res.statusCode).toEqual(200);
     expect(Array.isArray(res.json())).toEqual(true);
-  });
+  }, 15000);
 
   it('GET /server/network-interfaces/bridge', async () => {
     const res = await app.inject({

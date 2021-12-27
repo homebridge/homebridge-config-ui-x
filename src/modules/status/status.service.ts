@@ -67,7 +67,7 @@ export class StatusService {
    * Looks up the cpu current load % and stores the last 60 points
    */
   private async getCpuLoadPoint() {
-    const currentLoad = (await si.currentLoad()).currentload;
+    const currentLoad = (await si.currentLoad()).currentLoad;
     this.cpuLoadHistory = this.cpuLoadHistory.slice(-60);
     this.cpuLoadHistory.push(currentLoad);
   }
@@ -236,7 +236,7 @@ export class StatusService {
     client.emit('homebridge-status', await this.getHomebridgeStats());
 
     // ipc status events are only available in Homebridge 1.3.3 or later - and when running in service mode
-    if (this.configService.serviceMode && semver.gt(this.configService.homebridgeVersion, '1.3.3-beta.5', { includePrerelease: true })) {
+    if (this.configService.serviceMode && this.configService.homebridgeVersion && semver.gt(this.configService.homebridgeVersion, '1.3.3-beta.5', { includePrerelease: true })) {
       homebridgeStatusChangeSub = this.homebridgeStatusChange.subscribe(async (status) => {
         client.emit('homebridge-status', await this.getHomebridgeStats());
       });
@@ -281,7 +281,7 @@ export class StatusService {
    * Check if homebridge is running on the local system
    */
   public async checkHomebridgeStatus() {
-    if (this.configService.serviceMode && semver.gt(this.configService.homebridgeVersion, '1.3.3-beta.5', { includePrerelease: true })) {
+    if (this.configService.serviceMode && this.configService.homebridgeVersion && semver.gt(this.configService.homebridgeVersion, '1.3.3-beta.5', { includePrerelease: true })) {
       return this.homebridgeStatus;
     }
 
@@ -378,6 +378,7 @@ export class StatusService {
       homebridgeInsecureMode: this.configService.homebridgeInsecureMode,
       homebridgeCustomPluginPath: this.configService.customPluginPath,
       homebridgeRunningInDocker: this.configService.runningInDocker,
+      homebridgeRunniongInSynologyPackage: this.configService.runningInSynologyPackage,
       homebridgeServiceMode: this.configService.serviceMode,
       nodeVersion: process.version,
       os: await this.getOsInfo(),

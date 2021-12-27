@@ -17,7 +17,7 @@ import { NodePtyModule } from '../../core/node-pty/node-pty.module';
       headers: {
         'User-Agent': 'homebridge-config-ui-x',
       },
-      timeout: 5000,
+      timeout: 10000,
       httpsAgent: new https.Agent({ keepAlive: true }),
     }),
     NodePtyModule,

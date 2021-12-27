@@ -30,20 +30,20 @@
       <ul class="navbar-nav nav-flex-icons hb-nav-right">
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" placement="bottom"
           ngbTooltip="{{'menu.tooltip_view_logs' | translate}}" container="body">
-          <a class="nav-link" routerLink="/logs">
+          <a class="nav-link" routerLink="/logs" aria-label="View Homebridge Logs">
             <i class="fas fa-wave-square nav-menu-icon"></i>
           </a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" placement="bottom"
           ngbTooltip="{{'menu.tooltip_restart' | translate}}" container="body">
-          <a class="nav-link" routerLink="/restart">
+          <a class="nav-link" routerLink="/restart" aria-label="Restart Homebridge">
             <i #restartHomebridgeIcon class="fas fa-power-off nav-menu-icon"></i>
           </a>
         </li>
 
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle waves-effect waves-light" data-toggle="dropdown" aria-haspopup="true"
-            aria-expanded="false">
+          <a href="javascript:void(0)" class="nav-link dropdown-toggle waves-effect waves-light" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false" aria-label="more actions dropdown menu">
             <i class="fas fa-ellipsis-v nav-menu-icon"></i>
           </a>
           <div class="dropdown-menu dropdown-menu-right dropdown-info">
@@ -59,12 +59,12 @@
               *ngIf="$settings.env.runningInDocker && $auth.user.admin">
               {{ 'menu.docker.label_restart_container' | translate }}
             </a>
-            <a class="dropdown-item waves-effect waves-light" *ngIf="$settings.env.runningInLinux && $auth.user.admin"
-              (click)="restartServer()">
+            <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light"
+              *ngIf="$settings.env.runningInLinux && $auth.user.admin" (click)="restartServer()">
               {{ 'menu.linux.label_restart_server' | translate }}
             </a>
-            <a class="dropdown-item waves-effect waves-light" *ngIf="$settings.env.runningInLinux && $auth.user.admin"
-              (click)="shutdownServer()">
+            <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light"
+              *ngIf="$settings.env.runningInLinux && $auth.user.admin" (click)="shutdownServer()">
               {{ 'menu.linux.label_shutdown_server' | translate }}
             </a>
             <div class="dropdown-divider"
@@ -72,18 +72,19 @@
             <a class="dropdown-item waves-effect waves-light" routerLink="/settings" *ngIf="$auth.user.admin">
               Homebridge {{ 'menu.docker.label_settings' | translate }}
             </a>
-            <a class="dropdown-item waves-effect waves-light" (click)="backupRestoreHomebridge()"
-              *ngIf="$auth.user.admin">
+            <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light"
+              (click)="backupRestoreHomebridge()" *ngIf="$auth.user.admin">
               {{ 'backup.title_backup_restore' | translate }}
             </a>
             <div class="dropdown-divider" *ngIf="$auth.user.admin"></div>
-            <a class="dropdown-item waves-effect waves-light" (click)="openUiSettings()" *ngIf="$auth.user.admin">
+            <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light" (click)="openUiSettings()"
+              *ngIf="$auth.user.admin">
               {{ 'menu.label_ui_settings' | translate }}
             </a>
             <a class="dropdown-item waves-effect waves-light" routerLink="/users" *ngIf=" $auth.user.admin">
               {{'menu.tooltip_user_accounts' | translate}}
             </a>
-            <a class="dropdown-item" (click)="$auth.logout()" *ngIf="$settings.formAuth">
+            <a href="javascript:void(0)" class="dropdown-item" (click)="$auth.logout()" *ngIf="$settings.formAuth">
               {{ 'menu.tooltip_logout' | translate }}
             </a>
           </div>

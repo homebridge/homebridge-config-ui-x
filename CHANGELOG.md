@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## NEXT
+
+### Other Changes 
+
+* Minor changes to support a native Homebridge Synology DSM Package
+
+## 4.41.5 (2021-12-18)
+
+### Bug Fixes
+
+* Fixed a type error on startup on low powered ARM devices (such as the Raspberry Pi Zero W) ([#1251](https://github.com/oznu/homebridge-config-ui-x/issues/1251))
+
+### Other Changes 
+
+* Accessibility improvements ([#1226](https://github.com/oznu/homebridge-config-ui-x/issues/1226))
+* Increase timeout for requests made to npm from 5 seconds to 10 seconds.
+
+## 4.41.4 (2021-12-12)
+
+### Other Changes 
+
+* **System:** Updated the [`hb-service update-node`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command#update-nodejs) command to allow updating Node.js on Apple M1 ([#1246](https://github.com/oznu/homebridge-config-ui-x/issues/1246))
+* Updated npm dependencies
+
 ## 4.41.3 (2021-11-25)
 
 ### Bug Fixes

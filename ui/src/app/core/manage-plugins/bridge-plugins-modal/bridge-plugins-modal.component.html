@@ -30,11 +30,9 @@
                 {{ item.name || item.accessory || item.platform }}
               </strong>
             </h5>
-            <div class="material-switch pull-right">
-              <input [id]="'toggleExternalBridgeInput_' + i" type="checkbox"
-                (change)="toggleExternalBridge(item, enabledBlocks[i], i)" [(ngModel)]="enabledBlocks[i]" />
-              <label [for]="'toggleExternalBridgeInput_' + i" class="badge-primary"></label>
-            </div>
+            <input type="checkbox" class="rendux-input" [id]="'toggleExternalBridgeInput_' + i"
+              (change)="toggleExternalBridge(item, enabledBlocks[i], i)" [(ngModel)]="enabledBlocks[i]">
+            <label [for]="'toggleExternalBridgeInput_' + i" class="rendux-label"></label>
           </div>
           <div *ngIf="item._bridge?.username">
             <div *ngIf="deviceInfo[item._bridge?.username] === false">

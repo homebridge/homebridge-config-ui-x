@@ -14,8 +14,9 @@
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
         <div>{{ 'settings.network.title_network_interfaces' | translate }}
-          <i class="fas fa-info-circle primary-text"
-            ngbTooltip="{{ 'settings.network.message_network_interface_one' | translate }}"></i>
+          <a href="javascript:void(0)" ngbTooltip="{{ 'settings.network.message_network_interface_one' | translate }}">
+            <i class="fas fa-info-circle primary-text"></i>
+          </a>
         </div>
 
         <span *ngFor="let adapter of bridgeNetworkAdapters">
@@ -28,17 +29,21 @@
         </span>
       </span>
       <button class="btn btn-primary waves-effect m-0" [translate]="'reset.title_clear_cached_accessories'"
-        (click)="selectNetworkInterfaces()" [disabled]="!availableNetworkAdapters.length">
+        (click)="selectNetworkInterfaces()" [disabled]="!availableNetworkAdapters.length"
+        [attr.aria-label]="'settings.network.title_network_interfaces' | translate">
         <i class="fas fa-cog" [ngClass]="{ 'fa-pulse': !availableNetworkAdapters.length }"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.mdns_advertiser' | translate }}
-        <i class="fas fa-info-circle primary-text" ngbTooltip="{{ 'settings.mdns_advertiser_help' | translate }}"></i>
+        <a href="javascript:void(0)" ngbTooltip="{{ 'settings.mdns_advertiser_help' | translate }}">
+          <i class="fas fa-info-circle primary-text"></i>
+        </a>
       </span>
       <div>
-        <select class="custom-select" [formControl]="legacyMdnsFormControl">
+        <select class="custom-select" [formControl]="legacyMdnsFormControl"
+          [attr.aria-label]=" 'settings.mdns_advertiser' | translate">
           <option value="bonjour-hap">Bonjour HAP</option>
           <option value="ciao">Ciao</option>
         </select>
@@ -70,10 +75,9 @@
   <ul class="list-group">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span>Homebridge Debug Mode <code>-D</code></span>
-      <div class="material-switch pull-right">
-        <input id="homebridgeDebugMode" formControlName="HOMEBRIDGE_DEBUG" type="checkbox" />
-        <label for="homebridgeDebugMode" class="badge-primary"></label>
-      </div>
+      <input type="checkbox" class="rendux-input" id="homebridgeDebugMode" formControlName="HOMEBRIDGE_DEBUG"
+        aria-label="Debug Mode">
+      <label for="homebridgeDebugMode" class="rendux-label"></label>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span>
@@ -81,17 +85,15 @@
         <span class="d-none d-md-inline"> / Enable Accessory Control </span>
         <code>-I</code>
       </span>
-      <div class="material-switch pull-right">
-        <input id="homebridgeInsecureMode" formControlName="HOMEBRIDGE_INSECURE" type="checkbox" />
-        <label for="homebridgeInsecureMode" class="badge-primary"></label>
-      </div>
+      <input type="checkbox" class="rendux-input" id="homebridgeInsecureMode" formControlName="HOMEBRIDGE_INSECURE"
+        aria-label="Insecure Mode">
+      <label for="homebridgeInsecureMode" class="rendux-label"></label>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="$settings.env.serviceMode">
       <span>Keep accessories of uninstalled plugins <code>-K</code></span>
-      <div class="material-switch pull-right">
-        <input id="homebridgeKeepOrphans" formControlName="HOMEBRIDGE_KEEP_ORPHANS" type="checkbox" />
-        <label for="homebridgeKeepOrphans" class="badge-primary"></label>
-      </div>
+      <input type="checkbox" class="rendux-input" id="homebridgeKeepOrphans" formControlName="HOMEBRIDGE_KEEP_ORPHANS"
+        aria-label="Keep accessories of uninstall plugins">
+      <label for="homebridgeKeepOrphans" class="rendux-label"></label>
     </li>
   </ul>
 
@@ -102,8 +104,10 @@
       <li class="list-group-item d-flex justify-content-between align-items-center">
         <span>
           DEBUG
-          <i class="fas fa-info-circle primary-text"
-            ngbTooltip="Some plugins require you to set the DEBUG environment variable to enable debug level logging."></i>
+          <a href="javascript:void(0)"
+            ngbTooltip="Some plugins require you to set the DEBUG environment variable to enable debug level logging.">
+            <i class="fas fa-info-circle primary-text"></i>
+          </a>
         </span>
         <div class="pull-right">
           <input class="form-control form-control-sm" formControlName="ENV_DEBUG" type="text" />
@@ -138,20 +142,25 @@
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
         {{ 'reset.title_unpair_bridges_cameras_tv_external_accessories' | translate }}
-        <i class="fas fa-info-circle primary-text"
-          ngbTooltip="{{ 'reset.message_unpair_bridges_cameras_tv_external_accessories' | translate }}"></i>
+        <a href="javascript:void(0)"
+          ngbTooltip="{{ 'reset.message_unpair_bridges_cameras_tv_external_accessories' | translate }}">
+          <i class="fas fa-info-circle primary-text"></i>
+        </a>
       </span>
-      <button class="btn btn-primary waves-effect m-0" (click)="unpairAccessory()">
+      <button class="btn btn-primary waves-effect m-0" (click)="unpairAccessory()"
+        [attr.aria-label]="'reset.title_unpair_bridges_cameras_tv_external_accessories' | translate">
         <i class="fas fa-flip-horizontal fa-external-link-square-alt"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
         {{ 'reset.title_reset_homebridge_accessory' | translate | titlecase }}
-        <i class="fas fa-info-circle primary-text"
-          ngbTooltip="{{ 'reset.message_reset_will_unpair_from_homekit' | translate }}"></i>
+        <a href="javascript:void(0)" ngbTooltip="{{ 'reset.message_reset_will_unpair_from_homekit' | translate }}">
+          <i class="fas fa-info-circle primary-text"></i>
+        </a>
       </span>
-      <button class="btn btn-primary waves-effect m-0" (click)="resetHomebridgeState()">
+      <button class="btn btn-primary waves-effect m-0" (click)="resetHomebridgeState()"
+        [attr.aria-label]="'reset.title_reset_homebridge_accessory' | translate">
         <i class="fas fa-flip-horizontal fa-external-link-square-alt"></i>
       </button>
     </li>
@@ -171,22 +180,25 @@
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
         {{ 'reset.title_clear_cached_accessories_single' | translate }}
-        <i class="fas fa-info-circle primary-text"
-          ngbTooltip="{{ 'reset.message_remove_cached_accessories_single' | translate }}"></i>
+        <a href="javascript:void(0)" ngbTooltip="{{ 'reset.message_remove_cached_accessories_single' | translate }}">
+          <i class="fas fa-info-circle primary-text"></i>
+        </a>
       </span>
       <button class="btn btn-primary waves-effect m-0" [translate]="'reset.title_clear_cached_accessories_single'"
-        (click)="removeSingleCachedAccessories()">
+        (click)="removeSingleCachedAccessories()"
+        [attr.aria-label]="'reset.title_clear_cached_accessories_single' | translate">
         <i class="fas fa-flip-horizontal fa-external-link-square-alt"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
         {{ 'reset.title_clear_cached_accessories' | translate }}
-        <i class="fas fa-info-circle primary-text"
-          ngbTooltip="{{ 'reset.message_remove_cached_accessories' | translate }}"></i>
+        <a href="javascript:void(0)" ngbTooltip="{{ 'reset.message_remove_cached_accessories' | translate }}">
+          <i class="fas fa-info-circle primary-text"></i>
+        </a>
       </span>
       <button class="btn btn-primary waves-effect m-0" [translate]="'reset.title_clear_cached_accessories'"
-        (click)="removeAllCachedAccessories()">
+        (click)="removeAllCachedAccessories()" [attr.aria-label]="'reset.title_clear_cached_accessories' | translate">
         <i class="fas fa-flip-horizontal fa-external-link-square-alt"></i>
       </button>
     </li>
@@ -198,10 +210,12 @@
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
         {{ 'reset.title_force_restart_hb_service' | translate }}
-        <i class="fas fa-info-circle primary-text"
-          ngbTooltip="{{ 'reset.message_force_restart_hb_help_text' | translate }}"></i>
+        <a href="javascript:void(0)" ngbTooltip="{{ 'reset.message_force_restart_hb_help_text' | translate }}">
+          <i class="fas fa-info-circle primary-text"></i>
+        </a>
       </span>
-      <button class="btn btn-primary waves-effect m-0" (click)="forceRestartService()">
+      <button class="btn btn-primary waves-effect m-0" (click)="forceRestartService()"
+        [attr.aria-label]="'reset.title_force_restart_hb_service' | translate">
         <i class="fas fa-sync"></i>
       </button>
     </li>
