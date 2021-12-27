@@ -6,7 +6,7 @@ import { ServiceTypeX } from '../../accessories.interfaces';
   templateUrl: './smokesensor.component.html',
   styleUrls: ['./smokesensor.component.scss'],
 })
-export class LeaksensorComponent implements OnInit {
+export class SmokesensorComponent implements OnInit {
   @Input() public service: ServiceTypeX;
 
   constructor() { }
