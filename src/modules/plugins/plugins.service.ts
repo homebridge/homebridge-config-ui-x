@@ -581,6 +581,22 @@ export class PluginsService {
     }
     // end 1.2.x -> 1.3.0 upgrade
 
+    // 1.3.x -> 1.4.0 upgrade set ciao as bridge advertiser
+    if (homebridge.installedVersion && homebridgeUpdateAction.version) {
+      const installedVersion = semver.parse(homebridge.installedVersion);
+      const targetVersion = semver.parse(homebridgeUpdateAction.version);
+      if (installedVersion.minor === 3 && targetVersion.minor > 3 && os.platform() === 'linux') {
+        try {
+          const config: HomebridgeConfig = await fs.readJson(this.configService.configPath);
+          config.bridge.advertiser = 'avahi';
+          await fs.writeJsonSync(this.configService.configPath, config);
+        } catch (e) {
+          this.logger.warn('Could not update config.json', e.message);
+        }
+      }
+    }
+    // end 1.3.x -> 1.4.0 upgrade
+
     await this.runNpmCommand(
       [...this.npm, 'install', ...installOptions, `${homebridge.name}@${homebridgeUpdateAction.version}`],
       installPath,

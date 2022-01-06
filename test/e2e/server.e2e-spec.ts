@@ -402,6 +402,23 @@ describe('ServerController (e2e)', () => {
     expect(res.json()).toEqual({ advertiser: 'ciao' });
   });
 
+  it('GET /server/mdns-advertiser (when set to avahi)', async () => {
+    const config: HomebridgeConfig = await fs.readJson(configService.configPath);
+    config.bridge.advertiser = 'avahi';
+    await fs.writeJson(configService.configPath, config);
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/mdns-advertiser',
+      headers: {
+        authorization,
+      },
+    });
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.json()).toEqual({ advertiser: 'avahi' });
+  });
+
   it('PUT /server/mdns-advertiser (bonjour-hap)', async () => {
     const initialConfig: HomebridgeConfig = await fs.readJson(configService.configPath);
     delete initialConfig.bridge.advertiser;
@@ -446,6 +463,29 @@ describe('ServerController (e2e)', () => {
     // check the value was saved
     const config = await fs.readJson(configService.configPath);
     expect(config.bridge.advertiser).toEqual('ciao');
+  });
+
+  it('PUT /server/mdns-advertiser (avahi)', async () => {
+    const initialConfig: HomebridgeConfig = await fs.readJson(configService.configPath);
+    delete initialConfig.mdns;
+    await fs.writeJson(configService.configPath, initialConfig);
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/server/mdns-advertiser',
+      headers: {
+        authorization,
+      },
+      payload: {
+        advertiser: 'avahi',
+      },
+    });
+
+    expect(res.statusCode).toEqual(200);
+
+    // check the value was saved
+    const config = await fs.readJson(configService.configPath);
+    expect(config.bridge.advertiser).toEqual('avahi');
   });
 
   it('PUT /server/mdns-advertiser (invalid value)', async () => {
