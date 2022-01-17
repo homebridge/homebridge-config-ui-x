@@ -411,6 +411,12 @@
             "enum": [
               "zh-TW"
             ]
+          },
+          {
+            "title": "Hebrew",
+            "enum": [
+              "he"
+            ]
           }
         ]
       },
