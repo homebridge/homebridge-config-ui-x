@@ -20,6 +20,7 @@ interface EnvInterface {
   packageVersion: string;
   runningInDocker: boolean;
   runningInLinux: boolean;
+  runningInSynologyPackage: boolean;
   dockerOfflineUpdate: boolean;
   serviceMode: boolean;
   lang: string | null;
