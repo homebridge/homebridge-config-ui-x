@@ -1,0 +1,13 @@
+::ng-deep {
+  .switch-off {
+    svg {
+      .smoke_sensor_trigger_lines {
+        display: none;
+      }
+      .smoke_sensor_box {
+        fill: #808080;
+      }
+    }
+  }
+}
+

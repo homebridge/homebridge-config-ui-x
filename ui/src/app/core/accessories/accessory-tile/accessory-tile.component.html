@@ -44,6 +44,8 @@
   </app-securitysystem>
   <app-leaksensor *ngSwitchCase="'LeakSensor'" [service]="service">Leak Sensor
   </app-leaksensor>
+  <app-smokesensor *ngSwitchCase="'SmokeSensor'" [service]="service">Smoke Sensor
+  </app-smokesensor>
   <app-valve *ngSwitchCase="'Valve'" [service]="service">Valve
   </app-valve>
   <app-irrigationsystem *ngSwitchCase="'IrrigationSystem'" [service]="service">Irrigation System
