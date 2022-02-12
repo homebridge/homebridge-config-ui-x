@@ -78,7 +78,7 @@ describe('StatusController (e2e)', () => {
     expect(res.json()).toHaveProperty('cpuLoadHistory');
     expect(res.json()).toHaveProperty('cpuTemperature');
     expect(res.json()).toHaveProperty('currentLoad');
-  });
+  }, 30000);
 
   it('GET /status/ram', async () => {
     const res = await app.inject({
@@ -92,7 +92,21 @@ describe('StatusController (e2e)', () => {
     expect(res.statusCode).toBe(200);
     expect(res.json()).toHaveProperty('mem');
     expect(res.json()).toHaveProperty('memoryUsageHistory');
-  });
+  }, 30000);
+
+  it('GET /status/network', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/status/network',
+      headers: {
+        authorization,
+      },
+    });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toHaveProperty('net');
+    expect(res.json()).toHaveProperty('networkUsageHistory');
+  }, 30000);
 
   it('GET /status/uptime', async () => {
     const res = await app.inject({
@@ -169,8 +183,8 @@ describe('StatusController (e2e)', () => {
 
     expect(res.statusCode).toBe(200);
     expect(res.json()).toHaveProperty('serviceUser');
-    expect(res.json().homebridgeConfigJsonPath).toEqual(process.env.UIX_CONFIG_PATH);
-    expect(res.json().homebridgeStoragePath).toEqual(process.env.UIX_STORAGE_PATH);
+    expect(res.json().homebridgeConfigJsonPath).toBe(process.env.UIX_CONFIG_PATH);
+    expect(res.json().homebridgeStoragePath).toBe(process.env.UIX_STORAGE_PATH);
   }, 30000);
 
   it('GET /status/nodejs', async () => {

@@ -29,8 +29,10 @@ export class StatusService {
 
   private cpuLoadHistory: number[] = [];
   private memoryUsageHistory: number[] = [];
+  private networkUsageHistory: number[] = [];
 
   private memoryInfo: si.Systeminformation.MemData;
+  private networkInfo: si.Systeminformation.NetworkStatsData;
 
   constructor(
     private httpService: HttpService,
@@ -51,6 +53,12 @@ export class StatusService {
         this.getCpuLoadPoint();
         this.getMemoryUsagePoint();
       }, 10000);
+
+      // poll network usage once per second so we have correct per/second figures
+      setInterval(async () => {
+        this.getNetworkUsagePoint();
+      }, 1000);
+
     } else {
       this.logger.warn('Server metrics monitoring disabled.');
     }
@@ -70,6 +78,26 @@ export class StatusService {
     const currentLoad = (await si.currentLoad()).currentLoad;
     this.cpuLoadHistory = this.cpuLoadHistory.slice(-60);
     this.cpuLoadHistory.push(currentLoad);
+  }
+
+  /**
+   * Looks up the current network usage and stores the last 60 points
+   */
+  private async getNetworkUsagePoint() {
+    // TODO: aggregate stats for all interfaces and not just the default 
+    //       interface (even better - be able to specify in the UI which interfaces to aggregate)
+    const defaultInterfaceName = await si.networkInterfaceDefault();
+
+    const net = await si.networkStats(defaultInterfaceName);
+    this.networkInfo = net[0];
+
+    // TODO: be able to specify unit size (i.e. bytes, megabytes, gigabytes)
+    const tx_rx_sec = (net[0].tx_sec + net[0].rx_sec) / 1024 / 1024;
+
+    // TODO: break out the sent and received figures to two separate stacked 
+    //       graphs (these should ideally be positive/negative mirrored linecharts)
+    this.networkUsageHistory = this.networkUsageHistory.slice(-60);
+    this.networkUsageHistory.push(tx_rx_sec);
   }
 
   /**
@@ -189,6 +217,20 @@ export class StatusService {
     return {
       mem: this.memoryInfo,
       memoryUsageHistory: this.memoryUsageHistory,
+    };
+  }
+
+  /**
+   * Returns server Network usage information
+   */
+  public async getServerNetworkInfo() {
+    if (!this.networkUsageHistory.length) {
+      await this.getNetworkUsagePoint();
+    }
+
+    return {
+      net: this.networkInfo,
+      networkUsageHistory: this.networkUsageHistory,
     };
   }
 
