@@ -19,6 +19,7 @@ import { HapQrcodeWidgetComponent } from './widgets/hap-qrcode-widget/hap-qrcode
 import { HomebridgeLogsWidgetComponent } from './widgets/homebridge-logs-widget/homebridge-logs-widget.component';
 import { TerminalWidgetComponent } from './widgets/terminal-widget/terminal-widget.component';
 import { CpuWidgetComponent } from './widgets/cpu-widget/cpu-widget.component';
+import { NetworkWidgetComponent } from './widgets/network-widget/network-widget.component';
 import { MemoryWidgetComponent } from './widgets/memory-widget/memory-widget.component';
 import { UptimeWidgetComponent } from './widgets/uptime-widget/uptime-widget.component';
 import { HomebridgeStatusWidgetComponent } from './widgets/homebridge-status-widget/homebridge-status-widget.component';
@@ -37,6 +38,7 @@ import { ChildBridgeWidgetComponent } from './widgets/child-bridge-widget/child-
     HomebridgeLogsWidgetComponent,
     TerminalWidgetComponent,
     CpuWidgetComponent,
+    NetworkWidgetComponent,
     MemoryWidgetComponent,
     UptimeWidgetComponent,
     HomebridgeStatusWidgetComponent,
@@ -55,6 +57,7 @@ import { ChildBridgeWidgetComponent } from './widgets/child-bridge-widget/child-
     HomebridgeLogsWidgetComponent,
     TerminalWidgetComponent,
     CpuWidgetComponent,
+    NetworkWidgetComponent,
     MemoryWidgetComponent,
     UptimeWidgetComponent,
     HomebridgeStatusWidgetComponent,

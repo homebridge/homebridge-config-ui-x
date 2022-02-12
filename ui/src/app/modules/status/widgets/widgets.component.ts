@@ -7,6 +7,7 @@ import { HapQrcodeWidgetComponent } from './hap-qrcode-widget/hap-qrcode-widget.
 import { HomebridgeLogsWidgetComponent } from './homebridge-logs-widget/homebridge-logs-widget.component';
 import { TerminalWidgetComponent } from './terminal-widget/terminal-widget.component';
 import { CpuWidgetComponent } from './cpu-widget/cpu-widget.component';
+import { NetworkWidgetComponent } from './network-widget/network-widget.component';
 import { MemoryWidgetComponent } from './memory-widget/memory-widget.component';
 import { UptimeWidgetComponent } from './uptime-widget/uptime-widget.component';
 import { HomebridgeStatusWidgetComponent } from './homebridge-status-widget/homebridge-status-widget.component';
@@ -28,6 +29,7 @@ export class WidgetsComponent implements OnInit, OnDestroy {
     HomebridgeLogsWidgetComponent,
     TerminalWidgetComponent,
     CpuWidgetComponent,
+    NetworkWidgetComponent,
     MemoryWidgetComponent,
     UptimeWidgetComponent,
     HomebridgeStatusWidgetComponent,

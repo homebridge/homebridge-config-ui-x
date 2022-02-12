@@ -100,6 +100,16 @@ export class StatusGateway {
     }
   }
 
+  @SubscribeMessage('get-server-network-info')
+  async getServerNetworkInfo(client, payload) {
+    try {
+      return await this.statusService.getServerNetworkInfo();
+    } catch (e) {
+      return new WsException(e.message);
+    }
+  }
+
+
   @SubscribeMessage('get-server-uptime-info')
   async getServerUptimeInfo(client, payload) {
     try {

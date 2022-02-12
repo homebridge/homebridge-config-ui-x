@@ -1,28 +1,25 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
-import { Subscription, interval } from 'rxjs';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { interval, Subscription } from 'rxjs';
 import { ChartOptions } from 'chart.js';
 import { Color, BaseChartDirective } from 'ng2-charts';
 
 import { WsService } from '@/app/core/ws.service';
-import { SettingsService } from '@/app/core/settings.service';
+import { AuthService } from '@/app/core/auth/auth.service';
 
 @Component({
-  selector: 'app-cpu-widget',
-  templateUrl: './cpu-widget.component.html',
-  styleUrls: ['./cpu-widget.component.scss'],
+  selector: 'app-network-widget',
+  templateUrl: './network-widget.component.html',
+  styleUrls: ['./network-widget.component.scss'],
 })
-export class CpuWidgetComponent implements OnInit, OnDestroy {
-  @Input() public widget;
-
+export class NetworkWidgetComponent implements OnInit, OnDestroy {
   private io = this.$ws.getExistingNamespace('status');
   private intervalSubscription: Subscription;
 
-  @ViewChild(BaseChartDirective, { static: true }) private chart: BaseChartDirective;
+  @ViewChild(BaseChartDirective, { static: true }) public chart: BaseChartDirective;
   @ViewChild('widgetbackground', { static: true }) private widgetBackground: ElementRef;
 
-  public cpu = {} as any;
-  public cpuTemperature = {} as any;
-  public currentLoad = 0;
+  public receivedPerSec: number;
+  public sentPerSec: number;
 
   public lineChartData = [{ data: [] }];
   public lineChartLabels = [];
@@ -44,6 +41,10 @@ export class CpuWidgetComponent implements OnInit, OnDestroy {
       yAxes: [
         {
           display: false,
+          // ticks: {
+          //   max: 100,
+          //   min: 0,
+          // },
         },
       ],
     },
@@ -63,21 +64,22 @@ export class CpuWidgetComponent implements OnInit, OnDestroy {
 
   constructor(
     private $ws: WsService,
-    public $settings: SettingsService,
+    public $auth: AuthService,
   ) { }
 
   ngOnInit() {
     this.io.connected.subscribe(async () => {
-      this.getServerCpuInfo();
+      this.getServerNetworkInfo();
     });
 
     if (this.io.socket.connected) {
-      this.getServerCpuInfo();
+      this.getServerNetworkInfo();
     }
 
-    this.intervalSubscription = interval(9000).subscribe(() => {
+    // refresh data once per second
+    this.intervalSubscription = interval(1000).subscribe(() => {
       if (this.io.socket.connected) {
-        this.getServerCpuInfo();
+        this.getServerNetworkInfo();
       }
     });
 
@@ -89,16 +91,16 @@ export class CpuWidgetComponent implements OnInit, OnDestroy {
     }
   }
 
-  getServerCpuInfo() {
-    this.io.request('get-server-cpu-info').subscribe((data) => {
-      this.cpuTemperature = data.cpuTemperature;
-      this.currentLoad = data.currentLoad;
+  getServerNetworkInfo() {
+    this.io.request('get-server-network-info').subscribe((data) => {
+      this.receivedPerSec = data.net.rx_sec / 1024 / 1024;
+      this.sentPerSec = data.net.tx_sec / 1024 / 1024;
 
       if (!this.lineChartData[0].data.length) {
-        this.lineChartData[0].data = data.cpuLoadHistory;
-        this.lineChartLabels = data.cpuLoadHistory.map(x => 'point');
+        this.lineChartData[0].data = data.networkUsageHistory;
+        this.lineChartLabels = data.networkUsageHistory.map(x => 'point');
       } else {
-        this.lineChartData[0].data.push(data.currentLoad);
+        this.lineChartData[0].data.push(data.networkUsageHistory.slice(-1)[0]);
         this.lineChartLabels.push('point');
 
         if (this.lineChartData[0].data.length > 60) {
@@ -113,4 +115,5 @@ export class CpuWidgetComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.intervalSubscription.unsubscribe();
   }
+
 }

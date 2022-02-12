@@ -94,6 +94,20 @@ describe('StatusController (e2e)', () => {
     expect(res.json()).toHaveProperty('memoryUsageHistory');
   });
 
+  it('GET /status/network', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/status/network',
+      headers: {
+        authorization,
+      },
+    });
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.json()).toHaveProperty('net');
+    expect(res.json()).toHaveProperty('networkUsageHistory');
+  });
+
   it('GET /status/uptime', async () => {
     const res = await app.inject({
       method: 'GET',
