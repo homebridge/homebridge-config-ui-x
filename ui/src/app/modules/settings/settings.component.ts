@@ -32,6 +32,7 @@ export class SettingsComponent implements OnInit {
   public saved = false;
 
   public showNetworking = false;
+  public showAvahiMdnsOption = false;
   public availableNetworkAdapters: Record<string, any> = [];
   public bridgeNetworkAdapters: Record<string, any> = [];
 
@@ -153,6 +154,11 @@ export class SettingsComponent implements OnInit {
       if (semver.gte(homebridgePackage.installedVersion, '1.3.0-beta.0', { includePrerelease: true })) {
         this.showNetworking = true;
         this.getNetworkSettings();
+      }
+      if (semver.gte(homebridgePackage.installedVersion, '1.4.0-beta.0', { includePrerelease: true })) {
+        if (this.$settings.env.runningInLinux || this.$settings.env.runningInDocker || this.$settings.env.runningInSynologyPackage) {
+          this.showAvahiMdnsOption = true;
+        }
       }
     } catch (e) {
 

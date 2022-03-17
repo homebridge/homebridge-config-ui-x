@@ -11,7 +11,7 @@ export class HomebridgeNetworkInterfacesDto {
 export class HomebridgeMdnsSettingDto {
   @IsString()
   @IsDefined()
-  @IsIn(['ciao', 'bonjour-hap'])
+  @IsIn(['avahi', 'ciao', 'bonjour-hap'])
   @ApiProperty()
-  advertiser: 'ciao' | 'bonjour-hap';
+  advertiser: 'avahi' | 'ciao' | 'bonjour-hap';
 }

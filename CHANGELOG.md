@@ -2,10 +2,17 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## NEXT
+## 4.42.0 (2022-01-20)
+
+### Notable Changes
+
+* **i18n:** Hebrew (he) language added by [@blackcolt](https://github.com/blackcolt) ([#1258](https://github.com/oznu/homebridge-config-ui-x/pull/1258))
+* **Accessory Control:** [@Feilner](https://github.com/Feilner) added support for Smoke Sensor accessory types ([#1263](https://github.com/oznu/homebridge-config-ui-x/issues/1263))
+* **Homebridge:** Added the ability to select the `avahi` mdns advertiser when running Homebridge 1.4.x or later on Linux based systems ([#1266](https://github.com/oznu/homebridge-config-ui-x/issues/1266))
 
 ### Other Changes 
 
+* **i18n:** Improvements to French language translations ([#1260](https://github.com/oznu/homebridge-config-ui-x/pull/1260))
 * Minor changes to support a native Homebridge Synology DSM Package
 
 ## 4.41.5 (2021-12-18)
