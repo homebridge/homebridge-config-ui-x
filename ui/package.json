@@ -34,7 +34,7 @@
     "file-saver": "^2.0.5",
     "jquery": "^3.6.0",
     "json5": "^2.2.0",
-    "lodash-es": "^4.17.20",
+    "lodash-es": "^4.17.21",
     "mdbootstrap": "^4.19.2",
     "mobile-detect": "^1.4.5",
     "monaco-editor": "^0.20.0",
