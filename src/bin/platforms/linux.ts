@@ -381,6 +381,10 @@ export class LinuxInstaller {
    * Check the command is being run as root and we can detect the user
    */
   private checkForRoot() {
+    if (this.isSynologyPackage()) {
+      this.hbService.logger('ERROR: This command is not available on Synology DSM', 'fail');
+      process.exit(1);
+    }
     if (process.getuid() !== 0) {
       this.hbService.logger('ERROR: This command must be executed using sudo on Linux', 'fail');
       this.hbService.logger(`EXAMPLE: sudo hb-service ${this.hbService.action}`, 'fail');
