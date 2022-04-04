@@ -65,7 +65,7 @@
     "commander": "6.2.1",
     "dayjs": "^1.10.7",
     "fastify": "3.24.1",
-    "fastify-multipart": "5.2.1",
+    "fastify-multipart": "5.3.1",
     "fastify-static": "4.5.0",
     "fastify-swagger": "4.12.6",
     "fs-extra": "9.1.0",
