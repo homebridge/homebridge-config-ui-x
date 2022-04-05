@@ -15,23 +15,20 @@ import { AddRoomModalComponent } from './add-room-modal/add-room-modal.component
 import { AccessoriesComponent } from './accessories.component';
 
 @NgModule({
-  declarations: [
-    AccessoriesComponent,
-    DragHerePlaceholderComponent,
-    AddRoomModalComponent,
-  ],
-  entryComponents: [
-    AddRoomModalComponent,
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    NgbModule,
-    DragulaModule,
-    TranslateModule.forChild(),
-    CoreModule,
-    AccessoriesCoreModule,
-    AccessoriesRoutingModule,
-  ],
+    declarations: [
+        AccessoriesComponent,
+        DragHerePlaceholderComponent,
+        AddRoomModalComponent,
+    ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        NgbModule,
+        DragulaModule,
+        TranslateModule.forChild(),
+        CoreModule,
+        AccessoriesCoreModule,
+        AccessoriesRoutingModule,
+    ],
 })
 export class AccessoriesModule { }

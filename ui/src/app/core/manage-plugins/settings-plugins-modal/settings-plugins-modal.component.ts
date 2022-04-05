@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
-import * as uuid from 'uuid/v4';
+import { v4 as uuid } from 'uuid';
 
 import { ApiService } from '@/app/core/api.service';
 import { SettingsService } from '@/app/core/settings.service';
