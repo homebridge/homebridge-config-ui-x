@@ -115,19 +115,19 @@ describe('PlatformToolsTerminal (e2e)', () => {
     expect(nodePtyService.spawn).toHaveBeenCalled();
 
     // check initial listeners
-    expect(client.listenerCount('stdin')).toEqual(1);
-    expect(client.listenerCount('resize')).toEqual(1);
-    expect(client.listenerCount('end')).toEqual(1);
-    expect(client.listenerCount('disconnect')).toEqual(1);
+    expect(client.listenerCount('stdin')).toBe(1);
+    expect(client.listenerCount('resize')).toBe(1);
+    expect(client.listenerCount('end')).toBe(1);
+    expect(client.listenerCount('disconnect')).toBe(1);
 
     // end the session
     client.emit('end');
 
     // check the listeners were removed
-    expect(client.listenerCount('stdin')).toEqual(0);
-    expect(client.listenerCount('resize')).toEqual(0);
-    expect(client.listenerCount('end')).toEqual(0);
-    expect(client.listenerCount('disconnect')).toEqual(0);
+    expect(client.listenerCount('stdin')).toBe(0);
+    expect(client.listenerCount('resize')).toBe(0);
+    expect(client.listenerCount('end')).toBe(0);
+    expect(client.listenerCount('disconnect')).toBe(0);
 
     // check the terminal was exited
     expect(mockTerm.onExit).toHaveBeenCalled();

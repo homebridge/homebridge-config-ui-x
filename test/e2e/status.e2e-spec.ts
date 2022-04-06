@@ -74,7 +74,7 @@ describe('StatusController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()).toHaveProperty('cpuLoadHistory');
     expect(res.json()).toHaveProperty('cpuTemperature');
     expect(res.json()).toHaveProperty('currentLoad');
@@ -89,7 +89,7 @@ describe('StatusController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()).toHaveProperty('mem');
     expect(res.json()).toHaveProperty('memoryUsageHistory');
   });
@@ -103,7 +103,7 @@ describe('StatusController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()).toHaveProperty('time');
     expect(res.json()).toHaveProperty('processUptime');
   });
@@ -128,7 +128,7 @@ describe('StatusController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()).toEqual({ status: 'up' });
   });
 
@@ -154,7 +154,7 @@ describe('StatusController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()).toEqual({ status: 'down' });
   });
 
@@ -167,7 +167,7 @@ describe('StatusController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()).toHaveProperty('serviceUser');
     expect(res.json().homebridgeConfigJsonPath).toEqual(process.env.UIX_CONFIG_PATH);
     expect(res.json().homebridgeStoragePath).toEqual(process.env.UIX_STORAGE_PATH);
@@ -204,9 +204,9 @@ describe('StatusController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json().currentVersion).toEqual(process.version);
-    expect(res.json().latestVersion).toEqual('v12.18.0');
+    expect(res.json().latestVersion).toBe('v12.18.0');
   });
 
   afterAll(async () => {
