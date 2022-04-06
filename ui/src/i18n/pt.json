@@ -341,7 +341,7 @@
     "status.widget.systeminfo.label_service_mode": "Executado como Serviço",
     "status.widget.systeminfo.label_service_user": "Utilizador",
     "status.widget.systeminfo.label_storage_path": "Caminho do Armazenamento",
-    "status.widget.systeminfo.label_synology_package": "Synology Package",
+    "status.widget.systeminfo.label_synology_package": "Pacote Synology",
     "status.widget.systeminfo.label_timezone": "Fuso Horário",
     "status.widget.title_manage_widget": "Gerir o Widget",
     "status.widget.uptime.label_process": "Processo",

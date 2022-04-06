@@ -53,8 +53,8 @@ describe('AuthController (e2e)', () => {
   });
 
   it('should create auth.json and .uix-secrets on launch', async () => {
-    expect(await fs.pathExists(authFilePath)).toEqual(true);
-    expect(await fs.pathExists(secretsFilePath)).toEqual(true);
+    expect(await fs.pathExists(authFilePath)).toBe(true);
+    expect(await fs.pathExists(secretsFilePath)).toBe(true);
   });
 
   it('POST /auth/login (valid login)', async () => {
@@ -67,7 +67,7 @@ describe('AuthController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(201);
+    expect(res.statusCode).toBe(201);
     expect(res.json()).toHaveProperty('access_token');
   });
 
@@ -81,7 +81,7 @@ describe('AuthController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(403);
+    expect(res.statusCode).toBe(403);
     expect(res.json()).not.toHaveProperty('access_token');
   });
 
@@ -94,7 +94,7 @@ describe('AuthController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toBe(400);
     expect(res.body).toContain('password should not be null or undefined');
     expect(res.json()).not.toHaveProperty('access_token');
   });
@@ -108,7 +108,7 @@ describe('AuthController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toBe(400);
     expect(res.body).toContain('username should not be null or undefined');
     expect(res.json()).not.toHaveProperty('access_token');
   });
@@ -119,7 +119,7 @@ describe('AuthController (e2e)', () => {
       path: '/auth/noauth',
     });
 
-    expect(res.statusCode).toEqual(401);
+    expect(res.statusCode).toBe(401);
     expect(res.json()).not.toHaveProperty('access_token');
   });
 
@@ -133,7 +133,7 @@ describe('AuthController (e2e)', () => {
       path: '/auth/noauth',
     });
 
-    expect(res.statusCode).toEqual(201);
+    expect(res.statusCode).toBe(201);
     expect(res.json()).toHaveProperty('access_token');
   });
 
@@ -155,8 +155,8 @@ describe('AuthController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
-    expect(res.json().status).toEqual('OK');
+    expect(res.statusCode).toBe(200);
+    expect(res.json().status).toBe('OK');
   });
 
   it('GET /auth/check (invalid token)', async () => {
@@ -168,7 +168,7 @@ describe('AuthController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(401);
+    expect(res.statusCode).toBe(401);
   });
 
   it('GET /auth/settings', async () => {
@@ -177,8 +177,8 @@ describe('AuthController (e2e)', () => {
       path: '/auth/settings',
     });
 
-    expect(res.statusCode).toEqual(200);
-    expect(res.json().env.homebridgeInstanceName).toEqual('Homebridge Test');
+    expect(res.statusCode).toBe(200);
+    expect(res.json().env.homebridgeInstanceName).toBe('Homebridge Test');
   });
 
   afterAll(async () => {

@@ -81,7 +81,7 @@ describe('PlatformToolsDocker (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json().script).toEqual(startupScript);
   });
 
@@ -99,7 +99,7 @@ describe('PlatformToolsDocker (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(await fs.readFile(startupFilePath, 'utf8')).toEqual(startupScript);
   });
 
@@ -112,7 +112,7 @@ describe('PlatformToolsDocker (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(restartDockerContainerFn).toHaveBeenCalled();
   });
 

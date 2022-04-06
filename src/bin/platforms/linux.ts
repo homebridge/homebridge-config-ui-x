@@ -131,7 +131,12 @@ export class LinuxInstaller {
    */
   public async rebuild(all = false) {
     try {
-      this.checkForRoot();
+      if (this.isSynologyPackage()) {
+        // skip root check for this method on Synology DSM
+      } else {
+        this.checkForRoot();
+      }
+
       const npmGlobalPath = child_process.execSync('/bin/echo -n "$(npm --no-update-notifier -g prefix)/lib/node_modules"').toString('utf8');
       const targetNodeVersion = child_process.execSync('node -v').toString('utf8').trim();
 
@@ -197,12 +202,16 @@ export class LinuxInstaller {
    * Update Node.js
    */
   public async updateNodejs(job: { target: string; rebuild: boolean }) {
-    this.checkForRoot();
+    if (this.isSynologyPackage()) {
+      // skip root check for this method on Synology DSM
+    } else {
+      this.checkForRoot();
+    }
 
     // check target path
     const targetPath = path.dirname(path.dirname(process.execPath));
 
-    if (targetPath !== '/usr' && targetPath !== '/usr/local') {
+    if (targetPath !== '/usr' && targetPath !== '/usr/local' && !targetPath.endsWith('/@appstore/homebridge/app')) {
       this.hbService.logger(`Cannot update Node.js on your system. Non-standard installation path detected: ${targetPath}`, 'fail');
       process.exit(1);
     }
@@ -233,13 +242,17 @@ export class LinuxInstaller {
    * Update Node.js from the tarball archives
    */
   private async updateNodeFromTarball(job: { target: string; rebuild: boolean }, targetPath: string) {
-    // only glibc linux >=2.24 is supported
+
     try {
-      const glibcVersion = parseFloat(child_process.execSync('getconf GNU_LIBC_VERSION 2>/dev/null').toString().split('glibc')[1].trim());
-      if (glibcVersion < 2.24) {
-        this.hbService.logger('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
-          `Wanted: >=2.24. Installed: ${glibcVersion}`, 'fail');
-        process.exit(1);
+      if (this.isSynologyPackage()) {
+        // skip glibc version check on Synology DSM
+      } else {
+        const glibcVersion = parseFloat(child_process.execSync('getconf GNU_LIBC_VERSION 2>/dev/null').toString().split('glibc')[1].trim());
+        if (glibcVersion < 2.24) {
+          this.hbService.logger('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
+            `Wanted: >=2.24. Installed: ${glibcVersion}`, 'fail');
+          process.exit(1);
+        }
       }
     } catch (e) {
       const osInfo = await si.osInfo();
@@ -368,6 +381,10 @@ export class LinuxInstaller {
    * Check the command is being run as root and we can detect the user
    */
   private checkForRoot() {
+    if (this.isSynologyPackage()) {
+      this.hbService.logger('ERROR: This command is not available on Synology DSM', 'fail');
+      process.exit(1);
+    }
     if (process.getuid() !== 0) {
       this.hbService.logger('ERROR: This command must be executed using sudo on Linux', 'fail');
       this.hbService.logger(`EXAMPLE: sudo hb-service ${this.hbService.action}`, 'fail');
@@ -426,6 +443,13 @@ export class LinuxInstaller {
     } catch (e) {
       this.hbService.logger('WARNING: Failed to setup /etc/sudoers, you may not be able to shutdown/restart your server from the Homebridge UI.', 'warn');
     }
+  }
+
+  /**
+   * Determines if the command is being run inside the Synology DSM SPK Package
+   */
+  private isSynologyPackage(): boolean {
+    return Boolean(process.env.HOMEBRIDGE_SYNOLOGY_PACKAGE === '1') && process.env.USER === 'homebridge';
   }
 
   /**

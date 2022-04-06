@@ -19,39 +19,30 @@ import { SelectPreviousVersionComponent } from './select-previous-version/select
 import { BridgePluginsModalComponent } from './bridge-plugins-modal/bridge-plugins-modal.component';
 
 @NgModule({
-  entryComponents: [
-    SettingsPluginsModalComponent,
-    ManagePluginsModalComponent,
-    UninstallPluginsModalComponent,
-    NodeUpdateRequiredModalComponent,
-    ManualPluginConfigModalComponent,
-    SelectPreviousVersionComponent,
-    BridgePluginsModalComponent,
-  ],
-  declarations: [
-    SettingsPluginsModalComponent,
-    ManagePluginsModalComponent,
-    UninstallPluginsModalComponent,
-    NodeUpdateRequiredModalComponent,
-    InterpolateMdPipe,
-    ManualPluginConfigModalComponent,
-    SelectPreviousVersionComponent,
-    BridgePluginsModalComponent,
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    TranslateModule.forChild(),
-    NgbModule,
-    NgxMdModule,
-    MonacoEditorModule,
-    NgbModule,
-    CoreModule,
-    CustomPluginsModule,
-  ],
-  providers: [
-    ManagePluginsService,
-  ],
+    declarations: [
+        SettingsPluginsModalComponent,
+        ManagePluginsModalComponent,
+        UninstallPluginsModalComponent,
+        NodeUpdateRequiredModalComponent,
+        InterpolateMdPipe,
+        ManualPluginConfigModalComponent,
+        SelectPreviousVersionComponent,
+        BridgePluginsModalComponent,
+    ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        TranslateModule.forChild(),
+        NgbModule,
+        NgxMdModule,
+        MonacoEditorModule,
+        NgbModule,
+        CoreModule,
+        CustomPluginsModule,
+    ],
+    providers: [
+        ManagePluginsService,
+    ],
 })
 export class ManagePluginsModule { }

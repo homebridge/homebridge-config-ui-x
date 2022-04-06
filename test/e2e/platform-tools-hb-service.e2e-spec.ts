@@ -86,7 +86,7 @@ describe('PlatformToolsHbService (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
   });
 
   it('GET /platform-tools/hb-service/homebridge-startup-settings (env file does not exist)', async () => {
@@ -100,7 +100,7 @@ describe('PlatformToolsHbService (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
   });
 
   it('PUT /platform-tools/hb-service/homebridge-startup-settings', async () => {
@@ -121,22 +121,22 @@ describe('PlatformToolsHbService (e2e)', () => {
       payload,
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
 
     const envFile = await fs.readJson(envFilePath);
-    expect(envFile.debugMode).toEqual(true);
-    expect(envFile.keepOrphans).toEqual(true);
-    expect(envFile.insecureMode).toEqual(false);
-    expect(envFile.env.DEBUG).toEqual('*');
-    expect(envFile.env.NODE_OPTIONS).toEqual('--inspect');
+    expect(envFile.debugMode).toBe(true);
+    expect(envFile.keepOrphans).toBe(true);
+    expect(envFile.insecureMode).toBe(false);
+    expect(envFile.env.DEBUG).toBe('*');
+    expect(envFile.env.NODE_OPTIONS).toBe('--inspect');
 
     // the restart flag should be set
-    expect(configService.hbServiceUiRestartRequired).toEqual(true);
+    expect(configService.hbServiceUiRestartRequired).toBe(true);
   });
 
   it('PUT /platform-tools/hb-service/set-full-service-restart-flag', async () => {
     // sanity check
-    expect(configService.hbServiceUiRestartRequired).toEqual(false);
+    expect(configService.hbServiceUiRestartRequired).toBe(false);
 
     const res = await app.inject({
       method: 'PUT',
@@ -146,8 +146,8 @@ describe('PlatformToolsHbService (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
-    expect(configService.hbServiceUiRestartRequired).toEqual(true);
+    expect(res.statusCode).toBe(200);
+    expect(configService.hbServiceUiRestartRequired).toBe(true);
   });
 
   it('GET /platform-tools/hb-service/log/download', async () => {
@@ -163,7 +163,7 @@ describe('PlatformToolsHbService (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.body).toEqual(sampleLogData);
   });
 
@@ -180,7 +180,7 @@ describe('PlatformToolsHbService (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.body).toEqual(sampleLogData);
   });
 
@@ -197,8 +197,8 @@ describe('PlatformToolsHbService (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
-    expect(await fs.readFile(logFilePath, 'utf8')).toEqual('');
+    expect(res.statusCode).toBe(200);
+    expect(await fs.readFile(logFilePath, 'utf8')).toBe('');
   });
 
   afterAll(async () => {
