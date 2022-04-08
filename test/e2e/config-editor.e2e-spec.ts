@@ -302,7 +302,7 @@ describe('ConfigEditorController (e2e)', () => {
 
     // check the updates were saved to disk and mistakes corrected
     const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
-    expect(savedConfig.bridge.username).toEqual(originalUsername);
+    expect(savedConfig.bridge.username).toBe(originalUsername);
   });
 
   it('POST /config-editor (accept bridge.username if valid value is provided)', async () => {
@@ -345,7 +345,7 @@ describe('ConfigEditorController (e2e)', () => {
 
     // check the updates were saved to disk and mistakes corrected
     const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
-    expect(savedConfig.bridge.pin).toEqual(originalPin);
+    expect(savedConfig.bridge.pin).toBe(originalPin);
   });
 
   it('POST /config-editor (accept bridge.pin if a valid value is provided)', async () => {
@@ -866,7 +866,13 @@ describe('ConfigEditorController (e2e)', () => {
       },
     });
 
-    const newbackupCount = (await fs.readdir(backupFilePath)).length;
+    // there is a race condition here whereby we might read the backup file 
+    // path before the deletion has actually happened, causing the test to fail,
+    // so I have added a 1 second delay.
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    const backups = await fs.readdir(backupFilePath);
+    const newbackupCount = backups.length;
 
     expect(newbackupCount).toBe(0);
     expect(res.statusCode).toBe(200);

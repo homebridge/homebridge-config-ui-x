@@ -2,7 +2,8 @@ name: Test
 
 on: [
   pull_request,
-  push
+  push,
+  workflow_dispatch  
 ]
 
 jobs:
@@ -28,6 +29,8 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      - run: echo npm version "$(npm --version)"
+      - run: echo node version "$(node --version)"
       - run: npm ci
       - run: npm run build:server
       - run: npm run lint:server
