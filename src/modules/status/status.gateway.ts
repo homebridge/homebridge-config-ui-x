@@ -103,7 +103,7 @@ export class StatusGateway {
   @SubscribeMessage('get-server-network-info')
   async getServerNetworkInfo(client, payload) {
     try {
-      return await this.statusService.getServerNetworkInfo();
+      return await this.statusService.getCurrentNetworkUsage();
     } catch (e) {
       return new WsException(e.message);
     }

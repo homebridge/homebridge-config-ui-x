@@ -24,10 +24,10 @@ export class StatusController {
     return this.statusService.getServerMemoryInfo();
   }
 
-  @ApiOperation({ summary: 'Return a history of transmitted & received bytes per second as well as the latest value.' })
+  @ApiOperation({ summary: 'Returns the current transmitted & received bytes per second.' })
   @Get('/network')
   getServerNetworkInfo() {
-    return this.statusService.getServerNetworkInfo();
+    return this.statusService.getCurrentNetworkUsage();
   }
 
   @ApiOperation({ summary: 'Return the host and process (UI) uptime.' })

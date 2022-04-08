@@ -95,10 +95,10 @@ export class NetworkWidgetComponent implements OnInit, OnDestroy {
       this.interface = data.net.iface;
 
       if (!this.lineChartData[0].data.length) {
-        this.lineChartData[0].data = data.networkUsageHistory;
-        this.lineChartLabels = data.networkUsageHistory.map(x => 'point');
+        this.lineChartData[0].data = [data.point];
+        this.lineChartLabels = ['point'];
       } else {
-        this.lineChartData[0].data.push(data.networkUsageHistory.slice(-1)[0]);
+        this.lineChartData[0].data.push(data.point);
         this.lineChartLabels.push('point');
 
         if (this.lineChartData[0].data.length > 60) {

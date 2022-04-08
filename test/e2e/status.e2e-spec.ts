@@ -105,7 +105,7 @@ describe('StatusController (e2e)', () => {
 
     expect(res.statusCode).toBe(200);
     expect(res.json()).toHaveProperty('net');
-    expect(res.json()).toHaveProperty('networkUsageHistory');
+    expect(res.json()).toHaveProperty('point');
   }, 30000);
 
   it('GET /status/uptime', async () => {
