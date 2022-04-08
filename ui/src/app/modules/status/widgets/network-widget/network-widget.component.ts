@@ -18,6 +18,7 @@ export class NetworkWidgetComponent implements OnInit, OnDestroy {
   @ViewChild(BaseChartDirective, { static: true }) public chart: BaseChartDirective;
   @ViewChild('widgetbackground', { static: true }) private widgetBackground: ElementRef;
 
+  public interface: string;
   public receivedPerSec: number;
   public sentPerSec: number;
 
@@ -89,8 +90,9 @@ export class NetworkWidgetComponent implements OnInit, OnDestroy {
 
   getServerNetworkInfo() {
     this.io.request('get-server-network-info').subscribe((data) => {
-      this.receivedPerSec = data.net.rx_sec / 1024 / 1024;
-      this.sentPerSec = data.net.tx_sec / 1024 / 1024;
+      this.receivedPerSec = (data.net.rx_sec / 1024 / 1024) * 8;
+      this.sentPerSec = (data.net.tx_sec / 1024 / 1024) * 8;
+      this.interface = data.net.iface;
 
       if (!this.lineChartData[0].data.length) {
         this.lineChartData[0].data = data.networkUsageHistory;

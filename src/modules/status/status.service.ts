@@ -27,6 +27,8 @@ export class StatusService {
   private homebridgeStatus: HomebridgeStatus = HomebridgeStatus.DOWN;
   private homebridgeStatusChange = new Subject<HomebridgeStatus>();
 
+  private networkUsagePollInterval: NodeJS.Timeout;
+
   private cpuLoadHistory: number[] = [];
   private memoryUsageHistory: number[] = [];
   private networkUsageHistory: number[] = [];
@@ -53,12 +55,6 @@ export class StatusService {
         this.getCpuLoadPoint();
         this.getMemoryUsagePoint();
       }, 10000);
-
-      // poll network usage once per second so we have correct per/second figures
-      setInterval(async () => {
-        this.getNetworkUsagePoint();
-      }, 1000);
-
     } else {
       this.logger.warn('Server metrics monitoring disabled.');
     }
@@ -224,6 +220,14 @@ export class StatusService {
    * Returns server Network usage information
    */
   public async getServerNetworkInfo() {
+    if (!this.networkUsagePollInterval && this.configService.ui.disableServerMetricsMonitoring !== true) {
+      // poll network usage once per second so we have correct per/second figures
+      // we start doing this the first time data is requested, continuing until the process is stopped.
+      this.networkUsagePollInterval = setInterval(() => {
+        this.getNetworkUsagePoint();
+      }, 1000);
+    }
+
     if (!this.networkUsageHistory.length) {
       await this.getNetworkUsagePoint();
     }
