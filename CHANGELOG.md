@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. This projec
 
 ## NEXT
 
+### Notable Changes
+
+* **Dashboard:** New "Network Activity" widget option added by [@seidnerj](https://github.com/seidnerj) ([#1292](https://github.com/oznu/homebridge-config-ui-x/pull/1292))
+
 ### Other Changes 
 
 * **i18n:** Improvements to Portuguese language translations ([#1260](https://github.com/oznu/homebridge-config-ui-x/pull/1282))
