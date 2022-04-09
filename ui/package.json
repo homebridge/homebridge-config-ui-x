@@ -84,6 +84,7 @@
   },
   "overrides": {
     "@angular/common": "^13.3.2",
-    "@angular/core": "^13.3.2"
+    "@angular/core": "^13.3.2",
+    "marked": "^4.0.13"
   }
 }
