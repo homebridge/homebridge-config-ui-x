@@ -81,7 +81,7 @@
     "child_bridge.label_bridge_settings": "Bridge Einstellungen",
     "child_bridge.label_child_bridges": "Unter-Bridges",
     "child_bridge.message_about": "Homebridge erlaubt es dir, die Plattform oder Geräte deiner Plugins als eine isolierten Unter-Bridge zu betreiben. Das kann die allgemeine Reaktionsfähigkeit und Zuverlässigkeit von Homebridge verbessern.",
-    "child_bridge.message_child_bridges_must_be_paired_seperately": "Jede Unter-Bridge Plattform oder Gerät muss separat mit HomeKit gekoppelt werden.",
+    "child_bridge.message_child_bridges_must_be_paired_separately": "Jede Unter-Bridge Plattform oder Gerät muss separat mit HomeKit gekoppelt werden.",
     "child_bridge.message_must_configure_plugin_first": "Du musst dieses Plugin konfigurieren, bevor du dessen Bridge Einstellungen verwalten kannst.",
     "child_bridge.message_restart_homebridge": "Homebridge neu starten, um die Einrichtung dieser Unter-Bridge abzuschließen.",
     "child_bridge.message_return_to_pair": "Zu dieser Seite zurückkehren, nachdem Homebridge neu gestartet wurde, um den Kopplungs-QR-Code zu sehen.",

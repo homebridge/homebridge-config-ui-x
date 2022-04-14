@@ -81,7 +81,7 @@
     "child_bridge.label_bridge_settings": "Configuració del pont",
     "child_bridge.label_child_bridges": "Ponts fill",
     "child_bridge.message_about": "Homebridge permet executar la plataforma o accessori del connector com un pont fill aïllat. Això pot ajudar a millorar la capacitat general de resposta i la fiabilitat de Homebridge.",
-    "child_bridge.message_child_bridges_must_be_paired_seperately": "Cada pont fill de plataforma o accessori ha de ser aparellat a HomeKit per separat.",
+    "child_bridge.message_child_bridges_must_be_paired_separately": "Cada pont fill de plataforma o accessori ha de ser aparellat a HomeKit per separat.",
     "child_bridge.message_must_configure_plugin_first": "Cal configurar aquest plugin per poder modificar la configuració de pont.",
     "child_bridge.message_restart_homebridge": "Reinicia Homebridge per acabar de configurar aquest pont fill.",
     "child_bridge.message_return_to_pair": "Torna a aquesta pantalla després de reiniciar Homebridge per veure el codi QR d'aparellament.",

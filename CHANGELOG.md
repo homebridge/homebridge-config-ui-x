@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Other Changes 
 
 * **i18n:** Improvements to Portuguese language translations ([#1260](https://github.com/oznu/homebridge-config-ui-x/pull/1282))
+* **i18n:** Fixed typo ([#1260](https://github.com/oznu/homebridge-config-ui-x/issue/1315))
 * **Accessory Control:** Fix alignment of light sensor tile information ([#1263](https://github.com/oznu/homebridge-config-ui-x/pull/1285))
 * **Accessory Control:** Fix light sensor rounding ([#1263](https://github.com/oznu/homebridge-config-ui-x/pull/1295))
 * **System:** The `hb-service update-node` command now works on the [native Homebridge Synology DSM Package](https://github.com/oznu/homebridge-syno-spk) (via integrated terminal only)

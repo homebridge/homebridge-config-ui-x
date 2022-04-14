@@ -55,8 +55,13 @@ export class PluginsSettingsUiService {
         return this.serveAssetsFromDevServer(reply, pluginUi, assetPath);
       }
 
+      // fallback path (to serve static assets from the plugin ui public folder)
+      const fallbackPath = path.resolve(process.env.UIX_BASE_PATH, 'public', path.basename(filePath));
+
       if (await fs.pathExists(filePath)) {
         return reply.sendFile(path.basename(filePath), path.dirname(filePath));
+      } else if (fallbackPath.match(/^.*\.(jpe?g|gif|png|svg|ttf|woff2|css)$/i) && await fs.pathExists(fallbackPath)) {
+        return reply.sendFile(path.basename(fallbackPath), path.dirname(fallbackPath));
       } else {
         this.loggerService.warn('Asset Not Found:', pluginName + '/' + assetPath);
         return reply.code(404).send('Not Found');

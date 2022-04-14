@@ -94,6 +94,11 @@ export class NetworkWidgetComponent implements OnInit, OnDestroy {
       this.sentPerSec = (data.net.tx_sec / 1024 / 1024) * 8;
       this.interface = data.net.iface;
 
+      // the chart looks strange if the data rate is < 1.
+      if (data.point < 1) {
+        data.point = 0;
+      }
+
       if (!this.lineChartData[0].data.length) {
         this.lineChartData[0].data = [data.point];
         this.lineChartLabels = ['point'];

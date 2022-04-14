@@ -81,7 +81,7 @@
     "child_bridge.label_bridge_settings": "Ajustes de Puente",
     "child_bridge.label_child_bridges": "Puentes Hijo",
     "child_bridge.message_about": "Homebridge permite ejecutar la plataforma o accesorio del plugin como un puente hijo aislado. Esto puede ayudar a mejorar la capacidad general de respuesta y la fiabilidad de Homebridge.",
-    "child_bridge.message_child_bridges_must_be_paired_seperately": "Cada puente hijo de plataforma o accesorio deberá ser emparejado a HomeKit por separado.",
+    "child_bridge.message_child_bridges_must_be_paired_separately": "Cada puente hijo de plataforma o accesorio deberá ser emparejado a HomeKit por separado.",
     "child_bridge.message_must_configure_plugin_first": "Es necesario configurar este plugin para poder modificar los ajustes del puente.",
     "child_bridge.message_restart_homebridge": "Reinicia Homebridge para terminar de configurar este puente hijo.",
     "child_bridge.message_return_to_pair": "Regresa a esta pantalla después de reiniciar Homebridge para ver el Código QR de emparejamiento.",
