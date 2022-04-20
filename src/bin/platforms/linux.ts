@@ -246,11 +246,21 @@ export class LinuxInstaller {
     try {
       if (this.isSynologyPackage()) {
         // skip glibc version check on Synology DSM
+        // we know node > 18 requires glibc > 2.28, while DSM 7 only has 2.27 at the moment
+        if (semver.gte(job.target, '18.0.0')) {
+          this.hbService.logger('Cannot update Node.js on your system. Synology DSM 7 does not currently support Node.js 18 or later.', 'fail');
+          process.exit(1);
+        }
       } else {
         const glibcVersion = parseFloat(child_process.execSync('getconf GNU_LIBC_VERSION 2>/dev/null').toString().split('glibc')[1].trim());
         if (glibcVersion < 2.24) {
           this.hbService.logger('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
             `Wanted: >=2.24. Installed: ${glibcVersion}`, 'fail');
+          process.exit(1);
+        }
+        if (semver.gte(job.target, '18.0.0') && glibcVersion < 2.28) {
+          this.hbService.logger('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
+            `Wanted: >=2.28. Installed: ${glibcVersion}`, 'fail');
           process.exit(1);
         }
       }
