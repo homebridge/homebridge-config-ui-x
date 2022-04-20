@@ -377,7 +377,7 @@ export class PluginsService {
     const installOptions: Array<string> = [];
 
     // check to see if custom plugin path is using a package.json file
-    if (installPath === this.configService.customPluginPath && await fs.pathExists(path.resolve(installPath, '../package.json'))) {
+    if (installPath === this.configService.customPluginPath && !this.configService.usePnpm && await fs.pathExists(path.resolve(installPath, '../package.json'))) {
       installOptions.push('--save');
     }
 

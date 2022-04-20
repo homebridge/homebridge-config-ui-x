@@ -225,7 +225,7 @@ export class HomebridgeServiceHelper {
     // Set Env Vars
     process.env.UIX_STORAGE_PATH = this.storagePath;
     process.env.UIX_CONFIG_PATH = path.resolve(this.storagePath, 'config.json');
-    process.env.UIX_BASE_PATH = path.resolve(__dirname, '../../');
+    process.env.UIX_BASE_PATH = process.env.UIX_BASE_PATH_OVERRIDE || path.resolve(__dirname, '../../');
     process.env.UIX_SERVICE_MODE = '1';
     process.env.UIX_INSECURE_MODE = '1';
   }
