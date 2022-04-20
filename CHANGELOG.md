@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## NEXT
+
+### Bug Fixes
+
+**UI:** Fixed a bug preventing modals from closing correctly ([#1317](https://github.com/oznu/homebridge-config-ui-x/issues/1317))
+
 ## 4.43.0 (2022-04-14)
 
 ### Notable Changes
