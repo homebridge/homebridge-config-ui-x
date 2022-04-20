@@ -49,6 +49,7 @@ export class ConfigService {
   public runningInLinux = (!this.runningInDocker && !this.runningInSynologyPackage && os.platform() === 'linux');
   public ableToConfigureSelf = (!this.runningInDocker || semver.satisfies(process.env.CONFIG_UI_VERSION, '>=3.5.5', { includePrerelease: true }));
   public enableTerminalAccess = this.runningInDocker || this.runningInSynologyPackage || Boolean(process.env.HOMEBRIDGE_CONFIG_UI_TERMINAL === '1');
+  public usePnpm = (process.env.UIX_USE_PNPM === '1');
 
   // docker paths
   public startupScript = path.resolve(this.storagePath, 'startup.sh');

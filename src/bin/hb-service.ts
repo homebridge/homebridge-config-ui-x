@@ -533,6 +533,13 @@ export class HomebridgeServiceHelper {
       }
     }
 
+    // check the custom plugins path
+    if (!this.homebridgeModulePath && process.env.UIX_CUSTOM_PLUGIN_PATH) {
+      if (await fs.pathExists(path.resolve(process.env.UIX_CUSTOM_PLUGIN_PATH, 'homebridge', 'package.json'))) {
+        this.homebridgeModulePath = path.resolve(process.env.UIX_CUSTOM_PLUGIN_PATH, 'homebridge');
+      }
+    }
+
     if (this.homebridgeModulePath) {
       try {
         await this.refreshHomebridgePackage();

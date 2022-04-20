@@ -1002,8 +1002,8 @@ export class PluginsService {
       }
 
     }
-    // Linux and macOS don't require the full path to npm
-    return ['npm'];
+    // Linux and macOS don't require the full path to npm / pnpm
+    return [this.configService.usePnpm ? 'pnpm' : 'npm'];
   }
 
   /**

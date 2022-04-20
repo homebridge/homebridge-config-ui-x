@@ -73,6 +73,7 @@ export class BackupService {
         'node_modules',       // docker
         'startup.sh',         // docker
         '.docker.env',        // docker
+        'pnpm-lock.yaml',     // pnpm
         'FFmpeg',             // ffmpeg
         'fdk-aac',            // ffmpeg
         '.git',               // git
