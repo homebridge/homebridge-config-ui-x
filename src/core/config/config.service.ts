@@ -32,6 +32,7 @@ export class ConfigService {
   public configPath = process.env.UIX_CONFIG_PATH || path.resolve(os.homedir(), '.homebridge/config.json');
   public storagePath = process.env.UIX_STORAGE_PATH || path.resolve(os.homedir(), '.homebridge');
   public customPluginPath = process.env.UIX_CUSTOM_PLUGIN_PATH;
+  public strictPluginResolution = (process.env.UIX_STRICT_PLUGIN_RESOLUTION === '1');
   public secretPath = path.resolve(this.storagePath, '.uix-secrets');
   public authPath = path.resolve(this.storagePath, 'auth.json');
   public accessoryLayoutPath = path.resolve(this.storagePath, 'accessories', 'uiAccessoriesLayout.json');

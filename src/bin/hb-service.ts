@@ -90,6 +90,7 @@ export class HomebridgeServiceHelper {
       .option('-U, --user-storage-path <path>', '', (p) => { this.storagePath = p; this.usingCustomStoragePath = true; })
       .option('-S, --service-name <service name>', 'The name of the homebridge service to install or control', (p) => this.serviceName = p)
       .option('-T, --no-timestamp', '', () => this.homebridgeOpts.push('-T'))
+      .option('--strict-plugin-resolution', '', () => { process.env.UIX_STRICT_PLUGIN_RESOLUTION = '1'; })
       .option('--port <port>', 'The port to set to the Homebridge UI when installing as a service', (p) => this.uiPort = parseInt(p, 10))
       .option('--user <user>', 'The user account the Homebridge service will be installed as (Linux, macOS only)', (p) => this.asUser = p)
       .option('--stdout', '', () => this.stdout = true)
@@ -393,6 +394,22 @@ export class HomebridgeServiceHelper {
       this.logger('Could not find Homebridge. Make sure you have installed homebridge using the -g flag then restart.', 'fail');
       this.logger('npm install -g --unsafe-perm homebridge', 'fail');
       return;
+    }
+
+    // allow the --strict-plugin-resolution flag on Homebridge v1.4.1 or later only
+    if (
+      this.homebridgePackage &&
+      process.env.UIX_STRICT_PLUGIN_RESOLUTION === '1' &&
+      semver.gte(this.homebridgePackage.version, '1.4.1-beta.1', { includePrerelease: true })
+    ) {
+      if (!this.homebridgeOpts.includes('--strict-plugin-resolution')) {
+        this.homebridgeOpts.push('--strict-plugin-resolution');
+      }
+    } else if (process.env.UIX_STRICT_PLUGIN_RESOLUTION === '1') {
+      const strictPluginIndex = this.homebridgeOpts.indexOf('--strict-plugin-resolution');
+      if (strictPluginIndex > -1) {
+        this.homebridgeOpts.splice(strictPluginIndex, 1);
+      }
     }
 
     if (this.homebridgeOpts.length) {

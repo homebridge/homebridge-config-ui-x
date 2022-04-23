@@ -1011,39 +1011,55 @@ export class PluginsService {
    * this is the same code used by homebridge to find plugins
    * https://github.com/nfarina/homebridge/blob/c73a2885d62531925ea439b9ad6d149a285f6daa/lib/plugin.js#L105-L134
    */
-  private getBasePaths() {
+  private getBasePaths(): string[] {
     let paths = [];
-
-    // add the paths used by require()
-    // we need to use 'eval' on require to bypass webpack
-    paths = paths.concat(eval('require').main.paths);
 
     if (this.configService.customPluginPath) {
       paths.unshift(this.configService.customPluginPath);
     }
 
-    if (process.env.NODE_PATH) {
-      paths = process.env.NODE_PATH.split(path.delimiter)
-        .filter((p) => !!p) // trim out empty values
-        .concat(paths);
-    } else {
-      // Default paths for each system
-      if ((os.platform() === 'win32')) {
-        paths.push(path.join(process.env.APPDATA, 'npm/node_modules'));
-      } else {
-        paths.push('/usr/local/lib/node_modules');
-        paths.push('/usr/lib/node_modules');
-        paths.push(child_process.execSync('/bin/echo -n "$(npm --no-update-notifier -g prefix)/lib/node_modules"').toString('utf8'));
+    if (this.configService.strictPluginResolution) {
+      if (!paths.length) {
+        paths.push(...this.getNpmPrefixToSearchPaths());
       }
+    } else {
+      // add the paths used by require()
+      // we need to use 'eval' on require to bypass webpack
+      paths = paths.concat(eval('require').main.paths);
+
+      if (process.env.NODE_PATH) {
+        paths = process.env.NODE_PATH.split(path.delimiter)
+          .filter((p) => !!p) // trim out empty values
+          .concat(paths);
+      } else {
+        // Default paths for non-windows systems
+        if ((os.platform() !== 'win32')) {
+          paths.push('/usr/local/lib/node_modules');
+          paths.push('/usr/lib/node_modules');
+        }
+        paths.push(...this.getNpmPrefixToSearchPaths());
+      }
+
+      // don't look at homebridge-config-ui-x's own modules
+      paths = paths.filter(x => x !== path.join(process.env.UIX_BASE_PATH, 'node_modules'));
     }
-
-    // don't look at homebridge-config-ui-x's own modules
-    paths = paths.filter(x => x !== path.join(process.env.UIX_BASE_PATH, 'node_modules'));
-
     // filter out duplicates and non-existent paths
     return _.uniq(paths).filter((requiredPath) => {
       return fs.existsSync(requiredPath);
     });
+  }
+
+  /**
+   * Get path from the npm prefix, eg. /usr/local/lib/node_modules
+   */
+  private getNpmPrefixToSearchPaths(): string[] {
+    const paths = [];
+    if ((os.platform() === 'win32')) {
+      paths.push(path.join(process.env.APPDATA, 'npm/node_modules'));
+    } else {
+      paths.push(child_process.execSync('/bin/echo -n "$(npm --no-update-notifier -g prefix)/lib/node_modules"').toString('utf8'));
+    }
+    return paths;
   }
 
   /**
