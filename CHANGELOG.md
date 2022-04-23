@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Other Changes 
 
 * **System:** The [`hb-service update-node`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command#update-nodejs) command will now check glibc v2.28 or later is present on Linux systems before allowing an update to Node.js 18+
+* **System:** The [`hb-service update-node`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command#update-nodejs) will now check for macOS 10.15 Catalina or later before allowing an update to Node.js 18+
 
 ## 4.43.0 (2022-04-14)
 

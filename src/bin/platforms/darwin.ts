@@ -224,6 +224,12 @@ export class DarwinInstaller {
       process.exit(1);
     }
 
+    // Node.js 18+ requires macOS 10.15 or later, which starts with Darwin 19.0.0
+    if (semver.lt(os.release(), '19.0.0') && semver.gte(job.target, '18.0.0')) {
+      this.hbService.logger('macOS Catalina 10.15 or later is required to install Node.js v18 or later', 'fail');
+      process.exit(1);
+    }
+
     const downloadUrl = `https://nodejs.org/dist/${job.target}/node-${job.target}-darwin-${process.arch}.tar.gz`;
     const targetPath = path.dirname(path.dirname(process.execPath));
 
