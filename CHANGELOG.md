@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Bug Fixes
 
-**UI:** Fixed a bug preventing modals from closing correctly ([#1317](https://github.com/oznu/homebridge-config-ui-x/issues/1317))
+* **UI:** Fixed a bug preventing modals from closing correctly ([#1317](https://github.com/oznu/homebridge-config-ui-x/issues/1317))
 
 ### Other Changes 
 
