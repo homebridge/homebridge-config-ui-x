@@ -395,7 +395,8 @@ export class StatusService {
       homebridgeInsecureMode: this.configService.homebridgeInsecureMode,
       homebridgeCustomPluginPath: this.configService.customPluginPath,
       homebridgeRunningInDocker: this.configService.runningInDocker,
-      homebridgeRunniongInSynologyPackage: this.configService.runningInSynologyPackage,
+      homebridgeRunningInSynologyPackage: this.configService.runningInSynologyPackage,
+      homebridgeRunningInPackageMode: this.configService.runningInPackageMode,
       homebridgeServiceMode: this.configService.serviceMode,
       nodeVersion: process.version,
       os: await this.getOsInfo(),
@@ -428,7 +429,7 @@ export class StatusService {
         currentVersion: process.version,
         latestVersion: currentLts.version,
         updateAvailable: semver.gt(currentLts.version, process.version),
-        showUpdateWarning: semver.lt(process.version, '12.13.0'),
+        showUpdateWarning: semver.lt(process.version, '14.15.0'),
         installPath: path.dirname(process.execPath),
       };
       this.statusCache.set('nodeJsVersion', versionInformation, 86400);

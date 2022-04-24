@@ -156,7 +156,12 @@ export class SettingsComponent implements OnInit {
         this.getNetworkSettings();
       }
       if (semver.gte(homebridgePackage.installedVersion, '1.4.0-beta.0', { includePrerelease: true })) {
-        if (this.$settings.env.runningInLinux || this.$settings.env.runningInDocker || this.$settings.env.runningInSynologyPackage) {
+        if (
+          this.$settings.env.runningInLinux ||
+          this.$settings.env.runningInDocker ||
+          this.$settings.env.runningInSynologyPackage ||
+          this.$settings.env.runningInPackageMode
+        ) {
           this.showAvahiMdnsOption = true;
         }
       }

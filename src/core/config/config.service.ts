@@ -47,9 +47,10 @@ export class ConfigService {
   public serviceMode = (process.env.UIX_SERVICE_MODE === '1');
   public runningInDocker = Boolean(process.env.HOMEBRIDGE_CONFIG_UI === '1');
   public runningInSynologyPackage = Boolean(process.env.HOMEBRIDGE_SYNOLOGY_PACKAGE === '1');
-  public runningInLinux = (!this.runningInDocker && !this.runningInSynologyPackage && os.platform() === 'linux');
+  public runningInPackageMode = Boolean(process.env.HOMEBRIDGE_APT_PACKAGE === '1');
+  public runningInLinux = (!this.runningInDocker && !this.runningInSynologyPackage && !this.runningInPackageMode && os.platform() === 'linux');
   public ableToConfigureSelf = (!this.runningInDocker || semver.satisfies(process.env.CONFIG_UI_VERSION, '>=3.5.5', { includePrerelease: true }));
-  public enableTerminalAccess = this.runningInDocker || this.runningInSynologyPackage || Boolean(process.env.HOMEBRIDGE_CONFIG_UI_TERMINAL === '1');
+  public enableTerminalAccess = this.runningInDocker || this.runningInSynologyPackage || this.runningInPackageMode || Boolean(process.env.HOMEBRIDGE_CONFIG_UI_TERMINAL === '1');
   public usePnpm = (process.env.UIX_USE_PNPM === '1');
 
   // docker paths
@@ -192,6 +193,7 @@ export class ConfigService {
         platform: os.platform(),
         runningInDocker: this.runningInDocker,
         runningInSynologyPackage: this.runningInSynologyPackage,
+        runningInPackageMode: this.runningInPackageMode,
         runningInLinux: this.runningInLinux,
         dockerOfflineUpdate: this.dockerOfflineUpdate,
         serviceMode: this.serviceMode,
@@ -270,7 +272,7 @@ export class ConfigService {
   private setConfigForServiceMode() {
     this.homebridgeInsecureMode = Boolean(process.env.UIX_INSECURE_MODE === '1');
     this.ui.restart = undefined;
-    this.ui.sudo = (os.platform() === 'linux' && !this.runningInDocker && !this.runningInSynologyPackage);
+    this.ui.sudo = (os.platform() === 'linux' && !this.runningInDocker && !this.runningInSynologyPackage && !this.runningInPackageMode);
     this.ui.log = {
       method: 'native',
       path: path.resolve(this.storagePath, 'homebridge.log'),

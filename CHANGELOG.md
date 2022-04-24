@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## NEXT
+
+### Other Changes 
+
+* **i18n:** Improvements to German language translations ([#1319](https://github.com/oznu/homebridge-config-ui-x/pull/1319))
+* **i18n:** Show Node.js update warning icon for users running < Node.js v14.15.0
+* **i18n:** Removed npm version from the System Information widget
+
 ## 4.43.1 (2022-04-23)
 
 ### Bug Fixes

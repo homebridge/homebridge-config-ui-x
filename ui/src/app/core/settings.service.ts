@@ -21,6 +21,7 @@ interface EnvInterface {
   runningInDocker: boolean;
   runningInLinux: boolean;
   runningInSynologyPackage: boolean;
+  runningInPackageMode: boolean;
   dockerOfflineUpdate: boolean;
   serviceMode: boolean;
   lang: string | null;

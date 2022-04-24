@@ -131,7 +131,7 @@ export class LinuxInstaller {
    */
   public async rebuild(all = false) {
     try {
-      if (this.isSynologyPackage()) {
+      if (this.isPackage()) {
         // skip root check for this method on Synology DSM
       } else {
         this.checkForRoot();
@@ -202,7 +202,7 @@ export class LinuxInstaller {
    * Update Node.js
    */
   public async updateNodejs(job: { target: string; rebuild: boolean }) {
-    if (this.isSynologyPackage()) {
+    if (this.isPackage()) {
       // skip root check for this method on Synology DSM
     } else {
       this.checkForRoot();
@@ -211,7 +211,7 @@ export class LinuxInstaller {
     // check target path
     const targetPath = path.dirname(path.dirname(process.execPath));
 
-    if (targetPath !== '/usr' && targetPath !== '/usr/local' && !targetPath.endsWith('/@appstore/homebridge/app')) {
+    if (targetPath !== '/usr' && targetPath !== '/usr/local' && targetPath !== '/usr/lib/homebridge' && !targetPath.endsWith('/@appstore/homebridge/app')) {
       this.hbService.logger(`Cannot update Node.js on your system. Non-standard installation path detected: ${targetPath}`, 'fail');
       process.exit(1);
     }
@@ -244,7 +244,7 @@ export class LinuxInstaller {
   private async updateNodeFromTarball(job: { target: string; rebuild: boolean }, targetPath: string) {
 
     try {
-      if (this.isSynologyPackage()) {
+      if (Boolean(process.env.HOMEBRIDGE_SYNOLOGY_PACKAGE === '1')) {
         // skip glibc version check on Synology DSM
         // we know node > 18 requires glibc > 2.28, while DSM 7 only has 2.27 at the moment
         if (semver.gte(job.target, '18.0.0')) {
@@ -391,7 +391,7 @@ export class LinuxInstaller {
    * Check the command is being run as root and we can detect the user
    */
   private checkForRoot() {
-    if (this.isSynologyPackage()) {
+    if (this.isPackage()) {
       this.hbService.logger('ERROR: This command is not available on Synology DSM', 'fail');
       process.exit(1);
     }
@@ -456,10 +456,13 @@ export class LinuxInstaller {
   }
 
   /**
-   * Determines if the command is being run inside the Synology DSM SPK Package
+   * Determines if the command is being run inside the Synology DSM SPK Package / Debian Package
    */
-  private isSynologyPackage(): boolean {
-    return Boolean(process.env.HOMEBRIDGE_SYNOLOGY_PACKAGE === '1') && process.env.USER === 'homebridge';
+  private isPackage(): boolean {
+    return (
+      Boolean(process.env.HOMEBRIDGE_SYNOLOGY_PACKAGE === '1') ||
+      Boolean(process.env.HOMEBRIDGE_APT_PACKAGE === '1')
+    ) && process.env.USER === 'homebridge';
   }
 
   /**
