@@ -172,7 +172,7 @@ export class HomebridgeServiceHelper {
         console.log('    run                              run homebridge daemon');
         console.log('    logs                             tails the homebridge service logs');
         console.log('    update-node [version]            update Node.js');
-        console.log('\nSee the wiki for help with hb-service: https://git.io/JTtHK \n');
+        console.log('\nSee the wiki for help with hb-service: https://homebridge.io/w/JTtHK \n');
 
         process.exit(1);
       }
@@ -606,7 +606,7 @@ export class HomebridgeServiceHelper {
       this.logger(
         'WARNING: It looks like you are running Node.js via NVM (Node Version Manager).\n' +
         '  Using hb-service with NVM may not work unless you have configured NVM for the\n' +
-        '  user this service will run as. See https://git.io/JUZ2g for instructions on how\n' +
+        '  user this service will run as. See https://homebridge.io/w/JUZ2g for instructions on how\n' +
         '  to remove NVM, then follow the wiki instructions to install Node.js and Homebridge.',
         'warn'
       );

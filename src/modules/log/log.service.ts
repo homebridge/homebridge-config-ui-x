@@ -69,7 +69,7 @@ export class LogService {
       this.tailLogFromFileNative(client);
     } else {
       client.emit('stdout', color.red('Cannot show logs. "log" option is not configured correctly in your Homebridge config.json file.\r\n\r\n'));
-      client.emit('stdout', color.cyan('See https://git.io/JtHrm for instructions or use hb-service.\r\n'));
+      client.emit('stdout', color.cyan('See https://homebridge.io/w/JtHrm for instructions or use hb-service.\r\n'));
     }
   }
 

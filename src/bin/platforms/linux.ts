@@ -132,7 +132,8 @@ export class LinuxInstaller {
   public async rebuild(all = false) {
     try {
       if (this.isPackage()) {
-        // skip root check for this method on Synology DSM
+        // must not run as root in package mode
+        this.checkIsNotRoot();
       } else {
         this.checkForRoot();
       }
@@ -203,7 +204,8 @@ export class LinuxInstaller {
    */
   public async updateNodejs(job: { target: string; rebuild: boolean }) {
     if (this.isPackage()) {
-      // skip root check for this method on Synology DSM
+      // must not run as root in package mode
+      this.checkIsNotRoot();
     } else {
       this.checkForRoot();
     }
@@ -392,7 +394,7 @@ export class LinuxInstaller {
    */
   private checkForRoot() {
     if (this.isPackage()) {
-      this.hbService.logger('ERROR: This command is not available on Synology DSM', 'fail');
+      this.hbService.logger('ERROR: This command is not available.', 'fail');
       process.exit(1);
     }
     if (process.getuid() !== 0) {
@@ -403,6 +405,16 @@ export class LinuxInstaller {
     if (this.hbService.action === 'install' && !this.hbService.asUser) {
       this.hbService.logger('ERROR: User parameter missing. Pass in the user you want to run Homebridge as using the --user flag eg.', 'fail');
       this.hbService.logger(`EXAMPLE: sudo hb-service ${this.hbService.action} --user your-user`, 'fail');
+      process.exit(1);
+    }
+  }
+
+  /**
+   * Check the current user is NOT root
+   */
+  private checkIsNotRoot() {
+    if (process.getuid() === 0) {
+      this.hbService.logger('ERROR: This command must not be executed as root or with sudo', 'fail');
       process.exit(1);
     }
   }
@@ -462,7 +474,7 @@ export class LinuxInstaller {
     return (
       Boolean(process.env.HOMEBRIDGE_SYNOLOGY_PACKAGE === '1') ||
       Boolean(process.env.HOMEBRIDGE_APT_PACKAGE === '1')
-    ) && process.env.USER === 'homebridge';
+    );
   }
 
   /**

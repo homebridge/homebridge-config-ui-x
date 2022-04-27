@@ -207,7 +207,7 @@ export class PluginsService {
     try {
       searchResults = (await this.httpService.get(`https://registry.npmjs.org/-/v1/search?text=${q}`).toPromise()).data;
     } catch (e) {
-      this.logger.error(`Failed to search the npm registry - "${e.message}" - see https://git.io/JJSz6 for help.`);
+      this.logger.error(`Failed to search the npm registry - "${e.message}" - see https://homebridge.io/w/JJSz6 for help.`);
       throw new InternalServerErrorException(`Failed to search the npm registry - "${e.message}" - see logs.`);
     }
 
@@ -308,7 +308,7 @@ export class PluginsService {
       return [plugin];
     } catch (e) {
       if (e.response?.status !== 404) {
-        this.logger.error(`Failed to search the npm registry - "${e.message}" - see https://git.io/JJSz6 for help.`);
+        this.logger.error(`Failed to search the npm registry - "${e.message}" - see https://homebridge.io/w/JJSz6 for help.`);
       }
       return [];
     }
@@ -483,7 +483,7 @@ export class PluginsService {
     const homebridgeInstalls = modules.filter(x => x.name === 'homebridge');
 
     if (homebridgeInstalls.length > 1) {
-      this.logger.warn('Multiple Instances Of Homebridge Found Installed - see https://git.io/JJSgm for help.');
+      this.logger.warn('Multiple Instances Of Homebridge Found Installed - see https://homebridge.io/w/JJSgm for help.');
       homebridgeInstalls.forEach((instance) => {
         this.logger.warn(instance.installPath);
       });
@@ -491,7 +491,7 @@ export class PluginsService {
 
     if (!homebridgeInstalls.length) {
       this.configService.hbServiceUiRestartRequired = true;
-      this.logger.error('Unable To Find Homebridge Installation - see https://git.io/JJSgZ for help.');
+      this.logger.error('Unable To Find Homebridge Installation - see https://homebridge.io/w/JJSgZ for help.');
       throw new Error('Unable To Find Homebridge Installation');
     }
 
@@ -1156,7 +1156,7 @@ export class PluginsService {
       }
     } catch (e) {
       if (e.response?.status !== 404) {
-        this.logger.log(`[${plugin.name}] Failed to check registry.npmjs.org for updates: "${e.message}" - see https://git.io/JJSz6 for help.`);
+        this.logger.log(`[${plugin.name}] Failed to check registry.npmjs.org for updates: "${e.message}" - see https://homebridge.io/w/JJSz6 for help.`);
       }
       plugin.publicPackage = false;
       plugin.latestVersion = null;
