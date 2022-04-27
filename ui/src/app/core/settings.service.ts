@@ -22,6 +22,7 @@ interface EnvInterface {
   runningInLinux: boolean;
   runningInSynologyPackage: boolean;
   runningInPackageMode: boolean;
+  canShutdownRestartHost: boolean;
   dockerOfflineUpdate: boolean;
   serviceMode: boolean;
   lang: string | null;

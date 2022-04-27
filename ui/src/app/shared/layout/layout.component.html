@@ -60,15 +60,15 @@
               {{ 'menu.docker.label_restart_container' | translate }}
             </a>
             <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light"
-              *ngIf="$settings.env.runningInLinux && $auth.user.admin" (click)="restartServer()">
+              *ngIf="$settings.env.canShutdownRestartHost && $auth.user.admin" (click)="restartServer()">
               {{ 'menu.linux.label_restart_server' | translate }}
             </a>
             <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light"
-              *ngIf="$settings.env.runningInLinux && $auth.user.admin" (click)="shutdownServer()">
+              *ngIf="$settings.env.canShutdownRestartHost && $auth.user.admin" (click)="shutdownServer()">
               {{ 'menu.linux.label_shutdown_server' | translate }}
             </a>
             <div class="dropdown-divider"
-              *ngIf="$auth.user.admin && ($settings.env.runningInDocker || $settings.env.runningInLinux)"></div>
+              *ngIf="$auth.user.admin && ($settings.env.runningInDocker || $settings.env.canShutdownRestartHost)"></div>
             <a class="dropdown-item waves-effect waves-light" routerLink="/settings" *ngIf="$auth.user.admin">
               Homebridge {{ 'menu.docker.label_settings' | translate }}
             </a>

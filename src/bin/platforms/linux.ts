@@ -211,7 +211,7 @@ export class LinuxInstaller {
     // check target path
     const targetPath = path.dirname(path.dirname(process.execPath));
 
-    if (targetPath !== '/usr' && targetPath !== '/usr/local' && targetPath !== '/usr/lib/homebridge' && !targetPath.endsWith('/@appstore/homebridge/app')) {
+    if (targetPath !== '/usr' && targetPath !== '/usr/local' && targetPath !== '/opt/homebridge' && !targetPath.endsWith('/@appstore/homebridge/app')) {
       this.hbService.logger(`Cannot update Node.js on your system. Non-standard installation path detected: ${targetPath}`, 'fail');
       process.exit(1);
     }
