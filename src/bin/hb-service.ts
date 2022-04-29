@@ -26,12 +26,13 @@ import { DarwinInstaller } from './platforms/darwin';
 import type { HomebridgeIpcService } from '../core/homebridge-ipc/homebridge-ipc.service';
 
 export class HomebridgeServiceHelper {
-  public action: 'install' | 'uninstall' | 'start' | 'stop' | 'restart' | 'rebuild' | 'run' | 'logs' | 'update-node' | 'before-start' | 'status';
+  public action: 'install' | 'uninstall' | 'start' | 'stop' | 'restart' | 'rebuild' | 'run' | 'add' | 'remove' | 'logs' | 'update-node' | 'before-start' | 'status';
   public selfPath = __filename;
   public serviceName = 'Homebridge';
   public storagePath;
   public usingCustomStoragePath = false;
   public allowRunRoot = false;
+  public enableHbServicePluginManagement = false;
   public asUser;
   private log: fs.WriteStream | NodeJS.WriteStream;
   private homebridgeModulePath: string;
@@ -85,7 +86,7 @@ export class HomebridgeServiceHelper {
     commander
       .allowUnknownOption()
       .storeOptionsAsProperties(true)
-      .arguments('[install|uninstall|start|stop|restart|rebuild|run|logs]')
+      .arguments('[install|uninstall|start|stop|restart|rebuild|run|logs|add|remove]')
       .option('-P, --plugin-path <path>', '', (p) => { process.env.UIX_CUSTOM_PLUGIN_PATH = p; this.homebridgeOpts.push('-P', p); })
       .option('-U, --user-storage-path <path>', '', (p) => { this.storagePath = p; this.usingCustomStoragePath = true; })
       .option('-S, --service-name <service name>', 'The name of the homebridge service to install or control', (p) => this.serviceName = p)
@@ -144,6 +145,14 @@ export class HomebridgeServiceHelper {
         this.tailLogs();
         break;
       }
+      case 'add': {
+        this.pnpmPluginManagement(commander.args);
+        break;
+      }
+      case 'remove': {
+        this.pnpmPluginManagement(commander.args);
+        break;
+      }
       case 'update-node': {
         this.checkForNodejsUpdates(commander.args.length === 2 ? commander.args[1] : null);
         break;
@@ -167,6 +176,10 @@ export class HomebridgeServiceHelper {
         console.log('    start                            start the homebridge service');
         console.log('    stop                             stop the homebridge service');
         console.log('    restart                          restart the homebridge service');
+        if (this.enableHbServicePluginManagement) {
+          console.log('    add <plugin>@<version>           install a plugin');
+          console.log('    add <plugin>@<version>           remove a plugin');
+        }
         console.log('    rebuild                          rebuild ui');
         console.log('    rebuild --all                    rebuild all npm modules (use after updating Node.js)');
         console.log('    run                              run homebridge daemon');
@@ -222,6 +235,13 @@ export class HomebridgeServiceHelper {
         process.exit(1);
       }
     }
+
+    // plugin management (install / uninstall) is only available when running as a package
+    this.enableHbServicePluginManagement = (
+      process.env.UIX_CUSTOM_PLUGIN_PATH &&
+      process.env.UIX_USE_PNPM === '1' &&
+      (process.env.HOMEBRIDGE_SYNOLOGY_PACKAGE === '1') || Boolean(process.env.HOMEBRIDGE_APT_PACKAGE === '1')
+    );
 
     // Set Env Vars
     process.env.UIX_STORAGE_PATH = this.storagePath;
@@ -1162,6 +1182,44 @@ export class HomebridgeServiceHelper {
     } catch (e) {
       this.logger('Homebridge UI Not Running', 'fail');
       process.exit(1);
+    }
+  }
+
+  /**
+   * Install / Remove a plugin using pnpm (supported platforms only)
+   */
+  private async pnpmPluginManagement(args) {
+    if (!this.enableHbServicePluginManagement) {
+      this.logger('Plugin management is not supported on your platform using hb-service.', 'fail');
+      process.exit(1);
+    }
+
+    if (args.length === 1) {
+      this.logger('Plugin name required.', 'fail');
+      process.exit(1);
+    }
+
+    const target = args[args.length - 1] as string;
+    const packageName = target.match(/^((@[\w-]*)\/)?(homebridge-[\w-]*)/)?.[0];
+
+    if (!packageName) {
+      this.logger('Invalid plugin name.', 'fail');
+      process.exit(1);
+    }
+
+    const cwd = path.dirname(process.env.UIX_CUSTOM_PLUGIN_PATH);
+
+    if (!await fs.pathExists(cwd)) {
+      this.logger(`Path does not exist: "${cwd}"`, 'fail');
+    }
+
+    try {
+      child_process.execSync(`pnpm -C ${cwd} ${args.join(' ')}`, {
+        cwd: cwd,
+        stdio: 'inherit',
+      });
+    } catch (e) {
+      this.logger('Plugin installation failed.', 'fail');
     }
   }
 

@@ -2,13 +2,14 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## NEXT
+## 4.43.2 (2022-04-29)
 
 ### Other Changes 
 
 * **i18n:** Improvements to German language translations ([#1319](https://github.com/oznu/homebridge-config-ui-x/pull/1319))
 * **i18n:** Show Node.js update warning icon for users running < Node.js v14.15.0
 * **i18n:** Removed npm version from the System Information widget
+* **System:** Changes to support Homebridge `apt` package installation
 
 ## 4.43.1 (2022-04-23)
 
