@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file. This projec
 * **i18n:** Show Node.js update warning icon for users running < Node.js v14.15.0
 * **i18n:** Removed npm version from the System Information widget
 * **System:** Changes to support Homebridge `apt` package installation
+* **System:** Fresh installs on Linux will have the default mdns advertiser set to `avahi` if the `avahi-daemon` service is running
 
 ## 4.43.1 (2022-04-23)
 

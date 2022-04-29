@@ -822,12 +822,14 @@ export class HomebridgeServiceHelper {
     const port = await this.generatePort();
     const name = 'Homebridge ' + username.substr(username.length - 5).replace(/:/g, '');
     const pin = this.generatePin();
+    const advertiser = await this.isAvahiDaemonRunning() ? 'avahi' : 'bonjour-hap';
 
     return {
       name,
       username,
       port,
       pin,
+      advertiser,
     };
   }
 
@@ -912,6 +914,32 @@ export class HomebridgeServiceHelper {
     }
 
     return port;
+  }
+
+  /**
+   * Test to see if the avahi-daemon service is running
+   * @returns 
+   */
+  private async isAvahiDaemonRunning(): Promise<boolean> {
+    if (os.platform() !== 'linux') {
+      return false;
+    }
+    if (!await fs.pathExists('/etc/avahi/avahi-daemon.conf') || !await fs.pathExists('/usr/bin/systemctl')) {
+      return false;
+    }
+    try {
+      if (await fs.pathExists('/usr/lib/systemd/system/avahi.service')) {
+        child_process.execSync('systemctl is-active --quiet avahi');
+        return true;
+      } else if (await fs.pathExists('/lib/systemd/system/avahi-daemon.service')) {
+        child_process.execSync('systemctl is-active --quiet avahi-daemon');
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
   }
 
   /**
