@@ -34,7 +34,7 @@ For detailed instructions on how to setup Node.js and Homebridge with Homebridge
 * <img src="https://user-images.githubusercontent.com/3979615/59594157-b015f000-9136-11e9-93cb-c9d9773ec9e8.png" alt="macos" height="16px" width="16px"/> [macOS](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-macOS)
 * <img src="https://user-images.githubusercontent.com/3979615/59593218-e0f52580-9134-11e9-8b77-585755af5d99.png" alt="windows" height="16px" width="16px"/> [Windows 10](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Windows-10)
 * <img src="https://user-images.githubusercontent.com/3979615/59594527-56fa8c00-9137-11e9-937b-32092dfcff41.png" alt="docker" height="16px" width="16px"/> [Docker (Linux)](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Docker)
-* <img src="https://user-images.githubusercontent.com/3979615/78118531-dc46f700-7452-11ea-95e5-977f79d1904f.png" alt="synology-dsm" height="16px" width="16px"/> [Setup Homebridge on a Synology NAS](https://github.com/oznu/homebridge-syno-spk#how-to-install)
+* <img src="https://user-images.githubusercontent.com/3979615/78118531-dc46f700-7452-11ea-95e5-977f79d1904f.png" alt="synology-dsm" height="16px" width="16px"/> [Setup Homebridge on a Synology NAS](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Synology-DSM)
 
 If your platform is not listed above, or you want to use your own service manager, see the [Manual Configuration](https://github.com/oznu/homebridge-config-ui-x/wiki/Manual-Configuration) wiki article for instructions on setting up the Homebridge UI to run as a Homebridge plugin instead of a service.
 

@@ -7,8 +7,8 @@ All notable changes to this project will be documented in this file. This projec
 ### Other Changes 
 
 * **i18n:** Improvements to German language translations ([#1319](https://github.com/oznu/homebridge-config-ui-x/pull/1319))
-* **i18n:** Show Node.js update warning icon for users running < Node.js v14.15.0
-* **i18n:** Removed npm version from the System Information widget
+* **Dashboard:** Start showing Node.js update warning icon for users running < Node.js v14.15.0
+* **Dashboard:** Removed npm version from the System Information widget
 * **System:** Changes to support Homebridge `apt` package installation
 * **System:** Fresh installs on Linux will have the default mdns advertiser set to `avahi` if the `avahi-daemon` service is running
 
