@@ -274,9 +274,9 @@ export class LinuxInstaller {
         }
       } else {
         const glibcVersion = parseFloat(child_process.execSync('getconf GNU_LIBC_VERSION 2>/dev/null').toString().split('glibc')[1].trim());
-        if (glibcVersion < 2.24) {
+        if (glibcVersion < 2.23) {
           this.hbService.logger('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
-            `Wanted: >=2.24. Installed: ${glibcVersion}`, 'fail');
+            `Wanted: >=2.23. Installed: ${glibcVersion}`, 'fail');
           process.exit(1);
         }
         if (semver.gte(job.target, '18.0.0') && glibcVersion < 2.28) {
