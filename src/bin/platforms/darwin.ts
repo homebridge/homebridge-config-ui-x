@@ -107,30 +107,51 @@ export class DarwinInstaller {
    */
   public async rebuild(all = false) {
     try {
-      this.checkForRoot();
-      const npmGlobalPath = child_process.execSync('/bin/echo -n "$(npm --no-update-notifier -g prefix)/lib/node_modules"').toString('utf8');
-      const targetNodeVersion = child_process.execSync('node -v').toString('utf8').trim();
-
-      child_process.execSync('npm rebuild --unsafe-perm', {
-        cwd: process.env.UIX_BASE_PATH,
-        stdio: 'inherit',
-      });
-
-      if (all === true) {
-        // rebuild all modules
-        try {
-          child_process.execSync('npm rebuild --unsafe-perm', {
-            cwd: npmGlobalPath,
-            stdio: 'inherit',
-          });
-        } catch (e) {
-          this.hbService.logger('Could not rebuild all modules - check Homebridge logs.', 'warn');
-        }
+      if (!this.isPackage()) {
+        this.checkForRoot(); // do not need root in package mode
       }
 
-      await this.setNpmPermissions(npmGlobalPath);
+      const targetNodeVersion = child_process.execSync('node -v').toString('utf8').trim();
 
-      this.hbService.logger(`Rebuilt modules in ${process.env.UIX_BASE_PATH} for Node.js ${targetNodeVersion}.`, 'succeed');
+      if (this.isPackage() && process.env.UIX_USE_PNPM === '1' && process.env.UIX_CUSTOM_PLUGIN_PATH) {
+        // pnpm+package mode
+        const cwd = path.dirname(process.env.UIX_CUSTOM_PLUGIN_PATH);
+
+        if (!await fs.pathExists(cwd)) {
+          this.hbService.logger(`Path does not exist: "${cwd}"`, 'fail');
+          process.exit(1);
+        }
+
+        child_process.execSync(`pnpm -C "${cwd}" rebuild`, {
+          cwd: cwd,
+          stdio: 'inherit',
+        });
+        this.hbService.logger(`Rebuilt plugins in ${process.env.UIX_CUSTOM_PLUGIN_PATH} for Node.js ${targetNodeVersion}.`, 'succeed');
+      } else {
+        // normal global npm setups
+        const npmGlobalPath = child_process.execSync('/bin/echo -n "$(npm --no-update-notifier -g prefix)/lib/node_modules"').toString('utf8');
+
+        child_process.execSync('npm rebuild --unsafe-perm', {
+          cwd: process.env.UIX_BASE_PATH,
+          stdio: 'inherit',
+        });
+        this.hbService.logger(`Rebuilt homebridge-config-ui-x for Node.js ${targetNodeVersion}.`, 'succeed');
+
+        if (all === true) {
+          // rebuild all modules
+          try {
+            child_process.execSync('npm rebuild --unsafe-perm', {
+              cwd: npmGlobalPath,
+              stdio: 'inherit',
+            });
+            this.hbService.logger(`Rebuilt plugins in ${npmGlobalPath} for Node.js ${targetNodeVersion}.`, 'succeed');
+          } catch (e) {
+            this.hbService.logger('Could not rebuild all modules - check Homebridge logs.', 'warn');
+          }
+        }
+
+        await this.setNpmPermissions(npmGlobalPath);
+      }
     } catch (e) {
       console.error(e.toString());
       this.hbService.logger('ERROR: Failed Operation', 'fail');
@@ -233,8 +254,8 @@ export class DarwinInstaller {
     const downloadUrl = `https://nodejs.org/dist/${job.target}/node-${job.target}-darwin-${process.arch}.tar.gz`;
     const targetPath = path.dirname(path.dirname(process.execPath));
 
-    // only allow updates when installed using the offical Node.js installer
-    if (targetPath !== '/usr/local') {
+    // only allow updates when installed using the offical Node.js installer / Homebridge package
+    if (targetPath !== '/usr/local' && !targetPath.startsWith('/Library/Application Support/Homebridge/node-')) {
       this.hbService.logger(`Cannot update Node.js on your system. Non-standard installation path detected: ${targetPath}`, 'fail');
       process.exit(1);
     }
@@ -301,6 +322,9 @@ export class DarwinInstaller {
    * Set permissions on global npm path
    */
   private async setNpmPermissions(npmGlobalPath: fs.PathLike) {
+    if (this.isPackage()) {
+      return; // we don't need to check this in package mode
+    }
     try {
       child_process.execSync(`chown -R ${this.user}:admin "${npmGlobalPath}"`);
       child_process.execSync(`chown -R ${this.user}:admin "$(dirname $(which npm))"`);
@@ -314,6 +338,15 @@ export class DarwinInstaller {
       this.hbService.logger('Once you have done this run the hb-service install command again to complete your installation.', 'fail');
       process.exit(1);
     }
+  }
+
+  /**
+   * Determines if the command is being run inside the macOS Package
+   */
+  private isPackage(): boolean {
+    return (
+      Boolean(process.env.HOMEBRIDGE_MACOS_PACKAGE === '1')
+    );
   }
 
   /**

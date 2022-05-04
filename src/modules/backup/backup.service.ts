@@ -328,7 +328,7 @@ export class BackupService {
       this.logger.log(data);
     });
 
-    this.restoreFromBackup(client, true);
+    await this.restoreFromBackup(client, true);
 
     return { status: 0 };
   }
