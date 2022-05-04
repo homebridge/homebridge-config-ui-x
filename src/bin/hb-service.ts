@@ -22,6 +22,7 @@ import { Tail } from 'tail';
 import { Win32Installer } from './platforms/win32';
 import { LinuxInstaller } from './platforms/linux';
 import { DarwinInstaller } from './platforms/darwin';
+import { FreeBSDInstaller } from './platforms/freebsd';
 
 import type { HomebridgeIpcService } from '../core/homebridge-ipc/homebridge-ipc.service';
 
@@ -54,7 +55,7 @@ export class HomebridgeServiceHelper {
 
   public uiPort = 8581;
 
-  private installer: Win32Installer | LinuxInstaller | DarwinInstaller;
+  private installer: Win32Installer | LinuxInstaller | DarwinInstaller | FreeBSDInstaller;
 
   // ui services
   private ipcService: HomebridgeIpcService;
@@ -78,6 +79,9 @@ export class HomebridgeServiceHelper {
       case 'darwin':
         this.installer = new DarwinInstaller(this);
         break;
+      case 'freebsd':
+        this.installer = new FreeBSDInstaller(this);
+        break;
       default:
         this.logger(`ERROR: This command is not supported on ${os.platform()}.`, 'fail');
         process.exit(1);
@@ -93,7 +97,7 @@ export class HomebridgeServiceHelper {
       .option('-T, --no-timestamp', '', () => this.homebridgeOpts.push('-T'))
       .option('--strict-plugin-resolution', '', () => { process.env.UIX_STRICT_PLUGIN_RESOLUTION = '1'; })
       .option('--port <port>', 'The port to set to the Homebridge UI when installing as a service', (p) => this.uiPort = parseInt(p, 10))
-      .option('--user <user>', 'The user account the Homebridge service will be installed as (Linux, macOS only)', (p) => this.asUser = p)
+      .option('--user <user>', 'The user account the Homebridge service will be installed as (Linux, FreeBSD, macOS only)', (p) => this.asUser = p)
       .option('--stdout', '', () => this.stdout = true)
       .option('--allow-root', '', () => this.allowRunRoot = true)
       .option('--docker', '', () => this.docker = true)
@@ -221,7 +225,7 @@ export class HomebridgeServiceHelper {
 
     // Setup default storage path
     if (!this.storagePath) {
-      if (os.platform() === 'linux') {
+      if (os.platform() === 'linux' || os.platform() === 'freebsd') {
         this.storagePath = path.resolve('/var/lib', this.serviceName.toLowerCase());
       } else {
         this.storagePath = path.resolve(os.homedir(), `.${this.serviceName.toLowerCase()}`);
@@ -803,7 +807,7 @@ export class HomebridgeServiceHelper {
    * Creates the default config.json
    */
   public async createDefaultConfig() {
-    await fs.writeJson(process.env.UIX_CONFIG_PATH, {
+    await fs.outputJson(process.env.UIX_CONFIG_PATH, {
       bridge: await this.generateBridgeConfig(),
       accessories: [],
       platforms: [
