@@ -163,14 +163,16 @@ export class PluginsSettingsUiService {
       return;
     }
 
+    // pass all env vars to server side script
+    const childEnv = Object.assign({}, process.env);
+    childEnv.HOMEBRIDGE_STORAGE_PATH = this.configService.storagePath;
+    childEnv.HOMEBRIDGE_CONFIG_PATH = this.configService.configPath;
+    childEnv.HOMEBRIDGE_UI_VERSION = this.configService.package.version;
+
     // launch the server side script
     const child = child_process.fork(pluginUi.serverPath, [], {
       silent: true,
-      env: {
-        HOMEBRIDGE_STORAGE_PATH: this.configService.storagePath,
-        HOMEBRIDGE_CONFIG_PATH: this.configService.configPath,
-        HOMEBRIDGE_UI_VERSION: this.configService.package.version,
-      },
+      env: childEnv,
     });
 
     child.stdout.on('data', (data) => {
