@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 4.43.3 (2022-05-07)
+
+### Bug Fixes
+
+* **Plugins:** Fixed a bug where local environment variables were stripped from the server side scripts of custom plugin user interfaces ([oznu/homebridge-syno-spk#85](https://github.com/oznu/homebridge-syno-spk/issues/85))
+
+### Other changes
+
+* **i18n:** Improvements to Dutch language translations ([#1330](https://github.com/oznu/homebridge-config-ui-x/pull/1330))
+
 ## 4.43.2 (2022-04-29)
 
 ### Other Changes 
