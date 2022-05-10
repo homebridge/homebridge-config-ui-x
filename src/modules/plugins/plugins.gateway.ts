@@ -9,7 +9,12 @@ import { Logger } from '../../core/logger/logger.service';
 import { WsAdminGuard } from '../../core/auth/guards/ws-admin-guard';
 
 @UseGuards(WsAdminGuard)
-@WebSocketGateway({ namespace: '/plugins' })
+@WebSocketGateway({
+  namespace: '/plugins', allowEIO3: true, cors: {
+    origin: ['http://localhost:8080', 'http://localhost:4200'],
+    credentials: true
+  }
+})
 @UsePipes(new ValidationPipe({
   whitelist: true,
   exceptionFactory: ((err) => {

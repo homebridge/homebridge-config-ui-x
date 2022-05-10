@@ -77,7 +77,7 @@ describe('PlatformToolsLinux (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(restartHostFn).toHaveBeenCalled();
   });
 
@@ -90,7 +90,7 @@ describe('PlatformToolsLinux (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(shutdownHostFn).toHaveBeenCalled();
   });
 

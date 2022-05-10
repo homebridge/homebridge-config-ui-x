@@ -1,4 +1,5 @@
-import { HttpModule, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
+import { HttpModule } from '@nestjs/axios';
 
 import { ConfigModule } from '../../../core/config/config.module';
 import { LoggerModule } from '../../../core/logger/logger.module';

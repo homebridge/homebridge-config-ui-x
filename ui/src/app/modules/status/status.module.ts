@@ -19,6 +19,7 @@ import { HapQrcodeWidgetComponent } from './widgets/hap-qrcode-widget/hap-qrcode
 import { HomebridgeLogsWidgetComponent } from './widgets/homebridge-logs-widget/homebridge-logs-widget.component';
 import { TerminalWidgetComponent } from './widgets/terminal-widget/terminal-widget.component';
 import { CpuWidgetComponent } from './widgets/cpu-widget/cpu-widget.component';
+import { NetworkWidgetComponent } from './widgets/network-widget/network-widget.component';
 import { MemoryWidgetComponent } from './widgets/memory-widget/memory-widget.component';
 import { UptimeWidgetComponent } from './widgets/uptime-widget/uptime-widget.component';
 import { HomebridgeStatusWidgetComponent } from './widgets/homebridge-status-widget/homebridge-status-widget.component';
@@ -30,22 +31,6 @@ import { ClockWidgetComponent } from './widgets/clock-widget/clock-widget.compon
 import { ChildBridgeWidgetComponent } from './widgets/child-bridge-widget/child-bridge-widget.component';
 
 @NgModule({
-  entryComponents: [
-    WidgetAddComponent,
-    WidgetControlComponent,
-    HapQrcodeWidgetComponent,
-    HomebridgeLogsWidgetComponent,
-    TerminalWidgetComponent,
-    CpuWidgetComponent,
-    MemoryWidgetComponent,
-    UptimeWidgetComponent,
-    HomebridgeStatusWidgetComponent,
-    SystemInfoWidgetComponent,
-    WeatherWidgetComponent,
-    AccessoriesWidgetComponent,
-    ClockWidgetComponent,
-    ChildBridgeWidgetComponent,
-  ],
   declarations: [
     StatusComponent,
     WidgetsComponent,
@@ -56,6 +41,7 @@ import { ChildBridgeWidgetComponent } from './widgets/child-bridge-widget/child-
     TerminalWidgetComponent,
     CpuWidgetComponent,
     MemoryWidgetComponent,
+    NetworkWidgetComponent,
     UptimeWidgetComponent,
     HomebridgeStatusWidgetComponent,
     SystemInfoWidgetComponent,

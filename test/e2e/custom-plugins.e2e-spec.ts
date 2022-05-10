@@ -1,8 +1,8 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { of, throwError } from 'rxjs';
-import axios, { AxiosResponse, AxiosError } from 'axios';
-import { ValidationPipe, HttpService } from '@nestjs/common';
+import axios from 'axios';
+import { ValidationPipe } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 
@@ -78,7 +78,7 @@ describe('CustomPluginsController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
   });
 
   it('GET /plugins/custom-plugins/homebridge-hue/dump-file (dump file missing)', async () => {
@@ -92,151 +92,7 @@ describe('CustomPluginsController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(404);
-  });
-
-  it('POST /plugins/custom-plugins/homebridge-ring/exchange-credentials (2fa not required)', async () => {
-    const data = {
-      access_token: 'access_token_mock',
-      refresh_token: 'refresh_token_mock',
-      expires_in: 3600,
-      scope: 'client',
-      token_type: 'Bearer',
-    };
-
-    const response: AxiosResponse<any> = {
-      data,
-      headers: {},
-      config: { url: 'https://oauth.ring.com/oauth/token' },
-      status: 200,
-      statusText: 'OK',
-    };
-
-    const mockPost = jest.spyOn(httpService, 'post')
-      .mockImplementationOnce(() => of(response));
-
-    const res = await app.inject({
-      method: 'POST',
-      path: '/plugins/custom-plugins/homebridge-ring/exchange-credentials',
-      headers: {
-        authorization,
-      },
-      payload: {
-        email: 'test@test.com',
-        password: 'test',
-      },
-    });
-
-    expect(mockPost).toHaveBeenCalledTimes(1);
-    expect(res.statusCode).toEqual(201);
-    expect(res.json()).toEqual(data);
-  });
-
-  it('POST /plugins/custom-plugins/homebridge-ring/exchange-credentials (2fa required)', async () => {
-    const data = {
-      email: '**************',
-      next_time_in_secs: 60,
-      phone: '**************',
-    };
-
-    const response: AxiosError<any> = {
-      name: 'Connection Error',
-      message: 'Connection Error',
-      toJSON: () => { return {}; },
-      isAxiosError: false,
-      code: '412',
-      config: { url: 'https://oauth.ring.com/oauth/token' },
-      response: {
-        data,
-        headers: {},
-        config: { url: 'https://oauth.ring.com/oauth/token' },
-        status: 412,
-        statusText: '412 Precondition Failed',
-      },
-    };
-
-    const mockPost = jest.spyOn(httpService, 'post')
-      .mockImplementationOnce(() => throwError(response));
-
-    const res = await app.inject({
-      method: 'POST',
-      path: '/plugins/custom-plugins/homebridge-ring/exchange-credentials',
-      headers: {
-        authorization,
-      },
-      payload: {
-        email: 'test@test.com',
-        password: 'test',
-      },
-    });
-
-    expect(mockPost).toHaveBeenCalledTimes(1);
-    expect(res.statusCode).toEqual(412);
-    expect(res.json()).toEqual(data);
-  });
-
-  it('POST /plugins/custom-plugins/homebridge-ring/exchange-credentials (with 2fa code)', async () => {
-    const data = {
-      access_token: 'access_token_mock',
-      refresh_token: 'refresh_token_mock',
-      expires_in: 3600,
-      scope: 'client',
-      token_type: 'Bearer',
-    };
-
-    const response: AxiosResponse<any> = {
-      data,
-      headers: {},
-      config: { url: 'https://oauth.ring.com/oauth/token' },
-      status: 200,
-      statusText: 'OK',
-    };
-
-    const mockPost = jest.spyOn(httpService, 'post')
-      .mockImplementationOnce(() => of(response));
-
-    const res = await app.inject({
-      method: 'POST',
-      path: '/plugins/custom-plugins/homebridge-ring/exchange-credentials',
-      headers: {
-        authorization,
-      },
-      payload: {
-        email: 'test@test.com',
-        password: 'test',
-        twoFactorAuthCode: '067104',
-      },
-    });
-
-    expect(mockPost).toHaveBeenCalledWith('https://oauth.ring.com/oauth/token', expect.anything(), {
-      headers: {
-        'content-type': 'application/json',
-        '2fa-support': 'true',
-        '2fa-code': '067104',
-      },
-    });
-    expect(mockPost).toHaveBeenCalledTimes(1);
-    expect(res.statusCode).toEqual(201);
-    expect(res.json()).toEqual(data);
-  });
-
-  it('POST /plugins/custom-plugins/homebridge-ring/exchange-credentials (missing payload property)', async () => {
-    const mockPost = jest.spyOn(httpService, 'post');
-
-    const res = await app.inject({
-      method: 'POST',
-      path: '/plugins/custom-plugins/homebridge-ring/exchange-credentials',
-      headers: {
-        authorization,
-      },
-      payload: {
-        email: 'test@test.com',
-      },
-    });
-
-    expect(res.statusCode).toEqual(400);
-    expect(mockPost).not.toHaveBeenCalled();
-    expect(res.body).toContain('password should not be null or undefined');
+    expect(res.statusCode).toBe(404);
   });
 
   afterAll(async () => {

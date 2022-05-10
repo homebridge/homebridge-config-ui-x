@@ -4,7 +4,12 @@ import { WsGuard } from '../../core/auth/guards/ws.guard';
 import { AccessoriesService } from './accessories.service';
 
 @UseGuards(WsGuard)
-@WebSocketGateway({ namespace: 'accessories' })
+@WebSocketGateway({
+  namespace: 'accessories', allowEIO3: true, cors: {
+    origin: ['http://localhost:8080', 'http://localhost:4200'],
+    credentials: true
+  }
+})
 export class AccessoriesGateway {
   constructor(
     private accessoriesService: AccessoriesService,

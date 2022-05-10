@@ -1,5 +1,7 @@
-import { Module, HttpModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
+import { HttpModule } from '@nestjs/axios';
 import { PassportModule } from '@nestjs/passport';
+
 import { StatusService } from './status.service';
 import { StatusGateway } from './status.gateway';
 import { PluginsModule } from '../plugins/plugins.module';

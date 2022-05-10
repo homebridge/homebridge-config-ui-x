@@ -2,10 +2,16 @@
 
 $image-path: "../../img";
 
+@font-face {
+  font-family: Font Awesome 5 Free;
+  src: local('Font Awesome 6 Free');
+}
+
 @import "~@fortawesome/fontawesome-free/scss/fontawesome.scss";
 @import "~@fortawesome/fontawesome-free/scss/solid.scss";
 @import "~@fortawesome/fontawesome-free/scss/regular.scss";
 @import "~@fortawesome/fontawesome-free/scss/brands.scss";
+@import "~@fortawesome/fontawesome-free/scss/v4-shims.scss";
 
 @import "~bootstrap/scss/bootstrap";
 @import "~mdbootstrap/scss/mdb-free";
@@ -19,11 +25,12 @@ $image-path: "../../img";
 @import "./base/buttons.scss";
 @import "./base/form.scss";
 @import "./base/background.scss";
+@import "./base/modal.scss";
 
 @import "./components/toastr.scss";
 @import "./components/accessories.scss";
 @import "./components/json-schema-form.scss";
-@import "./components//material-switch.scss";
+@import "./components/sliding-checkbox.scss";
 
 @import "./components/spinner.scss";
 @import "./components/widgets.scss";

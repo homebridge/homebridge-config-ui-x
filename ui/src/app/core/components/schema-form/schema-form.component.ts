@@ -12,12 +12,14 @@ export class SchemaFormComponent implements OnInit {
   @Input() data;
   @Output() dataChange = new EventEmitter();
   @Output() dataChanged = new EventEmitter();
+  @Output() isValid = new EventEmitter();
 
   public jsonFormOptions = {
     addSubmit: false,
     loadExternalAssets: false,
     returnEmptyFields: false,
     setSchemaDefaults: true,
+    autocomplete: false,
   };
 
   constructor() { }
@@ -29,6 +31,10 @@ export class SchemaFormComponent implements OnInit {
   onChanges(data) {
     this.dataChange.emit(data);
     this.dataChanged.emit(data);
+  }
+
+  validChange(data) {
+    this.isValid.emit(data);
   }
 
 }

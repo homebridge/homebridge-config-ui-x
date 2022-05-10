@@ -32,6 +32,16 @@
       background-color: $darkModePrimary;
     }
 
+    .rendux-label {
+      background: #898989 !important;
+      border-color: #898989 !important;
+    }
+
+    .rendux-input:checked + label {
+      background: $darkModePrimary !important;
+      border-color: $darkModePrimary !important;
+    }
+
     .btn-primary,
     .btn-default {
       @extend .btn-#{$baseBtn} !optional;
@@ -66,7 +76,11 @@
           background-color: $darkModePrimary;
           border-color: $darkModePrimary;
         }
-        &:hover,
+        @media (hover: hover) {
+          &:hover {
+            border-color: $darkModePrimary !important;
+          }
+        }
         &:focus {
           border-color: $darkModePrimary !important;
         }
@@ -80,8 +94,10 @@
 
       a {
         color: $secondaryBackground;
-        &:hover {
-          text-decoration: underline;
+        @media (hover: hover) {
+          &:hover {
+            text-decoration: underline;
+          }
         }
       }
     }
@@ -98,21 +114,29 @@
       &.card-link {
         color: #9e9e9e;
 
-        &:hover {
-          color: $darkModePrimary !important;
+        @media (hover: hover) {
+          &:hover {
+            color: $darkModePrimary !important;
+          }
         }
       }
 
       color: $darkModePrimary;
-      &:hover {
-        text-decoration: underline;
+
+      @media (hover: hover) {
+        &:hover {
+          text-decoration: underline;
+        }
       }
     }
 
     .icon-button {
       cursor: pointer;
-      &:hover {
-        color: $darkModePrimary !important;
+
+      @media (hover: hover) {
+        &:hover {
+          color: $darkModePrimary !important;
+        }
       }
     }
 
@@ -162,7 +186,9 @@
     }
 
     .table-hover tbody tr:hover {
-      color: $darkModePrimary !important;
+      @media (hover: hover) {
+        color: $darkModePrimary !important;
+      }
     }
 
     .table-striped tbody tr:nth-of-type(odd) {
@@ -201,12 +227,14 @@
       color: #999999 !important;
       border-color: #242424 !important;
 
-      &:focus,
-      &:hover {
-        border: 1px solid #242424 !important;
+      @media (hover: hover) {
+        &:hover {
+          border: 1px solid #242424 !important;
+        }
       }
 
       &:focus {
+        border: 1px solid #242424 !important;
         box-shadow: inherit !important;
         color: $darkModePrimary !important;
       }

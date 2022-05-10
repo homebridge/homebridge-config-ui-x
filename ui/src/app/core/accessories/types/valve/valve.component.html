@@ -1,5 +1,5 @@
 <div class="accessory-box" [ngClass]="{'switch-on': service.values.Active, 'switch-off': !service.values.Active}"
-  appLongclick (longclick)="onLongClick()" (shortclick)="onClick()">
+  appLongclick (longclick)="onLongClick()" (shortclick)="onClick()" tabindex="0">
   <div class="d-flex flex-column h-100">
     <div *ngIf="service.values.ValveType === 0" [inlineSVG]="'/assets/hap-icons/valve-generic.svg'" aria-label="Valve"
       class="accessory-svg"></div>

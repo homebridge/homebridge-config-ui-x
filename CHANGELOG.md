@@ -2,11 +2,141 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
-## NEXT
+## 4.43.3 (2022-05-07)
+
+### Bug Fixes
+
+* **Plugins:** Fixed a bug where local environment variables were stripped from the server side scripts of custom plugin user interfaces ([oznu/homebridge-syno-spk#85](https://github.com/oznu/homebridge-syno-spk/issues/85))
+
+### Other changes
+
+* **i18n:** Improvements to Dutch language translations ([#1330](https://github.com/oznu/homebridge-config-ui-x/pull/1330))
+
+## 4.43.2 (2022-04-29)
 
 ### Other Changes 
 
-* **Dashboard:** The current Homebridge status will now instantly reflect the current Homebridge status (when combined with Homebridge v1.3.3 or later)
+* **i18n:** Improvements to German language translations ([#1319](https://github.com/oznu/homebridge-config-ui-x/pull/1319))
+* **Dashboard:** Start showing Node.js update warning icon for users running < Node.js v14.15.0
+* **Dashboard:** Removed npm version from the System Information widget
+* **System:** Changes to support Homebridge `apt` package installation
+* **System:** Fresh installs on Linux will have the default mdns advertiser set to `avahi` if the `avahi-daemon` service is running
+
+## 4.43.1 (2022-04-23)
+
+### Bug Fixes
+
+* **UI:** Fixed a bug preventing modals from closing correctly ([#1317](https://github.com/oznu/homebridge-config-ui-x/issues/1317))
+
+### Other Changes 
+
+* **System:** The [`hb-service update-node`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command#update-nodejs) command will now check glibc v2.28 or later is present on Linux systems before allowing an update to Node.js 18+
+* **System:** The [`hb-service update-node`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command#update-nodejs) will now check for macOS 10.15 Catalina or later before allowing an update to Node.js 18+
+
+## 4.43.0 (2022-04-14)
+
+### Notable Changes
+
+* **Dashboard:** New "Network Activity" widget option added by [@seidnerj](https://github.com/seidnerj) ([#1292](https://github.com/oznu/homebridge-config-ui-x/pull/1292))
+
+### Other Changes 
+
+* **i18n:** Improvements to Portuguese language translations ([#1282](https://github.com/oznu/homebridge-config-ui-x/pull/1282))
+* **i18n:** Fixed typo ([#1315](https://github.com/oznu/homebridge-config-ui-x/issues/1315))
+* **Accessory Control:** Fix alignment of light sensor tile information ([#1285](https://github.com/oznu/homebridge-config-ui-x/pull/1285))
+* **Accessory Control:** Fix light sensor rounding ([#1295](https://github.com/oznu/homebridge-config-ui-x/pull/1295))
+* **Accessory Control:** Fix a bug where the battery service could display the charge level as null ([#1269](https://github.com/oznu/homebridge-config-ui-x/issues/1269))
+* **System:** The `hb-service update-node` command now works on the [native Homebridge Synology DSM Package](https://github.com/oznu/homebridge-syno-spk) (via integrated terminal only)
+* Updated npm dependencies
+
+## 4.42.0 (2022-01-20)
+
+### Notable Changes
+
+* **i18n:** Hebrew (he) language added by [@blackcolt](https://github.com/blackcolt) ([#1258](https://github.com/oznu/homebridge-config-ui-x/pull/1258))
+* **Accessory Control:** [@Feilner](https://github.com/Feilner) added support for Smoke Sensor accessory types ([#1263](https://github.com/oznu/homebridge-config-ui-x/issues/1263))
+* **Homebridge:** Added the ability to select the `avahi` mdns advertiser when running Homebridge 1.4.x or later on Linux based systems ([#1266](https://github.com/oznu/homebridge-config-ui-x/issues/1266))
+
+### Other Changes 
+
+* **i18n:** Improvements to French language translations ([#1260](https://github.com/oznu/homebridge-config-ui-x/pull/1260))
+* Minor changes to support a native Homebridge Synology DSM Package
+
+## 4.41.5 (2021-12-18)
+
+### Bug Fixes
+
+* Fixed a type error on startup on low powered ARM devices (such as the Raspberry Pi Zero W) ([#1251](https://github.com/oznu/homebridge-config-ui-x/issues/1251))
+
+### Other Changes 
+
+* Accessibility improvements ([#1226](https://github.com/oznu/homebridge-config-ui-x/issues/1226))
+* Increase timeout for requests made to npm from 5 seconds to 10 seconds.
+
+## 4.41.4 (2021-12-12)
+
+### Other Changes 
+
+* **System:** Updated the [`hb-service update-node`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command#update-nodejs) command to allow updating Node.js on Apple M1 ([#1246](https://github.com/oznu/homebridge-config-ui-x/issues/1246))
+* Updated npm dependencies
+
+## 4.41.3 (2021-11-25)
+
+### Bug Fixes
+
+* **System:** Added a fix to the [`hb-service update-node`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command#update-nodejs) command to prevent it breaking npm when upgrading from Node 14 to 16
+
+### Other Changes 
+
+* **i18n:** Improvements to Ukrainian language translations ([#1197](https://github.com/oznu/homebridge-config-ui-x/pull/1197))
+* **i18n:** Improvements to Thai language translations ([#1200](https://github.com/oznu/homebridge-config-ui-x/pull/1200))
+* **i18n:** Improvements to Traditional Chinese language translations ([#1240](https://github.com/oznu/homebridge-config-ui-x/pull/1240))
+* **Plugins:** The following features have been added to assist plugin developers building [custom plugin user interfaces](https://github.com/homebridge/plugin-ui-utils):
+  * The "loading" spinner is now correctly shown on top of schema generated forms ([#1198](https://github.com/oznu/homebridge-config-ui-x/pull/1198))
+
+## 4.41.2 (2021-07-30)
+
+### Other Changes 
+
+* **i18n:** Ukrainian (uk) language added by [@xrust83](https://github.com/xrust83) ([#1190](https://github.com/oznu/homebridge-config-ui-x/pull/1190))
+  * The Homebridge UI is now available in 26 different languages!
+* **i18n:** Improvements to Thai language translations ([#1159](https://github.com/oznu/homebridge-config-ui-x/pull/1159))
+* **i18n:** Improvements to Italian language translations ([#1166](https://github.com/oznu/homebridge-config-ui-x/pull/1166))
+* Updated npm dependencies
+
+## 4.41.1 (2021-04-27)
+
+### Other Changes
+
+* **i18n:** Improvements to Catalan language translations ([#1138](https://github.com/oznu/homebridge-config-ui-x/pull/1138))
+* **i18n:** Improvements to Brazillian Portuguese language translations ([#1139](https://github.com/oznu/homebridge-config-ui-x/pull/1139))
+* **i18n:** Improvements to Thai language translations ([#1141](https://github.com/oznu/homebridge-config-ui-x/pull/1141))
+* **i18n:** Improvements to Simplified Chinese language translations ([#1153](https://github.com/oznu/homebridge-config-ui-x/pull/1153))
+* **Accessory Control:** Updated accessory categories ([#1154](https://github.com/oznu/homebridge-config-ui-x/issues/1154))
+* **System:** Preliminary support for Node.js 16 (please continue to use Node.js v14.16.1 LTS for now)
+
+## 4.41.0 (2021-03-22)
+
+## Notable Changes
+
+* **Dashboard:** The Homebridge status shown on the dashboard will now instantly reflect the current Homebridge status
+  * As additional status of ***Starting*** has been added, which is shown when the Homebridge process has been spawned, but not yet fully loaded
+  * These changes will only be enabled when combined with [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) and Homebridge v1.3.3 or later
+
+### Other Changes 
+
+* **i18n:** Thai (th) language added by [@tomzt](https://github.com/tomzt) ([#1114](https://github.com/oznu/homebridge-config-ui-x/pull/1114))
+  * The Homebridge UI is now available in 25 different languages!
+* **i18n:** Improvements to Slovenian language translations ([#1116](https://github.com/oznu/homebridge-config-ui-x/pull/1116))
+* **i18n:** Improvements to Indonesian language translations ([#1117](https://github.com/oznu/homebridge-config-ui-x/pull/1117))
+* **i18n:** Improvements to French language translations ([#1121](https://github.com/oznu/homebridge-config-ui-x/pull/1121))
+* **i18n:** Improvements to Spanish language translations ([#1122](https://github.com/oznu/homebridge-config-ui-x/pull/1122))
+* **i18n:** Improvements to Portuguese language translations ([#1124](https://github.com/oznu/homebridge-config-ui-x/pull/1124))
+* **i18n:** Improvements to Polish language translations ([#1125](https://github.com/oznu/homebridge-config-ui-x/pull/1125))
+* **i18n:** Improvements to German language translations ([#1127](https://github.com/oznu/homebridge-config-ui-x/pull/1127))
+* **i18n:** Improvements to English language translations ([#1130](https://github.com/oznu/homebridge-config-ui-x/pull/1130))
+* **i18n:** Improvements to Traditional Chinese language translations ([#1133](https://github.com/oznu/homebridge-config-ui-x/pull/1133))
+* **i18n:** Improvements to Simplified Chinese language translations ([#1135](https://github.com/oznu/homebridge-config-ui-x/pull/1135))
 
 ### API Changes
 

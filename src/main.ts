@@ -16,7 +16,9 @@ import { SpaFilter } from './core/spa/spa.filter';
 import { ConfigService } from './core/config/config.service';
 import { getStartupConfig } from './core/config/config.startup';
 
-process.env.UIX_BASE_PATH = path.resolve(__dirname, '../');
+export { HomebridgeIpcService } from './core/homebridge-ipc/homebridge-ipc.service';
+
+process.env.UIX_BASE_PATH = process.env.UIX_BASE_PATH_OVERRIDE || path.resolve(__dirname, '../');
 
 async function bootstrap(): Promise<NestFastifyApplication> {
   const startupConfig = await getStartupConfig();

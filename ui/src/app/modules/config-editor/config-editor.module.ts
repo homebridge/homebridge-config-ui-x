@@ -11,24 +11,21 @@ import { ConfigEditorResolver } from './config-editor.resolver';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
-  entryComponents: [
-    ConfigRestoreBackupComponent,
-  ],
-  declarations: [
-    ConfigEditorComponent,
-    ConfigRestoreBackupComponent,
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MonacoEditorModule,
-    NgbModule,
-    TranslateModule.forChild(),
-    ConfigEditorRoutingModule,
-  ],
-  providers: [
-    ConfigEditorResolver,
-  ],
+    declarations: [
+        ConfigEditorComponent,
+        ConfigRestoreBackupComponent,
+    ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MonacoEditorModule,
+        NgbModule,
+        TranslateModule.forChild(),
+        ConfigEditorRoutingModule,
+    ],
+    providers: [
+        ConfigEditorResolver,
+    ],
 })
 export class ConfigEditorModule { }

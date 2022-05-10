@@ -39,7 +39,7 @@ export class ServerController {
   }
 
   @Get('/qrcode.svg')
-  @ApiOperation({ summary: 'Return the paring QR code as an SVG.' })
+  @ApiOperation({ summary: 'Return the pairing QR code as an SVG.' })
   @Header('content-type', 'image/svg+xml')
   getQrCode() {
     return this.serverService.generateQrCode();
@@ -84,7 +84,7 @@ export class ServerController {
   }
 
   @UseGuards(AdminGuard)
-  @ApiOperation({ summary: 'Get a single device paring' })
+  @ApiOperation({ summary: 'Get a single device pairing' })
   @Get('/pairings/:deviceId')
   getDevicePairingById(@Param('deviceId') deviceId: string) {
     return this.serverService.getDevicePairingById(deviceId);

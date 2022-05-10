@@ -19,15 +19,16 @@
             [translate]="'status.homebridge.label_up_to_date'">
             Up To Date
           </span>
-          <a (click)="$plugin.upgradeHomebridge(homebridgePkg)" href="JavaScript:void(0)" class="primary-text"
+          <a href="javascript:void(0)" (click)="$plugin.upgradeHomebridge(homebridgePkg)" class="primary-text"
             *ngIf="homebridgePkg.installedVersion && homebridgePkg.updateAvailable"
             [translate]="'status.homebridge.label_update_available'" [translateParams]="homebridgePkg"
-            ngbTooltip="{{'plugins.button_upgrade' | translate}} Homebridge">
+            ngbTooltip="{{'plugins.button_upgrade' | translate}} Homebridge" href="javascript:void(0)">
             Update Available
           </a>
           <br>
           <span class="grey-text" *ngIf="homebridgePkg.installedVersion">
-            <a (click)="$plugin.installPreviousVersion(homebridgePkg)" class="grey-text card-link">
+            <a href="javascript:void(0)" (click)="$plugin.installPreviousVersion(homebridgePkg)"
+              class="grey-text card-link">
               v{{ homebridgePkg.installedVersion }}
             </a>
           </span>
@@ -41,7 +42,7 @@
         <div class="mb-0 p-3 hb-status-icon">
           <i class="fas primary-text" [ngClass]="{
             'fa-exclamation-circle red-text': homebridgeStatus.status === 'down',
-            'fa-cog fa-spin text-warning': homebridgeStatus.status === 'pending',
+            'fa-cog fa-spin': homebridgeStatus.status === 'pending',
             'fa-check-circle': homebridgeStatus.status === 'up'
           }"></i>
         </div>

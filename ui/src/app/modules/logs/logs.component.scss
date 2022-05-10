@@ -12,9 +12,11 @@
     -o-transition: opacity 200ms ease-in;
     transition: opacity 200ms ease-in;
 
-    &:hover,
-    &:active {
-      opacity: 1;
+    @media (hover: hover) {
+      &:hover,
+      &:active {
+        opacity: 1;
+      }
     }
   }
 }

@@ -21,10 +21,10 @@ export class UnpairAccessoryModalComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.loadParings();
+    this.loadPairings();
   }
 
-  async loadParings() {
+  async loadPairings() {
     try {
       this.pairings = (await this.$api.get('/server/pairings').toPromise())
         .sort((a, b) => b._main ? 1 : -1);
@@ -39,7 +39,7 @@ export class UnpairAccessoryModalComponent implements OnInit {
 
     this.$api.delete(`/server/pairings/${id}`).subscribe(
       async data => {
-        await this.loadParings();
+        await this.loadPairings();
 
         if (!this.pairings.length) {
           this.activeModal.close();

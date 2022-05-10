@@ -11,7 +11,7 @@
         </tr>
         <tr *ngIf="serverInfo.os">
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_os'">OS</th>
-          <td [ngSwitch]="serverInfo.os.platform">
+          <td [ngSwitch]="serverInfo.os.platform" *ngIf="!serverInfo.homebridgeRunningInSynologyPackage">
             <span *ngSwitchCase="'darwin'">
               {{ serverInfo.os.codename }}
             </span>
@@ -21,6 +21,9 @@
             <span *ngSwitchDefault>
               {{ serverInfo.os.distro }} {{ serverInfo.os.codename | titlecase }} ({{ serverInfo.os.release }})
             </span>
+          </td>
+          <td *ngIf="serverInfo.homebridgeRunningInSynologyPackage">
+            Synology DSM
           </td>
         </tr>
         <tr *ngIf="serverInfo.os">
@@ -45,24 +48,11 @@
             Node.js Version
           </th>
           <td>
-            <a href="https://git.io/JTKEF" rel="noopener noreferrer" target="_blank" class="system-info-link"
+            <a href="https://homebridge.io/w/JTKEF" rel="noopener noreferrer" target="_blank" class="system-info-link"
               ngbTooltip="{{ nodejsInfo.updateAvailable ? ('plugins.status_update_available' | translate) + ' - ' + nodejsInfo.latestVersion : ''}}">
               {{ serverInfo.nodeVersion }}
               <i *ngIf="nodejsInfo.showUpdateWarning" class="primary-text fas fa-info-circle"></i>
             </a>
-          </td>
-        </tr>
-        <tr *ngIf="npmInfo.installedVersion">
-          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_npm_version'"
-            container="body" [openDelay]="1000" ngbTooltip="{{ npmInfo.installPath }}">
-            Npm version
-          </th>
-          <td>
-            <span
-              ngbTooltip="{{ npmInfo.updateAvailable ? ('plugins.status_update_available' | translate) + ' - v' + npmInfo.latestVersion : ''}}">
-              v{{ npmInfo.installedVersion }}
-              <i *ngIf="npmInfo.showUpdateWarning" class="primary-text fas fa-info-circle"></i>
-            </span>
           </td>
         </tr>
         <tr>
@@ -87,6 +77,12 @@
         </tr>
         <tr *ngIf="serverInfo.homebridgeRunningInDocker">
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_docker'">Docker</th>
+          <td>Yes</td>
+        </tr>
+        <tr *ngIf="serverInfo.homebridgeRunningInSynologyPackage">
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_synology_package'">
+            Synology Package
+          </th>
           <td>Yes</td>
         </tr>
         <tr *ngIf="serverInfo.homebridgeServiceMode">

@@ -1,5 +1,5 @@
 <div class="accessory-box" [ngClass]="{'switch-on': service.values.TargetPosition}" appLongclick
-  (longclick)="onLongClick()" (shortclick)="onClick()">
+  (longclick)="onLongClick()" (shortclick)="onClick()" tabindex="0">
   <div class="d-flex flex-column h-100">
     <div *ngIf="!service.values.TargetPosition" [inlineSVG]="'/assets/hap-icons/windowcovering-closed.svg'"
       aria-label="Window Covering" class="accessory-svg"></div>

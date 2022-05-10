@@ -5,7 +5,8 @@ import * as si from 'systeminformation';
 import * as semver from 'semver';
 import * as NodeCache from 'node-cache';
 import { Subject, Subscription } from 'rxjs';
-import { Injectable, HttpService, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 
 import { Logger } from '../../core/logger/logger.service';
 import { ConfigService } from '../../core/config/config.service';
@@ -66,7 +67,7 @@ export class StatusService {
    * Looks up the cpu current load % and stores the last 60 points
    */
   private async getCpuLoadPoint() {
-    const currentLoad = (await si.currentLoad()).currentload;
+    const currentLoad = (await si.currentLoad()).currentLoad;
     this.cpuLoadHistory = this.cpuLoadHistory.slice(-60);
     this.cpuLoadHistory.push(currentLoad);
   }
@@ -134,6 +135,23 @@ export class StatusService {
       cores: [],
       max: -1,
     };
+  }
+
+  /**
+   * Returns the current network usage
+   */
+  public async getCurrentNetworkUsage(): Promise<{ net: si.Systeminformation.NetworkStatsData; point: number }> {
+    // TODO: be able to specify in the UI which interfaces to aggregate
+    const defaultInterfaceName = await si.networkInterfaceDefault();
+
+    const net = await si.networkStats(defaultInterfaceName);
+
+    // TODO: be able to specify in the ui the unit size (i.e. bytes, megabytes, gigabytes)
+    const tx_rx_sec = (net[0].tx_sec + net[0].rx_sec) / 1024 / 1024;
+
+    // TODO: break out the sent and received figures to two separate stacked graphs 
+    // (these should ideally be positive/negative mirrored linecharts)
+    return { net: net[0], point: tx_rx_sec };
   }
 
   /**
@@ -235,7 +253,7 @@ export class StatusService {
     client.emit('homebridge-status', await this.getHomebridgeStats());
 
     // ipc status events are only available in Homebridge 1.3.3 or later - and when running in service mode
-    if (this.configService.serviceMode && semver.gt(this.configService.homebridgeVersion, '1.3.3-beta.5', { includePrerelease: true })) {
+    if (this.configService.serviceMode && this.configService.homebridgeVersion && semver.gt(this.configService.homebridgeVersion, '1.3.3-beta.5', { includePrerelease: true })) {
       homebridgeStatusChangeSub = this.homebridgeStatusChange.subscribe(async (status) => {
         client.emit('homebridge-status', await this.getHomebridgeStats());
       });
@@ -280,7 +298,7 @@ export class StatusService {
    * Check if homebridge is running on the local system
    */
   public async checkHomebridgeStatus() {
-    if (this.configService.serviceMode && semver.gt(this.configService.homebridgeVersion, '1.3.3-beta.5', { includePrerelease: true })) {
+    if (this.configService.serviceMode && this.configService.homebridgeVersion && semver.gt(this.configService.homebridgeVersion, '1.3.3-beta.5', { includePrerelease: true })) {
       return this.homebridgeStatus;
     }
 
@@ -377,6 +395,8 @@ export class StatusService {
       homebridgeInsecureMode: this.configService.homebridgeInsecureMode,
       homebridgeCustomPluginPath: this.configService.customPluginPath,
       homebridgeRunningInDocker: this.configService.runningInDocker,
+      homebridgeRunningInSynologyPackage: this.configService.runningInSynologyPackage,
+      homebridgeRunningInPackageMode: this.configService.runningInPackageMode,
       homebridgeServiceMode: this.configService.serviceMode,
       nodeVersion: process.version,
       os: await this.getOsInfo(),
@@ -409,7 +429,7 @@ export class StatusService {
         currentVersion: process.version,
         latestVersion: currentLts.version,
         updateAvailable: semver.gt(currentLts.version, process.version),
-        showUpdateWarning: semver.lt(process.version, '12.13.0'),
+        showUpdateWarning: semver.lt(process.version, '14.15.0'),
         installPath: path.dirname(process.execPath),
       };
       this.statusCache.set('nodeJsVersion', versionInformation, 86400);

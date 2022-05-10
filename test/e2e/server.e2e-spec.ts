@@ -89,7 +89,7 @@ describe('ServerController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(mockRestartServer).toHaveBeenCalled();
   });
 
@@ -102,8 +102,8 @@ describe('ServerController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
-    expect(res.headers['content-type']).toEqual('image/svg+xml');
+    expect(res.statusCode).toBe(200);
+    expect(res.headers['content-type']).toBe('image/svg+xml');
   });
 
   it('GET /server/pairing', async () => {
@@ -115,7 +115,7 @@ describe('ServerController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()).toEqual({
       displayName: 'Homebridge Test',
       isPaired: false,
@@ -137,7 +137,7 @@ describe('ServerController (e2e)', () => {
     });
 
     // should return 503 - Service Unavailable
-    expect(res.statusCode).toEqual(503);
+    expect(res.statusCode).toBe(503);
   });
 
   it('PUT /server/reset-homebridge-accessory', async () => {
@@ -149,11 +149,11 @@ describe('ServerController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
 
     // check the persist and accessories folders were removed
-    expect(await fs.pathExists(persistPath)).toEqual(false);
-    expect(await fs.pathExists(accessoriesPath)).toEqual(false);
+    expect(await fs.pathExists(persistPath)).toBe(false);
+    expect(await fs.pathExists(accessoriesPath)).toBe(false);
   });
 
   it('PUT /server/reset-cached-accessories (service mode enabled)', async () => {
@@ -168,7 +168,7 @@ describe('ServerController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
   });
 
   it('PUT /server/reset-cached-accessories (service mode disabed)', async () => {
@@ -183,7 +183,7 @@ describe('ServerController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toBe(400);
   });
 
   it('GET /server/cached-accessories', async () => {
@@ -198,7 +198,7 @@ describe('ServerController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()).toHaveLength(1);
   });
 
@@ -218,7 +218,7 @@ describe('ServerController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(204);
+    expect(res.statusCode).toBe(204);
 
     // check the cached accessory was removed
     cachedAccessories = await fs.readJson(path.resolve(accessoriesPath, 'cachedAccessories'));
@@ -241,7 +241,7 @@ describe('ServerController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(404);
+    expect(res.statusCode).toBe(404);
 
     // check the cached accessory was not removed
     cachedAccessories = await fs.readJson(path.resolve(accessoriesPath, 'cachedAccessories'));
@@ -257,7 +257,7 @@ describe('ServerController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()).toHaveLength(1);
   });
 
@@ -270,10 +270,10 @@ describe('ServerController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()._setupCode).toBeDefined();
-    expect(res.json()._isPaired).toEqual(false);
-    expect(res.json()._username).toEqual('67:E4:1F:0E:A0:5D');
+    expect(res.json()._isPaired).toBe(false);
+    expect(res.json()._username).toBe('67:E4:1F:0E:A0:5D');
   });
 
   it('DELETE /server/pairings/:deviceId', async () => {
@@ -285,7 +285,7 @@ describe('ServerController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(204);
+    expect(res.statusCode).toBe(204);
   });
 
   it('GET /server/network-interfaces/system', async () => {
@@ -297,9 +297,9 @@ describe('ServerController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
-    expect(Array.isArray(res.json())).toEqual(true);
-  });
+    expect(res.statusCode).toBe(200);
+    expect(Array.isArray(res.json())).toBe(true);
+  }, 30000);
 
   it('GET /server/network-interfaces/bridge', async () => {
     const res = await app.inject({
@@ -310,8 +310,8 @@ describe('ServerController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
-    expect(Array.isArray(res.json())).toEqual(true);
+    expect(res.statusCode).toBe(200);
+    expect(Array.isArray(res.json())).toBe(true);
   });
 
   it('PUT /server/network-interfaces/bridge', async () => {
@@ -326,7 +326,7 @@ describe('ServerController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
 
     // check the value was saved
     const config = await fs.readJson(configService.configPath);
@@ -345,7 +345,7 @@ describe('ServerController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
 
     // check the value was saved
     const config = await fs.readJson(configService.configPath);
@@ -364,7 +364,7 @@ describe('ServerController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toBe(400);
     expect(res.body).toContain('adapters must be an array');
   });
 
@@ -381,7 +381,7 @@ describe('ServerController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()).toEqual({ advertiser: 'bonjour-hap' });
   });
 
@@ -398,8 +398,25 @@ describe('ServerController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()).toEqual({ advertiser: 'ciao' });
+  });
+
+  it('GET /server/mdns-advertiser (when set to avahi)', async () => {
+    const config: HomebridgeConfig = await fs.readJson(configService.configPath);
+    config.bridge.advertiser = 'avahi';
+    await fs.writeJson(configService.configPath, config);
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/mdns-advertiser',
+      headers: {
+        authorization,
+      },
+    });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toEqual({ advertiser: 'avahi' });
   });
 
   it('PUT /server/mdns-advertiser (bonjour-hap)', async () => {
@@ -418,11 +435,11 @@ describe('ServerController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
 
     // check the value was saved
     const config = await fs.readJson(configService.configPath);
-    expect(config.bridge.advertiser).toEqual('bonjour-hap');
+    expect(config.bridge.advertiser).toBe('bonjour-hap');
   });
 
   it('PUT /server/mdns-advertiser (ciao)', async () => {
@@ -441,11 +458,34 @@ describe('ServerController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
 
     // check the value was saved
     const config = await fs.readJson(configService.configPath);
-    expect(config.bridge.advertiser).toEqual('ciao');
+    expect(config.bridge.advertiser).toBe('ciao');
+  });
+
+  it('PUT /server/mdns-advertiser (avahi)', async () => {
+    const initialConfig: HomebridgeConfig = await fs.readJson(configService.configPath);
+    delete initialConfig.mdns;
+    await fs.writeJson(configService.configPath, initialConfig);
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/server/mdns-advertiser',
+      headers: {
+        authorization,
+      },
+      payload: {
+        advertiser: 'avahi',
+      },
+    });
+
+    expect(res.statusCode).toBe(200);
+
+    // check the value was saved
+    const config = await fs.readJson(configService.configPath);
+    expect(config.bridge.advertiser).toBe('avahi');
   });
 
   it('PUT /server/mdns-advertiser (invalid value)', async () => {
@@ -464,7 +504,7 @@ describe('ServerController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toBe(400);
   });
 
   it('GET /server/port/new', async () => {
@@ -476,8 +516,8 @@ describe('ServerController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
-    expect(typeof res.json().port).toEqual('number');
+    expect(res.statusCode).toBe(200);
+    expect(typeof res.json().port).toBe('number');
     expect(res.json().port).toBeGreaterThanOrEqual(30000);
     expect(res.json().port).toBeLessThanOrEqual(60000);
   });

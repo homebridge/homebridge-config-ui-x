@@ -68,6 +68,14 @@ export class WidgetAddComponent implements OnInit {
       mobileOrder: 50,
     },
     {
+      name: this.translate.instant('status.network.title_network'),
+      component: 'NetworkWidgetComponent',
+      hidden: false,
+      cols: 10,
+      rows: 3,
+      mobileOrder: 55,
+    },
+    {
       name: this.translate.instant('status.uptime.title_uptime'),
       component: 'UptimeWidgetComponent',
       hidden: false,

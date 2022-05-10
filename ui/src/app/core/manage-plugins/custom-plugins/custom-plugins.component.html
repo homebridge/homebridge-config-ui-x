@@ -12,13 +12,8 @@
       <i class="fa fa-cog fa-spin" style="font-size: 72px;"></i>
     </div>
 
-    <div *ngIf="pluginSpinner"
-      class="loading-overlay text-center primary-text d-flex align-items-center justify-content-center">
-      <i class="fa fa-cog fa-spin" style="font-size: 72px;"></i>
-    </div>
-
     <iframe width="100%" height="1px;" #custompluginui
-      sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-downloads"
+      sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-downloads allow-forms"
       style="border: 0;">
     </iframe>
 
@@ -29,8 +24,24 @@
     </div>
 
     <div *ngIf="formId" class="card card-body">
-      <app-schema-form [configSchema]="formSchema" [(data)]="formData" (dataChanged)="formUpdatedSubject.next($event)">
+      <app-schema-form [configSchema]="formSchema" [(data)]="formData" (dataChanged)="formUpdatedSubject.next($event)"
+        (isValid)="formValidEvent($event)">
       </app-schema-form>
+
+      <div class="text-right custom-form-action-buttons">
+        <button class="btn btn-elegant" *ngIf="formCancelButtonLabel" (click)="formActionSubject.next('cancel')">
+          {{ formCancelButtonLabel }}
+        </button>
+        <button class="btn btn-primary" *ngIf="formSubmitButtonLabel" (click)="formActionSubject.next('submit')"
+          [disabled]="!formValid">
+          {{ formSubmitButtonLabel }}
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="pluginSpinner"
+         class="loading-overlay text-center primary-text d-flex align-items-center justify-content-center">
+      <i class="fa fa-cog fa-spin" style="font-size: 72px;"></i>
     </div>
   </div>
 

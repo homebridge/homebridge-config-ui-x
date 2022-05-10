@@ -20,6 +20,9 @@ interface EnvInterface {
   packageVersion: string;
   runningInDocker: boolean;
   runningInLinux: boolean;
+  runningInSynologyPackage: boolean;
+  runningInPackageMode: boolean;
+  canShutdownRestartHost: boolean;
   dockerOfflineUpdate: boolean;
   serviceMode: boolean;
   lang: string | null;
@@ -135,7 +138,7 @@ export class SettingsService {
       console.error(msg, 'Server time offset of', this.serverTimeOffset, 'seconds applied.');
       const toast = this.$toastr.warning(toastMsg, null, { timeOut: 20000, enableHtml: true, tapToDismiss: false });
       toast.onTap.subscribe(() => {
-        window.open('https://git.io/JqTFs', '_blank');
+        window.open('https://homebridge.io/w/JqTFs', '_blank');
       });
     }
   }

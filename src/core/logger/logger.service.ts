@@ -1,7 +1,7 @@
-import { LoggerService } from '@nestjs/common';
+import { ConsoleLogger } from '@nestjs/common';
 import * as color from 'bash-color';
 
-export class Logger implements LoggerService {
+export class Logger extends ConsoleLogger {
   private pluginName = ('Homebridge UI');
   private useTimestamps = (process.env.UIX_LOG_NO_TIMESTAMPS !== '1');
 

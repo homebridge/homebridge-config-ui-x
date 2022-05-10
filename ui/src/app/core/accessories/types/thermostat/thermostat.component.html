@@ -1,5 +1,5 @@
 <div class="accessory-box" [ngClass]="{'switch-on': service.values.TargetHeatingCoolingState > 0}" appLongclick
-  (longclick)="onClick()" (shortclick)="onClick()">
+  (longclick)="onClick()" (shortclick)="onClick()" tabindex="0">
   <div class="d-flex flex-column h-100">
     <div class="temperature-circle temperature-circle-collapse"
       [innerText]="(service.values.CurrentTemperature | convertTemp | number:'1.0-1') + '°'" [ngClass]="{

@@ -73,6 +73,9 @@ export class BackupService {
         'node_modules',       // docker
         'startup.sh',         // docker
         '.docker.env',        // docker
+        'pnpm-lock.yaml',     // pnpm
+        'package.json',       // npm
+        'package-lock.json',  // npm
         'FFmpeg',             // ffmpeg
         'fdk-aac',            // ffmpeg
         '.git',               // git
@@ -309,9 +312,31 @@ export class BackupService {
   }
 
   /**
+   * Do an offline restore
+   */
+  async triggerHeadlessRestore() {
+    if (!await fs.pathExists(this.restoreDirectory)) {
+      throw new BadRequestException('No backup file uploaded');
+    }
+
+    const client = new EventEmitter();
+
+    client.on('stdout', (data) => {
+      this.logger.log(data);
+    });
+    client.on('stderr', (data) => {
+      this.logger.log(data);
+    });
+
+    await this.restoreFromBackup(client, true);
+
+    return { status: 0 };
+  }
+
+  /**
    * Restores the uploaded backup
    */
-  async restoreFromBackup(client: EventEmitter) {
+  async restoreFromBackup(client: EventEmitter, autoRestart = false) {
     if (!this.restoreDirectory) {
       throw new BadRequestException();
     }
@@ -351,11 +376,21 @@ export class BackupService {
     client.emit('stdout', color.cyan('\r\nRestoring backup...\r\n\r\n'));
     await new Promise(resolve => setTimeout(resolve, 1000));
 
+    // files that should not be restored (but may exist in older backup archives)
+    const restoreFilter = [
+      path.join(this.restoreDirectory, 'storage', 'package.json'),
+      path.join(this.restoreDirectory, 'storage', 'package-lock.json'),
+    ];
+
     // restore files
     client.emit('stdout', color.yellow(`Restoring Homebridge storage to ${this.configService.storagePath}\r\n`));
     await new Promise(resolve => setTimeout(resolve, 100));
     await fs.copy(path.resolve(this.restoreDirectory, 'storage'), this.configService.storagePath, {
       filter: (filePath) => {
+        if (restoreFilter.includes(filePath)) {
+          client.emit('stdout', `Skipping ${path.basename(filePath)}\r\n`);
+          return false;
+        }
         client.emit('stdout', `Restoring ${path.basename(filePath)}\r\n`);
         return true;
       },
@@ -427,6 +462,11 @@ export class BackupService {
 
     // ensure ui is restarted on next restart
     this.configService.hbServiceUiRestartRequired = true;
+
+    // auto restart if told to
+    if (autoRestart) {
+      this.postBackupRestoreRestart();
+    }
 
     return { status: 0 };
   }

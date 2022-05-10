@@ -383,9 +383,21 @@
             ]
           },
           {
+            "title": "Thai (th)",
+            "enum": [
+              "th"
+            ]
+          },
+          {
             "title": "Turkish (tr)",
             "enum": [
               "tr"
+            ]
+          },
+          {
+            "title": "Ukrainian (uk)",
+            "enum": [
+              "uk"
             ]
           },
           {
@@ -398,6 +410,12 @@
             "title": "Chinese - Traditional (zh-TW)",
             "enum": [
               "zh-TW"
+            ]
+          },
+          {
+            "title": "Hebrew",
+            "enum": [
+              "he"
             ]
           }
         ]

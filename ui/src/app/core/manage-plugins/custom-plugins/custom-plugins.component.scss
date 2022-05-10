@@ -22,3 +22,9 @@
     background-color: rgba(36, 36, 36, 0.7);
   }
 }
+
+.custom-form-action-buttons {
+  button:last-child {
+    margin-right: 2px;
+  }
+}

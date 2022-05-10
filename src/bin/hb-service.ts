@@ -26,12 +26,13 @@ import { DarwinInstaller } from './platforms/darwin';
 import type { HomebridgeIpcService } from '../core/homebridge-ipc/homebridge-ipc.service';
 
 export class HomebridgeServiceHelper {
-  public action: 'install' | 'uninstall' | 'start' | 'stop' | 'restart' | 'rebuild' | 'run' | 'logs' | 'update-node' | 'before-start' | 'status';
+  public action: 'install' | 'uninstall' | 'start' | 'stop' | 'restart' | 'rebuild' | 'run' | 'add' | 'remove' | 'logs' | 'update-node' | 'before-start' | 'status';
   public selfPath = __filename;
   public serviceName = 'Homebridge';
   public storagePath;
   public usingCustomStoragePath = false;
   public allowRunRoot = false;
+  public enableHbServicePluginManagement = false;
   public asUser;
   private log: fs.WriteStream | NodeJS.WriteStream;
   private homebridgeModulePath: string;
@@ -85,11 +86,12 @@ export class HomebridgeServiceHelper {
     commander
       .allowUnknownOption()
       .storeOptionsAsProperties(true)
-      .arguments('[install|uninstall|start|stop|restart|rebuild|run|logs]')
+      .arguments('[install|uninstall|start|stop|restart|rebuild|run|logs|add|remove]')
       .option('-P, --plugin-path <path>', '', (p) => { process.env.UIX_CUSTOM_PLUGIN_PATH = p; this.homebridgeOpts.push('-P', p); })
       .option('-U, --user-storage-path <path>', '', (p) => { this.storagePath = p; this.usingCustomStoragePath = true; })
       .option('-S, --service-name <service name>', 'The name of the homebridge service to install or control', (p) => this.serviceName = p)
       .option('-T, --no-timestamp', '', () => this.homebridgeOpts.push('-T'))
+      .option('--strict-plugin-resolution', '', () => { process.env.UIX_STRICT_PLUGIN_RESOLUTION = '1'; })
       .option('--port <port>', 'The port to set to the Homebridge UI when installing as a service', (p) => this.uiPort = parseInt(p, 10))
       .option('--user <user>', 'The user account the Homebridge service will be installed as (Linux, macOS only)', (p) => this.asUser = p)
       .option('--stdout', '', () => this.stdout = true)
@@ -143,6 +145,14 @@ export class HomebridgeServiceHelper {
         this.tailLogs();
         break;
       }
+      case 'add': {
+        this.pnpmPluginManagement(commander.args);
+        break;
+      }
+      case 'remove': {
+        this.pnpmPluginManagement(commander.args);
+        break;
+      }
       case 'update-node': {
         this.checkForNodejsUpdates(commander.args.length === 2 ? commander.args[1] : null);
         break;
@@ -166,12 +176,16 @@ export class HomebridgeServiceHelper {
         console.log('    start                            start the homebridge service');
         console.log('    stop                             stop the homebridge service');
         console.log('    restart                          restart the homebridge service');
+        if (this.enableHbServicePluginManagement) {
+          console.log('    add <plugin>@<version>           install a plugin');
+          console.log('    add <plugin>@<version>           remove a plugin');
+        }
         console.log('    rebuild                          rebuild ui');
         console.log('    rebuild --all                    rebuild all npm modules (use after updating Node.js)');
         console.log('    run                              run homebridge daemon');
         console.log('    logs                             tails the homebridge service logs');
         console.log('    update-node [version]            update Node.js');
-        console.log('\nSee the wiki for help with hb-service: https://git.io/JTtHK \n');
+        console.log('\nSee the wiki for help with hb-service: https://homebridge.io/w/JTtHK \n');
 
         process.exit(1);
       }
@@ -222,10 +236,17 @@ export class HomebridgeServiceHelper {
       }
     }
 
+    // plugin management (install / uninstall) is only available when running as a package
+    this.enableHbServicePluginManagement = (
+      process.env.UIX_CUSTOM_PLUGIN_PATH &&
+      process.env.UIX_USE_PNPM === '1' &&
+      (process.env.HOMEBRIDGE_SYNOLOGY_PACKAGE === '1') || Boolean(process.env.HOMEBRIDGE_APT_PACKAGE === '1')
+    );
+
     // Set Env Vars
     process.env.UIX_STORAGE_PATH = this.storagePath;
     process.env.UIX_CONFIG_PATH = path.resolve(this.storagePath, 'config.json');
-    process.env.UIX_BASE_PATH = path.resolve(__dirname, '../../');
+    process.env.UIX_BASE_PATH = process.env.UIX_BASE_PATH_OVERRIDE || path.resolve(__dirname, '../../');
     process.env.UIX_SERVICE_MODE = '1';
     process.env.UIX_INSECURE_MODE = '1';
   }
@@ -345,6 +366,11 @@ export class HomebridgeServiceHelper {
     // start the ui
     await this.runUi();
 
+    // tell the ui what homebridge we are running initialy (this is refreshed when Homebridge is restarted)
+    if (this.ipcService && this.homebridgePackage) {
+      this.ipcService.setHomebridgeVersion(this.homebridgePackage.version);
+    }
+
     // delay the launch of homebridge on Raspberry Pi 1/Zero by 20 seconds
     if (os.cpus().length === 1 && os.arch() === 'arm') {
       this.logger('Delaying Homebridge startup by 20 seconds on low powered server');
@@ -388,6 +414,22 @@ export class HomebridgeServiceHelper {
       this.logger('Could not find Homebridge. Make sure you have installed homebridge using the -g flag then restart.', 'fail');
       this.logger('npm install -g --unsafe-perm homebridge', 'fail');
       return;
+    }
+
+    // allow the --strict-plugin-resolution flag on Homebridge v1.4.1 or later only
+    if (
+      this.homebridgePackage &&
+      process.env.UIX_STRICT_PLUGIN_RESOLUTION === '1' &&
+      semver.gte(this.homebridgePackage.version, '1.4.1-beta.1', { includePrerelease: true })
+    ) {
+      if (!this.homebridgeOpts.includes('--strict-plugin-resolution')) {
+        this.homebridgeOpts.push('--strict-plugin-resolution');
+      }
+    } else if (process.env.UIX_STRICT_PLUGIN_RESOLUTION === '1') {
+      const strictPluginIndex = this.homebridgeOpts.indexOf('--strict-plugin-resolution');
+      if (strictPluginIndex > -1) {
+        this.homebridgeOpts.splice(strictPluginIndex, 1);
+      }
     }
 
     if (this.homebridgeOpts.length) {
@@ -483,7 +525,7 @@ export class HomebridgeServiceHelper {
       const ui = await main.app;
 
       // extract services
-      this.ipcService = ui.get('HomebridgeIpcService');
+      this.ipcService = ui.get(main.HomebridgeIpcService);
     } catch (e) {
       this.logger('ERROR: The user interface threw an unhandled error');
       console.error(e);
@@ -525,6 +567,13 @@ export class HomebridgeServiceHelper {
       const globalModules = await this.getNpmGlobalModulesDirectory();
       if (globalModules && await fs.pathExists(path.resolve(globalModules, 'homebridge'))) {
         this.homebridgeModulePath = path.resolve(globalModules, 'homebridge');
+      }
+    }
+
+    // check the custom plugins path
+    if (!this.homebridgeModulePath && process.env.UIX_CUSTOM_PLUGIN_PATH) {
+      if (await fs.pathExists(path.resolve(process.env.UIX_CUSTOM_PLUGIN_PATH, 'homebridge', 'package.json'))) {
+        this.homebridgeModulePath = path.resolve(process.env.UIX_CUSTOM_PLUGIN_PATH, 'homebridge');
       }
     }
 
@@ -577,7 +626,7 @@ export class HomebridgeServiceHelper {
       this.logger(
         'WARNING: It looks like you are running Node.js via NVM (Node Version Manager).\n' +
         '  Using hb-service with NVM may not work unless you have configured NVM for the\n' +
-        '  user this service will run as. See https://git.io/JUZ2g for instructions on how\n' +
+        '  user this service will run as. See https://homebridge.io/w/JUZ2g for instructions on how\n' +
         '  to remove NVM, then follow the wiki instructions to install Node.js and Homebridge.',
         'warn'
       );
@@ -773,12 +822,14 @@ export class HomebridgeServiceHelper {
     const port = await this.generatePort();
     const name = 'Homebridge ' + username.substr(username.length - 5).replace(/:/g, '');
     const pin = this.generatePin();
+    const advertiser = await this.isAvahiDaemonRunning() ? 'avahi' : 'bonjour-hap';
 
     return {
       name,
       username,
       port,
       pin,
+      advertiser,
     };
   }
 
@@ -863,6 +914,32 @@ export class HomebridgeServiceHelper {
     }
 
     return port;
+  }
+
+  /**
+   * Test to see if the avahi-daemon service is running
+   * @returns 
+   */
+  private async isAvahiDaemonRunning(): Promise<boolean> {
+    if (os.platform() !== 'linux') {
+      return false;
+    }
+    if (!await fs.pathExists('/etc/avahi/avahi-daemon.conf') || !await fs.pathExists('/usr/bin/systemctl')) {
+      return false;
+    }
+    try {
+      if (await fs.pathExists('/usr/lib/systemd/system/avahi.service')) {
+        child_process.execSync('systemctl is-active --quiet avahi');
+        return true;
+      } else if (await fs.pathExists('/lib/systemd/system/avahi-daemon.service')) {
+        child_process.execSync('systemctl is-active --quiet avahi-daemon');
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
   }
 
   /**
@@ -1099,6 +1176,24 @@ export class HomebridgeServiceHelper {
   }
 
   /**
+   * Remove npm package
+   */
+  public async removeNpmPackage(npmInstallPath: string) {
+    if (!await fs.pathExists(npmInstallPath)) {
+      return;
+    }
+
+    const spinner = ora(`Cleaning up npm at ${npmInstallPath}...`).start();
+
+    try {
+      await fs.remove(npmInstallPath);
+      spinner.succeed(`Cleaned up npm at at ${npmInstallPath}`);
+    } catch (e) {
+      spinner.fail(e.message);
+    }
+  }
+
+  /**
    * Check the current status of the Homebridge UI by calling it's API
    */
   private async checkStatus() {
@@ -1115,6 +1210,44 @@ export class HomebridgeServiceHelper {
     } catch (e) {
       this.logger('Homebridge UI Not Running', 'fail');
       process.exit(1);
+    }
+  }
+
+  /**
+   * Install / Remove a plugin using pnpm (supported platforms only)
+   */
+  private async pnpmPluginManagement(args) {
+    if (!this.enableHbServicePluginManagement) {
+      this.logger('Plugin management is not supported on your platform using hb-service.', 'fail');
+      process.exit(1);
+    }
+
+    if (args.length === 1) {
+      this.logger('Plugin name required.', 'fail');
+      process.exit(1);
+    }
+
+    const target = args[args.length - 1] as string;
+    const packageName = target.match(/^((@[\w-]*)\/)?(homebridge-[\w-]*)/)?.[0];
+
+    if (!packageName) {
+      this.logger('Invalid plugin name.', 'fail');
+      process.exit(1);
+    }
+
+    const cwd = path.dirname(process.env.UIX_CUSTOM_PLUGIN_PATH);
+
+    if (!await fs.pathExists(cwd)) {
+      this.logger(`Path does not exist: "${cwd}"`, 'fail');
+    }
+
+    try {
+      child_process.execSync(`pnpm -C ${cwd} ${args.join(' ')}`, {
+        cwd: cwd,
+        stdio: 'inherit',
+      });
+    } catch (e) {
+      this.logger('Plugin installation failed.', 'fail');
     }
   }
 

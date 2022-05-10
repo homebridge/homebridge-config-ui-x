@@ -66,10 +66,10 @@ module.exports = {
     minimize: false,
   },
   plugins: [
-    new webpack.IgnorePlugin(/@nestjs\/microservices/),
-    new webpack.IgnorePlugin(/@nestjs\/platform-express/),
-    new webpack.IgnorePlugin(/swagger-ui-express/),
-    new webpack.IgnorePlugin(/cache-manager/),
-    new webpack.IgnorePlugin(/osx-temperature-sensor/)
+    new webpack.IgnorePlugin({ resourceRegExp: /^\.\/locale$/, contextRegExp: /@nestjs\/microservices/ }),
+    new webpack.IgnorePlugin({ resourceRegExp: /^\.\/locale$/, contextRegExp: /@nestjs\/platform-express/ }),
+    new webpack.IgnorePlugin({ resourceRegExp: /^\.\/locale$/, contextRegExp: /swagger-ui-express/ }),
+    new webpack.IgnorePlugin({ resourceRegExp: /^\.\/locale$/, contextRegExp: /cache-manager/ }),
+    new webpack.IgnorePlugin({ resourceRegExp: /^\.\/locale$/, contextRegExp: /osx-temperature-sensor/ })
   ],
 };

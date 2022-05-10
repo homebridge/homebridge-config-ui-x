@@ -90,8 +90,7 @@ export class StatusComponent implements OnInit, OnDestroy {
     this.io.socket.on('homebridge-status', (data) => {
       // check if client is up-to-date
       if (data.packageVersion && data.packageVersion !== this.$settings.uiVersion) {
-        // eslint-disable-next-line import/no-deprecated
-        window.location.reload(true);
+        window.location.reload();
       }
     });
 

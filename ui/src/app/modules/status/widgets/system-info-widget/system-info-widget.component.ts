@@ -12,7 +12,6 @@ export class SystemInfoWidgetComponent implements OnInit {
   private io = this.$ws.getExistingNamespace('status');
 
   public serverInfo;
-  public npmInfo = {} as any;
   public nodejsInfo = {} as any;
 
   constructor(
@@ -33,10 +32,6 @@ export class SystemInfoWidgetComponent implements OnInit {
   getSystemInfo() {
     this.io.request('get-homebridge-server-info').subscribe((data) => {
       this.serverInfo = data;
-    });
-
-    this.io.request('npm-version-check').subscribe((data) => {
-      this.npmInfo = data;
     });
 
     this.io.request('nodejs-version-check').subscribe((data) => {

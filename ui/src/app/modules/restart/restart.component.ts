@@ -66,7 +66,7 @@ export class RestartComponent implements OnInit, OnDestroy {
       // listen to homebridge-status events to see when it's back online
       this.io.socket.on('homebridge-status', (data) => {
         this.uiOnline = true;
-        if (data.status === 'up') {
+        if (data.status === 'up' || data.status === 'pending') {
           this.$toastr.success(this.translate.instant('restart.toast_server_restarted'), this.translate.instant('toast.title_success'));
           this.$router.navigate(['/']);
         }

@@ -1,9 +1,10 @@
 <ng-container [ngSwitch]="service.type">
-  <i class="fas fa-cog manage-accessory-button primary-text" (click)="$accessories.showAccessoryInformation(service)"
-    *ngIf="$accessories.readyForControl"></i>
+  <a href="javascript:void(0)" class="manage-accessory-button" (click)="$accessories.showAccessoryInformation(service)">
+    <i class="fas fa-cog primary-text" *ngIf="$accessories.readyForControl"></i>
+  </a>
   <i class="fas fa-spin fa-sync-alt refreshing-accessory-status-icon text-grey" *ngIf="!$accessories.readyForControl">
-
   </i>
+
   <app-switch *ngSwitchCase="'Switch'" [service]="service">Switch</app-switch>
   <app-thermostat *ngSwitchCase="'Thermostat'" [service]="service">Thermostat</app-thermostat>
   <app-outlet *ngSwitchCase="'Outlet'" [service]="service">Outlet</app-outlet>
@@ -43,6 +44,8 @@
   </app-securitysystem>
   <app-leaksensor *ngSwitchCase="'LeakSensor'" [service]="service">Leak Sensor
   </app-leaksensor>
+  <app-smokesensor *ngSwitchCase="'SmokeSensor'" [service]="service">Smoke Sensor
+  </app-smokesensor>
   <app-valve *ngSwitchCase="'Valve'" [service]="service">Valve
   </app-valve>
   <app-irrigationsystem *ngSwitchCase="'IrrigationSystem'" [service]="service">Irrigation System
