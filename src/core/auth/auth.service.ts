@@ -196,8 +196,12 @@ export class AuthService {
     user.admin = true;
 
     await fs.writeJson(this.configService.authPath, []);
-    await this.addUser(user);
+
+    const createdUser = await this.addUser(user);
+
     this.configService.setupWizardComplete = true;
+
+    return createdUser;
   }
 
   /**

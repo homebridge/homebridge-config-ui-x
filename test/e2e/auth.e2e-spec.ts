@@ -6,9 +6,13 @@ import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify
 
 import { AuthModule } from '../../src/core/auth/auth.module';
 import { ConfigService } from '../../src/core/config/config.service';
+import { AuthService } from '../../src/core/auth/auth.service';
 
 describe('AuthController (e2e)', () => {
   let app: NestFastifyApplication;
+
+  let authService: AuthService;
+  let configService: ConfigService;
 
   let authFilePath: string;
   let secretsFilePath: string;
@@ -42,8 +46,14 @@ describe('AuthController (e2e)', () => {
     await app.init();
     await app.getHttpAdapter().getInstance().ready();
 
-    // wait for initial auth to be setup
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    authService = app.get(AuthService);
+    configService = app.get(ConfigService);
+  });
+
+  beforeEach(async () => {
+    // setup test auth file
+    await fs.copy(path.resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
+    configService.setupWizardComplete = true;
   });
 
   afterEach(async () => {
@@ -52,9 +62,21 @@ describe('AuthController (e2e)', () => {
     configService.ui.auth = 'form';
   });
 
-  it('should create auth.json and .uix-secrets on launch', async () => {
-    expect(await fs.pathExists(authFilePath)).toBe(true);
+  it('should .uix-secrets on launch', async () => {
     expect(await fs.pathExists(secretsFilePath)).toBe(true);
+  });
+
+  it('should flag first run setup wizard as not complete if authfile not created', async () => {
+    // remove test auth file
+    await fs.remove(authFilePath);
+    await authService.checkAuthFile();
+    expect(configService.setupWizardComplete).toBe(false);
+  });
+
+  it('should flag first run setup wizard as complete if authfile is created', async () => {
+    // test authfile created in beforeEach hook
+    await authService.checkAuthFile();
+    expect(configService.setupWizardComplete).toBe(true);
   });
 
   it('POST /auth/login (valid login)', async () => {

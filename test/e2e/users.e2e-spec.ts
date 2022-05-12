@@ -199,6 +199,7 @@ describe('UsersController (e2e)', () => {
         authorization,
       },
       payload: {
+        name: 'admin',
         username: 'admin', // try change to existing username
       },
     });
