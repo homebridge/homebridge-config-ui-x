@@ -10,7 +10,7 @@
 
     <div *ngIf="step === 'create-account'" class="w-100 d-flex flex-column align-items-center">
       <img class="homebridge-logo homebridge-logo-small mr-auto ml-auto" src="/assets/homebridge-color-round.svg" />
-      <h3 class="pt-4 pb-3" translate="setup_wizard.label_create_account"></h3>
+      <h3 class="pt-4 pb-3 text-center" translate="setup_wizard.label_create_account"></h3>
 
       <div class="w-100">
         <p translate="setup_wizard.message_create_account_reason"></p>
@@ -39,12 +39,12 @@
 
           <div class="md-form">
             <i class="fas fa-lock prefix grey-text"></i>
-            <input formControlName="passwordConfirm" type="password" id="form-pass" autocomplete="new-password"
+            <input formControlName="passwordConfirm" type="password" id="form-pass-confirm" autocomplete="new-password"
               tabindex="2" class="form-control pl-0 pr-0" [readonly]="loading" [ngClass]="{
                 'is-valid': (createUserForm.controls.passwordConfirm.dirty) && createUserForm.controls.passwordConfirm.valid,
                 'is-invalid': (createUserForm.controls.passwordConfirm.dirty) && createUserForm.controls.passwordConfirm.errors
               }">
-            <label for="form-pass" [translate]="'users.label_confirm_password'"></label>
+            <label for="form-pass-confirm" [translate]="'users.label_confirm_password'"></label>
           </div>
 
           <div class="w-100 text-center">
