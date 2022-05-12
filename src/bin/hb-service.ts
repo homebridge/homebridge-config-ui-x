@@ -652,8 +652,7 @@ export class HomebridgeServiceHelper {
       console.log(`* http://[${defaultInterface.ip6}]:${this.uiPort}`);
     }
 
-    console.log('\nDefault Username: admin');
-    console.log('Default Password: admin\n');
+    console.log('');
 
     this.logger('Homebridge Setup Complete', 'succeed');
   }

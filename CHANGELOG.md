@@ -7,7 +7,11 @@ All notable changes to this project will be documented in this file. This projec
 ### Notable Changes
 
 * **Auth:** Users are prompted to create a new user account the first time the Homebridge UI is launched
-* **Auth:** The default credentials of **admin** and **admin** are no longer used for new installs
+* **Auth:** The default credentials of **admin** / **admin** are no longer set for new installs
+
+### Other changes
+
+* **i18n:** Improvements to Italian language translations ([#1333](https://github.com/oznu/homebridge-config-ui-x/pull/1333))
 
 ## 4.43.3 (2022-05-07)
 
