@@ -1,0 +1,71 @@
+<div class="setup-container d-flex align-items-center justify-content-center">
+  <div class="w-100 setup-card d-flex pb-5 pt-5">
+    <div *ngIf="step === 'welcome'" class="w-100 d-flex flex-column align-items-center">
+      <img class="homebridge-logo mr-auto ml-auto" src="/assets/homebridge-color-round.svg" />
+      <h3 class="pt-4 pb-3" translate="setup_wizard.message_welcome_to_homebridge"></h3>
+      <button type="button" class="btn btn-lg btn-primary" (click)="onClickGettingStarted()"
+        translate="setup_wizard.button_get_started">
+      </button>
+    </div>
+
+    <div *ngIf="step === 'create-account'" class="w-100 d-flex flex-column align-items-center">
+      <img class="homebridge-logo homebridge-logo-small mr-auto ml-auto" src="/assets/homebridge-color-round.svg" />
+      <h3 class="pt-4 pb-3" translate="setup_wizard.label_create_account"></h3>
+
+      <div class="w-100">
+        <p translate="setup_wizard.message_create_account_reason"></p>
+
+        <form novalidate (ngSubmit)="createFirstUser()" [formGroup]="createUserForm">
+
+          <div class="md-form">
+            <i class="fas fa-user prefix grey-text"></i>
+            <input formControlName="username" type="text" id="form-username" autocomplete="username"
+              autocapitalize="none" tabindex="1" class="form-control pl-0 pr-0" [readonly]="loading" [ngClass]="{
+                'is-valid': (createUserForm.controls.username.dirty) && createUserForm.controls.username.valid,
+                'is-invalid': (createUserForm.controls.username.dirty) && createUserForm.controls.username.invalid
+              }">
+            <label for="form-username" [translate]="'users.label_username'">Username</label>
+          </div>
+
+          <div class="md-form">
+            <i class="fas fa-lock prefix grey-text"></i>
+            <input formControlName="password" type="password" id="form-pass" autocomplete="new-password" tabindex="2"
+              class="form-control pl-0 pr-0" [readonly]="loading" [ngClass]="{
+                'is-valid': (createUserForm.controls.password.dirty) && createUserForm.controls.password.valid,
+                'is-invalid': (createUserForm.controls.password.dirty) && createUserForm.controls.password.errors
+              }">
+            <label for="form-pass" [translate]="'users.label_password'">Password</label>
+          </div>
+
+          <div class="md-form">
+            <i class="fas fa-lock prefix grey-text"></i>
+            <input formControlName="passwordConfirm" type="password" id="form-pass" autocomplete="new-password"
+              tabindex="2" class="form-control pl-0 pr-0" [readonly]="loading" [ngClass]="{
+                'is-valid': (createUserForm.controls.passwordConfirm.dirty) && createUserForm.controls.passwordConfirm.valid,
+                'is-invalid': (createUserForm.controls.passwordConfirm.dirty) && createUserForm.controls.passwordConfirm.errors
+              }">
+            <label for="form-pass" [translate]="'users.label_confirm_password'"></label>
+          </div>
+
+          <div class="w-100 text-center">
+            <button type="submit" class="btn btn-primary" [disabled]="createUserForm.invalid || loading" [ngClass]="{
+              'button-loading': loading
+            }">
+              {{ 'setup_wizard.label_create_account' | translate }}
+              <i class="button-loading-overlay fas fa-spinner fa-pulse"></i>
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+    <div *ngIf="step === 'setup-complete'" class="w-100 d-flex flex-column align-items-center">
+      <img class="homebridge-logo homebridge-logo-small mr-auto ml-auto" src="/assets/homebridge-color-round.svg" />
+      <h3 class="pt-4 pb-3" translate="setup_wizard_message_complete_title"></h3>
+      <p class="text-center" translate="setup_wizard_message_complete_message"></p>
+      <a class="btn btn-lg btn-primary mt-3" routerLink="/" translate="setup_wizard.label_open_dashboard">
+      </a>
+    </div>
+  </div>
+</div>

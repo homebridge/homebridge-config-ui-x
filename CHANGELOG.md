@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## NEXT
+
+### Notable Changes
+
+* **Auth:** Users are prompted to create a new user account the first time the Homebridge UI is launched
+* **Auth:** The default credentials of **admin** and **admin** are no longer used for new installs
+
 ## 4.43.3 (2022-05-07)
 
 ### Bug Fixes

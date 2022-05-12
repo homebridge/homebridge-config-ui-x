@@ -5,7 +5,7 @@ import { debounceTime } from 'rxjs/operators';
 
 import { environment } from '@/environments/environment';
 import { SettingsService } from '@/app/core/settings.service';
-import { AuthService } from '../auth.service';
+import { AuthService } from '../../core/auth/auth.service';
 
 @Component({
   selector: 'app-login',

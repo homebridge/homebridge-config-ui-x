@@ -18,6 +18,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { LayoutComponent } from './shared/layout/layout.component';
 import { RestartModule } from './modules/restart/restart.module';
 import { StatusModule } from './modules/status/status.module';
+import { LoginModule } from './modules/login/login.module';
 
 @NgModule({
     declarations: [
@@ -54,6 +55,7 @@ import { StatusModule } from './modules/status/status.module';
         DragulaModule.forRoot(),
         CoreModule,
         AuthModule,
+        LoginModule,
         StatusModule,
         RestartModule,
         AppRoutingModule,

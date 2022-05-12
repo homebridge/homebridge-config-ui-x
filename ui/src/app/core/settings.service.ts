@@ -29,6 +29,7 @@ interface EnvInterface {
   temperatureUnits: 'c' | 'f';
   instanceId: string;
   customWallpaperHash: string;
+  setupWizardComplete: boolean;
 }
 
 interface AppSettingsInterface {

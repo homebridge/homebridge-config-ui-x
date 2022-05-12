@@ -15,6 +15,7 @@ import { AuthModule } from './core/auth/auth.module';
 import { ServerModule } from './modules/server/server.module';
 import { PlatformToolsModule } from './modules/platform-tools/platform-tools.module';
 import { BackupModule } from './modules/backup/backup.module';
+import { SetupWizardModule } from './modules/setup-wizard/setup-wizard.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { BackupModule } from './modules/backup/backup.module';
     PlatformToolsModule,
     BackupModule,
     LogModule,
+    SetupWizardModule,
   ],
   controllers: [
     AppController,

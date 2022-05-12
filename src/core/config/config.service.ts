@@ -62,6 +62,9 @@ export class ConfigService {
   // package.json
   public package = fs.readJsonSync(path.resolve(process.env.UIX_BASE_PATH, 'package.json'));
 
+  // first user setup wizard
+  public setupWizardComplete = true;
+
   // custom wallpaper
   public customWallpaperPath = path.resolve(this.storagePath, 'ui-wallpaper.jpg');
   public customWallpaperHash: string;
@@ -203,6 +206,7 @@ export class ConfigService {
         lang: this.ui.lang === 'auto' ? null : this.ui.lang,
         instanceId: this.instanceId,
         customWallpaperHash: this.customWallpaperHash,
+        setupWizardComplete: this.setupWizardComplete,
       },
       formAuth: Boolean(this.ui.auth !== 'none'),
       theme: this.ui.theme || 'auto',
