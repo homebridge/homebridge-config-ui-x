@@ -73,4 +73,10 @@ export class StatusController {
   async getNodeJsVersionInfo() {
     return this.statusService.getNodeJsVersionInfo();
   }
+
+  @ApiOperation({ summary: 'Returns throttled status for Raspberry Pi' })
+  @Get('/rpi/throttled')
+  async getRaspberryPiThrottledStatus() {
+    return this.statusService.getRaspberryPiThrottledStatus();
+  }
 }

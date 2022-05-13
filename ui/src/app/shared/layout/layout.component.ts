@@ -23,6 +23,9 @@ import { ConfirmComponent } from '@/app/core/components/confirm/confirm.componen
 export class LayoutComponent implements OnInit {
   private io = this.$ws.connectToNamespace('app');
 
+  public rPiCurrentlyUndervoltage = false;
+  public rPiWasUndervoltage = false;
+
   @ViewChild('restartHomebridgeIcon') restartHomebridgeIcon: ElementRef;
 
   constructor(
@@ -55,6 +58,15 @@ export class LayoutComponent implements OnInit {
       const element = (this.restartHomebridgeIcon?.nativeElement as HTMLElement);
       if (element) {
         element.classList.remove('uix-highlight-icon');
+      }
+    });
+
+    this.$notification.raspberryPiThrottled.subscribe((throttled) => {
+      if (throttled['Under-voltage detected']) {
+        this.rPiCurrentlyUndervoltage = true;
+      }
+      if (throttled['Under-voltage has occurred']) {
+        this.rPiWasUndervoltage = true;
       }
     });
 

@@ -1,5 +1,7 @@
 import * as os from 'os';
 import * as path from 'path';
+import * as child_process from 'child_process';
+import * as util from 'util';
 import * as fs from 'fs-extra';
 import * as si from 'systeminformation';
 import * as semver from 'semver';
@@ -20,6 +22,8 @@ export const enum HomebridgeStatus {
   DOWN = 'down',
 }
 
+const execAsync = util.promisify(child_process.exec);
+
 @Injectable()
 export class StatusService {
   private statusCache = new NodeCache({ stdTTL: 3600 });
@@ -31,6 +35,17 @@ export class StatusService {
   private memoryUsageHistory: number[] = [];
 
   private memoryInfo: si.Systeminformation.MemData;
+
+  private rpiGetThrottledMapping = {
+    0: 'Under-voltage detected',
+    1: 'Arm frequency capped',
+    2: 'Currently throttled',
+    3: 'Soft temperature limit active',
+    16: 'Under-voltage has occurred',
+    17: 'Arm frequency capping has occurred',
+    18: 'Throttled has occurred',
+    19: 'Soft temperature limit has occurred',
+  };
 
   constructor(
     private httpService: HttpService,
@@ -445,5 +460,39 @@ export class StatusService {
       this.statusCache.set('nodeJsVersion', versionInformation, 3600);
       return versionInformation;
     }
+  }
+
+  /**
+   * Returns infomation about the current state of the Raspberry Pi
+   */
+  public async getRaspberryPiThrottledStatus() {
+    if (!this.configService.runningOnRaspberryPi) {
+      throw new BadRequestException('This command is only available on Raspberry Pi');
+    }
+
+    const output = {};
+
+    for (const bit of Object.keys(this.rpiGetThrottledMapping)) {
+      output[this.rpiGetThrottledMapping[bit]] = false;
+    }
+
+    try {
+      const { stdout } = await execAsync('vcgencmd get_throttled');
+      const throttledHex = parseInt(stdout.trim().replace('throttled=', ''));
+
+      if (!isNaN(throttledHex)) {
+        for (const bit of Object.keys(this.rpiGetThrottledMapping)) {
+          if ((throttledHex >> parseInt(bit, 10)) & 1) {
+            output[this.rpiGetThrottledMapping[bit]] = true;
+          } else {
+            output[this.rpiGetThrottledMapping[bit]] = false;
+          }
+        }
+      }
+    } catch (e) {
+      this.logger.error('Could not check vcgencmd get_throttled:', e.message);
+    }
+
+    return output;
   }
 }

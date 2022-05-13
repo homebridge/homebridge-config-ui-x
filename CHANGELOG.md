@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Notable Changes
 
+* **System:** Notify users running on a Raspberry Pi if their device is reporting under-voltage events
 * **System:** Added a first time setup wizard that allows user to create a Homebridge UI user account or restore from an existing backup
 * **Auth:** The default credentials of **admin** / **admin** are no longer set for new installs
 

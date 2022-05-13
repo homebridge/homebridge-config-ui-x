@@ -9,6 +9,7 @@ import { WsService } from '@/app/core/ws.service';
 import { AuthService } from '@/app/core/auth/auth.service';
 import { SettingsService } from '@/app/core/settings.service';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
+import { NotificationService } from '@/app/core/notification.service';
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { WidgetControlComponent } from './widget-control/widget-control.component';
 import { WidgetAddComponent } from './widget-add/widget-add.component';
@@ -35,6 +36,7 @@ export class StatusComponent implements OnInit, OnDestroy {
     public $toastr: ToastrService,
     private $modal: NgbModal,
     private $ws: WsService,
+    private $notification: NotificationService,
     public $auth: AuthService,
     public $settings: SettingsService,
     public $plugin: ManagePluginsService,
@@ -101,6 +103,13 @@ export class StatusComponent implements OnInit, OnDestroy {
         this.gridChangedEvent();
       },
     });
+
+    // if raspberry pi, do a check for throttled
+    if (this.$settings.env.runningOnRaspberryPi) {
+      this.io.request('get-raspberry-pi-throttled-status').subscribe((throttled) => {
+        this.$notification.raspberryPiThrottled.next(throttled);
+      });
+    }
   }
 
   getLayout() {

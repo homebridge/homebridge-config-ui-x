@@ -7,4 +7,5 @@ import { Subject } from 'rxjs';
 export class NotificationService {
   readonly configUpdated = new Subject();
   readonly restartTriggered = new Subject();
+  readonly raspberryPiThrottled: Subject<Record<string, boolean>> = new Subject();
 }

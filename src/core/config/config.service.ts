@@ -54,6 +54,9 @@ export class ConfigService {
   public enableTerminalAccess = this.runningInDocker || this.runningInSynologyPackage || this.runningInPackageMode || Boolean(process.env.HOMEBRIDGE_CONFIG_UI_TERMINAL === '1');
   public usePnpm = (process.env.UIX_USE_PNPM === '1');
 
+  // check this async
+  public runningOnRaspberryPi = false;
+
   // docker paths
   public startupScript = path.resolve(this.storagePath, 'startup.sh');
   public dockerEnvFile = path.resolve(this.storagePath, '.docker.env');
@@ -129,6 +132,7 @@ export class ConfigService {
   constructor() {
     const homebridgeConfig = fs.readJSONSync(this.configPath);
     this.parseConfig(homebridgeConfig);
+    this.checkIfRunningOnRaspberryPi();
   }
 
   /**
@@ -199,6 +203,7 @@ export class ConfigService {
         runningInSynologyPackage: this.runningInSynologyPackage,
         runningInPackageMode: this.runningInPackageMode,
         runningInLinux: this.runningInLinux,
+        runningOnRaspberryPi: this.runningOnRaspberryPi,
         canShutdownRestartHost: this.canShutdownRestartHost,
         dockerOfflineUpdate: this.dockerOfflineUpdate,
         serviceMode: this.serviceMode,
@@ -207,6 +212,7 @@ export class ConfigService {
         instanceId: this.instanceId,
         customWallpaperHash: this.customWallpaperHash,
         setupWizardComplete: this.setupWizardComplete,
+
       },
       formAuth: Boolean(this.ui.auth !== 'none'),
       theme: this.ui.theme || 'auto',
@@ -336,6 +342,21 @@ export class ConfigService {
       this.customWallpaperHash = hash.digest('hex') + '.jpg';
     } catch (e) {
       // do nothing
+    }
+  }
+
+  /**
+   * Checks to see if we are running on a Raspberry Pi
+   */
+  private async checkIfRunningOnRaspberryPi() {
+    try {
+      if (await fs.pathExists('/usr/bin/vcgencmd') && await fs.pathExists('/usr/bin/raspi-config')) {
+        this.runningOnRaspberryPi = true;
+      } else {
+        this.runningOnRaspberryPi = false;
+      }
+    } catch (e) {
+      this.runningOnRaspberryPi = false;
     }
   }
 

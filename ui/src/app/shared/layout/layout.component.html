@@ -28,6 +28,17 @@
       </ul>
 
       <ul class="navbar-nav nav-flex-icons hb-nav-right">
+        <li class="nav-item mr-3" *ngIf="rPiWasUndervoltage || rPiCurrentlyUndervoltage">
+          <a href="javascript:void(0)" class="nav-link dropdown-toggle waves-effect waves-light"
+            [popoverTitle]="(rPiCurrentlyUndervoltage ? 'rpi.throttled.currently_undervoltage_title' : 'rpi.throttled.previously_undervoltage_title') | translate"
+            [ngbPopover]="(rPiCurrentlyUndervoltage ? 'rpi.throttled.currently_undervoltage_message' : 'rpi.throttled.previously_undervoltage_message') | translate"
+            [ngbTooltip]="(rPiCurrentlyUndervoltage ? 'rpi.throttled.currently_undervoltage_title' : 'rpi.throttled.previously_undervoltage_title') | translate"
+            container="body" [placement]="['bottom', 'auto']">
+            <i class="fa-solid fa-bolt yellow-text " style="--fa-beat-scale: 2.0;"
+              [ngClass]="{ 'fa-beat': rPiCurrentlyUndervoltage }"></i>
+          </a>
+        </li>
+
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" placement="bottom"
           ngbTooltip="{{'menu.tooltip_view_logs' | translate}}" container="body">
           <a class="nav-link" routerLink="/logs" aria-label="View Homebridge Logs">

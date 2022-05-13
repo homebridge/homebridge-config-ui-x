@@ -155,4 +155,12 @@ export class StatusGateway {
     this.statusService.watchChildBridgeStatus(client);
   }
 
+  @SubscribeMessage('get-raspberry-pi-throttled-status')
+  async getRaspberryPiThrottledStatus(client, payload) {
+    try {
+      return await this.statusService.getRaspberryPiThrottledStatus();
+    } catch (e) {
+      return new WsException(e.message);
+    }
+  }
 }
