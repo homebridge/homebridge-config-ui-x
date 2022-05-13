@@ -67,3 +67,11 @@
   left: 0;
   right: 0;
 }
+
+small {
+  a {
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

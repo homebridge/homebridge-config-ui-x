@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Notable Changes
 
-* **Auth:** Users are prompted to create a new user account the first time the Homebridge UI is launched
+* **System:** Added a first time setup wizard that allows user to create a Homebridge UI user account or restore from an existing backup
 * **Auth:** The default credentials of **admin** / **admin** are no longer set for new installs
 
 ### Other changes

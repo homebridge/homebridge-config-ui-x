@@ -163,6 +163,29 @@ describe('SetupWizard (e2e)', () => {
     expect(res.statusCode).toBe(403);
   });
 
+  it('GET /get-setup-wizard-token', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/setup-wizard/get-setup-wizard-token',
+    });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toHaveProperty('access_token');
+    expect(res.json()).toHaveProperty('expires_in');
+    expect(res.json().expires_in).toBe(300);
+  });
+
+  it('GET /get-setup-wizard-token (rejects if setup wizard complete)', async () => {
+    configService.setupWizardComplete = true;
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/setup-wizard/get-setup-wizard-token',
+    });
+
+    expect(res.statusCode).toBe(403);
+  });
+
   afterAll(async () => {
     await app.close();
   });

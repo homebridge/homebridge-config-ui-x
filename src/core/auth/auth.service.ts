@@ -205,6 +205,30 @@ export class AuthService {
   }
 
   /**
+   * Generates a token for the setup wizard
+   */
+  async generateSetupWizardToken() {
+    // prevent access if auth is not disabled
+    if (this.configService.setupWizardComplete !== false) {
+      throw new ForbiddenException();
+    }
+
+    // generate a token
+    const token = await this.jwtService.sign({
+      username: 'setup-wizard',
+      name: 'setup-wizard',
+      admin: true,
+      instanceId: 'xxxxx', // intentionally wrong
+    }, { expiresIn: '5m' });
+
+    return {
+      access_token: token,
+      token_type: 'Bearer',
+      expires_in: 300,
+    };
+  }
+
+  /**
    * Executed on startup to see if the auth file is setup yet
    */
   async checkAuthFile() {
