@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## 4.44.1 (2022-05-14)
+
+### Bug Fixes
+
+* **Auth:** Fix a bug that prevented the 2FA prompt from showing up when logging in
+
 ## 4.44.0 (2022-05-13)
 
 ### Notable Changes
