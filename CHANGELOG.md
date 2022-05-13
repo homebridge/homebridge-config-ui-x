@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ## NEXT
 
-### Notable Changes
+### 4.44.0 (2022-05-13)
 
 * **System:** Notify users running on a Raspberry Pi if their device is reporting under-voltage events
 * **System:** Added a first time setup wizard that allows user to create a Homebridge UI user account or restore from an existing backup
@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Other changes
 
 * **i18n:** Improvements to Italian language translations ([#1333](https://github.com/oznu/homebridge-config-ui-x/pull/1333))
+* **i18n:** Improvements to Indonesian language translations ([#1336](https://github.com/oznu/homebridge-config-ui-x/pull/1336))
 
 ## 4.43.3 (2022-05-07)
 
