@@ -196,8 +196,6 @@
     "plugins.manage.message_confirm_disable": "Are you sure you want to disable {{ pluginName }}? Any accessories exposed by this plugin will be removed from HomeKit.",
     "plugins.manage.message_confirm_enable": "Are you sure you want to enable {{ pluginName }}?",
     "plugins.manage.message_install_previous_version": "Install Previous Version",
-    "plugins.manage.message_restart_required": "Vyžadován restart a obnovení",
-    "plugins.manage.message_restart_required_reason": "Po instalaci nové verze budete muset restartovat Homebridge a <strong>obnovit tuto stránku</strong>, abyste měli jistotu, že máte nejnovější verzi klienta.",
     "plugins.manage.message_select_version_to_install": "Select the version to install",
     "plugins.manage.message_thanks_for_upgrading_ui": "Děkujeme, že jste nainstalovali nejnovější verzi rozhraní Homebridge UI.",
     "plugins.manage.message_uninstall_remove_config_required": "Pokud tento plugin trvale odstraňujete, ujistěte se, že před restartováním aplikace Homebridge odeberete i jeho konfiguraci v souboru config.json.",

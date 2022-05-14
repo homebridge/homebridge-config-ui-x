@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
 
+## NEXT
+
+### Other changes
+
+* **Plugins:** Prevent closing the modal when a plugin install or update is in progress
+
 ## 4.44.1 (2022-05-14)
 
 ### Bug Fixes

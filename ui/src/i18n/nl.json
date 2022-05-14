@@ -196,8 +196,6 @@
     "plugins.manage.message_confirm_disable": "Weet u zeker dat u {{ pluginName }} wilt deactiveren? Alle accessoires aangemaakt door deze plugin worden verwijderd van HomeKit.",
     "plugins.manage.message_confirm_enable": "Weet u zeker dat u {{ pluginName }} wilt activeren?",
     "plugins.manage.message_install_previous_version": "Installeer Vorige Versie",
-    "plugins.manage.message_restart_required": "Herstart en Verversen Vereist",
-    "plugins.manage.message_restart_required_reason": "Na het installeren van een nieuwe versie moet u Homebridge opnieuw opstarten en <strong>deze pagina vernieuwen</strong> om ervoor te zorgen dat u over de nieuwste versie van de client beschikt.",
     "plugins.manage.message_select_version_to_install": "Selecteer de versie om te installeren",
     "plugins.manage.message_thanks_for_upgrading_ui": "Bedankt voor het installeren van de nieuwste versie van Homebridge UI.",
     "plugins.manage.message_uninstall_remove_config_required": "Indien je deze plugin permanent wilt verwijderen dien je alle configuratie voor de plugin te verwijderen uit config.json voordat je Homebridge herstart.",

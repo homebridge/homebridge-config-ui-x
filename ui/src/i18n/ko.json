@@ -196,8 +196,6 @@
     "plugins.manage.message_confirm_disable": "Are you sure you want to disable {{ pluginName }}? Any accessories exposed by this plugin will be removed from HomeKit.",
     "plugins.manage.message_confirm_enable": "Are you sure you want to enable {{ pluginName }}?",
     "plugins.manage.message_install_previous_version": "이전 버전 설치",
-    "plugins.manage.message_restart_required": "재시작 및 새로고침 필요",
-    "plugins.manage.message_restart_required_reason": "새로운 버전을 설치한 후에는 Homebridge를 재시작하고 <strong>이 페이지를 새로고침</strong>해야 최신버전의 클라이언트를 확인할 수 있습니다.",
     "plugins.manage.message_select_version_to_install": "설치할 버전을 선택하세요",
     "plugins.manage.message_thanks_for_upgrading_ui": "Homebridge UI 최신버전을 설치해주셔서 감사합니다.",
     "plugins.manage.message_uninstall_remove_config_required": "이 플러그인을 영구적으로 삭제하는 경우, Homebrdige를 재시작 하기 전에 config.json에서 이 플러그인의 Config 정보가 제거되었는지 확인해주세요.",

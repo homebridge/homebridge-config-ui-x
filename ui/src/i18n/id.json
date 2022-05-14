@@ -196,8 +196,6 @@
     "plugins.manage.message_confirm_disable": "Apakah Anda yakin ingin menonaaktifkan {{ pluginName }}? Aksesori apa pun yang diekspos oleh plugin ini akan dihapus dari HomeKit.",
     "plugins.manage.message_confirm_enable": "Apakah Anda yakin ingin mengaktifkan {{ pluginName }}?",
     "plugins.manage.message_install_previous_version": "Pasang Versi Sebelumnya",
-    "plugins.manage.message_restart_required": "Mengulang Kembali dan Refresh Diperlukan",
-    "plugins.manage.message_restart_required_reason": "Setelah memasang versi baru, anda harus mengulang kembali Homebridge dan <strong>me-refresh halaman ini</strong> untuk memastikan anda sudah memiliki versi terbaru.",
     "plugins.manage.message_select_version_to_install": "Pilih versi yang akan diinstal",
     "plugins.manage.message_thanks_for_upgrading_ui": "Terima kasih telah menginstal versi terbaru dari Homebridge UI 😘.",
     "plugins.manage.message_uninstall_remove_config_required": "Jika anda menghapus plugin ini secara permanen, pastikan anda menghapus konfigurasi untuk plugin ini di config.json sebelum mengulang kembali Homebridge.",

@@ -196,8 +196,6 @@
     "plugins.manage.message_confirm_disable": "{{ pluginName }} eklentisini devre dışı bırakmak istediğinizden emin misiniz? Bu eklenti tarafından HomeKit'e eklenmiş tüm aksesuarlar kaldırılacaktır.",
     "plugins.manage.message_confirm_enable": "{{ pluginName }} eklentisini etkinleştirmek istediğinizden emin misiniz?",
     "plugins.manage.message_install_previous_version": "Bir Önceki Sürümü Yükle",
-    "plugins.manage.message_restart_required": "Yeniden Başlatma ve Yenileme Gerekli",
-    "plugins.manage.message_restart_required_reason": "İstemcinin en son sürümüne sahip olduğunuza emin olmak için, yeni sürümü yükledikten sonra Homebridge'i yeniden başlatmanız ve <stron>bu sayfayı yenilemeniz> gerekli.",
     "plugins.manage.message_select_version_to_install": "Yüklemek istediğiniz sürümü seçin",
     "plugins.manage.message_thanks_for_upgrading_ui": "Homebridge UI'in en son sürümünü yüklediğiniz için teşekkür ederiz.",
     "plugins.manage.message_uninstall_remove_config_required": "Eğer bu eklentiyi kalıcı olarak kaldırıyorsanız Homebridge'i yeniden başlatmadan önce yapılandırma dosyasındaki bu eklenti ile ilgili tüm yapılandırma bilgilerini de kaldırdığınızdan emin olun.",

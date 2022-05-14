@@ -196,8 +196,6 @@
     "plugins.manage.message_confirm_disable": "Tem a certeza que pretende desativar {{ pluginName }}? Todos os acessórios adicionados por este plugin vão ser removidos do HomeKit.",
     "plugins.manage.message_confirm_enable": "Tem a certeza que pretende ativar {{ pluginName }}?",
     "plugins.manage.message_install_previous_version": "Instalar Versão Anterior",
-    "plugins.manage.message_restart_required": "Reinício e Atualização Necessária",
-    "plugins.manage.message_restart_required_reason": "Após instalação de uma nova versão é necessário reiniciar o Homebridge e <strong>atualizar esta página</strong> para assegurar que está a executar a ultima versão do cliente.",
     "plugins.manage.message_select_version_to_install": "Selecionar a versão a instalar",
     "plugins.manage.message_thanks_for_upgrading_ui": "Obrigado por instalar a ultima versão do Homebridge UI.",
     "plugins.manage.message_uninstall_remove_config_required": "Se está a remover este plugin permanentemente, verifique que não existe qualquer configuração deste plugin no arquivo config.json antes de reinicializar o Homebridge.",

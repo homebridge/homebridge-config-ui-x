@@ -196,8 +196,6 @@
     "plugins.manage.message_confirm_disable": "確定要停用 {{ pluginName }} 嗎？此 Plugin 的所有配件將從 HomeKit 中刪除。",
     "plugins.manage.message_confirm_enable": "確定要啟用 {{ pluginName }} 嗎？",
     "plugins.manage.message_install_previous_version": "安裝以前的版本",
-    "plugins.manage.message_restart_required": "需要重新啟動並重整",
-    "plugins.manage.message_restart_required_reason": "安裝新版本後、將需要重新啟動 Homebridge 並<strong>重整此頁面</strong>，以確保所使用為最新版本。",
     "plugins.manage.message_select_version_to_install": "選擇要安裝的版本",
     "plugins.manage.message_thanks_for_upgrading_ui": "感謝您安裝最新版本 Homebridge UI。",
     "plugins.manage.message_uninstall_remove_config_required": "假如要永久性的移除此 Plugin、請確定於重新啟動 Homebridge 前移除 config.json 中的相關設定。",
