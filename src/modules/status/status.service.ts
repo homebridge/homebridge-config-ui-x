@@ -490,7 +490,7 @@ export class StatusService {
         }
       }
     } catch (e) {
-      this.logger.error('Could not check vcgencmd get_throttled:', e.message);
+      this.logger.debug('Could not check vcgencmd get_throttled:', e.message);
     }
 
     return output;

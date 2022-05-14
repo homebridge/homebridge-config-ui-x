@@ -149,7 +149,6 @@
     "platform.docker.restart_container.title_restarting": "Reiniciando o Container do Docker",
     "platform.docker.restart_container.toast_container_restarted": "Container do docker reiniciado",
     "platform.docker.settings.button_restart_required": "Reinicialização Necessária",
-    "platform.docker.settings.message_env_warning": "Ao mudar estes valores irá forçar as variaveis do sistema correspondentes ás que possa ter definido com o comando run do docker.",
     "platform.docker.settings.message_image_upgrade_required": "Por favor atualize a imagem do oznu/homebridge para a ultima versão.",
     "platform.docker.settings.title_settings": "Configurações",
     "platform.docker.settings.toast_container_restart_required": "É Necessário reiniciar o Container",

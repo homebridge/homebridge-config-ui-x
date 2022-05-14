@@ -149,7 +149,6 @@
     "platform.docker.restart_container.title_restarting": "Mengulang Kembali Kontainer Docker",
     "platform.docker.restart_container.toast_container_restarted": "Kontainer Docker Dimuat Ulang",
     "platform.docker.settings.button_restart_required": "Mengulang Kembali Diperlukan",
-    "platform.docker.settings.message_env_warning": "Mengubah nilai ini akan menimpa variabel lingkungan yang yang berkaitan dengan perintah docker yang mungkin anda setel.",
     "platform.docker.settings.message_image_upgrade_required": "Harap tingkatkan gambar docker image oznu/homebridge ke versi terbaru.",
     "platform.docker.settings.title_settings": "Pengaturan",
     "platform.docker.settings.toast_container_restart_required": "Kontainer Perlu Dimulai Kembali",

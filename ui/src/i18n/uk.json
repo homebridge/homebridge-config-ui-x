@@ -149,7 +149,6 @@
     "platform.docker.restart_container.title_restarting": "Перезапуск контейнера Docker",
     "platform.docker.restart_container.toast_container_restarted": "Контейнер Docker перезапущений",
     "platform.docker.settings.button_restart_required": "Потрібен перезапуск",
-    "platform.docker.settings.message_env_warning": "Зміна цих значень змінить відповідні змінні середовища, які Ви, можливо, встановили за допомогою команди \"docker run\".",
     "platform.docker.settings.message_image_upgrade_required": "Будь ласка, обновіть контейнер oznu / homebridge до останньої версії.",
     "platform.docker.settings.title_settings": "Налаштування",
     "platform.docker.settings.toast_container_restart_required": "Потрібен перезапуск контейнера",

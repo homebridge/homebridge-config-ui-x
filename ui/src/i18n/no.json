@@ -149,7 +149,6 @@
     "platform.docker.restart_container.title_restarting": "Restarte dockercontainer",
     "platform.docker.restart_container.toast_container_restarted": "Dockercontaineren har startet på nytt",
     "platform.docker.settings.button_restart_required": "Omstart behøves",
-    "platform.docker.settings.message_env_warning": "Endring av disse verdiene tilsidesetter tilsvarende miljøvariabler som du kan ha konfigurert med docker run-kommandoen.",
     "platform.docker.settings.message_image_upgrade_required": "Oppgrader bildet av oznu / homebridge-docker til den nyeste versionen.",
     "platform.docker.settings.title_settings": "innstillinger",
     "platform.docker.settings.toast_container_restart_required": "Container-omstart behøves",

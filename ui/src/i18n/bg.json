@@ -149,7 +149,6 @@
     "platform.docker.restart_container.title_restarting": "Рестартиране на Docker контейнера",
     "platform.docker.restart_container.toast_container_restarted": "Docker контейнера е рестартиран",
     "platform.docker.settings.button_restart_required": "Нужно е рестартиране",
-    "platform.docker.settings.message_env_warning": "Промяната на тези стойности ще отмени съответните променливи на средата, които може да сте задали с командата Docker run.",
     "platform.docker.settings.message_image_upgrade_required": "Моля обновете oznu/homebridge образ за Docker до последната версия.",
     "platform.docker.settings.title_settings": "Настройки",
     "platform.docker.settings.toast_container_restart_required": "Нужно е рестартиране на контейнера",

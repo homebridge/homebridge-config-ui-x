@@ -10,7 +10,6 @@ import { ApiService } from '@/app/core/api.service';
 
 interface EnvInterface {
   platform: 'darwin' | 'win32' | 'linux' | 'freebsd';
-  ableToConfigureSelf: boolean;
   enableAccessories: boolean;
   enableTerminalAccess: boolean;
   homebridgeInstanceName: string;

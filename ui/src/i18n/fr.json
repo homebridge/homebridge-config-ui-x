@@ -149,7 +149,6 @@
     "platform.docker.restart_container.title_restarting": "Redémarrage du container Docker",
     "platform.docker.restart_container.toast_container_restarted": "Container Docker redémarré",
     "platform.docker.settings.button_restart_required": "Redémarrage requis",
-    "platform.docker.settings.message_env_warning": "Modifier ces valeurs surchargera les variables d'environnement correspondantes que vous auriez pu affecter avec la commande docker run.",
     "platform.docker.settings.message_image_upgrade_required": "Merci de mettre à jour l'image docker oznu/homebridge à la dernière version.",
     "platform.docker.settings.title_settings": "Réglages",
     "platform.docker.settings.toast_container_restart_required": "Redémarrage du container requis",

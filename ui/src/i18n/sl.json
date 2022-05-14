@@ -149,7 +149,6 @@
     "platform.docker.restart_container.title_restarting": "Ponovni zagon kontejnerja Docker",
     "platform.docker.restart_container.toast_container_restarted": "Docker Kontainer Ponovno zagnan",
     "platform.docker.settings.button_restart_required": "Potreben je ponovni zagon",
-    "platform.docker.settings.message_env_warning": "Če spremenite te vrednosti, nadomestite ustrezne spremenljivke okolja, ki ste jih morda nastavili z ukazom docker run.",
     "platform.docker.settings.message_image_upgrade_required": "Prosimo, nadgradite sliko dockerja oznu / homebridge na najnovejšo različico.",
     "platform.docker.settings.title_settings": "Nastavitve",
     "platform.docker.settings.toast_container_restart_required": "Potreben je ponovni zagon Kontejnerja",

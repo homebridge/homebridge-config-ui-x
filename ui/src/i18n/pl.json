@@ -149,7 +149,6 @@
     "platform.docker.restart_container.title_restarting": "Ponowne uruchamianie konternera Docker",
     "platform.docker.restart_container.toast_container_restarted": "Kontener Docker został ponownie uruchomiony",
     "platform.docker.settings.button_restart_required": "Wymagane jest ponowne uruchomienie",
-    "platform.docker.settings.message_env_warning": "Zmiana tych wartości spowoduje zastąpienie odpowiednich zmiennych środowiskowych, które można ustawić za pomocą polecenia uruchamiania Dockera.",
     "platform.docker.settings.message_image_upgrade_required": "Zaktualizuj obraz oznu/homebridge do najnowszej wersji.",
     "platform.docker.settings.title_settings": "Ustawienia",
     "platform.docker.settings.toast_container_restart_required": "Wymagane ponowne uruchomienie kontenera",

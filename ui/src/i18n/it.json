@@ -149,7 +149,6 @@
     "platform.docker.restart_container.title_restarting": "Riavvio container Docker",
     "platform.docker.restart_container.toast_container_restarted": "Container Docker riavviato",
     "platform.docker.settings.button_restart_required": "Riavvio richiesto",
-    "platform.docker.settings.message_env_warning": "La modifica di questi valori sovrascriverà le corrispondenti variabili di ambiente che potrebbero essere state impostate nel comando run di Docker",
     "platform.docker.settings.message_image_upgrade_required": "Aggiorna oznu/homebridge docker all'ultima versione.",
     "platform.docker.settings.title_settings": "Impostazioni",
     "platform.docker.settings.toast_container_restart_required": "È richiesto il riavvio del container",

@@ -149,7 +149,6 @@
     "platform.docker.restart_container.title_restarting": "Docker-Container neu starten",
     "platform.docker.restart_container.toast_container_restarted": "Docker-Container wurde neu gestartet",
     "platform.docker.settings.button_restart_required": "Neustart erforderlich",
-    "platform.docker.settings.message_env_warning": "Wenn du diese Werte änderst, werden die entsprechenden Umgebungsvariablen überschrieben, die du möglicherweise mit dem Befehl docker run festgelegt hast.",
     "platform.docker.settings.message_image_upgrade_required": "Bitte aktualisiere das oznu/docker Docker-Image auf die neueste Version.",
     "platform.docker.settings.title_settings": "Einstellungen",
     "platform.docker.settings.toast_container_restart_required": "Container-Neustart erforderlich",

@@ -928,10 +928,10 @@ export class HomebridgeServiceHelper {
     }
     try {
       if (await fs.pathExists('/usr/lib/systemd/system/avahi.service')) {
-        child_process.execSync('systemctl is-active --quiet avahi');
+        child_process.execSync('systemctl is-active --quiet avahi 2> /dev/null');
         return true;
       } else if (await fs.pathExists('/lib/systemd/system/avahi-daemon.service')) {
-        child_process.execSync('systemctl is-active --quiet avahi-daemon');
+        child_process.execSync('systemctl is-active --quiet avahi-daemon 2> /dev/null');
         return true;
       } else {
         return false;

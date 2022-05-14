@@ -149,7 +149,6 @@
     "platform.docker.restart_container.title_restarting": "Docker-container opnieuw starten",
     "platform.docker.restart_container.toast_container_restarted": "Docker-container opnieuw gestart",
     "platform.docker.settings.button_restart_required": "Opnieuw opstarten vereist",
-    "platform.docker.settings.message_env_warning": "Het wijzigen van deze waarden heeft voorrang boven de overeenkomstige omgevingsvariabelen die u mogelijk hebt ingesteld met de opdracht Docker Run.",
     "platform.docker.settings.message_image_upgrade_required": "Upgrade de image van oznu/homebridge docker naar de nieuwste versie.",
     "platform.docker.settings.title_settings": "Instellingen",
     "platform.docker.settings.toast_container_restart_required": "Container Herstart vereist",

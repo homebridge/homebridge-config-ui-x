@@ -88,7 +88,7 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
     }
 
     // check startup script is using the correct hashbang
-    if (this.startupScript.split('\n')[0].trim() !== '#!/bin/sh') {
+    if (!['#!/bin/sh', '#!/bin/bash'].includes(this.startupScript.split('\n')[0].trim())) {
       this.$toastr.error(
         this.translate.instant('platform.docker.startup_script.toast_script_must_use_hashbang'),
         this.translate.instant('platform.docker.startup_script.toast_title_script_error'),

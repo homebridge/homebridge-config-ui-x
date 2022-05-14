@@ -50,17 +50,15 @@ export class ConfigService {
   public runningInPackageMode = Boolean(process.env.HOMEBRIDGE_APT_PACKAGE === '1');
   public runningInLinux = (!this.runningInDocker && !this.runningInSynologyPackage && !this.runningInPackageMode && os.platform() === 'linux');
   public canShutdownRestartHost = (this.runningInLinux || process.env.UIX_CAN_SHUTDOWN_RESTART_HOST === '1');
-  public ableToConfigureSelf = (!this.runningInDocker || semver.satisfies(process.env.CONFIG_UI_VERSION, '>=3.5.5', { includePrerelease: true }));
   public enableTerminalAccess = this.runningInDocker || this.runningInSynologyPackage || this.runningInPackageMode || Boolean(process.env.HOMEBRIDGE_CONFIG_UI_TERMINAL === '1');
   public usePnpm = (process.env.UIX_USE_PNPM === '1');
 
   // check this async
   public runningOnRaspberryPi = false;
 
-  // docker paths
+  // docker settings
   public startupScript = path.resolve(this.storagePath, 'startup.sh');
-  public dockerEnvFile = path.resolve(this.storagePath, '.docker.env');
-  public dockerOfflineUpdate = this.runningInDocker && semver.satisfies(process.env.CONFIG_UI_VERSION, '>=4.6.2', { includePrerelease: true });
+  public dockerOfflineUpdate = this.runningInDocker && semver.satisfies(process.env.CONFIG_UI_VERSION, '>=4.6.2 <=4.44.1', { includePrerelease: true });
 
   // package.json
   public package = fs.readJsonSync(path.resolve(process.env.UIX_BASE_PATH, 'package.json'));
@@ -190,7 +188,6 @@ export class ConfigService {
   public uiSettings() {
     return {
       env: {
-        ableToConfigureSelf: this.ableToConfigureSelf,
         enableAccessories: this.homebridgeInsecureMode,
         enableTerminalAccess: this.enableTerminalAccess,
         homebridgeVersion: this.homebridgeVersion || null,

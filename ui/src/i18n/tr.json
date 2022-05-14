@@ -149,7 +149,6 @@
     "platform.docker.restart_container.title_restarting": "Docker kapsayıcısı yeniden başlatılıyor",
     "platform.docker.restart_container.toast_container_restarted": "Docker kapsayıcısı yeniden başlatıldı",
     "platform.docker.settings.button_restart_required": "Kpasayıcının yeniden başlatılması gerkeli",
-    "platform.docker.settings.message_env_warning": "Bu değerleri değiştirmek, docker run komutuyla ayarlamış olabileceğiniz ilgili ortam değişkenlerini geçersiz kılar.",
     "platform.docker.settings.message_image_upgrade_required": "Lütfen oznu/homebridge Docker imajını en son sürüme yükseltin.",
     "platform.docker.settings.title_settings": "Ayarlar",
     "platform.docker.settings.toast_container_restart_required": "Kapsayıcıyı yeniden başlatmanız gerekli",

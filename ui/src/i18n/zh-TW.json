@@ -149,7 +149,6 @@
     "platform.docker.restart_container.title_restarting": "正在重新啟動 Docker 容器",
     "platform.docker.restart_container.toast_container_restarted": "Docker 容器已重新啟動",
     "platform.docker.settings.button_restart_required": "需要重新啟動",
-    "platform.docker.settings.message_env_warning": "變更此些設定值可能會覆寫目前所設定的 docker run 命令相應環境變數。",
     "platform.docker.settings.message_image_upgrade_required": "請將 oznu/homebridge Docker 映像檔升級至最新版本。",
     "platform.docker.settings.title_settings": "設定",
     "platform.docker.settings.toast_container_restart_required": "需要重新啟動容器",
