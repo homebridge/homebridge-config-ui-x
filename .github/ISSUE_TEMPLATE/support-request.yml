@@ -81,6 +81,9 @@ body:
         - macOS
         - Windows 10
         - Windows 11
+        - Synology DSM
+        - QNAP
+        - Unraid
         - Other (specify in description)
       description: |
         If your operating system is not listed, please provide it in the support description.
