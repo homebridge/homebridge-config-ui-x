@@ -1,0 +1,23 @@
+name: Feature Request
+description: Suggest an idea for this project
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to contribute to this project!
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: Feature Description
+      description: |
+        Please provide an overview of the what feature you'd like to see.
+        
+        * What is happening?
+        * What you expect to happen?
+        * What problems would this new feature solve?
+      placeholder: |
+        Tip: You can attach images or files by clicking this area to highlight it and then dragging files in.
+    validations:
+      required: true
+ 
