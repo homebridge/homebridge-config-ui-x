@@ -35,7 +35,7 @@ body:
         Please provide the relevant logs showing the error that occurred.
 
         * Keep this short. Do not paste in hundereds of lines repeating the same error.
-        * Show the logs from the service being restarted until the error is occurs.
+        * Show the logs from the service being restarted until the error occurs.
     validations:
       required: false
   - type: textarea
