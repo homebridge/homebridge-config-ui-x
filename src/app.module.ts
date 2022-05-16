@@ -16,6 +16,7 @@ import { ServerModule } from './modules/server/server.module';
 import { PlatformToolsModule } from './modules/platform-tools/platform-tools.module';
 import { BackupModule } from './modules/backup/backup.module';
 import { SetupWizardModule } from './modules/setup-wizard/setup-wizard.module';
+import { ChildBridgesModule } from './modules/child-bridges/child-bridges.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { SetupWizardModule } from './modules/setup-wizard/setup-wizard.module';
     AccessoriesModule,
     ConfigEditorModule,
     PlatformToolsModule,
+    ChildBridgesModule,
     BackupModule,
     LogModule,
     SetupWizardModule,

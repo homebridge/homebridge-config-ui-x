@@ -1,7 +1,9 @@
 import { Controller, UseGuards, Get } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+
 import { StatusService } from './status.service';
+import { ChildBridgesService } from '../child-bridges/child-bridges.service';
 
 @ApiTags('Server Status')
 @ApiBearerAuth()
@@ -10,6 +12,7 @@ import { StatusService } from './status.service';
 export class StatusController {
   constructor(
     private readonly statusService: StatusService,
+    private readonly childBridgesService: ChildBridgesService,
   ) { }
 
   @ApiOperation({ summary: 'Return the current CPU load, load history and temperature (if available).' })
@@ -53,7 +56,7 @@ export class StatusController {
   })
   @Get('/homebridge/child-bridges')
   async getChildBridges() {
-    return this.statusService.getChildBridges();
+    return this.childBridgesService.getChildBridges();
   }
 
   @ApiOperation({ summary: 'Return the current Homebridge version / package information.' })

@@ -330,40 +330,6 @@ export class StatusService {
   }
 
   /**
-   * Return an array of child bridges
-   */
-  public async getChildBridges() {
-    if (!this.configService.serviceMode) {
-      throw new BadRequestException('This command is only available in service mode');
-    }
-
-    return this.homebridgeIpcService.getChildBridgeMetadata();
-  }
-
-  /**
- * Socket Handler - Per Client
- * Start watching for child bridge status events
- * @param client
- */
-  public async watchChildBridgeStatus(client) {
-    const listener = (data) => {
-      client.emit('child-bridge-status-update', data);
-    };
-
-    this.homebridgeIpcService.on('childBridgeStatusUpdate', listener);
-
-    // cleanup on disconnect
-    const onEnd = () => {
-      client.removeAllListeners('end');
-      client.removeAllListeners('disconnect');
-      this.homebridgeIpcService.removeListener('childBridgeStatusUpdate', listener);
-    };
-
-    client.on('end', onEnd.bind(this));
-    client.on('disconnect', onEnd.bind(this));
-  }
-
-  /**
    * Get / Cache the default interface
    */
   private async getDefaultInterface(): Promise<si.Systeminformation.NetworkInterfacesData> {

@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { take } from 'rxjs/operators';
 
 import { ApiService } from '@/app/core/api.service';
+import { WsService } from '@/app/core/ws.service';
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 
 @Component({
@@ -14,7 +15,10 @@ import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.s
   styleUrls: ['./plugins.component.scss'],
 })
 export class PluginsComponent implements OnInit, OnDestroy {
+  private io = this.$ws.connectToNamespace('child-bridges');
+
   public installedPlugins: any = [];
+  public childBridges = [];
   public form: FormGroup;
 
   public loading = true;
@@ -23,6 +27,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
 
   constructor(
     private $api: ApiService,
+    private $ws: WsService,
     private $plugin: ManagePluginsService,
     private $router: Router,
     private $route: ActivatedRoute,
@@ -31,6 +36,20 @@ export class PluginsComponent implements OnInit, OnDestroy {
   ) { }
 
   async ngOnInit() {
+    this.io.connected.subscribe(async () => {
+      this.getChildBridgeMetadata();
+      this.io.socket.emit('monitor-child-bridge-status');
+    });
+
+    this.io.socket.on('child-bridge-status-update', (data) => {
+      const existingBridge = this.childBridges.find(x => x.username === data.username);
+      if (existingBridge) {
+        Object.assign(existingBridge, data);
+      } else {
+        this.childBridges.push(data);
+      }
+    });
+
     this.navigationSubscription = this.$router.events.subscribe((e: any) => {
       // If it is a NavigationEnd event re-initalise the component
       if (e instanceof NavigationEnd) {
@@ -104,10 +123,21 @@ export class PluginsComponent implements OnInit, OnDestroy {
     }
   }
 
+  getChildBridgeMetadata() {
+    this.io.request('get-homebridge-child-bridge-status').subscribe((data) => {
+      this.childBridges = data;
+    });
+  }
+
+  getPluginChildBridges(plugin) {
+    return this.childBridges.filter(x => x.plugin === plugin.name);
+  }
+
   ngOnDestroy() {
     if (this.navigationSubscription) {
       this.navigationSubscription.unsubscribe();
     }
+    this.io.end();
   }
 
 }

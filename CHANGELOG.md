@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. This projec
 
 ## NEXT
 
+### Notable Changes
+
+* **Plugins:** Child bridge status and controls now appear on the plugin page
+
 ### Other changes
 
 * **Plugins:** Prevent closing the modal when a plugin install or update is in progress

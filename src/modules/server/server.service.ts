@@ -273,29 +273,6 @@ export class ServerService {
   }
 
   /**
-   * Restart a single child bridge
-   */
-  public async restartChildBridge(deviceId: string) {
-    if (!this.configService.serviceMode) {
-      this.logger.error('The restart child bridge command is only available in service mode');
-      throw new BadRequestException('This command is only available in service mode');
-    }
-
-    if (deviceId.length === 12) {
-      deviceId = deviceId.match(/.{1,2}/g).join(':');
-    }
-
-    await this.homebridgeIpcService.restartChildBridge(deviceId);
-
-    // reset the pool of discovered homebridge instances
-    this.accessoriesService.resetInstancePool();
-
-    return {
-      ok: true
-    };
-  }
-
-  /**
    * Returns a QR Code SVG
    */
   public async generateQrCode() {

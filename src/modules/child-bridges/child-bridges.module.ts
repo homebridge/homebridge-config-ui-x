@@ -1,30 +1,27 @@
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 
-import { ConfigModule } from '../../core/config/config.module';
 import { LoggerModule } from '../../core/logger/logger.module';
+import { ConfigModule } from '../../core/config/config.module';
 import { HomebridgeIpcModule } from '../../core/homebridge-ipc/homebridge-ipc.module';
-import { ConfigEditorModule } from '../config-editor/config-editor.module';
-import { ChildBridgesModule } from '../child-bridges/child-bridges.module';
 import { AccessoriesModule } from '../accessories/accessories.module';
-import { ServerService } from './server.service';
-import { ServerController } from './server.controller';
+import { ChildBridgesGateway } from './child-bridges.gateway';
+import { ChildBridgesService } from './child-bridges.service';
 
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
-    ConfigModule,
     LoggerModule,
-    ConfigEditorModule,
+    ConfigModule,
     AccessoriesModule,
-    ChildBridgesModule,
     HomebridgeIpcModule,
   ],
   providers: [
-    ServerService,
+    ChildBridgesService,
+    ChildBridgesGateway,
   ],
-  controllers: [
-    ServerController,
-  ],
+  exports: [
+    ChildBridgesService,
+  ]
 })
-export class ServerModule { }
+export class ChildBridgesModule { }
