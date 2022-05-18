@@ -62,7 +62,8 @@
 
     <div class="ml-auto">
       <ng-container *ngIf="hasChildBridges">
-        <a class="card-link grey-text" target="_blank" rel="noopener noreferrer" aria-label="Plugin homepage"
+        <a href="javascript:void(0);" class="card-link grey-text" rel="noopener noreferrer"
+          aria-label="Connect to HomeKit"
           *ngIf="!childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok'"
           ngbTooltip="{{'child_bridge.label_bridge_connect_to_homekit' | translate}}" placement="top" container="body"
           openDelay="150" (click)="$plugin.bridgeSettings(plugin)">
@@ -75,7 +76,7 @@
           'red-text': childBridgeStatus === 'down'
         }"></i>
 
-        <a class="card-link grey-text ml-3" target="_blank" aria-label="Restart Child Bridges"
+        <a href="javascript:void(0);" class="card-link grey-text ml-3" aria-label="Restart Child Bridges"
           *ngIf="!childBridgeRestartInProgress && !plugin.disabled"
           ngbTooltip="{{'child_bridge.label_bridge_restart_child_bridges' | translate}}" placement="top"
           container="body" openDelay="150" (click)="doChildBridgeAction('restart')">

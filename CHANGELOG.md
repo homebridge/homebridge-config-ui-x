@@ -6,7 +6,16 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Notable Changes
 
-* **Plugins:** Child bridge status and controls now appear on the plugin page
+* **Plugins:** Child bridge status and controls now appear on the plugin tile
+  * If a plugin has multiple child bridges, the status indicator shows the least favourable status
+  * Clicking the restart button on the plugin tile will restart all the plugin's child bridges
+
+The following features have been added, but will not be active until the **upcoming** release of Homebridge v1.5.0 is installed:
+
+* **Plugins:** If a child bridge is not paired with HomeKit, a pairing icon will show on the plugin tile
+* **Plugins:** Add ability to stop / start a plugin's child bridges
+* **Plugins:** When disabling a plugin, any of it's child bridges will be stopped
+* **Plugins:** When enabling a plugin, any of it's child bridges already registered in the current Homebridge process will be re-started
 
 ### Other changes
 
