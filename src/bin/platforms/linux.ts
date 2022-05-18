@@ -432,8 +432,9 @@ export class LinuxInstaller {
    * Check the current user is NOT root
    */
   private checkIsNotRoot() {
-    if (process.getuid() === 0) {
+    if (process.getuid() === 0 && !this.hbService.allowRunRoot) {
       this.hbService.logger('ERROR: This command must not be executed as root or with sudo', 'fail');
+      this.hbService.logger('ERROR: If you know what you are doing; you can override this by adding --allow-root', 'fail');
       process.exit(1);
     }
   }

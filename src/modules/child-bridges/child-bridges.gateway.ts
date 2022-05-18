@@ -1,10 +1,10 @@
 import { UseGuards } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets';
 
-import { WsAdminGuard } from '../../core/auth/guards/ws-admin-guard';
+import { WsGuard } from '../../core/auth/guards/ws.guard';
 import { ChildBridgesService } from './child-bridges.service';
 
-@UseGuards(WsAdminGuard)
+@UseGuards(WsGuard)
 @WebSocketGateway({
   namespace: '/child-bridges', allowEIO3: true, cors: {
     origin: ['http://localhost:8080', 'http://localhost:4200'],
