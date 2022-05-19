@@ -63,55 +63,62 @@ export class BackupService {
 
     this.logger.log(`Creating temporary backup archive at ${backupPath}`);
 
-    // create a copy of the storage directory in the temp path
-    await fs.copy(this.configService.storagePath, path.resolve(backupDir, 'storage'), {
-      filter: (filePath) => (![
-        'instance-backups',   // scheduled backups
-        'nssm.exe',           // windows hb-service
-        'homebridge.log',     // hb-service
-        'logs',               // docker
-        'node_modules',       // docker
-        'startup.sh',         // docker
-        '.docker.env',        // docker
-        'pnpm-lock.yaml',     // pnpm
-        'package.json',       // npm
-        'package-lock.json',  // npm
-        'FFmpeg',             // ffmpeg
-        'fdk-aac',            // ffmpeg
-        '.git',               // git
-        'recordings',         // homebridge-camera-ui recordings path
-        '.homebridge.sock',   // homebridge ipc socket
-      ].includes(path.basename(filePath))), // list of files not to include in the archive
-    });
+    try {
+      // create a copy of the storage directory in the temp path
+      await fs.copy(this.configService.storagePath, path.resolve(backupDir, 'storage'), {
+        filter: (filePath) => (![
+          'instance-backups',   // scheduled backups
+          'nssm.exe',           // windows hb-service
+          'homebridge.log',     // hb-service
+          'logs',               // docker
+          'node_modules',       // docker
+          'startup.sh',         // docker
+          '.docker.env',        // docker
+          'pnpm-lock.yaml',     // pnpm
+          'package.json',       // npm
+          'package-lock.json',  // npm
+          'FFmpeg',             // ffmpeg
+          'fdk-aac',            // ffmpeg
+          '.git',               // git
+          'recordings',         // homebridge-camera-ui recordings path
+          '.homebridge.sock',   // homebridge ipc socket
+        ].includes(path.basename(filePath))), // list of files not to include in the archive
+      });
 
-    // get full list of installed plugins
-    const installedPlugins = await this.pluginsService.getInstalledPlugins();
-    await fs.writeJSON(path.resolve(backupDir, 'plugins.json'), installedPlugins);
+      // get full list of installed plugins
+      const installedPlugins = await this.pluginsService.getInstalledPlugins();
+      await fs.writeJSON(path.resolve(backupDir, 'plugins.json'), installedPlugins);
 
-    // create an info.json
-    await fs.writeJson(path.resolve(backupDir, 'info.json'), {
-      timestamp: new Date().toISOString(),
-      platform: os.platform(),
-      uix: this.configService.package.version,
-      node: process.version,
-    });
+      // create an info.json
+      await fs.writeJson(path.resolve(backupDir, 'info.json'), {
+        timestamp: new Date().toISOString(),
+        platform: os.platform(),
+        uix: this.configService.package.version,
+        node: process.version,
+      });
 
-    // create a tarball of storage and plugins list
-    await tar.c({
-      portable: true,
-      gzip: true,
-      file: backupPath,
-      cwd: backupDir,
-      filter: (filePath, stat) => {
-        if (stat.size > 1e+7) {
-          this.logger.warn(`Backup is skipping "${filePath}" because it is larger than 10MB.`);
-          return false;
-        }
-        return true;
-      },
-    }, [
-      'storage', 'plugins.json', 'info.json',
-    ]);
+      // create a tarball of storage and plugins list
+      await tar.c({
+        portable: true,
+        gzip: true,
+        file: backupPath,
+        cwd: backupDir,
+        filter: (filePath, stat) => {
+          if (stat.size > 1e+7) {
+            this.logger.warn(`Backup is skipping "${filePath}" because it is larger than 10MB.`);
+            return false;
+          }
+          return true;
+        },
+      }, [
+        'storage', 'plugins.json', 'info.json',
+      ]);
+
+    } catch (e) {
+      this.logger.log(`Backup failed, removing ${backupDir}`);
+      await fs.remove(path.resolve(backupDir));
+      throw e;
+    }
 
     return {
       instanceId,

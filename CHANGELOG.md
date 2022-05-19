@@ -1,12 +1,8 @@
-# Change Log
-
-All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
-
 ## NEXT
 
 ### Notable Changes
 
-* **Plugins:** Child bridge status and controls now appear on the plugin tile
+* **Plugins:** [Child bridge](https://github.com/homebridge/homebridge/wiki/Child-Bridges) status and controls now appear on the plugin tile
   * If a plugin has multiple child bridges, the status indicator shows the least favourable status
   * Clicking the restart button on the plugin tile will restart all the plugin's child bridges
 
@@ -22,6 +18,10 @@ The following features have been added, but will not be active until the **upcom
 * **Plugins:** Prevent closing the modal when a plugin install or update is in progress
 * **i18n:** Improvements to Czech language translations ([#1343](https://github.com/oznu/homebridge-config-ui-x/pull/1343))
 * **i18n:** Improvements to German language translations ([#1345](https://github.com/oznu/homebridge-config-ui-x/pull/1345))
+
+### Bug Fixes
+
+* **Backups:** If a backup fails, the temporary directory it created is removed
 
 ## 4.44.1 (2022-05-14)
 
