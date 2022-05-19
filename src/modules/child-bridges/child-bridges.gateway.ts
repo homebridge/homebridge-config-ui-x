@@ -32,8 +32,6 @@ export class ChildBridgesGateway {
 
   @SubscribeMessage('restart-child-bridge')
   async restartChildBridge(client, payload) {
-    console.log('restart-child-bridge', payload);
-
     try {
       return await this.childBridgesService.restartChildBridge(payload);
     } catch (e) {

@@ -53,6 +53,12 @@ export class ChildBridgesService {
     client.on('disconnect', onEnd.bind(this));
   }
 
+  /**
+   * Start / stop / restart a child bridge
+   * @param event 
+   * @param deviceId 
+   * @returns 
+   */
   public stopStartRestartChildBridge(event: 'startChildBridge' | 'stopChildBridge' | 'restartChildBridge', deviceId: string) {
     if (['startChildBridge', 'stopChildBridge'].includes(event)) {
       if (!semver.satisfies(this.configService.homebridgeVersion, '>=1.5.0-beta.2', { includePrerelease: true })) {
