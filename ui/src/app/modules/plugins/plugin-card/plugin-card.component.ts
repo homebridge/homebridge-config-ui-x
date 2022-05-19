@@ -59,7 +59,7 @@ export class PluginCardComponent implements OnInit {
 
     // check if the homebridge version supports stopping / starting child bridges
     this.canStopStartChildBridges = this.$settings.env.homebridgeVersion ?
-      gt(this.$settings.env.homebridgeVersion, '1.5.0-beta.0', { includePrerelease: true }) : false;
+      gt(this.$settings.env.homebridgeVersion, '1.5.0-beta.1', { includePrerelease: true }) : false;
   }
 
   @Input() set childBridges(childBridges) {
@@ -154,7 +154,7 @@ export class PluginCardComponent implements OnInit {
       }
     } catch (err) {
       this.$toastr.error(
-        `Failed to ${action} bridges: ` + err.error?.message,
+        `Failed to ${action} bridges: ` + err?.message,
         this.$translate.instant('toast.title_error'),
       );
       this.childBridgeRestartInProgress = false;

@@ -20,6 +20,8 @@ The following features have been added, but will not be active until the **upcom
 ### Other changes
 
 * **Plugins:** Prevent closing the modal when a plugin install or update is in progress
+* **i18n:** Improvements to Czech language translations ([#1343](https://github.com/oznu/homebridge-config-ui-x/pull/1343))
+* **i18n:** Improvements to German language translations ([#1345](https://github.com/oznu/homebridge-config-ui-x/pull/1345))
 
 ## 4.44.1 (2022-05-14)
 

@@ -55,7 +55,7 @@ export class ChildBridgesService {
 
   public stopStartRestartChildBridge(event: 'startChildBridge' | 'stopChildBridge' | 'restartChildBridge', deviceId: string) {
     if (['startChildBridge', 'stopChildBridge'].includes(event)) {
-      if (!semver.satisfies(this.configService.homebridgeVersion, '>=1.5.0-beta.0', { includePrerelease: true })) {
+      if (!semver.satisfies(this.configService.homebridgeVersion, '>=1.5.0-beta.2', { includePrerelease: true })) {
         this.logger.error('The stop child bridge requires Homebridge v1.5.0 or later');
         throw new BadRequestException('This command is only available for Homebridge v1.5.0 or later');
       }
