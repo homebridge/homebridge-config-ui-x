@@ -4,7 +4,9 @@ import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { take } from 'rxjs/operators';
+import { gt } from 'semver';
 
+import { SettingsService } from '@/app/core/settings.service';
 import { ApiService } from '@/app/core/api.service';
 import { WsService } from '@/app/core/ws.service';
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
@@ -26,6 +28,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
   private navigationSubscription;
 
   constructor(
+    private $settings: SettingsService,
     private $api: ApiService,
     private $ws: WsService,
     private $plugin: ManagePluginsService,
@@ -83,7 +86,11 @@ export class PluginsComponent implements OnInit, OnDestroy {
 
     this.$route.queryParams.pipe(take(1)).subscribe(async (params) => {
       if (params.installed && this.installedPlugins.find(x => x.name === params.installed)) {
-        this.$plugin.settings(this.installedPlugins.find(x => x.name === params.installed))
+        const plugin = this.installedPlugins.find(x => x.name === params.installed);
+        this.$plugin.settings(plugin)
+          .then((schema?) => {
+            this.recommendChildBridge(plugin, schema);
+          })
           .finally(() => {
             this.$router.navigate([], {
               queryParams: {},
@@ -120,6 +127,18 @@ export class PluginsComponent implements OnInit, OnDestroy {
       this.loadInstalledPlugins();
     } else {
       this.search();
+    }
+  }
+
+  recommendChildBridge(plugin, schema) {
+    if (
+      this.$settings.env.recommendChildBridges &&
+      this.$settings.env.serviceMode &&
+      gt(this.$settings.env.homebridgeVersion, '1.5.0-beta.1', { includePrerelease: true }) &&
+      schema &&
+      schema.pluginType === 'platform'
+    ) {
+      this.$plugin.bridgeSettings(plugin);
     }
   }
 

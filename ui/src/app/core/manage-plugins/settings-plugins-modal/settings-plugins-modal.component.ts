@@ -90,7 +90,7 @@ export class SettingsPluginsModalComponent implements OnInit {
           this.translate.instant('plugins.settings.toast_plugin_config_saved'),
         );
 
-        this.activeModal.close();
+        this.activeModal.close(configBlocks.length ? this.schema : null);
         this.$notification.configUpdated.next();
 
         // reload app settings if the config was changed for Homebridge Config UI X

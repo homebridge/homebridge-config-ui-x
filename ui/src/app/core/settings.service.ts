@@ -30,6 +30,7 @@ interface EnvInterface {
   instanceId: string;
   customWallpaperHash: string;
   setupWizardComplete: boolean;
+  recommendChildBridges: boolean;
 }
 
 interface AppSettingsInterface {

@@ -43,7 +43,7 @@ export class ConfigService {
   public homebridgeVersion: string;
 
   // server env
-  public minimumNodeVersion = '10.17.0';
+  public minimumNodeVersion = '12.13.0';
   public serviceMode = (process.env.UIX_SERVICE_MODE === '1');
   public runningInDocker = Boolean(process.env.HOMEBRIDGE_CONFIG_UI === '1');
   public runningInSynologyPackage = Boolean(process.env.HOMEBRIDGE_SYNOLOGY_PACKAGE === '1');
@@ -52,6 +52,9 @@ export class ConfigService {
   public canShutdownRestartHost = (this.runningInLinux || process.env.UIX_CAN_SHUTDOWN_RESTART_HOST === '1');
   public enableTerminalAccess = this.runningInDocker || this.runningInSynologyPackage || this.runningInPackageMode || Boolean(process.env.HOMEBRIDGE_CONFIG_UI_TERMINAL === '1');
   public usePnpm = (process.env.UIX_USE_PNPM === '1');
+
+  // recommend child bridges on platforms with > 2GB ram
+  public recommendChildBridges = (os.totalmem() > 2e+9);
 
   // check this async
   public runningOnRaspberryPi = false;
@@ -209,7 +212,7 @@ export class ConfigService {
         instanceId: this.instanceId,
         customWallpaperHash: this.customWallpaperHash,
         setupWizardComplete: this.setupWizardComplete,
-
+        recommendChildBridges: this.recommendChildBridges,
       },
       formAuth: Boolean(this.ui.auth !== 'none'),
       theme: this.ui.theme || 'auto',
