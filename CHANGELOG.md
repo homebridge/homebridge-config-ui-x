@@ -1,4 +1,4 @@
-## NEXT
+## 4.45.0 (2022-05-27)
 
 ### Notable Changes
 
