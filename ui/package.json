@@ -24,7 +24,7 @@
     "@ng-bootstrap/ng-bootstrap": "^11.0.1",
     "@ngx-translate/core": "^14.0.0",
     "@ngx-translate/http-loader": "^7.0.0",
-    "@oznu/hap-client": "^1.8.1",
+    "@oznu/hap-client": "^1.9.0",
     "@oznu/ngx-bs4-jsonform": "^7.3.7",
     "@popperjs/core": "^2.11.5",
     "angular-gridster2": "^13.2.0",

@@ -1,4 +1,10 @@
-## 4.45.0 (2022-05-27)
+## NEXT
+
+### Bug Fixes
+
+* **Backups:** Fixed a bug preventing the storage directory from being backed up when it was a symbolic link
+
+## 4.45.0 (2022-05-21)
 
 ### Notable Changes
 

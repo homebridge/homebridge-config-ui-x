@@ -64,8 +64,11 @@ export class BackupService {
     this.logger.log(`Creating temporary backup archive at ${backupPath}`);
 
     try {
+      // resolve the real path of the storage directory (in case it's a symbolic link)
+      const storagePath = await fs.realpath(this.configService.storagePath);
+
       // create a copy of the storage directory in the temp path
-      await fs.copy(this.configService.storagePath, path.resolve(backupDir, 'storage'), {
+      await fs.copy(storagePath, path.resolve(backupDir, 'storage'), {
         filter: (filePath) => (![
           'instance-backups',   // scheduled backups
           'nssm.exe',           // windows hb-service
