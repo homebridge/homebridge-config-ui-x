@@ -1249,11 +1249,11 @@ export class PluginsService {
       term.on('exit', (code) => {
         if (code === 0) {
           clearTimeout(timeoutTimer);
-          client.emit('stdout', color.green('\n\rCommand succeeded!.\n\r'));
+          client.emit('stdout', color.green('\n\rOperation succeeded!.\n\r'));
           resolve(null);
         } else {
           clearTimeout(timeoutTimer);
-          reject('Command failed. Please review log for details.');
+          reject('Operation failed. Please review log for details.');
         }
       });
 

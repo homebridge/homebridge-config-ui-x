@@ -3,6 +3,7 @@
 ### Bug Fixes
 
 * **Backups:** Fixed a bug preventing the storage directory from being backed up when it was a symbolic link
+* **Plugins:** Allow the modal to be closed when a plugin install or upgrade fails
 
 ## 4.45.0 (2022-05-21)
 

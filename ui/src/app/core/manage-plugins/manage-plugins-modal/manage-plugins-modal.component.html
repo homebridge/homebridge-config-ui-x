@@ -43,7 +43,7 @@ hb-service start</pre>
     <h5>{{ release.name }}</h5>
     <markdown hrefTargetBlank class="plugin-md" [data]="release.changelog"></markdown>
   </div>
-  <div class="modal-footer" *ngIf="!onlineUpdateOk || actionComplete || showReleaseNotes">
+  <div class="modal-footer" *ngIf="!onlineUpdateOk || actionComplete || showReleaseNotes || actionFailed">
     <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')"
       [translate]="'form.button_close'">Close</button>
     <button *ngIf="onlineUpdateOk && showReleaseNotes" type="button" class="btn btn-primary" (click)="update()"
