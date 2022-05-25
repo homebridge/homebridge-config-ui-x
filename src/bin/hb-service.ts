@@ -807,7 +807,7 @@ export class HomebridgeServiceHelper {
    * Creates the default config.json
    */
   public async createDefaultConfig() {
-    await fs.outputJson(process.env.UIX_CONFIG_PATH, {
+    await fs.writeJson(process.env.UIX_CONFIG_PATH, {
       bridge: await this.generateBridgeConfig(),
       accessories: [],
       platforms: [

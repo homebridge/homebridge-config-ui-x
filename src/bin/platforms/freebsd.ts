@@ -19,7 +19,7 @@ export class FreeBSDInstaller {
   private get rcServicePath() {
     return path.resolve('/usr/local/etc/rc.d', this.rcServiceName);
   }
-  
+
   /**
    * Installs the rc service
    */
@@ -27,11 +27,11 @@ export class FreeBSDInstaller {
     this.checkForRoot();
     await this.checkUser();
     this.setupSudo();
-    
+
     await this.hbService.portCheck();
     await this.hbService.storagePathCheck();
     await this.hbService.configCheck();
-  
+
     try {
       await this.createRCService();
       await this.enableService();
@@ -49,8 +49,8 @@ export class FreeBSDInstaller {
   public async uninstall() {
     this.checkForRoot();
     await this.stop();
-  
-  // try and disable the service
+
+    // try and disable the service
     await this.disableService();
 
     try {
@@ -116,12 +116,12 @@ export class FreeBSDInstaller {
       this.checkForRoot();
       const npmGlobalPath = child_process.execSync('/bin/echo -n "$(npm --no-update-notifier -g prefix)/lib/node_modules"').toString('utf8');
       const targetNodeVersion = child_process.execSync('node -v').toString('utf8').trim();
-  
+
       child_process.execSync('npm rebuild --unsafe-perm', {
         cwd: process.env.UIX_BASE_PATH,
         stdio: 'inherit',
       });
-  
+
       if (all === true) {
         // rebuild all modules
         try {
@@ -133,7 +133,7 @@ export class FreeBSDInstaller {
           this.hbService.logger('Could not rebuild all modules - check Homebridge logs.', 'warn');
         }
       }
-  
+
       this.hbService.logger(`Rebuilt modules in ${process.env.UIX_BASE_PATH} for Node.js ${targetNodeVersion}.`, 'succeed');
     } catch (e) {
       console.error(e.toString());
@@ -187,12 +187,12 @@ export class FreeBSDInstaller {
    */
   private async disableService() {
     try {
-      child_process.execSync(`sysrc ${this.rcServiceName}_enable="˜NO" 2> /dev/null`);
+      child_process.execSync(`sysrc ${this.rcServiceName}_enable="NO" 2> /dev/null`);
     } catch (e) {
       this.hbService.logger(`WARNING: failed to run "sysrc ${this.rcServiceName}_enable=\"NO\"`, 'warn');
     }
   }
-  
+
   /**
    * Check the command is being run as root and we can detect the user
    */
@@ -202,7 +202,7 @@ export class FreeBSDInstaller {
       this.hbService.logger(`EXAMPLE: sudo hb-service ${this.hbService.action}`, 'fail');
       process.exit(1);
     }
-    if (!process.env.SUDO_USER && !this.hbService.asUser) {
+    if (this.hbService.action === 'install' && !process.env.SUDO_USER && !this.hbService.asUser) {
       this.hbService.logger('ERROR: Could not detect user. Pass in the user you want to run Homebridge as using the --user flag eg.', 'fail');
       this.hbService.logger(`EXAMPLE: sudo hb-service ${this.hbService.action} --user your-user`, 'fail');
       process.exit(1);
@@ -223,7 +223,6 @@ export class FreeBSDInstaller {
     }
   }
 
-  // TODO: shutdown doesn't exist in jails. Require jailutils, sysctl security.jail.jailed to check, jkill to restart
   /**
    * Allows the homebridge user to shutdown and restart the server from the UI
    * There is no need for full sudo access when running using hb-service
@@ -231,15 +230,14 @@ export class FreeBSDInstaller {
   private setupSudo() {
     try {
       const npmPath = child_process.execSync('which npm').toString('utf8').trim();
-      const shutdownPath = child_process.execSync('which shutdown').toString('utf8').trim();
-      const sudoersEntry = `${this.hbService.asUser}    ALL=(ALL) NOPASSWD:SETENV: ${shutdownPath}, ${npmPath}, /usr/local/bin/npm, /usr/sbin/service, /usr/bin/tail`;
-    
+      const sudoersEntry = `${this.hbService.asUser}    ALL=(ALL) NOPASSWD:SETENV: ${npmPath}, /usr/local/bin/npm`;
+
       // check if the sudoers file already contains the entry
       const sudoers = fs.readFileSync('/usr/local/etc/sudoers', 'utf-8');
       if (sudoers.includes(sudoersEntry)) {
         return;
       }
-    
+
       // grant the user restricted sudo privileges to /sbin/shutdown
       child_process.execSync(`echo '${sudoersEntry}' | sudo EDITOR='tee -a' visudo`);
     } catch (e) {
@@ -252,14 +250,13 @@ export class FreeBSDInstaller {
    */
   public async updateNodejs(job: { target: string; rebuild: boolean }) {
     this.hbService.logger('Update Node.js using pkg manually.', 'fail');
-      process.exit(1);
+    process.exit(1);
   }
 
   /**
    * Create the rc service script
    */
   private async createRCService() {
-    const nodePath = child_process.execSync('which node').toString('utf8').trim();
     const rcFileContents = [
       '#!/bin/sh',
       '#',
@@ -284,28 +281,27 @@ export class FreeBSDInstaller {
       ': ${' + this.rcServiceName + '_priority:="debug"}',
       ': ${' + this.rcServiceName + '_storage_path:="' + this.hbService.storagePath + '"}',
       '',
-      'command="/usr/local/bin/${name}"',
-      'procname="' + nodePath + '"',
-      'home="$(eval echo ~${' + this.rcServiceName + '_user})"',
+      'export HOME="$(eval echo ~${homebridge_user})"',
+      'export PATH=/usr/local/bin:${PATH}',
+      'export HOMEBRIDGE_CONFIG_UI_TERMINAL=1',
+      'export UIX_STORAGE_PATH="${homebridge_storage_path}"',
       '',
       'pidfile="/var/run/${name}.pid"',
+      'command="/usr/sbin/daemon"',
+      'procname="daemon"',
+      'command_args=" -c -f -R 3 -P ${pidfile} ' + this.hbService.selfPath + ' run -U ${homebridge_storage_path}"',
+      'start_precmd="homebridge_precmd"',
       '',
-      'start_cmd="${name}_start"',
-      '',
-      this.rcServiceName + '_start() {',
-      ' /usr/sbin/daemon -S -l ${' + this.rcServiceName + '_facility} -s ${' + this.rcServiceName + '_priority} \\',
-      '   -u ${' + this.rcServiceName + '_user} -p ${pidfile} -t ' + this.rcServiceName + ' \\',
-      '   /usr/bin/env -i \\',
-      '   "HOME=${home}" \\',
-      '   "PATH=/usr/local/bin:${PATH}" \\',
-      '   "UIX_STORAGE_PATH=${' + this.rcServiceName + '_storage_path}" \\',
-      '   $command \\',
-      '   -U "${' + this.rcServiceName + '_storage_path}"',
+      'homebridge_precmd()',
+      '{',
+      '   sleep 10',
+      '   chown -R ${homebridge_user}: ${homebridge_storage_path}',
+      '   install -o ${homebridge_user} /dev/null ${pidfile}',
       '}',
       '',
       'run_rc_command "$1"',
     ].filter(x => x).join('\n');
-  
+
     await fs.outputFile(this.rcServicePath, rcFileContents);
     await fs.chmod(this.rcServicePath, '755');
   }

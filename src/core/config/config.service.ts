@@ -50,7 +50,7 @@ export class ConfigService {
   public runningInPackageMode = Boolean(process.env.HOMEBRIDGE_APT_PACKAGE === '1');
   public runningInLinux = (!this.runningInDocker && !this.runningInSynologyPackage && !this.runningInPackageMode && os.platform() === 'linux');
   public runningInFreeBSD = (os.platform() === 'freebsd');
-  public canShutdownRestartHost = (this.runningInLinux || this.runningInFreeBSD || process.env.UIX_CAN_SHUTDOWN_RESTART_HOST === '1');
+  public canShutdownRestartHost = (this.runningInLinux || process.env.UIX_CAN_SHUTDOWN_RESTART_HOST === '1');
   public enableTerminalAccess = this.runningInDocker || this.runningInSynologyPackage || this.runningInPackageMode || Boolean(process.env.HOMEBRIDGE_CONFIG_UI_TERMINAL === '1');
   public usePnpm = (process.env.UIX_USE_PNPM === '1');
 
@@ -286,7 +286,7 @@ export class ConfigService {
   private setConfigForServiceMode() {
     this.homebridgeInsecureMode = Boolean(process.env.UIX_INSECURE_MODE === '1');
     this.ui.restart = undefined;
-    this.ui.sudo = (os.platform() === 'linux' && !this.runningInDocker && !this.runningInSynologyPackage && !this.runningInPackageMode);
+    this.ui.sudo = (os.platform() === 'linux' && !this.runningInDocker && !this.runningInSynologyPackage && !this.runningInPackageMode) || os.platform() === 'freebsd';
     this.ui.log = {
       method: 'native',
       path: path.resolve(this.storagePath, 'homebridge.log'),
