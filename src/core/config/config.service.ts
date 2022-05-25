@@ -49,7 +49,8 @@ export class ConfigService {
   public runningInSynologyPackage = Boolean(process.env.HOMEBRIDGE_SYNOLOGY_PACKAGE === '1');
   public runningInPackageMode = Boolean(process.env.HOMEBRIDGE_APT_PACKAGE === '1');
   public runningInLinux = (!this.runningInDocker && !this.runningInSynologyPackage && !this.runningInPackageMode && os.platform() === 'linux');
-  public canShutdownRestartHost = (this.runningInLinux || process.env.UIX_CAN_SHUTDOWN_RESTART_HOST === '1');
+  public runningInFreeBSD = (os.platform() === 'freebsd');
+  public canShutdownRestartHost = (this.runningInLinux || this.runningInFreeBSD || process.env.UIX_CAN_SHUTDOWN_RESTART_HOST === '1');
   public enableTerminalAccess = this.runningInDocker || this.runningInSynologyPackage || this.runningInPackageMode || Boolean(process.env.HOMEBRIDGE_CONFIG_UI_TERMINAL === '1');
   public usePnpm = (process.env.UIX_USE_PNPM === '1');
 
@@ -203,6 +204,7 @@ export class ConfigService {
         runningInSynologyPackage: this.runningInSynologyPackage,
         runningInPackageMode: this.runningInPackageMode,
         runningInLinux: this.runningInLinux,
+        runningInFreeBSD: this.runningInFreeBSD,
         runningOnRaspberryPi: this.runningOnRaspberryPi,
         canShutdownRestartHost: this.canShutdownRestartHost,
         dockerOfflineUpdate: this.dockerOfflineUpdate,
