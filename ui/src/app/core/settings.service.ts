@@ -19,6 +19,7 @@ interface EnvInterface {
   packageVersion: string;
   runningInDocker: boolean;
   runningInLinux: boolean;
+  runningInFreeBSD: boolean;
   runningInSynologyPackage: boolean;
   runningInPackageMode: boolean;
   runningOnRaspberryPi: boolean;
