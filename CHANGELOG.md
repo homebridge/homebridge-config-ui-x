@@ -1,5 +1,11 @@
 ## NEXT
 
+### Notable Changes
+
+* **System:** [@ohmantics](https://github.com/ohmantics) added FreeBSD support to [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command)
+  * Users running FreeBSD can now setup Homebridge as a service using the `hb-service install` command
+  * Also supports running inside TrueNAS Jails (tested with a FreeBSD 13.1 Jail)
+
 ### Bug Fixes
 
 * **Backups:** Fixed a bug preventing the storage directory from being backed up when it was a symbolic link

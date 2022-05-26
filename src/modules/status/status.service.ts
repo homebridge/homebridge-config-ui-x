@@ -339,7 +339,7 @@ export class StatusService {
       return cachedResult;
     }
 
-    const defaultInterfaceName = (os.platform() !== 'freebsd') ? await si.networkInterfaceDefault() : undefined;
+    const defaultInterfaceName = await si.networkInterfaceDefault();
     const defaultInterface = defaultInterfaceName ? (await si.networkInterfaces()).find(x => x.iface === defaultInterfaceName) : undefined;
 
     if (defaultInterface) {
