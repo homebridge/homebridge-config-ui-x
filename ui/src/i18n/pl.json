@@ -337,7 +337,7 @@
     "status.widget.label_reset_layout": "Zresetuj wygląd",
     "status.widget.label_systeminfo": "Informacje o systemie",
     "status.widget.label_temperature_units": "Jednostka temperatury",
-    "status.widget.label_temperature_units_celsius": "stopnie Celsiusza",
+    "status.widget.label_temperature_units_celsius": "stopnie Celsjusza",
     "status.widget.label_temperature_units_fahrenheit": "stopnie Fahrenheita",
     "status.widget.label_temperature_units_system_default": "Domyślny systemowy",
     "status.widget.label_unlock_layout": "Odblokuj wygląd",
