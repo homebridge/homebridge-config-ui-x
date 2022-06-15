@@ -6,12 +6,11 @@ import * as si from 'systeminformation';
 import * as semver from 'semver';
 
 import { HomebridgeServiceHelper } from '../hb-service';
+import { BasePlatform } from '../base-platform';
 
-export class LinuxInstaller {
-  private hbService: HomebridgeServiceHelper;
-
+export class LinuxInstaller extends BasePlatform {
   constructor(hbService: HomebridgeServiceHelper) {
-    this.hbService = hbService;
+    super(hbService);
   }
 
   private get systemdServiceName() {
@@ -123,6 +122,31 @@ export class LinuxInstaller {
       this.hbService.logger(`${this.hbService.serviceName} Restarted`, 'succeed');
     } catch (e) {
       this.hbService.logger(`Failed to restart ${this.hbService.serviceName}`, 'fail');
+    }
+  }
+
+  /**
+   * Code to execute before the service is started - as root
+   * Find failed npm install temporary directories and attempt to remove them
+   */
+  public async beforeStart() {
+    if ([
+      '/usr/local/lib/node_modules',
+      '/usr/lib/node_modules'
+    ].includes(path.dirname(process.env.UIX_BASE_PATH))) {
+      const modulesPath = path.dirname(process.env.UIX_BASE_PATH);
+      const temporaryDirectoriesToClean = (await fs.readdir(modulesPath)).filter(x => {
+        return x.startsWith('.homebridge-');
+      });
+      for (const directory of temporaryDirectoriesToClean) {
+        const pathToRemove = path.join(modulesPath, directory);
+        try {
+          console.log('Removing stale temporary directory:', pathToRemove);
+          await fs.remove(pathToRemove);
+        } catch (e) {
+          console.error('Failed to remove:', pathToRemove, e);
+        }
+      }
     }
   }
 
@@ -656,7 +680,7 @@ export class LinuxInstaller {
       'PermissionsStartOnly=true',
       `WorkingDirectory=${this.hbService.storagePath}`,
       `EnvironmentFile=/etc/default/${this.systemdServiceName}`,
-      `ExecStartPre=-run-parts ${this.runPartsPath}`,
+      `ExecStartPre=-/bin/run-parts ${this.runPartsPath}`,
       `ExecStartPre=-${this.hbService.selfPath} before-start $HOMEBRIDGE_OPTS`,
       `ExecStart=${this.hbService.selfPath} run $HOMEBRIDGE_OPTS`,
       'Restart=always',

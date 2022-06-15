@@ -4,12 +4,11 @@ import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
 
 import { HomebridgeServiceHelper } from '../hb-service';
+import { BasePlatform } from '../base-platform';
 
-export class FreeBSDInstaller {
-  private hbService: HomebridgeServiceHelper;
-
+export class FreeBSDInstaller extends BasePlatform {
   constructor(hbService: HomebridgeServiceHelper) {
-    this.hbService = hbService;
+    super(hbService);
   }
 
   private get rcServiceName() {

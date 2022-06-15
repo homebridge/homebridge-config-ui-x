@@ -26,6 +26,7 @@ module.exports = {
     '@nestjs/swagger': '@nestjs/swagger',
     '@nestjs/jwt': '@nestjs/jwt',
     '@nestjs/passport': '@nestjs/passport',
+    '@nestjs/axios': '@nestjs/axios',
     '@oznu/hap-client': '@oznu/hap-client',
     'fastify-swagger': 'fastify-swagger',
     'reflect-metadata': 'reflect-metadata',

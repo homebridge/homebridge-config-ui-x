@@ -53,10 +53,12 @@ export class LoginComponent implements OnInit {
       await this.$settings.onSettingsLoaded.toPromise();
     }
 
-    const backgroundImageUrl = this.$settings.env.customWallpaperHash ?
-      environment.api.base + '/auth/wallpaper/' + this.$settings.env.customWallpaperHash :
-      '/assets/snapshot.jpg';
-    this.backgroundStyle = `url('${backgroundImageUrl}') center/cover`;
+    if (this.$settings.env.customWallpaperHash) {
+      const backgroundImageUrl = this.$settings.env.customWallpaperHash ?
+        environment.api.base + '/auth/wallpaper/' + this.$settings.env.customWallpaperHash :
+        '/assets/snapshot.jpg';
+      this.backgroundStyle = `url('${backgroundImageUrl}') center/cover`;
+    }
   }
 
   async onSubmit({ value, valid }) {

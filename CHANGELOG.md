@@ -1,5 +1,13 @@
 ## 4.46.0 (2022-05-27)
 
+## NEXT
+
+### Notable Changes
+
+* **Auth:** Login wallpaper is now a solid colour matching the users current theme, custom wallpaper images are still used if configured
+* **System:** If the UI detects it's own dependencies are missing or corrupt, it will trigger a task to fix them (on certain systems only, update required)
+* **System:** Stale temporary npm directories that prevent the UI and other plugins from updating (`npm ERR! code ENOTEMPTY`) will be removed when doing a full service restart for users running on Linux with [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command)
+
 ### Notable Changes
 
 * **System:** [@ohmantics](https://github.com/ohmantics) added FreeBSD support to [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) ([#1349](https://github.com/oznu/homebridge-config-ui-x/pull/1349))

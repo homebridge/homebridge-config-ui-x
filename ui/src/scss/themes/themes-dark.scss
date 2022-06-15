@@ -325,6 +325,10 @@
       }
     }
 
+    .login-container {
+      background-color: #000000 !important;
+    }
+
     @keyframes uix-glow-icon-dark-mode {
       from {
         text-shadow: 0 0 5px $darkModePrimary, 0 0 10px $darkModePrimary, 0 0 15px $darkModePrimary;

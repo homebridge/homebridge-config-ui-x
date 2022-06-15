@@ -5,13 +5,13 @@ import * as fs from 'fs-extra';
 import * as semver from 'semver';
 
 import { HomebridgeServiceHelper } from '../hb-service';
+import { BasePlatform } from '../base-platform';
 
-export class DarwinInstaller {
-  private hbService: HomebridgeServiceHelper;
+export class DarwinInstaller extends BasePlatform {
   private user: string;
 
   constructor(hbService: HomebridgeServiceHelper) {
-    this.hbService = hbService;
+    super(hbService);
   }
 
   private get plistName() {
@@ -217,7 +217,7 @@ export class DarwinInstaller {
   /**
    * Resolves the target user home directory when running the install command as SUDO
    */
-  public getUserHomeDir() {
+  private getUserHomeDir() {
     try {
       const realHomeDir = child_process.execSync(`eval echo "~${this.user}"`).toString('utf8').trim();
       if (realHomeDir.charAt(0) === '~') {

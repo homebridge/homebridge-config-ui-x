@@ -58,7 +58,7 @@ export class ServerService {
           }
         });
       } else {
-        this.logger.log('No restart command defined, killing process...');
+        this.logger.log('Sending SIGTERM to process...');
         process.kill(process.pid, 'SIGTERM');
       }
     }, 500);

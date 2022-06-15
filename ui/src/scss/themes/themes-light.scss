@@ -99,6 +99,10 @@
       }
     }
 
+    .login-container {
+      background-color: $primary-dark  !important;
+    }
+
     @keyframes uix-glow-icon {
       from {
         text-shadow: 0 0 5px #fff, 0 0 10px #fff;
