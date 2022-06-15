@@ -1,16 +1,19 @@
-## NEXT
+## 4.47.0 (2022-06-15)
 
 ### Notable Changes
 
 * **Auth:** Login wallpaper is now a solid colour matching the users current theme, custom wallpaper images are still used if configured
 * **System:** If the UI detects it's own dependencies are missing or corrupt, it will trigger a task to fix them (on certain systems only, update required)
 * **System:** Stale temporary npm directories that prevent the UI and other plugins from updating (`npm ERR! code ENOTEMPTY`) will be removed when doing a full service restart for users running on Linux with [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command)
-* **Dashboard:** Fix some font size scaling issues ([#1360](https://github.com/oznu/homebridge-config-ui-x/issues/1360))
 
 ### Other changes
 
 * **i18n:** Improvements to Thai language translations ([#1354](https://github.com/oznu/homebridge-config-ui-x/pull/1354))
 * **i18n:** Improvements to Polish language translations ([#1361](https://github.com/oznu/homebridge-config-ui-x/pull/1361))
+
+### Bug Fixes
+
+* **Dashboard:** Fix some font size scaling issues ([#1360](https://github.com/oznu/homebridge-config-ui-x/issues/1360))
 
 ## 4.46.0 (2022-05-27)
 
