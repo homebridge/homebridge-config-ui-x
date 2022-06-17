@@ -78,7 +78,7 @@ describe('CustomPluginsController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
   });
 
   it('GET /plugins/custom-plugins/homebridge-hue/dump-file (dump file missing)', async () => {
@@ -92,7 +92,7 @@ describe('CustomPluginsController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(404);
+    expect(res.statusCode).toBe(404);
   });
 
   afterAll(async () => {

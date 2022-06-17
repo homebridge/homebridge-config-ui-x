@@ -63,52 +63,65 @@ export class BackupService {
 
     this.logger.log(`Creating temporary backup archive at ${backupPath}`);
 
-    // create a copy of the storage directory in the temp path
-    await fs.copy(this.configService.storagePath, path.resolve(backupDir, 'storage'), {
-      filter: (filePath) => (![
-        'instance-backups',   // scheduled backups
-        'nssm.exe',           // windows hb-service
-        'homebridge.log',     // hb-service
-        'logs',               // docker
-        'node_modules',       // docker
-        'startup.sh',         // docker
-        '.docker.env',        // docker
-        'FFmpeg',             // ffmpeg
-        'fdk-aac',            // ffmpeg
-        '.git',               // git
-        'recordings',         // homebridge-camera-ui recordings path
-        '.homebridge.sock',   // homebridge ipc socket
-      ].includes(path.basename(filePath))), // list of files not to include in the archive
-    });
+    try {
+      // resolve the real path of the storage directory (in case it's a symbolic link)
+      const storagePath = await fs.realpath(this.configService.storagePath);
 
-    // get full list of installed plugins
-    const installedPlugins = await this.pluginsService.getInstalledPlugins();
-    await fs.writeJSON(path.resolve(backupDir, 'plugins.json'), installedPlugins);
+      // create a copy of the storage directory in the temp path
+      await fs.copy(storagePath, path.resolve(backupDir, 'storage'), {
+        filter: (filePath) => (![
+          'instance-backups',   // scheduled backups
+          'nssm.exe',           // windows hb-service
+          'homebridge.log',     // hb-service
+          'logs',               // docker
+          'node_modules',       // docker
+          'startup.sh',         // docker
+          '.docker.env',        // docker
+          'pnpm-lock.yaml',     // pnpm
+          'package.json',       // npm
+          'package-lock.json',  // npm
+          'FFmpeg',             // ffmpeg
+          'fdk-aac',            // ffmpeg
+          '.git',               // git
+          'recordings',         // homebridge-camera-ui recordings path
+          '.homebridge.sock',   // homebridge ipc socket
+        ].includes(path.basename(filePath))), // list of files not to include in the archive
+      });
 
-    // create an info.json
-    await fs.writeJson(path.resolve(backupDir, 'info.json'), {
-      timestamp: new Date().toISOString(),
-      platform: os.platform(),
-      uix: this.configService.package.version,
-      node: process.version,
-    });
+      // get full list of installed plugins
+      const installedPlugins = await this.pluginsService.getInstalledPlugins();
+      await fs.writeJSON(path.resolve(backupDir, 'plugins.json'), installedPlugins);
 
-    // create a tarball of storage and plugins list
-    await tar.c({
-      portable: true,
-      gzip: true,
-      file: backupPath,
-      cwd: backupDir,
-      filter: (filePath, stat) => {
-        if (stat.size > 1e+7) {
-          this.logger.warn(`Backup is skipping "${filePath}" because it is larger than 10MB.`);
-          return false;
-        }
-        return true;
-      },
-    }, [
-      'storage', 'plugins.json', 'info.json',
-    ]);
+      // create an info.json
+      await fs.writeJson(path.resolve(backupDir, 'info.json'), {
+        timestamp: new Date().toISOString(),
+        platform: os.platform(),
+        uix: this.configService.package.version,
+        node: process.version,
+      });
+
+      // create a tarball of storage and plugins list
+      await tar.c({
+        portable: true,
+        gzip: true,
+        file: backupPath,
+        cwd: backupDir,
+        filter: (filePath, stat) => {
+          if (stat.size > 1e+7) {
+            this.logger.warn(`Backup is skipping "${filePath}" because it is larger than 10MB.`);
+            return false;
+          }
+          return true;
+        },
+      }, [
+        'storage', 'plugins.json', 'info.json',
+      ]);
+
+    } catch (e) {
+      this.logger.log(`Backup failed, removing ${backupDir}`);
+      await fs.remove(path.resolve(backupDir));
+      throw e;
+    }
 
     return {
       instanceId,
@@ -309,9 +322,31 @@ export class BackupService {
   }
 
   /**
+   * Do an offline restore
+   */
+  async triggerHeadlessRestore() {
+    if (!await fs.pathExists(this.restoreDirectory)) {
+      throw new BadRequestException('No backup file uploaded');
+    }
+
+    const client = new EventEmitter();
+
+    client.on('stdout', (data) => {
+      this.logger.log(data);
+    });
+    client.on('stderr', (data) => {
+      this.logger.log(data);
+    });
+
+    await this.restoreFromBackup(client, true);
+
+    return { status: 0 };
+  }
+
+  /**
    * Restores the uploaded backup
    */
-  async restoreFromBackup(client: EventEmitter) {
+  async restoreFromBackup(client: EventEmitter, autoRestart = false) {
     if (!this.restoreDirectory) {
       throw new BadRequestException();
     }
@@ -351,11 +386,21 @@ export class BackupService {
     client.emit('stdout', color.cyan('\r\nRestoring backup...\r\n\r\n'));
     await new Promise(resolve => setTimeout(resolve, 1000));
 
+    // files that should not be restored (but may exist in older backup archives)
+    const restoreFilter = [
+      path.join(this.restoreDirectory, 'storage', 'package.json'),
+      path.join(this.restoreDirectory, 'storage', 'package-lock.json'),
+    ];
+
     // restore files
     client.emit('stdout', color.yellow(`Restoring Homebridge storage to ${this.configService.storagePath}\r\n`));
     await new Promise(resolve => setTimeout(resolve, 100));
     await fs.copy(path.resolve(this.restoreDirectory, 'storage'), this.configService.storagePath, {
       filter: (filePath) => {
+        if (restoreFilter.includes(filePath)) {
+          client.emit('stdout', `Skipping ${path.basename(filePath)}\r\n`);
+          return false;
+        }
         client.emit('stdout', `Restoring ${path.basename(filePath)}\r\n`);
         return true;
       },
@@ -427,6 +472,11 @@ export class BackupService {
 
     // ensure ui is restarted on next restart
     this.configService.hbServiceUiRestartRequired = true;
+
+    // auto restart if told to
+    if (autoRestart) {
+      this.postBackupRestoreRestart();
+    }
 
     return { status: 0 };
   }

@@ -50,20 +50,9 @@ export class HomebridgeIpcService extends EventEmitter {
   }
 
   /**
-   * Send a message to the homebridge child process
-   */
-  private sendMessage(type: string, data?: unknown) {
-    if (this.homebridge && this.homebridge.connected) {
-      this.homebridge.send({ id: type, data: data });
-    } else {
-      throw new ServiceUnavailableException('The Homebridge Service Is Unavailable');
-    }
-  }
-
-  /**
    * Send a data request to homebridge and wait for the reply
    */
-  private async requestResponse(requestEvent: string, responseEvent: string) {
+  public async requestResponse(requestEvent: string, responseEvent: string) {
     return new Promise((resolve, reject) => {
       const actionTimeout = setTimeout(() => {
         this.removeListener(responseEvent, listener);
@@ -78,6 +67,17 @@ export class HomebridgeIpcService extends EventEmitter {
       this.once(responseEvent, listener);
       this.sendMessage(requestEvent);
     });
+  }
+
+  /**
+   * Send a message to the homebridge child process
+   */
+  public sendMessage(type: string, data?: unknown) {
+    if (this.homebridge && this.homebridge.connected) {
+      this.homebridge.send({ id: type, data: data });
+    } else {
+      throw new ServiceUnavailableException('The Homebridge Service Is Unavailable');
+    }
   }
 
   /**
@@ -128,24 +128,6 @@ export class HomebridgeIpcService extends EventEmitter {
     if (this.homebridge) {
       this.logger.log('Sending SIGKILL to Homebridge');
       this.homebridge.kill('SIGKILL');
-    }
-  }
-
-  /**
-   * Restart a Homebridge child bridge
-   */
-  public async restartChildBridge(username: string) {
-    await this.sendMessage('restartChildBridge', username);
-  }
-
-  /**
-   * Request a list of child bridges from the Homebridge process
-   */
-  public async getChildBridgeMetadata() {
-    try {
-      return await this.requestResponse('childBridgeMetadataRequest', 'childBridgeMetadataResponse');
-    } catch (e) {
-      return [];
     }
   }
 

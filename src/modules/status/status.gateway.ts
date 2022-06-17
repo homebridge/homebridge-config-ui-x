@@ -4,6 +4,7 @@ import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websock
 import { PluginsService } from '../plugins/plugins.service';
 import { StatusService } from './status.service';
 import { WsGuard } from '../../core/auth/guards/ws.guard';
+import { ChildBridgesService } from '../child-bridges/child-bridges.service';
 
 @UseGuards(WsGuard)
 @WebSocketGateway({
@@ -17,6 +18,7 @@ export class StatusGateway {
   constructor(
     private statusService: StatusService,
     private pluginsService: PluginsService,
+    private childBridgesService: ChildBridgesService,
   ) { }
 
   @SubscribeMessage('get-dashboard-layout')
@@ -100,6 +102,15 @@ export class StatusGateway {
     }
   }
 
+  @SubscribeMessage('get-server-network-info')
+  async getServerNetworkInfo(client, payload) {
+    try {
+      return await this.statusService.getCurrentNetworkUsage();
+    } catch (e) {
+      return new WsException(e.message);
+    }
+  }
+
   @SubscribeMessage('get-server-uptime-info')
   async getServerUptimeInfo(client, payload) {
     try {
@@ -132,18 +143,32 @@ export class StatusGateway {
     this.statusService.watchStats(client);
   }
 
+  /**
+   * @deprecated
+   */
   @SubscribeMessage('get-homebridge-child-bridge-status')
   async getChildBridges(client, payload) {
     try {
-      return await this.statusService.getChildBridges();
+      return await this.childBridgesService.getChildBridges();
     } catch (e) {
       return new WsException(e.message);
     }
   }
 
+  /**
+   * @deprecated
+   */
   @SubscribeMessage('monitor-child-bridge-status')
   async watchChildBridgeStatus(client, payload) {
-    this.statusService.watchChildBridgeStatus(client);
+    this.childBridgesService.watchChildBridgeStatus(client);
   }
 
+  @SubscribeMessage('get-raspberry-pi-throttled-status')
+  async getRaspberryPiThrottledStatus(client, payload) {
+    try {
+      return await this.statusService.getRaspberryPiThrottledStatus();
+    } catch (e) {
+      return new WsException(e.message);
+    }
+  }
 }

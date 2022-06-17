@@ -52,38 +52,7 @@ export class SettingsComponent implements OnInit {
     this.initNetworkingOptions();
     if (this.$settings.env.serviceMode) {
       this.initServiceModeForm();
-    } else if (this.$settings.env.runningInDocker) {
-      this.initDockerForm();
     }
-  }
-
-  initDockerForm() {
-    this.serviceForm = this.$fb.group({
-      HOMEBRIDGE_DEBUG: [false],
-      HOMEBRIDGE_INSECURE: [false],
-    });
-
-
-    this.$api.get('/platform-tools/docker/env').subscribe(
-      (data) => {
-        this.serviceForm.patchValue(data);
-        this.serviceForm.valueChanges.subscribe(this.saveDockerSettings.bind(this));
-      },
-      (err) => {
-        this.$toastr.error(err.message, 'Failed to load docker settings');
-      },
-    );
-  }
-
-  saveDockerSettings(data = this.serviceForm.value) {
-    this.$api.put('/platform-tools/docker/env', data).subscribe(() => {
-      this.$toastr.success(
-        this.translate.instant('platform.docker.settings.toast_container_restart_required'),
-        this.translate.instant('platform.docker.settings.toast_title_settings_saved'),
-      );
-      this.saved = true;
-      this.$notification.configUpdated.next();
-    });
   }
 
   initServiceModeForm() {
@@ -101,7 +70,7 @@ export class SettingsComponent implements OnInit {
         this.serviceForm.valueChanges.pipe(debounceTime(500)).subscribe(this.saveServiceModeSettings.bind(this));
       },
       (err) => {
-        this.$toastr.error(err.message, 'Failed to load docker settings');
+        this.$toastr.error(err.message, 'Failed to load startup settings');
       },
     );
   }
@@ -156,7 +125,12 @@ export class SettingsComponent implements OnInit {
         this.getNetworkSettings();
       }
       if (semver.gte(homebridgePackage.installedVersion, '1.4.0-beta.0', { includePrerelease: true })) {
-        if (this.$settings.env.runningInLinux || this.$settings.env.runningInDocker || this.$settings.env.runningInSynologyPackage) {
+        if (
+          this.$settings.env.runningInLinux ||
+          this.$settings.env.runningInDocker ||
+          this.$settings.env.runningInSynologyPackage ||
+          this.$settings.env.runningInPackageMode
+        ) {
           this.showAvahiMdnsOption = true;
         }
       }

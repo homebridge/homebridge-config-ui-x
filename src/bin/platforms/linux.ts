@@ -6,12 +6,11 @@ import * as si from 'systeminformation';
 import * as semver from 'semver';
 
 import { HomebridgeServiceHelper } from '../hb-service';
+import { BasePlatform } from '../base-platform';
 
-export class LinuxInstaller {
-  private hbService: HomebridgeServiceHelper;
-
+export class LinuxInstaller extends BasePlatform {
   constructor(hbService: HomebridgeServiceHelper) {
-    this.hbService = hbService;
+    super(hbService);
   }
 
   private get systemdServiceName() {
@@ -127,32 +126,82 @@ export class LinuxInstaller {
   }
 
   /**
+   * Code to execute before the service is started - as root
+   * Find failed npm install temporary directories and attempt to remove them
+   */
+  public async beforeStart() {
+    if ([
+      '/usr/local/lib/node_modules',
+      '/usr/lib/node_modules'
+    ].includes(path.dirname(process.env.UIX_BASE_PATH))) {
+      const modulesPath = path.dirname(process.env.UIX_BASE_PATH);
+      const temporaryDirectoriesToClean = (await fs.readdir(modulesPath)).filter(x => {
+        return x.startsWith('.homebridge-');
+      });
+      for (const directory of temporaryDirectoriesToClean) {
+        const pathToRemove = path.join(modulesPath, directory);
+        try {
+          console.log('Removing stale temporary directory:', pathToRemove);
+          await fs.remove(pathToRemove);
+        } catch (e) {
+          console.error('Failed to remove:', pathToRemove, e);
+        }
+      }
+    }
+  }
+
+  /**
    * Rebuilds the Node.js modules for Homebridge Config UI X
    */
   public async rebuild(all = false) {
     try {
-      this.checkForRoot();
-      const npmGlobalPath = child_process.execSync('/bin/echo -n "$(npm --no-update-notifier -g prefix)/lib/node_modules"').toString('utf8');
-      const targetNodeVersion = child_process.execSync('node -v').toString('utf8').trim();
-
-      child_process.execSync('npm rebuild --unsafe-perm', {
-        cwd: process.env.UIX_BASE_PATH,
-        stdio: 'inherit',
-      });
-
-      if (all === true) {
-        // rebuild all modules
-        try {
-          child_process.execSync('npm rebuild --unsafe-perm', {
-            cwd: npmGlobalPath,
-            stdio: 'inherit',
-          });
-        } catch (e) {
-          this.hbService.logger('Could not rebuild all modules - check Homebridge logs.', 'warn');
-        }
+      if (this.isPackage()) {
+        // must not run as root in package mode
+        this.checkIsNotRoot();
+      } else {
+        this.checkForRoot();
       }
 
-      this.hbService.logger(`Rebuilt modules in ${process.env.UIX_BASE_PATH} for Node.js ${targetNodeVersion}.`, 'succeed');
+      const targetNodeVersion = child_process.execSync('node -v').toString('utf8').trim();
+
+      if (this.isPackage() && process.env.UIX_USE_PNPM === '1' && process.env.UIX_CUSTOM_PLUGIN_PATH) {
+        // pnpm+package mode
+        const cwd = path.dirname(process.env.UIX_CUSTOM_PLUGIN_PATH);
+
+        if (!await fs.pathExists(cwd)) {
+          this.hbService.logger(`Path does not exist: "${cwd}"`, 'fail');
+          process.exit(1);
+        }
+
+        child_process.execSync(`pnpm -C "${cwd}" rebuild`, {
+          cwd: cwd,
+          stdio: 'inherit',
+        });
+        this.hbService.logger(`Rebuilt plugins in ${process.env.UIX_CUSTOM_PLUGIN_PATH} for Node.js ${targetNodeVersion}.`, 'succeed');
+      } else {
+        // normal global npm setups
+        const npmGlobalPath = child_process.execSync('/bin/echo -n "$(npm --no-update-notifier -g prefix)/lib/node_modules"').toString('utf8');
+
+        child_process.execSync('npm rebuild --unsafe-perm', {
+          cwd: process.env.UIX_BASE_PATH,
+          stdio: 'inherit',
+        });
+        this.hbService.logger(`Rebuilt homebridge-config-ui-x for Node.js ${targetNodeVersion}.`, 'succeed');
+
+        if (all === true) {
+          // rebuild all global node_modules
+          try {
+            child_process.execSync('npm rebuild --unsafe-perm', {
+              cwd: npmGlobalPath,
+              stdio: 'inherit',
+            });
+            this.hbService.logger(`Rebuilt plugins in ${npmGlobalPath} for Node.js ${targetNodeVersion}.`, 'succeed');
+          } catch (e) {
+            this.hbService.logger('Could not rebuild all plugins - check logs.', 'warn');
+          }
+        }
+
+      }
     } catch (e) {
       console.error(e.toString());
       this.hbService.logger('ERROR: Failed Operation', 'fail');
@@ -197,12 +246,17 @@ export class LinuxInstaller {
    * Update Node.js
    */
   public async updateNodejs(job: { target: string; rebuild: boolean }) {
-    this.checkForRoot();
+    if (this.isPackage()) {
+      // must not run as root in package mode
+      this.checkIsNotRoot();
+    } else {
+      this.checkForRoot();
+    }
 
     // check target path
     const targetPath = path.dirname(path.dirname(process.execPath));
 
-    if (targetPath !== '/usr' && targetPath !== '/usr/local') {
+    if (targetPath !== '/usr' && targetPath !== '/usr/local' && targetPath !== '/opt/homebridge' && !targetPath.endsWith('/@appstore/homebridge/app')) {
       this.hbService.logger(`Cannot update Node.js on your system. Non-standard installation path detected: ${targetPath}`, 'fail');
       process.exit(1);
     }
@@ -233,13 +287,27 @@ export class LinuxInstaller {
    * Update Node.js from the tarball archives
    */
   private async updateNodeFromTarball(job: { target: string; rebuild: boolean }, targetPath: string) {
-    // only glibc linux >=2.24 is supported
+
     try {
-      const glibcVersion = parseFloat(child_process.execSync('getconf GNU_LIBC_VERSION 2>/dev/null').toString().split('glibc')[1].trim());
-      if (glibcVersion < 2.24) {
-        this.hbService.logger('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
-          `Wanted: >=2.24. Installed: ${glibcVersion}`, 'fail');
-        process.exit(1);
+      if (Boolean(process.env.HOMEBRIDGE_SYNOLOGY_PACKAGE === '1')) {
+        // skip glibc version check on Synology DSM
+        // we know node > 18 requires glibc > 2.28, while DSM 7 only has 2.27 at the moment
+        if (semver.gte(job.target, '18.0.0')) {
+          this.hbService.logger('Cannot update Node.js on your system. Synology DSM 7 does not currently support Node.js 18 or later.', 'fail');
+          process.exit(1);
+        }
+      } else {
+        const glibcVersion = parseFloat(child_process.execSync('getconf GNU_LIBC_VERSION 2>/dev/null').toString().split('glibc')[1].trim());
+        if (glibcVersion < 2.23) {
+          this.hbService.logger('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
+            `Wanted: >=2.23. Installed: ${glibcVersion}`, 'fail');
+          process.exit(1);
+        }
+        if (semver.gte(job.target, '18.0.0') && glibcVersion < 2.28) {
+          this.hbService.logger('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
+            `Wanted: >=2.28. Installed: ${glibcVersion}`, 'fail');
+          process.exit(1);
+        }
       }
     } catch (e) {
       const osInfo = await si.osInfo();
@@ -368,6 +436,10 @@ export class LinuxInstaller {
    * Check the command is being run as root and we can detect the user
    */
   private checkForRoot() {
+    if (this.isPackage()) {
+      this.hbService.logger('ERROR: This command is not available.', 'fail');
+      process.exit(1);
+    }
     if (process.getuid() !== 0) {
       this.hbService.logger('ERROR: This command must be executed using sudo on Linux', 'fail');
       this.hbService.logger(`EXAMPLE: sudo hb-service ${this.hbService.action}`, 'fail');
@@ -376,6 +448,17 @@ export class LinuxInstaller {
     if (this.hbService.action === 'install' && !this.hbService.asUser) {
       this.hbService.logger('ERROR: User parameter missing. Pass in the user you want to run Homebridge as using the --user flag eg.', 'fail');
       this.hbService.logger(`EXAMPLE: sudo hb-service ${this.hbService.action} --user your-user`, 'fail');
+      process.exit(1);
+    }
+  }
+
+  /**
+   * Check the current user is NOT root
+   */
+  private checkIsNotRoot() {
+    if (process.getuid() === 0 && !this.hbService.allowRunRoot) {
+      this.hbService.logger('ERROR: This command must not be executed as root or with sudo', 'fail');
+      this.hbService.logger('ERROR: If you know what you are doing; you can override this by adding --allow-root', 'fail');
       process.exit(1);
     }
   }
@@ -426,6 +509,16 @@ export class LinuxInstaller {
     } catch (e) {
       this.hbService.logger('WARNING: Failed to setup /etc/sudoers, you may not be able to shutdown/restart your server from the Homebridge UI.', 'warn');
     }
+  }
+
+  /**
+   * Determines if the command is being run inside the Synology DSM SPK Package / Debian Package
+   */
+  private isPackage(): boolean {
+    return (
+      Boolean(process.env.HOMEBRIDGE_SYNOLOGY_PACKAGE === '1') ||
+      Boolean(process.env.HOMEBRIDGE_APT_PACKAGE === '1')
+    );
   }
 
   /**
@@ -587,7 +680,7 @@ export class LinuxInstaller {
       'PermissionsStartOnly=true',
       `WorkingDirectory=${this.hbService.storagePath}`,
       `EnvironmentFile=/etc/default/${this.systemdServiceName}`,
-      `ExecStartPre=-run-parts ${this.runPartsPath}`,
+      `ExecStartPre=-/bin/run-parts ${this.runPartsPath}`,
       `ExecStartPre=-${this.hbService.selfPath} before-start $HOMEBRIDGE_OPTS`,
       `ExecStart=${this.hbService.selfPath} run $HOMEBRIDGE_OPTS`,
       'Restart=always',

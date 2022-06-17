@@ -12,23 +12,20 @@ import { DonateModalComponent } from './donate-modal/donate-modal.component';
 import { PluginCardComponent } from './plugin-card/plugin-card.component';
 
 @NgModule({
-  entryComponents: [
-    DonateModalComponent,
-  ],
-  declarations: [
-    PluginsComponent,
-    DonateModalComponent,
-    PluginCardComponent,
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    TranslateModule.forChild(),
-    NgbModule,
-    CoreModule,
-    ManagePluginsModule,
-    PluginsRoutingModule,
-  ],
+    declarations: [
+        PluginsComponent,
+        DonateModalComponent,
+        PluginCardComponent,
+    ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        TranslateModule.forChild(),
+        NgbModule,
+        CoreModule,
+        ManagePluginsModule,
+        PluginsRoutingModule,
+    ],
 })
 export class PluginsModule { }

@@ -325,8 +325,8 @@
       }
     }
 
-    .uix-highlight-icon {
-      animation: uix-glow-icon-dark-mode 1s ease-in-out infinite alternate;
+    .login-container {
+      background-color: #000000 !important;
     }
 
     @keyframes uix-glow-icon-dark-mode {

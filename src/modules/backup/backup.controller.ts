@@ -83,6 +83,16 @@ export class BackupController {
   }
 
   @UseGuards(AdminGuard)
+  @Put('/restore/trigger')
+  @ApiOperation({
+    summary: 'Triggers a headless restore process from the last uploaded backup file.',
+    description: 'Logs to stdout / stderr.',
+  })
+  async restoreBackupTrigger() {
+    return await this.backupService.triggerHeadlessRestore();
+  }
+
+  @UseGuards(AdminGuard)
   @ApiOperation({
     summary: 'Upload a .hbfx backup file created by third party apps.',
     description: 'NOTE: This endpoint does not trigger the restore process.',

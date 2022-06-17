@@ -80,15 +80,15 @@ describe('PluginController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json().length).toBeGreaterThan(0);
 
     const mockPlugin: HomebridgePlugin = res.json().find(x => x.name === 'homebridge-mock-plugin');
 
     expect(mockPlugin).toBeTruthy();
-    expect(mockPlugin.settingsSchema).toEqual(true);
-    expect(mockPlugin.private).toEqual(true);
-    expect(mockPlugin.publicPackage).toEqual(false);
+    expect(mockPlugin.settingsSchema).toBe(true);
+    expect(mockPlugin.private).toBe(true);
+    expect(mockPlugin.publicPackage).toBe(false);
   });
 
   it('GET /plugins/search/:query (keyword)', async () => {
@@ -100,7 +100,7 @@ describe('PluginController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json().length).toBeGreaterThan(0);
     expect(res.json().find(x => x.name === 'homebridge-gsh')).toBeTruthy();
     expect(res.json()[0]).toHaveProperty('lastUpdated');
@@ -116,12 +116,12 @@ describe('PluginController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()).toHaveLength(1);
     expect(res.json().find(x => x.name === 'homebridge-daikin-esp8266')).toBeTruthy();
     expect(res.json()[0]).toHaveProperty('lastUpdated');
     expect(res.json()[0]).toHaveProperty('private');
-    expect(res.json()[0].private).toEqual(false);
+    expect(res.json()[0].private).toBe(false);
   });
 
   it('GET /plugins/search/:query (exact plugin name - @scoped)', async () => {
@@ -133,12 +133,12 @@ describe('PluginController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()).toHaveLength(1);
     expect(res.json().find(x => x.name === '@oznu/homebridge-esp8266-garage-door')).toBeTruthy();
     expect(res.json()[0]).toHaveProperty('lastUpdated');
     expect(res.json()[0]).toHaveProperty('private');
-    expect(res.json()[0].private).toEqual(false);
+    expect(res.json()[0].private).toBe(false);
   });
 
   it('GET /plugins/search/:query (blacklisted - exact plugin name)', async () => {
@@ -150,7 +150,7 @@ describe('PluginController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json().filter(x => x.name === 'homebridge-config-ui-rdp')).toHaveLength(0);
   });
 
@@ -163,7 +163,7 @@ describe('PluginController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json().filter(x => x.name === 'homebridge-config-ui-rdp')).toHaveLength(0);
   });
 
@@ -176,11 +176,11 @@ describe('PluginController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
-    expect(res.json().name).toEqual('homebridge-daikin-esp8266');
+    expect(res.statusCode).toBe(200);
+    expect(res.json().name).toBe('homebridge-daikin-esp8266');
     expect(res.json()).toHaveProperty('lastUpdated');
     expect(res.json()).toHaveProperty('private');
-    expect(res.json().private).toEqual(false);
+    expect(res.json().private).toBe(false);
   });
 
   it('GET /plugins/lookup/:pluginName (@scoped)', async () => {
@@ -192,11 +192,11 @@ describe('PluginController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
-    expect(res.json().name).toEqual('@oznu/homebridge-esp8266-garage-door');
+    expect(res.statusCode).toBe(200);
+    expect(res.json().name).toBe('@oznu/homebridge-esp8266-garage-door');
     expect(res.json()).toHaveProperty('lastUpdated');
     expect(res.json()).toHaveProperty('private');
-    expect(res.json().private).toEqual(false);
+    expect(res.json().private).toBe(false);
   });
 
   it('GET /plugins/lookup/:pluginName (not a homebridge plugin)', async () => {
@@ -208,8 +208,8 @@ describe('PluginController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(400);
-    expect(res.json().message).toEqual('Invalid plugin name.');
+    expect(res.statusCode).toBe(400);
+    expect(res.json().message).toBe('Invalid plugin name.');
   });
 
   it('GET /plugins/lookup/:pluginName/versions (non-scoped)', async () => {
@@ -221,7 +221,7 @@ describe('PluginController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()).toHaveProperty('tags');
     expect(res.json()).toHaveProperty('versions');
   });
@@ -235,7 +235,7 @@ describe('PluginController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()).toHaveProperty('tags');
     expect(res.json()).toHaveProperty('versions');
   });
@@ -249,9 +249,9 @@ describe('PluginController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
-    expect(res.json().pluginAlias).toEqual('ExampleHomebridgePlugin');
-    expect(res.json().pluginType).toEqual('platform');
+    expect(res.statusCode).toBe(200);
+    expect(res.json().pluginAlias).toBe('ExampleHomebridgePlugin');
+    expect(res.json().pluginType).toBe('platform');
   });
 
   it('GET /plugins/changelog/:plugin-name', async () => {
@@ -263,7 +263,7 @@ describe('PluginController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()).toHaveProperty('changelog');
   });
 
@@ -276,7 +276,7 @@ describe('PluginController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(404);
+    expect(res.statusCode).toBe(404);
   });
 
   it('GET /plugins/alias/:plugin-name (with config.schema.json)', async () => {
@@ -288,9 +288,9 @@ describe('PluginController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
-    expect(res.json().pluginAlias).toEqual('ExampleHomebridgePlugin');
-    expect(res.json().pluginType).toEqual('platform');
+    expect(res.statusCode).toBe(200);
+    expect(res.json().pluginAlias).toBe('ExampleHomebridgePlugin');
+    expect(res.json().pluginType).toBe('platform');
   });
 
   it('GET /plugins/alias/:plugin-name (without config.schema.json)', async () => {
@@ -302,9 +302,9 @@ describe('PluginController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
-    expect(res.json().pluginAlias).toEqual('HomebridgeMockPluginTwo');
-    expect(res.json().pluginType).toEqual('accessory');
+    expect(res.statusCode).toBe(200);
+    expect(res.json().pluginAlias).toBe('HomebridgeMockPluginTwo');
+    expect(res.json().pluginType).toBe('accessory');
   });
 
   afterAll(async () => {

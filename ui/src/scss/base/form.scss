@@ -10,3 +10,11 @@
     }
   }
 }
+
+.expandable, .expanded {
+  legend, label {
+    &:before {
+      font-family: 'Font Awesome 6 Free' !important;
+    }
+  }
+}

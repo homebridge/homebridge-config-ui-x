@@ -99,8 +99,8 @@
       }
     }
 
-    .uix-highlight-icon {
-      animation: uix-glow-icon 1s ease-in-out infinite alternate;
+    .login-container {
+      background-color: $primary-dark  !important;
     }
 
     @keyframes uix-glow-icon {

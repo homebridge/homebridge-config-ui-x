@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -18,6 +18,8 @@ import { ScheduledBackupsComponent } from './scheduled-backups/scheduled-backups
   styleUrls: ['./backup-restore.component.scss'],
 })
 export class BackupRestoreComponent implements OnInit, OnDestroy {
+  @Input() setupWizardRestore = false;
+
   public clicked = false;
   public selectedFile: File;
   public restoreInProgress = false;
@@ -42,7 +44,7 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
     private $ws: WsService,
   ) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.termTarget = document.getElementById('plugin-log-output');
     this.term.open(this.termTarget);
     this.fitAddon.fit();
@@ -50,6 +52,12 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
     this.io.socket.on('stdout', (data) => {
       this.term.write(data);
     });
+
+    if (this.setupWizardRestore) {
+      this.restoreStarted = true;
+      this.restoreInProgress = true;
+      this.startRestore();
+    }
   }
 
   async onDownloadBackupClick() {
@@ -106,6 +114,9 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
       (res) => {
         this.restoreInProgress = false;
         this.$toastr.success(this.translate.instant('backup.message_backup_restored'), this.translate.instant('toast.title_success'));
+        if (this.setupWizardRestore) {
+          this.postBackupRestart();
+        }
       },
       (err) => {
         this.restoreFailed = true;
@@ -173,7 +184,7 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
   postBackupRestart() {
     this.$api.put('/backup/restart', {}).subscribe(
       (res) => {
-        this.activeModal.close();
+        this.activeModal.close(true);
         this.$route.navigate(['/']);
       },
       (err) => {

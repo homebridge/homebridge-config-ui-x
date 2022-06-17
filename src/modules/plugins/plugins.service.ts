@@ -207,7 +207,7 @@ export class PluginsService {
     try {
       searchResults = (await this.httpService.get(`https://registry.npmjs.org/-/v1/search?text=${q}`).toPromise()).data;
     } catch (e) {
-      this.logger.error(`Failed to search the npm registry - "${e.message}" - see https://git.io/JJSz6 for help.`);
+      this.logger.error(`Failed to search the npm registry - "${e.message}" - see https://homebridge.io/w/JJSz6 for help.`);
       throw new InternalServerErrorException(`Failed to search the npm registry - "${e.message}" - see logs.`);
     }
 
@@ -308,7 +308,7 @@ export class PluginsService {
       return [plugin];
     } catch (e) {
       if (e.response?.status !== 404) {
-        this.logger.error(`Failed to search the npm registry - "${e.message}" - see https://git.io/JJSz6 for help.`);
+        this.logger.error(`Failed to search the npm registry - "${e.message}" - see https://homebridge.io/w/JJSz6 for help.`);
       }
       return [];
     }
@@ -377,7 +377,7 @@ export class PluginsService {
     const installOptions: Array<string> = [];
 
     // check to see if custom plugin path is using a package.json file
-    if (installPath === this.configService.customPluginPath && await fs.pathExists(path.resolve(installPath, '../package.json'))) {
+    if (installPath === this.configService.customPluginPath && !this.configService.usePnpm && await fs.pathExists(path.resolve(installPath, '../package.json'))) {
       installOptions.push('--save');
     }
 
@@ -483,7 +483,7 @@ export class PluginsService {
     const homebridgeInstalls = modules.filter(x => x.name === 'homebridge');
 
     if (homebridgeInstalls.length > 1) {
-      this.logger.warn('Multiple Instances Of Homebridge Found Installed - see https://git.io/JJSgm for help.');
+      this.logger.warn('Multiple Instances Of Homebridge Found Installed - see https://homebridge.io/w/JJSgm for help.');
       homebridgeInstalls.forEach((instance) => {
         this.logger.warn(instance.installPath);
       });
@@ -491,7 +491,7 @@ export class PluginsService {
 
     if (!homebridgeInstalls.length) {
       this.configService.hbServiceUiRestartRequired = true;
-      this.logger.error('Unable To Find Homebridge Installation - see https://git.io/JJSgZ for help.');
+      this.logger.error('Unable To Find Homebridge Installation - see https://homebridge.io/w/JJSgZ for help.');
       throw new Error('Unable To Find Homebridge Installation');
     }
 
@@ -1002,8 +1002,8 @@ export class PluginsService {
       }
 
     }
-    // Linux and macOS don't require the full path to npm
-    return ['npm'];
+    // Linux and macOS don't require the full path to npm / pnpm
+    return this.configService.usePnpm ? ['pnpm'] : ['npm'];
   }
 
   /**
@@ -1011,39 +1011,55 @@ export class PluginsService {
    * this is the same code used by homebridge to find plugins
    * https://github.com/nfarina/homebridge/blob/c73a2885d62531925ea439b9ad6d149a285f6daa/lib/plugin.js#L105-L134
    */
-  private getBasePaths() {
+  private getBasePaths(): string[] {
     let paths = [];
-
-    // add the paths used by require()
-    // we need to use 'eval' on require to bypass webpack
-    paths = paths.concat(eval('require').main.paths);
 
     if (this.configService.customPluginPath) {
       paths.unshift(this.configService.customPluginPath);
     }
 
-    if (process.env.NODE_PATH) {
-      paths = process.env.NODE_PATH.split(path.delimiter)
-        .filter((p) => !!p) // trim out empty values
-        .concat(paths);
-    } else {
-      // Default paths for each system
-      if ((os.platform() === 'win32')) {
-        paths.push(path.join(process.env.APPDATA, 'npm/node_modules'));
-      } else {
-        paths.push('/usr/local/lib/node_modules');
-        paths.push('/usr/lib/node_modules');
-        paths.push(child_process.execSync('/bin/echo -n "$(npm --no-update-notifier -g prefix)/lib/node_modules"').toString('utf8'));
+    if (this.configService.strictPluginResolution) {
+      if (!paths.length) {
+        paths.push(...this.getNpmPrefixToSearchPaths());
       }
+    } else {
+      // add the paths used by require()
+      // we need to use 'eval' on require to bypass webpack
+      paths = paths.concat(eval('require').main.paths);
+
+      if (process.env.NODE_PATH) {
+        paths = process.env.NODE_PATH.split(path.delimiter)
+          .filter((p) => !!p) // trim out empty values
+          .concat(paths);
+      } else {
+        // Default paths for non-windows systems
+        if ((os.platform() !== 'win32')) {
+          paths.push('/usr/local/lib/node_modules');
+          paths.push('/usr/lib/node_modules');
+        }
+        paths.push(...this.getNpmPrefixToSearchPaths());
+      }
+
+      // don't look at homebridge-config-ui-x's own modules
+      paths = paths.filter(x => x !== path.join(process.env.UIX_BASE_PATH, 'node_modules'));
     }
-
-    // don't look at homebridge-config-ui-x's own modules
-    paths = paths.filter(x => x !== path.join(process.env.UIX_BASE_PATH, 'node_modules'));
-
     // filter out duplicates and non-existent paths
     return _.uniq(paths).filter((requiredPath) => {
       return fs.existsSync(requiredPath);
     });
+  }
+
+  /**
+   * Get path from the npm prefix, eg. /usr/local/lib/node_modules
+   */
+  private getNpmPrefixToSearchPaths(): string[] {
+    const paths = [];
+    if ((os.platform() === 'win32')) {
+      paths.push(path.join(process.env.APPDATA, 'npm/node_modules'));
+    } else {
+      paths.push(child_process.execSync('/bin/echo -n "$(npm --no-update-notifier -g prefix)/lib/node_modules"').toString('utf8'));
+    }
+    return paths;
   }
 
   /**
@@ -1140,7 +1156,7 @@ export class PluginsService {
       }
     } catch (e) {
       if (e.response?.status !== 404) {
-        this.logger.log(`[${plugin.name}] Failed to check registry.npmjs.org for updates: "${e.message}" - see https://git.io/JJSz6 for help.`);
+        this.logger.log(`[${plugin.name}] Failed to check registry.npmjs.org for updates: "${e.message}" - see https://homebridge.io/w/JJSz6 for help.`);
       }
       plugin.publicPackage = false;
       plugin.latestVersion = null;
@@ -1233,11 +1249,11 @@ export class PluginsService {
       term.on('exit', (code) => {
         if (code === 0) {
           clearTimeout(timeoutTimer);
-          client.emit('stdout', color.green('\n\rCommand succeeded!.\n\r'));
+          client.emit('stdout', color.green('\n\rOperation succeeded!.\n\r'));
           resolve(null);
         } else {
           clearTimeout(timeoutTimer);
-          reject('Command failed. Please review log for details.');
+          reject('Operation failed. Please review log for details.');
         }
       });
 

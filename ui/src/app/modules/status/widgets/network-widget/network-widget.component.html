@@ -1,0 +1,23 @@
+<div class="flex-column d-flex align-items-stretch h-100 w-100 pb-1">
+  <div style="cursor: move;" class="drag-handler pl-2 pt-1 pr-2">
+    {{ 'status.network.title_network' | translate }} ({{ interface }})
+  </div>
+  <canvas class="widget-chart h-100 w-100" baseChart [datasets]="lineChartData" [labels]="lineChartLabels"
+    [options]="lineChartOptions" [colors]="lineChartColors" [chartType]="'line'"></canvas>
+  <div #widgetbackground class="hb-widget-chart-background"></div>
+  <div class="d-flex flex-row flex-grow-1 align-items-center w-100 gridster-item-content text-center">
+    <div class="d-flex justify-content-around flex-wrap w-100">
+      <div class="text-center widget-value-parent-wrap">
+        <div class="widget-value mb-0">{{ receivedPerSec | number:'1.0-1' }} Mb/s</div>
+        <div class="widget-value-label grey-text" [translate]="'status.network.label_received_per_second'">Received/sec
+        </div>
+      </div>
+      <div class="text-center widget-value-parent-wrap">
+        <div class="widget-value mb-0">
+          {{ sentPerSec | number:'1.0-1' }} Mb/s
+        </div>
+        <div class="widget-value-label grey-text" [translate]="'status.network.label_sent_per_second'">Sent/sec</div>
+      </div>
+    </div>
+  </div>
+</div>

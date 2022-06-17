@@ -1,6 +1,7 @@
 import { Controller, UseGuards, Get, Put, Body } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags, ApiBearerAuth, ApiExcludeEndpoint, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+
 import { AdminGuard } from '../../../core/auth/guards/admin.guard';
 import { DockerService } from './docker.service';
 
@@ -32,19 +33,5 @@ export class DockerController {
   @Put('restart-container')
   restartDockerContainer() {
     return this.dockerService.restartDockerContainer();
-  }
-
-  @ApiExcludeEndpoint()
-  @UseGuards(AdminGuard)
-  @Get('env')
-  getDockerEnv() {
-    return this.dockerService.getDockerEnv();
-  }
-
-  @ApiExcludeEndpoint()
-  @UseGuards(AdminGuard)
-  @Put('env')
-  updateDockerEnv(@Body() body) {
-    return this.dockerService.updateDockerEnv(body);
   }
 }
