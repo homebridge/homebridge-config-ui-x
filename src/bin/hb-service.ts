@@ -182,7 +182,7 @@ export class HomebridgeServiceHelper {
         console.log('    restart                          restart the homebridge service');
         if (this.enableHbServicePluginManagement) {
           console.log('    add <plugin>@<version>           install a plugin');
-          console.log('    add <plugin>@<version>           remove a plugin');
+          console.log('    remove <plugin>@<version>        remove a plugin');
         }
         console.log('    rebuild                          rebuild ui');
         console.log('    rebuild --all                    rebuild all npm modules (use after updating Node.js)');
