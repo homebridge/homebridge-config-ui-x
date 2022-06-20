@@ -412,6 +412,26 @@ export class PluginsService {
       return true;
     }
 
+    // if the package target supports bundled updates
+    if (pluginAction.name === this.configService.name) {
+      if ([
+        '/usr/local/lib/node_modules',
+        '/usr/lib/node_modules',
+        '/opt/homebridge/lib/node_modules',
+        '/var/packages/homebridge/target/app/lib/node_modules',
+      ].includes(path.dirname(process.env.UIX_BASE_PATH))) {
+        if (await this.isUiUpdateBundleAvailable(pluginAction.version)) {
+          try {
+            const prefix = path.dirname(path.dirname(path.dirname(process.env.UIX_BASE_PATH)));
+            await this.doUiBundleUpdate(pluginAction, prefix, client);
+            return true;
+          } catch (e) {
+            client.emit('stdout', color.yellow('\r\nBunled updatee failed. Trying regular update.\r\n'));
+          }
+        };
+      }
+    }
+
     // show a warning if updating homebridge-config-ui-x on Raspberry Pi 1 / Zero
     if (pluginAction.name === this.configService.name && os.cpus().length === 1 && os.arch() === 'arm') {
       client.emit('stdout', color.yellow('***************************************************************\r\n'));
@@ -616,6 +636,32 @@ export class PluginsService {
       this.npmPackage = npm;
       return npm;
     }
+  }
+
+  /**
+   * Check if a UI Update bundle is available for the given version
+   */
+  public async isUiUpdateBundleAvailable(version: string): Promise<boolean> {
+    try {
+      await this.httpService.head(`https://github.com/oznu/homebridge-config-ui-x/releases/download/${version}/homebridge-config-ui-x-${version}.tar.gz`).toPromise();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /**
+   * Do a UI update from the bundle
+   * @param version 
+   */
+  public async doUiBundleUpdate(pluginAction: PluginActionDto, prefix: string, client: EventEmitter) {
+    return await this.runNpmCommand(
+      ['npm', 'run', 'upgrade-install', '--', pluginAction.version, prefix],
+      process.env.UIX_BASE_PATH,
+      client,
+      pluginAction.termCols,
+      pluginAction.termRows
+    );
   }
 
   /**
