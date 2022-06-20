@@ -40,7 +40,7 @@ jobs:
         with:
           node-version: 16.x
       - name: Install package
-        run:
+        run: |
           mkdir package
           cd package
           export npm_config_prefix=$(pwd)
