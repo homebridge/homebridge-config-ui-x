@@ -28,7 +28,6 @@ jobs:
           tag_name: ${{ github.event.inputs.version }}
           release_name: ${{ github.event.inputs.version }}
           prerelease: ${{ github.event.inputs.prerelease }}
-          draft: true
   
   build:
     name: Build
