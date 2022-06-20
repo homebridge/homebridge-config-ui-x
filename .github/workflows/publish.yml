@@ -50,6 +50,6 @@ jobs:
           pwd
       - uses: AButler/upload-release-assets@v2.0
         with:
-          files: $(pwd)/homebridge-config-ui-x-${{ github.event.inputs.version }}.tar.gz
+          files: 'homebridge-config-ui-x-${{ github.event.inputs.version }}.tar.gz'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           release-tag: ${{ github.event.inputs.version }}
