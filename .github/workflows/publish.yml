@@ -6,6 +6,10 @@ on:
       version:
         description: 'Version / Tag (x.x.x):'
         required: true
+      create_release:
+        type: boolean
+        default: true
+        description: Create release?
       prerelease:
         type: boolean
         default: true
@@ -20,6 +24,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Create Release
+        if: github.event.inputs.create_release == true
         id: create_release
         uses: actions/create-release@v1
         env:
@@ -52,3 +57,4 @@ jobs:
           files: 'homebridge-config-ui-x-${{ github.event.inputs.version }}.tar.gz'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           release-tag: ${{ github.event.inputs.version }}
+
