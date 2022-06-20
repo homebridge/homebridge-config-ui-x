@@ -43,8 +43,10 @@ jobs:
           export npm_config_prefix=$(pwd)/package
           npm install -g homebridge-config-ui-x@${{ github.event.inputs.version }}
       - name: Create Bundle
-        run:
+        run: |
           tar -C $(pwd)/package -czvf homebridge-config-ui-x-${{ github.event.inputs.version }}.tar.gz .
+          ls -la 
+          pwd
       - uses: AButler/upload-release-assets@v2.0
         with:
           files: $(pwd)/homebridge-config-ui-x-${{ github.event.inputs.version }}.tar.gz
