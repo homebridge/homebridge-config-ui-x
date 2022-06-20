@@ -412,7 +412,7 @@ export class PluginsService {
       return true;
     }
 
-    // if the package target supports bundled updates
+    // if the package target supports bundled ui updates
     if (pluginAction.name === this.configService.name) {
       if ([
         '/usr/local/lib/node_modules',
@@ -420,15 +420,7 @@ export class PluginsService {
         '/opt/homebridge/lib/node_modules',
         '/var/packages/homebridge/target/app/lib/node_modules',
       ].includes(path.dirname(process.env.UIX_BASE_PATH))) {
-        if (await this.isUiUpdateBundleAvailable(pluginAction.version)) {
-          try {
-            const prefix = path.dirname(path.dirname(path.dirname(process.env.UIX_BASE_PATH)));
-            await this.doUiBundleUpdate(pluginAction, prefix, client);
-            return true;
-          } catch (e) {
-            client.emit('stdout', color.yellow('\r\nBunled updatee failed. Trying regular update.\r\n'));
-          }
-        };
+        return this.doUiBundleUpdate(pluginAction, client);
       }
     }
 
@@ -654,14 +646,33 @@ export class PluginsService {
    * Do a UI update from the bundle
    * @param version 
    */
-  public async doUiBundleUpdate(pluginAction: PluginActionDto, prefix: string, client: EventEmitter) {
-    return await this.runNpmCommand(
-      ['npm', 'run', 'upgrade-install', '--', pluginAction.version, prefix],
-      process.env.UIX_BASE_PATH,
+  public async doUiBundleUpdate(pluginAction: PluginActionDto, client: EventEmitter) {
+    // check if a bundled update is available
+    if (await this.isUiUpdateBundleAvailable(pluginAction.version)) {
+      const prefix = path.dirname(path.dirname(path.dirname(process.env.UIX_BASE_PATH)));
+      try {
+        await this.runNpmCommand(
+          ['npm', 'run', 'upgrade-install', '--', pluginAction.version, prefix],
+          process.env.UIX_BASE_PATH,
+          client,
+          pluginAction.termCols,
+          pluginAction.termRows
+        );
+        return true;
+      } catch (e) {
+        client.emit('stdout', color.yellow('\r\nBunled update failed. Trying regular update.\r\n'));
+      }
+    }
+
+    // otherwise, fall back to regular update using npm
+    await this.runNpmCommand(
+      ['npm', 'install', '-g', `${pluginAction.name}@${pluginAction.version}`],
+      path.dirname(path.dirname(process.env.UIX_BASE_PATH)),
       client,
       pluginAction.termCols,
       pluginAction.termRows
     );
+    return true;
   }
 
   /**
