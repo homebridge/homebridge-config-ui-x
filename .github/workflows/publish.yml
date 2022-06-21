@@ -49,7 +49,7 @@ jobs:
           npm install -g homebridge-config-ui-x@${{ github.event.inputs.version }}
       - name: Create Bundle
         run: |
-          tar -C $(pwd)/package -czvf homebridge-config-ui-x-${{ github.event.inputs.version }}.tar.gz .
+          tar -C $(pwd)/package --format=posix -czvf homebridge-config-ui-x-${{ github.event.inputs.version }}.tar.gz .
           shasum -a 256 homebridge-config-ui-x-${{ github.event.inputs.version }}.tar.gz > SHASUMS256.txt
       - uses: AButler/upload-release-assets@v2.0
         with:

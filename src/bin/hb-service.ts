@@ -561,7 +561,11 @@ export class HomebridgeServiceHelper {
    */
   private async getNpmGlobalModulesDirectory() {
     try {
-      const npmPrefix = child_process.execSync('npm -g prefix').toString('utf8').trim();
+      const npmPrefix = child_process.execSync('npm -g prefix', {
+        env: Object.assign({
+          npm_config_loglevel: 'silent'
+        }, process.env)
+      }).toString('utf8').trim();
       return os.platform() === 'win32' ? path.join(npmPrefix, 'node_modules') : path.join(npmPrefix, 'lib', 'node_modules');
     } catch (e) {
       return null;
@@ -579,7 +583,7 @@ export class HomebridgeServiceHelper {
     }
 
     // check the global npm modules directory
-    if (!this.homebridgeModulePath) {
+    if (!this.homebridgeModulePath && !(process.env.UIX_STRICT_PLUGIN_RESOLUTION === '1' && process.env.UIX_CUSTOM_PLUGIN_PATH)) {
       const globalModules = await this.getNpmGlobalModulesDirectory();
       if (globalModules && await fs.pathExists(path.resolve(globalModules, 'homebridge'))) {
         this.homebridgeModulePath = path.resolve(globalModules, 'homebridge');

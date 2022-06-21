@@ -660,7 +660,7 @@ export class PluginsService {
         );
         return true;
       } catch (e) {
-        client.emit('stdout', color.yellow('\r\nBunled update failed. Trying regular update.\r\n'));
+        client.emit('stdout', color.yellow('\r\nBundled update failed. Trying regular update using npm.\r\n\r\n'));
       }
     }
 
@@ -1267,7 +1267,14 @@ export class PluginsService {
       npm_config_unsafe_perm: 'true',
       npm_config_update_notifier: 'false',
       npm_config_prefer_online: 'true',
+      npm_config_foreground_scripts: 'true',
     });
+
+    if (!this.configService.usePnpm) {
+      Object.assign(env, {
+        npm_config_loglevel: 'error',
+      });
+    }
 
     // set global prefix for unix based systems
     if (command.includes('-g') && path.basename(cwd) === 'lib') {
