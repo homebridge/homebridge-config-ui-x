@@ -63,7 +63,7 @@ fi
 echo ""
 
 echo "Extracting..."
-tar -xvf "$tmp_dir/homebridge-config-ui-x-${TARGET_VERSION}.tar.gz" -C "$TARGET_PATH"
+tar -xvmf "$tmp_dir/homebridge-config-ui-x-${TARGET_VERSION}.tar.gz" -C "$TARGET_PATH"
 if [ "$?" != "0" ]; then
   echo "Failed to extract."
   mv "$TARGET_PATH/lib/node_modules/.homebridge-config-ui-x.bak" "$TARGET_PATH/lib/node_modules/homebridge-config-ui-x"
