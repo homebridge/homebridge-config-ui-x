@@ -11,9 +11,9 @@ echo "Target Path: $TARGET_PATH"
 echo ""
 
 SHASUM_COMMAND=""
-if command -v shasum &> /dev/null; then
+if command -v shasum > /dev/null; then
   SHASUM_COMMAND="shasum -a 256"
-elif command -v sha256sum &> /dev/null; then
+elif command -v sha256sum > /dev/null; then
   SHASUM_COMMAND="sha256sum"
 else
   echo "Failed to find shasum or sha256sum command."

@@ -1029,6 +1029,16 @@ export class PluginsService {
         }
       }
     }
+
+    // if homebridge-config-ui-x not found in default locations
+    if (allModules.findIndex(x => x.name === 'homebridge-config-ui-x') === -1) {
+      allModules.push({
+        name: 'homebridge-config-ui-x',
+        installPath: process.env.UIX_BASE_PATH,
+        path: path.dirname(process.env.UIX_BASE_PATH)
+      });
+    }
+
     return allModules;
   }
 

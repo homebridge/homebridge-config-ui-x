@@ -151,11 +151,11 @@ export class HomebridgeServiceHelper {
         break;
       }
       case 'add': {
-        this.pnpmPluginManagement(commander.args);
+        this.npmPluginManagement(commander.args);
         break;
       }
       case 'remove': {
-        this.pnpmPluginManagement(commander.args);
+        this.npmPluginManagement(commander.args);
         break;
       }
       case 'update-node': {
@@ -243,8 +243,7 @@ export class HomebridgeServiceHelper {
     // plugin management (install / uninstall) is only available when running as a package
     this.enableHbServicePluginManagement = (
       process.env.UIX_CUSTOM_PLUGIN_PATH &&
-      process.env.UIX_USE_PNPM === '1' &&
-      (process.env.HOMEBRIDGE_SYNOLOGY_PACKAGE === '1') || Boolean(process.env.HOMEBRIDGE_APT_PACKAGE === '1')
+      (Boolean(process.env.HOMEBRIDGE_SYNOLOGY_PACKAGE === '1') || Boolean(process.env.HOMEBRIDGE_APT_PACKAGE === '1'))
     );
 
     // Set Env Vars
@@ -1235,7 +1234,7 @@ export class HomebridgeServiceHelper {
   /**
    * Install / Remove a plugin using pnpm (supported platforms only)
    */
-  private async pnpmPluginManagement(args) {
+  private async npmPluginManagement(args) {
     if (!this.enableHbServicePluginManagement) {
       this.logger('Plugin management is not supported on your platform using hb-service.', 'fail');
       process.exit(1);
@@ -1260,8 +1259,15 @@ export class HomebridgeServiceHelper {
       this.logger(`Path does not exist: "${cwd}"`, 'fail');
     }
 
+    let baseCmd;
+    if (process.env.UIX_USE_PNPM === '1') {
+      baseCmd = 'pnpm -C';
+    } else {
+      baseCmd = 'npm --prefix';
+    }
+
     try {
-      child_process.execSync(`pnpm -C ${cwd} ${args.join(' ')}`, {
+      child_process.execSync(`${baseCmd} ${cwd} ${args.join(' ')}`, {
         cwd: cwd,
         stdio: 'inherit',
       });
