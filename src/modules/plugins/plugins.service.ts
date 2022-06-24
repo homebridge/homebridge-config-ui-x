@@ -647,8 +647,18 @@ export class PluginsService {
    * @param version 
    */
   public async doUiBundleUpdate(pluginAction: PluginActionDto, client: EventEmitter) {
+    // translate 'latest' into a real version number
+    if (pluginAction.version === 'latest') {
+      try {
+        const response = await this.httpService.get<IPackageJson>(`https://registry.npmjs.org/${this.configService.name}/${pluginAction.version}`).toPromise();
+        pluginAction.version = response.data.version;
+      } catch (e) {
+        client.emit('stdout', color.yellow(`\r\nFailed to resolve package version from ${pluginAction.version}.\r\n\r\n`));
+      }
+    }
+
     // check if a bundled update is available
-    if (await this.isUiUpdateBundleAvailable(pluginAction.version)) {
+    if (await this.isUiUpdateBundleAvailable(pluginAction.version) && pluginAction.version !== 'latest') {
       const prefix = path.dirname(path.dirname(path.dirname(process.env.UIX_BASE_PATH)));
       try {
         await this.runNpmCommand(
