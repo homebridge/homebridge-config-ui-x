@@ -1,9 +1,24 @@
+## 4.47.0 (2022-06-24)
+
+### Notable Changes
+
+* **System** Faster, and hopefully more reliable, updater for the Homebridge UI on macOS, Linux, Docker and FreeBSD
+  * This will only apply to updates after v4.48.0, not updating to v4.48.0
+  * If the new update process fails, it will fallback to using the standard `npm` update method automatically
+  * Linux (via apt package): requires apt package update (=>1.0.25)
+  * Linux / macOS / FreeBSD (setup via `hb-service install`): no changes required
+  * Docker: may require image update (=>2022-06-24)
+  * Synology DSM 7: requires package update via DSM Package Center (=>3.0.5)
+
+### Other Changes
+
+* **i18n:** Improvements to Thai language translations ([#1364](https://github.com/oznu/homebridge-config-ui-x/pull/1364))
+
 ## 4.47.0 (2022-06-15)
 
 ### Notable Changes
 
 * **Auth:** Login wallpaper is now a solid colour matching the users current theme, custom wallpaper images are still used if configured
-* **System:** If the UI detects it's own dependencies are missing or corrupt, it will trigger a task to fix them (on certain systems only, update required)
 * **System:** Stale temporary npm directories that prevent the UI and other plugins from updating (`npm ERR! code ENOTEMPTY`) will be removed when doing a full service restart for users running on Linux with [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command)
 
 ### Other changes

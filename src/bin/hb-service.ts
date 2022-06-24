@@ -520,8 +520,6 @@ export class HomebridgeServiceHelper {
    * Start the user interface
    */
   private async runUi() {
-    const moduleNotFoundPath = path.join(this.storagePath, '.uix-module-not-found');
-
     try {
       // import main module
       const main = await import('../main');
@@ -531,17 +529,7 @@ export class HomebridgeServiceHelper {
 
       // extract services
       this.ipcService = ui.get(main.HomebridgeIpcService);
-
-      // remove "module not found" error flag
-      if (await fs.pathExists(moduleNotFoundPath)) {
-        await fs.remove(moduleNotFoundPath);
-      }
     } catch (e) {
-      // if we encounter a "module not found" error, write a file to disk so the startup process can handle it
-      if (e && e.code === 'MODULE_NOT_FOUND') {
-        await fs.writeFile(moduleNotFoundPath, '1');
-      }
-
       this.logger('ERROR: The user interface threw an unhandled error');
       console.error(e);
 
