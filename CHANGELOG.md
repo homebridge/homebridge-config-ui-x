@@ -1,3 +1,9 @@
+## NEXT
+
+### Bug Fixes
+
+* **Backups:** Fixed an issue that could prevent backups being created on Synology DSM due to not being able read the `#recycle` directory
+
 ## 4.48.1 (2022-06-24)
 
 ### Notable Changes

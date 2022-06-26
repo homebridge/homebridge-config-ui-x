@@ -85,6 +85,8 @@ export class BackupService {
           '.git',               // git
           'recordings',         // homebridge-camera-ui recordings path
           '.homebridge.sock',   // homebridge ipc socket
+          '#recycle',           // synology dsm recycle bin
+          '@eaDir'              // synology dsm metadata
         ].includes(path.basename(filePath))), // list of files not to include in the archive
       });
 
