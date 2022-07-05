@@ -3,6 +3,11 @@
 ### Bug Fixes
 
 * **Backups:** Fixed an issue that could prevent backups being created on Synology DSM due to not being able read the `#recycle` directory
+* **Plugins** Faster, and hopefully more reliable, updater and installer for [Verified Homebridge Plugins](https://homebridge.io/w/Verified-Plugins) exclusively on the following platforms:
+  * Debian-based Linux (via apt package): requires apt package update (=>1.0.27)
+  * Docker: requires image update (=>2022-07-06)
+  * Synology DSM 7: requires package update via DSM Package Center (=>3.0.7)
+  * If the new update process fails, it will automatically fallback to using the standard `npm` update method 
 
 ## 4.48.1 (2022-06-24)
 

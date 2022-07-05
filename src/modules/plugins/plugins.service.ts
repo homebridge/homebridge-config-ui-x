@@ -587,7 +587,7 @@ export class PluginsService {
    */
   public async isPluginBundleAvailable(pluginAction: PluginActionDto) {
     if (
-      this.configService.usePluginBundles === true,
+      this.configService.usePluginBundles === true &&
       this.configService.customPluginPath &&
       this.configService.strictPluginResolution &&
       this.verifiedPlugins.find(x => x === pluginAction.name) &&
