@@ -134,20 +134,29 @@ export class LinuxInstaller extends BasePlatform {
       '/usr/local/lib/node_modules',
       '/usr/lib/node_modules'
     ].includes(path.dirname(process.env.UIX_BASE_PATH))) {
+      // systemd has a 90 second default timeout in the pre-start jobs
+      // terminate this task after 60 seconds to be safe
+      setTimeout(() => {
+        process.exit(0);
+      }, 60000);
+
       const modulesPath = path.dirname(process.env.UIX_BASE_PATH);
       const temporaryDirectoriesToClean = (await fs.readdir(modulesPath)).filter(x => {
         return x.startsWith('.homebridge-');
       });
+
       for (const directory of temporaryDirectoriesToClean) {
         const pathToRemove = path.join(modulesPath, directory);
         try {
           console.log('Removing stale temporary directory:', pathToRemove);
-          await fs.remove(pathToRemove);
+          await fs.rm(pathToRemove, { recursive: true, force: true });
         } catch (e) {
           console.error('Failed to remove:', pathToRemove, e);
         }
       }
     }
+
+    process.exit(0);
   }
 
   /**
