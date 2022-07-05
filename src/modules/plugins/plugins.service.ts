@@ -315,156 +315,107 @@ export class PluginsService {
   }
 
   /**
-   * Installs the requested plugin with NPM
-   * @param pluginName
-   * @param client
+   * Manage a plugin, install, update or uninstall it
+   * @param action 
+   * @param pluginAction 
+   * @param client 
    */
-  async installPlugin(pluginAction: PluginActionDto, client: EventEmitter) {
+  async managePlugin(action: 'install' | 'uninstall', pluginAction: PluginActionDto, client: EventEmitter) {
     pluginAction.version = pluginAction.version || 'latest';
-    await this.getInstalledPlugins();
 
-    // install new plugins in the same location as this plugin
-    let installPath = (this.configService.customPluginPath) ?
-      this.configService.customPluginPath : this.installedPlugins.find(x => x.name === this.configService.name).installPath;
-
-    // prepare flags for npm command
-    const installOptions: Array<string> = [];
-
-    // check to see if custom plugin path is using a package.json file
-    if (installPath === this.configService.customPluginPath && await fs.pathExists(path.resolve(installPath, '../package.json'))) {
-      installOptions.push('--save');
-    }
-
-    installPath = path.resolve(installPath, '../');
-
-    // set global flag
-    if (!this.configService.customPluginPath || os.platform() === 'win32') {
-      installOptions.push('-g');
-    }
-
-    await this.runNpmCommand(
-      [...this.npm, 'install', ...installOptions, `${pluginAction.name}@${pluginAction.version}`],
-      installPath,
-      client,
-      pluginAction.termCols,
-      pluginAction.termRows
-    );
-
-    return true;
-  }
-
-  /**
-   * Removes the requested plugin with NPM
-   * @param pluginName
-   * @param client
-   */
-  async uninstallPlugin(pluginAction: PluginActionDto, client: EventEmitter) {
-    if (pluginAction.name === this.configService.name) {
+    // prevent uninstalling self
+    if (action === 'uninstall' && pluginAction.name === this.configService.name) {
       throw new Error(`Cannot uninstall ${pluginAction.name} from ${this.configService.name}.`);
     }
 
-    await this.getInstalledPlugins();
-    // find the plugin
-    const plugin = this.installedPlugins.find(x => x.name === pluginAction.name);
-    if (!plugin) {
-      throw new Error(`Plugin "${pluginAction.name}" Not Found`);
-    }
-
-    // get the currently installed
-    let installPath = plugin.installPath;
-
-    // prepare flags for npm command
-    const installOptions: Array<string> = [];
-
-    // check to see if custom plugin path is using a package.json file
-    if (installPath === this.configService.customPluginPath && !this.configService.usePnpm && await fs.pathExists(path.resolve(installPath, '../package.json'))) {
-      installOptions.push('--save');
-    }
-
-    installPath = path.resolve(installPath, '../');
-
-    // set global flag
-    if (plugin.globalInstall || os.platform() === 'win32') {
-      installOptions.push('-g');
-    }
-
-    await this.runNpmCommand(
-      [...this.npm, 'uninstall', ...installOptions, pluginAction.name],
-      installPath,
-      client,
-      pluginAction.termCols,
-      pluginAction.termRows
-    );
-    await this.ensureCustomPluginDirExists();
-
-    return true;
-  }
-
-  /**
-   * Updates the requested plugin with NPM
-   * @param pluginName
-   * @param client
-   */
-  async updatePlugin(pluginAction: PluginActionDto, client: EventEmitter) {
-    pluginAction.version = pluginAction.version || 'latest';
+    // legacy support for offline docker updates
     if (pluginAction.name === this.configService.name && this.configService.dockerOfflineUpdate && pluginAction.version === 'latest') {
       await this.updateSelfOffline(client);
       return true;
     }
 
-    // if the package target supports bundled ui updates
-    if (pluginAction.name === this.configService.name) {
-      if ([
-        '/usr/local/lib/node_modules',
-        '/usr/lib/node_modules',
-        '/opt/homebridge/lib/node_modules',
-        '/var/packages/homebridge/target/app/lib/node_modules',
-      ].includes(path.dirname(process.env.UIX_BASE_PATH))) {
-        return this.doUiBundleUpdate(pluginAction, client);
+    // convert 'latest' into a real version
+    if (action === 'install' && pluginAction.version === 'latest') {
+      pluginAction.version = await this.getNpmModuleLatestVersion(pluginAction.name);
+    }
+
+    // set default install path
+    let installPath = (this.configService.customPluginPath) ?
+      this.configService.customPluginPath : this.installedPlugins.find(x => x.name === this.configService.name).installPath;
+
+    // check if the plugin is already installed
+    await this.getInstalledPlugins();
+
+    // check if the plugin is currently installed
+    const existingPlugin = this.installedPlugins.find(x => x.name === pluginAction.name);
+
+    // if the plugin is already installed, match the install path
+    if (existingPlugin) {
+      installPath = existingPlugin.installPath;
+    }
+
+    // homebridge-config-ui-x specific actions
+    if (action === 'install' && pluginAction.name === this.configService.name && await this.isUiUpdateBundleAvailable(pluginAction)) {
+      try {
+        await this.doUiBundleUpdate(pluginAction, client);
+        return true;
+      } catch (e) {
+        client.emit('stdout', color.yellow('\r\nBundled update failed. Trying regular update using npm.\r\n\r\n'));
+      }
+
+      // show a warning if updating homebridge-config-ui-x on Raspberry Pi 1 / Zero
+      if (os.cpus().length === 1 && os.arch() === 'arm') {
+        client.emit('stdout', color.yellow('***************************************************************\r\n'));
+        client.emit('stdout', color.yellow(`Please be patient while ${this.configService.name} updates.\r\n`));
+        client.emit('stdout', color.yellow('This process may take 5-15 minutes to complete on your device.\r\n'));
+        client.emit('stdout', color.yellow('***************************************************************\r\n\r\n'));
       }
     }
 
-    // show a warning if updating homebridge-config-ui-x on Raspberry Pi 1 / Zero
-    if (pluginAction.name === this.configService.name && os.cpus().length === 1 && os.arch() === 'arm') {
-      client.emit('stdout', color.yellow('***************************************************************\r\n'));
-      client.emit('stdout', color.yellow(`Please be patient while ${this.configService.name} updates.\r\n`));
-      client.emit('stdout', color.yellow('This process may take 5-15 minutes to complete on your device.\r\n'));
-      client.emit('stdout', color.yellow('***************************************************************\r\n\r\n'));
+    // if the plugin is verified, check to see if we can do a bundled update
+    if (action === 'install' && await this.isPluginBundleAvailable(pluginAction)) {
+      try {
+        await this.doPluginBundleUpdate(pluginAction, client);
+        return true;
+      } catch (e) {
+        client.emit('stdout', color.yellow('\r\nBundled install / update failed. Trying regular install / update using npm.\r\n\r\n'));
+      }
     }
-
-    await this.getInstalledPlugins();
-    // find the plugin
-    const plugin = this.installedPlugins.find(x => x.name === pluginAction.name);
-    if (!plugin) {
-      throw new Error(`Plugin "${pluginAction.name}" Not Found`);
-    }
-
-    // get the currently installed
-    let installPath = plugin.installPath;
 
     // prepare flags for npm command
     const installOptions: Array<string> = [];
 
     // check to see if custom plugin path is using a package.json file
-    if (installPath === this.configService.customPluginPath && await fs.pathExists(path.resolve(installPath, '../package.json'))) {
+    if (
+      installPath === this.configService.customPluginPath &&
+      !(action === 'uninstall' && this.configService.usePnpm) &&
+      await fs.pathExists(path.resolve(installPath, '../package.json'))
+    ) {
       installOptions.push('--save');
     }
 
+    // install path is one level up
     installPath = path.resolve(installPath, '../');
 
     // set global flag
-    if (plugin.globalInstall || os.platform() === 'win32') {
+    if (!this.configService.customPluginPath || os.platform() === 'win32' || existingPlugin?.globalInstall === true) {
       installOptions.push('-g');
     }
 
+    const npmPluginLabel = action === 'uninstall' ? pluginAction.name : `${pluginAction.name}@${pluginAction.version}`;
+
     try {
       await this.runNpmCommand(
-        [...this.npm, 'install', ...installOptions, `${pluginAction.name}@${pluginAction.version}`],
+        [...this.npm, action, ...installOptions, npmPluginLabel],
         installPath,
         client,
         pluginAction.termCols,
         pluginAction.termRows
       );
+
+      // ensure the custom plugin dir was not deleted
+      await this.ensureCustomPluginDirExists();
+
       return true;
     } catch (e) {
       if (pluginAction.name === this.configService.name) {
@@ -631,13 +582,66 @@ export class PluginsService {
   }
 
   /**
+   * Check to see if a plugin update bundle is available
+   * @param pluginAction 
+   */
+  public async isPluginBundleAvailable(pluginAction: PluginActionDto) {
+    if (
+      this.configService.usePluginBundles === true,
+      this.configService.customPluginPath &&
+      this.configService.strictPluginResolution &&
+      this.verifiedPlugins.find(x => x === pluginAction.name) &&
+      pluginAction.name !== this.configService.name &&
+      pluginAction.version !== 'latest'
+    ) {
+      try {
+        await this.httpService.head(`https://github.com/homebridge/plugin-repo/releases/download/v1/${pluginAction.name.replace('/', '@')}-${pluginAction.version}.tar.gz`).toPromise();
+        return true;
+      } catch (e) {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
+  /**
+   * Update a plugin using the bundle
+   * @param pluginAction 
+   * @param client 
+   */
+  public async doPluginBundleUpdate(pluginAction: PluginActionDto, client: EventEmitter) {
+    await this.runNpmCommand(
+      ['npm', 'run', 'plugin-upgrade-install', '--', pluginAction.name, pluginAction.version, this.configService.customPluginPath],
+      process.env.UIX_BASE_PATH,
+      client,
+      pluginAction.termCols,
+      pluginAction.termRows
+    );
+    return true;
+  }
+
+  /**
    * Check if a UI Update bundle is available for the given version
    */
-  public async isUiUpdateBundleAvailable(version: string): Promise<boolean> {
-    try {
-      await this.httpService.head(`https://github.com/oznu/homebridge-config-ui-x/releases/download/${version}/homebridge-config-ui-x-${version}.tar.gz`).toPromise();
-      return true;
-    } catch (e) {
+  public async isUiUpdateBundleAvailable(pluginAction: PluginActionDto): Promise<boolean> {
+    if (
+      [
+        '/usr/local/lib/node_modules',
+        '/usr/lib/node_modules',
+        '/opt/homebridge/lib/node_modules',
+        '/var/packages/homebridge/target/app/lib/node_modules',
+      ].includes(path.dirname(process.env.UIX_BASE_PATH)) &&
+      pluginAction.name === this.configService.name &&
+      pluginAction.version !== 'latest'
+    ) {
+      try {
+        await this.httpService.head(`https://github.com/oznu/homebridge-config-ui-x/releases/download/${pluginAction.version}/homebridge-config-ui-x-${pluginAction.version}.tar.gz`).toPromise();
+        return true;
+      } catch (e) {
+        return false;
+      }
+    } else {
       return false;
     }
   }
@@ -647,42 +651,14 @@ export class PluginsService {
    * @param version 
    */
   public async doUiBundleUpdate(pluginAction: PluginActionDto, client: EventEmitter) {
-    // translate 'latest' into a real version number
-    if (pluginAction.version === 'latest') {
-      try {
-        const response = await this.httpService.get<IPackageJson>(`https://registry.npmjs.org/${this.configService.name}/${pluginAction.version}`).toPromise();
-        pluginAction.version = response.data.version;
-      } catch (e) {
-        client.emit('stdout', color.yellow(`\r\nFailed to resolve package version from ${pluginAction.version}.\r\n\r\n`));
-      }
-    }
-
-    // check if a bundled update is available
-    if (await this.isUiUpdateBundleAvailable(pluginAction.version) && pluginAction.version !== 'latest') {
-      const prefix = path.dirname(path.dirname(path.dirname(process.env.UIX_BASE_PATH)));
-      try {
-        await this.runNpmCommand(
-          ['npm', 'run', 'upgrade-install', '--', pluginAction.version, prefix],
-          process.env.UIX_BASE_PATH,
-          client,
-          pluginAction.termCols,
-          pluginAction.termRows
-        );
-        return true;
-      } catch (e) {
-        client.emit('stdout', color.yellow('\r\nBundled update failed. Trying regular update using npm.\r\n\r\n'));
-      }
-    }
-
-    // otherwise, fall back to regular update using npm
+    const prefix = path.dirname(path.dirname(path.dirname(process.env.UIX_BASE_PATH)));
     await this.runNpmCommand(
-      ['npm', 'install', '-g', `${pluginAction.name}@${pluginAction.version}`],
-      path.dirname(path.dirname(process.env.UIX_BASE_PATH)),
+      ['npm', 'run', 'upgrade-install', '--', pluginAction.version, prefix],
+      process.env.UIX_BASE_PATH,
       client,
       pluginAction.termCols,
       pluginAction.termRows
     );
-    return true;
   }
 
   /**
@@ -1179,58 +1155,28 @@ export class PluginsService {
    */
   private async getPluginFromNpm(plugin: HomebridgePlugin): Promise<HomebridgePlugin> {
     try {
-      if (plugin.name.includes('@')) {
-        // scoped plugins do not allow us to access the "latest" tag directly
-        // see https://github.com/npm/registry-issue-archive/issues/34
+      // attempt to load from cache
+      const fromCache = this.npmPluginCache.get(plugin.name);
 
-        // attempt to load from cache
-        const fromCache = this.npmPluginCache.get(plugin.name);
+      // restore from cache, or load from npm
+      const pkg: IPackageJson = fromCache || (
+        await this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(plugin.name).replace('%40', '@')}/latest`).toPromise()
+      ).data;
 
-        // restore from cache, or load from npm
-        const pkg: INpmRegistryModule = fromCache || (
-          await this.httpService.get(`https://registry.npmjs.org/${plugin.name.replace('%40', '@')}`).toPromise()
-        ).data;
-
-        // store in cache if it was not there already
-        if (!fromCache) {
-          this.npmPluginCache.set(plugin.name, pkg);
-        }
-
-        plugin.publicPackage = true;
-        plugin.latestVersion = pkg['dist-tags'] ? pkg['dist-tags'].latest : plugin.installedVersion;
-        plugin.updateAvailable = semver.lt(plugin.installedVersion, plugin.latestVersion);
-        plugin.links = {
-          npm: `https://www.npmjs.com/package/${plugin.name}`,
-          homepage: pkg.homepage,
-        };
-        plugin.author = (pkg.maintainers.length) ? pkg.maintainers[0].name : null;
-        plugin.engines = plugin.latestVersion ? pkg.versions[plugin.latestVersion].engines : {};
-      } else {
-        // access the "latest" tag directly to speed up the request time
-
-        // attempt to load from cache
-        const fromCache = this.npmPluginCache.get(plugin.name);
-
-        // restore from cache, or load from npm
-        const pkg: IPackageJson = fromCache || (
-          await this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(plugin.name).replace('%40', '@')}/latest`).toPromise()
-        ).data;
-
-        // store in cache if it was not there already
-        if (!fromCache) {
-          this.npmPluginCache.set(plugin.name, pkg);
-        }
-
-        plugin.publicPackage = true;
-        plugin.latestVersion = pkg.version;
-        plugin.updateAvailable = semver.lt(plugin.installedVersion, plugin.latestVersion);
-        plugin.links = {
-          npm: `https://www.npmjs.com/package/${plugin.name}`,
-          homepage: pkg.homepage,
-        };
-        plugin.author = (pkg.maintainers.length) ? pkg.maintainers[0].name : null;
-        plugin.engines = pkg.engines;
+      // store in cache if it was not there already
+      if (!fromCache) {
+        this.npmPluginCache.set(plugin.name, pkg);
       }
+
+      plugin.publicPackage = true;
+      plugin.latestVersion = pkg.version;
+      plugin.updateAvailable = semver.lt(plugin.installedVersion, plugin.latestVersion);
+      plugin.links = {
+        npm: `https://www.npmjs.com/package/${plugin.name}`,
+        homepage: pkg.homepage,
+      };
+      plugin.author = (pkg.maintainers.length) ? pkg.maintainers[0].name : null;
+      plugin.engines = pkg.engines;
     } catch (e) {
       if (e.response?.status !== 404) {
         this.logger.log(`[${plugin.name}] Failed to check registry.npmjs.org for updates: "${e.message}" - see https://homebridge.io/w/JJSz6 for help.`);
@@ -1241,6 +1187,19 @@ export class PluginsService {
       plugin.links = {};
     }
     return plugin;
+  }
+
+  /**
+   * Returns the "latest" version for the provided module
+   * @param npmModuleName 
+   */
+  public async getNpmModuleLatestVersion(npmModuleName: string): Promise<string> {
+    try {
+      const response = await this.httpService.get<IPackageJson>(`https://registry.npmjs.org/${npmModuleName}/latest`).toPromise();
+      return response.data.version;
+    } catch (e) {
+      return 'latest';
+    }
   }
 
   /**

@@ -262,7 +262,7 @@ describe('BackupController (e2e)', () => {
 
     jest.spyOn(client, 'emit');
 
-    jest.spyOn(pluginsService, 'installPlugin')
+    jest.spyOn(pluginsService, 'managePlugin')
       .mockImplementation(async () => {
         return true;
       });
@@ -272,7 +272,7 @@ describe('BackupController (e2e)', () => {
 
     expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Restoring backup'));
     expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Restore Complete'));
-    expect(pluginsService.installPlugin).toHaveBeenCalledWith(expect.objectContaining({ name: 'homebridge-mock-plugin', version: expect.anything() }), client);
+    expect(pluginsService.managePlugin).toHaveBeenCalledWith('install', expect.objectContaining({ name: 'homebridge-mock-plugin', version: expect.anything() }), client);
 
     // ensure the temp restore directory was removed
     expect(await fs.pathExists(restoreDirectory)).toBe(false);

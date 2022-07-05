@@ -32,7 +32,7 @@ export class PluginsGateway {
   @SubscribeMessage('install')
   async installPlugin(client: EventEmitter, pluginAction: PluginActionDto) {
     try {
-      return await this.pluginsService.installPlugin(pluginAction, client);
+      return await this.pluginsService.managePlugin('install', pluginAction, client);
     } catch (e) {
       this.logger.error(e);
       client.emit('stdout', '\n\r' + color.red(e.toString()) + '\n\r');
@@ -43,7 +43,7 @@ export class PluginsGateway {
   @SubscribeMessage('uninstall')
   async uninstallPlugin(client: EventEmitter, pluginAction: PluginActionDto) {
     try {
-      return await this.pluginsService.uninstallPlugin(pluginAction, client);
+      return await this.pluginsService.managePlugin('uninstall', pluginAction, client);
     } catch (e) {
       this.logger.error(e);
       client.emit('stdout', '\n\r' + color.red(e.toString()) + '\n\r');
@@ -54,7 +54,7 @@ export class PluginsGateway {
   @SubscribeMessage('update')
   async updatePlugin(client: EventEmitter, pluginAction: PluginActionDto) {
     try {
-      return await this.pluginsService.updatePlugin(pluginAction, client);
+      return await this.pluginsService.managePlugin('install', pluginAction, client);
     } catch (e) {
       this.logger.error(e);
       client.emit('stdout', '\n\r' + color.red(e.toString()) + '\n\r');
