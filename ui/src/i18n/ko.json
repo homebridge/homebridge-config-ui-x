@@ -322,7 +322,7 @@
     "status.widget.add.label_homebridge_status": "Homebridge 상태",
     "status.widget.add.label_pairing_code": "페어링 코드",
     "status.widget.homebridgestatus.label_port": "Homebridge 포트 숨기기",
-    "status.widget.label_add_widget": "취젯 추가",
+    "status.widget.label_add_widget": "위젯 추가",
     "status.widget.label_clock": "시계",
     "status.widget.label_clock_dateformat": "날짜 형식",
     "status.widget.label_clock_timeformat": "시간 형식",
