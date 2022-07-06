@@ -1220,6 +1220,28 @@ export class HomebridgeServiceHelper {
   }
 
   /**
+   * Parse an npm package and version string
+   * Based on: https://github.com/egoist/parse-package-name
+   */
+  private parseNpmPackageString(input: string) {
+    const RE_SCOPED = /^(@[^\/]+\/[^@\/]+)(?:@([^\/]+))?(\/.*)?$/;
+    const RE_NON_SCOPED = /^([^@\/]+)(?:@([^\/]+))?(\/.*)?$/;
+
+    const m = RE_SCOPED.exec(input) || RE_NON_SCOPED.exec(input);
+
+    if (!m) {
+      this.logger('Invalid plugin name.', 'fail');
+      process.exit(1);
+    }
+
+    return {
+      name: m[1] || '',
+      version: m[2] || 'latest',
+      path: m[3] || '',
+    };
+  }
+
+  /**
    * Install / Remove a plugin using pnpm (supported platforms only)
    */
   private async npmPluginManagement(args) {
@@ -1233,10 +1255,15 @@ export class HomebridgeServiceHelper {
       process.exit(1);
     }
 
-    const target = args[args.length - 1] as string;
-    const packageName = target.match(/^((@[\w-]*)\/)?(homebridge-[\w-]*)/)?.[0];
+    const action: 'add' | 'remove' = args[0];
+    const target = this.parseNpmPackageString(args[args.length - 1]);
 
-    if (!packageName) {
+    if (!target.name) {
+      this.logger('Invalid plugin name.', 'fail');
+      process.exit(1);
+    }
+
+    if (!target.name.match(/^((@[\w-]*)\/)?(homebridge-[\w-]*)$/)) {
       this.logger('Invalid plugin name.', 'fail');
       process.exit(1);
     }
@@ -1247,18 +1274,26 @@ export class HomebridgeServiceHelper {
       this.logger(`Path does not exist: "${cwd}"`, 'fail');
     }
 
-    let baseCmd;
+    let cmd;
+
     if (process.env.UIX_USE_PNPM === '1') {
-      baseCmd = 'pnpm -C';
+      cmd = `pnpm -C "${cwd}" ${action} ${target.name}`;
     } else {
-      baseCmd = 'npm --prefix';
+      cmd = `npm --prefix "${cwd}" ${action} ${target.name}`;
     }
 
+    if (action === 'add') {
+      cmd += `@${target.version}`;
+    }
+
+    this.logger(`CMD: ${cmd}`, 'info');
+
     try {
-      child_process.execSync(`${baseCmd} ${cwd} ${args.join(' ')}`, {
+      child_process.execSync(cmd, {
         cwd: cwd,
         stdio: 'inherit',
       });
+      this.logger(`Installed ${target.name}@${target.version}`, 'succeed');
     } catch (e) {
       this.logger('Plugin installation failed.', 'fail');
     }

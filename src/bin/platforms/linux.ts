@@ -465,7 +465,7 @@ export class LinuxInstaller extends BasePlatform {
    * Check the current user is NOT root
    */
   private checkIsNotRoot() {
-    if (process.getuid() === 0 && !this.hbService.allowRunRoot) {
+    if (process.getuid() === 0 && !this.hbService.allowRunRoot && process.env.HOMEBRIDGE_CONFIG_UI !== '1') {
       this.hbService.logger('ERROR: This command must not be executed as root or with sudo', 'fail');
       this.hbService.logger('ERROR: If you know what you are doing; you can override this by adding --allow-root', 'fail');
       process.exit(1);
