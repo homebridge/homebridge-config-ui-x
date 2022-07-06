@@ -1,13 +1,23 @@
-## NEXT
+## 4.49.0 (2022-07-06)
 
-### Bug Fixes
+### Notable Changes
 
-* **Backups:** Fixed an issue that could prevent backups being created on Synology DSM due to not being able read the `#recycle` directory
 * **Plugins** Faster, and hopefully more reliable, updater and installer for [Verified Homebridge Plugins](https://homebridge.io/w/Verified-Plugins) exclusively on the following platforms:
   * Debian-based Linux (via apt package): requires apt package update (=>1.0.27)
   * Docker: requires image update (=>2022-07-06)
   * Synology DSM 7: requires package update via DSM Package Center (=>3.0.7)
   * If the new update process fails, it will automatically fallback to using the standard `npm` update method 
+
+### Other Changes
+
+* **i18n:** Improvements to Italian language translations ([#1373](https://github.com/oznu/homebridge-config-ui-x/pull/1373))
+* **i18n:** Improvements to Korean language translations ([#1374](https://github.com/oznu/homebridge-config-ui-x/pull/1374))
+* **i18n:** Improvements to Korean language translations ([#1375](https://github.com/oznu/homebridge-config-ui-x/pull/1375))
+
+### Bug Fixes
+
+* **Backups:** Fixed an issue that could prevent backups being created on Synology DSM due to not being able read the `#recycle` directory
+* **System:** Set a 60 second timeout on the pre-start job to clean up stale temporary npm directories on Linux running via `hb-service`; this should fix the errors some users were seeing when the task took more than the 90 seconds systemd allows by default ([#1371](https://github.com/oznu/homebridge-config-ui-x/issues/1371))
 
 ## 4.48.1 (2022-06-24)
 
