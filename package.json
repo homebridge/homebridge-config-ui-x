@@ -1,7 +1,7 @@
 {
   "name": "homebridge-config-ui-x",
   "displayName": "Homebridge UI",
-  "version": "4.49.0-test.5",
+  "version": "4.49.0-test.6",
   "description": "A web based management, configuration and control platform for Homebridge",
   "license": "MIT",
   "author": "oznu <dev@oz.nu>",
@@ -47,8 +47,7 @@
     "install:ui": "npm install --prefix ui",
     "test:e2e": "jest --forceExit --detectOpenHandles --verbose=true --silent --config ./test/jest-e2e.json",
     "prepublishOnly": "npm i --package-lock-only && npm run lint && npm run build",
-    "upgrade-install": "./upgrade-install.sh",
-    "plugin-upgrade-install": "./plugin-upgrade-install.sh"
+    "upgrade-install": "./upgrade-install.sh"
   },
   "dependencies": {
     "@nestjs/axios": "0.0.7",

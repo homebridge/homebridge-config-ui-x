@@ -611,9 +611,10 @@ export class PluginsService {
    * @param client 
    */
   public async doPluginBundleUpdate(pluginAction: PluginActionDto, client: EventEmitter) {
+    const pluginUpgradeInstallScriptPath = path.join(process.env.UIX_BASE_PATH, 'plugin-upgrade-install.sh');
     await this.runNpmCommand(
-      ['npm', 'run', 'plugin-upgrade-install', '--', pluginAction.name, pluginAction.version, this.configService.customPluginPath],
-      process.env.UIX_BASE_PATH,
+      [pluginUpgradeInstallScriptPath, pluginAction.name, pluginAction.version, this.configService.customPluginPath],
+      this.configService.storagePath,
       client,
       pluginAction.termCols,
       pluginAction.termRows
@@ -652,8 +653,9 @@ export class PluginsService {
    */
   public async doUiBundleUpdate(pluginAction: PluginActionDto, client: EventEmitter) {
     const prefix = path.dirname(path.dirname(path.dirname(process.env.UIX_BASE_PATH)));
+    const upgradeInstallScriptPath = path.join(process.env.UIX_BASE_PATH, 'upgrade-install.sh');
     await this.runNpmCommand(
-      ['npm', 'run', 'upgrade-install', '--', pluginAction.version, prefix],
+      this.configService.ui.sudo ? ['npm', 'run', 'upgrade-install', '--', pluginAction.version, prefix] : [upgradeInstallScriptPath, pluginAction.version, prefix],
       process.env.UIX_BASE_PATH,
       client,
       pluginAction.termCols,
