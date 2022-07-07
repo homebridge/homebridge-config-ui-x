@@ -105,7 +105,7 @@ function revertToBackup() {
 }
 
 echo "Extracting..."
-tar -xmvf "$tmp_dir/${TARGET_PLUGIN_BUNDLE_NAME}.tar.gz" -C "$TARGET_PATH"
+tar --no-same-owner -xmvf "$tmp_dir/${TARGET_PLUGIN_BUNDLE_NAME}.tar.gz" -C "$TARGET_PATH"
 if [ "$?" != "0" ]; then
   echo "Failed to extract."
   revertToBackup
