@@ -378,7 +378,7 @@ export class PluginsService {
         await this.doPluginBundleUpdate(pluginAction, client);
         return true;
       } catch (e) {
-        client.emit('stdout', color.yellow('\r\nBundled install / update failed. Trying regular install / update using npm.\r\n\r\n'));
+        client.emit('stdout', color.yellow('\r\nBundled install / update could not complete. Trying regular install / update using npm.\r\n\r\n'));
       }
     }
 

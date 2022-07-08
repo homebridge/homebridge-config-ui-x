@@ -1,12 +1,12 @@
-## 4.49.0 (2022-07-06)
+## 4.49.0 (2022-07-08)
 
 ### Notable Changes
 
 * **Plugins** Faster, and hopefully more reliable, updater and installer for [Verified Homebridge Plugins](https://homebridge.io/w/Verified-Plugins) exclusively on the following platforms:
   * Debian-based Linux (via apt package): requires apt package update (=>1.0.27)
-  * Docker: requires image update (=>2022-07-06)
+  * Docker: requires image update (=>2022-07-08)
   * Synology DSM 7: requires package update via DSM Package Center (=>3.0.7)
-  * If the new update process fails, it will automatically fallback to using the standard `npm` update method 
+  * If the new install / update process fails, it will automatically fallback to using the standard `npm` update method 
 
 ### Other Changes
 
