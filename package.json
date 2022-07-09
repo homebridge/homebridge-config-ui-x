@@ -82,7 +82,7 @@
     "reflect-metadata": "^0.1.12",
     "rxjs": "7.5.5",
     "semver": "7.3.6",
-    "systeminformation": "5.11.14",
+    "systeminformation": "5.11.23",
     "tail": "^2.2.4",
     "tar": "^6.1.11",
     "tcp-port-used": "^1.0.2",
