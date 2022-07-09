@@ -80,6 +80,7 @@ export class BackupService {
           'pnpm-lock.yaml',     // pnpm
           'package.json',       // npm
           'package-lock.json',  // npm
+          '.npmrc',             // npm
           'FFmpeg',             // ffmpeg
           'fdk-aac',            // ffmpeg
           '.git',               // git
@@ -392,6 +393,7 @@ export class BackupService {
     const restoreFilter = [
       path.join(this.restoreDirectory, 'storage', 'package.json'),
       path.join(this.restoreDirectory, 'storage', 'package-lock.json'),
+      path.join(this.restoreDirectory, 'storage', '.npmrc'),
     ];
 
     // restore files

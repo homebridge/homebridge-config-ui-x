@@ -932,13 +932,17 @@ export class PluginsService {
     const schema = await fs.readJson(path.resolve(fullPath, 'config.schema.json'));
     const customUiPath = path.resolve(fullPath, schema.customUiPath || 'homebridge-ui');
 
-    if (!customUiPath.startsWith(fullPath)) {
-      throw new Error('Custom UI path is outside the plugin root.');
-    }
-
     const publicPath = path.resolve(customUiPath, 'public');
     const serverPath = path.resolve(customUiPath, 'server.js');
     const devServer = plugin.private ? schema.customUiDevServer : null;
+
+    if (!devServer && !await fs.pathExists(customUiPath)) {
+      throw new Error('Plugin does not provide a custom UI at expected location: ' + customUiPath);
+    }
+
+    if (!devServer && !(await fs.realpath(customUiPath)).startsWith(await fs.realpath(fullPath))) {
+      throw new Error('Custom UI path is outside the plugin root: ' + await fs.realpath(customUiPath));
+    }
 
     if (await fs.pathExists(path.resolve(publicPath, 'index.html')) || devServer) {
       return {

@@ -15,6 +15,7 @@ import { EventEmitter } from 'events';
 @Injectable()
 export class PluginsSettingsUiService {
   private pluginUiMetadataCache = new NodeCache({ stdTTL: 86400 });
+  private pluginUiLastVersionCache = new NodeCache({ stdTTL: 86400 });
 
   constructor(
     private loggerService: Logger,
@@ -26,10 +27,16 @@ export class PluginsSettingsUiService {
   /**
    * Serve Custom HTML Assets for a plugin
    */
-  async serveCustomUiAsset(reply, pluginName: string, assetPath: string, origin: string) {
+  async serveCustomUiAsset(reply, pluginName: string, assetPath: string, origin: string, version?: string) {
     try {
       if (!assetPath) {
         assetPath = 'index.html';
+      }
+
+      if (assetPath === 'index.html' && version) {
+        if (version !== this.pluginUiLastVersionCache.get(pluginName)) {
+          this.pluginUiMetadataCache.del(pluginName);
+        }
       }
 
       const pluginUi: HomebridgePluginUiMetadata = (this.pluginUiMetadataCache.get(pluginName) as any)
@@ -80,6 +87,7 @@ export class PluginsSettingsUiService {
     try {
       const pluginUi = await this.pluginsService.getPluginUiMetadata(pluginName);
       this.pluginUiMetadataCache.set(pluginName, pluginUi);
+      this.pluginUiLastVersionCache.set(pluginName, pluginUi.plugin.installedVersion);
       return pluginUi;
     } catch (e) {
       this.loggerService.warn(`[${pluginName}] Custom UI:`, e.message);

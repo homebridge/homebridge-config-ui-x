@@ -1,3 +1,11 @@
+## NEXT
+
+### Bug Fixes
+
+* **Backups:** Exclude `.npmrc` files from backups
+* **Plugins:** A plugin with a [custom user interfaces](https://github.com/homebridge/plugin-ui-utils) will have it's optional `customUiPath` property re-evaluated when the package version changes ([#1379](https://github.com/oznu/homebridge-config-ui-x/issues/1379))
+* **Plugins:** Prevent a plugin using symlink to define a `customUiPath` outside it's root directory
+
 ## 4.49.0 (2022-07-08)
 
 ### Notable Changes
