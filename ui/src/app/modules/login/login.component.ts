@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormGroup, Validators, FormControl } from '@angular/forms';
+import { Validators, FormGroup, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { debounceTime } from 'rxjs/operators';
 
@@ -15,7 +15,12 @@ import { AuthService } from '../../core/auth/auth.service';
 export class LoginComponent implements OnInit {
   @ViewChild('password') private passwordInput;
 
-  public form: FormGroup;
+  public form: FormGroup<{
+    username: FormControl<string>;
+    password: FormControl<string>;
+    otp?: FormControl<string>;
+  }>;
+
   public backgroundStyle: string;
   public invalidCredentials = false;
   public invalid2faCode = false;
@@ -38,8 +43,8 @@ export class LoginComponent implements OnInit {
     this.form.valueChanges
       .pipe(debounceTime(500))
       .subscribe((changes) => {
-        const passwordInputValue = this.passwordInput.nativeElement.value;
-        if (passwordInputValue !== changes.password) {
+        const passwordInputValue = this.passwordInput?.nativeElement.value;
+        if (passwordInputValue && passwordInputValue !== changes.password) {
           this.form.controls.password.setValue(passwordInputValue);
         }
       });
@@ -65,7 +70,7 @@ export class LoginComponent implements OnInit {
     this.invalidCredentials = false;
     this.invalid2faCode = false;
     this.inProgress = true;
-    await this.$auth.login(this.form.value)
+    await this.$auth.login(this.form.getRawValue())
       .then((user) => {
         this.$router.navigateByUrl(this.targetRoute);
         window.sessionStorage.removeItem('target_route');
@@ -73,7 +78,11 @@ export class LoginComponent implements OnInit {
       .catch((err) => {
         if (err.status === 412) {
           if (!this.form.controls['otp']) {
-            this.form.addControl('otp', new FormControl('', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]));
+            this.form.addControl('otp', new FormControl('', [
+              Validators.required,
+              Validators.minLength(6),
+              Validators.maxLength(6),
+            ]));
           } else {
             this.form.controls['otp'].setErrors(['Invalid Code']);
             this.invalid2faCode = true;

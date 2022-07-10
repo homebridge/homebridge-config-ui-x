@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, FormGroup, FormControl } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -27,8 +27,15 @@ import { SelectNetworkInterfacesComponent } from './select-network-interfaces/se
   styleUrls: ['./settings.component.scss'],
 })
 export class SettingsComponent implements OnInit {
-  public serviceForm: FormGroup;
-  public legacyMdnsFormControl = new FormControl(false);
+  public serviceForm = new FormGroup({
+    HOMEBRIDGE_DEBUG: new FormControl(false),
+    HOMEBRIDGE_KEEP_ORPHANS: new FormControl(false),
+    HOMEBRIDGE_INSECURE: new FormControl(true),
+    ENV_DEBUG: new FormControl(null),
+    ENV_NODE_OPTIONS: new FormControl(null),
+  });
+
+  public legacyMdnsFormControl = new UntypedFormControl(false);
   public saved = false;
 
   public showNetworking = false;
@@ -40,7 +47,7 @@ export class SettingsComponent implements OnInit {
     public $settings: SettingsService,
     private $api: ApiService,
     private $notification: NotificationService,
-    public $fb: FormBuilder,
+    public $fb: UntypedFormBuilder,
     public $toastr: ToastrService,
     private $modal: NgbModal,
     private $route: ActivatedRoute,
@@ -56,14 +63,6 @@ export class SettingsComponent implements OnInit {
   }
 
   initServiceModeForm() {
-    this.serviceForm = this.$fb.group({
-      HOMEBRIDGE_DEBUG: [false],
-      HOMEBRIDGE_KEEP_ORPHANS: [false],
-      HOMEBRIDGE_INSECURE: [true],
-      ENV_DEBUG: [null],
-      ENV_NODE_OPTIONS: [null],
-    });
-
     this.$api.get('/platform-tools/hb-service/homebridge-startup-settings').subscribe(
       (data) => {
         this.serviceForm.patchValue(data);

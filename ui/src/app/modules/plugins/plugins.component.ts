@@ -21,7 +21,10 @@ export class PluginsComponent implements OnInit, OnDestroy {
 
   public installedPlugins: any = [];
   public childBridges = [];
-  public form: FormGroup;
+
+  public form = new FormGroup({
+    query: new FormControl('', [Validators.required]),
+  });
 
   public loading = true;
   public searchQuery: string;
@@ -58,10 +61,6 @@ export class PluginsComponent implements OnInit, OnDestroy {
       if (e instanceof NavigationEnd) {
         this.loadInstalledPlugins();
       }
-    });
-
-    this.form = new FormGroup({
-      query: new FormControl('', [Validators.required]),
     });
 
     // load list of installed plugins

@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl, Validators, FormGroup, FormControl } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import * as dayjs from 'dayjs';
@@ -20,7 +20,9 @@ export class UsersSetup2faComponent implements OnInit {
   public timeDiffError: number | null = null;
   public otpString: string;
 
-  public formGroup: FormGroup;
+  public formGroup = new FormGroup({
+    code: new FormControl('', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]),
+  });
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -30,10 +32,6 @@ export class UsersSetup2faComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.formGroup = new FormGroup({
-      code: new FormControl('', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]),
-    });
-
     this.$api.post('/users/otp/setup', {}).subscribe(
       data => {
         this.checkTimeDiff(data.timestamp);
