@@ -38,7 +38,7 @@ export class RestartComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.$notification.restartTriggered.next();
+    this.$notification.restartTriggered.next(undefined);
 
     this.io.connected.subscribe(() => {
       this.io.socket.emit('monitor-server-status');

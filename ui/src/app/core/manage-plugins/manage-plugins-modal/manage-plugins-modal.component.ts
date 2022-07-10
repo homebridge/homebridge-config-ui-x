@@ -168,7 +168,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
         this.$router.navigate(['/plugins']);
         this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);
         this.getChangeLog();
-        this.$notification.configUpdated.next();
+        this.$notification.configUpdated.next(undefined);
       },
       (err) => {
         this.actionFailed = true;

@@ -77,7 +77,7 @@ export class SettingsComponent implements OnInit {
   saveServiceModeSettings(data = this.serviceForm.value) {
     this.$api.put('/platform-tools/hb-service/homebridge-startup-settings', data).subscribe(() => {
       this.saved = true;
-      this.$notification.configUpdated.next();
+      this.$notification.configUpdated.next(undefined);
     });
   }
 
@@ -158,7 +158,7 @@ export class SettingsComponent implements OnInit {
       .subscribe(
         () => {
           this.saved = true;
-          this.$notification.configUpdated.next();
+          this.$notification.configUpdated.next(undefined);
         },
         (err) => {
           this.$toastr.error(err.message, 'Failed to set mdns advertiser.');
@@ -171,7 +171,7 @@ export class SettingsComponent implements OnInit {
       .subscribe(
         () => {
           this.saved = true;
-          this.$notification.configUpdated.next();
+          this.$notification.configUpdated.next(undefined);
         },
         (err) => {
           this.$toastr.error(err.message, 'Failed to set network adapters.');

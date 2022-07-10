@@ -38,7 +38,7 @@ export class AccessoriesWidgetComponent implements OnInit, OnDestroy {
     this.orderSubscription = dragulaService.drop().subscribe(() => {
       setTimeout(() => {
         this.widget.accessoryOrder = this.dashboardAccessories.map(x => x.uniqueId);
-        this.widget.$saveWidgetsEvent.next();
+        this.widget.$saveWidgetsEvent.next(undefined);
       });
     });
   }

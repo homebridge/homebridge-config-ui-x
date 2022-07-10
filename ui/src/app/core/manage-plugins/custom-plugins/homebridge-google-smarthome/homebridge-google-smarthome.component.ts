@@ -148,7 +148,7 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
 
     await this.saveConfig();
     this.activeModal.close();
-    this.$notification.configUpdated.next();
+    this.$notification.configUpdated.next(undefined);
   }
 
   close() {
