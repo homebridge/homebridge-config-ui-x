@@ -1,5 +1,10 @@
 ## NEXT
 
+### Other Changes
+
+* **i18n:** Improvements to Swedish language translations ([#1380](https://github.com/oznu/homebridge-config-ui-x/pull/1380))
+* **Dashboard:** Display CPU temperature on the dashboard when running on Synology DSM 7 ([#1382](https://github.com/oznu/homebridge-config-ui-x/pull/1382))
+
 ### Bug Fixes
 
 * **Backups:** Exclude `.npmrc` files from backups
