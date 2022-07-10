@@ -615,12 +615,12 @@ export class HomebridgeServiceHelper {
   }
 
   /**
-   * Checks the current Node.js version is > 10
+   * Checks the current Node.js version is > 14
    */
   private nodeVersionCheck() {
-    // 64 = v10;
-    if (parseInt(process.versions.modules, 10) < 64) {
-      this.logger(`ERROR: Node.js v10.13.0 or greater is required. Current: ${process.version}.`, 'fail');
+    // 83 = v14;
+    if (parseInt(process.versions.modules, 10) < 83) {
+      this.logger(`ERROR: Node.js v14.15.0 or greater is required. Current: ${process.version}.`, 'fail');
       process.exit(1);
     }
   }
