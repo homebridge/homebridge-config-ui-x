@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Put, Header, Delete, Param, HttpCode, Body, Query } from '@nestjs/common';
+import { Controller, Get, UseGuards, Put, Delete, Param, HttpCode, Body, Query } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiBearerAuth, ApiParam, ApiOperation, ApiQuery } from '@nestjs/swagger';
 
@@ -58,13 +58,6 @@ export class ServerController {
   @ApiOperation({ summary: 'Get the Homebridge HomeKit pairing information and status.' })
   getBridgePairingInformation() {
     return this.serverService.getBridgePairingInformation();
-  }
-
-  @Get('/qrcode.svg')
-  @ApiOperation({ summary: 'Return the pairing QR code as an SVG.' })
-  @Header('content-type', 'image/svg+xml')
-  getQrCode() {
-    return this.serverService.generateQrCode();
   }
 
   @UseGuards(AdminGuard)

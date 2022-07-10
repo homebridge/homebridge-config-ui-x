@@ -112,7 +112,6 @@
     "nodemon": "^2.0.19",
     "otplib": "^12.0.1",
     "prettier": "^2.7.1",
-    "qr-image": "^3.2.0",
     "rimraf": "^3.0.2",
     "ts-jest": "^28.0.5",
     "ts-loader": "^9.3.1",

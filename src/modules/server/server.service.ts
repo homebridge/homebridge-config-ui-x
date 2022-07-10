@@ -1,7 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as bufferShim from 'buffer-shims';
-import * as qr from 'qr-image';
 import * as si from 'systeminformation';
 import * as NodeCache from 'node-cache';
 import * as child_process from 'child_process';
@@ -23,7 +22,7 @@ export class ServerService {
   private accessoryId = this.configService.homebridgeConfig.bridge.username.split(':').join('');
   private accessoryInfoPath = path.join(this.configService.storagePath, 'persist', `AccessoryInfo.${this.accessoryId}.json`);
 
-  private setupCode: string;
+  public setupCode: string | null = null;
 
   constructor(
     private readonly configService: ConfigService,
@@ -273,22 +272,9 @@ export class ServerService {
   }
 
   /**
-   * Returns a QR Code SVG
-   */
-  public async generateQrCode() {
-    const setupCode = await this.getSetupCode();
-
-    if (!setupCode) {
-      throw new NotFoundException();
-    }
-
-    return qr.image(setupCode, { type: 'svg' });
-  }
-
-  /**
    * Returns existing setup code if cached, or requests one
    */
-  private async getSetupCode() {
+  public async getSetupCode(): Promise<string | null> {
     if (this.setupCode) {
       return this.setupCode;
     } else {

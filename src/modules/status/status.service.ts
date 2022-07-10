@@ -14,12 +14,22 @@ import { Logger } from '../../core/logger/logger.service';
 import { ConfigService } from '../../core/config/config.service';
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service';
 import { PluginsService } from '../plugins/plugins.service';
+import { ServerService } from '../server/server.service';
 
 export const enum HomebridgeStatus {
   PENDING = 'pending',
   OK = 'ok',
   UP = 'up',
   DOWN = 'down',
+}
+
+export interface HomebridgeStatusUpdate {
+  status: HomebridgeStatus;
+  paired?: null | boolean;
+  setupUri?: null | string;
+  name?: string;
+  username?: string;
+  pin?: string;
 }
 
 const execAsync = util.promisify(child_process.exec);
@@ -52,6 +62,7 @@ export class StatusService {
     private logger: Logger,
     private configService: ConfigService,
     private pluginsService: PluginsService,
+    private serverService: ServerService,
     private homebridgeIpcService: HomebridgeIpcService,
   ) {
 
@@ -71,8 +82,13 @@ export class StatusService {
     }
 
     if (this.configService.serviceMode) {
-      this.homebridgeIpcService.on('serverStatusUpdate', (data: { status: HomebridgeStatus }) => {
+      this.homebridgeIpcService.on('serverStatusUpdate', (data: HomebridgeStatusUpdate) => {
         this.homebridgeStatus = data.status === HomebridgeStatus.OK ? HomebridgeStatus.UP : data.status;
+
+        if (data?.setupUri) {
+          this.serverService.setupCode = data.setupUri;
+        }
+
         this.homebridgeStatusChange.next(this.homebridgeStatus);
       });
     }
@@ -240,6 +256,7 @@ export class StatusService {
   public async getHomebridgePairingPin() {
     return {
       pin: this.configService.homebridgeConfig.bridge.pin,
+      setupUri: await this.serverService.getSetupCode(),
     };
   }
 
@@ -248,11 +265,12 @@ export class StatusService {
    */
   public async getHomebridgeStatus() {
     return {
+      status: this.homebridgeStatus,
       consolePort: this.configService.ui.port,
       port: this.configService.homebridgeConfig.bridge.port,
       pin: this.configService.homebridgeConfig.bridge.pin,
+      setupUri: this.serverService.setupCode,
       packageVersion: this.configService.package.version,
-      status: this.homebridgeStatus,
     };
   }
 
@@ -304,6 +322,7 @@ export class StatusService {
       consolePort: this.configService.ui.port,
       port: this.configService.homebridgeConfig.bridge.port,
       pin: this.configService.homebridgeConfig.bridge.pin,
+      setupUri: await this.serverService.getSetupCode(),
       packageVersion: this.configService.package.version,
       status: await this.checkHomebridgeStatus(),
     };

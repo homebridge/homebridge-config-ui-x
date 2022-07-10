@@ -7,6 +7,7 @@ import { ConfigModule } from '../../core/config/config.module';
 import { LoggerModule } from '../../core/logger/logger.module';
 import { HomebridgeIpcModule } from '../../core/homebridge-ipc/homebridge-ipc.module';
 import { ChildBridgesModule } from '../child-bridges/child-bridges.module';
+import { ServerModule } from '../server/server.module';
 import { StatusService } from './status.service';
 import { StatusGateway } from './status.gateway';
 import { StatusController } from './status.controller';
@@ -18,6 +19,7 @@ import { StatusController } from './status.controller';
     LoggerModule,
     PluginsModule,
     ConfigModule,
+    ServerModule,
     HomebridgeIpcModule,
     ChildBridgesModule,
   ],
