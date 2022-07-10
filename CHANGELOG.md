@@ -2,11 +2,12 @@
 
 ### Breaking Changes
 
-* Node.js v14.15.0 or later is **required** - See [How To Update Node.js](https://homebridge.io/w/JTKEF)
+* Node.js v14.15.0 or later is **REQUIRED** - See [How To Update Node.js](https://homebridge.io/w/JTKEF)
 
 ### Other Changes
 
 * **i18n:** Improvements to Swedish language translations ([#1380](https://github.com/oznu/homebridge-config-ui-x/pull/1380))
+* Updated npm dependencies
 
 ### Bug Fixes
 
