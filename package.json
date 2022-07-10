@@ -1,7 +1,7 @@
 {
   "name": "homebridge-config-ui-x",
   "displayName": "Homebridge UI",
-  "version": "4.49.1-test.3",
+  "version": "4.49.1-test.4",
   "description": "A web based management, configuration and control platform for Homebridge",
   "license": "MIT",
   "author": "oznu <dev@oz.nu>",
@@ -28,7 +28,7 @@
     "hb-service": "./dist/bin/hb-service.js"
   },
   "engines": {
-    "node": ">=12.13.0",
+    "node": ">=14.15.0",
     "homebridge": ">=0.4.22"
   },
   "scripts": {
@@ -76,7 +76,7 @@
     "node-schedule": "^1.3.3",
     "ora": "5.3.0",
     "p-limit": "3.1.0",
-    "passport": "0.5.2",
+    "passport": "0.6.0",
     "passport-jwt": "4.0.0",
     "reflect-metadata": "^0.1.12",
     "rxjs": "7.5.5",
@@ -108,7 +108,7 @@
     "form-data": "^4.0.0",
     "jest": "^27.5.1",
     "lodash": "^4.17.20",
-    "nodemon": "^2.0.12",
+    "nodemon": "^2.0.19",
     "otplib": "^12.0.1",
     "prettier": "^2.6.2",
     "qr-image": "^3.2.0",

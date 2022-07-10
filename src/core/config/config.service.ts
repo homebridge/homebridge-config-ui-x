@@ -43,7 +43,7 @@ export class ConfigService {
   public homebridgeVersion: string;
 
   // server env
-  public minimumNodeVersion = '12.13.0';
+  public minimumNodeVersion = '14.15.0';
   public serviceMode = (process.env.UIX_SERVICE_MODE === '1');
   public runningInDocker = Boolean(process.env.HOMEBRIDGE_CONFIG_UI === '1');
   public runningInSynologyPackage = Boolean(process.env.HOMEBRIDGE_SYNOLOGY_PACKAGE === '1');
