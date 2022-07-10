@@ -93,19 +93,6 @@ describe('ServerController (e2e)', () => {
     expect(mockRestartServer).toHaveBeenCalled();
   });
 
-  it('GET /server/qrcode.svg', async () => {
-    const res = await app.inject({
-      method: 'GET',
-      path: '/server/qrcode.svg',
-      headers: {
-        authorization,
-      },
-    });
-
-    expect(res.statusCode).toBe(200);
-    expect(res.headers['content-type']).toBe('image/svg+xml');
-  });
-
   it('GET /server/pairing', async () => {
     const res = await app.inject({
       method: 'GET',
