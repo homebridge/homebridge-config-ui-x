@@ -82,6 +82,7 @@ export class BackupService {
           'node_modules',       // docker
           'startup.sh',         // docker
           '.docker.env',        // docker
+          'docker-compose.yml', // docker
           'pnpm-lock.yaml',     // pnpm
           'package.json',       // npm
           'package-lock.json',  // npm
@@ -392,6 +393,7 @@ export class BackupService {
       path.join(this.restoreDirectory, 'storage', 'package.json'),
       path.join(this.restoreDirectory, 'storage', 'package-lock.json'),
       path.join(this.restoreDirectory, 'storage', '.npmrc'),
+      path.join(this.restoreDirectory, 'storage', 'docker-compose.yml'),
     ];
 
     // restore files
