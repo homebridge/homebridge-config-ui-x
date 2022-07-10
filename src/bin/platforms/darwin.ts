@@ -129,7 +129,12 @@ export class DarwinInstaller extends BasePlatform {
         this.hbService.logger(`Rebuilt plugins in ${process.env.UIX_CUSTOM_PLUGIN_PATH} for Node.js ${targetNodeVersion}.`, 'succeed');
       } else {
         // normal global npm setups
-        const npmGlobalPath = child_process.execSync('/bin/echo -n "$(npm --no-update-notifier -g prefix)/lib/node_modules"').toString('utf8');
+        const npmGlobalPath = child_process.execSync('/bin/echo -n "$(npm -g prefix)/lib/node_modules"', {
+          env: Object.assign({
+            npm_config_loglevel: 'silent',
+            npm_update_notifier: 'false',
+          }, process.env),
+        }).toString('utf8');
 
         child_process.execSync('npm rebuild --unsafe-perm', {
           cwd: process.env.UIX_BASE_PATH,
@@ -301,7 +306,12 @@ export class DarwinInstaller extends BasePlatform {
    * Checks if the user has write access to the global npm directory
    */
   private async checkGlobalNpmAccess() {
-    const npmGlobalPath = child_process.execSync('/bin/echo -n "$(npm --no-update-notifier -g prefix)/lib/node_modules"').toString('utf8');
+    const npmGlobalPath = child_process.execSync('/bin/echo -n "$(npm -g prefix)/lib/node_modules"', {
+      env: Object.assign({
+        npm_config_loglevel: 'silent',
+        npm_update_notifier: 'false',
+      }, process.env),
+    }).toString('utf8');
     const { uid, gid } = await this.getId();
 
     try {

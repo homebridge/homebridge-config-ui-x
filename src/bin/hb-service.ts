@@ -550,7 +550,8 @@ export class HomebridgeServiceHelper {
     try {
       const npmPrefix = child_process.execSync('npm -g prefix', {
         env: Object.assign({
-          npm_config_loglevel: 'silent'
+          npm_config_loglevel: 'silent',
+          npm_update_notifier: 'false',
         }, process.env)
       }).toString('utf8').trim();
       return os.platform() === 'win32' ? path.join(npmPrefix, 'node_modules') : path.join(npmPrefix, 'lib', 'node_modules');

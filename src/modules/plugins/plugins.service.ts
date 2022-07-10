@@ -1116,7 +1116,12 @@ export class PluginsService {
     if ((os.platform() === 'win32')) {
       paths.push(path.join(process.env.APPDATA, 'npm/node_modules'));
     } else {
-      paths.push(child_process.execSync('/bin/echo -n "$(npm --no-update-notifier -g prefix)/lib/node_modules"').toString('utf8'));
+      paths.push(child_process.execSync('/bin/echo -n "$(npm -g prefix)/lib/node_modules"', {
+        env: Object.assign({
+          npm_config_loglevel: 'silent',
+          npm_update_notifier: 'false',
+        }, process.env),
+      }).toString('utf8'));
     }
     return paths;
   }

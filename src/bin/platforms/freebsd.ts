@@ -113,7 +113,12 @@ export class FreeBSDInstaller extends BasePlatform {
   public async rebuild(all = false) {
     try {
       this.checkForRoot();
-      const npmGlobalPath = child_process.execSync('/bin/echo -n "$(npm --no-update-notifier -g prefix)/lib/node_modules"').toString('utf8');
+      const npmGlobalPath = child_process.execSync('/bin/echo -n "$(npm -g prefix)/lib/node_modules"', {
+        env: Object.assign({
+          npm_config_loglevel: 'silent',
+          npm_update_notifier: 'false',
+        }, process.env),
+      }).toString('utf8');
       const targetNodeVersion = child_process.execSync('node -v').toString('utf8').trim();
 
       child_process.execSync('npm rebuild --unsafe-perm', {
