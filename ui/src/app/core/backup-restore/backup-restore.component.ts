@@ -103,7 +103,10 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
         this.clicked = false;
       },
       (err) => {
-        this.$toastr.error(this.translate.instant('backup.message_restore_failed'), this.translate.instant('toast.title_error'));
+        this.$toastr.error(
+          err?.error?.message || this.translate.instant('backup.message_restore_failed'),
+          this.translate.instant('toast.title_error'),
+        );
         this.clicked = false;
       },
     );
@@ -138,18 +141,19 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
         if (event.type === HttpEventType.UploadProgress) {
           this.uploadPercent = Math.round(100 * event.loaded / event.total);
         } else if (event instanceof HttpResponse) {
-          if (event.status === 200) {
-            this.restoreStarted = true;
-            this.restoreInProgress = true;
-            setTimeout(() => {
-              this.startHbfxRestore();
-            }, 500);
-            this.clicked = false;
-          }
+          this.restoreStarted = true;
+          this.restoreInProgress = true;
+          setTimeout(() => {
+            this.startHbfxRestore();
+          }, 500);
+          this.clicked = false;
         }
       },
       (err) => {
-        this.$toastr.error(this.translate.instant('backup.message_restore_failed'), this.translate.instant('toast.title_error'));
+        this.$toastr.error(
+          err?.error?.message || this.translate.instant('backup.message_restore_failed'),
+          this.translate.instant('toast.title_error'),
+        );
         this.clicked = false;
       },
     );

@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import axios, { AxiosResponse, AxiosError } from 'axios';
+import { AxiosResponse, AxiosError } from 'axios';
 import { of, throwError } from 'rxjs';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
@@ -34,7 +34,7 @@ describe('StatusController (e2e)', () => {
     await fs.copy(path.resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
 
     // create httpService instance
-    httpService = new HttpService(axios.create({}));
+    httpService = new HttpService();
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [StatusModule, AuthModule],

@@ -5,7 +5,7 @@ import { EventEmitter } from 'events';
 import { ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-import fastifyMultipart from 'fastify-multipart';
+import fastifyMultipart from '@fastify/multipart';
 import * as FormData from 'form-data';
 
 import { AuthModule } from '../../src/core/auth/auth.module';
@@ -238,7 +238,7 @@ describe('BackupController (e2e)', () => {
       payload,
     });
 
-    expect(res.statusCode).toBe(200);
+    expect(res.statusCode).toBe(201);
 
     await new Promise((resolve) => setTimeout(resolve, 100));
 

@@ -1,8 +1,8 @@
 import './self-check';
 
 import * as path from 'path';
-import { fastify, FastifyReply, FastifyRequest } from 'fastify';
-import fastifyMultipart from 'fastify-multipart';
+import { FastifyReply, FastifyRequest } from 'fastify';
+import fastifyMultipart from '@fastify/multipart';
 import * as helmet from 'helmet';
 import * as fs from 'fs-extra';
 import { NestFactory } from '@nestjs/core';
@@ -23,14 +23,10 @@ process.env.UIX_BASE_PATH = process.env.UIX_BASE_PATH_OVERRIDE || path.resolve(_
 async function bootstrap(): Promise<NestFastifyApplication> {
   const startupConfig = await getStartupConfig();
 
-  const server = fastify({
+  const fAdapter = new FastifyAdapter({
     https: startupConfig.httpsOptions,
-    logger: startupConfig.debug ? {
-      prettyPrint: true,
-    } : false,
+    logger: startupConfig.debug || false,
   });
-
-  const fAdapter = new FastifyAdapter(server);
 
   fAdapter.register(fastifyMultipart, {
     limits: {

@@ -1,14 +1,17 @@
 import * as os from 'os';
 import * as tar from 'tar';
 import * as path from 'path';
+import * as util from 'util';
 import * as fs from 'fs-extra';
 import * as color from 'bash-color';
 import * as unzipper from 'unzipper';
 import * as child_process from 'child_process';
 import * as dayjs from 'dayjs';
+import { pipeline } from 'stream';
 import { EventEmitter } from 'events';
-import { Injectable, BadRequestException, NotFoundException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException, InternalServerErrorException, StreamableFile } from '@nestjs/common';
 import { FastifyReply } from 'fastify';
+import { MultipartFile } from '@fastify/multipart';
 
 import { PluginsService } from '../plugins/plugins.service';
 import { SchedulerService } from '../../core/scheduler/scheduler.service';
@@ -16,6 +19,8 @@ import { ConfigService, HomebridgeConfig } from '../../core/config/config.servic
 import { HomebridgeIpcService } from '../..//core/homebridge-ipc/homebridge-ipc.service';
 import { Logger } from '../../core/logger/logger.service';
 import { HomebridgePlugin } from '../plugins/types';
+
+const pump = util.promisify(pipeline);
 
 @Injectable()
 export class BackupService {
@@ -253,21 +258,21 @@ export class BackupService {
   /**
    * Downloads a scheduled backup .tar.gz
    */
-  async getScheduledBackup(backupId: string) {
+  async getScheduledBackup(backupId: string): Promise<StreamableFile> {
     const backupPath = path.resolve(this.configService.instanceBackupPath, 'homebridge-backup-' + backupId + '.tar.gz');
 
     // check the file exists
     if (!await fs.pathExists(backupPath)) {
-      return new NotFoundException();
+      throw new NotFoundException();
     }
 
-    return fs.createReadStream(backupPath);
+    return new StreamableFile(fs.createReadStream(backupPath));
   }
 
   /**
    * Create and download backup archive of the current homebridge instance
    */
-  async downloadBackup(reply: FastifyReply) {
+  async downloadBackup(reply: FastifyReply): Promise<StreamableFile> {
     const { backupDir, backupPath, backupFileName } = await this.createBackup();
 
     // remove temp files (called when download finished)
@@ -286,33 +291,26 @@ export class BackupService {
       reply.raw.setHeader('access-control-allow-origin', 'http://localhost:4200');
     }
 
-    // start download
-    fs.createReadStream(backupPath)
-      .on('close', cleanup.bind(this))
-      .pipe(reply.raw);
+    return new StreamableFile(fs.createReadStream(backupPath).on('close', cleanup.bind(this)));
   }
 
   /**
    * Restore a backup file
    * File upload handler
    */
-  async uploadBackupRestore(file) {
+  async uploadBackupRestore(data: MultipartFile) {
     // clear restore directory
     this.restoreDirectory = undefined;
 
     // prepare a temp working directory
     const backupDir = await fs.mkdtemp(path.join(os.tmpdir(), 'homebridge-backup-'));
 
-    // create a write stream and pipe the upload into it
-    file.pipe(tar.x({
+    // pipe the data to the temp directory
+    await pump(data.file, tar.x({
       cwd: backupDir,
-    }).on('error', (err) => {
-      this.logger.error(err);
     }));
 
-    file.on('end', () => {
-      this.restoreDirectory = backupDir;
-    });
+    this.restoreDirectory = backupDir;
   }
 
   /**
@@ -488,7 +486,7 @@ export class BackupService {
   /**
    * Upload a .hbfx backup file
    */
-  async uploadHbfxRestore(file: fs.ReadStream) {
+  async uploadHbfxRestore(data: MultipartFile) {
     // clear restore directory
     this.restoreDirectory = undefined;
 
@@ -497,13 +495,12 @@ export class BackupService {
 
     this.logger.log(`Extracting .hbfx file to ${backupDir}`);
 
-    file.pipe(unzipper.Extract({
+    // pipe the data to the temp directory
+    await pump(data.file, unzipper.Extract({
       path: backupDir,
     }));
 
-    file.on('end', () => {
-      this.restoreDirectory = backupDir;
-    });
+    this.restoreDirectory = backupDir;
   }
 
   /**

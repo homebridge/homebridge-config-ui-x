@@ -1,4 +1,4 @@
-import { Controller, UseGuards, Get, Header } from '@nestjs/common';
+import { Controller, UseGuards, Get, Header, StreamableFile } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { AdminGuard } from '../../../core/auth/guards/admin.guard';
@@ -18,7 +18,7 @@ export class HomebridgeHueController {
   @Get('/dump-file')
   @Header('Content-disposition', 'attachment; filename=homebridge-hue.json.gz')
   @Header('Content-Type', 'application/json+gzip')
-  async exchangeCredentials() {
+  async exchangeCredentials(): Promise<StreamableFile> {
     return this.homebridgeHueService.streamDumpFile();
   }
 
