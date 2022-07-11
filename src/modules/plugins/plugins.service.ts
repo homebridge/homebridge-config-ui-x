@@ -59,6 +59,16 @@ export class PluginsService {
     'homebridge-server',
   ];
 
+  /**
+   * Define the alias / type some plugins without a schema where the extract method does not work
+   */
+  private pluginAliasHints = {
+    'homebridge-broadlink-rm-pro': {
+      pluginAlias: 'BroadlinkRM',
+      pluginType: 'platform'
+    }
+  };
+
   constructor(
     private httpService: HttpService,
     private nodePtyService: NodePtyService,
@@ -914,6 +924,11 @@ export class PluginsService {
         });
       } catch (e) {
         this.logger.debug('Failed to extract plugin alias:', e);
+        // fallback to the manual list, if defined for this plugin
+        if (this.pluginAliasHints[pluginName]) {
+          output.pluginAlias = this.pluginAliasHints[pluginName].pluginAlias;
+          output.pluginType = this.pluginAliasHints[pluginName].pluginType;
+        }
       }
     }
 
