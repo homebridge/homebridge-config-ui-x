@@ -600,7 +600,6 @@ export class PluginsService {
       this.configService.usePluginBundles === true &&
       this.configService.customPluginPath &&
       this.configService.strictPluginResolution &&
-      this.verifiedPlugins.find(x => x === pluginAction.name) &&
       pluginAction.name !== this.configService.name &&
       pluginAction.version !== 'latest'
     ) {
