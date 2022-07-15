@@ -197,7 +197,7 @@
     "plugins.manage.label_upgrade": "שודרג",
     "plugins.manage.message_confirm_disable": "Are you sure you want to disable {{ pluginName }}? Any accessories exposed by this plugin will be removed from HomeKit.",
     "plugins.manage.message_confirm_enable": "האם אתה בטוח שאתה רוצה לאפשר {{ pluginName }}?",
-    "plugins.manage.message_install_previous_version": "התקן גרסא קודמת",
+    "plugins.manage.message_install_alternate_version": "התקן גרסא קודמת",
     "plugins.manage.message_select_version_to_install": "בחר גרסה להתקנה",
     "plugins.manage.message_thanks_for_upgrading_ui": "Thanks for installing the latest version of Homebridge UI.",
     "plugins.manage.message_uninstall_remove_config_required": "If you are permanently removing this plugin, make sure you remove any config for this plugin in the config.json before restarting Homebridge.",

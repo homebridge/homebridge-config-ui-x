@@ -197,7 +197,7 @@
     "plugins.manage.label_upgrade": "升级",
     "plugins.manage.message_confirm_disable": "您确定要禁用 {{ pluginName }} 吗？所有通过该插件添加的设备将会从 HomeKit 中移除。",
     "plugins.manage.message_confirm_enable": "您确定要启用 {{ pluginName }} 吗？",
-    "plugins.manage.message_install_previous_version": "安装以往的版本",
+    "plugins.manage.message_install_alternate_version": "安装以往的版本",
     "plugins.manage.message_select_version_to_install": "选择安装的版本",
     "plugins.manage.message_thanks_for_upgrading_ui": "感谢您安装最新版本的 Homebridge UI.",
     "plugins.manage.message_uninstall_remove_config_required": "如果您确认要移除这个插件，请记得在重启 Homebridge 服务之前移除 config.json 中与该插件相关的配置代码。",

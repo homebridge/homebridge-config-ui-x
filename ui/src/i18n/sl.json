@@ -197,7 +197,7 @@
     "plugins.manage.label_upgrade": "Nadgradnja",
     "plugins.manage.message_confirm_disable": "Ali ste prepričani, da želite onemogočiti {{ pluginName }}? Vsa dodatna oprema, ki jo izpostavlja ta vtičnik, bo odstranjena iz programa HomeKit.",
     "plugins.manage.message_confirm_enable": "Ali ste prepričani, da želite omogočiti {{ pluginName }}? ",
-    "plugins.manage.message_install_previous_version": "Namesti prejšnjo različico",
+    "plugins.manage.message_install_alternate_version": "Namesti prejšnjo različico",
     "plugins.manage.message_select_version_to_install": "Izberite različico za namestitev",
     "plugins.manage.message_thanks_for_upgrading_ui": "Hvala, ker ste namestili najnovejšo različico Homebridge UI.",
     "plugins.manage.message_uninstall_remove_config_required": "Če ta vtičnik trajno odstranite, pred ponovnim zagonom Homebridgea obvezno odstranite konfiguracijo za ta vtičnik v config.json.",

@@ -106,7 +106,7 @@
 
           <button ngbDropdownItem *ngIf="plugin.publicPackage" (click)="$plugin.installPreviousVersion(plugin)">
             <i class="fas fa-fw fa-history"></i>
-            {{ 'plugins.manage.message_install_previous_version' | translate }}
+            {{ 'plugins.manage.message_install_alternate_version' | translate }}
           </button>
           <button ngbDropdownItem (click)="$plugin.bridgeSettings(plugin)"
             *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x' && canManageBridgeSettings">

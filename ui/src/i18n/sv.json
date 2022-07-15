@@ -197,7 +197,7 @@
     "plugins.manage.label_upgrade": "Uppgradering",
     "plugins.manage.message_confirm_disable": "Är du säker på att du vill inaktivera {{ pluginName }}? Alla tillbehör som exponeras av detta plugin kommer att tas bort från HomeKit.",
     "plugins.manage.message_confirm_enable": "Är du säker på att du vill aktivera {{ pluginName }}?",
-    "plugins.manage.message_install_previous_version": "Installera tidigare version",
+    "plugins.manage.message_install_alternate_version": "Installera tidigare version",
     "plugins.manage.message_select_version_to_install": "Välj den version som ska installeras",
     "plugins.manage.message_thanks_for_upgrading_ui": "Tack för att du installerade den senaste versionen av Homebridge UI.",
     "plugins.manage.message_uninstall_remove_config_required": "Om du tar bort detta plugin permanent, se till att du tar bort alla konfigurationer för detta plugin i config.json innan du startar om Homebridge.",
