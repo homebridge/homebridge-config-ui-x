@@ -14,6 +14,8 @@
 * **Backups:** Exclude `.npmrc` files from backups
 * **Plugins:** A plugin with a [custom user interfaces](https://github.com/homebridge/plugin-ui-utils) will have it's optional `customUiPath` property re-evaluated when the package version changes ([#1379](https://github.com/oznu/homebridge-config-ui-x/issues/1379))
 * **Plugins:** Prevent a plugin using symlink to define a `customUiPath` outside it's root directory
+* **Plugins:** Changed "install previous version" to "install alternate version" [#1385](https://github.com/oznu/homebridge-config-ui-x/issues/1385))
+* **Auth:** Fixed form validation for autofilled username and password [#1388](https://github.com/oznu/homebridge-config-ui-x/issues/1388))
 
 ## 4.49.0 (2022-07-08)
 
