@@ -1,12 +1,14 @@
-## NEXT
+## 4.50.0 (2022-07-16)
 
 ### Breaking Changes
 
 * Node.js v14.15.0 or later is **REQUIRED** - See [How To Update Node.js](https://homebridge.io/w/JTKEF)
+* Dropped support for Node.js versions prior to v14. Do not update to this version if you are not running v14.15.0 or later
 
 ### Other Changes
 
 * **i18n:** Improvements to Swedish language translations ([#1380](https://github.com/oznu/homebridge-config-ui-x/pull/1380))
+* **i18n:** Improvements to Polish language translations ([#1389](https://github.com/oznu/homebridge-config-ui-x/pull/1389))
 * Updated npm dependencies
 
 ### Bug Fixes
