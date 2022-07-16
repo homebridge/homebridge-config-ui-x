@@ -1,3 +1,10 @@
+## NEXT
+
+### Bug Fixes
+
+* **Backups:** Fixed an issue restoring backups when the Homebridge storage directory is a symbolic link
+* **Backups:** All symbolic links are dereferenced when performing a backup (the raw symlink is backed up, not what it pointed to)
+
 ## 4.50.0 (2022-07-16)
 
 ### Breaking Changes

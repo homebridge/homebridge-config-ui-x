@@ -74,6 +74,7 @@ export class BackupService {
 
       // create a copy of the storage directory in the temp path
       await fs.copy(storagePath, path.resolve(backupDir, 'storage'), {
+        dereference: true,
         filter: (filePath) => (![
           'instance-backups',   // scheduled backups
           'nssm.exe',           // windows hb-service
@@ -396,10 +397,14 @@ export class BackupService {
       path.join(this.restoreDirectory, 'storage', 'docker-compose.yml'),
     ];
 
+    // resolve the real path of the storage directory (in case it's a symbolic link)
+    const storagePath = await fs.realpath(this.configService.storagePath);
+
     // restore files
-    client.emit('stdout', color.yellow(`Restoring Homebridge storage to ${this.configService.storagePath}\r\n`));
+    client.emit('stdout', color.yellow(`Restoring Homebridge storage to ${storagePath}\r\n`));
     await new Promise(resolve => setTimeout(resolve, 100));
-    await fs.copy(path.resolve(this.restoreDirectory, 'storage'), this.configService.storagePath, {
+    await fs.copy(path.resolve(this.restoreDirectory, 'storage'), storagePath, {
+      dereference: true,
       filter: (filePath) => {
         if (restoreFilter.includes(filePath)) {
           client.emit('stdout', `Skipping ${path.basename(filePath)}\r\n`);
@@ -538,9 +543,13 @@ export class BackupService {
     client.emit('stdout', color.cyan('\r\nRestoring hbfx backup...\r\n\r\n'));
     await new Promise(resolve => setTimeout(resolve, 1000));
 
+    // resolve the real path of the storage directory (in case it's a symbolic link)
+    const storagePath = await fs.realpath(this.configService.storagePath);
+
     // restore files
-    client.emit('stdout', color.yellow(`Restoring Homebridge storage to ${this.configService.storagePath}\r\n`));
-    await fs.copy(path.resolve(this.restoreDirectory, 'etc'), path.resolve(this.configService.storagePath), {
+    client.emit('stdout', color.yellow(`Restoring Homebridge storage to ${storagePath}\r\n`));
+    await fs.copy(path.resolve(this.restoreDirectory, 'etc'), path.resolve(storagePath), {
+      dereference: true,
       filter: (filePath) => {
         if ([
           'access.json',
@@ -557,9 +566,10 @@ export class BackupService {
 
     // restore accessories
     const sourceAccessoriesPath = path.resolve(this.restoreDirectory, 'etc', 'accessories');
-    const targeAccessoriestPath = path.resolve(this.configService.storagePath, 'accessories');
+    const targetAccessoriestPath = path.resolve(storagePath, 'accessories');
     if (await fs.pathExists(sourceAccessoriesPath)) {
-      await fs.copy(sourceAccessoriesPath, targeAccessoriestPath, {
+      await fs.copy(sourceAccessoriesPath, targetAccessoriestPath, {
+        dereference: true,
         filter: (filePath) => {
           client.emit('stdout', `Restoring ${path.basename(filePath)}\r\n`);
           return true;
