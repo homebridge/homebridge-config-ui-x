@@ -330,7 +330,7 @@
     "status.widget.label_clock_timeformat": "Формат часу",
     "status.widget.label_font_size": "Розмір шрифту",
     "status.widget.label_font_weight": "Товщина шрифту",
-    "status.widget.label_hide_on_mobile": "Приховати в компактном вигляді (мобильні дисплеї)",
+    "status.widget.label_hide_on_mobile": "Приховати в компактному вигляді (мобильні дисплеї)",
     "status.widget.label_homebridge_logs": "Лог Homebridge",
     "status.widget.label_layout_locked": "Оформлення заблоковане",
     "status.widget.label_lock_layout": "Заблокувати оформлення",
