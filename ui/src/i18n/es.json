@@ -197,7 +197,7 @@
     "plugins.manage.label_upgrade": "Actualizar",
     "plugins.manage.message_confirm_disable": "¿Seguro que deseas desactivar {{ pluginName }}? Los accesorios que hayan sido añadidos por este plugin serán eliminados de HomeKit.",
     "plugins.manage.message_confirm_enable": "¿Seguro que deseas activar {{ pluginName }}?",
-    "plugins.manage.message_install_alternate_version": "Instalar versión anterior",
+    "plugins.manage.message_install_alternate_version": "Instalar versión alterna",
     "plugins.manage.message_select_version_to_install": "Elige la versión para instalar",
     "plugins.manage.message_thanks_for_upgrading_ui": "Gracias por instalar la última versión de Homebridge UI.",
     "plugins.manage.message_uninstall_remove_config_required": "Si eliminarás este plugin de forma permanente, asegúrate de quitar cualquier configuración de este plugin en el archivo config.json antes de reiniciar Homebridge.",
