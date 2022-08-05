@@ -269,6 +269,7 @@
     "rpi.throttled.currently_undervoltage_title": "Unterspannung festgestellt",
     "rpi.throttled.previously_undervoltage_message": "Dieser Raspberry Pi hat seit dem letzten Neustart ein Unterspannungsereignis gemeldet; bitte überprüfen Sie, ob er an eine geeignete Stromversorgung angeschlossen ist.",
     "rpi.throttled.previously_undervoltage_title": "Eine Unterspannung ist aufgetreten",
+    "settings.manage_cache.help": "Wenn ein nicht mehr vorhandenes Gerät noch in HomeKit angezeigt wird, musst du es möglicherweise aus dem Cache entfernen. Du kannst entweder ein einzelnes Gerät oder alle zwischengespeicherten Geräte aus dem Cache entfernen.",
     "settings.mdns_advertiser": "mDNS Advertiser",
     "settings.mdns_advertiser_help": "Wenn du Probleme hast, dich mit Homebridge zu verbinden, versuche einen der alternativen mDNS Advertiser zu verwenden.",
     "settings.network.label_interface_name": "Schnittstellen-Name",
