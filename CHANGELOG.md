@@ -2,6 +2,7 @@
 
 ### Bug Fixes
 
+* **Dashboard**: Fix an issue displaying the log viewer and termial widgets on Chrome > 104 ([#1400](https://github.com/oznu/homebridge-config-ui-x/issues/1400))
 * **Backups:** Fixed an issue restoring backups when the Homebridge storage directory is a symbolic link
 * **Backups:** All symbolic links are dereferenced when performing a backup (the raw symlink is backed up, not what it pointed to)
 
