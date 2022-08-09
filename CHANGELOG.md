@@ -1,10 +1,17 @@
-## NEXT
+## 4.50.1 (2022-08-09)
 
 ### Bug Fixes
 
 * **Dashboard**: Fix an issue displaying the log viewer and termial widgets on Chrome > 104 ([#1400](https://github.com/oznu/homebridge-config-ui-x/issues/1400))
 * **Backups:** Fixed an issue restoring backups when the Homebridge storage directory is a symbolic link
 * **Backups:** All symbolic links are dereferenced when performing a backup (the raw symlink is backed up, not what it pointed to)
+
+### Other Changes
+
+* **i18n:** Improvements to Ukrainian language translations ([#1390](https://github.com/oznu/homebridge-config-ui-x/pull/1390))
+* **i18n:** Improvements to French language translations ([#1393](https://github.com/oznu/homebridge-config-ui-x/pull/1393))
+* **i18n:** Improvements to Spanish language translations ([#1396](https://github.com/oznu/homebridge-config-ui-x/pull/1396))
+* **i18n:** Improvements to German language translations ([#1399](https://github.com/oznu/homebridge-config-ui-x/pull/1399))
 
 ## 4.50.0 (2022-07-16)
 
