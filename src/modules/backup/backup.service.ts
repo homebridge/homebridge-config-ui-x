@@ -16,7 +16,7 @@ import { MultipartFile } from '@fastify/multipart';
 import { PluginsService } from '../plugins/plugins.service';
 import { SchedulerService } from '../../core/scheduler/scheduler.service';
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
-import { HomebridgeIpcService } from '../..//core/homebridge-ipc/homebridge-ipc.service';
+import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service';
 import { Logger } from '../../core/logger/logger.service';
 import { HomebridgePlugin } from '../plugins/types';
 
