@@ -1,3 +1,9 @@
+## NEXT
+
+### Bug Fixes
+
+* **Backups:** Backups now ignore symlinks, fifo, sockets, pipes etc.
+
 ## 4.50.1 (2022-08-09)
 
 ### Bug Fixes
