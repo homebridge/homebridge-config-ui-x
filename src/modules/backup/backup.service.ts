@@ -74,28 +74,40 @@ export class BackupService {
 
       // create a copy of the storage directory in the temp path
       await fs.copy(storagePath, path.resolve(backupDir, 'storage'), {
-        dereference: true,
-        filter: (filePath) => (![
-          'instance-backups',   // scheduled backups
-          'nssm.exe',           // windows hb-service
-          'homebridge.log',     // hb-service
-          'logs',               // docker
-          'node_modules',       // docker
-          'startup.sh',         // docker
-          '.docker.env',        // docker
-          'docker-compose.yml', // docker
-          'pnpm-lock.yaml',     // pnpm
-          'package.json',       // npm
-          'package-lock.json',  // npm
-          '.npmrc',             // npm
-          'FFmpeg',             // ffmpeg
-          'fdk-aac',            // ffmpeg
-          '.git',               // git
-          'recordings',         // homebridge-camera-ui recordings path
-          '.homebridge.sock',   // homebridge ipc socket
-          '#recycle',           // synology dsm recycle bin
-          '@eaDir'              // synology dsm metadata
-        ].includes(path.basename(filePath))), // list of files not to include in the archive
+        filter: async (filePath) => {
+          // list of files not to include in the archive
+          if ([
+            'instance-backups',   // scheduled backups
+            'nssm.exe',           // windows hb-service
+            'homebridge.log',     // hb-service
+            'logs',               // docker
+            'node_modules',       // docker
+            'startup.sh',         // docker
+            '.docker.env',        // docker
+            'docker-compose.yml', // docker
+            'pnpm-lock.yaml',     // pnpm
+            'package.json',       // npm
+            'package-lock.json',  // npm
+            '.npmrc',             // npm
+            'FFmpeg',             // ffmpeg
+            'fdk-aac',            // ffmpeg
+            '.git',               // git
+            'recordings',         // homebridge-camera-ui recordings path
+            '.homebridge.sock',   // homebridge ipc socket
+            '#recycle',           // synology dsm recycle bin
+            '@eaDir'              // synology dsm metadata
+          ].includes(path.basename(filePath))) {
+            return false;
+          }
+
+          // check each item is a real directory or real file (no symlinks, pipes, unix sockets etc.)
+          try {
+            const stat = await fs.lstat(filePath);
+            return (stat.isDirectory() || stat.isFile());
+          } catch (e) {
+            return false;
+          }
+        },
       });
 
       // get full list of installed plugins
@@ -404,14 +416,26 @@ export class BackupService {
     client.emit('stdout', color.yellow(`Restoring Homebridge storage to ${storagePath}\r\n`));
     await new Promise(resolve => setTimeout(resolve, 100));
     await fs.copy(path.resolve(this.restoreDirectory, 'storage'), storagePath, {
-      dereference: true,
-      filter: (filePath) => {
+      filter: async (filePath) => {
         if (restoreFilter.includes(filePath)) {
           client.emit('stdout', `Skipping ${path.basename(filePath)}\r\n`);
           return false;
         }
-        client.emit('stdout', `Restoring ${path.basename(filePath)}\r\n`);
-        return true;
+
+        // check each item is a real directory or real file (no symlinks, pipes, unix sockets etc.)
+        try {
+          const stat = await fs.lstat(filePath);
+          if (stat.isDirectory() || stat.isFile()) {
+            client.emit('stdout', `Restoring ${path.basename(filePath)}\r\n`);
+            return true;
+          } else {
+            client.emit('stdout', `Skipping ${path.basename(filePath)}\r\n`);
+            return false;
+          }
+        } catch (e) {
+          client.emit('stdout', `Skipping ${path.basename(filePath)}\r\n`);
+          return false;
+        }
       },
     });
     client.emit('stdout', color.yellow('File restore complete.\r\n'));
@@ -549,7 +573,6 @@ export class BackupService {
     // restore files
     client.emit('stdout', color.yellow(`Restoring Homebridge storage to ${storagePath}\r\n`));
     await fs.copy(path.resolve(this.restoreDirectory, 'etc'), path.resolve(storagePath), {
-      dereference: true,
       filter: (filePath) => {
         if ([
           'access.json',
@@ -569,7 +592,6 @@ export class BackupService {
     const targetAccessoriestPath = path.resolve(storagePath, 'accessories');
     if (await fs.pathExists(sourceAccessoriesPath)) {
       await fs.copy(sourceAccessoriesPath, targetAccessoriestPath, {
-        dereference: true,
         filter: (filePath) => {
           client.emit('stdout', `Restoring ${path.basename(filePath)}\r\n`);
           return true;

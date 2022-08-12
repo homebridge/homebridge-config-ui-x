@@ -391,6 +391,11 @@ export class LinuxInstaller extends BasePlatform {
 
     try {
       const majorVersion = semver.parse(job.target).major;
+      // update apt (and accept release info changes)
+      child_process.execSync('apt-get update --allow-releaseinfo-change', {
+        stdio: 'inherit',
+      });
+
       // update repo
       child_process.execSync(`curl -sL https://deb.nodesource.com/setup_${majorVersion}.x | bash -`, {
         stdio: 'inherit',
