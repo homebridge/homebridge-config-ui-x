@@ -793,6 +793,9 @@ export class PluginsService {
         model: {
           type: 'string',
         },
+        firmware: {
+          type: 'string',
+        },
       },
     };
 
