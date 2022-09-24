@@ -412,6 +412,10 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                     type: 'string',
                     description: 'The bridge model to be displayed  in HomeKit',
                   },
+                  firmware: {
+                    type: 'string',
+                    description: 'The bridge firmware to be displayed  in HomeKit',
+                  },
                   bind: {
                     description: 'A string or an array of strings with the name(s) of the network interface(s) ' +
                       'Homebridge should bind to.\n\nRequires Homebridge v1.3 or later.',
