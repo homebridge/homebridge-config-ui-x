@@ -40,6 +40,7 @@ export class SettingsComponent implements OnInit {
 
   public showNetworking = false;
   public showAvahiMdnsOption = false;
+  public showResolvedMdnsOption = false;
   public availableNetworkAdapters: Record<string, any> = [];
   public bridgeNetworkAdapters: Record<string, any> = [];
 
@@ -131,6 +132,7 @@ export class SettingsComponent implements OnInit {
           this.$settings.env.runningInPackageMode
         ) {
           this.showAvahiMdnsOption = true;
+          this.showResolvedMdnsOption = true;
         }
       }
     } catch (e) {
