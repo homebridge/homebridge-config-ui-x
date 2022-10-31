@@ -46,6 +46,7 @@
           [attr.aria-label]=" 'settings.mdns_advertiser' | translate">
           <option value="bonjour-hap">Bonjour HAP</option>
           <option value="avahi" *ngIf="showAvahiMdnsOption">Avahi</option>
+          <option value="resolved" *ngIf="showResolvedMdnsOption">systemd-resolved (experimental)</option>
           <option value="ciao">Ciao</option>
         </select>
       </div>

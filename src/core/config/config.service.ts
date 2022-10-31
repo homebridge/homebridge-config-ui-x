@@ -12,7 +12,7 @@ export interface HomebridgeConfig {
     pin: string;
     name: string;
     port: number;
-    advertiser?: 'avahi' | 'ciao' | 'bonjour-hap';
+    advertiser?: 'avahi' | 'resolved' | 'ciao' | 'bonjour-hap';
     bind?: string | string[];
   };
   mdns?: {
