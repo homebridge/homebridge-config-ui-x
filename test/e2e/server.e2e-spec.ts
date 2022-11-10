@@ -406,6 +406,23 @@ describe('ServerController (e2e)', () => {
     expect(res.json()).toEqual({ advertiser: 'avahi' });
   });
 
+  it('GET /server/mdns-advertiser (when set to resolved)', async () => {
+    const config: HomebridgeConfig = await fs.readJson(configService.configPath);
+    config.bridge.advertiser = 'resolved';
+    await fs.writeJson(configService.configPath, config);
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/mdns-advertiser',
+      headers: {
+        authorization,
+      },
+    });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toEqual({ advertiser: 'resolved' });
+  });
+
   it('PUT /server/mdns-advertiser (bonjour-hap)', async () => {
     const initialConfig: HomebridgeConfig = await fs.readJson(configService.configPath);
     delete initialConfig.bridge.advertiser;
