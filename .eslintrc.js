@@ -20,6 +20,7 @@ module.exports = {
     node: true,
     jest: true,
   },
+  ignorePatterns: ['.eslintrc.js'],
   rules: {
     'quotes': ['error', 'single'],
     'comma-dangle': ['error', 'only-multiline'],

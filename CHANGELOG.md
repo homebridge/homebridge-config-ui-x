@@ -1,8 +1,12 @@
-## NEXT
+## 4.50.2 (2022-11-10)
+
+### Notable Changes
+
+* **Homebridge:** Add systemd-resolved Advertiser to UI ([#1430](https://github.com/oznu/homebridge-config-ui-x/pull/1430))
 
 ### Bug Fixes
 
-* **Backups:** Backups now ignore symlinks, fifo, sockets, pipes etc.
+* **Backups:** Backups now ignore symlinks, sockets, pipes etc.
 
 ## 4.50.1 (2022-08-09)
 
