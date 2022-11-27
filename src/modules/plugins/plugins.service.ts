@@ -828,7 +828,7 @@ export class PluginsService {
   }
 
   /**
-   * Get the latest release notes from GitHub for a plugin
+   * Get the release notes from GitHub for a plugin
    * @param pluginName
    */
   public async getPluginRelease(pluginName: string) {
@@ -859,8 +859,11 @@ export class PluginsService {
       throw new NotFoundException();
     }
 
+    const releaseTagPattern = plugin.settingsSchema ? await this.getPluginGithubReleaseTagPattern(pluginName) : null;
+    const releaseTag = releaseTagPattern ? `tags/${releaseTagPattern.replace('%VERSION%', plugin.latestVersion || '')}` : 'latest';
+
     try {
-      const release = (await this.httpService.get(`https://api.github.com/repos/${repoMatch[1]}/${repoMatch[2]}/releases/latest`).toPromise()).data;
+      const release = (await this.httpService.get(`https://api.github.com/repos/${repoMatch[1]}/${repoMatch[2]}/releases/${releaseTag}`).toPromise()).data;
       return {
         name: release.name,
         changelog: release.body,
@@ -868,6 +871,17 @@ export class PluginsService {
     } catch (e) {
       throw new NotFoundException();
     }
+  }
+
+/**
+   * Extract the github release tag pattern from a plugin
+   */
+  public async getPluginGithubReleaseTagPattern(pluginName: string): Promise<string | null> {
+    const schema = await this.getPluginConfigSchema(pluginName);
+    if (typeof schema.pluginGithubReleaseTagPattern === 'string') {
+      return schema.pluginGithubReleaseTagPattern;
+    }
+    return null;
   }
 
   /**
