@@ -26,6 +26,7 @@ import localeMk from '@angular/common/locales/mk';
 import localeTh from '@angular/common/locales/th';
 import localeUk from '@angular/common/locales/uk';
 import localeHE from '@angular/common/locales/he';
+import localeBE from '@angular/common/locales/be';
 
 registerLocaleData(localeEn);
 registerLocaleData(localeDe);
@@ -53,6 +54,7 @@ registerLocaleData(localeMk);
 registerLocaleData(localeTh);
 registerLocaleData(localeUk);
 registerLocaleData(localeHE);
+registerLocaleData(localeBE);
 
 export const supportedLocales = {
   en: 'en',
@@ -82,4 +84,5 @@ export const supportedLocales = {
   th: 'th',
   uk: 'uk',
   he: 'he',
+  be: 'be',
 };
