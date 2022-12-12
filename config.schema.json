@@ -257,6 +257,12 @@
             ]
           },
           {
+            "title": "Belarusian (be)",
+            "enum": [
+              "be"
+            ]
+          },
+          {
             "title": "Bulgarian (bg)",
             "enum": [
               "bg"
