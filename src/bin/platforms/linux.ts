@@ -344,6 +344,7 @@ export class LinuxInstaller extends BasePlatform {
       case 'aarch64':
         downloadUrl = `https://nodejs.org/dist/${job.target}/node-${job.target}-linux-arm64.tar.gz`;
         break;
+      case 'armv8l':
       case 'armv7l':
         downloadUrl = `https://nodejs.org/dist/${job.target}/node-${job.target}-linux-armv7l.tar.gz`;
         break;
