@@ -305,6 +305,7 @@
     "status.network.label_received_per_second": "Received",
     "status.network.label_sent_per_second": "Sent",
     "status.network.title_network": "Network Activity",
+    "status.plugin_out_of_date": "A bővítmények elavultak",
     "status.plugins_out_of_date": "A bővítmények elavultak",
     "status.services.label_console": "Console",
     "status.services.label_listening_on_port": "{{port}} port figyelve van",

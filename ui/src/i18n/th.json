@@ -305,6 +305,7 @@
     "status.network.label_received_per_second": "ได้รับแล้ว",
     "status.network.label_sent_per_second": "ส่ง",
     "status.network.title_network": "กิจกรรมเครือข่าย",
+    "status.plugin_out_of_date": "ปลั๊กอินล้าสมัย",
     "status.plugins_out_of_date": "ปลั๊กอินล้าสมัย",
     "status.services.label_console": "คอนโซล",
     "status.services.label_listening_on_port": "กำลังฟังพอร์ต {{port}}",

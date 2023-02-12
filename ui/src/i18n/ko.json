@@ -305,6 +305,7 @@
     "status.network.label_received_per_second": "수신됨",
     "status.network.label_sent_per_second": "전송",
     "status.network.title_network": "네트워크 Activity",
+    "status.plugin_out_of_date": "구버전",
     "status.plugins_out_of_date": "구버전",
     "status.services.label_console": "콘솔",
     "status.services.label_listening_on_port": "포트 {{port}} 수신 중",

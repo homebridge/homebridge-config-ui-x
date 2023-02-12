@@ -305,6 +305,7 @@
     "status.network.label_received_per_second": "Empfangen",
     "status.network.label_sent_per_second": "Gesendet",
     "status.network.title_network": "Netzwerkaktivitäten",
+    "status.plugin_out_of_date": "Plugin nicht mehr aktuell",
     "status.plugins_out_of_date": "Plugins nicht mehr aktuell",
     "status.services.label_console": "Konsole",
     "status.services.label_listening_on_port": "auf Port {{port}}",
