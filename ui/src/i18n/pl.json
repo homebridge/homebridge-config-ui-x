@@ -77,7 +77,7 @@
     "backup.title_backup_restore": "Kopia zapasowa",
     "backup.title_restore": "Przywróć",
     "backup.title_scheduled_backups": "Planowanie kopii zapasowych",
-    "child_bridge.label_bridge_connect_to_homekit": "Połącz z Homekit",
+    "child_bridge.label_bridge_connect_to_homekit": "Połącz z HomeKit",
     "child_bridge.label_bridge_paired": "Mostek sparowany",
     "child_bridge.label_bridge_restart_child_bridges": "Uruchom ponownie mostek podrzędny",
     "child_bridge.label_bridge_settings": "Ustawienia mostka",

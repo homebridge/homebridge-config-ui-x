@@ -77,7 +77,7 @@
     "backup.title_backup_restore": "Бекап / Поврат",
     "backup.title_restore": "Поврат",
     "backup.title_scheduled_backups": "Закажани бекапи",
-    "child_bridge.label_bridge_connect_to_homekit": "Connect to Homekit",
+    "child_bridge.label_bridge_connect_to_homekit": "Connect to HomeKit",
     "child_bridge.label_bridge_paired": "Bridge Paired",
     "child_bridge.label_bridge_restart_child_bridges": "Restart Child Bridges",
     "child_bridge.label_bridge_settings": "Bridge Settings",

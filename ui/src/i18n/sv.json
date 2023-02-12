@@ -77,7 +77,7 @@
     "backup.title_backup_restore": "Säkerhetskopiera / Återställning",
     "backup.title_restore": "Återställning",
     "backup.title_scheduled_backups": "Schemalagda säkerhetskopieringar",
-    "child_bridge.label_bridge_connect_to_homekit": "Anslut till Homekit",
+    "child_bridge.label_bridge_connect_to_homekit": "Anslut till HomeKit",
     "child_bridge.label_bridge_paired": "Brygga ansluten",
     "child_bridge.label_bridge_restart_child_bridges": "Starta om underbryggor",
     "child_bridge.label_bridge_settings": "Brygginställningar",

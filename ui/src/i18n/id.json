@@ -77,7 +77,7 @@
     "backup.title_backup_restore": "Cadangan/Pulihkan",
     "backup.title_restore": "Pulihkan",
     "backup.title_scheduled_backups": "Cadangan Terjadwal",
-    "child_bridge.label_bridge_connect_to_homekit": "Connect to Homekit",
+    "child_bridge.label_bridge_connect_to_homekit": "Connect to HomeKit",
     "child_bridge.label_bridge_paired": "Bridge Terpasang",
     "child_bridge.label_bridge_restart_child_bridges": "Restart Child Bridges",
     "child_bridge.label_bridge_settings": "Pengaturan Bridge",

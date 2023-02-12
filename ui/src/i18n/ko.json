@@ -77,7 +77,7 @@
     "backup.title_backup_restore": "백업 / 복원",
     "backup.title_restore": "복원",
     "backup.title_scheduled_backups": "예약된 백업",
-    "child_bridge.label_bridge_connect_to_homekit": "Homekit에 연결",
+    "child_bridge.label_bridge_connect_to_homekit": "HomeKit에 연결",
     "child_bridge.label_bridge_paired": "Bridge 연결됨",
     "child_bridge.label_bridge_restart_child_bridges": "하위 Bridge 다시 시작",
     "child_bridge.label_bridge_settings": "Bridge 설정",

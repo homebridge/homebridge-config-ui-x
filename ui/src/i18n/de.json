@@ -77,7 +77,7 @@
     "backup.title_backup_restore": "Backup / Wiederherstellen",
     "backup.title_restore": "Wiederherstellen",
     "backup.title_scheduled_backups": "Geplante Backups",
-    "child_bridge.label_bridge_connect_to_homekit": "Verbinde zu Homekit",
+    "child_bridge.label_bridge_connect_to_homekit": "Verbinde zu HomeKit",
     "child_bridge.label_bridge_paired": "Gekoppelte Bridge",
     "child_bridge.label_bridge_restart_child_bridges": "Restart Child Bridges",
     "child_bridge.label_bridge_settings": "Bridge Einstellungen",

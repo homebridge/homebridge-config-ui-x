@@ -77,7 +77,7 @@
     "backup.title_backup_restore": "การสำรองข้อมูล / การกู้คืน",
     "backup.title_restore": "การกู้คืน",
     "backup.title_scheduled_backups": "การสำรองข้อมูลตามกำหนดเวลา",
-    "child_bridge.label_bridge_connect_to_homekit": "เชื่อมต่อไปที่ Homekit",
+    "child_bridge.label_bridge_connect_to_homekit": "เชื่อมต่อไปที่ HomeKit",
     "child_bridge.label_bridge_paired": "Bridge ได้ถูกจับคู่แล้ว",
     "child_bridge.label_bridge_restart_child_bridges": "รีสตาร์ท Child Bridges",
     "child_bridge.label_bridge_settings": "การตั้งค่า Bridge",

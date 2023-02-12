@@ -77,7 +77,7 @@
     "backup.title_backup_restore": "גיבוי / שחזור",
     "backup.title_restore": "שחזר",
     "backup.title_scheduled_backups": "גיבויים מתוזמנים",
-    "child_bridge.label_bridge_connect_to_homekit": "Connect to Homekit",
+    "child_bridge.label_bridge_connect_to_homekit": "Connect to HomeKit",
     "child_bridge.label_bridge_paired": "מגשר מחובר",
     "child_bridge.label_bridge_restart_child_bridges": "Restart Child Bridges",
     "child_bridge.label_bridge_settings": "הגדרות מגשר",

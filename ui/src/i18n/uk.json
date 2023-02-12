@@ -77,7 +77,7 @@
     "backup.title_backup_restore": "Резерв. копія / Відновити",
     "backup.title_restore": "Відновити",
     "backup.title_scheduled_backups": "Резервне копіювання за розкладом",
-    "child_bridge.label_bridge_connect_to_homekit": "Під’єднайтеся до Homekit",
+    "child_bridge.label_bridge_connect_to_homekit": "Під’єднайтеся до HomeKit",
     "child_bridge.label_bridge_paired": "Міст спарований",
     "child_bridge.label_bridge_restart_child_bridges": "Перезавантажити дочірні мости",
     "child_bridge.label_bridge_settings": "Налаштування мосту",
