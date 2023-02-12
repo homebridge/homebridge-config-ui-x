@@ -209,7 +209,7 @@
     "plugins.node_update.title": "Node.js verze",
     "plugins.node_update.update_anyway": "Přesto aktualizovat",
     "plugins.node_update_homebridge_upgrade_and_try_again": "Před aktualizací Homebridge aktualizujte Node.js.",
-    "plugins.placeholder_search_plugin": "Vyhledejte pluginy k instalaci …",
+    "plugins.placeholder_search_plugin": "Vyhledejte pluginy k instalaci…",
     "plugins.settings.custom.homebridge-gsh.label_account_linked": "Účet propojen",
     "plugins.settings.custom.homebridge-gsh.label_link_account": "Propojit účet",
     "plugins.settings.custom.homebridge-gsh.label_unlink_account": "Odpojit účet",
