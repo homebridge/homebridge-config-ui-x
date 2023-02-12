@@ -209,7 +209,7 @@
     "plugins.node_update.title": "Node.js 版本",
     "plugins.node_update.update_anyway": "依舊更新",
     "plugins.node_update_homebridge_upgrade_and_try_again": "於更新 Homebridge 前、請先更新 Node.js。",
-    "plugins.placeholder_search_plugin": "搜尋 Plugin 並且安裝……",
+    "plugins.placeholder_search_plugin": "搜尋 Plugin 並且安裝…",
     "plugins.settings.custom.homebridge-gsh.label_account_linked": "帳號已連結",
     "plugins.settings.custom.homebridge-gsh.label_link_account": "連結帳號",
     "plugins.settings.custom.homebridge-gsh.label_unlink_account": "解除帳號連結",

@@ -293,7 +293,7 @@
     "status.cpu.label_load": "负载",
     "status.cpu.label_temp": "温度",
     "status.cpu.title_cpu": "CPU",
-    "status.homebridge.label_checking_for_updates": "正在查找更新……",
+    "status.homebridge.label_checking_for_updates": "正在查找更新…",
     "status.homebridge.label_up_to_date": "已是最新版本",
     "status.homebridge.label_update_available": "可升级至 {{latestVersion}}",
     "status.homebridge.label_version": "版本",
