@@ -1,5 +1,5 @@
 {
-  "name": "homebridge-config-ui-x",
+  "name": "homebridge-ui",
   "displayName": "Homebridge UI",
   "version": "4.50.2",
   "description": "A web based management, configuration and control platform for Homebridge",
@@ -7,21 +7,11 @@
   "author": "oznu <dev@oz.nu>",
   "repository": {
     "type": "git",
-    "url": "git://github.com/oznu/homebridge-config-ui-x.git"
+    "url": "git://github.com/bwp91/homebridge-ui.git"
   },
   "bugs": {
-    "url": "https://github.com/oznu/homebridge-config-ui-x/issues"
+    "url": "https://github.com/bwp91/homebridge-ui/issues"
   },
-  "funding": [
-    {
-      "type": "github",
-      "url": "https://github.com/sponsors/oznu"
-    },
-    {
-      "type": "paypal",
-      "url": "https://paypal.me/oznu"
-    }
-  ],
   "main": "./dist/index.js",
   "bin": {
     "homebridge-config-ui-x": "./dist/bin/standalone.js",
