@@ -342,7 +342,13 @@ export class LinuxInstaller extends BasePlatform {
         downloadUrl = `https://nodejs.org/dist/${job.target}/node-${job.target}-linux-x64.tar.gz`;
         break;
       case 'aarch64':
-        downloadUrl = `https://nodejs.org/dist/${job.target}/node-${job.target}-linux-arm64.tar.gz`;
+        // With the latest Raspberry Pi OS upgrades, the Raspberry Pi 4B now runs the 64-bit kernel, even on the 32-bit OS
+        // https://github.com/homebridge/homebridge/issues/3349#issuecomment-1523832510
+        if (child_process.execSync('getconf LONG_BIT')?.toString()?.trim() === '32') {
+          downloadUrl = `https://nodejs.org/dist/${job.target}/node-${job.target}-linux-armv7l.tar.gz`;
+        } else { // + case '64':
+          downloadUrl = `https://nodejs.org/dist/${job.target}/node-${job.target}-linux-arm64.tar.gz`;
+        }
         break;
       case 'armv7l':
         downloadUrl = `https://nodejs.org/dist/${job.target}/node-${job.target}-linux-armv7l.tar.gz`;
