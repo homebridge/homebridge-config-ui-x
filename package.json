@@ -28,8 +28,8 @@
     "hb-service": "./dist/bin/hb-service.js"
   },
   "engines": {
-    "node": ">=14.15.0",
-    "homebridge": ">=0.4.22"
+    "node": ">=16.20.0",
+    "homebridge": ">=1.6.0"
   },
   "scripts": {
     "watch": "concurrently \"npm run watch:ui\" \"npm run watch:server\"",
