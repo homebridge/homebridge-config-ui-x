@@ -19,11 +19,11 @@ jobs:
   publish:
     needs: lint
 
-    if: ${{ github.repository == 'homebridge/homebridge' }}
+    if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
 
     uses: homebridge/.github/.github/workflows/npm-publish.yml@main
     with:
-      tag: 'beta'
+      tag: 'test'
       dynamically_adjust_version: true
       npm_version_command: 'pre'
       pre_id: 'beta'
