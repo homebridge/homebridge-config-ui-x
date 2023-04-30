@@ -3,7 +3,7 @@ name: Node Release
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - '*.*.*'
   workflow_dispatch:
 
 jobs:
@@ -17,7 +17,7 @@ jobs:
   publish:
     needs: build_and_test
 
-    if: ${{ github.repository == 'homebridge/homebridge' }}
+    if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
 
     uses: homebridge/.github/.github/workflows/npm-publish.yml@main
     secrets:
