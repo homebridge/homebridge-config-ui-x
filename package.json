@@ -7,10 +7,10 @@
   "author": "oznu <dev@oz.nu>",
   "repository": {
     "type": "git",
-    "url": "git://github.com/oznu/homebridge-config-ui-x.git"
+    "url": "git://github.com/homebridge/homebridge-config-ui-x.git"
   },
   "bugs": {
-    "url": "https://github.com/oznu/homebridge-config-ui-x/issues"
+    "url": "https://github.com/homebridge/homebridge-config-ui-x/issues"
   },
   "funding": [
     {
