@@ -133,3 +133,7 @@ The Homebridge UI supports the [oznu/homebridge](https://github.com/oznu/docker-
 #### 4. Ask on Discord
 
 Join the [Official Homebridge Discord](https://discord.gg/C87Pvq3) community and ask in the [#ui](https://discord.gg/C87Pvq3) channel.
+
+# Credit
+
+Homebridge Config UiI X was originally created by [Oznu](https://github.com/oznu).
