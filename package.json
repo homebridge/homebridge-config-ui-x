@@ -46,6 +46,7 @@
     "webpack": "webpack --config webpack.config.js",
     "install:ui": "npm install --prefix ui",
     "test": "jest --forceExit --detectOpenHandles --verbose=true --silent --config ./test/jest-e2e.json",
+    "test-coverage": "jest --coverage --forceExit --detectOpenHandles --verbose=true --silent --config ./test/jest-e2e.json",
     "prepublishOnly": "npm i --package-lock-only && npm run lint && npm run build",
     "upgrade-install": "./upgrade-install.sh"
   },
