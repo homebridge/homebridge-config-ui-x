@@ -15,16 +15,14 @@ jobs:
 
     uses: homebridge/.github/.github/workflows/nodejs-build-and-test.yml@main
     with:
-      enable_coverage: false # TODO disabled for now!
+      enable_coverage: true
       runs_on: ${{ matrix.os }}
       install_cmd: npm ci && cd ui && npm ci
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
-  lint:
-    needs: build_and_test
-    uses: homebridge/.github/.github/workflows/eslint.yml@main
 
   test_hb_service:
+    needs: build_and_test
     strategy:
       fail-fast: false
       matrix:
@@ -73,3 +71,7 @@ jobs:
 
       - name: 'Test hb-service install'
         run: node dist/bin/hb-service.js status --port 8581
+
+  lint:
+    needs: [test_hb_service, build_and_test]
+    uses: homebridge/.github/.github/workflows/eslint.yml@main
