@@ -41,7 +41,7 @@
     "start": "ts-node -r tsconfig-paths/register src/main.ts",
     "serve": "npm run watch",
     "lint": "npm run lint:server && npm run lint:ui",
-    "lint:server": "eslint \"{src,test}/**/*.ts\" --max-warnings=0 --ignore-pattern \"ui\"",
+    "lint:server": "eslint \"{src,test}/**/*.ts\" --max-warnings=0",
     "lint:ui": "npm run lint --prefix ui",
     "webpack": "webpack --config webpack.config.js",
     "install:ui": "npm install --prefix ui",
