@@ -16,7 +16,7 @@ jobs:
       enable_coverage: true
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
-      runs_on: ${{ os }}
+      runs_on: ${{ matrix.os }}
   lint:
     needs: build_and_test
     uses: homebridge/.github/.github/workflows/eslint.yml@main
