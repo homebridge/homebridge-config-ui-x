@@ -20,5 +20,7 @@ jobs:
     if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
 
     uses: homebridge/.github/.github/workflows/npm-publish.yml@main
+    with:
+      install_cmd: npm ci && cd ui && npm ci
     secrets:
       npm_auth_token: ${{ secrets.npm_token }}

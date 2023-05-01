@@ -10,11 +10,15 @@ jobs:
     uses: homebridge/.github/.github/workflows/nodejs-build-and-test.yml@main
     with:
       enable_coverage: true
+      install_cmd: npm ci && cd ui && npm ci
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
+
   lint:
     needs: build_and_test
     uses: homebridge/.github/.github/workflows/eslint.yml@main
+    with:
+      install_cmd: npm ci && cd ui && npm ci
 
   publish:
     needs: lint
@@ -27,8 +31,6 @@ jobs:
       dynamically_adjust_version: true
       npm_version_command: 'pre'
       pre_id: 'test'
+      install_cmd: npm ci && cd ui && npm ci
     secrets:
       npm_auth_token: ${{ secrets.npm_token }}
-
-
-    # TODO attach to release!
