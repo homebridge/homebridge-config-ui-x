@@ -8,11 +8,62 @@ on:
 
 jobs:
   build_and_test:
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, macos-latest, windows-2019 ]
     uses: homebridge/.github/.github/workflows/nodejs-build-and-test.yml@main
     with:
       enable_coverage: true
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
+      runs_on: ${{ os }}
   lint:
     needs: build_and_test
     uses: homebridge/.github/.github/workflows/eslint.yml@main
+
+  test_hb_service:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, macos-latest, windows-2019 ]
+        node-version: [ 16.x, 18.x ]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node_version }}
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+
+      # remove dev deps
+      - run: npm clean-install --production
+
+      # test hb-service
+      - run: node dist/bin/hb-service.js -v
+      - if: runner.os == 'Linux'
+        name: 'Run hb-service install (Linux)'
+        run: |
+          sudo npm link
+          sudo npm install -g homebridge
+          sudo hb-service install --user homebridge
+          sleep 30
+      - if: runner.os == 'macOS'
+        name: 'Run hb-service install (macOS)'
+        run: |
+          sudo npm link
+          sudo npm install -g homebridge
+          sudo hb-service install
+          sleep 30
+      - if: runner.os == 'Windows'
+        name: 'Run hb-service install (Windows)'
+        run: |
+          npm link
+          npm install -g homebridge
+          hb-service install
+          Start-Sleep -s 30
+
+      - name: 'Test hb-service install'
+        run: node dist/bin/hb-service.js status --port 8581

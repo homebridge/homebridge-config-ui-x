@@ -45,7 +45,7 @@
     "lint:ui": "npm run lint --prefix ui",
     "webpack": "webpack --config webpack.config.js",
     "install:ui": "npm install --prefix ui",
-    "test:e2e": "jest --forceExit --detectOpenHandles --verbose=true --silent --config ./test/jest-e2e.json",
+    "test": "jest --forceExit --detectOpenHandles --verbose=true --silent --config ./test/jest-e2e.json",
     "prepublishOnly": "npm i --package-lock-only && npm run lint && npm run build",
     "upgrade-install": "./upgrade-install.sh"
   },
@@ -93,7 +93,7 @@
     "@types/jest": "^28.1.6",
     "@types/node": "^16.11.47",
     "@types/node-schedule": "^2.1.0",
-    "@types/semver": "^7.3.10",
+    "@types/semver": "7.3.10",
     "@types/tar": "^6.1.2",
     "@types/unzipper": "^0.10.5",
     "@typescript-eslint/eslint-plugin": "^5.32.0",

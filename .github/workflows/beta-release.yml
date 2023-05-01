@@ -26,6 +26,9 @@ jobs:
       tag: 'test'
       dynamically_adjust_version: true
       npm_version_command: 'pre'
-      pre_id: 'beta'
+      pre_id: 'test'
     secrets:
       npm_auth_token: ${{ secrets.npm_token }}
+
+
+    # TODO attach to release!
