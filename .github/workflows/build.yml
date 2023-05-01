@@ -73,7 +73,6 @@ jobs:
         run: node dist/bin/hb-service.js status --port 8581
 
   lint:
-    needs: [test_hb_service, build_and_test]
     uses: homebridge/.github/.github/workflows/eslint.yml@main
     with:
       install_cmd: npm ci && cd ui && npm ci
