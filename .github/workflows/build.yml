@@ -9,11 +9,13 @@ on:
 jobs:
   build_and_test:
     strategy:
+      fail-fast: false
       matrix:
         os: [ ubuntu-latest, macos-latest, windows-2019 ]
+
     uses: homebridge/.github/.github/workflows/nodejs-build-and-test.yml@main
     with:
-      enable_coverage: true
+      enable_coverage: false # TODO disabled for now!
       runs_on: ${{ matrix.os }}
       install_cmd: npm ci && cd ui && npm ci
     secrets:
@@ -39,9 +41,11 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
           cache: 'npm'
 
+      - run: npm ci
+      - run: npm run build:server
+
       # remove dev deps
       - run: npm clean-install --production
-      - run: npm run build:server
 
       # test hb-service
       - run: node dist/bin/hb-service.js -v
