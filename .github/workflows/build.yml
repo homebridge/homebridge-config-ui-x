@@ -15,6 +15,7 @@ jobs:
     with:
       enable_coverage: true
       runs_on: ${{ matrix.os }}
+      install_cmd: npm ci && cd ui && npm ci
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
   lint:
@@ -40,6 +41,7 @@ jobs:
 
       # remove dev deps
       - run: npm clean-install --production
+      - run: npm run build:server
 
       # test hb-service
       - run: node dist/bin/hb-service.js -v
