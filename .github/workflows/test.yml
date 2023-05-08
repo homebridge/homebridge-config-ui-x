@@ -60,6 +60,6 @@ jobs:
         id: statusCheck
         run: node dist/bin/hb-service.js status --port 8581
         continue-on-error: true
-      - name: 'Show errors'
+      - name: 'View Errors'
         run: |
-          if [[ ${{ steps.statusCheck.conclusion.success }} == 0 ]]; then hb-service view; else exit 0; fi
+          if [[ ${{ steps.statusCheck.outcome }} == 'success' ]]; then hb-service view; exit 1; else exit 0; fi
