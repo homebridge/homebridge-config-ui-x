@@ -94,7 +94,7 @@ export class LinuxInstaller extends BasePlatform {
 
       this.hbService.logger(`${this.hbService.serviceName} Started`, 'succeed');
     } catch (e) {
-      this.hbService.logger(`Failed to start ${this.hbService.serviceName}`, 'fail');
+      this.hbService.logger(`Failed to start ${this.hbService.serviceName} ` + e, 'fail');
     }
   }
 
