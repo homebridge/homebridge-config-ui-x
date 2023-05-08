@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
@@ -41,20 +41,20 @@ jobs:
           sudo npm link
           sudo npm install -g homebridge
           sudo hb-service install --user homebridge
-          sleep 30
+          sudo hb-service view
       - if: runner.os == 'macOS'
         name: 'Run hb-service install (macOS)'
         run: |
           sudo npm link
           sudo npm install -g homebridge
           sudo hb-service install
-          sleep 30
+          sudo hb-service view
       - if: runner.os == 'Windows'
         name: 'Run hb-service install (Windows)'
         run: |
           npm link
           npm install -g homebridge
           hb-service install
-          Start-Sleep -s 30
+          sudo hb-service view
       - name: 'Test hb-service install'
         run: node dist/bin/hb-service.js status --port 8581
