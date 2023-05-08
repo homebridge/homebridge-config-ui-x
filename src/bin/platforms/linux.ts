@@ -91,6 +91,7 @@ export class LinuxInstaller extends BasePlatform {
       this.hbService.logger(`Starting ${this.hbService.serviceName} Service...`);
       child_process.execSync(`systemctl start ${this.systemdServiceName}`);
       child_process.execSync(`systemctl status ${this.systemdServiceName} --no-pager`);
+
       this.hbService.logger(`${this.hbService.serviceName} Started`, 'succeed');
     } catch (e) {
       this.hbService.logger(`Failed to start ${this.hbService.serviceName}`, 'fail');
