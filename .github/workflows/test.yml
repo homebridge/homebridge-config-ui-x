@@ -59,7 +59,6 @@ jobs:
       - name: 'Test hb-service install'
         id: statusCheck
         run: node dist/bin/hb-service.js status --port 8581
-        continue-on-error: true
       - name: 'View Errors'
         run: |
-          if [[ ${{ steps.statusCheck.outcome }} == 'success' ]]; then hb-service view; exit 1; else exit 0; fi
+          if [[ ${{ failure() }} ]]; then hb-service view; exit 1; else exit 0; fi
