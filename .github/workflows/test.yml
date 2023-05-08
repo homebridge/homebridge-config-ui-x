@@ -41,7 +41,6 @@ jobs:
           sudo npm link
           sudo npm install -g homebridge
           sudo hb-service install --user homebridge
-          sudo hb-service install
           sleep 30
       - if: runner.os == 'macOS'
         name: 'Run hb-service install (macOS)'
@@ -64,4 +63,3 @@ jobs:
       - name: 'Show errors'
         run: |
           if [[ ${{ steps.statusCheck.conclusion.success }} == 0 ]]; then hb-service view; else exit 0; fi
-
