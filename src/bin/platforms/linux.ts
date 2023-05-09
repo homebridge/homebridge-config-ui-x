@@ -727,7 +727,7 @@ export class LinuxInstaller extends BasePlatform {
       `EnvironmentFile=/etc/default/${this.systemdServiceName}`,
       `ExecStartPre=-/bin/run-parts ${this.runPartsPath}`,
       `ExecStartPre=-${this.hbService.selfPath} before-start $HOMEBRIDGE_OPTS`,
-      `ExecStart=node ${this.hbService.selfPath} run $HOMEBRIDGE_OPTS`,
+      `ExecStart=${this.hbService.selfPath} run $HOMEBRIDGE_OPTS`,
       'Restart=always',
       'RestartSec=3',
       'KillMode=process',
