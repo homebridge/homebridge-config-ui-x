@@ -98,6 +98,9 @@ export class LinuxInstaller extends BasePlatform {
       console.log(e.stdout.toString());
       const ret = child_process.execSync(`journalctl -n 50 -u ${this.systemdServiceName} --no-pager`).toString();
       console.log(ret);
+
+      const ls = child_process.execSync(`ls -l ${this.hbService.selfPath}`).toString();
+      console.log(ls);
     }
   }
 
