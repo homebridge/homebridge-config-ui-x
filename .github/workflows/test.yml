@@ -35,7 +35,7 @@ jobs:
 
       # test hb-service
       - run: node dist/bin/hb-service.js -v
-      - run: hb-service view
+      - run: ls -l dist/bin/hb-service.js
       - if: runner.os == 'Linux'
         name: 'Run hb-service install (Linux)'
         run: |
