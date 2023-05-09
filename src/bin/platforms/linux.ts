@@ -579,6 +579,7 @@ export class LinuxInstaller extends BasePlatform {
           // chown the storage directory to the service user
           child_process.execSync(`chown -R ${serviceUser}: "${storagePath}"`);
         }
+        child_process.execSync(`chmod a+x ${this.hbService.selfPath}`);
       } catch (e) {
         this.hbService.logger('WARNING: Failed to set permissions', 'warn');
       }
