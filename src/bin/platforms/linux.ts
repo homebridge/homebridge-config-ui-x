@@ -96,7 +96,7 @@ export class LinuxInstaller extends BasePlatform {
       this.hbService.logger(`Failed to start ${this.hbService.serviceName} - ` + e, 'fail');
       console.log('STATUS: ' + e.status);
       console.log(e.stdout.toString());
-      var ret = child_process.execSync(`journalctl -n 50 -u ${this.systemdServiceName} --no-pager`).toString();
+      const ret = child_process.execSync(`journalctl -n 50 -u ${this.systemdServiceName} --no-pager`).toString();
       console.log(ret);
     }
   }
