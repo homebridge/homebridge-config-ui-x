@@ -1033,6 +1033,7 @@ export class HomebridgeServiceHelper {
    * Tails the Homebridge service log for 30 seconds and outputs the results to the console
    */
   private async viewLogs() {
+    this.installer.viewLogs();
     if (!fs.existsSync(this.logPath)) {
       this.logger(`ERROR: Log file does not exist at expected location: ${this.logPath}`, 'fail');
       process.exit(1);
