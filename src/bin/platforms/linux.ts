@@ -106,13 +106,7 @@ export class LinuxInstaller extends BasePlatform {
       this.hbService.logger(`${this.hbService.serviceName} Started`, 'succeed');
     } catch (e) {
       this.hbService.logger(`Failed to start ${this.hbService.serviceName} - ` + e, 'fail');
-      console.log('STATUS: ' + e.status);
-      console.log(e.stdout.toString());
-      const ret = child_process.execSync(`journalctl -n 50 -u ${this.systemdServiceName} --no-pager`).toString();
-      console.log(ret);
-
-      //    const ls = child_process.execSync(`ls -l ${this.hbService.selfPath}`).toString();
-      //    console.log(ls);
+      process.exit(1);
     }
   }
 
@@ -126,7 +120,7 @@ export class LinuxInstaller extends BasePlatform {
       child_process.execSync(`systemctl stop ${this.systemdServiceName}`);
       this.hbService.logger(`${this.hbService.serviceName} Stopped`, 'succeed');
     } catch (e) {
-      this.hbService.logger(`Failed to stop ${this.systemdServiceName}`, 'fail');
+      this.hbService.logger(`Failed to stop ${this.systemdServiceName} - ` + e, 'fail');
     }
   }
 
@@ -139,9 +133,10 @@ export class LinuxInstaller extends BasePlatform {
     try {
       this.hbService.logger(`Restarting ${this.hbService.serviceName} Service...`);
       child_process.execSync(`systemctl restart ${this.systemdServiceName}`);
+      child_process.execSync(`systemctl status ${this.systemdServiceName} --no-pager`);
       this.hbService.logger(`${this.hbService.serviceName} Restarted`, 'succeed');
     } catch (e) {
-      this.hbService.logger(`Failed to restart ${this.hbService.serviceName}`, 'fail');
+      this.hbService.logger(`Failed to restart ${this.hbService.serviceName} - ` + e, 'fail');
     }
   }
 
