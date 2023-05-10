@@ -1,8 +1,8 @@
 {
   "name": "homebridge-config-ui-x",
   "displayName": "Homebridge UI",
-  "version": "4.50.2",
-  "description": "A web based management, configuration and control platform for Homebridge",
+  "version": "4.50.3",
+  "description": "A web based management, configuration and control platform for Homebridge.",
   "license": "MIT",
   "author": "oznu <dev@oz.nu>",
   "repository": {
