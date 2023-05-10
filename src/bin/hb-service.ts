@@ -36,6 +36,7 @@ export class HomebridgeServiceHelper {
   public allowRunRoot = false;
   public enableHbServicePluginManagement = false;
   public asUser;
+  public addGroup: string;
   private log: fs.WriteStream | NodeJS.WriteStream;
   private homebridgeModulePath: string;
   private homebridgePackage: { version: string; bin: { homebridge: string } };
@@ -99,6 +100,7 @@ export class HomebridgeServiceHelper {
       .option('--strict-plugin-resolution', '', () => { process.env.UIX_STRICT_PLUGIN_RESOLUTION = '1'; })
       .option('--port <port>', 'The port to set to the Homebridge UI when installing as a service', (p) => this.uiPort = parseInt(p, 10))
       .option('--user <user>', 'The user account the Homebridge service will be installed as (Linux, FreeBSD, macOS only)', (p) => this.asUser = p)
+      .option('--group <group>', 'The group the Homebridge service will be added to (Linux, FreeBSD, macOS only)', (p) => this.addGroup = p)
       .option('--stdout', '', () => this.stdout = true)
       .option('--allow-root', '', () => this.allowRunRoot = true)
       .option('--docker', '', () => this.docker = true)
@@ -1033,6 +1035,7 @@ export class HomebridgeServiceHelper {
    * Tails the Homebridge service log for 30 seconds and outputs the results to the console
    */
   private async viewLogs() {
+    this.installer.viewLogs();
     if (!fs.existsSync(this.logPath)) {
       this.logger(`ERROR: Log file does not exist at expected location: ${this.logPath}`, 'fail');
       process.exit(1);

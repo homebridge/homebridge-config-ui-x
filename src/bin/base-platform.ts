@@ -40,6 +40,11 @@ export class BasePlatform {
     process.exit(0);
   }
 
+  public async viewLogs(): Promise<void> {
+    this.hbService.logger('This command has not been implemented on this platform.', 'fail');
+    process.exit(0);
+  }
+
   public async getId(): Promise<{ uid: number; gid: number }> {
     return {
       uid: 0,

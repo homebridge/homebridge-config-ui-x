@@ -82,6 +82,18 @@ export class LinuxInstaller extends BasePlatform {
   }
 
   /**
+   * viewLogs the systemd service
+   */
+  public async viewLogs() {
+    try {
+      const ret = child_process.execSync(`journalctl -n 50 -u ${this.systemdServiceName} --no-pager`).toString();
+      console.log(ret);
+    } catch (e) {
+      this.hbService.logger(`Failed to start ${this.hbService.serviceName} - ` + e, 'fail');
+    }
+  }
+
+  /**
    * Starts the systemd service
    */
   public async start() {
@@ -90,9 +102,10 @@ export class LinuxInstaller extends BasePlatform {
     try {
       this.hbService.logger(`Starting ${this.hbService.serviceName} Service...`);
       child_process.execSync(`systemctl start ${this.systemdServiceName}`);
-      this.hbService.logger(`${this.hbService.serviceName} Started`, 'succeed');
+      child_process.execSync(`systemctl status ${this.systemdServiceName} --no-pager`);
     } catch (e) {
-      this.hbService.logger(`Failed to start ${this.hbService.serviceName}`, 'fail');
+      this.hbService.logger(`Failed to start ${this.hbService.serviceName} - ` + e, 'fail');
+      process.exit(1);
     }
   }
 
@@ -106,7 +119,7 @@ export class LinuxInstaller extends BasePlatform {
       child_process.execSync(`systemctl stop ${this.systemdServiceName}`);
       this.hbService.logger(`${this.hbService.serviceName} Stopped`, 'succeed');
     } catch (e) {
-      this.hbService.logger(`Failed to stop ${this.systemdServiceName}`, 'fail');
+      this.hbService.logger(`Failed to stop ${this.systemdServiceName} - ` + e, 'fail');
     }
   }
 
@@ -119,9 +132,10 @@ export class LinuxInstaller extends BasePlatform {
     try {
       this.hbService.logger(`Restarting ${this.hbService.serviceName} Service...`);
       child_process.execSync(`systemctl restart ${this.systemdServiceName}`);
+      child_process.execSync(`systemctl status ${this.systemdServiceName} --no-pager`);
       this.hbService.logger(`${this.hbService.serviceName} Restarted`, 'succeed');
     } catch (e) {
-      this.hbService.logger(`Failed to restart ${this.hbService.serviceName}`, 'fail');
+      this.hbService.logger(`Failed to restart ${this.hbService.serviceName} - ` + e, 'fail');
     }
   }
 
@@ -499,6 +513,10 @@ export class LinuxInstaller extends BasePlatform {
       // if not create the user
       child_process.execSync(`useradd -m --system ${this.hbService.asUser}`);
       this.hbService.logger(`Created service user: ${this.hbService.asUser}`, 'info');
+      if (this.hbService.addGroup) {
+        child_process.execSync(`usermod -a -G ${this.hbService.addGroup} ${this.hbService.asUser}`, { timeout: 10000 });
+        this.hbService.logger(`Added ${this.hbService.asUser} to group ${this.hbService.addGroup}`, 'info');
+      }
     }
 
     try {
@@ -564,6 +582,7 @@ export class LinuxInstaller extends BasePlatform {
           // chown the storage directory to the service user
           child_process.execSync(`chown -R ${serviceUser}: "${storagePath}"`);
         }
+        child_process.execSync(`chmod a+x ${this.hbService.selfPath}`);
       } catch (e) {
         this.hbService.logger('WARNING: Failed to set permissions', 'warn');
       }

@@ -17,6 +17,10 @@ jobs:
             node-version: 16.x
           - os: windows-2019
             node-version: 18.x
+          - os: windows-latest
+            node-version: 16.x
+          - os: windows-latest
+            node-version: 18.x
 
     runs-on: ${{ matrix.os }}
 
@@ -40,7 +44,7 @@ jobs:
         run: |
           sudo npm link
           sudo npm install -g homebridge
-          sudo hb-service install --user homebridge
+          sudo hb-service install --user homebridge --group `id -gn`
           sleep 30
       - if: runner.os == 'macOS'
         name: 'Run hb-service install (macOS)'
@@ -57,10 +61,9 @@ jobs:
           hb-service install
           Start-Sleep -s 30
       - name: 'Test hb-service install'
-        id: statusCheck
         run: node dist/bin/hb-service.js status --port 8581
       - name: 'View Errors'
         if: ${{ failure() }}
         run: |
-          hb-service view
+          node dist/bin/hb-service.js view
           exit 1
