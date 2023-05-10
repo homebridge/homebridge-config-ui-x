@@ -88,8 +88,6 @@ export class LinuxInstaller extends BasePlatform {
     try {
       const ret = child_process.execSync(`journalctl -n 50 -u ${this.systemdServiceName} --no-pager`).toString();
       console.log(ret);
-      const ls = child_process.execSync(`ls -l ${this.hbService.selfPath}`).toString();
-      console.log(ls);
     } catch (e) {
       this.hbService.logger(`Failed to start ${this.hbService.serviceName} - ` + e, 'fail');
     }
@@ -104,9 +102,7 @@ export class LinuxInstaller extends BasePlatform {
     try {
       this.hbService.logger(`Starting ${this.hbService.serviceName} Service...`);
       child_process.execSync(`systemctl start ${this.systemdServiceName}`);
-      this.hbService.logger(`${this.hbService.serviceName} Started 1`, 'succeed');
       child_process.execSync(`systemctl status ${this.systemdServiceName} --no-pager`);
-      this.hbService.logger(`${this.hbService.serviceName} Started 2`, 'succeed');
     } catch (e) {
       this.hbService.logger(`Failed to start ${this.hbService.serviceName} - ` + e, 'fail');
       process.exit(1);
