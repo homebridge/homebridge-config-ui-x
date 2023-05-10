@@ -26,9 +26,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
-      - run: pwd
-      - run: id
-      - run: id -Gn
       - run: npm run build:server
       - run: npm run lint:server
       - run: npm run test:e2e
@@ -42,6 +39,9 @@ jobs:
         name: 'Run hb-service install (Linux)'
         run: |
           ls -l dist/bin/hb-service.js
+          pwd
+          id
+          id -Gn
           sudo npm link
           sudo npm install -g homebridge
           sudo hb-service install --user homebridge
