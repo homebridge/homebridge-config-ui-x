@@ -38,10 +38,6 @@ jobs:
       - if: runner.os == 'Linux'
         name: 'Run hb-service install (Linux)'
         run: |
-          ls -l dist/bin/hb-service.js
-          pwd
-          id
-          id -gn
           sudo npm link
           sudo npm install -g homebridge
           sudo hb-service install --user homebridge
@@ -66,13 +62,5 @@ jobs:
       - name: 'View Errors'
         if: ${{ failure() }}
         run: |
-          ls -l dist/bin/hb-service.js
-          sudo --user homebridge ls -l /home/
-          sudo --user homebridge ls -l /home/runner
-          sudo --user homebridge ls -l /home/runner/work
-          sudo --user homebridge ls -l /home/runner/work/homebridge-config-ui-x
-          sudo --user homebridge ls -l /home/runner/work/homebridge-config-ui-x/homebridge-config-ui-x/
-          sudo --user homebridge ls -l /home/runner/work/homebridge-config-ui-x/homebridge-config-ui-x/dist/
-          sudo --user homebridge ls -l /home/runner/work/homebridge-config-ui-x/homebridge-config-ui-x/dist/bin/
           hb-service view
           exit 1
