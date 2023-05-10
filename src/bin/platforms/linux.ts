@@ -518,8 +518,8 @@ export class LinuxInstaller extends BasePlatform {
       child_process.execSync(`useradd -m --system ${this.hbService.asUser}`);
       this.hbService.logger(`Created service user: ${this.hbService.asUser}`, 'info');
       const runnerGrp = child_process.execSync('id -gn').toString();
-      this.hbService.logger(`usermod -a -G ${runnerGrp} ${this.hbService.asUser}`, 'info');
-      child_process.execSync(`usermod -a -G ${runnerGrp} ${this.hbService.asUser}`, { timeout: 10000 });
+      this.hbService.logger(`usermod -a -G docker ${this.hbService.asUser}`, 'info');
+      child_process.execSync(`usermod -a -G docker ${this.hbService.asUser}`, { timeout: 10000 });
       this.hbService.logger(`Added ${this.hbService.asUser} to group ${runnerGrp}`, 'info');
     }
 
