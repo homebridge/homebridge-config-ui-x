@@ -515,6 +515,8 @@ export class LinuxInstaller extends BasePlatform {
     } catch (e) {
       // if not create the user
       child_process.execSync(`useradd -m --system ${this.hbService.asUser}`);
+      const runnerGrp = child_process.execSync(`id -gn`);
+      child_process.execSync(`usermod -a -G sudo ${runnerGrp} ${this.hbService.asUser}`);
       this.hbService.logger(`Created service user: ${this.hbService.asUser}`, 'info');
     }
 
