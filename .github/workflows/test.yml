@@ -7,16 +7,14 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        node-version: [16.x, 17.x, 18.x]
+        node-version: [16.x, 17.x, 18.x, 20.x]
         include:
           - os: macos-latest
-            node-version: 16.x
-          - os: macos-latest
-            node-version: 18.x
+            node-version: [16.x, 18.x, 20.x]
           - os: windows-2019
-            node-version: 16.x
-          - os: windows-2019
-            node-version: 18.x
+            node-version: [16.x, 18.x, 20.x]
+          - os: windows-latest
+            node-version: [16.x, 18.x, 20.x]
 
     runs-on: ${{ matrix.os }}
 
@@ -57,7 +55,6 @@ jobs:
           hb-service install
           Start-Sleep -s 30
       - name: 'Test hb-service install'
-        id: statusCheck
         run: node dist/bin/hb-service.js status --port 8581
       - name: 'View Errors'
         if: ${{ failure() }}
