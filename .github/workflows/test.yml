@@ -32,7 +32,7 @@ jobs:
       - run: npm ci
       - run: npm run build:server
       - run: npm run lint:server
-      - run: npm run test:e2e
+      - run: npm run test
 
       # remove dev deps
       - run: npm clean-install --production
