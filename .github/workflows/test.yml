@@ -64,5 +64,6 @@ jobs:
         if: ${{ failure() }}
         run: |
           ls -l dist/bin/hb-service.js
+          sudo --user homebridge ls -l /home/runner/work/homebridge-config-ui-x/homebridge-config-ui-x/dist/bin/
           hb-service view
           exit 1
