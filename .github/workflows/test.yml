@@ -65,5 +65,6 @@ jobs:
       - name: 'View Errors'
         if: ${{ failure() }}
         run: |
+          node dist/bin/hb-service.js view
           hb-service view
           exit 1
