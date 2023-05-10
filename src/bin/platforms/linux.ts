@@ -515,11 +515,11 @@ export class LinuxInstaller extends BasePlatform {
       child_process.execSync(`id ${this.hbService.asUser} 2> /dev/null`);
     } catch (e) {
       // if not create the user
-      child_process.execSync(`useradd -m --system ${this.hbService.asUser}`);
+      child_process.execSync(`useradd -m --system ${this.hbService.asUser}`, { timeout: 5000 });
       this.hbService.logger(`Created service user: ${this.hbService.asUser}`, 'info');
-      const runnerGrp = child_process.execSync('id -gn').toString();
+      const runnerGrp = child_process.execSync('id -gn', { timeout: 5000 }).toString();
       this.hbService.logger(`Created service user-1: ${this.hbService.asUser}`, 'info');
-      child_process.execSync(`usermod -a -G ${runnerGrp} ${this.hbService.asUser}`);
+      child_process.execSync(`sudo usermod -a -G ${runnerGrp} ${this.hbService.asUser}`, { timeout: 5000 });
       this.hbService.logger(`Added ${this.hbService.asUser} to group ${runnerGrp}`, 'info');
     }
 
