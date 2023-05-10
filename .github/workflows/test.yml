@@ -41,7 +41,7 @@ jobs:
           ls -l dist/bin/hb-service.js
           pwd
           id
-          id -Gn
+          id -gn
           sudo npm link
           sudo npm install -g homebridge
           sudo hb-service install --user homebridge
