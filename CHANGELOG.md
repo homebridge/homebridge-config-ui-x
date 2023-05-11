@@ -1,5 +1,9 @@
 ## 4.50.3 (2023-05-12)
 
+### Notable Changes
+
+* **System:** Transfer of homebridge-config-ui-x support to the homebridge community.  Tks Oznu for your efforts on this package.
+
 ### Bug Fixes
 
 * **Backups:** Restore never starts on version 4.50.2 ([#1457](https://github.com/homebridge/homebridge-config-ui-x/issues/1457))
