@@ -1,3 +1,15 @@
+## 4.50.3 (2023-05-12)
+
+### Bug Fixes
+
+* **Backups:** Restore never starts on version 4.50.2 ([#1457](https://github.com/homebridge/homebridge-config-ui-x/issues/1457))
+* **System:** hb-service update-node issue: Stops homebridge from starting ([#106](https://github.com/homebridge/homebridge-raspbian-image/issues/106))
+
+### Other Changes
+
+* **i18n:** No apostrophe in possessive "its" ([1450](https://github.com/homebridge/homebridge-config-ui-x/pull/1450))
+* **i18n:** Update de.json ([1477](https://github.com/homebridge/homebridge-config-ui-x/pull/1477))
+
 ## 4.50.2 (2022-11-10)
 
 ### Notable Changes
