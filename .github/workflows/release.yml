@@ -8,7 +8,7 @@ on:
 
 jobs:
   build_and_test:
-    uses: homebridge/homebridge-config-ui-x/.github/workflows/nodejs-build-and-test.yml
+    uses: ./.github/workflows/nodejs-build-and-test.yml
     with:
       enable_coverage: true
     secrets:
