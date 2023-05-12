@@ -1,3 +1,9 @@
+## 4.50.4 (2023-05-12)
+
+### Notable Changes
+
+* **System:** Updates to workflow release process
+
 ## 4.50.3 (2023-05-12)
 
 ### Notable Changes
