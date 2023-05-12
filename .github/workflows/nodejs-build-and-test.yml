@@ -1,0 +1,87 @@
+name: Build and Test - NodeJS
+
+on:
+  workflow_call:
+    inputs:
+      enable_coverage:
+        description: 'A boolean value indicating if coverage reporting shall be enabled. If provided the secret token is required.'
+        default: false
+        required: false
+        type: boolean
+      runs_on:
+        description: 'Defines the operating system the action should run on. Defaults to ubuntu-latest.'
+        default: 'ubuntu-latest'
+        required: false
+        type: string
+      install_cmd:
+        description: 'Defines the install command to be run. Defaults to `npm ci`.'
+        default: npm ci
+        required: false
+        type: string
+    secrets:
+      token:
+        description: 'The GitHub Token which is used to push to Coveralls'
+        required: false
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        node_version: [14, 16, 18]
+
+    runs-on: ${{ inputs.runs_on }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node_version }}
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+
+      - name: install
+        run: |
+          ${{ inputs.install_cmd }}
+          cd ui
+          ${{ inputs.install_cmd }}
+        env:
+          CI: true
+      - name: build
+        run: npm run build --if-present
+        env:
+          CI: true
+
+      - name: test # solely run the test script if coverage is disabled
+        if: ${{ !inputs.enable_coverage }}
+        run: npm run test
+        env:
+          CI: true
+      - name: test-coverage
+        if: ${{ inputs.enable_coverage }}
+        run: npm run test-coverage
+        env:
+          CI: true
+
+      - name: Coveralls Parallel
+        if: ${{ inputs.enable_coverage }}
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.github_token }}
+          flag-name: run-${{ matrix.node_version }}
+          parallel: true
+
+  # Finish up the coverage reporting to Coveralls after all matrix steps of the build jobs have run
+  collect_coverage_reports:
+    if: ${{ inputs.enable_coverage }}
+
+    needs: build
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Coveralls Finished
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.token }}
+          parallel-finished: true

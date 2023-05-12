@@ -17,9 +17,10 @@ jobs:
 
       # Sanity check to ensure that release tags don't start with a 'v' version prefix but adhere to the X.Y.Z format
       - name: Check for Tag name Format
-        if: startWith(${{github.event.release.tag_name}}, 'v')
+        # https://github.com/orgs/community/discussions/25017
+        if: startsWith(github.event.release.tag_name, 'v')
         run: |
-          echo "Tag name must not start with 'v' Prefix"
+          echo "Release Tag name must not start with 'v', this was supplied ${{github.event.release.tag_name}}"
           exit 1
 
       - name: Install package
