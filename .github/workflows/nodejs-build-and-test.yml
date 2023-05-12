@@ -42,7 +42,7 @@ jobs:
 
       - name: install
         run: |
-          ${{ inputs.install_cmd }}
+          ${{ inputs.install_cmd }} ; cd ui ;  ${{ inputs.install_cmd }}
           cd ui
           ${{ inputs.install_cmd }}
         env:
