@@ -8,9 +8,10 @@ on:
 
 jobs:
   build_and_test:
-    uses: ./.github/workflows/nodejs-build-and-test.yml
+    uses: homebridge/.github/.github/workflows/nodejs-build-and-test.yml@main
     with:
       enable_coverage: true
+      install_cmd: npm ci && cd ui && npm ci
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
 
