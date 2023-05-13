@@ -219,7 +219,7 @@ export class ManualPluginConfigModalComponent implements OnInit {
           this.translate.instant('plugins.settings.toast_plugin_config_saved'),
         );
 
-        this.$notification.configUpdated.next();
+        this.$notification.configUpdated.next(undefined);
         this.activeModal.close();
       })
       .catch(err => {

@@ -87,9 +87,9 @@ MS Internet Explorer (any version) is not supported!
 
 # Supported Node.js and Npm Versions
 
-While the Homebridge UI should work on Node.js 10+, only the following versions of Node.js are officially supported:
+While the Homebridge UI should work on Node.js 14+, only the following versions of Node.js are officially supported:
 
-* node v12.13.0 or higher
+* node v14.15.0 or higher
 * npm v6.4.1 or higher
 
 You can check your current versions using these commands:
@@ -133,3 +133,7 @@ The Homebridge UI supports the [oznu/homebridge](https://github.com/oznu/docker-
 #### 4. Ask on Discord
 
 Join the [Official Homebridge Discord](https://discord.gg/C87Pvq3) community and ask in the [#ui](https://discord.gg/C87Pvq3) channel.
+
+# Credit
+
+Homebridge Config UiI X was originally created by [Oznu](https://github.com/oznu).

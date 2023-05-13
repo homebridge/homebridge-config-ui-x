@@ -79,6 +79,10 @@
       }
     }
 
+    .qr-code-theme-color {
+      stroke: $primary-dark !important;
+    }
+
     .hb-widget-chart-background {
       background-color: rgba($primary-dark, 0.2);
       display: none;

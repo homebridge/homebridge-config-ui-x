@@ -79,7 +79,7 @@ export class SettingsService {
         this.setUiVersion(data.env.packageVersion);
         this.setLang(this.env.lang);
         this.settingsLoaded = true;
-        this.settingsLoadedSubject.next();
+        this.settingsLoadedSubject.next(undefined);
       });
   }
 

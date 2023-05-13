@@ -73,10 +73,17 @@ function tryRebuildNodePtyModule() {
   logger.warn('[node-pty] Trying to rebuild automatically...');
   logger.warn(`[node-pty] Path: ${modulePath}`);
   try {
-    child_process.execSync('npm run install --unsafe-perm', {
-      cwd: modulePath,
-      stdio: 'ignore',
-    });
+    if (process.env.UIX_USE_PNPM === '1' && process.env.UIX_CUSTOM_PLUGIN_PATH) {
+      child_process.execSync('pnpm rebuild node-pty-prebuilt-multiarch', {
+        cwd: process.env.UIX_CUSTOM_PLUGIN_PATH,
+        stdio: 'ignore',
+      });
+    } else {
+      child_process.execSync('npm run install --unsafe-perm', {
+        cwd: modulePath,
+        stdio: 'ignore',
+      });
+    }
   } catch (e) {
     if (os.platform() !== 'win32') {
       child_process.execSync('sudo -E -n run install --unsafe-perm', {

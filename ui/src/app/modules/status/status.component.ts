@@ -262,7 +262,7 @@ export class StatusComponent implements OnInit, OnDestroy {
       })
       .catch(() => {
         this.gridChangedEvent();
-        item.$configureEvent.next();
+        item.$configureEvent.next(undefined);
       });
   }
 

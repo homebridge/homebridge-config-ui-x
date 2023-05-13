@@ -209,7 +209,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     return this.$api.post('/config-editor', config)
       .toPromise()
       .then(data => {
-        this.$notification.configUpdated.next();
+        this.$notification.configUpdated.next(undefined);
         this.$toastr.success(this.translate.instant('config.toast_config_saved'), this.translate.instant('toast.title_success'));
         this.homebridgeConfig = JSON.stringify(data, null, 4);
       })

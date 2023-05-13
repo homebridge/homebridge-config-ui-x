@@ -96,7 +96,7 @@ export class BridgePluginsModalComponent implements OnInit {
 
     try {
       await this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.configBlocks).toPromise();
-      this.$notification.configUpdated.next();
+      this.$notification.configUpdated.next(undefined);
       this.activeModal.close();
     } catch (err) {
       this.$toastr.error(

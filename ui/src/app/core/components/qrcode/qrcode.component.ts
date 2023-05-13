@@ -1,5 +1,4 @@
-import { Component, ElementRef, Input, OnChanges, OnInit, ViewChild } from '@angular/core';
-import { doc } from 'prettier';
+import { Component, ElementRef, Input, OnChanges, ViewChild } from '@angular/core';
 import * as QRCode from 'qrcode';
 
 @Component({
@@ -22,11 +21,14 @@ export class QrcodeComponent implements OnChanges {
         type: 'svg',
         margin: 0,
         color: {
-          light: '#0000',
+          light: '#ffffff00',
           dark: document.body.classList.contains('dark-mode') ? '#FFF' : '#000',
         },
       });
       this.qrcodeElement.nativeElement.innerHTML = qrcodeSvg;
+      const svgElement = this.qrcodeElement.nativeElement.querySelector('svg') as SVGElement;
+      const svgPathElement = svgElement.querySelector('path') as SVGPathElement;
+      svgPathElement.classList.add('qr-code-theme-color');
     }
   }
 

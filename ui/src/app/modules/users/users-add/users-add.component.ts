@@ -12,7 +12,14 @@ import { ApiService } from '@/app/core/api.service';
   templateUrl: './users-add.component.html',
 })
 export class UsersAddComponent implements OnInit {
-  form: FormGroup;
+  form = new FormGroup({
+    username: new FormControl('', [Validators.required]),
+    name: new FormControl('', [Validators.required]),
+    password: new FormControl('', [Validators.compose([Validators.required, Validators.minLength(4)])]),
+    passwordConfirm: new FormControl('', [Validators.required]),
+    admin: new FormControl(true),
+  }, this.matchPassword);
+
   page = {
     title: 'users.title_add_user',
     save: 'users.button_add_new_user',
@@ -26,14 +33,8 @@ export class UsersAddComponent implements OnInit {
     private $api: ApiService,
   ) { }
 
-  ngOnInit() {
-    this.form = new FormGroup({
-      username: new FormControl('', [Validators.required]),
-      name: new FormControl('', [Validators.required]),
-      password: new FormControl('', [Validators.compose([Validators.required, Validators.minLength(4)])]),
-      passwordConfirm: new FormControl('', [Validators.required]),
-      admin: new FormControl(true),
-    }, this.matchPassword);
+  ngOnInit(): void {
+
   }
 
   matchPassword(AC: AbstractControl) {

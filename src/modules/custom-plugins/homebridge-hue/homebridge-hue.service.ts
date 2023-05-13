@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, StreamableFile } from '@nestjs/common';
 import { ConfigService } from '../../../core/config/config.service';
 
 @Injectable()
@@ -9,7 +9,7 @@ export class HomebridgeHueService {
     private configService: ConfigService,
   ) { }
 
-  async streamDumpFile(): Promise<fs.ReadStream> {
+  async streamDumpFile(): Promise<StreamableFile> {
     const dumpPath = path.resolve(this.configService.storagePath, 'homebridge-hue.json.gz');
 
     // check file exists
@@ -18,6 +18,6 @@ export class HomebridgeHueService {
     }
 
     // stream file to client
-    return fs.createReadStream(dumpPath);
+    return new StreamableFile(fs.createReadStream(dumpPath));
   }
 }

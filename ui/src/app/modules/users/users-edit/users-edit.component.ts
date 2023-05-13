@@ -15,7 +15,14 @@ import { AuthService } from '@/app/core/auth/auth.service';
 export class UsersEditComponent implements OnInit {
   @Input() user;
 
-  public form: FormGroup;
+  public form = new FormGroup({
+    username: new FormControl('', [Validators.required]),
+    name: new FormControl('', [Validators.required]),
+    password: new FormControl(''),
+    passwordConfirm: new FormControl(''),
+    admin: new FormControl(true),
+  }, this.matchPassword);
+
   public page = {
     title: 'users.title_edit_user',
     save: 'form.button_save',
@@ -34,15 +41,6 @@ export class UsersEditComponent implements OnInit {
 
   ngOnInit() {
     this.isCurrentUser = this.$auth.user.username === this.user.username;
-
-    this.form = new FormGroup({
-      username: new FormControl('', [Validators.required]),
-      name: new FormControl('', [Validators.required]),
-      password: new FormControl(''),
-      passwordConfirm: new FormControl(''),
-      admin: new FormControl(true),
-    }, this.matchPassword);
-
     this.form.patchValue(this.user);
   }
 

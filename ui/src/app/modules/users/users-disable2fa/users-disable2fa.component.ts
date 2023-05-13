@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl, Validators, FormGroup, FormControl } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
@@ -13,7 +13,10 @@ import { ApiService } from '@/app/core/api.service';
 })
 export class UsersDisable2faComponent implements OnInit {
 
-  public formGroup: FormGroup;
+  public formGroup = new FormGroup({
+    password: new FormControl('', [Validators.required]),
+  });
+
   public invalidCredentials = false;
 
   constructor(
@@ -24,9 +27,7 @@ export class UsersDisable2faComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.formGroup = new FormGroup({
-      password: new FormControl('', [Validators.required]),
-    });
+
   }
 
   disable2fa() {

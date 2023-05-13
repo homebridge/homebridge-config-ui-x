@@ -1,6 +1,7 @@
 # Dist
 dist/
 public/
+package/
 
 # Logs
 *.log

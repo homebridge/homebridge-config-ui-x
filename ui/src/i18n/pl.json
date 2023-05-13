@@ -197,7 +197,7 @@
     "plugins.manage.label_upgrade": "Aktualizacja",
     "plugins.manage.message_confirm_disable": "Jesteś pewny że chcesz wyłączyć {{ pluginName }}? Wszystkie akcesoria z tej wtyczki zostaną usunięte z aplikacji HomeKit, po ponownym jej załączeniu konieczna będzie ich ponowna konfiguracja.",
     "plugins.manage.message_confirm_enable": "Jesteś pewny że chcesz załączyć {{ pluginName }}?",
-    "plugins.manage.message_install_previous_version": "Zainstaluj poprzednią wersję",
+    "plugins.manage.message_install_alternate_version": "Zainstaluj inną wersję",
     "plugins.manage.message_select_version_to_install": "Wybierz wersję do instalacji",
     "plugins.manage.message_thanks_for_upgrading_ui": "Dziękujemy za zainstalowanie najnowszej wersji interfejsu Homebridge UI.",
     "plugins.manage.message_uninstall_remove_config_required": "Jeśli całkowicie usunąłeś tę wtyczkę, upewnij się, że usunąłeś jej konfigurację w pliku config.json przed zrestartowaniem Homebridge.",

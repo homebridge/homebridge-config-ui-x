@@ -21,7 +21,12 @@ export class SetupWizardComponent implements OnInit, OnDestroy {
   public previousTitle: string;
   public step: 'welcome' | 'create-account' | 'setup-complete' | 'restore-backup' | 'restarting' = 'welcome';
 
-  public createUserForm: FormGroup;
+  public createUserForm = new FormGroup({
+    username: new FormControl('', [Validators.required]),
+    password: new FormControl('', [Validators.compose([Validators.required, Validators.minLength(4)])]),
+    passwordConfirm: new FormControl('', [Validators.required]),
+  }, this.matchPassword);
+
   public loading = false;
 
   public selectedFile: File;
@@ -42,12 +47,6 @@ export class SetupWizardComponent implements OnInit, OnDestroy {
     this.previousTitle = this.$title.getTitle();
     this.$title.setTitle('Setup Homebridge');
     window.document.querySelector('body').classList.remove(`body-top-padding`);
-
-    this.createUserForm = new FormGroup({
-      username: new FormControl('', [Validators.required]),
-      password: new FormControl('', [Validators.compose([Validators.required, Validators.minLength(4)])]),
-      passwordConfirm: new FormControl('', [Validators.required]),
-    }, this.matchPassword);
   }
 
   matchPassword(AC: AbstractControl) {
@@ -81,7 +80,7 @@ export class SetupWizardComponent implements OnInit, OnDestroy {
   createFirstUser() {
     this.loading = true;
 
-    const payload = this.createUserForm.value;
+    const payload = this.createUserForm.getRawValue() as Record<string, string>;
     payload.name = payload.username;
 
     this.$api.post('/setup-wizard/create-first-user', payload).subscribe(

@@ -26,5 +26,8 @@ import { ServerController } from './server.controller';
   controllers: [
     ServerController,
   ],
+  exports: [
+    ServerService,
+  ]
 })
 export class ServerModule { }

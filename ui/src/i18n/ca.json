@@ -197,7 +197,7 @@
     "plugins.manage.label_upgrade": "Actualitzat",
     "plugins.manage.message_confirm_disable": "Estàs segur que vols desactivar {{ pluginName }}? Tots els accessoris exposats per aquest plugin se suprimiran de HomeKit",
     "plugins.manage.message_confirm_enable": "Estàs segur que vols activar {{ pluginName }}?",
-    "plugins.manage.message_install_previous_version": "Instal·lar versió anterior",
+    "plugins.manage.message_install_alternate_version": "Instal·lar versió anterior",
     "plugins.manage.message_select_version_to_install": "Tria la versió que vols instal·lar",
     "plugins.manage.message_thanks_for_upgrading_ui": "Gràcies per instal·lar l'última versió de Homebridge UI.",
     "plugins.manage.message_uninstall_remove_config_required": "Si eliminaràs aquest plugin de forma permanent, assegura't de treure qualsevol configuració d'aquest plugin a l'arxiu config.json abans de reiniciar Homebridge.",

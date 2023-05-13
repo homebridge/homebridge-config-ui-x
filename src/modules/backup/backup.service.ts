@@ -1,21 +1,26 @@
 import * as os from 'os';
 import * as tar from 'tar';
 import * as path from 'path';
+import * as util from 'util';
 import * as fs from 'fs-extra';
 import * as color from 'bash-color';
 import * as unzipper from 'unzipper';
 import * as child_process from 'child_process';
 import * as dayjs from 'dayjs';
+import { pipeline } from 'stream';
 import { EventEmitter } from 'events';
-import { Injectable, BadRequestException, NotFoundException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException, InternalServerErrorException, StreamableFile } from '@nestjs/common';
 import { FastifyReply } from 'fastify';
+import { MultipartFile } from '@fastify/multipart';
 
 import { PluginsService } from '../plugins/plugins.service';
 import { SchedulerService } from '../../core/scheduler/scheduler.service';
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
-import { HomebridgeIpcService } from '../..//core/homebridge-ipc/homebridge-ipc.service';
+import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service';
 import { Logger } from '../../core/logger/logger.service';
 import { HomebridgePlugin } from '../plugins/types';
+
+const pump = util.promisify(pipeline);
 
 @Injectable()
 export class BackupService {
@@ -69,23 +74,40 @@ export class BackupService {
 
       // create a copy of the storage directory in the temp path
       await fs.copy(storagePath, path.resolve(backupDir, 'storage'), {
-        filter: (filePath) => (![
-          'instance-backups',   // scheduled backups
-          'nssm.exe',           // windows hb-service
-          'homebridge.log',     // hb-service
-          'logs',               // docker
-          'node_modules',       // docker
-          'startup.sh',         // docker
-          '.docker.env',        // docker
-          'pnpm-lock.yaml',     // pnpm
-          'package.json',       // npm
-          'package-lock.json',  // npm
-          'FFmpeg',             // ffmpeg
-          'fdk-aac',            // ffmpeg
-          '.git',               // git
-          'recordings',         // homebridge-camera-ui recordings path
-          '.homebridge.sock',   // homebridge ipc socket
-        ].includes(path.basename(filePath))), // list of files not to include in the archive
+        filter: async (filePath) => {
+          // list of files not to include in the archive
+          if ([
+            'instance-backups',   // scheduled backups
+            'nssm.exe',           // windows hb-service
+            'homebridge.log',     // hb-service
+            'logs',               // docker
+            'node_modules',       // docker
+            'startup.sh',         // docker
+            '.docker.env',        // docker
+            'docker-compose.yml', // docker
+            'pnpm-lock.yaml',     // pnpm
+            'package.json',       // npm
+            'package-lock.json',  // npm
+            '.npmrc',             // npm
+            'FFmpeg',             // ffmpeg
+            'fdk-aac',            // ffmpeg
+            '.git',               // git
+            'recordings',         // homebridge-camera-ui recordings path
+            '.homebridge.sock',   // homebridge ipc socket
+            '#recycle',           // synology dsm recycle bin
+            '@eaDir'              // synology dsm metadata
+          ].includes(path.basename(filePath))) {
+            return false;
+          }
+
+          // check each item is a real directory or real file (no symlinks, pipes, unix sockets etc.)
+          try {
+            const stat = await fs.lstat(filePath);
+            return (stat.isDirectory() || stat.isFile());
+          } catch (e) {
+            return false;
+          }
+        },
       });
 
       // get full list of installed plugins
@@ -250,21 +272,21 @@ export class BackupService {
   /**
    * Downloads a scheduled backup .tar.gz
    */
-  async getScheduledBackup(backupId: string) {
+  async getScheduledBackup(backupId: string): Promise<StreamableFile> {
     const backupPath = path.resolve(this.configService.instanceBackupPath, 'homebridge-backup-' + backupId + '.tar.gz');
 
     // check the file exists
     if (!await fs.pathExists(backupPath)) {
-      return new NotFoundException();
+      throw new NotFoundException();
     }
 
-    return fs.createReadStream(backupPath);
+    return new StreamableFile(fs.createReadStream(backupPath));
   }
 
   /**
    * Create and download backup archive of the current homebridge instance
    */
-  async downloadBackup(reply: FastifyReply) {
+  async downloadBackup(reply: FastifyReply): Promise<StreamableFile> {
     const { backupDir, backupPath, backupFileName } = await this.createBackup();
 
     // remove temp files (called when download finished)
@@ -283,33 +305,26 @@ export class BackupService {
       reply.raw.setHeader('access-control-allow-origin', 'http://localhost:4200');
     }
 
-    // start download
-    fs.createReadStream(backupPath)
-      .on('close', cleanup.bind(this))
-      .pipe(reply.raw);
+    return new StreamableFile(fs.createReadStream(backupPath).on('close', cleanup.bind(this)));
   }
 
   /**
    * Restore a backup file
    * File upload handler
    */
-  async uploadBackupRestore(file) {
+  async uploadBackupRestore(data: MultipartFile) {
     // clear restore directory
     this.restoreDirectory = undefined;
 
     // prepare a temp working directory
     const backupDir = await fs.mkdtemp(path.join(os.tmpdir(), 'homebridge-backup-'));
 
-    // create a write stream and pipe the upload into it
-    file.pipe(tar.x({
+    // pipe the data to the temp directory
+    await pump(data.file, tar.x({
       cwd: backupDir,
-    }).on('error', (err) => {
-      this.logger.error(err);
     }));
 
-    file.on('end', () => {
-      this.restoreDirectory = backupDir;
-    });
+    this.restoreDirectory = backupDir;
   }
 
   /**
@@ -390,19 +405,37 @@ export class BackupService {
     const restoreFilter = [
       path.join(this.restoreDirectory, 'storage', 'package.json'),
       path.join(this.restoreDirectory, 'storage', 'package-lock.json'),
+      path.join(this.restoreDirectory, 'storage', '.npmrc'),
+      path.join(this.restoreDirectory, 'storage', 'docker-compose.yml'),
     ];
 
+    // resolve the real path of the storage directory (in case it's a symbolic link)
+    const storagePath = await fs.realpath(this.configService.storagePath);
+
     // restore files
-    client.emit('stdout', color.yellow(`Restoring Homebridge storage to ${this.configService.storagePath}\r\n`));
+    client.emit('stdout', color.yellow(`Restoring Homebridge storage to ${storagePath}\r\n`));
     await new Promise(resolve => setTimeout(resolve, 100));
-    await fs.copy(path.resolve(this.restoreDirectory, 'storage'), this.configService.storagePath, {
-      filter: (filePath) => {
+    await fs.copy(path.resolve(this.restoreDirectory, 'storage'), storagePath, {
+      filter: async (filePath) => {
         if (restoreFilter.includes(filePath)) {
           client.emit('stdout', `Skipping ${path.basename(filePath)}\r\n`);
           return false;
         }
-        client.emit('stdout', `Restoring ${path.basename(filePath)}\r\n`);
-        return true;
+
+        // check each item is a real directory or real file (no symlinks, pipes, unix sockets etc.)
+        try {
+          const stat = await fs.lstat(filePath);
+          if (stat.isDirectory() || stat.isFile()) {
+            client.emit('stdout', `Restoring ${path.basename(filePath)}\r\n`);
+            return true;
+          } else {
+            client.emit('stdout', `Skipping ${path.basename(filePath)}\r\n`);
+            return false;
+          }
+        } catch (e) {
+          client.emit('stdout', `Skipping ${path.basename(filePath)}\r\n`);
+          return false;
+        }
       },
     });
     client.emit('stdout', color.yellow('File restore complete.\r\n'));
@@ -418,7 +451,7 @@ export class BackupService {
     for (const plugin of plugins) {
       try {
         client.emit('stdout', color.yellow(`\r\nInstalling ${plugin.name}...\r\n`));
-        await this.pluginsService.installPlugin({ name: plugin.name, version: plugin.installedVersion }, client);
+        await this.pluginsService.managePlugin('install', { name: plugin.name, version: plugin.installedVersion }, client);
       } catch (e) {
         client.emit('stdout', color.red(`Failed to install ${plugin.name}.\r\n`));
       }
@@ -484,7 +517,7 @@ export class BackupService {
   /**
    * Upload a .hbfx backup file
    */
-  async uploadHbfxRestore(file: fs.ReadStream) {
+  async uploadHbfxRestore(data: MultipartFile) {
     // clear restore directory
     this.restoreDirectory = undefined;
 
@@ -493,13 +526,12 @@ export class BackupService {
 
     this.logger.log(`Extracting .hbfx file to ${backupDir}`);
 
-    file.pipe(unzipper.Extract({
+    // pipe the data to the temp directory
+    await pump(data.file, unzipper.Extract({
       path: backupDir,
     }));
 
-    file.on('end', () => {
-      this.restoreDirectory = backupDir;
-    });
+    this.restoreDirectory = backupDir;
   }
 
   /**
@@ -535,9 +567,12 @@ export class BackupService {
     client.emit('stdout', color.cyan('\r\nRestoring hbfx backup...\r\n\r\n'));
     await new Promise(resolve => setTimeout(resolve, 1000));
 
+    // resolve the real path of the storage directory (in case it's a symbolic link)
+    const storagePath = await fs.realpath(this.configService.storagePath);
+
     // restore files
-    client.emit('stdout', color.yellow(`Restoring Homebridge storage to ${this.configService.storagePath}\r\n`));
-    await fs.copy(path.resolve(this.restoreDirectory, 'etc'), path.resolve(this.configService.storagePath), {
+    client.emit('stdout', color.yellow(`Restoring Homebridge storage to ${storagePath}\r\n`));
+    await fs.copy(path.resolve(this.restoreDirectory, 'etc'), path.resolve(storagePath), {
       filter: (filePath) => {
         if ([
           'access.json',
@@ -554,9 +589,9 @@ export class BackupService {
 
     // restore accessories
     const sourceAccessoriesPath = path.resolve(this.restoreDirectory, 'etc', 'accessories');
-    const targeAccessoriestPath = path.resolve(this.configService.storagePath, 'accessories');
+    const targetAccessoriestPath = path.resolve(storagePath, 'accessories');
     if (await fs.pathExists(sourceAccessoriesPath)) {
-      await fs.copy(sourceAccessoriesPath, targeAccessoriestPath, {
+      await fs.copy(sourceAccessoriesPath, targetAccessoriestPath, {
         filter: (filePath) => {
           client.emit('stdout', `Restoring ${path.basename(filePath)}\r\n`);
           return true;
@@ -589,7 +624,7 @@ export class BackupService {
         }
         try {
           client.emit('stdout', color.yellow(`\r\nInstalling ${plugin}...\r\n`));
-          await this.pluginsService.installPlugin({ name: plugin, version: 'latest' }, client);
+          await this.pluginsService.managePlugin('install', { name: plugin, version: 'latest' }, client);
         } catch (e) {
           client.emit('stdout', color.red(`Failed to install ${plugin}.\r\n`));
         }

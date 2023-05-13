@@ -107,7 +107,7 @@ export class PluginCardComponent implements OnInit {
           this.$translate.instant('plugins.settings.toast_restart_required'),
           this.$translate.instant('toast.title_success'),
         );
-        this.$notification.configUpdated.next();
+        this.$notification.configUpdated.next(undefined);
       } catch (err) {
         this.$toastr.error(`Failed to disable plugin: ${err.message}`, this.$translate.instant('toast.title_error'));
       }
@@ -137,7 +137,7 @@ export class PluginCardComponent implements OnInit {
           this.$translate.instant('plugins.settings.toast_restart_required'),
           this.$translate.instant('toast.title_success'),
         );
-        this.$notification.configUpdated.next();
+        this.$notification.configUpdated.next(undefined);
       } catch (err) {
         this.$toastr.error(`Failed to enable plugin: ${err.message}`, this.$translate.instant('toast.title_error'));
       }
