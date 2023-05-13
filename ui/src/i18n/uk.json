@@ -307,6 +307,7 @@
     "status.network.label_received_per_second": "Отримано",
     "status.network.label_sent_per_second": "Надіслано",
     "status.network.title_network": "Активність у мережі",
+    "status.plugin_out_of_date": "Плагіни застаріли",
     "status.plugins_out_of_date": "Плагіни застаріли",
     "status.services.label_console": "Консоль",
     "status.services.label_listening_on_port": "Порт: {{port}}",

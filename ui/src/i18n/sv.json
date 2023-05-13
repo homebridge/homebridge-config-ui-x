@@ -305,6 +305,7 @@
     "status.network.label_received_per_second": "Mottaget",
     "status.network.label_sent_per_second": "Skickat",
     "status.network.title_network": "Nätverksaktivitet",
+    "status.plugin_out_of_date": "Plugin inaktuell",
     "status.plugins_out_of_date": "Plugins inaktuella",
     "status.services.label_console": "Konsol",
     "status.services.label_listening_on_port": "Lyssnar på port {{port}}",
