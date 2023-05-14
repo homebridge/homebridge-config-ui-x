@@ -1,9 +1,9 @@
 import './self-check';
 
 import * as path from 'path';
-import { fastify, FastifyReply, FastifyRequest } from 'fastify';
-import fastifyMultipart from 'fastify-multipart';
-import * as helmet from 'helmet';
+import { FastifyReply, FastifyRequest } from 'fastify';
+import fastifyMultipart from '@fastify/multipart';
+import helmet from '@fastify/helmet';
 import * as fs from 'fs-extra';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
@@ -18,23 +18,49 @@ import { getStartupConfig } from './core/config/config.startup';
 
 export { HomebridgeIpcService } from './core/homebridge-ipc/homebridge-ipc.service';
 
-process.env.UIX_BASE_PATH = path.resolve(__dirname, '../');
+process.env.UIX_BASE_PATH = process.env.UIX_BASE_PATH_OVERRIDE || path.resolve(__dirname, '../');
 
 async function bootstrap(): Promise<NestFastifyApplication> {
   const startupConfig = await getStartupConfig();
 
-  const server = fastify({
+  const fAdapter = new FastifyAdapter({
     https: startupConfig.httpsOptions,
-    logger: startupConfig.debug ? {
-      prettyPrint: true,
-    } : false,
+    logger: startupConfig.debug || false,
   });
-
-  const fAdapter = new FastifyAdapter(server);
 
   fAdapter.register(fastifyMultipart, {
     limits: {
       files: 1,
+    },
+  });
+
+  fAdapter.register(helmet, {
+    hsts: false,
+    frameguard: false,
+    referrerPolicy: {
+      policy: 'no-referrer',
+    },
+    crossOriginEmbedderPolicy: false,
+    crossOriginOpenerPolicy: false,
+    crossOriginResourcePolicy: false,
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ['\'self\''],
+        scriptSrc: ['\'self\'', '\'unsafe-inline\'', '\'unsafe-eval\''],
+        styleSrc: ['\'self\'', '\'unsafe-inline\''],
+        imgSrc: ['\'self\'', 'data:', 'https://raw.githubusercontent.com', 'https://user-images.githubusercontent.com'],
+        connectSrc: ['\'self\'', 'https://openweathermap.org', 'https://api.openweathermap.org', (req) => {
+          return `wss://${req.headers.host} ws://${req.headers.host} ${startupConfig.cspWsOveride || ''}`;
+        }],
+        scriptSrcAttr: null,
+        fontSrc: null,
+        objectSrc: null,
+        frameAncestors: null,
+        formAction: null,
+        baseUri: null,
+        upgradeInsecureRequests: null,
+        blockAllMixedContent: null,
+      },
     },
   });
 
@@ -49,26 +75,6 @@ async function bootstrap(): Promise<NestFastifyApplication> {
 
   const configService: ConfigService = app.get(ConfigService);
   const logger: Logger = app.get(Logger);
-
-  // helmet security headers
-  app.use(helmet({
-    hsts: false,
-    frameguard: false,
-    referrerPolicy: {
-      policy: 'no-referrer',
-    },
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ['\'self\''],
-        scriptSrc: ['\'self\'', '\'unsafe-inline\'', '\'unsafe-eval\''],
-        styleSrc: ['\'self\'', '\'unsafe-inline\''],
-        imgSrc: ['\'self\'', 'data:', 'https://raw.githubusercontent.com', 'https://user-images.githubusercontent.com'],
-        connectSrc: ['\'self\'', 'https://openweathermap.org', 'https://api.openweathermap.org', (req) => {
-          return `wss://${req.headers.host} ws://${req.headers.host} ${startupConfig.cspWsOveride || ''}`;
-        }],
-      },
-    },
-  }));
 
   // serve index.html without a cache
   app.getHttpAdapter().get('/', async (req: FastifyRequest, res: FastifyReply) => {

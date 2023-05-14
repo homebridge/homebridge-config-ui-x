@@ -1,8 +1,243 @@
-# Change Log
+## 4.50.4 (2023-05-12)
 
-All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/).
+### Notable Changes
 
-# NEXT
+* **System:** Updates to workflow release process
+
+## 4.50.3 (2023-05-12)
+
+### Notable Changes
+
+* **System:** Transfer of homebridge-config-ui-x support to the homebridge community.  Tks Oznu for your efforts on this package.
+
+### Bug Fixes
+
+* **Backups:** Restore never starts on version 4.50.2 ([#1457](https://github.com/homebridge/homebridge-config-ui-x/issues/1457))
+* **System:** hb-service update-node issue: Stops homebridge from starting ([#106](https://github.com/homebridge/homebridge-raspbian-image/issues/106))
+
+### Other Changes
+
+* **i18n:** No apostrophe in possessive "its" ([1450](https://github.com/homebridge/homebridge-config-ui-x/pull/1450))
+* **i18n:** Update de.json ([1477](https://github.com/homebridge/homebridge-config-ui-x/pull/1477))
+
+## 4.50.2 (2022-11-10)
+
+### Notable Changes
+
+* **Homebridge:** Add systemd-resolved Advertiser to UI ([#1430](https://github.com/oznu/homebridge-config-ui-x/pull/1430))
+
+### Bug Fixes
+
+* **Backups:** Backups now ignore symlinks, sockets, pipes etc.
+
+## 4.50.1 (2022-08-09)
+
+### Bug Fixes
+
+* **Dashboard**: Fix an issue displaying the log viewer and termial widgets on Chrome > 104 ([#1400](https://github.com/oznu/homebridge-config-ui-x/issues/1400))
+* **Backups:** Fixed an issue restoring backups when the Homebridge storage directory is a symbolic link
+* **Backups:** All symbolic links are dereferenced when performing a backup (the raw symlink is backed up, not what it pointed to)
+
+### Other Changes
+
+* **i18n:** Improvements to Ukrainian language translations ([#1390](https://github.com/oznu/homebridge-config-ui-x/pull/1390))
+* **i18n:** Improvements to French language translations ([#1393](https://github.com/oznu/homebridge-config-ui-x/pull/1393))
+* **i18n:** Improvements to Spanish language translations ([#1396](https://github.com/oznu/homebridge-config-ui-x/pull/1396))
+* **i18n:** Improvements to German language translations ([#1399](https://github.com/oznu/homebridge-config-ui-x/pull/1399))
+
+## 4.50.0 (2022-07-16)
+
+### Breaking Changes
+
+* Node.js v14.15.0 or later is **REQUIRED** - See [How To Update Node.js](https://homebridge.io/w/JTKEF)
+* Dropped support for Node.js versions prior to v14. Do not update to this version if you are not running v14.15.0 or later
+
+### Other Changes
+
+* **i18n:** Improvements to Swedish language translations ([#1380](https://github.com/oznu/homebridge-config-ui-x/pull/1380))
+* **i18n:** Improvements to Polish language translations ([#1389](https://github.com/oznu/homebridge-config-ui-x/pull/1389))
+* Updated npm dependencies
+
+### Bug Fixes
+
+* **Backups:** Exclude `.npmrc` files from backups
+* **Plugins:** A plugin with a [custom user interfaces](https://github.com/homebridge/plugin-ui-utils) will have it's optional `customUiPath` property re-evaluated when the package version changes ([#1379](https://github.com/oznu/homebridge-config-ui-x/issues/1379))
+* **Plugins:** Prevent a plugin using symlink to define a `customUiPath` outside it's root directory
+* **Plugins:** Changed "install previous version" to "Install Alternate Version" ([#1385](https://github.com/oznu/homebridge-config-ui-x/issues/1385))
+* **Auth:** Fixed form validation for autofilled username and password ([#1388](https://github.com/oznu/homebridge-config-ui-x/issues/1388))
+
+## 4.49.0 (2022-07-08)
+
+### Notable Changes
+
+* **Plugins** Faster, and hopefully more reliable, updater and installer for [Verified Homebridge Plugins](https://homebridge.io/w/Verified-Plugins) exclusively on the following platforms:
+  * Debian-based Linux (via apt package): requires apt package update (=>1.0.27)
+  * Docker: requires image update (=>2022-07-08)
+  * Synology DSM 7: requires package update via DSM Package Center (=>3.0.7)
+  * If the new install / update process fails, it will automatically fallback to using the standard `npm` update method 
+
+### Other Changes
+
+* **i18n:** Improvements to Italian language translations ([#1373](https://github.com/oznu/homebridge-config-ui-x/pull/1373))
+* **i18n:** Improvements to Korean language translations ([#1374](https://github.com/oznu/homebridge-config-ui-x/pull/1374))
+* **i18n:** Improvements to Korean language translations ([#1375](https://github.com/oznu/homebridge-config-ui-x/pull/1375))
+
+### Bug Fixes
+
+* **Backups:** Fixed an issue that could prevent backups being created on Synology DSM due to not being able read the `#recycle` directory
+* **System:** Set a 60 second timeout on the pre-start job to clean up stale temporary npm directories on Linux running via `hb-service`; this should fix the errors some users were seeing when the task took more than the 90 seconds systemd allows by default ([#1371](https://github.com/oznu/homebridge-config-ui-x/issues/1371))
+
+## 4.48.1 (2022-06-24)
+
+### Notable Changes
+
+* **System** Faster, and hopefully more reliable, updater for the Homebridge UI on macOS, Linux, Docker and FreeBSD
+  * This will only apply to updates after v4.48.0, not updating to v4.48.0
+  * If the new update process fails, it will fallback to using the standard `npm` update method automatically
+  * Linux (via apt package): requires apt package update (=>1.0.25)
+  * Linux / macOS / FreeBSD (setup via `hb-service install`): no changes required
+  * Docker: may require image update (=>2022-06-24)
+  * Synology DSM 7: requires package update via DSM Package Center (=>3.0.5)
+
+### Other Changes
+
+* **i18n:** Improvements to Thai language translations ([#1364](https://github.com/oznu/homebridge-config-ui-x/pull/1364))
+
+## 4.47.0 (2022-06-15)
+
+### Notable Changes
+
+* **Auth:** Login wallpaper is now a solid colour matching the users current theme, custom wallpaper images are still used if configured
+* **System:** Stale temporary npm directories that prevent the UI and other plugins from updating (`npm ERR! code ENOTEMPTY`) will be removed when doing a full service restart for users running on Linux with [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command)
+
+### Other changes
+
+* **i18n:** Improvements to Thai language translations ([#1354](https://github.com/oznu/homebridge-config-ui-x/pull/1354))
+* **i18n:** Improvements to Polish language translations ([#1361](https://github.com/oznu/homebridge-config-ui-x/pull/1361))
+
+### Bug Fixes
+
+* **Dashboard:** Fix some font size scaling issues ([#1360](https://github.com/oznu/homebridge-config-ui-x/issues/1360))
+
+## 4.46.0 (2022-05-27)
+
+### Notable Changes
+
+* **System:** [@ohmantics](https://github.com/ohmantics) added FreeBSD support to [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) ([#1349](https://github.com/oznu/homebridge-config-ui-x/pull/1349))
+  * Users running FreeBSD can now setup Homebridge as a service using the `hb-service install` command
+  * Also supports running inside TrueNAS Jails (tested with a FreeBSD 13.1 Jail)
+
+### Bug Fixes
+
+* **Backups:** Fixed a bug preventing the storage directory from being backed up when it was a symbolic link
+* **Plugins:** Allow the modal to be closed when a plugin install or upgrade fails
+
+## 4.45.0 (2022-05-21)
+
+### Notable Changes
+
+* **Plugins:** [Child bridge](https://github.com/homebridge/homebridge/wiki/Child-Bridges) status and controls now appear on the plugin tile
+  * If a plugin has multiple child bridges, the status indicator shows the least favourable status
+  * Clicking the restart button on the plugin tile will restart all the plugin's child bridges
+
+The following features have been added, but will not be active until the **upcoming** release of Homebridge v1.5.0 is installed:
+
+* **Plugins:** If a child bridge is not paired with HomeKit, a pairing icon will show on the plugin tile
+* **Plugins:** Add ability to stop / start a plugin's child bridges
+* **Plugins:** When disabling a plugin, any of it's child bridges will be stopped
+* **Plugins:** When enabling a plugin, any of it's child bridges already registered in the current Homebridge process will be re-started
+
+### Other changes
+
+* **Plugins:** Prevent closing the modal when a plugin install or update is in progress
+* **i18n:** Improvements to Czech language translations ([#1343](https://github.com/oznu/homebridge-config-ui-x/pull/1343))
+* **i18n:** Improvements to German language translations ([#1345](https://github.com/oznu/homebridge-config-ui-x/pull/1345))
+* **i18n:** Improvements to Polish language translations ([#1125](https://github.com/oznu/homebridge-config-ui-x/pull/1125))
+
+### Bug Fixes
+
+* **Backups:** If a backup fails, the temporary directory it created is removed
+
+## 4.44.1 (2022-05-14)
+
+### Bug Fixes
+
+* **Auth:** Fix a bug that prevented the 2FA prompt from showing up when logging in
+
+## 4.44.0 (2022-05-13)
+
+### Notable Changes
+
+* **System:** Notify users running on a Raspberry Pi if their device is reporting under-voltage events
+* **System:** Added a first time setup wizard that allows user to create a Homebridge UI user account or restore from an existing backup
+* **Auth:** The default credentials of **admin** / **admin** are no longer set for new installs
+
+### Other changes
+
+* **i18n:** Improvements to Italian language translations ([#1333](https://github.com/oznu/homebridge-config-ui-x/pull/1333))
+* **i18n:** Improvements to Indonesian language translations ([#1336](https://github.com/oznu/homebridge-config-ui-x/pull/1336))
+
+## 4.43.3 (2022-05-07)
+
+### Bug Fixes
+
+* **Plugins:** Fixed a bug where local environment variables were stripped from the server side scripts of custom plugin user interfaces ([oznu/homebridge-syno-spk#85](https://github.com/oznu/homebridge-syno-spk/issues/85))
+
+### Other changes
+
+* **i18n:** Improvements to Dutch language translations ([#1330](https://github.com/oznu/homebridge-config-ui-x/pull/1330))
+
+## 4.43.2 (2022-04-29)
+
+### Other Changes 
+
+* **i18n:** Improvements to German language translations ([#1319](https://github.com/oznu/homebridge-config-ui-x/pull/1319))
+* **Dashboard:** Start showing Node.js update warning icon for users running < Node.js v14.15.0
+* **Dashboard:** Removed npm version from the System Information widget
+* **System:** Changes to support Homebridge `apt` package installation
+* **System:** Fresh installs on Linux will have the default mdns advertiser set to `avahi` if the `avahi-daemon` service is running
+
+## 4.43.1 (2022-04-23)
+
+### Bug Fixes
+
+* **UI:** Fixed a bug preventing modals from closing correctly ([#1317](https://github.com/oznu/homebridge-config-ui-x/issues/1317))
+
+### Other Changes 
+
+* **System:** The [`hb-service update-node`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command#update-nodejs) command will now check glibc v2.28 or later is present on Linux systems before allowing an update to Node.js 18+
+* **System:** The [`hb-service update-node`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command#update-nodejs) will now check for macOS 10.15 Catalina or later before allowing an update to Node.js 18+
+
+## 4.43.0 (2022-04-14)
+
+### Notable Changes
+
+* **Dashboard:** New "Network Activity" widget option added by [@seidnerj](https://github.com/seidnerj) ([#1292](https://github.com/oznu/homebridge-config-ui-x/pull/1292))
+
+### Other Changes 
+
+* **i18n:** Improvements to Portuguese language translations ([#1282](https://github.com/oznu/homebridge-config-ui-x/pull/1282))
+* **i18n:** Fixed typo ([#1315](https://github.com/oznu/homebridge-config-ui-x/issues/1315))
+* **Accessory Control:** Fix alignment of light sensor tile information ([#1285](https://github.com/oznu/homebridge-config-ui-x/pull/1285))
+* **Accessory Control:** Fix light sensor rounding ([#1295](https://github.com/oznu/homebridge-config-ui-x/pull/1295))
+* **Accessory Control:** Fix a bug where the battery service could display the charge level as null ([#1269](https://github.com/oznu/homebridge-config-ui-x/issues/1269))
+* **System:** The `hb-service update-node` command now works on the [native Homebridge Synology DSM Package](https://github.com/oznu/homebridge-syno-spk) (via integrated terminal only)
+* Updated npm dependencies
+
+## 4.42.0 (2022-01-20)
+
+### Notable Changes
+
+* **i18n:** Hebrew (he) language added by [@blackcolt](https://github.com/blackcolt) ([#1258](https://github.com/oznu/homebridge-config-ui-x/pull/1258))
+* **Accessory Control:** [@Feilner](https://github.com/Feilner) added support for Smoke Sensor accessory types ([#1263](https://github.com/oznu/homebridge-config-ui-x/issues/1263))
+* **Homebridge:** Added the ability to select the `avahi` mdns advertiser when running Homebridge 1.4.x or later on Linux based systems ([#1266](https://github.com/oznu/homebridge-config-ui-x/issues/1266))
+
+### Other Changes 
+
+* **i18n:** Improvements to French language translations ([#1260](https://github.com/oznu/homebridge-config-ui-x/pull/1260))
+* Minor changes to support a native Homebridge Synology DSM Package
+
+## 4.41.5 (2021-12-18)
 
 ### Bug Fixes
 

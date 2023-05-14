@@ -226,7 +226,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
 
   handleUpdateConfig(event: MessageEvent, pluginConfig: Array<any>) {
     // refresh the schema form
-    this.schemaFormRefreshSubject.next();
+    this.schemaFormRefreshSubject.next(undefined);
 
     // ensure the update contains an array
     if (!Array.isArray(pluginConfig)) {
@@ -432,7 +432,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
         );
 
         this.saveInProgress = false;
-        this.$notification.configUpdated.next();
+        this.$notification.configUpdated.next(undefined);
 
         if (exit) {
           this.activeModal.close();

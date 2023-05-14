@@ -1,0 +1,122 @@
+name: Support Request
+description: Need help?
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please read the following before you start filling out this form:
+        
+        * If your issue is specific to a certain plugin, create the issue on that plugin's GitHub project page instead.
+        * Support via GitHub issues is limited. You may find it more benefitial ask questions on the [Homebridge Discord](https://discord.gg/kqNCe2D) or [Reddit](https://www.reddit.com/r/homebridge/) communities instead.
+        * Search through existing issues (resolved or open) which might provide a solution to your problem already.
+        * Aim to find a descriptive and precise title for your support request.
+  - type: textarea
+    id: current-situation
+    attributes:
+      label: Current Situation
+      description: |
+        Please provide an overview of the current situation and illustrate potential problems or shortcomings.
+        
+        * What is happening?
+        * What you expect to happen?
+        * Clear steps explaining how to reproduce the problem.
+      placeholder: |
+        Tip: You can attach images or files by clicking this area to highlight it and then dragging files in.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      render: text
+      description: |
+        Please provide the relevant logs showing the error that occurred.
+
+        * Keep this short. Do not paste in hundereds of lines repeating the same error.
+        * Show the logs from the service being restarted until the error occurs.
+    validations:
+      required: false
+  - type: textarea
+    id: json-config
+    attributes:
+      label: Config
+      render: json
+      description: |
+        If relevant to your support, please include your Homebridge config (`config.json`). 
+        
+        * If you're unsure if the config is relevant, please include it.
+        * Be sure to **remove any sensitive information (passwords, tokens, etc.).**
+    validations:
+      required: false
+  - type: input
+    id: homebridge-ui-version
+    attributes:
+      label: Homebridge UI Version
+    validations:
+      required: true
+  - type: input
+    id: homebridge-version
+    attributes:
+      label: Homebridge Version
+    validations:
+      required: true
+  - type: input
+    id: node-version
+    attributes:
+      label: Node.js Version
+      description: |
+        We only accept support reports for systems running even numbered versions of Node.js. See [this link](https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js) for more information.
+    validations:
+      required: true
+  - type: dropdown
+    id: operating-system
+    attributes:
+      label: Operating System
+      options:
+        - Official Homebridge Raspberry Pi Image
+        - Raspberry Pi OS / Raspbian
+        - Ubuntu / Debian (or a variant)
+        - Fedora / CentOS / RedHat (or a variant)
+        - macOS
+        - Windows 10
+        - Windows 11
+        - Synology DSM
+        - QNAP
+        - Unraid
+        - Other (specify in description)
+      description: |
+        If your operating system is not listed, please provide it in the support description.
+    validations:
+      required: true
+  - type: checkboxes
+    id: 
+    attributes:
+      label: Environment Info
+      options:
+        - label: Using Docker?
+        - label: Using Hyper-V?
+        - label: Using hb-service?
+      description: |
+        Please check any boxes that apply to you.
+    validations:
+      required: false
+  - type: dropdown
+    id: raspberry-pi-model
+    attributes:
+      label: Raspberry Pi Model
+      options:
+        - Raspberry Pi 1 B
+        - Raspberry Pi 2
+        - Raspberry Pi 3
+        - Raspberry Pi Zero W
+        - Raspberry Pi Zero WH
+        - Raspberry Pi Zero 2 W
+        - Raspberry Pi 3 A+
+        - Raspberry Pi 3 B+
+        - Raspberry Pi 4 B
+        - Other (specify in description)
+      description: |
+        If you are running on a Raspberry Pi, please tell us which model Raspberry Pi you are using.
+    validations:
+      required: false

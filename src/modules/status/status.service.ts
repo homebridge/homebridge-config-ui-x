@@ -1,5 +1,7 @@
 import * as os from 'os';
 import * as path from 'path';
+import * as child_process from 'child_process';
+import * as util from 'util';
 import * as fs from 'fs-extra';
 import * as si from 'systeminformation';
 import * as semver from 'semver';
@@ -12,6 +14,7 @@ import { Logger } from '../../core/logger/logger.service';
 import { ConfigService } from '../../core/config/config.service';
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service';
 import { PluginsService } from '../plugins/plugins.service';
+import { ServerService } from '../server/server.service';
 
 export const enum HomebridgeStatus {
   PENDING = 'pending',
@@ -19,6 +22,17 @@ export const enum HomebridgeStatus {
   UP = 'up',
   DOWN = 'down',
 }
+
+export interface HomebridgeStatusUpdate {
+  status: HomebridgeStatus;
+  paired?: null | boolean;
+  setupUri?: null | string;
+  name?: string;
+  username?: string;
+  pin?: string;
+}
+
+const execAsync = util.promisify(child_process.exec);
 
 @Injectable()
 export class StatusService {
@@ -32,11 +46,23 @@ export class StatusService {
 
   private memoryInfo: si.Systeminformation.MemData;
 
+  private rpiGetThrottledMapping = {
+    0: 'Under-voltage detected',
+    1: 'Arm frequency capped',
+    2: 'Currently throttled',
+    3: 'Soft temperature limit active',
+    16: 'Under-voltage has occurred',
+    17: 'Arm frequency capping has occurred',
+    18: 'Throttled has occurred',
+    19: 'Soft temperature limit has occurred',
+  };
+
   constructor(
     private httpService: HttpService,
     private logger: Logger,
     private configService: ConfigService,
     private pluginsService: PluginsService,
+    private serverService: ServerService,
     private homebridgeIpcService: HomebridgeIpcService,
   ) {
 
@@ -56,8 +82,13 @@ export class StatusService {
     }
 
     if (this.configService.serviceMode) {
-      this.homebridgeIpcService.on('serverStatusUpdate', (data: { status: HomebridgeStatus }) => {
+      this.homebridgeIpcService.on('serverStatusUpdate', (data: HomebridgeStatusUpdate) => {
         this.homebridgeStatus = data.status === HomebridgeStatus.OK ? HomebridgeStatus.UP : data.status;
+
+        if (data?.setupUri) {
+          this.serverService.setupCode = data.setupUri;
+        }
+
         this.homebridgeStatusChange.next(this.homebridgeStatus);
       });
     }
@@ -138,6 +169,23 @@ export class StatusService {
   }
 
   /**
+   * Returns the current network usage
+   */
+  public async getCurrentNetworkUsage(): Promise<{ net: si.Systeminformation.NetworkStatsData; point: number }> {
+    // TODO: be able to specify in the UI which interfaces to aggregate
+    const defaultInterfaceName = await si.networkInterfaceDefault();
+
+    const net = await si.networkStats(defaultInterfaceName);
+
+    // TODO: be able to specify in the ui the unit size (i.e. bytes, megabytes, gigabytes)
+    const tx_rx_sec = (net[0].tx_sec + net[0].rx_sec) / 1024 / 1024;
+
+    // TODO: break out the sent and received figures to two separate stacked graphs 
+    // (these should ideally be positive/negative mirrored linecharts)
+    return { net: net[0], point: tx_rx_sec };
+  }
+
+  /**
    * Get the current dashboard layout
    */
   public async getDashboardLayout() {
@@ -208,6 +256,7 @@ export class StatusService {
   public async getHomebridgePairingPin() {
     return {
       pin: this.configService.homebridgeConfig.bridge.pin,
+      setupUri: await this.serverService.getSetupCode(),
     };
   }
 
@@ -216,11 +265,12 @@ export class StatusService {
    */
   public async getHomebridgeStatus() {
     return {
+      status: this.homebridgeStatus,
       consolePort: this.configService.ui.port,
       port: this.configService.homebridgeConfig.bridge.port,
       pin: this.configService.homebridgeConfig.bridge.pin,
+      setupUri: this.serverService.setupCode,
       packageVersion: this.configService.package.version,
-      status: this.homebridgeStatus,
     };
   }
 
@@ -272,6 +322,7 @@ export class StatusService {
       consolePort: this.configService.ui.port,
       port: this.configService.homebridgeConfig.bridge.port,
       pin: this.configService.homebridgeConfig.bridge.pin,
+      setupUri: await this.serverService.getSetupCode(),
       packageVersion: this.configService.package.version,
       status: await this.checkHomebridgeStatus(),
     };
@@ -298,40 +349,6 @@ export class StatusService {
   }
 
   /**
-   * Return an array of child bridges
-   */
-  public async getChildBridges() {
-    if (!this.configService.serviceMode) {
-      throw new BadRequestException('This command is only available in service mode');
-    }
-
-    return this.homebridgeIpcService.getChildBridgeMetadata();
-  }
-
-  /**
- * Socket Handler - Per Client
- * Start watching for child bridge status events
- * @param client
- */
-  public async watchChildBridgeStatus(client) {
-    const listener = (data) => {
-      client.emit('child-bridge-status-update', data);
-    };
-
-    this.homebridgeIpcService.on('childBridgeStatusUpdate', listener);
-
-    // cleanup on disconnect
-    const onEnd = () => {
-      client.removeAllListeners('end');
-      client.removeAllListeners('disconnect');
-      this.homebridgeIpcService.removeListener('childBridgeStatusUpdate', listener);
-    };
-
-    client.on('end', onEnd.bind(this));
-    client.on('disconnect', onEnd.bind(this));
-  }
-
-  /**
    * Get / Cache the default interface
    */
   private async getDefaultInterface(): Promise<si.Systeminformation.NetworkInterfacesData> {
@@ -341,7 +358,7 @@ export class StatusService {
       return cachedResult;
     }
 
-    const defaultInterfaceName = (os.platform() !== 'freebsd') ? await si.networkInterfaceDefault() : undefined;
+    const defaultInterfaceName = await si.networkInterfaceDefault();
     const defaultInterface = defaultInterfaceName ? (await si.networkInterfaces()).find(x => x.iface === defaultInterfaceName) : undefined;
 
     if (defaultInterface) {
@@ -378,6 +395,8 @@ export class StatusService {
       homebridgeInsecureMode: this.configService.homebridgeInsecureMode,
       homebridgeCustomPluginPath: this.configService.customPluginPath,
       homebridgeRunningInDocker: this.configService.runningInDocker,
+      homebridgeRunningInSynologyPackage: this.configService.runningInSynologyPackage,
+      homebridgeRunningInPackageMode: this.configService.runningInPackageMode,
       homebridgeServiceMode: this.configService.serviceMode,
       nodeVersion: process.version,
       os: await this.getOsInfo(),
@@ -410,7 +429,7 @@ export class StatusService {
         currentVersion: process.version,
         latestVersion: currentLts.version,
         updateAvailable: semver.gt(currentLts.version, process.version),
-        showUpdateWarning: semver.lt(process.version, '12.13.0'),
+        showUpdateWarning: semver.lt(process.version, '14.15.0'),
         installPath: path.dirname(process.execPath),
       };
       this.statusCache.set('nodeJsVersion', versionInformation, 86400);
@@ -426,5 +445,39 @@ export class StatusService {
       this.statusCache.set('nodeJsVersion', versionInformation, 3600);
       return versionInformation;
     }
+  }
+
+  /**
+   * Returns infomation about the current state of the Raspberry Pi
+   */
+  public async getRaspberryPiThrottledStatus() {
+    if (!this.configService.runningOnRaspberryPi) {
+      throw new BadRequestException('This command is only available on Raspberry Pi');
+    }
+
+    const output = {};
+
+    for (const bit of Object.keys(this.rpiGetThrottledMapping)) {
+      output[this.rpiGetThrottledMapping[bit]] = false;
+    }
+
+    try {
+      const { stdout } = await execAsync('vcgencmd get_throttled');
+      const throttledHex = parseInt(stdout.trim().replace('throttled=', ''));
+
+      if (!isNaN(throttledHex)) {
+        for (const bit of Object.keys(this.rpiGetThrottledMapping)) {
+          if ((throttledHex >> parseInt(bit, 10)) & 1) {
+            output[this.rpiGetThrottledMapping[bit]] = true;
+          } else {
+            output[this.rpiGetThrottledMapping[bit]] = false;
+          }
+        }
+      }
+    } catch (e) {
+      this.logger.debug('Could not check vcgencmd get_throttled:', e.message);
+    }
+
+    return output;
   }
 }

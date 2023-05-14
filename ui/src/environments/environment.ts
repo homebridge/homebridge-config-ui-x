@@ -7,14 +7,14 @@ export const environment = {
   production: false,
   serverTarget: require('../../../package.json').version,
   api: {
-    base: 'http://localhost:8080/api',
-    socket: 'http://localhost:8080',
-    origin: 'http://localhost:8080',
+    base: 'http://localhost:8581/api',
+    socket: 'http://localhost:8581',
+    origin: 'http://localhost:8581',
   },
   jwt: {
     tokenKey: 'access_token',
-    allowedDomains: ['localhost:8080'],
-    disallowedRoutes: ['http://localhost:8080/api/auth/login'],
+    allowedDomains: ['localhost:8581'],
+    disallowedRoutes: ['http://localhost:8581/api/auth/login'],
   },
   apiHttpOptions: {
     withCredentials: true,

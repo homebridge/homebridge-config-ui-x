@@ -10,7 +10,6 @@ import { ApiService } from '@/app/core/api.service';
 
 interface EnvInterface {
   platform: 'darwin' | 'win32' | 'linux' | 'freebsd';
-  ableToConfigureSelf: boolean;
   enableAccessories: boolean;
   enableTerminalAccess: boolean;
   homebridgeInstanceName: string;
@@ -20,12 +19,19 @@ interface EnvInterface {
   packageVersion: string;
   runningInDocker: boolean;
   runningInLinux: boolean;
+  runningInFreeBSD: boolean;
+  runningInSynologyPackage: boolean;
+  runningInPackageMode: boolean;
+  runningOnRaspberryPi: boolean;
+  canShutdownRestartHost: boolean;
   dockerOfflineUpdate: boolean;
   serviceMode: boolean;
   lang: string | null;
   temperatureUnits: 'c' | 'f';
   instanceId: string;
   customWallpaperHash: string;
+  setupWizardComplete: boolean;
+  recommendChildBridges: boolean;
 }
 
 interface AppSettingsInterface {
@@ -73,7 +79,7 @@ export class SettingsService {
         this.setUiVersion(data.env.packageVersion);
         this.setLang(this.env.lang);
         this.settingsLoaded = true;
-        this.settingsLoadedSubject.next();
+        this.settingsLoadedSubject.next(undefined);
       });
   }
 
@@ -135,7 +141,7 @@ export class SettingsService {
       console.error(msg, 'Server time offset of', this.serverTimeOffset, 'seconds applied.');
       const toast = this.$toastr.warning(toastMsg, null, { timeOut: 20000, enableHtml: true, tapToDismiss: false });
       toast.onTap.subscribe(() => {
-        window.open('https://git.io/JqTFs', '_blank');
+        window.open('https://homebridge.io/w/JqTFs', '_blank');
       });
     }
   }

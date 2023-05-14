@@ -6,12 +6,11 @@ import * as si from 'systeminformation';
 import * as semver from 'semver';
 
 import { HomebridgeServiceHelper } from '../hb-service';
+import { BasePlatform } from '../base-platform';
 
-export class LinuxInstaller {
-  private hbService: HomebridgeServiceHelper;
-
+export class LinuxInstaller extends BasePlatform {
   constructor(hbService: HomebridgeServiceHelper) {
-    this.hbService = hbService;
+    super(hbService);
   }
 
   private get systemdServiceName() {
@@ -83,6 +82,18 @@ export class LinuxInstaller {
   }
 
   /**
+   * viewLogs the systemd service
+   */
+  public async viewLogs() {
+    try {
+      const ret = child_process.execSync(`journalctl -n 50 -u ${this.systemdServiceName} --no-pager`).toString();
+      console.log(ret);
+    } catch (e) {
+      this.hbService.logger(`Failed to start ${this.hbService.serviceName} - ` + e, 'fail');
+    }
+  }
+
+  /**
    * Starts the systemd service
    */
   public async start() {
@@ -91,9 +102,10 @@ export class LinuxInstaller {
     try {
       this.hbService.logger(`Starting ${this.hbService.serviceName} Service...`);
       child_process.execSync(`systemctl start ${this.systemdServiceName}`);
-      this.hbService.logger(`${this.hbService.serviceName} Started`, 'succeed');
+      child_process.execSync(`systemctl status ${this.systemdServiceName} --no-pager`);
     } catch (e) {
-      this.hbService.logger(`Failed to start ${this.hbService.serviceName}`, 'fail');
+      this.hbService.logger(`Failed to start ${this.hbService.serviceName} - ` + e, 'fail');
+      process.exit(1);
     }
   }
 
@@ -107,7 +119,7 @@ export class LinuxInstaller {
       child_process.execSync(`systemctl stop ${this.systemdServiceName}`);
       this.hbService.logger(`${this.hbService.serviceName} Stopped`, 'succeed');
     } catch (e) {
-      this.hbService.logger(`Failed to stop ${this.systemdServiceName}`, 'fail');
+      this.hbService.logger(`Failed to stop ${this.systemdServiceName} - ` + e, 'fail');
     }
   }
 
@@ -120,10 +132,45 @@ export class LinuxInstaller {
     try {
       this.hbService.logger(`Restarting ${this.hbService.serviceName} Service...`);
       child_process.execSync(`systemctl restart ${this.systemdServiceName}`);
+      child_process.execSync(`systemctl status ${this.systemdServiceName} --no-pager`);
       this.hbService.logger(`${this.hbService.serviceName} Restarted`, 'succeed');
     } catch (e) {
-      this.hbService.logger(`Failed to restart ${this.hbService.serviceName}`, 'fail');
+      this.hbService.logger(`Failed to restart ${this.hbService.serviceName} - ` + e, 'fail');
     }
+  }
+
+  /**
+   * Code to execute before the service is started - as root
+   * Find failed npm install temporary directories and attempt to remove them
+   */
+  public async beforeStart() {
+    if ([
+      '/usr/local/lib/node_modules',
+      '/usr/lib/node_modules'
+    ].includes(path.dirname(process.env.UIX_BASE_PATH))) {
+      // systemd has a 90 second default timeout in the pre-start jobs
+      // terminate this task after 60 seconds to be safe
+      setTimeout(() => {
+        process.exit(0);
+      }, 60000);
+
+      const modulesPath = path.dirname(process.env.UIX_BASE_PATH);
+      const temporaryDirectoriesToClean = (await fs.readdir(modulesPath)).filter(x => {
+        return x.startsWith('.homebridge-');
+      });
+
+      for (const directory of temporaryDirectoriesToClean) {
+        const pathToRemove = path.join(modulesPath, directory);
+        try {
+          console.log('Removing stale temporary directory:', pathToRemove);
+          await fs.rm(pathToRemove, { recursive: true, force: true });
+        } catch (e) {
+          console.error('Failed to remove:', pathToRemove, e);
+        }
+      }
+    }
+
+    process.exit(0);
   }
 
   /**
@@ -131,28 +178,58 @@ export class LinuxInstaller {
    */
   public async rebuild(all = false) {
     try {
-      this.checkForRoot();
-      const npmGlobalPath = child_process.execSync('/bin/echo -n "$(npm --no-update-notifier -g prefix)/lib/node_modules"').toString('utf8');
-      const targetNodeVersion = child_process.execSync('node -v').toString('utf8').trim();
-
-      child_process.execSync('npm rebuild --unsafe-perm', {
-        cwd: process.env.UIX_BASE_PATH,
-        stdio: 'inherit',
-      });
-
-      if (all === true) {
-        // rebuild all modules
-        try {
-          child_process.execSync('npm rebuild --unsafe-perm', {
-            cwd: npmGlobalPath,
-            stdio: 'inherit',
-          });
-        } catch (e) {
-          this.hbService.logger('Could not rebuild all modules - check Homebridge logs.', 'warn');
-        }
+      if (this.isPackage()) {
+        // must not run as root in package mode
+        this.checkIsNotRoot();
+      } else {
+        this.checkForRoot();
       }
 
-      this.hbService.logger(`Rebuilt modules in ${process.env.UIX_BASE_PATH} for Node.js ${targetNodeVersion}.`, 'succeed');
+      const targetNodeVersion = child_process.execSync('node -v').toString('utf8').trim();
+
+      if (this.isPackage() && process.env.UIX_USE_PNPM === '1' && process.env.UIX_CUSTOM_PLUGIN_PATH) {
+        // pnpm+package mode
+        const cwd = path.dirname(process.env.UIX_CUSTOM_PLUGIN_PATH);
+
+        if (!await fs.pathExists(cwd)) {
+          this.hbService.logger(`Path does not exist: "${cwd}"`, 'fail');
+          process.exit(1);
+        }
+
+        child_process.execSync(`pnpm -C "${cwd}" rebuild`, {
+          cwd: cwd,
+          stdio: 'inherit',
+        });
+        this.hbService.logger(`Rebuilt plugins in ${process.env.UIX_CUSTOM_PLUGIN_PATH} for Node.js ${targetNodeVersion}.`, 'succeed');
+      } else {
+        // normal global npm setups
+        const npmGlobalPath = child_process.execSync('/bin/echo -n "$(npm -g prefix)/lib/node_modules"', {
+          env: Object.assign({
+            npm_config_loglevel: 'silent',
+            npm_update_notifier: 'false',
+          }, process.env),
+        }).toString('utf8');
+
+        child_process.execSync('npm rebuild --unsafe-perm', {
+          cwd: process.env.UIX_BASE_PATH,
+          stdio: 'inherit',
+        });
+        this.hbService.logger(`Rebuilt homebridge-config-ui-x for Node.js ${targetNodeVersion}.`, 'succeed');
+
+        if (all === true) {
+          // rebuild all global node_modules
+          try {
+            child_process.execSync('npm rebuild --unsafe-perm', {
+              cwd: npmGlobalPath,
+              stdio: 'inherit',
+            });
+            this.hbService.logger(`Rebuilt plugins in ${npmGlobalPath} for Node.js ${targetNodeVersion}.`, 'succeed');
+          } catch (e) {
+            this.hbService.logger('Could not rebuild all plugins - check logs.', 'warn');
+          }
+        }
+
+      }
     } catch (e) {
       console.error(e.toString());
       this.hbService.logger('ERROR: Failed Operation', 'fail');
@@ -197,12 +274,17 @@ export class LinuxInstaller {
    * Update Node.js
    */
   public async updateNodejs(job: { target: string; rebuild: boolean }) {
-    this.checkForRoot();
+    if (this.isPackage()) {
+      // must not run as root in package mode
+      this.checkIsNotRoot();
+    } else {
+      this.checkForRoot();
+    }
 
     // check target path
     const targetPath = path.dirname(path.dirname(process.execPath));
 
-    if (targetPath !== '/usr' && targetPath !== '/usr/local') {
+    if (targetPath !== '/usr' && targetPath !== '/usr/local' && targetPath !== '/opt/homebridge' && !targetPath.endsWith('/@appstore/homebridge/app')) {
       this.hbService.logger(`Cannot update Node.js on your system. Non-standard installation path detected: ${targetPath}`, 'fail');
       process.exit(1);
     }
@@ -233,13 +315,27 @@ export class LinuxInstaller {
    * Update Node.js from the tarball archives
    */
   private async updateNodeFromTarball(job: { target: string; rebuild: boolean }, targetPath: string) {
-    // only glibc linux >=2.24 is supported
+
     try {
-      const glibcVersion = parseFloat(child_process.execSync('getconf GNU_LIBC_VERSION 2>/dev/null').toString().split('glibc')[1].trim());
-      if (glibcVersion < 2.24) {
-        this.hbService.logger('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
-          `Wanted: >=2.24. Installed: ${glibcVersion}`, 'fail');
-        process.exit(1);
+      if (Boolean(process.env.HOMEBRIDGE_SYNOLOGY_PACKAGE === '1')) {
+        // skip glibc version check on Synology DSM
+        // we know node > 18 requires glibc > 2.28, while DSM 7 only has 2.27 at the moment
+        if (semver.gte(job.target, '18.0.0')) {
+          this.hbService.logger('Cannot update Node.js on your system. Synology DSM 7 does not currently support Node.js 18 or later.', 'fail');
+          process.exit(1);
+        }
+      } else {
+        const glibcVersion = parseFloat(child_process.execSync('getconf GNU_LIBC_VERSION 2>/dev/null').toString().split('glibc')[1].trim());
+        if (glibcVersion < 2.23) {
+          this.hbService.logger('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
+            `Wanted: >=2.23. Installed: ${glibcVersion}`, 'fail');
+          process.exit(1);
+        }
+        if (semver.gte(job.target, '18.0.0') && glibcVersion < 2.28) {
+          this.hbService.logger('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
+            `Wanted: >=2.28. Installed: ${glibcVersion}`, 'fail');
+          process.exit(1);
+        }
       }
     } catch (e) {
       const osInfo = await si.osInfo();
@@ -260,7 +356,13 @@ export class LinuxInstaller {
         downloadUrl = `https://nodejs.org/dist/${job.target}/node-${job.target}-linux-x64.tar.gz`;
         break;
       case 'aarch64':
-        downloadUrl = `https://nodejs.org/dist/${job.target}/node-${job.target}-linux-arm64.tar.gz`;
+        // With the latest Raspberry Pi OS upgrades, the Raspberry Pi 4B now runs the 64-bit kernel, even on the 32-bit OS
+        // https://github.com/homebridge/homebridge/issues/3349#issuecomment-1523832510
+        if (child_process.execSync('getconf LONG_BIT')?.toString()?.trim() === '32') {
+          downloadUrl = `https://nodejs.org/dist/${job.target}/node-${job.target}-linux-armv7l.tar.gz`;
+        } else { // + case '64':
+          downloadUrl = `https://nodejs.org/dist/${job.target}/node-${job.target}-linux-arm64.tar.gz`;
+        }
         break;
       case 'armv7l':
         downloadUrl = `https://nodejs.org/dist/${job.target}/node-${job.target}-linux-armv7l.tar.gz`;
@@ -309,6 +411,11 @@ export class LinuxInstaller {
 
     try {
       const majorVersion = semver.parse(job.target).major;
+      // update apt (and accept release info changes)
+      child_process.execSync('apt-get update --allow-releaseinfo-change', {
+        stdio: 'inherit',
+      });
+
       // update repo
       child_process.execSync(`curl -sL https://deb.nodesource.com/setup_${majorVersion}.x | bash -`, {
         stdio: 'inherit',
@@ -368,6 +475,10 @@ export class LinuxInstaller {
    * Check the command is being run as root and we can detect the user
    */
   private checkForRoot() {
+    if (this.isPackage()) {
+      this.hbService.logger('ERROR: This command is not available.', 'fail');
+      process.exit(1);
+    }
     if (process.getuid() !== 0) {
       this.hbService.logger('ERROR: This command must be executed using sudo on Linux', 'fail');
       this.hbService.logger(`EXAMPLE: sudo hb-service ${this.hbService.action}`, 'fail');
@@ -376,6 +487,17 @@ export class LinuxInstaller {
     if (this.hbService.action === 'install' && !this.hbService.asUser) {
       this.hbService.logger('ERROR: User parameter missing. Pass in the user you want to run Homebridge as using the --user flag eg.', 'fail');
       this.hbService.logger(`EXAMPLE: sudo hb-service ${this.hbService.action} --user your-user`, 'fail');
+      process.exit(1);
+    }
+  }
+
+  /**
+   * Check the current user is NOT root
+   */
+  private checkIsNotRoot() {
+    if (process.getuid() === 0 && !this.hbService.allowRunRoot && process.env.HOMEBRIDGE_CONFIG_UI !== '1') {
+      this.hbService.logger('ERROR: This command must not be executed as root or with sudo', 'fail');
+      this.hbService.logger('ERROR: If you know what you are doing; you can override this by adding --allow-root', 'fail');
       process.exit(1);
     }
   }
@@ -391,6 +513,10 @@ export class LinuxInstaller {
       // if not create the user
       child_process.execSync(`useradd -m --system ${this.hbService.asUser}`);
       this.hbService.logger(`Created service user: ${this.hbService.asUser}`, 'info');
+      if (this.hbService.addGroup) {
+        child_process.execSync(`usermod -a -G ${this.hbService.addGroup} ${this.hbService.asUser}`, { timeout: 10000 });
+        this.hbService.logger(`Added ${this.hbService.asUser} to group ${this.hbService.addGroup}`, 'info');
+      }
     }
 
     try {
@@ -429,6 +555,16 @@ export class LinuxInstaller {
   }
 
   /**
+   * Determines if the command is being run inside the Synology DSM SPK Package / Debian Package
+   */
+  private isPackage(): boolean {
+    return (
+      Boolean(process.env.HOMEBRIDGE_SYNOLOGY_PACKAGE === '1') ||
+      Boolean(process.env.HOMEBRIDGE_APT_PACKAGE === '1')
+    );
+  }
+
+  /**
    * Fixes the permission on the storage path
    */
   private fixPermissions() {
@@ -446,6 +582,7 @@ export class LinuxInstaller {
           // chown the storage directory to the service user
           child_process.execSync(`chown -R ${serviceUser}: "${storagePath}"`);
         }
+        child_process.execSync(`chmod a+x ${this.hbService.selfPath}`);
       } catch (e) {
         this.hbService.logger('WARNING: Failed to set permissions', 'warn');
       }
@@ -587,7 +724,7 @@ export class LinuxInstaller {
       'PermissionsStartOnly=true',
       `WorkingDirectory=${this.hbService.storagePath}`,
       `EnvironmentFile=/etc/default/${this.systemdServiceName}`,
-      `ExecStartPre=-run-parts ${this.runPartsPath}`,
+      `ExecStartPre=-/bin/run-parts ${this.runPartsPath}`,
       `ExecStartPre=-${this.hbService.selfPath} before-start $HOMEBRIDGE_OPTS`,
       `ExecStart=${this.hbService.selfPath} run $HOMEBRIDGE_OPTS`,
       'Restart=always',

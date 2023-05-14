@@ -4,7 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { fastify } from 'fastify';
-import fastifyMultipart from 'fastify-multipart';
+import fastifyMultipart from '@fastify/multipart';
 
 import { AppModule } from '../../src/app.module';
 
@@ -35,9 +35,7 @@ describe('FastifyOptions (e2e)', () => {
 
     // setup fastify
     const server = fastify({
-      logger: {
-        prettyPrint: true,
-      },
+      logger: true,
     });
 
     const fAdapter = new FastifyAdapter(server);
@@ -65,8 +63,8 @@ describe('FastifyOptions (e2e)', () => {
       path: '/',
     });
 
-    expect(res.statusCode).toEqual(200);
-    expect(res.body).toEqual('Hello World!');
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toBe('Hello World!');
   });
 
   afterAll(async () => {

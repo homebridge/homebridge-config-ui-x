@@ -1,37 +1,38 @@
 name: Test
 
-on: [
-  pull_request,
-  push
-]
+on: [pull_request, push]
 
 jobs:
   build:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        node-version: [12.x, 13.x, 14.x, 15.x, 16.x, 17.x]
+        node-version: [16.x, 17.x, 18.x]
         include:
           - os: macos-latest
-            node-version: 14.x
+            node-version: 16.x
           - os: macos-latest
+            node-version: 18.x
+          - os: windows-2019
+            node-version: 16.x
+          - os: windows-2019
+            node-version: 18.x
+          - os: windows-latest
             node-version: 16.x
           - os: windows-latest
-            node-version: 14.x
-          - os: windows-latest
-            node-version: 16.x
+            node-version: 18.x
 
     runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
       - run: npm run build:server
       - run: npm run lint:server
-      - run: npm run test:e2e
+      - run: npm run test
 
       # remove dev deps
       - run: npm clean-install --production
@@ -43,7 +44,7 @@ jobs:
         run: |
           sudo npm link
           sudo npm install -g homebridge
-          sudo hb-service install --user homebridge
+          sudo hb-service install --user homebridge --group `id -gn`
           sleep 30
       - if: runner.os == 'macOS'
         name: 'Run hb-service install (macOS)'
@@ -61,4 +62,8 @@ jobs:
           Start-Sleep -s 30
       - name: 'Test hb-service install'
         run: node dist/bin/hb-service.js status --port 8581
-        
+      - name: 'View Errors'
+        if: ${{ failure() }}
+        run: |
+          node dist/bin/hb-service.js view
+          exit 1

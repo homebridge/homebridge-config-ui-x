@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import axios, { AxiosResponse, AxiosError } from 'axios';
+import { AxiosResponse, AxiosError } from 'axios';
 import { of, throwError } from 'rxjs';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
@@ -34,7 +34,7 @@ describe('StatusController (e2e)', () => {
     await fs.copy(path.resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
 
     // create httpService instance
-    httpService = new HttpService(axios.create({}));
+    httpService = new HttpService();
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [StatusModule, AuthModule],
@@ -74,11 +74,11 @@ describe('StatusController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()).toHaveProperty('cpuLoadHistory');
     expect(res.json()).toHaveProperty('cpuTemperature');
     expect(res.json()).toHaveProperty('currentLoad');
-  });
+  }, 30000);
 
   it('GET /status/ram', async () => {
     const res = await app.inject({
@@ -89,10 +89,24 @@ describe('StatusController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()).toHaveProperty('mem');
     expect(res.json()).toHaveProperty('memoryUsageHistory');
-  });
+  }, 30000);
+
+  it('GET /status/network', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/status/network',
+      headers: {
+        authorization,
+      },
+    });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toHaveProperty('net');
+    expect(res.json()).toHaveProperty('point');
+  }, 30000);
 
   it('GET /status/uptime', async () => {
     const res = await app.inject({
@@ -103,7 +117,7 @@ describe('StatusController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()).toHaveProperty('time');
     expect(res.json()).toHaveProperty('processUptime');
   });
@@ -128,7 +142,7 @@ describe('StatusController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()).toEqual({ status: 'up' });
   });
 
@@ -154,7 +168,7 @@ describe('StatusController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()).toEqual({ status: 'down' });
   });
 
@@ -167,10 +181,10 @@ describe('StatusController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()).toHaveProperty('serviceUser');
-    expect(res.json().homebridgeConfigJsonPath).toEqual(process.env.UIX_CONFIG_PATH);
-    expect(res.json().homebridgeStoragePath).toEqual(process.env.UIX_STORAGE_PATH);
+    expect(res.json().homebridgeConfigJsonPath).toBe(process.env.UIX_CONFIG_PATH);
+    expect(res.json().homebridgeStoragePath).toBe(process.env.UIX_STORAGE_PATH);
   }, 30000);
 
   it('GET /status/nodejs', async () => {
@@ -204,9 +218,9 @@ describe('StatusController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json().currentVersion).toEqual(process.version);
-    expect(res.json().latestVersion).toEqual('v12.18.0');
+    expect(res.json().latestVersion).toBe('v12.18.0');
   });
 
   afterAll(async () => {

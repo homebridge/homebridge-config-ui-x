@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Put, UseGuards, Res, Req, InternalServerErrorException, Param } from '@nestjs/common';
+import { Controller, Get, Post, Put, UseGuards, Res, Req, InternalServerErrorException, Param, StreamableFile } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiConsumes, ApiParam } from '@nestjs/swagger';
-import { FastifyReply } from 'fastify';
+import { FastifyRequest } from 'fastify';
 
 import { BackupService } from './backup.service';
 import { AdminGuard } from '../../core/auth/guards/admin.guard';
@@ -21,9 +21,9 @@ export class BackupController {
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Download a .tar.gz of the Homebridge instance.' })
   @Get('/download')
-  async downloadBackup(@Res() reply) {
+  async downloadBackup(@Res({ passthrough: true }) res): Promise<StreamableFile> {
     try {
-      return await this.backupService.downloadBackup(reply);
+      return await this.backupService.downloadBackup(res);
     } catch (e) {
       console.error(e);
       this.logger.error('Backup Failed ' + e);
@@ -49,7 +49,7 @@ export class BackupController {
   @ApiOperation({ summary: 'Download a system generated instance backup.' })
   @ApiParam({ name: 'backupId', type: 'string' })
   @Get('/scheduled-backups/:backupId')
-  async getScheduledBackup(@Param('backupId') backupId) {
+  async getScheduledBackup(@Param('backupId') backupId): Promise<StreamableFile> {
     return this.backupService.getScheduledBackup(backupId);
   }
 
@@ -71,15 +71,24 @@ export class BackupController {
       },
     },
   })
-  restoreBackup(@Req() req, @Res() res: FastifyReply) {
-    req.multipart(async (field, file, filename, encoding, mimetype) => {
-      this.backupService.uploadBackupRestore(file);
-    }, (err) => {
-      if (err) {
-        return res.send(500).send(err.message);
-      }
-      return res.code(200).send();
-    });
+  async restoreBackup(@Req() req: FastifyRequest) {
+    try {
+      const data = await req.file();
+      await this.backupService.uploadBackupRestore(data);
+    } catch (err) {
+      this.logger.error('Restore backup failed:', err.message);
+      throw new InternalServerErrorException(err.message);
+    }
+  }
+
+  @UseGuards(AdminGuard)
+  @Put('/restore/trigger')
+  @ApiOperation({
+    summary: 'Triggers a headless restore process from the last uploaded backup file.',
+    description: 'Logs to stdout / stderr.',
+  })
+  async restoreBackupTrigger() {
+    return await this.backupService.triggerHeadlessRestore();
   }
 
   @UseGuards(AdminGuard)
@@ -100,15 +109,14 @@ export class BackupController {
     },
   })
   @Post('/restore/hbfx')
-  restoreHbfx(@Req() req, @Res() res: FastifyReply) {
-    req.multipart(async (field, file, filename, encoding, mimetype) => {
-      this.backupService.uploadHbfxRestore(file);
-    }, (err) => {
-      if (err) {
-        return res.send(500).send(err.message);
-      }
-      return res.code(200).send();
-    });
+  async restoreHbfx(@Req() req: FastifyRequest) {
+    try {
+      const data = await req.file();
+      await this.backupService.uploadHbfxRestore(data);
+    } catch (err) {
+      this.logger.error('Restore backup failed:', err.message);
+      throw new InternalServerErrorException(err.message);
+    }
   }
 
   @UseGuards(AdminGuard)

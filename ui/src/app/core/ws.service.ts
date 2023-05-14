@@ -37,13 +37,13 @@ export class WsService {
       // broadcast to sbuscribers that the connection is ready
       setTimeout(() => {
         if (io.socket.connected) {
-          io.connected.next();
+          io.connected.next(undefined);
         }
       });
 
       // watch for re-connections, and broadcast
       io.socket.on('connect', () => {
-        io.connected.next();
+        io.connected.next(undefined);
       });
 
       // define end function
@@ -61,7 +61,7 @@ export class WsService {
 
       // wait for the connection and broadcase when ready
       io.socket.on('connect', () => {
-        io.connected.next();
+        io.connected.next(undefined);
       });
 
       // define end function

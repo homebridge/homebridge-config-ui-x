@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, FormGroup, FormControl } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -27,11 +27,20 @@ import { SelectNetworkInterfacesComponent } from './select-network-interfaces/se
   styleUrls: ['./settings.component.scss'],
 })
 export class SettingsComponent implements OnInit {
-  public serviceForm: FormGroup;
-  public legacyMdnsFormControl = new FormControl(false);
+  public serviceForm = new FormGroup({
+    HOMEBRIDGE_DEBUG: new FormControl(false),
+    HOMEBRIDGE_KEEP_ORPHANS: new FormControl(false),
+    HOMEBRIDGE_INSECURE: new FormControl(true),
+    ENV_DEBUG: new FormControl(null),
+    ENV_NODE_OPTIONS: new FormControl(null),
+  });
+
+  public legacyMdnsFormControl = new UntypedFormControl(false);
   public saved = false;
 
   public showNetworking = false;
+  public showAvahiMdnsOption = false;
+  public showResolvedMdnsOption = false;
   public availableNetworkAdapters: Record<string, any> = [];
   public bridgeNetworkAdapters: Record<string, any> = [];
 
@@ -39,7 +48,7 @@ export class SettingsComponent implements OnInit {
     public $settings: SettingsService,
     private $api: ApiService,
     private $notification: NotificationService,
-    public $fb: FormBuilder,
+    public $fb: UntypedFormBuilder,
     public $toastr: ToastrService,
     private $modal: NgbModal,
     private $route: ActivatedRoute,
@@ -51,56 +60,17 @@ export class SettingsComponent implements OnInit {
     this.initNetworkingOptions();
     if (this.$settings.env.serviceMode) {
       this.initServiceModeForm();
-    } else if (this.$settings.env.runningInDocker) {
-      this.initDockerForm();
     }
   }
 
-  initDockerForm() {
-    this.serviceForm = this.$fb.group({
-      HOMEBRIDGE_DEBUG: [false],
-      HOMEBRIDGE_INSECURE: [false],
-    });
-
-
-    this.$api.get('/platform-tools/docker/env').subscribe(
-      (data) => {
-        this.serviceForm.patchValue(data);
-        this.serviceForm.valueChanges.subscribe(this.saveDockerSettings.bind(this));
-      },
-      (err) => {
-        this.$toastr.error(err.message, 'Failed to load docker settings');
-      },
-    );
-  }
-
-  saveDockerSettings(data = this.serviceForm.value) {
-    this.$api.put('/platform-tools/docker/env', data).subscribe(() => {
-      this.$toastr.success(
-        this.translate.instant('platform.docker.settings.toast_container_restart_required'),
-        this.translate.instant('platform.docker.settings.toast_title_settings_saved'),
-      );
-      this.saved = true;
-      this.$notification.configUpdated.next();
-    });
-  }
-
   initServiceModeForm() {
-    this.serviceForm = this.$fb.group({
-      HOMEBRIDGE_DEBUG: [false],
-      HOMEBRIDGE_KEEP_ORPHANS: [false],
-      HOMEBRIDGE_INSECURE: [true],
-      ENV_DEBUG: [null],
-      ENV_NODE_OPTIONS: [null],
-    });
-
     this.$api.get('/platform-tools/hb-service/homebridge-startup-settings').subscribe(
       (data) => {
         this.serviceForm.patchValue(data);
         this.serviceForm.valueChanges.pipe(debounceTime(500)).subscribe(this.saveServiceModeSettings.bind(this));
       },
       (err) => {
-        this.$toastr.error(err.message, 'Failed to load docker settings');
+        this.$toastr.error(err.message, 'Failed to load startup settings');
       },
     );
   }
@@ -108,7 +78,7 @@ export class SettingsComponent implements OnInit {
   saveServiceModeSettings(data = this.serviceForm.value) {
     this.$api.put('/platform-tools/hb-service/homebridge-startup-settings', data).subscribe(() => {
       this.saved = true;
-      this.$notification.configUpdated.next();
+      this.$notification.configUpdated.next(undefined);
     });
   }
 
@@ -154,6 +124,22 @@ export class SettingsComponent implements OnInit {
         this.showNetworking = true;
         this.getNetworkSettings();
       }
+      const onLinux = (
+        this.$settings.env.runningInLinux ||
+        this.$settings.env.runningInDocker ||
+        this.$settings.env.runningInSynologyPackage ||
+        this.$settings.env.runningInPackageMode
+      );
+      if (semver.gte(homebridgePackage.installedVersion, '1.4.0-beta.0', { includePrerelease: true })) {
+        if (onLinux) {
+          this.showAvahiMdnsOption = true;
+        }
+      }
+      if (semver.gte(homebridgePackage.installedVersion, '1.6.0-beta.0', { includePrerelease: true })) {
+        if (onLinux) {
+          this.showResolvedMdnsOption = true;
+        }
+      }
     } catch (e) {
 
     }
@@ -179,7 +165,7 @@ export class SettingsComponent implements OnInit {
       .subscribe(
         () => {
           this.saved = true;
-          this.$notification.configUpdated.next();
+          this.$notification.configUpdated.next(undefined);
         },
         (err) => {
           this.$toastr.error(err.message, 'Failed to set mdns advertiser.');
@@ -192,7 +178,7 @@ export class SettingsComponent implements OnInit {
       .subscribe(
         () => {
           this.saved = true;
-          this.$notification.configUpdated.next();
+          this.$notification.configUpdated.next(undefined);
         },
         (err) => {
           this.$toastr.error(err.message, 'Failed to set network adapters.');

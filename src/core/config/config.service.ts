@@ -12,7 +12,7 @@ export interface HomebridgeConfig {
     pin: string;
     name: string;
     port: number;
-    advertiser?: 'ciao' | 'bonjour-hap';
+    advertiser?: 'avahi' | 'resolved' | 'ciao' | 'bonjour-hap';
     bind?: string | string[];
   };
   mdns?: {
@@ -32,6 +32,7 @@ export class ConfigService {
   public configPath = process.env.UIX_CONFIG_PATH || path.resolve(os.homedir(), '.homebridge/config.json');
   public storagePath = process.env.UIX_STORAGE_PATH || path.resolve(os.homedir(), '.homebridge');
   public customPluginPath = process.env.UIX_CUSTOM_PLUGIN_PATH;
+  public strictPluginResolution = (process.env.UIX_STRICT_PLUGIN_RESOLUTION === '1');
   public secretPath = path.resolve(this.storagePath, '.uix-secrets');
   public authPath = path.resolve(this.storagePath, 'auth.json');
   public accessoryLayoutPath = path.resolve(this.storagePath, 'accessories', 'uiAccessoriesLayout.json');
@@ -42,20 +43,35 @@ export class ConfigService {
   public homebridgeVersion: string;
 
   // server env
-  public minimumNodeVersion = '10.17.0';
+  public minimumNodeVersion = '14.15.0';
   public serviceMode = (process.env.UIX_SERVICE_MODE === '1');
   public runningInDocker = Boolean(process.env.HOMEBRIDGE_CONFIG_UI === '1');
-  public runningInLinux = (!this.runningInDocker && os.platform() === 'linux');
-  public ableToConfigureSelf = (!this.runningInDocker || semver.satisfies(process.env.CONFIG_UI_VERSION, '>=3.5.5', { includePrerelease: true }));
-  public enableTerminalAccess = this.runningInDocker || Boolean(process.env.HOMEBRIDGE_CONFIG_UI_TERMINAL === '1');
+  public runningInSynologyPackage = Boolean(process.env.HOMEBRIDGE_SYNOLOGY_PACKAGE === '1');
+  public runningInPackageMode = Boolean(process.env.HOMEBRIDGE_APT_PACKAGE === '1');
+  public runningInLinux = (!this.runningInDocker && !this.runningInSynologyPackage && !this.runningInPackageMode && os.platform() === 'linux');
+  public runningInFreeBSD = (os.platform() === 'freebsd');
+  public canShutdownRestartHost = (this.runningInLinux || process.env.UIX_CAN_SHUTDOWN_RESTART_HOST === '1');
+  public enableTerminalAccess = this.runningInDocker || this.runningInSynologyPackage || this.runningInPackageMode || Boolean(process.env.HOMEBRIDGE_CONFIG_UI_TERMINAL === '1');
 
-  // docker paths
+  // plugin management
+  public usePnpm = (process.env.UIX_USE_PNPM === '1');
+  public usePluginBundles = (process.env.UIX_USE_PLUGIN_BUNDLES === '1');
+
+  // recommend child bridges on platforms with > 2GB ram
+  public recommendChildBridges = (os.totalmem() > 2e+9);
+
+  // check this async
+  public runningOnRaspberryPi = false;
+
+  // docker settings
   public startupScript = path.resolve(this.storagePath, 'startup.sh');
-  public dockerEnvFile = path.resolve(this.storagePath, '.docker.env');
-  public dockerOfflineUpdate = this.runningInDocker && semver.satisfies(process.env.CONFIG_UI_VERSION, '>=4.6.2', { includePrerelease: true });
+  public dockerOfflineUpdate = this.runningInDocker && semver.satisfies(process.env.CONFIG_UI_VERSION, '>=4.6.2 <=4.44.1', { includePrerelease: true });
 
   // package.json
   public package = fs.readJsonSync(path.resolve(process.env.UIX_BASE_PATH, 'package.json'));
+
+  // first user setup wizard
+  public setupWizardComplete = true;
 
   // custom wallpaper
   public customWallpaperPath = path.resolve(this.storagePath, 'ui-wallpaper.jpg');
@@ -121,6 +137,7 @@ export class ConfigService {
   constructor() {
     const homebridgeConfig = fs.readJSONSync(this.configPath);
     this.parseConfig(homebridgeConfig);
+    this.checkIfRunningOnRaspberryPi();
   }
 
   /**
@@ -178,7 +195,6 @@ export class ConfigService {
   public uiSettings() {
     return {
       env: {
-        ableToConfigureSelf: this.ableToConfigureSelf,
         enableAccessories: this.homebridgeInsecureMode,
         enableTerminalAccess: this.enableTerminalAccess,
         homebridgeVersion: this.homebridgeVersion || null,
@@ -188,13 +204,20 @@ export class ConfigService {
         packageVersion: this.package.version,
         platform: os.platform(),
         runningInDocker: this.runningInDocker,
+        runningInSynologyPackage: this.runningInSynologyPackage,
+        runningInPackageMode: this.runningInPackageMode,
         runningInLinux: this.runningInLinux,
+        runningInFreeBSD: this.runningInFreeBSD,
+        runningOnRaspberryPi: this.runningOnRaspberryPi,
+        canShutdownRestartHost: this.canShutdownRestartHost,
         dockerOfflineUpdate: this.dockerOfflineUpdate,
         serviceMode: this.serviceMode,
         temperatureUnits: this.ui.tempUnits || 'c',
         lang: this.ui.lang === 'auto' ? null : this.ui.lang,
         instanceId: this.instanceId,
         customWallpaperHash: this.customWallpaperHash,
+        setupWizardComplete: this.setupWizardComplete,
+        recommendChildBridges: this.recommendChildBridges,
       },
       formAuth: Boolean(this.ui.auth !== 'none'),
       theme: this.ui.theme || 'auto',
@@ -266,7 +289,7 @@ export class ConfigService {
   private setConfigForServiceMode() {
     this.homebridgeInsecureMode = Boolean(process.env.UIX_INSECURE_MODE === '1');
     this.ui.restart = undefined;
-    this.ui.sudo = (os.platform() === 'linux' && !this.runningInDocker);
+    this.ui.sudo = (os.platform() === 'linux' && !this.runningInDocker && !this.runningInSynologyPackage && !this.runningInPackageMode) || os.platform() === 'freebsd';
     this.ui.log = {
       method: 'native',
       path: path.resolve(this.storagePath, 'homebridge.log'),
@@ -324,6 +347,21 @@ export class ConfigService {
       this.customWallpaperHash = hash.digest('hex') + '.jpg';
     } catch (e) {
       // do nothing
+    }
+  }
+
+  /**
+   * Checks to see if we are running on a Raspberry Pi
+   */
+  private async checkIfRunningOnRaspberryPi() {
+    try {
+      if (await fs.pathExists('/usr/bin/vcgencmd') && await fs.pathExists('/usr/bin/raspi-config')) {
+        this.runningOnRaspberryPi = true;
+      } else {
+        this.runningOnRaspberryPi = false;
+      }
+    } catch (e) {
+      this.runningOnRaspberryPi = false;
     }
   }
 

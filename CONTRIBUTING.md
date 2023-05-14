@@ -44,35 +44,28 @@ Symlink your development directory to global:
 npm link
 ```
 
-You can now run `homebridge` and it will use `homebridge-config-ui-x` from your development directory. Make sure you have setup `homebridge-config-ui-x` in your `config.json` and that the plugin is configured to run on port `8080`. Here is a good template to use:
+If you don't have homebridge installed already run:
 
-```json
-"platforms": [
-    {
-        "platform": "config",
-        "name": "Config",
-        "port": 8080,
-        "standalone": true
-    }
-]
+```
+npm install -g homebridge
 ```
 
 ## Watching For Changes
 
-This will start the Angular development server on port `4200` and a standalone server on port 8080. It will also watch and compile changes made to the server side TypeScript code:
+This will start the Angular development server on port `4200` and a standalone server on port 8581. It will also watch and compile changes made to the server side TypeScript code:
 
 ```
 npm run watch
 ```
 
-You should now be able to navigate to `https://localhost:4200` in your browser which will connect to your `homebridge` instance running on port `8080`. The UI  will automatically reload whenever you make changes to the code.
+You should now be able to navigate to `https://localhost:4200` in your browser which will connect to your `homebridge` instance running on port `8581`. The UI  will automatically reload whenever you make changes to the code.
 
 ## Running Tests
 
 If you have made changes to the server side code, you should run the e2e test suite before creating a pull request:
 
 ```
-npm run test:e2e
+npm run test
 ```
 
 ## Contributing To Translations

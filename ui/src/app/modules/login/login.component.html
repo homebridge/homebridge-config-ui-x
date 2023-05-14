@@ -9,7 +9,7 @@
 
         <div class="md-form">
           <i class="fas fa-user prefix grey-text"></i>
-          <input formControlName="username" type="text" id="form-username" autofocus autocomplete="username"
+          <input #username formControlName="username" type="text" id="form-username" autofocus autocomplete="username"
             autocapitalize="none" tabindex="1" class="form-control pl-0 pr-0" [ngClass]="{
             'is-invalid': form.controls.username.dirty && form.controls.username.errors
           }">
@@ -31,11 +31,11 @@
         <p class="text-center">{{ 'users.setup_2fa_enter_code' | translate }}</p>
         <div class="md-form">
           <i class="fas fa-key prefix grey-text"></i>
-          <input formControlName="otp" type="text" id="form-ota" autocomplete="one-time-code" autocapitalize="none"
+          <input #otp formControlName="otp" type="text" id="form-ota" autocomplete="one-time-code" autocapitalize="none"
             inputmode="numeric" pattern="[0-9]*" tabindex="1" class="form-control pl-0 pr-0" [ngClass]="{
               'is-invalid': form.controls.otp.dirty && form.controls.otp.errors
             }">
-          <label for="form-username" [translate]="'login.label_2fa_code'"></label>
+          <label for="form-ota" [translate]="'login.label_2fa_code'"></label>
         </div>
       </div>
 

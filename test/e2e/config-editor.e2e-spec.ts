@@ -84,7 +84,7 @@ describe('ConfigEditorController (e2e)', () => {
   });
 
   it('should create the config.json backup path', async () => {
-    expect(await fs.pathExists(backupFilePath)).toEqual(true);
+    expect(await fs.pathExists(backupFilePath)).toBe(true);
   });
 
   it('should schedule a job to remove old config.json backups', async () => {
@@ -140,7 +140,7 @@ describe('ConfigEditorController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()).toEqual(await fs.readJson(configFilePath));
   });
 
@@ -158,7 +158,7 @@ describe('ConfigEditorController (e2e)', () => {
       payload: currentConfig,
     });
 
-    expect(res.statusCode).toEqual(201);
+    expect(res.statusCode).toBe(201);
 
     // check the updates were saved to disk
     expect(currentConfig).toEqual(await fs.readJson(configFilePath));
@@ -182,7 +182,7 @@ describe('ConfigEditorController (e2e)', () => {
       payload: currentConfig,
     });
 
-    expect(res.statusCode).toEqual(201);
+    expect(res.statusCode).toBe(201);
 
     // check the updates were saved to disk and mistakes corrected
     const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
@@ -206,12 +206,12 @@ describe('ConfigEditorController (e2e)', () => {
       payload: currentConfig,
     });
 
-    expect(res.statusCode).toEqual(201);
+    expect(res.statusCode).toBe(201);
 
     // check the updates were saved to disk and mistakes corrected
     const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
-    expect(typeof savedConfig.bridge.port).toEqual('number');
-    expect(savedConfig.bridge.port).toEqual(12345);
+    expect(typeof savedConfig.bridge.port).toBe('number');
+    expect(savedConfig.bridge.port).toBe(12345);
   });
 
   it('POST /config-editor (correct bridge.port if invalid value is provided)', async () => {
@@ -230,11 +230,11 @@ describe('ConfigEditorController (e2e)', () => {
       payload: currentConfig,
     });
 
-    expect(res.statusCode).toEqual(201);
+    expect(res.statusCode).toBe(201);
 
     // check the updates were saved to disk and mistakes corrected
     const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
-    expect(typeof savedConfig.bridge.port).toEqual('number');
+    expect(typeof savedConfig.bridge.port).toBe('number');
     expect(savedConfig.bridge.port).toBeGreaterThanOrEqual(51000);
     expect(savedConfig.bridge.port).toBeLessThanOrEqual(52000);
   });
@@ -253,11 +253,11 @@ describe('ConfigEditorController (e2e)', () => {
       payload: currentConfig,
     });
 
-    expect(res.statusCode).toEqual(201);
+    expect(res.statusCode).toBe(201);
 
     // check the updates were saved to disk and mistakes corrected
     const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
-    expect(savedConfig.bridge.port).toEqual(8080);
+    expect(savedConfig.bridge.port).toBe(8080);
   });
 
   it('POST /config-editor (correct bridge.port if port is out of range)', async () => {
@@ -274,11 +274,11 @@ describe('ConfigEditorController (e2e)', () => {
       payload: currentConfig,
     });
 
-    expect(res.statusCode).toEqual(201);
+    expect(res.statusCode).toBe(201);
 
     // check the updates were saved to disk and mistakes corrected
     const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
-    expect(typeof savedConfig.bridge.port).toEqual('number');
+    expect(typeof savedConfig.bridge.port).toBe('number');
     expect(savedConfig.bridge.port).toBeGreaterThanOrEqual(51000);
     expect(savedConfig.bridge.port).toBeLessThanOrEqual(52000);
   });
@@ -298,11 +298,11 @@ describe('ConfigEditorController (e2e)', () => {
       payload: currentConfig,
     });
 
-    expect(res.statusCode).toEqual(201);
+    expect(res.statusCode).toBe(201);
 
     // check the updates were saved to disk and mistakes corrected
     const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
-    expect(savedConfig.bridge.username).toEqual(originalUsername);
+    expect(savedConfig.bridge.username).toBe(originalUsername);
   });
 
   it('POST /config-editor (accept bridge.username if valid value is provided)', async () => {
@@ -319,11 +319,11 @@ describe('ConfigEditorController (e2e)', () => {
       payload: currentConfig,
     });
 
-    expect(res.statusCode).toEqual(201);
+    expect(res.statusCode).toBe(201);
 
     // check the updates were saved to disk and mistakes corrected
     const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
-    expect(savedConfig.bridge.username).toEqual('0E:B8:2B:20:76:08');
+    expect(savedConfig.bridge.username).toBe('0E:B8:2B:20:76:08');
   });
 
   it('POST /config-editor (correct bridge.pin if an invalid value is provided)', async () => {
@@ -341,11 +341,11 @@ describe('ConfigEditorController (e2e)', () => {
       payload: currentConfig,
     });
 
-    expect(res.statusCode).toEqual(201);
+    expect(res.statusCode).toBe(201);
 
     // check the updates were saved to disk and mistakes corrected
     const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
-    expect(savedConfig.bridge.pin).toEqual(originalPin);
+    expect(savedConfig.bridge.pin).toBe(originalPin);
   });
 
   it('POST /config-editor (accept bridge.pin if a valid value is provided)', async () => {
@@ -362,11 +362,11 @@ describe('ConfigEditorController (e2e)', () => {
       payload: currentConfig,
     });
 
-    expect(res.statusCode).toEqual(201);
+    expect(res.statusCode).toBe(201);
 
     // check the updates were saved to disk and mistakes corrected
     const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
-    expect(savedConfig.bridge.pin).toEqual('111-11-111');
+    expect(savedConfig.bridge.pin).toBe('111-11-111');
   });
 
   it('POST /config-editor (correct bridge.name if an invalid value is provided)', async () => {
@@ -383,11 +383,11 @@ describe('ConfigEditorController (e2e)', () => {
       payload: currentConfig,
     });
 
-    expect(res.statusCode).toEqual(201);
+    expect(res.statusCode).toBe(201);
 
     // check the updates were saved to disk and mistakes corrected
     const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
-    expect(typeof savedConfig.bridge.name).toEqual('string');
+    expect(typeof savedConfig.bridge.name).toBe('string');
     expect(savedConfig.bridge.name).toContain('Homebridge');
   });
 
@@ -405,11 +405,11 @@ describe('ConfigEditorController (e2e)', () => {
       payload: currentConfig,
     });
 
-    expect(res.statusCode).toEqual(201);
+    expect(res.statusCode).toBe(201);
 
     // check the updates were saved to disk and mistakes corrected
     const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
-    expect(savedConfig.bridge.name).toEqual('Homebridge Test!');
+    expect(savedConfig.bridge.name).toBe('Homebridge Test!');
   });
 
   it('POST /config-editor (remove plugins array if empty)', async () => {
@@ -426,7 +426,7 @@ describe('ConfigEditorController (e2e)', () => {
       payload: currentConfig,
     });
 
-    expect(res.statusCode).toEqual(201);
+    expect(res.statusCode).toBe(201);
 
     // check the updates were saved to disk and mistakes corrected
     const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
@@ -449,7 +449,7 @@ describe('ConfigEditorController (e2e)', () => {
       payload: currentConfig,
     });
 
-    expect(res.statusCode).toEqual(201);
+    expect(res.statusCode).toBe(201);
 
     // check the updates were saved to disk and mistakes corrected
     const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
@@ -471,12 +471,12 @@ describe('ConfigEditorController (e2e)', () => {
       payload: currentConfig,
     });
 
-    expect(res.statusCode).toEqual(201);
+    expect(res.statusCode).toBe(201);
 
     // check the updates were saved to disk and mistakes corrected
     const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
-    expect(Array.isArray(savedConfig.platforms)).toEqual(true);
-    expect(Array.isArray(savedConfig.accessories)).toEqual(true);
+    expect(Array.isArray(savedConfig.platforms)).toBe(true);
+    expect(Array.isArray(savedConfig.accessories)).toBe(true);
     expect(savedConfig.platforms).toHaveLength(0);
     expect(savedConfig.accessories).toHaveLength(0);
   });
@@ -494,7 +494,7 @@ describe('ConfigEditorController (e2e)', () => {
       payload: currentConfig,
     });
 
-    expect(res.statusCode).toEqual(201);
+    expect(res.statusCode).toBe(201);
 
     // check the updates were saved to disk and mistakes corrected
     const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
@@ -514,7 +514,7 @@ describe('ConfigEditorController (e2e)', () => {
       payload: currentConfig,
     });
 
-    expect(res.statusCode).toEqual(201);
+    expect(res.statusCode).toBe(201);
 
     // check the updates were saved to disk and mistakes corrected
     const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
@@ -546,11 +546,11 @@ describe('ConfigEditorController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
 
     // it should only return the ExampleHomebridgePlugin config
     expect(res.json()).toHaveLength(1);
-    expect(res.json()[0].platform).toEqual('ExampleHomebridgePlugin');
+    expect(res.json()[0].platform).toBe('ExampleHomebridgePlugin');
   });
 
   it('GET /config-editor/plugin/:pluginName (no config)', async () => {
@@ -569,7 +569,7 @@ describe('ConfigEditorController (e2e)', () => {
       payload: {},
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()).toHaveLength(0);
   });
 
@@ -582,7 +582,7 @@ describe('ConfigEditorController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(404);
+    expect(res.statusCode).toBe(404);
   });
 
   it('POST /config-editor/plugin/:pluginName', async () => {
@@ -606,7 +606,7 @@ describe('ConfigEditorController (e2e)', () => {
       payload: mockConfig,
     });
 
-    expect(res.statusCode).toEqual(201);
+    expect(res.statusCode).toBe(201);
 
     const updatedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
     expect(updatedConfig.platforms).toHaveLength(1);
@@ -647,7 +647,7 @@ describe('ConfigEditorController (e2e)', () => {
       payload: mockConfig,
     });
 
-    expect(res.statusCode).toEqual(201);
+    expect(res.statusCode).toBe(201);
 
     const updatedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
     expect(updatedConfig.platforms).toHaveLength(4);
@@ -684,7 +684,7 @@ describe('ConfigEditorController (e2e)', () => {
       payload: mockConfig,
     });
 
-    expect(res.statusCode).toEqual(201);
+    expect(res.statusCode).toBe(201);
 
     const updatedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
     expect(updatedConfig.platforms).toHaveLength(3);
@@ -712,11 +712,11 @@ describe('ConfigEditorController (e2e)', () => {
       payload: mockConfig,
     });
 
-    expect(res.statusCode).toEqual(201);
+    expect(res.statusCode).toBe(201);
 
     const updatedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
     expect(updatedConfig.platforms).toHaveLength(1);
-    expect(updatedConfig.platforms[0].platform).toEqual('ExampleHomebridgePlugin');
+    expect(updatedConfig.platforms[0].platform).toBe('ExampleHomebridgePlugin');
   });
 
   it('POST /config-editor/plugin/:pluginName (enforce array body)', async () => {
@@ -734,7 +734,7 @@ describe('ConfigEditorController (e2e)', () => {
       payload: mockConfig,
     });
 
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toBe(400);
     expect(res.body).toContain('Plugin Config must be an array.');
   });
 
@@ -757,7 +757,7 @@ describe('ConfigEditorController (e2e)', () => {
       payload: mockConfig,
     });
 
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toBe(400);
     expect(res.body).toContain('Plugin config must be an array of objects.');
   });
 
@@ -771,10 +771,10 @@ describe('ConfigEditorController (e2e)', () => {
       payload: {},
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
 
     const config: HomebridgeConfig = await fs.readJson(configFilePath);
-    expect(Array.isArray(config.disabledPlugins)).toEqual(true);
+    expect(Array.isArray(config.disabledPlugins)).toBe(true);
     expect(config.disabledPlugins).toContainEqual('homebridge-mock-plugin');
   });
 
@@ -788,7 +788,7 @@ describe('ConfigEditorController (e2e)', () => {
       payload: {},
     });
 
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toBe(400);
   });
 
   it('PUT /config-editor/plugin/:pluginName/enable', async () => {
@@ -808,10 +808,10 @@ describe('ConfigEditorController (e2e)', () => {
       payload: {},
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
 
     const config: HomebridgeConfig = await fs.readJson(configFilePath);
-    expect(Array.isArray(config.disabledPlugins)).toEqual(true);
+    expect(Array.isArray(config.disabledPlugins)).toBe(true);
     expect(config.disabledPlugins).toHaveLength(1);
     expect(config.disabledPlugins).not.toContainEqual('homebridge-mock-plugin');
     expect(config.disabledPlugins).toContainEqual('homebridge-example-plugin');
@@ -828,7 +828,7 @@ describe('ConfigEditorController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()).toHaveLength(backupCount);
   });
 
@@ -851,7 +851,7 @@ describe('ConfigEditorController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
   });
 
   it('DELETE /config-editor/backups', async () => {
@@ -866,10 +866,16 @@ describe('ConfigEditorController (e2e)', () => {
       },
     });
 
-    const newbackupCount = (await fs.readdir(backupFilePath)).length;
+    // there is a race condition here whereby we might read the backup file 
+    // path before the deletion has actually happened, causing the test to fail,
+    // so I have added a 1 second delay.
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    expect(newbackupCount).toEqual(0);
-    expect(res.statusCode).toEqual(200);
+    const backups = await fs.readdir(backupFilePath);
+    const newbackupCount = backups.length;
+
+    expect(newbackupCount).toBe(0);
+    expect(res.statusCode).toBe(200);
   });
 
   afterAll(async () => {

@@ -17,13 +17,6 @@ import {
 import { SelectNetworkInterfacesComponent } from './select-network-interfaces/select-network-interfaces.component';
 
 @NgModule({
-  entryComponents: [
-    ResetHomebridgeModalComponent,
-    UnpairAccessoryModalComponent,
-    RemoveAllCachedAccessoriesModalComponent,
-    RemoveSingleCachedAccessoryModalComponent,
-    SelectNetworkInterfacesComponent,
-  ],
   declarations: [
     SettingsComponent,
     ResetHomebridgeModalComponent,

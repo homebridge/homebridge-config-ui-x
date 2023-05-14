@@ -5,12 +5,11 @@ import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
 
 import { HomebridgeServiceHelper } from '../hb-service';
+import { BasePlatform } from '../base-platform';
 
-export class Win32Installer {
-  private hbService: HomebridgeServiceHelper;
-
+export class Win32Installer extends BasePlatform {
   constructor(hbService: HomebridgeServiceHelper) {
-    this.hbService = hbService;
+    super(hbService);
   }
 
   /**
@@ -121,26 +120,9 @@ export class Win32Installer {
   }
 
   /**
-   * Returns the users uid and gid. Not used on Windows
-   */
-  public async getId(): Promise<{ uid: number; gid: number }> {
-    return {
-      uid: 0,
-      gid: 0,
-    };
-  }
-
-  /**
-   * Returns the pid of the process running on the defined port
-   */
-  public getPidOfPort(port: number) {
-    return null;
-  }
-
-  /**
    * Update Node.js
    */
-  public updateNodejs(job: { target: string; rebuild: boolean }) {
+  public async updateNodejs(job: { target: string; rebuild: boolean }) {
     this.hbService.logger('ERROR: This command is not supported on Windows.', 'fail');
     this.hbService.logger(`Please download Node.js v${job.target} from https://nodejs.org/en/download/ and install manually.`, 'fail');
   }

@@ -1,11 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormGroup, Validators, FormControl } from '@angular/forms';
+import { Validators, FormGroup, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { debounceTime } from 'rxjs/operators';
 
 import { environment } from '@/environments/environment';
 import { SettingsService } from '@/app/core/settings.service';
-import { AuthService } from '../auth.service';
+import { AuthService } from '@/app/core/auth/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -14,8 +14,15 @@ import { AuthService } from '../auth.service';
 })
 export class LoginComponent implements OnInit {
   @ViewChild('password') private passwordInput;
+  @ViewChild('username') private usernameInput;
+  @ViewChild('otp') private otpInput;
 
-  public form: FormGroup;
+  public form: FormGroup<{
+    username: FormControl<string>;
+    password: FormControl<string>;
+    otp?: FormControl<string>;
+  }>;
+
   public backgroundStyle: string;
   public invalidCredentials = false;
   public invalid2faCode = false;
@@ -31,15 +38,15 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     this.form = new FormGroup({
-      username: new FormControl('', [Validators.required]),
-      password: new FormControl('', [Validators.required]),
+      username: new FormControl(''),
+      password: new FormControl(''),
     });
 
     this.form.valueChanges
       .pipe(debounceTime(500))
       .subscribe((changes) => {
-        const passwordInputValue = this.passwordInput.nativeElement.value;
-        if (passwordInputValue !== changes.password) {
+        const passwordInputValue = this.passwordInput?.nativeElement.value;
+        if (passwordInputValue && passwordInputValue !== changes.password) {
           this.form.controls.password.setValue(passwordInputValue);
         }
       });
@@ -53,17 +60,38 @@ export class LoginComponent implements OnInit {
       await this.$settings.onSettingsLoaded.toPromise();
     }
 
-    const backgroundImageUrl = this.$settings.env.customWallpaperHash ?
-      environment.api.base + '/auth/wallpaper/' + this.$settings.env.customWallpaperHash :
-      '/assets/snapshot.jpg';
-    this.backgroundStyle = `url('${backgroundImageUrl}') center/cover`;
+    if (this.$settings.env.customWallpaperHash) {
+      const backgroundImageUrl = this.$settings.env.customWallpaperHash ?
+        environment.api.base + '/auth/wallpaper/' + this.$settings.env.customWallpaperHash :
+        '/assets/snapshot.jpg';
+      this.backgroundStyle = `url('${backgroundImageUrl}') center/cover`;
+    }
   }
 
   async onSubmit({ value, valid }) {
     this.invalidCredentials = false;
     this.invalid2faCode = false;
     this.inProgress = true;
-    await this.$auth.login(this.form.value)
+
+    // grab the values from the native element as they may be "populated" via autofill.
+    const passwordInputValue = this.passwordInput?.nativeElement.value;
+    if (passwordInputValue && passwordInputValue !== this.form.get('password').value) {
+      this.form.controls.password.setValue(passwordInputValue);
+    }
+
+    const usernameInputValue = this.usernameInput?.nativeElement.value;
+    if (usernameInputValue && usernameInputValue !== this.form.get('username').value) {
+      this.form.controls.username.setValue(usernameInputValue);
+    }
+
+    if (this.twoFactorCodeRequired) {
+      const otpInputValue = this.otpInput?.nativeElement.value;
+      if (otpInputValue && otpInputValue !== this.form.get('otp').value) {
+        this.form.controls.username.setValue(otpInputValue);
+      }
+    }
+
+    await this.$auth.login(this.form.getRawValue())
       .then((user) => {
         this.$router.navigateByUrl(this.targetRoute);
         window.sessionStorage.removeItem('target_route');
@@ -71,7 +99,11 @@ export class LoginComponent implements OnInit {
       .catch((err) => {
         if (err.status === 412) {
           if (!this.form.controls['otp']) {
-            this.form.addControl('otp', new FormControl('', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]));
+            this.form.addControl('otp', new FormControl('', [
+              Validators.required,
+              Validators.minLength(6),
+              Validators.maxLength(6),
+            ]));
           } else {
             this.form.controls['otp'].setErrors(['Invalid Code']);
             this.invalid2faCode = true;

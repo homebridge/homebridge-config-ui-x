@@ -5,6 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 
 import { ApiService } from '@/app/core/api.service';
 import { SettingsService } from '@/app/core/settings.service';
+import { NotificationService } from '@/app/core/notification.service';
 
 @Component({
   selector: 'app-bridge-plugins-modal',
@@ -27,6 +28,7 @@ export class BridgePluginsModalComponent implements OnInit {
   constructor(
     public activeModal: NgbActiveModal,
     public $settings: SettingsService,
+    private $notification: NotificationService,
     private $api: ApiService,
     private $toastr: ToastrService,
     private $translate: TranslateService,
@@ -94,6 +96,7 @@ export class BridgePluginsModalComponent implements OnInit {
 
     try {
       await this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.configBlocks).toPromise();
+      this.$notification.configUpdated.next(undefined);
       this.activeModal.close();
     } catch (err) {
       this.$toastr.error(
