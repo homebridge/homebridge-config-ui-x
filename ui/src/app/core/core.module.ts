@@ -15,6 +15,7 @@ import { ConfirmComponent } from './components/confirm/confirm.component';
 import { SchemaFormComponent } from './components/schema-form/schema-form.component';
 import { QrcodeComponent } from './components/qrcode/qrcode.component';
 import { RtlDirective } from './directives/rtl.directive';
+import { JsonSchemaFormPatchDirective } from './directives/json-schema-form-patch.directive';
 
 @NgModule({
     declarations: [
@@ -26,6 +27,7 @@ import { RtlDirective } from './directives/rtl.directive';
         HrefTargetBlankDirective,
         LongClickDirective,
         RtlDirective,
+        JsonSchemaFormPatchDirective,
         BackupRestoreComponent,
         ScheduledBackupsComponent,
         ConfirmComponent,
@@ -47,6 +49,7 @@ import { RtlDirective } from './directives/rtl.directive';
         HrefTargetBlankDirective,
         LongClickDirective,
         RtlDirective,
+        JsonSchemaFormPatchDirective,
     ],
 })
 export class CoreModule { }
