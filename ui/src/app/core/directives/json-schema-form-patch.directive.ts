@@ -11,18 +11,18 @@ export class JsonSchemaFormPatchDirective {
   constructor(
     @Host() @Self() @Optional() public jsonSchemaForm: JsonSchemaFormComponent) {
 
-    let buildLayout_original = jsonSchemaForm.jsf.buildLayout.bind(jsonSchemaForm.jsf)
+    const buildLayoutOriginal = jsonSchemaForm.jsf.buildLayout.bind(jsonSchemaForm.jsf);
 
     jsonSchemaForm.jsf.buildLayout = (widgetLibrary: any) => {
 
-      buildLayout_original(widgetLibrary);
+      buildLayoutOriginal(widgetLibrary);
       if (jsonSchemaForm.jsf.formValues && this.jsfPatch) {
         return this.fixNestedArrayLayout(
           jsonSchemaForm.jsf.layout,
-          jsonSchemaForm.jsf.formValues
+          jsonSchemaForm.jsf.formValues,
         );
       }
-    }
+    };
 
   }
 
@@ -34,9 +34,9 @@ export class JsonSchemaFormPatchDirective {
   private fixArray(items: any | any[], formData: any, refPointer: string) {
 
     if (Array.isArray(items)) {
-      items.filter(x => x.name !== "_bridge" && (x.dataType == "array" || x.arrayItem)).forEach(item => {
+      items.filter(x => x.name !== '_bridge' && (x.dataType === 'array' || x.arrayItem)).forEach(item => {
         this.fixNestedArray(item, formData, refPointer);
-      })
+      });
     } else {
       this.fixNestedArray(items, formData, refPointer);
     }
@@ -45,9 +45,9 @@ export class JsonSchemaFormPatchDirective {
   private fixNestedArray(item: any, formData: any, refPointer: string) {
     if (item.items && Array.isArray(item.items)) {
 
-      const ref = item.items.find(x => x.type === "$ref");
+      const ref = item.items.find(x => x.type === '$ref');
       if (ref) {
-        const dataItems = item.items.filter(x => x.type === "section");
+        const dataItems = item.items.filter(x => x.type === 'section');
         const template = dataItems.length > 0
           ? dataItems.reduce((a, b) => a.id > b.id ? a : b)
           : this.getItemTemplateFromRef(ref);
@@ -58,7 +58,7 @@ export class JsonSchemaFormPatchDirective {
           // add missing items
           while (item.items.length - 1 < data.length) {
             const newItem = cloneDeep(template);
-            newItem._id = uniqueId("new_");
+            newItem._id = uniqueId('new_');
 
             item.items.unshift(newItem);
           }
@@ -72,6 +72,10 @@ export class JsonSchemaFormPatchDirective {
       } else {
         this.fixArray(item.items, formData, refPointer);
       }
+
+      item.items.filter(i => i.items && Array.isArray(i.items)).forEach(i => {
+        this.fixArray(i.items, formData, refPointer);
+      });
     }
   }
 
@@ -85,9 +89,9 @@ export class JsonSchemaFormPatchDirective {
   }
 
   private getItemTemplateFromRef(ref: any) {
-    const templateNode = {
-      "type": "section",
-      "items": []
+    const templateNode: { type: string; items: any[] } = {
+      type: 'section',
+      items: [],
     };
 
     const item = cloneDeep(ref);
