@@ -74,7 +74,6 @@ export class JsonSchemaFormPatchDirective {
       }
 
       item.items.filter(i => i.items && Array.isArray(i.items)).forEach(i => {
-        console.log(i);
         this.fixArray(i.items, formData, refPointer);
       });
     }
