@@ -53,7 +53,9 @@ export class JsonSchemaFormPatchDirective {
 
       const ref = item.items.find(x => x.type === '$ref');
       if (ref) {
+
         const dataItems = item.items.filter(x => x.type === 'section' || x.type === 'div');
+
         const template = dataItems.length > 0
           ? dataItems.reduce((a, b) => a.id > b.id ? a : b)
           : this.getItemTemplateFromRef(ref);
