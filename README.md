@@ -37,6 +37,10 @@ For detailed instructions on how to setup Node.js and Homebridge with Homebridge
 
 If your platform is not listed above, or you want to use your own service manager, see the [Manual Configuration](https://github.com/homebridge/homebridge-config-ui-x/wiki/Manual-Configuration) wiki article for instructions on setting up the Homebridge UI to run as a Homebridge plugin instead of a service.
 
+The default username is `admin` and the default password is `admin`.
+
+The UI can be accessed via web browser by default on port `8581` (eg. `http://localhost:8581`).
+
 # Usage
 
 ### Status Screen
