@@ -131,7 +131,7 @@ describe('AccessoriesController (e2e)', () => {
     });
 
     expect(jest.spyOn(accessoriesService.hapClient, 'getAllServices')).toHaveBeenCalled();
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()).toHaveLength(1);
   });
 
@@ -146,7 +146,7 @@ describe('AccessoriesController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toBe(400);
   });
 
   it('GET /accessories/layout', async () => {
@@ -158,7 +158,7 @@ describe('AccessoriesController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
   });
 
   it('GET /accessories/:uniqueId (valid unique id)', async () => {
@@ -170,7 +170,7 @@ describe('AccessoriesController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(refreshCharacteristics).toHaveBeenCalledTimes(1);
   });
 
@@ -183,7 +183,7 @@ describe('AccessoriesController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toBe(400);
   });
 
   it('PUT /accessories/:uniqueId (boolean - valid)', async () => {
@@ -203,7 +203,7 @@ describe('AccessoriesController (e2e)', () => {
 
     expect(getCharacteristic).toHaveBeenCalled();
     expect(setValue).toHaveBeenCalledWith(true);
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
   });
 
   it('PUT /accessories/:uniqueId (boolean - invalid)', async () => {
@@ -223,7 +223,7 @@ describe('AccessoriesController (e2e)', () => {
 
     expect(getCharacteristic).toHaveBeenCalled();
     expect(setValue).not.toHaveBeenCalled();
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toBe(400);
   });
 
   it('PUT /accessories/:uniqueId (int - valid)', async () => {
@@ -243,7 +243,7 @@ describe('AccessoriesController (e2e)', () => {
 
     expect(getCharacteristic).toHaveBeenCalled();
     expect(setValue).toHaveBeenCalledWith(1);
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
   });
 
   it('PUT /accessories/:uniqueId (int - out of range)', async () => {
@@ -263,7 +263,7 @@ describe('AccessoriesController (e2e)', () => {
 
     expect(getCharacteristic).toHaveBeenCalled();
     expect(setValue).not.toHaveBeenCalled();
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toBe(400);
   });
 
   it('PUT /accessories/:uniqueId (float - valid)', async () => {
@@ -283,7 +283,7 @@ describe('AccessoriesController (e2e)', () => {
 
     expect(getCharacteristic).toHaveBeenCalled();
     expect(setValue).toHaveBeenCalledWith(22.5);
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
   });
 
   it('PUT /accessories/:uniqueId (float - out of range)', async () => {
@@ -303,7 +303,7 @@ describe('AccessoriesController (e2e)', () => {
 
     expect(getCharacteristic).toHaveBeenCalled();
     expect(setValue).not.toHaveBeenCalled();
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toBe(400);
   });
 
   it('PUT /accessories/:uniqueId (invalid characteristic type)', async () => {
@@ -323,7 +323,7 @@ describe('AccessoriesController (e2e)', () => {
 
     expect(getCharacteristic).toHaveBeenCalledWith('NotReal');
     expect(setValue).not.toHaveBeenCalled();
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toBe(400);
   });
 
   it('PUT /accessories/:uniqueId (missing characteristic type)', async () => {
@@ -342,7 +342,7 @@ describe('AccessoriesController (e2e)', () => {
 
     expect(getCharacteristic).not.toHaveBeenCalled();
     expect(setValue).not.toHaveBeenCalled();
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toBe(400);
     expect(res.body).toContain('characteristicType should not be null or undefined');
   });
 
@@ -362,7 +362,7 @@ describe('AccessoriesController (e2e)', () => {
 
     expect(getCharacteristic).not.toHaveBeenCalled();
     expect(setValue).not.toHaveBeenCalled();
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toBe(400);
     expect(res.body).toContain('value should not be null or undefined');
   });
 

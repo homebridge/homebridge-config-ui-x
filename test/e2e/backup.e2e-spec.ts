@@ -5,7 +5,7 @@ import { EventEmitter } from 'events';
 import { ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-import fastifyMultipart from 'fastify-multipart';
+import fastifyMultipart from '@fastify/multipart';
 import * as FormData from 'form-data';
 
 import { AuthModule } from '../../src/core/auth/auth.module';
@@ -195,7 +195,7 @@ describe('BackupController (e2e)', () => {
 
     await backupService.ensureScheduledBackupPath();
 
-    expect(await fs.pathExists(instanceBackupPath)).toEqual(true);
+    expect(await fs.pathExists(instanceBackupPath)).toBe(true);
   });
 
   it('GET /backup/download', async () => {
@@ -207,8 +207,8 @@ describe('BackupController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
-    expect(res.headers['content-type']).toEqual('application/octet-stream');
+    expect(res.statusCode).toBe(200);
+    expect(res.headers['content-type']).toBe('application/octet-stream');
   });
 
   it('POST /backup/restore', async () => {
@@ -238,7 +238,7 @@ describe('BackupController (e2e)', () => {
       payload,
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(201);
 
     await new Promise((resolve) => setTimeout(resolve, 100));
 
@@ -247,8 +247,8 @@ describe('BackupController (e2e)', () => {
     const pluginsJson = path.join(restoreDirectory, 'plugins.json');
     const infoJson = path.join(restoreDirectory, 'info.json');
 
-    expect(await fs.pathExists(pluginsJson)).toEqual(true);
-    expect(await fs.pathExists(infoJson)).toEqual(true);
+    expect(await fs.pathExists(pluginsJson)).toBe(true);
+    expect(await fs.pathExists(infoJson)).toBe(true);
 
     // mark the "homebridge-mock-plugin" dummy plugin as public so we can test the mock install
     const installedPlugins = (await fs.readJson(pluginsJson)).map(x => {
@@ -262,7 +262,7 @@ describe('BackupController (e2e)', () => {
 
     jest.spyOn(client, 'emit');
 
-    jest.spyOn(pluginsService, 'installPlugin')
+    jest.spyOn(pluginsService, 'managePlugin')
       .mockImplementation(async () => {
         return true;
       });
@@ -272,10 +272,10 @@ describe('BackupController (e2e)', () => {
 
     expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Restoring backup'));
     expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Restore Complete'));
-    expect(pluginsService.installPlugin).toHaveBeenCalledWith(expect.objectContaining({ name: 'homebridge-mock-plugin', version: expect.anything() }), client);
+    expect(pluginsService.managePlugin).toHaveBeenCalledWith('install', expect.objectContaining({ name: 'homebridge-mock-plugin', version: expect.anything() }), client);
 
     // ensure the temp restore directory was removed
-    expect(await fs.pathExists(restoreDirectory)).toEqual(false);
+    expect(await fs.pathExists(restoreDirectory)).toBe(false);
   });
 
   it('GET /backup/restart', async () => {
@@ -287,7 +287,7 @@ describe('BackupController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(postBackupRestoreRestartFn).toHaveBeenCalled();
   });
 
@@ -303,11 +303,11 @@ describe('BackupController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()).toHaveLength(0);
 
     // the path should have been re-created
-    expect(await fs.pathExists(configService.instanceBackupPath)).toEqual(true);
+    expect(await fs.pathExists(configService.instanceBackupPath)).toBe(true);
   });
 
   it('GET /backup/scheduled-backups', async () => {
@@ -325,7 +325,7 @@ describe('BackupController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()).toHaveLength(1);
     expect(res.json()[0]).toHaveProperty('id');
     expect(res.json()[0]).toHaveProperty('fileName');
@@ -349,8 +349,8 @@ describe('BackupController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
-    expect(res.headers['content-type']).toEqual('application/octet-stream');
+    expect(res.statusCode).toBe(200);
+    expect(res.headers['content-type']).toBe('application/octet-stream');
   });
 
   it('GET /backup/scheduled-backups/:backupId (not found)', async () => {
@@ -362,8 +362,8 @@ describe('BackupController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(404);
-    expect(res.headers['content-type']).not.toEqual('application/octet-stream');
+    expect(res.statusCode).toBe(404);
+    expect(res.headers['content-type']).not.toBe('application/octet-stream');
   });
 
   it('GET /backup/scheduled-backups/next', async () => {
@@ -378,10 +378,10 @@ describe('BackupController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()).toHaveProperty('next');
-    expect(res.json().next).not.toEqual(false);
-    expect(dayjs(res.json().next).isValid()).toEqual(true);
+    expect(res.json().next).not.toBe(false);
+    expect(dayjs(res.json().next).isValid()).toBe(true);
   });
 
   it('GET /backup/scheduled-backups/next (backups disabled)', async () => {
@@ -396,12 +396,13 @@ describe('BackupController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()).toHaveProperty('next');
-    expect(res.json().next).toEqual(false);
+    expect(res.json().next).toBe(false);
   });
 
   afterAll(async () => {
+    schedulerService.scheduledJobs['instance-backup']?.cancel();
     await app.close();
   });
 });

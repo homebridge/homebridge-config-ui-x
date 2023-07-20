@@ -1,6 +1,5 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import axios from 'axios';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -35,7 +34,7 @@ describe('CustomPluginsController (e2e)', () => {
     await fs.copy(path.resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
 
     // create httpService instance
-    httpService = new HttpService(axios.create({}));
+    httpService = new HttpService();
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [CustomPluginsModule, AuthModule],
@@ -78,7 +77,7 @@ describe('CustomPluginsController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
   });
 
   it('GET /plugins/custom-plugins/homebridge-hue/dump-file (dump file missing)', async () => {
@@ -92,7 +91,7 @@ describe('CustomPluginsController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(404);
+    expect(res.statusCode).toBe(404);
   });
 
   afterAll(async () => {

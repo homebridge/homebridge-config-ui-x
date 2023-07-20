@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
+
 import { ConfigModule } from '../../core/config/config.module';
+import { LoggerModule } from '../../core/logger/logger.module';
+import { HomebridgeIpcModule } from '../../core/homebridge-ipc/homebridge-ipc.module';
+import { ConfigEditorModule } from '../config-editor/config-editor.module';
+import { ChildBridgesModule } from '../child-bridges/child-bridges.module';
+import { AccessoriesModule } from '../accessories/accessories.module';
 import { ServerService } from './server.service';
 import { ServerController } from './server.controller';
-import { LoggerModule } from '../../core/logger/logger.module';
-import { ConfigEditorModule } from '../config-editor/config-editor.module';
-import { AccessoriesModule } from '../accessories/accessories.module';
-import { HomebridgeIpcModule } from '../../core/homebridge-ipc/homebridge-ipc.module';
 
 @Module({
   imports: [
@@ -15,6 +17,7 @@ import { HomebridgeIpcModule } from '../../core/homebridge-ipc/homebridge-ipc.mo
     LoggerModule,
     ConfigEditorModule,
     AccessoriesModule,
+    ChildBridgesModule,
     HomebridgeIpcModule,
   ],
   providers: [
@@ -23,5 +26,8 @@ import { HomebridgeIpcModule } from '../../core/homebridge-ipc/homebridge-ipc.mo
   controllers: [
     ServerController,
   ],
+  exports: [
+    ServerService,
+  ]
 })
 export class ServerModule { }

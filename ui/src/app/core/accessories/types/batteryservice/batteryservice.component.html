@@ -1,6 +1,6 @@
 <div class="accessory-box">
   <div class="d-flex flex-column h-100">
-    <div class="batterylevel-circle" [innerText]="(service.values.BatteryLevel | number:'1.0-0') + '%'" [ngClass]="{
+    <div class="batterylevel-circle" [innerText]="(service.values.BatteryLevel || 0 | number:'1.0-0') + '%'" [ngClass]="{
       'lowbattery': service.values.StatusLowBattery === 1
     }"></div>
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>

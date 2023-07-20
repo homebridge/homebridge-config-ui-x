@@ -19,7 +19,7 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly logger: Logger,
   ) {
-    this.setupAuthFile();
+    this.checkAuthFile();
 
     // otp options
     authenticator.options = {
@@ -181,41 +181,69 @@ export class AuthService {
   }
 
   /**
-   * Setup the default user
+   * Setup the first user
    */
-  async setupDefaultUser() {
-    await this.addUser({
-      username: 'admin',
-      password: 'admin',
-      name: 'Administrator',
-      admin: true,
-    });
-    this.logger.log('Username and password have been set to default:');
-    this.logger.log('Username: admin');
-    this.logger.log('Password: admin');
+  async setupFirstUser(user: UserDto) {
+    if (this.configService.setupWizardComplete) {
+      throw new ForbiddenException();
+    }
+
+    if (!user.password) {
+      throw new BadRequestException('Password missing.');
+    }
+
+    // first user must be admin
+    user.admin = true;
+
+    await fs.writeJson(this.configService.authPath, []);
+
+    const createdUser = await this.addUser(user);
+
+    this.configService.setupWizardComplete = true;
+
+    return createdUser;
   }
 
   /**
-   * Executed on startup to ensure there is at least one admin
+   * Generates a token for the setup wizard
    */
-  async setupAuthFile() {
+  async generateSetupWizardToken() {
+    // prevent access if auth is not disabled
+    if (this.configService.setupWizardComplete !== false) {
+      throw new ForbiddenException();
+    }
+
+    // generate a token
+    const token = await this.jwtService.sign({
+      username: 'setup-wizard',
+      name: 'setup-wizard',
+      admin: true,
+      instanceId: 'xxxxx', // intentionally wrong
+    }, { expiresIn: '5m' });
+
+    return {
+      access_token: token,
+      token_type: 'Bearer',
+      expires_in: 300,
+    };
+  }
+
+  /**
+   * Executed on startup to see if the auth file is setup yet
+   */
+  async checkAuthFile() {
     if (!await fs.pathExists(this.configService.authPath)) {
-      await fs.writeJson(this.configService.authPath, []);
+      this.configService.setupWizardComplete = false;
+      return;
     }
-
-    // try and read the auth.json file, if it's corrupted
-    let authfile;
     try {
-      authfile = await this.getUsers();
+      const authfile: UserDto[] = await fs.readJson(this.configService.authPath);
+      // there must be at least one admin user
+      if (!authfile.find(x => x.admin === true)) {
+        this.configService.setupWizardComplete = false;
+      }
     } catch (e) {
-      this.logger.error(`Failed to read auth.json file at ${this.configService.authPath}.`);
-      await fs.writeJson(this.configService.authPath, []);
-      authfile = await this.getUsers();
-    }
-
-    // if there are no admin users, add the default user
-    if (!authfile.find(x => x.admin === true || x.username === 'admin')) {
-      await this.setupDefaultUser();
+      this.configService.setupWizardComplete = false;
     }
   }
 

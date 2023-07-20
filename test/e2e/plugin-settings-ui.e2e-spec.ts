@@ -1,6 +1,5 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import axios from 'axios';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -38,7 +37,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
     await fs.copy(path.resolve(__dirname, '../mocks', 'plugins'), pluginsPath, { recursive: true });
 
     // create httpService instance
-    httpService = new HttpService(axios.create({}));
+    httpService = new HttpService();
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [PluginsSettingsUiModule, AuthModule],
@@ -68,7 +67,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
       path: '/plugins/settings-ui/homebridge-mock-plugin/',
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.body).toContain('Hello World');
     expect(res.body).toContain('homebridge-mock-plugin');
   });
@@ -79,7 +78,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
       path: '/plugins/settings-ui/homebridge-mock-plugin/index.html',
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.body).toContain('Hello World');
     expect(res.body).toContain('homebridge-mock-plugin');
   });
@@ -90,7 +89,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
       path: `plugins/settings-ui/homebridge-mock-plugin/index.html?origin=${encodeURIComponent('http://example.com')}`,
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.body).toContain('http://example.com/assets/plugin-ui-utils/ui.js');
   });
 
@@ -100,7 +99,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
       path: '/plugins/settings-ui/homebridge-mock-plugin-two/index.html',
     });
 
-    expect(res.statusCode).toEqual(404);
+    expect(res.statusCode).toBe(404);
   });
 
   afterAll(async () => {

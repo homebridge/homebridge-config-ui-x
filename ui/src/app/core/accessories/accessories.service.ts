@@ -251,7 +251,7 @@ export class AccessoriesService {
     // send update request to server
     this.io.request('save-layout', { user: this.$auth.user.username, layout: this.accessoryLayout })
       .subscribe(
-        data => this.layoutSaved.next(),
+        data => this.layoutSaved.next(undefined),
         err => this.$toastr.error(err.message, 'Failed to save page layout'),
       );
   }

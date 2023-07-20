@@ -1,0 +1,39 @@
+name: Attach Artifacts
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    name: Attach Artifact
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16.x
+
+      # Sanity check to ensure that release tags don't start with a 'v' version prefix but adhere to the X.Y.Z format
+      - name: Check for Tag name Format
+        # https://github.com/orgs/community/discussions/25017
+        if: startsWith(github.event.release.tag_name, 'v')
+        run: |
+          echo "Release Tag name must not start with 'v', this was supplied ${{github.event.release.tag_name}}"
+          exit 1
+
+      - name: Install package
+        run: |
+          export npm_config_prefix=$(pwd)/package
+          npm install -g homebridge-config-ui-x@${{ github.event.release.tag_name }}
+      - name: Create Bundle
+        run: |
+          tar -C $(pwd)/package --owner=0 --group=0 --format=posix -czvf homebridge-config-ui-x-${{ github.event.release.tag_name }}.tar.gz .
+          shasum -a 256 homebridge-config-ui-x-${{ github.event.release.tag_name }}.tar.gz > SHASUMS256.txt
+      - name: Attach Bundle
+        uses: AButler/upload-release-assets@v2.0
+        with:
+          files: 'homebridge-config-ui-x-${{ github.event.release.tag_name }}.tar.gz;SHASUMS256.txt'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          release-tag: ${{ github.event.release.tag_name }}

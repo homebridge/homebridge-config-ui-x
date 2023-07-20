@@ -83,8 +83,8 @@ describe('LogGateway (e2e)', () => {
     logService.setLogMethod();
 
     // check the log command is correct
-    expect((logService as any).useNative).toEqual(true);
-    expect((logService as any).command).not.toBeDefined();
+    expect((logService as any).useNative).toBe(true);
+    expect((logService as any).command).toBeUndefined();
 
     logGateway.connect(client, size);
 
@@ -106,7 +106,7 @@ describe('LogGateway (e2e)', () => {
     logService.setLogMethod();
 
     // check the log command is correct
-    expect((logService as any).useNative).toEqual(false);
+    expect((logService as any).useNative).toBe(false);
     expect((logService as any).command).toEqual(['tail', '-n', '500', '-f', logFilePath]);
 
     logGateway.connect(client, size);
@@ -130,7 +130,7 @@ describe('LogGateway (e2e)', () => {
     logService.setLogMethod();
 
     // check the log command is correct
-    expect((logService as any).useNative).toEqual(false);
+    expect((logService as any).useNative).toBe(false);
     expect((logService as any).command).toEqual(['sudo', '-n', 'tail', '-n', '500', '-f', logFilePath]);
   });
 
@@ -145,7 +145,7 @@ describe('LogGateway (e2e)', () => {
     logService.setLogMethod();
 
     // check the log command is correct
-    expect((logService as any).useNative).toEqual(false);
+    expect((logService as any).useNative).toBe(false);
     expect((logService as any).command).toEqual(['journalctl', '-o', 'cat', '-n', '500', '-f', '-u', 'homebridge']);
   });
 
@@ -161,7 +161,7 @@ describe('LogGateway (e2e)', () => {
     logService.setLogMethod();
 
     // check the log command is correct
-    expect((logService as any).useNative).toEqual(false);
+    expect((logService as any).useNative).toBe(false);
     expect((logService as any).command).toEqual(['sudo', '-n', 'journalctl', '-o', 'cat', '-n', '500', '-f', '-u', 'homebridge']);
   });
 
@@ -176,7 +176,7 @@ describe('LogGateway (e2e)', () => {
     logService.setLogMethod();
 
     // check the log command is correct
-    expect((logService as any).useNative).toEqual(false);
+    expect((logService as any).useNative).toBe(false);
     expect((logService as any).command).toEqual(['powershell.exe', '-command', `Get-Content -Path '${logFilePath}' -Wait -Tail 200`]);
 
     logGateway.connect(client, size);
@@ -201,9 +201,9 @@ describe('LogGateway (e2e)', () => {
     expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('line 1'));
 
     // initial listeners
-    expect((logService as any).nativeTail.listenerCount('line')).toEqual(1);
-    expect(client.listenerCount('disconnect')).toEqual(1);
-    expect(client.listenerCount('end')).toEqual(1);
+    expect((logService as any).nativeTail.listenerCount('line')).toBe(1);
+    expect(client.listenerCount('disconnect')).toBe(1);
+    expect(client.listenerCount('end')).toBe(1);
 
     // emit disconnect
     client.emit('disconnect');
@@ -211,9 +211,9 @@ describe('LogGateway (e2e)', () => {
     await new Promise((resolve) => setTimeout(resolve, 100));
 
     // ensure listeners have been removed
-    expect((logService as any).nativeTail.listenerCount('line')).toEqual(0);
-    expect(client.listenerCount('disconnect')).toEqual(0);
-    expect(client.listenerCount('end')).toEqual(0);
+    expect((logService as any).nativeTail.listenerCount('line')).toBe(0);
+    expect(client.listenerCount('disconnect')).toBe(0);
+    expect(client.listenerCount('end')).toBe(0);
   });
 
   it('ON /log/tail-log (not configured)', async () => {

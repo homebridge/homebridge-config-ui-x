@@ -17,9 +17,18 @@
         </div>
 
         <div style="min-width: 48px;" class="grey-text text-right">
-          <i *ngIf="!bridge.restartInProgress" class="fa-fw icon-button fas fa-power-off"
-            (click)="restartChildBridge(bridge)" ngbTooltip="{{'menu.tooltip_restart' | translate}}" container="body"
-            openDelay="150" [placement]="['left', 'top', 'bottom']"></i>
+          <!-- <a *ngIf="!bridge.restartInProgress && bridge.paired === false" href="javascript:void(0)"
+            (click)="restartChildBridge(bridge)" class="grey-text mr-1"
+            ngbTooltip="{{'child_bridge.label_bridge_connect_to_homekit' | translate}}" container="body" openDelay="150"
+            [placement]="['left', 'top', 'bottom']">
+            <i class="fa-fw icon-button fas fa-qrcode"></i>
+          </a> -->
+
+          <a *ngIf="!bridge.restartInProgress" href="javascript:void(0)" (click)="restartChildBridge(bridge)"
+            class="grey-text" ngbTooltip="{{'menu.tooltip_restart' | translate}}" container="body" openDelay="150"
+            [placement]="['right', 'top', 'bottom']">
+            <i class="fa-fw icon-button fas fa-power-off"></i>
+          </a>
           <i *ngIf="bridge.restartInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
         </div>
       </li>

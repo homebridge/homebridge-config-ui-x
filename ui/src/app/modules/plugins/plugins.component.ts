@@ -4,8 +4,11 @@ import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { take } from 'rxjs/operators';
+import { gt } from 'semver';
 
+import { SettingsService } from '@/app/core/settings.service';
 import { ApiService } from '@/app/core/api.service';
+import { WsService } from '@/app/core/ws.service';
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 
 @Component({
@@ -14,15 +17,23 @@ import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.s
   styleUrls: ['./plugins.component.scss'],
 })
 export class PluginsComponent implements OnInit, OnDestroy {
+  private io = this.$ws.connectToNamespace('child-bridges');
+
   public installedPlugins: any = [];
-  public form: FormGroup;
+  public childBridges = [];
+
+  public form = new FormGroup({
+    query: new FormControl('', [Validators.required]),
+  });
 
   public loading = true;
   public searchQuery: string;
   private navigationSubscription;
 
   constructor(
+    private $settings: SettingsService,
     private $api: ApiService,
+    private $ws: WsService,
     private $plugin: ManagePluginsService,
     private $router: Router,
     private $route: ActivatedRoute,
@@ -31,15 +42,25 @@ export class PluginsComponent implements OnInit, OnDestroy {
   ) { }
 
   async ngOnInit() {
+    this.io.connected.subscribe(async () => {
+      this.getChildBridgeMetadata();
+      this.io.socket.emit('monitor-child-bridge-status');
+    });
+
+    this.io.socket.on('child-bridge-status-update', (data) => {
+      const existingBridge = this.childBridges.find(x => x.username === data.username);
+      if (existingBridge) {
+        Object.assign(existingBridge, data);
+      } else {
+        this.childBridges.push(data);
+      }
+    });
+
     this.navigationSubscription = this.$router.events.subscribe((e: any) => {
       // If it is a NavigationEnd event re-initalise the component
       if (e instanceof NavigationEnd) {
         this.loadInstalledPlugins();
       }
-    });
-
-    this.form = new FormGroup({
-      query: new FormControl('', [Validators.required]),
     });
 
     // load list of installed plugins
@@ -64,7 +85,11 @@ export class PluginsComponent implements OnInit, OnDestroy {
 
     this.$route.queryParams.pipe(take(1)).subscribe(async (params) => {
       if (params.installed && this.installedPlugins.find(x => x.name === params.installed)) {
-        this.$plugin.settings(this.installedPlugins.find(x => x.name === params.installed))
+        const plugin = this.installedPlugins.find(x => x.name === params.installed);
+        this.$plugin.settings(plugin)
+          .then((schema?) => {
+            this.recommendChildBridge(plugin, schema);
+          })
           .finally(() => {
             this.$router.navigate([], {
               queryParams: {},
@@ -104,10 +129,33 @@ export class PluginsComponent implements OnInit, OnDestroy {
     }
   }
 
+  recommendChildBridge(plugin, schema) {
+    if (
+      this.$settings.env.recommendChildBridges &&
+      this.$settings.env.serviceMode &&
+      gt(this.$settings.env.homebridgeVersion, '1.5.0-beta.1', { includePrerelease: true }) &&
+      schema &&
+      schema.pluginType === 'platform'
+    ) {
+      this.$plugin.bridgeSettings(plugin);
+    }
+  }
+
+  getChildBridgeMetadata() {
+    this.io.request('get-homebridge-child-bridge-status').subscribe((data) => {
+      this.childBridges = data;
+    });
+  }
+
+  getPluginChildBridges(plugin) {
+    return this.childBridges.filter(x => x.plugin === plugin.name);
+  }
+
   ngOnDestroy() {
     if (this.navigationSubscription) {
       this.navigationSubscription.unsubscribe();
     }
+    this.io.end();
   }
 
 }

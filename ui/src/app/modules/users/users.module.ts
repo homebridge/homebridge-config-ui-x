@@ -14,30 +14,24 @@ import { UsersSetup2faComponent } from './users-setup2fa/users-setup2fa.componen
 import { UsersDisable2faComponent } from './users-disable2fa/users-disable2fa.component';
 
 @NgModule({
-  entryComponents: [
-    UsersAddComponent,
-    UsersEditComponent,
-    UsersSetup2faComponent,
-    UsersDisable2faComponent,
-  ],
-  declarations: [
-    UsersComponent,
-    UsersAddComponent,
-    UsersEditComponent,
-    UsersSetup2faComponent,
-    UsersDisable2faComponent,
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    TranslateModule.forChild(),
-    NgbModule,
-    CoreModule,
-    UsersRoutingModule,
-  ],
-  providers: [
-    UsersResolver,
-  ],
+    declarations: [
+        UsersComponent,
+        UsersAddComponent,
+        UsersEditComponent,
+        UsersSetup2faComponent,
+        UsersDisable2faComponent,
+    ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        TranslateModule.forChild(),
+        NgbModule,
+        CoreModule,
+        UsersRoutingModule,
+    ],
+    providers: [
+        UsersResolver,
+    ],
 })
 export class UsersModule { }

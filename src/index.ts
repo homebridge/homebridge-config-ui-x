@@ -12,6 +12,10 @@ let homebridge;
 export = (api) => {
   homebridge = api;
   homebridge.registerPlatform('homebridge-config-ui-x', 'config', HomebridgeConfigUi);
+
+  if (process.env.UIX_SERVICE_MODE === '1' && process.connected) {
+    HomebridgeConfigUi.serviceMode();
+  }
 };
 
 class HomebridgeConfigUi {
@@ -39,12 +43,12 @@ class HomebridgeConfigUi {
 
     if (process.env.UIX_SERVICE_MODE === '1' && process.connected) {
       this.log('Running in Service Mode');
-      this.serviceMode();
+      return;
     } else if (config.standalone || process.env.UIX_SERVICE_MODE === '1' ||
       (process.env.HOMEBRIDGE_CONFIG_UI === '1' && semver.satisfies(process.env.CONFIG_UI_VERSION, '>=3.5.5', { includePrerelease: true }))) {
       this.log.warn('*********** Homebridge Standalone Mode Is Depreciated **********');
       this.log.warn('* Please swap to "service mode" using the hb-service command.  *');
-      this.log.warn('* See https://git.io/JUvQr for instructions on how to migrate. *');
+      this.log.warn('* See https://homebridge.io/w/JUvQr for instructions on how to migrate. *');
       this.log('Running in Standalone Mode.');
     } else if (config.noFork) {
       this.noFork();
@@ -84,7 +88,7 @@ class HomebridgeConfigUi {
    * This ensures the Homebridge process is killed when hb-service
    * is killed with SIGTERM to prevent stale processes.
    */
-  serviceMode() {
+  static serviceMode() {
     process.on('disconnect', () => {
       process.exit();
     });

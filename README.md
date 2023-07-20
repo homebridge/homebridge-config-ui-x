@@ -3,7 +3,7 @@
 [![Discord](https://badgen.net/discord/online-members/C87Pvq3?icon=discord&label=discord)](https://discord.gg/C87Pvq3)
 [![Donate](https://badgen.net/badge/donate/paypal/yellow)](https://paypal.me/oznu)
 
-Supported Languages: :gb: :de: :fr: :poland: :czech_republic: :ru: :cn: :hungary: :jp: :es: :netherlands: :tr: :it: :bulgaria: :sweden: :norway: :slovenia: :brazil: :portugal: :indonesia: :kr: :macedonia: :thailand:
+Supported Languages: :gb: :de: :fr: :poland: :czech_republic: :ru: :cn: :hungary: :jp: :es: :netherlands: :tr: :it: :bulgaria: :sweden: :norway: :slovenia: :brazil: :portugal: :indonesia: :kr: :macedonia: :thailand: :israel: :ukraine:
 
 # Homebridge Config UI X
 
@@ -27,18 +27,19 @@ Homebridge Config UI X also provides a tool called [`hb-service`](https://github
 
 For detailed instructions on how to setup Node.js and Homebridge with Homebridge Config UI X as a service see the guides on the wiki:
 
-* <img src="https://user-images.githubusercontent.com/3979615/78118327-9853f200-7452-11ea-88aa-5e57ebcf3070.png" alt="homebridge-raspbian-image" height="16px" width="16px"/> [Official Homebridge Raspberry Pi Image](https://github.com/homebridge/homebridge-raspbian-image/wiki/Getting-Started)
-* <img src="https://user-images.githubusercontent.com/3979615/59594350-07b45b80-9137-11e9-85fd-e75093ba91a4.png" alt="raspbian" height="16px" width="16px"/> [Raspberry Pi (Raspbian)](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Raspbian)
-* <img src="https://user-images.githubusercontent.com/3979615/59595664-93c78280-9139-11e9-83dc-4d6f9405e788.png" alt="linux" height="16px" width="16px"/> [Debian or Ubuntu Linux](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Debian-or-Ubuntu-Linux)
-* <img src="https://user-images.githubusercontent.com/3979615/59595664-93c78280-9139-11e9-83dc-4d6f9405e788.png" alt="linux" height="16px" width="16px"/> [Red Hat, CentOS or Fedora Linux](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Red-Hat%2C-CentOS-or-Fedora-Linux)
-* <img src="https://user-images.githubusercontent.com/3979615/59594157-b015f000-9136-11e9-93cb-c9d9773ec9e8.png" alt="macos" height="16px" width="16px"/> [macOS](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-macOS)
-* <img src="https://user-images.githubusercontent.com/3979615/59593218-e0f52580-9134-11e9-8b77-585755af5d99.png" alt="windows" height="16px" width="16px"/> [Windows 10](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Windows-10)
-* <img src="https://user-images.githubusercontent.com/3979615/59594527-56fa8c00-9137-11e9-937b-32092dfcff41.png" alt="docker" height="16px" width="16px"/> [Docker (Linux)](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Docker)
-* <img src="https://user-images.githubusercontent.com/3979615/78118531-dc46f700-7452-11ea-95e5-977f79d1904f.png" alt="synology-dsm" height="16px" width="16px"/> [Setup Homebridge on a Synology NAS](https://github.com/oznu/homebridge-syno-spk#how-to-install)
+* <img src="https://user-images.githubusercontent.com/3979615/78118327-9853f200-7452-11ea-88aa-5e57ebcf3070.png" alt="homebridge-raspbian-image" height="16px" width="16px"/> [Setup Homebridge using the official Homebridge Raspberry Pi Image](https://github.com/homebridge/homebridge-raspbian-image/wiki/Getting-Started)
+* <img src="https://user-images.githubusercontent.com/3979615/59594350-07b45b80-9137-11e9-85fd-e75093ba91a4.png" alt="raspbian" height="16px" width="16px"/> [Setup Homebridge on a Raspberry Pi (Raspbian)](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Raspbian)
+* <img src="https://user-images.githubusercontent.com/3979615/59595664-93c78280-9139-11e9-83dc-4d6f9405e788.png" alt="linux" height="16px" width="16px"/> [Setup Homebridge on Debian or Ubuntu Linux](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Debian-or-Ubuntu-Linux)
+* <img src="https://user-images.githubusercontent.com/3979615/59593218-e0f52580-9134-11e9-8b77-585755af5d99.png" alt="windows" height="16px" width="16px"/> [Setup Homebridge on Windows 10](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Windows-10)
+* <img src="https://user-images.githubusercontent.com/3979615/59594157-b015f000-9136-11e9-93cb-c9d9773ec9e8.png" alt="macos" height="16px" width="16px"/> [Setup Homebridge on macOS](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-macOS)
+* <img src="https://user-images.githubusercontent.com/3979615/59594527-56fa8c00-9137-11e9-937b-32092dfcff41.png" alt="docker" height="16px" width="16px"/> [Setup Homebridge using Docker](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Docker)
+* <img src="https://user-images.githubusercontent.com/3979615/78118531-dc46f700-7452-11ea-95e5-977f79d1904f.png" alt="synology-dsm" height="16px" width="16px"/> [Setup Homebridge on a Synology NAS](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Synology-DSM)
 
 If your platform is not listed above, or you want to use your own service manager, see the [Manual Configuration](https://github.com/oznu/homebridge-config-ui-x/wiki/Manual-Configuration) wiki article for instructions on setting up the Homebridge UI to run as a Homebridge plugin instead of a service.
 
 The default username is `admin` and the default password is `admin`.
+
+The UI can be accessed via web browser by default on port `8581` (eg. `http://localhost:8581`).
 
 # Usage
 
@@ -90,9 +91,9 @@ MS Internet Explorer (any version) is not supported!
 
 # Supported Node.js and Npm Versions
 
-While the Homebridge UI should work on Node.js 10+, only the following versions of Node.js are officially supported:
+While the Homebridge UI should work on Node.js 14+, only the following versions of Node.js are officially supported:
 
-* node v12.13.0 or higher
+* node v14.15.0 or higher
 * npm v6.4.1 or higher
 
 You can check your current versions using these commands:
@@ -136,3 +137,7 @@ The Homebridge UI supports the [oznu/homebridge](https://github.com/oznu/docker-
 #### 4. Ask on Discord
 
 Join the [Official Homebridge Discord](https://discord.gg/C87Pvq3) community and ask in the [#ui](https://discord.gg/C87Pvq3) channel.
+
+# Credit
+
+Homebridge Config UiI X was originally created by [Oznu](https://github.com/oznu).

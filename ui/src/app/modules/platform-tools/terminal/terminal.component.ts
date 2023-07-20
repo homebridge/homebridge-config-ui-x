@@ -29,7 +29,7 @@ export class TerminalComponent implements OnInit, OnDestroy {
 
   @HostListener('window:resize', ['$event'])
   onWindowResize(event) {
-    this.resizeEvent.next();
+    this.resizeEvent.next(undefined);
   }
 
   ngOnDestroy() {

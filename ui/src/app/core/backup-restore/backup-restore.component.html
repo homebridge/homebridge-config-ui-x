@@ -6,7 +6,7 @@
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
-  <div class="modal-body" *ngIf="!restoreStarted">
+  <div class="modal-body" *ngIf="!restoreStarted && !setupWizardRestore">
     <h4 class="text-center" [translate]="'backup.title_backup'"></h4>
     <p [translate]="'backup.message_backup_help_one'"></p>
     <p [translate]="'backup.message_backup_help_two'"></p>
@@ -25,8 +25,8 @@
     <div class="custom-file">
       <input type="file" class="custom-file-input" id="restoreFileUpload" accept="application/gzip, .gz, .hbfx"
         (change)="handleRestoreFileInput($event.target.files)">
-      <label class="custom-file-label"
-        for="restoreFileUpload">{{ selectedFile?.name || 'backup.label_choose_backup_file_to_restore' | translate }}</label>
+      <label class="custom-file-label" for="restoreFileUpload">{{ selectedFile?.name ||
+        'backup.label_choose_backup_file_to_restore' | translate }}</label>
     </div>
     <p class="primary-text mt-3" *ngIf="selectedFile" [translate]="'backup.message_restore_warning'"></p>
     <div class="text-center" *ngIf="selectedFile">

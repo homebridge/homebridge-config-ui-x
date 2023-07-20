@@ -3,23 +3,28 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { AuthGuard } from '@/app/core/auth/auth.guard';
 import { AdminGuard } from '@/app/core/auth/admin.guard';
-import { LoginComponent } from '@/app/core/auth/login/login.component';
-import { LoginGuard } from '@/app/core/auth/login/login.guard';
-
-import { LayoutComponent } from './shared/layout/layout.component';
+import { LoginComponent } from '@/app/modules/login/login.component';
+import { LoginGuard } from '@/app/modules/login/login.guard';
+import { SetupWizardGuard } from '@/app/modules/setup-wizard/setup-wizard.guard';
+import { LayoutComponent } from '@/app/shared/layout/layout.component';
 
 /*
  * The status and restart modules should not be lazy loaded
  * to ensure restarts after an update go smoothly
  */
-import { RestartComponent } from './modules/restart/restart.component';
-import { StatusComponent } from './modules/status/status.component';
+import { RestartComponent } from '@/app/modules/restart/restart.component';
+import { StatusComponent } from '@/app/modules/status/status.component';
 
 const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent,
     canActivate: [LoginGuard],
+  },
+  {
+    path: 'setup',
+    loadChildren: () => import('./modules/setup-wizard/setup-wizard.module').then(m => m.SetupWizardModule),
+    canActivate: [SetupWizardGuard],
   },
   {
     path: '',

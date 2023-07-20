@@ -31,6 +31,7 @@ export class ManagePluginsService {
     const ref = this.modalService.open(ManagePluginsModalComponent, {
       size: 'lg',
       backdrop: 'static',
+      keyboard: false,
     });
     ref.componentInstance.action = 'Install';
     ref.componentInstance.pluginName = pluginName;
@@ -40,6 +41,7 @@ export class ManagePluginsService {
   uninstallPlugin(plugin) {
     const ref = this.modalService.open(UninstallPluginsModalComponent, {
       backdrop: 'static',
+      keyboard: false,
     });
     ref.componentInstance.action = 'Uninstall';
     ref.componentInstance.plugin = plugin;
@@ -53,6 +55,7 @@ export class ManagePluginsService {
     const ref = this.modalService.open(ManagePluginsModalComponent, {
       size: 'lg',
       backdrop: 'static',
+      keyboard: false,
     });
     ref.componentInstance.action = 'Update';
     ref.componentInstance.pluginName = plugin.name;
@@ -67,6 +70,7 @@ export class ManagePluginsService {
     const ref = this.modalService.open(ManagePluginsModalComponent, {
       size: 'lg',
       backdrop: 'static',
+      keyboard: false,
     });
     ref.componentInstance.action = 'Update';
     ref.componentInstance.pluginName = homebridgePkg.name;
@@ -93,7 +97,7 @@ export class ManagePluginsService {
   }
 
   /**
-   * Open the version selector
+   * Open the child bridge modal
    *
    * @param plugin
    */

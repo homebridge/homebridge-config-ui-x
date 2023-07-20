@@ -54,7 +54,14 @@
               "inline-svg",
               "ng-inline-svg",
               "semver",
-              "ajv"
+              "ajv",
+              "json5",
+              "dayjs",
+              "prismjs",
+              "xterm",
+              "xterm-addon-fit",
+              "xterm-addon-web-links",
+              "mobile-detect"
             ],
             "aot": false,
             "vendorChunk": true,
@@ -120,7 +127,6 @@
       }
     }
   },
-  "defaultProject": "ui",
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app",
@@ -129,5 +135,8 @@
     "@schematics/angular:directive": {
       "prefix": "app"
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }

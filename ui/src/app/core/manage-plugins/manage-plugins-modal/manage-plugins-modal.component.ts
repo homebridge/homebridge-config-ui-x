@@ -28,6 +28,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   private fitAddon = new FitAddon();
 
   public actionComplete = false;
+  public actionFailed = false;
   public showReleaseNotes = false;
   public updateSelf = false;
   public changeLog: string;
@@ -111,8 +112,9 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
         this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);
       },
       (err) => {
+        this.actionFailed = true;
         this.$router.navigate(['/plugins']);
-        console.error(`Failed to install ${this.pluginName}`);
+        this.$toastr.error(err.message, this.translate.instant('toast.title_error'));
       },
     );
   }
@@ -129,7 +131,8 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
         this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);
       },
       (err) => {
-        console.error(`Failed to uninstall ${this.pluginName}`);
+        this.actionFailed = true;
+        this.$toastr.error(err.message, this.translate.instant('toast.title_error'));
       },
     );
   }
@@ -165,9 +168,12 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
         this.$router.navigate(['/plugins']);
         this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);
         this.getChangeLog();
-        this.$notification.configUpdated.next();
+        this.$notification.configUpdated.next(undefined);
       },
-      (err) => { },
+      (err) => {
+        this.actionFailed = true;
+        this.$toastr.error(err.message, this.translate.instant('toast.title_error'));
+      },
     );
   }
 
@@ -183,7 +189,8 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
         this.$toastr.success(this.pastTenseVerb, this.toastSuccess);
       },
       (err) => {
-        this.$toastr.error(err.message);
+        this.actionFailed = true;
+        this.$toastr.error(err.message, this.translate.instant('toast.title_error'));
       },
     );
   }

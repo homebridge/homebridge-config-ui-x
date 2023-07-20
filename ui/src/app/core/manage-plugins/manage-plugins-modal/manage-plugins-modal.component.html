@@ -1,24 +1,18 @@
 <div class="modal-content">
   <div class="modal-header">
     <h5 class="modal-title">{{ presentTenseVerb }}: {{ pluginName }}</h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-      (click)="activeModal.dismiss('Cross click')">
-      <span aria-hidden="true">&times;</span>
-    </button>
   </div>
   <div [hidden]="!onlineUpdateOk || actionComplete || showReleaseNotes" id="plugin-log-output" class="modal-body"></div>
   <div *ngIf="actionComplete" class="modal-body plugin-modal-body">
     <div *ngIf="updateSelf">
-      <h3 class="text-center primary-text" [translate]="'plugins.manage.message_restart_required'">Restart and Refresh
-        Required</h3>
-      <p class="text-center grey-text" [translate]="'plugins.manage.message_thanks_for_upgrading_ui'">Thanks for
-        installing the latest version of Homebridge Config UI X.</p>
-      <p [innerHTML]="'plugins.manage.message_restart_required_reason' | translate">
-        After installing a new version you will need to restart Homebridge and
-        <strong>refresh this page</strong> to ensure you have the latest version of the client.
+      <h3 class="text-center primary-text" [translate]="'platform.version.title_service_restart_required'">
+        Restart Required
+      </h3>
+      <p class="text-center grey-text" [translate]="'plugins.manage.message_thanks_for_upgrading_ui'">
+        Thanks for installing the latest version of the Homebridge UI.
       </p>
       <div class="text-center">
-        <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="onRestartHomebridgeClick()"
+        <button type="button" class="btn btn-primary" (click)="onRestartHomebridgeClick()"
           [translate]="'plugins.manage.button_restart_now'">Restart Homebridge Now</button>
       </div>
       <hr>
@@ -49,10 +43,10 @@ hb-service start</pre>
     <h5>{{ release.name }}</h5>
     <markdown hrefTargetBlank class="plugin-md" [data]="release.changelog"></markdown>
   </div>
-  <div class="modal-footer">
+  <div class="modal-footer" *ngIf="!onlineUpdateOk || actionComplete || showReleaseNotes || actionFailed">
     <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')"
       [translate]="'form.button_close'">Close</button>
-    <button *ngIf="onlineUpdateOk && showReleaseNotes" type="button" class="btn btn-primary" data-dismiss="modal"
-      (click)="update()" [translate]="'plugins.button_update'">Update</button>
+    <button *ngIf="onlineUpdateOk && showReleaseNotes" type="button" class="btn btn-primary" (click)="update()"
+      [translate]="'plugins.button_update'">Update</button>
   </div>
 </div>

@@ -15,6 +15,7 @@ import { EventEmitter } from 'events';
 @Injectable()
 export class PluginsSettingsUiService {
   private pluginUiMetadataCache = new NodeCache({ stdTTL: 86400 });
+  private pluginUiLastVersionCache = new NodeCache({ stdTTL: 86400 });
 
   constructor(
     private loggerService: Logger,
@@ -26,10 +27,16 @@ export class PluginsSettingsUiService {
   /**
    * Serve Custom HTML Assets for a plugin
    */
-  async serveCustomUiAsset(reply, pluginName: string, assetPath: string, origin: string) {
+  async serveCustomUiAsset(reply, pluginName: string, assetPath: string, origin: string, version?: string) {
     try {
       if (!assetPath) {
         assetPath = 'index.html';
+      }
+
+      if (assetPath === 'index.html' && version) {
+        if (version !== this.pluginUiLastVersionCache.get(pluginName)) {
+          this.pluginUiMetadataCache.del(pluginName);
+        }
       }
 
       const pluginUi: HomebridgePluginUiMetadata = (this.pluginUiMetadataCache.get(pluginName) as any)
@@ -55,8 +62,13 @@ export class PluginsSettingsUiService {
         return this.serveAssetsFromDevServer(reply, pluginUi, assetPath);
       }
 
+      // fallback path (to serve static assets from the plugin ui public folder)
+      const fallbackPath = path.resolve(process.env.UIX_BASE_PATH, 'public', path.basename(filePath));
+
       if (await fs.pathExists(filePath)) {
         return reply.sendFile(path.basename(filePath), path.dirname(filePath));
+      } else if (fallbackPath.match(/^.*\.(jpe?g|gif|png|svg|ttf|woff2|css)$/i) && await fs.pathExists(fallbackPath)) {
+        return reply.sendFile(path.basename(fallbackPath), path.dirname(fallbackPath));
       } else {
         this.loggerService.warn('Asset Not Found:', pluginName + '/' + assetPath);
         return reply.code(404).send('Not Found');
@@ -75,6 +87,7 @@ export class PluginsSettingsUiService {
     try {
       const pluginUi = await this.pluginsService.getPluginUiMetadata(pluginName);
       this.pluginUiMetadataCache.set(pluginName, pluginUi);
+      this.pluginUiLastVersionCache.set(pluginName, pluginUi.plugin.installedVersion);
       return pluginUi;
     } catch (e) {
       this.loggerService.warn(`[${pluginName}] Custom UI:`, e.message);
@@ -158,14 +171,16 @@ export class PluginsSettingsUiService {
       return;
     }
 
+    // pass all env vars to server side script
+    const childEnv = Object.assign({}, process.env);
+    childEnv.HOMEBRIDGE_STORAGE_PATH = this.configService.storagePath;
+    childEnv.HOMEBRIDGE_CONFIG_PATH = this.configService.configPath;
+    childEnv.HOMEBRIDGE_UI_VERSION = this.configService.package.version;
+
     // launch the server side script
     const child = child_process.fork(pluginUi.serverPath, [], {
       silent: true,
-      env: {
-        HOMEBRIDGE_STORAGE_PATH: this.configService.storagePath,
-        HOMEBRIDGE_CONFIG_PATH: this.configService.configPath,
-        HOMEBRIDGE_UI_VERSION: this.configService.package.version,
-      },
+      env: childEnv,
     });
 
     child.stdout.on('data', (data) => {

@@ -103,7 +103,7 @@ describe('PluginsGateway (e2e)', () => {
     expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('some log from terminal'));
 
     // expect the method to let the client know the command succeeded
-    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Command succeeded!'));
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded!'));
   });
 
   it('ON /plugins/install (custom version)', async () => {
@@ -130,7 +130,7 @@ describe('PluginsGateway (e2e)', () => {
     expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('some log from terminal'));
 
     // expect the method to let the client know the command succeeded
-    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Command succeeded!'));
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded!'));
   });
 
   it('ON /plugins/install (sudo)', async () => {
@@ -157,7 +157,7 @@ describe('PluginsGateway (e2e)', () => {
     expect(mockSpawn).toHaveBeenCalledWith('sudo', ['-E', '-n', 'npm', 'install', 'homebridge-mock-plugin@latest'], expect.anything());
 
     // expect the method to let the client know the command succeeded
-    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Command succeeded!'));
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded!'));
   });
 
   it('ON /plugins/install (fail)', async () => {
@@ -181,8 +181,8 @@ describe('PluginsGateway (e2e)', () => {
       expect(mockSpawn).toHaveBeenCalledWith('npm', ['install', 'homebridge-mock-plugin@latest'], expect.anything());
     }
 
-    // expect the method to let the client know the command failed
-    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Command failed'));
+    // expect the method to let the client know the operation failed
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation failed'));
   });
 
   it('ON /plugins/uninstall', async () => {
@@ -207,7 +207,7 @@ describe('PluginsGateway (e2e)', () => {
     }
 
     // expect the method to let the client know the command succeeded
-    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Command succeeded!'));
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded!'));
   });
 
   it('ON /plugins/uninstall (prevent self uninstall)', async () => {
@@ -253,7 +253,7 @@ describe('PluginsGateway (e2e)', () => {
     }
 
     // expect the method to let the client know the command succeeded
-    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Command succeeded!'));
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded!'));
   });
 
   it('ON /plugins/update (custom version)', async () => {
@@ -278,7 +278,7 @@ describe('PluginsGateway (e2e)', () => {
     }
 
     // expect the method to let the client know the command succeeded
-    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Command succeeded!'));
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded!'));
   });
 
   it('ON /plugins/homebridge-update', async () => {
@@ -314,7 +314,7 @@ describe('PluginsGateway (e2e)', () => {
       }));
     }
     // expect the method to let the client know the command succeeded
-    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Command succeeded!'));
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded!'));
   });
 
   it('ON /plugins/homebridge-update (custom version)', async () => {
@@ -350,7 +350,7 @@ describe('PluginsGateway (e2e)', () => {
       }));
     }
     // expect the method to let the client know the command succeeded
-    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Command succeeded!'));
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded!'));
   });
 
   it('ON /plugins/homebridge-update (1.2.x -> 1.3.x)', async () => {

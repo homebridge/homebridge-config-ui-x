@@ -196,7 +196,6 @@ export class AccessoriesService {
     // floats
     if (characteristic.format === 'float') {
       value = parseFloat(value as string);
-      console.log(value);
       if (characteristic.minValue !== undefined && value < characteristic.minValue) {
         throw new BadRequestException(`Invalid value. The value must be between ${characteristic.minValue} and ${characteristic.maxValue}.`);
       }

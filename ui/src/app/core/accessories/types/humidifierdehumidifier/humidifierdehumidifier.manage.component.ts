@@ -78,7 +78,7 @@ export class HumidifierDehumidifierManageComponent implements OnInit {
   }
 
   onHumidityStateChange() {
-    this.targetHumidityChanged.next();
+    this.targetHumidityChanged.next(undefined);
   }
 
 }

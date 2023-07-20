@@ -15,43 +15,41 @@ import { ConfirmComponent } from './components/confirm/confirm.component';
 import { SchemaFormComponent } from './components/schema-form/schema-form.component';
 import { QrcodeComponent } from './components/qrcode/qrcode.component';
 import { RtlDirective } from './directives/rtl.directive';
+import { JsonSchemaFormPatchDirective } from './directives/json-schema-form-patch.directive';
 
 @NgModule({
-  entryComponents: [
-    BackupRestoreComponent,
-    ScheduledBackupsComponent,
-    ConfirmComponent,
-  ],
-  declarations: [
-    SpinnerComponent,
-    SchemaFormComponent,
-    ConvertTempPipe,
-    ReplacePipe,
-    ExternalLinkIconPipe,
-    HrefTargetBlankDirective,
-    LongClickDirective,
-    RtlDirective,
-    BackupRestoreComponent,
-    ScheduledBackupsComponent,
-    ConfirmComponent,
-    QrcodeComponent,
-  ],
-  imports: [
-    CommonModule,
-    TranslateModule,
-    Bootstrap4FrameworkModule,
-  ],
-  providers: [],
-  exports: [
-    SpinnerComponent,
-    SchemaFormComponent,
-    QrcodeComponent,
-    ConvertTempPipe,
-    ReplacePipe,
-    ExternalLinkIconPipe,
-    HrefTargetBlankDirective,
-    LongClickDirective,
-    RtlDirective,
-  ],
+    declarations: [
+        SpinnerComponent,
+        SchemaFormComponent,
+        ConvertTempPipe,
+        ReplacePipe,
+        ExternalLinkIconPipe,
+        HrefTargetBlankDirective,
+        LongClickDirective,
+        RtlDirective,
+        JsonSchemaFormPatchDirective,
+        BackupRestoreComponent,
+        ScheduledBackupsComponent,
+        ConfirmComponent,
+        QrcodeComponent,
+    ],
+    imports: [
+        CommonModule,
+        TranslateModule,
+        Bootstrap4FrameworkModule,
+    ],
+    providers: [],
+    exports: [
+        SpinnerComponent,
+        SchemaFormComponent,
+        QrcodeComponent,
+        ConvertTempPipe,
+        ReplacePipe,
+        ExternalLinkIconPipe,
+        HrefTargetBlankDirective,
+        LongClickDirective,
+        RtlDirective,
+        JsonSchemaFormPatchDirective,
+    ],
 })
 export class CoreModule { }

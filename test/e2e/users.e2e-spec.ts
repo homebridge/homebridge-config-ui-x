@@ -71,7 +71,7 @@ describe('UsersController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
     expect(res.json()).toHaveLength(1);
   });
 
@@ -81,7 +81,7 @@ describe('UsersController (e2e)', () => {
       path: '/users',
     });
 
-    expect(res.statusCode).toEqual(401);
+    expect(res.statusCode).toBe(401);
   });
 
   it('POST /users', async () => {
@@ -101,7 +101,7 @@ describe('UsersController (e2e)', () => {
       payload,
     });
 
-    expect(res.statusCode).toEqual(201);
+    expect(res.statusCode).toBe(201);
 
     expect(res.json()).toEqual({
       id: 2,
@@ -131,7 +131,7 @@ describe('UsersController (e2e)', () => {
       payload,
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
 
     expect(res.json()).toEqual({
       id: 1,
@@ -141,7 +141,7 @@ describe('UsersController (e2e)', () => {
       otpActive: false,
     });
 
-    expect((await fs.readJson(authFilePath))[0].name).toEqual('New Name');
+    expect((await fs.readJson(authFilePath))[0].name).toBe('New Name');
   });
 
   it('PATCH /users/:userId (change username)', async () => {
@@ -160,7 +160,7 @@ describe('UsersController (e2e)', () => {
       payload,
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
 
     expect(res.json()).toEqual({
       id: 1,
@@ -170,8 +170,8 @@ describe('UsersController (e2e)', () => {
       otpActive: false,
     });
 
-    expect((await fs.readJson(authFilePath))[0].name).toEqual('New Name');
-    expect((await fs.readJson(authFilePath))[0].username).toEqual('newUsername');
+    expect((await fs.readJson(authFilePath))[0].name).toBe('New Name');
+    expect((await fs.readJson(authFilePath))[0].username).toBe('newUsername');
   });
 
   it('PATCH /users/:userId (change username - conflict)', async () => {
@@ -199,11 +199,12 @@ describe('UsersController (e2e)', () => {
         authorization,
       },
       payload: {
+        name: 'admin',
         username: 'admin', // try change to existing username
       },
     });
 
-    expect(res.statusCode).toEqual(409);
+    expect(res.statusCode).toBe(409);
     expect(res.json().message).toContain('already exists');
   });
 
@@ -238,7 +239,7 @@ describe('UsersController (e2e)', () => {
       payload,
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toBe(200);
 
     // check the user was deleted from the auth.json file
     expect(await fs.readJson(authFilePath)).toHaveLength(1);
@@ -275,7 +276,7 @@ describe('UsersController (e2e)', () => {
       payload,
     });
 
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toBe(400);
     expect(res.json().message).toContain('Cannot delete only admin user');
   });
 
@@ -294,7 +295,7 @@ describe('UsersController (e2e)', () => {
       payload,
     });
 
-    expect(res.statusCode).toEqual(201);
+    expect(res.statusCode).toBe(201);
 
     // check the new password works
     const testLoginWithNewPassword = await app.inject({
@@ -306,7 +307,7 @@ describe('UsersController (e2e)', () => {
       },
     });
 
-    expect(testLoginWithNewPassword.statusCode).toEqual(201);
+    expect(testLoginWithNewPassword.statusCode).toBe(201);
 
     // check the old password is rejected
     const testLoginWithOldPassword = await app.inject({
@@ -318,7 +319,7 @@ describe('UsersController (e2e)', () => {
       },
     });
 
-    expect(testLoginWithOldPassword.statusCode).toEqual(403);
+    expect(testLoginWithOldPassword.statusCode).toBe(403);
   });
 
   it('POST /users/otp/setup', async () => {
@@ -330,7 +331,7 @@ describe('UsersController (e2e)', () => {
       },
     });
 
-    expect(res.statusCode).toEqual(201);
+    expect(res.statusCode).toBe(201);
     expect(res.json()).toHaveProperty('otpauth');
 
     const authFile: UserDto[] = await fs.readJson(authFilePath);
@@ -364,11 +365,11 @@ describe('UsersController (e2e)', () => {
       payload,
     });
 
-    expect(res.statusCode).toEqual(201);
+    expect(res.statusCode).toBe(201);
 
     // check otp was activated
     authFile = await fs.readJson(authFilePath);
-    expect(authFile[0].otpActive).toEqual(true);
+    expect(authFile[0].otpActive).toBe(true);
 
     // check logins now prompt for otp
     const testLoginWithoutOtp = await app.inject({
@@ -380,8 +381,8 @@ describe('UsersController (e2e)', () => {
       },
     });
 
-    expect(testLoginWithoutOtp.statusCode).toEqual(412);
-    expect(testLoginWithoutOtp.json().message).toEqual('2FA Code Required');
+    expect(testLoginWithoutOtp.statusCode).toBe(412);
+    expect(testLoginWithoutOtp.json().message).toBe('2FA Code Required');
 
     // generate a otp to test a login with
     const otp = authenticator.generate(otpSecret);
@@ -397,7 +398,7 @@ describe('UsersController (e2e)', () => {
       },
     });
 
-    expect(testLoginWithOtp.statusCode).toEqual(201);
+    expect(testLoginWithOtp.statusCode).toBe(201);
 
     // check subsequent logins with the same otp token are rejected
     const testLoginWithOtpReplay = await app.inject({
@@ -410,8 +411,8 @@ describe('UsersController (e2e)', () => {
       },
     });
 
-    expect(testLoginWithOtpReplay.statusCode).toEqual(412);
-    expect(testLoginWithoutOtp.json().message).toEqual('2FA Code Required');
+    expect(testLoginWithOtpReplay.statusCode).toBe(412);
+    expect(testLoginWithoutOtp.json().message).toBe('2FA Code Required');
   });
 
   it('POST /users/otp/deactivate (valid password)', async () => {
@@ -435,7 +436,7 @@ describe('UsersController (e2e)', () => {
       payload,
     });
 
-    expect(res.statusCode).toEqual(201);
+    expect(res.statusCode).toBe(201);
 
     authFile = await fs.readJson(authFilePath);
     expect(authFile[0].otpActive).toBeFalsy();
@@ -463,10 +464,10 @@ describe('UsersController (e2e)', () => {
       payload,
     });
 
-    expect(res.statusCode).toEqual(403);
+    expect(res.statusCode).toBe(403);
 
     authFile = await fs.readJson(authFilePath);
-    expect(authFile[0].otpActive).toEqual(true);
+    expect(authFile[0].otpActive).toBe(true);
     expect(authFile[0].otpSecret).toBeTruthy();
   });
 
