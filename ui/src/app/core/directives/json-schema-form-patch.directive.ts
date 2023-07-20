@@ -32,9 +32,15 @@ export class JsonSchemaFormPatchDirective {
   }
 
   private fixArray(items: any | any[], formData: any, refPointer: string) {
-
     if (Array.isArray(items)) {
-      items.filter(x => x.name !== '_bridge' && (x.dataType === 'array' || x.arrayItem)).forEach(item => {
+      const configItems = items.filter(x => x.name !== '_bridge');
+      const nestedItems = configItems
+        .filter(x => x.items && Array.isArray(x.items))
+        .flatMap(x => x.items)
+        .filter(x => x.dataType === 'array' || x.arrayItem);
+
+      const allItems = configItems.concat(nestedItems);
+      allItems.filter(x => x.dataType === 'array' || x.arrayItem).forEach(item => {
         this.fixNestedArray(item, formData, refPointer);
       });
     } else {
@@ -47,12 +53,16 @@ export class JsonSchemaFormPatchDirective {
 
       const ref = item.items.find(x => x.type === '$ref');
       if (ref) {
-        const dataItems = item.items.filter(x => x.type === 'section');
+        const dataItems = item.items.filter(x => x.type === 'section' || x.type === 'div');
         const template = dataItems.length > 0
           ? dataItems.reduce((a, b) => a.id > b.id ? a : b)
           : this.getItemTemplateFromRef(ref);
 
         const data = this.getDataFromPointer(formData, ref.dataPointer.replace(refPointer, ''));
+
+        if (data === null) {
+          return;
+        }
 
         if (Array.isArray(data)) {
           // add missing items
@@ -83,7 +93,13 @@ export class JsonSchemaFormPatchDirective {
     let value = data;
 
     dataPointer.substring(1).split(/\//).filter(x => x !== '-')
-      .forEach((key: string) => value = value[key]);
+      .forEach((key: string) => {
+        try {
+          value = value[key];
+        } catch {
+          value = null;
+        }
+      });
 
     return value;
   }
