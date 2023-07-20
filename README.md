@@ -35,7 +35,7 @@ For detailed instructions on how to setup Node.js and Homebridge with Homebridge
 * <img src="https://user-images.githubusercontent.com/3979615/59594527-56fa8c00-9137-11e9-937b-32092dfcff41.png" alt="docker" height="16px" width="16px"/> [Setup Homebridge using Docker](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Docker)
 * <img src="https://user-images.githubusercontent.com/3979615/78118531-dc46f700-7452-11ea-95e5-977f79d1904f.png" alt="synology-dsm" height="16px" width="16px"/> [Setup Homebridge on a Synology NAS](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Synology-DSM)
 
-If your platform is not listed above, or you want to use your own service manager, see the [Manual Configuration](https://github.com/oznu/homebridge-config-ui-x/wiki/Manual-Configuration) wiki article for instructions on setting up the Homebridge UI to run as a Homebridge plugin instead of a service.
+If your platform is not listed above, or you want to use your own service manager, see the [Manual Configuration](https://github.com/homebridge/homebridge-config-ui-x/wiki/Manual-Configuration) wiki article for instructions on setting up the Homebridge UI to run as a Homebridge plugin instead of a service.
 
 # Usage
 
@@ -124,12 +124,16 @@ Make sure you are running [supported versions of node and npm](#supported-nodejs
 
 #### 2. Accessories tab missing
 
-If the Accessories tab is not shown then you are not running Homebridge in insecure mode. See the [Enabling Accessory Control](https://github.com/oznu/homebridge-config-ui-x/wiki/Enabling-Accessory-Control) wiki for details. If you have just enabled insecure mode make sure you have restarted Homebridge and refreshed the page in your browser.
+If the Accessories tab is not shown then you are not running Homebridge in insecure mode. See the [Enabling Accessory Control](https://github.com/homebridge/homebridge-config-ui-x/wiki/Enabling-Accessory-Control) wiki for details. If you have just enabled insecure mode make sure you have restarted Homebridge and refreshed the page in your browser.
 
 #### 3. Running in Docker
 
-The Homebridge UI supports the [oznu/homebridge](https://github.com/oznu/docker-homebridge) Docker image. You must enable the UI using the method described in [the wiki](https://github.com/oznu/homebridge-config-ui-x/wiki/Enabling-UI-with-Docker).
+The Homebridge UI supports the [homebridge/homebridge](https://github.com/homebridge/docker-homebridge) Docker image. You must enable the UI using the method described in [the wiki](https://github.com/homebridge/homebridge-config-ui-x/wiki/Enabling-UI-with-Docker).
 
 #### 4. Ask on Discord
 
 Join the [Official Homebridge Discord](https://discord.gg/C87Pvq3) community and ask in the [#ui](https://discord.gg/C87Pvq3) channel.
+
+# Credit
+
+Homebridge Config UiI X was originally created by [Oznu](https://github.com/oznu).

@@ -8,6 +8,7 @@ module.exports = {
     "ui/",
     'ui/**/*',
     'dist/**/*',
+    '.eslintrc.js'
   ],
   plugins: ['@typescript-eslint/eslint-plugin'],
   extends: [
@@ -20,7 +21,6 @@ module.exports = {
     node: true,
     jest: true,
   },
-  ignorePatterns: ['.eslintrc.js'],
   rules: {
     'quotes': ['error', 'single'],
     'comma-dangle': ['error', 'only-multiline'],
