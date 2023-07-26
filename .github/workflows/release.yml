@@ -1,0 +1,27 @@
+name: Node Release
+
+on:
+  push:
+    tags:
+      - '*.*.*'
+  workflow_dispatch:
+
+jobs:
+  build_and_test:
+    uses: homebridge/.github/.github/workflows/nodejs-build-and-test.yml@main
+    with:
+      enable_coverage: true
+      install_cmd: npm ci && cd ui && npm ci
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+
+  publish:
+    needs: build_and_test
+
+    if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
+
+    uses: homebridge/.github/.github/workflows/npm-publish.yml@main
+    with:
+      install_cmd: npm ci && cd ui && npm ci
+    secrets:
+      npm_auth_token: ${{ secrets.npm_token }}

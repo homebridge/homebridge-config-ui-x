@@ -28,7 +28,7 @@ import { FreeBSDInstaller } from './platforms/freebsd';
 import type { HomebridgeIpcService } from '../core/homebridge-ipc/homebridge-ipc.service';
 
 export class HomebridgeServiceHelper {
-  public action: 'install' | 'uninstall' | 'start' | 'stop' | 'restart' | 'rebuild' | 'run' | 'add' | 'remove' | 'logs' | 'update-node' | 'before-start' | 'status';
+  public action: 'install' | 'uninstall' | 'start' | 'stop' | 'restart' | 'rebuild' | 'run' | 'add' | 'remove' | 'logs' | 'view' | 'update-node' | 'before-start' | 'status';
   public selfPath = __filename;
   public serviceName = 'Homebridge';
   public storagePath;
@@ -36,6 +36,7 @@ export class HomebridgeServiceHelper {
   public allowRunRoot = false;
   public enableHbServicePluginManagement = false;
   public asUser;
+  public addGroup: string;
   private log: fs.WriteStream | NodeJS.WriteStream;
   private homebridgeModulePath: string;
   private homebridgePackage: { version: string; bin: { homebridge: string } };
@@ -91,7 +92,7 @@ export class HomebridgeServiceHelper {
     commander
       .allowUnknownOption()
       .storeOptionsAsProperties(true)
-      .arguments('[install|uninstall|start|stop|restart|rebuild|run|logs|add|remove]')
+      .arguments('[install|uninstall|start|stop|restart|rebuild|run|logs|view|add|remove]')
       .option('-P, --plugin-path <path>', '', (p) => { process.env.UIX_CUSTOM_PLUGIN_PATH = p; this.homebridgeOpts.push('-P', p); })
       .option('-U, --user-storage-path <path>', '', (p) => { this.storagePath = p; this.usingCustomStoragePath = true; })
       .option('-S, --service-name <service name>', 'The name of the homebridge service to install or control', (p) => this.serviceName = p)
@@ -99,6 +100,7 @@ export class HomebridgeServiceHelper {
       .option('--strict-plugin-resolution', '', () => { process.env.UIX_STRICT_PLUGIN_RESOLUTION = '1'; })
       .option('--port <port>', 'The port to set to the Homebridge UI when installing as a service', (p) => this.uiPort = parseInt(p, 10))
       .option('--user <user>', 'The user account the Homebridge service will be installed as (Linux, FreeBSD, macOS only)', (p) => this.asUser = p)
+      .option('--group <group>', 'The group the Homebridge service will be added to (Linux, FreeBSD, macOS only)', (p) => this.addGroup = p)
       .option('--stdout', '', () => this.stdout = true)
       .option('--allow-root', '', () => this.allowRunRoot = true)
       .option('--docker', '', () => this.docker = true)
@@ -150,6 +152,10 @@ export class HomebridgeServiceHelper {
         this.tailLogs();
         break;
       }
+      case 'view': {
+        this.viewLogs();
+        break;
+      }
       case 'add': {
         this.npmPluginManagement(commander.args);
         break;
@@ -188,6 +194,7 @@ export class HomebridgeServiceHelper {
         console.log('    rebuild --all                    rebuild all npm modules (use after updating Node.js)');
         console.log('    run                              run homebridge daemon');
         console.log('    logs                             tails the homebridge service logs');
+        console.log('    view                             views the homebridge service logs for 30 seconds');
         console.log('    update-node [version]            update Node.js');
         console.log('\nSee the wiki for help with hb-service: https://homebridge.io/w/JTtHK \n');
 
@@ -1022,6 +1029,43 @@ export class HomebridgeServiceHelper {
     });
 
     tail.on('line', console.log);
+  }
+
+  /**
+   * Tails the Homebridge service log for 30 seconds and outputs the results to the console
+   */
+  private async viewLogs() {
+    this.installer.viewLogs();
+    if (!fs.existsSync(this.logPath)) {
+      this.logger(`ERROR: Log file does not exist at expected location: ${this.logPath}`, 'fail');
+      process.exit(1);
+    }
+
+    const logStats = await fs.stat(this.logPath);
+    const logStartPosition = logStats.size <= 200000 ? 0 : logStats.size - 200000;
+    const logStream = fs.createReadStream(this.logPath, { start: logStartPosition });
+
+    logStream.on('data', (buffer) => {
+      process.stdout.write(buffer);
+    });
+
+    logStream.on('end', () => {
+      logStream.close();
+    });
+
+    const tail = new Tail(this.logPath, {
+      fromBeginning: false,
+      useWatchFile: true,
+      fsWatchOptions: {
+        interval: 200,
+      },
+    });
+
+    tail.on('line', console.log);
+
+    setTimeout(function () {
+      tail.unwatch();
+    }, 30000);
   }
 
   /**

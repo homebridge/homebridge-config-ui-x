@@ -77,7 +77,7 @@
           <br>
 
           <a routerLink="/plugins" class="primary-text" *ngIf="homebridgePluginStatus.length">
-            {{ homebridgePluginStatus.length }} {{ 'status.plugins_out_of_date' | translate }}
+            {{ homebridgePluginStatus.length }} {{ homebridgePluginStatus.length === 1 ? ('status.plugin_out_of_date' | translate) : ('status.plugins_out_of_date' | translate) }}
           </a>
           <a class="grey-text card-link" routerLink="/plugins" *ngIf="!homebridgePluginStatus.length"
             [translate]="'status.services.label_not_running'">

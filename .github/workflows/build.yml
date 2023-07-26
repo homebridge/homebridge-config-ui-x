@@ -1,10 +1,30 @@
-name: Test
+name: Node Build
 
-on: [pull_request, push]
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
 
 jobs:
-  build:
+  build_and_test:
     strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-2019]
+
+    uses: homebridge/.github/.github/workflows/nodejs-build-and-test.yml@main
+    with:
+      enable_coverage: true
+      runs_on: ${{ matrix.os }}
+      install_cmd: npm ci && cd ui && npm ci
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+
+  test_hb_service:
+    needs: build_and_test
+    strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest]
         node-version: [16.x, 17.x, 18.x]
@@ -67,3 +87,9 @@ jobs:
         run: |
           node dist/bin/hb-service.js view
           exit 1
+
+  lint:
+    needs: build_and_test
+    uses: homebridge/.github/.github/workflows/eslint.yml@main
+    with:
+      install_cmd: npm ci && cd ui && npm ci
