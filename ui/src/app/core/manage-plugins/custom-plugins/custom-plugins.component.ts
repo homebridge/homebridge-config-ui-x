@@ -30,6 +30,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   public loading = true;
   public saveInProgress = false;
   public pluginSpinner = false;
+  public uiLoaded = false;
 
   private basePath: string;
   private iframe: HTMLIFrameElement;
@@ -122,6 +123,9 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     this.iframe = this.customPluginUiElementTarget.nativeElement as HTMLIFrameElement;
     this.iframe.src = environment.api.base + this.basePath +
       '/index.html?origin=' + encodeURIComponent(location.origin) + '&v=' + encodeURIComponent(this.plugin.installedVersion);
+    this.iframe.onload = () => {
+      this.uiLoaded = true;
+    };
   }
 
   handleMessage = (e: MessageEvent) => {
