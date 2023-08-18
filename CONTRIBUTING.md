@@ -65,7 +65,7 @@ You should now be able to navigate to `https://localhost:4200` in your browser w
 If you have made changes to the server side code, you should run the e2e test suite before creating a pull request:
 
 ```
-npm run test:e2e
+npm run test
 ```
 
 ## Contributing To Translations
