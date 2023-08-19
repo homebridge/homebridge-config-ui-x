@@ -30,6 +30,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   public loading = true;
   public saveInProgress = false;
   public pluginSpinner = false;
+  public uiLoaded = false;
 
   private basePath: string;
   private iframe: HTMLIFrameElement;
@@ -130,6 +131,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
         case 'loaded':
           this.injectDefaultStyles(e);
           this.confirmReady(e);
+          this.uiLoaded = true;
           break;
         case 'request': {
           this.handleRequest(e);
