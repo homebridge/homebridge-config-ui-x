@@ -28,7 +28,7 @@
     "hb-service": "./dist/bin/hb-service.js"
   },
   "engines": {
-    "node": ">=16.20.0",
+    "node": ">=16.20.2",
     "homebridge": ">=1.6.0"
   },
   "scripts": {
