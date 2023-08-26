@@ -17,7 +17,7 @@
       style="border: 0;">
     </iframe>
 
-    <div *ngIf="pluginConfig.length && schema.singular && showSchemaForm" class="card card-body">
+    <div *ngIf="uiLoaded && pluginConfig.length && schema.singular && showSchemaForm" class="card card-body">
       <app-schema-form [configSchema]="schema" [(data)]="pluginConfig[0]"
         (dataChanged)="schemaFormUpdatedSubject.next($event)">
       </app-schema-form>
