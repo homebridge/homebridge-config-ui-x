@@ -32,6 +32,7 @@
     "homebridge": ">=1.6.0"
   },
   "scripts": {
+    "check": "npm install && npm outdated",
     "watch": "concurrently \"npm run watch:ui\" \"npm run watch:server\"",
     "watch:server": "nodemon",
     "watch:ui": "npm run start --prefix ui",

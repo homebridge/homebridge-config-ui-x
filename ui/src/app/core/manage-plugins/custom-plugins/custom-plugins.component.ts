@@ -131,7 +131,6 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
         case 'loaded':
           this.injectDefaultStyles(e);
           this.confirmReady(e);
-          this.uiLoaded = true;
           break;
         case 'request': {
           this.handleRequest(e);
@@ -139,6 +138,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
         }
         case 'scrollHeight':
           this.setiFrameHeight(e);
+          this.uiLoaded = true;
           break;
         case 'config.get': {
           this.requestResponse(e, this.getConfigBlocks());
