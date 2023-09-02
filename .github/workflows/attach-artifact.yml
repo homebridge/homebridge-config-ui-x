@@ -13,7 +13,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v1
         with:
-          node-version: 16.x
+          node-version: 20.x
 
       # Sanity check to ensure that release tags don't start with a 'v' version prefix but adhere to the X.Y.Z format
       - name: Check for Tag name Format
