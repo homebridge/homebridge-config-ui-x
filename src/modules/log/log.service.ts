@@ -101,7 +101,7 @@ export class LogService {
           client.emit('stdout', '\n\r');
           client.emit('stdout', color.red(`The log tail command "${command.join(' ')}" exited with code ${code.exitCode}.\n\r`));
           client.emit('stdout', color.red('Please check the command in your config.json is correct.\n\r\n\r'));
-          client.emit('stdout', color.cyan('See https://github.com/oznu/homebridge-config-ui-x#log-viewer-configuration for instructions.\r\n'));
+          client.emit('stdout', color.cyan('See https://github.com/homebridge/homebridge-config-ui-x#log-viewer-configuration for instructions.\r\n'));
         }
       } catch (e) {
         // the client socket probably closed
