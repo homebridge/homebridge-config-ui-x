@@ -1252,7 +1252,7 @@ export class PluginsService {
         client.emit('stdout', `${path.resolve(cwd, 'node_modules')}\n\r\n\r`);
         client.emit('stdout', color.yellow('This may cause the operation to fail.\n\r'));
         client.emit('stdout', color.yellow('See the docs for details on how to enable sudo mode:\n\r'));
-        client.emit('stdout', color.yellow('https://github.com/homebridge/homebridge-config-ui-x#sudo-mode\n\r\n\r'));
+        client.emit('stdout', color.yellow('https://github.com/homebridge/homebridge-config-ui-x/wiki/Manual-Configuration#sudo-mode\n\r\n\r'));
       }
     }
 
