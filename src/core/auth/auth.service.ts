@@ -95,9 +95,11 @@ export class AuthService {
    * This will throw an error if the credentials are incorrect.
    */
   private async checkPassword(user: UserDto, password: string) {
-    const hashedPassword = await this.hashPassword(password, user.salt);
+    const passwordAttemptHash = await this.hashPassword(password, user.salt);
+    const passwordAttemptHashBuff = Buffer.from(passwordAttemptHash, 'hex');
+    const knownPasswordHashBuff = Buffer.from(user.hashedPassword, 'hex');
 
-    if (hashedPassword === user.hashedPassword) {
+    if (crypto.timingSafeEqual(passwordAttemptHashBuff, knownPasswordHashBuff)) {
       return user;
     } else {
       throw new ForbiddenException();
