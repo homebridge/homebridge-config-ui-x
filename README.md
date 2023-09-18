@@ -140,4 +140,4 @@ Join the [Official Homebridge Discord](https://discord.gg/C87Pvq3) community and
 
 # Credit
 
-Homebridge Config UiI X was originally created by [Oznu](https://github.com/oznu).
+Homebridge Config UI X was originally created by [oznu](https://github.com/oznu).
