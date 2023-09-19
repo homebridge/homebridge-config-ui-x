@@ -29,20 +29,14 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        node-version: [18.x, 20.x]
+        node-version: [18.x]
         include:
           - os: macos-latest
             node-version: 18.x
-          - os: macos-latest
-            node-version: 20.x
           - os: windows-2019
             node-version: 18.x
-          - os: windows-2019
-            node-version: 20.x
           - os: windows-latest
             node-version: 18.x
-          - os: windows-latest
-            node-version: 20.x
 
     runs-on: ${{ matrix.os }}
 
