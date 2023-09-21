@@ -1,7 +1,7 @@
 {
   "name": "homebridge-config-ui-x",
   "displayName": "Homebridge UI",
-  "version": "4.50.4",
+  "version": "4.50.5",
   "description": "A web based management, configuration and control platform for Homebridge.",
   "license": "MIT",
   "author": "oznu <dev@oz.nu>",
@@ -28,10 +28,11 @@
     "hb-service": "./dist/bin/hb-service.js"
   },
   "engines": {
-    "node": ">=16.20.0",
+    "node": ">=16.20.2",
     "homebridge": ">=1.6.0"
   },
   "scripts": {
+    "check": "npm install && npm outdated",
     "watch": "concurrently \"npm run watch:ui\" \"npm run watch:server\"",
     "watch:server": "nodemon",
     "watch:ui": "npm run start --prefix ui",

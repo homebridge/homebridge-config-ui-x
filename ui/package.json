@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "check": "npm install && npm outdated",
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build --configuration production --output-path=../public --source-map=false --aot=true",

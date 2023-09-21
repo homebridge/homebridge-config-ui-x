@@ -30,6 +30,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   public loading = true;
   public saveInProgress = false;
   public pluginSpinner = false;
+  public uiLoaded = false;
 
   private basePath: string;
   private iframe: HTMLIFrameElement;
@@ -137,6 +138,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
         }
         case 'scrollHeight':
           this.setiFrameHeight(e);
+          this.uiLoaded = true;
           break;
         case 'config.get': {
           this.requestResponse(e, this.getConfigBlocks());
