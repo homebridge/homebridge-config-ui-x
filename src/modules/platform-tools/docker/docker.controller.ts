@@ -15,21 +15,21 @@ export class DockerController {
   ) { }
 
   @UseGuards(AdminGuard)
-  @ApiOperation({ summary: 'Return the oznu/homebridge docker image startup.sh file contents.' })
+  @ApiOperation({ summary: 'Return the homebridge/homebridge docker image startup.sh file contents.' })
   @Get('startup-script')
   getStartupScript() {
     return this.dockerService.getStartupScript();
   }
 
   @UseGuards(AdminGuard)
-  @ApiOperation({ summary: 'Update the oznu/homebridge docker image startup.sh file contents.' })
+  @ApiOperation({ summary: 'Update the homebridge/homebridge docker image startup.sh file contents.' })
   @Put('startup-script')
   updateStartupScript(@Body() body) {
     return this.dockerService.updateStartupScript(body.script);
   }
 
   @UseGuards(AdminGuard)
-  @ApiOperation({ summary: 'Restart the oznu/homebridge docker image container.' })
+  @ApiOperation({ summary: 'Restart the homebridge/homebridge docker image container.' })
   @Put('restart-container')
   restartDockerContainer() {
     return this.dockerService.restartDockerContainer();

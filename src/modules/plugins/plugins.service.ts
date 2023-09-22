@@ -326,9 +326,9 @@ export class PluginsService {
 
   /**
    * Manage a plugin, install, update or uninstall it
-   * @param action 
-   * @param pluginAction 
-   * @param client 
+   * @param action
+   * @param pluginAction
+   * @param client
    */
   async managePlugin(action: 'install' | 'uninstall', pluginAction: PluginActionDto, client: EventEmitter) {
     pluginAction.version = pluginAction.version || 'latest';
@@ -593,7 +593,7 @@ export class PluginsService {
 
   /**
    * Check to see if a plugin update bundle is available
-   * @param pluginAction 
+   * @param pluginAction
    */
   public async isPluginBundleAvailable(pluginAction: PluginActionDto) {
     if (
@@ -616,8 +616,8 @@ export class PluginsService {
 
   /**
    * Update a plugin using the bundle
-   * @param pluginAction 
-   * @param client 
+   * @param pluginAction
+   * @param client
    */
   public async doPluginBundleUpdate(pluginAction: PluginActionDto, client: EventEmitter) {
     const pluginUpgradeInstallScriptPath = path.join(process.env.UIX_BASE_PATH, 'plugin-upgrade-install.sh');
@@ -658,7 +658,7 @@ export class PluginsService {
 
   /**
    * Do a UI update from the bundle
-   * @param version 
+   * @param version
    */
   public async doUiBundleUpdate(pluginAction: PluginActionDto, client: EventEmitter) {
     const prefix = path.dirname(path.dirname(path.dirname(process.env.UIX_BASE_PATH)));
@@ -674,7 +674,7 @@ export class PluginsService {
 
   /**
    * Sets a flag telling the system to update the package next time the UI is restarted
-   * Dependend on OS support - currently only supported by the oznu/homebridge docker image
+   * Dependend on OS support - currently only supported by the homebridge/homebridge docker image
    */
   public async updateSelfOffline(client: EventEmitter) {
     client.emit('stdout', color.yellow(`${this.configService.name} has been scheduled to update on the next container restart.\n\r\n\r`));
@@ -1216,7 +1216,7 @@ export class PluginsService {
 
   /**
    * Returns the "latest" version for the provided module
-   * @param npmModuleName 
+   * @param npmModuleName
    */
   public async getNpmModuleLatestVersion(npmModuleName: string): Promise<string> {
     try {
@@ -1404,7 +1404,7 @@ export class PluginsService {
     clearTimeout(this.verifiedPluginsRetryTimeout);
     try {
       this.verifiedPlugins = (
-        await this.httpService.get('https://raw.githubusercontent.com/homebridge/verified/master/verified-plugins.json', {
+        await this.httpService.get('https://raw.githubusercontent.com/homebridge/verified/main/verified-plugins.json', {
           httpsAgent: null,
         }).toPromise()
       ).data;
