@@ -50,7 +50,7 @@ export class HomebridgeServiceHelper {
   // send logs to stdout instead of the homebridge.log
   private stdout: boolean;
 
-  // oznu/docker-homebridge options
+  // homebridge/docker-homebridge options
   public docker: boolean;
   private uid: number;
   private gid: number;
@@ -932,7 +932,7 @@ export class HomebridgeServiceHelper {
 
   /**
    * Test to see if the avahi-daemon service is running
-   * @returns 
+   * @returns
    */
   private async isAvahiDaemonRunning(): Promise<boolean> {
     if (os.platform() !== 'linux') {
@@ -1122,7 +1122,7 @@ export class HomebridgeServiceHelper {
 
   /**
    * Fix the permission on the docker storage directory
-   * This is only used when running in the oznu/docker-homebridge docker container
+   * This is only used when running in the homebridge/docker-homebridge docker container
    */
   private fixDockerPermissions() {
     try {
