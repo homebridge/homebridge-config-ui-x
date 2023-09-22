@@ -72,4 +72,4 @@ npm run test
 
 Additional language translations, or improvements to existing translations are most welcome.  Translations can be found here: 
 
-https://github.com/homebridge/homebridge-config-ui-x/tree/main/ui/src/i18n
+https://github.com/homebridge/homebridge-config-ui-x/tree/latest/ui/src/i18n
