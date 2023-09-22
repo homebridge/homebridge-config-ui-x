@@ -262,7 +262,7 @@ export class ConfigService {
   }
 
   /**
-   * Populate the required config for oznu/homebridge docker
+   * Populate the required config for homebridge/homebridge docker
    */
   private setConfigForDocker() {
     // forced config
