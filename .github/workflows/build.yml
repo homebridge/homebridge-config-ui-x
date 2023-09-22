@@ -2,7 +2,7 @@ name: Node Build
 
 on:
   push:
-    branches: [main]
+    branches: [latest]
   pull_request:
   workflow_dispatch:
 
@@ -13,7 +13,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-2019]
 
-    uses: homebridge/.github/.github/workflows/nodejs-build-and-test.yml@main
+    uses: homebridge/.github/.github/workflows/nodejs-build-and-test.yml@latest
     with:
       enable_coverage: true
       runs_on: ${{ matrix.os }}
@@ -90,6 +90,6 @@ jobs:
 
   lint:
     needs: build_and_test
-    uses: homebridge/.github/.github/workflows/eslint.yml@main
+    uses: homebridge/.github/.github/workflows/eslint.yml@latest
     with:
       install_cmd: npm ci && cd ui && npm ci
