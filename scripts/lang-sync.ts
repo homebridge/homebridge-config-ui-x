@@ -11,14 +11,14 @@ const basePath = path.dirname(__dirname);
 const langFiles = fs.readdirSync(path.resolve(basePath, 'ui/src/i18n'))
   .filter(x => x.endsWith('.json'));
 
-const master = fs.readJsonSync(path.resolve(basePath, 'ui/src/i18n/en.json'));
+const main = fs.readJsonSync(path.resolve(basePath, 'ui/src/i18n/en.json'));
 
 for (const lang of langFiles) {
   const langPath = path.resolve(basePath, 'ui/src/i18n', lang);
   const translationStrings = fs.readJsonSync(langPath);
 
   if (lang !== 'en.json') {
-    for (const [key, value] of Object.entries(master)) {
+    for (const [key, value] of Object.entries(main)) {
       if (!translationStrings.hasOwnProperty(key)) {
         translationStrings[key] = value;
       }

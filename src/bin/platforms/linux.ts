@@ -341,7 +341,7 @@ export class LinuxInstaller extends BasePlatform {
       const osInfo = await si.osInfo();
       if (osInfo.distro === 'Alpine Linux') {
         this.hbService.logger('Updating Node.js on Alpine Linux / Docker is not supported by this command.', 'fail');
-        this.hbService.logger('To update Node.js you should pull down the latest version of the oznu/homebridge Docker image.', 'fail');
+        this.hbService.logger('To update Node.js you should pull down the latest version of the homebridge/homebridge Docker image.', 'fail');
       } else {
         this.hbService.logger('Updating Node.js using this tool is not supported on your version of Linux.');
       }
