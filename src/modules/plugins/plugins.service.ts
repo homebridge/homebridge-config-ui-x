@@ -1404,7 +1404,7 @@ export class PluginsService {
     clearTimeout(this.verifiedPluginsRetryTimeout);
     try {
       this.verifiedPlugins = (
-        await this.httpService.get('https://raw.githubusercontent.com/homebridge/verified/main/verified-plugins.json', {
+        await this.httpService.get('https://raw.githubusercontent.com/homebridge/verified/latest/verified-plugins.json', {
           httpsAgent: null,
         }).toPromise()
       ).data;
