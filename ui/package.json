@@ -33,7 +33,7 @@
     "dayjs": "^1.11.3",
     "file-saver": "^2.0.5",
     "jquery": "^3.6.0",
-    "json5": "^2.2.1",
+    "json5": "^2.2.2",
     "lodash-es": "^4.17.21",
     "mdbootstrap": "^4.20.0",
     "mobile-detect": "^1.4.5",
