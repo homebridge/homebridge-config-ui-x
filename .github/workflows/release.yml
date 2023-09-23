@@ -8,7 +8,7 @@ on:
 
 jobs:
   build_and_test:
-    uses: homebridge/.github/.github/workflows/nodejs-build-and-test.yml@latest
+    uses: homebridge/.github/.github/workflows/nodejs-build-and-test.yml@main
     with:
       enable_coverage: true
       install_cmd: npm ci && cd ui && npm ci
@@ -20,7 +20,7 @@ jobs:
 
     if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
 
-    uses: homebridge/.github/.github/workflows/npm-publish.yml@latest
+    uses: homebridge/.github/.github/workflows/npm-publish.yml@main
     with:
       install_cmd: npm ci && cd ui && npm ci
     secrets:

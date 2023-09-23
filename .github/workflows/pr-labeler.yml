@@ -7,6 +7,6 @@ on:
 
 jobs:
   stale:
-    uses: homebridge/.github/.github/workflows/pr-labeler.yml@latest
+    uses: homebridge/.github/.github/workflows/pr-labeler.yml@main
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
