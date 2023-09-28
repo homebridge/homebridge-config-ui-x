@@ -2,6 +2,7 @@ name: Node Release
 
 on:
   push:
+    branches: [latest]
     tags:
       - '*.*.*'
   workflow_dispatch:
