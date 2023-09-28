@@ -50,7 +50,7 @@
     "popper.js": "^1.16.1",
     "qrcode": "^1.5.0",
     "rxjs": "^7.4.0",
-    "semver": "^7.3.6",
+    "semver": "^7.5.2",
     "socket.io-client": "^2.5.0",
     "tslib": "^2.1.0",
     "xterm": "^4.19.0",
