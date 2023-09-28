@@ -1,10 +1,11 @@
 name: Node Release
 
 on:
-  push:
-    branches: [latest]
-    tags:
-      - '*.*.*'
+# Removed publish on push, and forced manual release from github
+#  push:
+#    branches: [latest]
+#    tags:
+#      - '*.*.*'
   workflow_dispatch:
 
 jobs:
