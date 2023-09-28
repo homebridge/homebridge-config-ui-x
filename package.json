@@ -32,6 +32,7 @@
     "homebridge": ">=1.6.0"
   },
   "scripts": {
+    "check": "npm install && npm outdated",
     "watch": "concurrently \"npm run watch:ui\" \"npm run watch:server\"",
     "watch:server": "nodemon",
     "watch:ui": "npm run start --prefix ui",
@@ -82,7 +83,7 @@
     "reflect-metadata": "0.1.13",
     "rxjs": "7.5.6",
     "semver": "7.3.7",
-    "systeminformation": "5.12.3",
+    "systeminformation": "5.16.9",
     "tail": "2.2.4",
     "tar": "6.1.11",
     "tcp-port-used": "1.0.2",

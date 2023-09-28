@@ -1,3 +1,16 @@
+## 4.50.6 (2023-09-27)
+
+### Bug Fixes
+
+- **System:** Update comparison to timing safe ([1535](https://github.com/homebridge/homebridge-config-ui-x/pull/1535))
+
+### Other Changes
+
+- **i18n:** Update pt.json ([1503](https://github.com/homebridge/homebridge-config-ui-x/pull/1520))
+- **i18n:** Use verb form for buttons and menu items ([1533](https://github.com/homebridge/homebridge-config-ui-x/pull/1533))
+- **i18n:** Wait for custom UI ([1526](https://github.com/homebridge/homebridge-config-ui-x/pull/1526))
+- Updated npm dependencies
+
 ## 4.50.5 (2023-08-19)
 
 ### Notable Changes

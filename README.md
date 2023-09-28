@@ -17,15 +17,16 @@ Supported Languages: :gb: :de: :fr: :poland: :czech_republic: :ru: :cn: :hungary
 * View and control Homebridge accessories
 * Restart Homebridge
 * Backup and Restore your Homebridge instance
+* Set up and manage your Homebridge plugins as [child bridges](https://github.com/homebridge/homebridge/wiki/Child-Bridges)
 * and more...
 
-Homebridge Config UI X also provides a tool called [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) which makes it easy to setup Homebridge as a service on Linux/Raspbian, macOS and Windows 10.
+Homebridge Config UI X also provides a tool called [`hb-service`](https://github.com/homebridge/homebridge-config-ui-x/wiki/Homebridge-Service-Command) which makes it easy to set up Homebridge as a service on Linux/Raspbian, macOS and Windows 10.
 
 [![Status](screenshots/homebridge-config-ui-x-darkmode-status.png?2020-01-07)](#usage)
 
 # Installation Instructions
 
-For detailed instructions on how to setup Node.js and Homebridge with Homebridge Config UI X as a service see the guides on the wiki:
+For detailed instructions on how to set up Node.js and Homebridge with Homebridge Config UI X as a service, see the guides on the wiki:
 
 * <img src="https://user-images.githubusercontent.com/3979615/78118327-9853f200-7452-11ea-88aa-5e57ebcf3070.png" alt="homebridge-raspbian-image" height="16px" width="16px"/> [Setup Homebridge using the official Homebridge Raspberry Pi Image](https://github.com/homebridge/homebridge-raspbian-image/wiki/Getting-Started)
 * <img src="https://user-images.githubusercontent.com/3979615/59594350-07b45b80-9137-11e9-85fd-e75093ba91a4.png" alt="raspbian" height="16px" width="16px"/> [Setup Homebridge on a Raspberry Pi (Raspbian)](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Raspbian)
@@ -39,13 +40,13 @@ If your platform is not listed above, or you want to use your own service manage
 
 The default username is `admin` and the default password is `admin`.
 
-The UI can be accessed via web browser by default on port `8581` (eg. `http://localhost:8581`).
+The UI can be accessed via web browser by default on port `8581` (e.g. `http://localhost:8581`).
 
 # Usage
 
 ### Status Screen
 
-This shows an overview of your Homebridge system. The dashboard is widget based and completely customisable with a number of themes available.
+This shows an overview of your Homebridge system. The dashboard is widget-based and completely customisable with a number of themes available.
 
 ![Status](screenshots/homebridge-config-ui-x-status.png?2020-01-07)
 
@@ -61,7 +62,7 @@ You can configure supported plugins using the graphical settings editor, removin
 
 ### Configuration Screen
 
-The configuration screen allows you to modify your Homebridge `config.json`. The built in editor automatically syntax-checks your JSON and makes a backup of your config every time you make a change.
+The configuration screen allows you to modify your Homebridge `config.json`. The built-in editor automatically syntax-checks your JSON and makes a backup of your config every time you make a change.
 
 ![Config](screenshots/homebridge-config-ui-x-config.png?2020-01-07)
 
@@ -91,10 +92,7 @@ MS Internet Explorer (any version) is not supported!
 
 # Supported Node.js and Npm Versions
 
-While the Homebridge UI should work on Node.js 14+, only the following versions of Node.js are officially supported:
-
-* node v14.15.0 or higher
-* npm v6.4.1 or higher
+The Homebridge UI follows the same Node support schedule as Homebridge. See the [How-To-Update-Node.js](https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js) page in the Homebridge wiki for currently supported versions.
 
 You can check your current versions using these commands:
 
@@ -136,7 +134,7 @@ The Homebridge UI supports the [homebridge/homebridge](https://github.com/homebr
 
 #### 4. Ask on Discord
 
-Join the [Official Homebridge Discord](https://discord.gg/C87Pvq3) community and ask in the [#ui](https://discord.gg/C87Pvq3) channel.
+Join the [Official Homebridge Discord](https://discord.gg/C87Pvq3) community and ask in the [#ui-general](https://discord.gg/C87Pvq3) or [#ui-issues](https://discord.gg/C87Pvq3) channel.
 
 # Credit
 
