@@ -86,6 +86,6 @@ jobs:
 
   lint:
     needs: build_and_test
-    uses: homebridge/.github/.github/workflows/eslint.yml@latest
+    uses: homebridge/.github/.github/workflows/eslint.yml@main
     with:
       install_cmd: npm ci && cd ui && npm ci
