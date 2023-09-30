@@ -359,6 +359,11 @@ export class StatusService {
     }
 
     const defaultInterfaceName = await si.networkInterfaceDefault();
+
+    // These ts-ignore should be able to be removed in the next major release of 'systeminformation' (v6)
+    // See https://github.com/sebhildebrandt/systeminformation/issues/775#issuecomment-1741836906
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const defaultInterface = defaultInterfaceName ? (await si.networkInterfaces()).find(x => x.iface === defaultInterfaceName) : undefined;
 
     if (defaultInterface) {
