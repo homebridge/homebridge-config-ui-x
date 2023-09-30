@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { AxiosResponse, AxiosError, AxiosRequestHeaders, AxiosRequestConfig, InternalAxiosRequestConfig } from "axios";
+import { AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { of, throwError } from 'rxjs';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
