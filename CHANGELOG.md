@@ -1,3 +1,10 @@
+## BETA
+
+### Other Changes
+
+- **System:**
+  - Updated backend dependencies (#1571 and #1569)
+
 ## 4.50.6 (2023-09-28)
 
 ### Bug Fixes
