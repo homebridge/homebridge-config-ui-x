@@ -2,7 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { lt } from 'semver';
+import { ltr } from 'semver';
 import { throttleTime } from 'rxjs/operators';
 
 import { environment } from '@/environments/environment';
@@ -123,7 +123,7 @@ export class LayoutComponent implements OnInit {
       await this.$settings.onSettingsLoaded.toPromise();
     }
 
-    if (lt(this.$settings.uiVersion, environment.serverTarget, { includePrerelease: true })) {
+    if (ltr(this.$settings.uiVersion, environment.serverTarget, { includePrerelease: true })) {
       console.log(`Server restart required. UI Version: ${environment.serverTarget} - Server Version: ${this.$settings.uiVersion} `);
       const ref = this.$modal.open(ConfirmComponent);
 

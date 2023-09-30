@@ -120,9 +120,9 @@ export class SettingsComponent implements OnInit {
   async initNetworkingOptions() {
     try {
       const homebridgePackage = await this.$api.get('/status/homebridge-version').toPromise();
-      if (semver.gte(homebridgePackage.installedVersion, '1.3.0-beta.0', { includePrerelease: true })) {
+      if (semver.gtr(homebridgePackage.installedVersion, '1.3.0-beta.0', { includePrerelease: true })) {
         this.showNetworking = true;
-        this.getNetworkSettings();
+        await this.getNetworkSettings();
       }
       const onLinux = (
         this.$settings.env.runningInLinux ||
@@ -130,12 +130,12 @@ export class SettingsComponent implements OnInit {
         this.$settings.env.runningInSynologyPackage ||
         this.$settings.env.runningInPackageMode
       );
-      if (semver.gte(homebridgePackage.installedVersion, '1.4.0-beta.0', { includePrerelease: true })) {
+      if (semver.gtr(homebridgePackage.installedVersion, '1.4.0-beta.0', { includePrerelease: true })) {
         if (onLinux) {
           this.showAvahiMdnsOption = true;
         }
       }
-      if (semver.gte(homebridgePackage.installedVersion, '1.6.0-beta.0', { includePrerelease: true })) {
+      if (semver.gtr(homebridgePackage.installedVersion, '1.6.0-beta.0', { includePrerelease: true })) {
         if (onLinux) {
           this.showResolvedMdnsOption = true;
         }
