@@ -3,6 +3,7 @@
 ### Other Changes
 
 - **System:**
+  - Updated frontend dependencies (#1572)
   - Updated backend dependencies (#1571 and #1569)
 
 ## 4.50.6 (2023-09-28)

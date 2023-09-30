@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-import { gt } from 'semver';
+import { gtr } from 'semver';
 
 import { SettingsService } from '@/app/core/settings.service';
 import { ApiService } from '@/app/core/api.service';
@@ -51,15 +51,15 @@ export class PluginCardComponent implements OnInit {
   ngOnInit(): void {
     // check if the homebridge version supports disabled plugins
     this.canDisablePlugins = this.$settings.env.homebridgeVersion ?
-      gt(this.$settings.env.homebridgeVersion, '1.3.0-beta.46', { includePrerelease: true }) : false;
+      gtr(this.$settings.env.homebridgeVersion, '1.3.0-beta.46', { includePrerelease: true }) : false;
 
     // check if the homebridge version supports external bridges
     this.canManageBridgeSettings = this.$settings.env.homebridgeVersion ?
-      gt(this.$settings.env.homebridgeVersion, '1.3.0-beta.47', { includePrerelease: true }) : false;
+      gtr(this.$settings.env.homebridgeVersion, '1.3.0-beta.47', { includePrerelease: true }) : false;
 
     // check if the homebridge version supports stopping / starting child bridges
     this.canStopStartChildBridges = this.$settings.env.homebridgeVersion ?
-      gt(this.$settings.env.homebridgeVersion, '1.5.0-beta.1', { includePrerelease: true }) : false;
+      gtr(this.$settings.env.homebridgeVersion, '1.5.0-beta.1', { includePrerelease: true }) : false;
   }
 
   @Input() set childBridges(childBridges) {
