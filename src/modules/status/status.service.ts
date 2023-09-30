@@ -180,7 +180,7 @@ export class StatusService {
     // TODO: be able to specify in the ui the unit size (i.e. bytes, megabytes, gigabytes)
     const tx_rx_sec = (net[0].tx_sec + net[0].rx_sec) / 1024 / 1024;
 
-    // TODO: break out the sent and received figures to two separate stacked graphs 
+    // TODO: break out the sent and received figures to two separate stacked graphs
     // (these should ideally be positive/negative mirrored linecharts)
     return { net: net[0], point: tx_rx_sec };
   }
@@ -286,7 +286,7 @@ export class StatusService {
     client.emit('homebridge-status', await this.getHomebridgeStats());
 
     // ipc status events are only available in Homebridge 1.3.3 or later - and when running in service mode
-    if (this.configService.serviceMode && this.configService.homebridgeVersion && semver.gt(this.configService.homebridgeVersion, '1.3.3-beta.5', { includePrerelease: true })) {
+    if (this.configService.serviceMode && this.configService.homebridgeVersion && semver.gtr(this.configService.homebridgeVersion, '1.3.3-beta.5', { includePrerelease: true })) {
       homebridgeStatusChangeSub = this.homebridgeStatusChange.subscribe(async (status) => {
         client.emit('homebridge-status', await this.getHomebridgeStats());
       });
@@ -332,7 +332,7 @@ export class StatusService {
    * Check if homebridge is running on the local system
    */
   public async checkHomebridgeStatus() {
-    if (this.configService.serviceMode && this.configService.homebridgeVersion && semver.gt(this.configService.homebridgeVersion, '1.3.3-beta.5', { includePrerelease: true })) {
+    if (this.configService.serviceMode && this.configService.homebridgeVersion && semver.gtr(this.configService.homebridgeVersion, '1.3.3-beta.5', { includePrerelease: true })) {
       return this.homebridgeStatus;
     }
 
