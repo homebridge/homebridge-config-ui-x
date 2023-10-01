@@ -24,7 +24,6 @@ interface EnvInterface {
   runningInPackageMode: boolean;
   runningOnRaspberryPi: boolean;
   canShutdownRestartHost: boolean;
-  dockerOfflineUpdate: boolean;
   serviceMode: boolean;
   lang: string | null;
   temperatureUnits: 'c' | 'f';

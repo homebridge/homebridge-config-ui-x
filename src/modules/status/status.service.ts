@@ -285,8 +285,8 @@ export class StatusService {
 
     client.emit('homebridge-status', await this.getHomebridgeStats());
 
-    // ipc status events are only available in Homebridge 1.3.3 or later - and when running in service mode
-    if (this.configService.serviceMode && this.configService.homebridgeVersion && semver.satisfies(this.configService.homebridgeVersion, '1.3.3-beta.5', { includePrerelease: true })) {
+    // ipc status events are only available in Homebridge 1.3.3 or later (check removed in UI 5.0) - and when running in service mode
+    if (this.configService.serviceMode) {
       homebridgeStatusChangeSub = this.homebridgeStatusChange.subscribe(async (status) => {
         client.emit('homebridge-status', await this.getHomebridgeStats());
       });
@@ -332,7 +332,7 @@ export class StatusService {
    * Check if homebridge is running on the local system
    */
   public async checkHomebridgeStatus() {
-    if (this.configService.serviceMode && this.configService.homebridgeVersion && semver.satisfies(this.configService.homebridgeVersion, '1.3.3-beta.5', { includePrerelease: true })) {
+    if (this.configService.serviceMode) {
       return this.homebridgeStatus;
     }
 

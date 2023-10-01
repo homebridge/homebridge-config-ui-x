@@ -23,9 +23,6 @@ export class PluginCardComponent implements OnInit {
 
   private io = this.$ws.getExistingNamespace('child-bridges');
 
-  public canDisablePlugins = false;
-  public canManageBridgeSettings = false;
-
   public isMobile = this.$md.detect.mobile();
 
   private _childBridges = [];
@@ -34,7 +31,6 @@ export class PluginCardComponent implements OnInit {
   public allChildBridgesStopped = false;
   public childBridgeStatus = 'pending';
   public childBridgeRestartInProgress = false;
-  public canStopStartChildBridges = false;
 
   constructor(
     public $plugin: ManagePluginsService,
@@ -48,19 +44,7 @@ export class PluginCardComponent implements OnInit {
     private $md: MobileDetectService,
   ) { }
 
-  ngOnInit(): void {
-    // check if the homebridge version supports disabled plugins
-    this.canDisablePlugins = this.$settings.env.homebridgeVersion ?
-      satisfies(this.$settings.env.homebridgeVersion, '1.3.0-beta.46', { includePrerelease: true }) : false;
-
-    // check if the homebridge version supports external bridges
-    this.canManageBridgeSettings = this.$settings.env.homebridgeVersion ?
-      satisfies(this.$settings.env.homebridgeVersion, '1.3.0-beta.47', { includePrerelease: true }) : false;
-
-    // check if the homebridge version supports stopping / starting child bridges
-    this.canStopStartChildBridges = this.$settings.env.homebridgeVersion ?
-      satisfies(this.$settings.env.homebridgeVersion, '1.5.0-beta.1', { includePrerelease: true }) : false;
-  }
+  ngOnInit(): void {}
 
   @Input() set childBridges(childBridges) {
     this.hasChildBridges = childBridges.length > 0;
@@ -100,7 +84,7 @@ export class PluginCardComponent implements OnInit {
         // mark as disabled
         plugin.disabled = true;
         // stop all child bridges
-        if (this.hasChildBridges && this.canStopStartChildBridges) {
+        if (this.hasChildBridges) {
           this.doChildBridgeAction('stop');
         }
         this.$toastr.success(
@@ -130,7 +114,7 @@ export class PluginCardComponent implements OnInit {
         // mark as enabled
         plugin.disabled = false;
         // start all child bridges
-        if (this.hasChildBridges && this.canStopStartChildBridges) {
+        if (this.hasChildBridges) {
           this.doChildBridgeAction('start');
         }
         this.$toastr.success(

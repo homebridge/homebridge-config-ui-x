@@ -288,7 +288,7 @@ export class HomebridgeServiceHelper {
   }
 
   /**
-   * Trucate the log file to prevent large log files
+   * Truncate the log file to prevent large log files
    */
   private async truncateLog() {
     if (!await fs.pathExists(this.logPath)) {
@@ -426,20 +426,9 @@ export class HomebridgeServiceHelper {
       return;
     }
 
-    // allow the --strict-plugin-resolution flag on Homebridge v1.4.1 or later only
-    if (
-      this.homebridgePackage &&
-      process.env.UIX_STRICT_PLUGIN_RESOLUTION === '1' &&
-      semver.satisfies(this.homebridgePackage.version, '1.4.1-beta.1', { includePrerelease: true })
-    ) {
-      if (!this.homebridgeOpts.includes('--strict-plugin-resolution')) {
-        this.homebridgeOpts.push('--strict-plugin-resolution');
-      }
-    } else if (process.env.UIX_STRICT_PLUGIN_RESOLUTION === '1') {
-      const strictPluginIndex = this.homebridgeOpts.indexOf('--strict-plugin-resolution');
-      if (strictPluginIndex > -1) {
-        this.homebridgeOpts.splice(strictPluginIndex, 1);
-      }
+    // allow the --strict-plugin-resolution flag on Homebridge v1.4.1 or later only (check removed in UI 5.0)
+    if (!this.homebridgeOpts.includes('--strict-plugin-resolution')) {
+      this.homebridgeOpts.push('--strict-plugin-resolution');
     }
 
     if (this.homebridgeOpts.length) {
@@ -1092,11 +1081,9 @@ export class HomebridgeServiceHelper {
           this.homebridgeOpts.push('-D');
         }
 
-        // check if keep orphans should be enabled, only for Homebridge v1.0.2 and later
-        if (this.homebridgePackage && semver.satisfies(this.homebridgePackage.version, '1.0.2', { includePrerelease: true })) {
-          if (homebridgeStartupOptions.keepOrphans && !this.homebridgeOpts.includes('-K')) {
-            this.homebridgeOpts.push('-K');
-          }
+        // check if keep orphans should be enabled, only for Homebridge v1.0.2 and later (check removed in UI 5.0)
+        if (homebridgeStartupOptions.keepOrphans && !this.homebridgeOpts.includes('-K')) {
+          this.homebridgeOpts.push('-K');
         }
 
         // insecure mode is enabled by default, allow it to be removed if set to false

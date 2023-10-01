@@ -338,12 +338,6 @@ export class PluginsService {
       throw new Error(`Cannot uninstall ${pluginAction.name} from ${this.configService.name}.`);
     }
 
-    // legacy support for offline docker updates
-    if (pluginAction.name === this.configService.name && this.configService.dockerOfflineUpdate && pluginAction.version === 'latest') {
-      await this.updateSelfOffline(client);
-      return true;
-    }
-
     // convert 'latest' into a real version
     if (action === 'install' && pluginAction.version === 'latest') {
       pluginAction.version = await this.getNpmModuleLatestVersion(pluginAction.name);
@@ -478,27 +472,13 @@ export class PluginsService {
 
     const homebridgeVersion = semver.parse(homebridge.installedVersion);
 
-    // patch for homebridge 1.2.x to allow updates to newer versions of 1.2.x without 1.2.x being set to "latest"
-    if (
-      homebridgeVersion.major === 1 &&
-      homebridgeVersion.minor === 2 &&
-      semver.satisfies(homebridge.installedVersion, homebridge.latestVersion, { includePrerelease: true })
-    ) {
-      const versions = await this.getAvailablePluginVersions('homebridge');
-      if (versions.tags['release-1.2.x'] && semver.gt(versions.tags['release-1.2.x'], homebridge.installedVersion)) {
-        homebridge.updateAvailable = true;
-        homebridge.latestVersion = versions.tags['release-1.2.x'];
-      }
-    }
-    // end patch
-
     // show beta updates if the user is currently running a beta release
     if (
       homebridgeVersion.prerelease[0] === 'beta' &&
-      semver.satisfies(homebridge.installedVersion, homebridge.latestVersion, { includePrerelease: true })
+      semver.gt(homebridge.installedVersion, homebridge.latestVersion)
     ) {
       const versions = await this.getAvailablePluginVersions('homebridge');
-      if (versions.tags['beta'] && semver.satisfies(versions.tags['beta'], homebridge.installedVersion, { includePrerelease: true })) {
+      if (versions.tags['beta'] && semver.gt(versions.tags['beta'], homebridge.installedVersion)) {
         homebridge.updateAvailable = true;
         homebridge.latestVersion = versions.tags['beta'];
       }
@@ -538,22 +518,6 @@ export class PluginsService {
       installOptions.push('-g');
     }
 
-    // 1.2.x -> 1.3.0 upgrade set ciao as bridge advertiser
-    if (homebridge.installedVersion && homebridgeUpdateAction.version) {
-      const installedVersion = semver.parse(homebridge.installedVersion);
-      const targetVersion = semver.parse(homebridgeUpdateAction.version);
-      if (installedVersion.minor === 2 && targetVersion.minor > 2) {
-        try {
-          const config: HomebridgeConfig = await fs.readJson(this.configService.configPath);
-          config.bridge.advertiser = 'ciao';
-          await fs.writeJsonSync(this.configService.configPath, config);
-        } catch (e) {
-          this.logger.warn('Could not update config.json', e.message);
-        }
-      }
-    }
-    // end 1.2.x -> 1.3.0 upgrade
-
     await this.runNpmCommand(
       [...this.npm, 'install', ...installOptions, `${homebridge.name}@${homebridgeUpdateAction.version}`],
       installPath,
@@ -584,7 +548,7 @@ export class PluginsService {
       const npm = await this.parsePackageJson(pjson, npmPkg.path) as HomebridgePlugin & { showUpdateWarning?: boolean };
 
       // show the update warning if the installed version is below the minimum recommended
-      npm.showUpdateWarning = semver.lt(npm.installedVersion, '6.4.1');
+      npm.showUpdateWarning = semver.lt(npm.installedVersion, '9.8.1');
 
       this.npmPackage = npm;
       return npm;

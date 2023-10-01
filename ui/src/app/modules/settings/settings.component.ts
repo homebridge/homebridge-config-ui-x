@@ -5,7 +5,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { debounceTime } from 'rxjs/operators';
-import * as semver from 'semver';
 
 import { SettingsService } from '@/app/core/settings.service';
 import { ApiService } from '@/app/core/api.service';
@@ -120,25 +119,19 @@ export class SettingsComponent implements OnInit {
   async initNetworkingOptions() {
     try {
       const homebridgePackage = await this.$api.get('/status/homebridge-version').toPromise();
-      if (semver.satisfies(homebridgePackage.installedVersion, '1.3.0-beta.0', { includePrerelease: true })) {
-        this.showNetworking = true;
-        await this.getNetworkSettings();
-      }
+      this.showNetworking = true;
+      await this.getNetworkSettings();
       const onLinux = (
         this.$settings.env.runningInLinux ||
         this.$settings.env.runningInDocker ||
         this.$settings.env.runningInSynologyPackage ||
         this.$settings.env.runningInPackageMode
       );
-      if (semver.satisfies(homebridgePackage.installedVersion, '1.4.0-beta.0', { includePrerelease: true })) {
-        if (onLinux) {
-          this.showAvahiMdnsOption = true;
-        }
+      if (onLinux) {
+        this.showAvahiMdnsOption = true;
       }
-      if (semver.satisfies(homebridgePackage.installedVersion, '1.6.0-beta.0', { includePrerelease: true })) {
-        if (onLinux) {
-          this.showResolvedMdnsOption = true;
-        }
+      if (onLinux) {
+        this.showResolvedMdnsOption = true;
       }
     } catch (e) {
 

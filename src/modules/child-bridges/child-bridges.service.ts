@@ -1,5 +1,4 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import * as semver from 'semver';
 
 import { Logger } from '../../core/logger/logger.service';
 import { ConfigService } from '../../core/config/config.service';
@@ -55,18 +54,11 @@ export class ChildBridgesService {
 
   /**
    * Start / stop / restart a child bridge
-   * @param event 
-   * @param deviceId 
-   * @returns 
+   * @param event
+   * @param deviceId
+   * @returns
    */
   public stopStartRestartChildBridge(event: 'startChildBridge' | 'stopChildBridge' | 'restartChildBridge', deviceId: string) {
-    if (['startChildBridge', 'stopChildBridge'].includes(event)) {
-      if (!semver.satisfies(this.configService.homebridgeVersion, '>=1.5.0-beta.2', { includePrerelease: true })) {
-        this.logger.error('The stop child bridge requires Homebridge v1.5.0 or later');
-        throw new BadRequestException('This command is only available for Homebridge v1.5.0 or later');
-      }
-    }
-
     if (!this.configService.serviceMode) {
       this.logger.error('The restart child bridge command is only available in service mode');
       throw new BadRequestException('This command is only available in service mode');

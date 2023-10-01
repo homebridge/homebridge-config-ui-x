@@ -3,7 +3,6 @@ import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as crypto from 'crypto';
-import * as semver from 'semver';
 import * as _ from 'lodash';
 
 export interface HomebridgeConfig {
@@ -65,7 +64,6 @@ export class ConfigService {
 
   // docker settings
   public startupScript = path.resolve(this.storagePath, 'startup.sh');
-  public dockerOfflineUpdate = this.runningInDocker && semver.satisfies(process.env.CONFIG_UI_VERSION, '>=4.6.2 <=4.44.1', { includePrerelease: true });
 
   // package.json
   public package = fs.readJsonSync(path.resolve(process.env.UIX_BASE_PATH, 'package.json'));
@@ -210,7 +208,6 @@ export class ConfigService {
         runningInFreeBSD: this.runningInFreeBSD,
         runningOnRaspberryPi: this.runningOnRaspberryPi,
         canShutdownRestartHost: this.canShutdownRestartHost,
-        dockerOfflineUpdate: this.dockerOfflineUpdate,
         serviceMode: this.serviceMode,
         temperatureUnits: this.ui.tempUnits || 'c',
         lang: this.ui.lang === 'auto' ? null : this.ui.lang,
