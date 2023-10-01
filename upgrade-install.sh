@@ -74,7 +74,7 @@ echo ""
 
 echo "Running post-install scripts..."
 cd "$TARGET_PATH/lib/node_modules/homebridge-config-ui-x"
-npm rebuild --foreground-scripts --unsafe-perm node-pty-prebuilt-multiarch
+npm rebuild --foreground-scripts --unsafe-perm @homebridge/node-pty-prebuilt-multiarch
 if [ "$?" != "0" ]; then
   echo "Failed to rebuild."
   mv "$TARGET_PATH/lib/node_modules/.homebridge-config-ui-x.bak" "$TARGET_PATH/lib/node_modules/homebridge-config-ui-x"
