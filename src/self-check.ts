@@ -19,7 +19,7 @@ const logger = new Logger();
 function main() {
   // check if node-pty is built correctly
   try {
-    require('node-pty-prebuilt-multiarch');
+    require('@homebridge/node-pty-prebuilt-multiarch');
   } catch (e) {
     logger.error(e);
     logger.error(`[node-pty] Node.js ${process.version}`);
@@ -68,13 +68,13 @@ function main() {
 
 function tryRebuildNodePtyModule() {
   // using eval('require') here so it does not break with webpack
-  const modulePath = path.dirname(path.dirname(eval('require').resolve('node-pty-prebuilt-multiarch')));
+  const modulePath = path.dirname(path.dirname(eval('require').resolve('@homebridge/node-pty-prebuilt-multiarch')));
 
   logger.warn('[node-pty] Trying to rebuild automatically...');
   logger.warn(`[node-pty] Path: ${modulePath}`);
   try {
     if (process.env.UIX_USE_PNPM === '1' && process.env.UIX_CUSTOM_PLUGIN_PATH) {
-      child_process.execSync('pnpm rebuild node-pty-prebuilt-multiarch', {
+      child_process.execSync('pnpm rebuild @homebridge/node-pty-prebuilt-multiarch', {
         cwd: process.env.UIX_CUSTOM_PLUGIN_PATH,
         stdio: 'ignore',
       });

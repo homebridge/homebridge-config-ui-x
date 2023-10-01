@@ -7,7 +7,7 @@ on:
 
 jobs:
   build_and_test:
-    uses: homebridge/.github/.github/workflows/nodejs-build-and-test.yml@main
+    uses: homebridge/.github/.github/workflows/nodejs-build-and-test.yml@latest
     with:
       enable_coverage: true
       install_cmd: npm ci && cd ui && npm ci
@@ -16,7 +16,7 @@ jobs:
 
   lint:
     needs: build_and_test
-    uses: homebridge/.github/.github/workflows/eslint.yml@main
+    uses: homebridge/.github/.github/workflows/eslint.yml@latest
     with:
       install_cmd: npm ci && cd ui && npm ci
 
@@ -25,7 +25,7 @@ jobs:
 
     if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
 
-    uses: homebridge/.github/.github/workflows/npm-publish.yml@main
+    uses: homebridge/.github/.github/workflows/npm-publish.yml@latest
     with:
       tag: 'test'
       dynamically_adjust_version: true
