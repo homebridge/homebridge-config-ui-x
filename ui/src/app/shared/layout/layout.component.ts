@@ -123,7 +123,7 @@ export class LayoutComponent implements OnInit {
       await this.$settings.onSettingsLoaded.toPromise();
     }
 
-    if (!lt(this.$settings.uiVersion, environment.serverTarget)) {
+    if (lt(this.$settings.uiVersion, environment.serverTarget)) {
       console.log(`Server restart required. UI Version: ${environment.serverTarget} - Server Version: ${this.$settings.uiVersion} `);
       const ref = this.$modal.open(ConfirmComponent);
 
