@@ -159,6 +159,11 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       (data) => {
         if (this.pluginName === 'homebridge-config-ui-x') {
           this.updateSelf = true;
+          if (this.$settings.env.dockerOfflineUpdate && this.targetVersion === 'latest') {
+            this.$router.navigate(['/platform-tools/docker/restart-container']);
+            this.activeModal.close();
+            return;
+          }
         }
         this.$router.navigate(['/plugins']);
         this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);

@@ -285,8 +285,8 @@ export class StatusService {
 
     client.emit('homebridge-status', await this.getHomebridgeStats());
 
-    // ipc status events are only available in Homebridge 1.3.3 or later (check removed in UI 5.0) - and when running in service mode
-    if (this.configService.serviceMode) {
+    // ipc status events are only available in Homebridge 1.3.3 or later - and when running in service mode
+    if (this.configService.serviceMode && this.configService.homebridgeVersion && semver.gt(this.configService.homebridgeVersion, '1.3.3-beta.5')) {
       homebridgeStatusChangeSub = this.homebridgeStatusChange.subscribe(async (status) => {
         client.emit('homebridge-status', await this.getHomebridgeStats());
       });
@@ -332,7 +332,7 @@ export class StatusService {
    * Check if homebridge is running on the local system
    */
   public async checkHomebridgeStatus() {
-    if (this.configService.serviceMode) {
+    if (this.configService.serviceMode && this.configService.homebridgeVersion && semver.gt(this.configService.homebridgeVersion, '1.3.3-beta.5')) {
       return this.homebridgeStatus;
     }
 
@@ -359,7 +359,6 @@ export class StatusService {
     }
 
     const defaultInterfaceName = await si.networkInterfaceDefault();
-
     // These ts-ignore should be able to be removed in the next major release of 'systeminformation' (v6)
     // See https://github.com/sebhildebrandt/systeminformation/issues/775#issuecomment-1741836906
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
