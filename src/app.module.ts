@@ -44,4 +44,5 @@ import { ChildBridgesModule } from './modules/child-bridges/child-bridges.module
     AppGateway,
   ],
 })
+
 export class AppModule { }

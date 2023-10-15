@@ -51,15 +51,15 @@ export class PluginCardComponent implements OnInit {
   ngOnInit(): void {
     // check if the homebridge version supports disabled plugins
     this.canDisablePlugins = this.$settings.env.homebridgeVersion ?
-      gt(this.$settings.env.homebridgeVersion, '1.3.0-beta.46', { includePrerelease: true }) : false;
+      gt(this.$settings.env.homebridgeVersion, '1.3.0-beta.46') : false;
 
     // check if the homebridge version supports external bridges
     this.canManageBridgeSettings = this.$settings.env.homebridgeVersion ?
-      gt(this.$settings.env.homebridgeVersion, '1.3.0-beta.47', { includePrerelease: true }) : false;
+      gt(this.$settings.env.homebridgeVersion, '1.3.0-beta.47') : false;
 
     // check if the homebridge version supports stopping / starting child bridges
     this.canStopStartChildBridges = this.$settings.env.homebridgeVersion ?
-      gt(this.$settings.env.homebridgeVersion, '1.5.0-beta.1', { includePrerelease: true }) : false;
+      gt(this.$settings.env.homebridgeVersion, '1.5.0-beta.1') : false;
   }
 
   @Input() set childBridges(childBridges) {
