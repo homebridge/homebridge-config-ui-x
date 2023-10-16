@@ -1,9 +1,12 @@
-## BETA
+## Beta-4.50.7
+
+### Notable Changes
 
 ⚠️ Node 16 has reached end-of-life and is no longer supported by the Homebridge UI.
 
 - Starting with v4.50.7, the Homebridge UI will no longer work with Node 16, only Node 18 or 20
 - Homebridge UI follows the same Node support schedule as Homebridge. See the [How-To-Update-Node.js](https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js) page in the Homebridge wiki for more information
+- **Plugins:** Use plugin display name if available ([1458](https://github.com/homebridge/homebridge-config-ui-x/pull/1582))
 
 ### Other Changes
 
