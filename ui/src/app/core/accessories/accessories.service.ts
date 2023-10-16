@@ -76,7 +76,7 @@ export class AccessoriesService {
     }
 
     // subscribe to accessory events
-    this.io.socket.on('accessories-data', (data) => {
+    this.io.socket.on('accessories-data', (data: unknown) => {
       this.parseServices(data);
       this.generateHelpers();
       this.sortIntoRooms();
@@ -92,16 +92,16 @@ export class AccessoriesService {
 
     // when a new instance is available, do a self reload
     this.io.socket.on('accessories-reload-required', async () => {
-      await this.stop();
+      this.stop();
       await this.start();
     });
 
-    this.io.socket.on('accessory-control-failure', (message) => {
+    this.io.socket.on('accessory-control-failure', (message: string) => {
       this.$toastr.error(message);
     });
 
     // when the system is ready for accessory control
-    this.io.socket.on('accessories-ready-for-control', (message) => {
+    this.io.socket.on('accessories-ready-for-control', () => {
       console.log('ready for control');
       this.readyForControl = true;
     });
@@ -251,7 +251,7 @@ export class AccessoriesService {
     // send update request to server
     this.io.request('save-layout', { user: this.$auth.user.username, layout: this.accessoryLayout })
       .subscribe(
-        data => this.layoutSaved.next(undefined),
+        () => this.layoutSaved.next(undefined),
         err => this.$toastr.error(err.message, 'Failed to save page layout'),
       );
   }
@@ -270,7 +270,7 @@ export class AccessoriesService {
             return null;
           }
 
-          characteristic.setValue = (value: number | string | boolean) => new Promise((resolve, reject) => {
+          characteristic.setValue = (value: number | string | boolean) => new Promise((resolve) => {
             if (!this.readyForControl) {
               resolve(undefined);
             }
@@ -304,8 +304,8 @@ export class AccessoriesService {
     ref.componentInstance.service = service;
 
     ref.result
-      .then(x => this.saveLayout())
-      .catch(x => this.saveLayout());
+      .then(() => this.saveLayout())
+      .catch(() => this.saveLayout());
 
     return false;
   }

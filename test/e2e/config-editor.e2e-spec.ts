@@ -866,7 +866,7 @@ describe('ConfigEditorController (e2e)', () => {
       },
     });
 
-    // there is a race condition here whereby we might read the backup file 
+    // there is a race condition here whereby we might read the backup file
     // path before the deletion has actually happened, causing the test to fail,
     // so I have added a 1 second delay.
     await new Promise((resolve) => setTimeout(resolve, 1000));

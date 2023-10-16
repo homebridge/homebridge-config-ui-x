@@ -482,7 +482,7 @@ export class PluginsService {
     if (
       homebridgeVersion.major === 1 &&
       homebridgeVersion.minor === 2 &&
-      semver.gt(homebridge.installedVersion, homebridge.latestVersion, { includePrerelease: true })
+      semver.gt(homebridge.installedVersion, homebridge.latestVersion)
     ) {
       const versions = await this.getAvailablePluginVersions('homebridge');
       if (versions.tags['release-1.2.x'] && semver.gt(versions.tags['release-1.2.x'], homebridge.installedVersion)) {
@@ -495,10 +495,10 @@ export class PluginsService {
     // show beta updates if the user is currently running a beta release
     if (
       homebridgeVersion.prerelease[0] === 'beta' &&
-      semver.gt(homebridge.installedVersion, homebridge.latestVersion, { includePrerelease: true })
+      semver.gt(homebridge.installedVersion, homebridge.latestVersion)
     ) {
       const versions = await this.getAvailablePluginVersions('homebridge');
-      if (versions.tags['beta'] && semver.gt(versions.tags['beta'], homebridge.installedVersion, { includePrerelease: true })) {
+      if (versions.tags['beta'] && semver.gt(versions.tags['beta'], homebridge.installedVersion)) {
         homebridge.updateAvailable = true;
         homebridge.latestVersion = versions.tags['beta'];
       }
@@ -1416,5 +1416,4 @@ export class PluginsService {
       }, 60000);
     }
   }
-
 }
