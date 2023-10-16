@@ -72,7 +72,7 @@
     "class-validator": "0.14.0",
     "commander": "7.2.0",
     "dayjs": "1.11.10",
-    "fastify": "4.24.2",
+    "fastify": "4.23.2",
     "fs-extra": "10.1.0",
     "node-cache": "5.1.2",
     "node-schedule": "2.1.1",
