@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { minVersion, gte } from 'semver';
+import { gte, minVersion } from 'semver';
 import { ToastrService } from 'ngx-toastr';
 
 import { SettingsService } from '@/app/core/settings.service';
@@ -190,7 +190,7 @@ export class ManagePluginsService {
 
   private async checkNodeVersion(plugin): Promise<boolean> {
     if (plugin.engines && plugin.engines.node) {
-      if (gte(this.$settings.env.nodeVersion, minVersion(plugin.engines.node), { includePrerelease: true })) {
+      if (gte(this.$settings.env.nodeVersion, minVersion(plugin.engines.node))) {
         return true;
       }
 

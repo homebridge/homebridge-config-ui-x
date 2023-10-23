@@ -204,5 +204,4 @@ export class Win32Installer extends BasePlatform {
       this.hbService.logger(e);
     }
   }
-
 }

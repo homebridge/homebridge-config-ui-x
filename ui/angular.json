@@ -64,6 +64,11 @@
               "mobile-detect"
             ],
             "aot": false,
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "./node_modules"
+              ]
+            },
             "vendorChunk": true,
             "extractLicenses": false,
             "buildOptimizer": false,

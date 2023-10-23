@@ -7,18 +7,18 @@ $image-path: "../../img";
   src: local('Font Awesome 6 Free');
 }
 
-@import "~@fortawesome/fontawesome-free/scss/fontawesome.scss";
-@import "~@fortawesome/fontawesome-free/scss/solid.scss";
-@import "~@fortawesome/fontawesome-free/scss/regular.scss";
-@import "~@fortawesome/fontawesome-free/scss/brands.scss";
-@import "~@fortawesome/fontawesome-free/scss/v4-shims.scss";
+@import "@fortawesome/fontawesome-free/scss/fontawesome.scss";
+@import "@fortawesome/fontawesome-free/scss/solid.scss";
+@import "@fortawesome/fontawesome-free/scss/regular.scss";
+@import "@fortawesome/fontawesome-free/scss/brands.scss";
+@import "@fortawesome/fontawesome-free/scss/v4-shims.scss";
 
-@import "~bootstrap/scss/bootstrap";
-@import "~mdbootstrap/scss/mdb-free";
+@import "bootstrap/scss/bootstrap";
+@import "mdbootstrap/scss/mdb-free";
 
-@import "~xterm/css/xterm.css";
-@import "~nouislider/distribute/nouislider.min.css";
-@import "~dragula/dist/dragula.min.css";
+@import "xterm/css/xterm.css";
+@import "nouislider/distribute/nouislider.min.css";
+@import "dragula/dist/dragula.min.css";
 
 @import "./base/checkbox.scss";
 @import "./base/layout.scss";

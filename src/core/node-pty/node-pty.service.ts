@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import * as pty from 'node-pty-prebuilt-multiarch';
+import * as pty from '@homebridge/node-pty-prebuilt-multiarch';
 
 @Injectable()
 export class NodePtyService {
