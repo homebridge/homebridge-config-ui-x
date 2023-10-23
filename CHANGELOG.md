@@ -13,10 +13,10 @@
 ### Other Changes
 
 - **System:**
+  - Fixes for `Script https://deb.nodesource.com/setup_X is now deprecated` ( #1586 #1560 #1589 )
   - Updated backend dependencies (#1571 and #1569)
   - Updated frontend dependencies (#1572)
-  - Update @homebridge/node-pty-prebuilt-multiarch to version v0.11.1 ( Node 20 Support and upstream refresh )
-  - Update @homebridge/node-pty-prebuilt-multiarch to version v0.11.3 (#1583)
+  - Update @homebridge/node-pty-prebuilt-multiarch to version v0.11.7 ( Node 20 Support and upstream refresh )
 
 ## 4.50.6 (2023-09-28)
 

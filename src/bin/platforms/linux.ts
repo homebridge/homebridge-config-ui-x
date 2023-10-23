@@ -412,12 +412,24 @@ export class LinuxInstaller extends BasePlatform {
     try {
       const majorVersion = semver.parse(job.target).major;
       // update apt (and accept release info changes)
-      child_process.execSync('apt-get update --allow-releaseinfo-change', {
+      child_process.execSync('apt-get update --allow-releaseinfo-change && sudo apt-get install -y ca-certificates curl gnupg', {
         stdio: 'inherit',
       });
 
+      // Update certificates
+      child_process.execSync(`curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor --yes -o /etc/apt/keyrings/nodes`, {
+        stdio: 'inherit',
+      });
+
+      // Clean up old nodesource keyring
+      if (await fs.pathExists('/usr/share/keyrings/nodesource.gpg')) {
+        child_process.execSync(`rm -f /usr/share/keyrings/nodesource.gpg`, {
+          stdio: 'inherit',
+        });
+      }
+
       // update repo
-      child_process.execSync(`curl -sL https://deb.nodesource.com/setup_${majorVersion}.x | bash -`, {
+      child_process.execSync(`echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${majorVersion}.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list`, {
         stdio: 'inherit',
       });
 
@@ -429,7 +441,7 @@ export class LinuxInstaller extends BasePlatform {
       }
 
       // update node.js
-      child_process.execSync('apt-get install -y nodejs', {
+      child_process.execSync('apt-get update && apt-get install -y nodejs', {
         stdio: 'inherit',
       });
     } catch (e) {
