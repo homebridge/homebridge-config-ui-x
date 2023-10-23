@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { AxiosResponse, AxiosError } from 'axios';
+import { AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { of, throwError } from 'rxjs';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
@@ -126,7 +126,7 @@ describe('StatusController (e2e)', () => {
     const response: AxiosResponse<any> = {
       data: {},
       headers: {},
-      config: { url: 'http://localhost:51826' },
+      config: { url: 'http://localhost:51826' } as InternalAxiosRequestConfig,
       status: 404,
       statusText: 'Not Found',
     };
@@ -154,7 +154,7 @@ describe('StatusController (e2e)', () => {
       isAxiosError: true,
       code: null,
       response: null,
-      config: { url: 'http://localhost:51826' },
+      config: { url: 'http://localhost:51826' } as InternalAxiosRequestConfig,
     };
 
     jest.spyOn(httpService, 'get')
@@ -202,7 +202,7 @@ describe('StatusController (e2e)', () => {
     const response: AxiosResponse<any> = {
       data,
       headers: {},
-      config: { url: 'https://nodejs.org/dist/index.json' },
+      config: { url: 'https://nodejs.org/dist/index.json' } as InternalAxiosRequestConfig,
       status: 200,
       statusText: 'OK',
     };

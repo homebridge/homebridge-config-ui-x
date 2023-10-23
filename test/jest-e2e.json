@@ -8,6 +8,5 @@
     "^.+\\.(t|j)s$": "ts-jest"
   },
   "collectCoverageFrom": ["**/*.ts"],
-  "setupFiles": ["./test/setup.ts"],
   "coveragePathIgnorePatterns": ["/ui/", "/test/", "/dist/", "/scripts/"]
 }

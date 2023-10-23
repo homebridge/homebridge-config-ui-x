@@ -3,7 +3,7 @@ import * as fs from 'fs-extra';
 import { EventEmitter } from 'events';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-import type { IPty } from 'node-pty-prebuilt-multiarch';
+import type { IPty } from '@homebridge/node-pty-prebuilt-multiarch';
 
 import { ConfigService } from '../../src/core/config/config.service';
 import { TerminalModule } from '../../src/modules/platform-tools/terminal/terminal.module';

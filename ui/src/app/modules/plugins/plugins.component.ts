@@ -133,7 +133,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
     if (
       this.$settings.env.recommendChildBridges &&
       this.$settings.env.serviceMode &&
-      gt(this.$settings.env.homebridgeVersion, '1.5.0-beta.1', { includePrerelease: true }) &&
+      gt(this.$settings.env.homebridgeVersion, '1.5.0-beta.1') &&
       schema &&
       schema.pluginType === 'platform'
     ) {
@@ -157,5 +157,4 @@ export class PluginsComponent implements OnInit, OnDestroy {
     }
     this.io.end();
   }
-
 }
