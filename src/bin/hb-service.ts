@@ -288,7 +288,7 @@ export class HomebridgeServiceHelper {
   }
 
   /**
-   * Trucate the log file to prevent large log files
+   * Truncate the log file to prevent large log files
    */
   private async truncateLog() {
     if (!await fs.pathExists(this.logPath)) {
@@ -430,7 +430,7 @@ export class HomebridgeServiceHelper {
     if (
       this.homebridgePackage &&
       process.env.UIX_STRICT_PLUGIN_RESOLUTION === '1' &&
-      semver.gte(this.homebridgePackage.version, '1.4.1-beta.1', { includePrerelease: true })
+      semver.gte(this.homebridgePackage.version, '1.4.1-beta.1')
     ) {
       if (!this.homebridgeOpts.includes('--strict-plugin-resolution')) {
         this.homebridgeOpts.push('--strict-plugin-resolution');
@@ -653,6 +653,10 @@ export class HomebridgeServiceHelper {
    */
   public async printPostInstallInstructions() {
     const defaultAdapter = await si.networkInterfaceDefault();
+    // These ts-ignore should be able to be removed in the next major release of 'systeminformation' (v6)
+    // See https://github.com/sebhildebrandt/systeminformation/issues/775#issuecomment-1741836906
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const defaultInterface = (await si.networkInterfaces()).find(x => x.iface === defaultAdapter);
 
     console.log('\nManage Homebridge by going to one of the following in your browser:\n');
@@ -1089,7 +1093,7 @@ export class HomebridgeServiceHelper {
         }
 
         // check if keep orphans should be enabled, only for Homebridge v1.0.2 and later
-        if (this.homebridgePackage && semver.gte(this.homebridgePackage.version, '1.0.2', { includePrerelease: true })) {
+        if (this.homebridgePackage && semver.gte(this.homebridgePackage.version, '1.0.2')) {
           if (homebridgeStartupOptions.keepOrphans && !this.homebridgeOpts.includes('-K')) {
             this.homebridgeOpts.push('-K');
           }

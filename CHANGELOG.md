@@ -1,3 +1,23 @@
+## 4.51.0 (2023-10-16)
+
+### Notable Changes
+
+- **Node Support**
+  - ⚠️ Node 16 has reached end-of-life and is no longer supported by the Homebridge UI.
+    - Starting with v4.50.7, the Homebridge UI will no longer work with Node 16, only Node 18 and 20
+    - Homebridge UI follows the same Node support schedule as Homebridge. See the [How-To-Update-Node.js](https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js) page in the Homebridge wiki for more information
+
+- **Plugins**
+  - Use plugin display name if available (#1582)
+
+### Other Changes
+
+- **System:**
+  - Fixes for `Script https://deb.nodesource.com/setup_X is now deprecated` ( #1586 #1560 #1589 )
+  - Updated backend dependencies (#1571 and #1569)
+  - Updated frontend dependencies (#1572)
+  - Update @homebridge/node-pty-prebuilt-multiarch to version v0.11.7 ( Node 20 Support and upstream refresh )
+
 ## 4.50.6 (2023-09-28)
 
 ### Bug Fixes

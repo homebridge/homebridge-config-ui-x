@@ -31,10 +31,10 @@ export class ChildBridgesService {
   }
 
   /**
- * Socket Handler - Per Client
- * Start watching for child bridge status events
- * @param client
- */
+   * Socket Handler - Per Client
+   * Start watching for child bridge status events
+   * @param client
+   */
   public async watchChildBridgeStatus(client) {
     const listener = (data) => {
       client.emit('child-bridge-status-update', data);
@@ -55,9 +55,9 @@ export class ChildBridgesService {
 
   /**
    * Start / stop / restart a child bridge
-   * @param event 
-   * @param deviceId 
-   * @returns 
+   * @param event
+   * @param deviceId
+   * @returns
    */
   public stopStartRestartChildBridge(event: 'startChildBridge' | 'stopChildBridge' | 'restartChildBridge', deviceId: string) {
     if (['startChildBridge', 'stopChildBridge'].includes(event)) {

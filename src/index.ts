@@ -98,5 +98,4 @@ class HomebridgeConfigUi {
     const accessories = [];
     callback(accessories);
   }
-
 }

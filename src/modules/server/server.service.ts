@@ -109,7 +109,7 @@ export class ServerService {
 
   /**
    * Return a single device pairing
-   * @param deviceId 
+   * @param deviceId
    */
   public async getDevicePairingById(deviceId: string) {
     const persistPath = path.join(this.configService.storagePath, 'persist');
@@ -343,6 +343,10 @@ export class ServerService {
   public async getSystemNetworkInterfaces(): Promise<si.Systeminformation.NetworkInterfacesData[]> {
     const fromCache: si.Systeminformation.NetworkInterfacesData[] = this.serverServiceCache.get('network-interfaces');
 
+    // These ts-ignore should be able to be removed in the next major release of 'systeminformation' (v6)
+    // See https://github.com/sebhildebrandt/systeminformation/issues/775#issuecomment-1741836906
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const networkInterfaces = fromCache || (await si.networkInterfaces()).filter((adapter) => {
       return !adapter.internal
         && (adapter.ip4 || (adapter.ip6));
