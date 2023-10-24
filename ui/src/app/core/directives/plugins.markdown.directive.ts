@@ -1,9 +1,9 @@
 import { Directive, ElementRef, OnInit } from '@angular/core';
 
 @Directive({
-  selector: '[hrefTargetBlank]',
+  selector: 'markdown',
 })
-export class HrefTargetBlankDirective implements OnInit {
+export class PluginsMarkdownDirective implements OnInit {
 
   constructor(
     private el: ElementRef,

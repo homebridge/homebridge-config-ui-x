@@ -17,7 +17,7 @@
       </div>
       <hr>
     </div>
-    <markdown hrefTargetBlank class="plugin-md" [data]="changeLog"></markdown>
+    <markdown class="plugin-md" [data]="changeLog"></markdown>
   </div>
   <div *ngIf="!onlineUpdateOk" class="modal-body">
     <h4 class="primary-text text-center" [translate]="'plugins.manage.label_manual_update_required'">
@@ -41,7 +41,7 @@ hb-service start</pre>
   <div *ngIf="showReleaseNotes && !actionComplete" class="modal-body plugin-modal-body">
     <h3>Release Notes</h3>
     <h5>{{ release.name }}</h5>
-    <markdown hrefTargetBlank class="plugin-md" [data]="release.changelog"></markdown>
+    <markdown class="plugin-md" [data]="release.changelog"></markdown>
   </div>
   <div class="modal-footer" *ngIf="!onlineUpdateOk || actionComplete || showReleaseNotes || actionFailed">
     <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')"

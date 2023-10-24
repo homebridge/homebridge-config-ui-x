@@ -7,7 +7,7 @@ import { SpinnerComponent } from './components/spinner/spinner.component';
 import { ConvertTempPipe } from './pipes/convert-temp.pipe';
 import { ReplacePipe } from './pipes/replace.pipe';
 import { ExternalLinkIconPipe } from './pipes/external-link-icon.pipe';
-import { HrefTargetBlankDirective } from './directives/href-target-blank.directive';
+import { PluginsMarkdownDirective } from './directives/plugins.markdown.directive';
 import { LongClickDirective } from './directives/longclick.directive';
 import { BackupRestoreComponent } from './backup-restore/backup-restore.component';
 import { ScheduledBackupsComponent } from './backup-restore/scheduled-backups/scheduled-backups.component';
@@ -24,7 +24,7 @@ import { JsonSchemaFormPatchDirective } from './directives/json-schema-form-patc
         ConvertTempPipe,
         ReplacePipe,
         ExternalLinkIconPipe,
-        HrefTargetBlankDirective,
+        PluginsMarkdownDirective,
         LongClickDirective,
         RtlDirective,
         JsonSchemaFormPatchDirective,
@@ -46,7 +46,7 @@ import { JsonSchemaFormPatchDirective } from './directives/json-schema-form-patc
         ConvertTempPipe,
         ReplacePipe,
         ExternalLinkIconPipe,
-        HrefTargetBlankDirective,
+        PluginsMarkdownDirective,
         LongClickDirective,
         RtlDirective,
         JsonSchemaFormPatchDirective,
