@@ -28,6 +28,7 @@ jobs:
     secrets:
       npm_auth_token: ${{ secrets.npm_token }}
   build:
+    needs: publish
     name: Attach Artifact
     runs-on: ubuntu-latest
 
