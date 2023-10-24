@@ -52,7 +52,7 @@
     </a>
     <a href="javascript:void(0)" class="card-link" *ngIf="plugin.updateAvailable" (click)="$plugin.updatePlugin(plugin)"
        placement="bottom" ngbTooltip="{{'plugins.tooltip_update_plugin_to' | translate:plugin }}" container="body"
-       openDelay="150" [translate]="'plugins.button_update'">
+       openDelay="150" [translate]="'plugins.button_update'" triggers="hover">
       {{ 'plugins.button_update' | translate | uppercase }}
     </a>
     <a href="javascript:void(0)" class="card-link" *ngIf="!plugin.installedVersion"
