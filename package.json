@@ -72,6 +72,7 @@
     "class-validator": "0.14.0",
     "commander": "7.2.0",
     "dayjs": "1.11.10",
+    "emoji-js": "^3.7.0",
     "fastify": "4.23.2",
     "fs-extra": "10.1.0",
     "node-cache": "5.1.2",
