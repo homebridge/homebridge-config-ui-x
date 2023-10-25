@@ -11,7 +11,7 @@
   </div>
   <div class="modal-body">
     <div>
-      <markdown hrefTargetBlank class="plugin-md" [data]="schema.headerDisplay | interpolateMd"
+      <markdown class="plugin-md" [data]="schema.headerDisplay | interpolateMd"
         *ngIf="schema.headerDisplay"></markdown>
     </div>
 
@@ -50,7 +50,7 @@
     </div>
 
     <div class="mt-3">
-      <markdown hrefTargetBlank class="plugin-md" [data]="schema.footerDisplay | interpolateMd"
+      <markdown class="plugin-md" [data]="schema.footerDisplay | interpolateMd"
         *ngIf="schema.footerDisplay"></markdown>
     </div>
   </div>

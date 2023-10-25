@@ -336,6 +336,11 @@ export class LinuxInstaller extends BasePlatform {
             `Wanted: >=2.28. Installed: ${glibcVersion}`, 'fail');
           process.exit(1);
         }
+        if (semver.gte(job.target, '20.0.0') && glibcVersion < 2.29) {
+          this.hbService.logger('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
+            `Wanted: >=2.29. Installed: ${glibcVersion}`, 'fail');
+          process.exit(1);
+        }
       }
     } catch (e) {
       const osInfo = await si.osInfo();
@@ -429,7 +434,7 @@ export class LinuxInstaller extends BasePlatform {
       }
 
       // update repo
-      child_process.execSync(`echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${majorVersion}.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list`, {
+      child_process.execSync(`echo "deb [signed-by=/etc/apt/keyrings/nodes] https://deb.nodesource.com/node_${majorVersion}.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list`, {
         stdio: 'inherit',
       });
 

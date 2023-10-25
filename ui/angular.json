@@ -61,7 +61,8 @@
               "xterm",
               "xterm-addon-fit",
               "xterm-addon-web-links",
-              "mobile-detect"
+              "mobile-detect",
+              "emoji-js"
             ],
             "aot": false,
             "stylePreprocessorOptions": {

@@ -1,10 +1,23 @@
+# Change Log
+
+All notable changes to homebridge-config-ui-x will be documented in this file.
+
+## 4.51.1 (2023-10-25)
+
+### Bug Fixes
+
+- Blocks update-node from updating to version 20 on versions of Linux that don't support it and prevents this issue `node: /usr/lib/arm-linux-gnueabihf/libstdc++.so.6: version 'GLIBCXX_3.4.26' not found (required by node)` ([#3453](https://github.com/homebridge/homebridge/issues/3453))
+- Fix for unable to update NodeSource based nodejs version ([#1603](https://github.com/homebridge/homebridge-config-ui-x/pull/1603))
+- Colon Markdown emojis are not parsed as they are on GitHub ([#1601](https://github.com/homebridge/homebridge-config-ui-x/pull/1601))
+- Prevent tooltip from displaying after Node.js modal ([#1600](https://github.com/homebridge/homebridge-config-ui-x/pull/1600))
+
 ## 4.51.0 (2023-10-23)
 
 ### Notable Changes
 
 - **Node Support**
   - ⚠️ Node 16 has reached end-of-life and is no longer supported by the Homebridge UI.
-    - Starting with v4.50.7, the Homebridge UI will no longer work with Node 16, only Node 18 and 20
+    - Starting with v4.51.0, the Homebridge UI will no longer work with Node 16, only Node 18 and 20
     - Homebridge UI follows the same Node support schedule as Homebridge. See the [How-To-Update-Node.js](https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js) page in the Homebridge wiki for more information
 
 - **Plugins**
