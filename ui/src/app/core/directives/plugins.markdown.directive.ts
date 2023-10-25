@@ -1,9 +1,10 @@
 import { Directive, ElementRef, OnInit } from '@angular/core';
+import { EmojiConvertor } from 'emoji-js';
 
 @Directive({
-  selector: '[hrefTargetBlank]',
+  selector: 'markdown',
 })
-export class HrefTargetBlankDirective implements OnInit {
+export class PluginsMarkdownDirective implements OnInit {
 
   constructor(
     private el: ElementRef,
@@ -16,6 +17,10 @@ export class HrefTargetBlankDirective implements OnInit {
       a.target = '_blank';
       a.rel = 'noopener noreferrer';
     });
+
+    // replace colon emojis
+    const emoji = new EmojiConvertor();
+    this.el.nativeElement.innerHTML = emoji.replace_colons(this.el.nativeElement.innerHTML);
   }
 
 }
