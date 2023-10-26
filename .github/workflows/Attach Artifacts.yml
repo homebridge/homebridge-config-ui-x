@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag - must not start with 'v''
+        description: 'Tag - must not start with v'
         required: true
 
 jobs:
