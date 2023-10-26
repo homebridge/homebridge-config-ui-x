@@ -419,6 +419,8 @@ export class LinuxInstaller extends BasePlatform {
     this.hbService.logger('Updating from NodeSource...');
 
     try {
+
+      await this.glibcVersionCheck(job.target);
       const majorVersion = semver.parse(job.target).major;
       // update apt (and accept release info changes)
       child_process.execSync('apt-get update --allow-releaseinfo-change && sudo apt-get install -y ca-certificates curl gnupg', {
