@@ -2,6 +2,13 @@
 
 All notable changes to homebridge-config-ui-x will be documented in this file.
 
+## 4.51.2 (2023-10-27)
+
+### Bug Fixes
+
+- Improved guard rails around the NodeJS 20 update for environments that can not support NodeJS 20 (#1604)
+- Include commentary in the release notes about the possiblity of needing to run `sudo hb-service rebuild` after updating, and how to determine if your system is compatible with NodeJS 20.
+  
 ## 4.51.1 (2023-10-25)
 
 ### Bug Fixes
