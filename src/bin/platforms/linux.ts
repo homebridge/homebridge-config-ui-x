@@ -311,6 +311,25 @@ export class LinuxInstaller extends BasePlatform {
     }
   }
 
+  private async glibcVersionCheck(target: string) {
+    const glibcVersion = parseFloat(child_process.execSync('getconf GNU_LIBC_VERSION 2>/dev/null').toString().split('glibc')[1].trim());
+    if (glibcVersion < 2.23) {
+      this.hbService.logger('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
+        `Wanted: >=2.23. Installed: ${glibcVersion}`, 'fail');
+      process.exit(1);
+    }
+    if (semver.gte(target, '18.0.0') && glibcVersion < 2.28) {
+      this.hbService.logger('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
+        `Wanted: >=2.28. Installed: ${glibcVersion}`, 'fail');
+      process.exit(1);
+    }
+    if (semver.gte(target, '20.0.0') && glibcVersion < 2.29) {
+      this.hbService.logger('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
+        `Wanted: >=2.29. Installed: ${glibcVersion}`, 'fail');
+      process.exit(1);
+    }
+  }
+
   /**
    * Update Node.js from the tarball archives
    */
@@ -325,22 +344,7 @@ export class LinuxInstaller extends BasePlatform {
           process.exit(1);
         }
       } else {
-        const glibcVersion = parseFloat(child_process.execSync('getconf GNU_LIBC_VERSION 2>/dev/null').toString().split('glibc')[1].trim());
-        if (glibcVersion < 2.23) {
-          this.hbService.logger('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
-            `Wanted: >=2.23. Installed: ${glibcVersion}`, 'fail');
-          process.exit(1);
-        }
-        if (semver.gte(job.target, '18.0.0') && glibcVersion < 2.28) {
-          this.hbService.logger('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
-            `Wanted: >=2.28. Installed: ${glibcVersion}`, 'fail');
-          process.exit(1);
-        }
-        if (semver.gte(job.target, '20.0.0') && glibcVersion < 2.29) {
-          this.hbService.logger('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
-            `Wanted: >=2.29. Installed: ${glibcVersion}`, 'fail');
-          process.exit(1);
-        }
+        await this.glibcVersionCheck(job.target);
       }
     } catch (e) {
       const osInfo = await si.osInfo();
@@ -415,6 +419,8 @@ export class LinuxInstaller extends BasePlatform {
     this.hbService.logger('Updating from NodeSource...');
 
     try {
+
+      await this.glibcVersionCheck(job.target);
       const majorVersion = semver.parse(job.target).major;
       // update apt (and accept release info changes)
       child_process.execSync('apt-get update --allow-releaseinfo-change && sudo apt-get install -y ca-certificates curl gnupg', {
@@ -422,6 +428,10 @@ export class LinuxInstaller extends BasePlatform {
       });
 
       // Update certificates
+      child_process.execSync('mkdir -p /etc/apt/keyrings', {
+        stdio: 'inherit',
+      });
+
       child_process.execSync('curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor --yes -o /etc/apt/keyrings/nodes', {
         stdio: 'inherit',
       });
