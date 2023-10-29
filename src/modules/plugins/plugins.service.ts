@@ -840,11 +840,24 @@ export class PluginsService {
 
     // if loading a homebridge beta returned pre-defined help text
     if (plugin.name === 'homebridge' && plugin.latestVersion?.includes('beta')) {
+      // Query the list of branches for the repo, if the request doesn't work it doesn't matter too much
+      let betaBranch: string;
+
+      try {
+        // Find the first branch that starts with "beta"
+        betaBranch = (await this.httpService.get('https://api.github.com/repos/homebridge/homebridge/branches').toPromise())
+          .data
+          .find((branch: any) => branch.name.startsWith('beta'))
+          ?.name;
+      } catch (e) {
+        this.logger.error(`Failed to get list of branches from GitHub: ${e.message}`);
+      }
+
       return {
         name: 'v' + plugin.latestVersion,
         changelog: 'Thank you for helping improve Homebridge by testing the beta build of Homebridge.\n\n\n' +
-          'To see what needs testing or to report issues: https://github.com/homebridge/homebridge/issues\n\n\n' +
-          'See the commit history for recent changes: https://github.com/homebridge/homebridge/commits/beta'
+          'To see what needs testing or to report issues: https://github.com/homebridge/homebridge/issues' +
+          `${betaBranch && `\n\n\nSee the commit history for recent changes: https://github.com/homebridge/homebridge/commits/${betaBranch}`}`,
       };
     }
 
