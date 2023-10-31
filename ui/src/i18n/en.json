@@ -190,7 +190,7 @@
     "plugins.manage.message_confirm_enable": "Are you sure you want to enable {{ pluginName }}?",
     "plugins.manage.message_install_alternate_version": "Install Alternate Version",
     "plugins.manage.message_select_version_to_install": "Select the version to install",
-    "plugins.manage.message_thanks_for_updating": "Thanks for installing the latest version of {{ pluginName }}.",
+    "plugins.manage.message_thanks_for_updating": "Thanks for installing the {{ targetVersion }} version of {{ pluginName }}.",
     "plugins.manage.message_thanks_for_updating_restart": "Please restart Homebridge for the changes to apply. Alternatively, if you have this plugin running in child bridges, you can close this modal and restart these instead.",
     "plugins.manage.message_uninstall_remove_config_required": "If you are permanently removing this plugin, make sure you remove any config for this plugin in the config.json before restarting Homebridge.",
     "plugins.manage.message_uninstall_remove_confirmation": "Are you sure you want to uninstall {{ pluginName }}?",
