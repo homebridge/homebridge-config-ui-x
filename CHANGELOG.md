@@ -23,8 +23,12 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 
 ### Other Changes
 
+- `hb-service` will now refuse to install `node` versions less than `16.18.0`
+- Plugin node warning screen will appear when running a version of `node` lower than `18.15.0` (bumped up from `14.15.0`)
+- UI node warning screen will appear when running a version of `node` lower than `18.15.0` (bumped up from `10.17.0`)
 - Obtain correct beta branch name for Homebridge (and UI) (https://github.com/homebridge/homebridge-config-ui-x/commit/212b3eb1d5cb3ccda01fe2c3be711b80af4d5bf6)
 - Rename pre-release npm tag from `test` to `beta` for consistency with other Homebridge repositories (https://github.com/homebridge/homebridge-config-ui-x/commit/86ea73ffd0b35f372a164ee42e17a996905cffb6)
+- Updated dependencies
 
 ## 4.51.2 (2023-10-27)
 
