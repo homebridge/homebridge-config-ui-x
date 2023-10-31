@@ -1,4 +1,5 @@
-name: Manual Attach Artifacts
+name: Manually Attach Artifacts ( If the automation fails )
+run-name: Manually Attach Artifacts against ${{ github.event.inputs.tag }}
 
 on:
   workflow_dispatch:
@@ -30,10 +31,16 @@ jobs:
         run: |
           export npm_config_prefix=$(pwd)/package
           npm install -g homebridge-config-ui-x@${{ github.event.inputs.tag }}
+
+      - name: Remove invalid node-pty node-gyp run
+        run: |
+          rm -rf $(pwd)/package/lib/node_modules/homebridge-config-ui-x/node_modules/@homebridge/node-pty-prebuilt-multiarch/build
+
       - name: Create Bundle
         run: |
           tar -C $(pwd)/package --owner=0 --group=0 --format=posix -czvf homebridge-config-ui-x-${{ github.event.inputs.tag }}.tar.gz .
           shasum -a 256 homebridge-config-ui-x-${{ github.event.inputs.tag }}.tar.gz > SHASUMS256.txt
+
       - name: Attach Bundle
         uses: AButler/upload-release-assets@v2.0
         with:

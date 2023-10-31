@@ -4,16 +4,21 @@
   </div>
   <div [hidden]="!onlineUpdateOk || actionComplete || showReleaseNotes" id="plugin-log-output" class="modal-body"></div>
   <div *ngIf="actionComplete" class="modal-body plugin-modal-body">
-    <div *ngIf="updateSelf">
+    <div *ngIf="justUpdatedPlugin">
       <h3 class="text-center primary-text" [translate]="'platform.version.title_service_restart_required'">
         Restart Required
       </h3>
-      <p class="text-center grey-text" [translate]="'plugins.manage.message_thanks_for_upgrading_ui'">
-        Thanks for installing the latest version of the Homebridge UI.
+      <p class="text-center grey-text" [translate]="'plugins.manage.message_thanks_for_updating'">
+        Thanks for installing the latest version of {{ pluginName }}.
+      </p>
+      <p *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(pluginName)" class="text-center grey-text" [translate]="'plugins.manage.message_thanks_for_updating_restart'">
+        Please restart Homebridge for the changes to apply. Alternatively, if you have this plugin running in child bridges, you can close this modal and restart these instead.
       </p>
       <div class="text-center">
         <button type="button" class="btn btn-primary" (click)="onRestartHomebridgeClick()"
           [translate]="'plugins.manage.button_restart_now'">Restart Homebridge Now</button>
+        <button *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(pluginName)" type="button" class="btn btn-primary" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')"
+          [translate]="'form.button_close'">Close</button>
       </div>
       <hr>
     </div>
@@ -39,7 +44,8 @@ hb-service start</pre>
     <hr>
   </div>
   <div *ngIf="showReleaseNotes && !actionComplete" class="modal-body plugin-modal-body">
-    <h3>Release Notes</h3>
+    <h3 *ngIf="!updateToBeta" [translate]="'plugins.manage.label_release_notes'">Release Notes</h3>
+    <h3 *ngIf="updateToBeta" [translate]="'plugins.manage.label_release_notes_beta'">Beta Information</h3>
     <h5>{{ release.name }}</h5>
     <markdown class="plugin-md" [data]="release.changelog"></markdown>
   </div>

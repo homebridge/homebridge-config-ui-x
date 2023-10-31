@@ -2,19 +2,43 @@
 
 All notable changes to homebridge-config-ui-x will be documented in this file.
 
+## BETA 4.52.0 (2023-XX-XX)
+
+### Notable Changes
+
+- Show UI and plugin updates for newer beta versions when already running a beta version of the plugin
+  - Note: this only works when using an npm tag called `beta`
+- Show 'Restart Homebridge Now' modal (with additional messaging for child bridges) after any plugin update, not just the UI
+
+### i18n Changes
+
+- The following new language strings have been added/updated to each language file - calling on all our translators to continue your hard work!
+  - ADDED:
+    - `plugins.manage.label_release_notes`
+    - `plugins.manage.label_release_notes_beta`
+    - `plugins.manage.message_thanks_for_updating_restart`
+    - `plugins.status_update_beta_available`
+  - UPDATED:
+    - `plugins.manage.message_thanks_for_updating`
+
+### Other Changes
+
+- Obtain correct beta branch name for Homebridge (and UI) (https://github.com/homebridge/homebridge-config-ui-x/commit/212b3eb1d5cb3ccda01fe2c3be711b80af4d5bf6)
+- Rename pre-release npm tag from `test` to `beta` for consistency with other Homebridge repositories (https://github.com/homebridge/homebridge-config-ui-x/commit/86ea73ffd0b35f372a164ee42e17a996905cffb6)
+
 ## 4.51.2 (2023-10-27)
 
 ### Bug Fixes
 
-- Improved guard rails around the NodeJS 20 update for environments that can not support NodeJS 20 (#1604)
-- Include commentary in the release notes about the possiblity of needing to run `sudo hb-service rebuild` after updating, and how to determine if your system is compatible with NodeJS 20.
+- Improved guard rails around the Node.js 20 update for environments that can not support Node.js 20 (#1604)
+- Include commentary in the release notes about the possibility of needing to run `sudo hb-service rebuild` after updating, and how to determine if your system is compatible with Node.js 20.
   
 ## 4.51.1 (2023-10-25)
 
 ### Bug Fixes
 
 - Blocks update-node from updating to version 20 on versions of Linux that don't support it and prevents this issue `node: /usr/lib/arm-linux-gnueabihf/libstdc++.so.6: version 'GLIBCXX_3.4.26' not found (required by node)` ([#3453](https://github.com/homebridge/homebridge/issues/3453))
-- Fix for unable to update NodeSource based nodejs version ([#1603](https://github.com/homebridge/homebridge-config-ui-x/pull/1603))
+- Fix for unable to update NodeSource based Node.js version ([#1603](https://github.com/homebridge/homebridge-config-ui-x/pull/1603))
 - Colon Markdown emojis are not parsed as they are on GitHub ([#1601](https://github.com/homebridge/homebridge-config-ui-x/pull/1601))
 - Prevent tooltip from displaying after Node.js modal ([#1600](https://github.com/homebridge/homebridge-config-ui-x/pull/1600))
 
@@ -104,9 +128,9 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 
 ### Bug Fixes
 
-- **Dashboard**: Fix an issue displaying the log viewer and termial widgets on Chrome > 104 ([#1400](https://github.com/oznu/homebridge-config-ui-x/issues/1400))
+- **Dashboard**: Fix an issue displaying the log viewer and terminal widgets on Chrome > 104 ([#1400](https://github.com/oznu/homebridge-config-ui-x/issues/1400))
 - **Backups:** Fixed an issue restoring backups when the Homebridge storage directory is a symbolic link
-- **Backups:** All symbolic links are dereferenced when performing a backup (the raw symlink is backed up, not what it pointed to)
+- **Backups:** All symbolic links are de-referenced when performing a backup (the raw symlink is backed up, not what it pointed to)
 
 ### Other Changes
 
@@ -144,7 +168,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
   - Debian-based Linux (via apt package): requires apt package update (=>1.0.27)
   - Docker: requires image update (=>2022-07-08)
   - Synology DSM 7: requires package update via DSM Package Center (=>3.0.7)
-  - If the new install / update process fails, it will automatically fallback to using the standard `npm` update method
+  - If the new install / update process fails, it will automatically fall back to using the standard `npm` update method
 
 ### Other Changes
 
@@ -154,8 +178,8 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 
 ### Bug Fixes
 
-- **Backups:** Fixed an issue that could prevent backups being created on Synology DSM due to not being able read the `#recycle` directory
-- **System:** Set a 60 second timeout on the pre-start job to clean up stale temporary npm directories on Linux running via `hb-service`; this should fix the errors some users were seeing when the task took more than the 90 seconds systemd allows by default ([#1371](https://github.com/oznu/homebridge-config-ui-x/issues/1371))
+- **Backups:** Fixed an issue that could prevent backups being created on Synology DSM due to not being able to read the `#recycle` directory
+- **System:** Set a 60-second timeout on the pre-start job to clean up stale temporary npm directories on Linux running via `hb-service`; this should fix the errors some users were seeing when the task took more than the 90 seconds systemd allows by default ([#1371](https://github.com/oznu/homebridge-config-ui-x/issues/1371))
 
 ## 4.48.1 (2022-06-24)
 
@@ -163,7 +187,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 
 - **System** Faster, and hopefully more reliable, updater for the Homebridge UI on macOS, Linux, Docker and FreeBSD
   - This will only apply to updates after v4.48.0, not updating to v4.48.0
-  - If the new update process fails, it will fallback to using the standard `npm` update method automatically
+  - If the new update process fails, it will fall back to using the standard `npm` update method automatically
   - Linux (via apt package): requires apt package update (=>1.0.25)
   - Linux / macOS / FreeBSD (setup via `hb-service install`): no changes required
   - Docker: may require image update (=>2022-06-24)
@@ -194,7 +218,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 ### Notable Changes
 
 - **System:** [@ohmantics](https://github.com/ohmantics) added FreeBSD support to [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) ([#1349](https://github.com/oznu/homebridge-config-ui-x/pull/1349))
-  - Users running FreeBSD can now setup Homebridge as a service using the `hb-service install` command
+  - Users running FreeBSD can now set up Homebridge as a service using the `hb-service install` command
   - Also supports running inside TrueNAS Jails (tested with a FreeBSD 13.1 Jail)
 
 ### Bug Fixes
@@ -214,8 +238,8 @@ The following features have been added, but will not be active until the **upcom
 
 - **Plugins:** If a child bridge is not paired with HomeKit, a pairing icon will show on the plugin tile
 - **Plugins:** Add ability to stop / start a plugin's child bridges
-- **Plugins:** When disabling a plugin, any of it's child bridges will be stopped
-- **Plugins:** When enabling a plugin, any of it's child bridges already registered in the current Homebridge process will be re-started
+- **Plugins:** When disabling a plugin, any of its child bridges will be stopped
+- **Plugins:** When enabling a plugin, any of its child bridges already registered in the current Homebridge process will be re-started
 
 ### Other changes
 
@@ -265,7 +289,7 @@ The following features have been added, but will not be active until the **upcom
 - **Dashboard:** Start showing Node.js update warning icon for users running < Node.js v14.15.0
 - **Dashboard:** Removed npm version from the System Information widget
 - **System:** Changes to support Homebridge `apt` package installation
-- **System:** Fresh installs on Linux will have the default mdns advertiser set to `avahi` if the `avahi-daemon` service is running
+- **System:** Fresh installations on Linux will have the default mdns advertiser set to `avahi` if the `avahi-daemon` service is running
 
 ## 4.43.1 (2022-04-23)
 
@@ -354,7 +378,7 @@ The following features have been added, but will not be active until the **upcom
 ### Other Changes
 
 - **i18n:** Improvements to Catalan language translations ([#1138](https://github.com/oznu/homebridge-config-ui-x/pull/1138))
-- **i18n:** Improvements to Brazillian Portuguese language translations ([#1139](https://github.com/oznu/homebridge-config-ui-x/pull/1139))
+- **i18n:** Improvements to Brazilian Portuguese language translations ([#1139](https://github.com/oznu/homebridge-config-ui-x/pull/1139))
 - **i18n:** Improvements to Thai language translations ([#1141](https://github.com/oznu/homebridge-config-ui-x/pull/1141))
 - **i18n:** Improvements to Simplified Chinese language translations ([#1153](https://github.com/oznu/homebridge-config-ui-x/pull/1153))
 - **Accessory Control:** Updated accessory categories ([#1154](https://github.com/oznu/homebridge-config-ui-x/issues/1154))
@@ -469,7 +493,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed ([cur
 - **i18n:** Macedonian (mk) language added by [@dimovskidamjan](https://github.com/dimovskidamjan) ([#1011](https://github.com/oznu/homebridge-config-ui-x/pull/1011))
   - The Homebridge UI is now available in 24 different languages!
 - **Plugins:** The following features have been added to assist plugin developers building [custom plugin user interfaces](https://github.com/homebridge/plugin-ui-utils):
-  - Added an option to retrive a list of cached accessories for the plugin using the `homebridge.getCachedAccessories` method
+  - Added an option to retrieve a list of cached accessories for the plugin using the `homebridge.getCachedAccessories` method
 
 ### Other Changes
 
@@ -504,7 +528,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 
 ### Bug Fixes
 
-- **Auth:** Fix an issue that prevented the "Login" button from being enabled when auto filling credentials on iOS ([#993](https://github.com/oznu/homebridge-config-ui-x/pull/993))
+- **Auth:** Fix an issue that prevented the "Login" button from being enabled when autofilling credentials on iOS ([#993](https://github.com/oznu/homebridge-config-ui-x/pull/993))
 
 ## 4.35.0 (2020-11-30)
 
@@ -558,7 +582,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 - **i18n:** Improvements to Simplified Chinese language translations ([#942](https://github.com/oznu/homebridge-config-ui-x/pull/942))
 - **i18n:** Improvements to German language translations ([#946](https://github.com/oznu/homebridge-config-ui-x/pull/946))
 - **i18n:** Improvements to Spanish language translations ([#950](https://github.com/oznu/homebridge-config-ui-x/pull/950))
-- **API**: Added REST API endpoints to lookup and update the config for a single plugin, see the [Swagger API documentation](https://github.com/oznu/homebridge-config-ui-x/wiki/API-Reference) for details
+- **API**: Added REST API endpoints to look up and update the config for a single plugin, see the [Swagger API documentation](https://github.com/oznu/homebridge-config-ui-x/wiki/API-Reference) for details
 - **System**: Display a warning in the UI when the client (browser) is running a newer version than the server - this can happen if the service is not restarted after updating the Homebridge UI
 
 ## 4.32.0 (2020-11-06)
@@ -592,7 +616,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 
 - **Backup/Restore:** Full instance backups are now automatically made daily (01:15) ([#660](https://github.com/oznu/homebridge-config-ui-x/issues/660))
   - Backup archives will be kept for 7 days before being removed
-  - Backup archives will stored in your Homebridge config folder (`./backups/instance-backups`)
+  - Backup archives will be stored in your Homebridge config folder (`./backups/instance-backups`)
   - Users can customise the directory that backups are saved to by setting the [`scheduledBackupPath`](https://github.com/oznu/homebridge-config-ui-x/wiki/Config-Options#scheduledbackuppath) option - this allows you to have the automated backups archives saved to a network share or backup drive
   - Users can download these scheduled backups by opening the existing [Backup / Restore](https://github.com/homebridge/homebridge/wiki/Backup-and-Restore) tool
   - Added [REST API endpoints](https://github.com/oznu/homebridge-config-ui-x/wiki/API-Reference) for getting the list of automated backups, and downloading an existing backup archive
@@ -620,7 +644,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 
 - **System:** Initial support for Node.js v15 and npm v7, however please stay on the current LTS version of Node.js (currently v12.19.0) ([#904](https://github.com/oznu/homebridge-config-ui-x/issues/904))
 - **Config Editor:** Fixed a bug that prevented the purging of config.json backups ([#898](https://github.com/oznu/homebridge-config-ui-x/issues/898))
-- **Ring Plugin:** Fixed an issue that prevented two factor authentication codes with leading zeros from being accepted when linking a Ring Account ([#dgreif/ring#471](https://github.com/dgreif/ring/issues/471))
+- **Ring Plugin:** Fixed an issue that prevented two-factor authentication codes with leading zeros from being accepted when linking a Ring Account ([#dgreif/ring#471](https://github.com/dgreif/ring/issues/471))
 
 ### Other Changes
 
@@ -637,15 +661,15 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 
 ### Notable Changes
 
-- **Plugins:** Added the ability to rollback to a previous version of a plugin, or install the beta/test version of a plugin
-- **Homebridge:** Added the ability to rollback to a previous version of Homebridge, or install the latest beta version of Homebridge ([#877](https://github.com/oznu/homebridge-config-ui-x/issues/877))
+- **Plugins:** Added the ability to roll back to a previous version of a plugin, or install the beta/test version of a plugin
+- **Homebridge:** Added the ability to roll back to a previous version of Homebridge, or install the latest beta version of Homebridge ([#877](https://github.com/oznu/homebridge-config-ui-x/issues/877))
   - Click the Homebridge version on the status dashboard to access this feature
 - **Config Editor:** Automatic backups of the `config.json` file are now saved to `./backups/config-backups/` to reduce clutter in the Homebridge storage folder ([#732](https://github.com/oznu/homebridge-config-ui-x/pull/732))
   - Existing config backup files will be moved on next restart
 - **Restart:** Made it more obvious which button to click when you need to restart Homebridge
 - **Restart:** The restart page now shows separate statues for the UI and Homebridge
 - **Restart:** Users running with [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) will now be prompted to view the Homebridge logs if the Homebridge service is taking a long time to come back online after a restart
-- **i18n:** Brazillian Portuguese (pt-BR) language added by [@zearthur99](https://github.com/zearthur99) ([#880](https://github.com/oznu/homebridge-config-ui-x/pull/880))
+- **i18n:** Brazilian Portuguese (pt-BR) language added by [@zearthur99](https://github.com/zearthur99) ([#880](https://github.com/oznu/homebridge-config-ui-x/pull/880))
   - The Homebridge UI is now available in 21 different languages!
 
 ### Other Changes
@@ -680,7 +704,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 
 ### Other Changes
 
-- **API**: Added REST API endpoints to lookup the plugin type and plugin alias that are needed to configure the plugin, see the [Swagger API documentation](https://github.com/oznu/homebridge-config-ui-x/wiki/API-Reference) for details
+- **API**: Added REST API endpoints to look up the plugin type and plugin alias that are needed to configure the plugin, see the [Swagger API documentation](https://github.com/oznu/homebridge-config-ui-x/wiki/API-Reference) for details
 
 ## 4.27.2 (2020-09-25)
 
@@ -693,7 +717,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 - **i18n:** Improvements to Spanish language translations ([#837](https://github.com/oznu/homebridge-config-ui-x/pull/837))
 - **i18n:** Improvements to German language translations ([#834](https://github.com/oznu/homebridge-config-ui-x/pull/834))
 - **i18n:** Improvements to Swedish language translations ([#850](https://github.com/oznu/homebridge-config-ui-x/pull/850))
-- **API**: Added REST API endpoints to lookup a single plugin from NPM, see the [Swagger API documentation](https://github.com/oznu/homebridge-config-ui-x/wiki/API-Reference) for details
+- **API**: Added REST API endpoints to look up a single plugin from NPM, see the [Swagger API documentation](https://github.com/oznu/homebridge-config-ui-x/wiki/API-Reference) for details
 
 ### Bug Fixes
 
@@ -792,8 +816,8 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 
 ### Notable Changes
 
-- **Auth:** Two Factor Authentication codes are now only valid for a single login only
-- **Auth:** Two Factor Authentication codes are now valid for a window of +1
+- **Auth:** Two-Factor Authentication codes are now only valid for a single login only
+- **Auth:** Two-Factor Authentication codes are now valid for a window of +1
 
 ### Other Changes
 
@@ -838,7 +862,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 ### Notable Changes
 
 - **API:** Added Swagger API Documentation; you can access this via `/swagger` (this is the same API already in use by the web client)
-- **Auth:** Added the ability to secure your Homebridge UI user account with **Two Factor Authentication**, drop-down menu -> _User Accounts_ -> _Setup 2FA_
+- **Auth:** Added the ability to secure your Homebridge UI user account with **Two-Factor Authentication**, drop-down menu -> _User Accounts_ -> _Setup 2FA_
 - **Login:** Custom wallpaper can now be added by added a `ui-wallpaper.jpg` file in your Homebridge storage directory (and leaving the `loginWallpaper` config option blank) ([#697](https://github.com/oznu/homebridge-config-ui-x/issues/690))
 - **Login:** Custom wallpaper changes will now break the browser cache ([#700](https://github.com/oznu/homebridge-config-ui-x/issues/700))
 - **i18n:** Portuguese language translation added by [@SamuelMagano](https://github.com/SamuelMagano) ([#698](https://github.com/oznu/homebridge-config-ui-x/pull/698), [#708](https://github.com/oznu/homebridge-config-ui-x/pull/708))
@@ -859,7 +883,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 
 ### Notable Changes
 
-- **Server:** Added the ability to unpair selected bridges / cameras / TVs without needed to reset the main Homebridge instance, this feature is available from the drop down menu -> _Homebridge Settings_
+- **Server:** Added the ability to unpair selected bridges / cameras / TVs without needed to reset the main Homebridge instance, this feature is available from the drop-down menu -> _Homebridge Settings_
 - **hb-service:** Users can now remove individual accessories from the accessory cache, drop-down menu -> _Homebridge Settings_ -> _Remove Single Cached Accessory_ ([#202](https://github.com/oznu/homebridge-config-ui-x/issues/202))
 - **i18n:** Slovenian language translation added by [@mitchoklemen](https://github.com/mitchoklemen) ([#694](https://github.com/oznu/homebridge-config-ui-x/pull/694))
 
@@ -903,7 +927,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 
 ### Bug Fixes
 
-- **Plugins:** Fixed a bug that prevented the plugins from loading when there was an bad file in the global node_modules directory ([#657](https://github.com/oznu/homebridge-config-ui-x/issues/657))
+- **Plugins:** Fixed a bug that prevented the plugins from loading when there was a bad file in the global node_modules directory ([#657](https://github.com/oznu/homebridge-config-ui-x/issues/657))
 
 ## 4.17.1 (2020-04-29)
 
@@ -977,7 +1001,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 
 ### Other Changes
 
-- **Plugins:** The service will not longer attempt to check if updates are available for plugins that have `"private": true` set in their `package.json` file
+- **Plugins:** The service will no longer attempt to check if updates are available for plugins that have `"private": true` set in their `package.json` file
 - Updated npm dependencies
 
 ### Bug Fixes
@@ -992,7 +1016,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 
 ### Bug Fixes
 
-- **System:** When updating Homebridge, the release notes will now be shown prior to the update occuring
+- **System:** When updating Homebridge, the release notes will now be shown prior to the update occurring
 - **hb-service:** improved discovery of Homebridge install path
 
 ## 4.13.0 (2020-03-18)
@@ -1005,7 +1029,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 
 - **i18n:** The display of dates (in the Clock widget for example) are now localised ([#528](https://github.com/oznu/homebridge-config-ui-x/issues/528))
 - **Accessory Control:** If controlling an accessory fails, the error message is now shown in the UI as a toast notification
-- **hb-service:** Linux only: Updated the generated systemd unit file, `homebridge.service`, to allow the UI to listen on ports below 1024 (requires service re-install for existing [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) users) ([#584](https://github.com/oznu/homebridge-config-ui-x/pull/584))
+- **hb-service:** Linux only: Updated the generated systemd unit file, `homebridge.service`, to allow the UI to listen on ports below 1024 (requires service re-installation for existing [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) users) ([#584](https://github.com/oznu/homebridge-config-ui-x/pull/584))
 - **i18n:** Improvements to Traditional Chinese language translations ([#585](https://github.com/oznu/homebridge-config-ui-x/pull/585))
 - **i18n:** Improvements to Dutch language translations ([#588](https://github.com/oznu/homebridge-config-ui-x/pull/588))
 - Updated the loading spinner to match the set theme
@@ -1042,7 +1066,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 
 ### Backup / Restore Feature
 
-This release comes with a new feature that allows users to backup and restore their entire Homebridge instance.
+This release comes with a new feature that allows users to back up and restore their entire Homebridge instance.
 
 The backup and restore process works in such a way that users should be able to use the feature roll back to a previous state, or transfer their current Homebridge setup to a new server without the need to re-pair with HomeKit.
 
@@ -1113,7 +1137,7 @@ Highlights:
 
 - **Plugins:** Added a confirmation box when uninstalling plugins
 - **Plugins:** Added an option to have a plugin's config removed from the `config.json` when the plugin is being uninstalled (only plugins that implement the [Plugins Settings GUI](https://github.com/oznu/homebridge-config-ui-x/wiki/Developers:-Plugin-Settings-GUI) support this feature)
-- **System:** The UI will now attempt to rebuild it's own modules after a Node.js upgrade
+- **System:** The UI will now attempt to rebuild its own modules after a Node.js upgrade
 - **System:** Added the ability for [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) users to clear the Homebridge cached accessories from the UI (without doing a full Homebridge reset)
 - **Dashboard:** Weather widget now supports local translations of the current weather description ([#515](https://github.com/oznu/homebridge-config-ui-x/issues/515))
 
@@ -1165,7 +1189,7 @@ https://user-images.githubusercontent.com/3979615/72317538-b92b6780-36ed-11ea-80
 - **i18n:** Improvements to Swedish language translations ([#476](https://github.com/oznu/homebridge-config-ui-x/pull/476))
 - **i18n:** Improvements to German language translations ([#482](https://github.com/oznu/homebridge-config-ui-x/pull/482))
 - **Dashboard:** Node.js / npm version warning icons will now only show up if you are using an unsupported version of Node.js, the latest available version can still be viewed by hovering over the current version
-- **Plugins**: Added seemless account linking support for the [Homebridge Honeywell Home](https://github.com/donavanbecker/homebridge-honeywell-home#readme) plugin
+- **Plugins**: Added seamless account linking support for the [Homebridge Honeywell Home](https://github.com/donavanbecker/homebridge-honeywell-home#readme) plugin
 - **Plugins**: Added the ability for [Homebridge Ring](https://github.com/dgreif/ring/tree/master/homebridge) users to get their Ring account `refreshToken` directly from the UI ([#486](https://github.com/oznu/homebridge-config-ui-x/pull/486))
 
 ### Bug Fixes
@@ -1175,13 +1199,13 @@ https://user-images.githubusercontent.com/3979615/72317538-b92b6780-36ed-11ea-80
 - **System:** Fixed a bug that caused the UI to crash when running in debug mode in production ([#469](https://github.com/oznu/homebridge-config-ui-x/issues/469))
 - **Dashboard:** Fixed a bug where the "Plugin Status" icon was not changing when there were updates available ([#443](https://github.com/oznu/homebridge-config-ui-x/issues/443))
 - **Auth:** Fixed a warning about a depreciated option that was in use ([#473](https://github.com/oznu/homebridge-config-ui-x/issues/473))
-- **Config Editor:** Fixed a issue that prevented the on-screen keyboard from being able to be displayed after it was dismissed on an iPad Pro ([#480](https://github.com/oznu/homebridge-config-ui-x/issues/480))
+- **Config Editor:** Fixed an issue that prevented the on-screen keyboard from being able to be displayed after it was dismissed on an iPad Pro ([#480](https://github.com/oznu/homebridge-config-ui-x/issues/480))
 
 ## 4.7.0 (2020-01-11)
 
 ### New Dashboard
 
-This release comes with a brand new status dashboard that features a fully customisable, widget-based design. Users can decide which widgets they wish to enable and position and resize them as they like.
+This release comes with a brand-new status dashboard that features a fully customisable, widget-based design. Users can decide which widgets they wish to enable and position and resize them as they like.
 
 https://user-images.githubusercontent.com/3979615/71886653-b16d3f80-3190-11ea-9ff8-49dc4ae4fff0.png
 
@@ -1200,9 +1224,9 @@ New widgets include:
 
 ### Simple Service Installer
 
-This release expands the `hb-service` command to support macOS and Linux in addition to Windows 10. This command allows you to setup a Homebridge instance as a service in seconds.
+This release expands the `hb-service` command to support macOS and Linux in addition to Windows 10. This command allows you to set up a Homebridge instance as a service in seconds.
 
-Running `hb-service install` will setup Homebridge and Homebridge Config UI X to run as a service with auto-start on boot. The same command works across Linux, macOS and Windows 10.
+Running `hb-service install` will set up Homebridge and Homebridge Config UI X to run as a service with auto-start on boot. The same command works across Linux, macOS and Windows 10.
 
 https://user-images.githubusercontent.com/3979615/71888439-4291e580-3194-11ea-8687-a3d58f94ba47.gif
 
@@ -1217,7 +1241,7 @@ Notable Features:
 
 The config editor (non-mobile) has had the Ace Editor replaced with the [Microsoft Monaco Editor](https://microsoft.github.io/monaco-editor/) (the code editor that powers VS Code).
 
-This allow for much more powerful JSON syntax checking, more helpful error messages and the new ability to detect duplicate keys in object (like when a second platforms[] array is added by mistake!).
+This allows for much more powerful JSON syntax checking, more helpful error messages and the new ability to detect duplicate keys in object (like when a second platforms[] array is added by mistake!).
 
 https://user-images.githubusercontent.com/3979615/71890579-b635f180-3198-11ea-98ab-cc7b7263afd9.gif
 
@@ -1331,14 +1355,14 @@ In addition:
   - All instances you want to control must have the same PIN, be on the same network, and running in insecure mode
   - Your other instances are automatically discovered, however you can blacklist instances you don't want to control using the plugin settings
   - Due to the changes required to identify accessories across multiple instances your room/accessory layout will be reset after upgrading
-- **System:** Added a new feature to help setup and run Homebridge and Homebridge Config UI X as a service on Windows 10
+- **System:** Added a new feature to help set up and run Homebridge and Homebridge Config UI X as a service on Windows 10
 
 ### Notable Changes
 
 - **Plugins:** The "last updated" date is now displayed when searching for plugins to install ([#336](https://github.com/oznu/homebridge-config-ui-x/pull/336))
 - **Logs:** Increased the default number of lines to show for the "Log from File" method from 200 to 500 ([#339](https://github.com/oznu/homebridge-config-ui-x/issues/339))
 - **Accessory Control:** Accessory tiles now animate when clicked/pressed, similar to how they behave in the native iOS Home app
-- **Accessory Control:** Accessory characteristics (on, off, brightness etc) now update immediately when changed in HomeKit (previously there was up to a 3 second delay)
+- **Accessory Control:** Accessory characteristics (on, off, brightness etc.) now update immediately when changed in HomeKit (previously there was up to a 3-second delay)
 - **i18n:** Bulgarian language translation added by [@mafyata](https://github.com/mafyata)
 - **i18n:** Added translation support for accessory states and labels ([#342](https://github.com/oznu/homebridge-config-ui-x/pull/342))
   - If you're still seeing English labels, we need your help translating the new values for your language, [get started here](https://github.com/oznu/homebridge-config-ui-x/tree/master/ui/src/i18n)
@@ -1406,7 +1430,7 @@ In addition:
 ### Other Changes
 
 - Add an on-screen warning when attempting to install/update/uninstall a plugin, or view the logs on unsupported versions of Node.js ([#305](https://github.com/oznu/homebridge-config-ui-x/issues/305))
-- Added some more detailed log message to help when users are not able to login, need to reset their password, are unable to view accessories
+- Added some more detailed log message to help when users are not able to log in, need to reset their password, are unable to view accessories
 
 ## 4.4.2 (2019-05-19)
 
@@ -1414,7 +1438,7 @@ In addition:
 
 - **Plugins:** Added extra logging to try and investigate the cause of [#299](https://github.com/oznu/homebridge-config-ui-x/issues/299)
 - Provide a more detailed error with steps to resolve if the `node-pty` module fails to load (after a Node.js update for example)
-- Added a warning message in the logs letting the user know if their Node.js version is to low (anything less than 8.15.1)
+- Added a warning message in the logs letting the user know if their Node.js version is too low (anything less than 8.15.1)
 - Updated npm dependencies
 
 ## 4.4.1 (2019-05-16)
@@ -1454,7 +1478,7 @@ In addition:
 
 ### Notable Changes
 
-- **Homebridge:** Added `homebridgePackagePath` to allow users to defined where the Homebridge module is installed if it's not installed globally ([#280](https://github.com/oznu/homebridge-config-ui-x/issues/280))
+- **Homebridge:** Added `homebridgePackagePath` to allow users to define where the Homebridge module is installed if it's not installed globally ([#280](https://github.com/oznu/homebridge-config-ui-x/issues/280))
 
 ### Other Changes
 
@@ -1532,7 +1556,7 @@ In addition:
 ### Breaking Changes
 
 - **Auth:** The Basic Authentication option has been removed. Users who have Basic Authentication enabled will be swapped to Form Authentication
-- **Reverse Proxy:** Some users who have setup a reverse proxy and defined the websocket path will need to swap the WebSocket endpoint from `/wsocket` to `/socket.io`
+- **Reverse Proxy:** Some users who have set up a reverse proxy and defined the websocket path will need to swap the WebSocket endpoint from `/wsocket` to `/socket.io`
   - _If you are using the reverse proxy templates from the [wiki](https://github.com/oznu/homebridge-config-ui-x/wiki/) no changes are required_
 - **Node.js Version:** Dropping support for Node 7 and below, this plugin now requires Node.js v8.15.1 or higher on Linux and v10 or higher on Windows
 
@@ -1541,7 +1565,7 @@ In addition:
 - **Plugins:** Before updating a Homebridge plugin the release notes from GitHub will be shown where possible ([#233](https://github.com/oznu/homebridge-config-ui-x/issues/233))
 - **Plugins:** A corrupt plugin will no longer prevent all the installed plugins from being displayed ([#252](https://github.com/oznu/homebridge-config-ui-x/issues/252))
 - **i18n:** Turkish language translation added by [@btutal](https://github.com/btutal)
-- **Theme:** The default theme for new installs is now `teal` instead of `red`
+- **Theme:** The default theme for new installations is now `teal` instead of `red`
 - **Auth:** Ability to customise the session timeout
 - **System:** Added the ability for the plugin to run as a separate service rather than a Homebridge plugin, this will allow users who have configured this feature to manage their server even if Homebridge is crashing due to a bad config / other issue
   - Previously this has only been supported, and the default setup, when running in Docker ([oznu/homebridge](https://github.com/oznu/docker-homebridge))
@@ -1712,7 +1736,7 @@ In addition:
 
 ### Notable Changes
 
-- **Accessory Control:** Long-clicking a lightbulb with no additional characteristics (eg. brightness) no longer opens a modal ([#47#issuecomment-405089113](https://github.com/oznu/homebridge-config-ui-x/issues/47#issuecomment-405089113))
+- **Accessory Control:** Long-clicking a lightbulb with no additional characteristics (e.g. brightness) no longer opens a modal ([#47#issuecomment-405089113](https://github.com/oznu/homebridge-config-ui-x/issues/47#issuecomment-405089113))
 - **Accessory Control:** Right-clicking an accessory on a non-mobile device will bring up a modal showing all accessory characteristics and other information
 - **i18n:** Polish language translation added by [@mientki](https://github.com/mientki)
   - User contributions to the non-english translations are always welcome, [click here](https://github.com/oznu/homebridge-config-ui-x/blob/master/CONTRIBUTING.md#contributing-to-translations) for details on how you can help
@@ -1818,7 +1842,7 @@ In addition:
 
 - **Beta Feature**: Initial implementation of GUI/form based setup for supported plugins
 - Added support for optional native HTTPS / SSL ([#68](https://github.com/oznu/homebridge-config-ui-x/issues/68), [#35](https://github.com/oznu/homebridge-config-ui-x/issues/35))
-- The Log Viewer config options have changed, existing options have been have depreciated, see [README](https://github.com/oznu/homebridge-config-ui-x#log-viewer-configuration) for details
+- The Log Viewer config options have changed, existing options have been depreciated, see [README](https://github.com/oznu/homebridge-config-ui-x#log-viewer-configuration) for details
 - Docker users may now configure this plugin using the `config.json` or the new plugin GUI/form config method
 - Added metadata tag allow using plugin as a full screen web app on iOS ([#88](https://github.com/oznu/homebridge-config-ui-x/issues/88))
 - Added ability to restore and cleanup `config.json` backups ([#77](https://github.com/oznu/homebridge-config-ui-x/issues/77))
@@ -1827,7 +1851,7 @@ In addition:
 
 - Added [Content-Security-Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) headers
 - Links to external sites now have `rel="noopener noreferrer"`
-- Links in plugin-author generated markdown (eg. change logs, plugin config) are now opened in a new tab
+- Links in plugin-author generated markdown (e.g. change logs, plugin config) are now opened in a new tab
 - When on the status page, the browser will refresh automatically if the client version does not match the server version
 - Updated npm dependencies
 
@@ -1871,7 +1895,7 @@ In addition:
 
 ### Notable Changes
 
-- This plugin now runs in a seperate thread to the main homebridge process ([#75](https://github.com/oznu/homebridge-config-ui-x/issues/75))
+- This plugin now runs in a separate thread to the main homebridge process ([#75](https://github.com/oznu/homebridge-config-ui-x/issues/75))
   - This can be disabled by setting `noFork` to `true` in the plugin config
 - Added ability to set a custom image for the login screen using the `loginWallpaper` option ([#34](https://github.com/oznu/homebridge-config-ui-x/issues/34))
 - Updated npm dependencies
@@ -1913,7 +1937,7 @@ In addition:
 
 ### Notable Changes
 
-- Added ability for Linux users to shutdown and restart the server Homebridge is running on ([#39](https://github.com/oznu/homebridge-config-ui-x/issues/39))
+- Added ability for Linux users to shut down and restart the server Homebridge is running on ([#39](https://github.com/oznu/homebridge-config-ui-x/issues/39))
 - Updated npm dependencies
 
 ## 3.2.1 (2018-03-13)

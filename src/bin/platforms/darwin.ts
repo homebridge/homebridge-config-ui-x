@@ -245,8 +245,8 @@ export class DarwinInstaller extends BasePlatform {
       process.exit(1);
     }
 
-    if (process.arch === 'arm64' && semver.lt(job.target, '16.0.0')) {
-      this.hbService.logger('macOS M1 / arm64 support is only available from Node.js 16 onwards', 'fail');
+    if (process.arch === 'arm64' && semver.lt(job.target, '18.0.0')) {
+      this.hbService.logger('macOS M1 / arm64 support is only available from Node.js v18 or later', 'fail');
       process.exit(1);
     }
 

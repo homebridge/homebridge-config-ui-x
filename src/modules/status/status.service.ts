@@ -433,7 +433,7 @@ export class StatusService {
         currentVersion: process.version,
         latestVersion: currentLts.version,
         updateAvailable: semver.gt(currentLts.version, process.version),
-        showUpdateWarning: semver.lt(process.version, '14.15.0'),
+        showUpdateWarning: semver.lt(process.version, '18.15.0'),
         installPath: path.dirname(process.execPath),
       };
       this.statusCache.set('nodeJsVersion', versionInformation, 86400);
