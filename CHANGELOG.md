@@ -7,7 +7,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 ### Notable Changes
 
 - Show UI and plugin updates for newer beta versions when already running a beta version of the plugin
-  - Note: this only works when using an npm tag called `beta`
+  - Note: this only works when a plugin uses a `beta` NPM tag for beta releases
 - Show 'Restart Homebridge Now' modal (with additional messaging for child bridges) after any plugin update, not just the UI
 
 ### i18n Changes

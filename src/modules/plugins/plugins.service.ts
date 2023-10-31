@@ -854,40 +854,30 @@ export class PluginsService {
 
     // Special case for beta npm tags for homebridge, homebridge ui and all plugins
     if (plugin.latestVersion?.includes('beta')) {
-      switch (plugin.name) {
-        case 'homebridge':
-        case 'homebridge-config-ui-x': {
-          // If loading a homebridge/ui beta returned pre-defined help text
-          // Query the list of branches for the repo, if the request doesn't work it doesn't matter too much
-          let betaBranch: string;
-          try {
-            // Find the first branch that starts with "beta"
-            betaBranch = (await this.httpService.get(`https://api.github.com/repos/homebridge/${plugin.name}/branches`).toPromise())
-              .data
-              .find((branch: any) => branch.name.startsWith('beta-'))
-              ?.name;
-          } catch (e) {
-            this.logger.error(`Failed to get list of branches from GitHub: ${e.message}`);
-          }
-          return {
-            name: 'v' + plugin.latestVersion,
-            changelog: `Thank you for helping improve Homebridge by testing the beta build for \`${plugin.name}\`.\n\n` +
-              'To see what needs testing or to report issues:\n' +
-              `- https://github.com/homebridge/${plugin.name}/issues` +
-              `${betaBranch && `\n\nSee the commit history for recent changes:\n- https://github.com/homebridge/${plugin.name}/commits/${betaBranch}`}`,
-          };
-        }
-        default: {
-          // If loading any other plugin beta, return some generic text for now
-          return {
-            name: 'v' + plugin.latestVersion,
-            changelog: `Thank you for helping improve \`${pluginName}\` by testing the beta build.\n\n` +
-              'You can use the Homebridge UI at any time to revert back to the stable version of this plugin.\n\n' +
-              'Please remember this is a **test** version of the plugin, and report any issues to the plugin\'s GitHub page:\n' +
-              `- https://github.com/${repoMatch[1]}/${repoMatch[2]}/issues`,
-          };
+      let betaBranch: string | undefined;
+
+      if (['homebridge-config-ui-x', 'homebridge'].includes(plugin.name)) {
+        // If loading a homebridge/ui beta returned pre-defined help text
+        // Query the list of branches for the repo, if the request doesn't work it doesn't matter too much
+        try {
+          // Find the first branch that starts with "beta"
+          betaBranch = (await this.httpService.get(`https://api.github.com/repos/homebridge/${plugin.name}/branches`).toPromise())
+            .data
+            .find((branch: any) => branch.name.startsWith('beta-'))
+            ?.name;
+        } catch (e) {
+          this.logger.error(`Failed to get list of branches from GitHub: ${e.message}`);
         }
       }
+
+      return {
+        name: 'v' + plugin.latestVersion,
+        changelog: `Thank you for helping improve ${plugin.displayName || `\`${plugin.name}\`.`} by testing the beta build.\n\n` +
+          'You can use the Homebridge UI at any time to revert back to the stable version.\n\n' +
+          'Please remember this is a **test** version, and report any issues to the GitHub repository page:\n' +
+          `- https://github.com/${repoMatch[1]}/${repoMatch[2]}/issues` +
+          `${betaBranch && `\n\nSee the commit history for recent changes:\n- https://github.com/${repoMatch[1]}/${repoMatch[2]}/commits/${betaBranch}`}`,
+      };
     }
 
     try {
