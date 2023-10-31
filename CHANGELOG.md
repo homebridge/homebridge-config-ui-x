@@ -2,13 +2,14 @@
 
 All notable changes to homebridge-config-ui-x will be documented in this file.
 
-## BETA 4.52.0 (2023-XX-XX)
+## BETA 4.52.0 (2023-11-XX)
 
 ### Notable Changes
 
 - Show UI and plugin updates for newer beta versions when already running a beta version of the plugin
   - Note: this only works when a plugin uses a `beta` NPM tag for beta releases
 - Show 'Restart Homebridge Now' modal (with additional messaging for child bridges) after any plugin update, not just the UI
+- Update HomeKit Setup Code Format: 1234-5678, make it consistant with the Home App [#1612](https://github.com/homebridge/homebridge-config-ui-x/issues/1612)
 
 ### i18n Changes
 
