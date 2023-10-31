@@ -872,7 +872,7 @@ export class PluginsService {
 
       return {
         name: 'v' + plugin.latestVersion,
-        changelog: `Thank you for helping improve ${plugin.displayName || `\`${plugin.name}\`.`} by testing a beta version.\n\n` +
+        changelog: `Thank you for helping improve ${plugin.displayName || `\`${plugin.name}\``} by testing a beta version.\n\n` +
           'You can use the Homebridge UI at any time to revert back to the stable version.\n\n' +
           'Please remember this is a **test** version, and report any issues to the GitHub repository page:\n' +
           `- https://github.com/${repoMatch[1]}/${repoMatch[2]}/issues` +
