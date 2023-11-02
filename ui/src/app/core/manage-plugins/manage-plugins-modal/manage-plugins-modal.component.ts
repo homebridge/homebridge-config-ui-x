@@ -32,7 +32,6 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   public showReleaseNotes = false;
   public justUpdatedPlugin = false;
   public updateToBeta = false;
-  public restartInProgress: Record<string, boolean> = {};
   public changeLog: string;
   public release;
 
@@ -46,7 +45,6 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
     public activeModal: NgbActiveModal,
     public $toastr: ToastrService,
     private translate: TranslateService,
-    private $translate: TranslateService,
     private $settings: SettingsService,
     private $api: ApiService,
     private $ws: WsService,
@@ -178,27 +176,6 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
         this.$toastr.error(err.message, this.translate.instant('toast.title_error'));
       },
     );
-  }
-
-  async restartChildBridge(username: string) {
-    this.restartInProgress[username] = true;
-    try {
-      await this.$api.put(`/server/restart/${username.replace(/:/g, '')}`, {}).toPromise();
-      this.$toastr.success(
-        this.$translate.instant('child_bridge.toast_restart_requested'),
-        this.$translate.instant('toast.title_success'),
-      );
-    } catch (err) {
-      this.$toastr.error(
-        'Failed to restart bridge: ' + err.error?.message,
-        this.$translate.instant('toast.title_error'),
-      );
-      this.restartInProgress[username] = false;
-    } finally {
-      setTimeout(() => {
-        this.restartInProgress[username] = false;
-      }, 12000);
-    }
   }
 
   upgradeHomebridge() {
