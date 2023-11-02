@@ -11,29 +11,15 @@
       <p class="text-center grey-text" [translate]="'plugins.manage.message_thanks_for_updating'">
         Thanks for installing the latest version of {{ pluginName }}.
       </p>
-      <p *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(pluginName)" class="text-center grey-text"
-        [translate]="'plugins.manage.message_thanks_for_updating_restart'">
-        Please restart Homebridge for the changes to apply. Alternatively, if you have this plugin running in child
-        bridges, you can close this modal and restart these instead.
+      <p *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(pluginName)" class="text-center grey-text" [translate]="'plugins.manage.message_thanks_for_updating_restart'">
+        Please restart Homebridge for the changes to apply. Alternatively, if you have this plugin running in child bridges, you can close this modal and restart these instead.
       </p>
-      <div class="text-right">
-        <button *ngIf="$settings.env.serviceMode" class="btn btn-primary waves-effect mr-0"
-          [disabled]="restartInProgress[item._bridge?.username]" ngbTooltip="{{'menu.tooltip_restart' | translate}}"
-          container="body" openDelay="150" (click)="restartChildBridge(item._bridge?.username)">
-          <i class="fas fa-fw nav-menu-icon" [ngClass]="{
-            'fa-power-off': !restartInProgress[item._bridge?.username],
-            'fa-spinner fa-pulse': restartInProgress[item._bridge?.username]
-          }"></i>
-        </button>
-      </div>
       <div class="text-center">
         <button type="button" class="btn btn-primary" (click)="onRestartHomebridgeClick()"
           [translate]="'plugins.manage.button_restart_now'">Restart Homebridge Now</button>
-        <button *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(pluginName)" type="button"
-          class="btn btn-primary" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')"
+        <button *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(pluginName)" type="button" class="btn btn-primary" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')"
           [translate]="'form.button_close'">Close</button>
       </div>
-
       <hr>
     </div>
     <markdown class="plugin-md" [data]="changeLog"></markdown>
