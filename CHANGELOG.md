@@ -9,7 +9,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - Show UI and plugin updates for newer beta versions when already running a beta version of the plugin
   - Note: this only works when a plugin uses a `beta` NPM tag for beta releases
 - Show 'Restart Homebridge Now' modal (with additional messaging for child bridges) after any plugin update, not just the UI
-- Update HomeKit Setup Code Format: 1234-5678, making it more consistant with the Home App [#1612](https://github.com/homebridge/homebridge-config-ui-x/issues/1612)
+- Update HomeKit Setup Code Format: 1234-5678, making it more consistent with the Home App [#1612](https://github.com/homebridge/homebridge-config-ui-x/issues/1612)
 
 ### i18n Changes
 
@@ -30,7 +30,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - Obtain correct beta branch name for Homebridge (and UI) (https://github.com/homebridge/homebridge-config-ui-x/commit/212b3eb1d5cb3ccda01fe2c3be711b80af4d5bf6)
 - Rename pre-release npm tag from `test` to `beta` for consistency with other Homebridge repositories (https://github.com/homebridge/homebridge-config-ui-x/commit/86ea73ffd0b35f372a164ee42e17a996905cffb6)
 - Updated dependencies
-- Update @homebridge/node-pty-prebuilt-multiarch to version v0.11.8 ( Updated build process and backlevel support for Synology DSM devices )
+- Update @homebridge/node-pty-prebuilt-multiarch to version v0.11.8 ( Updated build process and back-level support for Synology DSM devices )
 
 ## 4.51.2 (2023-10-27)
 
