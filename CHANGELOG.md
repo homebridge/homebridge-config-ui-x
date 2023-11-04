@@ -2,6 +2,13 @@
 
 All notable changes to homebridge-config-ui-x will be documented in this file.
 
+## BETA
+
+### Bug Fixes
+
+- Fix text in post-plugin-update modal which wasn't showing translated strings properly
+- Revert HomeKit code formatting change
+
 ## 4.52.0 (2023-11-04)
 
 ### Notable Changes
