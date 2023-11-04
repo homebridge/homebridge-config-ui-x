@@ -2,7 +2,7 @@
   "bridge": {
     "name": "Homebridge Test",
     "port": 51826,
-    "pin": "8749-9441",
+    "pin": "874-99-441",
     "username": "67:E4:1F:0E:A0:5D"
   },
   "accessories": [],

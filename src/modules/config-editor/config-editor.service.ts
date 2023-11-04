@@ -113,7 +113,7 @@ export class ConfigEditorService {
     }
 
     // ensure the pin matches the required pattern
-    const pinPattern = /^([0-9]{4}-[0-9]{4})$/;
+    const pinPattern = /^([0-9]{3}-[0-9]{2}-[0-9]{3})$/;
     if (!pinPattern.test(config.bridge.pin)) {
       if (pinPattern.test(this.configService.homebridgeConfig.bridge.pin)) {
         config.bridge.pin = this.configService.homebridgeConfig.bridge.pin;
