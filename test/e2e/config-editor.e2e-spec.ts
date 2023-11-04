@@ -351,7 +351,7 @@ describe('ConfigEditorController (e2e)', () => {
   it('POST /config-editor (accept bridge.pin if a valid value is provided)', async () => {
     const currentConfig = await fs.readJson(configFilePath);
 
-    currentConfig.bridge.pin = '111-11-111';
+    currentConfig.bridge.pin = '1111-1111';
 
     const res = await app.inject({
       method: 'POST',
@@ -366,7 +366,7 @@ describe('ConfigEditorController (e2e)', () => {
 
     // check the updates were saved to disk and mistakes corrected
     const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
-    expect(savedConfig.bridge.pin).toBe('111-11-111');
+    expect(savedConfig.bridge.pin).toBe('1111-1111');
   });
 
   it('POST /config-editor (correct bridge.name if an invalid value is provided)', async () => {

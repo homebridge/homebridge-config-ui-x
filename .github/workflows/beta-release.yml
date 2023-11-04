@@ -27,10 +27,10 @@ jobs:
 
     uses: homebridge/.github/.github/workflows/npm-publish.yml@latest
     with:
-      tag: 'test'
+      tag: 'beta'
       dynamically_adjust_version: true
       npm_version_command: 'pre'
-      pre_id: 'test'
+      pre_id: 'beta'
       install_cmd: npm ci && cd ui && npm ci
     secrets:
       npm_auth_token: ${{ secrets.npm_token }}

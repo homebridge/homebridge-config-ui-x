@@ -6,24 +6,30 @@
         <div class="mb-0 p-3 hb-status-icon">
           <i class="fas fa-cog fa-spin primary-text" *ngIf="!homebridgePkg.installedVersion"></i>
           <i class="fas fa-check-circle primary-text"
-            *ngIf="homebridgePkg.installedVersion && !homebridgePkg.updateAvailable"></i>
+            *ngIf="homebridgePkg.installedVersion && !homebridgePkg.updateAvailable && !homebridgePkg.betaUpdateAvailable"></i>
           <i class="fas fa-cloud-upload-alt primary-text"
-            *ngIf="homebridgePkg.installedVersion && homebridgePkg.updateAvailable"></i>
+            *ngIf="homebridgePkg.installedVersion && (homebridgePkg.updateAvailable || homebridgePkg.betaUpdateAvailable)"></i>
         </div>
         <div class="align-self-center">
           <span class="grey-text" *ngIf="!homebridgePkg.installedVersion"
             [translate]="'status.homebridge.label_checking_for_updates'">
             Checking for updates...
           </span>
-          <span *ngIf="homebridgePkg.installedVersion && !homebridgePkg.updateAvailable"
+          <span *ngIf="homebridgePkg.installedVersion && !homebridgePkg.updateAvailable && !homebridgePkg.betaUpdateAvailable"
             [translate]="'status.homebridge.label_up_to_date'">
             Up To Date
           </span>
           <a href="javascript:void(0)" (click)="$plugin.upgradeHomebridge(homebridgePkg)" class="primary-text"
-            *ngIf="homebridgePkg.installedVersion && homebridgePkg.updateAvailable"
+            *ngIf="homebridgePkg.installedVersion && homebridgePkg.updateAvailable && !homebridgePkg.betaUpdateAvailable"
             [translate]="'status.homebridge.label_update_available'" [translateParams]="homebridgePkg"
             ngbTooltip="{{'plugins.button_upgrade' | translate}} Homebridge" href="javascript:void(0)">
             Update Available
+          </a>
+          <a href="javascript:void(0)" (click)="$plugin.upgradeHomebridge(homebridgePkg, 'beta')" class="primary-text"
+             *ngIf="homebridgePkg.installedVersion && !homebridgePkg.updateAvailable && homebridgePkg.betaUpdateAvailable"
+             [translate]="'status.homebridge.label_update_available'" [translateParams]="homebridgePkg"
+             ngbTooltip="{{'plugins.button_upgrade' | translate}} Homebridge" href="javascript:void(0)">
+             Update Available
           </a>
           <br>
           <span class="grey-text" *ngIf="homebridgePkg.installedVersion">

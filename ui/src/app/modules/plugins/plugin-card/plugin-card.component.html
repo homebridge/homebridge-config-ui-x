@@ -2,15 +2,18 @@
 <div class="card card-body mb-3">
   <div class="d-flex flex-row justify-content-between">
     <div class="">
-      <p class="mb-0 primary-text" *ngIf="plugin.installedVersion && !plugin.updateAvailable && !plugin.disabled"
+      <p class="mb-0 primary-text" *ngIf="plugin.installedVersion && !plugin.updateAvailable && !plugin.betaUpdateAvailable && !plugin.disabled"
          [translate]="'plugins.status_installed'">
         Installed
       </p>
       <p class="mb-0 grey-text" *ngIf="!plugin.installedVersion" [translate]="'plugins.status_not_installed'">
         Not Installed
       </p>
-      <p class="mb-0 primary-text" *ngIf="plugin.updateAvailable && !plugin.disabled">
+      <p class="mb-0 primary-text" *ngIf="plugin.updateAvailable && !plugin.betaUpdateAvailable && !plugin.disabled">
         <i class="far fa-arrow-alt-circle-up"></i> {{ 'plugins.status_update_available' | translate }}
+      </p>
+      <p class="mb-0 primary-text" *ngIf="plugin.betaUpdateAvailable && !plugin.updateAvailable && !plugin.disabled">
+          <i class="far fa-arrow-alt-circle-up"></i> {{ 'plugins.status_update_beta_available' | translate }}
       </p>
       <p class="mb-0 red-text" *ngIf="plugin.installedVersion && plugin.disabled">
         <i class="far fa-times-circle"></i> {{ 'plugins.status_disabled' | translate }}
@@ -50,10 +53,15 @@
     <a href="javascript:void(0)" class="card-link" *ngIf="plugin.installedVersion" (click)="$plugin.settings(plugin)">
       {{ 'plugins.button_settings' | translate | uppercase }}
     </a>
-    <a href="javascript:void(0)" class="card-link" *ngIf="plugin.updateAvailable" (click)="$plugin.updatePlugin(plugin)"
+    <a href="javascript:void(0)" class="card-link" *ngIf="plugin.updateAvailable && !plugin.betaUpdateAvailable" (click)="$plugin.updatePlugin(plugin)"
        placement="bottom" ngbTooltip="{{'plugins.tooltip_update_plugin_to' | translate:plugin }}" container="body"
        openDelay="150" [translate]="'plugins.button_update'" triggers="hover">
-      {{ 'plugins.button_update' | translate | uppercase }}
+       {{ 'plugins.button_update' | translate | uppercase }}
+    </a>
+    <a href="javascript:void(0)" class="card-link" *ngIf="!plugin.updateAvailable && plugin.betaUpdateAvailable" (click)="$plugin.updatePlugin(plugin, 'beta')"
+       placement="bottom" ngbTooltip="{{'plugins.tooltip_update_plugin_to' | translate:plugin }}" container="body"
+       openDelay="150" [translate]="'plugins.button_update'" triggers="hover">
+       {{ 'plugins.button_update' | translate | uppercase }}
     </a>
     <a href="javascript:void(0)" class="card-link" *ngIf="!plugin.installedVersion"
        (click)="$plugin.installPlugin(plugin.name)">

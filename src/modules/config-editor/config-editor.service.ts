@@ -113,7 +113,7 @@ export class ConfigEditorService {
     }
 
     // ensure the pin matches the required pattern
-    const pinPattern = /^([0-9]{3}-[0-9]{2}-[0-9]{3})$/;
+    const pinPattern = /^([0-9]{4}-[0-9]{4})$/;
     if (!pinPattern.test(config.bridge.pin)) {
       if (pinPattern.test(this.configService.homebridgeConfig.bridge.pin)) {
         config.bridge.pin = this.configService.homebridgeConfig.bridge.pin;
@@ -418,8 +418,7 @@ export class ConfigEditorService {
   public generatePin() {
     let code: string | Array<any> = Math.floor(10000000 + Math.random() * 90000000) + '';
     code = code.split('');
-    code.splice(3, 0, '-');
-    code.splice(6, 0, '-');
+    code.splice(4, 0, '-');
     code = code.join('');
     return code;
   }

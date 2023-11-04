@@ -40,7 +40,7 @@ jobs:
         run: |
           tar -C $(pwd)/package --owner=0 --group=0 --format=posix -czvf homebridge-config-ui-x-${{ github.event.inputs.tag }}.tar.gz .
           shasum -a 256 homebridge-config-ui-x-${{ github.event.inputs.tag }}.tar.gz > SHASUMS256.txt
-          
+
       - name: Attach Bundle
         uses: AButler/upload-release-assets@v2.0
         with:

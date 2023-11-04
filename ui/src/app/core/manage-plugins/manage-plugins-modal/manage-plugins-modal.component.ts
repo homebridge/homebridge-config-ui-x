@@ -30,7 +30,8 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   public actionComplete = false;
   public actionFailed = false;
   public showReleaseNotes = false;
-  public updateSelf = false;
+  public justUpdatedPlugin = false;
+  public updateToBeta = false;
   public changeLog: string;
   public release;
 
@@ -78,10 +79,17 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
         this.pastTenseVerb = this.translate.instant('plugins.manage.label_uninstalled');
         break;
       case 'Update':
-        if (this.targetVersion === 'latest') {
-          this.getReleaseNotes();
-        } else {
-          this.update();
+        switch (this.targetVersion) {
+          case 'latest':
+            this.updateToBeta = false;
+            this.getReleaseNotes();
+            break;
+          case 'beta':
+            this.updateToBeta = true;
+            this.getReleaseNotes();
+            break;
+          default:
+            this.update();
         }
         this.presentTenseVerb = this.translate.instant('plugins.manage.label_update');
         this.pastTenseVerb = this.translate.instant('plugins.manage.label_updated');
@@ -157,14 +165,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       termRows: this.term.rows,
     }).subscribe(
       (data) => {
-        if (this.pluginName === 'homebridge-config-ui-x') {
-          this.updateSelf = true;
-          if (this.$settings.env.dockerOfflineUpdate && this.targetVersion === 'latest') {
-            this.$router.navigate(['/platform-tools/docker/restart-container']);
-            this.activeModal.close();
-            return;
-          }
-        }
+        this.justUpdatedPlugin = true;
         this.$router.navigate(['/plugins']);
         this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);
         this.getChangeLog();

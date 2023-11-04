@@ -143,7 +143,7 @@ export class PluginsService {
     }));
 
     this.installedPlugins = plugins;
-    return _.orderBy(plugins, [(resultItem) => { return resultItem.name === this.configService.name; }, 'updateAvailable', 'name'], ['desc', 'desc', 'asc']);
+    return _.orderBy(plugins, [(resultItem: { name: string }) => { return resultItem.name === this.configService.name; }, 'updateAvailable', 'betaUpdateAvailable', 'name'], ['desc', 'desc', 'desc', 'asc']);
   }
 
   /**
@@ -151,7 +151,7 @@ export class PluginsService {
    */
   public async getOutOfDatePlugins(): Promise<HomebridgePlugin[]> {
     const plugins = await this.getInstalledPlugins();
-    return plugins.filter(x => x.updateAvailable);
+    return plugins.filter(x => x.updateAvailable || x.betaUpdateAvailable);
   }
 
   /**
@@ -181,7 +181,7 @@ export class PluginsService {
       const fromCache = this.npmPluginCache.get(`lookup-${pluginName}`);
 
       const pkg: INpmRegistryModule = fromCache || (await (
-        this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(pluginName).replace('%40', '@')}`, {
+        this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(pluginName).replace(/%40/g, '@')}`, {
           headers: {
             'accept': 'application/vnd.npm.install-v1+json', // only return minimal information
           },
@@ -273,7 +273,7 @@ export class PluginsService {
       const fromCache = this.npmPluginCache.get(`lookup-${query}`);
 
       const pkg: INpmRegistryModule = fromCache || (await (
-        this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(query).replace('%40', '@')}`).toPromise()
+        this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(query).replace(/%40/g, '@')}`).toPromise()
       )).data;
 
       if (!fromCache) {
@@ -308,6 +308,7 @@ export class PluginsService {
       plugin.latestVersion = pkg['dist-tags'] ? pkg['dist-tags'].latest : undefined;
       plugin.lastUpdated = pkg.time.modified;
       plugin.updateAvailable = false;
+      plugin.betaUpdateAvailable = false;
       plugin.links = {
         npm: `https://www.npmjs.com/package/${plugin.name}`,
         homepage: pkg.homepage,
@@ -499,7 +500,8 @@ export class PluginsService {
     ) {
       const versions = await this.getAvailablePluginVersions('homebridge');
       if (versions.tags['beta'] && semver.gt(versions.tags['beta'], homebridge.installedVersion)) {
-        homebridge.updateAvailable = true;
+        homebridge.updateAvailable = false;
+        homebridge.betaUpdateAvailable = true;
         homebridge.latestVersion = versions.tags['beta'];
       }
     }
@@ -584,7 +586,8 @@ export class PluginsService {
       const npm = await this.parsePackageJson(pjson, npmPkg.path) as HomebridgePlugin & { showUpdateWarning?: boolean };
 
       // show the update warning if the installed version is below the minimum recommended
-      npm.showUpdateWarning = semver.lt(npm.installedVersion, '6.4.1');
+      // (bwp91) I set this to 9.5.0 to match a minimum node version of 18.15.0
+      npm.showUpdateWarning = semver.lt(npm.installedVersion, '9.5.0');
 
       this.npmPackage = npm;
       return npm;
@@ -838,17 +841,7 @@ export class PluginsService {
       throw new NotFoundException();
     }
 
-    // if loading a homebridge beta returned pre-defined help text
-    if (plugin.name === 'homebridge' && plugin.latestVersion?.includes('beta')) {
-      return {
-        name: 'v' + plugin.latestVersion,
-        changelog: 'Thank you for helping improve Homebridge by testing the beta build of Homebridge.\n\n\n' +
-          'To see what needs testing or to report issues: https://github.com/homebridge/homebridge/issues\n\n\n' +
-          'See the commit history for recent changes: https://github.com/homebridge/homebridge/commits/beta'
-      };
-    }
-
-    // plugin must have a homepage to workout Git Repo
+    // Plugin must have a homepage to work out Git Repo
     if (!plugin.links.homepage) {
       throw new NotFoundException();
     }
@@ -857,6 +850,34 @@ export class PluginsService {
     const repoMatch = plugin.links.homepage.match(/https:\/\/github.com\/([^\/]+)\/([^\/#]+)/);
     if (!repoMatch) {
       throw new NotFoundException();
+    }
+
+    // Special case for beta npm tags for homebridge, homebridge ui and all plugins
+    if (plugin.latestVersion?.includes('beta')) {
+      let betaBranch: string | undefined;
+
+      if (['homebridge-config-ui-x', 'homebridge'].includes(plugin.name)) {
+        // If loading a homebridge/ui beta returned pre-defined help text
+        // Query the list of branches for the repo, if the request doesn't work it doesn't matter too much
+        try {
+          // Find the first branch that starts with "beta"
+          betaBranch = (await this.httpService.get(`https://api.github.com/repos/homebridge/${plugin.name}/branches`).toPromise())
+            .data
+            .find((branch: any) => branch.name.startsWith('beta-'))
+            ?.name;
+        } catch (e) {
+          this.logger.error(`Failed to get list of branches from GitHub: ${e.message}`);
+        }
+      }
+
+      return {
+        name: 'v' + plugin.latestVersion,
+        changelog: `Thank you for helping improve ${plugin.displayName || `\`${plugin.name}\``} by testing a beta version.\n\n` +
+          'You can use the Homebridge UI at any time to revert back to the stable version.\n\n' +
+          'Please remember this is a **test** version, and report any issues to the GitHub repository page:\n' +
+          `- https://github.com/${repoMatch[1]}/${repoMatch[2]}/issues` +
+          (betaBranch ? `\n\nSee the commit history for recent changes:\n- https://github.com/${repoMatch[1]}/${repoMatch[2]}/commits/${betaBranch}` : ''),
+      };
     }
 
     try {
@@ -1167,6 +1188,7 @@ export class PluginsService {
       plugin.publicPackage = false;
       plugin.latestVersion = null;
       plugin.updateAvailable = false;
+      plugin.betaUpdateAvailable = false;
       plugin.links = {};
       return plugin;
     }
@@ -1182,11 +1204,31 @@ export class PluginsService {
     try {
       // attempt to load from cache
       const fromCache = this.npmPluginCache.get(plugin.name);
+      plugin.updateAvailable = false;
+      plugin.betaUpdateAvailable = false;
 
       // restore from cache, or load from npm
       const pkg: IPackageJson = fromCache || (
-        await this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(plugin.name).replace('%40', '@')}/latest`).toPromise()
+        await this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(plugin.name).replace(/%40/g, '@')}/latest`).toPromise()
       ).data;
+
+      plugin.latestVersion = pkg.version;
+      plugin.updateAvailable = semver.gt(pkg.version, plugin.installedVersion);
+
+      // check for beta updates, if no latest version is available
+      if (!plugin.updateAvailable) {
+        const pluginVersion = semver.parse(plugin.installedVersion);
+        if (
+          pluginVersion.prerelease[0] === 'beta' &&
+          semver.gt(plugin.installedVersion, plugin.latestVersion)
+        ) {
+          const versions = await this.getAvailablePluginVersions(plugin.name);
+          if (versions.tags['beta'] && semver.gt(versions.tags['beta'], plugin.installedVersion)) {
+            plugin.betaUpdateAvailable = true;
+            plugin.latestVersion = versions.tags['beta'];
+          }
+        }
+      }
 
       // store in cache if it was not there already
       if (!fromCache) {
@@ -1194,8 +1236,6 @@ export class PluginsService {
       }
 
       plugin.publicPackage = true;
-      plugin.latestVersion = pkg.version;
-      plugin.updateAvailable = semver.lt(plugin.installedVersion, plugin.latestVersion);
       plugin.links = {
         npm: `https://www.npmjs.com/package/${plugin.name}`,
         homepage: pkg.homepage,
@@ -1209,6 +1249,7 @@ export class PluginsService {
       plugin.publicPackage = false;
       plugin.latestVersion = null;
       plugin.updateAvailable = false;
+      plugin.betaUpdateAvailable = false;
       plugin.links = {};
     }
     return plugin;

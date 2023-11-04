@@ -1148,9 +1148,9 @@ export class HomebridgeServiceHelper {
     if (requestedVersion) {
       const wantedVersion = versionList.find(x => x.version.startsWith('v' + requestedVersion));
       if (wantedVersion) {
-        // check the requested version is greater than v14.15.0
-        if (!semver.gte(wantedVersion.version, '14.15.0')) {
-          this.logger('Refusing to install Node.js version lower than v14.15.0.', 'fail');
+        // check the requested version is greater than v16.18.2
+        if (!semver.gte(wantedVersion.version, '16.18.2')) {
+          this.logger('Refusing to install Node.js version lower than v16.18.2.', 'fail');
           return { update: false };
         }
         this.logger(`Installing Node.js ${wantedVersion.version} over ${process.version}...`, 'info');

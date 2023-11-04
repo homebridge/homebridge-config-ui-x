@@ -672,6 +672,30 @@
           "key": "loginWallpaper",
           "notitle": true,
           "placeholder": "eg. /home/pi/mywallpaper.jpg"
+        },
+        {
+          "ref": "ssl",
+          "type": "fieldset",
+          "expandable": true,
+          "title": "SSL Setup",
+          "items": [
+            {
+              "key": "ssl.key",
+              "placeholder": "eg. /Users/homebridge/.homebridge/certs/server.key"
+            },
+            {
+              "key": "ssl.cert",
+              "placeholder": "eg. /Users/homebridge/.homebridge/certs/server.crt"
+            },
+            {
+              "key": "ssl.pfx",
+              "placeholder": "eg. /Users/homebridge/.homebridge/certs/server.pfx"
+            },
+            {
+              "key": "ssl.passphrase",
+              "placeholder": "eg. mypassphrase"
+            }
+          ]
         }
       ]
     }

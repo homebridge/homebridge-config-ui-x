@@ -400,9 +400,9 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                   },
                   pin: {
                     type: 'string',
-                    description: 'The Homebridge instance pin.\nThis is used when pairing Homebridge to HomeKit.\nExample: 630-27-655',
-                    default: '630-27-655',
-                    pattern: '^([0-9]{3}-[0-9]{2}-[0-9]{3})$',
+                    description: 'The Homebridge instance pin.\nThis is used when pairing Homebridge to HomeKit.\nExample: 6302-7655',
+                    default: '6302-7655',
+                    pattern: '^([0-9]{4}-[0-9]{4})$',
                   },
                   manufacturer: {
                     type: 'string',
@@ -422,7 +422,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                     },
                   },
                 },
-                default: { name: 'Homebridge', username: '0E:89:49:64:91:86', port: 51173, pin: '630-27-655' },
+                default: { name: 'Homebridge', username: '0E:89:49:64:91:86', port: 51173, pin: '6302-7655' },
               },
               mdns: {
                 type: 'object',

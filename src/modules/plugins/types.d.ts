@@ -9,6 +9,7 @@ export interface HomebridgePlugin {
   latestVersion?: string;
   lastUpdated?: string;
   updateAvailable?: boolean;
+  betaUpdateAvailable?: boolean;
   installPath?: string;
   globalInstall?: boolean;
   settingsSchema?: boolean;
