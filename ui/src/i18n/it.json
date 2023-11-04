@@ -200,6 +200,7 @@
     "plugins.node_update.node_version_too_low": "Il plugin {{ pluginName }} raccomanda l'esecuzione su Node.js v{{ minVersion }} o successivo. Stai attualmente eseguendo Node.js {{ installedVersion }}.",
     "plugins.node_update.title": "Versione di Node.js",
     "plugins.node_update.update_anyway": "Aggiorna comunque",
+    "plugins.node_update_homebridge_ui_upgrade_and_try_again": "Per piacere aggiornare Node.js prima di aggiornare Homebridge UI.",
     "plugins.node_update_homebridge_upgrade_and_try_again": "Per piacere aggiornare Node.js prima di aggiornare Homebridge.",
     "plugins.placeholder_search_plugin": "Cerca plugin da installare…",
     "plugins.settings.custom.homebridge-gsh.label_account_linked": "Account collegato",
