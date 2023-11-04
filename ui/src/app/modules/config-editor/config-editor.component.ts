@@ -400,9 +400,9 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                   },
                   pin: {
                     type: 'string',
-                    description: 'The Homebridge instance pin.\nThis is used when pairing Homebridge to HomeKit.\nExample: 6302-7655',
-                    default: '6302-7655',
-                    pattern: '^([0-9]{4}-[0-9]{4})$',
+                    description: 'The Homebridge instance pin.\nThis is used when pairing Homebridge to HomeKit.\nExample: 630-27-655',
+                    default: '630-27-655',
+                    pattern: '^([0-9]{3}-[0-9]{2}-[0-9]{3})$',
                   },
                   manufacturer: {
                     type: 'string',

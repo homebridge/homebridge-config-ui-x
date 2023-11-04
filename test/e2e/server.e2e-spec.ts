@@ -106,7 +106,7 @@ describe('ServerController (e2e)', () => {
     expect(res.json()).toEqual({
       displayName: 'Homebridge Test',
       isPaired: false,
-      pincode: '8749-9441',
+      pincode: '874-99-441',
       setupCode: 'X-HM://0024X0Z3L1FAP',
     });
   });
