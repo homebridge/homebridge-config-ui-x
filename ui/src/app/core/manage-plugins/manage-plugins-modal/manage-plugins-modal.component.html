@@ -8,9 +8,7 @@
       <h3 class="text-center primary-text" [translate]="'platform.version.title_service_restart_required'">
         Restart Required
       </h3>
-      <p class="text-center grey-text" translate="plugins.manage.message_thanks_for_updating" [translateParams]="{ pluginName: pluginName, targetVersion: targetVersion }">
-        Thanks for installing the {{ targetVersion }} version of {{ pluginName }}.
-      </p>
+      <p class="text-center grey-text" translate="plugins.manage.message_thanks_for_updating" [translateParams]="{ pluginName: pluginName, targetVersion: targetVersion }"></p>
       <p *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(pluginName)" class="text-center grey-text" [translate]="'plugins.manage.message_thanks_for_updating_restart'">
         Please restart Homebridge for the changes to apply. Alternatively, if you have this plugin running in child bridges, you can close this modal and restart these instead.
       </p>
