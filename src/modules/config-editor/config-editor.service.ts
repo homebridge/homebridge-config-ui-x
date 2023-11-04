@@ -418,7 +418,8 @@ export class ConfigEditorService {
   public generatePin() {
     let code: string | Array<any> = Math.floor(10000000 + Math.random() * 90000000) + '';
     code = code.split('');
-    code.splice(4, 0, '-');
+    code.splice(3, 0, '-');
+    code.splice(6, 0, '-');
     code = code.join('');
     return code;
   }
