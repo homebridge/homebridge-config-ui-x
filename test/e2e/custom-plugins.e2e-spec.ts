@@ -94,6 +94,34 @@ describe('CustomPluginsController (e2e)', () => {
     expect(res.statusCode).toBe(404);
   });
 
+  it('GET /plugins/custom-plugins/homebridge-deconz/dump-file (dump file exists)', async () => {
+    await fs.writeJson(path.resolve(process.env.UIX_STORAGE_PATH, 'homebridge-deconz.json.gz'), {});
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/plugins/custom-plugins/homebridge-deconz/dump-file',
+      headers: {
+        authorization,
+      },
+    });
+
+    expect(res.statusCode).toBe(200);
+  });
+
+  it('GET /plugins/custom-plugins/homebridge-deconz/dump-file (dump file missing)', async () => {
+    await fs.remove(path.resolve(process.env.UIX_STORAGE_PATH, 'homebridge-deconz.json.gz'));
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/plugins/custom-plugins/homebridge-deconz/dump-file',
+      headers: {
+        authorization,
+      },
+    });
+
+    expect(res.statusCode).toBe(404);
+  });
+
   afterAll(async () => {
     await app.close();
   });

@@ -46,6 +46,7 @@
     <div *ngIf="pluginConfig.length && schema.singular" class="card card-body">
       <app-schema-form [configSchema]="schema" [(data)]="pluginConfig[0].config">
       </app-schema-form>
+      <app-homebridge-deconz *ngIf="plugin.name==='homebridge-deconz'"></app-homebridge-deconz>
       <app-homebridge-hue *ngIf="plugin.name==='homebridge-hue'"></app-homebridge-hue>
     </div>
 
