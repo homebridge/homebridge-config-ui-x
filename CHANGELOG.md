@@ -2,7 +2,11 @@
 
 All notable changes to homebridge-config-ui-x will be documented in this file.
 
-## BETA
+## 4.52.1 (2023-11-04)
+
+### Other Changes
+
+- **i18n:** Update de.json ([1627](https://github.com/homebridge/homebridge-config-ui-x/pull/1627))
 
 ### Bug Fixes
 
