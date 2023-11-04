@@ -269,15 +269,27 @@
             ]
           },
           {
+            "title": "Chinese - Simplified (zh-CN)",
+            "enum": [
+              "zh-CN"
+            ]
+          },
+          {
+            "title": "Chinese - Traditional (zh-TW)",
+            "enum": [
+              "zh-TW"
+            ]
+          },
+          {
             "title": "Czech (cs)",
             "enum": [
               "cs"
             ]
           },
           {
-            "title": "German (de)",
+            "title": "Dutch (nl)",
             "enum": [
-              "de"
+              "nl"
             ]
           },
           {
@@ -287,15 +299,22 @@
             ]
           },
           {
-            "title": "Spanish (es)",
-            "enum": [
-              "es"
-            ]
-          },
-          {
             "title": "French (fr)",
             "enum": [
               "fr"
+            ]
+          },
+          {
+            "title": "German (de)",
+            "enum": [
+              "de"
+            ]
+          },
+
+          {
+            "title": "Hebrew (he)",
+            "enum": [
+              "he"
             ]
           },
           {
@@ -329,12 +348,6 @@
             ]
           },
           {
-            "title": "Dutch (nl)",
-            "enum": [
-              "nl"
-            ]
-          },
-          {
             "title": "Macedonian (mk)",
             "enum": [
               "mk"
@@ -347,21 +360,21 @@
             ]
           },
           {
-            "title": "Portuguese (pt-BR)",
+            "title": "Polish (pl)",
+            "enum": [
+              "pl"
+            ]
+          },
+          {
+            "title": "Portuguese (Brazil)",
             "enum": [
               "pt-BR"
             ]
           },
           {
-            "title": "Portuguese (pt)",
+            "title": "Portuguese (Portugal)",
             "enum": [
               "pt"
-            ]
-          },
-          {
-            "title": "Polish (pl)",
-            "enum": [
-              "pl"
             ]
           },
           {
@@ -374,6 +387,12 @@
             "title": "Slovenian (sl)",
             "enum": [
               "sl"
+            ]
+          },
+          {
+            "title": "Spanish (es)",
+            "enum": [
+              "es"
             ]
           },
           {
@@ -399,24 +418,6 @@
             "enum": [
               "uk"
             ]
-          },
-          {
-            "title": "Chinese - Simplified (zh-CN)",
-            "enum": [
-              "zh-CN"
-            ]
-          },
-          {
-            "title": "Chinese - Traditional (zh-TW)",
-            "enum": [
-              "zh-TW"
-            ]
-          },
-          {
-            "title": "Hebrew",
-            "enum": [
-              "he"
-            ]
           }
         ]
       },
@@ -433,7 +434,7 @@
         "type": "string"
       },
       "noFork": {
-        "title": "Do not run the Config UI web server in a seperate process/thread",
+        "title": "Do not run the Config UI web server in a separate process/thread",
         "type": "boolean"
       },
       "host": {

@@ -190,7 +190,7 @@
     "plugins.manage.message_confirm_enable": "Bist du sicher, dass du {{ pluginName }} aktivieren möchtest?",
     "plugins.manage.message_install_alternate_version": "Vorherige Version installieren",
     "plugins.manage.message_select_version_to_install": "Zu installierende Version auswählen",
-    "plugins.manage.message_thanks_for_updating": "Vielen Dank für die Installation der neuesten Version von {{ pluginName }}.",
+    "plugins.manage.message_thanks_for_updating": "Vielen Dank für die Installation der {{ targetVersion }} Version von {{ pluginName }}.",
     "plugins.manage.message_thanks_for_updating_restart": "Bitte starte Homebridge neu, damit die Änderungen wirksam werden. Wenn du dieses Plugin in Unter-Bridges ausführst, kannst du alternativ diesen Hinweis auch schließen und stattdessen diese neu starten.",
     "plugins.manage.message_uninstall_remove_config_required": "Stelle sicher, dass wenn du dieses Plugin dauerhaft entfernst, jede Konfiguration für dieses Plugin in der config.json entfernt hast, bevor du Homebridge neu startest.",
     "plugins.manage.message_uninstall_remove_confirmation": "Bist du sicher, dass du {{ pluginName }} entfernen möchtest?",
