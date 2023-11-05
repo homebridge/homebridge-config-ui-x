@@ -1,15 +1,14 @@
+import { EventEmitter } from 'events';
 import * as os from 'os';
 import * as path from 'path';
-import * as fs from 'fs-extra';
-import { EventEmitter } from 'events';
-import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-
+import { Test, TestingModule } from '@nestjs/testing';
+import * as fs from 'fs-extra';
 import { ConfigService } from '../../src/core/config/config.service';
+import { NodePtyService } from '../../src/core/node-pty/node-pty.service';
+import { PluginsGateway } from '../../src/modules/plugins/plugins.gateway';
 import { PluginsModule } from '../../src/modules/plugins/plugins.module';
 import { PluginsService } from '../../src/modules/plugins/plugins.service';
-import { PluginsGateway } from '../../src/modules/plugins/plugins.gateway';
-import { NodePtyService } from '../../src/core/node-pty/node-pty.service';
 
 describe('PluginsGateway (e2e)', () => {
   let app: NestFastifyApplication;

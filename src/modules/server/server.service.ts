@@ -1,18 +1,23 @@
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import * as bufferShim from 'buffer-shims';
-import * as si from 'systeminformation';
-import * as NodeCache from 'node-cache';
 import * as child_process from 'child_process';
-import * as tcpPortUsed from 'tcp-port-used';
-import { Injectable, NotFoundException, BadRequestException, ServiceUnavailableException, InternalServerErrorException } from '@nestjs/common';
+import * as path from 'path';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  ServiceUnavailableException
+} from '@nestjs/common';
 import { Categories } from '@oznu/hap-client/dist/hap-types';
-
-import { Logger } from '../../core/logger/logger.service';
+import * as bufferShim from 'buffer-shims';
+import * as fs from 'fs-extra';
+import * as NodeCache from 'node-cache';
+import * as si from 'systeminformation';
+import * as tcpPortUsed from 'tcp-port-used';
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service';
-import { ConfigEditorService } from '../config-editor/config-editor.service';
+import { Logger } from '../../core/logger/logger.service';
 import { AccessoriesService } from '../accessories/accessories.service';
+import { ConfigEditorService } from '../config-editor/config-editor.service';
 import { HomebridgeMdnsSettingDto } from './server.dto';
 
 @Injectable()
@@ -103,7 +108,7 @@ export class ServerService {
       .filter(x => x.match(/AccessoryInfo\.([A-F,a-f,0-9]+)\.json/));
 
     return Promise.all(devices.map(async (x) => {
-      return await this.getDevicePairingById(x.split('.')[1]);
+      return this.getDevicePairingById(x.split('.')[1]);
     }));
   }
 
@@ -256,10 +261,10 @@ export class ServerService {
 
     try {
       this.logger.log('Clearing Cached Homebridge Accessories...');
-      for (const cachedAccessoriesPath of cachedAccessoryPaths) {
-        if (await fs.pathExists(cachedAccessoriesPath)) {
-          await fs.unlink(cachedAccessoriesPath);
-          this.logger.warn(`Removed ${cachedAccessoriesPath}`);
+      for (const thisCachedAccessoriesPath of cachedAccessoryPaths) {
+        if (await fs.pathExists(thisCachedAccessoriesPath)) {
+          await fs.unlink(thisCachedAccessoriesPath);
+          this.logger.warn(`Removed ${thisCachedAccessoriesPath}`);
         }
       }
     } catch (e) {

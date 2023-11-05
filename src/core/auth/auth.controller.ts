@@ -1,9 +1,21 @@
-import { Controller, Post, Body, Get, UseGuards, Header } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Header,
+  Post,
+  UseGuards
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags, ApiBearerAuth, ApiExcludeEndpoint, ApiOperation } from '@nestjs/swagger';
-import { AuthService } from './auth.service';
-import { AuthDto } from './auth.dto';
+import {
+  ApiBearerAuth,
+  ApiExcludeEndpoint,
+  ApiOperation,
+  ApiTags
+} from '@nestjs/swagger';
 import { ConfigService } from '../config/config.service';
+import { AuthDto } from './auth.dto';
+import { AuthService } from './auth.service';
 
 @ApiTags('Authentication')
 @Controller('auth')

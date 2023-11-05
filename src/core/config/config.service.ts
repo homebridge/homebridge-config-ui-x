@@ -1,28 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import * as crypto from 'crypto';
 import * as os from 'os';
 import * as path from 'path';
+import { Injectable } from '@nestjs/common';
 import * as fs from 'fs-extra';
-import * as crypto from 'crypto';
-import * as semver from 'semver';
 import * as _ from 'lodash';
-
-export interface HomebridgeConfig {
-  bridge: {
-    username: string;
-    pin: string;
-    name: string;
-    port: number;
-    advertiser?: 'avahi' | 'resolved' | 'ciao' | 'bonjour-hap';
-    bind?: string | string[];
-  };
-  mdns?: {
-    interface?: string | string[];
-  };
-  platforms: Record<string, any>[];
-  accessories: Record<string, any>[];
-  plugins?: string[];
-  disabledPlugins?: string[];
-}
+import * as semver from 'semver';
 
 @Injectable()
 export class ConfigService {
@@ -372,4 +354,22 @@ export class ConfigService {
     return fs.createReadStream(this.ui.loginWallpaper || this.customWallpaperPath);
   }
 
+}
+
+export interface HomebridgeConfig {
+  bridge: {
+    username: string;
+    pin: string;
+    name: string;
+    port: number;
+    advertiser?: 'avahi' | 'resolved' | 'ciao' | 'bonjour-hap';
+    bind?: string | string[];
+  };
+  mdns?: {
+    interface?: string | string[];
+  };
+  platforms: Record<string, any>[];
+  accessories: Record<string, any>[];
+  plugins?: string[];
+  disabledPlugins?: string[];
 }

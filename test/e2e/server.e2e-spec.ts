@@ -1,13 +1,12 @@
 import * as path from 'path';
-import * as fs from 'fs-extra';
 import { ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-
+import { Test, TestingModule } from '@nestjs/testing';
+import * as fs from 'fs-extra';
 import { AuthModule } from '../../src/core/auth/auth.module';
+import { ConfigService, HomebridgeConfig } from '../../src/core/config/config.service';
 import { ServerModule } from '../../src/modules/server/server.module';
 import { ServerService } from '../../src/modules/server/server.service';
-import { ConfigService, HomebridgeConfig } from '../../src/core/config/config.service';
 
 describe('ServerController (e2e)', () => {
   let app: NestFastifyApplication;
