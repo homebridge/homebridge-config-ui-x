@@ -1,9 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import * as semver from 'semver';
-
-import { Logger } from '../../core/logger/logger.service';
 import { ConfigService } from '../../core/config/config.service';
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service';
+import { Logger } from '../../core/logger/logger.service';
 import { AccessoriesService } from '../accessories/accessories.service';
 
 @Injectable()

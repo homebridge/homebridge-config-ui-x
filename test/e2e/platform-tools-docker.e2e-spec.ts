@@ -1,12 +1,11 @@
 import * as path from 'path';
-import * as fs from 'fs-extra';
 import { ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-
+import { Test, TestingModule } from '@nestjs/testing';
+import * as fs from 'fs-extra';
 import { AuthModule } from '../../src/core/auth/auth.module';
-import { DockerService } from '../../src/modules/platform-tools/docker/docker.service';
 import { DockerModule } from '../../src/modules/platform-tools/docker/docker.module';
+import { DockerService } from '../../src/modules/platform-tools/docker/docker.service';
 
 describe('PlatformToolsDocker (e2e)', () => {
   let app: NestFastifyApplication;

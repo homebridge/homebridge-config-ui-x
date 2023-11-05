@@ -1,7 +1,6 @@
 import { EventEmitter } from 'events';
 import { UseGuards } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
-
 import { WsGuard } from '../../core/auth/guards/ws.guard';
 import { LogService, LogTermSize } from './log.service';
 

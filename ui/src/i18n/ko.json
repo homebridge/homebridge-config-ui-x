@@ -200,6 +200,7 @@
     "plugins.node_update.node_version_too_low": "{{ pluginName }} 플러그인은 Node.js v{{ minVersion }} 이상 버전에서 실행이 권장됩니다. 현재 실행 중인 Node.js 버전은 {{ installedVersion }} 입니다.",
     "plugins.node_update.title": "Node.js 버전",
     "plugins.node_update.update_anyway": "무시하고 업데이트",
+    "plugins.node_update_homebridge_ui_upgrade_and_try_again": "Homebridge UI를 업데이트하기 전에 Node.js를 업그레이드 해주세요.",
     "plugins.node_update_homebridge_upgrade_and_try_again": "Homebridge를 업데이트하기 전에 Node.js를 업그레이드 해주세요.",
     "plugins.placeholder_search_plugin": "설치할 플러그인 검색…",
     "plugins.settings.custom.homebridge-gsh.label_account_linked": "계정 연결됨",

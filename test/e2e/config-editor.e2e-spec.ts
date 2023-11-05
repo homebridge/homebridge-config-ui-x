@@ -1,14 +1,13 @@
 import * as path from 'path';
-import * as fs from 'fs-extra';
-import * as dayjs from 'dayjs';
 import { ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-
+import { Test, TestingModule } from '@nestjs/testing';
+import * as dayjs from 'dayjs';
+import * as fs from 'fs-extra';
 import { AuthModule } from '../../src/core/auth/auth.module';
-import { ConfigEditorModule } from '../../src/modules/config-editor/config-editor.module';
 import { HomebridgeConfig } from '../../src/core/config/config.service';
 import { SchedulerService } from '../../src/core/scheduler/scheduler.service';
+import { ConfigEditorModule } from '../../src/modules/config-editor/config-editor.module';
 import { ConfigEditorService } from '../../src/modules/config-editor/config-editor.service';
 
 describe('ConfigEditorController (e2e)', () => {

@@ -1,7 +1,13 @@
 import * as path from 'path';
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  HttpException,
+  NotFoundException
+} from '@nestjs/common';
 import * as fs from 'fs-extra';
 
-import { Catch, NotFoundException, ExceptionFilter, HttpException, ArgumentsHost } from '@nestjs/common';
 
 @Catch(NotFoundException)
 export class SpaFilter implements ExceptionFilter {

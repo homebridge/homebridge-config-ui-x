@@ -1,6 +1,6 @@
-import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { ChildProcess } from 'child_process';
 import { EventEmitter } from 'events';
+import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '../config/config.service';
 import { Logger } from '../logger/logger.service';
 
@@ -55,6 +55,7 @@ export class HomebridgeIpcService extends EventEmitter {
   public async requestResponse(requestEvent: string, responseEvent: string) {
     return new Promise((resolve, reject) => {
       const actionTimeout = setTimeout(() => {
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
         this.removeListener(responseEvent, listener);
         reject('The Homebridge service did not respond');
       }, 3000);

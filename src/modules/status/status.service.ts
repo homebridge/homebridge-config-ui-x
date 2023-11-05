@@ -1,18 +1,17 @@
+import * as child_process from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
-import * as child_process from 'child_process';
 import * as util from 'util';
+import { HttpService } from '@nestjs/axios';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import * as fs from 'fs-extra';
-import * as si from 'systeminformation';
-import * as semver from 'semver';
 import * as NodeCache from 'node-cache';
 import { Subject, Subscription } from 'rxjs';
-import { Injectable, BadRequestException } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-
-import { Logger } from '../../core/logger/logger.service';
+import * as semver from 'semver';
+import * as si from 'systeminformation';
 import { ConfigService } from '../../core/config/config.service';
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service';
+import { Logger } from '../../core/logger/logger.service';
 import { PluginsService } from '../plugins/plugins.service';
 import { ServerService } from '../server/server.service';
 
@@ -178,11 +177,11 @@ export class StatusService {
     const net = await si.networkStats(defaultInterfaceName);
 
     // TODO: be able to specify in the ui the unit size (i.e. bytes, megabytes, gigabytes)
-    const tx_rx_sec = (net[0].tx_sec + net[0].rx_sec) / 1024 / 1024;
+    const txRxSec = (net[0].tx_sec + net[0].rx_sec) / 1024 / 1024;
 
     // TODO: break out the sent and received figures to two separate stacked graphs
-    // (these should ideally be positive/negative mirrored linecharts)
-    return { net: net[0], point: tx_rx_sec };
+    // (these should ideally be positive/negative mirrored line charts)
+    return { net: net[0], point: txRxSec };
   }
 
   /**
@@ -452,7 +451,7 @@ export class StatusService {
   }
 
   /**
-   * Returns infomation about the current state of the Raspberry Pi
+   * Returns information about the current state of the Raspberry Pi
    */
   public async getRaspberryPiThrottledStatus() {
     if (!this.configService.runningOnRaspberryPi) {

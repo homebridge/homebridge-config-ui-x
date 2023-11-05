@@ -1,12 +1,16 @@
 import * as path from 'path';
+import { ValidationPipe } from '@nestjs/common';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import { Test, TestingModule } from '@nestjs/testing';
 import * as fs from 'fs-extra';
 import { authenticator } from 'otplib';
-import { ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-
+import {
+  UserActivateOtpDto,
+  UserDeactivateOtpDto,
+  UserDto,
+  UserUpdatePasswordDto
+} from '../../src/modules/users/users.dto';
 import { UsersModule } from '../../src/modules/users/users.module';
-import { UserDto, UserUpdatePasswordDto, UserActivateOtpDto, UserDeactivateOtpDto } from '../../src/modules/users/users.dto';
 
 describe('UsersController (e2e)', () => {
   let app: NestFastifyApplication;

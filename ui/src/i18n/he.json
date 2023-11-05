@@ -200,6 +200,7 @@
     "plugins.node_update.node_version_too_low": "The {{ pluginName }} plugin recommends running on Node.js v{{ minVersion }} or later. You are currently running Node.js {{ installedVersion }}.",
     "plugins.node_update.title": "Node.js גרסאת",
     "plugins.node_update.update_anyway": "עדכן בכל זאת",
+    "plugins.node_update_homebridge_ui_upgrade_and_try_again": "Please upgrade Node.js before updating Homebridge UI.",
     "plugins.node_update_homebridge_upgrade_and_try_again": "אנא עדכן את גרסאת הNode.js לפני שדרוג ההומברידג'",
     "plugins.placeholder_search_plugin": "חפש תוספים להתקנה…",
     "plugins.settings.custom.homebridge-gsh.label_account_linked": "חשבון קושר",

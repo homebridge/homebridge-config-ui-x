@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { LinuxModule } from './linux/linux.module';
 import { DockerModule } from './docker/docker.module';
-import { TerminalModule } from './terminal/terminal.module';
 import { HbServiceModule } from './hb-service/hb-service.module';
+import { LinuxModule } from './linux/linux.module';
+import { TerminalModule } from './terminal/terminal.module';
 
 @Module({
   imports: [
