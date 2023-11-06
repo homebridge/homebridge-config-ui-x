@@ -1,6 +1,6 @@
 import * as path from 'path';
-import * as fs from 'fs-extra';
 import { Injectable, NotFoundException, StreamableFile } from '@nestjs/common';
+import * as fs from 'fs-extra';
 import { ConfigService } from '../../../core/config/config.service';
 
 @Injectable()

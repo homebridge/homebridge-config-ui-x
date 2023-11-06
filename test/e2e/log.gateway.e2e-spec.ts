@@ -1,14 +1,13 @@
+import { EventEmitter } from 'events';
 import * as os from 'os';
 import * as path from 'path';
-import * as fs from 'fs-extra';
-import { EventEmitter } from 'events';
-import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-
-import { LogModule } from '../../src/modules/log/log.module';
-import { LogGateway } from '../../src/modules/log/log.gateway';
-import { LogService } from '../../src/modules/log/log.service';
+import { Test, TestingModule } from '@nestjs/testing';
+import * as fs from 'fs-extra';
 import { ConfigService } from '../../src/core/config/config.service';
+import { LogGateway } from '../../src/modules/log/log.gateway';
+import { LogModule } from '../../src/modules/log/log.module';
+import { LogService } from '../../src/modules/log/log.service';
 
 describe('LogGateway (e2e)', () => {
   let app: NestFastifyApplication;

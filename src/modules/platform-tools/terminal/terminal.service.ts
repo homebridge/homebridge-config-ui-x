@@ -1,16 +1,11 @@
 import { EventEmitter } from 'events';
-import * as fs from 'fs-extra';
 import { Injectable } from '@nestjs/common';
-
+import * as fs from 'fs-extra';
 import { ConfigService } from '../../../core/config/config.service';
 import { Logger } from '../../../core/logger/logger.service';
 import { NodePtyService } from '../../../core/node-pty/node-pty.service';
 
 export type TermSize = { cols: number; rows: number };
-
-export interface WsEventEmitter extends EventEmitter {
-  disconnect: () => void;
-}
 
 @Injectable()
 export class TerminalService {
@@ -96,4 +91,8 @@ export class TerminalService {
     client.on('end', onEnd.bind(this));
     client.on('disconnect', onEnd.bind(this));
   }
+}
+
+export interface WsEventEmitter extends EventEmitter {
+  disconnect: () => void;
 }
