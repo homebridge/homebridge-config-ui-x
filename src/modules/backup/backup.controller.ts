@@ -1,11 +1,28 @@
-import { Controller, Get, Post, Put, UseGuards, Res, Req, InternalServerErrorException, Param, StreamableFile } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  InternalServerErrorException,
+  Param,
+  Post,
+  Put,
+  Req,
+  Res,
+  StreamableFile,
+  UseGuards
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiConsumes, ApiParam } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiParam,
+  ApiTags
+} from '@nestjs/swagger';
 import { FastifyRequest } from 'fastify';
-
-import { BackupService } from './backup.service';
 import { AdminGuard } from '../../core/auth/guards/admin.guard';
 import { Logger } from '../../core/logger/logger.service';
+import { BackupService } from './backup.service';
 
 @ApiTags('Backup & Restore')
 @ApiBearerAuth()
@@ -88,7 +105,7 @@ export class BackupController {
     description: 'Logs to stdout / stderr.',
   })
   async restoreBackupTrigger() {
-    return await this.backupService.triggerHeadlessRestore();
+    return this.backupService.triggerHeadlessRestore();
   }
 
   @UseGuards(AdminGuard)

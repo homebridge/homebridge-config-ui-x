@@ -1,9 +1,32 @@
-import { Controller, UseGuards, Body, Post, Get, Param, Delete, Patch, ParseIntPipe, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Req,
+  UseGuards
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags, ApiBearerAuth, ApiBody, ApiResponse, ApiOperation, ApiParam } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags
+} from '@nestjs/swagger';
 import { AuthService } from '../../core/auth/auth.service';
 import { AdminGuard } from '../../core/auth/guards/admin.guard';
-import { UserDto, UserUpdatePasswordDto, UserActivateOtpDto, UserDeactivateOtpDto } from './users.dto';
+import {
+  UserActivateOtpDto,
+  UserDeactivateOtpDto,
+  UserDto,
+  UserUpdatePasswordDto
+} from './users.dto';
 
 @ApiTags('User Management')
 @ApiBearerAuth()

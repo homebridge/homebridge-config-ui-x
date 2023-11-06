@@ -200,6 +200,7 @@
     "plugins.node_update.node_version_too_low": "Плагинот {{ pluginName }} препорачува да се извршува на Node.js v{{ minVersion }} или понов. Моментално имате Node.js {{ installedVersion }}.",
     "plugins.node_update.title": "Верзија на Node.js",
     "plugins.node_update.update_anyway": "Сепак ажурирај",
+    "plugins.node_update_homebridge_ui_upgrade_and_try_again": "Ве молиме аурирајте го Node.js пред да го ажурирате Homebridge UI.",
     "plugins.node_update_homebridge_upgrade_and_try_again": "Ве молиме аурирајте го Node.js пред да го ажурирате Homebridge.",
     "plugins.placeholder_search_plugin": "Барајте плагини достапни за инсталација…",
     "plugins.settings.custom.homebridge-gsh.label_account_linked": "Поврзана корисничка сметка",

@@ -200,6 +200,7 @@
     "plugins.node_update.node_version_too_low": "{{ pluginName }} Plugin 建議以 Node.js v{{ minVersion }} 或更新版本執行。目前所使用的 Node.js 版本為 {{ installedVersion }}。",
     "plugins.node_update.title": "Node.js 版本",
     "plugins.node_update.update_anyway": "依舊更新",
+    "plugins.node_update_homebridge_ui_upgrade_and_try_again": "於更新 Homebridge UI 前、請先更新 Node.js。",
     "plugins.node_update_homebridge_upgrade_and_try_again": "於更新 Homebridge 前、請先更新 Node.js。",
     "plugins.placeholder_search_plugin": "搜尋 Plugin 並且安裝…",
     "plugins.settings.custom.homebridge-gsh.label_account_linked": "帳號已連結",

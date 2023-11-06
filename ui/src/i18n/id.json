@@ -200,6 +200,7 @@
     "plugins.node_update.node_version_too_low": "Plugin {{ pluginName }} merekomendasikan Node.js v{{ minVersion }} atau lebih baru. Saat ini anda menjalankan Node.js {{ installedVersion }}.",
     "plugins.node_update.title": "Versi Node.js",
     "plugins.node_update.update_anyway": "Tetap Perbarui",
+    "plugins.node_update_homebridge_ui_upgrade_and_try_again": "Harap tingkatkan Node.js sebelum memperbaharui Homebridge UI.",
     "plugins.node_update_homebridge_upgrade_and_try_again": "Harap tingkatkan Node.js sebelum memperbaharui Homebridge.",
     "plugins.placeholder_search_plugin": "Cari plugin untuk dipasang…",
     "plugins.settings.custom.homebridge-gsh.label_account_linked": "Akun Terhubung",

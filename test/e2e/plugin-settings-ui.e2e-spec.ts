@@ -1,10 +1,9 @@
 import * as path from 'path';
-import * as fs from 'fs-extra';
-import { ValidationPipe } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { Test, TestingModule } from '@nestjs/testing';
+import { ValidationPipe } from '@nestjs/common';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-
+import { Test, TestingModule } from '@nestjs/testing';
+import * as fs from 'fs-extra';
 import { AuthModule } from '../../src/core/auth/auth.module';
 import { PluginsSettingsUiModule } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui.module';
 
