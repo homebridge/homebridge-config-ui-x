@@ -10,56 +10,56 @@
     "hideOnMobile": false
   },
   {
-    "x": 15,
-    "y": 0,
+    "x": 16,
+    "y": 10,
     "component": "ChildBridgeWidgetComponent",
-    "cols": 5,
-    "rows": 9,
+    "cols": 4,
+    "rows": 3,
     "mobileOrder": 35,
     "hideOnMobile": false
   },
   {
-    "x": 5,
-    "y": 3,
+    "x": 0,
+    "y": 10,
     "component": "CpuWidgetComponent",
-    "cols": 5,
+    "cols": 4,
     "rows": 3,
     "mobileOrder": 40,
     "hideOnMobile": false
   },
   {
-    "x": 10,
-    "y": 3,
+    "x": 4,
+    "y": 10,
     "component": "MemoryWidgetComponent",
-    "cols": 5,
+    "cols": 4,
     "rows": 3,
     "mobileOrder": 50,
     "hideOnMobile": false
   },
   {
-    "x": 10,
-    "y": 6,
+    "x": 8,
+    "y": 10,
     "component": "NetworkWidgetComponent",
-    "cols": 5,
+    "cols": 4,
     "rows": 3,
     "mobileOrder": 55,
     "hideOnMobile": false
   },
   {
-    "x": 5,
-    "y": 6,
+    "x": 12,
+    "y": 10,
     "component": "UptimeWidgetComponent",
-    "cols": 5,
+    "cols": 4,
     "rows": 3,
     "mobileOrder": 60,
     "hideOnMobile": false
   },
   {
-    "x": 0,
-    "y": 9,
+    "x": 15,
+    "y": 0,
     "component": "SystemInfoWidgetComponent",
     "cols": 5,
-    "rows": 9,
+    "rows": 10,
     "mobileOrder": 70,
     "hideOnMobile": false
   },
@@ -68,16 +68,16 @@
     "y": 0,
     "component": "HapQrcodeWidgetComponent",
     "cols": 5,
-    "rows": 9,
+    "rows": 10,
     "mobileOrder": 100,
     "hideOnMobile": false
   },
   {
     "x": 5,
-    "y": 9,
+    "y": 3,
     "component": "HomebridgeLogsWidgetComponent",
-    "cols": 15,
-    "rows": 9,
+    "cols": 10,
+    "rows": 7,
     "mobileOrder": 1000,
     "hideOnMobile": true
   }
