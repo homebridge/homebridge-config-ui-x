@@ -10,7 +10,7 @@ import * as child_process from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
 import axios from 'axios';
-import * as commander from 'commander';
+import { program } from 'commander';
 import * as fs from 'fs-extra';
 import * as ora from 'ora';
 import * as semver from 'semver';
@@ -87,7 +87,7 @@ export class HomebridgeServiceHelper {
         process.exit(1);
     }
 
-    commander
+    program
       .allowUnknownOption()
       .storeOptionsAsProperties(true)
       .arguments('[install|uninstall|start|stop|restart|rebuild|run|logs|view|add|remove]')
@@ -139,7 +139,7 @@ export class HomebridgeServiceHelper {
       }
       case 'rebuild': {
         this.logger(`Rebuilding for Node.js ${process.version}...`);
-        this.installer.rebuild(commander.args.includes('--all'));
+        this.installer.rebuild(program.args.includes('--all'));
         break;
       }
       case 'run': {
@@ -155,15 +155,15 @@ export class HomebridgeServiceHelper {
         break;
       }
       case 'add': {
-        this.npmPluginManagement(commander.args);
+        this.npmPluginManagement(program.args);
         break;
       }
       case 'remove': {
-        this.npmPluginManagement(commander.args);
+        this.npmPluginManagement(program.args);
         break;
       }
       case 'update-node': {
-        this.checkForNodejsUpdates(commander.args.length === 2 ? commander.args[1] : null);
+        this.checkForNodejsUpdates(program.args.length === 2 ? program.args[1] : null);
         break;
       }
       case 'before-start': {
@@ -175,7 +175,7 @@ export class HomebridgeServiceHelper {
         break;
       }
       default: {
-        commander.outputHelp();
+        program.outputHelp();
 
         console.log('\nThe hb-service command is provided by homebridge-config-ui-x\n');
         console.log('Please provide a command:');
