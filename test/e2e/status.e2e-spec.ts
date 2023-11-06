@@ -1,14 +1,13 @@
 import * as path from 'path';
-import * as fs from 'fs-extra';
-import { AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
-import { of, throwError } from 'rxjs';
-import { ValidationPipe } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { Test, TestingModule } from '@nestjs/testing';
+import { ValidationPipe } from '@nestjs/common';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-
-import { StatusModule } from '../../src/modules/status/status.module';
+import { Test, TestingModule } from '@nestjs/testing';
+import { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import * as fs from 'fs-extra';
+import { of, throwError } from 'rxjs';
 import { AuthModule } from '../../src/core/auth/auth.module';
+import { StatusModule } from '../../src/modules/status/status.module';
 
 describe('StatusController (e2e)', () => {
   let app: NestFastifyApplication;

@@ -1,18 +1,12 @@
+import * as child_process from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
-import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
-
-import { HomebridgeServiceHelper } from '../hb-service';
 import { BasePlatform } from '../base-platform';
 
 export class DarwinInstaller extends BasePlatform {
   private user: string;
-
-  constructor(hbService: HomebridgeServiceHelper) {
-    super(hbService);
-  }
 
   private get plistName() {
     return `com.${this.hbService.serviceName.toLowerCase()}.server`;

@@ -200,6 +200,7 @@
     "plugins.node_update.node_version_too_low": "{{ pluginName }} eklentisi Node.js v{{ minVersion }} veya daha üst sürümünü çalıştırmanızı tavsiye ediyor. Mevutta Node.js v{{ installedVersion }} çalıştırıyorsunuz.",
     "plugins.node_update.title": "Node.js Sürümü",
     "plugins.node_update.update_anyway": "Yine de Güncelle",
+    "plugins.node_update_homebridge_ui_upgrade_and_try_again": "Lütfen Homebridge UI'i güncellemeden önce Node.js sürümünü yükseltin.",
     "plugins.node_update_homebridge_upgrade_and_try_again": "Lütfen Homebridge'i güncellemeden önce Node.js sürümünü yükseltin.",
     "plugins.placeholder_search_plugin": "Yüklemek için eklentiler arayın…",
     "plugins.settings.custom.homebridge-gsh.label_account_linked": "Hesap Bağlandı",

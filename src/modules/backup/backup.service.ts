@@ -1,23 +1,28 @@
-import * as os from 'os';
-import * as tar from 'tar';
-import * as path from 'path';
-import * as util from 'util';
-import * as fs from 'fs-extra';
-import * as color from 'bash-color';
-import * as unzipper from 'unzipper';
 import * as child_process from 'child_process';
-import * as dayjs from 'dayjs';
-import { pipeline } from 'stream';
 import { EventEmitter } from 'events';
-import { Injectable, BadRequestException, NotFoundException, InternalServerErrorException, StreamableFile } from '@nestjs/common';
-import { FastifyReply } from 'fastify';
+import * as os from 'os';
+import * as path from 'path';
+import { pipeline } from 'stream';
+import * as util from 'util';
 import { MultipartFile } from '@fastify/multipart';
-
-import { PluginsService } from '../plugins/plugins.service';
-import { SchedulerService } from '../../core/scheduler/scheduler.service';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  StreamableFile
+} from '@nestjs/common';
+import * as color from 'bash-color';
+import * as dayjs from 'dayjs';
+import { FastifyReply } from 'fastify';
+import * as fs from 'fs-extra';
+import * as tar from 'tar';
+import * as unzipper from 'unzipper';
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service';
 import { Logger } from '../../core/logger/logger.service';
+import { SchedulerService } from '../../core/scheduler/scheduler.service';
+import { PluginsService } from '../plugins/plugins.service';
 import { HomebridgePlugin } from '../plugins/types';
 
 const pump = util.promisify(pipeline);
@@ -170,7 +175,7 @@ export class BackupService {
       }
     } else {
       // when not using a custom backup path, just ensure it exists
-      return await fs.ensureDir(this.configService.instanceBackupPath);
+      return fs.ensureDir(this.configService.instanceBackupPath);
     }
   }
 
@@ -332,7 +337,7 @@ export class BackupService {
    */
   async removeRestoreDirectory() {
     if (this.restoreDirectory) {
-      return await fs.remove(this.restoreDirectory);
+      return fs.remove(this.restoreDirectory);
     }
   }
 

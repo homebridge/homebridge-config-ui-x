@@ -200,6 +200,7 @@
     "plugins.node_update.node_version_too_low": "Plugin {{ pluginName }} vyžaduje pro běh Node.js ve verzi {{ minVersion }} nebo vyšší. Vaše aktuálně běžící verze Node.js {{ installedVersion }}.",
     "plugins.node_update.title": "Node.js verze",
     "plugins.node_update.update_anyway": "Přesto aktualizovat",
+    "plugins.node_update_homebridge_ui_upgrade_and_try_again": "Před aktualizací Homebridge UI aktualizujte Node.js.",
     "plugins.node_update_homebridge_upgrade_and_try_again": "Před aktualizací Homebridge aktualizujte Node.js.",
     "plugins.placeholder_search_plugin": "Vyhledejte pluginy k instalaci…",
     "plugins.settings.custom.homebridge-gsh.label_account_linked": "Účet propojen",

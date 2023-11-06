@@ -1,16 +1,10 @@
+import * as child_process from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
-import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
-
-import { HomebridgeServiceHelper } from '../hb-service';
 import { BasePlatform } from '../base-platform';
 
 export class FreeBSDInstaller extends BasePlatform {
-  constructor(hbService: HomebridgeServiceHelper) {
-    super(hbService);
-  }
-
   private get rcServiceName() {
     return this.hbService.serviceName.toLowerCase();
   }

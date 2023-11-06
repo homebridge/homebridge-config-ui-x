@@ -1,18 +1,12 @@
+import * as child_process from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
-import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
-import * as si from 'systeminformation';
 import * as semver from 'semver';
-
-import { HomebridgeServiceHelper } from '../hb-service';
+import * as si from 'systeminformation';
 import { BasePlatform } from '../base-platform';
 
 export class LinuxInstaller extends BasePlatform {
-  constructor(hbService: HomebridgeServiceHelper) {
-    super(hbService);
-  }
-
   private get systemdServiceName() {
     return this.hbService.serviceName.toLowerCase();
   }
@@ -622,12 +616,12 @@ export class LinuxInstaller extends BasePlatform {
   private async createFirewallRules() {
     // check ufw is present on the system (debian based linux)
     if (await fs.pathExists('/usr/sbin/ufw')) {
-      return await this.createUfwRules();
+      return this.createUfwRules();
     }
 
     // check firewall-cmd is present on the system (enterprise linux)
     if (await fs.pathExists('/usr/bin/firewall-cmd')) {
-      return await this.createFirewallCmdRules();
+      return this.createFirewallCmdRules();
     }
   }
 

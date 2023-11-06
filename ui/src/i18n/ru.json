@@ -200,6 +200,7 @@
     "plugins.node_update.node_version_too_low": "Плагин {{ pluginName }} рекомендуется запускать используя Node.js v{{ minVersion }} или новее. В настоящее время Вы используете Node.js {{ installedVersion }}.",
     "plugins.node_update.title": "Версия Node.js",
     "plugins.node_update.update_anyway": "Обновить в любом случае",
+    "plugins.node_update_homebridge_ui_upgrade_and_try_again": "Пожалуйста, обновите Node.js перед обновлением Homebridge UI.",
     "plugins.node_update_homebridge_upgrade_and_try_again": "Пожалуйста, обновите Node.js перед обновлением Homebridge.",
     "plugins.placeholder_search_plugin": "Поиск плагинов для установки…",
     "plugins.settings.custom.homebridge-gsh.label_account_linked": "Аккаунт привязан",

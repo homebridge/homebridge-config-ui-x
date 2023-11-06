@@ -1,17 +1,47 @@
 /**
- * Pollyfill for Node.js 11.x that does not support `globalThis`
+ * Polyfill for Node.js 11.x that does not support `globalThis`
  * This should be removed when support for < Node.js 12 is dropped
  */
 if (!global.globalThis && (process.versions.modules === '67' || process.versions.modules === '64')) {
   (global as any).globalThis = global;
 }
 
+import * as child_process from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
-import * as child_process from 'child_process';
 import { Logger } from './core/logger/logger.service';
 
 const logger = new Logger();
+
+function tryRebuildNodePtyModule() {
+  // using eval('require') here so it does not break with webpack
+  const modulePath = path.dirname(path.dirname(eval('require').resolve('@homebridge/node-pty-prebuilt-multiarch')));
+
+  logger.warn('[node-pty] Trying to rebuild automatically...');
+  logger.warn(`[node-pty] Path: ${modulePath}`);
+  try {
+    if (process.env.UIX_USE_PNPM === '1' && process.env.UIX_CUSTOM_PLUGIN_PATH) {
+      child_process.execSync('pnpm rebuild @homebridge/node-pty-prebuilt-multiarch', {
+        cwd: process.env.UIX_CUSTOM_PLUGIN_PATH,
+        stdio: 'ignore',
+      });
+    } else {
+      child_process.execSync('npm run install --unsafe-perm', {
+        cwd: modulePath,
+        stdio: 'ignore',
+      });
+    }
+  } catch (e) {
+    if (os.platform() !== 'win32') {
+      child_process.execSync('sudo -E -n run install --unsafe-perm', {
+        cwd: modulePath,
+        stdio: 'ignore',
+      });
+    } else {
+      throw e;
+    }
+  }
+}
 
 /**
  * The purpose of this script is to check the environment before launching the UI
@@ -64,36 +94,6 @@ function main() {
     process.exit(1);
   }
 
-}
-
-function tryRebuildNodePtyModule() {
-  // using eval('require') here so it does not break with webpack
-  const modulePath = path.dirname(path.dirname(eval('require').resolve('@homebridge/node-pty-prebuilt-multiarch')));
-
-  logger.warn('[node-pty] Trying to rebuild automatically...');
-  logger.warn(`[node-pty] Path: ${modulePath}`);
-  try {
-    if (process.env.UIX_USE_PNPM === '1' && process.env.UIX_CUSTOM_PLUGIN_PATH) {
-      child_process.execSync('pnpm rebuild @homebridge/node-pty-prebuilt-multiarch', {
-        cwd: process.env.UIX_CUSTOM_PLUGIN_PATH,
-        stdio: 'ignore',
-      });
-    } else {
-      child_process.execSync('npm run install --unsafe-perm', {
-        cwd: modulePath,
-        stdio: 'ignore',
-      });
-    }
-  } catch (e) {
-    if (os.platform() !== 'win32') {
-      child_process.execSync('sudo -E -n run install --unsafe-perm', {
-        cwd: modulePath,
-        stdio: 'ignore',
-      });
-    } else {
-      throw e;
-    }
-  }
 }
 
 main();

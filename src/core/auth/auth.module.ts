@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
-import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import { LoggerModule } from '../logger/logger.module';
+import { PassportModule } from '@nestjs/passport';
 import { ConfigModule } from '../config/config.module';
 import { ConfigService } from '../config/config.service';
-import { JwtStrategy } from './jwt.strategy';
+import { LoggerModule } from '../logger/logger.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { WsGuard } from './guards/ws.guard';
 import { AdminGuard } from './guards/admin.guard';
 import { WsAdminGuard } from './guards/ws-admin-guard';
+import { WsGuard } from './guards/ws.guard';
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   imports: [

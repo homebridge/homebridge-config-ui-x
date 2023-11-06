@@ -2,21 +2,12 @@
  * Homebridge Entry Point
  */
 
-import * as path from 'path';
 import * as child_process from 'child_process';
+import * as path from 'path';
 import * as commander from 'commander';
 import * as semver from 'semver';
 
 let homebridge;
-
-export = (api) => {
-  homebridge = api;
-  homebridge.registerPlatform('homebridge-config-ui-x', 'config', HomebridgeConfigUi);
-
-  if (process.env.UIX_SERVICE_MODE === '1' && process.connected) {
-    HomebridgeConfigUi.serviceMode();
-  }
-};
 
 class HomebridgeConfigUi {
   log;
@@ -99,3 +90,12 @@ class HomebridgeConfigUi {
     callback(accessories);
   }
 }
+
+export = (api) => {
+  homebridge = api;
+  homebridge.registerPlatform('homebridge-config-ui-x', 'config', HomebridgeConfigUi);
+
+  if (process.env.UIX_SERVICE_MODE === '1' && process.connected) {
+    HomebridgeConfigUi.serviceMode();
+  }
+};
