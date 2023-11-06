@@ -4,11 +4,18 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 
 ## Beta-4.52.2 (2023-11-XX)
 
+### Notable Changes
+
+- Prevent the UI from updating when running an unsupported version of Node.js
+  - This mimics the behaviour of updating Homebridge itself
+  - The option of 'Update Anyway' will still appear for other plugins when running an unsupported version of Node.js
+
 ### Other Changes
 
 - **i18n:** Update pl.json ([1633](https://github.com/homebridge/homebridge-config-ui-x/pull/1633))
 - **i18n:** Update fr.json ([1629](https://github.com/homebridge/homebridge-config-ui-x/pull/1629))
 - **i18n:** Update es.json (Improves Spanish localization) ([1632](https://github.com/homebridge/homebridge-config-ui-x/pull/1632))
+- Updated dependencies, including `@homebridge/node-pty-prebuilt-multiarch` to `0.11.10`
 
 ## 4.52.1 (2023-11-04)
 
