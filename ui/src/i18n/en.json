@@ -337,6 +337,8 @@
     "status.widget.systeminfo.label_storage_path": "Storage Path",
     "status.widget.systeminfo.label_synology_package": "Synology Package",
     "status.widget.systeminfo.label_timezone": "Timezone",
+    "status.widget.systeminfo.label_enabled": "Enabled",
+    "status.widget.systeminfo.label_disbled": "Disabled",
     "status.widget.title_manage_widget": "Manage Widget",
     "status.widget.uptime.label_process": "Process",
     "status.widget.uptime.label_server": "Server",
