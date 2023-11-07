@@ -17,7 +17,7 @@
     <!-- <div>
       <button (click)="addWidget()" class="btn btn-primary">Hi</button>
     </div> -->
-    <gridster [options]="options" class="flex-grow-1 no-scrollbars" [hidden]="consoleStatus === 'down'"
+    <gridster [options]="options" class="flex-grow-1 no-scrollbars px-3 py-0" [hidden]="consoleStatus === 'down'"
       *ngIf="dashboard.length">
       <ng-container *ngFor="let item of dashboard">
         <gridster-item *ngIf="!(item.hideOnMobile && page.mobile)" class="widget-item" [item]="item"
@@ -32,7 +32,7 @@
   </div>
 
   <div class="row mb-auto">
-    <div class="col-md-12 text-center mb-3 grey-text">
+    <div class="col-md-12 text-center px-4 py-1 grey-text">
       <!-- The below copyright notice shall be included and displayed on all copies or substantial portions of this software. -->
       <small>        
         &copy; 2023 

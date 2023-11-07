@@ -299,7 +299,7 @@
     "status.plugins_out_of_date": "구버전",
     "status.services.label_not_running": "실행되지 않음",
     "status.services.label_running": "실행 중",
-    "status.services.label_running_on_port": "포트 {{port}}에서 실행 중",
+    "status.services.label_running_on_port": "Port: {{port}}",
     "status.services.label_starting": "Starting…",
     "status.uptime.title_uptime": "가동 시간",
     "status.widget.accessories.label_choose_accessories_to_display": "이 위젯에 나타날 액세서리를 액세서리 탭에서 선택해주세요.",

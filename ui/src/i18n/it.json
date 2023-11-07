@@ -299,7 +299,7 @@
     "status.plugins_out_of_date": "Plugin da aggiornare",
     "status.services.label_not_running": "Non in esecuzione",
     "status.services.label_running": "In esecuzione",
-    "status.services.label_running_on_port": "In esecuzione sulla porta {{port}}",
+    "status.services.label_running_on_port": "Port: {{port}}",
     "status.services.label_starting": "Avvio in corso…",
     "status.uptime.title_uptime": "Avviato da",
     "status.widget.accessories.label_choose_accessories_to_display": "Scegli gli accessori da mostrare in questo widget dalla scheda Accessori.",

@@ -299,7 +299,7 @@
     "status.plugins_out_of_date": "Vtičniki so zastareli",
     "status.services.label_not_running": "Ne deluje",
     "status.services.label_running": "Proces deluje",
-    "status.services.label_running_on_port": "Deluje na portu {{port}}",
+    "status.services.label_running_on_port": "Port: {{port}}",
     "status.services.label_starting": "Starting…",
     "status.uptime.title_uptime": "Čas delovanja",
     "status.widget.accessories.label_choose_accessories_to_display": "Na zavihku Pripomočki izberite Pripomočki za prikaz v tem pripomočku.",
