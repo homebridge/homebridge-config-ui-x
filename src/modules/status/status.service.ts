@@ -390,8 +390,11 @@ export class StatusService {
    * Get / Cache the GLIBC version
    */
   private getGlibcVersion(): string {
-    const cachedResult = this.statusCache.get('glibcVersion') as string;
+    if (os.platform() !== 'linux') {
+      return '';
+    }
 
+    const cachedResult = this.statusCache.get('glibcVersion') as string;
     if (cachedResult) {
       return cachedResult;
     }
@@ -402,9 +405,8 @@ export class StatusService {
       return glibcVersion;
     } catch (e) {
       this.logger.debug('Could not check glibc version:', e.message);
-      return null;
+      return '';
     }
-
   }
 
   /**
@@ -423,7 +425,7 @@ export class StatusService {
       homebridgeServiceMode: this.configService.serviceMode,
       nodeVersion: process.version,
       os: await this.getOsInfo(),
-      glibcVersion: os.platform() === 'linux' ? this.getGlibcVersion() : null,
+      glibcVersion: this.getGlibcVersion(),
       time: si.time(),
       network: await this.getDefaultInterface() || {},
     };
@@ -450,31 +452,33 @@ export class StatusService {
       const versionList = (await this.httpService.get('https://nodejs.org/dist/index.json').toPromise()).data;
       const currentLts = versionList.filter(x => x.lts)[0];
 
-      // let showNextUpdateWarning = false;
-      // if (os.platform() === 'linux') {
-      //   const glibcVersion = parseFloat(child_process.execSync('getconf GNU_LIBC_VERSION 2>/dev/null').toString().split('glibc')[1].trim());
-      //   if (glibcVersion < 2.23) {
-      //     this.logger.warn('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
-      //       `Wanted: >=2.23. Installed: ${glibcVersion} - see https://homebridge.io/w/JJSun`, 'fail');
-      //     showNextUpdateWarning = true;
-      //   }
-      //   if (semver.gte(currentLts.version, '18.0.0') && glibcVersion < 2.28) {
-      //     this.logger.warn('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
-      //       `Wanted: >=2.28. Installed: ${glibcVersion} - see https://homebridge.io/w/JJSun`, 'fail');
-      //     showNextUpdateWarning = true;
-      //   }
-      //   if (semver.gte(currentLts.version, '20.0.0') && glibcVersion < 2.29) {
-      //     this.logger.warn('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
-      //       `Wanted: >=2.29. Installed: ${glibcVersion} - see https://homebridge.io/w/JJSun`, 'fail');
-      //     showNextUpdateWarning = true;
-      //   }
-      // }
+      const glibcVersion = this.getGlibcVersion();
+      let showNextUpdateWarning = false;
+      if (glibcVersion) {
+        const glibcVersionFloat = parseFloat(glibcVersion);
+        if (glibcVersionFloat < 2.23) {
+          this.logger.warn('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
+            `Wanted: >=2.23. Installed: ${glibcVersion} - see https://homebridge.io/w/JJSun`, 'fail');
+          showNextUpdateWarning = true;
+        }
+        if (semver.gte(currentLts.version, '18.0.0') && glibcVersionFloat < 2.28) {
+          this.logger.warn('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
+            `Wanted: >=2.28. Installed: ${glibcVersion} - see https://homebridge.io/w/JJSun`, 'fail');
+          showNextUpdateWarning = true;
+        }
+        if (semver.gte(currentLts.version, '20.0.0') && glibcVersionFloat < 2.29) {
+          this.logger.warn('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
+            `Wanted: >=2.29. Installed: ${glibcVersion} - see https://homebridge.io/w/JJSun`, 'fail');
+          showNextUpdateWarning = true;
+        }
+      }
+
       const versionInformation = {
         currentVersion: process.version,
         latestVersion: currentLts.version,
         updateAvailable: semver.gt(currentLts.version, process.version),
         showUpdateWarning: semver.lt(process.version, '18.15.0'),
-        // showNextUpdateWarning,
+        showNextUpdateWarning,
         installPath: path.dirname(process.execPath),
       };
       this.statusCache.set('nodeJsVersion', versionInformation, 86400);
@@ -486,7 +490,7 @@ export class StatusService {
         latestVersion: process.version,
         updateAvailable: false,
         showUpdateWarning: false,
-        // showNextUpdateWarning: false,
+        showNextUpdateWarning: false,
       };
       this.statusCache.set('nodeJsVersion', versionInformation, 3600);
       return versionInformation;

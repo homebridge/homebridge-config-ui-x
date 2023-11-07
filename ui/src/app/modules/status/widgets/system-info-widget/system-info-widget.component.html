@@ -44,7 +44,14 @@
         </tr>
         <tr *ngIf="serverInfo.glibcVersion">
           <th scope="row" class="text-nowrap">GLIBC Version</th>
-          <td>{{ serverInfo.glibcVersion }}</td>
+          <td>
+            <a *ngIf="nodejsInfo.showNextUpdateWarning" href="https://homebridge.io/w/JJSun" rel="noopener noreferrer" target="_blank" class="system-info-link"
+              ngbTooltip="Warning!">
+              {{ serverInfo.glibcVersion }}
+              <i class="primary-text fas fa-info-circle"></i>
+            </a>
+            <span *ngIf="!nodejsInfo.showNextUpdateWarning">{{ serverInfo.glibcVersion }}</span>
+          </td>
         </tr>
         <tr>
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_nodejs_version'"
