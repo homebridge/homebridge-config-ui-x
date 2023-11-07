@@ -329,7 +329,6 @@
     "status.widget.label_unlock_layout": "Разблокувати оформлення",
     "status.widget.systeminfo.label_config_path": "Файл конфігурації",
     "status.widget.systeminfo.label_docker": "Docker",
-    "status.widget.systeminfo.label_glibc_version": "GLIBC Version",
     "status.widget.systeminfo.label_glibc_warning": "Version is too low for updating Node.js to newer versions - https://homebridge.io/w/JJSun",
     "status.widget.systeminfo.label_hostname": "Назва хосту",
     "status.widget.systeminfo.label_ipv4": "IPv4",

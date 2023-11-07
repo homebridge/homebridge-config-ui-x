@@ -327,7 +327,6 @@
     "status.widget.label_unlock_layout": "Отклучи распоред",
     "status.widget.systeminfo.label_config_path": "Патека за конфигурацијата",
     "status.widget.systeminfo.label_docker": "Docker",
-    "status.widget.systeminfo.label_glibc_version": "GLIBC Version",
     "status.widget.systeminfo.label_glibc_warning": "Version is too low for updating Node.js to newer versions - https://homebridge.io/w/JJSun",
     "status.widget.systeminfo.label_hostname": "Име на host",
     "status.widget.systeminfo.label_ipv4": "IPv4",
