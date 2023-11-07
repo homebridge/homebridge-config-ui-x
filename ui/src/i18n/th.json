@@ -299,7 +299,7 @@
     "status.plugins_out_of_date": "ปลั๊กอินล้าสมัย",
     "status.services.label_not_running": "ไม่ทำงาน",
     "status.services.label_running": "กำลังทำงาน",
-    "status.services.label_running_on_port": "กำลังทำงานบนพอร์ต {{port}}",
+    "status.services.label_running_on_port": "Port: {{port}}",
     "status.services.label_starting": "กำลังเริ่มทำงาน…",
     "status.uptime.title_uptime": "ระยะเวลาเปิดบริการ",
     "status.widget.accessories.label_choose_accessories_to_display": "เลือกอุปกรณ์เสริมที่จะแสดงในวิดเจ็ตนี้จากแท็บอุปกรณ์เสริม",
