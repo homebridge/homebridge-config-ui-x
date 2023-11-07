@@ -1,26 +1,26 @@
 [
   {
-    "x": 5,
-    "y": 0,
+    "x": 0,
+    "y": 8,
     "component": "HomebridgeStatusWidgetComponent",
-    "cols": 10,
-    "rows": 3,
+    "cols": 5,
+    "rows": 6,
     "mobileOrder": 10,
     "hidePort": true,
     "hideOnMobile": false
   },
   {
-    "x": 15,
-    "y": 0,
+    "x": 16,
+    "y": 8,
     "component": "ChildBridgeWidgetComponent",
     "cols": 5,
-    "rows": 9,
+    "rows": 6,
     "mobileOrder": 35,
     "hideOnMobile": false
   },
   {
     "x": 5,
-    "y": 3,
+    "y": 8,
     "component": "CpuWidgetComponent",
     "cols": 5,
     "rows": 3,
@@ -28,8 +28,8 @@
     "hideOnMobile": false
   },
   {
-    "x": 10,
-    "y": 3,
+    "x": 5,
+    "y": 11,
     "component": "MemoryWidgetComponent",
     "cols": 5,
     "rows": 3,
@@ -38,7 +38,7 @@
   },
   {
     "x": 10,
-    "y": 6,
+    "y": 11,
     "component": "NetworkWidgetComponent",
     "cols": 5,
     "rows": 3,
@@ -46,8 +46,8 @@
     "hideOnMobile": false
   },
   {
-    "x": 5,
-    "y": 6,
+    "x": 10,
+    "y": 8,
     "component": "UptimeWidgetComponent",
     "cols": 5,
     "rows": 3,
@@ -55,11 +55,11 @@
     "hideOnMobile": false
   },
   {
-    "x": 0,
-    "y": 9,
+    "x": 15,
+    "y": 0,
     "component": "SystemInfoWidgetComponent",
     "cols": 5,
-    "rows": 9,
+    "rows": 8,
     "mobileOrder": 70,
     "hideOnMobile": false
   },
@@ -68,16 +68,16 @@
     "y": 0,
     "component": "HapQrcodeWidgetComponent",
     "cols": 5,
-    "rows": 9,
+    "rows": 8,
     "mobileOrder": 100,
     "hideOnMobile": false
   },
   {
     "x": 5,
-    "y": 9,
+    "y": 0,
     "component": "HomebridgeLogsWidgetComponent",
-    "cols": 15,
-    "rows": 9,
+    "cols": 10,
+    "rows": 8,
     "mobileOrder": 1000,
     "hideOnMobile": true
   }

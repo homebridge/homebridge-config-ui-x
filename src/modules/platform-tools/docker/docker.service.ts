@@ -1,7 +1,6 @@
-import * as fs from 'fs-extra';
 import * as child_process from 'child_process';
 import { Injectable } from '@nestjs/common';
-
+import * as fs from 'fs-extra';
 import { ConfigService } from '../../../core/config/config.service';
 import { Logger } from '../../../core/logger/logger.service';
 

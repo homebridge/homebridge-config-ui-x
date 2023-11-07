@@ -1,18 +1,12 @@
+import * as child_process from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
-import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
-import * as si from 'systeminformation';
 import * as semver from 'semver';
-
-import { HomebridgeServiceHelper } from '../hb-service';
+import * as si from 'systeminformation';
 import { BasePlatform } from '../base-platform';
 
 export class LinuxInstaller extends BasePlatform {
-  constructor(hbService: HomebridgeServiceHelper) {
-    super(hbService);
-  }
-
   private get systemdServiceName() {
     return this.hbService.serviceName.toLowerCase();
   }
@@ -148,7 +142,7 @@ export class LinuxInstaller extends BasePlatform {
       '/usr/local/lib/node_modules',
       '/usr/lib/node_modules'
     ].includes(path.dirname(process.env.UIX_BASE_PATH))) {
-      // systemd has a 90 second default timeout in the pre-start jobs
+      // systemd has a 90-second default timeout in the pre-start jobs
       // terminate this task after 60 seconds to be safe
       setTimeout(() => {
         process.exit(0);
@@ -559,7 +553,7 @@ export class LinuxInstaller extends BasePlatform {
   }
 
   /**
-   * Allows the homebridge user to shutdown and restart the server from the UI
+   * Allows the homebridge user to shut down and restart the server from the UI
    * There is no need for full sudo access when running using hb-service
    */
   private setupSudo() {
@@ -622,12 +616,12 @@ export class LinuxInstaller extends BasePlatform {
   private async createFirewallRules() {
     // check ufw is present on the system (debian based linux)
     if (await fs.pathExists('/usr/sbin/ufw')) {
-      return await this.createUfwRules();
+      return this.createUfwRules();
     }
 
     // check firewall-cmd is present on the system (enterprise linux)
     if (await fs.pathExists('/usr/bin/firewall-cmd')) {
-      return await this.createFirewallCmdRules();
+      return this.createFirewallCmdRules();
     }
   }
 
@@ -695,7 +689,7 @@ export class LinuxInstaller extends BasePlatform {
   }
 
   /**
-   * Setup the run-parts path and scripts
+   * Set up the run-parts path and scripts
    * This allows users to define their own scripts to run before Homebridge starts/restarts
    * The default script will ensure the homebridge storage path has the correct permissions each time Homebridge starts
    */

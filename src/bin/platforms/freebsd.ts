@@ -1,16 +1,10 @@
+import * as child_process from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
-import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
-
-import { HomebridgeServiceHelper } from '../hb-service';
 import { BasePlatform } from '../base-platform';
 
 export class FreeBSDInstaller extends BasePlatform {
-  constructor(hbService: HomebridgeServiceHelper) {
-    super(hbService);
-  }
-
   private get rcServiceName() {
     return this.hbService.serviceName.toLowerCase();
   }
@@ -228,7 +222,7 @@ export class FreeBSDInstaller extends BasePlatform {
   }
 
   /**
-   * Allows the homebridge user to shutdown and restart the server from the UI
+   * Allows the homebridge user to shut down and restart the server from the UI
    * There is no need for full sudo access when running using hb-service
    */
   private setupSudo() {

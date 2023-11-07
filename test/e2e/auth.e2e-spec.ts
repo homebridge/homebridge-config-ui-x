@@ -1,12 +1,11 @@
 import * as path from 'path';
-import * as fs from 'fs-extra';
 import { ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-
+import { Test, TestingModule } from '@nestjs/testing';
+import * as fs from 'fs-extra';
 import { AuthModule } from '../../src/core/auth/auth.module';
-import { ConfigService } from '../../src/core/config/config.service';
 import { AuthService } from '../../src/core/auth/auth.service';
+import { ConfigService } from '../../src/core/config/config.service';
 
 describe('AuthController (e2e)', () => {
   let app: NestFastifyApplication;
@@ -58,8 +57,8 @@ describe('AuthController (e2e)', () => {
 
   afterEach(async () => {
     // restore auth mode after each test
-    const configService: ConfigService = app.get(ConfigService);
-    configService.ui.auth = 'form';
+    const thisConfigService: ConfigService = app.get(ConfigService);
+    thisConfigService.ui.auth = 'form';
   });
 
   it('should .uix-secrets on launch', async () => {
@@ -147,8 +146,8 @@ describe('AuthController (e2e)', () => {
 
   it('POST /auth/noauth (auth disabled)', async () => {
     // set auth mode to none
-    const configService: ConfigService = app.get(ConfigService);
-    configService.ui.auth = 'none';
+    const thisConfigService: ConfigService = app.get(ConfigService);
+    thisConfigService.ui.auth = 'none';
 
     const res = await app.inject({
       method: 'POST',

@@ -1,14 +1,13 @@
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
-
 import { ConfigModule } from '../../core/config/config.module';
-import { LoggerModule } from '../../core/logger/logger.module';
 import { HomebridgeIpcModule } from '../../core/homebridge-ipc/homebridge-ipc.module';
-import { ConfigEditorModule } from '../config-editor/config-editor.module';
-import { ChildBridgesModule } from '../child-bridges/child-bridges.module';
+import { LoggerModule } from '../../core/logger/logger.module';
 import { AccessoriesModule } from '../accessories/accessories.module';
-import { ServerService } from './server.service';
+import { ChildBridgesModule } from '../child-bridges/child-bridges.module';
+import { ConfigEditorModule } from '../config-editor/config-editor.module';
 import { ServerController } from './server.controller';
+import { ServerService } from './server.service';
 
 @Module({
   imports: [
@@ -31,3 +30,4 @@ import { ServerController } from './server.controller';
   ]
 })
 export class ServerModule { }
+

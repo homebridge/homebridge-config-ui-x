@@ -1,9 +1,8 @@
-import { Controller, UseGuards, Get } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
-
-import { StatusService } from './status.service';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ChildBridgesService } from '../child-bridges/child-bridges.service';
+import { StatusService } from './status.service';
 
 @ApiTags('Server Status')
 @ApiBearerAuth()

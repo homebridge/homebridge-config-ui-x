@@ -6,43 +6,40 @@
 
 process.title = 'hb-service';
 
+import * as child_process from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
-import * as commander from 'commander';
-import * as child_process from 'child_process';
-import * as fs from 'fs-extra';
-import * as tcpPortUsed from 'tcp-port-used';
-import * as si from 'systeminformation';
-import * as semver from 'semver';
-import * as ora from 'ora';
-import * as tar from 'tar';
 import axios from 'axios';
+import { program } from 'commander';
+import * as fs from 'fs-extra';
+import * as ora from 'ora';
+import * as semver from 'semver';
+import * as si from 'systeminformation';
 import { Tail } from 'tail';
-
+import * as tar from 'tar';
+import * as tcpPortUsed from 'tcp-port-used';
+import type { HomebridgeIpcService } from '../core/homebridge-ipc/homebridge-ipc.service';
 import { BasePlatform } from './base-platform';
-import { Win32Installer } from './platforms/win32';
-import { LinuxInstaller } from './platforms/linux';
 import { DarwinInstaller } from './platforms/darwin';
 import { FreeBSDInstaller } from './platforms/freebsd';
-
-import type { HomebridgeIpcService } from '../core/homebridge-ipc/homebridge-ipc.service';
+import { LinuxInstaller } from './platforms/linux';
+import { Win32Installer } from './platforms/win32';
 
 export class HomebridgeServiceHelper {
   public action: 'install' | 'uninstall' | 'start' | 'stop' | 'restart' | 'rebuild' | 'run' | 'add' | 'remove' | 'logs' | 'view' | 'update-node' | 'before-start' | 'status';
   public selfPath = __filename;
   public serviceName = 'Homebridge';
-  public storagePath;
+  public storagePath: string;
   public usingCustomStoragePath = false;
   public allowRunRoot = false;
   public enableHbServicePluginManagement = false;
-  public asUser;
+  public asUser: string;
   public addGroup: string;
   private log: fs.WriteStream | NodeJS.WriteStream;
   private homebridgeModulePath: string;
   private homebridgePackage: { version: string; bin: { homebridge: string } };
   private homebridgeBinary: string;
   private homebridge: child_process.ChildProcessWithoutNullStreams;
-  private homebridgeStopped = true;
   private homebridgeOpts = ['-I'];
   private homebridgeCustomEnv = {};
   private uiBinary: string;
@@ -89,7 +86,7 @@ export class HomebridgeServiceHelper {
         process.exit(1);
     }
 
-    commander
+    program
       .allowUnknownOption()
       .storeOptionsAsProperties(true)
       .arguments('[install|uninstall|start|stop|restart|rebuild|run|logs|view|add|remove]')
@@ -141,7 +138,7 @@ export class HomebridgeServiceHelper {
       }
       case 'rebuild': {
         this.logger(`Rebuilding for Node.js ${process.version}...`);
-        this.installer.rebuild(commander.args.includes('--all'));
+        this.installer.rebuild(program.args.includes('--all'));
         break;
       }
       case 'run': {
@@ -157,15 +154,15 @@ export class HomebridgeServiceHelper {
         break;
       }
       case 'add': {
-        this.npmPluginManagement(commander.args);
+        this.npmPluginManagement(program.args);
         break;
       }
       case 'remove': {
-        this.npmPluginManagement(commander.args);
+        this.npmPluginManagement(program.args);
         break;
       }
       case 'update-node': {
-        this.checkForNodejsUpdates(commander.args.length === 2 ? commander.args[1] : null);
+        this.checkForNodejsUpdates(program.args.length === 2 ? program.args[1] : null);
         break;
       }
       case 'before-start': {
@@ -177,7 +174,7 @@ export class HomebridgeServiceHelper {
         break;
       }
       default: {
-        commander.outputHelp();
+        program.outputHelp();
 
         console.log('\nThe hb-service command is provided by homebridge-config-ui-x\n');
         console.log('Please provide a command:');
@@ -206,7 +203,7 @@ export class HomebridgeServiceHelper {
   /**
    * Logger function, log to homebridge.log file when possible
    */
-  public logger(msg, type: 'info' | 'succeed' | 'fail' | 'warn' = 'info') {
+  public logger(msg: string, type: 'info' | 'succeed' | 'fail' | 'warn' = 'info') {
     if (this.action === 'run') {
       msg = `\x1b[37m[${new Date().toLocaleString()}]\x1b[0m ` +
         '\x1b[36m[HB Supervisor]\x1b[0m ' + msg;
@@ -376,7 +373,7 @@ export class HomebridgeServiceHelper {
     // start the ui
     await this.runUi();
 
-    // tell the ui what homebridge we are running initialy (this is refreshed when Homebridge is restarted)
+    // tell the ui what homebridge we are running initially (this is refreshed when Homebridge is restarted)
     if (this.ipcService && this.homebridgePackage) {
       this.ipcService.setHomebridgeVersion(this.homebridgePackage.version);
     }
@@ -418,8 +415,6 @@ export class HomebridgeServiceHelper {
    * Starts homebridge as a child process, sending the log output to the homebridge.log
    */
   private runHomebridge() {
-    this.homebridgeStopped = false;
-
     if (!this.homebridgeBinary || !fs.pathExistsSync(this.homebridgeBinary)) {
       this.logger('Could not find Homebridge. Make sure you have installed homebridge using the -g flag then restart.', 'fail');
       this.logger('npm install -g --unsafe-perm homebridge', 'fail');
@@ -511,7 +506,6 @@ export class HomebridgeServiceHelper {
    * @param signal
    */
   private handleHomebridgeClose(code: number, signal: string) {
-    this.homebridgeStopped = true;
     this.logger(`Homebridge Process Ended. Code: ${code}, Signal: ${signal}`);
 
     this.checkForStaleHomebridgeProcess();
@@ -657,7 +651,7 @@ export class HomebridgeServiceHelper {
     // See https://github.com/sebhildebrandt/systeminformation/issues/775#issuecomment-1741836906
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    const defaultInterface = (await si.networkInterfaces()).find(x => x.iface === defaultAdapter);
+    const defaultInterface = (await si.networkInterfaces()).find((x: any) => x.iface === defaultAdapter);
 
     console.log('\nManage Homebridge by going to one of the following in your browser:\n');
 
@@ -726,7 +720,7 @@ export class HomebridgeServiceHelper {
       if (!Array.isArray(currentConfig.platforms)) {
         currentConfig.platforms = [];
       }
-      let uiConfigBlock = currentConfig.platforms.find((x) => x.platform === 'config');
+      let uiConfigBlock = currentConfig.platforms.find((x: any) => x.platform === 'config');
 
       // if the config block does not exist, then create it
       if (!uiConfigBlock) {
@@ -745,7 +739,7 @@ export class HomebridgeServiceHelper {
         restartRequired = true;
       }
 
-      // if doing an install, make sure the port number matches the value passed in by the user
+      // if doing an installation, make sure the port number matches the value passed in by the user
       if (this.action === 'install') {
         // correct the port
         if (uiConfigBlock.port !== this.uiPort) {
@@ -863,7 +857,7 @@ export class HomebridgeServiceHelper {
   }
 
   /**
-   * Returns true if running on the Homebridge Rasbpian Image
+   * Returns true if running on the Homebridge Raspbian Image
    */
   private async isRaspbianImage(): Promise<boolean> {
     return os.platform() === 'linux' && await fs.pathExists('/etc/hb-ui-port');
@@ -888,7 +882,7 @@ export class HomebridgeServiceHelper {
       return envPort;
     }
 
-    // otherwise return the defaul port
+    // otherwise return the default port
     return this.uiPort;
   }
 
@@ -1227,7 +1221,7 @@ export class HomebridgeServiceHelper {
     const spinner = ora(`Installing Node.js ${targetVersion}`).start();
 
     try {
-      await tar.x(extractConfig);
+      tar.x(extractConfig);
       spinner.succeed(`Installed Node.js ${targetVersion}`);
     } catch (e) {
       spinner.fail(e.message);
@@ -1254,7 +1248,7 @@ export class HomebridgeServiceHelper {
   }
 
   /**
-   * Check the current status of the Homebridge UI by calling it's API
+   * Check the current status of the Homebridge UI by calling its API
    */
   private async checkStatus() {
     this.logger(`Testing hb-service is running on port ${this.uiPort}...`);
@@ -1274,7 +1268,7 @@ export class HomebridgeServiceHelper {
   }
 
   /**
-   * Parse an npm package and version string
+   * Parse an NPM package and version string
    * Based on: https://github.com/egoist/parse-package-name
    */
   private parseNpmPackageString(input: string) {
@@ -1298,7 +1292,7 @@ export class HomebridgeServiceHelper {
   /**
    * Install / Remove a plugin using pnpm (supported platforms only)
    */
-  private async npmPluginManagement(args) {
+  private async npmPluginManagement(args: any[]) {
     if (!this.enableHbServicePluginManagement) {
       this.logger('Plugin management is not supported on your platform using hb-service.', 'fail');
       process.exit(1);
@@ -1328,7 +1322,7 @@ export class HomebridgeServiceHelper {
       this.logger(`Path does not exist: "${cwd}"`, 'fail');
     }
 
-    let cmd;
+    let cmd: string;
 
     if (process.env.UIX_USE_PNPM === '1') {
       cmd = `pnpm -C "${cwd}" ${action} ${target.name}`;

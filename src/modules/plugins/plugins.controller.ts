@@ -1,8 +1,18 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  UseGuards
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags, ApiBearerAuth, ApiParam, ApiOperation } from '@nestjs/swagger';
-import { PluginsService } from './plugins.service';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiTags
+} from '@nestjs/swagger';
 import { AdminGuard } from '../../core/auth/guards/admin.guard';
+import { PluginsService } from './plugins.service';
 
 @ApiTags('Plugins')
 @ApiBearerAuth()

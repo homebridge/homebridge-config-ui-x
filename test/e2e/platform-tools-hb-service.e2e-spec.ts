@@ -1,12 +1,11 @@
 import * as path from 'path';
-import * as fs from 'fs-extra';
 import { ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-
+import { Test, TestingModule } from '@nestjs/testing';
+import * as fs from 'fs-extra';
 import { AuthModule } from '../../src/core/auth/auth.module';
-import { HbServiceModule } from '../../src/modules/platform-tools/hb-service/hb-service.module';
 import { ConfigService } from '../../src/core/config/config.service';
+import { HbServiceModule } from '../../src/modules/platform-tools/hb-service/hb-service.module';
 
 describe('PlatformToolsHbService (e2e)', () => {
   let app: NestFastifyApplication;

@@ -1,8 +1,8 @@
-import { Controller, UseGuards, Put } from '@nestjs/common';
+import { Controller, Put, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
-import { LinuxService } from './linux.service';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AdminGuard } from '../../../core/auth/guards/admin.guard';
+import { LinuxService } from './linux.service';
 
 @ApiTags('Platform - Linux')
 @ApiBearerAuth()
