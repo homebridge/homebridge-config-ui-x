@@ -290,7 +290,7 @@
     "status.memory.label_available": "Volná",
     "status.memory.label_total": "Celková",
     "status.memory.title_memory": "Paměť RAM",
-    "status.message_code_scan_instructions": "Naskenováním přidejte do HomeKit",
+    "status.message_code_scan_instructions": "Naskenováním přidejte do HomeKit.",
     "status.network.label_received_per_second": "Přijato",
     "status.network.label_sent_per_second": "Odesláno",
     "status.network.title_network": "Aktivita Sítě",
