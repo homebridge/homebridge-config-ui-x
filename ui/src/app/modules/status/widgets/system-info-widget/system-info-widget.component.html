@@ -28,14 +28,6 @@
             </a> Synology DSM
           </td>
         </tr>
-        <tr *ngIf="serverInfo.homebridgeRunningInDocker">
-            <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_docker'">Docker</th>
-            <td>Yes</td>
-        </tr>
-        <tr *ngIf="serverInfo.homebridgeServiceMode">
-            <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_service_mode'">Service Mode</th>
-            <td>Yes</td>
-        </tr>
         <tr>
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_nodejs_version'">
             Node.js Version
@@ -93,13 +85,14 @@
           </th>
           <td class="text-nowrap" [translate]="'status.widget.systeminfo.label_yes'">Yes</td>
         </tr>
+        <tr>
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_timezone'">Timezone</th>
+          <td>{{ serverInfo.time.timezone }}</td>
+        </tr>
         <tr *ngIf="serverInfo.homebridgeServiceMode">
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_service_mode'">Service Mode
           </th>
           <td class="text-nowrap" [translate]="'status.widget.systeminfo.label_enabled'">Enabled</td>
-        <tr>
-          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_timezone'">Timezone</th>
-          <td>{{ serverInfo.time.timezone }}</td>
         </tr>
       </tbody>
     </table>
