@@ -41,7 +41,7 @@
         </div>
         <div class="align-self-center">
           <span *ngIf="homebridgePkg.installedVersion">
-            <a href="javascript:void(0)" (click)="$plugin.installPreviousVersion(homebridgePkg)" class="card-link">
+            <a href="javascript:void(0)" (click)="$plugin.installPreviousVersion(homebridgePkg)" class="card-link card-link-title">
               v{{ homebridgePkg.installedVersion }}
             </a>
           </span>
@@ -84,7 +84,7 @@
           <a routerLink="/plugins" class="primary-text" *ngIf="homebridgePluginStatus.length">
             {{ homebridgePluginStatus.length }} {{ homebridgePluginStatus.length === 1 ? ('status.plugin_out_of_date' | translate) : ('status.plugins_out_of_date' | translate) }}
           </a>
-          <span *ngIf="!homebridgePluginStatus.length" [translate]="'status.services.label_not_running'">
+          <span class="grey-text" *ngIf="!homebridgePluginStatus.length" [translate]="'status.services.label_not_running'">
             {{ 'status.homebridge.label_up_to_date' | translate }}
           </span>
         </div>
