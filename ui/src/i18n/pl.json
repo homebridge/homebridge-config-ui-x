@@ -299,7 +299,7 @@
     "status.plugins_out_of_date": "Wtyczki nieaktualne",
     "status.services.label_not_running": "Nieuruchomiony",
     "status.services.label_running": "Uruchomiony",
-    "status.services.label_running_on_port": "Uruchomiony na porcie {{port}}",
+    "status.services.label_running_on_port": "Port {{port}}",
     "status.services.label_starting": "Uruchamianie…",
     "status.uptime.title_uptime": "Czas pracy",
     "status.widget.accessories.label_choose_accessories_to_display": "Wybierz to akcesorium, aby wyświetlić go jako widżet.",
