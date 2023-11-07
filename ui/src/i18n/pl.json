@@ -337,6 +337,8 @@
     "status.widget.systeminfo.label_storage_path": "Ścieżka zapisu",
     "status.widget.systeminfo.label_synology_package": "Synology Package",
     "status.widget.systeminfo.label_timezone": "Strefa czasowa",
+    "status.widget.systeminfo.label_enabled": "Włączony",
+    "status.widget.systeminfo.label_disbled": "Wyłączony",
     "status.widget.title_manage_widget": "Ustawienia widżetu",
     "status.widget.uptime.label_process": "Procesy",
     "status.widget.uptime.label_server": "Serwer",
