@@ -222,7 +222,7 @@ export class FreeBSDInstaller extends BasePlatform {
   }
 
   /**
-   * Allows the homebridge user to shutdown and restart the server from the UI
+   * Allows the homebridge user to shut down and restart the server from the UI
    * There is no need for full sudo access when running using hb-service
    */
   private setupSudo() {

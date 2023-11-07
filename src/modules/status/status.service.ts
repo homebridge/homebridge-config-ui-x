@@ -16,7 +16,6 @@ import { PluginsService } from '../plugins/plugins.service';
 import { ServerService } from '../server/server.service';
 
 export const enum HomebridgeStatus {
-  PENDING = 'pending',
   OK = 'ok',
   UP = 'up',
   DOWN = 'down',
@@ -36,7 +35,7 @@ const execAsync = util.promisify(child_process.exec);
 @Injectable()
 export class StatusService {
   private statusCache = new NodeCache({ stdTTL: 3600 });
-  private dashboardLayout;
+  private dashboardLayout: any;
   private homebridgeStatus: HomebridgeStatus = HomebridgeStatus.DOWN;
   private homebridgeStatusChange = new Subject<HomebridgeStatus>();
 
@@ -204,7 +203,7 @@ export class StatusService {
   /**
    * Saves the current dashboard layout
    */
-  public async setDashboardLayout(layout) {
+  public async setDashboardLayout(layout: any) {
     fs.writeJSONSync(path.resolve(this.configService.storagePath, '.uix-dashboard.json'), layout);
     this.dashboardLayout = layout;
     return { status: 'ok' };
@@ -244,7 +243,7 @@ export class StatusService {
    */
   public async getServerUptimeInfo() {
     return {
-      time: await si.time(),
+      time: si.time(),
       processUptime: process.uptime(),
     };
   }
@@ -278,7 +277,7 @@ export class StatusService {
    * Start emitting server stats to client
    * @param client
    */
-  public async watchStats(client) {
+  public async watchStats(client: any) {
     let homebridgeStatusChangeSub: Subscription;
     let homebridgeStatusInterval: NodeJS.Timeout;
 
@@ -286,7 +285,7 @@ export class StatusService {
 
     // ipc status events are only available in Homebridge 1.3.3 or later - and when running in service mode
     if (this.configService.serviceMode && this.configService.homebridgeVersion && semver.gt(this.configService.homebridgeVersion, '1.3.3-beta.5')) {
-      homebridgeStatusChangeSub = this.homebridgeStatusChange.subscribe(async (status) => {
+      homebridgeStatusChangeSub = this.homebridgeStatusChange.subscribe(async () => {
         client.emit('homebridge-status', await this.getHomebridgeStats());
       });
     } else {
@@ -388,6 +387,29 @@ export class StatusService {
   }
 
   /**
+   * Get / Cache the GLIBC version
+   */
+  private getGlibcVersion(): string {
+    if (os.platform() !== 'linux') {
+      return '';
+    }
+
+    const cachedResult = this.statusCache.get('glibcVersion') as string;
+    if (cachedResult) {
+      return cachedResult;
+    }
+
+    try {
+      const glibcVersion = child_process.execSync('getconf GNU_LIBC_VERSION 2>/dev/null').toString().split('glibc')[1].trim();
+      this.statusCache.set('glibcVersion', glibcVersion, 86400);
+      return glibcVersion;
+    } catch (e) {
+      this.logger.debug('Could not check glibc version:', e.message);
+      return '';
+    }
+  }
+
+  /**
    * Returns details about this Homebridge server
    */
   public async getHomebridgeServerInfo() {
@@ -397,13 +419,15 @@ export class StatusService {
       homebridgeStoragePath: this.configService.storagePath,
       homebridgeInsecureMode: this.configService.homebridgeInsecureMode,
       homebridgeCustomPluginPath: this.configService.customPluginPath,
+      homebridgePluginPath: path.resolve(process.env.UIX_BASE_PATH, '..'),
       homebridgeRunningInDocker: this.configService.runningInDocker,
       homebridgeRunningInSynologyPackage: this.configService.runningInSynologyPackage,
       homebridgeRunningInPackageMode: this.configService.runningInPackageMode,
       homebridgeServiceMode: this.configService.serviceMode,
       nodeVersion: process.version,
       os: await this.getOsInfo(),
-      time: await si.time(),
+      glibcVersion: this.getGlibcVersion(),
+      time: si.time(),
       network: await this.getDefaultInterface() || {},
     };
   }
@@ -428,11 +452,17 @@ export class StatusService {
     try {
       const versionList = (await this.httpService.get('https://nodejs.org/dist/index.json').toPromise()).data;
       const currentLts = versionList.filter(x => x.lts)[0];
+
+      // See why this is set to 2.29 at https://homebridge.io/w/JJSun
+      const glibcVersion = this.getGlibcVersion();
+      const showNextUpdateWarning = glibcVersion && parseFloat(glibcVersion) < 2.29;
+
       const versionInformation = {
         currentVersion: process.version,
         latestVersion: currentLts.version,
         updateAvailable: semver.gt(currentLts.version, process.version),
         showUpdateWarning: semver.lt(process.version, '18.15.0'),
+        showNextUpdateWarning,
         installPath: path.dirname(process.execPath),
       };
       this.statusCache.set('nodeJsVersion', versionInformation, 86400);
@@ -444,6 +474,7 @@ export class StatusService {
         latestVersion: process.version,
         updateAvailable: false,
         showUpdateWarning: false,
+        showNextUpdateWarning: false,
       };
       this.statusCache.set('nodeJsVersion', versionInformation, 3600);
       return versionInformation;
@@ -470,11 +501,7 @@ export class StatusService {
 
       if (!isNaN(throttledHex)) {
         for (const bit of Object.keys(this.rpiGetThrottledMapping)) {
-          if ((throttledHex >> parseInt(bit, 10)) & 1) {
-            output[this.rpiGetThrottledMapping[bit]] = true;
-          } else {
-            output[this.rpiGetThrottledMapping[bit]] = false;
-          }
+          output[this.rpiGetThrottledMapping[bit]] = !!((throttledHex >> parseInt(bit, 10)) & 1);
         }
       }
     } catch (e) {

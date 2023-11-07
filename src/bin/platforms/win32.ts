@@ -161,7 +161,7 @@ export class Win32Installer extends BasePlatform {
           .on('finish', () => {
             return resolve(nssmPath);
           })
-          .on('error', (err) => {
+          .on('error', (err: any) => {
             return reject(err);
           });
       }).catch(async (e) => {

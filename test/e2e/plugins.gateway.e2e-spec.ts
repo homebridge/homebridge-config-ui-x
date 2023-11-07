@@ -46,7 +46,7 @@ describe('PluginsGateway (e2e)', () => {
     await fs.copy(path.resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
 
     await fs.remove(pluginsPath);
-    await fs.copy(path.resolve(__dirname, '../mocks', 'plugins'), pluginsPath, { recursive: true });
+    await fs.copy(path.resolve(__dirname, '../mocks', 'plugins'), pluginsPath);
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [PluginsModule],
