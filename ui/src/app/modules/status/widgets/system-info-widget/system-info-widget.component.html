@@ -31,7 +31,7 @@
             <a href="https://homebridge.io/w/JTKEF" rel="noopener noreferrer" target="_blank" class="system-info-link"
               ngbTooltip="{{ nodejsInfo.updateAvailable ? ('plugins.status_update_available' | translate) + ' - ' + nodejsInfo.latestVersion : ''}}">
               {{ serverInfo.nodeVersion }}
-              <i *ngIf="nodejsInfo.showUpdateWarning" class="primary-text fas fa-info-circle"></i>
+              <i *ngIf="nodejsInfo.showUpdateWarning" class="primary-text fas fa-circle-up"></i>
             </a>
           </td>
         </tr>
