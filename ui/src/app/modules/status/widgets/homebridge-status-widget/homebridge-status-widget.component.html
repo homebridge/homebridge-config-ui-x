@@ -1,9 +1,9 @@
 <div class="flex-column d-flex align-items-stretch h-100 w-100 pb-1">
   <div style="cursor: move;" class="drag-handler pl-2 pt-1 pb-1 pr-2">Homebridge</div>
   <div class="d-flex flex-wrap w-100 pr-3 pl-2 justify-content-start gridster-item-content">
-    <div class="hb-status-item d-flex flex-row mr-5">
+    <div class="hb-status-item d-flex flex-row mr-5 pr-5">
       <div class="d-flex">
-        <div class="mb-0 px-3 py-1 hb-status-icon">
+        <div class="mb-0 px-3 py-2 hb-status-icon">
           <i class="fas primary-text" [ngClass]="{
             'fa-exclamation-circle red-text': homebridgeStatus.status === 'down',
             'fa-cog fa-spin': homebridgeStatus.status === 'pending',
@@ -30,9 +30,9 @@
       </div>
     </div>
 
-    <div class="hb-status-item d-flex flex-row mr-5">
+    <div class="hb-status-item d-flex flex-row mr-5 pr-5">
       <div class="d-flex">
-        <div class="mb-0 px-3 py-1 hb-status-icon">
+        <div class="mb-0 px-3 py-2 hb-status-icon">
           <i class="fas fa-cog fa-spin primary-text" *ngIf="!homebridgePkg.installedVersion"></i>
           <i class="fas fa-check-circle primary-text"
             *ngIf="homebridgePkg.installedVersion && !homebridgePkg.updateAvailable && !homebridgePkg.betaUpdateAvailable"></i>
@@ -72,9 +72,9 @@
       </div>
     </div>
 
-    <div class="hb-status-item d-flex flex-row">
+    <div class="hb-status-item d-flex flex-row mr-5 pr-5">
       <div class="d-flex">
-        <div class="mb-0 px-3 py-1 hb-status-icon">
+        <div class="mb-0 px-3 py-2 hb-status-icon">
           <i class="fas fa-exclamation-circle primary-text" *ngIf="homebridgePluginStatus.length"></i>
           <i class="fas fa-check-circle primary-text" *ngIf="!homebridgePluginStatus.length"></i>
         </div>
