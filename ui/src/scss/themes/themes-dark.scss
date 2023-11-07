@@ -19,22 +19,6 @@
       border-bottom-width: 1px;
     }
 
-    .dropdown-menu {
-      background-color: $secondaryBackground;
-    }
-    
-    .dropdown-divider {
-      border-top: 1px solid #555555;
-    }
-    
-    .navbar .dropdown-menu a:not(.active) {
-      color: #eeeeee;
-    }
-    
-    .dropdown-item:hover, .dropdown-item:focus {
-      background-color: #555555;
-    }
-
     .primary-text {
       color: $darkModePrimary;
     }
