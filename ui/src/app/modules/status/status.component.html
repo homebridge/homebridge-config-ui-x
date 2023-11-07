@@ -17,7 +17,7 @@
     <!-- <div>
       <button (click)="addWidget()" class="btn btn-primary">Hi</button>
     </div> -->
-    <gridster [options]="options" class="flex-grow-1 no-scrollbars px-3 py-0" [hidden]="consoleStatus === 'down'"
+    <gridster [options]="options" class="flex-grow-1 no-scrollbars py-0" [hidden]="consoleStatus === 'down'"
       *ngIf="dashboard.length">
       <ng-container *ngFor="let item of dashboard">
         <gridster-item *ngIf="!(item.hideOnMobile && page.mobile)" class="widget-item" [item]="item"
