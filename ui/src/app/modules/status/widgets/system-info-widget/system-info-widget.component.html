@@ -71,9 +71,9 @@
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_config_path'">Config Path</th>
           <td>{{ serverInfo.homebridgeConfigJsonPath }}</td>
         </tr>
-        <tr *ngIf="serverInfo.homebridgeCustomPluginPath">
+        <tr>
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_plugin_path'">Plugin Path</th>
-          <td>{{ serverInfo.homebridgeCustomPluginPath }}</td>
+          <td>{{ serverInfo.homebridgeCustomPluginPath || serverInfo.homebridgePluginPath }}</td>
         </tr>
         <tr *ngIf="serverInfo.homebridgeRunningInDocker">
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_docker'">Docker</th>

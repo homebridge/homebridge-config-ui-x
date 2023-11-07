@@ -419,6 +419,7 @@ export class StatusService {
       homebridgeStoragePath: this.configService.storagePath,
       homebridgeInsecureMode: this.configService.homebridgeInsecureMode,
       homebridgeCustomPluginPath: this.configService.customPluginPath,
+      homebridgePluginPath: path.resolve(process.env.UIX_BASE_PATH, '..'),
       homebridgeRunningInDocker: this.configService.runningInDocker,
       homebridgeRunningInSynologyPackage: this.configService.runningInSynologyPackage,
       homebridgeRunningInPackageMode: this.configService.runningInPackageMode,
