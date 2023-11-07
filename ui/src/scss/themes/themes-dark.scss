@@ -19,6 +19,28 @@
       border-bottom-width: 1px;
     }
 
+    .dropdown-menu {
+      background-color: $secondaryBackground;
+    }
+
+    .dropdown-divider {
+      border-top: 1px solid #555555;
+    }
+
+    .navbar .dropdown-menu a:not(.active) {
+      color: #eeeeee;
+    }
+
+    .dropdown-item:hover,
+    .dropdown-item:focus {
+      background-color: #555555;
+    }
+
+    .dropdown-item,
+    .dropdown-item:hover {
+      color: #eeeeee;
+    }
+
     .primary-text {
       color: $darkModePrimary;
     }
@@ -28,7 +50,7 @@
       opacity: 1 !important;
     }
 
-    .hb-uix-switch input:checked ~ .hb-uix-slider {
+    .hb-uix-switch input:checked~.hb-uix-slider {
       background-color: $darkModePrimary;
     }
 
@@ -37,7 +59,7 @@
       border-color: #898989 !important;
     }
 
-    .rendux-input:checked + label {
+    .rendux-input:checked+label {
       background: $darkModePrimary !important;
       border-color: $darkModePrimary !important;
     }
@@ -70,17 +92,20 @@
 
     .nav-tabs {
       border-bottom: 1px solid $darkModePrimary;
+
       .nav-link {
         &.active {
           color: #ffffff;
           background-color: $darkModePrimary;
           border-color: $darkModePrimary;
         }
+
         @media (hover: hover) {
           &:hover {
             border-color: $darkModePrimary !important;
           }
         }
+
         &:focus {
           border-color: $darkModePrimary !important;
         }
@@ -94,6 +119,7 @@
 
       a {
         color: $secondaryBackground;
+
         @media (hover: hover) {
           &:hover {
             text-decoration: underline;
@@ -210,7 +236,8 @@
         &:focus {
           box-shadow: 0 1px 0 0 $darkModePrimary !important;
           border-bottom: 1px solid $darkModePrimary !important;
-          & + label {
+
+          &+label {
             color: $darkModePrimary !important;
           }
         }
@@ -247,6 +274,7 @@
     .list-group-item {
       background-color: $secondaryBackground;
       color: #ffffff;
+
       .badge-primary {
         background-color: $darkModePrimary !important;
       }
@@ -254,6 +282,7 @@
 
     .hb-plugin-settings-modal,
     .hb-backup-modal {
+
       input,
       select {
         border-color: #242424 !important; //$backgroundColor;
@@ -324,6 +353,7 @@
       .spinner_outer {
         stroke: $darkModePrimary;
       }
+
       .spinner_inner {
         stroke: #fff;
       }

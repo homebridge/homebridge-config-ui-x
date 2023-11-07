@@ -39,6 +39,7 @@ export class AuthService {
    * Authenticate a user with their credentials
    * @param username
    * @param password
+   * @param otp
    */
   async authenticate(username: string, password: string, otp?: string): Promise<any> {
     try {
@@ -86,10 +87,11 @@ export class AuthService {
    * Authenticate and provide a JWT response
    * @param username
    * @param password
+   * @param otp
    */
   async signIn(username: string, password: string, otp?: string): Promise<any> {
     const user = await this.authenticate(username, password, otp);
-    const token = await this.jwtService.sign(user);
+    const token = this.jwtService.sign(user);
 
     return {
       access_token: token,
@@ -128,7 +130,7 @@ export class AuthService {
     const user = users.find(x => x.admin === true);
 
     // generate a token
-    const token = await this.jwtService.sign({
+    const token = this.jwtService.sign({
       username: user.username,
       name: user.name,
       admin: user.admin,
@@ -147,15 +149,15 @@ export class AuthService {
    * All information about the user we need is stored in the payload
    * @param payload the decoded, verified jwt payload
    */
-  async validateUser(payload): Promise<any> {
+  async validateUser(payload: any): Promise<any> {
     return payload;
   }
 
   /**
    * Verify a token is signed correctly
-   * @param token
+   * @param client
    */
-  async verifyWsConnection(client) {
+  async verifyWsConnection(client: any) {
     try {
       return jwt.verify(client.handshake.query.token, this.configService.secrets.secretKey);
     } catch (e) {
@@ -191,7 +193,7 @@ export class AuthService {
   }
 
   /**
-   * Setup the first user
+   * Set up the first user
    */
   async setupFirstUser(user: UserDto) {
     if (this.configService.setupWizardComplete) {
@@ -224,7 +226,7 @@ export class AuthService {
     }
 
     // generate a token
-    const token = await this.jwtService.sign({
+    const token = this.jwtService.sign({
       username: 'setup-wizard',
       name: 'setup-wizard',
       admin: true,
@@ -239,7 +241,7 @@ export class AuthService {
   }
 
   /**
-   * Executed on startup to see if the auth file is setup yet
+   * Executed on startup to see if the auth file is set up yet
    */
   async checkAuthFile() {
     if (!await fs.pathExists(this.configService.authPath)) {
@@ -285,23 +287,21 @@ export class AuthService {
   }
 
   /**
-   * Return a user by it's id
+   * Return a user by id
    * @param id
    */
   async findById(id: number): Promise<UserDto> {
     const users = await this.getUsers();
-    const user = users.find(x => x.id === id);
-    return user;
+    return users.find(x => x.id === id);
   }
 
   /**
-   * Return a user by it's username
+   * Return a user by username
    * @param username
    */
   async findByUsername(username: string): Promise<UserDto> {
     const users = await this.getUsers();
-    const user = users.find(x => x.username === username);
-    return user;
+    return users.find(x => x.username === username);
   }
 
   /**
@@ -317,7 +317,7 @@ export class AuthService {
    * Add a new user
    * @param user
    */
-  async addUser(user) {
+  async addUser(user: UserDto) {
     const authfile = await this.getUsers();
     const salt = await this.genSalt();
 
@@ -373,7 +373,7 @@ export class AuthService {
 
   /**
    * Updates a user
-   * @param userId
+   * @param id
    * @param update
    */
   async updateUser(id: number, update: UserDto) {
@@ -404,7 +404,7 @@ export class AuthService {
     }
 
     // update the auth.json
-    this.saveUserFile(authfile);
+    await this.saveUserFile(authfile);
     this.logger.log(`Updated user: ${user.username}`);
 
     return this.desensitiseUserProfile(user);
@@ -413,7 +413,7 @@ export class AuthService {
   /**
    * Change a users own password
    */
-  async updateOwnPassword(username, currentPassword: string, newPassword: string) {
+  async updateOwnPassword(username: string, currentPassword: string, newPassword: string) {
     const authfile = await this.getUsers();
     const user = authfile.find(x => x.username === username);
 
@@ -424,7 +424,7 @@ export class AuthService {
     // this will throw an error of the password is wrong
     await this.checkPassword(user, currentPassword);
 
-    // generate a new salf
+    // generate a new salt
     const salt = await this.genSalt();
     user.hashedPassword = await this.hashPassword(newPassword, salt);
     user.salt = salt;
