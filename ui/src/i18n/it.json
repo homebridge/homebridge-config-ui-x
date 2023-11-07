@@ -290,7 +290,7 @@
     "status.memory.label_available": "Libera",
     "status.memory.label_total": "Totale",
     "status.memory.title_memory": "Memoria",
-    "status.message_code_scan_instructions": "Inquadra questo codice QR con la fotocamera del tuo dispositivo iOS per aggiungere questa istanza di Homebridge all'applicazione Apple Casa.",
+    "status.message_code_scan_instructions": "Scansiona per aggiungere a HomeKit.",
     "status.network.label_received_per_second": "Ricevuti",
     "status.network.label_sent_per_second": "Inviati",
     "status.network.title_network": "Attività di rete",
