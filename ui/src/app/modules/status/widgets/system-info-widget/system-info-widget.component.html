@@ -5,10 +5,6 @@
   <div class="d-flex flex-wrap w-100 pl-1 pr-1" *ngIf="serverInfo">
     <table class="table table-sm table-borderless gridster-item-content ">
       <tbody>
-        <tr>
-          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_timezone'">Timezone</th>
-          <td>{{ serverInfo.time.timezone }}</td>
-        </tr>
         <tr *ngIf="serverInfo.os">
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_os'">OS</th>
           <td [ngSwitch]="serverInfo.os.platform" *ngIf="!serverInfo.homebridgeRunningInSynologyPackage">
@@ -25,23 +21,7 @@
           <td *ngIf="serverInfo.homebridgeRunningInSynologyPackage">
             Synology DSM
           </td>
-        </tr>
-        <tr *ngIf="serverInfo.os">
-          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_hostname'">Hostname</th>
-          <td>{{ serverInfo.os.hostname }}</td>
-        </tr>
-        <tr *ngIf="serverInfo.network.ip4">
-          <th scope="row" class="text-nowrap">
-            {{ 'status.widget.systeminfo.label_ipv4' | translate }} ({{ serverInfo.network.iface }})
-          </th>
-          <td>{{ serverInfo.network.ip4 }}</td>
-        </tr>
-        <tr *ngIf="serverInfo.network.ip6">
-          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_timezone'">
-            {{ 'status.widget.systeminfo.label_ipv6' | translate }} ({{ serverInfo.network.iface }})
-          </th>
-          <td>{{ serverInfo.network.ip6 }}</td>
-        </tr>
+        </tr>   
         <tr *ngIf="serverInfo.glibcVersion">
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_glibc_version'">GLIBC Version</th>
           <td>
@@ -61,13 +41,29 @@
             <a href="https://homebridge.io/w/JTKEF" rel="noopener noreferrer" target="_blank" class="system-info-link"
               ngbTooltip="{{ nodejsInfo.updateAvailable ? ('plugins.status_update_available' | translate) + ' - ' + nodejsInfo.latestVersion : ''}}">
               {{ serverInfo.nodeVersion }}
-              <i *ngIf="nodejsInfo.showUpdateWarning" class="primary-text fas fa-info-circle"></i>
+              <i *ngIf="nodejsInfo.showUpdateWarning" class="primary-text fas fa-circle-up"></i>
             </a>
           </td>
         </tr>
         <tr>
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_nodejs_path'">Node.js Path</th>
           <td>{{ nodejsInfo.installPath }}</td>
+        </tr>
+        <tr *ngIf="serverInfo.network.ip4">
+          <th scope="row" class="text-nowrap">
+            {{ 'status.widget.systeminfo.label_ipv4' | translate }} ({{ serverInfo.network.iface }})
+          </th>
+          <td>{{ serverInfo.network.ip4 }}</td>
+        </tr>
+        <tr *ngIf="serverInfo.network.ip6">
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_timezone'">
+            {{ 'status.widget.systeminfo.label_ipv6' | translate }} ({{ serverInfo.network.iface }})
+          </th>
+          <td>{{ serverInfo.network.ip6 }}</td>
+        </tr>
+        <tr *ngIf="serverInfo.os">
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_hostname'">Hostname</th>
+          <td>{{ serverInfo.os.hostname }}</td>
         </tr>
         <tr>
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_service_user'">User</th>
@@ -93,6 +89,10 @@
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_synology_package'">
             Synology Package</th>
           <td>Yes</td>
+        </tr>
+        <tr>
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_timezone'">Timezone</th>
+          <td>{{ serverInfo.time.timezone }}</td>
         </tr>
         <tr *ngIf="serverInfo.homebridgeServiceMode">
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_service_mode'">Service Mode</th>
