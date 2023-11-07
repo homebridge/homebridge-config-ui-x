@@ -290,7 +290,7 @@
     "status.memory.label_available": "Lliure",
     "status.memory.label_total": "Total",
     "status.memory.title_memory": "Memòria",
-    "status.message_code_scan_instructions": "Escaneja per afegir a HomeKit",
+    "status.message_code_scan_instructions": "Escaneja per afegir a HomeKit.",
     "status.network.label_received_per_second": "Rebut",
     "status.network.label_sent_per_second": "Enviat",
     "status.network.title_network": "Activitat en xarxa",
