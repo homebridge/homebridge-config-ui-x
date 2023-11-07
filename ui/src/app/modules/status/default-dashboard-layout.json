@@ -10,8 +10,8 @@
     "hideOnMobile": false
   },
   {
-    "x": 0,
-    "y": 0,
+    "x": 15,
+    "y": 8,
     "component": "ChildBridgeWidgetComponent",
     "cols": 5,
     "rows": 6,
@@ -64,7 +64,7 @@
     "hideOnMobile": false
   },
   {
-    "x": 5,
+    "x": 0,
     "y": 0,
     "component": "HapQrcodeWidgetComponent",
     "cols": 5,
@@ -73,8 +73,8 @@
     "hideOnMobile": false
   },
   {
-    "x": 0,
-    "y": 14,
+    "x": 5,
+    "y": 0,
     "component": "HomebridgeLogsWidgetComponent",
     "cols": 10,
     "rows": 8,
