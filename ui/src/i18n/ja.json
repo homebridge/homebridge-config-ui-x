@@ -138,6 +138,7 @@
     "menu.linux.label_restart_server": "サーバーを再起動",
     "menu.linux.label_shutdown_server": "サーバーを終了",
     "menu.linux.label_terminal": "ターミナル",
+    "menu.linux.label_logs": "Log",
     "menu.tooltip_logout": "ログアウト",
     "menu.tooltip_restart": "再起動",
     "menu.tooltip_user_accounts": "ユーザーアカウント",

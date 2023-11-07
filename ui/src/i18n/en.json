@@ -138,6 +138,7 @@
     "menu.linux.label_restart_server": "Restart Server",
     "menu.linux.label_shutdown_server": "Shutdown Server",
     "menu.linux.label_terminal": "Terminal",
+    "menu.linux.label_logs": "Log",
     "menu.tooltip_logout": "Log out",
     "menu.tooltip_restart": "Restart",
     "menu.tooltip_user_accounts": "User Accounts",

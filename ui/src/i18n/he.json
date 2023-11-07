@@ -138,6 +138,7 @@
     "menu.linux.label_restart_server": "אתחל מחדש שרת",
     "menu.linux.label_shutdown_server": "כבה שרת",
     "menu.linux.label_terminal": "קונסולה",
+    "menu.linux.label_logs": "Log",
     "menu.tooltip_logout": "התנתק",
     "menu.tooltip_restart": "התחל מחדש",
     "menu.tooltip_user_accounts": "משתמשים",

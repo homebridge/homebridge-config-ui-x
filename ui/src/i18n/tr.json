@@ -138,6 +138,7 @@
     "menu.linux.label_restart_server": "Sunucuyu Yeniden Başlat",
     "menu.linux.label_shutdown_server": "Sunucuyu Kapat",
     "menu.linux.label_terminal": "Terminal",
+    "menu.linux.label_logs": "Log",
     "menu.tooltip_logout": "Çıkış Yap",
     "menu.tooltip_restart": "Yeniden Başlat",
     "menu.tooltip_user_accounts": "Kullanıcı Hesapları",

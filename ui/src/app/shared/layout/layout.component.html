@@ -62,8 +62,7 @@
               *ngIf="$settings.env.enableTerminalAccess && $auth.user.admin" routerLink="/platform-tools/terminal">
               {{ 'menu.linux.label_terminal' | translate }}
             </a>
-            <a class="dropdown-item waves-effect waves-light"
-              *ngIf="$auth.user.admin" routerLink="/logs">
+            <a class="dropdown-item waves-effect waves-light" *ngIf="$auth.user.admin" routerLink="/logs">
               {{ 'menu.linux.label_logs' | translate }}
             </a>
             <div class="dropdown-divider" *ngIf="$auth.user.admin"></div>
@@ -72,7 +71,7 @@
             </a>
             <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light" (click)="openUiSettings()"
               *ngIf="$auth.user.admin">
-              UI {{ 'menu.label_ui_settings' | translate }}
+              {{ 'menu.label_ui_settings' | translate }}
             </a>
             <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light"
               (click)="backupRestoreHomebridge()" *ngIf="$auth.user.admin">
