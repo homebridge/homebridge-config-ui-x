@@ -290,7 +290,7 @@
     "status.memory.label_available": "Tersedia",
     "status.memory.label_total": "Total",
     "status.memory.title_memory": "Memori",
-    "status.message_code_scan_instructions": "Pindai kode ini dengan kamera di perangkat iOS anda untuk ditambahkan ke dalam Apple Home",
+    "status.message_code_scan_instructions": "Pindai untuk menambahkan ke HomeKit.",
     "status.network.label_received_per_second": "Diterima",
     "status.network.label_sent_per_second": "Dikirim",
     "status.network.title_network": "Aktivitas Jaringan",
