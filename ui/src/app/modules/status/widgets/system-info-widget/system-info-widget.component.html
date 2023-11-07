@@ -21,7 +21,15 @@
           <td *ngIf="serverInfo.homebridgeRunningInSynologyPackage">
             Synology DSM
           </td>
-        </tr>   
+        </tr>
+        <tr *ngIf="serverInfo.homebridgeRunningInDocker">
+            <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_docker'">Docker</th>
+            <td>Yes</td>
+        </tr>
+        <tr *ngIf="serverInfo.homebridgeServiceMode">
+            <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_service_mode'">Service Mode</th>
+            <td>Yes</td>
+        </tr>
         <tr *ngIf="serverInfo.glibcVersion">
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_glibc_version'">GLIBC Version</th>
           <td>
@@ -81,22 +89,9 @@
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_plugin_path'">Plugin Path</th>
           <td>{{ serverInfo.homebridgeCustomPluginPath }}</td>
         </tr>
-        <tr *ngIf="serverInfo.homebridgeRunningInDocker">
-          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_docker'">Docker</th>
-          <td>Yes</td>
-        </tr>
-        <tr *ngIf="serverInfo.homebridgeRunningInSynologyPackage">
-          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_synology_package'">
-            Synology Package</th>
-          <td>Yes</td>
-        </tr>
         <tr>
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_timezone'">Timezone</th>
           <td>{{ serverInfo.time.timezone }}</td>
-        </tr>
-        <tr *ngIf="serverInfo.homebridgeServiceMode">
-          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_service_mode'">Service Mode</th>
-          <td>Yes</td>
         </tr>
       </tbody>
     </table>
