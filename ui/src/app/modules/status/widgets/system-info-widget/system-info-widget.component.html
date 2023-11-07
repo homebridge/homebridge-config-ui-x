@@ -15,23 +15,26 @@
               {{ serverInfo.os.distro }}
             </span>
             <span *ngSwitchDefault>
-              {{ serverInfo.os.distro }} {{ serverInfo.os.codename | titlecase }} ({{ serverInfo.os.release }})
+              <a *ngIf="nodejsInfo.showNextUpdateWarning" href="https://homebridge.io/w/JJSun" rel="noopener noreferrer" target="_blank" class="system-info-link"
+                ngbTooltip="{{'status.widget.systeminfo.label_glibc_warning' | translate }}">
+                <i class="primary-text fas fa-circle-up"></i>
+              </a> {{ serverInfo.os.distro }} {{ serverInfo.os.codename | titlecase }} ({{ serverInfo.os.release }})
             </span>
           </td>
           <td *ngIf="serverInfo.homebridgeRunningInSynologyPackage">
-            Synology DSM
-          </td>
-        </tr>   
-        <tr *ngIf="serverInfo.glibcVersion">
-          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_glibc_version'">GLIBC Version</th>
-          <td>
             <a *ngIf="nodejsInfo.showNextUpdateWarning" href="https://homebridge.io/w/JJSun" rel="noopener noreferrer" target="_blank" class="system-info-link"
-               ngbTooltip="{{'status.widget.systeminfo.glibc_warning' | translate }}">
-              {{ serverInfo.glibcVersion }}
-              <i class="primary-text fas fa-info-circle"></i>
-            </a>
-            <span *ngIf="!nodejsInfo.showNextUpdateWarning">{{ serverInfo.glibcVersion }}</span>
+               ngbTooltip="{{'status.widget.systeminfo.label_glibc_warning' | translate }}">
+              <i class="primary-text fas fa-circle-up"></i>
+            </a> Synology DSM
           </td>
+        </tr>
+        <tr *ngIf="serverInfo.homebridgeRunningInDocker">
+            <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_docker'">Docker</th>
+            <td>Yes</td>
+        </tr>
+        <tr *ngIf="serverInfo.homebridgeServiceMode">
+            <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_service_mode'">Service Mode</th>
+            <td>Yes</td>
         </tr>
         <tr>
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_nodejs_version'">
@@ -40,8 +43,7 @@
           <td>
             <a href="https://homebridge.io/w/JTKEF" rel="noopener noreferrer" target="_blank" class="system-info-link"
               ngbTooltip="{{ nodejsInfo.updateAvailable ? ('plugins.status_update_available' | translate) + ' - ' + nodejsInfo.latestVersion : ''}}">
-              {{ serverInfo.nodeVersion }}
-              <i *ngIf="nodejsInfo.showUpdateWarning" class="primary-text fas fa-circle-up"></i>
+              <i *ngIf="nodejsInfo.showUpdateWarning" class="primary-text fas fa-circle-up"></i> {{ serverInfo.nodeVersion }}
             </a>
           </td>
         </tr>
@@ -77,26 +79,13 @@
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_config_path'">Config Path</th>
           <td>{{ serverInfo.homebridgeConfigJsonPath }}</td>
         </tr>
-        <tr *ngIf="serverInfo.homebridgeCustomPluginPath">
+        <tr>
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_plugin_path'">Plugin Path</th>
-          <td>{{ serverInfo.homebridgeCustomPluginPath }}</td>
-        </tr>
-        <tr *ngIf="serverInfo.homebridgeRunningInDocker">
-          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_docker'">Docker</th>
-          <td>Yes</td>
-        </tr>
-        <tr *ngIf="serverInfo.homebridgeRunningInSynologyPackage">
-          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_synology_package'">
-            Synology Package</th>
-          <td>Yes</td>
+          <td>{{ serverInfo.homebridgeCustomPluginPath || serverInfo.homebridgePluginPath }}</td>
         </tr>
         <tr>
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_timezone'">Timezone</th>
           <td>{{ serverInfo.time.timezone }}</td>
-        </tr>
-        <tr *ngIf="serverInfo.homebridgeServiceMode">
-          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_service_mode'">Service Mode</th>
-          <td>Yes</td>
         </tr>
       </tbody>
     </table>

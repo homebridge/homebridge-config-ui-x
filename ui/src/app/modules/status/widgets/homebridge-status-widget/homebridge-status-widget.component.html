@@ -11,7 +11,7 @@
           }"></i>
         </div>
         <div class="align-self-center">
-          <span>System</span>
+            <span [translate]="'menu.label_status'">Status</span>
           <br>
           <span class="grey-text" *ngIf="homebridgeStatus.status === 'pending'"
             [translate]="'status.services.label_starting'">Starting...</span>
@@ -29,7 +29,7 @@
         </div>
       </div>
     </div>
-        
+
     <div class="hb-status-item d-flex flex-row mr-5">
       <div class="d-flex">
         <div class="mb-0 px-3 py-1 hb-status-icon">
@@ -40,10 +40,8 @@
             *ngIf="homebridgePkg.installedVersion && (homebridgePkg.updateAvailable || homebridgePkg.betaUpdateAvailable)"></i>
         </div>
         <div class="align-self-center">
-          <span>Homebridge </span>        
           <span *ngIf="homebridgePkg.installedVersion">
-            <a href="javascript:void(0)" (click)="$plugin.installPreviousVersion(homebridgePkg)"
-              class="grey-text card-link">
+            <a href="javascript:void(0)" (click)="$plugin.installPreviousVersion(homebridgePkg)" class="card-link card-link-title">
               v{{ homebridgePkg.installedVersion }}
             </a>
           </span>
@@ -60,13 +58,13 @@
             <a href="javascript:void(0)" (click)="$plugin.upgradeHomebridge(homebridgePkg)" class="primary-text"
             *ngIf="homebridgePkg.installedVersion && homebridgePkg.updateAvailable && !homebridgePkg.betaUpdateAvailable"
             [translate]="'status.homebridge.label_update_available'" [translateParams]="homebridgePkg"
-            ngbTooltip="{{'plugins.button_upgrade' | translate}} Homebridge" href="javascript:void(0)">
+            ngbTooltip="{{'plugins.button_upgrade' | translate}} Homebridge">
             Update Available
             </a>
             <a href="javascript:void(0)" (click)="$plugin.upgradeHomebridge(homebridgePkg, 'beta')" class="primary-text"
              *ngIf="homebridgePkg.installedVersion && !homebridgePkg.updateAvailable && homebridgePkg.betaUpdateAvailable"
              [translate]="'status.homebridge.label_update_available'" [translateParams]="homebridgePkg"
-             ngbTooltip="{{'plugins.button_upgrade' | translate}} Homebridge" href="javascript:void(0)">
+             ngbTooltip="{{'plugins.button_upgrade' | translate}} Homebridge">
              Update Available
             </a>
           </span>
@@ -86,13 +84,12 @@
           <a routerLink="/plugins" class="primary-text" *ngIf="homebridgePluginStatus.length">
             {{ homebridgePluginStatus.length }} {{ homebridgePluginStatus.length === 1 ? ('status.plugin_out_of_date' | translate) : ('status.plugins_out_of_date' | translate) }}
           </a>
-          <a class="grey-text card-link" routerLink="/plugins" *ngIf="!homebridgePluginStatus.length"
-            [translate]="'status.services.label_not_running'">
+          <a class="grey-text card-link" routerLink="/plugins" *ngIf="!homebridgePluginStatus.length">
             {{ 'status.homebridge.label_up_to_date' | translate }}
           </a>
         </div>
       </div>
     </div>
-    
+
   </div>
 </div>
