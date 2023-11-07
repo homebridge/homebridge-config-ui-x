@@ -327,7 +327,6 @@
     "status.widget.label_unlock_layout": "Buka Tata Letak",
     "status.widget.systeminfo.label_config_path": "Path Konfigurasi",
     "status.widget.systeminfo.label_docker": "Docker",
-    "status.widget.systeminfo.label_glibc_version": "GLIBC Version",
     "status.widget.systeminfo.label_glibc_warning": "Version is too low for updating Node.js to newer versions - https://homebridge.io/w/JJSun",
     "status.widget.systeminfo.label_hostname": "Nama Host",
     "status.widget.systeminfo.label_ipv4": "IPv4",

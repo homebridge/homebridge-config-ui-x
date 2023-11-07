@@ -452,26 +452,9 @@ export class StatusService {
       const versionList = (await this.httpService.get('https://nodejs.org/dist/index.json').toPromise()).data;
       const currentLts = versionList.filter(x => x.lts)[0];
 
+      // See why this is set to 2.29 at https://homebridge.io/w/JJSun
       const glibcVersion = this.getGlibcVersion();
-      let showNextUpdateWarning = false;
-      if (glibcVersion) {
-        const glibcVersionFloat = parseFloat(glibcVersion);
-        if (glibcVersionFloat < 2.23) {
-          this.logger.warn('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
-            `Wanted: >=2.23. Installed: ${glibcVersion} - see https://homebridge.io/w/JJSun`, 'fail');
-          showNextUpdateWarning = true;
-        }
-        if (semver.gte(currentLts.version, '18.0.0') && glibcVersionFloat < 2.28) {
-          this.logger.warn('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
-            `Wanted: >=2.28. Installed: ${glibcVersion} - see https://homebridge.io/w/JJSun`, 'fail');
-          showNextUpdateWarning = true;
-        }
-        if (semver.gte(currentLts.version, '20.0.0') && glibcVersionFloat < 2.29) {
-          this.logger.warn('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
-            `Wanted: >=2.29. Installed: ${glibcVersion} - see https://homebridge.io/w/JJSun`, 'fail');
-          showNextUpdateWarning = true;
-        }
-      }
+      const showNextUpdateWarning = glibcVersion && parseFloat(glibcVersion) < 2.29;
 
       const versionInformation = {
         currentVersion: process.version,
