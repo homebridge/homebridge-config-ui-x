@@ -2,11 +2,10 @@ import { EventEmitter } from 'events';
 import { UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets';
 import * as color from 'bash-color';
-
-import { PluginsService } from './plugins.service';
-import { PluginActionDto, HomebridgeUpdateActionDto } from './plugins.dto';
-import { Logger } from '../../core/logger/logger.service';
 import { WsAdminGuard } from '../../core/auth/guards/ws-admin-guard';
+import { Logger } from '../../core/logger/logger.service';
+import { HomebridgeUpdateActionDto, PluginActionDto } from './plugins.dto';
+import { PluginsService } from './plugins.service';
 
 @UseGuards(WsAdminGuard)
 @WebSocketGateway({

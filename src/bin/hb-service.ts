@@ -6,26 +6,24 @@
 
 process.title = 'hb-service';
 
+import * as child_process from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
-import * as commander from 'commander';
-import * as child_process from 'child_process';
-import * as fs from 'fs-extra';
-import * as tcpPortUsed from 'tcp-port-used';
-import * as si from 'systeminformation';
-import * as semver from 'semver';
-import * as ora from 'ora';
-import * as tar from 'tar';
 import axios from 'axios';
+import { program } from 'commander';
+import * as fs from 'fs-extra';
+import * as ora from 'ora';
+import * as semver from 'semver';
+import * as si from 'systeminformation';
 import { Tail } from 'tail';
-
+import * as tar from 'tar';
+import * as tcpPortUsed from 'tcp-port-used';
+import type { HomebridgeIpcService } from '../core/homebridge-ipc/homebridge-ipc.service';
 import { BasePlatform } from './base-platform';
-import { Win32Installer } from './platforms/win32';
-import { LinuxInstaller } from './platforms/linux';
 import { DarwinInstaller } from './platforms/darwin';
 import { FreeBSDInstaller } from './platforms/freebsd';
-
-import type { HomebridgeIpcService } from '../core/homebridge-ipc/homebridge-ipc.service';
+import { LinuxInstaller } from './platforms/linux';
+import { Win32Installer } from './platforms/win32';
 
 export class HomebridgeServiceHelper {
   public action: 'install' | 'uninstall' | 'start' | 'stop' | 'restart' | 'rebuild' | 'run' | 'add' | 'remove' | 'logs' | 'view' | 'update-node' | 'before-start' | 'status';
@@ -89,7 +87,7 @@ export class HomebridgeServiceHelper {
         process.exit(1);
     }
 
-    commander
+    program
       .allowUnknownOption()
       .storeOptionsAsProperties(true)
       .arguments('[install|uninstall|start|stop|restart|rebuild|run|logs|view|add|remove]')
@@ -141,7 +139,7 @@ export class HomebridgeServiceHelper {
       }
       case 'rebuild': {
         this.logger(`Rebuilding for Node.js ${process.version}...`);
-        this.installer.rebuild(commander.args.includes('--all'));
+        this.installer.rebuild(program.args.includes('--all'));
         break;
       }
       case 'run': {
@@ -157,15 +155,15 @@ export class HomebridgeServiceHelper {
         break;
       }
       case 'add': {
-        this.npmPluginManagement(commander.args);
+        this.npmPluginManagement(program.args);
         break;
       }
       case 'remove': {
-        this.npmPluginManagement(commander.args);
+        this.npmPluginManagement(program.args);
         break;
       }
       case 'update-node': {
-        this.checkForNodejsUpdates(commander.args.length === 2 ? commander.args[1] : null);
+        this.checkForNodejsUpdates(program.args.length === 2 ? program.args[1] : null);
         break;
       }
       case 'before-start': {
@@ -177,7 +175,7 @@ export class HomebridgeServiceHelper {
         break;
       }
       default: {
-        commander.outputHelp();
+        program.outputHelp();
 
         console.log('\nThe hb-service command is provided by homebridge-config-ui-x\n');
         console.log('Please provide a command:');

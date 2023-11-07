@@ -1,23 +1,21 @@
+import * as child_process from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
-import * as child_process from 'child_process';
 import * as util from 'util';
+import { HttpService } from '@nestjs/axios';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import * as fs from 'fs-extra';
-import * as si from 'systeminformation';
-import * as semver from 'semver';
 import * as NodeCache from 'node-cache';
 import { Subject, Subscription } from 'rxjs';
-import { Injectable, BadRequestException } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-
-import { Logger } from '../../core/logger/logger.service';
+import * as semver from 'semver';
+import * as si from 'systeminformation';
 import { ConfigService } from '../../core/config/config.service';
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service';
+import { Logger } from '../../core/logger/logger.service';
 import { PluginsService } from '../plugins/plugins.service';
 import { ServerService } from '../server/server.service';
 
 export const enum HomebridgeStatus {
-  PENDING = 'pending',
   OK = 'ok',
   UP = 'up',
   DOWN = 'down',
@@ -37,7 +35,7 @@ const execAsync = util.promisify(child_process.exec);
 @Injectable()
 export class StatusService {
   private statusCache = new NodeCache({ stdTTL: 3600 });
-  private dashboardLayout;
+  private dashboardLayout: any;
   private homebridgeStatus: HomebridgeStatus = HomebridgeStatus.DOWN;
   private homebridgeStatusChange = new Subject<HomebridgeStatus>();
 
@@ -178,11 +176,11 @@ export class StatusService {
     const net = await si.networkStats(defaultInterfaceName);
 
     // TODO: be able to specify in the ui the unit size (i.e. bytes, megabytes, gigabytes)
-    const tx_rx_sec = (net[0].tx_sec + net[0].rx_sec) / 1024 / 1024;
+    const txRxSec = (net[0].tx_sec + net[0].rx_sec) / 1024 / 1024;
 
     // TODO: break out the sent and received figures to two separate stacked graphs
-    // (these should ideally be positive/negative mirrored linecharts)
-    return { net: net[0], point: tx_rx_sec };
+    // (these should ideally be positive/negative mirrored line charts)
+    return { net: net[0], point: txRxSec };
   }
 
   /**
@@ -205,7 +203,7 @@ export class StatusService {
   /**
    * Saves the current dashboard layout
    */
-  public async setDashboardLayout(layout) {
+  public async setDashboardLayout(layout: any) {
     fs.writeJSONSync(path.resolve(this.configService.storagePath, '.uix-dashboard.json'), layout);
     this.dashboardLayout = layout;
     return { status: 'ok' };
@@ -245,7 +243,7 @@ export class StatusService {
    */
   public async getServerUptimeInfo() {
     return {
-      time: await si.time(),
+      time: si.time(),
       processUptime: process.uptime(),
     };
   }
@@ -279,7 +277,7 @@ export class StatusService {
    * Start emitting server stats to client
    * @param client
    */
-  public async watchStats(client) {
+  public async watchStats(client: any) {
     let homebridgeStatusChangeSub: Subscription;
     let homebridgeStatusInterval: NodeJS.Timeout;
 
@@ -287,7 +285,7 @@ export class StatusService {
 
     // ipc status events are only available in Homebridge 1.3.3 or later - and when running in service mode
     if (this.configService.serviceMode && this.configService.homebridgeVersion && semver.gt(this.configService.homebridgeVersion, '1.3.3-beta.5')) {
-      homebridgeStatusChangeSub = this.homebridgeStatusChange.subscribe(async (status) => {
+      homebridgeStatusChangeSub = this.homebridgeStatusChange.subscribe(async () => {
         client.emit('homebridge-status', await this.getHomebridgeStats());
       });
     } else {
@@ -389,6 +387,29 @@ export class StatusService {
   }
 
   /**
+   * Get / Cache the GLIBC version
+   */
+  private getGlibcVersion(): string {
+    if (os.platform() !== 'linux') {
+      return '';
+    }
+
+    const cachedResult = this.statusCache.get('glibcVersion') as string;
+    if (cachedResult) {
+      return cachedResult;
+    }
+
+    try {
+      const glibcVersion = child_process.execSync('getconf GNU_LIBC_VERSION 2>/dev/null').toString().split('glibc')[1].trim();
+      this.statusCache.set('glibcVersion', glibcVersion, 86400);
+      return glibcVersion;
+    } catch (e) {
+      this.logger.debug('Could not check glibc version:', e.message);
+      return '';
+    }
+  }
+
+  /**
    * Returns details about this Homebridge server
    */
   public async getHomebridgeServerInfo() {
@@ -404,7 +425,8 @@ export class StatusService {
       homebridgeServiceMode: this.configService.serviceMode,
       nodeVersion: process.version,
       os: await this.getOsInfo(),
-      time: await si.time(),
+      glibcVersion: this.getGlibcVersion(),
+      time: si.time(),
       network: await this.getDefaultInterface() || {},
     };
   }
@@ -429,11 +451,34 @@ export class StatusService {
     try {
       const versionList = (await this.httpService.get('https://nodejs.org/dist/index.json').toPromise()).data;
       const currentLts = versionList.filter(x => x.lts)[0];
+
+      const glibcVersion = this.getGlibcVersion();
+      let showNextUpdateWarning = false;
+      if (glibcVersion) {
+        const glibcVersionFloat = parseFloat(glibcVersion);
+        if (glibcVersionFloat < 2.23) {
+          this.logger.warn('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
+            `Wanted: >=2.23. Installed: ${glibcVersion} - see https://homebridge.io/w/JJSun`, 'fail');
+          showNextUpdateWarning = true;
+        }
+        if (semver.gte(currentLts.version, '18.0.0') && glibcVersionFloat < 2.28) {
+          this.logger.warn('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
+            `Wanted: >=2.28. Installed: ${glibcVersion} - see https://homebridge.io/w/JJSun`, 'fail');
+          showNextUpdateWarning = true;
+        }
+        if (semver.gte(currentLts.version, '20.0.0') && glibcVersionFloat < 2.29) {
+          this.logger.warn('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
+            `Wanted: >=2.29. Installed: ${glibcVersion} - see https://homebridge.io/w/JJSun`, 'fail');
+          showNextUpdateWarning = true;
+        }
+      }
+
       const versionInformation = {
         currentVersion: process.version,
         latestVersion: currentLts.version,
         updateAvailable: semver.gt(currentLts.version, process.version),
         showUpdateWarning: semver.lt(process.version, '18.15.0'),
+        showNextUpdateWarning,
         installPath: path.dirname(process.execPath),
       };
       this.statusCache.set('nodeJsVersion', versionInformation, 86400);
@@ -445,6 +490,7 @@ export class StatusService {
         latestVersion: process.version,
         updateAvailable: false,
         showUpdateWarning: false,
+        showNextUpdateWarning: false,
       };
       this.statusCache.set('nodeJsVersion', versionInformation, 3600);
       return versionInformation;
@@ -452,7 +498,7 @@ export class StatusService {
   }
 
   /**
-   * Returns infomation about the current state of the Raspberry Pi
+   * Returns information about the current state of the Raspberry Pi
    */
   public async getRaspberryPiThrottledStatus() {
     if (!this.configService.runningOnRaspberryPi) {
@@ -471,11 +517,7 @@ export class StatusService {
 
       if (!isNaN(throttledHex)) {
         for (const bit of Object.keys(this.rpiGetThrottledMapping)) {
-          if ((throttledHex >> parseInt(bit, 10)) & 1) {
-            output[this.rpiGetThrottledMapping[bit]] = true;
-          } else {
-            output[this.rpiGetThrottledMapping[bit]] = false;
-          }
+          output[this.rpiGetThrottledMapping[bit]] = !!((throttledHex >> parseInt(bit, 10)) & 1);
         }
       }
     } catch (e) {

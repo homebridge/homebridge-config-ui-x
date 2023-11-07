@@ -53,8 +53,8 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
         if (this.widget.fontSize !== this.fontSize || this.widget.fontWeight !== this.fontWeight) {
           this.fontSize = this.widget.fontSize;
           this.fontWeight = this.widget.fontWeight;
-          this.$log.term.setOption('fontSize', this.widget.fontSize);
-          this.$log.term.setOption('fontWeight', this.widget.fontWeight);
+          this.$log.term.options.fontSize = this.widget.fontSize;
+          this.$log.term.options.fontWeight = this.widget.fontWeight;
           this.resizeEvent.next(undefined);
           setTimeout(() => {
             this.$log.term.scrollToBottom();

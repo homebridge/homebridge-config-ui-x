@@ -1,23 +1,32 @@
-import { EventEmitter } from 'events';
-import { Injectable, NotFoundException, InternalServerErrorException, BadRequestException } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-import { HomebridgePlugin, IPackageJson, INpmSearchResults, INpmRegistryModule } from './types';
-import { HomebridgePluginVersions, HomebridgePluginUiMetadata, PluginAlias } from './types';
-import axios from 'axios';
-import * as os from 'os';
-import * as _ from 'lodash';
-import * as path from 'path';
-import * as fs from 'fs-extra';
 import * as child_process from 'child_process';
-import * as semver from 'semver';
+import { EventEmitter } from 'events';
+import * as os from 'os';
+import * as path from 'path';
+import { HttpService } from '@nestjs/axios';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException
+} from '@nestjs/common';
+import axios from 'axios';
 import * as color from 'bash-color';
+import * as fs from 'fs-extra';
+import * as _ from 'lodash';
 import * as NodeCache from 'node-cache';
 import * as pLimit from 'p-limit';
-
-import { Logger } from '../../core/logger/logger.service';
+import * as semver from 'semver';
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
+import { Logger } from '../../core/logger/logger.service';
 import { NodePtyService } from '../../core/node-pty/node-pty.service';
 import { HomebridgeUpdateActionDto, PluginActionDto } from './plugins.dto';
+import {
+  HomebridgePlugin,
+  INpmRegistryModule,
+  INpmSearchResults,
+  IPackageJson
+} from './types';
+import { HomebridgePluginUiMetadata, HomebridgePluginVersions, PluginAlias } from './types';
 
 @Injectable()
 export class PluginsService {
@@ -257,7 +266,7 @@ export class PluginsService {
       && (query.indexOf('homebridge-') === 0 || this.isScopedPlugin(query))
       && !this.searchResultBlacklist.includes(query.toLowerCase())
     ) {
-      return await this.searchNpmRegistrySingle(query.toLowerCase());
+      return this.searchNpmRegistrySingle(query.toLowerCase());
     }
 
     return _.orderBy(result, ['verifiedPlugin'], ['desc']);
@@ -446,7 +455,7 @@ export class PluginsService {
     if (this.configService.ui.homebridgePackagePath) {
       const pjsonPath = path.join(this.configService.ui.homebridgePackagePath, 'package.json');
       if (await fs.pathExists(pjsonPath)) {
-        return await this.parsePackageJson(await fs.readJson(pjsonPath), this.configService.ui.homebridgePackagePath);
+        return this.parsePackageJson(await fs.readJson(pjsonPath), this.configService.ui.homebridgePackagePath);
       } else {
         this.logger.error(`"homebridgePath" (${this.configService.ui.homebridgePackagePath}) does not exist`);
       }
@@ -499,10 +508,10 @@ export class PluginsService {
       semver.gt(homebridge.installedVersion, homebridge.latestVersion)
     ) {
       const versions = await this.getAvailablePluginVersions('homebridge');
-      if (versions.tags['beta'] && semver.gt(versions.tags['beta'], homebridge.installedVersion)) {
+      if (versions.tags.beta && semver.gt(versions.tags.beta, homebridge.installedVersion)) {
         homebridge.updateAvailable = false;
         homebridge.betaUpdateAvailable = true;
-        homebridge.latestVersion = versions.tags['beta'];
+        homebridge.latestVersion = versions.tags.beta;
       }
     }
 
@@ -714,7 +723,7 @@ export class PluginsService {
     const schemaPath = path.resolve(plugin.installPath, pluginName, 'config.schema.json');
 
     if (this.miscSchemas[pluginName] && !await fs.pathExists(schemaPath)) {
-      return await fs.readJson(this.miscSchemas[pluginName]);
+      return fs.readJson(this.miscSchemas[pluginName]);
     }
 
     let configSchema = await fs.readJson(schemaPath);
@@ -1223,9 +1232,9 @@ export class PluginsService {
           semver.gt(plugin.installedVersion, plugin.latestVersion)
         ) {
           const versions = await this.getAvailablePluginVersions(plugin.name);
-          if (versions.tags['beta'] && semver.gt(versions.tags['beta'], plugin.installedVersion)) {
+          if (versions.tags.beta && semver.gt(versions.tags.beta, plugin.installedVersion)) {
             plugin.betaUpdateAvailable = true;
-            plugin.latestVersion = versions.tags['beta'];
+            plugin.latestVersion = versions.tags.beta;
           }
         }
       }
