@@ -291,7 +291,7 @@
     "status.memory.label_available": "空き",
     "status.memory.label_total": "合計",
     "status.memory.title_memory": "メモリ",
-    "status.message_code_scan_instructions": "Appleホームアプリに追加するには、iOSデバイスのカメラでこのコードを読み取ってください。",
+    "status.message_code_scan_instructions": "スキャンして HomeKit に追加します。",
     "status.network.label_received_per_second": "Received",
     "status.network.label_sent_per_second": "Sent",
     "status.network.title_network": "Network Activity",

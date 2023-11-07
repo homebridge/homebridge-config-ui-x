@@ -291,7 +291,7 @@
     "status.memory.label_available": "가능",
     "status.memory.label_total": "전체",
     "status.memory.title_memory": "메모리",
-    "status.message_code_scan_instructions": "Apple Home에 추가하려면 iOS 디바이스의 카메라로 이 코드를 스캔하세요.",
+    "status.message_code_scan_instructions": "HomeKit에 추가하려면 스캔하세요.",
     "status.network.label_received_per_second": "수신됨",
     "status.network.label_sent_per_second": "전송",
     "status.network.title_network": "네트워크 Activity",

@@ -293,7 +293,7 @@
     "status.memory.label_available": "Вільно",
     "status.memory.label_total": "Всього",
     "status.memory.title_memory": "Пам'ять",
-    "status.message_code_scan_instructions": "Відскануйте цей код за допомогою камери iOS пристрою, щоб додати в додаток \"Дім\".",
+    "status.message_code_scan_instructions": "Скануйте, щоб додати до HomeKit.",
     "status.network.label_received_per_second": "Отримано",
     "status.network.label_sent_per_second": "Надіслано",
     "status.network.title_network": "Активність у мережі",

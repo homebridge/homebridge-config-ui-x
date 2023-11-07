@@ -291,7 +291,7 @@
     "status.memory.label_available": "Disponível",
     "status.memory.label_total": "Total",
     "status.memory.title_memory": "Memória",
-    "status.message_code_scan_instructions": "Leia este código com a câmara do seu dispositivo iOS para adicionar ao Apple Home.",
+    "status.message_code_scan_instructions": "Digitalize para adicionar ao HomeKit.",
     "status.network.label_received_per_second": "Recebido",
     "status.network.label_sent_per_second": "Enviado",
     "status.network.title_network": "Atividade da Rede",

@@ -291,7 +291,7 @@
     "status.memory.label_available": "Na voljo",
     "status.memory.label_total": "Skupaj",
     "status.memory.title_memory": "Spomin",
-    "status.message_code_scan_instructions": "Preglejte to kodo s kamero v napravi iOS, da jo dodate v Apple Home.",
+    "status.message_code_scan_instructions": "Skenirajte za dodajanje v HomeKit.",
     "status.network.label_received_per_second": "Received",
     "status.network.label_sent_per_second": "Sent",
     "status.network.title_network": "Network Activity",

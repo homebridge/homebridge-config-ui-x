@@ -291,7 +291,7 @@
     "status.memory.label_available": "Szabad",
     "status.memory.label_total": "Összesen",
     "status.memory.title_memory": "Memória",
-    "status.message_code_scan_instructions": "Az iOS készülék kameráját irányítsd a kódra, hogy a az Apple Home-ba bekerüljön a Homebridge",
+    "status.message_code_scan_instructions": "Szkennelje be, hogy hozzáadja a HomeKit",
     "status.network.label_received_per_second": "Received",
     "status.network.label_sent_per_second": "Sent",
     "status.network.title_network": "Network Activity",

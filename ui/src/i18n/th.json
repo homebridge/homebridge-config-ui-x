@@ -291,7 +291,7 @@
     "status.memory.label_available": "เหลือว่าง",
     "status.memory.label_total": "ทั้งหมด",
     "status.memory.title_memory": "หน่วยความจำ",
-    "status.message_code_scan_instructions": "สแกนรหัสนี้ด้วยกล้องบนอุปกรณ์ iOS ของคุณเพื่อเพิ่มลงใน Apple Home",
+    "status.message_code_scan_instructions": "สแกนเพื่อเพิ่มลงใน HomeKit",
     "status.network.label_received_per_second": "ได้รับแล้ว",
     "status.network.label_sent_per_second": "ส่ง",
     "status.network.title_network": "กิจกรรมเครือข่าย",

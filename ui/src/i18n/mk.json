@@ -291,7 +291,7 @@
     "status.memory.label_available": "Достапно",
     "status.memory.label_total": "Вкупно",
     "status.memory.title_memory": "Меморија",
-    "status.message_code_scan_instructions": "Скенирајте го овој код камерата на вашиот iOS уред за да го даодадете во Apple Home.",
+    "status.message_code_scan_instructions": "Скенирајте за да додадете во HomeKit.",
     "status.network.label_received_per_second": "Received",
     "status.network.label_sent_per_second": "Sent",
     "status.network.title_network": "Network Activity",
