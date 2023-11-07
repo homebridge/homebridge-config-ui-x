@@ -299,7 +299,7 @@
     "status.plugins_out_of_date": "Plugins obsolètes",
     "status.services.label_not_running": "Non démarré",
     "status.services.label_running": "Démarré",
-    "status.services.label_running_on_port": "Démarré sur le port {{port}}",
+    "status.services.label_running_on_port": "Port: {{port}}",
     "status.services.label_starting": "Démarrage en cours…",
     "status.uptime.title_uptime": "Temps de fonctionnement",
     "status.widget.accessories.label_choose_accessories_to_display": "Choisissez les accessoires à afficher dans ce widget dans l'onglet Accessoires.",

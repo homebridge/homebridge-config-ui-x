@@ -299,7 +299,7 @@
     "status.plugins_out_of_date": "Eklentiler Güncel Değil",
     "status.services.label_not_running": "Çalışmıyor",
     "status.services.label_running": "Çalışıyor",
-    "status.services.label_running_on_port": "{{Port}} bağlantı noktasında çalışıyor",
+    "status.services.label_running_on_port": "Port: {{port}}",
     "status.services.label_starting": "Starting…",
     "status.uptime.title_uptime": "Çalışma Süresi",
     "status.widget.accessories.label_choose_accessories_to_display": "Bu araçta göstermek istediğiniz aksesuarları aksesuarlar sekmesinden seçin.",

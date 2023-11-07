@@ -299,7 +299,7 @@
     "status.plugins_out_of_date": "Neaktualizované pluginy",
     "status.services.label_not_running": "Nefunguje",
     "status.services.label_running": "Běží",
-    "status.services.label_running_on_port": "Běží na portu {{port}}",
+    "status.services.label_running_on_port": "Port: {{port}}",
     "status.services.label_starting": "Zapíná se…",
     "status.uptime.title_uptime": "Doba provozu",
     "status.widget.accessories.label_choose_accessories_to_display": "Vyberte příslušenství, které se zobrazí v tomto widgetu na kartě Příslušenství.",
