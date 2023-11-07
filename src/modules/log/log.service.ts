@@ -47,6 +47,7 @@ export class LogService {
   /**
    * Socket handler
    * @param client
+   * @param size
    */
   public connect(client: EventEmitter, size: LogTermSize) {
     this.ending = false;
@@ -203,8 +204,11 @@ export class LogService {
           interval: 200,
         },
       });
-    } else if (this.nativeTail.listenerCount('line') === 0) {
-      this.nativeTail.watch();
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    } else { // @ts-expect-error
+      if (this.nativeTail.listenerCount('line') === 0) {
+        this.nativeTail.watch();
+      }
     }
 
     // watch for lines and emit to client
@@ -223,10 +227,17 @@ export class LogService {
     const onEnd = () => {
       this.ending = true;
 
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       this.nativeTail.removeListener('line', onLine);
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       this.nativeTail.removeListener('error', onError);
 
       // stop watching the file if there are no other watchers
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       if (this.nativeTail.listenerCount('line') === 0) {
         this.nativeTail.unwatch();
       }
