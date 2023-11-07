@@ -299,7 +299,7 @@
     "status.plugins_out_of_date": "Plugins nicht mehr aktuell",
     "status.services.label_not_running": "Gestoppt",
     "status.services.label_running": "Läuft",
-    "status.services.label_running_on_port": "Läuft auf Port {{port}}",
+    "status.services.label_running_on_port": "Port: {{port}}",
     "status.services.label_starting": "Starte …",
     "status.uptime.title_uptime": "Betriebszeit",
     "status.widget.accessories.label_choose_accessories_to_display": "Wähle die Geräte, die in diesem Widget vom Geräte-Tab angezeigt werden sollen.",
