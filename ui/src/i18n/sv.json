@@ -299,7 +299,7 @@
     "status.plugins_out_of_date": "Plugins inaktuella",
     "status.services.label_not_running": "Körs inte",
     "status.services.label_running": "Kör",
-    "status.services.label_running_on_port": "Kör på port {{port}}",
+    "status.services.label_running_on_port": "Port: {{port}}",
     "status.services.label_starting": "Starting…",
     "status.uptime.title_uptime": "Upptid",
     "status.widget.accessories.label_choose_accessories_to_display": "Välj Tillbehör som ska visas i den här widgeten från fliken Tillbehör.",
