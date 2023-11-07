@@ -23,6 +23,27 @@ export class LinuxInstaller extends BasePlatform {
     return path.resolve('/etc/hb-service', this.hbService.serviceName.toLowerCase(), 'prestart.d');
   }
 
+  private get synologyVersion(): string | null {
+    if (!Boolean(process.env.HOMEBRIDGE_SYNOLOGY_PACKAGE === '1')) {
+      return null;
+    }
+    try {
+      const versionFile = fs.readFileSync('/etc/VERSION', 'utf8');
+      const majorVersion = versionFile.match(/majorversion="(\d+)"/)?.[1];
+      const minorVersion = versionFile.match(/minorversion="(\d+)"/)?.[1];
+
+      if (!majorVersion || !minorVersion) {
+        return null;
+      }
+
+      return `${majorVersion}.${minorVersion}`;
+    } catch (e) {
+      console.error(e.toString());
+      this.hbService.logger('ERROR: Failed Operation', 'fail');
+      return null;
+    }
+  }
+
   /**
    * Installs the systemd service
    */
@@ -328,15 +349,19 @@ export class LinuxInstaller extends BasePlatform {
    * Update Node.js from the tarball archives
    */
   private async updateNodeFromTarball(job: { target: string; rebuild: boolean }, targetPath: string) {
-
     try {
-      if (Boolean(process.env.HOMEBRIDGE_SYNOLOGY_PACKAGE === '1')) {
-        // skip glibc version check on Synology DSM
-        // we know node > 18 requires glibc > 2.28, while DSM 7 only has 2.27 at the moment
-        if (semver.gte(job.target, '18.0.0')) {
-          this.hbService.logger('Cannot update Node.js on your system. Synology DSM 7 does not currently support Node.js 18 or later.', 'fail');
-          process.exit(1);
-        }
+      // we know that synology DSM 7.2 uses the correct glibc version for Node 20
+      // otherwise skip glibc version check on Synology DSM
+      // we know node > 18 requires glibc > 2.28, while DSM 7 only has 2.27 at the moment
+      const isSynologyPackage = Boolean(process.env.HOMEBRIDGE_SYNOLOGY_PACKAGE === '1');
+      const isSynologyVersionGE72 = isSynologyPackage && parseFloat(this.synologyVersion) >= 7.2;
+      const isTargetNodeVersionSupported = !isSynologyPackage || semver.gte(job.target, '18.0.0');
+
+      if (isSynologyVersionGE72) {
+        await this.glibcVersionCheck(job.target);
+      } else if (!isTargetNodeVersionSupported) {
+        this.hbService.logger('Cannot update Node.js on your system. Synology DSM 7 does not currently support Node.js 18 or later.', 'fail');
+        process.exit(1);
       } else {
         await this.glibcVersionCheck(job.target);
       }
