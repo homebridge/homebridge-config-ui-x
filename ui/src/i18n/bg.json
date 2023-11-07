@@ -299,7 +299,7 @@
     "status.plugins_out_of_date": "Добавките са остарели",
     "status.services.label_not_running": "Не работи",
     "status.services.label_running": "Работи",
-    "status.services.label_running_on_port": "порт {{port}}",
+    "status.services.label_running_on_port": "порт: {{port}}",
     "status.services.label_starting": "Starting…",
     "status.uptime.title_uptime": "Време на работа",
     "status.widget.accessories.label_choose_accessories_to_display": "Choose the Accessories to display in this widget from the Accessories tab.",
