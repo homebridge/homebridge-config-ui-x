@@ -28,14 +28,6 @@
             </a> Synology DSM
           </td>
         </tr>
-        <tr *ngIf="serverInfo.homebridgeRunningInDocker">
-            <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_docker'">Docker</th>
-            <td>Yes</td>
-        </tr>
-        <tr *ngIf="serverInfo.homebridgeServiceMode">
-            <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_service_mode'">Service Mode</th>
-            <td>Yes</td>
-        </tr>
         <tr>
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_nodejs_version'">
             Node.js Version
@@ -83,9 +75,24 @@
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_plugin_path'">Plugin Path</th>
           <td>{{ serverInfo.homebridgeCustomPluginPath || serverInfo.homebridgePluginPath }}</td>
         </tr>
+        <tr *ngIf="serverInfo.homebridgeRunningInDocker">
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_docker'">Docker</th>
+          <td class="text-nowrap" [translate]="'status.widget.systeminfo.label_yes'">Yes</td>
+        </tr>
+        <tr *ngIf="serverInfo.homebridgeRunningInSynologyPackage">
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_synology_package'">
+            Synology Package
+          </th>
+          <td class="text-nowrap" [translate]="'status.widget.systeminfo.label_yes'">Yes</td>
+        </tr>
         <tr>
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_timezone'">Timezone</th>
           <td>{{ serverInfo.time.timezone }}</td>
+        </tr>
+        <tr *ngIf="serverInfo.homebridgeServiceMode">
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_service_mode'">Service Mode
+          </th>
+          <td class="text-nowrap" [translate]="'status.widget.systeminfo.label_enabled'">Enabled</td>
         </tr>
       </tbody>
     </table>
