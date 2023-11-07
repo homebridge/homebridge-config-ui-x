@@ -53,8 +53,8 @@ export class TerminalWidgetComponent implements OnInit, OnDestroy {
         if (this.widget.fontSize !== this.fontSize || this.widget.fontWeight !== this.fontWeight) {
           this.fontSize = this.widget.fontSize;
           this.fontWeight = this.widget.fontWeight;
-          this.$terminal.term.setOption('fontSize', this.widget.fontSize);
-          this.$terminal.term.setOption('fontWeight', this.widget.fontWeight);
+          this.$terminal.term.options.fontSize = this.widget.fontSize;
+          this.$terminal.term.options.fontWeight = this.widget.fontWeight;
           this.resizeEvent.next(undefined);
           setTimeout(() => {
             this.$terminal.term.scrollToBottom();

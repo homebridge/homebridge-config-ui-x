@@ -4,7 +4,7 @@
 
 import * as child_process from 'child_process';
 import * as path from 'path';
-import * as commander from 'commander';
+import { program } from 'commander';
 import * as semver from 'semver';
 
 let homebridge;
@@ -19,7 +19,7 @@ class HomebridgeConfigUi {
     process.env.UIX_STORAGE_PATH = homebridge.user.storagePath();
     process.env.UIX_PLUGIN_NAME = config.name || 'homebridge-config-ui-x';
 
-    commander
+    program
       .allowUnknownOption()
       .option('-P, --plugin-path [path]', '', (p) => process.env.UIX_CUSTOM_PLUGIN_PATH = p)
       .option('-I, --insecure', '', () => process.env.UIX_INSECURE_MODE = '1')

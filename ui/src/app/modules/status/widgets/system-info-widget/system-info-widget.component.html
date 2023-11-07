@@ -42,9 +42,19 @@
           </th>
           <td>{{ serverInfo.network.ip6 }}</td>
         </tr>
+        <tr *ngIf="serverInfo.glibcVersion">
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_glibc_version'">GLIBC Version</th>
+          <td>
+            <a *ngIf="nodejsInfo.showNextUpdateWarning" href="https://homebridge.io/w/JJSun" rel="noopener noreferrer" target="_blank" class="system-info-link"
+               ngbTooltip="{{'status.widget.systeminfo.glibc_warning' | translate }}">
+              {{ serverInfo.glibcVersion }}
+              <i class="primary-text fas fa-info-circle"></i>
+            </a>
+            <span *ngIf="!nodejsInfo.showNextUpdateWarning">{{ serverInfo.glibcVersion }}</span>
+          </td>
+        </tr>
         <tr>
-          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_nodejs_version'"
-            container="body" [openDelay]="1000" ngbTooltip="{{ nodejsInfo.installPath }}">
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_nodejs_version'">
             Node.js Version
           </th>
           <td>
@@ -56,23 +66,23 @@
           </td>
         </tr>
         <tr>
-          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_service_user'">User
-          </th>
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_nodejs_path'">Node.js Path</th>
+          <td>{{ nodejsInfo.installPath }}</td>
+        </tr>
+        <tr>
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_service_user'">User</th>
           <td>{{ serverInfo.serviceUser }}</td>
         </tr>
         <tr>
-          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_storage_path'">Storage Path
-          </th>
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_storage_path'">Storage Path</th>
           <td>{{ serverInfo.homebridgeStoragePath }}</td>
         </tr>
         <tr>
-          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_config_path'">Config Path
-          </th>
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_config_path'">Config Path</th>
           <td>{{ serverInfo.homebridgeConfigJsonPath }}</td>
         </tr>
         <tr *ngIf="serverInfo.homebridgeCustomPluginPath">
-          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_plugin_path'">Plugin Path
-          </th>
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_plugin_path'">Plugin Path</th>
           <td>{{ serverInfo.homebridgeCustomPluginPath }}</td>
         </tr>
         <tr *ngIf="serverInfo.homebridgeRunningInDocker">
@@ -81,13 +91,11 @@
         </tr>
         <tr *ngIf="serverInfo.homebridgeRunningInSynologyPackage">
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_synology_package'">
-            Synology Package
-          </th>
+            Synology Package</th>
           <td>Yes</td>
         </tr>
         <tr *ngIf="serverInfo.homebridgeServiceMode">
-          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_service_mode'">Service Mode
-          </th>
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_service_mode'">Service Mode</th>
           <td>Yes</td>
         </tr>
       </tbody>

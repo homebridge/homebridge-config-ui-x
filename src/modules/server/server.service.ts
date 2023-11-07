@@ -7,18 +7,18 @@ import {
   NotFoundException,
   ServiceUnavailableException
 } from '@nestjs/common';
-import { Categories } from '@oznu/hap-client/dist/hap-types';
+import {Categories} from '@oznu/hap-client/dist/hap-types';
 import * as bufferShim from 'buffer-shims';
 import * as fs from 'fs-extra';
 import * as NodeCache from 'node-cache';
 import * as si from 'systeminformation';
 import * as tcpPortUsed from 'tcp-port-used';
-import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
-import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service';
-import { Logger } from '../../core/logger/logger.service';
-import { AccessoriesService } from '../accessories/accessories.service';
-import { ConfigEditorService } from '../config-editor/config-editor.service';
-import { HomebridgeMdnsSettingDto } from './server.dto';
+import {ConfigService, HomebridgeConfig} from '../../core/config/config.service';
+import {HomebridgeIpcService} from '../../core/homebridge-ipc/homebridge-ipc.service';
+import {Logger} from '../../core/logger/logger.service';
+import {AccessoriesService} from '../accessories/accessories.service';
+import {ConfigEditorService} from '../config-editor/config-editor.service';
+import {HomebridgeMdnsSettingDto} from './server.dto';
 
 @Injectable()
 export class ServerService {
@@ -105,7 +105,7 @@ export class ServerService {
     const persistPath = path.join(this.configService.storagePath, 'persist');
 
     const devices = (await fs.readdir(persistPath))
-      .filter(x => x.match(/AccessoryInfo\.([A-F,a-f,0-9]+)\.json/));
+      .filter(x => x.match(/AccessoryInfo\.([A-F,a-f0-9]+)\.json/));
 
     return Promise.all(devices.map(async (x) => {
       return this.getDevicePairingById(x.split('.')[1]);
@@ -119,7 +119,7 @@ export class ServerService {
   public async getDevicePairingById(deviceId: string) {
     const persistPath = path.join(this.configService.storagePath, 'persist');
 
-    let device;
+    let device: any;
     try {
       device = await fs.readJson(path.join(persistPath, `AccessoryInfo.${deviceId}.json`));
     } catch (e) {
@@ -296,11 +296,10 @@ export class ServerService {
   /**
    * Generates the setup code
    */
-  private generateSetupCode(accessoryInfo): string {
+  private generateSetupCode(accessoryInfo: any): string {
     // this code is from https://github.com/KhaosT/HAP-NodeJS/blob/master/lib/Accessory.js#L369
     const buffer = bufferShim.alloc(8);
-    const setupCode = parseInt(accessoryInfo.pincode.replace(/-/g, ''), 10);
-    let valueLow = setupCode;
+    let valueLow = parseInt(accessoryInfo.pincode.replace(/-/g, ''), 10);
     const valueHigh = accessoryInfo.category >> 1;
 
     valueLow |= 1 << 28; // Supports IP;
@@ -452,17 +451,13 @@ export class ServerService {
    * Check if the system Node.js version has changed
    */
   private async nodeVersionChanged(): Promise<boolean> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       let result = false;
 
       const child = child_process.spawn(process.execPath, ['-v']);
 
       child.stdout.once('data', (data) => {
-        if (data.toString().trim() === process.version) {
-          result = false;
-        } else {
-          result = true;
-        }
+        result = data.toString().trim() !== process.version;
       });
 
       child.on('error', () => {
