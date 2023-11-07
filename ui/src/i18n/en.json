@@ -291,7 +291,7 @@
     "status.memory.label_available": "Available",
     "status.memory.label_total": "Total",
     "status.memory.title_memory": "Memory",
-    "status.message_code_scan_instructions": "Scan to add to Homekit.",
+    "status.message_code_scan_instructions": "Scan this code with the camera on your iOS device to add to Apple Home.",
     "status.network.label_received_per_second": "Received",
     "status.network.label_sent_per_second": "Sent",
     "status.network.title_network": "Network Activity",
