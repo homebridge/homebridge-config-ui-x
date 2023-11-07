@@ -43,7 +43,7 @@
           <td>{{ serverInfo.network.ip6 }}</td>
         </tr>
         <tr *ngIf="serverInfo.glibcVersion">
-          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.glibc_version'">GLIBC Version</th>
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_glibc_version'">GLIBC Version</th>
           <td>
             <a *ngIf="nodejsInfo.showNextUpdateWarning" href="https://homebridge.io/w/JJSun" rel="noopener noreferrer" target="_blank" class="system-info-link"
                ngbTooltip="{{'status.widget.systeminfo.glibc_warning' | translate }}">
@@ -66,7 +66,7 @@
           </td>
         </tr>
         <tr>
-          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.nodejs_version'">Node.js Path</th>
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_nodejs_path'">Node.js Path</th>
           <td>{{ nodejsInfo.installPath }}</td>
         </tr>
         <tr>
