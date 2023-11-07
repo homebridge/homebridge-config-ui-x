@@ -190,7 +190,7 @@ export class PluginsSettingsUiService {
     });
 
     child.on('exit', () => {
-      this.loggerService.log(`[${pluginName}]`, 'Child process ended');
+      this.loggerService.debug(`[${pluginName}]`, 'Custom UI: closed (child process ended)');
     });
 
     child.addListener('message', (response: { action: string; payload: any }) => {
@@ -202,7 +202,7 @@ export class PluginsSettingsUiService {
 
     // function to handle cleanup
     const cleanup = () => {
-      this.loggerService.log(`[${pluginName}]`, 'Terminating child process...');
+      this.loggerService.debug(`[${pluginName}]`, 'Custom UI: closing (terminating child process)...');
 
       const childPid = child.pid;
       if (child.connected) {
