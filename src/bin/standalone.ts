@@ -4,9 +4,9 @@ process.title = 'homebridge-config-ui-x';
 
 import * as os from 'os';
 import * as path from 'path';
-import * as commander from 'commander';
+import { program } from 'commander';
 
-commander
+program
   .allowUnknownOption()
   .option('-U, --user-storage-path [path]', '', (p) => process.env.UIX_STORAGE_PATH = p)
   .option('-P, --plugin-path [path]', '', (p) => process.env.UIX_CUSTOM_PLUGIN_PATH = p)

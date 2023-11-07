@@ -1,9 +1,22 @@
-import { Controller, UseGuards, Get, Put, Body, Req, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Put,
+  Query,
+  Req,
+  UseGuards
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags, ApiBearerAuth, ApiQuery, ApiOperation } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+  ApiTags
+} from '@nestjs/swagger';
 import { AdminGuard } from '../../../core/auth/guards/admin.guard';
-import { HbServiceService } from './hb-service.service';
 import { HbServiceStartupSettings } from './hb-service.dto';
+import { HbServiceService } from './hb-service.service';
 
 @ApiTags('Platform - HB Service')
 @ApiBearerAuth()

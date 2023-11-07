@@ -1,16 +1,13 @@
-import * as os from 'os';
-import * as color from 'bash-color';
-import * as semver from 'semver';
 import * as child_process from 'child_process';
-import * as fs from 'fs-extra';
 import { EventEmitter } from 'events';
+import * as os from 'os';
 import { Injectable } from '@nestjs/common';
+import * as color from 'bash-color';
+import * as fs from 'fs-extra';
+import * as semver from 'semver';
 import { Tail } from 'tail';
-
 import { ConfigService } from '../../core/config/config.service';
 import { NodePtyService } from '../../core/node-pty/node-pty.service';
-
-export type LogTermSize = { cols: number; rows: number };
 
 @Injectable()
 export class LogService {
@@ -250,10 +247,12 @@ export class LogService {
   }
 
   /**
-   * Logs are not configued
+   * Logs are not configured
    */
   private logNotConfigured() {
     this.command = null;
   }
 
 }
+
+export type LogTermSize = { cols: number; rows: number };

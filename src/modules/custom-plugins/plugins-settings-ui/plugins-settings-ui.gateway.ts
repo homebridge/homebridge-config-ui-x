@@ -1,7 +1,6 @@
-import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
-import { UseGuards } from '@nestjs/common';
 import { EventEmitter } from 'events';
-
+import { UseGuards } from '@nestjs/common';
+import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { WsAdminGuard } from '../../../core/auth/guards/ws-admin-guard';
 import { PluginsSettingsUiService } from './plugins-settings-ui.service';
 

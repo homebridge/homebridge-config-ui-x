@@ -1,20 +1,19 @@
 import './self-check';
 
 import * as path from 'path';
-import { FastifyReply, FastifyRequest } from 'fastify';
-import fastifyMultipart from '@fastify/multipart';
 import helmet from '@fastify/helmet';
-import * as fs from 'fs-extra';
-import { NestFactory } from '@nestjs/core';
+import fastifyMultipart from '@fastify/multipart';
 import { ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { FastifyReply, FastifyRequest } from 'fastify';
+import * as fs from 'fs-extra';
 import { AppModule } from './app.module';
-import { Logger } from './core/logger/logger.service';
-import { SpaFilter } from './core/spa/spa.filter';
 import { ConfigService } from './core/config/config.service';
 import { getStartupConfig } from './core/config/config.startup';
+import { Logger } from './core/logger/logger.service';
+import { SpaFilter } from './core/spa/spa.filter';
 
 export { HomebridgeIpcService } from './core/homebridge-ipc/homebridge-ipc.service';
 

@@ -7,3 +7,9 @@
     width: 100%;
   }
 }
+
+::ng-deep body.dark-mode {
+  .card-link-title {
+    color: #ffffff !important;
+  }
+}

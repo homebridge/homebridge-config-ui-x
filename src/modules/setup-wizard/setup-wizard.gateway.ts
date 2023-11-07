@@ -1,10 +1,9 @@
-import * as color from 'bash-color';
 import { EventEmitter } from 'events';
 import { UseGuards } from '@nestjs/common';
-import { WebSocketGateway, SubscribeMessage, WsException } from '@nestjs/websockets';
-
-import { Logger } from '../../core/logger/logger.service';
+import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets';
+import * as color from 'bash-color';
 import { WsAdminGuard } from '../../core/auth/guards/ws-admin-guard';
+import { Logger } from '../../core/logger/logger.service';
 import { BackupService } from '../backup/backup.service';
 
 @UseGuards(WsAdminGuard)

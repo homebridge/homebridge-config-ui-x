@@ -1,12 +1,11 @@
 import * as path from 'path';
-import * as fs from 'fs-extra';
 import { ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-
+import { Test, TestingModule } from '@nestjs/testing';
+import * as fs from 'fs-extra';
 import { AuthModule } from '../../src/core/auth/auth.module';
-import { AccessoriesModule } from '../../src/modules/accessories/accessories.module';
 import { ConfigService } from '../../src/core/config/config.service';
+import { AccessoriesModule } from '../../src/modules/accessories/accessories.module';
 import { AccessoriesService } from '../../src/modules/accessories/accessories.service';
 
 describe('AccessoriesController (e2e)', () => {
