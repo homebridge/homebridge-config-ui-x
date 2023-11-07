@@ -1,14 +1,13 @@
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
-
 import { ConfigModule } from '../../core/config/config.module';
+import { HomebridgeIpcModule } from '../../core/homebridge-ipc/homebridge-ipc.module';
 import { LoggerModule } from '../../core/logger/logger.module';
 import { SchedulerModule } from '../../core/scheduler/scheduler.module';
-import { HomebridgeIpcModule } from '../../core/homebridge-ipc/homebridge-ipc.module';
-import { BackupService } from './backup.service';
-import { BackupGateway } from './backup.gateway';
-import { BackupController } from './backup.controller';
 import { PluginsModule } from '../plugins/plugins.module';
+import { BackupController } from './backup.controller';
+import { BackupGateway } from './backup.gateway';
+import { BackupService } from './backup.service';
 
 @Module({
   imports: [

@@ -1,22 +1,17 @@
-import * as path from 'path';
-import * as fs from 'fs-extra';
 import { EventEmitter } from 'events';
-import { Test, TestingModule } from '@nestjs/testing';
-import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import * as path from 'path';
 import type { IPty } from '@homebridge/node-pty-prebuilt-multiarch';
-
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import { Test, TestingModule } from '@nestjs/testing';
+import * as fs from 'fs-extra';
 import { ConfigService } from '../../src/core/config/config.service';
+import { NodePtyService } from '../../src/core/node-pty/node-pty.service';
+import { TerminalGateway } from '../../src/modules/platform-tools/terminal/terminal.gateway';
 import { TerminalModule } from '../../src/modules/platform-tools/terminal/terminal.module';
 import { WsEventEmitter } from '../../src/modules/platform-tools/terminal/terminal.service';
-import { TerminalGateway } from '../../src/modules/platform-tools/terminal/terminal.gateway';
-import { NodePtyService } from '../../src/core/node-pty/node-pty.service';
 
 // create mock websocket client
-class MockWsEventEmmiter extends EventEmitter implements WsEventEmitter {
-  constructor() {
-    super();
-  }
-
+class MockWsEventEmitter extends EventEmitter implements WsEventEmitter {
   disconnect = jest.fn();
 }
 
@@ -74,7 +69,7 @@ describe('PlatformToolsTerminal (e2e)', () => {
     jest.resetAllMocks();
 
     // create client
-    client = new MockWsEventEmmiter();
+    client = new MockWsEventEmitter();
 
     jest.spyOn(client, 'emit');
     jest.spyOn(client, 'on');

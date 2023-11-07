@@ -1,14 +1,22 @@
-import * as fs from 'fs-extra';
 import * as crypto from 'crypto';
-import * as jwt from 'jsonwebtoken';
-import { authenticator } from 'otplib';
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  HttpException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Injectable, ForbiddenException, BadRequestException, UnauthorizedException, ConflictException, NotFoundException, HttpException } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
+import * as fs from 'fs-extra';
+import * as jwt from 'jsonwebtoken';
 import * as NodeCache from 'node-cache';
+import { authenticator } from 'otplib';
+import { UserDto } from '../../modules/users/users.dto';
 import { ConfigService } from '../config/config.service';
 import { Logger } from '../logger/logger.service';
-import { UserDto } from '../../modules/users/users.dto';
 
 @Injectable()
 export class AuthService {
@@ -302,7 +310,7 @@ export class AuthService {
    */
   private async saveUserFile(users: UserDto[]) {
     // update the auth.json
-    return await fs.writeJson(this.configService.authPath, users, { spaces: 4 });
+    return fs.writeJson(this.configService.authPath, users, { spaces: 4 });
   }
 
   /**

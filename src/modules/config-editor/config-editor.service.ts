@@ -1,9 +1,9 @@
-import * as fs from 'fs-extra';
 import * as path from 'path';
-import * as dayjs from 'dayjs';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { Logger } from '../../core/logger/logger.service';
+import * as dayjs from 'dayjs';
+import * as fs from 'fs-extra';
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
+import { Logger } from '../../core/logger/logger.service';
 import { SchedulerService } from '../../core/scheduler/scheduler.service';
 import { PluginsService } from '../plugins/plugins.service';
 
@@ -333,7 +333,7 @@ export class ConfigEditorService {
     }
 
     // read source backup
-    return await fs.readFile(requestedBackupPath);
+    return fs.readFile(requestedBackupPath);
   }
 
   /**
