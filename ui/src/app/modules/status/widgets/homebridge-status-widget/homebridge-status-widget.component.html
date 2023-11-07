@@ -40,15 +40,14 @@
             *ngIf="homebridgePkg.installedVersion && (homebridgePkg.updateAvailable || homebridgePkg.betaUpdateAvailable)"></i>
         </div>
         <div class="align-self-center">
-          <span>Homebridge</span>        
-          <br>
-          <span class="grey-text" *ngIf="homebridgePkg.installedVersion">
+          <span>Homebridge </span>        
+          <span *ngIf="homebridgePkg.installedVersion">
             <a href="javascript:void(0)" (click)="$plugin.installPreviousVersion(homebridgePkg)"
               class="grey-text card-link">
               v{{ homebridgePkg.installedVersion }}
             </a>
-            <span> - </span>
           </span>
+          <br>
           <span class="grey-text">
             <span class="grey-text" *ngIf="!homebridgePkg.installedVersion"
             [translate]="'status.homebridge.label_checking_for_updates'">
