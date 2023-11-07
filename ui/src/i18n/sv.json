@@ -290,7 +290,7 @@
     "status.memory.label_available": "Fritt",
     "status.memory.label_total": "Totalt",
     "status.memory.title_memory": "Minne",
-    "status.message_code_scan_instructions": "Skanna den här koden med kameran på din iOS-enhet för att lägga till i Apple Home.",
+    "status.message_code_scan_instructions": "Skanna för att lägga till i HomeKit.",
     "status.network.label_received_per_second": "Mottaget",
     "status.network.label_sent_per_second": "Skickat",
     "status.network.title_network": "Nätverksaktivitet",
