@@ -165,6 +165,7 @@
     "platform.linux.shutdown.title_shutting_down_server": "Apagant el servidor",
     "platform.version.message_service_restart_required": "ADVERTÈNCIA: Homebridge UI v{{uiVersion}} ha estat instal·lat, però el servei encara segueix executant la v{{serverVersion}}.",
     "platform.version.title_service_restart_required": "Reinici del servei obligatori",
+    "plugins.button_homepage": "Plugin Homepage",
     "plugins.button_install": "Instal·lar",
     "plugins.button_settings": "Ajustos",
     "plugins.button_uninstall": "Desinstal·lar",

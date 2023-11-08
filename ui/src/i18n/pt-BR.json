@@ -165,6 +165,7 @@
     "platform.linux.shutdown.title_shutting_down_server": "Desligando o Servidor",
     "platform.version.message_service_restart_required": "ATENÇÃO: Homebridge UI v{{ uiVersion }} foi instalado, mas o serviço do servidor ainda está rodando a versão v{{ serverVersion }}.",
     "platform.version.title_service_restart_required": "Reinicialização do Servidor Necessária",
+    "plugins.button_homepage": "Plugin Homepage",
     "plugins.button_install": "Instalar",
     "plugins.button_settings": "Definições",
     "plugins.button_uninstall": "Desinstalar",

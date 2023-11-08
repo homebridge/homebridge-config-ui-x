@@ -165,6 +165,7 @@
     "platform.linux.shutdown.title_shutting_down_server": "Вимкнення сервера",
     "platform.version.message_service_restart_required": "УВАГА: Інтерфейс Homebridge v{{ uiVersion }} встановлено, але служба сервера все ще працює v{{ serverVersion }}.",
     "platform.version.title_service_restart_required": "Потрібен перезапуск служби",
+    "plugins.button_homepage": "Plugin Homepage",
     "plugins.button_install": "Встановити",
     "plugins.button_settings": "Налаштування",
     "plugins.button_uninstall": "Видалити",

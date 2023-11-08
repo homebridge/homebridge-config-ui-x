@@ -1,12 +1,8 @@
 {
   "watch": [
-    "src",
-    "ui"
+    "src"
   ],
-  "ext": [
-    "ts",
-    "html"
-  ],
+  "ext": "ts",
   "ignore": [
     "src/**/*.spec.ts"
   ],

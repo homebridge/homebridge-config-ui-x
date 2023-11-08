@@ -165,6 +165,7 @@
     "platform.linux.shutdown.title_shutting_down_server": "正在关闭服务器",
     "platform.version.message_service_restart_required": "警告: Homebridge UI 版本 {{ uiVersion }} 已安装到您的系统中，但是服务进程的版本依然为 {{ serverVersion }}。",
     "platform.version.title_service_restart_required": "需要重启服务",
+    "plugins.button_homepage": "Plugin Homepage",
     "plugins.button_install": "安装",
     "plugins.button_settings": "设置",
     "plugins.button_uninstall": "卸载",

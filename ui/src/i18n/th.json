@@ -165,6 +165,7 @@
     "platform.linux.shutdown.title_shutting_down_server": "กำลังปิดเซิร์ฟเวอร์",
     "platform.version.message_service_restart_required": "คำเตือน: Homebridge UI รุ่น{{ uiVersion }} ได้รับการติดตั้งแล้ว แต่บริการเซิร์ฟเวอร์ยังคงทำงานอยู่ รุ่น{{ serverVersion }}.",
     "platform.version.title_service_restart_required": "จำเป็นต้องรีสตาร์ทบริการ",
+    "plugins.button_homepage": "Plugin Homepage",
     "plugins.button_install": "ติดตั้ง",
     "plugins.button_settings": "การตั้งค่า",
     "plugins.button_uninstall": "ถอนการติดตั้ง",

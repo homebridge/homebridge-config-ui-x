@@ -165,6 +165,7 @@
     "platform.linux.shutdown.title_shutting_down_server": "서버 종료",
     "platform.version.message_service_restart_required": "경고: Homebridge UI v{{ uiVersion }}가 설치되었지만, 서버 서비스는 여전히 v{{ serverVersion }}를 실행 중입니다.",
     "platform.version.title_service_restart_required": "서비스 재시작 필요",
+    "plugins.button_homepage": "Plugin Homepage",
     "plugins.button_install": "설치",
     "plugins.button_settings": "설정",
     "plugins.button_uninstall": "제거",

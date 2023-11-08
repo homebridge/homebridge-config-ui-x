@@ -165,6 +165,7 @@
     "platform.linux.shutdown.title_shutting_down_server": "מכבה שרת",
     "platform.version.message_service_restart_required": "אזהרה: ממשק ההומברידג' v{{ uiVersion }} has been installed, but the server service is still running v{{ serverVersion }}.",
     "platform.version.title_service_restart_required": "אתחול שירות נדרש",
+    "plugins.button_homepage": "Plugin Homepage",
     "plugins.button_install": "התקן",
     "plugins.button_settings": "הגדרות",
     "plugins.button_uninstall": "הסר",
