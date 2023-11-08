@@ -98,7 +98,7 @@
         <a href="javascript:void(0)" class="card-link grey-text" aria-label="Plugin actions drop down menu"
            ngbDropdownToggle>
           <span class="card-link">
-            <i class="fas fa-wrench"></i>
+            <i class="fas fa-ellipsis-v pl-1"></i>
           </span>
         </a>
         <div ngbDropdownMenu aria-labelledby="Plugin actions drop down menu">
@@ -136,13 +136,13 @@
                   (click)="$plugin.uninstallPlugin(plugin)">
             <i class="fas fa-fw fa-trash"></i> {{ 'plugins.button_uninstall' | translate }}
           </button>
+          <div class="dropdown-divider"></div>
+          <a ngbDropdownItem target="_blank" rel="noopener noreferrer" class="text-decoration-none"
+            *ngIf="plugin.links.homepage || plugin.links.npm" [href]="plugin.links.homepage || plugin.links.npm">
+            <i class="{{ plugin.links?.homepage?.includes('github.com') ? 'fa fa-lg fa-github' : 'fas fa-external-link-alt' }}"></i> Plugin Homepage
+          </a>
         </div>
       </span>
-      <a class="card-link grey-text ml-3" target="_blank" rel="noopener noreferrer" aria-label="Plugin homepage"
-         *ngIf="plugin.links.homepage || plugin.links.npm" [href]="plugin.links.homepage || plugin.links.npm"
-         [ngbTooltip]="plugin.links.homepage || plugin.links.npm" placement="left" container="body" openDelay="150">
-        <i class="fas fa-external-link-alt"></i>
-      </a>
     </div>
   </div>
 </div>

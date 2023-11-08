@@ -54,20 +54,20 @@
           <br>
           <span class="grey-text">
             <span *ngIf="homebridgePkg.installedVersion && !homebridgePkg.updateAvailable && !homebridgePkg.betaUpdateAvailable"
-            [translate]="'status.homebridge.label_up_to_date'">
-            Up To Date
+              [translate]="'status.homebridge.label_up_to_date'">
+              Up To Date
             </span>
             <a href="javascript:void(0)" (click)="$plugin.upgradeHomebridge(homebridgePkg)" class="primary-text"
-            *ngIf="homebridgePkg.installedVersion && homebridgePkg.updateAvailable && !homebridgePkg.betaUpdateAvailable"
-            [translate]="'status.homebridge.label_update_available'" [translateParams]="homebridgePkg"
-            ngbTooltip="{{'plugins.button_upgrade' | translate}} Homebridge">
-            Update Available
+              *ngIf="homebridgePkg.installedVersion && homebridgePkg.updateAvailable && !homebridgePkg.betaUpdateAvailable"
+              [translate]="'status.homebridge.label_update_available'" [translateParams]="homebridgePkg"
+              ngbTooltip="{{'plugins.button_upgrade' | translate}} Homebridge">
+              Update Available
             </a>
             <a href="javascript:void(0)" (click)="$plugin.upgradeHomebridge(homebridgePkg, 'beta')" class="primary-text"
-             *ngIf="homebridgePkg.installedVersion && !homebridgePkg.updateAvailable && homebridgePkg.betaUpdateAvailable"
-             [translate]="'status.homebridge.label_update_available'" [translateParams]="homebridgePkg"
-             ngbTooltip="{{'plugins.button_upgrade' | translate}} Homebridge">
-             Update Available
+              *ngIf="homebridgePkg.installedVersion && !homebridgePkg.updateAvailable && homebridgePkg.betaUpdateAvailable"
+              [translate]="'status.homebridge.label_update_available'" [translateParams]="homebridgePkg"
+              ngbTooltip="{{'plugins.button_upgrade' | translate}} Homebridge">
+              Update Available
             </a>
           </span>
         </div>
@@ -77,7 +77,7 @@
     <div class="hb-status-item d-flex flex-row mr-4 pr-4">
       <div class="d-flex">
         <div class="mb-0 px-3 py-2 hb-status-icon">
-          <i class="fas fa-exclamation-circle primary-text" *ngIf="homebridgePluginStatus.length"></i>
+          <i class="fas fa-cloud-upload-alt primary-text" *ngIf="homebridgePluginStatus.length"></i>
           <i class="fas fa-check-circle primary-text" *ngIf="!homebridgePluginStatus.length"></i>
         </div>
         <div class="align-self-center">
@@ -94,6 +94,5 @@
         </div>
       </div>
     </div>
-
   </div>
 </div>
