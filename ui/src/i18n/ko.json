@@ -174,6 +174,7 @@
     "plugins.donate.message_learn_more": "플러그인의 기부 링크에 대해 자세히 알아보기",
     "plugins.donate.tile_donate_to": "{{ author }}에 기부",
     "plugins.manage.button_restart_now": "지금 Homebridge 재시작",
+    "plugins.manage.child_bridge_button_restart_now": "Restart Child Bridge Now",
     "plugins.manage.disable": "Disable",
     "plugins.manage.enable": "Enable",
     "plugins.manage.json_config": "JSON Config",
