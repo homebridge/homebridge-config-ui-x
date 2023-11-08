@@ -20,15 +20,8 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   @Input() pluginName;
   @Input() targetVersion = 'latest';
   @Input() action;
-  @Input() plugin;
 
   private io = this.$ws.connectToNamespace('plugins');
-
-  public canConfigure = true;
-  public configBlocks: any[] = [];
-  public enabledBlocks: Record<number, boolean> = {};
-  public usernameCache: Map<number, string> = new Map();
-  public deviceInfo: Map<string, any> = new Map();
 
   private term = new Terminal();
   private termTarget: HTMLElement;
@@ -39,7 +32,6 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   public showReleaseNotes = false;
   public justUpdatedPlugin = false;
   public updateToBeta = false;
-  public restartInProgress: Record<string, boolean> = {};
   public changeLog: string;
   public release;
 
@@ -53,7 +45,6 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
     public activeModal: NgbActiveModal,
     public $toastr: ToastrService,
     private translate: TranslateService,
-    private $translate: TranslateService,
     private $settings: SettingsService,
     private $api: ApiService,
     private $ws: WsService,
@@ -63,8 +54,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
     this.term.loadAddon(this.fitAddon);
   }
 
-  ngOnInit(): void {
-    this.loadPluginConfig();
+  ngOnInit() {
     this.termTarget = document.getElementById('plugin-log-output');
     this.term.open(this.termTarget);
     this.fitAddon.fit();
@@ -104,32 +94,6 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
         this.presentTenseVerb = this.translate.instant('plugins.manage.label_update');
         this.pastTenseVerb = this.translate.instant('plugins.manage.label_updated');
         break;
-    }
-  }
-
-  loadPluginConfig() {
-    this.$api.get(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`).subscribe(
-      (configBlocks) => {
-        this.configBlocks = configBlocks;
-        for (const [i, block] of this.configBlocks.entries()) {
-          if (block._bridge && block._bridge.username) {
-            this.enabledBlocks[i] = true;
-            this.usernameCache.set(i, block._bridge.username);
-            this.getDeviceInfo(block._bridge.username);
-          }
-        }
-      },
-      (err) => {
-        this.canConfigure = false;
-      },
-    );
-  }
-
-  async getDeviceInfo(username: string) {
-    try {
-      this.deviceInfo[username] = await this.$api.get(`/server/pairings/${username.replace(/:/g, '')}`).toPromise();
-    } catch (e) {
-      this.deviceInfo[username] = false;
     }
   }
 
@@ -212,27 +176,6 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
         this.$toastr.error(err.message, this.translate.instant('toast.title_error'));
       },
     );
-  }
-
-  async restartChildBridge(username: string) {
-    this.restartInProgress[username] = true;
-    try {
-      await this.$api.put(`/server/restart/${username.replace(/:/g, '')}`, {}).toPromise();
-      this.$toastr.success(
-        this.$translate.instant('child_bridge.toast_restart_requested'),
-        this.$translate.instant('toast.title_success'),
-      );
-    } catch (err) {
-      this.$toastr.error(
-        'Failed to restart bridge: ' + err.error?.message,
-        this.$translate.instant('toast.title_error'),
-      );
-      this.restartInProgress[username] = false;
-    } finally {
-      setTimeout(() => {
-        this.restartInProgress[username] = false;
-      }, 12000);
-    }
   }
 
   upgradeHomebridge() {
