@@ -14,7 +14,7 @@
     <div class="text-center">
       <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="onDownloadBackupClick()"
         [disabled]="clicked">
-        <i *ngIf="clicked" class="fa fa-circle-notch fa-spin"></i>
+        <i *ngIf="clicked" class="fa fa-fw fa-circle-notch fa-spin"></i>
         <span *ngIf="!clicked" [translate]="'backup.button_download_backup_archive'"></span>
       </button>
     </div>
@@ -33,7 +33,7 @@
       <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="onRestoreBackupClick()"
         [disabled]="clicked">
         <span *ngIf="clicked">
-          <i *ngIf="!uploadPercent || uploadPercent === 100" class="fa fa-circle-notch fa-spin"></i>
+          <i *ngIf="!uploadPercent || uploadPercent === 100" class="fa fa-fw fa-circle-notch fa-spin"></i>
           <span *ngIf="uploadPercent && uploadPercent !== 100">{{ uploadPercent }}% - </span>
           <span *ngIf="uploadPercent === 100"> Extracting Archive</span>
           <span *ngIf="uploadPercent !== 100"> {{ 'backup.label_uploading' | translate }}</span>

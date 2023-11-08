@@ -10,7 +10,7 @@
 
     <!-- plugins -->
     <div class="w-100" *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)">
-      <i class="fab fa-node primary-text" style="font-size: 100px;"></i>
+      <i class="fab fa-fw fa-node primary-text" style="font-size: 100px;"></i>
       <p class="mt-4" translate="plugins.node_update.node_version_too_low"
         [translateParams]="{pluginName: plugin.name, minVersion: minVersion, installedVersion: installedVersion}">
       </p>
@@ -18,14 +18,14 @@
       </p>
       <p>
         <a href="https://homebridge.io/w/JTKEF" target="_blank" rel="noopener noreferrer">
-          How To Update Node.js <i class="fa fa-external-link-alt"></i>
+          How To Update Node.js <i class="fa fa-fw fa-external-link-alt"></i>
         </a>
       </p>
     </div>
 
     <!-- homebridge -->
     <div class="w-100" *ngIf="plugin.name === 'homebridge'">
-      <i class="fab fa-node primary-text" style="font-size: 100px;"></i>
+      <i class="fab fa-fw fa-node primary-text" style="font-size: 100px;"></i>
       <p class="mt-4" translate="plugins.node_update.homebridge_node_version_too_low"
         [translateParams]="{minVersion: minVersion, installedVersion: installedVersion, latestVersion: plugin.latestVersion}">
       </p>
@@ -33,14 +33,14 @@
       </p>
       <p>
         <a href="https://homebridge.io/w/JTKEF" target="_blank" rel="noopener noreferrer">
-          How To Update Node.js <i class="fa fa-external-link-alt"></i>
+          How To Update Node.js <i class="fa fa-fw fa-external-link-alt"></i>
         </a>
       </p>
     </div>
 
     <!-- homebridge ui -->
     <div class="w-100" *ngIf="plugin.name === 'homebridge-config-ui-x'">
-      <i class="fab fa-node primary-text" style="font-size: 100px;"></i>
+      <i class="fab fa-fw fa-node primary-text" style="font-size: 100px;"></i>
       <p class="mt-4" translate="plugins.node_update.homebridge_node_version_too_low"
          [translateParams]="{minVersion: minVersion, installedVersion: installedVersion, latestVersion: plugin.latestVersion}">
       </p>
@@ -48,7 +48,7 @@
       </p>
       <p>
         <a href="https://homebridge.io/w/JTKEF" target="_blank" rel="noopener noreferrer">
-          How To Update Node.js <i class="fa fa-external-link-alt"></i>
+          How To Update Node.js <i class="fa fa-fw fa-external-link-alt"></i>
         </a>
       </p>
     </div>
