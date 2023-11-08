@@ -165,6 +165,7 @@
     "platform.linux.shutdown.title_shutting_down_server": "Vypnutí serveru",
     "platform.version.message_service_restart_required": "UPOZORNĚNÍ: Homebridge UI verze{{ uiVersion }} bylo nainstalováno, ale server stále běží na verzi{{ serverVersion }}.",
     "platform.version.title_service_restart_required": "Je Vyžadován Restart Služby",
+    "plugins.button_homepage": "Plugin Homepage",
     "plugins.button_install": "Instalovat",
     "plugins.button_settings": "Nastavení",
     "plugins.button_uninstall": "Odinstalovat",

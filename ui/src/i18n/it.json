@@ -165,6 +165,7 @@
     "platform.linux.shutdown.title_shutting_down_server": "Arresto del sistema",
     "platform.version.message_service_restart_required": "ATTENZIONE: Homebridge UI v{{ uiVersion }} è stato installato, ma la versione in esecuzione del suo servizio è la v{{ serverVersion }}.",
     "platform.version.title_service_restart_required": "È necessario riavviare il servizio",
+    "plugins.button_homepage": "Plugin Homepage",
     "plugins.button_install": "Installa",
     "plugins.button_settings": "Impostazioni",
     "plugins.button_uninstall": "Disinstalla",

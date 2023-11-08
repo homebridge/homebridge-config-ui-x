@@ -165,6 +165,7 @@
     "platform.linux.shutdown.title_shutting_down_server": "Sunucu Kapatılıyor",
     "platform.version.message_service_restart_required": "UYARI: Homebridge UI v{{ uiVersion }} kuruldu, fakat sunucu halen v{{ serverVersion }} sürümünü çalıştırıyor.",
     "platform.version.title_service_restart_required": "Servisin Yeniden Başlatılması Gerekli",
+    "plugins.button_homepage": "Plugin Homepage",
     "plugins.button_install": "Yükle",
     "plugins.button_settings": "Ayarlar",
     "plugins.button_uninstall": "Kaldır",
