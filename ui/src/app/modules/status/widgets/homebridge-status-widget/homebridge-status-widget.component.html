@@ -85,9 +85,9 @@
             {{ 'menu.label_plugins' | translate }}
           </a>
           <br>
-          <span class="grey-text" *ngIf="homebridgePluginStatus.length">
+          <a routerLink="/plugins" class="primary-text" *ngIf="homebridgePluginStatus.length">
             {{ homebridgePluginStatus.length }} {{ homebridgePluginStatus.length === 1 ? ('status.plugin_out_of_date' | translate) : ('status.plugins_out_of_date' | translate) }}
-          </span>
+          </a>
           <span class="grey-text" *ngIf="!homebridgePluginStatus.length">
             {{ 'status.homebridge.label_up_to_date' | translate }}
           </span>
