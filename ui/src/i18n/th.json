@@ -138,7 +138,7 @@
     "menu.linux.label_restart_server": "รีสตาร์ทเซิร์ฟเวอร์",
     "menu.linux.label_shutdown_server": "ปิดเซิร์ฟเวอร์",
     "menu.linux.label_terminal": "เทอร์มินอล",
-    "menu.linux.label_logs": "Log",
+    "menu.linux.label_logs": "Logs",
     "menu.tooltip_logout": "ออกจากระบบ",
     "menu.tooltip_restart": "รีสตาร์ท",
     "menu.tooltip_user_accounts": "บัญชีผู้ใช้",

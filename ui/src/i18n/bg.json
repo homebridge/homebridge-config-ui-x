@@ -138,7 +138,7 @@
     "menu.linux.label_restart_server": "Рестартирай Сървъра",
     "menu.linux.label_shutdown_server": "Изключи Сървъра",
     "menu.linux.label_terminal": "Терминал",
-    "menu.linux.label_logs": "Log",
+    "menu.linux.label_logs": "Logs",
     "menu.tooltip_logout": "Излез",
     "menu.tooltip_restart": "Рестарт",
     "menu.tooltip_user_accounts": "Потребители",

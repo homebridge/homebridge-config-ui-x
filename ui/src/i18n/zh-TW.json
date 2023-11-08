@@ -138,7 +138,7 @@
     "menu.linux.label_restart_server": "重新啟動 Homebridge",
     "menu.linux.label_shutdown_server": "關閉 Homebridge",
     "menu.linux.label_terminal": "終端機",
-    "menu.linux.label_logs": "Log",
+    "menu.linux.label_logs": "Logs",
     "menu.tooltip_logout": "登出",
     "menu.tooltip_restart": "重新啟動",
     "menu.tooltip_user_accounts": "使用者帳號",

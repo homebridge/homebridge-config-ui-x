@@ -138,7 +138,7 @@
     "menu.linux.label_restart_server": "Restart serveru",
     "menu.linux.label_shutdown_server": "Vypnutí serveru",
     "menu.linux.label_terminal": "Terminál",
-    "menu.linux.label_logs": "Log",
+    "menu.linux.label_logs": "Logs",
     "menu.tooltip_logout": "Odhlásit",
     "menu.tooltip_restart": "Restartovat",
     "menu.tooltip_user_accounts": "Uživatelský účet",

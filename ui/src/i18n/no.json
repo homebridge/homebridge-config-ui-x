@@ -138,7 +138,7 @@
     "menu.linux.label_restart_server": "Restart serveren",
     "menu.linux.label_shutdown_server": "Slå av serveren",
     "menu.linux.label_terminal": "Terminal",
-    "menu.linux.label_logs": "Log",
+    "menu.linux.label_logs": "Logs",
     "menu.tooltip_logout": "Logg ut",
     "menu.tooltip_restart": "Omstart",
     "menu.tooltip_user_accounts": "Brukerkontoer",

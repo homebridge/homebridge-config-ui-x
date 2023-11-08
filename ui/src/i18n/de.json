@@ -138,7 +138,7 @@
     "menu.linux.label_restart_server": "Server neustarten",
     "menu.linux.label_shutdown_server": "Server herunterfahren",
     "menu.linux.label_terminal": "Konsole",
-    "menu.linux.label_logs": "Log",
+    "menu.linux.label_logs": "Logs",
     "menu.tooltip_logout": "Ausloggen",
     "menu.tooltip_restart": "Neustart",
     "menu.tooltip_user_accounts": "Benutzerkonten",

@@ -138,7 +138,7 @@
     "menu.linux.label_restart_server": "Redémarrer le Serveur",
     "menu.linux.label_shutdown_server": "Éteindre le Serveur",
     "menu.linux.label_terminal": "Terminal",
-    "menu.linux.label_logs": "Log",
+    "menu.linux.label_logs": "Logs",
     "menu.tooltip_logout": "Déconnexion",
     "menu.tooltip_restart": "Redémarrer",
     "menu.tooltip_user_accounts": "Comptes utilisateurs",

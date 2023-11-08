@@ -138,7 +138,7 @@
     "menu.linux.label_restart_server": "Riavvia sistema",
     "menu.linux.label_shutdown_server": "Arresta sistema",
     "menu.linux.label_terminal": "Terminale",
-    "menu.linux.label_logs": "Log",
+    "menu.linux.label_logs": "Logs",
     "menu.tooltip_logout": "Scollegati",
     "menu.tooltip_restart": "Riavvia",
     "menu.tooltip_user_accounts": "Account utente",

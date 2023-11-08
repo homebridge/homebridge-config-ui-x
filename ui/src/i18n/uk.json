@@ -138,7 +138,7 @@
     "menu.linux.label_restart_server": "Перезавантажити сервер",
     "menu.linux.label_shutdown_server": "Завершення роботи сервера",
     "menu.linux.label_terminal": "Термінал",
-    "menu.linux.label_logs": "Log",
+    "menu.linux.label_logs": "Logs",
     "menu.tooltip_logout": "Вихід",
     "menu.tooltip_restart": "Перезапуск",
     "menu.tooltip_user_accounts": "Користувачі",
