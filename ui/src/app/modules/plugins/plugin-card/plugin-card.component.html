@@ -13,7 +13,7 @@
         <i class="far fa-arrow-alt-circle-up"></i> {{ 'plugins.status_update_available' | translate }}
       </p>
       <p class="mb-0 primary-text" *ngIf="plugin.betaUpdateAvailable && !plugin.updateAvailable && !plugin.disabled">
-          <i class="far fa-arrow-alt-circle-up"></i> {{ 'plugins.status_update_beta_available' | translate }}
+        <i class="far fa-arrow-alt-circle-up"></i> {{ 'plugins.status_update_beta_available' | translate }}
       </p>
       <p class="mb-0 red-text" *ngIf="plugin.installedVersion && plugin.disabled">
         <i class="far fa-times-circle"></i> {{ 'plugins.status_disabled' | translate }}
@@ -136,7 +136,7 @@
                   (click)="$plugin.uninstallPlugin(plugin)">
             <i class="fas fa-fw fa-trash"></i> {{ 'plugins.button_uninstall' | translate }}
           </button>
-          <div class="dropdown-divider"></div>
+          <div class="dropdown-divider" *ngIf="plugin.links.homepage || plugin.links.npm"></div>
           <a ngbDropdownItem target="_blank" rel="noopener noreferrer" class="text-decoration-none"
             *ngIf="plugin.links.homepage || plugin.links.npm" [href]="plugin.links.homepage || plugin.links.npm">
             <i class="{{ plugin.links?.homepage?.includes('github.com') ? 'fa fa-lg fa-github' : 'fas fa-external-link-alt' }}"></i> Plugin Homepage

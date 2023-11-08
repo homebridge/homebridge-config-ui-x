@@ -38,7 +38,7 @@
           <i class="fas fa-cog fa-spin primary-text" *ngIf="!homebridgePkg.installedVersion"></i>
           <i class="fas fa-check-circle primary-text"
             *ngIf="homebridgePkg.installedVersion && !homebridgePkg.updateAvailable && !homebridgePkg.betaUpdateAvailable"></i>
-          <i class="fas fa-cloud-upload-alt primary-text"
+          <i class="fas fa-arrow-alt-circle-up primary-text"
             *ngIf="homebridgePkg.installedVersion && (homebridgePkg.updateAvailable || homebridgePkg.betaUpdateAvailable)"></i>
         </div>
         <div class="align-self-center">
@@ -77,7 +77,7 @@
     <div class="hb-status-item d-flex flex-row mr-4 pr-4">
       <div class="d-flex">
         <div class="mb-0 px-3 py-2 hb-status-icon">
-          <i class="fas fa-cloud-upload-alt primary-text" *ngIf="homebridgePluginStatus.length"></i>
+          <i class="fas fa-arrow-alt-circle-up primary-text" *ngIf="homebridgePluginStatus.length"></i>
           <i class="fas fa-check-circle primary-text" *ngIf="!homebridgePluginStatus.length"></i>
         </div>
         <div class="align-self-center">
