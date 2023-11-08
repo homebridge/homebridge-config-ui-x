@@ -25,19 +25,15 @@
            [href]="'https://www.npmjs.com/~' + plugin.author">@{{ plugin.author }}</a>
       </p>
       <p class="mb-0 grey-text text-right" *ngIf="plugin.verifiedPlugin">
-        <a href="javascript:void(0)" class="card-link pink-text text-decoration-none" *ngIf="plugin.funding"
+        <a href="javascript:void(0)" class="card-link pink-text text-decoration-none ml-3" *ngIf="plugin.funding"
            (click)="openFundingModal(plugin)">
-          <span class="card-link pink-text">
-            <i class="fas fa-fw fa-heart"></i>
-            <span class="d-none d-md-inline"> {{ 'plugins.donate.button_donate' | translate }}</span>
-          </span>
+          <i class="fas fa-fw fa-heart"></i>
+          <span class="d-none d-md-inline"> {{ 'plugins.donate.button_donate' | translate }}</span>
         </a>
-        <a class="card-link grey-text text-decoration-none" target="_blank" rel="noopener noreferrer"
+        <a class="card-link text-decoration-none green-text ml-3" target="_blank" rel="noopener noreferrer"
            href="https://github.com/homebridge/homebridge/wiki/verified-Plugins" ngbTooltip="@{{ plugin.author }}">
-          <span class="card-link green-text">
-            <i class="fas fa-fw fa-shield-alt"></i>
-            <span class="d-none d-md-inline"> Verified</span>
-          </span>
+          <i class="fas fa-fw fa-shield-alt"></i>
+          <span class="d-none d-md-inline"> Verified</span>
         </a>
       </p>
     </div>
@@ -53,24 +49,24 @@
     <a href="javascript:void(0)" class="card-link" *ngIf="plugin.installedVersion" (click)="$plugin.settings(plugin)">
       {{ 'plugins.button_settings' | translate | uppercase }}
     </a>
-    <a href="javascript:void(0)" class="card-link" *ngIf="plugin.updateAvailable && !plugin.betaUpdateAvailable" (click)="$plugin.updatePlugin(plugin)"
-       placement="bottom" ngbTooltip="{{'plugins.tooltip_update_plugin_to' | translate:plugin }}" container="body"
-       openDelay="150" [translate]="'plugins.button_update'" triggers="hover">
-       {{ 'plugins.button_update' | translate | uppercase }}
-    </a>
-    <a href="javascript:void(0)" class="card-link" *ngIf="!plugin.updateAvailable && plugin.betaUpdateAvailable" (click)="$plugin.updatePlugin(plugin, 'beta')"
-       placement="bottom" ngbTooltip="{{'plugins.tooltip_update_plugin_to' | translate:plugin }}" container="body"
-       openDelay="150" [translate]="'plugins.button_update'" triggers="hover">
-       {{ 'plugins.button_update' | translate | uppercase }}
-    </a>
     <a href="javascript:void(0)" class="card-link" *ngIf="!plugin.installedVersion"
        (click)="$plugin.installPlugin(plugin.name)">
       {{ 'plugins.button_install' | translate | uppercase }}
     </a>
 
     <div class="ml-auto">
+      <a href="javascript:void(0)" class="card-link text-decoration-none ml-3" *ngIf="plugin.updateAvailable && !plugin.betaUpdateAvailable" (click)="$plugin.updatePlugin(plugin)"
+         placement="bottom" ngbTooltip="{{'plugins.tooltip_update_plugin_to' | translate:plugin }}" container="body"
+         openDelay="150" [translate]="'plugins.button_update'" triggers="hover">
+        <i class="fas fa-fw fa-arrow-alt-circle-up primary-text"></i>
+      </a>
+      <a href="javascript:void(0)" class="card-link text-decoration-none ml-3" *ngIf="!plugin.updateAvailable && plugin.betaUpdateAvailable" (click)="$plugin.updatePlugin(plugin, 'beta')"
+         placement="bottom" ngbTooltip="{{'plugins.tooltip_update_plugin_to' | translate:plugin }}" container="body"
+         openDelay="150" [translate]="'plugins.button_update'" triggers="hover">
+        <i class="fas fa-fw fa-arrow-alt-circle-up primary-text"></i>
+      </a>
       <ng-container *ngIf="hasChildBridges">
-        <a href="javascript:void(0);" class="card-link grey-text" rel="noopener noreferrer"
+        <a href="javascript:void(0);" class="card-link grey-text ml-3" rel="noopener noreferrer"
            aria-label="Connect to HomeKit"
            *ngIf="!childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok'"
            ngbTooltip="{{'child_bridge.label_bridge_connect_to_homekit' | translate}}" placement="top" container="body"
