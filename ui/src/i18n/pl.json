@@ -140,7 +140,7 @@
     "menu.linux.label_shutdown_server": "Wyłącz serwer",
     "menu.linux.label_terminal": "Terminal",
     "menu.tooltip_logout": "Wyloguj",
-    "menu.tooltip_restart": "Uruchom ponownie",
+    "menu.tooltip_restart": "Zrestartuj serwer",
     "menu.tooltip_user_accounts": "Użytkownicy",
     "menu.tooltip_view_logs": "Pokaż Logi",
     "platform.docker.restart_container.message_run_with_restart_always": "Upewnij się, że uruchamiasz kontener Docker z parametrem <strong>--restart=always</strong>",
