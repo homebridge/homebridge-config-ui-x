@@ -25,18 +25,18 @@
            [href]="'https://www.npmjs.com/~' + plugin.author">@{{ plugin.author }}</a>
       </p>
       <p class="mb-0 grey-text text-right" *ngIf="plugin.verifiedPlugin">
-        <a href="javascript:void(0)" class="card-link pink-text" *ngIf="plugin.funding"
+        <a href="javascript:void(0)" class="card-link pink-text text-decoration-none" *ngIf="plugin.funding"
            (click)="openFundingModal(plugin)">
           <span class="card-link pink-text">
             <i class="fas fa-heart"></i>
-            {{ 'plugins.donate.button_donate' | translate }}
+            <span class="d-none d-md-inline"> {{ 'plugins.donate.button_donate' | translate }}</span>
           </span>
         </a>
-        <a class="card-link grey-text" target="_blank" rel="noopener noreferrer"
+        <a class="card-link grey-text text-decoration-none" target="_blank" rel="noopener noreferrer"
            href="https://github.com/homebridge/homebridge/wiki/verified-Plugins" ngbTooltip="@{{ plugin.author }}">
           <span class="card-link green-text">
             <i class="fas fa-shield-alt"></i>
-            <span class="d-none d-sm-inline"> Verified</span>
+            <span class="d-none d-md-inline"> Verified</span>
           </span>
         </a>
       </p>

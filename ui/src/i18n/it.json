@@ -342,7 +342,7 @@
     "status.widget.systeminfo.label_synology_package": "Pacchetto Synology",
     "status.widget.systeminfo.label_timezone": "Fuso orario",
     "status.widget.systeminfo.label_enabled": "Enabled",
-    "status.widget.systeminfo.label_disbled": "Disabled",
+    "status.widget.systeminfo.label_disabled": "Disabled",
     "status.widget.systeminfo.label_yes": "Yes",
     "status.widget.systeminfo.label_no": "No",
     "status.widget.title_manage_widget": "Gestisci widget",

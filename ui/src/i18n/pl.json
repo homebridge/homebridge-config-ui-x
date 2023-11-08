@@ -342,7 +342,7 @@
     "status.widget.systeminfo.label_synology_package": "Synology Package",
     "status.widget.systeminfo.label_timezone": "Strefa czasowa",
     "status.widget.systeminfo.label_enabled": "Włączony",
-    "status.widget.systeminfo.label_disbled": "Wyłączony",
+    "status.widget.systeminfo.label_disabled": "Wyłączony",
     "status.widget.systeminfo.label_yes": "Tak",
     "status.widget.systeminfo.label_no": "Nie",
     "status.widget.title_manage_widget": "Ustawienia widżetu",

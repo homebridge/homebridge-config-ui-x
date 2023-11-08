@@ -79,14 +79,16 @@
           <i class="fas fa-check-circle primary-text" *ngIf="!homebridgePluginStatus.length"></i>
         </div>
         <div class="align-self-center">
-          <span [translate]="'menu.label_plugins'">Plugins</span>
+          <a href="javascript:void(0)" routerLink="/plugins" class="card-link card-link-title">
+          {{ 'menu.label_plugins' | translate }}
+          </a>
           <br>
-          <a routerLink="/plugins" class="primary-text" *ngIf="homebridgePluginStatus.length">
+          <span class="grey-text" *ngIf="homebridgePluginStatus.length">
             {{ homebridgePluginStatus.length }} {{ homebridgePluginStatus.length === 1 ? ('status.plugin_out_of_date' | translate) : ('status.plugins_out_of_date' | translate) }}
-          </a>
-          <a class="grey-text card-link" routerLink="/plugins" *ngIf="!homebridgePluginStatus.length">
+          </span>
+          <span class="grey-text" *ngIf="!homebridgePluginStatus.length">
             {{ 'status.homebridge.label_up_to_date' | translate }}
-          </a>
+          </span>
         </div>
       </div>
     </div>

@@ -20,6 +20,11 @@ export class DonateModalComponent implements OnInit {
       this.activeModal.close();
     }
 
+    // Override author for homebridge-config-ui-x
+    if (this.plugin.name === 'homebridge-config-ui-x') {
+      this.plugin.author = 'oznu';
+    }
+
     // normalise the different funding attribute formats
     if (Array.isArray(this.plugin.funding)) {
       this.fundingOptions = this.plugin.funding.map((option) => {
