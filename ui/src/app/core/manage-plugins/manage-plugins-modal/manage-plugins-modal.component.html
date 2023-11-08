@@ -16,7 +16,9 @@
         bridges, you can close this modal and restart these instead.
       </p>
       <div class="text-center">
-        <button type="button" class="btn btn-primary" (click)="onRestartChildBridgeClick(item._bridge?.username)"
+        <button type="button" class="btn btn-primary"
+          *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(pluginName)"
+          (click)="onRestartChildBridgeClick(item._bridge?.username)"
           [translate]="'plugins.manage.child_bridge_button_restart_now'">Restart Child Bridge Now</button>
         <button type="button" class="btn btn-primary" (click)="onRestartHomebridgeClick()"
           [translate]="'plugins.manage.button_restart_now'">Restart Homebridge Now</button>
