@@ -26,6 +26,7 @@
 .dropdown-menu {
   @media screen and (max-width: 600px) {
     position: fixed !important;
-    top: 28px;
+    top: 50px;
+    max-width: 70%
   }
 }
