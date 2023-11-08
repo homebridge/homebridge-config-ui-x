@@ -139,7 +139,7 @@
           <div class="dropdown-divider" *ngIf="plugin.links.homepage || plugin.links.npm"></div>
           <a ngbDropdownItem target="_blank" rel="noopener noreferrer" class="text-decoration-none"
             *ngIf="plugin.links.homepage || plugin.links.npm" [href]="plugin.links.homepage || plugin.links.npm">
-            <i class="{{ !plugin.links.homepage.startsWith('https://github.com/') ? 'fab fa-fw fa-github' : 'fab fa-fw fa-npm' }}"></i> Plugin Homepage
+            <i class="{{ plugin.links.homepage.startsWith('https://github.com/') ? 'fab fa-fw fa-github' : 'fab fa-fw fa-npm' }}"></i> Plugin Homepage
           </a>
         </div>
       </span>
