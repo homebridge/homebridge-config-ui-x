@@ -11,7 +11,9 @@
           }"></i>
         </div>
         <div class="align-self-center">
-            <span [translate]="'menu.label_status'">Status</span>
+          <a href="javascript:void(0)" routerLink="/logs" class="card-link card-link-title">
+            {{ 'menu.label_status' | translate }}
+          </a>
           <br>
           <span class="grey-text" *ngIf="homebridgeStatus.status === 'pending'"
             [translate]="'status.services.label_starting'">Starting...</span>
@@ -80,7 +82,7 @@
         </div>
         <div class="align-self-center">
           <a href="javascript:void(0)" routerLink="/plugins" class="card-link card-link-title">
-          {{ 'menu.label_plugins' | translate }}
+            {{ 'menu.label_plugins' | translate }}
           </a>
           <br>
           <span class="grey-text" *ngIf="homebridgePluginStatus.length">
