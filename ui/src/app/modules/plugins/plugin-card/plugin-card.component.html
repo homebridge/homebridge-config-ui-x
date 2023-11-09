@@ -5,19 +5,19 @@
       <p class="mb-0 primary-text"
         *ngIf="plugin.installedVersion && !plugin.updateAvailable && !plugin.betaUpdateAvailable && !plugin.disabled"
         [translate]="'plugins.status_installed'">
-        <i class="far fa-check-circle-o"></i> Installed
+        <i class="far fa-fw fa-circle-check"></i> Installed
       </p>
       <p class="mb-0 grey-text" *ngIf="!plugin.installedVersion" [translate]="'plugins.status_not_installed'">
-        <i class="far fa-circle-o"></i> Not Installed
+        <i class="far fa-fw fa-circle"></i> Not Installed
       </p>
       <p class="mb-0 primary-text" *ngIf="plugin.updateAvailable && !plugin.betaUpdateAvailable && !plugin.disabled">
-        <i class="far fa-arrow-alt-circle-up"></i> {{ 'plugins.status_update_available' | translate }}
+        <i class="far fa-fw fa-arrow-alt-circle-up"></i> {{ 'plugins.status_update_available' | translate }}
       </p>
       <p class="mb-0 primary-text" *ngIf="plugin.betaUpdateAvailable && !plugin.updateAvailable && !plugin.disabled">
-        <i class="far fa-arrow-alt-circle-up"></i> {{ 'plugins.status_update_beta_available' | translate }}
+        <i class="far fa-fw fa-arrow-alt-circle-up"></i> {{ 'plugins.status_update_beta_available' | translate }}
       </p>
       <p class="mb-0 red-text" *ngIf="plugin.installedVersion && plugin.disabled">
-        <i class="far fa-times-circle"></i> {{ 'plugins.status_disabled' | translate }}
+        <i class="far fa-fw fa-times-circle"></i> {{ 'plugins.status_disabled' | translate }}
       </p>
     </div>
     <div class="">

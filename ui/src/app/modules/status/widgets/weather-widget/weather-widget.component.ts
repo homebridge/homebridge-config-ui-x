@@ -90,9 +90,9 @@ export class WeatherWidgetComponent implements OnInit, OnDestroy {
   getWeatherIconClass(): string {
     switch (this.currentWeather.weather[0].icon) {
       case '01d': // clear day
-        return 'far fa-sun';
+        return 'far fa-fw fa-sun';
       case '01n': // clear night
-        return 'far fa-moon';
+        return 'far fa-fw fa-moon';
       case '02d': // few clouds day
         return 'fas fa-fw fa-cloud-sun';
       case '02n': // few clouds night

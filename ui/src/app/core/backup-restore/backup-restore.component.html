@@ -47,7 +47,7 @@
 
   <div class="modal-footer" *ngIf="!restoreStarted || restoreFailed === true">
     <button type="button" class="btn btn-elegant mr-auto" (click)="openScheduledBackups()">
-      <i class="far fa-clock"></i> {{ 'backup.title_scheduled_backups' | translate }}
+      <i class="far fa-fw fa-clock"></i> {{ 'backup.title_scheduled_backups' | translate }}
     </button>
     <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')"
       [translate]="'form.button_close'" [disabled]="clicked">Close</button>
