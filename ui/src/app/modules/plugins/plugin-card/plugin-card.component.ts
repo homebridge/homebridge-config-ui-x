@@ -12,6 +12,7 @@ import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.s
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
 import { DonateModalComponent } from '@/app/modules/plugins/donate-modal/donate-modal.component';
+import { InformationComponent } from '@/app/core/components/information/information.component';
 
 @Component({
   selector: 'app-plugin-card',
@@ -81,9 +82,17 @@ export class PluginCardComponent implements OnInit {
     this._childBridges = childBridges;
   }
 
-  openFundingModal(plugin) {
+  openFundingModal(plugin: any) {
     const ref = this.$modal.open(DonateModalComponent);
     ref.componentInstance.plugin = plugin;
+  }
+
+  openVerifiedModal() {
+    const ref = this.$modal.open(InformationComponent);
+    ref.componentInstance.title = this.$translate.instant('plugins.manage.modal_verified_title');
+    ref.componentInstance.message = this.$translate.instant('plugins.manage.modal_verified_message');
+    ref.componentInstance.ctaButtonLabel = this.$translate.instant('plugins.manage.modal_verified_cta');
+    ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/homebridge/wiki/verified-Plugins';
   }
 
   disablePlugin(plugin) {
