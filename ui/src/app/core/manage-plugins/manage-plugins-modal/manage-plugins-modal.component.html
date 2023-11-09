@@ -21,7 +21,7 @@
           (click)="onRestartChildBridgeClick(item._bridge?.username)"
           [translate]="'plugins.manage.child_bridge_button_restart_now'">Restart Child Bridge Now</button>
         <button type="button" class="btn btn-primary" (click)="onRestartHomebridgeClick()"
-          [translate]="'plugins.manage.button_restart_now'">Restart Homebridge Now</button>
+          [translate]="'plugins.manage.button_restart_now'">Restart Homebridge</button>
         <button *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(pluginName)" type="button"
           class="btn btn-primary" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')"
           [translate]="'form.button_close'">Close</button>
