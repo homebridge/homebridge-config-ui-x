@@ -80,6 +80,8 @@
     "child_bridge.label_bridge_restart_child_bridges": "Restart Child Bridges",
     "child_bridge.label_bridge_settings": "Bridge Instellingen",
     "child_bridge.label_child_bridges": "Child Bridges",
+    "child_bridge.label_child_start": "Start child bridge",
+    "child_bridge.label_child_stop": "Stop child bridge",
     "child_bridge.message_about": "Homebridge maakt het mogelijk om uw plugin platform of accessoire als geïsoleerde child bridge. Dit kan de algehele response en betrouwbaarheid van Homebridge verbeteren.",
     "child_bridge.message_child_bridges_must_be_paired_separately": "Ieder child bridge platform of accessoire moet apart gepaired worden met HomeKit.",
     "child_bridge.message_must_configure_plugin_first": "U moet deze plugin configureren voordat U de bridge instellingen kunt instellen.",
