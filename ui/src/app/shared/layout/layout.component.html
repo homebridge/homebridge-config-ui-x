@@ -98,7 +98,7 @@
               {{ 'menu.linux.label_shutdown_server' | translate }}
             </a>
             <a href="javascript:void(0)" class="dropdown-item" (click)="$auth.logout()" *ngIf="$settings.formAuth">
-              {{ 'menu.tooltip_logout' | translate }}
+              {{ 'menu.tooltip_logout' | translate }} - {{ $auth.user.username }}
             </a>
           </div>
         </li>

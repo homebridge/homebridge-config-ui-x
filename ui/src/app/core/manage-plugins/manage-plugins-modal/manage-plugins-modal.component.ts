@@ -237,9 +237,12 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
     this.io.request('get-homebridge-child-bridge-status').subscribe((data) => {
       this.childBridges = data;
     });
+    return this.childBridges;
   }
 
   public async onRestartChildBridgeClick(bridge) {
+    const childBridges = this.getChildBridgeMetadata();
+    const childBridge = childBridges.find((x) => x.username === bridge.username);
     bridge.restartInProgress = true;
     try {
       await this.io.request('restart-child-bridge', bridge.username).toPromise();
