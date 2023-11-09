@@ -23,10 +23,18 @@
   font-size: 20px;
 }
 
+.navbar .dropdown-menu {
+  margin-top: 15px !important;
+}
+
 .dropdown-menu {
   @media screen and (max-width: 600px) {
     position: fixed !important;
     top: 50px;
     max-width: 70%
   }
+}
+
+a:hover {
+  text-decoration: none !important;
 }

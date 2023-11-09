@@ -20,11 +20,11 @@
     }
 
     .dropdown-menu {
-      background-color: $secondaryBackground;
+      background-color: #222222;
     }
 
     .dropdown-divider {
-      border-top: 1px solid #555555;
+      border-top: 1px solid #444444;
     }
 
     .navbar .dropdown-menu a:not(.active) {
@@ -33,7 +33,7 @@
 
     .dropdown-item:hover,
     .dropdown-item:focus {
-      background-color: #555555;
+      background-color: #444444;
     }
 
     .dropdown-item,
