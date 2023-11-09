@@ -178,7 +178,7 @@
     "plugins.donate.message_learn_more": "למה יותר על לינקי תרומה לתוספים",
     "plugins.donate.tile_donate_to": "תרום ל {{ author }}",
     "plugins.manage.button_restart_now": "אתחל הומברידג' עכשיו",
-    "plugins.manage.child_bridge_button_restart_now": "Restart Child Bridge Now",
+    "plugins.manage.child_bridge_button_restart_now": "Restart Child Bridges",
     "plugins.manage.disable": "לא פעיל",
     "plugins.manage.enable": "מאופשר",
     "plugins.manage.json_config": "הגדרות ג'סון",

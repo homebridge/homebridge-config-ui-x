@@ -178,7 +178,7 @@
     "plugins.donate.message_learn_more": "Eklentilerdeki bağış bağlantıları hakkkında daha fazla bilgi edinin",
     "plugins.donate.tile_donate_to": "{{ author }} Kişisine Bağış Yap.",
     "plugins.manage.button_restart_now": "Homebridge'i Şimdi Yeniden Başlat",
-    "plugins.manage.child_bridge_button_restart_now": "Restart Child Bridge Now",
+    "plugins.manage.child_bridge_button_restart_now": "Restart Child Bridges",
     "plugins.manage.disable": "Devre Dışı Bırak",
     "plugins.manage.enable": "Etkinleştir",
     "plugins.manage.json_config": "JSON Config",

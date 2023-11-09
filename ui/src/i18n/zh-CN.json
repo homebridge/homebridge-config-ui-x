@@ -178,7 +178,7 @@
     "plugins.donate.message_learn_more": "了解更多关于插件页面的打赏链接",
     "plugins.donate.tile_donate_to": "打赏给 {{ author }}",
     "plugins.manage.button_restart_now": "立即重启 Homebridge",
-    "plugins.manage.child_bridge_button_restart_now": "Restart Child Bridge Now",
+    "plugins.manage.child_bridge_button_restart_now": "Restart Child Bridges",
     "plugins.manage.disable": "Disable",
     "plugins.manage.enable": "Enable",
     "plugins.manage.json_config": "JSON Config",

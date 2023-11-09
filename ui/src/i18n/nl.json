@@ -178,7 +178,7 @@
     "plugins.donate.message_learn_more": "Meer informatie over donatie links van plugins",
     "plugins.donate.tile_donate_to": "Doneer aan {{ author }}",
     "plugins.manage.button_restart_now": "Herstart Homebridge Nu",
-    "plugins.manage.child_bridge_button_restart_now": "Restart Child Bridge Now",
+    "plugins.manage.child_bridge_button_restart_now": "Restart Child Bridges",
     "plugins.manage.disable": "Deactiveren",
     "plugins.manage.enable": "Activeren",
     "plugins.manage.json_config": "JSON Config",

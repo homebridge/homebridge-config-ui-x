@@ -178,7 +178,7 @@
     "plugins.donate.message_learn_more": "Preberite več o povezavah za donacije vtičnikov",
     "plugins.donate.tile_donate_to": "Doniraj {{ author }}",
     "plugins.manage.button_restart_now": "Znova zaženite Homebridge",
-    "plugins.manage.child_bridge_button_restart_now": "Restart Child Bridge Now",
+    "plugins.manage.child_bridge_button_restart_now": "Restart Child Bridges",
     "plugins.manage.disable": "Onemogoči",
     "plugins.manage.enable": "Omogoči",
     "plugins.manage.json_config": "JSON Config",

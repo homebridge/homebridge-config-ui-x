@@ -178,7 +178,7 @@
     "plugins.donate.message_learn_more": "了解更多 Plugin 的贊助連結",
     "plugins.donate.tile_donate_to": "贊助 {{ author }}",
     "plugins.manage.button_restart_now": "立即重新啟動 Homebridge",
-    "plugins.manage.child_bridge_button_restart_now": "Restart Child Bridge Now",
+    "plugins.manage.child_bridge_button_restart_now": "Restart Child Bridges",
     "plugins.manage.disable": "關閉",
     "plugins.manage.enable": "開啟",
     "plugins.manage.json_config": "JSON Config",
