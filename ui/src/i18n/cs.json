@@ -175,7 +175,7 @@
     "plugins.button_update": "Aktualizovat",
     "plugins.button_upgrade": "Upgradovat",
     "plugins.donate.button_donate": "Podpořit",
-    "plugins.donate.message_learn_more": "Zjistěte více o odkazech podpory na pluginech.",
+    "plugins.donate.message_learn_more": "Zjistěte více o odkazech podpory na pluginech",
     "plugins.donate.tile_donate_to": "Podpořit {{ author }}",
     "plugins.manage.button_restart_now": "Restartujte Homebridge nyní",
     "plugins.manage.child_bridge_button_restart_now": "Restart Child Bridge Now",

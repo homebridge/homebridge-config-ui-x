@@ -175,7 +175,7 @@
     "plugins.button_update": "Oppdatering",
     "plugins.button_upgrade": "oppgradering",
     "plugins.donate.button_donate": "Donate",
-    "plugins.donate.message_learn_more": "Learn more about donation links on plugins.",
+    "plugins.donate.message_learn_more": "Learn more about donation links on plugins",
     "plugins.donate.tile_donate_to": "Donate to {{ author }}",
     "plugins.manage.button_restart_now": "Starte Homebridge på nytt nå",
     "plugins.manage.child_bridge_button_restart_now": "Restart Child Bridge Now",

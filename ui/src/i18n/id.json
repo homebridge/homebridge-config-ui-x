@@ -175,7 +175,7 @@
     "plugins.button_update": "Pembaruan",
     "plugins.button_upgrade": "Peningkatan",
     "plugins.donate.button_donate": "Donasi",
-    "plugins.donate.message_learn_more": "Pelajari lebih lanjut tentang link donasi plugin.",
+    "plugins.donate.message_learn_more": "Pelajari lebih lanjut tentang link donasi plugin",
     "plugins.donate.tile_donate_to": "Donasi ke {{ author }}",
     "plugins.manage.button_restart_now": "Mengulang Kembali Homebridge Sekarang",
     "plugins.manage.child_bridge_button_restart_now": "Restart Child Bridge Now",

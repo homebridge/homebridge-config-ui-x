@@ -175,7 +175,7 @@
     "plugins.button_update": "Actualizar",
     "plugins.button_upgrade": "Actualizar",
     "plugins.donate.button_donate": "Donar",
-    "plugins.donate.message_learn_more": "Aprender más sobre los enlaces de donación de los plugins.",
+    "plugins.donate.message_learn_more": "Aprender más sobre los enlaces de donación de los plugins",
     "plugins.donate.tile_donate_to": "Donar a {{ author }}",
     "plugins.manage.button_restart_now": "Reiniciar Homebridge ahora",
     "plugins.manage.child_bridge_button_restart_now": "Restart Child Bridge Now",
