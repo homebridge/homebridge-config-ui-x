@@ -81,6 +81,8 @@
     "child_bridge.label_bridge_restart_child_bridges": "Reiniciar Pontes Secundárias",
     "child_bridge.label_bridge_settings": "Definições da Ponte",
     "child_bridge.label_child_bridges": "Pontes Secundárias",
+    "child_bridge.label_child_start": "Start child bridge",
+    "child_bridge.label_child_stop": "Stop child bridge",
     "child_bridge.message_about": "O Homebridge permite que possa executar uma plataforma de um plugin ou um acessório como uma ponte secundária isolada. Isto pode melhorar a fiabilidade e o tempo de resposta do Homebridge.",
     "child_bridge.message_child_bridges_must_be_paired_separately": "É necessário emparelhar separadamente no HomeKit cada plataforma ou acessório da ponte secundária.",
     "child_bridge.message_must_configure_plugin_first": "É necessário configurar este plugin antes de gerir as definições da ponte.",

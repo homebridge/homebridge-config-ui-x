@@ -81,6 +81,8 @@
     "child_bridge.label_bridge_restart_child_bridges": "Restart Child Bridges",
     "child_bridge.label_bridge_settings": "Bridge 設定",
     "child_bridge.label_child_bridges": "子 Bridges",
+    "child_bridge.label_child_start": "Start child bridge",
+    "child_bridge.label_child_stop": "Stop child bridge",
     "child_bridge.message_about": "Homebridge 允許以獨立的子 Bridge 模式執行 Plugin 平台或配件，將有助於改善 Homebridge 的回應速度與穩定度。",
     "child_bridge.message_child_bridges_must_be_paired_separately": "每一個子 Bridge 平台或配件將需要分別與 HomeKit 進行配對。",
     "child_bridge.message_must_configure_plugin_first": "於管理該 Bridge 設定之前，需要先設定此 Plugin。",
