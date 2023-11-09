@@ -41,8 +41,6 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
 
   public onlineUpdateOk: boolean;
 
-  public childBridges = [];
-
   constructor(
     public activeModal: NgbActiveModal,
     public $toastr: ToastrService,
@@ -233,16 +231,26 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
     this.activeModal.close();
   }
 
-  getChildBridgeMetadata() {
-    this.io.request('get-homebridge-child-bridge-status').subscribe((data) => {
-      this.childBridges = data;
+
+  public getChildBridgeMetadata(): any[] {
+    const childBridges: any[] = [];
+    this.$api.get('/plugins').subscribe((data: any[]) => {
+      data.forEach((plugin) => {
+        if (plugin._bridge) {
+          childBridges.push({
+            pluginName: plugin.name,
+            username: plugin._bridge.username,
+            restartInProgress: false,
+          });
+        }
+      });
     });
-    return this.childBridges;
+    return childBridges;
   }
 
-  public async onRestartChildBridgeClick(pluginName: string) {
+  public async onRestartChildBridgeClick() {
     const childBridges = this.getChildBridgeMetadata();
-    const bridge = childBridges.find((x) => x.pluginName === pluginName);
+    const bridge = childBridges.find((x) => x.pluginName === this.pluginName);
     bridge.restartInProgress = true;
     try {
       await this.io.request('restart-child-bridge', bridge.username).toPromise();
