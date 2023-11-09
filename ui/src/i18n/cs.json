@@ -1,5 +1,5 @@
 {
-    "language": "Czech, Czeski",    
+    "--language": "Czech, Czeski",
     "accessories.button_add_room": "Přidat místnost",
     "accessories.button_create_room": "Upravit místnost",
     "accessories.button_toggle_hidden": "Zobrazit/schovat skryté",
