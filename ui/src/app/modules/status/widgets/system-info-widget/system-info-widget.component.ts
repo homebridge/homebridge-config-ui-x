@@ -49,7 +49,9 @@ export class SystemInfoWidgetComponent implements OnInit {
     ref.componentInstance.title = this.$translate.instant('status.widget.systeminfo.modal_glibc_title');
     ref.componentInstance.message = this.$translate.instant('status.widget.systeminfo.modal_glibc_message');
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('status.widget.systeminfo.modal_glibc_cta');
-    ref.componentInstance.ctaButtonLink = 'https://homebridge.io/w/JJSun';
+
+    // eslint-disable-next-line max-len
+    ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/homebridge-config-ui-x/wiki/Troubleshooting/#error---update-node---your-version-of-linux-does-not-meet-the-glibc-version';
   }
 
   serviceModeModal() {
@@ -57,7 +59,8 @@ export class SystemInfoWidgetComponent implements OnInit {
     ref.componentInstance.title = this.$translate.instant('status.widget.systeminfo.modal_servicemode_title');
     ref.componentInstance.message = this.$translate.instant('status.widget.systeminfo.modal_servicemode_message');
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('status.widget.systeminfo.modal_servicemode_cta');
-    ref.componentInstance.ctaButtonLink
-      = 'https://github.com/homebridge/homebridge-config-ui-x/wiki/How-To-Swap-From-Standalone-Mode-to-Service-Mode';
+
+    // eslint-disable-next-line max-len
+    ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/homebridge-config-ui-x/wiki/How-To-Swap-From-Standalone-Mode-to-Service-Mode';
   }
 }
