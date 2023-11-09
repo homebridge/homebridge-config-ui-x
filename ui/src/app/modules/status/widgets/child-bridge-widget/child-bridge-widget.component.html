@@ -26,7 +26,7 @@
 
           <a *ngIf="!bridge.restartInProgress" href="javascript:void(0)" (click)="restartChildBridge(bridge)"
             class="grey-text" ngbTooltip="{{'menu.tooltip_restart' | translate}}" container="body" openDelay="150"
-            [placement]="['right', 'top', 'bottom']">
+            [placement]="['left', 'top', 'bottom']">
             <i class="fa-fw icon-button fas fa-fw fa-power-off"></i>
           </a>
           <i *ngIf="bridge.restartInProgress" class="fas fa-fw fa-fw fa-spinner fa-pulse"></i>
