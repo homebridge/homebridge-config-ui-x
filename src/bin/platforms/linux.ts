@@ -142,7 +142,7 @@ export class LinuxInstaller extends BasePlatform {
       '/usr/local/lib/node_modules',
       '/usr/lib/node_modules'
     ].includes(path.dirname(process.env.UIX_BASE_PATH))) {
-      // systemd has a 90 second default timeout in the pre-start jobs
+      // systemd has a 90-second default timeout in the pre-start jobs
       // terminate this task after 60 seconds to be safe
       setTimeout(() => {
         process.exit(0);
@@ -553,7 +553,7 @@ export class LinuxInstaller extends BasePlatform {
   }
 
   /**
-   * Allows the homebridge user to shutdown and restart the server from the UI
+   * Allows the homebridge user to shut down and restart the server from the UI
    * There is no need for full sudo access when running using hb-service
    */
   private setupSudo() {
@@ -689,7 +689,7 @@ export class LinuxInstaller extends BasePlatform {
   }
 
   /**
-   * Setup the run-parts path and scripts
+   * Set up the run-parts path and scripts
    * This allows users to define their own scripts to run before Homebridge starts/restarts
    * The default script will ensure the homebridge storage path has the correct permissions each time Homebridge starts
    */

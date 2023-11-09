@@ -72,8 +72,8 @@ describe('ServerController (e2e)', () => {
     await fs.remove(accessoriesPath);
 
     // copy mock accessories and persist
-    await fs.copy(path.resolve(__dirname, '../mocks', 'persist'), persistPath, { recursive: true });
-    await fs.copy(path.resolve(__dirname, '../mocks', 'accessories'), accessoriesPath, { recursive: true });
+    await fs.copy(path.resolve(__dirname, '../mocks', 'persist'), persistPath);
+    await fs.copy(path.resolve(__dirname, '../mocks', 'accessories'), accessoriesPath);
   });
 
   it('PUT /server/restart', async () => {

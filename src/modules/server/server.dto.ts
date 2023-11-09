@@ -20,3 +20,4 @@ export class HomebridgeNetworkInterfacesDto {
   @ApiProperty()
     adapters: string[];
 }
+
