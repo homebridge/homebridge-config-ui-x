@@ -240,9 +240,9 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
     return this.childBridges;
   }
 
-  public async onRestartChildBridgeClick(bridge) {
+  public async onRestartChildBridgeClick(pluginName: string) {
     const childBridges = this.getChildBridgeMetadata();
-    const childBridge = childBridges.find((x) => x.username === bridge.username);
+    const bridge = childBridges.find((x) => x.pluginName === pluginName);
     bridge.restartInProgress = true;
     try {
       await this.io.request('restart-child-bridge', bridge.username).toPromise();
