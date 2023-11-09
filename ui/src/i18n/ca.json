@@ -354,7 +354,7 @@
     "status.widget.systeminfo.modal_glibc_message": "This message indicates that your operating system does not support newer versions of Node.js. To resolve this and be able to install updated versions of Node.js in the future, you will need to update your operating system to a more recent version.",
     "status.widget.systeminfo.modal_glibc_title": "Actualització del OS",
     "status.widget.systeminfo.modal_servicemode_cta": "Més informació",
-    "status.widget.systeminfo.modal_servicemode_message": "Text to write...",
+    "status.widget.systeminfo.modal_servicemode_message": "Standalone mode is no longer recommended. Setting up Homebridge and Homebridge UI with hb-service has the same benefits of standalone mode but is much easier to setup and maintain.",
     "status.widget.systeminfo.modal_servicemode_title": "Service Mode",
     "status.widget.title_manage_widget": "Gestionar widget",
     "status.widget.uptime.label_process": "Procés",
