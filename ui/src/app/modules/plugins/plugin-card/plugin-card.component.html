@@ -3,12 +3,11 @@
   <div class="d-flex flex-row justify-content-between">
     <div class="">
       <p class="mb-0 primary-text"
-        *ngIf="plugin.installedVersion && !plugin.updateAvailable && !plugin.betaUpdateAvailable && !plugin.disabled"
-        [translate]="'plugins.status_installed'">
-        <i class="far fa-fw fa-circle-check"></i> Installed
+        *ngIf="plugin.installedVersion && !plugin.updateAvailable && !plugin.betaUpdateAvailable && !plugin.disabled">
+        <i class="far fa-fw fa-circle-check"></i> {{ 'plugins.status_installed' | translate }}
       </p>
-      <p class="mb-0 grey-text" *ngIf="!plugin.installedVersion" [translate]="'plugins.status_not_installed'">
-        <i class="far fa-fw fa-circle"></i> Not Installed
+      <p class="mb-0 grey-text" *ngIf="!plugin.installedVersion">
+        <i class="far fa-fw fa-circle"></i> {{ 'plugins.status_not_installed' | translate }}
       </p>
       <p class="mb-0 primary-text" *ngIf="plugin.updateAvailable && !plugin.betaUpdateAvailable && !plugin.disabled">
         <i class="far fa-fw fa-arrow-alt-circle-up"></i> {{ 'plugins.status_update_available' | translate }}
@@ -90,7 +89,6 @@
           <i class="fa-fw icon-button fas fa-fw fa-power-off"></i>
         </a>
         <i *ngIf="childBridgeRestartInProgress" class="ml-3 grey-text fas fa-fw fa-fw fa-spinner fa-pulse"></i>
-
       </ng-container>
 
       <span ngbDropdown placement="bottom-right top-right" class="d-inline-block ml-3">

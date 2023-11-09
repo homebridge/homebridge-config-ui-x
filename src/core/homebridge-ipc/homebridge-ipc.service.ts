@@ -60,7 +60,7 @@ export class HomebridgeIpcService extends EventEmitter {
         reject('The Homebridge service did not respond');
       }, 3000);
 
-      const listener = (data) => {
+      const listener = (data: any) => {
         clearTimeout(actionTimeout);
         resolve(data);
       };

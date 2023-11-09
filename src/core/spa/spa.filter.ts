@@ -11,7 +11,7 @@ import * as fs from 'fs-extra';
 
 @Catch(NotFoundException)
 export class SpaFilter implements ExceptionFilter {
-  catch(exception: HttpException, host: ArgumentsHost) {
+  catch(_exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const req = ctx.getRequest();
     const res = ctx.getResponse();

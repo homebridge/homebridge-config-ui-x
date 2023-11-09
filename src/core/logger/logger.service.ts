@@ -13,28 +13,28 @@ export class Logger extends ConsoleLogger {
     }
   }
 
-  log(...args) {
+  log(...args: any[]) {
     console.log(
       this.prefix,
       ...args,
     );
   }
 
-  error(...args) {
+  error(...args: any[]) {
     console.error(
       this.prefix,
       ...args.map(x => color.red(x)),
     );
   }
 
-  warn(...args) {
+  warn(...args: any[]) {
     console.warn(
       this.prefix,
       ...args.map(x => color.yellow(x)),
     );
   }
 
-  debug(...args) {
+  debug(...args: any[]) {
     if (process.env.UIX_DEBUG_LOGGING === '1') {
       console.debug(
         this.prefix,
@@ -43,7 +43,7 @@ export class Logger extends ConsoleLogger {
     }
   }
 
-  verbose(...args) {
+  verbose(...args: any[]) {
     console.debug(
       this.prefix,
       ...args,
