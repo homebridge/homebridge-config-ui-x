@@ -20,6 +20,11 @@ export class DonateModalComponent implements OnInit {
       this.activeModal.close();
     }
 
+    // Override author for homebridge-config-ui-x
+    if (this.plugin.name === 'homebridge-config-ui-x') {
+      this.plugin.author = 'oznu';
+    }
+
     // normalise the different funding attribute formats
     if (Array.isArray(this.plugin.funding)) {
       this.fundingOptions = this.plugin.funding.map((option) => {
@@ -55,16 +60,16 @@ export class DonateModalComponent implements OnInit {
   getIconClass(type: string) {
     switch (type.toLowerCase()) {
       case 'paypal':
-        return 'fab fa-paypal';
+        return 'fab fa-fw fa-paypal';
       case 'github':
-        return 'fab fa-github';
+        return 'fab fa-fw fa-github';
       case 'patreon':
-        return 'fab fa-patreon';
+        return 'fab fa-fw fa-patreon';
       case 'kofi':
       case 'ko-fi':
-        return 'fas fa-coffee';
+        return 'fas fa-fw fa-fw fa-coffee';
       default:
-        return 'fas fa-link';
+        return 'fas fa-fw fa-fw fa-link';
     }
   }
 

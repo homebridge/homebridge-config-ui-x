@@ -1,18 +1,12 @@
+import * as child_process from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
-import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
-
-import { HomebridgeServiceHelper } from '../hb-service';
 import { BasePlatform } from '../base-platform';
 
 export class DarwinInstaller extends BasePlatform {
   private user: string;
-
-  constructor(hbService: HomebridgeServiceHelper) {
-    super(hbService);
-  }
 
   private get plistName() {
     return `com.${this.hbService.serviceName.toLowerCase()}.server`;
@@ -220,7 +214,7 @@ export class DarwinInstaller extends BasePlatform {
   }
 
   /**
-   * Resolves the target user home directory when running the install command as SUDO
+   * Resolves the target user home directory when running the installation command as SUDO
    */
   private getUserHomeDir() {
     try {
@@ -259,7 +253,7 @@ export class DarwinInstaller extends BasePlatform {
     const downloadUrl = `https://nodejs.org/dist/${job.target}/node-${job.target}-darwin-${process.arch}.tar.gz`;
     const targetPath = path.dirname(path.dirname(process.execPath));
 
-    // only allow updates when installed using the offical Node.js installer / Homebridge package
+    // only allow updates when installed using the official Node.js installer / Homebridge package
     if (targetPath !== '/usr/local' && !targetPath.startsWith('/Library/Application Support/Homebridge/node-')) {
       this.hbService.logger(`Cannot update Node.js on your system. Non-standard installation path detected: ${targetPath}`, 'fail');
       process.exit(1);

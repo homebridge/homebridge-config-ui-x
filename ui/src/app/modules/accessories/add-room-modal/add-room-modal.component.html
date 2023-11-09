@@ -11,7 +11,7 @@
       <div class="alert alert-info" role="alert" [translate]="'accessories.message_rooms_not_appear_in_homekit'">
       </div>
       <div class="md-form">
-        <i class="fas fa-home prefix grey-text"></i>
+        <i class="fas fa-fw fa-home prefix grey-text"></i>
         <input type="text" id="form-name" autofocus class="form-control pl-0 pr-0" [(ngModel)]="roomName"
           [ngModelOptions]="{standalone: true}" (keyup.enter)="activeModal.close(roomName)">
         <label for="form-name" [translate]="'accessories.label_room_name'">Room Name</label>

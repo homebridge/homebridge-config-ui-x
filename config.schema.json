@@ -2,7 +2,7 @@
   "pluginAlias": "config",
   "pluginType": "platform",
   "singular": true,
-  "footerDisplay": "[REST API Documentation <i class='fas fa-external-link-alt'></i>](/swagger)",
+  "footerDisplay": "[REST API Documentation <i class='fas fa-fw fa-external-link-alt'></i>](/swagger)",
   "schema": {
     "type": "object",
     "properties": {

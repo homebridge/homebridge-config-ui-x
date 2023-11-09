@@ -1,7 +1,7 @@
-import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as stream from 'stream';
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import * as fs from 'fs-extra';
 import { ConfigService } from '../../../core/config/config.service';
 import { Logger } from '../../../core/logger/logger.service';
 

@@ -1,9 +1,8 @@
 import * as path from 'path';
-import * as fs from 'fs-extra';
-import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationPipe } from '@nestjs/common';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-
+import { Test, TestingModule } from '@nestjs/testing';
+import * as fs from 'fs-extra';
 import { AppModule } from '../../src/app.module';
 
 describe('AppController (e2e)', () => {

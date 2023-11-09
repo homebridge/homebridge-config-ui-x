@@ -28,7 +28,7 @@
       <div class="restart-progress-box text-center primary-text">
         <span>
           <i [ngClass]="{
-            'fas fa-spinner fa-spin': !uiOnline,
+            'fas fa-fw fa-spinner fa-spin': !uiOnline,
             'far fa-check-circle': uiOnline
           }"></i> {{ 'restart.message_homebridge_ui_online' | translate }}
         </span>
@@ -38,7 +38,7 @@
         <span [ngClass]="{ 'grey-text': !uiOnline }">
           <i [ngClass]="{
             'far fa-pause-circle': !uiOnline,
-            'fas fa-spinner fa-spin': uiOnline
+            'fas fa-fw fa-spinner fa-spin': uiOnline
           }"></i> {{ 'restart.message_homebridge_service_ready' | translate }}
         </span>
       </div>

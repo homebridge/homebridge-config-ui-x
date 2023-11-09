@@ -4,7 +4,7 @@
   <button *ngIf="consoleStatus === 'up' && $auth.user.admin" (click)="addWidget()"
     class="btn btn-primary btn-floating add-widget-button"
     ngbTooltip="{{ (options.draggable.enabled ? 'status.widget.label_add_widget' : 'status.widget.label_layout_locked') | translate }}">
-    <i class="fas fa-plus" [ngClass]="{
+    <i class="fas fa-fw fa-plus" [ngClass]="{
       'fa-plus': options.draggable.enabled,
       'fa-lock': !options.draggable.enabled
     }"></i>
@@ -17,13 +17,13 @@
     <!-- <div>
       <button (click)="addWidget()" class="btn btn-primary">Hi</button>
     </div> -->
-    <gridster [options]="options" class="flex-grow-1 no-scrollbars" [hidden]="consoleStatus === 'down'"
+    <gridster [options]="options" class="flex-grow-1 no-scrollbars py-0" [hidden]="consoleStatus === 'down'"
       *ngIf="dashboard.length">
       <ng-container *ngFor="let item of dashboard">
         <gridster-item *ngIf="!(item.hideOnMobile && page.mobile)" class="widget-item" [item]="item"
           [id]="item.component">
           <div class="gridster-item-content">
-            <i class="fas fa-cog widget-control-button primary-text" (click)="manageWidget(item)"></i>
+            <i class="fas fa-fw fa-cog widget-control-button primary-text" (click)="manageWidget(item)"></i>
           </div>
           <app-widgets [widget]="item" class="d-flex h-100 w-100"></app-widgets>
         </gridster-item>
@@ -32,19 +32,21 @@
   </div>
 
   <div class="row mb-auto">
-    <div class="col-md-12 text-center mb-3 grey-text">
+    <div class="col-md-12 text-center px-4 py-1 grey-text">
+      <!-- The below copyright notice shall be included and displayed on all copies or substantial portions of this software. -->
+      <small>
+        &copy; 2023
+        <a class="grey-text" target="_blank" rel="noopener noreferrer"
+          href="https://github.com/homebridge">Homebridge</a>.
+      </small>
       <small>
         <a class="grey-text" target="_blank" rel="noopener noreferrer"
           href="https://github.com/homebridge/homebridge-config-ui-x">{{ $settings.env.packageName }}
           v{{ $settings.env.packageVersion }}</a>
-        -
-      </small>
-      <small>
-        <!-- The below copyright notice shall be included and displayed on all copies or substantial portions of this software. -->
-        &copy; 2023 Homebridge. Originally created by
+        - originally created by
         <a class="grey-text" target="_blank" rel="noopener noreferrer" href="https://github.com/oznu">oznu</a>.
-        <!-- The above copyright notice shall be included and displayed on all copies or substantial portions of this software. -->
       </small>
+      <!-- The above copyright notice shall be included and displayed on all copies or substantial portions of this software. -->
     </div>
   </div>
 </div>

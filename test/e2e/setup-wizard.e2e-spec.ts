@@ -1,9 +1,8 @@
 import * as path from 'path';
-import * as fs from 'fs-extra';
 import { ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-
+import { Test, TestingModule } from '@nestjs/testing';
+import * as fs from 'fs-extra';
 import { ConfigService } from '../../src/core/config/config.service';
 import { SetupWizardModule } from '../../src/modules/setup-wizard/setup-wizard.module';
 import { UserDto } from '../../src/modules/users/users.dto';

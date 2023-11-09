@@ -21,7 +21,7 @@
         <form novalidate (ngSubmit)="createFirstUser()" [formGroup]="createUserForm">
 
           <div class="md-form">
-            <i class="fas fa-user prefix grey-text"></i>
+            <i class="fas fa-fw fa-user prefix grey-text"></i>
             <input formControlName="username" type="text" id="form-username" autocomplete="username"
               autocapitalize="none" tabindex="1" class="form-control pl-0 pr-0" [readonly]="loading" [ngClass]="{
                 'is-valid': (createUserForm.controls.username.dirty) && createUserForm.controls.username.valid,
@@ -31,7 +31,7 @@
           </div>
 
           <div class="md-form">
-            <i class="fas fa-lock prefix grey-text"></i>
+            <i class="fas fa-fw fa-lock prefix grey-text"></i>
             <input formControlName="password" type="password" id="form-pass" autocomplete="new-password" tabindex="2"
               class="form-control pl-0 pr-0" [readonly]="loading" [ngClass]="{
                 'is-valid': (createUserForm.controls.password.dirty) && createUserForm.controls.password.valid,
@@ -41,7 +41,7 @@
           </div>
 
           <div class="md-form">
-            <i class="fas fa-lock prefix grey-text"></i>
+            <i class="fas fa-fw fa-lock prefix grey-text"></i>
             <input formControlName="passwordConfirm" type="password" id="form-pass-confirm" autocomplete="new-password"
               tabindex="2" class="form-control pl-0 pr-0" [readonly]="loading" [ngClass]="{
                 'is-valid': (createUserForm.controls.passwordConfirm.dirty) && createUserForm.controls.passwordConfirm.valid,
@@ -55,7 +55,7 @@
               'button-loading': loading
             }">
               {{ 'setup_wizard.label_create_account' | translate }}
-              <i class="button-loading-overlay fas fa-spinner fa-pulse"></i>
+              <i class="button-loading-overlay fas fa-fw fa-spinner fa-pulse"></i>
             </button>
           </div>
 
@@ -83,7 +83,7 @@
         <button type="button" class="btn btn-primary mr-0" (click)="onRestoreBackupClick()"
           [disabled]="restoreUploading || !selectedFile">
           <span *ngIf="restoreUploading">
-            <i class="fas fa-spinner fa-pulse"></i>
+            <i class="fas fa-fw fa-spinner fa-pulse"></i>
             {{ 'backup.label_uploading' | translate }}
           </span>
           <span *ngIf="!restoreUploading" [translate]="'backup.button_restore_backup'"></span>
@@ -95,7 +95,7 @@
       <img class="homebridge-logo homebridge-logo-small mr-auto ml-auto" src="/assets/homebridge-color-round.svg" />
       <h3 class="pt-4 pb-3 text-center" translate="restart.title_restart"></h3>
       <h1>
-        <i class="fas fa-spinner fa-pulse"></i>
+        <i class="fas fa-fw fa-spinner fa-pulse"></i>
       </h1>
     </div>
 

@@ -44,7 +44,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   constructor(
     public activeModal: NgbActiveModal,
     public $toastr: ToastrService,
-    private translate: TranslateService,
+    private $translate: TranslateService,
     private $settings: SettingsService,
     private $api: ApiService,
     private $ws: WsService,
@@ -63,20 +63,20 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       this.term.write(data);
     });
 
-    this.toastSuccess = this.translate.instant('toast.title_success');
+    this.toastSuccess = this.$translate.instant('toast.title_success');
 
     this.onlineUpdateOk = !(['homebridge', 'homebridge-config-ui-x'].includes(this.pluginName) && this.$settings.env.platform === 'win32');
 
     switch (this.action) {
       case 'Install':
         this.install();
-        this.presentTenseVerb = this.translate.instant('plugins.manage.label_install');
-        this.pastTenseVerb = this.translate.instant('plugins.manage.label_installed');
+        this.presentTenseVerb = this.$translate.instant('plugins.manage.label_install');
+        this.pastTenseVerb = this.$translate.instant('plugins.manage.label_installed');
         break;
       case 'Uninstall':
         this.uninstall();
-        this.presentTenseVerb = this.translate.instant('plugins.manage.label_uninstall');
-        this.pastTenseVerb = this.translate.instant('plugins.manage.label_uninstalled');
+        this.presentTenseVerb = this.$translate.instant('plugins.manage.label_uninstall');
+        this.pastTenseVerb = this.$translate.instant('plugins.manage.label_uninstalled');
         break;
       case 'Update':
         switch (this.targetVersion) {
@@ -91,8 +91,8 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
           default:
             this.update();
         }
-        this.presentTenseVerb = this.translate.instant('plugins.manage.label_update');
-        this.pastTenseVerb = this.translate.instant('plugins.manage.label_updated');
+        this.presentTenseVerb = this.$translate.instant('plugins.manage.label_update');
+        this.pastTenseVerb = this.$translate.instant('plugins.manage.label_updated');
         break;
     }
   }
@@ -122,7 +122,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       (err) => {
         this.actionFailed = true;
         this.$router.navigate(['/plugins']);
-        this.$toastr.error(err.message, this.translate.instant('toast.title_error'));
+        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'));
       },
     );
   }
@@ -140,7 +140,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       },
       (err) => {
         this.actionFailed = true;
-        this.$toastr.error(err.message, this.translate.instant('toast.title_error'));
+        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'));
       },
     );
   }
@@ -173,7 +173,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       },
       (err) => {
         this.actionFailed = true;
-        this.$toastr.error(err.message, this.translate.instant('toast.title_error'));
+        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'));
       },
     );
   }
@@ -191,7 +191,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       },
       (err) => {
         this.actionFailed = true;
-        this.$toastr.error(err.message, this.translate.instant('toast.title_error'));
+        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'));
       },
     );
   }
@@ -229,6 +229,40 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   public onRestartHomebridgeClick() {
     this.$router.navigate(['/restart']);
     this.activeModal.close();
+  }
+
+
+  public getChildBridgeMetadata(): any[] {
+    const childBridges: any[] = [];
+    this.$api.get('/plugins').subscribe((data: any[]) => {
+      data.forEach((plugin) => {
+        if (plugin._bridge) {
+          childBridges.push({
+            pluginName: plugin.name,
+            username: plugin._bridge.username,
+            restartInProgress: false,
+          });
+        }
+      });
+    });
+    return childBridges;
+  }
+
+  public async onRestartChildBridgeClick() {
+    const childBridges = this.getChildBridgeMetadata();
+    const bridge = childBridges.find((x) => x.pluginName === this.pluginName);
+    bridge.restartInProgress = true;
+    try {
+      await this.io.request('restart-child-bridge', bridge.username).toPromise();
+    } catch (err) {
+      this.$toastr.error(
+        'Failed to restart bridge: ' + err.error?.message,
+        this.$translate.instant('toast.title_error'),
+      );
+      bridge.restartInProgress = false;
+    } finally {
+      this.activeModal.close();
+    }
   }
 
   ngOnDestroy() {

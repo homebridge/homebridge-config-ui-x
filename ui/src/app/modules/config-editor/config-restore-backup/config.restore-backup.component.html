@@ -10,7 +10,7 @@
   </div>
   <div class="modal-body">
     <div *ngIf="loading" class="text-center primary-text">
-      <i class="fa fa-cog fa-spin" style="font-size: 72px;"></i>
+      <i class="fa fa-fw fa-cog fa-spin" style="font-size: 72px;"></i>
     </div>
     <table class="table table-borderless table-hover table-sm" *ngIf="!loading && backupList && backupList.length">
       <tbody>
@@ -18,7 +18,7 @@
           <td class="w-100">{{ backup.timestamp | date:'medium' }}</td>
           <td nowrap>
             <a class="card-link" (click)="restore(backup.id)">{{'config.restore.message_copy_to_editor' | translate}} <i
-                class="fas fa-arrow-right"></i></a>
+                class="fas fa-fw fa-arrow-right"></i></a>
           </td>
         </tr>
       </tbody>
