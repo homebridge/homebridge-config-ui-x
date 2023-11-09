@@ -100,10 +100,10 @@
         <div ngbDropdownMenu aria-labelledby="Plugin actions drop down menu">
           <ng-container *ngIf="canStopStartChildBridges && hasChildBridges && !plugin.disabled">
             <button ngbDropdownItem *ngIf="!allChildBridgesStopped" (click)="doChildBridgeAction('stop')">
-              <i class="fas fa-fw fa-stop"></i> {{ 'child_bridge.label_bridge_stop' | translate }}
+              <i class="fas fa-fw fa-stop"></i> {{ 'child_bridge.label_child_stop' | translate }}
             </button>
             <button ngbDropdownItem *ngIf="allChildBridgesStopped" (click)="doChildBridgeAction('start')">
-              <i class="fas fa-fw fa-play"></i> {{ 'child_bridge.label_bridge_start' | translate }}
+              <i class="fas fa-fw fa-play"></i> {{ 'child_bridge.label_child_start' | translate }}
             </button>
             <div class="dropdown-divider"></div>
           </ng-container>
