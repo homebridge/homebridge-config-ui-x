@@ -12,8 +12,8 @@ import { ManagePluginsModalComponent } from '@/app/core/manage-plugins/manage-pl
   styleUrls: ['./uninstall-plugins-modal.component.scss'],
 })
 export class UninstallPluginsModalComponent implements OnInit {
-  @Input() plugin;
-  @Input() action;
+  @Input() plugin: any;
+  @Input() action: string;
 
   public loading = true;
   public removeConfig = true;

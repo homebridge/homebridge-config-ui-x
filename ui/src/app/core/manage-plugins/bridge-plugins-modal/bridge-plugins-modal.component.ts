@@ -13,8 +13,8 @@ import { NotificationService } from '@/app/core/notification.service';
   styleUrls: ['./bridge-plugins-modal.component.scss'],
 })
 export class BridgePluginsModalComponent implements OnInit {
-  @Input() plugin;
-  @Input() schema;
+  @Input() plugin: any;
+  @Input() schema: any;
 
   public canConfigure = true;
   public configBlocks: any[] = [];
@@ -50,13 +50,13 @@ export class BridgePluginsModalComponent implements OnInit {
           }
         }
       },
-      (err) => {
+      () => {
         this.canConfigure = false;
       },
     );
   }
 
-  async toggleExternalBridge(block, enable: boolean, index: number) {
+  async toggleExternalBridge(block: any, enable: boolean, index: number) {
     if (!enable) {
       delete block._bridge;
       return;
@@ -68,7 +68,7 @@ export class BridgePluginsModalComponent implements OnInit {
     };
 
     this.usernameCache.set(index, block._bridge.username);
-    this.getDeviceInfo(block._bridge.username);
+    await this.getDeviceInfo(block._bridge.username);
   }
 
   async getUnusedPort() {
