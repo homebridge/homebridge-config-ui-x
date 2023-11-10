@@ -20,12 +20,13 @@ export interface PluginConfigBlock {
   styleUrls: ['./settings-plugins-modal.component.scss'],
 })
 export class SettingsPluginsModalComponent implements OnInit {
-  @Input() plugin;
-  @Input() schema;
+  @Input() plugin: any;
+  @Input() schema: any;
 
   public pluginAlias: string;
   public pluginType: 'platform' | 'accessory';
 
+  public actionComplete = false;
   public pluginConfig: PluginConfigBlock[] = [];
   public form: any = {};
   public show = '';
@@ -85,21 +86,28 @@ export class SettingsPluginsModalComponent implements OnInit {
     try {
       await this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, configBlocks)
         .toPromise();
-      this.$toastr.success(
-        this.translate.instant('plugins.settings.toast_restart_required'),
-        this.translate.instant('plugins.settings.toast_plugin_config_saved'));
-
-      this.activeModal.close(configBlocks.length ? this.schema : null);
-      this.$notification.configUpdated.next(undefined);
 
       // reload app settings if the config was changed for Homebridge UI
       if (this.plugin.name === 'homebridge-config-ui-x') {
         this.$settings.getAppSettings().catch();
       }
+
+      this.actionComplete = true;
+
+      // this.$toastr.success(
+      //   this.translate.instant('plugins.settings.toast_restart_required'),
+      //   this.translate.instant('plugins.settings.toast_plugin_config_saved'),
+      // );
+      // this.activeModal.close(configBlocks.length ? this.schema : null);
+      // this.$notification.configUpdated.next(undefined);
+
+
     } catch (err) {
       this.$toastr.error(
-        this.translate.instant('config.toast_failed_to_save_config') + ': ' + err.error?.message,
-        this.translate.instant('toast.title_error'));
+        this.translate.instant(
+          'config.toast_failed_to_save_config') + ': ' + err.error?.message,
+          this.translate.instant('toast.title_error'),
+      );
     } finally {
       this.saveInProgress = false;
     }
