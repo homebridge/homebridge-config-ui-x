@@ -45,9 +45,17 @@
             <i class="fas fa-fw fa-wave-square nav-menu-icon"></i>
           </a>
         </li>
-        <li class="nav-item waves-effect waves-light" routerLinkActive="active" placement="bottom"
+        <li *ngIf="$settings.env.runningInDocker && $auth.user.admin"
+          class="nav-item waves-effect waves-light" routerLinkActive="active" placement="bottom"
+          ngbTooltip="{{ 'menu.docker.label_restart_container' | translate }}" container="body">
+          <a class="nav-link" routerLink="/platform-tools/docker/restart-container" aria-label="Restart Container">
+            <i #restartHomebridgeIcon class="fas fa-fw fa-power-off nav-menu-icon"></i>
+          </a>
+        </li>
+        <li *ngIf="$settings.env.canShutdownRestartHost && $auth.user.admin"
+          class="nav-item waves-effect waves-light" routerLinkActive="active" placement="bottom"
           ngbTooltip="{{'menu.tooltip_restart' | translate}}" container="body">
-          <a class="nav-link" routerLink="/restart" aria-label="Restart Homebridge">
+          <a class="nav-link" href="javascript:void(0)" (click)="restartServer()" aria-label="Restart Homebridge">
             <i #restartHomebridgeIcon class="fas fa-fw fa-power-off nav-menu-icon"></i>
           </a>
         </li>
