@@ -253,15 +253,14 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       for (const bridge of this.childBridges) {
         await this.$api.put(`/server/restart/${bridge.username}`, {}).toPromise();
       }
-
-      // toast success
       this.$toastr.success(
-        'SUCCESS!!!',
+        this.$translate.instant('plugins.manage.child_bridge_restart_success'),
         this.$translate.instant('toast.title_success'),
       );
     } catch (err) {
+      this.$notification.configUpdated.next(undefined); // highlight the restart icon in the navbar
       this.$toastr.error(
-        'Error restarting child bridge, please restart Homebridge instead.',
+        this.$translate.instant('plugins.manage.child_bridge_restart_failed'),
         this.$translate.instant('toast.title_error'),
       );
     } finally {

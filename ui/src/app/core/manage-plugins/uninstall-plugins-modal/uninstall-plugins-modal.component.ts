@@ -70,5 +70,4 @@ export class UninstallPluginsModalComponent implements OnInit {
       this.translate.instant('plugins.settings.toast_plugin_config_saved'),
     );
   }
-
 }

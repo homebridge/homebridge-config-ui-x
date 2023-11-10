@@ -19,10 +19,10 @@
         Please restart the plugin's child bridges for the changes to apply.
       </p>
       <div class="text-center">
-        <button type="button" class="btn btn-primary"
-          *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(pluginName) && childBridges.length > 0"
-          (click)="onRestartChildBridgeClick()"
-          [translate]="'plugins.manage.child_bridge_button_restart_now'">Restart Child Bridges</button>
+        <button type="button" class="btn btn-primary" *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(pluginName) && childBridges.length > 0"
+          (click)="onRestartChildBridgeClick()">
+          {{ (childBridges.length === 1 ? 'plugins.manage.child_bridge_button_restart_now_one' : 'plugins.manage.child_bridge_button_restart_now') | translate }}
+        </button>
         <button type="button" class="btn btn-primary"
           *ngIf="['homebridge', 'homebridge-config-ui-x'].includes(pluginName) || childBridges.length === 0" (click)="onRestartHomebridgeClick()"
           [translate]="'plugins.manage.button_restart_now'">Restart Homebridge</button>

@@ -62,5 +62,4 @@ export class SelectPreviousVersionComponent implements OnInit {
   doInstall() {
     this.activeModal.close(this.selectedVersion);
   }
-
 }
