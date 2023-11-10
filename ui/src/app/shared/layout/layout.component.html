@@ -81,6 +81,10 @@
               {{'menu.tooltip_user_accounts' | translate}}
             </a>
             <div class="dropdown-divider" *ngIf="$auth.user.admin"></div>
+            <a class="dropdown-item waves-effect waves-light" routerLink="/restart"
+              *ngIf="$auth.user.admin">
+              {{ 'menu.tooltip_restart' | translate }}
+            </a>
             <a class="dropdown-item waves-effect waves-light" routerLink="/platform-tools/docker/startup-script"
               *ngIf="$settings.env.runningInDocker && $auth.user.admin">
               {{ 'menu.docker.label_startup_script' | translate }}
@@ -97,6 +101,7 @@
               *ngIf="$settings.env.canShutdownRestartHost && $auth.user.admin" (click)="shutdownServer()">
               {{ 'menu.linux.label_shutdown_server' | translate }}
             </a>
+            <div class="dropdown-divider" *ngIf="$auth.user.admin"></div>
             <a href="javascript:void(0)" class="dropdown-item" (click)="$auth.logout()" *ngIf="$settings.formAuth">
               {{ 'menu.tooltip_logout' | translate }} - {{ $auth.user.username }}
             </a>
