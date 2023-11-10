@@ -9,10 +9,7 @@
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
-  <div *ngIf="actionComplete" class="modal-body">
-    <!-- blank for now -->
-  </div>
-  <div *ngIf="!actionComplete" class="modal-body">
+  <div class="modal-body">
     <div>
       <markdown class="plugin-md" [data]="schema.headerDisplay | interpolateMd"
         *ngIf="schema.headerDisplay"></markdown>
@@ -58,7 +55,7 @@
         *ngIf="schema.footerDisplay"></markdown>
     </div>
   </div>
-  <div *ngIf="!actionComplete" class="modal-footer justify-content-between">
+  <div class="modal-footer justify-content-between">
     <div style="min-width: 25%;" class="text-left">
       <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.close('Cross click')"
         [translate]="'form.button_cancel'">Cancel</button>
