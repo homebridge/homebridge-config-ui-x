@@ -219,7 +219,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
     try {
       this.$api.get('/status/homebridge/child-bridges').subscribe((data: any[]) => {
         data.forEach((bridge) => {
-          if (this.pluginName === bridge.pluginName) {
+          if (this.pluginName === bridge.plugin) {
             this.childBridges.push(bridge);
           }
         });
