@@ -58,14 +58,14 @@
       <a href="javascript:void(0)" class="card-link text-decoration-none ml-3"
         *ngIf="plugin.updateAvailable && !plugin.betaUpdateAvailable" (click)="$plugin.updatePlugin(plugin)"
         placement="bottom" ngbTooltip="{{'plugins.tooltip_update_plugin_to' | translate:plugin }}" container="body"
-        [openDelay]="150" [closeDelay]="3000" autoClose="true" triggers="hover:focus:touchstart:touchend:click"
+        [openDelay]="150" [closeDelay]="3000" [autoClose]="true" triggers="hover:focus:touchstart:touchend:click"
         tooltipClass="d-none d-sm-block" [translate]="'plugins.button_update'" >
         <i class="fas fa-fw fa-arrow-alt-circle-up primary-text"></i>
       </a>
       <a href="javascript:void(0)" class="card-link text-decoration-none ml-3"
         *ngIf="!plugin.updateAvailable && plugin.betaUpdateAvailable" (click)="$plugin.updatePlugin(plugin, 'beta')"
         placement="bottom" ngbTooltip="{{'plugins.tooltip_update_plugin_to' | translate:plugin }}" container="body"
-        [openDelay]="150" [closeDelay]="3000" autoClose="true" triggers="hover:focus:touchstart:touchend:click"
+        [openDelay]="150" [closeDelay]="3000" [autoClose]="true" triggers="hover:focus:touchstart:touchend:click"
         tooltipClass="d-none d-sm-block" [translate]="'plugins.button_update'">
         <i class="fas fa-fw fa-arrow-alt-circle-up primary-text"></i>
       </a>
