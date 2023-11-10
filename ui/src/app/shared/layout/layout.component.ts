@@ -102,7 +102,7 @@ export class LayoutComponent implements OnInit {
         // do nothing
       });
   }
-  
+
   restartServer() {
     const ref = this.$modal.open(ConfirmComponent);
     ref.componentInstance.title = this.translate.instant('menu.linux.label_restart_server');
