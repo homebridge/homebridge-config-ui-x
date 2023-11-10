@@ -143,7 +143,7 @@
     "menu.linux.label_shutdown_server": "Shutdown Server",
     "menu.linux.label_terminal": "Terminal",
     "menu.tooltip_logout": "Log out",
-    "menu.tooltip_restart": "Restart",
+    "menu.tooltip_restart": "Restart Homebridge",
     "menu.tooltip_user_accounts": "User Accounts",
     "menu.tooltip_view_logs": "View Logs",
     "platform.docker.restart_container.message_run_with_restart_always": "Make sure you're running the Docker container with <strong>--restart=always</strong>",
