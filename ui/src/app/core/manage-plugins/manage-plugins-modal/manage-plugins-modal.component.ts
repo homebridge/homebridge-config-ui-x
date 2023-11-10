@@ -172,7 +172,6 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
         this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);
         this.getChangeLog();
         this.getChildBridges();
-        this.$notification.configUpdated.next(undefined);
       },
       (err) => {
         this.actionFailed = true;
@@ -250,18 +249,22 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   }
 
   public async onRestartChildBridgeClick() {
-    const io = this.$ws.connectToNamespace('child-bridges');
     try {
       for (const bridge of this.childBridges) {
-        await io.request('restart-child-bridge', bridge.username).toPromise();
+        await this.$api.put(`/server/restart/${bridge.username}`, {}).toPromise();
       }
+
+      // toast success
+      this.$toastr.success(
+        'SUCCESS!!!',
+        this.$translate.instant('toast.title_success'),
+      );
     } catch (err) {
       this.$toastr.error(
-        'Failed to restart child bridge: ' + err.error?.message,
+        'Error restarting child bridge, please restart Homebridge instead.',
         this.$translate.instant('toast.title_error'),
       );
     } finally {
-      io.end();
       this.activeModal.close();
     }
   }
