@@ -34,6 +34,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   public justUpdatedPlugin = false;
   public updateToBeta = false;
   public changeLog: string;
+  public childBridges: any[] = [];
   public release: any;
 
   private toastSuccess: string;
@@ -170,6 +171,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
         this.$router.navigate(['/plugins']);
         this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);
         this.getChangeLog();
+        this.getChildBridges();
         this.$notification.configUpdated.next(undefined);
       },
       (err) => {
@@ -213,6 +215,21 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
     );
   }
 
+  getChildBridges(): any[] {
+    try {
+      this.$api.get('/status/homebridge/child-bridges').subscribe((data: any[]) => {
+        data.forEach((bridge) => {
+          if (this.pluginName === bridge.pluginName) {
+            this.childBridges.push(bridge);
+          }
+        });
+      });
+      return this.childBridges;
+    } catch (e) {
+      return [];
+    }
+  }
+
   getReleaseNotes() {
     this.$api.get(`/plugins/release/${encodeURIComponent(this.pluginName)}`).subscribe(
       (data) => {
@@ -232,38 +249,19 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
     this.activeModal.close();
   }
 
-
-  public getChildBridgeMetadata(): any[] {
-    const childBridges: any[] = [];
-    this.$api.get('/plugins').subscribe((data: any[]) => {
-      data.forEach((plugin) => {
-        if (plugin._bridge) {
-          childBridges.push({
-            pluginName: plugin.name,
-            username: plugin._bridge.username,
-            restartInProgress: false,
-          });
-        }
-      });
-    });
-    return childBridges;
-  }
-
   public async onRestartChildBridgeClick() {
-    const childBridges = this.getChildBridgeMetadata();
-    const bridge = childBridges.find((x) => x.pluginName === this.pluginName);
-    bridge.restartInProgress = true;
-    try {
-      await this.io.request('restart-child-bridge', bridge.username).toPromise();
-    } catch (err) {
-      this.$toastr.error(
-        'Failed to restart bridge: ' + err.error?.message,
-        this.$translate.instant('toast.title_error'),
-      );
-      bridge.restartInProgress = false;
-    } finally {
-      this.activeModal.close();
-    }
+    // bridge.restartInProgress = true;
+    // try {
+    //   await this.io.request('restart-child-bridge', bridge.username).toPromise();
+    // } catch (err) {
+    //   this.$toastr.error(
+    //     'Failed to restart bridge: ' + err.error?.message,
+    //     this.$translate.instant('toast.title_error'),
+    //   );
+    //   bridge.restartInProgress = false;
+    // } finally {
+    //   this.activeModal.close();
+    // }
   }
 
   ngOnDestroy() {
