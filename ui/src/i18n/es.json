@@ -198,7 +198,7 @@
     "plugins.manage.message_select_version_to_install": "Elige la versión para instalar",
     "plugins.manage.message_thanks_for_updating": "Gracias por instalar la última versión de {{ pluginName }}.",
     "plugins.manage.message_thanks_for_updating_restart": "Por favor, reinicia Homebridge para aplicar los cambios.",
-    "plugins.manage.message_thanks_for_updating_restart_child_bridges": "Please restart the plugin's child bridges for the changes to apply.",
+    "plugins.manage.message_thanks_for_updating_restart_child_bridges": "Por favor, reinicia los puentes hijos de este plugin para aplicar los cambios.",
     "plugins.manage.message_uninstall_remove_config_required": "Si eliminarás este plugin de forma permanente, asegúrate de quitar cualquier configuración de este plugin en el archivo config.json antes de reiniciar Homebridge.",
     "plugins.manage.message_uninstall_remove_confirmation": "¿Estás seguro que deseas desinstalar {{ pluginName }}?",
     "plugins.manage.message_uninstall_remove_plugin_config": "¿Eliminar la Configuración del Plugin?",
