@@ -2,19 +2,69 @@
 
 All notable changes to homebridge-config-ui-x will be documented in this file.
 
-## Beta-4.52.2 (2023-11-XX)
+## 4.52.2 (2023-11-11)
 
 ### Notable Changes
 
 - Prevent the UI from updating when running an unsupported version of Node.js
   - This mimics the behaviour of updating Homebridge itself
   - The option of 'Update Anyway' will still appear for other plugins when running an unsupported version of Node.js
+  - GLIBC Version is now Cached
+- Enhanced the 'Restart Homebridge Now' modal to now Show 'Restart Child Bridges Now' modal after any plugin update if that plugin is setup as a child bridge.
 
-### Other Changes
+### i18n Changes
 
+- The following new language strings have been added to each language file - calling on all our translators to continue your hard work!
+  - ADDED:
+    - `child_bridge.label_child_start`
+    - `child_bridge.label_child_stop`
+    - `menu.linux.label_logs`
+    - `plugins.button_api_documentation`
+    - `plugins.button_homepage`
+    - `plugins.manage.child_bridge_button_restart_now`
+    - `plugins.manage.child_bridge_button_restart_now_one`
+    - `plugins.manage.child_bridge_restart_success`
+    - `plugins.manage.child_bridge_restart_failed`
+    - `plugins.manage.message_thanks_for_updating_restart_child_bridges`
+    - `plugins.manage.modal_verified_cta`
+    - `plugins.manage.modal_verified_message`
+    - `plugins.manage.modal_verified_title`
+    - `plugins.node_update_homebridge_ui_upgrade_and_try_again`
+    - `status.widget.systeminfo.label_disabled`
+    - `status.widget.systeminfo.label_enabled`
+    - `status.widget.systeminfo.label_glibc_warning`
+    - `status.widget.systeminfo.label_no`
+    - `status.widget.systeminfo.label_nodejs_path`
+    - `status.widget.systeminfo.label_yes`
+    - `status.widget.systeminfo.modal_glibc_cta`
+    - `status.widget.systeminfo.modal_glibc_message`
+    - `status.widget.systeminfo.modal_glibc_title`
+    - `status.widget.systeminfo.modal_servicemode_cta`
+    - `status.widget.systeminfo.modal_servicemode_message`
+    - `status.widget.systeminfo.modal_servicemode_title`
+  - UPDATED:
+    - `plugins.manage.message_thanks_for_updating_restart`
+    - `plugins.donate.message_learn_more`
+    - `status.message_code_scan_instructions`
 - **i18n:** Update pl.json ([1633](https://github.com/homebridge/homebridge-config-ui-x/pull/1633))
 - **i18n:** Update fr.json ([1629](https://github.com/homebridge/homebridge-config-ui-x/pull/1629))
 - **i18n:** Update es.json (Improves Spanish localization) ([1632](https://github.com/homebridge/homebridge-config-ui-x/pull/1632))
+
+### Other Changes
+
+- Overall UI
+  - [Fixed Icon Widths](https://github.com/homebridge/homebridge-config-ui-x/commit/46035d29016d135bd86c795fc26360d801f0fe22) throughout UI
+- Update Plugin Tiles
+  - Add Plugin Homepage to Plugin Dropdown
+  - When `Update Availble`/`Beta Update Available` are available a purple arrow is nodw displayed by Plugin menu
+- Updated Menu, Thanks [mkz212](https://github.com/mkz212) 
+  - Changed the menu layout order
+  - Made the dropdown darker ([1660](https://github.com/homebridge/homebridge-config-ui-x/pull/1660))
+  - Username is now displayed by logout Menu option.
+- Widget Updates, Thanks [mkz212](https://github.com/mkz212) 
+  - Update System Information Widget ordering
+  - Added ability to scroll Homebridge widget ([1651](https://github.com/homebridge/homebridge-config-ui-x/pull/1651))
+  - Updated default layout
 - Updated dependencies, including `@homebridge/node-pty-prebuilt-multiarch` to `0.11.10`
 
 ## 4.52.1 (2023-11-04)
