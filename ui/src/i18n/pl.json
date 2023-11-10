@@ -267,7 +267,7 @@
     "restart.message_homebridge_ui_online": "Interfejs Homebridge gotowy",
     "restart.message_please_wait_while_server_restarts": "Proszę czekać, strona zostanie automatycznie odświeżona po powrocie serwera do trybu online.",
     "restart.message_server_is_taking_long_time_to_restart": "Restart serwera zajmuje więcej czasu. Może być konieczny ręczny restart.",
-    "restart.title_restart": "Restartowanie serwera",
+    "restart.title_restart": "Restartowanie Homebridge",
     "restart.toast_server_restart_error": "Błąd w trakcie restartu serwera",
     "restart.toast_server_restarted": "Serwer uruchomił się ponownie",
     "restart.toast_sever_restart_timeout": "Serwer potrzebuje więcej czasu, aby powrócić do trybu online",
