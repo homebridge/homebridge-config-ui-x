@@ -250,18 +250,20 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   }
 
   public async onRestartChildBridgeClick() {
-    // bridge.restartInProgress = true;
-    // try {
-    //   await this.io.request('restart-child-bridge', bridge.username).toPromise();
-    // } catch (err) {
-    //   this.$toastr.error(
-    //     'Failed to restart bridge: ' + err.error?.message,
-    //     this.$translate.instant('toast.title_error'),
-    //   );
-    //   bridge.restartInProgress = false;
-    // } finally {
-    //   this.activeModal.close();
-    // }
+    const io = this.$ws.connectToNamespace('child-bridges');
+    try {
+      for (const bridge of this.childBridges) {
+        await io.request('restart-child-bridge', bridge.username).toPromise();
+      }
+    } catch (err) {
+      this.$toastr.error(
+        'Failed to restart child bridge: ' + err.error?.message,
+        this.$translate.instant('toast.title_error'),
+      );
+    } finally {
+      io.end();
+      this.activeModal.close();
+    }
   }
 
   ngOnDestroy() {

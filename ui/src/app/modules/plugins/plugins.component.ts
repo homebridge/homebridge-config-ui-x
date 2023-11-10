@@ -57,7 +57,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
     });
 
     this.navigationSubscription = this.$router.events.subscribe((e: any) => {
-      // If it is a NavigationEnd event re-initalise the component
+      // If it is a NavigationEnd event re-initialise the component
       if (e instanceof NavigationEnd) {
         this.loadInstalledPlugins();
       }
