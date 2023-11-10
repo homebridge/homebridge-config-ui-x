@@ -64,10 +64,8 @@
   </div>
   <div class="modal-footer justify-content-between">
     <div style="min-width: 25%;" class="text-left">
-      <button type="button" class="btn btn-elegant mr-auto" data-dismiss="modal" (click)="addBlock()"
-        *ngIf="canConfigure">
-        <i class="fa fa-fw fa-plus"></i> Add {{ pluginType }}
-      </button>
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.close()"
+              [translate]="'form.button_close'">Close</button>
     </div>
 
     <div style="min-width: 25%;" class="d-none d-lg-inline text-center">
@@ -79,8 +77,11 @@
     </div>
 
     <div style="min-width: 25%;" class="text-right">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.close()"
-        [translate]="'form.button_close'">Close</button>
+      <button type="button" class="btn btn-elegant mr-auto" data-dismiss="modal" (click)="addBlock()"
+              *ngIf="canConfigure">
+        Add {{ pluginType }}
+      </button>
+
       <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="save()" [disabled]="saveInProgress"
         *ngIf="canConfigure">
         {{ 'form.button_save' | translate }} <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>

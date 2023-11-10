@@ -16,10 +16,11 @@ import { NotificationService } from '@/app/core/notification.service';
   templateUrl: './manage-plugins-modal.component.html',
   styleUrls: ['./manage-plugins-modal.component.scss'],
 })
+
 export class ManagePluginsModalComponent implements OnInit, OnDestroy {
-  @Input() pluginName;
+  @Input() pluginName: string;
   @Input() targetVersion = 'latest';
-  @Input() action;
+  @Input() action: string;
 
   private io = this.$ws.connectToNamespace('plugins');
 
@@ -33,7 +34,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   public justUpdatedPlugin = false;
   public updateToBeta = false;
   public changeLog: string;
-  public release;
+  public release: any;
 
   private toastSuccess: string;
   public presentTenseVerb: string;
@@ -45,7 +46,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
     public activeModal: NgbActiveModal,
     public $toastr: ToastrService,
     private $translate: TranslateService,
-    private $settings: SettingsService,
+    public $settings: SettingsService,
     private $api: ApiService,
     private $ws: WsService,
     private $notification: NotificationService,
@@ -59,7 +60,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
     this.term.open(this.termTarget);
     this.fitAddon.fit();
 
-    this.io.socket.on('stdout', (data) => {
+    this.io.socket.on('stdout', (data: string | Uint8Array) => {
       this.term.write(data);
     });
 
@@ -112,7 +113,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       termCols: this.term.cols,
       termRows: this.term.rows,
     }).subscribe(
-      (data) => {
+      () => {
         this.$router.navigate(['/plugins'], {
           queryParams: { installed: this.pluginName },
         });
@@ -133,7 +134,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       termCols: this.term.cols,
       termRows: this.term.rows,
     }).subscribe(
-      (data) => {
+      () => {
         this.activeModal.close();
         this.$router.navigate(['/plugins']);
         this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);
@@ -164,7 +165,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       termCols: this.term.cols,
       termRows: this.term.rows,
     }).subscribe(
-      (data) => {
+      () => {
         this.justUpdatedPlugin = true;
         this.$router.navigate(['/plugins']);
         this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);
@@ -184,7 +185,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       termCols: this.term.cols,
       termRows: this.term.rows,
     }).subscribe(
-      (data) => {
+      () => {
         this.$router.navigate(['/restart']);
         this.activeModal.close();
         this.$toastr.success(this.pastTenseVerb, this.toastSuccess);
@@ -206,7 +207,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
           this.activeModal.close();
         }
       },
-      (err) => {
+      () => {
         this.activeModal.close();
       },
     );
@@ -218,7 +219,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
         this.showReleaseNotes = true;
         this.release = data;
       },
-      (err) => {
+      () => {
         if (this.onlineUpdateOk) {
           this.update();
         }
@@ -268,5 +269,4 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.io.end();
   }
-
 }
