@@ -81,8 +81,8 @@
               {{'menu.tooltip_user_accounts' | translate}}
             </a>
             <div class="dropdown-divider" *ngIf="$auth.user.admin"></div>
-            <a class="dropdown-item waves-effect waves-light" routerLink="/restart"
-              *ngIf="$auth.user.admin">
+            <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light"
+              *ngIf="$auth.user.admin" (click)="restartServer()">
               {{ 'menu.tooltip_restart' | translate }}
             </a>
             <a class="dropdown-item waves-effect waves-light" routerLink="/platform-tools/docker/startup-script"
