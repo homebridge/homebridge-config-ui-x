@@ -221,7 +221,7 @@
     "plugins.settings.custom.homebridge-gsh.message_homebridge_restart_required": "Homebridge necessita reiniciar perquè els canvis tinguin efecte.",
     "plugins.settings.label_open_config_editor": "Obrir editor de configuració",
     "plugins.settings.message_consult_documentation": "Si us plau consulte la documentació del plugin per a més informació i instruccions de com configurar aquest plugin correctament.",
-    "plugins.settings.message_manual_config_required": "Aquest plugin s'ha de configurar manualment usant l'Editor de Homebridge Config UI.",
+    "plugins.settings.message_manual_config_required": "Aquest plugin s'ha de configurar manualment usant l'Editor de Homebridge UI.",
     "plugins.settings.title_settings": "Ajustos",
     "plugins.settings.toast_plugin_config_saved": "Configuració del plugin guardada",
     "plugins.settings.toast_restart_required": "Reiniciar Homebridge per aplicar els canvis.",

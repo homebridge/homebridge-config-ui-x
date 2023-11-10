@@ -509,7 +509,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                       properties: {
                         platform: {
                           type: 'string',
-                          description: 'Homebridge Config UI X platform name must be set to "config".\nDo Not Change!',
+                          description: 'Homebridge UI platform name must be set to "config".\nDo Not Change!',
                           oneOf: [
                             { enum: 'config' },
                           ],

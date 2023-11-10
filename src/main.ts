@@ -128,7 +128,7 @@ async function bootstrap(): Promise<NestFastifyApplication> {
   // serve spa on all 404
   app.useGlobalFilters(new SpaFilter());
 
-  logger.warn(`Homebridge Config UI X v${configService.package.version} is listening on ${startupConfig.host} port ${configService.ui.port}`);
+  logger.warn(`Homebridge UI v${configService.package.version} is listening on ${startupConfig.host} port ${configService.ui.port}`);
   await app.listen(configService.ui.port, startupConfig.host);
 
   return app;

@@ -397,7 +397,7 @@ export class BackupService {
     // display backup archive information
     client.emit('stdout', color.cyan('Backup Archive Information\r\n'));
     client.emit('stdout', `Source Node.js Version: ${backupInfo.node}\r\n`);
-    client.emit('stdout', `Source Homebridge Config UI X Version: v${backupInfo.uix}\r\n`);
+    client.emit('stdout', `Source Homebridge UI Version: v${backupInfo.uix}\r\n`);
     client.emit('stdout', `Source Platform: ${backupInfo.platform}\r\n`);
     client.emit('stdout', `Created: ${backupInfo.timestamp}\r\n`);
 

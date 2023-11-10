@@ -92,7 +92,7 @@ export class SettingsPluginsModalComponent implements OnInit {
       this.activeModal.close(configBlocks.length ? this.schema : null);
       this.$notification.configUpdated.next(undefined);
 
-      // reload app settings if the config was changed for Homebridge Config UI X
+      // reload app settings if the config was changed for Homebridge UI
       if (this.plugin.name === 'homebridge-config-ui-x') {
         this.$settings.getAppSettings().catch();
       }
