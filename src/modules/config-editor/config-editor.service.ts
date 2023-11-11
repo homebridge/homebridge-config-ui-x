@@ -286,9 +286,11 @@ export class ConfigEditorService {
 
     const idx = config.disabledPlugins.findIndex(x => x === pluginName);
 
-    config.disabledPlugins.splice(idx, 1);
-
-    await this.updateConfigFile(config);
+    // Check plugin is in thw list
+    if (idx > -1) {
+      config.disabledPlugins.splice(idx, 1);
+      await this.updateConfigFile(config);
+    }
 
     return config.disabledPlugins;
   }
