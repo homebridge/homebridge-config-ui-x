@@ -134,15 +134,15 @@
           </button>
           <div class="dropdown-divider" *ngIf="plugin.links.homepage || plugin.links.npm"></div>
           <a ngbDropdownItem target="_blank" rel="noopener noreferrer" class="text-decoration-none"
+            *ngIf="plugin.name === 'homebridge-config-ui-x'" href="/swagger">
+            <i class="fas fa-fw fa-passport"></i> {{ 'plugins.button_api_documentation' | translate }}
+          </a>
+          <a ngbDropdownItem target="_blank" rel="noopener noreferrer" class="text-decoration-none"
             *ngIf="plugin.links.homepage || plugin.links.npm" [href]="plugin.links.homepage || plugin.links.npm">
             <i *ngIf="plugin.links.homepage"
               class="{{ plugin.links.homepage.startsWith('https://github.com/') ? 'fab fa-fw fa-github' : 'fas fa-external-link-alt' }}"></i>
             <i *ngIf="!plugin.links.homepage && plugin.links.npm" class="fab fa-fw fa-npm"></i>
             {{ 'plugins.button_homepage' | translate }}
-          </a>
-          <a ngbDropdownItem target="_blank" rel="noopener noreferrer" class="text-decoration-none"
-            *ngIf="plugin.name === 'homebridge-config-ui-x'" href="/swagger">
-            <i class="fas fa-fw fa-passport"></i> {{ 'plugins.button_api_documentation' | translate }}
           </a>
         </div>
       </span>
