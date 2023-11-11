@@ -82,20 +82,22 @@ export class LogService {
     this.io.socket.on('stdout', (data: string) => {
       console.log(data);
       if (this.pluginName) {
-        const lines = data.split('\n');
+        const lines = data.split('\r\n');
         let includeNextLine = false;
 
         lines.forEach((line) => {
+          this.term.write(line + '\r');
           if (includeNextLine) {
-            if (line.match(/\\u001b\[39m\\u001b\[36m\[(.*?)]\\u001b\[39m/)) {
+            if (line.match(/ \u001b\[39m\u001b\[36m\[.*?]\u001b\[39m /)) {
               includeNextLine = false;
             } else {
-              this.term.write(line);
+              this.term.write(line + '\r');
               return;
             }
           }
 
-          if (line.includes(` \u001b[39m\u001b[36m[${this.pluginName}]\u00b1[39m `)) {
+          // " \u001b[39m\u001b[36m[Govee]\u001b[39m "
+          if (line.includes(` \u001b[39m\u001b[36m[${this.pluginName}]\u001b[39m `)) {
             this.term.write(line + '\r');
             includeNextLine = true;
           }
