@@ -10,7 +10,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
   - This mimics the behaviour of updating Homebridge itself
   - The option of 'Update Anyway' will still appear for other plugins when running an unsupported version of Node.js
   - GLIBC Version is now Cached
-- Enhanced the 'Restart Homebridge Now' modal to now Show 'Restart Child Bridges Now' modal after any plugin update if that plugin is setup as a child bridge.
+- Enhanced the 'Restart Homebridge Now' modal to now Show 'Restart Child Bridges' modal after any plugin update if that plugin is set up as a child bridge.
 
 ### i18n Changes
 
@@ -18,6 +18,9 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
   - ADDED:
     - `child_bridge.label_child_start`
     - `child_bridge.label_child_stop`
+    - `menu.hbrestart.confirm_button`
+    - `menu.hbrestart.confirmation`
+    - `menu.hbrestart.title`
     - `menu.linux.label_logs`
     - `plugins.button_api_documentation`
     - `plugins.button_homepage`

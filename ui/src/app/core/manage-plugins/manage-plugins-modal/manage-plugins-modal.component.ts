@@ -224,7 +224,8 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
         });
       });
       return this.childBridges;
-    } catch (e) {
+    } catch (err) {
+      this.$toastr.error(err.message, this.$translate.instant('toast.title_error'));
       return [];
     }
   }

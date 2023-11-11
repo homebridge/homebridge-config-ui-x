@@ -58,13 +58,13 @@
       <a href="javascript:void(0)" class="card-link text-decoration-none ml-3"
         *ngIf="plugin.updateAvailable && !plugin.betaUpdateAvailable" (click)="$plugin.updatePlugin(plugin)"
         placement="bottom" ngbTooltip="{{'plugins.tooltip_update_plugin_to' | translate:plugin }}" container="body"
-        openDelay="150" closeDelay="3000" autoClose="true" [translate]="'plugins.button_update'" triggers="hover">
+        [openDelay]="150" [closeDelay]="3000" [autoClose]="true" [translate]="'plugins.button_update'" triggers="hover:focus:touchstart:touchend:click">
         <i class="fas fa-fw fa-arrow-alt-circle-up primary-text"></i>
       </a>
       <a href="javascript:void(0)" class="card-link text-decoration-none ml-3"
         *ngIf="!plugin.updateAvailable && plugin.betaUpdateAvailable" (click)="$plugin.updatePlugin(plugin, 'beta')"
         placement="bottom" ngbTooltip="{{'plugins.tooltip_update_plugin_to' | translate:plugin }}" container="body"
-        openDelay="150" closeDelay="3000" autoClose="true" [translate]="'plugins.button_update'" triggers="hover">
+        [openDelay]="150" [closeDelay]="3000" [autoClose]="true" [translate]="'plugins.button_update'" triggers="hover:focus:touchstart:touchend:click">
         <i class="fas fa-fw fa-arrow-alt-circle-up primary-text"></i>
       </a>
       <ng-container *ngIf="hasChildBridges">
@@ -133,6 +133,10 @@
             <i class="fas fa-fw fa-fw fa-trash"></i> {{ 'plugins.button_uninstall' | translate }}
           </button>
           <div class="dropdown-divider" *ngIf="plugin.links.homepage || plugin.links.npm"></div>
+            <a ngbDropdownItem target="_blank" rel="noopener noreferrer" class="text-decoration-none"
+               *ngIf="plugin.name === 'homebridge-config-ui-x'" href="/swagger">
+            <i class="fas fa-fw fa-passport"></i> {{ 'plugins.button_api_documentation' | translate }}
+          </a>
           <a ngbDropdownItem target="_blank" rel="noopener noreferrer" class="text-decoration-none"
             *ngIf="plugin.links.homepage || plugin.links.npm" [href]="plugin.links.homepage || plugin.links.npm">
             <i *ngIf="plugin.links.homepage"

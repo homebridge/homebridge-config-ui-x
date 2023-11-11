@@ -95,7 +95,7 @@ export class PluginCardComponent implements OnInit {
     ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/homebridge/wiki/verified-Plugins';
   }
 
-  disablePlugin(plugin) {
+  disablePlugin(plugin: any) {
     const ref = this.$modal.open(ConfirmComponent);
 
     ref.componentInstance.title = `${this.$translate.instant('plugins.manage.disable')}: ${plugin.name}`;
@@ -125,7 +125,7 @@ export class PluginCardComponent implements OnInit {
     });
   }
 
-  enablePlugin(plugin) {
+  enablePlugin(plugin: any) {
     const ref = this.$modal.open(ConfirmComponent);
 
     ref.componentInstance.title = `${this.$translate.instant('plugins.manage.enable')}: ${plugin.name}`;
@@ -168,7 +168,6 @@ export class PluginCardComponent implements OnInit {
       );
       this.childBridgeRestartInProgress = false;
     } finally {
-
       setTimeout(() => {
         this.childBridgeRestartInProgress = false;
       }, action === 'restart' ? 12000 : action === 'stop' ? 6000 : 1000);
