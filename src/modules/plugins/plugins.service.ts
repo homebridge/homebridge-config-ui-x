@@ -152,7 +152,7 @@ export class PluginsService {
     }));
 
     this.installedPlugins = plugins;
-    return _.orderBy(plugins, [(resultItem: { name: string }) => { return resultItem.name === this.configService.name; }, 'updateAvailable', 'betaUpdateAvailable', 'name'], ['desc', 'desc', 'desc', 'asc']);
+    return _.orderBy(plugins, [(resultItem: HomebridgePlugin) => { return resultItem.name === this.configService.name; }, 'updateAvailable', 'betaUpdateAvailable', 'name'], ['desc', 'desc', 'desc', 'asc']);
   }
 
   /**
@@ -273,7 +273,7 @@ export class PluginsService {
   }
 
   /**
-   * Get a single plugin from the registry using it's exact name
+   * Get a single plugin from the registry using its exact name
    * Used as a fallback if the search queries are not finding the desired plugin
    * @param query
    */
@@ -369,7 +369,7 @@ export class PluginsService {
     // check if the plugin is currently installed
     const existingPlugin = this.installedPlugins.find(x => x.name === pluginAction.name);
 
-    // if the plugin is already installed, match the install path
+    // if the plugin is already installed, match the installation path
     if (existingPlugin) {
       installPath = existingPlugin.installPath;
     }
@@ -557,7 +557,7 @@ export class PluginsService {
         try {
           const config: HomebridgeConfig = await fs.readJson(this.configService.configPath);
           config.bridge.advertiser = 'ciao';
-          await fs.writeJsonSync(this.configService.configPath, config);
+          fs.writeJsonSync(this.configService.configPath, config);
         } catch (e) {
           this.logger.warn('Could not update config.json', e.message);
         }
@@ -670,7 +670,8 @@ export class PluginsService {
 
   /**
    * Do a UI update from the bundle
-   * @param version
+   * @param pluginAction
+   * @param client
    */
   public async doUiBundleUpdate(pluginAction: PluginActionDto, client: EventEmitter) {
     const prefix = path.dirname(path.dirname(path.dirname(process.env.UIX_BASE_PATH)));
@@ -686,7 +687,7 @@ export class PluginsService {
 
   /**
    * Sets a flag telling the system to update the package next time the UI is restarted
-   * Dependend on OS support - currently only supported by the homebridge/homebridge docker image
+   * Dependent on OS support - currently only supported by the homebridge/homebridge docker image
    */
   public async updateSelfOffline(client: EventEmitter) {
     client.emit('stdout', color.yellow(`${this.configService.name} has been scheduled to update on the next container restart.\n\r\n\r`));
@@ -748,19 +749,14 @@ export class PluginsService {
 
       // filter some options from the UI config when using service mode
       if (this.configService.serviceMode) {
-        configSchema.layout = configSchema.layout.filter(x => {
-          if (x.ref === 'log') {
-            return false;
-          }
-          return true;
+        configSchema.layout = configSchema.layout.filter((x: any) => {
+          return x.ref !== 'log';
         });
 
-        const advanced = configSchema.layout.find(x => x.ref === 'advanced');
-        advanced.items = advanced.items.filter(x => {
-          if (x === 'sudo' || x.key === 'restart') {
-            return false;
-          }
-          return true;
+        const advanced = configSchema.layout.find((x: any) => x.ref === 'advanced');
+        advanced.items = advanced.items.filter((x: any) => {
+          return !(x === 'sudo' || x.key === 'restart');
+
         });
       }
     }
@@ -1019,7 +1015,7 @@ export class PluginsService {
   /**
    * Load any @scoped homebridge modules
    */
-  private async getInstalledScopedModules(requiredPath, scope): Promise<Array<{ name: string; path: string; installPath: string }>> {
+  private async getInstalledScopedModules(requiredPath: string, scope: string): Promise<Array<{ name: string; path: string; installPath: string }>> {
     try {
       if ((await fs.stat(path.join(requiredPath, scope))).isDirectory()) {
         const scopedModules = await fs.readdir(path.join(requiredPath, scope));
@@ -1079,7 +1075,7 @@ export class PluginsService {
   }
 
   /**
-   * Return a boolean if the plugin is an @scoped/homebridge plugin
+   * Return a boolean if the plugin is a @scoped/homebridge plugin
    */
   private isScopedPlugin(name: string): boolean {
     return (name.charAt(0) === '@' && name.split('/').length > 0 && name.split('/')[1].indexOf('homebridge-') === 0);
@@ -1153,7 +1149,7 @@ export class PluginsService {
   }
 
   /**
-   * Get path from the npm prefix, eg. /usr/local/lib/node_modules
+   * Get path from the npm prefix, e.g. /usr/local/lib/node_modules
    */
   private getNpmPrefixToSearchPaths(): string[] {
     const paths = [];
@@ -1282,6 +1278,8 @@ export class PluginsService {
    * @param command
    * @param cwd
    * @param client
+   * @param cols
+   * @param rows
    */
   private async runNpmCommand(command: Array<string>, cwd: string, client: EventEmitter, cols?: number, rows?: number) {
     // remove synology @eaDir folders from the node_modules
@@ -1313,7 +1311,7 @@ export class PluginsService {
       client.emit('stdout', color.yellow(`You may experience issues while running on Node.js ${process.version}.\n\r\n\r`));
     }
 
-    // setup the environment for the call
+    // set up the environment for the call
     const env = {};
     Object.assign(env, process.env);
     Object.assign(env, {
@@ -1338,7 +1336,7 @@ export class PluginsService {
       });
     }
 
-    // on windows we want to ensure the global prefix is the same as the install path
+    // on windows, we want to ensure the global prefix is the same as the installation path
     if (os.platform() === 'win32') {
       Object.assign(env, {
         npm_config_prefix: cwd,
@@ -1448,7 +1446,7 @@ export class PluginsService {
   }
 
   /**
-   * Loads the list of verified plugins from github
+   * Loads the list of verified plugins from GitHub
    */
   private async loadVerifiedPluginsList() {
     clearTimeout(this.verifiedPluginsRetryTimeout);

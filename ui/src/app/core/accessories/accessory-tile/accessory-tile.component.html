@@ -1,8 +1,8 @@
 <ng-container [ngSwitch]="service.type">
   <a href="javascript:void(0)" class="manage-accessory-button" (click)="$accessories.showAccessoryInformation(service)">
-    <i class="fas fa-cog primary-text" *ngIf="$accessories.readyForControl"></i>
+    <i class="fas fa-fw fa-cog primary-text" *ngIf="$accessories.readyForControl"></i>
   </a>
-  <i class="fas fa-spin fa-sync-alt refreshing-accessory-status-icon text-grey" *ngIf="!$accessories.readyForControl">
+  <i class="fas fa-fw fa-spin fa-sync-alt refreshing-accessory-status-icon text-grey" *ngIf="!$accessories.readyForControl">
   </i>
 
   <app-switch *ngSwitchCase="'Switch'" [service]="service">Switch</app-switch>

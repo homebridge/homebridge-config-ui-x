@@ -16,7 +16,7 @@ import { NotificationService } from '@/app/core/notification.service';
   styleUrls: ['./manual-plugin-config-modal.component.scss'],
 })
 export class ManualPluginConfigModalComponent implements OnInit {
-  @Input() plugin;
+  @Input() plugin: any;
 
   public pluginAlias: string;
   public pluginType: 'platform' | 'accessory';
@@ -30,7 +30,7 @@ export class ManualPluginConfigModalComponent implements OnInit {
   public currentBlockIndex: number | null = null;
   public saveInProgress = false;
 
-  public monacoEditor;
+  public monacoEditor: any;
   public editorOptions = {
     language: 'json',
     theme: this.$settings.theme.startsWith('dark-mode') ? 'vs-dark' : 'vs-light',
@@ -62,7 +62,7 @@ export class ManualPluginConfigModalComponent implements OnInit {
     return this.pluginType === 'accessory' ? 'accessories' : 'platforms';
   }
 
-  async onEditorInit(editor) {
+  async onEditorInit(editor: any) {
     this.monacoEditor = editor;
     window['editor'] = editor;
     await this.monacoEditor.getModel().setValue(this.currentBlock);
@@ -80,7 +80,7 @@ export class ManualPluginConfigModalComponent implements OnInit {
           this.loading = false;
         }
       },
-      (err) => {
+      () => {
         this.loading = false;
       },
     );
@@ -103,9 +103,11 @@ export class ManualPluginConfigModalComponent implements OnInit {
     );
   }
 
-  // configBlocks(): Array<any> {
-  //   return this.pluginConfig;
-  // }
+  blockChanged() {
+    for (const block of this.pluginConfig) {
+      block.name = block.config.name || block.name;
+    }
+  }
 
   addBlock() {
     if (!this.saveCurrentBlock()) {
@@ -204,33 +206,30 @@ export class ManualPluginConfigModalComponent implements OnInit {
     this.show = '';
   }
 
-  save() {
+  async save() {
     this.saveInProgress = true;
     if (!this.saveCurrentBlock()) {
       this.saveInProgress = false;
       return;
     }
 
-    return this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig)
-      .toPromise()
-      .then(data => {
-        this.$toastr.success(
-          this.translate.instant('plugins.settings.toast_restart_required'),
-          this.translate.instant('plugins.settings.toast_plugin_config_saved'),
-        );
+    try {
+      await this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig)
+        .toPromise();
+      this.$toastr.success(
+        this.translate.instant('plugins.settings.toast_restart_required'),
+        this.translate.instant('plugins.settings.toast_plugin_config_saved'));
 
-        this.$notification.configUpdated.next(undefined);
-        this.activeModal.close();
-      })
-      .catch(err => {
-        this.$toastr.error(this.translate.instant('config.toast_failed_to_save_config'), this.translate.instant('toast.title_error'));
-        this.saveInProgress = false;
-      });
+      this.$notification.configUpdated.next(undefined);
+      this.activeModal.close();
+    } catch {
+      this.$toastr.error(this.translate.instant('config.toast_failed_to_save_config'), this.translate.instant('toast.title_error'));
+      this.saveInProgress = false;
+    }
   }
 
   openFullConfigEditor() {
     this.$router.navigate(['/config']);
     this.activeModal.close();
   }
-
 }

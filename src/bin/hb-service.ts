@@ -744,7 +744,7 @@ export class HomebridgeServiceHelper {
         // correct the port
         if (uiConfigBlock.port !== this.uiPort) {
           uiConfigBlock.port = this.uiPort;
-          this.logger(`WARNING: HOMEBRIDGE CONFIG UI PORT IN ${process.env.UIX_CONFIG_PATH} CHANGED TO ${this.uiPort}`, 'warn');
+          this.logger(`WARNING: HOMEBRIDGE UI PORT IN ${process.env.UIX_CONFIG_PATH} CHANGED TO ${this.uiPort}`, 'warn');
         }
         // delete unnecessary config
         delete uiConfigBlock.restart;

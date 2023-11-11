@@ -5,7 +5,7 @@
       <p class="h4 text-center mb-4" [innerText]="page.title | translate"></p>
 
       <div class="md-form">
-        <i class="fas fa-user-shield prefix grey-text"></i>
+        <i class="fas fa-fw fa-user-shield prefix grey-text"></i>
         <input formControlName="username" type="text" id="form-username" autocomplete="off" autocapitalize="none"
           class="form-control pl-0 pr-0">
         <label for="form-username" [ngClass]="{'active': page.title === 'users.title_edit_user'}"
@@ -13,7 +13,7 @@
       </div>
 
       <div class="md-form">
-        <i class="fas fa-user prefix grey-text"></i>
+        <i class="fas fa-fw fa-user prefix grey-text"></i>
         <input formControlName="name" type="text" id="form-name" autocomplete="name" class="form-control pl-0 pr-0">
         <label for="form-name" [ngClass]="{'active': page.title === 'users.title_edit_user'}"
           [translate]="'users.label_full_name'">Full Name</label>
@@ -22,7 +22,7 @@
       <div class="row pb-3">
         <div class="col-md-6">
           <div class="md-form">
-            <i class="fas fa-lock prefix grey-text"></i>
+            <i class="fas fa-fw fa-lock prefix grey-text"></i>
             <input formControlName="password" type="password" autocomplete="new-password" id="form-pass"
               class="form-control pl-0 pr-0" [ngClass]="{
                 'is-invalid': form.controls.password.dirty && form.controls.password.errors

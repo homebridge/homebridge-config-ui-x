@@ -10,7 +10,7 @@
     "hideOnMobile": false
   },
   {
-    "x": 16,
+    "x": 15,
     "y": 8,
     "component": "ChildBridgeWidgetComponent",
     "cols": 5,

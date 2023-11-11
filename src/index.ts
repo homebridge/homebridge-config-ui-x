@@ -7,12 +7,12 @@ import * as path from 'path';
 import { program } from 'commander';
 import * as semver from 'semver';
 
-let homebridge;
+let homebridge: any;
 
 class HomebridgeConfigUi {
-  log;
+  log: any;
 
-  constructor(log, config) {
+  constructor(log: any, config: any) {
     this.log = log;
 
     process.env.UIX_CONFIG_PATH = homebridge.user.configPath();
@@ -49,7 +49,7 @@ class HomebridgeConfigUi {
   }
 
   /**
-   * Run plugin as a seperate node.js process
+   * Run plugin as a separate node.js process
    */
   fork() {
     const ui = child_process.fork(path.resolve(__dirname, 'bin/fork'), null, {
@@ -62,7 +62,7 @@ class HomebridgeConfigUi {
       process.kill(process.pid, 'SIGTERM');
     });
 
-    ui.on('error', (err) => {
+    ui.on('error', () => {
       // do nothing
     });
   }
@@ -75,7 +75,7 @@ class HomebridgeConfigUi {
   }
 
   /**
-   * Setup the service mode process helper
+   * Set up the service mode process helper
    * This ensures the Homebridge process is killed when hb-service
    * is killed with SIGTERM to prevent stale processes.
    */

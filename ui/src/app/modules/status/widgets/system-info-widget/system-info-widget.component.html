@@ -3,7 +3,7 @@
     System Information
   </div>
   <div class="d-flex flex-wrap w-100 pl-1 pr-1" *ngIf="serverInfo">
-    <table class="table table-sm table-borderless gridster-item-content ">
+    <table class="table table-sm table-borderless gridster-item-content">
       <tbody>
         <tr *ngIf="serverInfo.os">
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_os'">OS</th>
@@ -15,41 +15,16 @@
               {{ serverInfo.os.distro }}
             </span>
             <span *ngSwitchDefault>
-              <a *ngIf="nodejsInfo.showNextUpdateWarning" href="https://homebridge.io/w/JJSun" rel="noopener noreferrer" target="_blank" class="system-info-link"
-                ngbTooltip="{{'status.widget.systeminfo.label_glibc_warning' | translate }}">
-                <i class="primary-text fas fa-circle-up"></i>
+              <a *ngIf="nodejsInfo.showNextUpdateWarning" class="system-info-link" href="javascript:void(0)" (click)="glibcVersionModal()">
+                <i class="primary-text fas fa-fw fa-exclamation-circle"></i>
               </a> {{ serverInfo.os.distro }} {{ serverInfo.os.codename | titlecase }} ({{ serverInfo.os.release }})
             </span>
           </td>
           <td *ngIf="serverInfo.homebridgeRunningInSynologyPackage">
-            <a *ngIf="nodejsInfo.showNextUpdateWarning" href="https://homebridge.io/w/JJSun" rel="noopener noreferrer" target="_blank" class="system-info-link"
-               ngbTooltip="{{'status.widget.systeminfo.label_glibc_warning' | translate }}">
-              <i class="primary-text fas fa-circle-up"></i>
+            <a *ngIf="nodejsInfo.showNextUpdateWarning" class="system-info-link" href="javascript:void(0)" (click)="glibcVersionModal()">
+              <i class="primary-text fas fa-fw fa-exclamation-circle"></i>
             </a> Synology DSM
           </td>
-        </tr>
-        <tr *ngIf="serverInfo.homebridgeRunningInDocker">
-            <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_docker'">Docker</th>
-            <td>Yes</td>
-        </tr>
-        <tr *ngIf="serverInfo.homebridgeServiceMode">
-            <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_service_mode'">Service Mode</th>
-            <td>Yes</td>
-        </tr>
-        <tr>
-          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_nodejs_version'">
-            Node.js Version
-          </th>
-          <td>
-            <a href="https://homebridge.io/w/JTKEF" rel="noopener noreferrer" target="_blank" class="system-info-link"
-              ngbTooltip="{{ nodejsInfo.updateAvailable ? ('plugins.status_update_available' | translate) + ' - ' + nodejsInfo.latestVersion : ''}}">
-              <i *ngIf="nodejsInfo.showUpdateWarning" class="primary-text fas fa-circle-up"></i> {{ serverInfo.nodeVersion }}
-            </a>
-          </td>
-        </tr>
-        <tr>
-          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_nodejs_path'">Node.js Path</th>
-          <td>{{ nodejsInfo.installPath }}</td>
         </tr>
         <tr *ngIf="serverInfo.network.ip4">
           <th scope="row" class="text-nowrap">
@@ -72,6 +47,21 @@
           <td>{{ serverInfo.serviceUser }}</td>
         </tr>
         <tr>
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_nodejs_version'">
+            Node.js Version
+          </th>
+          <td>
+            <a href="https://homebridge.io/w/JTKEF" rel="noopener noreferrer" target="_blank" class="system-info-link"
+              ngbTooltip="{{ nodejsInfo.updateAvailable ? ('plugins.status_update_available' | translate) + ' - ' + nodejsInfo.latestVersion : ''}}">
+              <i *ngIf="nodejsInfo.updateAvailable" class="primary-text fas fa-fw fa-circle-up"></i>
+            </a> {{ serverInfo.nodeVersion }}
+          </td>
+        </tr>
+        <tr>
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_nodejs_path'">Node.js Path</th>
+          <td>{{ nodejsInfo.installPath }}</td>
+        </tr>
+        <tr>
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_storage_path'">Storage Path</th>
           <td>{{ serverInfo.homebridgeStoragePath }}</td>
         </tr>
@@ -86,6 +76,28 @@
         <tr>
           <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_timezone'">Timezone</th>
           <td>{{ serverInfo.time.timezone }}</td>
+        </tr>
+        <tr *ngIf="serverInfo.homebridgeRunningInDocker">
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_docker'">Docker</th>
+          <td class="text-nowrap" [translate]="'status.widget.systeminfo.label_yes'">Yes</td>
+        </tr>
+        <tr *ngIf="serverInfo.homebridgeRunningInSynologyPackage">
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_synology_package'">
+            Synology Package
+          </th>
+          <td class="text-nowrap" [translate]="'status.widget.systeminfo.label_yes'">Yes</td>
+        </tr>
+        <tr>
+          <th scope="row" class="text-nowrap" [translate]="'status.widget.systeminfo.label_service_mode'">Service Mode
+          </th>
+          <td class="text-nowrap" *ngIf="serverInfo.homebridgeServiceMode">
+            {{ 'status.widget.systeminfo.label_enabled' | translate }}
+          </td>
+          <td class="text-nowrap" *ngIf="!serverInfo.homebridgeServiceMode">
+            <a class="system-info-link" href="javascript:void(0)" (click)="serviceModeModal()">
+              <i class="primary-text fas fa-fw fa-exclamation-circle"></i>
+            </a> {{ 'status.widget.systeminfo.label_disabled' | translate }}
+          </td>
         </tr>
       </tbody>
     </table>

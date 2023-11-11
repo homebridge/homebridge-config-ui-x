@@ -74,6 +74,7 @@ export class LogService {
   /**
    * Connect pty
    * @param client
+   * @param size
    */
   private tailLog(client: EventEmitter, size: LogTermSize) {
     const command = [...this.command];
@@ -212,11 +213,11 @@ export class LogService {
     }
 
     // watch for lines and emit to client
-    const onLine = (line) => {
+    const onLine = (line: string) => {
       client.emit('stdout', line + '\n\r');
     };
 
-    const onError = (err) => {
+    const onError = (err: Error) => {
       client.emit('stdout', err.message + '\n\r');
     };
 

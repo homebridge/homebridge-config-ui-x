@@ -189,7 +189,7 @@ export class LinuxInstaller extends BasePlatform {
   }
 
   /**
-   * Rebuilds the Node.js modules for Homebridge Config UI X
+   * Rebuilds the Node.js modules for Homebridge UI
    */
   public async rebuild(all = false) {
     try {

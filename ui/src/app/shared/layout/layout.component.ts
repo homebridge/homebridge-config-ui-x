@@ -88,6 +88,21 @@ export class LayoutComponent implements OnInit {
     });
   }
 
+  restartHomebridge() {
+    const ref = this.$modal.open(ConfirmComponent);
+    ref.componentInstance.title = this.translate.instant('menu.hbrestart.title');
+    ref.componentInstance.message = this.translate.instant('menu.hbrestart.confirmation');
+    ref.componentInstance.confirmButtonLabel = this.translate.instant('menu.hbrestart.confirm_button');
+
+    ref.result
+      .then(() => {
+        this.$router.navigate(['/restart']);
+      })
+      .finally(() => {
+        // do nothing
+      });
+  }
+
   restartServer() {
     const ref = this.$modal.open(ConfirmComponent);
     ref.componentInstance.title = this.translate.instant('menu.linux.label_restart_server');
@@ -141,5 +156,4 @@ export class LayoutComponent implements OnInit {
       });
     }
   }
-
 }

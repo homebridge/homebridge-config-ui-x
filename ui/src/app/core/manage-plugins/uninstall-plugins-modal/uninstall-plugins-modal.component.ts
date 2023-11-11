@@ -12,8 +12,8 @@ import { ManagePluginsModalComponent } from '@/app/core/manage-plugins/manage-pl
   styleUrls: ['./uninstall-plugins-modal.component.scss'],
 })
 export class UninstallPluginsModalComponent implements OnInit {
-  @Input() plugin;
-  @Input() action;
+  @Input() plugin: any;
+  @Input() action: string;
 
   public loading = true;
   public removeConfig = true;
@@ -64,11 +64,14 @@ export class UninstallPluginsModalComponent implements OnInit {
   }
 
   async removePluginConfig() {
+    // Remove the config for this plugin
     await this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, []).toPromise();
+
+    // If the plugin is in the disabled list, then remove it
+    await this.$api.put(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}/enable`, {}).toPromise();
 
     this.$toastr.success(
       this.translate.instant('plugins.settings.toast_plugin_config_saved'),
     );
   }
-
 }

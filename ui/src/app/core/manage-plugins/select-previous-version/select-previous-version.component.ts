@@ -11,7 +11,7 @@ import { TranslateService } from '@ngx-translate/core';
   styleUrls: ['./select-previous-version.component.scss'],
 })
 export class SelectPreviousVersionComponent implements OnInit {
-  @Input() plugin;
+  @Input() plugin: any;
 
   public loading = true;
   public versions: Array<{ name: string; version: string }> = [];
@@ -37,7 +37,7 @@ export class SelectPreviousVersionComponent implements OnInit {
           tagVersions[result.tags[key]] = key;
         }
 
-        const versions = result.versions.filter(x => tagVersions[x] || !x.includes('-')).reverse();
+        const versions = result.versions.filter((x: any) => tagVersions[x] || !x.includes('-')).reverse();
 
         for (const version of versions.slice(0, 20)) {
           this.versions.push({
@@ -62,5 +62,4 @@ export class SelectPreviousVersionComponent implements OnInit {
   doInstall() {
     this.activeModal.close(this.selectedVersion);
   }
-
 }

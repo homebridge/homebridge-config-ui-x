@@ -5,9 +5,9 @@
 
 Supported Languages: :gb: :de: :fr: :poland: :czech_republic: :ru: :cn: :hungary: :jp: :es: :netherlands: :tr: :it: :bulgaria: :sweden: :norway: :slovenia: :brazil: :portugal: :indonesia: :kr: :macedonia: :thailand: :israel: :ukraine:
 
-# Homebridge Config UI X
+# Homebridge UI
 
-[Homebridge Config UI X](https://www.npmjs.com/package/homebridge-config-ui-x) is a web based management tool for [Homebridge](https://github.com/homebridge/homebridge) that allows you to manage all aspects of your Homebridge setup.
+[Homebridge UI](https://www.npmjs.com/package/homebridge-config-ui-x) is a web based management tool for [Homebridge](https://github.com/homebridge/homebridge) that allows you to manage all aspects of your Homebridge setup.
 
 * Install and configure Homebridge plugins
 * Edit the Homebridge `config.json` with advanced JSON syntax checking and structure validation
@@ -20,13 +20,13 @@ Supported Languages: :gb: :de: :fr: :poland: :czech_republic: :ru: :cn: :hungary
 * Set up and manage your Homebridge plugins as [child bridges](https://github.com/homebridge/homebridge/wiki/Child-Bridges)
 * and more...
 
-Homebridge Config UI X also provides a tool called [`hb-service`](https://github.com/homebridge/homebridge-config-ui-x/wiki/Homebridge-Service-Command) which makes it easy to set up Homebridge as a service on Linux/Raspbian, macOS and Windows 10.
+Homebridge UI also provides a tool called [`hb-service`](https://github.com/homebridge/homebridge-config-ui-x/wiki/Homebridge-Service-Command) which makes it easy to set up Homebridge as a service on Linux/Raspbian, macOS and Windows 10.
 
 [![Status](screenshots/homebridge-config-ui-x-darkmode-status.png?2020-01-07)](#usage)
 
 # Installation Instructions
 
-For detailed instructions on how to set up Node.js and Homebridge with Homebridge Config UI X as a service, see the guides on the wiki:
+For detailed instructions on how to set up Node.js and Homebridge with Homebridge UI as a service, see the guides on the wiki:
 
 * <img src="https://user-images.githubusercontent.com/3979615/78118327-9853f200-7452-11ea-88aa-5e57ebcf3070.png" alt="homebridge-raspbian-image" height="16px" width="16px"/> [Setup Homebridge using the official Homebridge Raspberry Pi Image](https://github.com/homebridge/homebridge-raspbian-image/wiki/Getting-Started)
 * <img src="https://user-images.githubusercontent.com/3979615/59594350-07b45b80-9137-11e9-85fd-e75093ba91a4.png" alt="raspbian" height="16px" width="16px"/> [Setup Homebridge on a Raspberry Pi (Raspbian)](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Raspbian)
@@ -138,4 +138,4 @@ Join the [Official Homebridge Discord](https://discord.gg/C87Pvq3) community and
 
 # Credit
 
-Homebridge Config UI X was originally created by [oznu](https://github.com/oznu).
+Homebridge UI was originally created by [oznu](https://github.com/oznu).

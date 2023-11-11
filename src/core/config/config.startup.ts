@@ -12,7 +12,7 @@ export async function getStartupConfig() {
   const configPath = process.env.UIX_CONFIG_PATH || path.resolve(os.homedir(), '.homebridge/config.json');
 
   const homebridgeConfig = await fs.readJSON(configPath);
-  const ui = Array.isArray(homebridgeConfig.platforms) ? homebridgeConfig.platforms.find(x => x.platform === 'config') : undefined;
+  const ui = Array.isArray(homebridgeConfig.platforms) ? homebridgeConfig.platforms.find((x: any) => x.platform === 'config') : undefined;
 
   const config = {} as {
     host?: '::' | '0.0.0.0' | string;
@@ -22,12 +22,12 @@ export async function getStartupConfig() {
       pfx?: Buffer;
       passphrase?: string;
     };
-    cspWsOveride?: string;
+    cspWsOverride?: string;
     debug?: boolean;
   };
 
   // check if IPv6 is available on this host
-  const ipv6 = Object.entries(os.networkInterfaces()).filter(([net, addresses]) => {
+  const ipv6 = Object.entries(os.networkInterfaces()).filter(([, addresses]) => {
     return addresses.find(x => x.family === 'IPv6');
   }).length;
 
@@ -68,7 +68,7 @@ export async function getStartupConfig() {
 
   // preload proxy host settings
   if (ui.proxyHost) {
-    config.cspWsOveride = `wss://${ui.proxyHost} ws://${ui.proxyHost}`;
+    config.cspWsOverride = `wss://${ui.proxyHost} ws://${ui.proxyHost}`;
   }
 
   // preload debug settings

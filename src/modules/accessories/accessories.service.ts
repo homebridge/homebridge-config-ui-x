@@ -28,13 +28,13 @@ export class AccessoriesService {
    * Connects the client to the homebridge service
    * @param client
    */
-  public async connect(client) {
+  public async connect(client: any) {
     if (!this.configService.homebridgeInsecureMode) {
       this.logger.error('Homebridge must be running in insecure mode to control accessories');
       return;
     }
 
-    let services;
+    let services: any[];
 
     const loadAllAccessories = async (refresh: boolean) => {
       if (!refresh) {
@@ -55,7 +55,7 @@ export class AccessoriesService {
     await loadAllAccessories(false);
 
     // handling incoming requests
-    const requestHandler = async (msg?) => {
+    const requestHandler = async (msg?: any) => {
       if (msg.set) {
         const service: ServiceType = services.find(x => x.uniqueId === msg.set.uniqueId);
         if (service) {
@@ -76,12 +76,12 @@ export class AccessoriesService {
 
     const monitor = await this.hapClient.monitorCharacteristics();
 
-    const updateHandler = (data) => {
+    const updateHandler = (data: any) => {
       client.emit('accessories-data', data);
     };
     monitor.on('service-update', updateHandler);
 
-    const instanceUpdateHandler = async (data) => {
+    const instanceUpdateHandler = async (data: any) => {
       client.emit('accessories-reload-required', services);
     };
     this.hapClient.on('instance-discovered', instanceUpdateHandler);
@@ -113,13 +113,12 @@ export class AccessoriesService {
    * Refresh the characteristics from Homebridge
    * @param services
    */
-  private refreshCharacteristics(services) {
+  private refreshCharacteristics(services: any[]) {
     services.forEach(service => service.refreshCharacteristics());
   }
 
   /**
    * Load all the accessories from Homebridge
-   * @param refreshServices
    */
   public async loadAccessories(): Promise<ServiceType[]> {
     if (!this.configService.homebridgeInsecureMode) {
@@ -141,7 +140,7 @@ export class AccessoriesService {
   }
 
   /**
-   * Get a single accessory and refresh it's characteristics
+   * Get a single accessory and refresh its characteristics
    * @param uniqueId
    */
   public async getAccessory(uniqueId: string) {
@@ -163,7 +162,7 @@ export class AccessoriesService {
   /**
    * Set a characteristics value
    * @param uniqueId
-   * @param iid
+   * @param characteristicType
    * @param value
    */
   public async setAccessoryCharacteristic(uniqueId: string, characteristicType: string, value: number | boolean | string) {
@@ -212,7 +211,7 @@ export class AccessoriesService {
           value = false;
         }
       } else if (typeof value === 'number') {
-        value = value === 1 ? true : false;
+        value = value === 1;
       }
 
       if (typeof value !== 'boolean') {
@@ -238,7 +237,7 @@ export class AccessoriesService {
       if (username in accessoryLayout) {
         return accessoryLayout[username];
       } else {
-        throw new Error('User not in Acccessory Layout');
+        throw new Error('User not in Accessory Layout');
       }
     } catch (e) {
       return [
@@ -256,7 +255,7 @@ export class AccessoriesService {
    * @param layout
    */
   public async saveAccessoryLayout(user: string, layout: Record<string, unknown>) {
-    let accessoryLayout;
+    let accessoryLayout: any;
 
     try {
       accessoryLayout = await fs.readJson(this.configService.accessoryLayoutPath);

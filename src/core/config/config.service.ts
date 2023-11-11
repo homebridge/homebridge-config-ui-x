@@ -21,7 +21,6 @@ export class ConfigService {
   public configBackupPath = path.resolve(this.storagePath, 'backups/config-backups');
   public instanceBackupPath = path.resolve(this.storagePath, 'backups/instance-backups');
   public homebridgeInsecureMode = Boolean(process.env.UIX_INSECURE_MODE === '1');
-  public homebridgeNoTimestamps = Boolean(process.env.UIX_LOG_NO_TIMESTAMPS === '1');
   public homebridgeVersion: string;
 
   // server env
@@ -125,7 +124,7 @@ export class ConfigService {
   /**
    * Loads the config from the config.json
    */
-  public parseConfig(homebridgeConfig) {
+  public parseConfig(homebridgeConfig: HomebridgeConfig) {
     this.homebridgeConfig = homebridgeConfig;
 
     if (!this.homebridgeConfig.bridge) {
@@ -337,11 +336,7 @@ export class ConfigService {
    */
   private async checkIfRunningOnRaspberryPi() {
     try {
-      if (await fs.pathExists('/usr/bin/vcgencmd') && await fs.pathExists('/usr/bin/raspi-config')) {
-        this.runningOnRaspberryPi = true;
-      } else {
-        this.runningOnRaspberryPi = false;
-      }
+      this.runningOnRaspberryPi = await fs.pathExists('/usr/bin/vcgencmd') && await fs.pathExists('/usr/bin/raspi-config');
     } catch (e) {
       this.runningOnRaspberryPi = false;
     }

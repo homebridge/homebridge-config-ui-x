@@ -37,7 +37,7 @@
           <div *ngIf="item._bridge?.username">
             <div *ngIf="deviceInfo[item._bridge?.username] === false">
               <ngb-alert type="info" [dismissible]="false" class="mt-3">
-                <i class="fa fa-info-circle"></i>
+                <i class="fa fa-fw fa-info-circle"></i>
                 {{ 'child_bridge.message_restart_homebridge' | translate }}
                 <br>{{ 'child_bridge.message_return_to_pair' | translate }}
               </ngb-alert>
@@ -54,7 +54,7 @@
               </div>
               <div *ngIf="deviceInfo[item._bridge?.username]._isPaired=== true">
                 <div class="text-center">
-                  <i class="fa fa-check-circle primary-text" style="font-size: 50px;"></i>
+                  <i class="fa fa-fw fa-check-circle primary-text" style="font-size: 50px;"></i>
                   <p class="mt-2">
                     {{ 'child_bridge.label_bridge_paired' | translate }}
                   </p>
@@ -66,7 +66,7 @@
                   [disabled]="restartInProgress[item._bridge?.username]"
                   ngbTooltip="{{'menu.tooltip_restart' | translate}}" container="body" openDelay="150"
                   (click)="restartChildBridge(item._bridge?.username)">
-                  <i class="fas fa-fw nav-menu-icon" [ngClass]="{
+                  <i class="fas fa-fw fa-fw nav-menu-icon" [ngClass]="{
                     'fa-power-off': !restartInProgress[item._bridge?.username],
                     'fa-spinner fa-pulse': restartInProgress[item._bridge?.username]
                   }"></i>
@@ -83,13 +83,13 @@
     </div>
 
     <ngb-alert *ngIf="!configBlocks.length && canConfigure" type="info" [dismissible]="false">
-      <i class="fa fa-info-circle"></i>
+      <i class="fa fa-fw fa-info-circle"></i>
       {{ 'child_bridge.message_must_configure_plugin_first' | translate }}
     </ngb-alert>
 
     <div *ngIf="!canConfigure" class="mb-2">
       <ngb-alert type="info" [dismissible]="false">
-        <i class="fa fa-info-circle"></i>
+        <i class="fa fa-fw fa-info-circle"></i>
         {{ 'plugins.settings.message_manual_config_required' | translate }}
         {{ 'plugins.settings.message_consult_documentation' | translate }}
       </ngb-alert>
@@ -105,7 +105,7 @@
       <a href="https://github.com/homebridge/homebridge/wiki/Child-Bridges" target="_blank" rel="noopener noreferrer"
         class="primary-text">
         {{ 'child_bridge.message_wiki_link' | translate }}
-        <i class='fas fa-external-link-alt'></i>
+        <i class='fas fa-fw fa-external-link-alt'></i>
       </a>
     </p>
 
@@ -117,7 +117,7 @@
 
     <div style="min-width: 25%;" class="d-none d-lg-block text-center">
       <a *ngIf="plugin.links.npm" [href]="plugin.links.npm" target="_blank" rel="noopener noreferrer"
-        class="pr-3 manage-plugin-config-external-icons dark-mode-highlight"><i class="fab fa-npm"></i></a>
+        class="pr-3 manage-plugin-config-external-icons dark-mode-highlight"><i class="fab fa-fw fa-npm"></i></a>
       <a *ngIf="plugin.links.homepage" [href]="plugin.links.homepage" target="_blank" rel="noopener noreferrer"
         class="manage-plugin-config-external-icons dark-mode-highlight">
         <i [ngClass]="plugin.links.homepage | externalLinkIcon"></i>
@@ -129,7 +129,7 @@
         [translate]="'form.button_cancel'">Cancel</button>
       <button type="button" class="btn btn-primary" (click)="save()" [disabled]="saveInProgress"
         *ngIf="configBlocks.length">
-        {{ 'form.button_save' | translate }} <i *ngIf="saveInProgress" class="fas fa-spinner fa-pulse"></i>
+        {{ 'form.button_save' | translate }} <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
       </button>
     </div>
   </div>
