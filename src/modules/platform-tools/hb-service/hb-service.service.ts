@@ -4,6 +4,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import * as fs from 'fs-extra';
 import { ConfigService } from '../../../core/config/config.service';
 import { Logger } from '../../../core/logger/logger.service';
+import { HbServiceStartupSettings } from './hb-service.dto';
 
 @Injectable()
 export class HbServiceService {
@@ -12,7 +13,8 @@ export class HbServiceService {
   constructor(
     private readonly configService: ConfigService,
     private readonly logger: Logger
-  ) { }
+  ) {
+  }
 
   /**
    * Returns the Homebridge startup settings
@@ -43,7 +45,7 @@ export class HbServiceService {
   /**
    * Sets the Homebridge startup settings
    */
-  async setHomebridgeStartupSettings(data) {
+  async setHomebridgeStartupSettings(data: HbServiceStartupSettings) {
     // restart ui on next restart
     this.configService.hbServiceUiRestartRequired = true;
 
@@ -91,8 +93,8 @@ export class HbServiceService {
     }
 
     const removeColour = new stream.Transform({
-      transform(chunk, encoding, callback) {
-        callback(null, chunk.toString('utf8').replace(/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]/g, ''));
+      transform(chunk, _encoding, callback) {
+        callback(null, chunk.toString().replace(/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]/g, ''));
       },
     });
 

@@ -10,16 +10,17 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
   - This mimics the behaviour of updating Homebridge itself
   - The option of 'Update Anyway' will still appear for other plugins when running an unsupported version of Node.js
   - GLIBC Version is now cached
+- When uninstalling a plugin, it will also be removed from the disabled plugin list if it was previously disabled
 
 ### UI Changes
 
 #### General
 
 - Fixed icon widths throughout UI
-- Updated menu (thanks [mkz212](https://github.com/mkz212)!)
+- Updated menu (thanks [@mkz212](https://github.com/mkz212)!)
   - Added links to main dropdown menu: 'Logs' and 'Restart Homebridge' + reordered list
   - Changed the menu layout order
-  - Made the dropdown darker in dark mode ([1660](https://github.com/homebridge/homebridge-config-ui-x/pull/1660))
+  - Made the dropdown darker in dark mode ([#1660](https://github.com/homebridge/homebridge-config-ui-x/pull/1660))
   - Username is now displayed by logout Menu option
 
 #### Status Page
@@ -31,7 +32,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
   - Added alert icon and modal when running an older OS that cannot update to Node.js 18/20
   - Added alert icon and modal when not running in service mode
 - **Homebridge Widget**
-  - Added ability to scroll Homebridge widget ([1651](https://github.com/homebridge/homebridge-config-ui-x/pull/1651))
+  - Added ability to scroll Homebridge widget ([#1651](https://github.com/homebridge/homebridge-config-ui-x/pull/1651))
   - 'Update available' icons are now up-arrows to match plugins page
 
 #### Plugins Page
@@ -82,19 +83,19 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
     - `plugins.manage.message_thanks_for_updating_restart`
     - `plugins.donate.message_learn_more`
     - `status.message_code_scan_instructions`
-- **i18n:** Update pl.json ([1633](https://github.com/homebridge/homebridge-config-ui-x/pull/1633))
-- **i18n:** Update fr.json ([1629](https://github.com/homebridge/homebridge-config-ui-x/pull/1629))
-- **i18n:** Update es.json (Improves Spanish localization) ([1632](https://github.com/homebridge/homebridge-config-ui-x/pull/1632))
+- **i18n:** Update pl.json ([#1633](https://github.com/homebridge/homebridge-config-ui-x/pull/1633))
+- **i18n:** Update fr.json ([#1629](https://github.com/homebridge/homebridge-config-ui-x/pull/1629))
+- **i18n:** Update es.json (Improves Spanish localization) ([#1632](https://github.com/homebridge/homebridge-config-ui-x/pull/1632))
 
 ### Other Changes
 
-- Updated dependencies, including `@homebridge/node-pty-prebuilt-multiarch` to `0.11.10`
+- Updated dependencies, including `@homebridge/node-pty-prebuilt-multiarch` to `0.11.10` (thanks [@NorthernMan54](https://github.com/NorthernMan54)!)
 
 ## 4.52.1 (2023-11-04)
 
 ### Other Changes
 
-- **i18n:** Update de.json ([1627](https://github.com/homebridge/homebridge-config-ui-x/pull/1627))
+- **i18n:** Update de.json ([#1627](https://github.com/homebridge/homebridge-config-ui-x/pull/1627))
 
 ### Bug Fixes
 
@@ -126,10 +127,10 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - `hb-service` will now refuse to install `node` versions less than `16.18.0`
 - Plugin node warning screen will appear when running a version of `node` lower than `18.15.0` (bumped up from `14.15.0`)
 - UI node warning screen will appear when running a version of `node` lower than `18.15.0` (bumped up from `10.17.0`)
-- Obtain correct beta branch name for Homebridge (and UI) (https://github.com/homebridge/homebridge-config-ui-x/commit/212b3eb1d5cb3ccda01fe2c3be711b80af4d5bf6)
-- Rename pre-release npm tag from `test` to `beta` for consistency with other Homebridge repositories (https://github.com/homebridge/homebridge-config-ui-x/commit/86ea73ffd0b35f372a164ee42e17a996905cffb6)
+- Obtain correct beta branch name for Homebridge (and UI) ([#212b3eb](https://github.com/homebridge/homebridge-config-ui-x/commit/212b3eb1d5cb3ccda01fe2c3be711b80af4d5bf6))
+- Rename pre-release npm tag from `test` to `beta` for consistency with other Homebridge repositories ([#86ea73f](https://github.com/homebridge/homebridge-config-ui-x/commit/86ea73ffd0b35f372a164ee42e17a996905cffb6))
 - Updated dependencies
-- Update @homebridge/node-pty-prebuilt-multiarch to version v0.11.8 ( Updated build process and back-level support for Synology DSM devices )
+- Update `@homebridge/node-pty-prebuilt-multiarch` to version v0.11.8 (updated build process and back-level support for Synology DSM devices)
 
 ## 4.51.2 (2023-10-27)
 

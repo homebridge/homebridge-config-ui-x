@@ -20,6 +20,7 @@ export class TerminalService {
   /**
    * Create a new terminal session
    * @param client
+   * @param size
    */
   async startSession(client: WsEventEmitter, size: TermSize) {
     this.ending = false;

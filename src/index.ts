@@ -7,12 +7,12 @@ import * as path from 'path';
 import { program } from 'commander';
 import * as semver from 'semver';
 
-let homebridge;
+let homebridge: any;
 
 class HomebridgeConfigUi {
-  log;
+  log: any;
 
-  constructor(log, config) {
+  constructor(log: any, config: any) {
     this.log = log;
 
     process.env.UIX_CONFIG_PATH = homebridge.user.configPath();

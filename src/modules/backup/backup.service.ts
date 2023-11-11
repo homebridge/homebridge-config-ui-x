@@ -29,7 +29,7 @@ const pump = util.promisify(pipeline);
 
 @Injectable()
 export class BackupService {
-  private restoreDirectory;
+  private restoreDirectory: string;
 
   constructor(
     private readonly configService: ConfigService,
@@ -62,7 +62,7 @@ export class BackupService {
   }
 
   /**
-   * Creates the .tar.gz instance backup of the curent Homebridge instance
+   * Creates the .tar.gz instance backup of the current Homebridge instance
    */
   private async createBackup() {
     // prepare a temp working directory
@@ -180,7 +180,7 @@ export class BackupService {
   }
 
   /**
-   * Runs the job to create a a scheduled backup
+   * Runs the job to create a scheduled backup
    */
   async runScheduledBackupJob() {
     // ensure backup path exists
@@ -594,9 +594,9 @@ export class BackupService {
 
     // restore accessories
     const sourceAccessoriesPath = path.resolve(this.restoreDirectory, 'etc', 'accessories');
-    const targetAccessoriestPath = path.resolve(storagePath, 'accessories');
+    const targetAccessoriesPath = path.resolve(storagePath, 'accessories');
     if (await fs.pathExists(sourceAccessoriesPath)) {
-      await fs.copy(sourceAccessoriesPath, targetAccessoriestPath, {
+      await fs.copy(sourceAccessoriesPath, targetAccessoriesPath, {
         filter: (filePath) => {
           client.emit('stdout', `Restoring ${path.basename(filePath)}\r\n`);
           return true;
@@ -639,11 +639,11 @@ export class BackupService {
     // clone elements from the source config that we care about
     const targetConfig: HomebridgeConfig = JSON.parse(JSON.stringify({
       bridge: sourceConfig.bridge,
-      accessories: sourceConfig.accessories?.map((x) => {
+      accessories: sourceConfig.accessories?.map((x: any) => {
         delete x.plugin_map;
         return x;
       }) || [],
-      platforms: sourceConfig.platforms?.map((x) => {
+      platforms: sourceConfig.platforms?.map((x: any) => {
         if (x.platform === 'google-home') {
           x.platform = 'google-smarthome';
           x.notice = 'Keep your token a secret!';
@@ -721,7 +721,7 @@ export class BackupService {
       // if running in standalone mode, need to find the pid of homebridge and kill it
       if (os.platform() === 'linux' && this.configService.ui.standalone) {
         try {
-          // try get pid by port
+          // try to get pid by port
           const getPidByPort = (port: number): number => {
             try {
               return parseInt(child_process.execSync(
@@ -732,7 +732,7 @@ export class BackupService {
             }
           };
 
-          // try get pid by name
+          // try to get pid by name
           const getPidByName = (): number => {
             try {
               return parseInt(child_process.execSync('pidof homebridge').toString('utf8').trim(), 10);
@@ -769,7 +769,7 @@ export class BackupService {
   }
 
   /**
-   * Checks the bridge.bind options are valid for the current system when restoring.
+   * Checks the 'bridge.bind' options are valid for the current system when restoring.
    */
   private checkBridgeBindConfig(restoredConfig: HomebridgeConfig) {
     if (restoredConfig.bridge.bind) {
