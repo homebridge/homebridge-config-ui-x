@@ -20,7 +20,7 @@ import { InformationComponent } from '@/app/core/components/information/informat
   styleUrls: ['./plugin-card.component.scss'],
 })
 export class PluginCardComponent implements OnInit {
-  @Input() plugin;
+  @Input() plugin: any;
 
   private io = this.$ws.getExistingNamespace('child-bridges');
 
@@ -63,7 +63,7 @@ export class PluginCardComponent implements OnInit {
       gt(this.$settings.env.homebridgeVersion, '1.5.0-beta.1') : false;
   }
 
-  @Input() set childBridges(childBridges) {
+  @Input() set childBridges(childBridges: any[]) {
     this.hasChildBridges = childBridges.length > 0;
     this.hasUnpairedChildBridges = childBridges.filter(x => x.paired === false).length > 0;
     this.allChildBridgesStopped = childBridges.filter(x => x.manuallyStopped === true).length === childBridges.length;
@@ -140,7 +140,7 @@ export class PluginCardComponent implements OnInit {
         plugin.disabled = false;
         // start all child bridges
         if (this.hasChildBridges && this.canStopStartChildBridges) {
-          this.doChildBridgeAction('start');
+          await this.doChildBridgeAction('start');
         }
         this.$toastr.success(
           this.$translate.instant('plugins.settings.toast_restart_required'),

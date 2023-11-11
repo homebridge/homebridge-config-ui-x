@@ -73,7 +73,6 @@
               *ngIf="$auth.user.admin">
               {{ 'menu.label_ui_settings' | translate }}
             </a>
-            <div class="dropdown-divider waves-effect waves-light" *ngIf="$auth.user.admin"></div>
             <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light"
               (click)="backupRestoreHomebridge()" *ngIf="$auth.user.admin">
               {{ 'backup.title_backup_restore' | translate }}
