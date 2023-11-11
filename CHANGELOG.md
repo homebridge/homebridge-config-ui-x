@@ -9,8 +9,41 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - Prevent the UI from updating when running an unsupported version of Node.js
   - This mimics the behaviour of updating Homebridge itself
   - The option of 'Update Anyway' will still appear for other plugins when running an unsupported version of Node.js
-  - GLIBC Version is now Cached
-- Enhanced the 'Restart Homebridge Now' modal to now Show 'Restart Child Bridges' modal after any plugin update if that plugin is set up as a child bridge.
+  - GLIBC Version is now cached
+
+### UI Changes
+
+#### General
+
+- Fixed icon widths throughout UI
+- Updated menu (thanks [mkz212](https://github.com/mkz212)!)
+  - Added links to main dropdown menu: 'Logs' and 'Restart Homebridge' + reordered list
+  - Changed the menu layout order
+  - Made the dropdown darker in dark mode ([1660](https://github.com/homebridge/homebridge-config-ui-x/pull/1660))
+  - Username is now displayed by logout Menu option
+
+#### Status Page
+
+- Updated default layout
+- **System Information Widget**
+  - Update ordering of rows
+  - Added `Node.js Path` and `Plugin Path` rows
+  - Added alert icon and modal when running an older OS that cannot update to Node.js 18/20
+  - Added alert icon and modal when not running in service mode
+- **Homebridge Widget**
+  - Added ability to scroll Homebridge widget ([1651](https://github.com/homebridge/homebridge-config-ui-x/pull/1651))
+  - 'Update available' icons are now up-arrows to match plugins page
+
+#### Plugins Page
+
+- Enhanced the 'Restart Homebridge Now' modal to now Show 'Restart Child Bridges' modal after any plugin update if that plugin is set up as a child bridge
+- Change plugin options dropdown icon to vertical ellipsis for consistency with restart Homebridge icon in top menu
+- Move plugin homepage link to plugin options dropdown
+- Move Homebridge UI API link to plugin options dropdown
+- Hide 'Donate' and 'Verified' text (on plugin tiles) on small screens
+- 'Verified' text on plugin tile now opens a modal rather than linking to Homebridge wiki
+- When `Update Availble`/`Beta Update Available` are available an arrow icon is now displayed by Plugin menu icon
+- Added icons to plugin statuses: 'Installed' and 'Not Installed'
 
 ### i18n Changes
 
@@ -55,19 +88,6 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 
 ### Other Changes
 
-- Overall UI
-  - [Fixed Icon Widths](https://github.com/homebridge/homebridge-config-ui-x/commit/46035d29016d135bd86c795fc26360d801f0fe22) throughout UI
-- Update Plugin Tiles
-  - Add Plugin Homepage to Plugin Dropdown
-  - When `Update Availble`/`Beta Update Available` are available a purple arrow is nodw displayed by Plugin menu
-- Updated Menu, Thanks [mkz212](https://github.com/mkz212) 
-  - Changed the menu layout order
-  - Made the dropdown darker ([1660](https://github.com/homebridge/homebridge-config-ui-x/pull/1660))
-  - Username is now displayed by logout Menu option.
-- Widget Updates, Thanks [mkz212](https://github.com/mkz212) 
-  - Update System Information Widget ordering
-  - Added ability to scroll Homebridge widget ([1651](https://github.com/homebridge/homebridge-config-ui-x/pull/1651))
-  - Updated default layout
 - Updated dependencies, including `@homebridge/node-pty-prebuilt-multiarch` to `0.11.10`
 
 ## 4.52.1 (2023-11-04)
