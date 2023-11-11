@@ -82,10 +82,12 @@ export class LogService {
     this.io.socket.on('stdout', (data: string) => {
       console.log(data);
       if (this.pluginName) {
+        console.log(JSON.stringify(data));
         const lines = data.split('\n');
         let includeNextLine = false;
 
         lines.forEach((line) => {
+          this.term.write(line);
           if (includeNextLine) {
             if (line.match(/] \[[a-zA-Z0-9]+] /)) {
               includeNextLine = false;
