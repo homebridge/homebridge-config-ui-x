@@ -80,6 +80,7 @@ export class LogService {
 
     // subscribe to incoming data events from server to client
     this.io.socket.on('stdout', (data: string) => {
+      console.log(data);
       if (this.pluginName) {
         const lines = data.split('\n');
         let includeNextLine = false;
