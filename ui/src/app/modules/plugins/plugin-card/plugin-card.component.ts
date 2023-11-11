@@ -64,7 +64,7 @@ export class PluginCardComponent implements OnInit {
 
     // check if mobile
     if (window.screen.width < 768) { // 768px portrait
-      this.detectMobile = true;
+      this.deviceIsMobile = true;
     }
   }
 
