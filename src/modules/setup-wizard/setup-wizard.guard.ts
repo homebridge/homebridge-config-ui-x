@@ -1,6 +1,5 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Observable } from 'rxjs';
-
 import { ConfigService } from '../../core/config/config.service';
 
 @Injectable()

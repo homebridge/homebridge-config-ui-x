@@ -13,7 +13,7 @@ export class PluginsMarkdownDirective implements OnInit {
   ngOnInit() {
     // ensure third party links open in a new window without a referrer
     const links = this.el.nativeElement.querySelectorAll('a');
-    links.forEach((a) => {
+    links.forEach((a: any) => {
       a.target = '_blank';
       a.rel = 'noopener noreferrer';
     });

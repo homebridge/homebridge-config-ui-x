@@ -1,28 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import * as crypto from 'crypto';
 import * as os from 'os';
 import * as path from 'path';
+import { Injectable } from '@nestjs/common';
 import * as fs from 'fs-extra';
-import * as crypto from 'crypto';
-import * as semver from 'semver';
 import * as _ from 'lodash';
-
-export interface HomebridgeConfig {
-  bridge: {
-    username: string;
-    pin: string;
-    name: string;
-    port: number;
-    advertiser?: 'avahi' | 'resolved' | 'ciao' | 'bonjour-hap';
-    bind?: string | string[];
-  };
-  mdns?: {
-    interface?: string | string[];
-  };
-  platforms: Record<string, any>[];
-  accessories: Record<string, any>[];
-  plugins?: string[];
-  disabledPlugins?: string[];
-}
+import * as semver from 'semver';
 
 @Injectable()
 export class ConfigService {
@@ -39,7 +21,6 @@ export class ConfigService {
   public configBackupPath = path.resolve(this.storagePath, 'backups/config-backups');
   public instanceBackupPath = path.resolve(this.storagePath, 'backups/instance-backups');
   public homebridgeInsecureMode = Boolean(process.env.UIX_INSECURE_MODE === '1');
-  public homebridgeNoTimestamps = Boolean(process.env.UIX_LOG_NO_TIMESTAMPS === '1');
   public homebridgeVersion: string;
 
   // server env
@@ -143,7 +124,7 @@ export class ConfigService {
   /**
    * Loads the config from the config.json
    */
-  public parseConfig(homebridgeConfig) {
+  public parseConfig(homebridgeConfig: HomebridgeConfig) {
     this.homebridgeConfig = homebridgeConfig;
 
     if (!this.homebridgeConfig.bridge) {
@@ -355,11 +336,7 @@ export class ConfigService {
    */
   private async checkIfRunningOnRaspberryPi() {
     try {
-      if (await fs.pathExists('/usr/bin/vcgencmd') && await fs.pathExists('/usr/bin/raspi-config')) {
-        this.runningOnRaspberryPi = true;
-      } else {
-        this.runningOnRaspberryPi = false;
-      }
+      this.runningOnRaspberryPi = await fs.pathExists('/usr/bin/vcgencmd') && await fs.pathExists('/usr/bin/raspi-config');
     } catch (e) {
       this.runningOnRaspberryPi = false;
     }
@@ -372,4 +349,22 @@ export class ConfigService {
     return fs.createReadStream(this.ui.loginWallpaper || this.customWallpaperPath);
   }
 
+}
+
+export interface HomebridgeConfig {
+  bridge: {
+    username: string;
+    pin: string;
+    name: string;
+    port: number;
+    advertiser?: 'avahi' | 'resolved' | 'ciao' | 'bonjour-hap';
+    bind?: string | string[];
+  };
+  mdns?: {
+    interface?: string | string[];
+  };
+  platforms: Record<string, any>[];
+  accessories: Record<string, any>[];
+  plugins?: string[];
+  disabledPlugins?: string[];
 }

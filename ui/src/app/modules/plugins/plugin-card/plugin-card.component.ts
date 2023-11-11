@@ -12,6 +12,7 @@ import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.s
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
 import { DonateModalComponent } from '@/app/modules/plugins/donate-modal/donate-modal.component';
+import { InformationComponent } from '@/app/core/components/information/information.component';
 
 @Component({
   selector: 'app-plugin-card',
@@ -19,7 +20,7 @@ import { DonateModalComponent } from '@/app/modules/plugins/donate-modal/donate-
   styleUrls: ['./plugin-card.component.scss'],
 })
 export class PluginCardComponent implements OnInit {
-  @Input() plugin;
+  @Input() plugin: any;
 
   private io = this.$ws.getExistingNamespace('child-bridges');
 
@@ -62,7 +63,7 @@ export class PluginCardComponent implements OnInit {
       gt(this.$settings.env.homebridgeVersion, '1.5.0-beta.1') : false;
   }
 
-  @Input() set childBridges(childBridges) {
+  @Input() set childBridges(childBridges: any[]) {
     this.hasChildBridges = childBridges.length > 0;
     this.hasUnpairedChildBridges = childBridges.filter(x => x.paired === false).length > 0;
     this.allChildBridgesStopped = childBridges.filter(x => x.manuallyStopped === true).length === childBridges.length;
@@ -81,12 +82,20 @@ export class PluginCardComponent implements OnInit {
     this._childBridges = childBridges;
   }
 
-  openFundingModal(plugin) {
+  openFundingModal(plugin: any) {
     const ref = this.$modal.open(DonateModalComponent);
     ref.componentInstance.plugin = plugin;
   }
 
-  disablePlugin(plugin) {
+  openVerifiedModal() {
+    const ref = this.$modal.open(InformationComponent);
+    ref.componentInstance.title = this.$translate.instant('plugins.manage.modal_verified_title');
+    ref.componentInstance.message = this.$translate.instant('plugins.manage.modal_verified_message');
+    ref.componentInstance.ctaButtonLabel = this.$translate.instant('plugins.manage.modal_verified_cta');
+    ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/homebridge/wiki/verified-Plugins';
+  }
+
+  disablePlugin(plugin: any) {
     const ref = this.$modal.open(ConfirmComponent);
 
     ref.componentInstance.title = `${this.$translate.instant('plugins.manage.disable')}: ${plugin.name}`;
@@ -116,7 +125,7 @@ export class PluginCardComponent implements OnInit {
     });
   }
 
-  enablePlugin(plugin) {
+  enablePlugin(plugin: any) {
     const ref = this.$modal.open(ConfirmComponent);
 
     ref.componentInstance.title = `${this.$translate.instant('plugins.manage.enable')}: ${plugin.name}`;
@@ -131,7 +140,7 @@ export class PluginCardComponent implements OnInit {
         plugin.disabled = false;
         // start all child bridges
         if (this.hasChildBridges && this.canStopStartChildBridges) {
-          this.doChildBridgeAction('start');
+          await this.doChildBridgeAction('start');
         }
         this.$toastr.success(
           this.$translate.instant('plugins.settings.toast_restart_required'),
@@ -159,7 +168,6 @@ export class PluginCardComponent implements OnInit {
       );
       this.childBridgeRestartInProgress = false;
     } finally {
-
       setTimeout(() => {
         this.childBridgeRestartInProgress = false;
       }, action === 'restart' ? 12000 : action === 'stop' ? 6000 : 1000);

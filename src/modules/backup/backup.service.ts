@@ -1,30 +1,35 @@
-import * as os from 'os';
-import * as tar from 'tar';
-import * as path from 'path';
-import * as util from 'util';
-import * as fs from 'fs-extra';
-import * as color from 'bash-color';
-import * as unzipper from 'unzipper';
 import * as child_process from 'child_process';
-import * as dayjs from 'dayjs';
-import { pipeline } from 'stream';
 import { EventEmitter } from 'events';
-import { Injectable, BadRequestException, NotFoundException, InternalServerErrorException, StreamableFile } from '@nestjs/common';
-import { FastifyReply } from 'fastify';
+import * as os from 'os';
+import * as path from 'path';
+import { pipeline } from 'stream';
+import * as util from 'util';
 import { MultipartFile } from '@fastify/multipart';
-
-import { PluginsService } from '../plugins/plugins.service';
-import { SchedulerService } from '../../core/scheduler/scheduler.service';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  StreamableFile
+} from '@nestjs/common';
+import * as color from 'bash-color';
+import * as dayjs from 'dayjs';
+import { FastifyReply } from 'fastify';
+import * as fs from 'fs-extra';
+import * as tar from 'tar';
+import * as unzipper from 'unzipper';
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service';
 import { Logger } from '../../core/logger/logger.service';
+import { SchedulerService } from '../../core/scheduler/scheduler.service';
+import { PluginsService } from '../plugins/plugins.service';
 import { HomebridgePlugin } from '../plugins/types';
 
 const pump = util.promisify(pipeline);
 
 @Injectable()
 export class BackupService {
-  private restoreDirectory;
+  private restoreDirectory: string;
 
   constructor(
     private readonly configService: ConfigService,
@@ -57,7 +62,7 @@ export class BackupService {
   }
 
   /**
-   * Creates the .tar.gz instance backup of the curent Homebridge instance
+   * Creates the .tar.gz instance backup of the current Homebridge instance
    */
   private async createBackup() {
     // prepare a temp working directory
@@ -170,12 +175,12 @@ export class BackupService {
       }
     } else {
       // when not using a custom backup path, just ensure it exists
-      return await fs.ensureDir(this.configService.instanceBackupPath);
+      return fs.ensureDir(this.configService.instanceBackupPath);
     }
   }
 
   /**
-   * Runs the job to create a a scheduled backup
+   * Runs the job to create a scheduled backup
    */
   async runScheduledBackupJob() {
     // ensure backup path exists
@@ -332,7 +337,7 @@ export class BackupService {
    */
   async removeRestoreDirectory() {
     if (this.restoreDirectory) {
-      return await fs.remove(this.restoreDirectory);
+      return fs.remove(this.restoreDirectory);
     }
   }
 
@@ -392,7 +397,7 @@ export class BackupService {
     // display backup archive information
     client.emit('stdout', color.cyan('Backup Archive Information\r\n'));
     client.emit('stdout', `Source Node.js Version: ${backupInfo.node}\r\n`);
-    client.emit('stdout', `Source Homebridge Config UI X Version: v${backupInfo.uix}\r\n`);
+    client.emit('stdout', `Source Homebridge UI Version: v${backupInfo.uix}\r\n`);
     client.emit('stdout', `Source Platform: ${backupInfo.platform}\r\n`);
     client.emit('stdout', `Created: ${backupInfo.timestamp}\r\n`);
 
@@ -589,9 +594,9 @@ export class BackupService {
 
     // restore accessories
     const sourceAccessoriesPath = path.resolve(this.restoreDirectory, 'etc', 'accessories');
-    const targetAccessoriestPath = path.resolve(storagePath, 'accessories');
+    const targetAccessoriesPath = path.resolve(storagePath, 'accessories');
     if (await fs.pathExists(sourceAccessoriesPath)) {
-      await fs.copy(sourceAccessoriesPath, targetAccessoriestPath, {
+      await fs.copy(sourceAccessoriesPath, targetAccessoriesPath, {
         filter: (filePath) => {
           client.emit('stdout', `Restoring ${path.basename(filePath)}\r\n`);
           return true;
@@ -634,11 +639,11 @@ export class BackupService {
     // clone elements from the source config that we care about
     const targetConfig: HomebridgeConfig = JSON.parse(JSON.stringify({
       bridge: sourceConfig.bridge,
-      accessories: sourceConfig.accessories?.map((x) => {
+      accessories: sourceConfig.accessories?.map((x: any) => {
         delete x.plugin_map;
         return x;
       }) || [],
-      platforms: sourceConfig.platforms?.map((x) => {
+      platforms: sourceConfig.platforms?.map((x: any) => {
         if (x.platform === 'google-home') {
           x.platform = 'google-smarthome';
           x.notice = 'Keep your token a secret!';
@@ -716,7 +721,7 @@ export class BackupService {
       // if running in standalone mode, need to find the pid of homebridge and kill it
       if (os.platform() === 'linux' && this.configService.ui.standalone) {
         try {
-          // try get pid by port
+          // try to get pid by port
           const getPidByPort = (port: number): number => {
             try {
               return parseInt(child_process.execSync(
@@ -727,7 +732,7 @@ export class BackupService {
             }
           };
 
-          // try get pid by name
+          // try to get pid by name
           const getPidByName = (): number => {
             try {
               return parseInt(child_process.execSync('pidof homebridge').toString('utf8').trim(), 10);
@@ -764,7 +769,7 @@ export class BackupService {
   }
 
   /**
-   * Checks the bridge.bind options are valid for the current system when restoring.
+   * Checks the 'bridge.bind' options are valid for the current system when restoring.
    */
   private checkBridgeBindConfig(restoredConfig: HomebridgeConfig) {
     if (restoredConfig.bridge.bind) {

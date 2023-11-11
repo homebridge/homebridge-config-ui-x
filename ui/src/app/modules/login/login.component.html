@@ -8,7 +8,7 @@
       <div *ngIf="!twoFactorCodeRequired">
 
         <div class="md-form">
-          <i class="fas fa-user prefix grey-text"></i>
+          <i class="fas fa-fw fa-user prefix grey-text"></i>
           <input #username formControlName="username" type="text" id="form-username" autofocus autocomplete="username"
             autocapitalize="none" tabindex="1" class="form-control pl-0 pr-0" [ngClass]="{
             'is-invalid': form.controls.username.dirty && form.controls.username.errors
@@ -17,7 +17,7 @@
         </div>
 
         <div class="md-form">
-          <i class="fas fa-lock prefix grey-text"></i>
+          <i class="fas fa-fw fa-lock prefix grey-text"></i>
           <input #password formControlName="password" type="password" id="form-pass" autocomplete="current-password"
             tabindex="2" class="form-control pl-0 pr-0" [ngClass]="{
             'is-invalid': form.controls.password.dirty && form.controls.password.errors
@@ -30,7 +30,7 @@
       <div *ngIf="twoFactorCodeRequired">
         <p class="text-center">{{ 'users.setup_2fa_enter_code' | translate }}</p>
         <div class="md-form">
-          <i class="fas fa-key prefix grey-text"></i>
+          <i class="fas fa-fw fa-key prefix grey-text"></i>
           <input #otp formControlName="otp" type="text" id="form-ota" autocomplete="one-time-code" autocapitalize="none"
             inputmode="numeric" pattern="[0-9]*" tabindex="1" class="form-control pl-0 pr-0" [ngClass]="{
               'is-invalid': form.controls.otp.dirty && form.controls.otp.errors

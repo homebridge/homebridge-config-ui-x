@@ -10,7 +10,6 @@ import { AuthService } from '@/app/core/auth/auth.service';
 import { SettingsService } from '@/app/core/settings.service';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { NotificationService } from '@/app/core/notification.service';
-import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { WidgetControlComponent } from './widget-control/widget-control.component';
 import { WidgetAddComponent } from './widget-add/widget-add.component';
 
@@ -39,7 +38,6 @@ export class StatusComponent implements OnInit, OnDestroy {
     private $notification: NotificationService,
     public $auth: AuthService,
     public $settings: SettingsService,
-    public $plugin: ManagePluginsService,
     public $md: MobileDetectService,
   ) { }
 
@@ -97,7 +95,7 @@ export class StatusComponent implements OnInit, OnDestroy {
     });
 
     // this allows widgets to trigger a save to the grid layout
-    // eg. when the order of the accessories in the accessories widget changes
+    // e.g. when the order of the accessories in the accessories widget changes
     this.saveWidgetsEvent.subscribe({
       next: () => {
         this.gridChangedEvent();
@@ -123,7 +121,7 @@ export class StatusComponent implements OnInit, OnDestroy {
     );
   }
 
-  setLayout(layout) {
+  setLayout(layout: any[]) {
     this.dashboard = layout.map((item) => {
       item.$resizeEvent = new Subject();
       item.$configureEvent = new Subject();
@@ -172,7 +170,7 @@ export class StatusComponent implements OnInit, OnDestroy {
     this.options.api.optionsChanged();
   }
 
-  gridResizeEvent(item, itemComponent) {
+  gridResizeEvent(item: any, itemComponent: any) {
     itemComponent.item.$resizeEvent.next('resize');
     this.page.mobile = (window.innerWidth < 1024);
   }

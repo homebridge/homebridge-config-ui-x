@@ -1,16 +1,13 @@
-import * as os from 'os';
-import * as color from 'bash-color';
-import * as semver from 'semver';
 import * as child_process from 'child_process';
-import * as fs from 'fs-extra';
 import { EventEmitter } from 'events';
+import * as os from 'os';
 import { Injectable } from '@nestjs/common';
+import * as color from 'bash-color';
+import * as fs from 'fs-extra';
+import * as semver from 'semver';
 import { Tail } from 'tail';
-
 import { ConfigService } from '../../core/config/config.service';
 import { NodePtyService } from '../../core/node-pty/node-pty.service';
-
-export type LogTermSize = { cols: number; rows: number };
 
 @Injectable()
 export class LogService {
@@ -50,6 +47,7 @@ export class LogService {
   /**
    * Socket handler
    * @param client
+   * @param size
    */
   public connect(client: EventEmitter, size: LogTermSize) {
     this.ending = false;
@@ -76,6 +74,7 @@ export class LogService {
   /**
    * Connect pty
    * @param client
+   * @param size
    */
   private tailLog(client: EventEmitter, size: LogTermSize) {
     const command = [...this.command];
@@ -206,16 +205,19 @@ export class LogService {
           interval: 200,
         },
       });
-    } else if (this.nativeTail.listenerCount('line') === 0) {
-      this.nativeTail.watch();
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    } else { // @ts-expect-error
+      if (this.nativeTail.listenerCount('line') === 0) {
+        this.nativeTail.watch();
+      }
     }
 
     // watch for lines and emit to client
-    const onLine = (line) => {
+    const onLine = (line: string) => {
       client.emit('stdout', line + '\n\r');
     };
 
-    const onError = (err) => {
+    const onError = (err: Error) => {
       client.emit('stdout', err.message + '\n\r');
     };
 
@@ -226,10 +228,17 @@ export class LogService {
     const onEnd = () => {
       this.ending = true;
 
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       this.nativeTail.removeListener('line', onLine);
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       this.nativeTail.removeListener('error', onError);
 
       // stop watching the file if there are no other watchers
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       if (this.nativeTail.listenerCount('line') === 0) {
         this.nativeTail.unwatch();
       }
@@ -250,10 +259,12 @@ export class LogService {
   }
 
   /**
-   * Logs are not configued
+   * Logs are not configured
    */
   private logNotConfigured() {
     this.command = null;
   }
 
 }
+
+export type LogTermSize = { cols: number; rows: number };

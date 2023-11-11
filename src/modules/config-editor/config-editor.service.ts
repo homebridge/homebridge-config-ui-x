@@ -1,9 +1,9 @@
-import * as fs from 'fs-extra';
 import * as path from 'path';
-import * as dayjs from 'dayjs';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { Logger } from '../../core/logger/logger.service';
+import * as dayjs from 'dayjs';
+import * as fs from 'fs-extra';
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
+import { Logger } from '../../core/logger/logger.service';
 import { SchedulerService } from '../../core/scheduler/scheduler.service';
 import { PluginsService } from '../plugins/plugins.service';
 
@@ -28,7 +28,7 @@ export class ConfigEditorService {
   }
 
   /**
-   * Schedule the job to cleanup old config.json backup files
+   * Schedule the job to clean up old config.json backup files
    */
   private scheduleConfigBackupCleanup() {
     const scheduleRule = new this.schedulerService.RecurrenceRule();
@@ -98,7 +98,7 @@ export class ConfigEditorService {
     }
 
     // ensure the username matches the required pattern
-    const usernamePattern = /^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$/;
+    const usernamePattern = /^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$/;
     if (!usernamePattern.test(config.bridge.username)) {
       if (usernamePattern.test(this.configService.homebridgeConfig.bridge.username)) {
         config.bridge.username = this.configService.homebridgeConfig.bridge.username;
@@ -161,7 +161,7 @@ export class ConfigEditorService {
       await fs.rename(this.configService.configPath, path.resolve(this.configService.configBackupPath, 'config.json.' + now.getTime().toString()));
     } catch (e) {
       if (e.code === 'ENOENT') {
-        this.ensureBackupPathExists();
+        await this.ensureBackupPathExists();
       } else {
         this.logger.warn('Could not create a backup of the config.json file to', this.configService.configBackupPath, e.message);
       }
@@ -286,9 +286,11 @@ export class ConfigEditorService {
 
     const idx = config.disabledPlugins.findIndex(x => x === pluginName);
 
-    config.disabledPlugins.splice(idx, 1);
-
-    await this.updateConfigFile(config);
+    // Check plugin is in the list
+    if (idx > -1) {
+      config.disabledPlugins.splice(idx, 1);
+      await this.updateConfigFile(config);
+    }
 
     return config.disabledPlugins;
   }
@@ -299,7 +301,7 @@ export class ConfigEditorService {
   public async listConfigBackups() {
     const dirContents = await fs.readdir(this.configService.configBackupPath);
 
-    const backups = dirContents
+    return dirContents
       .filter(x => x.match(/^config.json.[0-9]{09,15}/))
       .sort()
       .reverse()
@@ -316,8 +318,6 @@ export class ConfigEditorService {
         }
       })
       .filter((x => x && !isNaN(x.timestamp.getTime())));
-
-    return backups;
   }
 
   /**
@@ -333,7 +333,7 @@ export class ConfigEditorService {
     }
 
     // read source backup
-    return await fs.readFile(requestedBackupPath);
+    return fs.readFile(requestedBackupPath);
   }
 
   /**
@@ -343,7 +343,7 @@ export class ConfigEditorService {
     const backups = await this.listConfigBackups();
 
     // delete each backup file
-    await backups.forEach(async (backupFile) => {
+    backups.forEach(async (backupFile) => {
       await fs.unlink(path.resolve(this.configService.configBackupPath, backupFile.file));
     });
   }
@@ -408,7 +408,7 @@ export class ConfigEditorService {
         await fs.remove(sourcePath);
       }
     } catch (e) {
-      this.logger.warn('An error occured while migrating config.json backups to new location', e.message);
+      this.logger.warn('An error occurred while migrating config.json backups to new location', e.message);
     }
   }
 

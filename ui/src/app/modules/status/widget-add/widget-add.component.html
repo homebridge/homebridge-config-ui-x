@@ -21,15 +21,15 @@
   <div class="modal-footer">
     <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="doResetLayout()"
       [translate]="'status.widget.label_reset_layout'">
-      <i class="fas fa-history pr-2"></i> Reset Layout
+      <i class="fas fa-fw fa-history pr-2"></i> Reset Layout
     </button>
     <button *ngIf="!isLayoutUnlocked" type="button" class="btn btn-danger mr-auto" data-dismiss="modal"
       (click)="doLockLayout()" [translate]="'status.widget.label_lock_layout'">
-      <i class="fas fa-lock pr-2"></i> Lock Layout
+      <i class="fas fa-fw fa-lock pr-2"></i> Lock Layout
     </button>
     <button *ngIf="isLayoutUnlocked" type="button" class="btn btn-danger mr-auto" data-dismiss="modal"
       (click)="doUnlockLayout()" [translate]="'status.widget.label_unlock_layout'">
-      <i class="fas fa-lock pr-2"></i> Unlock Layout
+      <i class="fas fa-fw fa-lock pr-2"></i> Unlock Layout
     </button>
     <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')"
       [translate]="'form.button_close'">Close</button>

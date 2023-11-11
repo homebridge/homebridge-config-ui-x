@@ -14,7 +14,7 @@
     <div class="text-center">
       <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="onDownloadBackupClick()"
         [disabled]="clicked">
-        <i *ngIf="clicked" class="fa fa-circle-notch fa-spin"></i>
+        <i *ngIf="clicked" class="fa fa-fw fa-circle-notch fa-spin"></i>
         <span *ngIf="!clicked" [translate]="'backup.button_download_backup_archive'"></span>
       </button>
     </div>
@@ -33,7 +33,7 @@
       <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="onRestoreBackupClick()"
         [disabled]="clicked">
         <span *ngIf="clicked">
-          <i *ngIf="!uploadPercent || uploadPercent === 100" class="fa fa-circle-notch fa-spin"></i>
+          <i *ngIf="!uploadPercent || uploadPercent === 100" class="fa fa-fw fa-circle-notch fa-spin"></i>
           <span *ngIf="uploadPercent && uploadPercent !== 100">{{ uploadPercent }}% - </span>
           <span *ngIf="uploadPercent === 100"> Extracting Archive</span>
           <span *ngIf="uploadPercent !== 100"> {{ 'backup.label_uploading' | translate }}</span>
@@ -47,7 +47,7 @@
 
   <div class="modal-footer" *ngIf="!restoreStarted || restoreFailed === true">
     <button type="button" class="btn btn-elegant mr-auto" (click)="openScheduledBackups()">
-      <i class="far fa-clock"></i> {{ 'backup.title_scheduled_backups' | translate }}
+      <i class="far fa-fw fa-clock"></i> {{ 'backup.title_scheduled_backups' | translate }}
     </button>
     <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')"
       [translate]="'form.button_close'" [disabled]="clicked">Close</button>

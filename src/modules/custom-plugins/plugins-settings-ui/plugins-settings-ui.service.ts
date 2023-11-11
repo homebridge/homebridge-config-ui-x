@@ -1,16 +1,15 @@
 
+import * as child_process from 'child_process';
+import { EventEmitter } from 'events';
 import * as path from 'path';
+import { HttpService } from '@nestjs/axios';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import * as fs from 'fs-extra';
 import * as NodeCache from 'node-cache';
-import * as child_process from 'child_process';
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-
-import { Logger } from '../../../core/logger/logger.service';
 import { ConfigService } from '../../../core/config/config.service';
+import { Logger } from '../../../core/logger/logger.service';
 import { PluginsService } from '../../plugins/plugins.service';
 import { HomebridgePluginUiMetadata } from '../../plugins/types';
-import { EventEmitter } from 'events';
 
 @Injectable()
 export class PluginsSettingsUiService {
@@ -49,7 +48,7 @@ export class PluginsSettingsUiService {
         return reply.code(404).send('Not Found');
       }
 
-      // this will severely limit the ability for this page to do anything if loaded outside of the UI
+      // this will severely limit the ability for this page to do anything if loaded outside the UI
       reply.header('Content-Security-Policy', '');
 
       if (assetPath === 'index.html') {
@@ -59,7 +58,7 @@ export class PluginsSettingsUiService {
       }
 
       if (pluginUi.devServer) {
-        return this.serveAssetsFromDevServer(reply, pluginUi, assetPath);
+        return await this.serveAssetsFromDevServer(reply, pluginUi, assetPath);
       }
 
       // fallback path (to serve static assets from the plugin ui public folder)
@@ -74,9 +73,8 @@ export class PluginsSettingsUiService {
         return reply.code(404).send('Not Found');
       }
     } catch (e) {
-      e.message === 'Not Found' ? reply.code(404) : reply.code(500);
       this.loggerService.error(`[${pluginName}]`, e.message);
-      return reply.send(e.message);
+      return e.message === 'Not Found' ? reply.code(404).send(e.message) : reply.code(500).send(e.message);
     }
   }
 
@@ -119,7 +117,7 @@ export class PluginsSettingsUiService {
       // dev server is only enabled for private plugins
       return (await this.httpService.get(pluginUi.devServer, { responseType: 'text' }).toPromise()).data;
     } else {
-      return await fs.readFile(path.join(pluginUi.publicPath, 'index.html'), 'utf8');
+      return fs.readFile(path.join(pluginUi.publicPath, 'index.html'), 'utf8');
     }
   }
 
@@ -192,7 +190,7 @@ export class PluginsSettingsUiService {
     });
 
     child.on('exit', () => {
-      this.loggerService.log(`[${pluginName}]`, 'Child process ended');
+      this.loggerService.debug(`[${pluginName}]`, 'Custom UI: closed (child process ended)');
     });
 
     child.addListener('message', (response: { action: string; payload: any }) => {
@@ -204,7 +202,7 @@ export class PluginsSettingsUiService {
 
     // function to handle cleanup
     const cleanup = () => {
-      this.loggerService.log(`[${pluginName}]`, 'Terminating child process...');
+      this.loggerService.debug(`[${pluginName}]`, 'Custom UI: closing (terminating child process)...');
 
       const childPid = child.pid;
       if (child.connected) {

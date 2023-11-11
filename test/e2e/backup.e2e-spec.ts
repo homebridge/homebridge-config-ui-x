@@ -1,20 +1,19 @@
-import * as path from 'path';
-import * as fs from 'fs-extra';
-import * as dayjs from 'dayjs';
 import { EventEmitter } from 'events';
-import { ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import * as path from 'path';
 import fastifyMultipart from '@fastify/multipart';
+import { ValidationPipe } from '@nestjs/common';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import { Test, TestingModule } from '@nestjs/testing';
+import * as dayjs from 'dayjs';
 import * as FormData from 'form-data';
-
+import * as fs from 'fs-extra';
 import { AuthModule } from '../../src/core/auth/auth.module';
-import { BackupModule } from '../../src/modules/backup/backup.module';
-import { BackupService } from '../../src/modules/backup/backup.service';
-import { BackupGateway } from '../../src/modules/backup/backup.gateway';
-import { PluginsService } from '../../src/modules/plugins/plugins.service';
 import { ConfigService } from '../../src/core/config/config.service';
 import { SchedulerService } from '../../src/core/scheduler/scheduler.service';
+import { BackupGateway } from '../../src/modules/backup/backup.gateway';
+import { BackupModule } from '../../src/modules/backup/backup.module';
+import { BackupService } from '../../src/modules/backup/backup.service';
+import { PluginsService } from '../../src/modules/plugins/plugins.service';
 
 describe('BackupController (e2e)', () => {
   let app: NestFastifyApplication;

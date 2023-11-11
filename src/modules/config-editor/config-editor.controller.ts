@@ -1,8 +1,24 @@
-import { Controller, UseGuards, Get, Post, Body, Param, Delete, ParseIntPipe, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  UseGuards
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiParam } from '@nestjs/swagger';
-import { ConfigEditorService } from './config-editor.service';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiTags
+} from '@nestjs/swagger';
 import { AdminGuard } from '../../core/auth/guards/admin.guard';
+import { ConfigEditorService } from './config-editor.service';
 
 @ApiTags('Homebridge Config Editor')
 @ApiBearerAuth()
