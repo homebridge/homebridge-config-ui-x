@@ -89,13 +89,12 @@ export class LogService {
             if (line.match(/\^\[\[36m\[.*]\^\[\[0m/)) {
               includeNextLine = false;
             } else {
-              console.log(line);
+              this.term.write(line);
             }
           }
 
-          if (line.includes(` ^[[36m[${pluginName}]^[[0m `)) {
-            // if it does, log the line
-            console.log(line);
+          if (line.includes(` ^[[36m[${this.pluginName}]^[[0m `)) {
+            this.term.write(line);
             includeNextLine = true;
           }
         });
