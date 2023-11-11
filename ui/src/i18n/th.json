@@ -351,7 +351,7 @@
     "status.widget.systeminfo.label_ipv4": "IPv4",
     "status.widget.systeminfo.label_ipv6": "IPv6",
     "status.widget.systeminfo.label_no": "ไม่",
-    "status.widget.systeminfo.label_nodejs_path": พาธของ Node.js",
+    "status.widget.systeminfo.label_nodejs_path": "พาธของ Node.js",
     "status.widget.systeminfo.label_nodejs_version": "รุ่นของ Node.js",
     "status.widget.systeminfo.label_os": "ระบบปฏิบัติการ",
     "status.widget.systeminfo.label_plugin_path": "เส้นทางปลั๊กอิน",

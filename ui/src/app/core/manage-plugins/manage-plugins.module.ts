@@ -17,6 +17,7 @@ import { NodeUpdateRequiredModalComponent } from './node-update-required-modal/n
 import { ManualPluginConfigModalComponent } from './manual-plugin-config-modal/manual-plugin-config-modal.component';
 import { SelectPreviousVersionComponent } from './select-previous-version/select-previous-version.component';
 import { BridgePluginsModalComponent } from './bridge-plugins-modal/bridge-plugins-modal.component';
+import { PluginLogModalComponent } from '@/app/core/manage-plugins/plugin-log-modal/plugin-log-modal.component';
 
 @NgModule({
     declarations: [
@@ -28,6 +29,7 @@ import { BridgePluginsModalComponent } from './bridge-plugins-modal/bridge-plugi
         ManualPluginConfigModalComponent,
         SelectPreviousVersionComponent,
         BridgePluginsModalComponent,
+        PluginLogModalComponent,
     ],
     imports: [
         CommonModule,
