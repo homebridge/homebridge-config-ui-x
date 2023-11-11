@@ -86,14 +86,15 @@ export class LogService {
 
         lines.forEach((line) => {
           if (includeNextLine) {
-            if (line.match(/\^\[\[36m\[.*]\^\[\[0m/)) {
+            if (line.match(/] \[[a-zA-Z0-9]+] /)) {
               includeNextLine = false;
             } else {
               this.term.write(line);
+              return;
             }
           }
 
-          if (line.includes(` ^[[36m[${this.pluginName}]^[[0m `)) {
+          if (line.includes(`] [${this.pluginName}] `)) {
             this.term.write(line);
             includeNextLine = true;
           }
