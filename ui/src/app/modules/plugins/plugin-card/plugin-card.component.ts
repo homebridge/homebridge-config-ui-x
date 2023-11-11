@@ -61,6 +61,11 @@ export class PluginCardComponent implements OnInit {
     // check if the homebridge version supports stopping / starting child bridges
     this.canStopStartChildBridges = this.$settings.env.homebridgeVersion ?
       gt(this.$settings.env.homebridgeVersion, '1.5.0-beta.1') : false;
+
+    // check if mobile
+    if (window.screen.width < 768) { // 768px portrait
+      this.detectMobile = true;
+    }
   }
 
   @Input() set childBridges(childBridges: any[]) {
