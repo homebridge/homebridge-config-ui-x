@@ -18,6 +18,7 @@ export class LogService {
   private webLinksAddon: WebLinksAddon;
   private resize: Subject<any>;
   private elementResize: Subject<any> | undefined;
+  private pluginName: string;
 
   constructor(
     private $ws: WsService,
@@ -26,7 +27,10 @@ export class LogService {
   startTerminal(
     targetElement: ElementRef,
     termOpts: ITerminalOptions = {},
-    elementResize?: Subject<any>) {
+    elementResize?: Subject<any>,
+    pluginName?: string,
+  ) {
+    this.pluginName = pluginName;
 
     // handle element resize events
     this.elementResize = elementResize;
@@ -75,8 +79,29 @@ export class LogService {
     });
 
     // subscribe to incoming data events from server to client
-    this.io.socket.on('stdout', data => {
-      this.term.write(data);
+    this.io.socket.on('stdout', (data: string) => {
+      if (this.pluginName) {
+        const lines = data.split('\n');
+        let includeNextLine = false;
+
+        lines.forEach((line) => {
+          if (includeNextLine) {
+            if (line.match(/36m\[.*?]/)) {
+              includeNextLine = false;
+            } else {
+              this.term.write(line + '\r\n');
+              return;
+            }
+          }
+
+          if (line.includes(`36m[${this.pluginName}]`)) {
+            this.term.write(line + '\r\n');
+            includeNextLine = true;
+          }
+        });
+      } else {
+        this.term.write(data);
+      }
     });
 
     // handle resize events from the client

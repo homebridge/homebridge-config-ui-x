@@ -13,6 +13,7 @@ import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
 import { DonateModalComponent } from '@/app/modules/plugins/donate-modal/donate-modal.component';
 import { InformationComponent } from '@/app/core/components/information/information.component';
+import { PluginLogModalComponent } from '@/app/core/manage-plugins/plugin-log-modal/plugin-log-modal.component';
 
 @Component({
   selector: 'app-plugin-card',
@@ -153,6 +154,15 @@ export class PluginCardComponent implements OnInit {
     }).finally(() => {
       //
     });
+  }
+
+  viewPluginLog(plugin: any) {
+    const ref = this.$modal.open(PluginLogModalComponent, {
+      size: 'xl',
+      backdrop: 'static',
+    });
+
+    ref.componentInstance.plugin = plugin;
   }
 
   async doChildBridgeAction(action: 'stop' | 'start' | 'restart') {
