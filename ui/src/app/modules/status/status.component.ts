@@ -86,7 +86,7 @@ export class StatusComponent implements OnInit, OnDestroy {
       this.consoleStatus = 'down';
     });
 
-    this.io.socket.on('homebridge-status', (data) => {
+    this.io.socket.on('homebridge-status', (data: any) => {
       // check if client is up-to-date
       if (data.packageVersion && data.packageVersion !== this.$settings.uiVersion) {
         window.location.reload();
@@ -169,7 +169,7 @@ export class StatusComponent implements OnInit, OnDestroy {
     this.options.api.optionsChanged();
   }
 
-  gridResizeEvent(item: any, itemComponent: any) {
+  gridResizeEvent(_item: any, itemComponent: any) {
     itemComponent.item.$resizeEvent.next('resize');
     this.page.mobile = (window.innerWidth < 1024);
   }
@@ -245,7 +245,7 @@ export class StatusComponent implements OnInit, OnDestroy {
       });
   }
 
-  manageWidget(item) {
+  manageWidget(item: any) {
     const ref = this.$modal.open(WidgetControlComponent);
     ref.componentInstance.widget = item;
 
@@ -267,5 +267,4 @@ export class StatusComponent implements OnInit, OnDestroy {
     this.io.end();
     this.saveWidgetsEvent.complete();
   }
-
 }

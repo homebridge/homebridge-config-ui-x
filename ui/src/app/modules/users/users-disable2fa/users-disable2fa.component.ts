@@ -32,11 +32,11 @@ export class UsersDisable2faComponent implements OnInit {
   disable2fa() {
     this.invalidCredentials = false;
     this.$api.post('/users/otp/deactivate', this.formGroup.value).subscribe(
-      data => {
+      () => {
         this.activeModal.close();
         this.toastr.success(this.translate.instant('users.setup_2fa_disable_success'), this.translate.instant('toast.title_success'));
       },
-      err => {
+      () => {
         this.formGroup.setValue({ password: '' });
         this.invalidCredentials = true;
       },

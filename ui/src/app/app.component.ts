@@ -8,8 +8,6 @@ import { SettingsService } from '@/app/core/settings.service';
   templateUrl: './app.component.html',
 })
 export class AppComponent {
-  public langdir = 'ltr';
-
   constructor(
     router: Router,
     translate: TranslateService,
@@ -49,7 +47,7 @@ export class AppComponent {
       'he',
     ];
 
-    // which langs should use RTL
+    // which languages should use RTL
     const rtlLanguages = [
       'he',
     ];

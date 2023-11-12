@@ -100,7 +100,7 @@ export class SettingsComponent implements OnInit {
         this.$router.navigate(['/restart']);
       },
       (err) => {
-        this.$toastr.error(err.message, 'Failed to set force setvice restart flag.');
+        this.$toastr.error(err.message, 'Failed to set force service restart flag.');
       },
     );
   }

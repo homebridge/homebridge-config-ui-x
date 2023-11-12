@@ -18,7 +18,7 @@ import { ApiService } from '@/app/core/api.service';
   styleUrls: ['./users-setup2fa.component.scss'],
 })
 export class UsersSetup2faComponent implements OnInit {
-  @Input() public user;
+  @Input() public user: any;
 
   @ViewChild('qrcode', { static: true }) qrcodeElement: ElementRef;
 
@@ -47,14 +47,14 @@ export class UsersSetup2faComponent implements OnInit {
       err => {
         this.activeModal.dismiss();
         this.toastr.error(
-          err.error.message || 'An error occured while attempting to setup 2FA',
+          err.error.message || 'An error occurred while attempting to setup 2FA',
           this.translate.instant('toast.title_error'),
         );
       },
     );
   }
 
-  checkTimeDiff(timestamp) {
+  checkTimeDiff(timestamp: string) {
     const diffMs = dayjs(timestamp).diff(new Date(), 'millisecond');
     if (diffMs < -5000 || diffMs > 5000) {
       this.timeDiffError = diffMs;
@@ -65,12 +65,12 @@ export class UsersSetup2faComponent implements OnInit {
 
   enable2fa() {
     this.$api.post('/users/otp/activate', this.formGroup.value).subscribe(
-      data => {
+      () => {
         this.toastr.success(this.translate.instant('users.setup_2fa_enabled_success'), this.translate.instant('toast.title_success'));
         this.activeModal.close();
       },
       err => {
-        this.toastr.error(err.error.message || 'An error occured', this.translate.instant('toast.title_error'));
+        this.toastr.error(err.error.message || 'An error occurred', this.translate.instant('toast.title_error'));
       },
     );
   }

@@ -139,6 +139,7 @@
     "menu.docker.label_startup_script": "Başlangıç Komutu",
     "menu.docker.label_terminal": "Terminal",
     "menu.hbrestart.confirm_button": "Restart Homebridge",
+    "menu.hbrestart.confirm_service_button": "Restart HB Service & UI",
     "menu.hbrestart.confirmation": "Are you sure you want to restart Homebridge?",
     "menu.hbrestart.title": "Restart Homebridge",
     "menu.label_accessories": "Aksesuarlar",

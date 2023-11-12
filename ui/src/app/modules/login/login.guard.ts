@@ -27,7 +27,7 @@ export class LoginGuard implements CanActivate {
     }
 
     if (this.$settings.env.setupWizardComplete === false) {
-      // redirect to setup wizard page
+      // redirect to set up wizard page
       this.$router.navigate(['/setup']);
       return false;
     }

@@ -16,6 +16,11 @@
         {{ 'menu.hbrestart.confirm_button' | translate }}
       </button>
     </p>
+    <p class="w-100 text-center my-4">
+      <button type="button" class="btn btn-danger w-75 my-0" (click)="restartHomebridgeService()" ngbTooltip="{{ 'reset.message_force_restart_hb_help_text' | translate }}">
+        {{ 'menu.hbrestart.confirm_service_button' | translate }}
+      </button>
+    </p>
     <p class="w-100 text-center my-4" *ngIf="$settings.env.canShutdownRestartHost">
       <button type="button" class="btn btn-danger w-75 my-0" (click)="restartServer()">
         {{ 'menu.linux.label_restart_server' | translate }}

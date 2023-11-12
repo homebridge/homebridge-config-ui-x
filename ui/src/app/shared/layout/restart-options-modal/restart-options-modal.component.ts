@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { ToastrService } from 'ngx-toastr';
+import { ApiService } from '@/app/core/api.service';
 import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
@@ -11,8 +13,10 @@ import { SettingsService } from '@/app/core/settings.service';
 export class RestartOptionsModalComponent implements OnInit {
   constructor(
     public activeModal: NgbActiveModal,
+    private $api: ApiService,
     private $router: Router,
     public $settings: SettingsService,
+    public $toastr: ToastrService,
   ) { }
 
   ngOnInit() {}
@@ -20,6 +24,18 @@ export class RestartOptionsModalComponent implements OnInit {
   restartHomebridge() {
     this.$router.navigate(['/restart']);
     this.activeModal.close();
+  }
+
+  restartHomebridgeService() {
+    this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}).subscribe(
+      () => {
+        this.$router.navigate(['/restart']);
+        this.activeModal.close();
+      },
+      (err) => {
+        this.$toastr.error(err.message, 'Failed to set force service restart flag.');
+      },
+    );
   }
 
   restartServer() {

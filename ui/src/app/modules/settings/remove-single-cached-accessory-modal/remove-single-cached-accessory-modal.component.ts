@@ -36,7 +36,7 @@ export class RemoveSingleCachedAccessoryModalComponent implements OnInit {
     }
   }
 
-  removeAccessory(item) {
+  removeAccessory(item: any) {
     this.deleting = item.UUID;
 
     this.toastr.info(this.translate.instant('reset.toast_removing_cached_accessory_please_wait'));
@@ -46,7 +46,7 @@ export class RemoveSingleCachedAccessoryModalComponent implements OnInit {
         cacheFile: item.$cacheFile,
       },
     }).subscribe(
-      async data => {
+      async () => {
         await this.loadCachedAccessories();
 
         this.deleting = null;
@@ -57,7 +57,7 @@ export class RemoveSingleCachedAccessoryModalComponent implements OnInit {
 
         this.toastr.success(this.translate.instant('reset.toast_cached_accessory_removed'), this.translate.instant('toast.title_success'));
       },
-      err => {
+      () => {
         this.deleting = null;
         this.toastr.error(this.translate.instant(
           'reset.toast_failed_to_delete_cached_accessory'),

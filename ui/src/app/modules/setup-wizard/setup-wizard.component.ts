@@ -6,7 +6,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
-import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
@@ -37,7 +36,6 @@ export class SetupWizardComponent implements OnInit, OnDestroy {
   public restoreUploading = false;
 
   constructor(
-    private $router: Router,
     private $modal: NgbModal,
     private $translate: TranslateService,
     private $toastr: ToastrService,

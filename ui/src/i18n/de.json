@@ -139,6 +139,7 @@
     "menu.docker.label_startup_script": "Start-Skript",
     "menu.docker.label_terminal": "Konsole",
     "menu.hbrestart.confirm_button": "Homebridge neustarten",
+    "menu.hbrestart.confirm_service_button": "Restart HB Service & UI",
     "menu.hbrestart.confirmation": "Bist du sicher, dass du Homebridge neustarten möchtest?",
     "menu.hbrestart.title": "Homebridge neustarten",
     "menu.label_accessories": "Geräte",

@@ -24,7 +24,6 @@ export class RestartComponent implements OnInit, OnDestroy {
   error: any = false;
 
   public uiOnline = false;
-  public homebridgeOnline = false;
 
   constructor(
     private $api: ApiService,

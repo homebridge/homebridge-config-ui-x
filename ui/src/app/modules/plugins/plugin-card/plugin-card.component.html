@@ -26,12 +26,11 @@
       </p>
       <p class="mb-0 grey-text text-right" *ngIf="plugin.verifiedPlugin">
         <a href="javascript:void(0)" class="card-link pink-text text-decoration-none ml-3" *ngIf="plugin.funding"
-          (click)="openFundingModal(plugin)">
+           ngbTooltip="@{{ plugin.name === 'homebridge-config-ui-x' ? 'oznu' : plugin.author }}" (click)="openFundingModal(plugin)">
           <i class="fas fa-fw fa-heart"></i>
           <span class="d-none d-md-inline"> {{ 'plugins.donate.button_donate' | translate }}</span>
         </a>
-        <a href="javascript:void(0)" class="card-link text-decoration-none green-text ml-3" ngbTooltip="@{{ plugin.author }}"
-          (click)="openVerifiedModal()">
+        <a href="javascript:void(0)" class="card-link text-decoration-none green-text ml-3" (click)="openVerifiedModal()">
           <i class="fas fa-fw fa-shield-alt"></i>
           <span class="d-none d-md-inline"> Verified</span>
         </a>

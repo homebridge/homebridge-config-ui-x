@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-const webpack = require('webpack');
 const path = require('path');
-
+const webpack = require('webpack');
 const packageJson = require('./package.json');
 
 const externals = {};

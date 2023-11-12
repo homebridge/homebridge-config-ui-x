@@ -139,6 +139,7 @@
     "menu.docker.label_startup_script": "สคริปต์เริ่มต้น",
     "menu.docker.label_terminal": "เทอร์มินอล",
     "menu.hbrestart.confirm_button": "รีสตาร์ท Homebridge",
+    "menu.hbrestart.confirm_service_button": "Restart HB Service & UI",
     "menu.hbrestart.confirmation": "คุณแน่ใจหรือไม่ว่าต้องการรีสตาร์ท Homebridge?",
     "menu.hbrestart.title": "รีสตาร์ท Homebridge",
     "menu.label_accessories": "อุปกรณ์เสริม",

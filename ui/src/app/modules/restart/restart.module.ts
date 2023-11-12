@@ -14,4 +14,5 @@ import { CoreModule } from '@/app/core/core.module';
     CoreModule,
   ],
 })
+
 export class RestartModule { }

@@ -51,7 +51,7 @@ export class UsersComponent implements OnInit {
     });
   }
 
-  openEditUser(user) {
+  openEditUser(user: any) {
     const ref = this.modalService.open(UsersEditComponent, {
       size: 'lg',
     });
@@ -62,9 +62,9 @@ export class UsersComponent implements OnInit {
     });
   }
 
-  deleteUser(id) {
+  deleteUser(id: string) {
     this.$api.delete(`/users/${id}`).subscribe(
-      data => {
+      () => {
         this.toastr.success(this.translate.instant('users.toast_user_deleted'), this.translate.instant('toast.title_success'));
         this.reloadUsers();
       },
@@ -77,7 +77,7 @@ export class UsersComponent implements OnInit {
     );
   }
 
-  setup2fa(user) {
+  setup2fa(user: any) {
     const ref = this.modalService.open(UsersSetup2faComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -89,7 +89,7 @@ export class UsersComponent implements OnInit {
     });
   }
 
-  disable2fa(user) {
+  disable2fa(user: any) {
     const ref = this.modalService.open(UsersDisable2faComponent, {
       backdrop: 'static',
     });

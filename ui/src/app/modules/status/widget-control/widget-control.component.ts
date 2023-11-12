@@ -25,7 +25,7 @@ export class WidgetControlComponent implements OnInit {
     private $http: HttpClient,
     private $translate: TranslateService,
   ) { }
-  @Input() widget;
+  @Input() widget: any;
 
   // weather
   public searching: boolean;
@@ -77,7 +77,7 @@ export class WidgetControlComponent implements OnInit {
       switchMap(term =>
         term.length < 3 ? [] :
           this.findOpenWeatherMapCity(term).pipe(
-            catchError((e) => {
+            catchError(() => {
               this.searching = false;
               return of([]);
             })),
@@ -112,7 +112,7 @@ export class WidgetControlComponent implements OnInit {
           },
         }),
       }).pipe(
-        map((response: any) => response.list.map((item) => ({
+        map((response: any) => response.list.map((item: any) => ({
               id: item.id,
               name: item.name,
               country: item.sys.country,

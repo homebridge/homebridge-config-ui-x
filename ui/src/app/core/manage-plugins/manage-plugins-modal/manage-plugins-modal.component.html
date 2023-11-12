@@ -58,11 +58,15 @@ hb-service start</pre>
   </div>
   <div class="modal-footer justify-content-between" *ngIf="!onlineUpdateOk || actionComplete || showReleaseNotes || actionFailed">
     <div class="text-left">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
+      <button *ngIf="!justUpdatedPlugin" type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
         {{ 'form.button_close' | translate }}
       </button>
     </div>
-    <div class="text-center"></div>
+    <div class="text-center">
+      <button *ngIf="justUpdatedPlugin" type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
+        {{ 'form.button_close' | translate }}
+      </button>
+    </div>
     <div class="text-right">
       <button *ngIf="onlineUpdateOk && showReleaseNotes" type="button" class="btn btn-primary" (click)="update()">
         {{ 'plugins.button_update' | translate }}

@@ -27,7 +27,7 @@ export class UnpairAccessoryModalComponent implements OnInit {
   async loadPairings() {
     try {
       this.pairings = (await this.$api.get('/server/pairings').toPromise())
-        .sort((a, b) => b._main ? 1 : -1);
+        .sort((_: any, b: any) => b._main ? 1 : -1);
     } catch (e) {
       this.toastr.error('Paired accessories could not be loaded.', this.translate.instant('toast.title_error'));
       this.activeModal.close();
@@ -38,7 +38,7 @@ export class UnpairAccessoryModalComponent implements OnInit {
     this.deleting = id;
 
     this.$api.delete(`/server/pairings/${id}`).subscribe(
-      async data => {
+      async () => {
         await this.loadPairings();
 
         if (!this.pairings.length) {
@@ -52,11 +52,10 @@ export class UnpairAccessoryModalComponent implements OnInit {
           this.translate.instant('toast.title_success'),
         );
       },
-      err => {
+      () => {
         this.deleting = null;
         this.toastr.error('Failed to un-pair accessory.', this.translate.instant('toast.title_error'));
       },
     );
   }
-
 }
