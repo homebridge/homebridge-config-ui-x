@@ -8,10 +8,10 @@ import { TranslateService } from '@ngx-translate/core';
   styleUrls: ['./confirm.component.scss'],
 })
 export class ConfirmComponent implements OnInit {
-  @Input() title;
-  @Input() message;
-  @Input() confirmButtonLabel;
-  @Input() cancelButtonLabel;
+  @Input() title: string;
+  @Input() message: string;
+  @Input() confirmButtonLabel: string;
+  @Input() cancelButtonLabel: string;
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -23,5 +23,4 @@ export class ConfirmComponent implements OnInit {
       this.cancelButtonLabel = this.translate.instant('form.button_cancel');
     }
   }
-
 }

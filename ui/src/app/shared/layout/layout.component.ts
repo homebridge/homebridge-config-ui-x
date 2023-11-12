@@ -14,6 +14,7 @@ import { NotificationService } from '@/app/core/notification.service';
 import { BackupRestoreComponent } from '@/app/core/backup-restore/backup-restore.component';
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
+import { RestartOptionsModalComponent } from '@/app/shared/layout/restart-options-modal/restart-options-modal-component';
 
 @Component({
   selector: 'app-layout',
@@ -88,49 +89,8 @@ export class LayoutComponent implements OnInit {
     });
   }
 
-  restartHomebridge() {
-    const ref = this.$modal.open(ConfirmComponent);
-    ref.componentInstance.title = this.translate.instant('menu.hbrestart.title');
-    ref.componentInstance.message = this.translate.instant('menu.hbrestart.confirmation');
-    ref.componentInstance.confirmButtonLabel = this.translate.instant('menu.hbrestart.confirm_button');
-
-    ref.result
-      .then(() => {
-        this.$router.navigate(['/restart']);
-      })
-      .finally(() => {
-        // do nothing
-      });
-  }
-
-  restartServer() {
-    const ref = this.$modal.open(ConfirmComponent);
-    ref.componentInstance.title = this.translate.instant('menu.linux.label_restart_server');
-    ref.componentInstance.message = this.translate.instant('platform.linux.restart.confirmation');
-    ref.componentInstance.confirmButtonLabel = this.translate.instant('menu.linux.label_restart_server');
-
-    ref.result
-      .then(() => {
-        this.$router.navigate(['/platform-tools/linux/restart-server']);
-      })
-      .finally(() => {
-        // do nothing
-      });
-  }
-
-  shutdownServer() {
-    const ref = this.$modal.open(ConfirmComponent);
-    ref.componentInstance.title = this.translate.instant('menu.linux.label_shutdown_server');
-    ref.componentInstance.message = this.translate.instant('platform.linux.shutdown.confirmation');
-    ref.componentInstance.confirmButtonLabel = this.translate.instant('menu.linux.label_shutdown_server');
-
-    ref.result
-      .then(() => {
-        this.$router.navigate(['/platform-tools/linux/shutdown-server']);
-      })
-      .finally(() => {
-        // do nothing
-      });
+  openRestartOptionsModal() {
+    const ref = this.$modal.open(RestartOptionsModalComponent);
   }
 
   async compareServerUiVersion() {
