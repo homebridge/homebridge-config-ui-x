@@ -63,7 +63,7 @@ export class PluginCardComponent implements OnInit {
       gt(this.$settings.env.homebridgeVersion, '1.5.0-beta.1') : false;
 
     // detect mobile
-    this.detectMobile = (('ontouchstart' in document.documentElement) || (screen.width <= 768)) ? true : false;
+    this.detectMobile = (('ontouchstart' in document.documentElement) || (window.screen.width <= 768)) ? true : false;
   }
 
   @Input() set childBridges(childBridges: any[]) {
