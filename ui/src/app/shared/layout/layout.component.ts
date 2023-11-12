@@ -14,7 +14,7 @@ import { NotificationService } from '@/app/core/notification.service';
 import { BackupRestoreComponent } from '@/app/core/backup-restore/backup-restore.component';
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
-import { RestartOptionsModalComponent } from '@/app/shared/layout/restart-options-modal/restart-options-modal-component';
+import { RestartOptionsModalComponent } from '@/app/shared/layout/restart-options-modal/restart-options-modal.component';
 
 @Component({
   selector: 'app-layout',

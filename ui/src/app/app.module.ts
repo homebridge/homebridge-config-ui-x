@@ -19,7 +19,7 @@ import { LayoutComponent } from './shared/layout/layout.component';
 import { RestartModule } from './modules/restart/restart.module';
 import { StatusModule } from './modules/status/status.module';
 import { LoginModule } from './modules/login/login.module';
-import { RestartOptionsModalComponent } from '@/app/shared/layout/restart-options-modal/restart-options-modal-component';
+import { RestartOptionsModalComponent } from '@/app/shared/layout/restart-options-modal/restart-options-modal.component';
 
 @NgModule({
     declarations: [
