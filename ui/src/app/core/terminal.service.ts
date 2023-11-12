@@ -1,11 +1,10 @@
-import { Injectable, ElementRef } from '@angular/core';
-import { Terminal, ITerminalOptions } from 'xterm';
+import { ElementRef, Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
+import { ITerminalOptions, Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 import { WebLinksAddon } from 'xterm-addon-web-links';
-import { Subject, Subscription } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
-
-import { WsService, IoNamespace } from '@/app/core/ws.service';
+import { IoNamespace, WsService } from '@/app/core/ws.service';
 
 @Injectable({
   providedIn: 'root',
@@ -80,7 +79,7 @@ export class TerminalService {
     });
 
     // subscribe to incoming data events from server to client
-    this.io.socket.on('stdout', data => {
+    this.io.socket.on('stdout', (data: string) => {
       this.term.write(data);
     });
 

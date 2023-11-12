@@ -28,14 +28,14 @@
       </ul>
 
       <ul class="navbar-nav nav-flex-icons hb-nav-right">
-        <li class="nav-item mr-3" *ngIf="rPiWasUndervoltage || rPiCurrentlyUndervoltage">
+        <li class="nav-item mr-3" *ngIf="rPiWasUnderVoltage || rPiCurrentlyUnderVoltage">
           <a href="javascript:void(0)" class="nav-link dropdown-toggle waves-effect waves-light"
-            [popoverTitle]="(rPiCurrentlyUndervoltage ? 'rpi.throttled.currently_undervoltage_title' : 'rpi.throttled.previously_undervoltage_title') | translate"
-            [ngbPopover]="(rPiCurrentlyUndervoltage ? 'rpi.throttled.currently_undervoltage_message' : 'rpi.throttled.previously_undervoltage_message') | translate"
-            [ngbTooltip]="(rPiCurrentlyUndervoltage ? 'rpi.throttled.currently_undervoltage_title' : 'rpi.throttled.previously_undervoltage_title') | translate"
+            [popoverTitle]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_title' : 'rpi.throttled.previously_undervoltage_title') | translate"
+            [ngbPopover]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_message' : 'rpi.throttled.previously_undervoltage_message') | translate"
+            [ngbTooltip]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_title' : 'rpi.throttled.previously_undervoltage_title') | translate"
             container="body" [placement]="['bottom', 'auto']">
             <i class="fa-solid fa-bolt yellow-text " style="--fa-beat-scale: 2.0;"
-              [ngClass]="{ 'fa-beat': rPiCurrentlyUndervoltage }"></i>
+              [ngClass]="{ 'fa-beat': rPiCurrentlyUnderVoltage }"></i>
           </a>
         </li>
 
@@ -62,16 +62,19 @@
               *ngIf="$settings.env.enableTerminalAccess && $auth.user.admin" routerLink="/platform-tools/terminal">
               {{ 'menu.linux.label_terminal' | translate }}
             </a>
-            <a class="dropdown-item waves-effect waves-light" *ngIf="$auth.user.admin" routerLink="/logs">
+            <a class="dropdown-item waves-effect waves-light" routerLink="/logs">
               {{ 'menu.linux.label_logs' | translate }}
+            </a>
+            <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light" (click)="openRestartOptionsModal()" *ngIf="$auth.user.admin">
+              {{ 'menu.restart.title' | translate }}
             </a>
             <div class="dropdown-divider" *ngIf="$auth.user.admin"></div>
             <a class="dropdown-item waves-effect waves-light" routerLink="/settings" *ngIf="$auth.user.admin">
-              Homebridge {{ 'menu.docker.label_settings' | translate }}
+              {{ 'menu.label_settings_hb' | translate }}
             </a>
             <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light" (click)="openUiSettings()"
               *ngIf="$auth.user.admin">
-              {{ 'menu.label_ui_settings' | translate }}
+              {{ 'menu.label_settings_ui' | translate }}
             </a>
             <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light"
               (click)="backupRestoreHomebridge()" *ngIf="$auth.user.admin">
@@ -80,27 +83,7 @@
             <a class="dropdown-item waves-effect waves-light" routerLink="/users" *ngIf=" $auth.user.admin">
               {{'menu.tooltip_user_accounts' | translate}}
             </a>
-            <div class="dropdown-divider waves-effect waves-light" *ngIf="$auth.user.admin"></div>
-            <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light" (click)="restartHomebridge()" *ngIf="$auth.user.admin">
-              {{ 'menu.tooltip_restart' | translate }}
-            </a>
-            <a class="dropdown-item waves-effect waves-light" routerLink="/platform-tools/docker/startup-script"
-              *ngIf="$settings.env.runningInDocker && $auth.user.admin">
-              {{ 'menu.docker.label_startup_script' | translate }}
-            </a>
-            <a class="dropdown-item waves-effect waves-light" routerLink="/platform-tools/docker/restart-container"
-              *ngIf="$settings.env.runningInDocker && $auth.user.admin">
-              {{ 'menu.docker.label_restart_container' | translate }}
-            </a>
-            <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light"
-              *ngIf="$settings.env.canShutdownRestartHost && $auth.user.admin" (click)="restartServer()">
-              {{ 'menu.linux.label_restart_server' | translate }}
-            </a>
-            <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light"
-              *ngIf="$settings.env.canShutdownRestartHost && $auth.user.admin" (click)="shutdownServer()">
-              {{ 'menu.linux.label_shutdown_server' | translate }}
-            </a>
-            <div class="dropdown-divider" *ngIf="$settings.formAuth && $auth.user.admin"></div>
+            <div class="dropdown-divider" *ngIf="$settings.formAuth"></div>
             <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light" (click)="$auth.logout()" *ngIf="$settings.formAuth">
               {{ 'menu.tooltip_logout' | translate }} - {{ $auth.user.username }}
             </a>

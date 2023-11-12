@@ -1,8 +1,7 @@
 <div class="modal-content" style="min-height: 300px;">
   <div class="modal-header">
     <h5 class="modal-title">{{'plugins.node_update.title' | translate}}</h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-      (click)="activeModal.dismiss('Cross click')">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="activeModal.dismiss('Dismiss')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
@@ -54,18 +53,23 @@
     </div>
 
   </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-elegant mr-auto" data-dismiss="modal"
-      (click)="activeModal.dismiss('Cross click')">
-      {{'form.button_cancel' | translate}}
-    </button>
-    <button *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)" type="button" class="btn btn-danger" data-dismiss="modal"
-      (click)="activeModal.close(true);">
-      {{'plugins.node_update.update_anyway' | translate}}
-    </button>
-    <button *ngIf="['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)" type="button" class="btn btn-danger" data-dismiss="modal"
-      (click)="activeModal.dismiss('Cross click')">
-      {{'form.button_close' | translate}}
-    </button>
+
+  <div class="modal-footer justify-content-between">
+    <div class="text-left">
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')" *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)">
+        {{ 'form.button_close' | translate }}
+      </button>
+    </div>
+    <div class="text-center">
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')" *ngIf="['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)">
+        {{ 'form.button_close' | translate }}
+      </button>
+    </div>
+    <div class="text-right">
+      <button *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)" type="button" class="btn btn-danger" data-dismiss="modal"
+              (click)="activeModal.close(true);">
+        {{'plugins.node_update.update_anyway' | translate}}
+      </button>
+    </div>
   </div>
 </div>

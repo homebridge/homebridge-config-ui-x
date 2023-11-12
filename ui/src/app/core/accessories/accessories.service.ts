@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ServiceType } from '@oznu/hap-client';
 import { ToastrService } from 'ngx-toastr';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject } from 'rxjs';
-
-import { WsService, IoNamespace } from '../ws.service';
-import { AuthService } from '../auth/auth.service';
 import { ApiService } from '../api.service';
+import { AuthService } from '../auth/auth.service';
+import { IoNamespace, WsService } from '../ws.service';
 import { ServiceTypeX } from './accessories.interfaces';
 import { InfoModalComponent } from './info-modal/info-modal.component';
 
@@ -320,5 +319,4 @@ export class AccessoriesService {
     this.roomsOrdered = false;
     delete this.accessoryLayout;
   }
-
 }

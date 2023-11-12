@@ -283,8 +283,8 @@ export class StatusService {
 
     client.emit('homebridge-status', await this.getHomebridgeStats());
 
-    // ipc status events are only available in Homebridge 1.3.3 or later - and when running in service mode
-    if (this.configService.serviceMode && this.configService.homebridgeVersion && semver.gt(this.configService.homebridgeVersion, '1.3.3-beta.5')) {
+    // ipc status events are only available when running in service mode
+    if (this.configService.serviceMode) {
       homebridgeStatusChangeSub = this.homebridgeStatusChange.subscribe(async () => {
         client.emit('homebridge-status', await this.getHomebridgeStats());
       });
@@ -330,7 +330,7 @@ export class StatusService {
    * Check if homebridge is running on the local system
    */
   public async checkHomebridgeStatus() {
-    if (this.configService.serviceMode && this.configService.homebridgeVersion && semver.gt(this.configService.homebridgeVersion, '1.3.3-beta.5')) {
+    if (this.configService.serviceMode) {
       return this.homebridgeStatus;
     }
 
@@ -451,7 +451,7 @@ export class StatusService {
 
     try {
       const versionList = (await this.httpService.get('https://nodejs.org/dist/index.json').toPromise()).data;
-      const currentLts = versionList.filter(x => x.lts)[0];
+      const currentLts = versionList.filter((x: any) => x.lts)[0];
 
       // See why this is set to 2.29 at https://homebridge.io/w/JJSun
       const glibcVersion = this.getGlibcVersion();

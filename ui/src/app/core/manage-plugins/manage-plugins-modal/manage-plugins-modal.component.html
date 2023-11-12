@@ -56,10 +56,21 @@ hb-service start</pre>
     <h5>{{ release.name }}</h5>
     <markdown class="plugin-md" [data]="release.changelog"></markdown>
   </div>
-  <div class="modal-footer" *ngIf="!onlineUpdateOk || actionComplete || showReleaseNotes || actionFailed">
-    <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')"
-      [translate]="'form.button_close'">Close</button>
-    <button *ngIf="onlineUpdateOk && showReleaseNotes" type="button" class="btn btn-primary" (click)="update()"
-      [translate]="'plugins.button_update'">Update</button>
+  <div class="modal-footer justify-content-between" *ngIf="!onlineUpdateOk || actionComplete || showReleaseNotes || actionFailed">
+    <div class="text-left">
+      <button *ngIf="!justUpdatedPlugin" type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
+        {{ 'form.button_close' | translate }}
+      </button>
+    </div>
+    <div class="text-center">
+      <button *ngIf="justUpdatedPlugin" type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
+        {{ 'form.button_close' | translate }}
+      </button>
+    </div>
+    <div class="text-right">
+      <button *ngIf="onlineUpdateOk && showReleaseNotes" type="button" class="btn btn-primary" (click)="update()">
+        {{ 'plugins.button_update' | translate }}
+      </button>
+    </div>
   </div>
 </div>

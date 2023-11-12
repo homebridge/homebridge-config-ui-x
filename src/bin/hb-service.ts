@@ -421,12 +421,7 @@ export class HomebridgeServiceHelper {
       return;
     }
 
-    // allow the --strict-plugin-resolution flag on Homebridge v1.4.1 or later only
-    if (
-      this.homebridgePackage &&
-      process.env.UIX_STRICT_PLUGIN_RESOLUTION === '1' &&
-      semver.gte(this.homebridgePackage.version, '1.4.1-beta.1')
-    ) {
+    if (this.homebridgePackage && process.env.UIX_STRICT_PLUGIN_RESOLUTION === '1') {
       if (!this.homebridgeOpts.includes('--strict-plugin-resolution')) {
         this.homebridgeOpts.push('--strict-plugin-resolution');
       }

@@ -1,5 +1,3 @@
-
-
 .room-title {
   margin-left: 10px;
   @media (max-width: 575px) {
@@ -24,3 +22,6 @@
   }
 }
 
+a:hover {
+  text-decoration: none !important;
+}

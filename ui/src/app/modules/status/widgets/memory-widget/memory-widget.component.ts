@@ -1,10 +1,15 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { interval, Subscription } from 'rxjs';
+import {
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { ChartOptions } from 'chart.js';
-import { Color, BaseChartDirective } from 'ng2-charts';
-
-import { WsService } from '@/app/core/ws.service';
+import { BaseChartDirective, Color } from 'ng2-charts';
+import { Subscription, interval } from 'rxjs';
 import { AuthService } from '@/app/core/auth/auth.service';
+import { WsService } from '@/app/core/ws.service';
 
 @Component({
   selector: 'app-memory-widget',
