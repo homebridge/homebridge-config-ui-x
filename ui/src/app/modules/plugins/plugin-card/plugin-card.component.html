@@ -113,11 +113,11 @@
             {{ 'plugins.manage.message_install_alternate_version' | translate }}
           </button>
           <button ngbDropdownItem (click)="viewPluginLog(plugin)">
-            <i class="fas fa-fw fa-fw fa-wave-square"></i> {{ 'child_bridge.label_plugin_logs' | translate }}
+            <i class="fas fa-fw fa-fw fa-wave-square"></i> {{ 'plugins.manage.plugin_logs' | translate }}
           </button>
           <button ngbDropdownItem (click)="$plugin.bridgeSettings(plugin)"
             *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x'">
-            <i class="fas fa-fw fa-fw fa-project-diagram"></i> {{ 'plugins.manage.plugin_logs' | translate }}
+            <i class="fas fa-fw fa-fw fa-project-diagram"></i> {{ 'child_bridge.label_bridge_settings' | translate }}
           </button>
           <button ngbDropdownItem (click)="$plugin.jsonEditor(plugin)"
             *ngIf="!isMobile && plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x'">
