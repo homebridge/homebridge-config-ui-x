@@ -62,7 +62,7 @@
               *ngIf="$settings.env.enableTerminalAccess && $auth.user.admin" routerLink="/platform-tools/terminal">
               {{ 'menu.linux.label_terminal' | translate }}
             </a>
-            <a class="dropdown-item waves-effect waves-light" *ngIf="$auth.user.admin" routerLink="/logs">
+            <a class="dropdown-item waves-effect waves-light" routerLink="/logs">
               {{ 'menu.linux.label_logs' | translate }}
             </a>
             <div class="dropdown-divider" *ngIf="$auth.user.admin"></div>
@@ -81,9 +81,6 @@
               {{'menu.tooltip_user_accounts' | translate}}
             </a>
             <div class="dropdown-divider waves-effect waves-light" *ngIf="$auth.user.admin"></div>
-            <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light" (click)="restartHomebridge()" *ngIf="$auth.user.admin">
-              {{ 'menu.tooltip_restart' | translate }}
-            </a>
             <a class="dropdown-item waves-effect waves-light" routerLink="/platform-tools/docker/startup-script"
               *ngIf="$settings.env.runningInDocker && $auth.user.admin">
               {{ 'menu.docker.label_startup_script' | translate }}
@@ -100,7 +97,10 @@
               *ngIf="$settings.env.canShutdownRestartHost && $auth.user.admin" (click)="shutdownServer()">
               {{ 'menu.linux.label_shutdown_server' | translate }}
             </a>
-            <div class="dropdown-divider" *ngIf="$settings.formAuth && $auth.user.admin"></div>
+            <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light" (click)="restartHomebridge()" *ngIf="$auth.user.admin">
+              {{ 'menu.tooltip_restart' | translate }}
+            </a>
+            <div class="dropdown-divider" *ngIf="$settings.formAuth"></div>
             <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light" (click)="$auth.logout()" *ngIf="$settings.formAuth">
               {{ 'menu.tooltip_logout' | translate }} - {{ $auth.user.username }}
             </a>

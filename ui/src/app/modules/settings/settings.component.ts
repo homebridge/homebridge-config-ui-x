@@ -1,11 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, FormGroup, FormControl } from '@angular/forms';
+import { UntypedFormControl, FormGroup, FormControl } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import { ActivatedRoute, Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
+import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { debounceTime } from 'rxjs/operators';
-import * as semver from 'semver';
 
 import { SettingsService } from '@/app/core/settings.service';
 import { ApiService } from '@/app/core/api.service';
@@ -38,7 +36,6 @@ export class SettingsComponent implements OnInit {
   public legacyMdnsFormControl = new UntypedFormControl(false);
   public saved = false;
 
-  public showNetworking = false;
   public showAvahiMdnsOption = false;
   public showResolvedMdnsOption = false;
   public availableNetworkAdapters: Record<string, any> = [];
@@ -48,12 +45,9 @@ export class SettingsComponent implements OnInit {
     public $settings: SettingsService,
     private $api: ApiService,
     private $notification: NotificationService,
-    public $fb: UntypedFormBuilder,
     public $toastr: ToastrService,
     private $modal: NgbModal,
-    private $route: ActivatedRoute,
     private $router: Router,
-    private translate: TranslateService,
   ) { }
 
   ngOnInit() {
@@ -119,26 +113,16 @@ export class SettingsComponent implements OnInit {
 
   async initNetworkingOptions() {
     try {
-      const homebridgePackage = await this.$api.get('/status/homebridge-version').toPromise();
-      if (semver.gte(homebridgePackage.installedVersion, '1.3.0-beta.0')) {
-        this.showNetworking = true;
-        this.getNetworkSettings();
-      }
+      await this.getNetworkSettings();
       const onLinux = (
         this.$settings.env.runningInLinux ||
         this.$settings.env.runningInDocker ||
         this.$settings.env.runningInSynologyPackage ||
         this.$settings.env.runningInPackageMode
       );
-      if (semver.gte(homebridgePackage.installedVersion, '1.4.0-beta.0')) {
         if (onLinux) {
           this.showAvahiMdnsOption = true;
-        }
-      }
-      if (semver.gte(homebridgePackage.installedVersion, '1.6.0-beta.0')) {
-        if (onLinux) {
           this.showResolvedMdnsOption = true;
-        }
       }
     } catch (e) {
 
@@ -193,7 +177,7 @@ export class SettingsComponent implements OnInit {
     }
 
     this.bridgeNetworkAdapters = adapters.map((interfaceName) => {
-      const i = this.availableNetworkAdapters.find((x => x.iface === interfaceName));
+      const i = this.availableNetworkAdapters.find(((x: any) => x.iface === interfaceName));
       if (i) {
         i.selected = true;
         i.missing = false;

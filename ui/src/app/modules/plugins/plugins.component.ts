@@ -4,12 +4,12 @@ import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { take } from 'rxjs/operators';
-import { gt } from 'semver';
 
 import { SettingsService } from '@/app/core/settings.service';
 import { ApiService } from '@/app/core/api.service';
 import { WsService } from '@/app/core/ws.service';
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-plugins',
@@ -27,8 +27,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
   });
 
   public loading = true;
-  public searchQuery: string;
-  private navigationSubscription;
+  private navigationSubscription: Subscription;
 
   constructor(
     private $settings: SettingsService,
@@ -47,7 +46,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
       this.io.socket.emit('monitor-child-bridge-status');
     });
 
-    this.io.socket.on('child-bridge-status-update', (data) => {
+    this.io.socket.on('child-bridge-status-update', (data: any) => {
       const existingBridge = this.childBridges.find(x => x.username === data.username);
       if (existingBridge) {
         Object.assign(existingBridge, data);
@@ -84,8 +83,8 @@ export class PluginsComponent implements OnInit, OnDestroy {
     }
 
     this.$route.queryParams.pipe(take(1)).subscribe(async (params) => {
-      if (params.installed && this.installedPlugins.find(x => x.name === params.installed)) {
-        const plugin = this.installedPlugins.find(x => x.name === params.installed);
+      if (params.installed && this.installedPlugins.find((x: any) => x.name === params.installed)) {
+        const plugin = this.installedPlugins.find((x: any) => x.name === params.installed);
         this.$plugin.settings(plugin)
           .then((schema?) => {
             this.recommendChildBridge(plugin, schema);
@@ -121,7 +120,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
     this.loadInstalledPlugins();
   }
 
-  onSubmit({ value, valid }) {
+  onSubmit({ value }) {
     if (!value.query.length) {
       this.loadInstalledPlugins();
     } else {
@@ -129,11 +128,10 @@ export class PluginsComponent implements OnInit, OnDestroy {
     }
   }
 
-  recommendChildBridge(plugin, schema) {
+  recommendChildBridge(plugin: any, schema: any) {
     if (
       this.$settings.env.recommendChildBridges &&
       this.$settings.env.serviceMode &&
-      gt(this.$settings.env.homebridgeVersion, '1.5.0-beta.1') &&
       schema &&
       schema.pluginType === 'platform'
     ) {
@@ -147,7 +145,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
     });
   }
 
-  getPluginChildBridges(plugin) {
+  getPluginChildBridges(plugin: any) {
     return this.childBridges.filter(x => x.plugin === plugin.name);
   }
 

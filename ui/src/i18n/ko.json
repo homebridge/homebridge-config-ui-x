@@ -212,6 +212,7 @@
     "plugins.manage.modal_verified_cta": "More Info",
     "plugins.manage.modal_verified_message": "Homebridge plugins that are marked as verified have been reviewed by the Homebridge project team to ensure they meet various requirements that encourage best practices and a trouble-free user experience.",
     "plugins.manage.modal_verified_title": "Verified Plugins",
+    "plugins.manage.plugin_logs": "View Plugin Logs",
     "plugins.node_update.are_you_sure_you_want_to_update": "{{ pluginName }} 플러그인을 업데이트하시겠습니까?",
     "plugins.node_update.homebridge_node_version_too_low": "Homebridge v{{latestVersion}} 실행을 위해서는 Node.js v{{minVersion}} 이상이 필요합니다. 현재 실행 중인 Node.js 버전은 {{ installedVersion }} 입니다.",
     "plugins.node_update.node_version_too_low": "{{ pluginName }} 플러그인은 Node.js v{{ minVersion }} 이상 버전에서 실행이 권장됩니다. 현재 실행 중인 Node.js 버전은 {{ installedVersion }} 입니다.",
