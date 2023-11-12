@@ -89,13 +89,13 @@ export class LogService {
             if (line.match(/36m\[.*?]/)) {
               includeNextLine = false;
             } else {
-              this.term.write(line + '\r');
+              this.term.write(line + '\r\n');
               return;
             }
           }
 
           if (line.includes(`36m[${this.pluginName}]`)) {
-            this.term.write(line + '\r');
+            this.term.write(line + '\r\n');
             includeNextLine = true;
           }
         });
