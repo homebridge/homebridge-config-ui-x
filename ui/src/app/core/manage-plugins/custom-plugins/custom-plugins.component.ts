@@ -9,6 +9,7 @@ import { environment } from '@/environments/environment';
 import { ApiService } from '@/app/core/api.service';
 import { WsService } from '@/app/core/ws.service';
 import { NotificationService } from '@/app/core/notification.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-custom-plugins',
@@ -29,8 +30,10 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
 
   public loading = true;
   public saveInProgress = false;
+  public justSavedAndExited = false;
   public pluginSpinner = false;
   public uiLoaded = false;
+  public childBridges: any[] = [];
 
   private basePath: string;
   private iframe: HTMLIFrameElement;
@@ -57,6 +60,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     private $translate: TranslateService,
     private $toastr: ToastrService,
     private $api: ApiService,
+    private $router: Router,
     private $ws: WsService,
     private $notification: NotificationService,
   ) { }
@@ -402,7 +406,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   /**
    * Fired when a custom form is cancelled or submitted
    *
-   * @param action
+   * @param formEvent
    */
   formActionEvent(formEvent: 'cancel' | 'submit') {
     this.iframe.contentWindow.postMessage({
@@ -428,22 +432,64 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     return await this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig)
       .toPromise()
       .then(data => {
-        this.$toastr.success(
-          this.$translate.instant('plugins.settings.toast_restart_required'),
-          this.$translate.instant('plugins.settings.toast_plugin_config_saved'),
-        );
+        // this.$toastr.success(
+        //   this.$translate.instant('plugins.settings.toast_restart_required'),
+        //   this.$translate.instant('plugins.settings.toast_plugin_config_saved'),
+        // );
 
         this.saveInProgress = false;
-        this.$notification.configUpdated.next(undefined);
+        // this.$notification.configUpdated.next(undefined);
 
         if (exit) {
-          this.activeModal.close();
+          this.getChildBridges();
+          this.justSavedAndExited = true;
         }
       })
       .catch(err => {
         this.saveInProgress = false;
         this.$toastr.error(this.$translate.instant('config.toast_failed_to_save_config'), this.$translate.instant('toast.title_error'));
       });
+  }
+
+  getChildBridges(): any[] {
+    try {
+      this.$api.get('/status/homebridge/child-bridges').subscribe((data: any[]) => {
+        data.forEach((bridge) => {
+          if (this.plugin.name === bridge.plugin) {
+            this.childBridges.push(bridge);
+          }
+        });
+      });
+      return this.childBridges;
+    } catch (err) {
+      this.$toastr.error(err.message, this.$translate.instant('toast.title_error'));
+      return [];
+    }
+  }
+
+  public onRestartHomebridgeClick() {
+    this.$router.navigate(['/restart']);
+    this.activeModal.close();
+  }
+
+  public async onRestartChildBridgeClick() {
+    try {
+      for (const bridge of this.childBridges) {
+        await this.$api.put(`/server/restart/${bridge.username}`, {}).toPromise();
+      }
+      this.$toastr.success(
+        this.$translate.instant('plugins.manage.child_bridge_restart_success'),
+        this.$translate.instant('toast.title_success'),
+      );
+    } catch (err) {
+      this.$notification.configUpdated.next(undefined); // highlight the restart icon in the navbar
+      this.$toastr.error(
+        this.$translate.instant('plugins.manage.child_bridge_restart_failed'),
+        this.$translate.instant('toast.title_error'),
+      );
+    } finally {
+      this.activeModal.close();
+    }
   }
 
   deletePluginConfig() {

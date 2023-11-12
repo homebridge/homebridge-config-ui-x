@@ -170,7 +170,7 @@
     "platform.linux.shutdown.message_server_will_power_down": "The server will power down shortly.",
     "platform.linux.shutdown.title_shutting_down_server": "Shutting Down Server",
     "platform.version.message_service_restart_required": "WARNING: Homebridge UI v{{ uiVersion }} has been installed, but the server service is still running v{{ serverVersion }}.",
-    "platform.version.title_service_restart_required": "Service Restart Required",
+    "platform.version.title_service_restart_required": "Homebridge Restart Required",
     "plugins.button_api_documentation": "API Documentation",
     "plugins.button_homepage": "Plugin Homepage",
     "plugins.button_install": "Install",

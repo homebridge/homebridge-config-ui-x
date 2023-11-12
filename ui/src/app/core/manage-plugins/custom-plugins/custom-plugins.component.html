@@ -7,7 +7,30 @@
     </button>
   </div>
 
-  <div class="modal-body" style="min-height: 110px;">
+  <div class="modal-body" style="min-height: 110px;" [hidden]="!justSavedAndExited">
+    <h3 class="text-center primary-text" [translate]="'platform.version.title_service_restart_required'">
+      Restart Required
+    </h3>
+    <p *ngIf="['homebridge', 'homebridge-config-ui-x'].includes(plugin.name) || childBridges.length === 0" class="text-center grey-text"
+       [translate]="'plugins.manage.message_thanks_for_updating_restart'">
+      Please restart Homebridge for the changes to apply.
+    </p>
+    <p *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name) && childBridges.length > 0" class="text-center grey-text"
+       [translate]="'plugins.manage.message_thanks_for_updating_restart_child_bridges'">
+      Please restart the plugin's child bridges for the changes to apply.
+    </p>
+    <div class="text-center">
+      <button type="button" class="btn btn-primary" *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name) && childBridges.length > 0"
+        (click)="onRestartChildBridgeClick()">
+        {{ (childBridges.length === 1 ? 'plugins.manage.child_bridge_button_restart_now_one' : 'plugins.manage.child_bridge_button_restart_now') | translate }}
+      </button>
+      <button type="button" class="btn btn-primary"
+        *ngIf="['homebridge', 'homebridge-config-ui-x'].includes(plugin.name) || childBridges.length === 0" (click)="onRestartHomebridgeClick()"
+        [translate]="'plugins.manage.button_restart_now'">Restart Homebridge</button>
+    </div>
+  </div>
+
+  <div class="modal-body" style="min-height: 110px;" [hidden]="justSavedAndExited">
     <div *ngIf="loading" class="text-center primary-text">
       <i class="fa fa-fw fa-cog fa-spin" style="font-size: 72px;"></i>
     </div>
@@ -45,7 +68,7 @@
     </div>
   </div>
 
-  <div class="modal-footer justify-content-between">
+  <div class="modal-footer justify-content-between" [hidden]="justSavedAndExited">
     <div style="min-width: 25%;" class="text-left">
       <button *ngIf="plugin.name !== 'homebridge-config-ui-x'" class="btn btn-danger"
         [ngbTooltip]="'form.button_delete' | translate" container="body" [disabled]="saveInProgress"
@@ -71,6 +94,4 @@
       </button>
     </div>
   </div>
-
-
 </div>
