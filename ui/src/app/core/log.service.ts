@@ -85,7 +85,6 @@ export class LogService {
         let includeNextLine = false;
 
         lines.forEach((line) => {
-          console.log('line', line);
           if (includeNextLine) {
             if (line.match(/36m\[.*?]/)) {
               includeNextLine = false;
@@ -96,7 +95,6 @@ export class LogService {
           }
 
           if (line.includes(`[36m[${this.pluginName}]`)) {
-            console.log('match', line);
             this.term.write(line + '\r');
             includeNextLine = true;
           }
