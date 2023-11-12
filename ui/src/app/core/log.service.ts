@@ -88,7 +88,7 @@ export class LogService {
           this.term.write(line + '\r');
           console.log('line', line);
           if (includeNextLine) {
-            if (line.match(/36m\[.*?]/)) {
+            if (line.match(/\[.*?]/)) {
               includeNextLine = false;
             } else {
               this.term.write(line + '\r');
@@ -96,7 +96,7 @@ export class LogService {
             }
           }
 
-          if (line.includes(`[36m[${this.pluginName}]`)) {
+          if (line.includes(`[${this.pluginName}]`)) {
             console.log('match', line);
             this.term.write(line + '\r');
             includeNextLine = true;
