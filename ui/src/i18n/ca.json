@@ -248,7 +248,6 @@
     "plugins.toast_failed_to_load_plugins": "Error al carregar els plugins",
     "plugins.tooltip_update_plugin_to": "Actualitzar el plugin a v{{ latestVersion }}",
     "reset.accessories_will_may_need_to_be_reconfigured": "Després de realitzar aquesta acció, pot ser que sigui necessari configurar de nou alguns accessoris en HomeKit o tornar a afegir-los a les teves automatitzacions.",
-    "reset.button_reset_homebridge_now": "Restableix Homebridge ara",
     "reset.message_accessory_config_will_not_be_changed": "La resta de la configuració no serà canviada. Si Homebridge no comença causa d'una mala configuració, un reinici no ho arreglarà.",
     "reset.message_action_is_irreversible": "Aquesta acció és irreversible. Si us plau, llegeix amb precaució abans de continuar.",
     "reset.message_all_automations_will_be_reset": "Totes les automatitzacions necessiten ser configurades de nou després de reinici.",

@@ -248,7 +248,6 @@
     "plugins.toast_failed_to_load_plugins": "Eklentiler yüklenemedi",
     "plugins.tooltip_update_plugin_to": "Eklentiyi v{{version}} sürümüne güncelleştir",
     "reset.accessories_will_may_need_to_be_reconfigured": "Bu işlemi gerçekleştirdikten sonra bazı aksesuarların HomeKit içerisinde yeniden yapılandırılması veya mevcut otomasyonlarınıza yeniden eklenmesi gerekebilir.",
-    "reset.button_reset_homebridge_now": "Homebridge'i Şimdi Sıfırla",
     "reset.message_accessory_config_will_not_be_changed": "Yapılandırmanızın geri kalanı değişmeyecek. Homebridge kötü bir yapılandırma nedeniyle başlatılamıyorsa, sıfırlama işlemi onu düzeltmez.",
     "reset.message_action_is_irreversible": "Bu işlem geri alınamaz. Lütfen devam etmeden önce dikkatlice okuyunuz.",
     "reset.message_all_automations_will_be_reset": "Sıfırlama işleminden sonra tüm otomasyonların yeniden yapılandırılması gerekir.",

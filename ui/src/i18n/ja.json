@@ -248,7 +248,6 @@
     "plugins.toast_failed_to_load_plugins": "プラグインの読み込みに失敗しました",
     "plugins.tooltip_update_plugin_to": "プラグインをv{{latestVersion}}に更新",
     "reset.accessories_will_may_need_to_be_reconfigured": "この操作を実行すると、一部のアクセサリをHomeKitで再設定するか、自動化機能に再追加する必要がある可能性があります。",
-    "reset.button_reset_homebridge_now": "今すぐHomebridgeを初期化",
     "reset.message_accessory_config_will_not_be_changed": "その他の設定は変更されません。 Homebridgeが不適切なコンフィグが原因で起動していない場合、初期化しても修正されません。",
     "reset.message_action_is_irreversible": "この操作は元に戻せません。決定する前によくお読みください。",
     "reset.message_all_automations_will_be_reset": "すべてのオートメーションはリセット後に再設定する必要があります",

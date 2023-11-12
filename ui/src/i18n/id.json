@@ -248,7 +248,6 @@
     "plugins.toast_failed_to_load_plugins": "Gagal memuat plugin",
     "plugins.tooltip_update_plugin_to": "Perbarui plugin ke v{{latestVersion}}",
     "reset.accessories_will_may_need_to_be_reconfigured": "Setelah melakukan tindakan ini, beberapa aksesoris mungkin perlu dikonfigurasi ulang di HomeKit atau ditambahkan kembali ke otomasi anda.",
-    "reset.button_reset_homebridge_now": "Atur Ulang Homebridge Sekarang",
     "reset.message_accessory_config_will_not_be_changed": "Konfigurasi anda yang lain tidak akan diubah. Jika Homebridge tidak berjalan karena konfigurasi yang buruk, atur ulang tidak akan memperbaikinya.",
     "reset.message_action_is_irreversible": "Tindakan ini tidak dapat dipulihkan. Harap baca dengan seksama sebelum melanjutkan.",
     "reset.message_all_automations_will_be_reset": "Semua otomatisasi perlu dikonfigurasi ulang setelah diatur ulang.",

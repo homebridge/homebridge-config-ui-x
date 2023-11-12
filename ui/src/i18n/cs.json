@@ -248,7 +248,6 @@
     "plugins.toast_failed_to_load_plugins": "Nepodařilo se načíst pluginy",
     "plugins.tooltip_update_plugin_to": "Aktualizovat plugin pro v{{latestVersion}}",
     "reset.accessories_will_may_need_to_be_reconfigured": "Po provedení této akce může být nutné některé příslušenství znovu nakonfigurovat v HomeKit nebo znovu přidat do vašich automatizací.",
-    "reset.button_reset_homebridge_now": "Resetovat Homebridge nyní",
     "reset.message_accessory_config_will_not_be_changed": "Zbytek konfigurace se nezmění. Pokud se Homebridge nespustí kvůli špatné konfiguraci, reset ji neopraví.",
     "reset.message_action_is_irreversible": "Tato akce je nevratná. Před pokračováním prosím pečlivě přečtěte.",
     "reset.message_all_automations_will_be_reset": "Všechny automatizace budete muset po restartování znovu nastavit.",

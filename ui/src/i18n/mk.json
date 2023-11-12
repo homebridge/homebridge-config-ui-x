@@ -248,7 +248,6 @@
     "plugins.toast_failed_to_load_plugins": "Грешка при вчитување плагини.",
     "plugins.tooltip_update_plugin_to": "Ажурирај го плагинот на v{{latestVersion}}",
     "reset.accessories_will_may_need_to_be_reconfigured": "По извршување на оваа акција, некои уреди можно е да треба да бидат повторно конфигурирано во HomeKit или да се додадат во вашите автоматизации.",
-    "reset.button_reset_homebridge_now": "Ресетирај го Homebridge",
     "reset.message_accessory_config_will_not_be_changed": "Остатокот од Вашата конфигурација нема да биде изменет. Ако Homebridge не може да се стартува поради погрешна конфигурација ресетирањето нема да го поправи проблемот.",
     "reset.message_action_is_irreversible": "Оваа акција е неповратна. Ве молиме внимателно прочитајте пред да продолжите.",
     "reset.message_all_automations_will_be_reset": "All automations and will need to be reconfigured after a reset.",

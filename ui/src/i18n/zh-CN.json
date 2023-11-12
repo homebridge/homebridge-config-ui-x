@@ -248,7 +248,6 @@
     "plugins.toast_failed_to_load_plugins": "载入插件失败",
     "plugins.tooltip_update_plugin_to": "更新插件至 v{{latestVersion}}",
     "reset.accessories_will_may_need_to_be_reconfigured": "执行此操作后某些配件可能需要重新在 HomeKit 中配对或者重新添加到自动化内。",
-    "reset.button_reset_homebridge_now": "重置 Homebridge",
     "reset.message_accessory_config_will_not_be_changed": "其他的配置不会更改。如果由于配置错误导致 Homebridge 无法启动，则重置将无法解决问题。",
     "reset.message_action_is_irreversible": "这一行动不可逆。在继续之前请仔细阅读。",
     "reset.message_all_automations_will_be_reset": "所有自动化都需要在重置后重新配置。",

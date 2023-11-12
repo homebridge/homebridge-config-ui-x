@@ -248,7 +248,6 @@
     "plugins.toast_failed_to_load_plugins": "Vtičnikov ni bilo mogoče naložiti",
     "plugins.tooltip_update_plugin_to": "Posodobite vtičnik v{{latestVersion}}",
     "reset.accessories_will_may_need_to_be_reconfigured": "Po izvedbi tega dejanja bo morda treba nekatere dodatke konfigurirati v HomeKitu ali jih ponovno dodati v svoje avtomatizacije.",
-    "reset.button_reset_homebridge_now": "Ponastavi Homebridge zdaj",
     "reset.message_accessory_config_will_not_be_changed": "Preostali del konfiguracije se ne bo spremenil. Če se Homebridge ne zažene zaradi slabe konfiguracije, se ponastavitev ne bo odpravila.",
     "reset.message_action_is_irreversible": "To dejanje je nepovratno. Pred nadaljevanjem natančno preberite navodila.",
     "reset.message_all_automations_will_be_reset": "Vse avtomatizacije in jih bo treba po ponastavitvi spremeniti.",

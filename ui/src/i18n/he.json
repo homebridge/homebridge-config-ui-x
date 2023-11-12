@@ -248,7 +248,6 @@
     "plugins.toast_failed_to_load_plugins": "כשל בהעלאת התוספים",
     "plugins.tooltip_update_plugin_to": "תוסף עודכן לגרסא v{{latestVersion}}",
     "reset.accessories_will_may_need_to_be_reconfigured": "After performing this action some accessories may need to be reconfigured in HomeKit or re-added to your automations.",
-    "reset.button_reset_homebridge_now": "רסט את הומברידג' עכשיו",
     "reset.message_accessory_config_will_not_be_changed": "The rest of your config will not be changed. If Homebridge is not starting due to a bad config a reset will not fix it.",
     "reset.message_action_is_irreversible": "פעולה זו לא ניתנת לביטול, נא קרא בזהירות לפני שתמשיך",
     "reset.message_all_automations_will_be_reset": "All automations and will need to be reconfigured after a reset.",

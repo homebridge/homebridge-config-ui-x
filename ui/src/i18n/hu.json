@@ -248,7 +248,6 @@
     "plugins.toast_failed_to_load_plugins": "Nem sikerült betölteni a plugineket",
     "plugins.tooltip_update_plugin_to": "Frissítés a v{{latestVersion}} verzióra",
     "reset.accessories_will_may_need_to_be_reconfigured": "After performing this action some accessories may need to be reconfigured in HomeKit or re-added to your automations.",
-    "reset.button_reset_homebridge_now": "Homebridge resetelése most",
     "reset.message_accessory_config_will_not_be_changed": "A beállítások nagy része nem lesz változtatva. Ha a Homebridge nem indul el a rossz beállítások miatt, azt a reset nem oldja meg.",
     "reset.message_action_is_irreversible": "Ez a mávelet visszavonhatatlan. Figyelmesen olvassa el, mielőtt megtenné.",
     "reset.message_all_automations_will_be_reset": "Minden automatizálást újra kell konfigurálni a reset után.",

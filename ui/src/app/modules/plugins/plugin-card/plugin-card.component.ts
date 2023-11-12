@@ -74,6 +74,7 @@ export class PluginCardComponent implements OnInit {
     ref.componentInstance.message = this.$translate.instant('plugins.manage.modal_verified_message');
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('plugins.manage.modal_verified_cta');
     ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/homebridge/wiki/verified-Plugins';
+    ref.componentInstance.faIconClass = 'fa-shield-alt green-text';
   }
 
   disablePlugin(plugin: any) {
@@ -82,6 +83,7 @@ export class PluginCardComponent implements OnInit {
     ref.componentInstance.title = `${this.$translate.instant('plugins.manage.disable')}: ${plugin.name}`;
     ref.componentInstance.message = this.$translate.instant('plugins.manage.message_confirm_disable', { pluginName: plugin.name });
     ref.componentInstance.confirmButtonLabel = this.$translate.instant('plugins.manage.disable');
+    ref.componentInstance.faIconClass = 'fa-circle-pause red-text';
 
     ref.result.then(async () => {
       try {
@@ -111,6 +113,7 @@ export class PluginCardComponent implements OnInit {
     ref.componentInstance.title = `${this.$translate.instant('plugins.manage.enable')}: ${plugin.name}`;
     ref.componentInstance.message = this.$translate.instant('plugins.manage.message_confirm_enable', { pluginName: plugin.name });
     ref.componentInstance.confirmButtonLabel = this.$translate.instant('plugins.manage.enable');
+    ref.componentInstance.faIconClass = 'fa-circle-check green-text';
 
     ref.result.then(async () => {
       try {

@@ -248,7 +248,6 @@
     "plugins.toast_failed_to_load_plugins": "플러그인 로드 실패",
     "plugins.tooltip_update_plugin_to": "플러그인을 v{{latestVersion}}로 업데이트",
     "reset.accessories_will_may_need_to_be_reconfigured": "이 작업을 진행한 후에는 HomeKit에서 일부 액세서리를 재구성해야 할 수 있으며, 자동화 작업들을 다시 추가해야할 수 있습니다.",
-    "reset.button_reset_homebridge_now": "지금 Homebridge 초기화",
     "reset.message_accessory_config_will_not_be_changed": "나머지 Config 정보는 변경되지 않습니다. 초기화 작업은 잘못된 Config 구성으로 Homebridge가 시작되지 않는 문제를 해결해주지 않습니다.",
     "reset.message_action_is_irreversible": "이 작업을 진행하면 되돌릴 수 없습니다. 진행하기 전에 주의깊게 읽어보세요.",
     "reset.message_all_automations_will_be_reset": "초기화 후에는 모든 자동화의 재구성이 필요합니다.",

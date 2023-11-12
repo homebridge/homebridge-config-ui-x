@@ -248,7 +248,6 @@
     "plugins.toast_failed_to_load_plugins": "โหลดปลั๊กอินไม่สำเร็จ",
     "plugins.tooltip_update_plugin_to": "อัปเดตปลั๊กอินเป็น รุ่น{{latestVersion}}",
     "reset.accessories_will_may_need_to_be_reconfigured": "หลังจากดำเนินการนี้แล้วอุปกรณ์เสริมบางอย่างอาจต้องได้รับการกำหนดค่าใหม่ใน HomeKit หรือเพิ่มเข้าไปใหม่ในระบบอัตโนมัติของคุณ",
-    "reset.button_reset_homebridge_now": "รีเซ็ต Homebridge ทันที",
     "reset.message_accessory_config_will_not_be_changed": "ส่วนที่เหลือของการกำหนดค่าของคุณจะไม่เปลี่ยนแปลง หาก Homebridge ไม่เริ่มทำงานเนื่องจากการกำหนดค่าไม่ถูกต้องการรีเซ็ตจะไม่สามารถแก้ไขได้",
     "reset.message_action_is_irreversible": "การกระทำนี้ไม่สามารถย้อนกลับได้ โปรดอ่านอย่างละเอียดก่อนดำเนินการต่อ",
     "reset.message_all_automations_will_be_reset": "ระบบอัตโนมัติทั้งหมดและจะต้องได้รับการกำหนดค่าใหม่หลังจากรีเซ็ต",

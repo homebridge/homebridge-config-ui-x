@@ -248,7 +248,6 @@
     "plugins.toast_failed_to_load_plugins": "Plugins 載入失敗",
     "plugins.tooltip_update_plugin_to": "更新 Plugin 至 v{{latestVersion}}",
     "reset.accessories_will_may_need_to_be_reconfigured": "執行此動作後，部分配件可能必須於 HomeKit 中重新設定或重新加入自動化。",
-    "reset.button_reset_homebridge_now": "立即重置 Homebridge",
     "reset.message_accessory_config_will_not_be_changed": "重置並不會對您的 Config 進行任何變更。如果 Homebridge 是因為 Config 錯誤而無法啟動，那重置也無法解決問題。",
     "reset.message_action_is_irreversible": "此行為是無法取消重來的，請在繼續之前仔細閱讀。",
     "reset.message_all_automations_will_be_reset": "所有自動化、重置後需要重新 Config。",

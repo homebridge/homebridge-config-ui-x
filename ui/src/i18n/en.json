@@ -248,7 +248,6 @@
     "plugins.toast_failed_to_load_plugins": "Failed to load plugins",
     "plugins.tooltip_update_plugin_to": "Update plugin to v{{latestVersion}}",
     "reset.accessories_will_may_need_to_be_reconfigured": "After performing this action some accessories may need to be reconfigured in HomeKit or re-added to your automations.",
-    "reset.button_reset_homebridge_now": "Reset Homebridge Now",
     "reset.message_accessory_config_will_not_be_changed": "The rest of your config will not be changed. If Homebridge is not starting due to a bad config a reset will not fix it.",
     "reset.message_action_is_irreversible": "This action is irreversible. Please read carefully before proceeding.",
     "reset.message_all_automations_will_be_reset": "All automations and will need to be reconfigured after a reset.",
@@ -411,6 +410,6 @@
     "users.toast_added_new_user": "Added New User",
     "users.toast_failed_to_add_user": "Failed to Add User",
     "users.toast_failed_to_delete_user": "Failed to Delete user",
-    "users.toast_updated_user": "Updated User",
+    "users.toast_updated_user": "User Updated",
     "users.toast_user_deleted": "User Deleted"
 }

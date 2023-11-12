@@ -248,7 +248,6 @@
     "plugins.toast_failed_to_load_plugins": "Не удалось загрузить плагины",
     "plugins.tooltip_update_plugin_to": "Обновить плагин до v{{latestVersion}}",
     "reset.accessories_will_may_need_to_be_reconfigured": "После выполнения этого действия некоторые аксессуары, возможно, потребуется перенастроить в HomeKit или повторно добавить в Вашу автоматизацию.",
-    "reset.button_reset_homebridge_now": "Сбросить Homebridge прямо сейчас",
     "reset.message_accessory_config_will_not_be_changed": "Остальная часть Вашего файла конфигурации не будет изменена. Если Homebridge не запускается из-за ошибки файла конфигурации, сброс это не исправит.",
     "reset.message_action_is_irreversible": "Это действие необратимо. Пожалуйста, внимательно прочитайте, прежде чем продолжить.",
     "reset.message_all_automations_will_be_reset": "Все автоматизации будут нуждаться в перенастройке после перезагрузки.",
