@@ -1,17 +1,11 @@
-import * as os from 'os';
-import axios from 'axios';
-import * as path from 'path';
 import * as child_process from 'child_process';
+import * as os from 'os';
+import * as path from 'path';
+import axios from 'axios';
 import * as fs from 'fs-extra';
-
-import { HomebridgeServiceHelper } from '../hb-service';
 import { BasePlatform } from '../base-platform';
 
 export class Win32Installer extends BasePlatform {
-  constructor(hbService: HomebridgeServiceHelper) {
-    super(hbService);
-  }
-
   /**
    * Installs the Windows 10 Homebridge Service
    */
@@ -101,7 +95,7 @@ export class Win32Installer extends BasePlatform {
   }
 
   /**
-   * Rebuilds the Node.js modules for Homebridge Config UI X
+   * Rebuilds the Node.js modules for Homebridge UI
    */
   public async rebuild(all = false) {
     this.checkIsAdmin();
@@ -167,7 +161,7 @@ export class Win32Installer extends BasePlatform {
           .on('finish', () => {
             return resolve(nssmPath);
           })
-          .on('error', (err) => {
+          .on('error', (err: any) => {
             return reject(err);
           });
       }).catch(async (e) => {

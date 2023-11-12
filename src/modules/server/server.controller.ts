@@ -1,11 +1,26 @@
-import { Controller, Get, UseGuards, Put, Delete, Param, HttpCode, Body, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  Put,
+  Query,
+  UseGuards
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags, ApiBearerAuth, ApiParam, ApiOperation, ApiQuery } from '@nestjs/swagger';
-
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiTags
+} from '@nestjs/swagger';
 import { AdminGuard } from '../../core/auth/guards/admin.guard';
 import { ChildBridgesService } from '../child-bridges/child-bridges.service';
-import { ServerService } from './server.service';
 import { HomebridgeMdnsSettingDto, HomebridgeNetworkInterfacesDto } from './server.dto';
+import { ServerService } from './server.service';
 
 @ApiTags('Homebridge')
 @ApiBearerAuth()
@@ -156,3 +171,4 @@ export class ServerController {
     return this.serverService.setHomebridgeMdnsSetting(body);
   }
 }
+

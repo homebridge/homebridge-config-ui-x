@@ -3,7 +3,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 
 import { WsService } from '@/app/core/ws.service';
-import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 
 @Component({
   selector: 'app-child-bridge-widget',
@@ -11,7 +10,7 @@ import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.s
   styleUrls: ['./child-bridge-widget.component.scss'],
 })
 export class ChildBridgeWidgetComponent implements OnInit, OnDestroy {
-  @Input() widget;
+  @Input() widget: any;
 
   private io = this.$ws.connectToNamespace('child-bridges');
 
@@ -21,7 +20,6 @@ export class ChildBridgeWidgetComponent implements OnInit, OnDestroy {
     private $toastr: ToastrService,
     private $translate: TranslateService,
     private $ws: WsService,
-    public $plugin: ManagePluginsService,
   ) { }
 
   ngOnInit(): void {
@@ -30,7 +28,7 @@ export class ChildBridgeWidgetComponent implements OnInit, OnDestroy {
       this.io.socket.emit('monitor-child-bridge-status');
     });
 
-    this.io.socket.on('child-bridge-status-update', (data) => {
+    this.io.socket.on('child-bridge-status-update', (data: any) => {
       const existingBridge = this.childBridges.find(x => x.username === data.username);
       if (existingBridge) {
         Object.assign(existingBridge, data);
@@ -46,7 +44,7 @@ export class ChildBridgeWidgetComponent implements OnInit, OnDestroy {
     });
   }
 
-  async restartChildBridge(bridge) {
+  async restartChildBridge(bridge: any) {
     bridge.restartInProgress = true;
     try {
       await this.io.request('restart-child-bridge', bridge.username).toPromise();

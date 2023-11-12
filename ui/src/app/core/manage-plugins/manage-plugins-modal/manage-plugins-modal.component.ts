@@ -16,10 +16,11 @@ import { NotificationService } from '@/app/core/notification.service';
   templateUrl: './manage-plugins-modal.component.html',
   styleUrls: ['./manage-plugins-modal.component.scss'],
 })
+
 export class ManagePluginsModalComponent implements OnInit, OnDestroy {
-  @Input() pluginName;
+  @Input() pluginName: string;
   @Input() targetVersion = 'latest';
-  @Input() action;
+  @Input() action: string;
 
   private io = this.$ws.connectToNamespace('plugins');
 
@@ -33,7 +34,8 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   public justUpdatedPlugin = false;
   public updateToBeta = false;
   public changeLog: string;
-  public release;
+  public childBridges: any[] = [];
+  public release: any;
 
   private toastSuccess: string;
   public presentTenseVerb: string;
@@ -44,8 +46,8 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   constructor(
     public activeModal: NgbActiveModal,
     public $toastr: ToastrService,
-    private translate: TranslateService,
-    private $settings: SettingsService,
+    private $translate: TranslateService,
+    public $settings: SettingsService,
     private $api: ApiService,
     private $ws: WsService,
     private $notification: NotificationService,
@@ -59,24 +61,24 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
     this.term.open(this.termTarget);
     this.fitAddon.fit();
 
-    this.io.socket.on('stdout', (data) => {
+    this.io.socket.on('stdout', (data: string | Uint8Array) => {
       this.term.write(data);
     });
 
-    this.toastSuccess = this.translate.instant('toast.title_success');
+    this.toastSuccess = this.$translate.instant('toast.title_success');
 
     this.onlineUpdateOk = !(['homebridge', 'homebridge-config-ui-x'].includes(this.pluginName) && this.$settings.env.platform === 'win32');
 
     switch (this.action) {
       case 'Install':
         this.install();
-        this.presentTenseVerb = this.translate.instant('plugins.manage.label_install');
-        this.pastTenseVerb = this.translate.instant('plugins.manage.label_installed');
+        this.presentTenseVerb = this.$translate.instant('plugins.manage.label_install');
+        this.pastTenseVerb = this.$translate.instant('plugins.manage.label_installed');
         break;
       case 'Uninstall':
         this.uninstall();
-        this.presentTenseVerb = this.translate.instant('plugins.manage.label_uninstall');
-        this.pastTenseVerb = this.translate.instant('plugins.manage.label_uninstalled');
+        this.presentTenseVerb = this.$translate.instant('plugins.manage.label_uninstall');
+        this.pastTenseVerb = this.$translate.instant('plugins.manage.label_uninstalled');
         break;
       case 'Update':
         switch (this.targetVersion) {
@@ -91,8 +93,8 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
           default:
             this.update();
         }
-        this.presentTenseVerb = this.translate.instant('plugins.manage.label_update');
-        this.pastTenseVerb = this.translate.instant('plugins.manage.label_updated');
+        this.presentTenseVerb = this.$translate.instant('plugins.manage.label_update');
+        this.pastTenseVerb = this.$translate.instant('plugins.manage.label_updated');
         break;
     }
   }
@@ -112,7 +114,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       termCols: this.term.cols,
       termRows: this.term.rows,
     }).subscribe(
-      (data) => {
+      () => {
         this.$router.navigate(['/plugins'], {
           queryParams: { installed: this.pluginName },
         });
@@ -122,7 +124,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       (err) => {
         this.actionFailed = true;
         this.$router.navigate(['/plugins']);
-        this.$toastr.error(err.message, this.translate.instant('toast.title_error'));
+        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'));
       },
     );
   }
@@ -133,14 +135,14 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       termCols: this.term.cols,
       termRows: this.term.rows,
     }).subscribe(
-      (data) => {
+      () => {
         this.activeModal.close();
         this.$router.navigate(['/plugins']);
         this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);
       },
       (err) => {
         this.actionFailed = true;
-        this.$toastr.error(err.message, this.translate.instant('toast.title_error'));
+        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'));
       },
     );
   }
@@ -164,16 +166,16 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       termCols: this.term.cols,
       termRows: this.term.rows,
     }).subscribe(
-      (data) => {
+      () => {
         this.justUpdatedPlugin = true;
         this.$router.navigate(['/plugins']);
         this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);
         this.getChangeLog();
-        this.$notification.configUpdated.next(undefined);
+        this.getChildBridges();
       },
       (err) => {
         this.actionFailed = true;
-        this.$toastr.error(err.message, this.translate.instant('toast.title_error'));
+        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'));
       },
     );
   }
@@ -184,14 +186,14 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       termCols: this.term.cols,
       termRows: this.term.rows,
     }).subscribe(
-      (data) => {
+      () => {
         this.$router.navigate(['/restart']);
         this.activeModal.close();
         this.$toastr.success(this.pastTenseVerb, this.toastSuccess);
       },
       (err) => {
         this.actionFailed = true;
-        this.$toastr.error(err.message, this.translate.instant('toast.title_error'));
+        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'));
       },
     );
   }
@@ -206,10 +208,26 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
           this.activeModal.close();
         }
       },
-      (err) => {
+      () => {
         this.activeModal.close();
       },
     );
+  }
+
+  getChildBridges(): any[] {
+    try {
+      this.$api.get('/status/homebridge/child-bridges').subscribe((data: any[]) => {
+        data.forEach((bridge) => {
+          if (this.pluginName === bridge.plugin) {
+            this.childBridges.push(bridge);
+          }
+        });
+      });
+      return this.childBridges;
+    } catch (err) {
+      this.$toastr.error(err.message, this.$translate.instant('toast.title_error'));
+      return [];
+    }
   }
 
   getReleaseNotes() {
@@ -218,7 +236,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
         this.showReleaseNotes = true;
         this.release = data;
       },
-      (err) => {
+      () => {
         if (this.onlineUpdateOk) {
           this.update();
         }
@@ -231,8 +249,27 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
     this.activeModal.close();
   }
 
+  public async onRestartChildBridgeClick() {
+    try {
+      for (const bridge of this.childBridges) {
+        await this.$api.put(`/server/restart/${bridge.username}`, {}).toPromise();
+      }
+      this.$toastr.success(
+        this.$translate.instant('plugins.manage.child_bridge_restart_success'),
+        this.$translate.instant('toast.title_success'),
+      );
+    } catch (err) {
+      this.$notification.configUpdated.next(undefined); // highlight the restart icon in the navbar
+      this.$toastr.error(
+        this.$translate.instant('plugins.manage.child_bridge_restart_failed'),
+        this.$translate.instant('toast.title_error'),
+      );
+    } finally {
+      this.activeModal.close();
+    }
+  }
+
   ngOnDestroy() {
     this.io.end();
   }
-
 }

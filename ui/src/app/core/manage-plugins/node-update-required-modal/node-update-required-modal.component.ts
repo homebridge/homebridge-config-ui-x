@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { minVersion } from 'semver';
+import {  NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { minVersion, SemVer } from 'semver';
 
 import { SettingsService } from '@/app/core/settings.service';
 
@@ -10,10 +10,10 @@ import { SettingsService } from '@/app/core/settings.service';
   styleUrls: ['./node-update-required-modal.component.scss'],
 })
 export class NodeUpdateRequiredModalComponent implements OnInit {
-  @Input() plugin;
+  @Input() plugin: any;
 
-  public minVersion;
-  public installedVersion;
+  public minVersion: SemVer;
+  public installedVersion: string;
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -24,5 +24,4 @@ export class NodeUpdateRequiredModalComponent implements OnInit {
     this.minVersion = minVersion(this.plugin.engines.node);
     this.installedVersion = this.$settings.env.nodeVersion;
   }
-
 }

@@ -1,8 +1,21 @@
-import { Controller, UseGuards, Get, Put, Param, Body, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Put,
+  Req,
+  UseGuards
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiParam } from '@nestjs/swagger';
-import { AccessoriesService } from './accessories.service';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiTags
+} from '@nestjs/swagger';
 import { AccessorySetCharacteristicDto } from './accessories.dto';
+import { AccessoriesService } from './accessories.service';
 
 @ApiTags('Accessories')
 @ApiBearerAuth()

@@ -27,7 +27,7 @@ export class ManagePluginsService {
     private $toastr: ToastrService,
   ) { }
 
-  installPlugin(pluginName, targetVersion = 'latest') {
+  installPlugin(pluginName: string, targetVersion = 'latest') {
     const ref = this.modalService.open(ManagePluginsModalComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -38,7 +38,7 @@ export class ManagePluginsService {
     ref.componentInstance.targetVersion = targetVersion;
   }
 
-  uninstallPlugin(plugin) {
+  uninstallPlugin(plugin: any) {
     const ref = this.modalService.open(UninstallPluginsModalComponent, {
       backdrop: 'static',
       keyboard: false,
@@ -47,7 +47,7 @@ export class ManagePluginsService {
     ref.componentInstance.plugin = plugin;
   }
 
-  async updatePlugin(plugin, targetVersion = 'latest') {
+  async updatePlugin(plugin: any, targetVersion = 'latest') {
     if (!await this.checkNodeVersion(plugin)) {
       return;
     }
@@ -62,7 +62,7 @@ export class ManagePluginsService {
     ref.componentInstance.targetVersion = targetVersion;
   }
 
-  async upgradeHomebridge(homebridgePkg, targetVersion = 'latest') {
+  async upgradeHomebridge(homebridgePkg: any, targetVersion = 'latest') {
     if (!await this.checkNodeVersion(homebridgePkg)) {
       return;
     }
@@ -82,18 +82,21 @@ export class ManagePluginsService {
    *
    * @param plugin
    */
-  installPreviousVersion(plugin) {
+  async installPreviousVersion(plugin: any) {
     const ref = this.modalService.open(SelectPreviousVersionComponent, {
       backdrop: 'static',
     });
 
     ref.componentInstance.plugin = plugin;
 
-    return ref.result.then((targetVersion) => plugin.installedVersion && plugin.name !== 'homebridge' ?
-      this.updatePlugin(plugin, targetVersion) :
-      this.installPlugin(plugin.name, targetVersion)).catch(() => {
-        // do nothing
-      });
+    try {
+      const targetVersion = await ref.result;
+      return plugin.installedVersion && plugin.name !== 'homebridge' ?
+        this.updatePlugin(plugin, targetVersion) :
+        this.installPlugin(plugin.name, targetVersion);
+    } catch (e) {
+      // do nothing
+    }
   }
 
   /**
@@ -101,9 +104,9 @@ export class ManagePluginsService {
    *
    * @param plugin
    */
-  async bridgeSettings(plugin) {
+  async bridgeSettings(plugin: any) {
     // load the plugins schema
-    let schema;
+    let schema: any;
     if (plugin.settingsSchema) {
       try {
         schema = await this.loadConfigSchema(plugin.name);
@@ -127,9 +130,9 @@ export class ManagePluginsService {
    *
    * @param plugin
    */
-  async settings(plugin) {
+  async settings(plugin: any) {
     // load the plugins schema
-    let schema;
+    let schema: any;
     if (plugin.settingsSchema) {
       try {
         schema = await this.loadConfigSchema(plugin.name);
@@ -168,7 +171,7 @@ export class ManagePluginsService {
   /**
    * Open the json config modal
    */
-  async jsonEditor(plugin) {
+  async jsonEditor(plugin: any) {
     const ref = this.modalService.open(
       ManualPluginConfigModalComponent,
       {
@@ -184,11 +187,11 @@ export class ManagePluginsService {
     });
   }
 
-  private async loadConfigSchema(pluginName) {
+  private async loadConfigSchema(pluginName: string) {
     return this.$api.get(`/plugins/config-schema/${encodeURIComponent(pluginName)}`).toPromise();
   }
 
-  private async checkNodeVersion(plugin): Promise<boolean> {
+  private async checkNodeVersion(plugin: any): Promise<boolean> {
     if (plugin.engines && plugin.engines.node) {
       if (gte(this.$settings.env.nodeVersion, minVersion(plugin.engines.node))) {
         return true;

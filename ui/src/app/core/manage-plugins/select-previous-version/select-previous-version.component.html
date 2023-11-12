@@ -9,11 +9,11 @@
   <div class="modal-body d-flex flex-row flex-grow-1 w-100">
 
     <div *ngIf="loading" class="w-100 text-center primary-text">
-      <i class="fa fa-cog fa-spin" style="font-size: 72px;"></i>
+      <i class="fa fa-fw fa-cog fa-spin" style="font-size: 72px;"></i>
     </div>
 
     <div class="w-100  text-center" *ngIf="!loading">
-      <i class="fas fa-history primary-text" style="font-size: 50px;"></i>
+      <i class="fas fa-fw fa-history primary-text" style="font-size: 50px;"></i>
       <p class="mt-4">
         {{ 'plugins.manage.message_select_version_to_install' | translate }}:
       </p>

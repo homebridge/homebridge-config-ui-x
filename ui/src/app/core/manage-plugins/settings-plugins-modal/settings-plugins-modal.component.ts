@@ -20,8 +20,8 @@ export interface PluginConfigBlock {
   styleUrls: ['./settings-plugins-modal.component.scss'],
 })
 export class SettingsPluginsModalComponent implements OnInit {
-  @Input() plugin;
-  @Input() schema;
+  @Input() plugin: any;
+  @Input() schema: any;
 
   public pluginAlias: string;
   public pluginType: 'platform' | 'accessory';
@@ -78,35 +78,31 @@ export class SettingsPluginsModalComponent implements OnInit {
     );
   }
 
-  save() {
+  async save() {
     this.saveInProgress = true;
     const configBlocks = this.pluginConfig.map(x => x.config);
 
-    return this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, configBlocks)
-      .toPromise()
-      .then((done) => {
-        this.$toastr.success(
-          this.translate.instant('plugins.settings.toast_restart_required'),
-          this.translate.instant('plugins.settings.toast_plugin_config_saved'),
-        );
+    try {
+      await this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, configBlocks)
+        .toPromise();
+      this.$toastr.success(
+        this.translate.instant('plugins.settings.toast_restart_required'),
+        this.translate.instant('plugins.settings.toast_plugin_config_saved'));
 
-        this.activeModal.close(configBlocks.length ? this.schema : null);
-        this.$notification.configUpdated.next(undefined);
+      this.activeModal.close(configBlocks.length ? this.schema : null);
+      this.$notification.configUpdated.next(undefined);
 
-        // reload app settings if the config was changed for Homebridge Config UI X
-        if (this.plugin.name === 'homebridge-config-ui-x') {
-          this.$settings.getAppSettings().catch(/* do nothing */);
-        }
-      })
-      .catch(err => {
-        this.$toastr.error(
-          this.translate.instant('config.toast_failed_to_save_config') + ': ' + err.error?.message,
-          this.translate.instant('toast.title_error'),
-        );
-      })
-      .finally(() => {
-        this.saveInProgress = false;
-      });
+      // reload app settings if the config was changed for Homebridge UI
+      if (this.plugin.name === 'homebridge-config-ui-x') {
+        this.$settings.getAppSettings().catch();
+      }
+    } catch (err) {
+      this.$toastr.error(
+        this.translate.instant('config.toast_failed_to_save_config') + ': ' + err.error?.message,
+        this.translate.instant('toast.title_error'));
+    } finally {
+      this.saveInProgress = false;
+    }
   }
 
   blockChanged() {
@@ -131,7 +127,7 @@ export class SettingsPluginsModalComponent implements OnInit {
     this.blockChanged();
   }
 
-  removeBlock(__uuid__) {
+  removeBlock(__uuid__: string) {
     const pluginConfigIndex = this.pluginConfig.findIndex(x => x.__uuid__ === __uuid__);
     this.pluginConfig.splice(pluginConfigIndex, 1);
   }
@@ -139,7 +135,7 @@ export class SettingsPluginsModalComponent implements OnInit {
   /**
    * Homebridge Hue - ensure users object is preserved
    */
-  homebridgeHueFix(platform) {
+  homebridgeHueFix(platform: any) {
     this.schema.schema.properties.users = {
       type: 'object',
       properties: {},
@@ -155,5 +151,4 @@ export class SettingsPluginsModalComponent implements OnInit {
       };
     }
   }
-
 }

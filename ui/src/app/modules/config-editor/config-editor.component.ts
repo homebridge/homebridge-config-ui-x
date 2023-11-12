@@ -400,9 +400,9 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                   },
                   pin: {
                     type: 'string',
-                    description: 'The Homebridge instance pin.\nThis is used when pairing Homebridge to HomeKit.\nExample: 6302-7655',
-                    default: '6302-7655',
-                    pattern: '^([0-9]{4}-[0-9]{4})$',
+                    description: 'The Homebridge instance pin.\nThis is used when pairing Homebridge to HomeKit.\nExample: 630-27-655',
+                    default: '630-27-655',
+                    pattern: '^([0-9]{3}-[0-9]{2}-[0-9]{3})$',
                   },
                   manufacturer: {
                     type: 'string',
@@ -509,7 +509,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                       properties: {
                         platform: {
                           type: 'string',
-                          description: 'Homebridge Config UI X platform name must be set to "config".\nDo Not Change!',
+                          description: 'Homebridge UI platform name must be set to "config".\nDo Not Change!',
                           oneOf: [
                             { enum: 'config' },
                           ],

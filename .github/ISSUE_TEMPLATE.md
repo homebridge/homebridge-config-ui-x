@@ -22,7 +22,7 @@ assignees: ''
 <!-- Bug reports that do not contain logs may be closed without warning. -->
 
 ```
-Show the Homebridge / Homebridge Config UI X logs here.
+Show the Homebridge / Homebridge UI logs here.
 ```
 
 **Homebridge Config:**
@@ -39,7 +39,7 @@ Show your homebridge config.json here
 * **Node.js Version**: <!-- node -v -->
 * **NPM Version**: <!-- npm -v -->
 * **Homebridge Version**: <!-- homebridge -V -->
-* **Homebridge Config UI X Version**:
+* **Homebridge UI Version**:
 * **Operating System**: Raspbian / Ubuntu / Debian / Windows / macOS / Docker
 * **Process Supervisor**: Docker / Systemd / init.d / pm2 / launchctl / hb-service / other / none
 

@@ -1,19 +1,24 @@
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import * as bufferShim from 'buffer-shims';
-import * as si from 'systeminformation';
-import * as NodeCache from 'node-cache';
 import * as child_process from 'child_process';
+import * as path from 'path';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  ServiceUnavailableException
+} from '@nestjs/common';
+import {Categories} from '@oznu/hap-client/dist/hap-types';
+import * as bufferShim from 'buffer-shims';
+import * as fs from 'fs-extra';
+import * as NodeCache from 'node-cache';
+import * as si from 'systeminformation';
 import * as tcpPortUsed from 'tcp-port-used';
-import { Injectable, NotFoundException, BadRequestException, ServiceUnavailableException, InternalServerErrorException } from '@nestjs/common';
-import { Categories } from '@oznu/hap-client/dist/hap-types';
-
-import { Logger } from '../../core/logger/logger.service';
-import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
-import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service';
-import { ConfigEditorService } from '../config-editor/config-editor.service';
-import { AccessoriesService } from '../accessories/accessories.service';
-import { HomebridgeMdnsSettingDto } from './server.dto';
+import {ConfigService, HomebridgeConfig} from '../../core/config/config.service';
+import {HomebridgeIpcService} from '../../core/homebridge-ipc/homebridge-ipc.service';
+import {Logger} from '../../core/logger/logger.service';
+import {AccessoriesService} from '../accessories/accessories.service';
+import {ConfigEditorService} from '../config-editor/config-editor.service';
+import {HomebridgeMdnsSettingDto} from './server.dto';
 
 @Injectable()
 export class ServerService {
@@ -100,10 +105,10 @@ export class ServerService {
     const persistPath = path.join(this.configService.storagePath, 'persist');
 
     const devices = (await fs.readdir(persistPath))
-      .filter(x => x.match(/AccessoryInfo\.([A-F,a-f,0-9]+)\.json/));
+      .filter(x => x.match(/AccessoryInfo\.([A-F,a-f0-9]+)\.json/));
 
     return Promise.all(devices.map(async (x) => {
-      return await this.getDevicePairingById(x.split('.')[1]);
+      return this.getDevicePairingById(x.split('.')[1]);
     }));
   }
 
@@ -114,7 +119,7 @@ export class ServerService {
   public async getDevicePairingById(deviceId: string) {
     const persistPath = path.join(this.configService.storagePath, 'persist');
 
-    let device;
+    let device: any;
     try {
       device = await fs.readJson(path.join(persistPath, `AccessoryInfo.${deviceId}.json`));
     } catch (e) {
@@ -135,7 +140,7 @@ export class ServerService {
     delete device.pairedClientsPermission;
 
     try {
-      device._category = Object.entries(Categories).find(([name, value]) => value === device.category)[0].toLowerCase();
+      device._category = Object.entries(Categories).find(([, value]) => value === device.category)[0].toLowerCase();
     } catch (e) {
       device._category = 'Other';
     }
@@ -256,10 +261,10 @@ export class ServerService {
 
     try {
       this.logger.log('Clearing Cached Homebridge Accessories...');
-      for (const cachedAccessoriesPath of cachedAccessoryPaths) {
-        if (await fs.pathExists(cachedAccessoriesPath)) {
-          await fs.unlink(cachedAccessoriesPath);
-          this.logger.warn(`Removed ${cachedAccessoriesPath}`);
+      for (const thisCachedAccessoriesPath of cachedAccessoryPaths) {
+        if (await fs.pathExists(thisCachedAccessoriesPath)) {
+          await fs.unlink(thisCachedAccessoriesPath);
+          this.logger.warn(`Removed ${thisCachedAccessoriesPath}`);
         }
       }
     } catch (e) {
@@ -291,11 +296,10 @@ export class ServerService {
   /**
    * Generates the setup code
    */
-  private generateSetupCode(accessoryInfo): string {
+  private generateSetupCode(accessoryInfo: any): string {
     // this code is from https://github.com/KhaosT/HAP-NodeJS/blob/master/lib/Accessory.js#L369
     const buffer = bufferShim.alloc(8);
-    const setupCode = parseInt(accessoryInfo.pincode.replace(/-/g, ''), 10);
-    let valueLow = setupCode;
+    let valueLow = parseInt(accessoryInfo.pincode.replace(/-/g, ''), 10);
     const valueHigh = accessoryInfo.category >> 1;
 
     valueLow |= 1 << 28; // Supports IP;
@@ -347,7 +351,7 @@ export class ServerService {
     // See https://github.com/sebhildebrandt/systeminformation/issues/775#issuecomment-1741836906
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    const networkInterfaces = fromCache || (await si.networkInterfaces()).filter((adapter) => {
+    const networkInterfaces = fromCache || (await si.networkInterfaces()).filter((adapter: any) => {
       return !adapter.internal
         && (adapter.ip4 || (adapter.ip6));
     });
@@ -447,17 +451,13 @@ export class ServerService {
    * Check if the system Node.js version has changed
    */
   private async nodeVersionChanged(): Promise<boolean> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       let result = false;
 
       const child = child_process.spawn(process.execPath, ['-v']);
 
       child.stdout.once('data', (data) => {
-        if (data.toString().trim() === process.version) {
-          result = false;
-        } else {
-          result = true;
-        }
+        result = data.toString().trim() !== process.version;
       });
 
       child.on('error', () => {

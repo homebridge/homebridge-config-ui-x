@@ -16,6 +16,7 @@ import { SchemaFormComponent } from './components/schema-form/schema-form.compon
 import { QrcodeComponent } from './components/qrcode/qrcode.component';
 import { RtlDirective } from './directives/rtl.directive';
 import { JsonSchemaFormPatchDirective } from './directives/json-schema-form-patch.directive';
+import { InformationComponent } from '@/app/core/components/information/information.component';
 
 @NgModule({
     declarations: [
@@ -31,6 +32,7 @@ import { JsonSchemaFormPatchDirective } from './directives/json-schema-form-patc
         BackupRestoreComponent,
         ScheduledBackupsComponent,
         ConfirmComponent,
+        InformationComponent,
         QrcodeComponent,
     ],
     imports: [

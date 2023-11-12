@@ -9,8 +9,8 @@
   <div class="modal-body d-flex flex-row flex-grow-1 align-items-center w-100 text-center">
 
     <!-- plugins -->
-    <div class="w-100" *ngIf="plugin.name !== 'homebridge'">
-      <i class="fab fa-node primary-text" style="font-size: 100px;"></i>
+    <div class="w-100" *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)">
+      <i class="fab fa-fw fa-node primary-text" style="font-size: 100px;"></i>
       <p class="mt-4" translate="plugins.node_update.node_version_too_low"
         [translateParams]="{pluginName: plugin.name, minVersion: minVersion, installedVersion: installedVersion}">
       </p>
@@ -18,14 +18,14 @@
       </p>
       <p>
         <a href="https://homebridge.io/w/JTKEF" target="_blank" rel="noopener noreferrer">
-          How To Update Node.js <i class="fa fa-external-link-alt"></i>
+          How To Update Node.js <i class="fa fa-fw fa-external-link-alt"></i>
         </a>
       </p>
     </div>
 
     <!-- homebridge -->
     <div class="w-100" *ngIf="plugin.name === 'homebridge'">
-      <i class="fab fa-node primary-text" style="font-size: 100px;"></i>
+      <i class="fab fa-fw fa-node primary-text" style="font-size: 100px;"></i>
       <p class="mt-4" translate="plugins.node_update.homebridge_node_version_too_low"
         [translateParams]="{minVersion: minVersion, installedVersion: installedVersion, latestVersion: plugin.latestVersion}">
       </p>
@@ -33,7 +33,22 @@
       </p>
       <p>
         <a href="https://homebridge.io/w/JTKEF" target="_blank" rel="noopener noreferrer">
-          How To Update Node.js <i class="fa fa-external-link-alt"></i>
+          How To Update Node.js <i class="fa fa-fw fa-external-link-alt"></i>
+        </a>
+      </p>
+    </div>
+
+    <!-- homebridge ui -->
+    <div class="w-100" *ngIf="plugin.name === 'homebridge-config-ui-x'">
+      <i class="fab fa-fw fa-node primary-text" style="font-size: 100px;"></i>
+      <p class="mt-4" translate="plugins.node_update.homebridge_node_version_too_low"
+         [translateParams]="{minVersion: minVersion, installedVersion: installedVersion, latestVersion: plugin.latestVersion}">
+      </p>
+      <p translate="plugins.node_update_homebridge_ui_upgrade_and_try_again">
+      </p>
+      <p>
+        <a href="https://homebridge.io/w/JTKEF" target="_blank" rel="noopener noreferrer">
+          How To Update Node.js <i class="fa fa-fw fa-external-link-alt"></i>
         </a>
       </p>
     </div>
@@ -44,11 +59,11 @@
       (click)="activeModal.dismiss('Cross click')">
       {{'form.button_cancel' | translate}}
     </button>
-    <button *ngIf="plugin.name !== 'homebridge'" type="button" class="btn btn-danger" data-dismiss="modal"
+    <button *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)" type="button" class="btn btn-danger" data-dismiss="modal"
       (click)="activeModal.close(true);">
       {{'plugins.node_update.update_anyway' | translate}}
     </button>
-    <button *ngIf="plugin.name === 'homebridge'" type="button" class="btn btn-danger" data-dismiss="modal"
+    <button *ngIf="['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)" type="button" class="btn btn-danger" data-dismiss="modal"
       (click)="activeModal.dismiss('Cross click')">
       {{'form.button_close' | translate}}
     </button>

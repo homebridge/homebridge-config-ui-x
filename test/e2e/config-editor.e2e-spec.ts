@@ -1,14 +1,13 @@
 import * as path from 'path';
-import * as fs from 'fs-extra';
-import * as dayjs from 'dayjs';
 import { ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-
+import { Test, TestingModule } from '@nestjs/testing';
+import * as dayjs from 'dayjs';
+import * as fs from 'fs-extra';
 import { AuthModule } from '../../src/core/auth/auth.module';
-import { ConfigEditorModule } from '../../src/modules/config-editor/config-editor.module';
 import { HomebridgeConfig } from '../../src/core/config/config.service';
 import { SchedulerService } from '../../src/core/scheduler/scheduler.service';
+import { ConfigEditorModule } from '../../src/modules/config-editor/config-editor.module';
 import { ConfigEditorService } from '../../src/modules/config-editor/config-editor.service';
 
 describe('ConfigEditorController (e2e)', () => {
@@ -45,7 +44,7 @@ describe('ConfigEditorController (e2e)', () => {
 
     // copy test plugins
     await fs.remove(pluginsPath);
-    await fs.copy(path.resolve(__dirname, '../mocks', 'plugins'), pluginsPath, { recursive: true });
+    await fs.copy(path.resolve(__dirname, '../mocks', 'plugins'), pluginsPath);
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [ConfigEditorModule, AuthModule],
@@ -351,7 +350,7 @@ describe('ConfigEditorController (e2e)', () => {
   it('POST /config-editor (accept bridge.pin if a valid value is provided)', async () => {
     const currentConfig = await fs.readJson(configFilePath);
 
-    currentConfig.bridge.pin = '1111-1111';
+    currentConfig.bridge.pin = '111-11-111';
 
     const res = await app.inject({
       method: 'POST',
@@ -366,7 +365,7 @@ describe('ConfigEditorController (e2e)', () => {
 
     // check the updates were saved to disk and mistakes corrected
     const savedConfig: HomebridgeConfig = await fs.readJson(configFilePath);
-    expect(savedConfig.bridge.pin).toBe('1111-1111');
+    expect(savedConfig.bridge.pin).toBe('111-11-111');
   });
 
   it('POST /config-editor (correct bridge.name if an invalid value is provided)', async () => {
