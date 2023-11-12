@@ -9,10 +9,8 @@
     </button>
   </div>
 
-  <div class="modal-body" style="min-height: 110px;" [hidden]="!justSavedAndExited">
-    <h3 class="text-center primary-text" [translate]="'platform.version.title_service_restart_required'">
-      Restart Required
-    </h3>
+  <div class="modal-body text-center" [hidden]="!justSavedAndExited">
+    <i class="fa fa-fw fa-power-off primary-text mb-4" style="font-size: 75px;"></i>
     <p *ngIf="['homebridge', 'homebridge-config-ui-x'].includes(plugin.name) || childBridges.length === 0" class="text-center grey-text"
        [translate]="'plugins.manage.message_thanks_for_updating_restart'">
       Please restart Homebridge for the changes to apply.

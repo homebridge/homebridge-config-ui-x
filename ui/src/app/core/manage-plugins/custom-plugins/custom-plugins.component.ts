@@ -52,9 +52,9 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   public schemaFormUpdatedSubject = new Subject();
 
   // other forms
-  public formId;
-  public formSchema;
-  public formData;
+  public formId: string;
+  public formSchema: any;
+  public formData: any;
   public formSubmitButtonLabel: string;
   public formCancelButtonLabel: string;
   public formValid = true;
