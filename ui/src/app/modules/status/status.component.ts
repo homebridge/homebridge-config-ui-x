@@ -1,17 +1,16 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ToastrService } from 'ngx-toastr';
 import { GridsterConfig, GridsterItem } from 'angular-gridster2';
+import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { take } from 'rxjs/operators';
-
-import { WsService } from '@/app/core/ws.service';
+import { WidgetAddComponent } from './widget-add/widget-add.component';
+import { WidgetControlComponent } from './widget-control/widget-control.component';
 import { AuthService } from '@/app/core/auth/auth.service';
-import { SettingsService } from '@/app/core/settings.service';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { NotificationService } from '@/app/core/notification.service';
-import { WidgetControlComponent } from './widget-control/widget-control.component';
-import { WidgetAddComponent } from './widget-add/widget-add.component';
+import { SettingsService } from '@/app/core/settings.service';
+import { WsService } from '@/app/core/ws.service';
 
 @Component({
   selector: 'app-status',

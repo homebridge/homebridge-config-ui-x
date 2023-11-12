@@ -1,8 +1,7 @@
 <div class="modal-content hb-accessories-info-modal">
   <div class="modal-header">
     <h5 class="modal-title">{{ service.customName || service.serviceName }}</h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-      (click)="activeModal.dismiss('Cross click')">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="activeModal.dismiss('Dismiss')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
@@ -70,5 +69,12 @@
         </tr>
       </tbody>
     </table>
+  </div>
+  <div class="modal-footer justify-content-between">
+    <div class="text-center">
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
+        {{ 'form.button_close' | translate }}
+      </button>
+    </div>
   </div>
 </div>

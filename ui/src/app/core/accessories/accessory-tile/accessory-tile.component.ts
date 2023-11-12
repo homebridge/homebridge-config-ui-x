@@ -16,5 +16,4 @@ export class AccessoryTileComponent implements OnInit {
 
   ngOnInit(): void {
   }
-
 }

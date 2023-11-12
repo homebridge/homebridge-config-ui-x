@@ -1,8 +1,7 @@
 <div class="modal-content" style="min-height: 300px;">
   <div class="modal-header">
     <h5 class="modal-title">{{'plugins.manage.label_uninstall' | translate}}: {{ plugin.displayName || plugin.name }}</h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-      (click)="activeModal.dismiss('Cross click')">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="activeModal.dismiss('Dismiss')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
@@ -28,15 +27,18 @@
         {{ 'plugins.manage.message_uninstall_remove_config_required' | translate }}
       </ngb-alert>
     </div>
-
   </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-elegant mr-auto" data-dismiss="modal"
-      (click)="activeModal.dismiss('Cross click')">
-      {{'form.button_cancel' | translate}}
-    </button>
-    <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="doUninstall()" [disabled]="loading">
-      {{'plugins.manage.label_uninstall' | translate}}
-    </button>
+  <div class="modal-footer justify-content-between">
+    <div class="text-left">
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
+        {{ 'form.button_close' | translate }}
+      </button>
+    </div>
+    <div class="text-center"></div>
+    <div class="text-right">
+      <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="doUninstall()" [disabled]="loading">
+        {{'plugins.manage.label_uninstall' | translate}}
+      </button>
+    </div>
   </div>
 </div>

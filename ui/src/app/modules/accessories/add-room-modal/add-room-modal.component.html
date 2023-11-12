@@ -1,12 +1,11 @@
 <div class="modal-content">
-  <div class="modal-header">
-    <h5 class="modal-title" [translate]="'accessories.title_create_new_room'">Create New Room</h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-      (click)="activeModal.dismiss('Cross click')">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
   <form>
+    <div class="modal-header">
+      <h5 class="modal-title" [translate]="'accessories.title_create_new_room'">Create New Room</h5>
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="activeModal.dismiss('Dismiss')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
     <div class="modal-body">
       <div class="alert alert-info" role="alert" [translate]="'accessories.message_rooms_not_appear_in_homekit'">
       </div>
@@ -17,9 +16,18 @@
         <label for="form-name" [translate]="'accessories.label_room_name'">Room Name</label>
       </div>
     </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="activeModal.close(roomName)"
-        [translate]="'accessories.button_create_room'">Create Room</button>
+    <div class="modal-footer justify-content-between">
+      <div class="text-left">
+        <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
+          {{ 'form.button_close' | translate }}
+        </button>
+      </div>
+      <div class="text-center"></div>
+      <div class="text-right">
+        <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="activeModal.close(roomName)">
+          {{ 'accessories.button_create_room' | translate }}
+        </button>
+      </div>
     </div>
   </form>
 </div>

@@ -1,15 +1,21 @@
-import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import { Router } from '@angular/router';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { debounceTime, skip } from 'rxjs/operators';
-
-import { environment } from '@/environments/environment';
 import { ApiService } from '@/app/core/api.service';
-import { WsService } from '@/app/core/ws.service';
 import { NotificationService } from '@/app/core/notification.service';
-import { Router } from '@angular/router';
+import { WsService } from '@/app/core/ws.service';
+import { environment } from '@/environments/environment';
 
 @Component({
   selector: 'app-custom-plugins',

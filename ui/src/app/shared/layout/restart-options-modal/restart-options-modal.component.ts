@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { SettingsService } from '@/app/core/settings.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-confirm',

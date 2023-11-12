@@ -1,14 +1,13 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ToastrService } from 'ngx-toastr';
-import { TranslateService } from '@ngx-translate/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { TranslateService } from '@ngx-translate/core';
 import { DragulaService } from 'ng2-dragula';
+import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
-
-import { SettingsService } from '@/app/core/settings.service';
+import { AddRoomModalComponent } from './add-room-modal/add-room-modal.component';
 import { AccessoriesService } from '@/app/core/accessories/accessories.service';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
-import { AddRoomModalComponent } from './add-room-modal/add-room-modal.component';
+import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
   selector: 'app-accessories',

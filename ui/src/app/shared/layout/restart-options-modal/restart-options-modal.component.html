@@ -1,36 +1,49 @@
-<div class="modal-content" style="min-height: 300px;">
+<div class="modal-content">
   <div class="modal-header">
     <h5 class="modal-title">Restart Options</h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-      (click)="activeModal.dismiss('Dismiss')">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="activeModal.dismiss('Dismiss')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
-  <div class="modal-body align-items-center w-100">
-    <p class="w-100 text-center">
-      <button type="button" class="btn btn-danger w-75 my-3" (click)="restartHomebridge()">
+  <div class="modal-body align-items-center w-100 pb-0">
+
+    <div class="w-100 text-center primary-text mb-4">
+      <i class="fas fa-fw fa-power-off" style="font-size: 50px;"></i>
+    </div>
+
+    <p class="w-100 text-center my-1">
+      <button type="button" class="btn btn-danger w-75 my-0" (click)="restartHomebridge()">
         Restart Homebridge
       </button>
     </p>
-    <p class="w-100 text-center" *ngIf="$settings.env.canShutdownRestartHost">
-      <button type="button" class="btn btn-danger w-75 my-3" (click)="restartServer()">
+    <p class="w-100 text-center my-1" *ngIf="$settings.env.canShutdownRestartHost">
+      <button type="button" class="btn btn-danger w-75 my-0" (click)="restartServer()">
         Restart OS
       </button>
     </p>
-    <p class="w-100 text-center" *ngIf="$settings.env.canShutdownRestartHost">
-      <button type="button" class="btn btn-danger w-75 my-3" (click)="shutdownServer()">
+    <p class="w-100 text-center my-1" *ngIf="$settings.env.canShutdownRestartHost">
+      <button type="button" class="btn btn-danger w-75 my-0" (click)="shutdownServer()">
         Shutdown OS
       </button>
     </p>
-    <p class="w-100 text-center" *ngIf="$settings.env.runningInDocker">
-      <button type="button" class="btn btn-danger w-75 my-3" (click)="dockerStartupScript()">
+    <p class="w-100 text-center my-1" *ngIf="$settings.env.runningInDocker">
+      <button type="button" class="btn btn-danger w-75 my-0" (click)="dockerStartupScript()">
         {{ 'menu.docker.label_startup_script' | translate }}
       </button>
     </p>
-    <p class="w-100 text-center" *ngIf="$settings.env.runningInDocker">
-      <button type="button" class="btn btn-danger w-75 my-3" (click)="dockerRestartContainer()">
+    <p class="w-100 text-center my-1" *ngIf="$settings.env.runningInDocker">
+      <button type="button" class="btn btn-danger w-75 my-0" (click)="dockerRestartContainer()">
         {{ 'menu.docker.label_restart_container' | translate }}
       </button>
     </p>
+  </div>
+  <div class="modal-footer justify-content-between mt-0">
+    <div class="text-left"></div>
+    <div class="text-center">
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
+        {{ 'form.button_close' | translate }}
+      </button>
+    </div>
+    <div class="text-right"></div>
   </div>
 </div>

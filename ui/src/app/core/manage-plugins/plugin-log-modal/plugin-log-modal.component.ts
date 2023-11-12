@@ -8,12 +8,11 @@ import {
   ViewChild,
 } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { ToastrService } from 'ngx-toastr';
-
-import { ApiService } from '@/app/core/api.service';
 import { TranslateService } from '@ngx-translate/core';
-import { LogService } from '@/app/core/log.service';
+import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
+import { ApiService } from '@/app/core/api.service';
+import { LogService } from '@/app/core/log.service';
 
 @Component({
   selector: 'app-plugin-log-modal',

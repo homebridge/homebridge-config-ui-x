@@ -2,16 +2,15 @@ import { Component, Input, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-
 import { ApiService } from '@/app/core/api.service';
-import { WsService } from '@/app/core/ws.service';
-import { NotificationService } from '@/app/core/notification.service';
-import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
-import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
-import { DonateModalComponent } from '@/app/modules/plugins/donate-modal/donate-modal.component';
 import { InformationComponent } from '@/app/core/components/information/information.component';
+import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { PluginLogModalComponent } from '@/app/core/manage-plugins/plugin-log-modal/plugin-log-modal.component';
+import { MobileDetectService } from '@/app/core/mobile-detect.service';
+import { NotificationService } from '@/app/core/notification.service';
+import { WsService } from '@/app/core/ws.service';
+import { DonateModalComponent } from '@/app/modules/plugins/donate-modal/donate-modal.component';
 
 @Component({
   selector: 'app-plugin-card',
@@ -83,7 +82,6 @@ export class PluginCardComponent implements OnInit {
     ref.componentInstance.title = `${this.$translate.instant('plugins.manage.disable')}: ${plugin.name}`;
     ref.componentInstance.message = this.$translate.instant('plugins.manage.message_confirm_disable', { pluginName: plugin.name });
     ref.componentInstance.confirmButtonLabel = this.$translate.instant('plugins.manage.disable');
-    ref.componentInstance.cancelButtonLabel = this.$translate.instant('form.button_cancel');
 
     ref.result.then(async () => {
       try {
@@ -113,7 +111,6 @@ export class PluginCardComponent implements OnInit {
     ref.componentInstance.title = `${this.$translate.instant('plugins.manage.enable')}: ${plugin.name}`;
     ref.componentInstance.message = this.$translate.instant('plugins.manage.message_confirm_enable', { pluginName: plugin.name });
     ref.componentInstance.confirmButtonLabel = this.$translate.instant('plugins.manage.enable');
-    ref.componentInstance.cancelButtonLabel = this.$translate.instant('form.button_cancel');
 
     ref.result.then(async () => {
       try {

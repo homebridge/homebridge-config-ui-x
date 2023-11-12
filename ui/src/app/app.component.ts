@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-
 import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
@@ -57,11 +56,7 @@ export class AppComponent {
 
     // watch for lang changes
     translate.onLangChange.subscribe(() => {
-      if (rtlLanguages.includes(translate.currentLang)) {
-        $settings.rtl = true;
-      } else {
-        $settings.rtl = false;
-      }
+      $settings.rtl = rtlLanguages.includes(translate.currentLang);
     });
 
     const browserLang = languages.find(x => x === translate.getBrowserLang() || x === translate.getBrowserCultureLang());
