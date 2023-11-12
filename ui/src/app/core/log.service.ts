@@ -94,7 +94,7 @@ export class LogService {
             }
           }
 
-          if (line.includes(`[36m[${this.pluginName}]`)) {
+          if (line.includes(`36m[${this.pluginName}]`)) {
             this.term.write(line + '\r');
             includeNextLine = true;
           }
