@@ -310,7 +310,7 @@ export class AuthService {
    */
   private async saveUserFile(users: UserDto[]) {
     // update the auth.json
-    return fs.writeJson(this.configService.authPath, users, { spaces: 4 });
+    return fs.writeJsonSync(this.configService.authPath, users, { spaces: 4 });
   }
 
   /**
