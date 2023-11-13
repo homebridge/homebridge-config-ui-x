@@ -243,7 +243,7 @@ export class StatusService {
    */
   public async getServerUptimeInfo() {
     return {
-      time: si.time(),
+      time: await si.time(),
       processUptime: process.uptime(),
     };
   }
@@ -427,7 +427,7 @@ export class StatusService {
       nodeVersion: process.version,
       os: await this.getOsInfo(),
       glibcVersion: this.getGlibcVersion(),
-      time: si.time(),
+      time: await si.time(),
       network: await this.getDefaultInterface() || {},
     };
   }
