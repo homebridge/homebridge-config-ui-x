@@ -98,7 +98,7 @@
             <i class="fas fa-fw fa-fw fa-history"></i>
             {{ 'plugins.manage.message_install_alternate_version' | translate }}
           </button>
-          <button ngbDropdownItem (click)="viewPluginLog(plugin)">
+          <button ngbDropdownItem (click)="viewPluginLog(plugin)" *ngIf="plugin.installedVersion">
             <i class="fas fa-fw fa-fw fa-wave-square"></i> {{ 'plugins.manage.plugin_logs' | translate }}
           </button>
           <button ngbDropdownItem (click)="$plugin.bridgeSettings(plugin)"
