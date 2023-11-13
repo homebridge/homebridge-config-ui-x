@@ -77,13 +77,12 @@
 
       <span ngbDropdown placement="bottom-right top-right" class="d-inline-block ml-3">
         <a class="card-link" href="javascript:void(0)" aria-label="Plugin actions drop down menu" ngbDropdownToggle>
-            <i class="fas fa-fw fa-ellipsis-v" class="grey-text">
-              <span *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable" 
+            <i class="fas fa-fw fa-ellipsis-v" class="grey-text"></i>
+        </a>
+        <span *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable" 
                 class="position-absolute p-1 bg-danger rounded-circle" 
                 style="right:0px; top:0px;">
-              </span>
-            </i>
-        </a>
+        </span>
         <div ngbDropdownMenu aria-labelledby="Plugin actions drop down menu">
           <ng-container *ngIf="hasChildBridges && !plugin.disabled">
             <button ngbDropdownItem *ngIf="!allChildBridgesStopped" (click)="doChildBridgeAction('stop')">
