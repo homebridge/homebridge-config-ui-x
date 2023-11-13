@@ -245,7 +245,6 @@
     "plugins.status_installed": "Инсталиран",
     "plugins.status_not_installed": "Не е инсталиран",
     "plugins.status_update_available": "Налична е актуализация",
-    "plugins.status_update_beta_available": "Beta Update Available",
     "plugins.toast_failed_to_load_plugins": "Неуспешно зареждане на добавките",
     "plugins.tooltip_update_plugin_to": "Актуализирай добавката до v{{latestVersion}}",
     "reset.accessories_will_may_need_to_be_reconfigured": "After performing this action some accessories may need to be reconfigured in HomeKit or re-added to your automations.",

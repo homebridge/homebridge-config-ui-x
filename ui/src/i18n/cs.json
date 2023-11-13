@@ -245,7 +245,6 @@
     "plugins.status_installed": "Instalováno",
     "plugins.status_not_installed": "Není instalován",
     "plugins.status_update_available": "Aktualizace k dispozici",
-    "plugins.status_update_beta_available": "Beta Update Available",
     "plugins.toast_failed_to_load_plugins": "Nepodařilo se načíst pluginy",
     "plugins.tooltip_update_plugin_to": "Aktualizovat plugin pro v{{latestVersion}}",
     "reset.accessories_will_may_need_to_be_reconfigured": "Po provedení této akce může být nutné některé příslušenství znovu nakonfigurovat v HomeKit nebo znovu přidat do vašich automatizací.",

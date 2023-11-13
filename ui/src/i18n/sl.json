@@ -245,7 +245,6 @@
     "plugins.status_installed": "Nameščeno",
     "plugins.status_not_installed": "Ni nameščeno",
     "plugins.status_update_available": "Posodobitev je na voljo",
-    "plugins.status_update_beta_available": "Beta Update Available",
     "plugins.toast_failed_to_load_plugins": "Vtičnikov ni bilo mogoče naložiti",
     "plugins.tooltip_update_plugin_to": "Posodobite vtičnik v{{latestVersion}}",
     "reset.accessories_will_may_need_to_be_reconfigured": "Po izvedbi tega dejanja bo morda treba nekatere dodatke konfigurirati v HomeKitu ali jih ponovno dodati v svoje avtomatizacije.",

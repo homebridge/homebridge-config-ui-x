@@ -245,7 +245,6 @@
     "plugins.status_installed": "Yüklü",
     "plugins.status_not_installed": "Yüklü Değil",
     "plugins.status_update_available": "Güncelleme Mevcut",
-    "plugins.status_update_beta_available": "Beta Update Available",
     "plugins.toast_failed_to_load_plugins": "Eklentiler yüklenemedi",
     "plugins.tooltip_update_plugin_to": "Eklentiyi v{{version}} sürümüne güncelleştir",
     "reset.accessories_will_may_need_to_be_reconfigured": "Bu işlemi gerçekleştirdikten sonra bazı aksesuarların HomeKit içerisinde yeniden yapılandırılması veya mevcut otomasyonlarınıza yeniden eklenmesi gerekebilir.",

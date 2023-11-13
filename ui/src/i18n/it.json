@@ -245,7 +245,6 @@
     "plugins.status_installed": "Installato",
     "plugins.status_not_installed": "Non installato",
     "plugins.status_update_available": "Aggiornamento disponibile",
-    "plugins.status_update_beta_available": "Beta Update Available",
     "plugins.toast_failed_to_load_plugins": "Impossibile caricare i plugin",
     "plugins.tooltip_update_plugin_to": "Aggiorna plugin alla versione v{{latestVersion}}",
     "reset.accessories_will_may_need_to_be_reconfigured": "Dopo l'esecuzione di questa operazione potrebbe essere necessario riconfigurare alcuni degli accessori in HomeKit o riaggiungerli alle automazioni.",

@@ -245,7 +245,6 @@
     "plugins.status_installed": "Telepítve",
     "plugins.status_not_installed": "Nincs telepítve",
     "plugins.status_update_available": "Új frissítés érhető el",
-    "plugins.status_update_beta_available": "Beta Update Available",
     "plugins.toast_failed_to_load_plugins": "Nem sikerült betölteni a plugineket",
     "plugins.tooltip_update_plugin_to": "Frissítés a v{{latestVersion}} verzióra",
     "reset.accessories_will_may_need_to_be_reconfigured": "After performing this action some accessories may need to be reconfigured in HomeKit or re-added to your automations.",
