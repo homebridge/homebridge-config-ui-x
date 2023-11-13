@@ -245,7 +245,6 @@
     "plugins.status_installed": "Terpasang",
     "plugins.status_not_installed": "Tidak Terpasang",
     "plugins.status_update_available": "Pembaruan Tersedia",
-    "plugins.status_update_beta_available": "Beta Update Available",
     "plugins.toast_failed_to_load_plugins": "Gagal memuat plugin",
     "plugins.tooltip_update_plugin_to": "Perbarui plugin ke v{{latestVersion}}",
     "reset.accessories_will_may_need_to_be_reconfigured": "Setelah melakukan tindakan ini, beberapa aksesoris mungkin perlu dikonfigurasi ulang di HomeKit atau ditambahkan kembali ke otomasi anda.",

@@ -245,7 +245,6 @@
     "plugins.status_installed": "Geïnstalleerd",
     "plugins.status_not_installed": "Niet Geïnstalleerd",
     "plugins.status_update_available": "Update Beschikbaar",
-    "plugins.status_update_beta_available": "Beta Update Available",
     "plugins.toast_failed_to_load_plugins": "Laden van plug-ins mislukt",
     "plugins.tooltip_update_plugin_to": "Update plugin naar v{{latestVersion}}",
     "reset.accessories_will_may_need_to_be_reconfigured": "Na het uitvoeren van deze actie kan het zijn dat voor sommmige accessoires de configuratie in HomeKit moet worden aangepast of opnieuw moet worden toegevoegd aan je automatiseringen.",

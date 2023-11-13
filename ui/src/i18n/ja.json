@@ -245,7 +245,6 @@
     "plugins.status_installed": "インストール済",
     "plugins.status_not_installed": "未インストール",
     "plugins.status_update_available": "更新が利用可能です",
-    "plugins.status_update_beta_available": "Beta Update Available",
     "plugins.toast_failed_to_load_plugins": "プラグインの読み込みに失敗しました",
     "plugins.tooltip_update_plugin_to": "プラグインをv{{latestVersion}}に更新",
     "reset.accessories_will_may_need_to_be_reconfigured": "この操作を実行すると、一部のアクセサリをHomeKitで再設定するか、自動化機能に再追加する必要がある可能性があります。",

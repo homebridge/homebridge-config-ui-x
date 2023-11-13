@@ -245,7 +245,6 @@
     "plugins.status_installed": "ติดตั้งแล้ว",
     "plugins.status_not_installed": "ไม่ได้ติดตั้ง",
     "plugins.status_update_available": "มีการอัปเดต",
-    "plugins.status_update_beta_available": "มีการอัปเดตรุ่นเบต้า",
     "plugins.toast_failed_to_load_plugins": "โหลดปลั๊กอินไม่สำเร็จ",
     "plugins.tooltip_update_plugin_to": "อัปเดตปลั๊กอินเป็น รุ่น{{latestVersion}}",
     "reset.accessories_will_may_need_to_be_reconfigured": "หลังจากดำเนินการนี้แล้วอุปกรณ์เสริมบางอย่างอาจต้องได้รับการกำหนดค่าใหม่ใน HomeKit หรือเพิ่มเข้าไปใหม่ในระบบอัตโนมัติของคุณ",

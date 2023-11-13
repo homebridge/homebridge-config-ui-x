@@ -245,7 +245,6 @@
     "plugins.status_installed": "Installerad",
     "plugins.status_not_installed": "Inte installerad",
     "plugins.status_update_available": "Uppdatering tillgänglig",
-    "plugins.status_update_beta_available": "Beta Update Available",
     "plugins.toast_failed_to_load_plugins": "Det gick inte att ladda plugins",
     "plugins.tooltip_update_plugin_to": "Uppdatera plugin till v {{latestVersion}}",
     "reset.accessories_will_may_need_to_be_reconfigured": "När du har utfört den här åtgärden kan vissa tillbehör behöva konfigureras om i HomeKit eller läggas till i dina automatiseringar igen.",
