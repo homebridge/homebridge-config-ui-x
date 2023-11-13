@@ -108,6 +108,11 @@
             <div class="dropdown-divider"></div>
           </ng-container>
           <button ngbDropdownItem *ngIf="plugin.publicPackage" (click)="$plugin.installPreviousVersion(plugin)">
+            <i class="fas fa-fw fa-fw fa-arrow-alt-circle-up"></i>
+            {{ 'plugins.manage.message_install_alternate_version' | translate }}
+            <p class="mb-0 text-muted> --- </p>
+          </button>
+          <button ngbDropdownItem *ngIf="plugin.publicPackage" (click)="$plugin.installPreviousVersion(plugin)">
             <i class="fas fa-fw fa-fw fa-history"></i>
             {{ 'plugins.manage.message_install_alternate_version' | translate }}
           </button>
