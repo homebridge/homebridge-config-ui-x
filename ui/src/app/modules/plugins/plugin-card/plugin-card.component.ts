@@ -9,6 +9,7 @@ import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.s
 import { PluginLogModalComponent } from '@/app/core/manage-plugins/plugin-log-modal/plugin-log-modal.component';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { NotificationService } from '@/app/core/notification.service';
+import { SettingsService } from '@/app/core/settings.service';
 import { WsService } from '@/app/core/ws.service';
 import { DonateModalComponent } from '@/app/modules/plugins/donate-modal/donate-modal.component';
 
@@ -30,6 +31,7 @@ export class PluginCardComponent implements OnInit {
   public allChildBridgesStopped = false;
   public childBridgeStatus = 'pending';
   public childBridgeRestartInProgress = false;
+  public recommendChildBridge = false;
 
   constructor(
     public $plugin: ManagePluginsService,
@@ -40,9 +42,26 @@ export class PluginCardComponent implements OnInit {
     private $modal: NgbModal,
     private $toastr: ToastrService,
     private $md: MobileDetectService,
-  ) { }
+    private $settings: SettingsService,
+  ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    if (
+      !this.$settings.env.recommendChildBridges
+      || !this.$settings.env.serviceMode
+      || ['homebridge', 'homebridge-config-ui-x'].includes(this.plugin.name)
+    ) {
+      this.recommendChildBridge = false;
+      return;
+    }
+    this.$api.get(`/plugins/config-schema/${encodeURIComponent(this.plugin.name)}`, {}).toPromise()
+      .then((schema) => {
+        this.recommendChildBridge = schema.pluginType === 'platform';
+      })
+      .catch(() => {
+        this.recommendChildBridge = false;
+      });
+  }
 
   @Input() set childBridges(childBridges: any[]) {
     this.hasChildBridges = childBridges.length > 0;
