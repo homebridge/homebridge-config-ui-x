@@ -245,7 +245,6 @@
     "plugins.status_installed": "Встановлено",
     "plugins.status_not_installed": "Не встановлено",
     "plugins.status_update_available": "Доступне оновлення",
-    "plugins.status_update_beta_available": "Beta Update Available",
     "plugins.toast_failed_to_load_plugins": "Не вдалося завантажити плагіни",
     "plugins.tooltip_update_plugin_to": "Оновити плагін до v{{latestVersion}}",
     "reset.accessories_will_may_need_to_be_reconfigured": "Після виконання цієї дії деякі аксесуари, можливо, буде потрібно переналаштувати в HomeKit або повторно добавити в Вашу автоматизацію.",

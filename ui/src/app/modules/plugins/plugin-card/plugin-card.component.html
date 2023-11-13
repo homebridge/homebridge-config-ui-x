@@ -9,11 +9,8 @@
       <p class="mb-0 grey-text" *ngIf="!plugin.installedVersion">
         <i class="far fa-fw fa-circle"></i> {{ 'plugins.status_not_installed' | translate }}
       </p>
-      <p class="mb-0 primary-text" *ngIf="plugin.updateAvailable && !plugin.betaUpdateAvailable && !plugin.disabled">
+      <p class="mb-0 primary-text" *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable && !plugin.disabled">
         <i class="far fa-fw fa-arrow-alt-circle-up"></i> {{ 'plugins.status_update_available' | translate }}
-      </p>
-      <p class="mb-0 primary-text" *ngIf="plugin.betaUpdateAvailable && !plugin.updateAvailable && !plugin.disabled">
-        <i class="far fa-fw fa-arrow-alt-circle-up"></i> {{ 'plugins.status_update_beta_available' | translate }}
       </p>
       <p class="mb-0 red-text" *ngIf="plugin.installedVersion && plugin.disabled">
         <i class="far fa-fw fa-circle-pause"></i> {{ 'plugins.status_disabled' | translate }}
@@ -54,18 +51,6 @@
     </a>
 
     <div class="ml-auto">
-      <a href="javascript:void(0)" class="card-link text-decoration-none ml-3"
-        *ngIf="plugin.updateAvailable && !plugin.betaUpdateAvailable" (click)="$plugin.updatePlugin(plugin)"
-        placement="bottom" ngbTooltip="{{'plugins.tooltip_update_plugin_to' | translate:plugin }}" container="body"
-        [openDelay]="150" [closeDelay]="3000" [autoClose]="true" [translate]="'plugins.button_update'" triggers="hover:focus:touchstart:touchend:click">
-        <i class="fas fa-fw fa-arrow-alt-circle-up primary-text"></i>
-      </a>
-      <a href="javascript:void(0)" class="card-link text-decoration-none ml-3"
-        *ngIf="!plugin.updateAvailable && plugin.betaUpdateAvailable" (click)="$plugin.updatePlugin(plugin, 'beta')"
-        placement="bottom" ngbTooltip="{{'plugins.tooltip_update_plugin_to' | translate:plugin }}" container="body"
-        [openDelay]="150" [closeDelay]="3000" [autoClose]="true" [translate]="'plugins.button_update'" triggers="hover:focus:touchstart:touchend:click">
-        <i class="fas fa-fw fa-arrow-alt-circle-up primary-text"></i>
-      </a>
       <ng-container *ngIf="hasChildBridges">
         <a href="javascript:void(0);" class="card-link grey-text ml-3" rel="noopener noreferrer"
           aria-label="Connect to HomeKit"
@@ -91,11 +76,8 @@
       </ng-container>
 
       <span ngbDropdown placement="bottom-right top-right" class="d-inline-block ml-3">
-        <a href="javascript:void(0)" class="card-link grey-text" aria-label="Plugin actions drop down menu"
-          ngbDropdownToggle>
-          <span class="card-link">
-            <i class="fas fa-fw fa-ellipsis-v"></i>
-          </span>
+        <a class="card-link" href="javascript:void(0)" aria-label="Plugin actions drop down menu" ngbDropdownToggle>
+            <i class="fas fa-fw fa-ellipsis-v" [ngClass]="{'grey-text': !plugin.updateAvailable && !plugin.betaUpdateAvailable, 'primary-text': plugin.updateAvailable || plugin.betaUpdateAvailable }"></i>
         </a>
         <div ngbDropdownMenu aria-labelledby="Plugin actions drop down menu">
           <ng-container *ngIf="hasChildBridges && !plugin.disabled">
@@ -107,16 +89,12 @@
             </button>
             <div class="dropdown-divider"></div>
           </ng-container>
-          <button ngbDropdownItem *ngIf="plugin.updateAvailable && !plugin.betaUpdateAvailable" (click)="$plugin.updatePlugin(plugin)">
-            <i class="fas fa-fw fa-fw fa-arrow-alt-circle-up"></i>
-            {{ 'plugins.manage.label_update' | translate }}
+          <button ngbDropdownItem *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable"
+            (click)="$plugin.updatePlugin(plugin, plugin.betaUpdateAvailable ? 'beta' : 'latest')">
+            <i class="fas fa-fw fa-arrow-alt-circle-up primary-text"></i>
+            {{ 'plugins.button_update' | translate }} (v{{ plugin.latestVersion }})
             <p class="mb-0 text-muted" style="margin-left: 1.25em;"> v{{ plugin.installedVersion }} --- {{ plugin.latestVersion }} </p>
           </button>
-          <button ngbDropdownItem *ngIf="!plugin.updateAvailable && plugin.betaUpdateAvailable" (click)="$plugin.updatePlugin(plugin, 'beta')">
-            <i class="fas fa-fw fa-fw fa-arrow-alt-circle-up"></i>
-            {{ 'plugins.manage.label_update' | translate }} (beta)
-            <p class="mb-0 text-muted" style="margin-left: 1.25em;"> v{{ plugin.installedVersion }} --- {{ plugin.latestVersion }} </p>
-          </button>  
           <button ngbDropdownItem *ngIf="plugin.publicPackage" (click)="$plugin.installPreviousVersion(plugin)">
             <i class="fas fa-fw fa-fw fa-history"></i>
             {{ 'plugins.manage.message_install_alternate_version' | translate }}
@@ -134,11 +112,11 @@
           </button>
           <button ngbDropdownItem (click)="disablePlugin(plugin)"
             *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x' && !plugin.disabled">
-            <i class="far fa-fw fa-times-circle"></i> {{ 'plugins.manage.disable' | translate }}
+            <i class="far fa-fw fa-circle-pause"></i> {{ 'plugins.manage.disable' | translate }}
           </button>
           <button ngbDropdownItem (click)="enablePlugin(plugin)"
             *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x' && plugin.disabled">
-            <i class="far fa-fw fa-check-circle"></i> {{ 'plugins.manage.enable' | translate }}
+            <i class="far fa-fw fa-circle-play"></i> {{ 'plugins.manage.enable' | translate }}
           </button>
           <button ngbDropdownItem *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x'"
             (click)="$plugin.uninstallPlugin(plugin)">

@@ -245,7 +245,6 @@
     "plugins.status_installed": "Instal·lat",
     "plugins.status_not_installed": "No instal·lat",
     "plugins.status_update_available": "Actualització disponible",
-    "plugins.status_update_beta_available": "Actualització Beta Disponible",
     "plugins.toast_failed_to_load_plugins": "Error al carregar els plugins",
     "plugins.tooltip_update_plugin_to": "Actualitzar el plugin a v{{ latestVersion }}",
     "reset.accessories_will_may_need_to_be_reconfigured": "Després de realitzar aquesta acció, pot ser que sigui necessari configurar de nou alguns accessoris en HomeKit o tornar a afegir-los a les teves automatitzacions.",

@@ -245,7 +245,6 @@
     "plugins.status_installed": "Инсталиран",
     "plugins.status_not_installed": "Не е инсталиран",
     "plugins.status_update_available": "Ажурирање достапно",
-    "plugins.status_update_beta_available": "Beta Update Available",
     "plugins.toast_failed_to_load_plugins": "Грешка при вчитување плагини.",
     "plugins.tooltip_update_plugin_to": "Ажурирај го плагинот на v{{latestVersion}}",
     "reset.accessories_will_may_need_to_be_reconfigured": "По извршување на оваа акција, некои уреди можно е да треба да бидат повторно конфигурирано во HomeKit или да се додадат во вашите автоматизации.",

@@ -245,7 +245,6 @@
     "plugins.status_installed": "Installert",
     "plugins.status_not_installed": "Ikke installert",
     "plugins.status_update_available": "Oppdatering tilgjengelig",
-    "plugins.status_update_beta_available": "Beta Update Available",
     "plugins.toast_failed_to_load_plugins": "Kunne ikke laste plugins",
     "plugins.tooltip_update_plugin_to": "Oppdater plugin til v {{latestVersion}}",
     "reset.accessories_will_may_need_to_be_reconfigured": "After performing this action some accessories may need to be reconfigured in HomeKit or re-added to your automations.",

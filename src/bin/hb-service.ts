@@ -1212,11 +1212,11 @@ export class HomebridgeServiceHelper {
   /**
    * Extract the Node.js tarball
    */
-  public async extractNodejs(targetVersion: string, extractConfig) {
+  public async extractNodejs(targetVersion: string, extractConfig: tar.ExtractOptions) {
     const spinner = ora(`Installing Node.js ${targetVersion}`).start();
 
     try {
-      tar.x(extractConfig);
+      await tar.x(extractConfig);
       spinner.succeed(`Installed Node.js ${targetVersion}`);
     } catch (e) {
       spinner.fail(e.message);

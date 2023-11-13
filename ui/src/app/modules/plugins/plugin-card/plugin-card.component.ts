@@ -83,7 +83,7 @@ export class PluginCardComponent implements OnInit {
     ref.componentInstance.title = `${this.$translate.instant('plugins.manage.disable')}: ${plugin.name}`;
     ref.componentInstance.message = this.$translate.instant('plugins.manage.message_confirm_disable', { pluginName: plugin.name });
     ref.componentInstance.confirmButtonLabel = this.$translate.instant('plugins.manage.disable');
-    ref.componentInstance.faIconClass = 'fa-circle-pause red-text';
+    ref.componentInstance.faIconClass = 'fa-circle-pause primary-text';
 
     ref.result.then(async () => {
       try {
@@ -113,7 +113,7 @@ export class PluginCardComponent implements OnInit {
     ref.componentInstance.title = `${this.$translate.instant('plugins.manage.enable')}: ${plugin.name}`;
     ref.componentInstance.message = this.$translate.instant('plugins.manage.message_confirm_enable', { pluginName: plugin.name });
     ref.componentInstance.confirmButtonLabel = this.$translate.instant('plugins.manage.enable');
-    ref.componentInstance.faIconClass = 'fa-circle-check green-text';
+    ref.componentInstance.faIconClass = 'fa-circle-play primary-text';
 
     ref.result.then(async () => {
       try {

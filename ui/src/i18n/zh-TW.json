@@ -245,7 +245,6 @@
     "plugins.status_installed": "已安裝",
     "plugins.status_not_installed": "未安裝",
     "plugins.status_update_available": "可用更新",
-    "plugins.status_update_beta_available": "Beta Update Available",
     "plugins.toast_failed_to_load_plugins": "Plugins 載入失敗",
     "plugins.tooltip_update_plugin_to": "更新 Plugin 至 v{{latestVersion}}",
     "reset.accessories_will_may_need_to_be_reconfigured": "執行此動作後，部分配件可能必須於 HomeKit 中重新設定或重新加入自動化。",

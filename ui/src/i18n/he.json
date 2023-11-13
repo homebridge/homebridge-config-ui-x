@@ -245,7 +245,6 @@
     "plugins.status_installed": "מותקן",
     "plugins.status_not_installed": "לא מותקן",
     "plugins.status_update_available": "עדכון זמין",
-    "plugins.status_update_beta_available": "Beta Update Available",
     "plugins.toast_failed_to_load_plugins": "כשל בהעלאת התוספים",
     "plugins.tooltip_update_plugin_to": "תוסף עודכן לגרסא v{{latestVersion}}",
     "reset.accessories_will_may_need_to_be_reconfigured": "After performing this action some accessories may need to be reconfigured in HomeKit or re-added to your automations.",
