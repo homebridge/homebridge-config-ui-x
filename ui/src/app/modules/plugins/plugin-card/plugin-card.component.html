@@ -77,7 +77,12 @@
 
       <span ngbDropdown placement="bottom-right top-right" class="d-inline-block ml-3">
         <a class="card-link" href="javascript:void(0)" aria-label="Plugin actions drop down menu" ngbDropdownToggle>
-            <i class="fas fa-fw fa-ellipsis-v" [ngClass]="{'grey-text': !plugin.updateAvailable && !plugin.betaUpdateAvailable, 'primary-text': plugin.updateAvailable || plugin.betaUpdateAvailable }"></i>
+            <i class="fas fa-fw fa-ellipsis-v" class="grey-text">
+              <span *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable" 
+                class="position-absolute p-1 bg-danger rounded-circle" 
+                style="right:-2px; top:-2px;">
+              </span>
+            </i>
         </a>
         <div ngbDropdownMenu aria-labelledby="Plugin actions drop down menu">
           <ng-container *ngIf="hasChildBridges && !plugin.disabled">
@@ -91,8 +96,9 @@
           </ng-container>
           <button ngbDropdownItem *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable"
             (click)="$plugin.updatePlugin(plugin, plugin.betaUpdateAvailable ? 'beta' : 'latest')">
-            <i class="fas fa-fw fa-arrow-alt-circle-up primary-text"></i>
+            <i class="fas fa-fw fa-arrow-alt-circle-up"></i>
             {{ 'plugins.button_update' | translate }} (v{{ plugin.latestVersion }})
+            <span class="position-absolute p-1 bg-danger rounded-circle" style="left:10px; top:20px;"></span>
           </button>
           <button ngbDropdownItem *ngIf="plugin.publicPackage" (click)="$plugin.installPreviousVersion(plugin)">
             <i class="fas fa-fw fa-fw fa-history"></i>
