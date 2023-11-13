@@ -333,7 +333,7 @@ export class ConfigEditorService {
     }
 
     // read source backup
-    return fs.readFile(requestedBackupPath);
+    return fs.readFileSync(requestedBackupPath);
   }
 
   /**
