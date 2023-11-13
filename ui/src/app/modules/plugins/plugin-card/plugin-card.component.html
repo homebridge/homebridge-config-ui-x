@@ -110,12 +110,12 @@
           <button ngbDropdownItem *ngIf="plugin.updateAvailable && !plugin.betaUpdateAvailable" (click)="$plugin.updatePlugin(plugin)">
             <i class="fas fa-fw fa-fw fa-arrow-alt-circle-up"></i>
             {{ 'plugins.manage.label_update' | translate }}
-            <p class="mb-0 text-muted"> --- </p>
+            <p class="mb-0 text-muted"> v{{ plugin.installedVersion || plugin.latestVersion }} --- </p>
           </button>
           <button ngbDropdownItem *ngIf="!plugin.updateAvailable && plugin.betaUpdateAvailable" (click)="$plugin.updatePlugin(plugin, 'beta')">
             <i class="fas fa-fw fa-fw fa-arrow-alt-circle-up"></i>
             {{ 'plugins.manage.label_update' | translate }}
-            <p class="mb-0 text-muted"> --- </p>
+            <p class="mb-0 text-muted"> v{{ plugin.installedVersion || plugin.latestVersion }} --- </p>
           </button>  
           <button ngbDropdownItem *ngIf="plugin.publicPackage" (click)="$plugin.installPreviousVersion(plugin)">
             <i class="fas fa-fw fa-fw fa-history"></i>
