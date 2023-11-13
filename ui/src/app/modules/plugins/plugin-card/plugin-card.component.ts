@@ -45,23 +45,7 @@ export class PluginCardComponent implements OnInit {
     private $settings: SettingsService,
   ) {}
 
-  ngOnInit(): void {
-    if (
-      !this.$settings.env.recommendChildBridges
-      || !this.$settings.env.serviceMode
-      || ['homebridge', 'homebridge-config-ui-x'].includes(this.plugin.name)
-    ) {
-      this.recommendChildBridge = false;
-      return;
-    }
-    this.$api.get(`/plugins/config-schema/${encodeURIComponent(this.plugin.name)}`, {}).toPromise()
-      .then((schema) => {
-        this.recommendChildBridge = schema.pluginType === 'platform';
-      })
-      .catch(() => {
-        this.recommendChildBridge = false;
-      });
-  }
+  ngOnInit(): void {}
 
   @Input() set childBridges(childBridges: any[]) {
     this.hasChildBridges = childBridges.length > 0;
@@ -80,6 +64,20 @@ export class PluginCardComponent implements OnInit {
     }
 
     this._childBridges = childBridges;
+
+    if (
+      this.$settings.env.recommendChildBridges
+      && this.$settings.env.serviceMode
+      && !['homebridge', 'homebridge-config-ui-x'].includes(this.plugin.name)
+    ) {
+      this.$api.get(`/plugins/config-schema/${encodeURIComponent(this.plugin.name)}`, {}).toPromise()
+        .then((schema) => {
+          this.recommendChildBridge = schema.pluginType === 'platform';
+        })
+        .catch(() => {
+          // ignore
+        });
+    }
   }
 
   openFundingModal(plugin: any) {

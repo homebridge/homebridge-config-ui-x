@@ -51,9 +51,9 @@ hb-service start</pre>
     <hr>
   </div>
   <div *ngIf="showReleaseNotes && !actionComplete" class="modal-body plugin-modal-body">
-    <h3 *ngIf="!updateToBeta" [translate]="'plugins.manage.label_release_notes'">Release Notes</h3>
-    <h3 *ngIf="updateToBeta" [translate]="'plugins.manage.label_release_notes_beta'">Beta Information</h3>
-    <h5>{{ release.name }}</h5>
+    <h3>{{ release.name }}</h3>
+    <h5 *ngIf="!updateToBeta" [translate]="'plugins.manage.label_release_notes'">Release Notes</h5>
+    <h5 *ngIf="updateToBeta" [translate]="'plugins.manage.label_release_notes_beta'">Beta Information</h5>
     <markdown class="plugin-md" [data]="release.changelog"></markdown>
   </div>
   <div class="modal-footer justify-content-between" *ngIf="!onlineUpdateOk || actionComplete || showReleaseNotes || actionFailed">
