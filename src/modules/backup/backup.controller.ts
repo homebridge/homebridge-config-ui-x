@@ -105,7 +105,11 @@ export class BackupController {
     description: 'Logs to stdout / stderr.',
   })
   async restoreBackupTrigger() {
-    return this.backupService.triggerHeadlessRestore();
+    try {
+      return await this.backupService.triggerHeadlessRestore();
+    } catch (err) {
+      throw err;
+    }
   }
 
   @UseGuards(AdminGuard)
