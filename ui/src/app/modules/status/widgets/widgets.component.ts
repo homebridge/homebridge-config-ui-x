@@ -1,21 +1,27 @@
 import {
-  Component, OnInit, Input, ComponentFactoryResolver,
-  ApplicationRef, Injector, ElementRef, EmbeddedViewRef, OnDestroy,
+  ApplicationRef,
+  Component,
+  ComponentFactoryResolver,
+  ElementRef,
+  EmbeddedViewRef,
+  Injector,
+  Input,
+  OnDestroy,
+  OnInit,
 } from '@angular/core';
-
+import { AccessoriesWidgetComponent } from './accessories-widget/accessories-widget.component';
+import { ChildBridgeWidgetComponent } from './child-bridge-widget/child-bridge-widget.component';
+import { ClockWidgetComponent } from './clock-widget/clock-widget.component';
+import { CpuWidgetComponent } from './cpu-widget/cpu-widget.component';
 import { HapQrcodeWidgetComponent } from './hap-qrcode-widget/hap-qrcode-widget.component';
 import { HomebridgeLogsWidgetComponent } from './homebridge-logs-widget/homebridge-logs-widget.component';
-import { TerminalWidgetComponent } from './terminal-widget/terminal-widget.component';
-import { CpuWidgetComponent } from './cpu-widget/cpu-widget.component';
-import { NetworkWidgetComponent } from './network-widget/network-widget.component';
-import { MemoryWidgetComponent } from './memory-widget/memory-widget.component';
-import { UptimeWidgetComponent } from './uptime-widget/uptime-widget.component';
 import { HomebridgeStatusWidgetComponent } from './homebridge-status-widget/homebridge-status-widget.component';
+import { MemoryWidgetComponent } from './memory-widget/memory-widget.component';
+import { NetworkWidgetComponent } from './network-widget/network-widget.component';
 import { SystemInfoWidgetComponent } from './system-info-widget/system-info-widget.component';
+import { TerminalWidgetComponent } from './terminal-widget/terminal-widget.component';
+import { UptimeWidgetComponent } from './uptime-widget/uptime-widget.component';
 import { WeatherWidgetComponent } from './weather-widget/weather-widget.component';
-import { AccessoriesWidgetComponent } from './accessories-widget/accessories-widget.component';
-import { ClockWidgetComponent } from './clock-widget/clock-widget.component';
-import { ChildBridgeWidgetComponent } from './child-bridge-widget/child-bridge-widget.component';
 
 @Component({
   selector: 'app-widgets',

@@ -1,4 +1,11 @@
-import { OnDestroy, Directive, EventEmitter, HostListener, Input, Output } from '@angular/core';
+import {
+  Directive,
+  EventEmitter,
+  HostListener,
+  Input,
+  OnDestroy,
+  Output,
+} from '@angular/core';
 
 @Directive({
   selector: '[appLongclick]',

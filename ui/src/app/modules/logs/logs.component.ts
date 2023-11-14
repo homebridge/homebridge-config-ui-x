@@ -1,15 +1,21 @@
-import { Component, OnInit, HostListener, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
-import { TranslateService } from '@ngx-translate/core';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Subject } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 import { saveAs } from 'file-saver';
 import { ToastrService } from 'ngx-toastr';
-
-import { SettingsService } from '@/app/core/settings.service';
+import { Subject } from 'rxjs';
 import { ApiService } from '@/app/core/api.service';
-import { LogService } from '@/app/core/log.service';
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
+import { LogService } from '@/app/core/log.service';
+import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
   selector: 'app-logs',
@@ -38,7 +44,7 @@ export class LogsComponent implements OnInit, OnDestroy {
   }
 
   @HostListener('window:resize', ['$event'])
-  onWindowResize(event) {
+  onWindowResize() {
     this.resizeEvent.next(undefined);
   }
 
@@ -63,7 +69,7 @@ export class LogsComponent implements OnInit, OnDestroy {
             saveAs(res.body, 'homebridge.log.txt');
           },
           async (err: HttpErrorResponse) => {
-            let message;
+            let message: string;
             try {
               message = JSON.parse(await err.error.text()).message;
             } catch (e) {
@@ -86,7 +92,7 @@ export class LogsComponent implements OnInit, OnDestroy {
     ref.result.then(() => {
       this.$api.put('/platform-tools/hb-service/log/truncate', {})
         .subscribe(
-          (res) => {
+          () => {
             this.$toastr.success(
               this.$translate.instant('logs.message_log_file_truncated'),
               this.$translate.instant('toast.title_success'),
@@ -103,12 +109,3 @@ export class LogsComponent implements OnInit, OnDestroy {
   }
 
 }
-
-export const LogsStates = {
-  name: 'logs',
-  url: '/logs',
-  component: LogsComponent,
-  data: {
-    requiresAuth: true,
-  },
-};

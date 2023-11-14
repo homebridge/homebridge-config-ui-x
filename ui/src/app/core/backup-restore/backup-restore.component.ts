@@ -1,16 +1,20 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
+import {
+  Component,
+  Input,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { saveAs } from 'file-saver';
+import { ToastrService } from 'ngx-toastr';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
-import { ToastrService } from 'ngx-toastr';
-
+import { ScheduledBackupsComponent } from './scheduled-backups/scheduled-backups.component';
 import { ApiService } from '@/app/core/api.service';
 import { WsService } from '@/app/core/ws.service';
-import { ScheduledBackupsComponent } from './scheduled-backups/scheduled-backups.component';
 
 @Component({
   selector: 'app-backup-restore',

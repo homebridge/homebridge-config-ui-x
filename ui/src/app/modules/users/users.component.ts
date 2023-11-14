@@ -1,15 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-
-import { ApiService } from '@/app/core/api.service';
-import { AuthService } from '@/app/core/auth/auth.service';
 import { UsersAddComponent } from './users-add/users-add.component';
+import { UsersDisable2faComponent } from './users-disable2fa/users-disable2fa.component';
 import { UsersEditComponent } from './users-edit/users-edit.component';
 import { UsersSetup2faComponent } from './users-setup2fa/users-setup2fa.component';
-import { UsersDisable2faComponent } from './users-disable2fa/users-disable2fa.component';
+import { ApiService } from '@/app/core/api.service';
+import { AuthService } from '@/app/core/auth/auth.service';
 
 @Component({
   selector: 'app-users',
@@ -52,7 +51,7 @@ export class UsersComponent implements OnInit {
     });
   }
 
-  openEditUser(user) {
+  openEditUser(user: any) {
     const ref = this.modalService.open(UsersEditComponent, {
       size: 'lg',
     });
@@ -63,9 +62,9 @@ export class UsersComponent implements OnInit {
     });
   }
 
-  deleteUser(id) {
+  deleteUser(id: string) {
     this.$api.delete(`/users/${id}`).subscribe(
-      data => {
+      () => {
         this.toastr.success(this.translate.instant('users.toast_user_deleted'), this.translate.instant('toast.title_success'));
         this.reloadUsers();
       },
@@ -78,7 +77,7 @@ export class UsersComponent implements OnInit {
     );
   }
 
-  setup2fa(user) {
+  setup2fa(user: any) {
     const ref = this.modalService.open(UsersSetup2faComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -90,7 +89,7 @@ export class UsersComponent implements OnInit {
     });
   }
 
-  disable2fa(user) {
+  disable2fa(user: any) {
     const ref = this.modalService.open(UsersDisable2faComponent, {
       backdrop: 'static',
     });

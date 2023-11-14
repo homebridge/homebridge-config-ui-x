@@ -117,11 +117,7 @@ export class PluginsSettingsUiService {
       // dev server is only enabled for private plugins
       return (await this.httpService.get(pluginUi.devServer, { responseType: 'text' }).toPromise()).data;
     } else {
-      try {
-        return await fs.readFile(path.join(pluginUi.publicPath, 'index.html'), 'utf8');
-      } catch (err) {
-        throw err;
-      }
+      return fs.readFileSync(path.join(pluginUi.publicPath, 'index.html'), 'utf8');
     }
   }
 

@@ -732,11 +732,7 @@ export class PluginsService {
     const schemaPath = path.resolve(plugin.installPath, pluginName, 'config.schema.json');
 
     if (this.miscSchemas[pluginName] && !await fs.pathExists(schemaPath)) {
-      try {
-        return await fs.readJson(this.miscSchemas[pluginName]);
-      } catch (err) {
-        throw err;
-      }
+      return fs.readJsonSync(this.miscSchemas[pluginName]);
     }
 
     let configSchema = await fs.readJson(schemaPath);

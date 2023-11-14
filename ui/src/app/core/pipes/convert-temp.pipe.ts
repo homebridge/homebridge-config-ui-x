@@ -1,5 +1,4 @@
 import { Pipe, PipeTransform } from '@angular/core';
-
 import { SettingsService } from '@/app/core/settings.service';
 
 @Pipe({ name: 'convertTemp' })

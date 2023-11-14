@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 import { LinuxComponent } from './linux.component';
 import { RestartLinuxComponent } from './restart-linux/restart-linux.component';
 import { ShutdownLinuxComponent } from './shutdown-linux/shutdown-linux.component';

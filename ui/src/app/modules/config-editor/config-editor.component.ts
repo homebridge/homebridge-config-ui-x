@@ -1,17 +1,16 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ToastrService } from 'ngx-toastr';
-import { NgxEditorModel } from 'ngx-monaco-editor';
+import { TranslateService } from '@ngx-translate/core';
 import * as JSON5 from 'json5';
-
+import { NgxEditorModel } from 'ngx-monaco-editor';
+import { ToastrService } from 'ngx-toastr';
+import { ConfigRestoreBackupComponent } from './config-restore-backup/config.restore-backup.component';
 import { ApiService } from '@/app/core/api.service';
-import { SettingsService } from '@/app/core/settings.service';
-import { NotificationService } from '@/app/core/notification.service';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { MonacoEditorService } from '@/app/core/monaco-editor.service';
-import { ConfigRestoreBackupComponent } from './config-restore-backup/config.restore-backup.component';
+import { NotificationService } from '@/app/core/notification.service';
+import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
   selector: 'app-config',
@@ -22,16 +21,15 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   public originalConfig: string;
   public saveInProgress: boolean;
   public isMobile: any = false;
-  public backupUrl: string;
 
-  public monacoEditor;
+  public monacoEditor: any;
   public editorOptions = {
     language: 'json',
     theme: this.$settings.theme.startsWith('dark-mode') ? 'vs-dark' : 'vs-light',
     automaticLayout: true,
   };
 
-  private editorDecoractions = [];
+  private editorDecorations = [];
   public monacoEditorModel: NgxEditorModel;
 
   private lastHeight: number;
@@ -73,7 +71,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       uri: window['monaco'] ? window['monaco'].Uri.parse('a://homebridge/config.json') : undefined,
     };
 
-    //  if monaco is not loaded yet, wait for it, otherwise setup the editor now
+    //  if monaco is not loaded yet, wait for it, otherwise set up the editor now
     if (!window['monaco']) {
       this.$monacoEditor.readyEvent.subscribe({
         next: () => {
@@ -88,7 +86,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   /**
    * Called when the monaco editor is ready
    */
-  onEditorInit(editor) {
+  onEditorInit(editor: any) {
     this.monacoEditor = editor;
     this.monacoEditor.getModel().setValue(this.homebridgeConfig);
     window['editor'] = editor;
@@ -110,7 +108,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
     // hide decorations
     if (this.monacoEditor) {
-      this.editorDecoractions = this.monacoEditor.deltaDecorations(this.editorDecoractions, []);
+      this.editorDecorations = this.monacoEditor.deltaDecorations(this.editorDecorations, []);
     }
 
     this.saveInProgress = true;
@@ -152,7 +150,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
           this.translate.instant('config.toast_config_bridge_missing'),
           this.translate.instant('config.toast_title_config_error'),
         );
-      } else if (!/^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$/.test(config.bridge.username)) {
+      } else if (!/^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$/.test(config.bridge.username)) {
         this.$toastr.error(
           this.translate.instant('config.toast_config_username_format_error'),
           this.translate.instant('config.toast_title_config_error'),
@@ -205,17 +203,16 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     }
   }
 
-  saveConfig(config) {
-    return this.$api.post('/config-editor', config)
-      .toPromise()
-      .then(data => {
-        this.$notification.configUpdated.next(undefined);
-        this.$toastr.success(this.translate.instant('config.toast_config_saved'), this.translate.instant('toast.title_success'));
-        this.homebridgeConfig = JSON.stringify(data, null, 4);
-      })
-      .catch(err => {
-        this.$toastr.error(this.translate.instant('config.toast_failed_to_save_config'), this.translate.instant('toast.title_error'));
-      });
+  async saveConfig(config: any) {
+    try {
+      const data = await this.$api.post('/config-editor', config)
+        .toPromise();
+      this.$notification.configUpdated.next(undefined);
+      this.$toastr.success(this.translate.instant('config.toast_config_saved'), this.translate.instant('toast.title_success'));
+      this.homebridgeConfig = JSON.stringify(data, null, 4);
+    } catch {
+      this.$toastr.error(this.translate.instant('config.toast_failed_to_save_config'), this.translate.instant('toast.title_error'));
+    }
   }
 
   onRestore() {
@@ -240,7 +237,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
             // update the editor
             if (this.monacoEditor && window['editor'].modifiedEditor) {
               // remove all decorations
-              this.editorDecoractions = this.monacoEditor.deltaDecorations(this.editorDecoractions, []);
+              this.editorDecorations = this.monacoEditor.deltaDecorations(this.editorDecorations, []);
 
               // remove existing config
               this.monacoEditor.executeEdits('beautifier', [
@@ -312,7 +309,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     return true;
   }
 
-  validatePlugins(plugins: any[], key) {
+  validatePlugins(plugins: any[], key: string) {
     for (const item of plugins) {
       if (typeof item !== 'string') {
         this.$toastr.error(`Each item in the ${key} array must be a string.`);
@@ -325,7 +322,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   /**
    * Highlight the problematic rows in the editor
    */
-  highlightOffendingArrayItem(block) {
+  highlightOffendingArrayItem(block: string) {
     if (!this.monacoEditor) {
       return;
     }
@@ -345,7 +342,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
           matchRange.endColumn,
         );
 
-        this.editorDecoractions = this.monacoEditor.deltaDecorations(this.editorDecoractions, [
+        this.editorDecorations = this.monacoEditor.deltaDecorations(this.editorDecorations, [
           { range, options: { isWholeLine: true, linesDecorationsClassName: 'hb-monaco-editor-line-error' } },
         ]);
       }
@@ -353,7 +350,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Setup a json schema object used to check the config against
+   * Set up a json schema object used to check the config against
    */
   setMonacoEditorModel() {
     if (window['monaco'].languages.json.jsonDefaults.diagnosticsOptions.schemas.some(x => x.uri === 'http://homebridge/config.json')) {
@@ -484,7 +481,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
               platforms: {
                 type: 'array',
                 description: 'Plugins that expose a "Platform" should have there config entered in this array.' +
-                  '\nSeperate each plugin config block using a comma.',
+                  '\nSeparate each plugin config block using a comma.',
                 items: {
                   type: 'object',
                   required: ['platform'],
@@ -526,7 +523,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
               accessories: {
                 type: 'array',
                 description: 'Plugins that expose a "Accessory" should have there config entered in this array.' +
-                  '\nSeperate each plugin config block using a comma.',
+                  '\nSeparate each plugin config block using a comma.',
                 items: {
                   type: 'object',
                   required: ['accessory', 'name'],
