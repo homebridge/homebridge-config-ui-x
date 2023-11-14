@@ -2,7 +2,7 @@
 <div class="card card-body mb-3">
   <div class="d-flex flex-row justify-content-between">
     <div class="">
-      <p class="mb-0 primary-text"
+      <p class="mb-0 info-text"
         *ngIf="plugin.installedVersion && !plugin.updateAvailable && !plugin.betaUpdateAvailable && !plugin.disabled">
         <i class="far fa-fw fa-circle-check"></i> {{ 'plugins.status_installed' | translate }}
       </p>
@@ -56,7 +56,7 @@
          placement="top" ngbTooltip="{{'plugins.status_update_available' | translate:plugin }}" container="body" [openDelay]="150">
         <i class="fas fa-fw fa-arrow-alt-circle-up primary-text"></i>
       </a>
-      <a href="javascript:void(0);" class="card-link ml-3" *ngIf="!hasChildBridges && recommendChildBridge"
+      <a href="javascript:void(0);" class="card-link ml-3" *ngIf="!hasChildBridges && !plugin.disabled && recommendChildBridge"
          ngbTooltip="{{'child_bridge.label_bridge_setup_child_bridges' | translate}}" placement="top" container="body"
          [openDelay]="150" (click)="$plugin.bridgeSettings(plugin)">
         <i class="fa-fw icon-button fas fa-fw fa-circle-exclamation primary-text"></i>
@@ -64,7 +64,7 @@
       <ng-container *ngIf="hasChildBridges">
         <a href="javascript:void(0);" class="card-link grey-text ml-3" rel="noopener noreferrer"
           aria-label="Connect to HomeKit"
-          *ngIf="!childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok'"
+          *ngIf="!childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled"
           ngbTooltip="{{'child_bridge.label_bridge_connect_to_homekit' | translate}}" placement="top" container="body"
           openDelay="150" (click)="$plugin.bridgeSettings(plugin)">
           <i class="fa-fw icon-button fas fa-fw fa-circle-exclamation primary-text"></i>
@@ -104,7 +104,7 @@
             <i class="fas fa-fw fa-fw fa-history"></i>
             {{ 'plugins.manage.message_install_alternate_version' | translate }}
           </button>
-          <button ngbDropdownItem (click)="viewPluginLog(plugin)">
+          <button ngbDropdownItem (click)="viewPluginLog(plugin)" *ngIf="plugin.installedVersion">
             <i class="fas fa-fw fa-fw fa-wave-square"></i> {{ 'plugins.manage.plugin_logs' | translate }}
           </button>
           <button ngbDropdownItem (click)="$plugin.bridgeSettings(plugin)"

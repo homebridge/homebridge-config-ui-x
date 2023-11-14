@@ -37,15 +37,16 @@ export class PluginLogModalComponent implements OnInit, OnDestroy {
   }
 
   @HostListener('window:resize', ['$event'])
-  onWindowResize(event) {
+  onWindowResize() {
     this.resizeEvent.next(undefined);
   }
 
   getPluginLog() {
     // Get the plugin name as configured in the config file
+    console.log(this.plugin);
     this.$api.get(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`).subscribe(
       (result) => {
-        const logAlias = this.plugin.name === 'homebridge-config-ui-x' ? 'Homebridge UI' : result[0].name;
+        const logAlias = this.plugin.name === 'homebridge-config-ui-x' ? 'Homebridge UI' : (result[0]?.name || this.plugin.name);
         this.$log.startTerminal(this.termTarget, {}, this.resizeEvent, logAlias);
       },
       (err) => {
