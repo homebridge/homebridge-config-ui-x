@@ -20,6 +20,7 @@ import { DonateModalComponent } from '@/app/modules/plugins/donate-modal/donate-
 })
 export class PluginCardComponent implements OnInit {
   @Input() plugin: any;
+  @Input() childBridgesLoaded: boolean;
 
   private io = this.$ws.getExistingNamespace('child-bridges');
 
@@ -32,7 +33,6 @@ export class PluginCardComponent implements OnInit {
   public childBridgeStatus = 'pending';
   public childBridgeRestartInProgress = false;
   public recommendChildBridge = false;
-  public childBridgesLoaded = false;
 
   constructor(
     public $plugin: ManagePluginsService,
@@ -81,7 +81,6 @@ export class PluginCardComponent implements OnInit {
     }
 
     this._childBridges = childBridges;
-    this.childBridgesLoaded = true;
   }
 
   openFundingModal(plugin: any) {

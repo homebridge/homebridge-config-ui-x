@@ -17,6 +17,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
 
   public installedPlugins: any = [];
   public childBridges = [];
+  public childBridgesLoaded = false;
 
   public form = new FormGroup({
     query: new FormControl('', [Validators.required]),
@@ -109,6 +110,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
   getChildBridgeMetadata() {
     this.io.request('get-homebridge-child-bridge-status').subscribe((data) => {
       this.childBridges = data;
+      this.childBridgesLoaded = true;
     });
   }
 
