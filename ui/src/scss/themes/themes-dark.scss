@@ -112,6 +112,11 @@
       }
     }
 
+    .alert-info {
+      background-color: #55555540;
+      border-color: transparent;
+    }
+  
     .alert-warning {
       color: $secondaryBackground;
       background-color: #ffd793;
