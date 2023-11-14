@@ -80,7 +80,7 @@
             <a class="dropdown-item waves-effect waves-light" routerLink="/users" *ngIf=" $auth.user.admin">
               {{'menu.tooltip_user_accounts' | translate}}
             </a>
-            <div class="dropdown-divider" *ngIf="$settings.formAuth"></div>
+            <div class="dropdown-divider" *ngIf="$auth.user.admin || $settings.formAuth"></div>
             <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light" (click)="openRestartOptionsModal()" *ngIf="$auth.user.admin">
               {{ 'menu.restart.title' | translate }}
             </a>
