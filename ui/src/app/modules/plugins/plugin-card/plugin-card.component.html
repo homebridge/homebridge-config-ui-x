@@ -82,6 +82,11 @@
           <i class="fas fa-fw fa-ellipsis-v"></i>
         </a>
         <div ngbDropdownMenu aria-labelledby="Plugin actions drop down menu">
+          <button ngbDropdownItem *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable"
+            (click)="$plugin.updatePlugin(plugin, plugin.betaUpdateAvailable ? 'beta' : 'latest')">
+            <i class="fas fa-fw fa-arrow-alt-circle-up"></i>
+            {{ 'plugins.button_update' | translate }} (v{{ plugin.installedVersion }})
+          </button>
           <ng-container *ngIf="hasChildBridges && !plugin.disabled">
             <button ngbDropdownItem *ngIf="!childBridgeRestartInProgress && !plugin.disabled" (click)="doChildBridgeAction('restart')">
               <i class="fa-fw icon-button fas fa-fw fa-power-off"></i> {{ 'child_bridge.label_bridge_restart_child_bridges' | translate }}
@@ -94,12 +99,6 @@
             </button>
             <div class="dropdown-divider"></div>
           </ng-container>
-          <button ngbDropdownItem *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable"
-            (click)="$plugin.updatePlugin(plugin, plugin.betaUpdateAvailable ? 'beta' : 'latest')">
-            <i class="fas fa-fw fa-arrow-alt-circle-up primary-text"></i>
-            {{ 'plugins.button_update' | translate }}
-            <p class="mb-0 text-muted" style="margin-left: 1.25em;"> v{{ plugin.installedVersion }} --- {{ plugin.latestVersion }} </p>
-          </button>
           <button ngbDropdownItem *ngIf="plugin.publicPackage" (click)="$plugin.installPreviousVersion(plugin)">
             <i class="fas fa-fw fa-fw fa-history"></i>
             {{ 'plugins.manage.message_install_alternate_version' | translate }}
