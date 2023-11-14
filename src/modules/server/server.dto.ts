@@ -11,13 +11,12 @@ export class HomebridgeMdnsSettingDto {
   @IsDefined()
   @IsIn(['avahi', 'resolved', 'ciao', 'bonjour-hap'])
   @ApiProperty()
-    advertiser: 'avahi' | 'resolved'  | 'ciao' | 'bonjour-hap';
+  advertiser: 'avahi' | 'resolved' | 'ciao' | 'bonjour-hap';
 }
 
 export class HomebridgeNetworkInterfacesDto {
   @IsArray()
   @IsString({ each: true })
   @ApiProperty()
-    adapters: string[];
+  adapters: string[];
 }
-
