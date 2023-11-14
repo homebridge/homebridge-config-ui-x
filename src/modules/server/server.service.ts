@@ -7,18 +7,18 @@ import {
   NotFoundException,
   ServiceUnavailableException
 } from '@nestjs/common';
-import {Categories} from '@oznu/hap-client/dist/hap-types';
+import { Categories } from '@oznu/hap-client/dist/hap-types';
 import * as bufferShim from 'buffer-shims';
 import * as fs from 'fs-extra';
 import * as NodeCache from 'node-cache';
 import * as si from 'systeminformation';
 import * as tcpPortUsed from 'tcp-port-used';
-import {ConfigService, HomebridgeConfig} from '../../core/config/config.service';
-import {HomebridgeIpcService} from '../../core/homebridge-ipc/homebridge-ipc.service';
-import {Logger} from '../../core/logger/logger.service';
-import {AccessoriesService} from '../accessories/accessories.service';
-import {ConfigEditorService} from '../config-editor/config-editor.service';
-import {HomebridgeMdnsSettingDto} from './server.dto';
+import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
+import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service';
+import { Logger } from '../../core/logger/logger.service';
+import { AccessoriesService } from '../accessories/accessories.service';
+import { ConfigEditorService } from '../config-editor/config-editor.service';
+import { HomebridgeMdnsSettingDto } from './server.dto';
 
 @Injectable()
 export class ServerService {
@@ -108,7 +108,11 @@ export class ServerService {
       .filter(x => x.match(/AccessoryInfo\.([A-F,a-f0-9]+)\.json/));
 
     return Promise.all(devices.map(async (x) => {
-      return this.getDevicePairingById(x.split('.')[1]);
+      try {
+        return await this.getDevicePairingById(x.split('.')[1]);
+      } catch (err) {
+        throw err;
+      }
     }));
   }
 
