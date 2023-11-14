@@ -2,6 +2,12 @@
 
 All notable changes to homebridge-config-ui-x will be documented in this file.
 
+## 4.52.3 (2023-11-14)
+
+### Bug Fixes
+
+- Fixes for #1698, update-node failing with npm not found
+
 ## 4.52.2 (2023-11-11)
 
 ### Notable Changes

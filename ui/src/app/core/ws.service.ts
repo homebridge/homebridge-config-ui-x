@@ -2,9 +2,8 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Subject } from 'rxjs';
 import { connect } from 'socket.io-client';
-
-import { environment } from '@/environments/environment';
 import { AuthService } from '@/app/core/auth/auth.service';
+import { environment } from '@/environments/environment';
 
 export interface IoNamespace {
   connected?: Subject<any>;
@@ -34,7 +33,7 @@ export class WsService {
       const io: IoNamespace = this.namespaceConnectionCache[namespace];
       io.connected = new Subject();
 
-      // broadcast to sbuscribers that the connection is ready
+      // broadcast to subscribers that the connection is ready
       setTimeout(() => {
         if (io.socket.connected) {
           io.connected.next(undefined);
@@ -59,7 +58,7 @@ export class WsService {
       const io = this.establishConnectionToNamespace(namespace);
       io.connected = new Subject();
 
-      // wait for the connection and broadcase when ready
+      // wait for the connection and broadcast when ready
       io.socket.on('connect', () => {
         io.connected.next(undefined);
       });
@@ -93,8 +92,8 @@ export class WsService {
       },
     });
 
-    const request = (resource, payload): Observable<any> => new Observable((observer) => {
-      socket.emit(resource, payload, (resp) => {
+    const request = (resource: string, payload: any): Observable<any> => new Observable((observer) => {
+      socket.emit(resource, payload, (resp: any) => {
         if (typeof resp === 'object' && resp.error) {
           observer.error(resp);
         } else {

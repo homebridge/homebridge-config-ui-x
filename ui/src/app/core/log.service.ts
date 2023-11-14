@@ -1,11 +1,10 @@
-import { Injectable, ElementRef } from '@angular/core';
-import { Terminal, ITerminalOptions } from 'xterm';
-import { FitAddon } from 'xterm-addon-fit';
-import { WebLinksAddon } from 'xterm-addon-web-links';
+import { ElementRef, Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-
-import { WsService, IoNamespace } from '@/app/core/ws.service';
+import { ITerminalOptions, Terminal } from 'xterm';
+import { FitAddon } from 'xterm-addon-fit';
+import { WebLinksAddon } from 'xterm-addon-web-links';
+import { IoNamespace, WsService } from '@/app/core/ws.service';
 
 @Injectable({
   providedIn: 'root',
@@ -18,6 +17,7 @@ export class LogService {
   private webLinksAddon: WebLinksAddon;
   private resize: Subject<any>;
   private elementResize: Subject<any> | undefined;
+  private pluginName: string;
 
   constructor(
     private $ws: WsService,
@@ -26,7 +26,10 @@ export class LogService {
   startTerminal(
     targetElement: ElementRef,
     termOpts: ITerminalOptions = {},
-    elementResize?: Subject<any>) {
+    elementResize?: Subject<any>,
+    pluginName?: string,
+  ) {
+    this.pluginName = pluginName;
 
     // handle element resize events
     this.elementResize = elementResize;
@@ -75,8 +78,29 @@ export class LogService {
     });
 
     // subscribe to incoming data events from server to client
-    this.io.socket.on('stdout', data => {
-      this.term.write(data);
+    this.io.socket.on('stdout', (data: string) => {
+      if (this.pluginName) {
+        const lines = data.split('\n');
+        let includeNextLine = false;
+
+        lines.forEach((line) => {
+          if (includeNextLine) {
+            if (line.match(/36m\[.*?]/)) {
+              includeNextLine = false;
+            } else {
+              this.term.write(line + '\r\n');
+              return;
+            }
+          }
+
+          if (line.includes(`36m[${this.pluginName}]`)) {
+            this.term.write(line + '\r\n');
+            includeNextLine = true;
+          }
+        });
+      } else {
+        this.term.write(data);
+      }
     });
 
     // handle resize events from the client

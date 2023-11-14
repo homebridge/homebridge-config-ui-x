@@ -1,9 +1,8 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
-
-import { CoreModule } from '@/app/core/core.module';
 import { RestartComponent } from './restart.component';
+import { CoreModule } from '@/app/core/core.module';
 
 @NgModule({
   declarations: [
@@ -15,4 +14,5 @@ import { RestartComponent } from './restart.component';
     CoreModule,
   ],
 })
+
 export class RestartModule { }

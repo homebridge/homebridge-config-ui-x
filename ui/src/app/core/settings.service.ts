@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
+import * as dayjs from 'dayjs';
+import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { first } from 'rxjs/operators';
-import * as dayjs from 'dayjs';
-
 import { ApiService } from '@/app/core/api.service';
 
 interface EnvInterface {
@@ -32,13 +31,6 @@ interface EnvInterface {
   customWallpaperHash: string;
   setupWizardComplete: boolean;
   recommendChildBridges: boolean;
-}
-
-interface AppSettingsInterface {
-  env: EnvInterface;
-  formAuth: boolean;
-  theme: string;
-  serverTimestamp: string;
 }
 
 @Injectable({
@@ -68,19 +60,17 @@ export class SettingsService {
     this.getAppSettings();
   }
 
-  getAppSettings() {
-    return this.$api.get('/auth/settings').toPromise()
-      .then((data: AppSettingsInterface) => {
-        this.formAuth = data.formAuth;
-        this.env = data.env;
-        this.setTheme(data.theme || 'auto');
-        this.setTitle(this.env.homebridgeInstanceName);
-        this.checkServerTime(data.serverTimestamp);
-        this.setUiVersion(data.env.packageVersion);
-        this.setLang(this.env.lang);
-        this.settingsLoaded = true;
-        this.settingsLoadedSubject.next(undefined);
-      });
+  async getAppSettings() {
+    const data = await this.$api.get('/auth/settings').toPromise();
+    this.formAuth = data.formAuth;
+    this.env = data.env;
+    this.setTheme(data.theme || 'auto');
+    this.setTitle(this.env.homebridgeInstanceName);
+    this.checkServerTime(data.serverTimestamp);
+    this.setUiVersion(data.env.packageVersion);
+    this.setLang(this.env.lang);
+    this.settingsLoaded = true;
+    this.settingsLoadedSubject.next(undefined);
   }
 
   setTheme(theme: string) {
@@ -113,7 +103,7 @@ export class SettingsService {
     this.$title.setTitle(title || 'Homebridge');
   }
 
-  setUiVersion(version) {
+  setUiVersion(version: string) {
     if (!this.uiVersion) {
       this.uiVersion = version;
     }
