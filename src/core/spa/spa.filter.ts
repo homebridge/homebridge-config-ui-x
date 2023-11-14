@@ -8,7 +8,6 @@ import {
 } from '@nestjs/common';
 import * as fs from 'fs-extra';
 
-
 @Catch(NotFoundException)
 export class SpaFilter implements ExceptionFilter {
   catch(_exception: HttpException, host: ArgumentsHost) {

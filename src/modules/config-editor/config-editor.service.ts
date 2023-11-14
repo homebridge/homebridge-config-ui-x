@@ -333,7 +333,11 @@ export class ConfigEditorService {
     }
 
     // read source backup
-    return fs.readFileSync(requestedBackupPath);
+    try {
+      return await fs.readFile(requestedBackupPath);
+    } catch (err) {
+      throw err;
+    }
   }
 
   /**
