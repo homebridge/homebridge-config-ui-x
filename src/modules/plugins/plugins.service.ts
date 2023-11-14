@@ -266,7 +266,11 @@ export class PluginsService {
       && (query.indexOf('homebridge-') === 0 || this.isScopedPlugin(query))
       && !this.searchResultBlacklist.includes(query.toLowerCase())
     ) {
-      return this.searchNpmRegistrySingle(query.toLowerCase());
+      try {
+        return await this.searchNpmRegistrySingle(query.toLowerCase());
+      } catch (err) {
+        throw err;
+      }
     }
 
     return _.orderBy(result, ['verifiedPlugin'], ['desc']);
@@ -455,7 +459,11 @@ export class PluginsService {
     if (this.configService.ui.homebridgePackagePath) {
       const pjsonPath = path.join(this.configService.ui.homebridgePackagePath, 'package.json');
       if (await fs.pathExists(pjsonPath)) {
-        return this.parsePackageJson(await fs.readJson(pjsonPath), this.configService.ui.homebridgePackagePath);
+        try {
+          return await this.parsePackageJson(await fs.readJson(pjsonPath), this.configService.ui.homebridgePackagePath);
+        } catch (err) {
+          throw err;
+        }
       } else {
         this.logger.error(`"homebridgePath" (${this.configService.ui.homebridgePackagePath}) does not exist`);
       }
@@ -724,7 +732,11 @@ export class PluginsService {
     const schemaPath = path.resolve(plugin.installPath, pluginName, 'config.schema.json');
 
     if (this.miscSchemas[pluginName] && !await fs.pathExists(schemaPath)) {
-      return fs.readJson(this.miscSchemas[pluginName]);
+      try {
+        return await fs.readJson(this.miscSchemas[pluginName]);
+      } catch (err) {
+        throw err;
+      }
     }
 
     let configSchema = await fs.readJson(schemaPath);

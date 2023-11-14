@@ -22,7 +22,11 @@ export class AccessoriesGateway {
 
   @SubscribeMessage('get-layout')
   async getAccessoryLayout(client: any, payload: any) {
-    return this.accessoriesService.getAccessoryLayout(payload.user);
+    try {
+      return await this.accessoriesService.getAccessoryLayout(payload.user);
+    } catch (err) {
+      throw err;
+    }
   }
 
   @SubscribeMessage('save-layout')
