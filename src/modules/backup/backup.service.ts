@@ -175,11 +175,7 @@ export class BackupService {
       }
     } else {
       // when not using a custom backup path, just ensure it exists
-      try {
-        return await fs.ensureDir(this.configService.instanceBackupPath);
-      } catch (err) {
-        throw err;
-      }
+      return fs.ensureDirSync(this.configService.instanceBackupPath);
     }
   }
 
@@ -341,11 +337,7 @@ export class BackupService {
    */
   async removeRestoreDirectory() {
     if (this.restoreDirectory) {
-      try {
-        return await fs.remove(this.restoreDirectory);
-      } catch (err) {
-        throw err;
-      }
+      return fs.removeSync(this.restoreDirectory);
     }
   }
 
