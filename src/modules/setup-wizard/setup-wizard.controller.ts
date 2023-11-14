@@ -24,7 +24,11 @@ export class SetupWizardController {
     description: 'This endpoint is not available after the Homebridge setup wizard is complete.',
   })
   async setupFirstUser(@Body() body: UserDto) {
-    return this.authService.setupFirstUser(body);
+    try {
+      return await this.authService.setupFirstUser(body);
+    } catch (err) {
+      throw err;
+    }
   }
 
   @Get('/get-setup-wizard-token')
@@ -33,6 +37,10 @@ export class SetupWizardController {
     description: 'This endpoint is not available after the Homebridge setup wizard is complete.',
   })
   async generateSetupWizardToken() {
-    return this.authService.generateSetupWizardToken();
+    try {
+      return await this.authService.generateSetupWizardToken();
+    } catch (err) {
+      throw err;
+    }
   }
 }

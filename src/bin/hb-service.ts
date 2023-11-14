@@ -1221,7 +1221,7 @@ export class HomebridgeServiceHelper {
     const spinner = ora(`Installing Node.js ${targetVersion}`).start();
 
     try {
-      tar.x(extractConfig);
+      await tar.x(extractConfig);
       spinner.succeed(`Installed Node.js ${targetVersion}`);
     } catch (e) {
       spinner.fail(e.message);
