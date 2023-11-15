@@ -2,6 +2,12 @@
 
 All notable changes to homebridge-config-ui-x will be documented in this file.
 
+## 4.52.4 (TBD)
+
+### Notable Changes
+
+### Bug Fixes
+
 ## 4.52.3 (2023-11-14)
 
 ### Bug Fixes
