@@ -2,7 +2,7 @@
   <div class="modal-header">
     <h5 class="modal-title">{{ presentTenseVerb }}: {{ pluginName }}</h5>
   </div>
-  <div [hidden]="!onlineUpdateOk || actionComplete || showReleaseNotes" id="plugin-log-output" class="modal-body"></div>
+  <div [hidden]="!onlineUpdateOk || actionComplete || showReleaseNotes || justUninstalledPlugin" id="plugin-log-output" class="modal-body"></div>
   <div *ngIf="actionComplete" class="modal-body plugin-modal-body">
     <div *ngIf="justUpdatedPlugin">
       <h3 class="text-center primary-text" [translate]="'platform.version.title_service_restart_required'">
