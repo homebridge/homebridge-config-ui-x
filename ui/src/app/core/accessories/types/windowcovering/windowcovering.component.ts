@@ -27,7 +27,7 @@ export class WindowcoveringComponent implements OnInit {
 
   onLongClick() {
     const ref = this.modalService.open(WindowcoveringManageComponent, {
-      size: 'sm',
+      size: 'l',
     });
     ref.componentInstance.service = this.service;
   }
