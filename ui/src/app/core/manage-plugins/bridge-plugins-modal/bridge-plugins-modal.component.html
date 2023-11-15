@@ -11,7 +11,8 @@
   <div class="modal-body">
     <p>
       {{ 'child_bridge.message_about' | translate }}
-      <a href="https://github.com/homebridge/homebridge/wiki/Child-Bridges" target="_blank" rel="noopener noreferrer" class="primary-text">
+      <a href="https://github.com/homebridge/homebridge/wiki/Child-Bridges" target="_blank" rel="noopener noreferrer"
+        class="primary-text">
         {{ 'child_bridge.message_wiki_link' | translate }}
         <i class='fas fa-fw fa-external-link-alt'></i>
       </a>
@@ -49,7 +50,9 @@
                 <app-qrcode [data]="deviceInfo[item._bridge?.username]._setupCode" class="mr-auto ml-auto mt-2 mb-2"
                   style="width: 180px; height: 180px;">
                 </app-qrcode>
-
+                <p class="mr-auto ml-auto text-center">
+                  {{ deviceInfo[item._bridge?.username].pincode }}
+                </p>
                 <p class="grey-text  mr-auto ml-auto text-center" style="max-width: 400px;">
                   {{ 'status.message_code_scan_instructions' | translate }}
                 </p>
@@ -106,15 +109,16 @@
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-left">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.close('Dismiss')" *ngIf="configBlocks.length">
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.close('Dismiss')"
+        *ngIf="configBlocks.length">
         {{ 'form.button_close' | translate }}
       </button>
     </div>
     <div class="d-none d-lg-block text-center" *ngIf="configBlocks.length">
       <a *ngIf="plugin.links.npm" [href]="plugin.links.npm" target="_blank" rel="noopener noreferrer"
-         class="pr-3 manage-plugin-config-external-icons dark-mode-highlight"><i class="fab fa-fw fa-npm"></i></a>
+        class="pr-3 manage-plugin-config-external-icons dark-mode-highlight"><i class="fab fa-fw fa-npm"></i></a>
       <a *ngIf="plugin.links.homepage" [href]="plugin.links.homepage" target="_blank" rel="noopener noreferrer"
-         class="manage-plugin-config-external-icons dark-mode-highlight">
+        class="manage-plugin-config-external-icons dark-mode-highlight">
         <i [ngClass]="plugin.links.homepage | externalLinkIcon"></i>
       </a>
     </div>
@@ -124,7 +128,8 @@
       </button>
     </div>
     <div class="text-right">
-      <button type="button" class="btn btn-primary" (click)="save()" [disabled]="saveInProgress" *ngIf="configBlocks.length">
+      <button type="button" class="btn btn-primary" (click)="save()" [disabled]="saveInProgress"
+        *ngIf="configBlocks.length">
         {{ 'form.button_save' | translate }} <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
       </button>
     </div>
