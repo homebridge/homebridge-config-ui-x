@@ -18,16 +18,6 @@
         [translate]="'plugins.manage.message_thanks_for_updating_restart_child_bridges'">
         Please restart the plugin's child bridges for the changes to apply.
       </p>
-      <div class="text-center">
-        <button type="button" class="btn btn-primary" *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(pluginName) && childBridges.length > 0"
-          (click)="onRestartChildBridgeClick()">
-          {{ (childBridges.length === 1 ? 'plugins.manage.child_bridge_button_restart_now_one' : 'plugins.manage.child_bridge_button_restart_now') | translate }}
-        </button>
-        <button type="button" class="btn btn-primary"
-          *ngIf="['homebridge', 'homebridge-config-ui-x'].includes(pluginName) || childBridges.length === 0" (click)="onRestartHomebridgeClick()"
-          [translate]="'plugins.manage.button_restart_now'">Restart Homebridge</button>
-      </div>
-      <hr>
     </div>
     <div class="alert show alert-info pt-3 px-3 pb-0 mb-0">
       <markdown class="plugin-md" [data]="changeLog"></markdown>
@@ -50,7 +40,6 @@
 npm install -g {{ pluginName }}@{{targetVersion}}
 hb-service start</pre>
     </div>
-    <hr>
   </div>
   <div *ngIf="showReleaseNotes && !actionComplete" class="modal-body plugin-modal-body">
     <h5 *ngIf="!updateToBeta">{{ 'plugins.manage.label_release_notes' | translate }} <span *ngIf="release.name">({{ release.name }})</span></h5>
@@ -61,18 +50,26 @@ hb-service start</pre>
   </div>
   <div class="modal-footer justify-content-between" *ngIf="!onlineUpdateOk || actionComplete || showReleaseNotes || actionFailed">
     <div class="text-left">
-      <button *ngIf="!justUpdatedPlugin && !actionFailed" type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
+      <button *ngIf="!actionFailed" type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
         {{ 'form.button_close' | translate }}
       </button>
     </div>
     <div class="text-center">
-      <button *ngIf="justUpdatedPlugin || actionFailed" type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
+      <button *ngIf="actionFailed" type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
         {{ 'form.button_close' | translate }}
       </button>
     </div>
     <div class="text-right">
       <button *ngIf="onlineUpdateOk && showReleaseNotes" type="button" class="btn btn-primary" (click)="update()">
         {{ 'plugins.button_update' | translate }}
+      </button>
+      <button type="button" class="btn btn-primary" *ngIf="justUpdatedPlugin && !['homebridge', 'homebridge-config-ui-x'].includes(pluginName) && childBridges.length > 0"
+        (click)="onRestartChildBridgeClick()">
+        {{ (childBridges.length === 1 ? 'plugins.manage.child_bridge_button_restart_now_one' : 'plugins.manage.child_bridge_button_restart_now') | translate }}
+      </button>
+      <button type="button" class="btn btn-primary" *ngIf="justUpdatedPlugin && (['homebridge', 'homebridge-config-ui-x'].includes(pluginName) || childBridges.length === 0)"
+        (click)="onRestartHomebridgeClick()">
+        {{ 'plugins.manage.button_restart_now' | translate }}
       </button>
     </div>
   </div>
