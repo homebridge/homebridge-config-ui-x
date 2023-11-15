@@ -29,7 +29,7 @@ export class LightbulbComponent implements OnInit {
   onLongClick() {
     if ('Brightness' in this.service.values) {
       const ref = this.modalService.open(LightbulbManageComponent, {
-        size: 'l',
+        size: 'md',
       });
       ref.componentInstance.service = this.service;
     }
