@@ -36,6 +36,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   public actionFailed = false;
   public showReleaseNotes = false;
   public justUpdatedPlugin = false;
+  public justUninstalledPlugin = false;
   public updateToBeta = false;
   public changeLog: string;
   public childBridges: any[] = [];
@@ -140,7 +141,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       termRows: this.term.rows,
     }).subscribe(
       () => {
-        this.activeModal.close();
+        this.justUninstalledPlugin = true;
         this.$router.navigate(['/plugins']);
         this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);
       },
