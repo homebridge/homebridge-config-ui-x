@@ -29,7 +29,9 @@
       </div>
       <hr>
     </div>
-    <markdown class="plugin-md" [data]="changeLog"></markdown>
+    <div class="alert show alert-info pt-3 px-3 pb-0 mb-0">
+      <markdown class="plugin-md" [data]="changeLog"></markdown>
+    </div>
   </div>
   <div *ngIf="!onlineUpdateOk" class="modal-body">
     <h4 class="primary-text text-center" [translate]="'plugins.manage.label_manual_update_required'">
