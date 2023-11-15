@@ -19,15 +19,6 @@
        [translate]="'plugins.manage.message_thanks_for_updating_restart_child_bridges'">
       Please restart the plugin's child bridges for the changes to apply.
     </p>
-    <div class="text-center">
-      <button type="button" class="btn btn-primary" *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name) && childBridges.length > 0"
-        (click)="onRestartChildBridgeClick()">
-        {{ (childBridges.length === 1 ? 'plugins.manage.child_bridge_button_restart_now_one' : 'plugins.manage.child_bridge_button_restart_now') | translate }}
-      </button>
-      <button type="button" class="btn btn-primary"
-        *ngIf="['homebridge', 'homebridge-config-ui-x'].includes(plugin.name) || childBridges.length === 0" (click)="onRestartHomebridgeClick()"
-        [translate]="'plugins.manage.button_restart_now'">Restart Homebridge</button>
-    </div>
   </div>
 
   <div class="modal-body" style="min-height: 110px;" [hidden]="justSavedAndExited">
@@ -92,5 +83,21 @@
       </button>
     </div>
   </div>
-  <div class="modal-footer"  [hidden]="!justSavedAndExited"></div>
+  <div class="modal-footer justify-content-between" [hidden]="!justSavedAndExited">
+    <div class="text-left">
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.close('Dismiss')">
+        {{ 'form.button_close' | translate }}
+      </button>
+    </div>
+    <div class="text-center"></div>
+    <div class="text-right">
+      <button type="button" class="btn btn-primary" *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name) && childBridges.length > 0"
+              (click)="onRestartChildBridgeClick()">
+        {{ (childBridges.length === 1 ? 'plugins.manage.child_bridge_button_restart_now_one' : 'plugins.manage.child_bridge_button_restart_now') | translate }}
+      </button>
+      <button type="button" class="btn btn-primary"
+              *ngIf="['homebridge', 'homebridge-config-ui-x'].includes(plugin.name) || childBridges.length === 0" (click)="onRestartHomebridgeClick()"
+              [translate]="'plugins.manage.button_restart_now'">Restart Homebridge</button>
+    </div>
+  </div>
 </div>
