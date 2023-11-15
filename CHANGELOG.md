@@ -2,9 +2,15 @@
 
 All notable changes to homebridge-config-ui-x will be documented in this file.
 
-## 4.52.4 (TBD)
+## Beta-4.52.4 (TBD)
 
 ### Notable Changes
+
+
+
+### i18n Changes
+
+- **i18n:** Update fr.json ([#1705](https://github.com/homebridge/homebridge-config-ui-x/pull/1705))
 
 ### Bug Fixes
 
