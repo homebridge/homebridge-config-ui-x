@@ -107,6 +107,11 @@
       background-color: $primary-dark  !important;
     }
 
+    .switch-on, .light-on {
+      background-color: #fff;
+      color: #000000;
+    }
+
     @keyframes uix-glow-icon {
       from {
         text-shadow: 0 0 5px #fff, 0 0 10px #fff;
