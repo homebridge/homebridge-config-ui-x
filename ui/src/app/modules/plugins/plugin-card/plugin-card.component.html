@@ -105,7 +105,7 @@
             (click)="$plugin.uninstallPlugin(plugin)">
             <i class="fas fa-fw fa-fw fa-trash"></i> {{ 'plugins.button_uninstall' | translate }}
           </button>
-          <div class="dropdown-divider"></div>
+          <div class="dropdown-divider" *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x'"></div>
           <ng-container *ngIf="hasChildBridges && !plugin.disabled">
             <button ngbDropdownItem *ngIf="!childBridgeRestartInProgress && !plugin.disabled" (click)="doChildBridgeAction('restart')">
               <i class="fa-fw icon-button fas fa-fw fa-power-off"></i> {{ 'child_bridge.label_bridge_restart_child_bridges' | translate }}
