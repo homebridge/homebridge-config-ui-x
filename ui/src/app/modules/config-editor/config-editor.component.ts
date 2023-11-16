@@ -7,9 +7,9 @@ import { NgxEditorModel } from 'ngx-monaco-editor';
 import { ToastrService } from 'ngx-toastr';
 import { ConfigRestoreBackupComponent } from './config-restore-backup/config.restore-backup.component';
 import { ApiService } from '@/app/core/api.service';
+import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { MonacoEditorService } from '@/app/core/monaco-editor.service';
-import { NotificationService } from '@/app/core/notification.service';
 import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
@@ -39,8 +39,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     private $settings: SettingsService,
     private $api: ApiService,
     private $md: MobileDetectService,
+    private $modal: NgbModal,
     private $monacoEditor: MonacoEditorService,
-    private $notification: NotificationService,
     public $toastr: ToastrService,
     private $route: ActivatedRoute,
     private translate: TranslateService,
@@ -207,9 +207,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     try {
       const data = await this.$api.post('/config-editor', config)
         .toPromise();
-      this.$notification.configUpdated.next(undefined);
-      this.$toastr.success(this.translate.instant('config.toast_config_saved'), this.translate.instant('toast.title_success'));
       this.homebridgeConfig = JSON.stringify(data, null, 4);
+      this.$modal.open(RestartHomebridgeComponent);
     } catch {
       this.$toastr.error(this.translate.instant('config.toast_failed_to_save_config'), this.translate.instant('toast.title_error'));
     }
