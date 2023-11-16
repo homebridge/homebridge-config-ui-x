@@ -10,7 +10,7 @@
     background-color: #fff;
 
     #accessoryIcon {
-      fill: #1976d2 !important;
+      fill: #02d700 !important;
     }
   }
   .light-on {
@@ -18,6 +18,13 @@
 
     #accessoryIcon {
       fill: #ffd555 !important;
+    }
+  }
+  .window-on {
+    background-color: #fff;
+
+    #accessoryIcon {
+      fill: #00acff !important;
     }
   }
 }
