@@ -16,6 +16,7 @@ import { ConvertTempPipe } from './pipes/convert-temp.pipe';
 import { ExternalLinkIconPipe } from './pipes/external-link-icon.pipe';
 import { ReplacePipe } from './pipes/replace.pipe';
 import { InformationComponent } from '@/app/core/components/information/information.component';
+import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component';
 
 @NgModule({
     declarations: [
@@ -32,6 +33,7 @@ import { InformationComponent } from '@/app/core/components/information/informat
         ScheduledBackupsComponent,
         ConfirmComponent,
         InformationComponent,
+        RestartHomebridgeComponent,
         QrcodeComponent,
     ],
     imports: [
