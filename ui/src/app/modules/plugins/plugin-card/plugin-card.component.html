@@ -82,28 +82,12 @@
           <i class="fas fa-fw fa-ellipsis-v"></i>
         </a>
         <div ngbDropdownMenu aria-labelledby="Plugin actions drop down menu">
-          <ng-container *ngIf="hasChildBridges && !plugin.disabled">
-            <button ngbDropdownItem *ngIf="!childBridgeRestartInProgress && !plugin.disabled" (click)="doChildBridgeAction('restart')">
-              <i class="fa-fw icon-button fas fa-fw fa-power-off"></i> {{ 'child_bridge.label_bridge_restart_child_bridges' | translate }}
-            </button>
-            <button ngbDropdownItem *ngIf="!allChildBridgesStopped" (click)="doChildBridgeAction('stop')">
-              <i class="fas fa-fw fa-stop"></i> {{ 'child_bridge.label_child_stop' | translate }}
-            </button>
-            <button ngbDropdownItem *ngIf="allChildBridgesStopped" (click)="doChildBridgeAction('start')">
-              <i class="fas fa-fw fa-play"></i> {{ 'child_bridge.label_child_start' | translate }}
-            </button>
-            <div class="dropdown-divider"></div>
-          </ng-container>
           <button ngbDropdownItem *ngIf="plugin.publicPackage" (click)="$plugin.installPreviousVersion(plugin)">
             <i class="fas fa-fw fa-fw fa-history"></i>
             {{ 'plugins.manage.message_install_alternate_version' | translate }}
           </button>
           <button ngbDropdownItem (click)="viewPluginLog(plugin)" *ngIf="plugin.installedVersion">
             <i class="fas fa-fw fa-fw fa-wave-square"></i> {{ 'plugins.manage.plugin_logs' | translate }}
-          </button>
-          <button ngbDropdownItem (click)="$plugin.bridgeSettings(plugin)"
-            *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x'">
-            <i class="fas fa-fw fa-fw fa-project-diagram"></i> {{ 'child_bridge.label_bridge_settings' | translate }}
           </button>
           <button ngbDropdownItem (click)="$plugin.jsonEditor(plugin)"
             *ngIf="!isMobile && plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x'">
@@ -121,8 +105,24 @@
             (click)="$plugin.uninstallPlugin(plugin)">
             <i class="fas fa-fw fa-fw fa-trash"></i> {{ 'plugins.button_uninstall' | translate }}
           </button>
+          <div class="dropdown-divider"></div>
+          <ng-container *ngIf="hasChildBridges && !plugin.disabled">
+            <button ngbDropdownItem *ngIf="!childBridgeRestartInProgress && !plugin.disabled" (click)="doChildBridgeAction('restart')">
+              <i class="fa-fw icon-button fas fa-fw fa-power-off"></i> {{ 'child_bridge.label_bridge_restart_child_bridges' | translate }}
+            </button>
+            <button ngbDropdownItem *ngIf="!allChildBridgesStopped" (click)="doChildBridgeAction('stop')">
+              <i class="fas fa-fw fa-stop"></i> {{ 'child_bridge.label_child_stop' | translate }}
+            </button>
+            <button ngbDropdownItem *ngIf="allChildBridgesStopped" (click)="doChildBridgeAction('start')">
+              <i class="fas fa-fw fa-play"></i> {{ 'child_bridge.label_child_start' | translate }}
+            </button>
+          </ng-container>
+          <button ngbDropdownItem (click)="$plugin.bridgeSettings(plugin)"
+            *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x'">
+            <i class="fas fa-fw fa-fw fa-project-diagram"></i> {{ 'child_bridge.label_bridge_settings' | translate }}
+          </button>
           <div class="dropdown-divider" *ngIf="plugin.links.homepage || plugin.links.npm"></div>
-            <a ngbDropdownItem target="_blank" rel="noopener noreferrer" class="text-decoration-none"
+          <a ngbDropdownItem target="_blank" rel="noopener noreferrer" class="text-decoration-none"
                *ngIf="plugin.name === 'homebridge-config-ui-x'" href="/swagger">
             <i class="fas fa-fw fa-passport"></i> {{ 'plugins.button_api_documentation' | translate }}
           </a>
