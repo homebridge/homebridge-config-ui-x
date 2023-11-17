@@ -80,6 +80,7 @@
     "child_bridge.label_bridge_paired": "Brygga ansluten",
     "child_bridge.label_bridge_restart_child_bridges": "Starta om underbryggor",
     "child_bridge.label_bridge_settings": "Brygginställningar",
+    "child_bridge.label_bridge_setup_child_bridges": "Setup Child Bridges",
     "child_bridge.label_child_bridges": "Underbryggor",
     "child_bridge.label_child_start": "Start child bridge",
     "child_bridge.label_child_stop": "Stop child bridge",

@@ -80,6 +80,7 @@
     "child_bridge.label_bridge_paired": "Bridge abbinato",
     "child_bridge.label_bridge_restart_child_bridges": "Riavvia bridge figlio",
     "child_bridge.label_bridge_settings": "Impostazioni del bridge",
+    "child_bridge.label_bridge_setup_child_bridges": "Setup Child Bridges",
     "child_bridge.label_child_bridges": "Bridge figlio",
     "child_bridge.label_child_start": "Start child bridge",
     "child_bridge.label_child_stop": "Stop child bridge",

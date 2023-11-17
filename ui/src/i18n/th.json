@@ -80,6 +80,7 @@
     "child_bridge.label_bridge_paired": "Bridge ได้ถูกจับคู่แล้ว",
     "child_bridge.label_bridge_restart_child_bridges": "รีสตาร์ท Child Bridges",
     "child_bridge.label_bridge_settings": "การตั้งค่า Bridge",
+    "child_bridge.label_bridge_setup_child_bridges": "Setup Child Bridges",
     "child_bridge.label_child_bridges": "Child Bridge",
     "child_bridge.label_child_start": "เริ่มการทำงาน child bridge",
     "child_bridge.label_child_stop": "หยุดการทำงาน child bridge",

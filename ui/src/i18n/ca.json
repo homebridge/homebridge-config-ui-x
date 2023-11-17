@@ -80,6 +80,7 @@
     "child_bridge.label_bridge_paired": "Pont aparellat",
     "child_bridge.label_bridge_restart_child_bridges": "Reiniciar els ponts fills",
     "child_bridge.label_bridge_settings": "Configuració del pont",
+    "child_bridge.label_bridge_setup_child_bridges": "Setup Child Bridges",
     "child_bridge.label_child_bridges": "Ponts fill",
     "child_bridge.label_child_start": "Start child bridge",
     "child_bridge.label_child_stop": "Stop child bridge",

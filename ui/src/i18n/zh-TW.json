@@ -80,6 +80,7 @@
     "child_bridge.label_bridge_paired": "Bridge 已配對",
     "child_bridge.label_bridge_restart_child_bridges": "Restart Child Bridges",
     "child_bridge.label_bridge_settings": "Bridge 設定",
+    "child_bridge.label_bridge_setup_child_bridges": "Setup Child Bridges",
     "child_bridge.label_child_bridges": "子 Bridges",
     "child_bridge.label_child_start": "Start child bridge",
     "child_bridge.label_child_stop": "Stop child bridge",

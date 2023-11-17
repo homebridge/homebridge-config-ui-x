@@ -80,6 +80,7 @@
     "child_bridge.label_bridge_paired": "Mostek sparowany",
     "child_bridge.label_bridge_restart_child_bridges": "Zrestartuj mostek",
     "child_bridge.label_bridge_settings": "Ustawienia mostka",
+    "child_bridge.label_bridge_setup_child_bridges": "Setup Child Bridges",
     "child_bridge.label_child_bridges": "Mostki podrzędne",
     "child_bridge.label_child_start": "Uruchom mostek",
     "child_bridge.label_child_stop": "Wyłącz mostek",

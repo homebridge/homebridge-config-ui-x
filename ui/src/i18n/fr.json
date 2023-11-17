@@ -80,6 +80,7 @@
     "child_bridge.label_bridge_paired": "Pont appairé",
     "child_bridge.label_bridge_restart_child_bridges": "Redémarrer les Ponts secondaires",
     "child_bridge.label_bridge_settings": "Réglages du Pont",
+    "child_bridge.label_bridge_setup_child_bridges": "Setup Child Bridges",
     "child_bridge.label_child_bridges": "Ponts secondaires",
     "child_bridge.label_child_start": "Démarrer Pont secondaire",
     "child_bridge.label_child_stop": "Arrêter Pont secondaire",

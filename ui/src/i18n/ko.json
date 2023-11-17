@@ -80,6 +80,7 @@
     "child_bridge.label_bridge_paired": "Bridge 연결됨",
     "child_bridge.label_bridge_restart_child_bridges": "하위 Bridge 다시 시작",
     "child_bridge.label_bridge_settings": "Bridge 설정",
+    "child_bridge.label_bridge_setup_child_bridges": "Setup Child Bridges",
     "child_bridge.label_child_bridges": "하위 Bridges",
     "child_bridge.label_child_start": "Start child bridge",
     "child_bridge.label_child_stop": "Stop child bridge",
