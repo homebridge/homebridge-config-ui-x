@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 import { ConfigEditorComponent } from './config-editor.component';
 import { ConfigEditorResolver } from './config-editor.resolver';
 

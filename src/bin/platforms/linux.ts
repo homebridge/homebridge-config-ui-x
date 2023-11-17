@@ -641,12 +641,20 @@ export class LinuxInstaller extends BasePlatform {
   private async createFirewallRules() {
     // check ufw is present on the system (debian based linux)
     if (await fs.pathExists('/usr/sbin/ufw')) {
-      return this.createUfwRules();
+      try {
+        return await this.createUfwRules();
+      } catch (err) {
+        throw err;
+      }
     }
 
     // check firewall-cmd is present on the system (enterprise linux)
     if (await fs.pathExists('/usr/bin/firewall-cmd')) {
-      return this.createFirewallCmdRules();
+      try {
+        return await this.createFirewallCmdRules();
+      } catch (err) {
+        throw err;
+      }
     }
   }
 

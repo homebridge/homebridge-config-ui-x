@@ -91,7 +91,7 @@ export class AuthService {
    */
   async signIn(username: string, password: string, otp?: string): Promise<any> {
     const user = await this.authenticate(username, password, otp);
-    const token = this.jwtService.sign(user);
+    const token = await this.jwtService.sign(user);
 
     return {
       access_token: token,
@@ -130,7 +130,7 @@ export class AuthService {
     const user = users.find(x => x.admin === true);
 
     // generate a token
-    const token = this.jwtService.sign({
+    const token = await this.jwtService.sign({
       username: user.username,
       name: user.name,
       admin: user.admin,
@@ -226,7 +226,7 @@ export class AuthService {
     }
 
     // generate a token
-    const token = this.jwtService.sign({
+    const token = await this.jwtService.sign({
       username: 'setup-wizard',
       name: 'setup-wizard',
       admin: true,
@@ -310,7 +310,11 @@ export class AuthService {
    */
   private async saveUserFile(users: UserDto[]) {
     // update the auth.json
-    return fs.writeJson(this.configService.authPath, users, { spaces: 4 });
+    try {
+      return await fs.writeJson(this.configService.authPath, users, { spaces: 4 });
+    } catch (err) {
+      throw err;
+    }
   }
 
   /**

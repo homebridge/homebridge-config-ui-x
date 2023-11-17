@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-
 import { ApiService } from '@/app/core/api.service';
 
 @Component({
@@ -37,13 +36,13 @@ export class ConfigRestoreBackupComponent implements OnInit {
     );
   }
 
-  restore(backupId) {
+  restore(backupId: any) {
     return this.activeModal.close(backupId);
   }
 
   deleteAllBackups() {
     return this.$api.delete('/config-editor/backups').subscribe(
-      (data) => {
+      () => {
         this.activeModal.dismiss();
         this.$toastr.success(this.translate.instant('config.restore.toast_backups_deleted'), this.translate.instant('toast.title_success'));
       },

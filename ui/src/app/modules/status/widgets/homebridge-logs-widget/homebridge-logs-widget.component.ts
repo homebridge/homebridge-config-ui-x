@@ -1,7 +1,13 @@
-import { Component, OnInit, ViewChild, ElementRef, Input, OnDestroy } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { Subject } from 'rxjs';
 import { ITerminalOptions } from 'xterm';
-
 import { LogService } from '@/app/core/log.service';
 
 @Component({

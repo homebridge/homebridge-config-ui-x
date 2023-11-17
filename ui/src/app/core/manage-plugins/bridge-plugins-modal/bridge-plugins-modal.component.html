@@ -4,15 +4,18 @@
       {{ 'child_bridge.label_bridge_settings' | translate }}:
       {{ plugin.displayName || plugin.name }}
     </h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-      (click)="activeModal.close('Cross click')">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="activeModal.close('Dismiss')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body">
-
     <p>
       {{ 'child_bridge.message_about' | translate }}
+      <a href="https://github.com/homebridge/homebridge/wiki/Child-Bridges" target="_blank" rel="noopener noreferrer"
+        class="primary-text">
+        {{ 'child_bridge.message_wiki_link' | translate }}
+        <i class='fas fa-fw fa-external-link-alt'></i>
+      </a>
     </p>
 
     <div *ngIf="configBlocks.length">
@@ -47,15 +50,17 @@
                 <app-qrcode [data]="deviceInfo[item._bridge?.username]._setupCode" class="mr-auto ml-auto mt-2 mb-2"
                   style="width: 180px; height: 180px;">
                 </app-qrcode>
-
+                <p class="mr-auto ml-auto text-center">
+                  {{ deviceInfo[item._bridge?.username].pincode }}
+                </p>
                 <p class="grey-text  mr-auto ml-auto text-center" style="max-width: 400px;">
                   {{ 'status.message_code_scan_instructions' | translate }}
                 </p>
               </div>
               <div *ngIf="deviceInfo[item._bridge?.username]._isPaired=== true">
                 <div class="text-center">
-                  <i class="fa fa-fw fa-check-circle primary-text" style="font-size: 50px;"></i>
-                  <p class="mt-2">
+                  <i class="fa fa-fw fa-check-circle primary-text mb-4" style="font-size: 75px;"></i>
+                  <p>
                     {{ 'child_bridge.label_bridge_paired' | translate }}
                   </p>
                 </div>
@@ -101,21 +106,14 @@
       </div>
     </div>
 
-    <p>
-      <a href="https://github.com/homebridge/homebridge/wiki/Child-Bridges" target="_blank" rel="noopener noreferrer"
-        class="primary-text">
-        {{ 'child_bridge.message_wiki_link' | translate }}
-        <i class='fas fa-fw fa-external-link-alt'></i>
-      </a>
-    </p>
-
   </div>
   <div class="modal-footer justify-content-between">
-    <div style="min-width: 25%;" class="text-left">
-      <!-- left -->
+    <div class="text-left">
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.close('Dismiss')">
+        {{ 'form.button_close' | translate }}
+      </button>
     </div>
-
-    <div style="min-width: 25%;" class="d-none d-lg-block text-center">
+    <div class="d-none d-lg-block text-center" *ngIf="configBlocks.length">
       <a *ngIf="plugin.links.npm" [href]="plugin.links.npm" target="_blank" rel="noopener noreferrer"
         class="pr-3 manage-plugin-config-external-icons dark-mode-highlight"><i class="fab fa-fw fa-npm"></i></a>
       <a *ngIf="plugin.links.homepage" [href]="plugin.links.homepage" target="_blank" rel="noopener noreferrer"
@@ -123,13 +121,14 @@
         <i [ngClass]="plugin.links.homepage | externalLinkIcon"></i>
       </a>
     </div>
-
-    <div style="min-width: 25%;" class="text-right">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.close('Cross click')"
-        [translate]="'form.button_cancel'">Cancel</button>
+    <div class="text-center" *ngIf="!configBlocks.length"></div>
+    <div class="text-right">
       <button type="button" class="btn btn-primary" (click)="save()" [disabled]="saveInProgress"
         *ngIf="configBlocks.length">
         {{ 'form.button_save' | translate }} <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
+      </button>
+      <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="openPluginConfig()" *ngIf="!configBlocks.length">
+        {{ 'plugins.button_settings' | translate }}
       </button>
     </div>
   </div>

@@ -19,7 +19,7 @@ export class SelectNetworkInterfacesComponent implements OnInit {
 
   submit() {
     this.activeModal.close(
-      this.availableNetworkAdapters.filter(x => x.selected).map(x => x.iface),
+      this.availableNetworkAdapters.filter((x: any) => x.selected).map((x: any) => x.iface),
     );
   }
 

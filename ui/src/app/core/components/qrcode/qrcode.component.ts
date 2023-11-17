@@ -1,4 +1,10 @@
-import { Component, ElementRef, Input, OnChanges, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Input,
+  OnChanges,
+  ViewChild,
+} from '@angular/core';
 import * as QRCode from 'qrcode';
 
 @Component({

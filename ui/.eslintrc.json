@@ -19,6 +19,8 @@
         "plugin:@angular-eslint/ng-cli-compat--formatting-add-on",
         "plugin:@angular-eslint/template/process-inline-templates"
       ],
+      "plugins": [
+        "import", "import-newlines", "sort-exports"],
       "rules": {
         "@angular-eslint/component-selector": [
           "error",
@@ -77,7 +79,12 @@
         ],
         "id-blacklist": "off",
         "id-match": "off",
+        "import-newlines/enforce": ["error", 3],
+        "import/no-extraneous-dependencies": "off",
+        "import/order": ["warn", { "alphabetize": { "order": "asc" }, "newlines-between": "never" }],
         "no-underscore-dangle": "off",
+        "sort-exports/sort-exports": ["warn", { "sortDir": "asc" }],
+        "sort-imports": ["warn", { "ignoreDeclarationSort": true }],
         "space-before-function-paren": "error"
       }
     },

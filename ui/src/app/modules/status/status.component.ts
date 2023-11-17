@@ -1,17 +1,16 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ToastrService } from 'ngx-toastr';
 import { GridsterConfig, GridsterItem } from 'angular-gridster2';
+import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { take } from 'rxjs/operators';
-
-import { WsService } from '@/app/core/ws.service';
+import { WidgetAddComponent } from './widget-add/widget-add.component';
+import { WidgetControlComponent } from './widget-control/widget-control.component';
 import { AuthService } from '@/app/core/auth/auth.service';
-import { SettingsService } from '@/app/core/settings.service';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { NotificationService } from '@/app/core/notification.service';
-import { WidgetControlComponent } from './widget-control/widget-control.component';
-import { WidgetAddComponent } from './widget-add/widget-add.component';
+import { SettingsService } from '@/app/core/settings.service';
+import { WsService } from '@/app/core/ws.service';
 
 @Component({
   selector: 'app-status',
@@ -87,7 +86,7 @@ export class StatusComponent implements OnInit, OnDestroy {
       this.consoleStatus = 'down';
     });
 
-    this.io.socket.on('homebridge-status', (data) => {
+    this.io.socket.on('homebridge-status', (data: any) => {
       // check if client is up-to-date
       if (data.packageVersion && data.packageVersion !== this.$settings.uiVersion) {
         window.location.reload();
@@ -170,7 +169,7 @@ export class StatusComponent implements OnInit, OnDestroy {
     this.options.api.optionsChanged();
   }
 
-  gridResizeEvent(item: any, itemComponent: any) {
+  gridResizeEvent(_item: any, itemComponent: any) {
     itemComponent.item.$resizeEvent.next('resize');
     this.page.mobile = (window.innerWidth < 1024);
   }
@@ -246,7 +245,7 @@ export class StatusComponent implements OnInit, OnDestroy {
       });
   }
 
-  manageWidget(item) {
+  manageWidget(item: any) {
     const ref = this.$modal.open(WidgetControlComponent);
     ref.componentInstance.widget = item;
 
@@ -268,5 +267,4 @@ export class StatusComponent implements OnInit, OnDestroy {
     this.io.end();
     this.saveWidgetsEvent.complete();
   }
-
 }

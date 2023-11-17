@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-
-import { WsService } from '@/app/core/ws.service';
-import { AuthService } from '@/app/core/auth/auth.service';
-import { InformationComponent } from '@/app/core/components/information/information.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
+import { AuthService } from '@/app/core/auth/auth.service';
+import { InformationComponent } from '@/app/core/components/information/information.component';
+import { WsService } from '@/app/core/ws.service';
 
 @Component({
   selector: 'app-system-info-widget',
@@ -49,6 +48,7 @@ export class SystemInfoWidgetComponent implements OnInit {
     ref.componentInstance.title = this.$translate.instant('status.widget.systeminfo.modal_glibc_title');
     ref.componentInstance.message = this.$translate.instant('status.widget.systeminfo.modal_glibc_message');
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('status.widget.systeminfo.modal_glibc_cta');
+    ref.componentInstance.faIconClass = 'fab fa-fw fa-node-js primary-text';
 
     // eslint-disable-next-line max-len
     ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/homebridge-config-ui-x/wiki/Troubleshooting/#error---update-node---your-version-of-linux-does-not-meet-the-glibc-version';
@@ -59,6 +59,7 @@ export class SystemInfoWidgetComponent implements OnInit {
     ref.componentInstance.title = this.$translate.instant('status.widget.systeminfo.modal_servicemode_title');
     ref.componentInstance.message = this.$translate.instant('status.widget.systeminfo.modal_servicemode_message');
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('status.widget.systeminfo.modal_servicemode_cta');
+    ref.componentInstance.faIconClass = 'fas fa-fw fa-circle-exclamation primary-text';
 
     // eslint-disable-next-line max-len
     ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/homebridge-config-ui-x/wiki/How-To-Swap-From-Standalone-Mode-to-Service-Mode';

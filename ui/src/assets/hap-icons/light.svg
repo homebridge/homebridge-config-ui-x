@@ -5,7 +5,7 @@
  width="140.000000pt" height="140.000000pt" viewBox="0 0 140.000000 140.000000"
  preserveAspectRatio="xMidYMid meet">
 
-<g transform="translate(0.000000,140.000000) scale(0.100000,-0.100000)"
+<g id="accessoryIcon" transform="translate(0.000000,140.000000) scale(0.100000,-0.100000)"
 fill="#000000" stroke="none">
 <path d="M656 1354 c-23 -22 -29 -55 -24 -131 3 -54 8 -69 27 -84 31 -26 57
 -24 86 6 22 21 25 33 25 102 0 95 -15 123 -65 123 -18 0 -41 -7 -49 -16z"/>

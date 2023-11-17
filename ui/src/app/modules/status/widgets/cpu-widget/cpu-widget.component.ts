@@ -1,10 +1,16 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
-import { Subscription, interval } from 'rxjs';
+import {
+  Component,
+  ElementRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { ChartOptions } from 'chart.js';
-import { Color, BaseChartDirective } from 'ng2-charts';
-
-import { WsService } from '@/app/core/ws.service';
+import { BaseChartDirective, Color } from 'ng2-charts';
+import { Subscription, interval } from 'rxjs';
 import { SettingsService } from '@/app/core/settings.service';
+import { WsService } from '@/app/core/ws.service';
 
 @Component({
   selector: 'app-cpu-widget',

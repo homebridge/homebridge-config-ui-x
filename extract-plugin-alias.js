@@ -4,8 +4,8 @@
  * This script "mocks" homebridge and is used to extract the plugin alias and type.
  */
 
-const path = require('path');
 const EventEmitter = require('events').EventEmitter;
+const path = require('path');
 
 let pluginAlias;
 let pluginType;

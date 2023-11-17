@@ -1,10 +1,9 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AbstractControl } from '@angular/forms';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-
 import { ApiService } from '@/app/core/api.service';
 import { AuthService } from '@/app/core/auth/auth.service';
 
@@ -13,7 +12,7 @@ import { AuthService } from '@/app/core/auth/auth.service';
   templateUrl: './users-edit.component.html',
 })
 export class UsersEditComponent implements OnInit {
-  @Input() user;
+  @Input() user: any;
 
   public form = new FormGroup({
     username: new FormControl('', [Validators.required]),
@@ -54,9 +53,9 @@ export class UsersEditComponent implements OnInit {
     }
   }
 
-  onSubmit({ value, valid }) {
+  onSubmit({ value }) {
     this.$api.patch(`/users/${this.user.id}`, value).subscribe(
-      data => {
+      () => {
         this.activeModal.close();
         this.toastr.success(this.translate.instant('users.toast_updated_user'), this.translate.instant('toast.title_success'));
 

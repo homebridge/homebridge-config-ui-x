@@ -1,15 +1,20 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { Router } from '@angular/router';
+import {NgbActiveModal, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
-
 import { ApiService } from '@/app/core/api.service';
+import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component';
+import { NotificationService } from '@/app/core/notification.service';
 import { SettingsService } from '@/app/core/settings.service';
 import { WsService } from '@/app/core/ws.service';
-import { NotificationService } from '@/app/core/notification.service';
 
 @Component({
   selector: 'app-manage-plugins-modal',
@@ -49,6 +54,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
     private $translate: TranslateService,
     public $settings: SettingsService,
     private $api: ApiService,
+    private $modal: NgbModal,
     private $ws: WsService,
     private $notification: NotificationService,
     private $router: Router,
@@ -136,9 +142,8 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       termRows: this.term.rows,
     }).subscribe(
       () => {
-        this.activeModal.close();
         this.$router.navigate(['/plugins']);
-        this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);
+        this.$modal.open(RestartHomebridgeComponent);
       },
       (err) => {
         this.actionFailed = true;
