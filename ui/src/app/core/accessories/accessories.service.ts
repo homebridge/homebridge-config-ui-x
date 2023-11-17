@@ -3,7 +3,6 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ServiceType } from '@oznu/hap-client';
 import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
-import { ApiService } from '../api.service';
 import { AuthService } from '../auth/auth.service';
 import { IoNamespace, WsService } from '../ws.service';
 import { ServiceTypeX } from './accessories.interfaces';
@@ -45,7 +44,6 @@ export class AccessoriesService {
     public $toastr: ToastrService,
     private $ws: WsService,
     public $auth: AuthService,
-    private $api: ApiService,
   ) { }
 
   /**
@@ -122,14 +120,14 @@ export class AccessoriesService {
   /**
    * Parse the incoming accessory data and refresh existing accessory statuses
    */
-  private parseServices(services) {
+  private parseServices(services: any) {
     if (!this.accessories.services.length) {
       this.accessories.services = services;
       return;
     }
 
     // update the existing objects to avoid re-painting the dom element each refresh
-    services.forEach((service) => {
+    services.forEach((service: any) => {
       const existing = this.accessories.services.find(x => x.uniqueId === service.uniqueId);
 
       if (existing) {
@@ -295,7 +293,7 @@ export class AccessoriesService {
   /**
    *
    */
-  showAccessoryInformation(service) {
+  showAccessoryInformation(service: any) {
     const ref = this.modalService.open(InfoModalComponent, {
       size: 'lg',
     });

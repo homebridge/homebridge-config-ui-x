@@ -106,11 +106,12 @@ export class LayoutComponent implements OnInit {
       const ref = this.$modal.open(ConfirmComponent);
 
       ref.componentInstance.title = this.translate.instant('platform.version.title_service_restart_required');
-      ref.componentInstance.confirmButtonLabel = this.translate.instant('menu.tooltip_restart');
       ref.componentInstance.message = this.translate.instant('platform.version.message_service_restart_required', {
         serverVersion: this.$settings.uiVersion,
         uiVersion: environment.serverTarget,
       });
+      ref.componentInstance.confirmButtonLabel = this.translate.instant('menu.tooltip_restart');
+      ref.componentInstance.faIconClass = 'fas fa-fw-power-off';
 
       ref.result.then(() => {
         this.$router.navigate(['/restart']);

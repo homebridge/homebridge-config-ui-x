@@ -51,6 +51,7 @@
     </a>
 
     <div class="ml-auto">
+      <i *ngIf="!hasChildBridges" class="fas fa-fw fa-circle ml-3 green-text"></i>
       <i *ngIf="hasChildBridges" class="fas fa-fw fa-circle ml-3" [ngClass]="{
         'green-text': childBridgeStatus === 'ok',
         'text-warning': childBridgeStatus === 'pending',
