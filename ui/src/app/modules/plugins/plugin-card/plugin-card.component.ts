@@ -5,10 +5,10 @@ import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '@/app/core/api.service';
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
 import { InformationComponent } from '@/app/core/components/information/information.component';
+import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component';
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { PluginLogModalComponent } from '@/app/core/manage-plugins/plugin-log-modal/plugin-log-modal.component';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
-import { NotificationService } from '@/app/core/notification.service';
 import { SettingsService } from '@/app/core/settings.service';
 import { WsService } from '@/app/core/ws.service';
 import { DonateModalComponent } from '@/app/modules/plugins/donate-modal/donate-modal.component';
@@ -37,7 +37,6 @@ export class PluginCardComponent implements OnInit {
     public $plugin: ManagePluginsService,
     private $api: ApiService,
     private $ws: WsService,
-    private $notification: NotificationService,
     private $translate: TranslateService,
     private $modal: NgbModal,
     private $toastr: ToastrService,
@@ -113,11 +112,7 @@ export class PluginCardComponent implements OnInit {
         if (this.hasChildBridges) {
           await this.doChildBridgeAction('stop');
         }
-        this.$toastr.success(
-          this.$translate.instant('plugins.settings.toast_restart_required'),
-          this.$translate.instant('toast.title_success'),
-        );
-        this.$notification.configUpdated.next(undefined);
+        this.$modal.open(RestartHomebridgeComponent);
       } catch (err) {
         this.$toastr.error(`Failed to disable plugin: ${err.message}`, this.$translate.instant('toast.title_error'));
       }
@@ -143,11 +138,7 @@ export class PluginCardComponent implements OnInit {
         if (this.hasChildBridges) {
           await this.doChildBridgeAction('start');
         }
-        this.$toastr.success(
-          this.$translate.instant('plugins.settings.toast_restart_required'),
-          this.$translate.instant('toast.title_success'),
-        );
-        this.$notification.configUpdated.next(undefined);
+        this.$modal.open(RestartHomebridgeComponent);
       } catch (err) {
         this.$toastr.error(`Failed to enable plugin: ${err.message}`, this.$translate.instant('toast.title_error'));
       }

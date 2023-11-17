@@ -25,3 +25,18 @@
 a:hover {
   text-decoration: none !important;
 }
+
+// switch / outlet
+.accessory-widget-box .switch-on #accessoryIcon, .accessory-tab .switch-on #accessoryIcon {
+fill: #fff555 !important;
+}
+
+// lightbulb
+.accessory-widget-box .light-on #accessoryIcon, .accessory-tab .light-on #accessoryIcon {
+fill: #ffd555 !important;
+}
+
+// window covering
+.st0 {
+fill: #2ccff9 !important;
+}

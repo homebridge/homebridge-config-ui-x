@@ -1,12 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import * as JSON5 from 'json5';
 import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '@/app/core/api.service';
+import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
-import { NotificationService } from '@/app/core/notification.service';
 import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
@@ -39,8 +39,8 @@ export class ManualPluginConfigModalComponent implements OnInit {
   constructor(
     public activeModal: NgbActiveModal,
     private $api: ApiService,
+    private $modal: NgbModal,
     private $settings: SettingsService,
-    private $notification: NotificationService,
     private $toastr: ToastrService,
     private translate: TranslateService,
     private $router: Router,
@@ -215,12 +215,8 @@ export class ManualPluginConfigModalComponent implements OnInit {
     try {
       await this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig)
         .toPromise();
-      this.$toastr.success(
-        this.translate.instant('plugins.settings.toast_restart_required'),
-        this.translate.instant('plugins.settings.toast_plugin_config_saved'));
-
-      this.$notification.configUpdated.next(undefined);
       this.activeModal.close();
+      this.$modal.open(RestartHomebridgeComponent);
     } catch {
       this.$toastr.error(this.translate.instant('config.toast_failed_to_save_config'), this.translate.instant('toast.title_error'));
       this.saveInProgress = false;
