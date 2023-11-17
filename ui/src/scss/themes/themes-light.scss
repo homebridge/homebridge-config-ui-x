@@ -10,6 +10,10 @@
       color: $primary;
     }
 
+    .notif-dot {
+      background-color: $primary;
+    }
+
     .btn-primary,
     .btn-default {
       @extend .btn-#{$name} !optional;
