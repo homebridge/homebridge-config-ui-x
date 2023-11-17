@@ -32,6 +32,7 @@ export class PluginCardComponent implements OnInit {
   public childBridgeStatus = 'pending';
   public childBridgeRestartInProgress = false;
   public recommendChildBridge = false;
+  public detectMobile = false;
 
   constructor(
     public $plugin: ManagePluginsService,
