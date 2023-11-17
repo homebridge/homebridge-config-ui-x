@@ -46,10 +46,8 @@ export class PluginCardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    
     // detect mobile
     this.detectMobile = (('ontouchstart' in document.documentElement) || (window.screen.width <= 768)) ? true : false;
-    
     if (
       !this.$settings.env.recommendChildBridges
       || !this.$settings.env.serviceMode
