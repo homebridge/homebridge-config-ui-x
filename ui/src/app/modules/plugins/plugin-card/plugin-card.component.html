@@ -52,12 +52,12 @@
 
     <div class="ml-auto">
       <a href="javascript:void(0)" class="card-link ml-3"
-         *ngIf="!detectMobile && plugin.updateAvailable || plugin.betaUpdateAvailable" (click)="$plugin.updatePlugin(plugin, plugin.betaUpdateAvailable ? 'beta' : 'latest')"
+         *ngIf="!detectMobile && (plugin.updateAvailable || plugin.betaUpdateAvailable)" (click)="$plugin.updatePlugin(plugin, plugin.betaUpdateAvailable ? 'beta' : 'latest')"
          placement="top" ngbTooltip="{{'plugins.status_update_available' | translate:plugin }}" container="body" [openDelay]="150">
         <i class="fas fa-fw fa-arrow-alt-circle-up primary-text"></i>
       </a>
        <a href="javascript:void(0)" class="card-link ml-3"
-         *ngIf="detectMobile && plugin.updateAvailable || plugin.betaUpdateAvailable" (click)="$plugin.updatePlugin(plugin, plugin.betaUpdateAvailable ? 'beta' : 'latest')"
+         *ngIf="detectMobile && (plugin.updateAvailable || plugin.betaUpdateAvailable)" (click)="$plugin.updatePlugin(plugin, plugin.betaUpdateAvailable ? 'beta' : 'latest')"
          placement="top" ngbTooltip="" container="body" [openDelay]="150">
         <i class="fas fa-fw fa-arrow-alt-circle-up primary-text"></i>
       </a>
