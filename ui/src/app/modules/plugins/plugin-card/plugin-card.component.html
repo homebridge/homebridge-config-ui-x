@@ -80,11 +80,11 @@
       <span ngbDropdown placement="bottom-right top-right" class="d-inline-block ml-3">
         <a class="card-link" href="javascript:void(0)" aria-label="Plugin actions drop down menu" ngbDropdownToggle>
           <i class="fas fa-fw fa-ellipsis-v"></i>
-        </a>
-        <span *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable" 
+          <span *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable" 
                 class="position-absolute p-1 bg-danger rounded-circle" 
                 style="right:0px; top:0px;">
         </span>
+        </a>
         <div ngbDropdownMenu aria-labelledby="Plugin actions drop down menu">
           <ng-container *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable">
             <button ngbDropdownItem (click)="$plugin.updatePlugin(plugin, plugin.betaUpdateAvailable ? 'beta' : 'latest')">
