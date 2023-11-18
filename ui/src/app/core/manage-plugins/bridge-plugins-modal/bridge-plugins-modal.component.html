@@ -47,7 +47,9 @@
                 <app-qrcode [data]="deviceInfo[item._bridge?.username]._setupCode" class="mr-auto ml-auto mt-2 mb-2"
                   style="width: 180px; height: 180px;">
                 </app-qrcode>
-
+                <p class="mr-auto ml-auto text-center">
+                  {{ deviceInfo[item._bridge?.username].pincode }}
+                </p>
                 <p class="grey-text  mr-auto ml-auto text-center" style="max-width: 400px;">
                   {{ 'status.message_code_scan_instructions' | translate }}
                 </p>
