@@ -51,7 +51,7 @@
     </a>
 
     <div class="ml-auto">
-      <i *ngIf="!hasChildBridges" class="fas fa-fw fa-circle ml-3 green-text"></i>
+      <i *ngIf="!hasChildBridges && plugin.installedVersion" class="fas fa-fw fa-circle ml-3 green-text"></i>
       <i *ngIf="hasChildBridges" class="fas fa-fw fa-circle ml-3" [ngClass]="{
         'green-text': childBridgeStatus === 'ok',
         'text-warning': childBridgeStatus === 'pending',
@@ -64,7 +64,7 @@
             (plugin.updateAvailable || plugin.betaUpdateAvailable)
             || (!hasChildBridges && !plugin.disabled && recommendChildBridge)
             || (hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled)
-          " class="position-absolute p-1 notif-dot rounded-circle fa-beat-fade" style="right:0px; top:0px;--fa-animation-duration: 3s;--fa-fade-opacity: 0.6;"></span>
+          " class="position-absolute p-1 notif-dot rounded-circle fa-beat-fade" style="right:0;top:0;--fa-animation-duration:3s;--fa-fade-opacity:0.6;"></span>
         </a>
         <div ngbDropdownMenu aria-labelledby="Plugin actions drop down menu">
           <button ngbDropdownItem (click)="$plugin.updatePlugin(plugin, plugin.betaUpdateAvailable ? 'beta' : 'latest')"
