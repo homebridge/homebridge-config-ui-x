@@ -179,6 +179,7 @@
     "plugins.button_update": "更新",
     "plugins.button_upgrade": "更新",
     "plugins.donate.button_donate": "寄付する",
+    "plugins.donate.button_verified": "確認済み",
     "plugins.donate.message_learn_more": "プラグインの寄付リンクについてさらに詳しく",
     "plugins.donate.tile_donate_to": "{{ author }} に寄付する",
     "plugins.manage.button_restart_now": "いますぐHomebridgeを再起動",
