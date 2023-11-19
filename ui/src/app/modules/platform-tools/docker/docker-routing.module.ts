@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
-import { StartupScriptComponent } from './startup-script/startup-script.component';
+import { RouterModule, Routes } from '@angular/router';
 import { ContainerRestartComponent } from './container-restart/container-restart.component';
+import { StartupScriptComponent } from './startup-script/startup-script.component';
 import { StartupScriptResolver } from './startup-script/startup-script.resolver';
 
 const routes: Routes = [

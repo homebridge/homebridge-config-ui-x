@@ -1,6 +1,11 @@
-import { Component, OnInit, ElementRef, ViewChild, Input } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Input,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { Subject } from 'rxjs';
-
 import { WsService } from '@/app/core/ws.service';
 
 @Component({

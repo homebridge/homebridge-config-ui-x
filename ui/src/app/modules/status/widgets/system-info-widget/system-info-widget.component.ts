@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-
-import { WsService } from '@/app/core/ws.service';
-import { AuthService } from '@/app/core/auth/auth.service';
-import { InformationComponent } from '@/app/core/components/information/information.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
+import { AuthService } from '@/app/core/auth/auth.service';
+import { InformationComponent } from '@/app/core/components/information/information.component';
+import { WsService } from '@/app/core/ws.service';
 
 @Component({
   selector: 'app-system-info-widget',

@@ -1,15 +1,14 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { take } from 'rxjs/operators';
 import { gt } from 'semver';
-
-import { SettingsService } from '@/app/core/settings.service';
 import { ApiService } from '@/app/core/api.service';
-import { WsService } from '@/app/core/ws.service';
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
+import { SettingsService } from '@/app/core/settings.service';
+import { WsService } from '@/app/core/ws.service';
 
 @Component({
   selector: 'app-plugins',

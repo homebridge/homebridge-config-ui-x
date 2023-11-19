@@ -1,19 +1,22 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { lt } from 'semver';
+import { TranslateService } from '@ngx-translate/core';
 import { throttleTime } from 'rxjs/operators';
-
-import { environment } from '@/environments/environment';
-import { WsService } from '@/app/core/ws.service';
-import { SettingsService } from '@/app/core/settings.service';
+import { lt } from 'semver';
 import { AuthService } from '@/app/core/auth/auth.service';
-import { NotificationService } from '@/app/core/notification.service';
-
 import { BackupRestoreComponent } from '@/app/core/backup-restore/backup-restore.component';
-import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
+import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
+import { NotificationService } from '@/app/core/notification.service';
+import { SettingsService } from '@/app/core/settings.service';
+import { WsService } from '@/app/core/ws.service';
+import { environment } from '@/environments/environment';
 
 @Component({
   selector: 'app-layout',
