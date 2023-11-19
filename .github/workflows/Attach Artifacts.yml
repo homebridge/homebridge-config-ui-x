@@ -36,7 +36,7 @@ jobs:
       - name: Install package
         run: |
           export npm_config_prefix=$(pwd)/package
-          npm install -g homebridge-config-ui-x@$${{ needs.analyze-tags.outputs.previous-tag }}
+          npm install -g homebridge-config-ui-x@$${{ needs.analyze-tags.outputs.previous-tag || github.event.inputs.tag }}
 
       - name: Remove invalid node-pty node-gyp run
         run: |
@@ -50,6 +50,6 @@ jobs:
       - name: Attach Bundle
         uses: AButler/upload-release-assets@v2.0
         with:
-          files: 'homebridge-config-ui-x-${{ needs.analyze-tags.outputs.previous-tag }}.tar.gz;SHASUMS256.txt'
+          files: 'homebridge-config-ui-x-${{ needs.analyze-tags.outputs.previous-tag || github.event.inputs.tag }}.tar.gz;SHASUMS256.txt'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           release-tag: ${{ github.event.inputs.tag }}
