@@ -188,6 +188,7 @@
     "plugins.button_update": "Aggiorna",
     "plugins.button_upgrade": "Aggiorna sistema",
     "plugins.donate.button_donate": "Dona",
+    "plugins.donate.button_verified": "Verificato",
     "plugins.donate.message_learn_more": "Scopri di più riguardo i link per le donazioni dei plugin",
     "plugins.donate.tile_donate_to": "Dona a {{ author }}",
     "plugins.manage.button_restart_now": "Riavvia Homebridge adesso",

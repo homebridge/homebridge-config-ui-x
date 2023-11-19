@@ -188,6 +188,7 @@
     "plugins.button_update": "Обновить",
     "plugins.button_upgrade": "Обновить",
     "plugins.donate.button_donate": "Donate",
+    "plugins.donate.button_verified": "Проверено",
     "plugins.donate.message_learn_more": "Learn more about donation links on plugins",
     "plugins.donate.tile_donate_to": "Donate to {{ author }}",
     "plugins.manage.button_restart_now": "Перезапустить Homebridge прямо сейчас",
