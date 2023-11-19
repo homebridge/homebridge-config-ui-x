@@ -179,6 +179,7 @@
     "plugins.button_update": "Uppdatering",
     "plugins.button_upgrade": "Uppgradering",
     "plugins.donate.button_donate": "Donera",
+    "plugins.donate.button_verified": "Verifierad",
     "plugins.donate.message_learn_more": "Läs mer om donationslänkar i plugins",
     "plugins.donate.tile_donate_to": "Donera till {{ author }}",
     "plugins.manage.button_restart_now": "Starta om Homebridge nu",
