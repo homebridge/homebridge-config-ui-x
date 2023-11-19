@@ -2,17 +2,23 @@
 
 All notable changes to homebridge-config-ui-x will be documented in this file.
 
-## Beta-4.52.4 (TBD)
+## BETA
 
-### Notable Changes
+### UI Changes
 
+- Add Child Bridge Pin Code (#1739)
 
+### Translation Changes
 
-### i18n Changes
+- **i18n:** Update fr.json ([#1705](https://github.com/homebridge/homebridge-config-ui-x/pull/1705)) (in alpha, pending beta)
 
-- **i18n:** Update fr.json ([#1705](https://github.com/homebridge/homebridge-config-ui-x/pull/1705))
+### Other Changes
 
-### Bug Fixes
+- Add Alpha Releases (#1740)
+- update dependencies (#1745)
+- update github release workflow (#1746)
+- ui lint sort imports and exports (#1750)
+- update lang sync - remove old translations (#1751)
 
 ## 4.52.3 (2023-11-14)
 

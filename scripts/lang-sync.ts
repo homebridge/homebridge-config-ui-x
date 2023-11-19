@@ -1,4 +1,3 @@
-
 /**
  * Script to:
  * - copy new english translation strings to the other language files
