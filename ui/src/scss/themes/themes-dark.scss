@@ -45,6 +45,10 @@
       color: $darkModePrimary;
     }
 
+    .notif-dot {
+      background-color: $darkModePrimary;
+    }
+
     .dark-mode-highlight {
       color: $darkModePrimary !important;
       opacity: 1 !important;
@@ -315,7 +319,7 @@
       color: $secondaryText;
     }
 
-    .switch-on {
+    .switch-on, .light-on, .window-on {
       background-color: #fff;
       color: #000000;
     }

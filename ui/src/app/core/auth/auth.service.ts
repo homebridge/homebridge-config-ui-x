@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import * as dayjs from 'dayjs';
-
-import { environment } from '@/environments/environment';
 import { ApiService } from '@/app/core/api.service';
 import { SettingsService } from '@/app/core/settings.service';
+import { environment } from '@/environments/environment';
 
 interface UserInterface {
   username?: string;

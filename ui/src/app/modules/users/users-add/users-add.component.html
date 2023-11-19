@@ -1,9 +1,12 @@
 <div class="modal-content">
-  <div class="modal-body">
-
-    <form novalidate (ngSubmit)="onSubmit(form)" [formGroup]="form">
-      <p class="h4 text-center mb-4" [innerText]="page.title | translate"></p>
-
+  <form novalidate (ngSubmit)="onSubmit(form)" [formGroup]="form">
+    <div class="modal-header">
+      <h5 class="modal-title">{{ 'users.title_add_user' | translate }}</h5>
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="activeModal.dismiss('Dismiss')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
       <div class="md-form">
         <i class="fas fa-fw fa-user-shield prefix grey-text"></i>
         <input formControlName="username" [attr.disabled]="(page.title === 'users.title_edit_user') ? true : null"
@@ -11,14 +14,12 @@
         <label for="form-username" [ngClass]="{'active': page.title === 'users.title_edit_user'}"
           [translate]="'users.label_username'">Username</label>
       </div>
-
       <div class="md-form">
         <i class="fas fa-fw fa-user prefix grey-text"></i>
         <input formControlName="name" type="text" id="form-name" autocomplete="name" class="form-control pl-0 pr-0">
         <label for="form-name" [ngClass]="{'active': page.title === 'users.title_edit_user'}"
           [translate]="'users.label_full_name'">Full Name</label>
       </div>
-
       <div class="row pb-3">
         <div class="col-md-6">
           <div class="md-form">
@@ -40,18 +41,23 @@
           </div>
         </div>
       </div>
-
-      <div class="form-check text-center mb-4">
+      <div class="form-check text-center">
         <input formControlName="admin" type="checkbox" class="form-check-input" id="isAdmin">
         <label class="form-check-label" for="isAdmin" [translate]="'users.label_admin_user'">Admin User?</label>
       </div>
-
-      <div class="text-center">
-        <button class="btn btn-primary" type="submit" [disabled]="!form.valid"
-          [innerText]="page.save | translate"></button>
+    </div>
+    <div class="modal-footer justify-content-between">
+      <div class="text-left">
+        <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
+          {{ 'form.button_close' | translate }}
+        </button>
       </div>
-
-    </form>
-
-  </div>
+      <div class="text-center"></div>
+      <div class="text-right">
+        <button class="btn btn-primary" type="submit" [disabled]="!form.valid">
+          {{ 'form.button_save' | translate }}
+        </button>
+      </div>
+    </div>
+  </form>
 </div>

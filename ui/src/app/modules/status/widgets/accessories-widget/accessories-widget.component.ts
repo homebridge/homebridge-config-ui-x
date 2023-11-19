@@ -1,10 +1,14 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import { Subscription } from 'rxjs';
+import {
+  Component,
+  Input,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { DragulaService } from 'ng2-dragula';
-
+import { Subscription } from 'rxjs';
+import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
 import { AccessoriesService } from '@/app/core/accessories/accessories.service';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
-import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
 
 @Component({
   selector: 'app-accessories-widget',

@@ -1,11 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { Router } from '@angular/router';
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-
 import { ApiService } from '@/app/core/api.service';
+import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component';
+import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { SettingsService } from '@/app/core/settings.service';
-import { NotificationService } from '@/app/core/notification.service';
 
 @Component({
   selector: 'app-bridge-plugins-modal',
@@ -28,8 +29,10 @@ export class BridgePluginsModalComponent implements OnInit {
   constructor(
     public activeModal: NgbActiveModal,
     public $settings: SettingsService,
-    private $notification: NotificationService,
     private $api: ApiService,
+    private $modal: NgbModal,
+    private $plugins: ManagePluginsService,
+    private $router: Router,
     private $toastr: ToastrService,
     private $translate: TranslateService,
   ) { }
@@ -96,8 +99,8 @@ export class BridgePluginsModalComponent implements OnInit {
 
     try {
       await this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.configBlocks).toPromise();
-      this.$notification.configUpdated.next(undefined);
       this.activeModal.close();
+      this.$modal.open(RestartHomebridgeComponent);
     } catch (err) {
       this.$toastr.error(
         this.$translate.instant('config.toast_failed_to_save_config') + ': ' + err.error?.message,
@@ -106,6 +109,18 @@ export class BridgePluginsModalComponent implements OnInit {
     } finally {
       this.saveInProgress = false;
     }
+  }
+
+  openPluginConfig() {
+    // Close the existing modal
+    this.activeModal.close();
+
+    // Open the plugin config modal
+    this.$plugins.settings({
+      name: this.plugin.name,
+      settingsSchema: true,
+      links: {},
+    });
   }
 
   async restartChildBridge(username: string) {
@@ -145,4 +160,8 @@ export class BridgePluginsModalComponent implements OnInit {
     return username;
   }
 
+  openFullConfigEditor() {
+    this.$router.navigate(['/config']);
+    this.activeModal.close();
+  }
 }

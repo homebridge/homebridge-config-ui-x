@@ -1,7 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ServiceTypeX } from '../../accessories.interfaces';
-
 import { LightbulbManageComponent } from './lightbulb.manage.component';
 
 @Component({
@@ -30,7 +29,7 @@ export class LightbulbComponent implements OnInit {
   onLongClick() {
     if ('Brightness' in this.service.values) {
       const ref = this.modalService.open(LightbulbManageComponent, {
-        size: 'sm',
+        size: 'md',
       });
       ref.componentInstance.service = this.service;
     }

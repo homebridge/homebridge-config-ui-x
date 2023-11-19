@@ -1,8 +1,7 @@
 <div class="modal-content hb-backup-modal">
   <div class="modal-header">
     <h5 class="modal-title" [translate]="'backup.title_backup_restore'"></h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-      (click)="activeModal.dismiss('Cross click')" *ngIf="!restoreInProgress">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="activeModal.dismiss('Dismiss')" *ngIf="!restoreInProgress">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
@@ -45,16 +44,27 @@
 
   <div [hidden]="!restoreStarted" id="plugin-log-output" class="modal-body"></div>
 
-  <div class="modal-footer" *ngIf="!restoreStarted || restoreFailed === true">
-    <button type="button" class="btn btn-elegant mr-auto" (click)="openScheduledBackups()">
-      <i class="far fa-fw fa-clock"></i> {{ 'backup.title_scheduled_backups' | translate }}
-    </button>
-    <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')"
-      [translate]="'form.button_close'" [disabled]="clicked">Close</button>
+  <div class="modal-footer justify-content-between" *ngIf="!restoreStarted || restoreFailed === true">
+    <div class="text-left">
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
+        {{ 'form.button_close' | translate }}
+      </button>
+    </div>
+    <div class="text-center"></div>
+    <div class="text-right">
+      <button type="button" class="btn btn-primary mr-auto" (click)="openScheduledBackups()">
+        {{ 'backup.title_scheduled_backups' | translate }}
+      </button>
+    </div>
   </div>
 
-  <div class="modal-footer" *ngIf="!restoreInProgress && restoreStarted">
-    <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="postBackupRestart()">
-      {{ 'menu.tooltip_restart' | translate }} Homebridge</button>
+  <div class="modal-footer justify-content-between" *ngIf="!restoreInProgress && restoreStarted">
+    <div class="text-left"></div>
+    <div class="text-center">
+      <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="postBackupRestart()">
+        {{ 'menu.tooltip_restart' | translate }} Homebridge
+      </button>
+    </div>
+    <div class="text-right"></div>
   </div>
 </div>

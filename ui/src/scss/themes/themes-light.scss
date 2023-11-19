@@ -10,6 +10,10 @@
       color: $primary;
     }
 
+    .notif-dot {
+      background-color: $primary;
+    }
+
     .btn-primary,
     .btn-default {
       @extend .btn-#{$name} !optional;
@@ -105,6 +109,11 @@
 
     .login-container {
       background-color: $primary-dark  !important;
+    }
+
+    .switch-on, .light-on, .window-on {
+      background-color: #fff;
+      color: #000000;
     }
 
     @keyframes uix-glow-icon {
