@@ -12,6 +12,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 
 - Add Alpha Releases (#1740)
 - update dependencies (#1745)
+- update github release workflow (#1746)
 
 ## 4.52.3 (2023-11-14)
 
