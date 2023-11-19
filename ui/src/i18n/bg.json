@@ -179,6 +179,7 @@
     "plugins.button_update": "Актуализирай",
     "plugins.button_upgrade": "Актуализирай",
     "plugins.donate.button_donate": "Donate",
+    "plugins.donate.button_verified": "Verified",
     "plugins.donate.message_learn_more": "Learn more about donation links on plugins",
     "plugins.donate.tile_donate_to": "Donate to {{ author }}",
     "plugins.manage.button_restart_now": "Рестартирай Homebridge сега",

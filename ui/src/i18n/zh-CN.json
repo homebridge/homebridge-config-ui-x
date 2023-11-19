@@ -179,6 +179,7 @@
     "plugins.button_update": "更新",
     "plugins.button_upgrade": "升级",
     "plugins.donate.button_donate": "打赏",
+    "plugins.donate.button_verified": "Verified",
     "plugins.donate.message_learn_more": "了解更多关于插件页面的打赏链接",
     "plugins.donate.tile_donate_to": "打赏给 {{ author }}",
     "plugins.manage.button_restart_now": "立即重启 Homebridge",
