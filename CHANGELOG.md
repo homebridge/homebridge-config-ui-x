@@ -2,6 +2,16 @@
 
 All notable changes to homebridge-config-ui-x will be documented in this file.
 
+## BETA
+
+### UI Changes
+
+- Add Child Bridge Pin Code (#1739)
+
+### Other Changes
+
+- Add Alpha Releases (#1740)
+
 ## 4.52.3 (2023-11-14)
 
 ### Bug Fixes
