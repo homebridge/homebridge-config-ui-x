@@ -8,8 +8,7 @@ import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
 import { environment } from '@/environments/environment';
 
-
-export class AuthModule { }
+const tokenGetter = () => localStorage.getItem(environment.jwt.tokenKey);
 
 @NgModule({
   imports: [
@@ -34,5 +33,7 @@ export class AuthModule { }
   ],
   exports: [],
 })
+class AuthModule { }
+
 // token getter
-export const tokenGetter = () => localStorage.getItem(environment.jwt.tokenKey);
+export { AuthModule, tokenGetter };
