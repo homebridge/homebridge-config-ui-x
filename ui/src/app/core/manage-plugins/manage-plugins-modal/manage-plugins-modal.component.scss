@@ -1,6 +1,7 @@
 .plugin-modal-body {
   max-height: 60vh;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 
