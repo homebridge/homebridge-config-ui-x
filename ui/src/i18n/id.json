@@ -179,6 +179,7 @@
     "plugins.button_update": "Pembaruan",
     "plugins.button_upgrade": "Peningkatan",
     "plugins.donate.button_donate": "Donasi",
+    "plugins.donate.button_verified": "Diverifikasi",
     "plugins.donate.message_learn_more": "Pelajari lebih lanjut tentang link donasi plugin",
     "plugins.donate.tile_donate_to": "Donasi ke {{ author }}",
     "plugins.manage.button_restart_now": "Mengulang Kembali Homebridge Sekarang",

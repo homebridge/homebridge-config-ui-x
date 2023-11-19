@@ -1,0 +1,36 @@
+name: Node-CI Alpha
+
+on:
+  push:
+    branches: [alpha-*.*.*, alpha]
+  workflow_dispatch:
+
+jobs:
+  build_and_test:
+    uses: homebridge/.github/.github/workflows/nodejs-build-and-test.yml@latest
+    with:
+      enable_coverage: true
+      install_cmd: npm ci && cd ui && npm ci
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+
+  lint:
+    needs: build_and_test
+    uses: homebridge/.github/.github/workflows/eslint.yml@latest
+    with:
+      install_cmd: npm ci && cd ui && npm ci
+
+  publish:
+    needs: lint
+
+    if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
+
+    uses: homebridge/.github/.github/workflows/npm-publish.yml@latest
+    with:
+      tag: 'alpha'
+      dynamically_adjust_version: true
+      npm_version_command: 'pre'
+      pre_id: 'alpha'
+      install_cmd: npm ci && cd ui && npm ci
+    secrets:
+      npm_auth_token: ${{ secrets.npm_token }}
