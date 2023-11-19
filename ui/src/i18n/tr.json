@@ -179,7 +179,7 @@
     "plugins.button_update": "Güncelle",
     "plugins.button_upgrade": "Yükselt",
     "plugins.donate.button_donate": "Bağış Yap",
-    "plugins.donate.button_verified": "Verified",
+    "plugins.donate.button_verified": "Doğrulandı",
     "plugins.donate.message_learn_more": "Eklentilerdeki bağış bağlantıları hakkkında daha fazla bilgi edinin",
     "plugins.donate.tile_donate_to": "{{ author }} Kişisine Bağış Yap.",
     "plugins.manage.button_restart_now": "Homebridge'i Şimdi Yeniden Başlat",

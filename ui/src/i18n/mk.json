@@ -179,7 +179,7 @@
     "plugins.button_update": "Ажурирај",
     "plugins.button_upgrade": "Надгради",
     "plugins.donate.button_donate": "Донирај",
-    "plugins.donate.button_verified": "Verified",
+    "plugins.donate.button_verified": "Потврдено",
     "plugins.donate.message_learn_more": "Дознај повеќе за донациски линкови",
     "plugins.donate.tile_donate_to": "Донирај на {{ author }}",
     "plugins.manage.button_restart_now": "Рестартирај Homebridge",

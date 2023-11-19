@@ -179,7 +179,7 @@
     "plugins.button_update": "更新",
     "plugins.button_upgrade": "升級",
     "plugins.donate.button_donate": "贊助",
-    "plugins.donate.button_verified": "Verified",
+    "plugins.donate.button_verified": "已验证",
     "plugins.donate.message_learn_more": "了解更多 Plugin 的贊助連結",
     "plugins.donate.tile_donate_to": "贊助 {{ author }}",
     "plugins.manage.button_restart_now": "立即重新啟動 Homebridge",

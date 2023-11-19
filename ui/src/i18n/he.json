@@ -179,7 +179,7 @@
     "plugins.button_update": "עדכן",
     "plugins.button_upgrade": "שדרג",
     "plugins.donate.button_donate": "תרום",
-    "plugins.donate.button_verified": "Verified",
+    "plugins.donate.button_verified": "מְאוּמָת",
     "plugins.donate.message_learn_more": "למה יותר על לינקי תרומה לתוספים",
     "plugins.donate.tile_donate_to": "תרום ל {{ author }}",
     "plugins.manage.button_restart_now": "אתחל הומברידג' עכשיו",

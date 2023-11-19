@@ -179,7 +179,7 @@
     "plugins.button_update": "Aktualizovat",
     "plugins.button_upgrade": "Upgradovat",
     "plugins.donate.button_donate": "Podpořit",
-    "plugins.donate.button_verified": "Verified",
+    "plugins.donate.button_verified": "Ověřeno",
     "plugins.donate.message_learn_more": "Zjistěte více o odkazech podpory na pluginech",
     "plugins.donate.tile_donate_to": "Podpořit {{ author }}",
     "plugins.manage.button_restart_now": "Restartujte Homebridge nyní",

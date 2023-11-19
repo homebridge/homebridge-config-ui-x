@@ -179,7 +179,7 @@
     "plugins.button_update": "Aktualizuj (update)",
     "plugins.button_upgrade": "Aktualizuj (upgrade)",
     "plugins.donate.button_donate": "Wspomóż",
-    "plugins.donate.button_verified": "Verified",
+    "plugins.donate.button_verified": "Zweryfikowano",
     "plugins.donate.message_learn_more": "Przeczytaj więcej o stosowaniu linków wspomagania we wtyczkach",
     "plugins.donate.tile_donate_to": "Wspomóż {{ author }}",
     "plugins.manage.button_restart_now": "Uruchom ponownie teraz",
