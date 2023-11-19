@@ -14,6 +14,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - update dependencies (#1745)
 - update github release workflow (#1746)
 - ui lint sort imports and exports (#1750)
+- update lang sync - remove old translations (#1751)
 
 ## 4.52.3 (2023-11-14)
 
