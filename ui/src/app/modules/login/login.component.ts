@@ -1,11 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Validators, FormGroup, FormControl } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { debounceTime } from 'rxjs/operators';
-
-import { environment } from '@/environments/environment';
-import { SettingsService } from '@/app/core/settings.service';
 import { AuthService } from '@/app/core/auth/auth.service';
+import { SettingsService } from '@/app/core/settings.service';
+import { environment } from '@/environments/environment';
 
 @Component({
   selector: 'app-login',

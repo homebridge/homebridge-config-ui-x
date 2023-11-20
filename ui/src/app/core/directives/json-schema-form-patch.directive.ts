@@ -1,4 +1,10 @@
-import {Directive, Host, Input, Optional, Self} from '@angular/core';
+import {
+  Directive,
+  Host,
+  Input,
+  Optional,
+  Self,
+} from '@angular/core';
 import {JsonSchemaFormComponent} from '@oznu/ngx-bs4-jsonform';
 import {cloneDeep, merge, uniqueId} from 'lodash-es';
 

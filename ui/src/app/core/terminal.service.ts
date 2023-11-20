@@ -1,11 +1,10 @@
-import { Injectable, ElementRef } from '@angular/core';
-import { Terminal, ITerminalOptions } from 'xterm';
-import { FitAddon } from 'xterm-addon-fit';
-import { WebLinksAddon } from 'xterm-addon-web-links';
+import { ElementRef, Injectable } from '@angular/core';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-
-import { WsService, IoNamespace } from '@/app/core/ws.service';
+import { ITerminalOptions, Terminal } from 'xterm';
+import { FitAddon } from 'xterm-addon-fit';
+import { WebLinksAddon } from 'xterm-addon-web-links';
+import { IoNamespace, WsService } from '@/app/core/ws.service';
 
 @Injectable({
   providedIn: 'root',

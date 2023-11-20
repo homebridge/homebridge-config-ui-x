@@ -3,16 +3,15 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { gt } from 'semver';
-
-import { SettingsService } from '@/app/core/settings.service';
 import { ApiService } from '@/app/core/api.service';
-import { WsService } from '@/app/core/ws.service';
-import { NotificationService } from '@/app/core/notification.service';
+import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
+import { InformationComponent } from '@/app/core/components/information/information.component';
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
-import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
+import { NotificationService } from '@/app/core/notification.service';
+import { SettingsService } from '@/app/core/settings.service';
+import { WsService } from '@/app/core/ws.service';
 import { DonateModalComponent } from '@/app/modules/plugins/donate-modal/donate-modal.component';
-import { InformationComponent } from '@/app/core/components/information/information.component';
 
 @Component({
   selector: 'app-plugin-card',

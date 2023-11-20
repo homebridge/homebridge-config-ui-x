@@ -1,9 +1,8 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-
-import { WsService } from '@/app/core/ws.service';
-import { SettingsService } from '@/app/core/settings.service';
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
+import { SettingsService } from '@/app/core/settings.service';
+import { WsService } from '@/app/core/ws.service';
 
 @Component({
   selector: 'app-homebridge-status-widget',

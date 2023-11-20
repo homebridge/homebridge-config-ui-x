@@ -1,17 +1,16 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ToastrService } from 'ngx-toastr';
-import { NgxEditorModel } from 'ngx-monaco-editor';
+import { TranslateService } from '@ngx-translate/core';
 import * as JSON5 from 'json5';
-
+import { NgxEditorModel } from 'ngx-monaco-editor';
+import { ToastrService } from 'ngx-toastr';
+import { ConfigRestoreBackupComponent } from './config-restore-backup/config.restore-backup.component';
 import { ApiService } from '@/app/core/api.service';
-import { SettingsService } from '@/app/core/settings.service';
-import { NotificationService } from '@/app/core/notification.service';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { MonacoEditorService } from '@/app/core/monaco-editor.service';
-import { ConfigRestoreBackupComponent } from './config-restore-backup/config.restore-backup.component';
+import { NotificationService } from '@/app/core/notification.service';
+import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
   selector: 'app-config',

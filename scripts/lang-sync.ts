@@ -4,8 +4,8 @@
  * - remove old translation strings from the other language files
  */
 
-import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as fs from 'fs-extra';
 
 const basePath = path.dirname(__dirname);
 

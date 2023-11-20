@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
+import * as dayjs from 'dayjs';
+import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { first } from 'rxjs/operators';
-import * as dayjs from 'dayjs';
-
 import { ApiService } from '@/app/core/api.service';
 
 interface EnvInterface {

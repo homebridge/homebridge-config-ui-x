@@ -1,25 +1,26 @@
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, FormGroup, FormControl } from '@angular/forms';
-import { ToastrService } from 'ngx-toastr';
+import {
+  FormControl,
+  FormGroup,
+  UntypedFormBuilder,
+  UntypedFormControl,
+} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { TranslateService } from '@ngx-translate/core';
+import { ToastrService } from 'ngx-toastr';
 import { debounceTime } from 'rxjs/operators';
 import * as semver from 'semver';
-
-import { SettingsService } from '@/app/core/settings.service';
+// eslint-disable-next-line max-len
+import { RemoveAllCachedAccessoriesModalComponent } from './remove-all-cached-accessories-modal/remove-all-cached-accessories-modal.component';
+// eslint-disable-next-line max-len
+import { RemoveSingleCachedAccessoryModalComponent } from './remove-single-cached-accessory-modal/remove-single-cached-accessory-modal.component';
+import { ResetHomebridgeModalComponent } from './reset-homebridge-modal/reset-homebridge-modal.component';
+import { SelectNetworkInterfacesComponent } from './select-network-interfaces/select-network-interfaces.component';
+import { UnpairAccessoryModalComponent } from './unpair-accessory-modal/unpair-accessory-modal.component';
 import { ApiService } from '@/app/core/api.service';
 import { NotificationService } from '@/app/core/notification.service';
-
-import {
-  RemoveAllCachedAccessoriesModalComponent,
-} from './remove-all-cached-accessories-modal/remove-all-cached-accessories-modal.component';
-import { ResetHomebridgeModalComponent } from './reset-homebridge-modal/reset-homebridge-modal.component';
-import {
-  RemoveSingleCachedAccessoryModalComponent,
-} from './remove-single-cached-accessory-modal/remove-single-cached-accessory-modal.component';
-import { UnpairAccessoryModalComponent } from './unpair-accessory-modal/unpair-accessory-modal.component';
-import { SelectNetworkInterfacesComponent } from './select-network-interfaces/select-network-interfaces.component';
+import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
   selector: 'app-settings',

@@ -1,10 +1,14 @@
-import { Component, OnInit, Input, OnDestroy, OnChanges } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ServiceTypeX } from '../../accessories.interfaces';
-
-import { ValveManageComponent } from './valve.manage.component';
-import { interval, Subscription } from 'rxjs';
+import { Subscription, interval } from 'rxjs';
 import { filter } from 'rxjs/operators';
+import { ServiceTypeX } from '../../accessories.interfaces';
+import { ValveManageComponent } from './valve.manage.component';
 
 @Component({
   selector: 'app-valve',
