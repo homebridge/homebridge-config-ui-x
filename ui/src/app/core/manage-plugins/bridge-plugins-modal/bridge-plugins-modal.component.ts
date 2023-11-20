@@ -1,8 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
+import {Router} from '@angular/router';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '@/app/core/api.service';
+import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { NotificationService } from '@/app/core/notification.service';
 import { SettingsService } from '@/app/core/settings.service';
 
@@ -29,6 +31,8 @@ export class BridgePluginsModalComponent implements OnInit {
     public $settings: SettingsService,
     private $notification: NotificationService,
     private $api: ApiService,
+    private $plugins: ManagePluginsService,
+    private $router: Router,
     private $toastr: ToastrService,
     private $translate: TranslateService,
   ) { }
@@ -144,4 +148,20 @@ export class BridgePluginsModalComponent implements OnInit {
     return username;
   }
 
+  openPluginConfig() {
+    // Close the existing modal
+    this.activeModal.close();
+
+    // Open the plugin config modal
+    this.$plugins.settings({
+      name: this.plugin.name,
+      settingsSchema: true,
+      links: {},
+    });
+  }
+
+  openFullConfigEditor() {
+    this.$router.navigate(['/config']);
+    this.activeModal.close();
+  }
 }

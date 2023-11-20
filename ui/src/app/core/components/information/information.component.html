@@ -9,9 +9,17 @@
   <div class="modal-body d-flex flex-row flex-grow-1 align-items-center w-100">
     <p class="w-100 text-center">{{ message }}</p>
   </div>
-  <div class="modal-footer justify-content-center">
-    <a class="btn btn-primary text-decoration-none" target="_blank" href="{{ ctaButtonLink }}" rel="noopener noreferrer">
-      {{ ctaButtonLabel }}
-    </a>
+  <div class="modal-footer justify-content-between">
+    <div class="text-left">
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
+        {{ 'form.button_close' | translate }}
+      </button>
+    </div>
+    <div class="text-center"></div>
+    <div class="text-right">
+      <a class="btn btn-primary text-decoration-none" target="_blank" href="{{ ctaButtonLink }}" rel="noopener noreferrer">
+        {{ ctaButtonLabel }} <i class='fas fa-fw fa-external-link-alt'></i>
+      </a>
+    </div>
   </div>
 </div>
