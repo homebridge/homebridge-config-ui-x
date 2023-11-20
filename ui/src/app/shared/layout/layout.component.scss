@@ -1,8 +1,3 @@
-@media (min-width: 992px) {
-  .body-top-padding {
-    padding-top: 0px !important;
-  }
-}
 
 /* MOBILE NAVBAR */
 
@@ -95,7 +90,6 @@
   background: #0f0f0f;
   z-index: 100;
   transition: all 0.5s ease;
-  overflow: hidden;
 }
 .sidebar.show{
   width: 78px;
@@ -124,11 +118,13 @@
   font-weight: 600;
   transition: 0.3s ease;
   transition-delay: 0.1s;
+  display: inline-block;
 }
 .sidebar.show .logo-details .logo_name{
   transition-delay: 0s;
   opacity: 0;
   pointer-events: none;
+  display: none;
 }
 .sidebar .nav-links{
   height: 100%;
