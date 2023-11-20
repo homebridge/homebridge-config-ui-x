@@ -40,22 +40,22 @@
           <div *ngFor="let service of room.services" [ngSwitch]="service.type" class="accessory-item accessory-tab">
             <ng-container *ngIf="!hideHidden || !service.hidden">
               <app-accessory-tile [service]="service"></app-accessory-tile>
-              <div style="width:150px;height:0;margin-left:10px;margin-right:10px;"></div>
-              <div style="width:150px;height:0;margin-left:10px;margin-right:10px;"></div>
-              <div style="width:150px;height:0;margin-left:10px;margin-right:10px;"></div>
-              <div style="width:150px;height:0;margin-left:10px;margin-right:10px;"></div>
-              <div style="width:150px;height:0;margin-left:10px;margin-right:10px;"></div>
-              <div style="width:150px;height:0;margin-left:10px;margin-right:10px;"></div>
-              <div style="width:150px;height:0;margin-left:10px;margin-right:10px;"></div>
-              <div style="width:150px;height:0;margin-left:10px;margin-right:10px;"></div>
-              <div style="width:150px;height:0;margin-left:10px;margin-right:10px;"></div>
-              <div style="width:150px;height:0;margin-left:10px;margin-right:10px;"></div>
-              <div style="width:150px;height:0;margin-left:10px;margin-right:10px;"></div>
-              <div style="width:150px;height:0;margin-left:10px;margin-right:10px;"></div>
-              <div style="width:150px;height:0;margin-left:10px;margin-right:10px;"></div>
-              <div style="width:150px;height:0;margin-left:10px;margin-right:10px;"></div>
             </ng-container>
           </div>
+          <div style="width:150px;height:0;margin-left:10px;margin-right:10px;"></div>
+          <div style="width:150px;height:0;margin-left:10px;margin-right:10px;"></div>
+          <div style="width:150px;height:0;margin-left:10px;margin-right:10px;"></div>
+          <div style="width:150px;height:0;margin-left:10px;margin-right:10px;"></div>
+          <div style="width:150px;height:0;margin-left:10px;margin-right:10px;"></div>
+          <div style="width:150px;height:0;margin-left:10px;margin-right:10px;"></div>
+          <div style="width:150px;height:0;margin-left:10px;margin-right:10px;"></div>
+          <div style="width:150px;height:0;margin-left:10px;margin-right:10px;"></div>
+          <div style="width:150px;height:0;margin-left:10px;margin-right:10px;"></div>
+          <div style="width:150px;height:0;margin-left:10px;margin-right:10px;"></div>
+          <div style="width:150px;height:0;margin-left:10px;margin-right:10px;"></div>
+          <div style="width:150px;height:0;margin-left:10px;margin-right:10px;"></div>
+          <div style="width:150px;height:0;margin-left:10px;margin-right:10px;"></div>
+          <div style="width:150px;height:0;margin-left:10px;margin-right:10px;"></div>
         </div>
         <div class="col-md-12 d-flex flex-wrap noselect" *ngIf="!room.services.length && !isMobile"
           [dragula]='"services-bag"' [(dragulaModel)]='room.services'>
