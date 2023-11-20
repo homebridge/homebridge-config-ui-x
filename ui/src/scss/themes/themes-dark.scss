@@ -19,6 +19,24 @@
       border-bottom-width: 1px;
     }
 
+    .sidebar {
+      background-color: #0f0f0f;
+    }
+
+    .sidebar .nav-links li:hover,
+    .sidebar .nav-links li .sub-menu,
+    .li-link1.show, .li-link2.show {
+      background: #2b2b2b;
+    }
+    
+    .sidebar .logo-details i, .sidebar .logo-details img,
+    .sidebar .logo-details .logo_name,
+    .sidebar .nav-links li i,
+    .sidebar .nav-links li a .link_name,
+    .sidebar .nav-links li .sub-menu a {
+      color: #ffffff;
+    }
+
     .dropdown-menu {
       background-color: #222222;
     }
