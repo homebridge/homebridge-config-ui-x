@@ -15,13 +15,16 @@
       <ul class="navbar-nav mr-auto">
         <li class="nav-item waves-effect waves-light" routerLinkActive="active"
           [routerLinkActiveOptions]="{exact: true}">
-          <a class="nav-link" routerLink="/" [translate]="'menu.label_status'">Status</a>
+          <a class="nav-link" routerLink="/" [translate]="'menu.label_status'"
+            data-toggle="collapse" data-target=".navbar-toggler">Status</a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
-          <a class="nav-link" routerLink="/plugins" [translate]="'menu.label_plugins'">Plugins</a>
+          <a class="nav-link" routerLink="/plugins" [translate]="'menu.label_plugins'"
+            data-toggle="collapse" data-target=".navbar-toggler">Plugins</a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
-          <a class="nav-link" routerLink="/config" [translate]="'menu.label_config'">Config</a>
+          <a class="nav-link" routerLink="/config" [translate]="'menu.label_config'"
+            data-toggle="collapse" data-target=".navbar-toggler">Config</a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$settings.env.enableAccessories">
           <a class="nav-link" routerLink="/accessories" [translate]="'menu.label_accessories'">Accessories</a>
@@ -94,35 +97,35 @@
 <div class="container-fluid d-flex flex-col h-100 w-100 p-0">
    <div class="sidebar show d-none d-lg-block p-0">
     <div class="logo-details">
-      <img style="height:30px;" src="assets/homebridge-logo.svg" alt="logo">
-      <span class="logo_name">Homebridge</span>
+      <a routerLink="/"><img style="height:30px;" src="assets/homebridge-logo.svg" alt="logo">
+      <span class="logo_name">Homebridge</span></a>
     </div>
     <ul class="nav-links">
       <li>
-        <a href="#">
+        <a routerLink="/">
           <i class="fa fa-house"></i>
           <span class="link_name">Dashboard</span>
         </a>
         <ul class="sub-menu blank">
-          <li><a class="link_name" href="#">Dashboard</a></li>
+          <li><a class="link_name" routerLink="/">Dashboard</a></li>
         </ul>
       </li>
       <li>
-        <a href="#">
+        <a routerLink="/plugins">
           <i class="fa fa-plug"></i>
           <span class="link_name">Plugins</span>
         </a>
         <ul class="sub-menu blank">
-          <li><a class="link_name" href="#">Plugins</a></li>
+          <li><a class="link_name" routerLink="/plugins">Plugins</a></li>
         </ul>
       </li>
       <li>
-        <a href="#">
+        <a routerLink="/accessories">
           <i class="fa fa-lightbulb"></i>
           <span class="link_name">Accessories</span>
         </a>
         <ul class="sub-menu blank">
-          <li><a class="link_name" href="#">Accessories</a></li>
+          <li><a class="link_name" routerLink="/accessories">Accessories</a></li>
         </ul>
       </li>
       <li>
