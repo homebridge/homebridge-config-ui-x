@@ -4,7 +4,7 @@
       Restore Homebridge Config Backup
     </h5>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-      (click)="activeModal.dismiss('Cross click')">
+      (click)="activeModal.dismiss('Dismiss')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
@@ -27,10 +27,16 @@
       <h3 class="text-center" [translate]="'config.restore.message_no_backups'">No Backups</h3>
     </div>
   </div>
-  <div class="modal-footer">
-    <button *ngIf="!loading && backupList.length" type="button" class="btn btn-elegant mr-auto"
-      (click)="deleteAllBackups()" [translate]="'config.restore.button_remote_all_backups'">Remove All Backups</button>
-    <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="activeModal.dismiss('Cross click')"
-      [translate]="'form.button_cancel'">Cancel</button>
-  </div>
+  <div class="modal-footer justify-content-between">
+    <div class="text-left">
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
+        {{ 'form.button_close' | translate }}
+      </button>
+    </div>
+    <div class="text-center"></div>
+    <div class="text-right">
+      <button *ngIf="!loading && backupList.length" type="button" class="btn btn-danger mr-auto" (click)="deleteAllBackups()">
+        {{ 'form.button_remove' | translate }}
+      </button>
+    </div>
 </div>
