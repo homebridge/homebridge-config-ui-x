@@ -12,8 +12,15 @@ body {
   background-color: #f4f4f4;
 }
 
-.body-top-padding {
-  padding-top: 5.5rem;
+@media (min-width: 992px) {
+  .body-top-padding {
+    padding-top: 0px !important;
+  }
+}
+@media (max-width: 991px) {
+  .body-top-padding {
+    padding-top: 5.5rem !important
+  }
 }
 
 .help-block {
