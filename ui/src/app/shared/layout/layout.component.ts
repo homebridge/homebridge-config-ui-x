@@ -26,8 +26,8 @@ import { environment } from '@/environments/environment';
 export class LayoutComponent implements OnInit {
   private io = this.$ws.connectToNamespace('app');
 
-  public rPiCurrentlyUndervoltage = false;
-  public rPiWasUndervoltage = false;
+  public rPiCurrentlyUnderVoltage = false;
+  public rPiWasUnderVoltage = false;
 
   @ViewChild('restartHomebridgeIcon') restartHomebridgeIcon: ElementRef;
 
@@ -66,10 +66,10 @@ export class LayoutComponent implements OnInit {
 
     this.$notification.raspberryPiThrottled.subscribe((throttled) => {
       if (throttled['Under-voltage detected']) {
-        this.rPiCurrentlyUndervoltage = true;
+        this.rPiCurrentlyUnderVoltage = true;
       }
       if (throttled['Under-voltage has occurred']) {
-        this.rPiWasUndervoltage = true;
+        this.rPiWasUnderVoltage = true;
       }
     });
 

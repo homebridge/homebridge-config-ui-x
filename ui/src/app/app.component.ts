@@ -8,8 +8,6 @@ import { SettingsService } from '@/app/core/settings.service';
   templateUrl: './app.component.html',
 })
 export class AppComponent {
-  public langdir = 'ltr';
-
   constructor(
     router: Router,
     translate: TranslateService,
@@ -49,18 +47,14 @@ export class AppComponent {
       'he',
     ];
 
-    // which langs should use RTL
+    // which longs should use RTL
     const rtlLanguages = [
       'he',
     ];
 
     // watch for lang changes
     translate.onLangChange.subscribe(() => {
-      if (rtlLanguages.includes(translate.currentLang)) {
-        $settings.rtl = true;
-      } else {
-        $settings.rtl = false;
-      }
+      $settings.rtl = rtlLanguages.includes(translate.currentLang);
     });
 
     const browserLang = languages.find(x => x === translate.getBrowserLang() || x === translate.getBrowserCultureLang());

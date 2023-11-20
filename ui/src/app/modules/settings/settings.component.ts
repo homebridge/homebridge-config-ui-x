@@ -1,13 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  FormControl,
-  FormGroup,
-  UntypedFormBuilder,
-  UntypedFormControl,
-} from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { FormControl, FormGroup, UntypedFormControl } from '@angular/forms';
+import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { debounceTime } from 'rxjs/operators';
 import * as semver from 'semver';
@@ -49,12 +43,9 @@ export class SettingsComponent implements OnInit {
     public $settings: SettingsService,
     private $api: ApiService,
     private $notification: NotificationService,
-    public $fb: UntypedFormBuilder,
     public $toastr: ToastrService,
     private $modal: NgbModal,
-    private $route: ActivatedRoute,
     private $router: Router,
-    private translate: TranslateService,
   ) { }
 
   ngOnInit() {
@@ -113,7 +104,7 @@ export class SettingsComponent implements OnInit {
         this.$router.navigate(['/restart']);
       },
       (err) => {
-        this.$toastr.error(err.message, 'Failed to set force setvice restart flag.');
+        this.$toastr.error(err.message, 'Failed to set force service restart flag.');
       },
     );
   }

@@ -5,7 +5,6 @@ import { NgxEditorModel } from 'ngx-monaco-editor';
 import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '@/app/core/api.service';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
-import { MonacoEditorService } from '@/app/core/monaco-editor.service';
 import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
@@ -35,7 +34,6 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
     private $settings: SettingsService,
     private $api: ApiService,
     private $md: MobileDetectService,
-    private $monacoEditor: MonacoEditorService,
     public $toastr: ToastrService,
     private translate: TranslateService,
     private $route: ActivatedRoute,

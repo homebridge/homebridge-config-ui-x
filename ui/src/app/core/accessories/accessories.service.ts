@@ -3,7 +3,6 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ServiceType } from '@oznu/hap-client';
 import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
-import { ApiService } from '../api.service';
 import { AuthService } from '../auth/auth.service';
 import { IoNamespace, WsService } from '../ws.service';
 import { ServiceTypeX } from './accessories.interfaces';
@@ -45,7 +44,6 @@ export class AccessoriesService {
     public $toastr: ToastrService,
     private $ws: WsService,
     public $auth: AuthService,
-    private $api: ApiService,
   ) { }
 
   /**
