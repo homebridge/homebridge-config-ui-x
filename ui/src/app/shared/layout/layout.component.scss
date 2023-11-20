@@ -87,7 +87,6 @@
   left: 0;
   height: 100%;
   width: 260px;
-  background: #0f0f0f;
   z-index: 100;
   transition: all 0.5s ease;
 }
@@ -106,7 +105,6 @@
 }
 .sidebar .logo-details i, .sidebar .logo-details img {
   font-size: 30px;
-  color: #fff;
   height: 50px;
   min-width: 78px;
   text-align: center;
@@ -114,7 +112,6 @@
 }
 .sidebar .logo-details .logo_name{
   font-size: 22px;
-  color: #fff;
   font-weight: 600;
   transition: 0.3s ease;
   transition-delay: 0.1s;
@@ -142,9 +139,7 @@
   list-style: none;
   transition: all 0.4s ease;
 }
-.sidebar .nav-links li:hover{
-  background: #333333;
-}
+
 .sidebar .nav-links li .iocn-link{
   display: flex;
   align-items: center;
@@ -158,7 +153,6 @@
   min-width: 78px;
   text-align: center;
   line-height: 50px;
-  color: #fff;
   font-size: 20px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -177,7 +171,6 @@
 .sidebar .nav-links li a .link_name{
   font-size: 18px;
   font-weight: 400;
-  color: #fff;
   transition: all 0.4s ease;
 }
 .sidebar.show .nav-links li a .link_name{
@@ -187,7 +180,6 @@
 .sidebar .nav-links li .sub-menu{
   padding: 6px 6px 14px 80px;
   margin-top: -10px;
-  background: #333333;
   display: none;
   transition: all 0.3s ease;
 }
@@ -195,7 +187,6 @@
   display: block;
 }
 .sidebar .nav-links li .sub-menu a{
-  color: #fff;
   font-size: 15px;
   padding: 5px 0;
   white-space: nowrap;
@@ -251,7 +242,6 @@
 }
 
 .li-link1.show, .li-link2.show {
-  background: #333333;
   transition: 0s;
 }
 
