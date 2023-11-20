@@ -40,31 +40,24 @@
     margin-top: 0px;
 }
 
-/* State when the navbar is collapsed */
+/* State when the navbar is collapsed - BARS */
 
-.navbar-toggler.collapsed .top-bar {
-  position: absolute !important;
-  top: 0px !important;
-  transform: rotate(0deg) !important;
-}
-
-.navbar-toggler.collapsed .middle-bar {
-  opacity: 1;
+.navbar-toggler .top-bar {
   position: absolute;
-  top: 10px;
-  filter: alpha(opacity=0);
-}
-
-.navbar-toggler.collapsed .bottom-bar {
-  position: absolute;
-  top: 20px;
+  top: 0px;
   transform: rotate(0deg);
 }
 
-/* when navigation is clicked */
+.navbar-toggler .bottom-bar {
+  position: absolute;
+  top: 18px;
+  transform: rotate(0deg);
+}
+
+/* when navigation is clicked - X */
 
 .navbar-toggler:not(.collapsed) .top-bar {
-  top: inherit;
+  top: 10px;
   transform: rotate(135deg);
 }
 
@@ -75,7 +68,7 @@
 }
 
 .navbar-toggler:not(.collapsed) .bottom-bar {
-  top: inherit;
+  top: 10px;
   transform: rotate(-135deg);
 }
 
