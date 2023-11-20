@@ -9,6 +9,10 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - Add Child Bridge Pin Code (#1739)
 - standardise modal footers (#1753)
 
+### Translation Changes
+
+- **i18n:** Update fr.json ([#1705](https://github.com/homebridge/homebridge-config-ui-x/pull/1705))
+
 ### Other Changes
 
 - Add Alpha Releases (#1740)

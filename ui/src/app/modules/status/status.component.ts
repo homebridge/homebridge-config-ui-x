@@ -267,5 +267,4 @@ export class StatusComponent implements OnInit, OnDestroy {
     this.io.end();
     this.saveWidgetsEvent.complete();
   }
-
 }
