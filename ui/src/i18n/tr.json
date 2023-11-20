@@ -1,7 +1,6 @@
 {
     "--language": "Turkish, Turecki",
     "accessories.button_add_room": "Oda Ekle",
-    "accessories.button_create_room": "Oda Oluştur",
     "accessories.button_toggle_hidden": "Cihazları Gizle/Göster",
     "accessories.button_toggle_layout_lock": "Yerleşim Kilidini Aç/Kapat",
     "accessories.control.default_room": "Varsayılan Oda",
@@ -92,7 +91,6 @@
     "child_bridge.message_wiki_link": "Learn more about child bridges",
     "child_bridge.toast_restart_requested": "Child bridge restart requested.",
     "config.button_restore": "Yedekten Geri Yükle",
-    "config.restore.button_remote_all_backups": "Tüm Yedeklemeleri Sil",
     "config.restore.message_copy_to_editor": "Editöre Kopyala",
     "config.restore.message_no_backups": "Yedekleme Yok",
     "config.restore.title_restore_homebridge_backup": "Homebridge Yapılandırma Yedeğini Geri Yükle",

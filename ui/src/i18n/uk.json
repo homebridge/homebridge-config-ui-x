@@ -1,7 +1,6 @@
 {
     "--language": "Ukrainian, Ukraiński",
     "accessories.button_add_room": "Додати кімнату",
-    "accessories.button_create_room": "Створити кімнату",
     "accessories.button_toggle_hidden": "Приховані аксесуари",
     "accessories.button_toggle_layout_lock": "Закріпити оформлення",
     "accessories.control.default_room": "Кімната за замовчуванням",
@@ -92,7 +91,6 @@
     "child_bridge.message_wiki_link": "Дізнайтеся більше про дочірні мости",
     "child_bridge.toast_restart_requested": "Потрібен перезапуск дочірнього мосту.",
     "config.button_restore": "Відновити",
-    "config.restore.button_remote_all_backups": "Видалити всі резервні копії",
     "config.restore.message_copy_to_editor": "Копіювати в редактор",
     "config.restore.message_no_backups": "Немає резервних копій",
     "config.restore.title_restore_homebridge_backup": "Відновлення конфігурації Homebridge з резервної копії",

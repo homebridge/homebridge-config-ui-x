@@ -1,7 +1,6 @@
 {
     "--language": "Spanish, Hiszpański",
     "accessories.button_add_room": "Añadir habitación",
-    "accessories.button_create_room": "Crear habitación",
     "accessories.button_toggle_hidden": "Ocultar interruptor",
     "accessories.button_toggle_layout_lock": "Bloquear interfaz del interruptor",
     "accessories.control.default_room": "Habitación predeterminada",
@@ -92,7 +91,6 @@
     "child_bridge.message_wiki_link": "Más información sobre los puentes hijo",
     "child_bridge.toast_restart_requested": "Se ha solicitado el reinicio del puente hijo.",
     "config.button_restore": "Restaurar",
-    "config.restore.button_remote_all_backups": "Eliminar todas las copias de seguridad",
     "config.restore.message_copy_to_editor": "Copiar al editor",
     "config.restore.message_no_backups": "Sin copias de seguridad",
     "config.restore.title_restore_homebridge_backup": "Restaurar copia de seguridad de configuración de Homebridge.",

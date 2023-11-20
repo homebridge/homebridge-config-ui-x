@@ -1,7 +1,6 @@
 {
     "--language": "Indonesian, Indonezyjski",
     "accessories.button_add_room": "Tambah Ruangan",
-    "accessories.button_create_room": "Buat Ruangan",
     "accessories.button_toggle_hidden": "Sakelar Penyembunyi",
     "accessories.button_toggle_layout_lock": "Sakelar Pengunci Tata Letak",
     "accessories.control.default_room": "Ruangan Standar",
@@ -92,7 +91,6 @@
     "child_bridge.message_wiki_link": "Pelajari lebih lanjut tentang Anak Bridge",
     "child_bridge.toast_restart_requested": "Mulai ulang Anak Bridge yang diminta.",
     "config.button_restore": "Pulihkan",
-    "config.restore.button_remote_all_backups": "Hapus Semua Cadangan",
     "config.restore.message_copy_to_editor": "Salin ke Editor",
     "config.restore.message_no_backups": "Tidak Ada Cadangan",
     "config.restore.title_restore_homebridge_backup": "Pulihkan Konfigurasi Cadangan Homebridge",

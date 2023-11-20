@@ -1,7 +1,6 @@
 {
     "--language": "Portugese, Portugalski",
     "accessories.button_add_room": "Adicionar Cenário",
-    "accessories.button_create_room": "Criar Cenário",
     "accessories.button_toggle_hidden": "Mostrar/Não Mostrar Escondidos",
     "accessories.button_toggle_layout_lock": "Bloquear/Desbloquear Layout",
     "accessories.control.default_room": "Cenário Padrão",
@@ -92,7 +91,6 @@
     "child_bridge.message_wiki_link": "Saiba mais sobre pontes secundárias",
     "child_bridge.toast_restart_requested": "Pedido o reinício da ponte secundária.",
     "config.button_restore": "Restaurar",
-    "config.restore.button_remote_all_backups": "Eliminar Todos os Backups",
     "config.restore.message_copy_to_editor": "Copiar para o Editor",
     "config.restore.message_no_backups": "Sem Backups",
     "config.restore.title_restore_homebridge_backup": "Restaurar Backup das Configurações do Homebridge",

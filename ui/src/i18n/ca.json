@@ -1,7 +1,6 @@
 {
     "--language": "Catalan, Kataloński",
     "accessories.button_add_room": "Afegir Habitació",
-    "accessories.button_create_room": "Crear Habitació",
     "accessories.button_toggle_hidden": "Amaga Interruptor",
     "accessories.button_toggle_layout_lock": "Bloquejar interfície interruptor",
     "accessories.control.default_room": "Habitació per defecte",
@@ -92,7 +91,6 @@
     "child_bridge.message_wiki_link": "Obteniu més informació sobre els ponts fills",
     "child_bridge.toast_restart_requested": "S'ha sol·licitat la represa del pont fill.",
     "config.button_restore": "Restaurar",
-    "config.restore.button_remote_all_backups": "Eliminar totes les còpies de seguretat",
     "config.restore.message_copy_to_editor": "Copiar a l'editor",
     "config.restore.message_no_backups": "Sense còpies de seguretat",
     "config.restore.title_restore_homebridge_backup": "Restaurar còpia de seguretat de configuració de Homebridge",

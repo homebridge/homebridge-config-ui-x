@@ -1,7 +1,6 @@
 {
     "--language": "Slovenian, Słoweński",
     "accessories.button_add_room": "Dodaj sobo",
-    "accessories.button_create_room": "Ustvari sobo",
     "accessories.button_toggle_hidden": "Preklopi skrito",
     "accessories.button_toggle_layout_lock": "Zakleni postavitev",
     "accessories.control.default_room": "Privzeta soba",
@@ -92,7 +91,6 @@
     "child_bridge.message_wiki_link": "Preberite več o otroških mostovih",
     "child_bridge.toast_restart_requested": "Zahtevan je ponovni zagon otroškega mostu.",
     "config.button_restore": "Obnovi",
-    "config.restore.button_remote_all_backups": "Odstrani vse varnostne kopije",
     "config.restore.message_copy_to_editor": "Kopiraj v urejevalnik",
     "config.restore.message_no_backups": "Brez varnostnih kopij",
     "config.restore.title_restore_homebridge_backup": "Obnovi Homebridge Config Backup",

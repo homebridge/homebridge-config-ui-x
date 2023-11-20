@@ -1,7 +1,6 @@
 {
     "--language": "Japanese, Japoński",
     "accessories.button_add_room": "部屋を追加",
-    "accessories.button_create_room": "部屋を作成",
     "accessories.button_toggle_hidden": "表示・非表示",
     "accessories.button_toggle_layout_lock": "配置の固定・固定解除",
     "accessories.control.default_room": "デフォルトの部屋",
@@ -92,7 +91,6 @@
     "child_bridge.message_wiki_link": "Learn more about child bridges",
     "child_bridge.toast_restart_requested": "Child bridge restart requested.",
     "config.button_restore": "復元",
-    "config.restore.button_remote_all_backups": "全てのバックアップを削除",
     "config.restore.message_copy_to_editor": "エディタに複製",
     "config.restore.message_no_backups": "バックアップなし",
     "config.restore.title_restore_homebridge_backup": "Homebridgeコンフィグバックアップを復元",

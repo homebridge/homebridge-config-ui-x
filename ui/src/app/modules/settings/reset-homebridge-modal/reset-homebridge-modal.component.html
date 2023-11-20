@@ -15,9 +15,6 @@
       <li [translate]="'reset.message_your_homebridge_username_will_be_changed'">Your Homebridge username and pin will be changed.</li>
       <li><strong [innerHTML]="'reset.message_accessory_config_will_not_be_changed' | translate">The rest of your config will not be changed. If Homebridge is not starting due to a bad config a reset will not fix it.</strong></li>
     </ul>
-    <div class="text-center">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="onResetHomebridgeAccessoryClick()" [disabled]="clicked" [translate]="'reset.button_reset_homebridge_now'">Reset Homebridge Now</button>
-    </div>
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-left">

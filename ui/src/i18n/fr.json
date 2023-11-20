@@ -1,7 +1,6 @@
 {
     "--language": "French, Francuski",
     "accessories.button_add_room": "Ajouter une pièce",
-    "accessories.button_create_room": "Créer une pièce",
     "accessories.button_toggle_hidden": "Afficher / Masquer les accessoires masqués",
     "accessories.button_toggle_layout_lock": "Verrouiller / Déverrouiller la mise en page",
     "accessories.control.default_room": "Pièce par défaut",
@@ -92,7 +91,6 @@
     "child_bridge.message_wiki_link": "En savoir plus sur les Ponts secondaires",
     "child_bridge.toast_restart_requested": "Redémarrage du Pont secondaire en cours.",
     "config.button_restore": "Restaurer",
-    "config.restore.button_remote_all_backups": "Supprimer toutes les sauvegardes",
     "config.restore.message_copy_to_editor": "Copier dans l'éditeur",
     "config.restore.message_no_backups": "Aucune sauvegarde",
     "config.restore.title_restore_homebridge_backup": "Restaurer la configuration Homebridge sauvegardée",
