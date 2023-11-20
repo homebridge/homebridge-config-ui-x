@@ -98,8 +98,128 @@
 
 </header>
 
-<div class="container-fluid d-flex flex-col h-100 w-100">
-  <div class="w-100">
+<div class="container-fluid d-flex flex-col h-100 w-100 p-0">
+
+   <div class="sidebar show d-none d-lg-block p-0">
+    <div class="logo-details">
+      <img style="height:30px;" src="assets/homebridge-logo.svg" alt="logo">
+      <span class="logo_name">Homebridge</span>
+    </div>
+
+
+
+    <ul class="nav-links">
+      
+      <li>
+        <a href="#">
+          <i class='fa fa-house'></i>
+          <span class="link_name">Dashboard</span>
+        </a>
+        <ul class="sub-menu blank">
+          <li><a class="link_name" href="#">Dashboard</a></li>
+        </ul>
+      </li>
+
+      <li>
+        <a href="#">
+          <i class='fa fa-plug'></i>
+          <span class="link_name">Plugins</span>
+        </a>
+        <ul class="sub-menu blank">
+          <li><a class="link_name" href="#">Plugins</a></li>
+        </ul>
+      </li>
+
+      <li>
+        <a href="#">
+          <i class='fa fa-lightbulb'></i>
+          <span class="link_name">Accessories</span>
+        </a>
+        <ul class="sub-menu blank">
+          <li><a class="link_name" href="#">Accessories</a></li>
+        </ul>
+      </li>
+
+      <li>
+        <a href="#">
+          <i class='fa fa-timeline'></i>
+          <span class="link_name">Logs</span>
+        </a>
+        <ul class="sub-menu blank">
+          <li><a class="link_name" href="#">Logs</a></li>
+        </ul>
+      </li>
+
+      <li>
+        <a href="#">
+          <i class='fa fa-terminal'></i>
+          <span class="link_name">Terminal</span>
+        </a>
+        <ul class="sub-menu blank">
+          <li><a class="link_name" href="#">Terminal</a></li>
+        </ul>
+      </li>
+
+
+      <li class="li-link1">
+        <div class="iocn-link">
+          <a href="#">
+            <i class='fa fa-cog' ></i>
+            <span class="link_name">Settings</span>
+          </a>
+          <i class='fa fa-chevron-down arrow' data-bs-toggle="collapse"  data-bs-target=".li-link1" ></i>
+        </div>
+        <ul class="sub-menu">
+          <li><a class="link_name" href="#">Homebridge settings</a></li>
+          <li><a href="#">Homebridge settings</a></li>
+          <li><a href="#">UI Settings</a></li>
+          <li><a href="#">Backup</a></li>
+          <li><a href="#">Config</a></li>
+          <li><a href="#">Users</a></li>
+          
+        </ul>
+      </li>
+
+      <li class="li-link2">
+        <div class="iocn-link">
+          <a href="#">
+            <i class='fa fa-power-off' ></i>
+            <span class="link_name">Restart</span>
+          </a>
+          <i class='fa fa-chevron-down arrow' data-bs-toggle="collapse"  data-bs-target=".li-link2"></i>
+        </div>
+        <ul class="sub-menu">
+          <li><a class="link_name" href="#">Restart Homebridge</a></li>
+          <li><a href="#">Restart server</a></li>
+          <li><a href="#">Shutdown server</a></li>
+        </ul>
+      </li>
+
+      <li>
+        <div class="iocn-link">
+          <a href="#">
+            <i class='fa fa-right-from-bracket' ></i>
+            <span class="link_name">Logout<br><span class="text-secondary">admin</span></span>
+          </a>       
+        </div>
+        <ul class="sub-menu blank">
+          <li><a class="link_name" href="#">Logout - admin</a></li>
+        </ul>
+      </li>
+
+      <li>
+        <div class="iocn-link" style="position: fixed; bottom:0;">
+          <a href="#" data-bs-toggle="collapse"  data-bs-target=".sidebar,#chevron" aria-expanded="false" aria-controls=".sidebar">
+            <i id="chevron" class='fa fa-chevron-right' ></i>
+          </a>        
+        </div>
+      </li>
+
+    </ul>
+  </div>
+
+  
+  <div class="w-100 p-3">
     <router-outlet></router-outlet>
   </div>
 </div>
