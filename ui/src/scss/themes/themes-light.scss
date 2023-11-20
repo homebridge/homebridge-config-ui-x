@@ -24,6 +24,10 @@
       color: #333333;
     }
 
+    .sidebar .logo-details img {
+      filter: invert(1);
+    }
+
     .primary-text {
       color: $primary;
     }
