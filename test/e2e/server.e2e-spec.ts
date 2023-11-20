@@ -157,7 +157,7 @@ describe('ServerController (e2e)', () => {
     expect(res.statusCode).toBe(200);
   });
 
-  it('PUT /server/reset-cached-accessories (service mode disabed)', async () => {
+  it('PUT /server/reset-cached-accessories (service mode disabled)', async () => {
     // enable service mode
     configService.serviceMode = false;
 

@@ -389,7 +389,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Called when a other-form type is updated
+   * Called when an other-form type is updated
    */
   formUpdated(data) {
     this.iframe.contentWindow.postMessage({

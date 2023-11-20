@@ -4,7 +4,8 @@
       {{'plugins.settings.title_settings' | translate}}:
       {{ plugin.displayName || plugin.name }}
     </h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="activeModal.close()">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+      (click)="activeModal.close('Dismiss')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>

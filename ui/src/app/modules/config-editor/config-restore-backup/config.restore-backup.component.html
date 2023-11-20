@@ -3,7 +3,8 @@
     <h5 class="modal-title" [translate]="'config.restore.title_restore_homebridge_backup'">
       Restore Homebridge Config Backup
     </h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="activeModal.dismiss('Dismiss')">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+      (click)="activeModal.dismiss('Dismiss')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
@@ -35,7 +36,7 @@
     <div class="text-center"></div>
     <div class="text-right">
       <button *ngIf="!loading && backupList.length" type="button" class="btn btn-danger mr-auto" (click)="deleteAllBackups()">
-        {{ 'config.restore.button_remote_all_backups' | translate }}
+        {{ 'form.button_remove' | translate }}
       </button>
     </div>
   </div>

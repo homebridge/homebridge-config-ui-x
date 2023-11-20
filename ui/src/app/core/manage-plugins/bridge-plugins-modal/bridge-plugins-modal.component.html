@@ -4,7 +4,8 @@
       {{ 'child_bridge.label_bridge_settings' | translate }}:
       {{ plugin.displayName || plugin.name }}
     </h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="activeModal.close('Dismiss')">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+      (click)="activeModal.close('Dismiss')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
@@ -103,9 +104,9 @@
     </div>
     <div class="d-none d-lg-block text-center" *ngIf="configBlocks.length">
       <a *ngIf="plugin.links.npm" [href]="plugin.links.npm" target="_blank" rel="noopener noreferrer"
-        class="pr-3 manage-plugin-config-external-icons dark-mode-highlight"><i class="fab fa-fw fa-npm"></i></a>
+         class="pr-3 manage-plugin-config-external-icons dark-mode-highlight"><i class="fab fa-fw fa-npm"></i></a>
       <a *ngIf="plugin.links.homepage" [href]="plugin.links.homepage" target="_blank" rel="noopener noreferrer"
-        class="manage-plugin-config-external-icons dark-mode-highlight">
+         class="manage-plugin-config-external-icons dark-mode-highlight">
         <i [ngClass]="plugin.links.homepage | externalLinkIcon"></i>
       </a>
     </div>

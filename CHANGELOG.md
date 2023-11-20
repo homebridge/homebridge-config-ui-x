@@ -7,6 +7,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 ### UI Changes
 
 - Add Child Bridge Pin Code (#1739)
+- standardise modal footers (#1753)
 
 ### Translation Changes
 
@@ -19,6 +20,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - update github release workflow (#1746)
 - ui lint sort imports and exports (#1750)
 - update lang sync - remove old translations (#1751)
+- various code improvements + simplifications (#1754)
 
 ## 4.52.3 (2023-11-14)
 

@@ -54,7 +54,7 @@ export class WeatherWidgetComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Get the current weather forcast from OpenWeatherMap
+   * Get the current weather forecast from OpenWeatherMap
    * Cache for 20 minutes to prevent repeat requests
    */
   getCurrentWeather() {

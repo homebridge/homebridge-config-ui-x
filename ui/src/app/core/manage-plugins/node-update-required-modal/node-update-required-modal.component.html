@@ -1,7 +1,8 @@
 <div class="modal-content" style="min-height: 300px;">
   <div class="modal-header">
     <h5 class="modal-title">{{'plugins.node_update.title' | translate}}</h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="activeModal.dismiss('Dismiss')">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+      (click)="activeModal.dismiss('Dismiss')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
@@ -53,7 +54,6 @@
     </div>
 
   </div>
-
   <div class="modal-footer justify-content-between">
     <div class="text-left">
       <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')" *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)">
