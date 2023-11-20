@@ -47,7 +47,7 @@ export class UsersSetup2faComponent implements OnInit {
       err => {
         this.activeModal.dismiss();
         this.toastr.error(
-          err.error.message || 'An error occured while attempting to setup 2FA',
+          err.error.message || 'An error occurred while attempting to setup 2FA',
           this.translate.instant('toast.title_error'),
         );
       },
@@ -70,7 +70,7 @@ export class UsersSetup2faComponent implements OnInit {
         this.activeModal.close();
       },
       err => {
-        this.toastr.error(err.error.message || 'An error occured', this.translate.instant('toast.title_error'));
+        this.toastr.error(err.error.message || 'An error occurred', this.translate.instant('toast.title_error'));
       },
     );
   }

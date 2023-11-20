@@ -26,7 +26,6 @@ export class PluginsComponent implements OnInit, OnDestroy {
   });
 
   public loading = true;
-  public searchQuery: string;
   private navigationSubscription;
 
   constructor(

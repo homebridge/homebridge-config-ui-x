@@ -33,7 +33,7 @@ export class WsService {
       const io: IoNamespace = this.namespaceConnectionCache[namespace];
       io.connected = new Subject();
 
-      // broadcast to sbuscribers that the connection is ready
+      // broadcast to subscribers that the connection is ready
       setTimeout(() => {
         if (io.socket.connected) {
           io.connected.next(undefined);
@@ -58,7 +58,7 @@ export class WsService {
       const io = this.establishConnectionToNamespace(namespace);
       io.connected = new Subject();
 
-      // wait for the connection and broadcase when ready
+      // wait for the connection and broadcast when ready
       io.socket.on('connect', () => {
         io.connected.next(undefined);
       });

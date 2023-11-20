@@ -30,7 +30,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     automaticLayout: true,
   };
 
-  private editorDecoractions = [];
+  private editorDecorations = [];
   public monacoEditorModel: NgxEditorModel;
 
   private lastHeight: number;
@@ -72,7 +72,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       uri: window['monaco'] ? window['monaco'].Uri.parse('a://homebridge/config.json') : undefined,
     };
 
-    //  if monaco is not loaded yet, wait for it, otherwise setup the editor now
+    //  if monaco is not loaded yet, wait for it, otherwise set up the editor now
     if (!window['monaco']) {
       this.$monacoEditor.readyEvent.subscribe({
         next: () => {
@@ -109,7 +109,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
     // hide decorations
     if (this.monacoEditor) {
-      this.editorDecoractions = this.monacoEditor.deltaDecorations(this.editorDecoractions, []);
+      this.editorDecorations = this.monacoEditor.deltaDecorations(this.editorDecorations, []);
     }
 
     this.saveInProgress = true;
@@ -239,7 +239,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
             // update the editor
             if (this.monacoEditor && window['editor'].modifiedEditor) {
               // remove all decorations
-              this.editorDecoractions = this.monacoEditor.deltaDecorations(this.editorDecoractions, []);
+              this.editorDecorations = this.monacoEditor.deltaDecorations(this.editorDecorations, []);
 
               // remove existing config
               this.monacoEditor.executeEdits('beautifier', [
@@ -344,7 +344,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
           matchRange.endColumn,
         );
 
-        this.editorDecoractions = this.monacoEditor.deltaDecorations(this.editorDecoractions, [
+        this.editorDecorations = this.monacoEditor.deltaDecorations(this.editorDecorations, [
           { range, options: { isWholeLine: true, linesDecorationsClassName: 'hb-monaco-editor-line-error' } },
         ]);
       }
@@ -352,7 +352,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Setup a json schema object used to check the config against
+   * Set up a json schema object used to check the config against
    */
   setMonacoEditorModel() {
     if (window['monaco'].languages.json.jsonDefaults.diagnosticsOptions.schemas.some(x => x.uri === 'http://homebridge/config.json')) {
@@ -483,7 +483,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
               platforms: {
                 type: 'array',
                 description: 'Plugins that expose a "Platform" should have there config entered in this array.' +
-                  '\nSeperate each plugin config block using a comma.',
+                  '\nSeparate each plugin config block using a comma.',
                 items: {
                   type: 'object',
                   required: ['platform'],
@@ -525,7 +525,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
               accessories: {
                 type: 'array',
                 description: 'Plugins that expose a "Accessory" should have there config entered in this array.' +
-                  '\nSeperate each plugin config block using a comma.',
+                  '\nSeparate each plugin config block using a comma.',
                 items: {
                   type: 'object',
                   required: ['accessory', 'name'],

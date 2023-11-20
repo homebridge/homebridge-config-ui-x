@@ -385,7 +385,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Called when a other-form type is updated
+   * Called when an other-form type is updated
    */
   formUpdated(data) {
     this.iframe.contentWindow.postMessage({
@@ -408,7 +408,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   /**
    * Fired when a custom form is cancelled or submitted
    *
-   * @param action
+   * @param formEvent
    */
   formActionEvent(formEvent: 'cancel' | 'submit') {
     this.iframe.contentWindow.postMessage({

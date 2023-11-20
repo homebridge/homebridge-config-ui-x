@@ -34,7 +34,7 @@ body:
       description: |
         Please provide the relevant logs showing the error that occurred.
 
-        * Keep this short. Do not paste in hundereds of lines repeating the same error.
+        * Keep this short. Do not paste in hundreds of lines repeating the same error.
         * Show the logs from the service being restarted until the error occurs.
     validations:
       required: false
@@ -91,7 +91,7 @@ body:
     validations:
       required: true
   - type: checkboxes
-    id: 
+    id:
     attributes:
       label: Environment Info
       options:

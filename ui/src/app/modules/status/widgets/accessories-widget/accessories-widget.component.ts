@@ -56,7 +56,7 @@ export class AccessoriesWidgetComponent implements OnInit, OnDestroy {
     // start the accessory service
     await this.$accessories.start();
 
-    // subscrive to layout events
+    // subscribe to layout events
     this.layoutSubscription = this.$accessories.layoutSaved.subscribe({
       next: () => {
         this.getDashboardAccessories();
