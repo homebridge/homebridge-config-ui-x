@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-
 const path = require('path');
 const webpack = require('webpack');
 const packageJson = require('./package.json');
