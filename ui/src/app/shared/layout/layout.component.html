@@ -1,6 +1,5 @@
 <!--Main Navigation-->
 <header *ngIf="$settings.theme && $auth.user">
-
   <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary scrolling-navbar d-lg-none">
     <a class="navbar-brand" routerLink="/">
       <img class="menu-logo" src="/assets/homebridge-logo.svg" />
@@ -28,7 +27,6 @@
           <a class="nav-link" routerLink="/accessories" [translate]="'menu.label_accessories'">Accessories</a>
         </li>
       </ul>
-
       <ul class="navbar-nav nav-flex-icons hb-nav-right">
         <li class="nav-item mr-3" *ngIf="rPiWasUnderVoltage || rPiCurrentlyUnderVoltage">
           <a href="javascript:void(0)" class="nav-link dropdown-toggle waves-effect waves-light"
@@ -40,7 +38,6 @@
               [ngClass]="{ 'fa-beat': rPiCurrentlyUnderVoltage }"></i>
           </a>
         </li>
-
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" placement="bottom"
           ngbTooltip="{{'menu.tooltip_view_logs' | translate}}" container="body">
           <a class="nav-link" routerLink="/logs" aria-label="View Homebridge Logs">
@@ -53,7 +50,6 @@
             <i #restartHomebridgeIcon class="fas fa-fw fa-power-off nav-menu-icon"></i>
           </a>
         </li>
-
         <li class="nav-item dropdown">
           <a href="javascript:void(0)" class="nav-link dropdown-toggle waves-effect waves-light" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false" aria-label="more actions dropdown menu">
@@ -91,25 +87,17 @@
             </a>
           </div>
         </li>
-
       </ul>
     </div>
   </nav>
-
 </header>
-
 <div class="container-fluid d-flex flex-col h-100 w-100 p-0">
-
    <div class="sidebar show d-none d-lg-block p-0">
     <div class="logo-details">
       <img style="height:30px;" src="assets/homebridge-logo.svg" alt="logo">
       <span class="logo_name">Homebridge</span>
     </div>
-
-
-
     <ul class="nav-links">
-      
       <li>
         <a href="#">
           <i class='fa fa-house'></i>
@@ -119,7 +107,6 @@
           <li><a class="link_name" href="#">Dashboard</a></li>
         </ul>
       </li>
-
       <li>
         <a href="#">
           <i class='fa fa-plug'></i>
@@ -129,7 +116,6 @@
           <li><a class="link_name" href="#">Plugins</a></li>
         </ul>
       </li>
-
       <li>
         <a href="#">
           <i class='fa fa-lightbulb'></i>
@@ -139,7 +125,6 @@
           <li><a class="link_name" href="#">Accessories</a></li>
         </ul>
       </li>
-
       <li>
         <a href="#">
           <i class='fa fa-timeline'></i>
@@ -149,7 +134,6 @@
           <li><a class="link_name" href="#">Logs</a></li>
         </ul>
       </li>
-
       <li>
         <a href="#">
           <i class='fa fa-terminal'></i>
@@ -159,8 +143,6 @@
           <li><a class="link_name" href="#">Terminal</a></li>
         </ul>
       </li>
-
-
       <li class="li-link1">
         <div class="iocn-link">
           <a href="#">
@@ -176,10 +158,8 @@
           <li><a href="#">Backup</a></li>
           <li><a href="#">Config</a></li>
           <li><a href="#">Users</a></li>
-          
         </ul>
       </li>
-
       <li class="li-link2">
         <div class="iocn-link">
           <a href="#">
@@ -194,7 +174,6 @@
           <li><a href="#">Shutdown server</a></li>
         </ul>
       </li>
-
       <li>
         <div class="iocn-link">
           <a href="#">
@@ -206,7 +185,6 @@
           <li><a class="link_name" href="#">Logout - admin</a></li>
         </ul>
       </li>
-
       <li>
         <div class="iocn-link" style="position: fixed; bottom:0;">
           <a href="#" data-toggle="collapse"  data-target=".sidebar,#chevron" aria-expanded="false" aria-controls=".sidebar">
@@ -214,11 +192,8 @@
           </a>        
         </div>
       </li>
-
     </ul>
   </div>
-
-  
   <div class="w-100 p-3">
     <router-outlet></router-outlet>
   </div>
