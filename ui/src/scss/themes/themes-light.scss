@@ -6,6 +6,24 @@
       background-color: $primary-dark !important;
     }
 
+    .sidebar {
+      background-color: #ffffff;
+    }
+
+    .sidebar .nav-links li:hover,
+    .sidebar .nav-links li .sub-menu,
+    .li-link1.show, .li-link2.show {
+      background: #cccccc;
+    }
+    
+    .sidebar .logo-details i, .sidebar .logo-details img,
+    .sidebar .logo-details .logo_name,
+    .sidebar .nav-links li i,
+    .sidebar .nav-links li a .link_name,
+    .sidebar .nav-links li .sub-menu a {
+      color: #333333;
+    }
+
     .primary-text {
       color: $primary;
     }
