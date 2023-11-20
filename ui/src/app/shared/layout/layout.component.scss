@@ -3,10 +3,6 @@
     padding-top: 0px !important;
 }
 
-
-
-
-
 /* MOBILE NAVBAR */
 
 .navbar-toggler {
@@ -48,7 +44,6 @@
     margin-top: 0px;
 }
 
-
 /* State when the navbar is collapsed */
 
 .navbar-toggler.collapsed .top-bar {
@@ -87,7 +82,6 @@
   top: inherit;
   transform: rotate(-135deg);
 }
-
 
 /* SIDEBAR NAVBAR */
 
@@ -210,9 +204,11 @@
   opacity: 0.6;
   transition: all 0.3s ease;
 }
+  
 .sidebar .nav-links li .sub-menu a:hover{
   opacity: 1;
 }
+  
 .sidebar.show .nav-links li .sub-menu{
   position: absolute;
   left: 100%;
@@ -225,20 +221,24 @@
   pointer-events: none;
   transition: 0s;
 }
+  
 .sidebar.show .nav-links li:hover .sub-menu{
   top: 0;
   opacity: 1;
   pointer-events: auto;
   transition: all 0.4s ease;
 }
+  
 .sidebar .nav-links li .sub-menu .link_name{
   display: none;
 }
+  
 .sidebar.show .nav-links li .sub-menu .link_name{
   font-size: 18px;
   opacity: 1;
   display: block;
 }
+  
 .sidebar .nav-links li .sub-menu.blank{
   opacity: 1;
   pointer-events: auto;
@@ -246,6 +246,7 @@
   opacity: 0;
   pointer-events: none;
 }
+  
 .sidebar .nav-links li:hover .sub-menu.blank{
   top: 50%;
   transform: translateY(-50%);
@@ -254,7 +255,7 @@
 .li-link1.show, .li-link2.show {
   background: #333333;
   transition: 0s;
-  }
+}
 
 .li-link1, .li-link2 {
   display: block !important;
@@ -263,6 +264,7 @@
 #chevron {
   display: inline;
 }
+  
 #chevron.show {
   transform: rotate(-180deg);
 }
@@ -273,13 +275,7 @@
   display: none;
 }
 
-
-
-
-
-
-
-
+/* ELSE */
 
 .menu-logo {
   margin-right: 10px;
