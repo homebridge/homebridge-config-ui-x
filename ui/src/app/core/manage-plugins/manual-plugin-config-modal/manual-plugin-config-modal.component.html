@@ -63,27 +63,23 @@
     </ngb-accordion>
   </div>
   <div class="modal-footer justify-content-between">
-    <div style="min-width: 25%;" class="text-left">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.close()"
-              [translate]="'form.button_close'">Close</button>
+    <div class="text-left">
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.close()">
+        {{ 'form.button_close' | translate }}
+      </button>
     </div>
-
-    <div style="min-width: 25%;" class="d-none d-lg-inline text-center">
+    <div class="d-none d-lg-block text-center">
       <a *ngIf="plugin.links.npm" [href]="plugin.links.npm" target="_blank" rel="noopener noreferrer"
-        class="pr-3 manage-plugin-config-external-icons dark-mode-highlight"><i class="fab fa-fw fa-npm"></i></a>
+         class="pr-3 manage-plugin-config-external-icons dark-mode-highlight"><i class="fab fa-fw fa-npm"></i></a>
       <a *ngIf="plugin.links.homepage" [href]="plugin.links.homepage" target="_blank" rel="noopener noreferrer"
-        class="manage-plugin-config-external-icons dark-mode-highlight">
+         class="manage-plugin-config-external-icons dark-mode-highlight">
         <i [ngClass]="plugin.links.homepage | externalLinkIcon"></i></a>
     </div>
-
-    <div style="min-width: 25%;" class="text-right">
-      <button type="button" class="btn btn-elegant mr-auto" data-dismiss="modal" (click)="addBlock()"
-              *ngIf="canConfigure">
+    <div class="text-right">
+      <button type="button" class="btn btn-elegant mr-auto" data-dismiss="modal" (click)="addBlock()" *ngIf="canConfigure">
         Add {{ pluginType }}
       </button>
-
-      <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="save()" [disabled]="saveInProgress"
-        *ngIf="canConfigure">
+      <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="save()" [disabled]="saveInProgress" *ngIf="canConfigure">
         {{ 'form.button_save' | translate }} <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
       </button>
     </div>
