@@ -15,16 +15,13 @@
       <ul class="navbar-nav mr-auto">
         <li class="nav-item waves-effect waves-light" routerLinkActive="active"
           [routerLinkActiveOptions]="{exact: true}">
-          <a class="nav-link" routerLink="/" [translate]="'menu.label_status'"
-            data-toggle="collapse" data-target=".navbar-toggler">Status</a>
+          <a class="nav-link" routerLink="/" [translate]="'menu.label_status'">Status</a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
-          <a class="nav-link" routerLink="/plugins" [translate]="'menu.label_plugins'"
-            data-toggle="collapse" data-target=".navbar-toggler">Plugins</a>
+          <a class="nav-link" routerLink="/plugins" [translate]="'menu.label_plugins'">Plugins</a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
-          <a class="nav-link" routerLink="/config" [translate]="'menu.label_config'"
-            data-toggle="collapse" data-target=".navbar-toggler">Config</a>
+          <a class="nav-link" routerLink="/config" [translate]="'menu.label_config'">Config</a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$settings.env.enableAccessories">
           <a class="nav-link" routerLink="/accessories" [translate]="'menu.label_accessories'">Accessories</a>
