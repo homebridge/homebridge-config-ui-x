@@ -29,10 +29,10 @@
             data-toggle="collapse" data-target=".navbar-collapse.show">
             <i class="fa fa-lightbulb pr-2"></i>Accessories</a>
         </li>
-        <li class="nav-item waves-effect waves-light" routerLinkActive="active" >
+        <li class="nav-item waves-effect waves-light" routerLinkActive="active">
           <a class="nav-link" routerLink="/logs" [translate]="'menu.linux.label_logs'"
             data-toggle="collapse" data-target=".navbar-collapse.show">
-            <i class="fa fa-timeline pr-2"></i>Logs</a>
+            <i class="fa fa-code pr-2"></i>Logs</a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$settings.env.enableTerminalAccess && $auth.user.admin">
           <a class="nav-link" routerLink="/platform-tools/terminal" [translate]="'menu.linux.label_terminal'"
@@ -175,7 +175,7 @@
       </li>
       <li>
         <a href="#">
-          <i class="fa fa-timeline"></i>
+          <i class="fa fa-code"></i>
           <span class="link_name">Logs</span>
         </a>
         <ul class="sub-menu blank">
