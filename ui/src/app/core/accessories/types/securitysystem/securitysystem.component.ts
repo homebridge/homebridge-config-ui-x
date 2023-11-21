@@ -13,10 +13,9 @@ export class SecuritysystemComponent implements OnInit {
 
   constructor(
     private modalService: NgbModal,
-  ) { }
+  ) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   onClick() {
     const ref = this.modalService.open(SecuritysystemManageComponent, {
@@ -24,5 +23,4 @@ export class SecuritysystemComponent implements OnInit {
     });
     ref.componentInstance.service = this.service;
   }
-
 }

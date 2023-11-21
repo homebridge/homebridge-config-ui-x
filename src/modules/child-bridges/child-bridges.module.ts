@@ -21,6 +21,6 @@ import { ChildBridgesService } from './child-bridges.service';
   ],
   exports: [
     ChildBridgesService,
-  ]
+  ],
 })
-export class ChildBridgesModule { }
+export class ChildBridgesModule {}

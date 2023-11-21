@@ -18,7 +18,7 @@ export class UnpairAccessoryModalComponent implements OnInit {
     public toastr: ToastrService,
     private translate: TranslateService,
     private $api: ApiService,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.loadPairings();
@@ -27,6 +27,7 @@ export class UnpairAccessoryModalComponent implements OnInit {
   async loadPairings() {
     try {
       this.pairings = (await this.$api.get('/server/pairings').toPromise())
+        // eslint-disable-next-line no-underscore-dangle
         .sort((a, b) => b._main ? 1 : -1);
     } catch (e) {
       this.toastr.error('Paired accessories could not be loaded.', this.translate.instant('toast.title_error'));
@@ -58,5 +59,4 @@ export class UnpairAccessoryModalComponent implements OnInit {
       },
     );
   }
-
 }

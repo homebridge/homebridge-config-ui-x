@@ -9,13 +9,11 @@ import { ServiceTypeX } from '../../accessories.interfaces';
 export class LockmechanismComponent implements OnInit {
   @Input() public service: ServiceTypeX;
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   onClick() {
     this.service.getCharacteristic('LockTargetState').setValue(this.service.values.LockTargetState ? 0 : 1);
   }
-
 }

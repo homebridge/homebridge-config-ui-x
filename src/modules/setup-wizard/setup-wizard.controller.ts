@@ -3,7 +3,7 @@ import {
   Controller,
   Get,
   Post,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthService } from '../../core/auth/auth.service';
@@ -16,7 +16,7 @@ import { SetupWizardGuard } from './setup-wizard.guard';
 export class SetupWizardController {
   constructor(
     private authService: AuthService,
-  ) { }
+  ) {}
 
   @Post('/create-first-user')
   @ApiOperation({

@@ -18,11 +18,7 @@ export class LongClickDirective implements OnDestroy {
   private downTimeout;
   private done = false;
 
-  constructor() { }
-
-  ngOnDestroy() {
-    clearInterval(this.downTimeout);
-  }
+  constructor() {}
 
   @HostListener('keyup.enter', ['$event'])
   public onEnter(event: KeyboardEvent) {
@@ -67,6 +63,10 @@ export class LongClickDirective implements OnDestroy {
   @HostListener('touchmove', ['$event'])
   public onMouseMove(event: MouseEvent): void {
     this.done = true;
+    clearInterval(this.downTimeout);
+  }
+
+  ngOnDestroy() {
     clearInterval(this.downTimeout);
   }
 }

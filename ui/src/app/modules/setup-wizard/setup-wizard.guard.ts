@@ -14,7 +14,7 @@ export class SetupWizardGuard implements CanActivate {
   constructor(
     private $router: Router,
     private $settings: SettingsService,
-  ) { }
+  ) {}
 
   async canActivate(
     route: ActivatedRouteSnapshot,
@@ -32,5 +32,4 @@ export class SetupWizardGuard implements CanActivate {
 
     return true;
   }
-
 }

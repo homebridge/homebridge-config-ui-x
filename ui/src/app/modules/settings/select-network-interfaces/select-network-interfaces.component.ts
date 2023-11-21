@@ -12,15 +12,13 @@ export class SelectNetworkInterfacesComponent implements OnInit {
 
   constructor(
     public activeModal: NgbActiveModal,
-  ) { }
+  ) {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   submit() {
     this.activeModal.close(
       this.availableNetworkAdapters.filter(x => x.selected).map(x => x.iface),
     );
   }
-
 }

@@ -15,7 +15,7 @@ export class RtlDirective implements OnInit {
   constructor(
     private $settings: SettingsService,
     private el: ElementRef,
-  ) { }
+  ) {}
 
   ngOnInit() {
     if (this.$settings.rtl) {
@@ -27,5 +27,4 @@ export class RtlDirective implements OnInit {
       }
     }
   }
-
 }

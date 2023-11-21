@@ -12,4 +12,4 @@ import { TerminalModule } from './terminal/terminal.module';
     HbServiceModule,
   ],
 })
-export class PlatformToolsModule { }
+export class PlatformToolsModule {}

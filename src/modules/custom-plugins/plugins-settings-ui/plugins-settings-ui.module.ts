@@ -22,4 +22,4 @@ import { PluginsSettingsUiService } from './plugins-settings-ui.service';
     PluginsSettingsUiController,
   ],
 })
-export class PluginsSettingsUiModule { }
+export class PluginsSettingsUiModule {}

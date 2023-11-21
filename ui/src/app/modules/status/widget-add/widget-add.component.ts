@@ -15,6 +15,8 @@ export class WidgetAddComponent implements OnInit {
   @Input() unlockLayout: () => void;
   @Input() public isLayoutUnlocked: boolean;
 
+  public availableWidgets = [];
+
   private allWidgets = [
     {
       name: this.translate.instant('status.widget.add.label_homebridge_status'),
@@ -126,13 +128,11 @@ export class WidgetAddComponent implements OnInit {
     },
   ];
 
-  public availableWidgets = [];
-
   constructor(
     public activeModal: NgbActiveModal,
     private translate: TranslateService,
     private $settings: SettingsService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.availableWidgets = this.allWidgets.filter(x => !this.dashboard.some(i => i.component === x.component) && !x.hidden);
@@ -156,5 +156,4 @@ export class WidgetAddComponent implements OnInit {
     this.unlockLayout();
     this.activeModal.dismiss();
   }
-
 }

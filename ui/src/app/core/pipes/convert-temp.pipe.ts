@@ -5,7 +5,7 @@ import { SettingsService } from '@/app/core/settings.service';
 export class ConvertTempPipe implements PipeTransform {
   constructor(
     private $settings: SettingsService,
-  ) { }
+  ) {}
 
   transform(value: number, unit: 'c' | 'f' = this.$settings.env.temperatureUnits): number {
     if (unit === 'f') {

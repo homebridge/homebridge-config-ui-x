@@ -18,4 +18,4 @@ import { LinuxService } from './linux.service';
     LinuxController,
   ],
 })
-export class LinuxModule { }
+export class LinuxModule {}

@@ -21,17 +21,17 @@ export class WeatherWidgetComponent implements OnInit, OnDestroy {
   @Input() widget;
   @Input() configureEvent: Subject<any>;
 
+  public currentWeather;
+
   private io = this.$ws.getExistingNamespace('status');
   private intervalSubscription: Subscription;
-
-  public currentWeather;
 
   constructor(
     private $ws: WsService,
     public $auth: AuthService,
     private $http: HttpClient,
     private $translate: TranslateService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.io.connected.subscribe(async () => {
@@ -70,7 +70,7 @@ export class WeatherWidgetComponent implements OnInit, OnDestroy {
           return;
         }
       }
-    } catch (e) { }
+    } catch (e) {}
 
     this.$http.get('https://api.openweathermap.org/data/2.5/weather', {
       params: new HttpParams({
@@ -135,5 +135,4 @@ export class WeatherWidgetComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.intervalSubscription.unsubscribe();
   }
-
 }

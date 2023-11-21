@@ -2,8 +2,8 @@ import { HomebridgeServiceHelper } from './hb-service';
 
 export class BasePlatform {
   constructor(
-    public hbService: HomebridgeServiceHelper
-  ) { }
+    public hbService: HomebridgeServiceHelper,
+  ) {}
 
   public async install(): Promise<void> {
     this.hbService.logger('This command has not been implemented on this platform.', 'fail');

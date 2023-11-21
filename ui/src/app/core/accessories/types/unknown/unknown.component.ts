@@ -9,9 +9,8 @@ import { ServiceTypeX } from '../../accessories.interfaces';
 export class UnknownComponent implements OnInit {
   @Input() public service: ServiceTypeX;
 
-  constructor() { }
+  constructor() {}
 
   ngOnInit() {
   }
-
 }

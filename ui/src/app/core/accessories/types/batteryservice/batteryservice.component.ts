@@ -9,8 +9,7 @@ import { ServiceTypeX } from '../../accessories.interfaces';
 export class BatteryserviceComponent implements OnInit {
   @Input() public service: ServiceTypeX;
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 }

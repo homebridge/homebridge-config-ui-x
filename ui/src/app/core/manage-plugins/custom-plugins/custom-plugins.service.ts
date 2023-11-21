@@ -16,7 +16,7 @@ export class CustomPluginsService {
   constructor(
     private modalService: NgbModal,
     private $api: ApiService,
-  ) { }
+  ) {}
 
   async openSettings(plugin, schema) {
     const pluginConfig = await this.loadPluginConfig(plugin.name);

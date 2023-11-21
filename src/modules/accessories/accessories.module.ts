@@ -23,4 +23,4 @@ import { AccessoriesService } from './accessories.service';
     AccessoriesController,
   ],
 })
-export class AccessoriesModule { }
+export class AccessoriesModule {}

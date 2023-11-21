@@ -12,13 +12,9 @@ import { InfoModalComponent } from './info-modal/info-modal.component';
   providedIn: 'root',
 })
 export class AccessoriesService {
-  private io: IoNamespace;
-
   public layoutSaved = new Subject();
   public accessoryData = new Subject();
-
   public readyForControl = false;
-
   public accessoryLayout: {
     name: string; services: Array<{
       aid: number;
@@ -29,10 +25,11 @@ export class AccessoriesService {
       onDashboard?: boolean;
     }>;
   }[];
+
   public accessories: { services: ServiceType[] } = { services: [] };
   public rooms: Array<{ name: string; services: ServiceTypeX[] }> = [];
+  private io: IoNamespace;
   private roomsOrdered = false;
-
   private hiddenTypes = [
     'InputSource',
     'CameraRTPStreamManagement',
@@ -44,7 +41,35 @@ export class AccessoriesService {
     public $toastr: ToastrService,
     private $ws: WsService,
     public $auth: AuthService,
-  ) { }
+  ) {}
+
+  /**
+   *
+   */
+  showAccessoryInformation(service) {
+    const ref = this.modalService.open(InfoModalComponent, {
+      size: 'lg',
+    });
+
+    ref.componentInstance.service = service;
+
+    ref.result
+      .then(() => this.saveLayout())
+      .catch(() => this.saveLayout());
+
+    return false;
+  }
+
+  /**
+   * Stop the accessory control session
+   */
+  public stop() {
+    this.io.end();
+    this.rooms = [];
+    this.accessories = { services: [] };
+    this.roomsOrdered = false;
+    delete this.accessoryLayout;
+  }
 
   /**
    * Start the accessory control session
@@ -102,6 +127,32 @@ export class AccessoriesService {
       console.log('ready for control');
       this.readyForControl = true;
     });
+  }
+
+  /**
+   * Save the room layout
+   */
+  public saveLayout() {
+    // generate layout schema to save to disk
+    this.accessoryLayout = this.rooms.map((room) => ({
+      name: room.name,
+      services: room.services.map((service) => ({
+        uniqueId: service.uniqueId,
+        aid: service.aid,
+        iid: service.iid,
+        uuid: service.uuid,
+        customName: service.customName || undefined,
+        hidden: service.hidden || undefined,
+        onDashboard: service.onDashboard || undefined,
+      })),
+    })).filter(room => room.services.length);
+
+    // send update request to server
+    this.io.request('save-layout', { user: this.$auth.user.username, layout: this.accessoryLayout })
+      .subscribe(
+        () => this.layoutSaved.next(undefined),
+        err => this.$toastr.error(err.message, 'Failed to save page layout'),
+      );
   }
 
   /**
@@ -228,32 +279,6 @@ export class AccessoriesService {
   }
 
   /**
-   * Save the room layout
-   */
-  public saveLayout() {
-    // generate layout schema to save to disk
-    this.accessoryLayout = this.rooms.map((room) => ({
-      name: room.name,
-      services: room.services.map((service) => ({
-        uniqueId: service.uniqueId,
-        aid: service.aid,
-        iid: service.iid,
-        uuid: service.uuid,
-        customName: service.customName || undefined,
-        hidden: service.hidden || undefined,
-        onDashboard: service.onDashboard || undefined,
-      })),
-    })).filter(room => room.services.length);
-
-    // send update request to server
-    this.io.request('save-layout', { user: this.$auth.user.username, layout: this.accessoryLayout })
-      .subscribe(
-        () => this.layoutSaved.next(undefined),
-        err => this.$toastr.error(err.message, 'Failed to save page layout'),
-      );
-  }
-
-  /**
    * Generate helpers for accessory control
    */
   private generateHelpers() {
@@ -289,33 +314,4 @@ export class AccessoriesService {
       }
     });
   }
-
-  /**
-   *
-   */
-  showAccessoryInformation(service) {
-    const ref = this.modalService.open(InfoModalComponent, {
-      size: 'lg',
-    });
-
-    ref.componentInstance.service = service;
-
-    ref.result
-      .then(() => this.saveLayout())
-      .catch(() => this.saveLayout());
-
-    return false;
-  }
-
-  /**
-   * Stop the accessory control session
-   */
-  public stop() {
-    this.io.end();
-    this.rooms = [];
-    this.accessories = { services: [] };
-    this.roomsOrdered = false;
-    delete this.accessoryLayout;
-  }
-
 }

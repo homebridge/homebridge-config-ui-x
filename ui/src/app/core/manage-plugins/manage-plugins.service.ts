@@ -24,7 +24,7 @@ export class ManagePluginsService {
     private $settings: SettingsService,
     private $api: ApiService,
     private $toastr: ToastrService,
-  ) { }
+  ) {}
 
   installPlugin(pluginName: string, targetVersion = 'latest') {
     const ref = this.modalService.open(ManagePluginsModalComponent, {
@@ -91,7 +91,7 @@ export class ManagePluginsService {
     try {
       const targetVersion = await ref.result;
       return plugin.installedVersion && plugin.name !== 'homebridge' ?
-        this.updatePlugin(plugin, targetVersion) :
+        await this.updatePlugin(plugin, targetVersion) :
         this.installPlugin(plugin.name, targetVersion);
     } catch (e) {
       // do nothing
@@ -211,5 +211,4 @@ export class ManagePluginsService {
       return true;
     }
   }
-
 }

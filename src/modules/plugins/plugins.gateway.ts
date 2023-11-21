@@ -11,8 +11,8 @@ import { PluginsService } from './plugins.service';
 @WebSocketGateway({
   namespace: '/plugins', allowEIO3: true, cors: {
     origin: ['http://localhost:8080', 'http://localhost:4200'],
-    credentials: true
-  }
+    credentials: true,
+  },
 })
 @UsePipes(new ValidationPipe({
   whitelist: true,
@@ -26,7 +26,7 @@ export class PluginsGateway {
   constructor(
     private pluginsService: PluginsService,
     private logger: Logger,
-  ) { }
+  ) {}
 
   @SubscribeMessage('install')
   async installPlugin(client: EventEmitter, pluginAction: PluginActionDto) {

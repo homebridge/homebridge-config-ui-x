@@ -12,7 +12,7 @@ export class StatusController {
   constructor(
     private readonly statusService: StatusService,
     private readonly childBridgesService: ChildBridgesService,
-  ) { }
+  ) {}
 
   @ApiOperation({ summary: 'Return the current CPU load, load history and temperature (if available).' })
   @Get('/cpu')
@@ -40,7 +40,7 @@ export class StatusController {
 
   @ApiOperation({
     summary: 'Return the current Homebridge status.',
-    description: 'Possible Homebridge statuses are `up`, `pending` or `down`.'
+    description: 'Possible Homebridge statuses are `up`, `pending` or `down`.',
   })
   @Get('/homebridge')
   async checkHomebridgeStatus() {
@@ -51,7 +51,7 @@ export class StatusController {
 
   @ApiOperation({
     summary: 'Return an array of the active child bridges and their status.',
-    description: 'This method is only available when running `hb-service`.'
+    description: 'This method is only available when running `hb-service`.',
   })
   @Get('/homebridge/child-bridges')
   async getChildBridges() {

@@ -33,24 +33,24 @@ export class LogsComponent implements OnInit, OnDestroy {
     private $toastr: ToastrService,
     private $translate: TranslateService,
     private $modal: NgbModal,
-  ) { }
-
-  ngOnInit() {
-    // set body bg color
-    window.document.querySelector('body').classList.add(`bg-black`);
-
-    // start the terminal
-    this.$log.startTerminal(this.termTarget, {}, this.resizeEvent);
-  }
+  ) {}
 
   @HostListener('window:resize', ['$event'])
   onWindowResize(event) {
     this.resizeEvent.next(undefined);
   }
 
+  ngOnInit() {
+    // set body bg color
+    window.document.querySelector('body').classList.add('bg-black');
+
+    // start the terminal
+    this.$log.startTerminal(this.termTarget, {}, this.resizeEvent);
+  }
+
   ngOnDestroy() {
     // unset body bg color
-    window.document.querySelector('body').classList.remove(`bg-black`);
+    window.document.querySelector('body').classList.remove('bg-black');
 
     // destroy the terminal
     this.$log.destroyTerminal();
@@ -107,7 +107,6 @@ export class LogsComponent implements OnInit, OnDestroy {
       // do nothing
     });
   }
-
 }
 
 export const LogsStates = {

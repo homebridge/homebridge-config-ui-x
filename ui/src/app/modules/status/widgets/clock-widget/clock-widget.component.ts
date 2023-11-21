@@ -14,11 +14,12 @@ import { Subscription, interval } from 'rxjs';
 export class ClockWidgetComponent implements OnInit, OnDestroy {
   @Input() widget;
 
-  private secondsCounter = interval(1000);
-  private secondsCounterSubscription: Subscription;
   public currentTime: Date = new Date();
 
-  constructor() { }
+  private secondsCounter = interval(1000);
+  private secondsCounterSubscription: Subscription;
+
+  constructor() {}
 
   ngOnInit() {
     if (!this.widget.timeFormat) {
@@ -36,5 +37,4 @@ export class ClockWidgetComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.secondsCounterSubscription.unsubscribe();
   }
-
 }

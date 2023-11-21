@@ -14,7 +14,7 @@ export class UsersResolver implements Resolve<any> {
     private $api: ApiService,
     private $toastr: ToastrService,
     private $router: Router,
-  ) { }
+  ) {}
 
   resolve(
     route: ActivatedRouteSnapshot,

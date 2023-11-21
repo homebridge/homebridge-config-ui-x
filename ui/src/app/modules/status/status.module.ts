@@ -63,4 +63,4 @@ import { ManagePluginsModule } from '@/app/core/manage-plugins/manage-plugins.mo
     ManagePluginsModule,
   ],
 })
-export class StatusModule { }
+export class StatusModule {}

@@ -11,13 +11,13 @@ import { WsService } from '@/app/core/ws.service';
   templateUrl: './container-restart.component.html',
 })
 export class ContainerRestartComponent implements OnInit, OnDestroy {
-  private io = this.$ws.connectToNamespace('status');
-
   checkTimeout: NodeJS.Timeout;
   checkDelay: NodeJS.Timeout;
   resp: any = {};
   timeout = false;
   error: any = false;
+
+  private io = this.$ws.connectToNamespace('status');
 
   constructor(
     private $api: ApiService,
@@ -26,7 +26,7 @@ export class ContainerRestartComponent implements OnInit, OnDestroy {
     public $toastr: ToastrService,
     private translate: TranslateService,
     private $router: Router,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.io.connected.subscribe(() => {
@@ -75,5 +75,4 @@ export class ContainerRestartComponent implements OnInit, OnDestroy {
     clearTimeout(this.checkDelay);
     clearTimeout(this.checkTimeout);
   }
-
 }

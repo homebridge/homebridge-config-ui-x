@@ -20,4 +20,4 @@ import { CoreModule } from '@/app/core/core.module';
     LinuxRoutingModule,
   ],
 })
-export class LinuxModule { }
+export class LinuxModule {}

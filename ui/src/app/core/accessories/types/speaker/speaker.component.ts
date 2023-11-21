@@ -13,10 +13,9 @@ export class SpeakerComponent implements OnInit {
 
   constructor(
     private modalService: NgbModal,
-  ) { }
+  ) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   onClick() {
     this.service.getCharacteristic('Mute').setValue(!this.service.values.Mute);

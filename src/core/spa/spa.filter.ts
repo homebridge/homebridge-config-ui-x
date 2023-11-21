@@ -4,7 +4,7 @@ import {
   Catch,
   ExceptionFilter,
   HttpException,
-  NotFoundException
+  NotFoundException,
 } from '@nestjs/common';
 import * as fs from 'fs-extra';
 

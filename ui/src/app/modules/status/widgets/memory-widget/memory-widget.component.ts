@@ -17,15 +17,11 @@ import { WsService } from '@/app/core/ws.service';
   styleUrls: ['./memory-widget.component.scss'],
 })
 export class MemoryWidgetComponent implements OnInit, OnDestroy {
-  private io = this.$ws.getExistingNamespace('status');
-  private intervalSubscription: Subscription;
-
   @ViewChild(BaseChartDirective, { static: true }) public chart: BaseChartDirective;
   @ViewChild('widgetbackground', { static: true }) private widgetBackground: ElementRef;
 
   public totalMemory: number;
   public freeMemory: number;
-
   public lineChartData = [{ data: [] }];
   public lineChartLabels = [];
 
@@ -67,10 +63,13 @@ export class MemoryWidgetComponent implements OnInit, OnDestroy {
     },
   ];
 
+  private io = this.$ws.getExistingNamespace('status');
+  private intervalSubscription: Subscription;
+
   constructor(
     private $ws: WsService,
     public $auth: AuthService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.io.connected.subscribe(async () => {
@@ -119,5 +118,4 @@ export class MemoryWidgetComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.intervalSubscription.unsubscribe();
   }
-
 }

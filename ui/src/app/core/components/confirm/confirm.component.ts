@@ -16,12 +16,11 @@ export class ConfirmComponent implements OnInit {
   constructor(
     public activeModal: NgbActiveModal,
     private translate: TranslateService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     if (!this.cancelButtonLabel) {
       this.cancelButtonLabel = this.translate.instant('form.button_cancel');
     }
   }
-
 }

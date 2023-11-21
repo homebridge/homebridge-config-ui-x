@@ -13,7 +13,7 @@ export class DonateModalComponent implements OnInit {
 
   constructor(
     public activeModal: NgbActiveModal,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     if (!this.plugin.funding) {
@@ -72,5 +72,4 @@ export class DonateModalComponent implements OnInit {
         return 'fas fa-fw fa-fw fa-link';
     }
   }
-
 }

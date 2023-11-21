@@ -69,5 +69,4 @@ export class LightbulbManageComponent implements OnInit {
   onBrightnessStateChange() {
     this.targetBrightnessChanged.next(this.targetBrightness.value);
   }
-
 }

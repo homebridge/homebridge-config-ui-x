@@ -52,5 +52,4 @@ export class ThermostatManageComponent implements OnInit {
   onTemperatureStateChange() {
     this.targetTemperatureChanged.next(this.targetTemperature.value);
   }
-
 }

@@ -34,7 +34,7 @@ export class UsersSetup2faComponent implements OnInit {
     private toastr: ToastrService,
     private translate: TranslateService,
     private $api: ApiService,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.$api.post('/users/otp/setup', {}).subscribe(
@@ -74,5 +74,4 @@ export class UsersSetup2faComponent implements OnInit {
       },
     );
   }
-
 }

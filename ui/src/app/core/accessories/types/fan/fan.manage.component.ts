@@ -69,5 +69,4 @@ export class FanManageComponent implements OnInit {
   onTargetRotationSpeedChange() {
     this.targetRotationSpeedChanged.next(this.targetRotationSpeed.value);
   }
-
 }

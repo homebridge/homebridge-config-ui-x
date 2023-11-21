@@ -3,7 +3,7 @@ import {
   Get,
   Param,
   Query,
-  Res
+  Res,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { PluginsSettingsUiService } from './plugins-settings-ui.service';
@@ -14,7 +14,7 @@ export class PluginsSettingsUiController {
 
   constructor(
     private pluginSettingsUiService: PluginsSettingsUiService,
-  ) { }
+  ) {}
 
   @Get('/:pluginName/*')
   @ApiOperation({ summary: 'Returns the HTML assets for a plugin\'s custom UI' })
@@ -26,5 +26,4 @@ export class PluginsSettingsUiController {
       throw err;
     }
   }
-
 }

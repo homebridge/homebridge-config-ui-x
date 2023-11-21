@@ -10,14 +10,14 @@ import { BackupService } from './backup.service';
 @WebSocketGateway({
   namespace: '/backup', allowEIO3: true, cors: {
     origin: ['http://localhost:8080', 'http://localhost:4200'],
-    credentials: true
-  }
+    credentials: true,
+  },
 })
 export class BackupGateway {
   constructor(
     private backupService: BackupService,
     private logger: Logger,
-  ) { }
+  ) {}
 
   @SubscribeMessage('do-restore')
   async doRestore(client: EventEmitter) {

@@ -3,7 +3,7 @@ import {
   Get,
   Header,
   StreamableFile,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -18,7 +18,7 @@ export class HomebridgeDeconzController {
 
   constructor(
     private homebridgeDeconzService: HomebridgeDeconzService,
-  ) { }
+  ) {}
 
   @UseGuards(AdminGuard)
   @Get('/dump-file')
@@ -27,5 +27,4 @@ export class HomebridgeDeconzController {
   async exchangeCredentials(): Promise<StreamableFile> {
     return this.homebridgeDeconzService.streamDumpFile();
   }
-
 }

@@ -5,8 +5,8 @@ import {
   Optional,
   Self,
 } from '@angular/core';
-import {JsonSchemaFormComponent} from '@oznu/ngx-bs4-jsonform';
-import {cloneDeep, merge, uniqueId} from 'lodash-es';
+import { JsonSchemaFormComponent } from '@oznu/ngx-bs4-jsonform';
+import { cloneDeep, merge, uniqueId } from 'lodash-es';
 
 @Directive({
   selector: '[jsfPatch]',
@@ -76,7 +76,7 @@ export class JsonSchemaFormPatchDirective {
           // add missing items
           while (item.items.length - 1 < data.length) {
             const newItem = cloneDeep(template);
-            newItem._id = uniqueId('new_');
+            newItem._id = uniqueId('new_'); // eslint-disable-line no-underscore-dangle
 
             item.items.unshift(newItem);
           }

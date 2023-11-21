@@ -20,8 +20,6 @@ import { WsService } from '@/app/core/ws.service';
   ],
 })
 export class StatusComponent implements OnInit, OnDestroy {
-  private io = this.$ws.connectToNamespace('status');
-
   public saveWidgetsEvent = new Subject();
   public options: GridsterConfig;
   public dashboard: Array<GridsterItem> = [];
@@ -29,6 +27,8 @@ export class StatusComponent implements OnInit, OnDestroy {
   public page = {
     mobile: (window.innerWidth < 1024),
   };
+
+  private io = this.$ws.connectToNamespace('status');
 
   constructor(
     public $toastr: ToastrService,
@@ -38,7 +38,7 @@ export class StatusComponent implements OnInit, OnDestroy {
     public $auth: AuthService,
     public $settings: SettingsService,
     public $md: MobileDetectService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.options = {
@@ -267,5 +267,4 @@ export class StatusComponent implements OnInit, OnDestroy {
     this.io.end();
     this.saveWidgetsEvent.complete();
   }
-
 }

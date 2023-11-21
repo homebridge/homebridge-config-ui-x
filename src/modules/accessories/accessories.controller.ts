@@ -5,14 +5,14 @@ import {
   Param,
   Put,
   Req,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiParam,
-  ApiTags
+  ApiTags,
 } from '@nestjs/swagger';
 import { AccessorySetCharacteristicDto } from './accessories.dto';
 import { AccessoriesService } from './accessories.service';
@@ -24,7 +24,7 @@ import { AccessoriesService } from './accessories.service';
 export class AccessoriesController {
   constructor(
     private readonly accessoriesService: AccessoriesService,
-  ) { }
+  ) {}
 
   @ApiOperation({
     summary: 'Return a list of Homebridge accessories.',
@@ -61,5 +61,4 @@ export class AccessoriesController {
   setAccessoryCharacteristic(@Param('uniqueId') uniqueId, @Body() body: AccessorySetCharacteristicDto) {
     return this.accessoriesService.setAccessoryCharacteristic(uniqueId, body.characteristicType, body.value);
   }
-
 }
