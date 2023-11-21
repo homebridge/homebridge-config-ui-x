@@ -21,12 +21,10 @@
           <a class="nav-link" routerLink="/plugins" [translate]="'menu.label_plugins'">Plugins</a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
-          <a class="nav-link" routerLink="/config" [translate]="'menu.label_config'"
-            data-toggle="collapse" data-target=".navbar-collapse.show">Config</a>
+          <a class="nav-link" routerLink="/config" [translate]="'menu.label_config'">Config</a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$settings.env.enableAccessories">
-          <a class="nav-link" routerLink="/accessories" [translate]="'menu.label_accessories'"
-            data-toggle="collapse" data-target=".navbar-collapse.show">Accessories</a>
+          <a class="nav-link" routerLink="/accessories" [translate]="'menu.label_accessories'">Accessories</a>
         </li>
       </ul>
       <ul class="navbar-nav nav-flex-icons hb-nav-right">
