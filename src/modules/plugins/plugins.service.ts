@@ -12,7 +12,7 @@ import {
   dirname,
   join,
   resolve,
-  sep
+  sep,
 } from 'path';
 import { HttpService } from '@nestjs/axios';
 import {
@@ -26,7 +26,7 @@ import {
   cyan,
   green,
   red,
-  yellow
+  yellow,
 } from 'bash-color';
 import {
   access,
@@ -41,16 +41,16 @@ import {
   readdir,
   realpath,
   remove,
-  stat
+  stat,
 } from 'fs-extra';
-import { orderBy, uniq }from 'lodash';
+import { orderBy, uniq } from 'lodash';
 import * as NodeCache from 'node-cache';
 import * as pLimit from 'p-limit';
 import {
   gt,
   lt,
   parse,
-  satisfies
+  satisfies,
 } from 'semver';
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
 import { Logger } from '../../core/logger/logger.service';
@@ -60,7 +60,7 @@ import {
   HomebridgePlugin,
   INpmRegistryModule,
   INpmSearchResults,
-  IPackageJson
+  IPackageJson,
 } from './types';
 import { HomebridgePluginUiMetadata, HomebridgePluginVersions, PluginAlias } from './types';
 

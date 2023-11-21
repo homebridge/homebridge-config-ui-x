@@ -1161,7 +1161,7 @@ export class HomebridgeServiceHelper {
    */
   private async checkForNodejsUpdates(requestedVersion: string) {
     const versionList = (await axios.get('https://nodejs.org/dist/index.json')).data;
-    const currentLts = versionList.filter(x => x.lts)[0];
+    const currentLts = versionList.filter((x) => x.lts)[0];
 
     if (requestedVersion) {
       const wantedVersion = versionList.find(x => x.version.startsWith('v' + requestedVersion));
@@ -1224,7 +1224,7 @@ export class HomebridgeServiceHelper {
               .on('finish', () => {
                 return res(tempFile);
               })
-              .on('error', (err) => {
+              .on('error', (err: Error) => {
                 return rej(err);
               });
           });

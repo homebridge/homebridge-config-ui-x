@@ -1,7 +1,7 @@
 import { homedir } from 'os';
+import { networkInterfaces } from 'os';
 import { resolve } from 'path';
 import { readFile, readJson, stat } from 'fs-extra';
-import { networkInterfaces } from 'systeminformation';
 import { Logger } from '../logger/logger.service';
 
 /**
