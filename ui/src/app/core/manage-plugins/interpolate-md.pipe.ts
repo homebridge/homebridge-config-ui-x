@@ -9,5 +9,4 @@ export class InterpolateMdPipe implements PipeTransform {
     return value
       .replace(/\${{HOSTNAME}}/g, location.hostname);
   }
-
 }

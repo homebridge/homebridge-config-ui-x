@@ -140,7 +140,7 @@ export class LinuxInstaller extends BasePlatform {
   public async beforeStart() {
     if ([
       '/usr/local/lib/node_modules',
-      '/usr/lib/node_modules'
+      '/usr/lib/node_modules',
     ].includes(path.dirname(process.env.UIX_BASE_PATH))) {
       // systemd has a 90-second default timeout in the pre-start jobs
       // terminate this task after 60 seconds to be safe

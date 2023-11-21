@@ -26,7 +26,7 @@ export class UninstallPluginsModalComponent implements OnInit {
     private translate: TranslateService,
     private $toastr: ToastrService,
     private $api: ApiService,
-  ) { }
+  ) {}
 
   async ngOnInit() {
     try {
@@ -59,7 +59,7 @@ export class UninstallPluginsModalComponent implements OnInit {
   }
 
   async getAlias() {
-    return await this.$api.get(`/plugins/alias/${encodeURIComponent(this.plugin.name)}`).toPromise();
+    return this.$api.get(`/plugins/alias/${encodeURIComponent(this.plugin.name)}`).toPromise();
   }
 
   async removePluginConfig() {

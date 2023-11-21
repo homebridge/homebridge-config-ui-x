@@ -12,9 +12,8 @@ export class HbServiceService {
 
   constructor(
     private readonly configService: ConfigService,
-    private readonly logger: Logger
-  ) {
-  }
+    private readonly logger: Logger,
+  ) {}
 
   /**
    * Returns the Homebridge startup settings

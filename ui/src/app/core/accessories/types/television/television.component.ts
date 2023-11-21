@@ -10,11 +10,11 @@ export class TelevisionComponent implements OnInit {
   @Input() public service: ServiceTypeX;
   public channelList = {};
 
-  constructor() { }
+  constructor() {}
 
   ngOnInit() {
     // build inputService list
-    for (const [iid, inputService] of Object.entries(this.service.linkedServices)) {
+    for (const [, inputService] of Object.entries(this.service.linkedServices)) {
       this.channelList[inputService.values.Identifier] = inputService.values.ConfiguredName;
     }
   }
@@ -22,5 +22,4 @@ export class TelevisionComponent implements OnInit {
   onClick() {
     this.service.getCharacteristic('Active').setValue(this.service.values.Active ? 0 : 1);
   }
-
 }

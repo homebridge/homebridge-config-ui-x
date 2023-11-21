@@ -10,6 +10,6 @@ import { SetupWizardController } from './setup-wizard.controller';
     LoggerModule,
     AuthModule,
   ],
-  controllers: [SetupWizardController]
+  controllers: [SetupWizardController],
 })
-export class SetupWizardModule { }
+export class SetupWizardModule {}

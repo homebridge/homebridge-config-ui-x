@@ -25,4 +25,4 @@ import { CoreModule } from '@/app/core/core.module';
     SetupWizardGuard,
   ],
 })
-export class SetupWizardModule { }
+export class SetupWizardModule {}

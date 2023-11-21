@@ -5,7 +5,7 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-  ServiceUnavailableException
+  ServiceUnavailableException,
 } from '@nestjs/common';
 import { Categories } from '@oznu/hap-client/dist/hap-types';
 import * as bufferShim from 'buffer-shims';
@@ -35,7 +35,7 @@ export class ServerService {
     private readonly accessoriesService: AccessoriesService,
     private readonly homebridgeIpcService: HomebridgeIpcService,
     private readonly logger: Logger,
-  ) { }
+  ) {}
 
   /**
    * Restart the server
@@ -399,7 +399,7 @@ export class ServerService {
     }
 
     return {
-      advertiser: config.bridge.advertiser
+      advertiser: config.bridge.advertiser,
     };
   }
 

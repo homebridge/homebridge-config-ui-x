@@ -12,4 +12,4 @@ import { PluginsSettingsUiModule } from './plugins-settings-ui/plugins-settings-
   controllers: [],
   providers: [],
 })
-export class CustomPluginsModule { }
+export class CustomPluginsModule {}

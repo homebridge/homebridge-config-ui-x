@@ -9,9 +9,8 @@ import { ServiceTypeX } from '../../accessories.interfaces';
 export class TemperaturesensorComponent implements OnInit {
   @Input() public service: ServiceTypeX;
 
-  constructor() { }
+  constructor() {}
 
   ngOnInit() {
   }
-
 }

@@ -12,7 +12,7 @@ export class ChildBridgesService {
     private readonly configService: ConfigService,
     private readonly homebridgeIpcService: HomebridgeIpcService,
     private readonly accessoriesService: AccessoriesService,
-  ) { }
+  ) {}
 
   /**
    * Return an array of child bridges
@@ -82,7 +82,7 @@ export class ChildBridgesService {
     }, 5000);
 
     return {
-      ok: true
+      ok: true,
     };
   }
 

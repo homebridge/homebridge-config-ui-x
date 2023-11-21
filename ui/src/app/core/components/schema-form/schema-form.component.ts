@@ -11,13 +11,13 @@ import { EventEmitter } from '@angular/core';
   templateUrl: './schema-form.component.html',
 })
 export class SchemaFormComponent implements OnInit {
-  public currentData;
-
   @Input() configSchema;
   @Input() data;
   @Output() dataChange = new EventEmitter();
   @Output() dataChanged = new EventEmitter();
   @Output() isValid = new EventEmitter();
+
+  public currentData;
 
   public jsonFormOptions = {
     addSubmit: false,
@@ -27,7 +27,7 @@ export class SchemaFormComponent implements OnInit {
     autocomplete: false,
   };
 
-  constructor() { }
+  constructor() {}
 
   ngOnInit(): void {
     this.currentData = this.data;
@@ -41,5 +41,4 @@ export class SchemaFormComponent implements OnInit {
   validChange(data) {
     this.isValid.emit(data);
   }
-
 }

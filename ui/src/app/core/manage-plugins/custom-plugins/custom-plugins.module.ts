@@ -13,28 +13,28 @@ import { HomebridgeHueComponent } from './homebridge-hue/homebridge-hue.componen
 import { CoreModule } from '@/app/core/core.module';
 
 @NgModule({
-    declarations: [
-        CustomPluginsComponent,
-        HomebridgeDeconzComponent,
-        HomebridgeGoogleSmarthomeComponent,
-        HomebridgeHueComponent,
-    ],
-    imports: [
-        CommonModule,
-        NgbModule,
-        FormsModule,
-        ReactiveFormsModule,
-        TranslateModule.forChild(),
-        Bootstrap4FrameworkModule,
-        NgxMdModule,
-        CoreModule,
-    ],
-    providers: [
-        CustomPluginsService,
-    ],
-    exports: [
-        HomebridgeDeconzComponent,
-        HomebridgeHueComponent,
-    ],
+  declarations: [
+    CustomPluginsComponent,
+    HomebridgeDeconzComponent,
+    HomebridgeGoogleSmarthomeComponent,
+    HomebridgeHueComponent,
+  ],
+  imports: [
+    CommonModule,
+    NgbModule,
+    FormsModule,
+    ReactiveFormsModule,
+    TranslateModule.forChild(),
+    Bootstrap4FrameworkModule,
+    NgxMdModule,
+    CoreModule,
+  ],
+  providers: [
+    CustomPluginsService,
+  ],
+  exports: [
+    HomebridgeDeconzComponent,
+    HomebridgeHueComponent,
+  ],
 })
-export class CustomPluginsModule { }
+export class CustomPluginsModule {}

@@ -9,8 +9,8 @@ import { StatusService } from './status.service';
 @WebSocketGateway({
   namespace: 'status', allowEIO3: true, cors: {
     origin: ['http://localhost:8080', 'http://localhost:4200'],
-    credentials: true
-  }
+    credentials: true,
+  },
 })
 export class StatusGateway {
 
@@ -18,7 +18,7 @@ export class StatusGateway {
     private statusService: StatusService,
     private pluginsService: PluginsService,
     private childBridgesService: ChildBridgesService,
-  ) { }
+  ) {}
 
   @SubscribeMessage('get-dashboard-layout')
   async getDashboardLayout(client, payload) {

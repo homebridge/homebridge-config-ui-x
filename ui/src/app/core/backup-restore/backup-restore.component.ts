@@ -46,7 +46,7 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
     public $toastr: ToastrService,
     private $api: ApiService,
     private $ws: WsService,
-  ) { }
+  ) {}
 
   async ngOnInit() {
     this.termTarget = document.getElementById('plugin-log-output');
@@ -221,5 +221,4 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.io.end();
   }
-
 }

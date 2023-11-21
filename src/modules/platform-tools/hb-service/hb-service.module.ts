@@ -18,4 +18,4 @@ import { HbServiceService } from './hb-service.service';
     HbServiceController,
   ],
 })
-export class HbServiceModule { }
+export class HbServiceModule {}

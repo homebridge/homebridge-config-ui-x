@@ -46,8 +46,8 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
     this.visualViewPortEventCallback = () => this.visualViewPortChanged();
     this.lastHeight = window.innerHeight;
 
-    if (window['visualViewport'] && !this.isMobile) {
-      window['visualViewport'].addEventListener('resize', this.visualViewPortEventCallback, true);
+    if (window.visualViewport && !this.isMobile) {
+      window.visualViewport.addEventListener('resize', this.visualViewPortEventCallback, true);
       this.$md.disableTouchMove();
     }
 
@@ -113,24 +113,24 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
   }
 
   visualViewPortChanged() {
-    if (this.lastHeight < window['visualViewport'].height) {
+    if (this.lastHeight < window.visualViewport.height) {
       (document.activeElement as HTMLElement).blur();
     }
 
-    if (window['visualViewport'].height < window.innerHeight) {
+    if (window.visualViewport.height < window.innerHeight) {
       // keyboard may have opened
       this.$md.enableTouchMove();
-      this.lastHeight = window['visualViewport'].height;
-    } else if (window['visualViewport'].height === window.innerHeight) {
+      this.lastHeight = window.visualViewport.height;
+    } else if (window.visualViewport.height === window.innerHeight) {
       // keyboard is closed
       this.$md.disableTouchMove();
-      this.lastHeight = window['visualViewport'].height;
+      this.lastHeight = window.visualViewport.height;
     }
   }
 
   ngOnDestroy() {
-    if (window['visualViewport']) {
-      window['visualViewport'].removeEventListener('resize', this.visualViewPortEventCallback, true);
+    if (window.visualViewport) {
+      window.visualViewport.removeEventListener('resize', this.visualViewPortEventCallback, true);
       this.$md.enableTouchMove();
     }
 

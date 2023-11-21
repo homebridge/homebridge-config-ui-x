@@ -17,7 +17,7 @@ export class AdminGuard implements CanActivate {
     private $auth: AuthService,
     private $toast: ToastrService,
     private $router: Router,
-  ) { }
+  ) {}
 
   canActivate(
     next: ActivatedRouteSnapshot,

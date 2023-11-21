@@ -30,4 +30,4 @@ import { StatusService } from './status.service';
     StatusController,
   ],
 })
-export class StatusModule { }
+export class StatusModule {}

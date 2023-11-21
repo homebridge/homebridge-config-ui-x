@@ -69,5 +69,4 @@ export class AirpurifierManageComponent implements OnInit {
   onTargetRotationSpeedChange() {
     this.targetRotationSpeedChanged.next(this.targetRotationSpeed.value);
   }
-
 }

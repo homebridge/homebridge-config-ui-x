@@ -22,33 +22,19 @@ import { environment } from '@/environments/environment';
   styleUrls: ['./custom-plugins.component.scss'],
 })
 export class CustomPluginsComponent implements OnInit, OnDestroy {
-  private io = this.$ws.connectToNamespace('plugins/settings-ui');
-
   @ViewChild('custompluginui', { static: true }) customPluginUiElementTarget: ElementRef;
-
   @Input() plugin;
   @Input() schema;
   @Input() pluginConfig: Record<string, any>[];
 
   public pluginAlias: string;
   public pluginType: 'platform' | 'accessory';
-
   public loading = true;
   public saveInProgress = false;
   public pluginSpinner = false;
   public uiLoaded = false;
-
-  private basePath: string;
-  private iframe: HTMLIFrameElement;
-
-  // main config schema forms
   public showSchemaForm = false;
-  private schemaFormRecentlyUpdated = false;
-  private schemaFormRecentlyRefreshed = false;
-  private schemaFormRefreshSubject = new Subject();
   public schemaFormUpdatedSubject = new Subject();
-
-  // other forms
   public formId;
   public formSchema;
   public formData;
@@ -58,6 +44,13 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   public formUpdatedSubject = new Subject();
   public formActionSubject = new Subject();
 
+  private io = this.$ws.connectToNamespace('plugins/settings-ui');
+  private basePath: string;
+  private iframe: HTMLIFrameElement;
+  private schemaFormRecentlyUpdated = false;
+  private schemaFormRecentlyRefreshed = false;
+  private schemaFormRefreshSubject = new Subject();
+
   constructor(
     public activeModal: NgbActiveModal,
     private $translate: TranslateService,
@@ -65,7 +58,11 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     private $api: ApiService,
     private $ws: WsService,
     private $notification: NotificationService,
-  ) { }
+  ) {}
+
+  get arrayKey() {
+    return this.pluginType === 'accessory' ? 'accessories' : 'platforms';
+  }
 
   ngOnInit(): void {
     this.pluginAlias = this.schema.pluginAlias;
@@ -119,10 +116,6 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     this.basePath = `/plugins/settings-ui/${encodeURIComponent(this.plugin.name)}`;
 
     window.addEventListener('message', this.handleMessage, false);
-  }
-
-  get arrayKey() {
-    return this.pluginType === 'accessory' ? 'accessories' : 'platforms';
   }
 
   loadUi() {
@@ -431,7 +424,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
 
   async savePluginConfig(exit = false) {
     this.saveInProgress = true;
-    return await this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig)
+    return this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig)
       .toPromise()
       .then(data => {
         this.$toastr.success(

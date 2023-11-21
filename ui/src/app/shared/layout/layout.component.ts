@@ -24,12 +24,12 @@ import { environment } from '@/environments/environment';
   styleUrls: ['./layout.component.scss'],
 })
 export class LayoutComponent implements OnInit {
-  private io = this.$ws.connectToNamespace('app');
+  @ViewChild('restartHomebridgeIcon') restartHomebridgeIcon: ElementRef;
 
   public rPiCurrentlyUnderVoltage = false;
   public rPiWasUnderVoltage = false;
 
-  @ViewChild('restartHomebridgeIcon') restartHomebridgeIcon: ElementRef;
+  private io = this.$ws.connectToNamespace('app');
 
   constructor(
     public translate: TranslateService,
@@ -40,7 +40,7 @@ export class LayoutComponent implements OnInit {
     private $notification: NotificationService,
     private $modal: NgbModal,
     private $router: Router,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.io.socket.on('reconnect', () => {

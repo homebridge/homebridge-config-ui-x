@@ -9,7 +9,7 @@ export class SetupWizardGuard implements CanActivate {
   constructor(
     private $router: Router,
     private $settings: SettingsService,
-  ) { }
+  ) {}
 
   async canActivate(): Promise<boolean> {
     if (!this.$settings.settingsLoaded) {

@@ -8,7 +8,7 @@ import {
   Req,
   Res,
   StreamableFile,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -17,7 +17,7 @@ import {
   ApiConsumes,
   ApiOperation,
   ApiParam,
-  ApiTags
+  ApiTags,
 } from '@nestjs/swagger';
 import { FastifyRequest } from 'fastify';
 import { AdminGuard } from '../../core/auth/guards/admin.guard';
@@ -33,7 +33,7 @@ export class BackupController {
   constructor(
     private backupService: BackupService,
     private logger: Logger,
-  ) { }
+  ) {}
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Download a .tar.gz of the Homebridge instance.' })
@@ -146,5 +146,4 @@ export class BackupController {
   postBackupRestoreRestart() {
     return this.backupService.postBackupRestoreRestart();
   }
-
 }

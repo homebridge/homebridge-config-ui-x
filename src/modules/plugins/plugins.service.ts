@@ -7,7 +7,7 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
-  NotFoundException
+  NotFoundException,
 } from '@nestjs/common';
 import axios from 'axios';
 import * as color from 'bash-color';
@@ -24,7 +24,7 @@ import {
   HomebridgePlugin,
   INpmRegistryModule,
   INpmSearchResults,
-  IPackageJson
+  IPackageJson,
 } from './types';
 import { HomebridgePluginUiMetadata, HomebridgePluginVersions, PluginAlias } from './types';
 
@@ -74,8 +74,8 @@ export class PluginsService {
   private pluginAliasHints = {
     'homebridge-broadlink-rm-pro': {
       pluginAlias: 'BroadlinkRM',
-      pluginType: 'platform'
-    }
+      pluginType: 'platform',
+    },
   };
 
   constructor(
@@ -434,7 +434,7 @@ export class PluginsService {
         installPath,
         client,
         pluginAction.termCols,
-        pluginAction.termRows
+        pluginAction.termRows,
       );
 
       // ensure the custom plugin dir was not deleted
@@ -646,7 +646,7 @@ export class PluginsService {
       this.configService.storagePath,
       client,
       pluginAction.termCols,
-      pluginAction.termRows
+      pluginAction.termRows,
     );
     return true;
   }
@@ -689,7 +689,7 @@ export class PluginsService {
       process.env.UIX_BASE_PATH,
       client,
       pluginAction.termCols,
-      pluginAction.termRows
+      pluginAction.termRows,
     );
   }
 
@@ -1079,7 +1079,7 @@ export class PluginsService {
       allModules.push({
         name: 'homebridge-config-ui-x',
         installPath: process.env.UIX_BASE_PATH,
-        path: path.dirname(process.env.UIX_BASE_PATH)
+        path: path.dirname(process.env.UIX_BASE_PATH),
       });
     }
 

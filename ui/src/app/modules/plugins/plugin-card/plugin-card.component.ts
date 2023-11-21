@@ -21,20 +21,18 @@ import { DonateModalComponent } from '@/app/modules/plugins/donate-modal/donate-
 export class PluginCardComponent implements OnInit {
   @Input() plugin: any;
 
-  private io = this.$ws.getExistingNamespace('child-bridges');
-
-  public canDisablePlugins = false;
-  public canManageBridgeSettings = false;
-
-  public isMobile = this.$md.detect.mobile();
-
-  private _childBridges = [];
   public hasChildBridges = false;
   public hasUnpairedChildBridges = false;
   public allChildBridgesStopped = false;
   public childBridgeStatus = 'pending';
   public childBridgeRestartInProgress = false;
   public canStopStartChildBridges = false;
+  public canDisablePlugins = false;
+  public canManageBridgeSettings = false;
+  public isMobile = this.$md.detect.mobile();
+
+  private io = this.$ws.getExistingNamespace('child-bridges');
+  private setChildBridges = [];
 
   constructor(
     public $plugin: ManagePluginsService,
@@ -46,21 +44,7 @@ export class PluginCardComponent implements OnInit {
     private $modal: NgbModal,
     private $toastr: ToastrService,
     private $md: MobileDetectService,
-  ) { }
-
-  ngOnInit(): void {
-    // check if the homebridge version supports disabled plugins
-    this.canDisablePlugins = this.$settings.env.homebridgeVersion ?
-      gt(this.$settings.env.homebridgeVersion, '1.3.0-beta.46') : false;
-
-    // check if the homebridge version supports external bridges
-    this.canManageBridgeSettings = this.$settings.env.homebridgeVersion ?
-      gt(this.$settings.env.homebridgeVersion, '1.3.0-beta.47') : false;
-
-    // check if the homebridge version supports stopping / starting child bridges
-    this.canStopStartChildBridges = this.$settings.env.homebridgeVersion ?
-      gt(this.$settings.env.homebridgeVersion, '1.5.0-beta.1') : false;
-  }
+  ) {}
 
   @Input() set childBridges(childBridges: any[]) {
     this.hasChildBridges = childBridges.length > 0;
@@ -78,7 +62,21 @@ export class PluginCardComponent implements OnInit {
       }
     }
 
-    this._childBridges = childBridges;
+    this.setChildBridges = childBridges;
+  }
+
+  ngOnInit(): void {
+    // check if the homebridge version supports disabled plugins
+    this.canDisablePlugins = this.$settings.env.homebridgeVersion ?
+      gt(this.$settings.env.homebridgeVersion, '1.3.0-beta.46') : false;
+
+    // check if the homebridge version supports external bridges
+    this.canManageBridgeSettings = this.$settings.env.homebridgeVersion ?
+      gt(this.$settings.env.homebridgeVersion, '1.3.0-beta.47') : false;
+
+    // check if the homebridge version supports stopping / starting child bridges
+    this.canStopStartChildBridges = this.$settings.env.homebridgeVersion ?
+      gt(this.$settings.env.homebridgeVersion, '1.5.0-beta.1') : false;
   }
 
   openFundingModal(plugin: any) {
@@ -157,7 +155,7 @@ export class PluginCardComponent implements OnInit {
   async doChildBridgeAction(action: 'stop' | 'start' | 'restart') {
     this.childBridgeRestartInProgress = true;
     try {
-      for (const bridge of this._childBridges) {
+      for (const bridge of this.setChildBridges) {
         await this.io.request(action + '-child-bridge', bridge.username).toPromise();
       }
     } catch (err) {

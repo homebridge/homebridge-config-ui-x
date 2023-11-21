@@ -11,7 +11,7 @@ export class HomebridgeIpcService extends EventEmitter {
   private permittedEvents = [
     'childBridgeMetadataResponse',
     'childBridgeStatusUpdate',
-    'serverStatusUpdate'
+    'serverStatusUpdate',
   ];
 
   constructor(
@@ -96,7 +96,7 @@ export class HomebridgeIpcService extends EventEmitter {
         try {
           this.logger.warn('Sending SIGKILL to Homebridge');
           this.homebridge.kill('SIGKILL');
-        } catch (e) { }
+        } catch (e) {}
       }, 7000);
 
       // if homebridge ends before the timeout, clear the timeout
@@ -131,5 +131,4 @@ export class HomebridgeIpcService extends EventEmitter {
       this.homebridge.kill('SIGKILL');
     }
   }
-
 }

@@ -54,5 +54,4 @@ export class WindowManageComponent implements OnInit {
   onTargetPositionChange() {
     this.targetPositionChanged.next(this.targetPosition.value);
   }
-
 }

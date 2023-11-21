@@ -13,7 +13,7 @@ export class SecuritysystemManageComponent implements OnInit {
 
   constructor(
     public activeModal: NgbActiveModal,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.targetMode = this.service.values.SecuritySystemTargetState;
@@ -22,5 +22,4 @@ export class SecuritysystemManageComponent implements OnInit {
   onTargetStateChange() {
     this.service.getCharacteristic('SecuritySystemTargetState').setValue(this.targetMode);
   }
-
 }
