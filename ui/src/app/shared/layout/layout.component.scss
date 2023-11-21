@@ -80,6 +80,11 @@
   background-color: transparent !important;
 }
 
+.navbar-nav .dropdown-menu {
+  position: static !important;
+  background-color: transparent !important;
+}
+
 /* SIDEBAR NAVBAR */
 
 .sidebar {
@@ -179,7 +184,7 @@
   pointer-events: none;
 }
 .sidebar .nav-links li .sub-menu{
-  padding: 6px 6px 14px 0px;
+  padding: 6px 6px 14px 30px;
   margin-top: -10px;
   display: none;
   transition: all 0.3s ease;
@@ -269,6 +274,8 @@
   width: 10px !important;
   line-height: 10px !important;
   font-size: 16px !important;
+  min-width: 20px !important;
+  margin-right: 10px;
 }
 
 /* ELSE */
