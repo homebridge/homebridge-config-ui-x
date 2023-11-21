@@ -281,6 +281,7 @@
 .navbar .dropdown-menu {
   max-width: 100% !important;
   margin: 0px !important;
+  margin-top: 0px !important;
   padding-left: 20px !important;
 }
 
@@ -315,6 +316,7 @@
   font-size: 20px;
 }
 
+/*
 .navbar .dropdown-menu {
   margin-top: 15px !important;
 }
@@ -326,6 +328,7 @@
     max-width: 70%
   }
 }
+*/
 
 a:hover {
   text-decoration: none !important;
