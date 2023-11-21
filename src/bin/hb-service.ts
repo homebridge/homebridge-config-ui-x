@@ -52,7 +52,7 @@ import * as ora from 'ora';
 import { gt, gte, parse } from 'semver';
 import { networkInterfaceDefault, networkInterfaces } from 'systeminformation';
 import { Tail } from 'tail';
-import { x as extract } from 'tar';
+import { ExtractOptions, x as extract } from 'tar';
 import { check as tcpCheck } from 'tcp-port-used';
 import type { HomebridgeIpcService } from '../core/homebridge-ipc/homebridge-ipc.service';
 import { BasePlatform } from './base-platform';
@@ -1241,7 +1241,7 @@ export class HomebridgeServiceHelper {
   /**
    * Extract the Node.js tarball
    */
-  public async extractNodejs(targetVersion: string, extractConfig: tar.ExtractOptions) {
+  public async extractNodejs(targetVersion: string, extractConfig: ExtractOptions) {
     const spinner = ora(`Installing Node.js ${targetVersion}`).start();
 
     try {
