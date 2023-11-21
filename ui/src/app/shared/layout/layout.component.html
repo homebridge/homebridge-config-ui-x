@@ -69,7 +69,7 @@
             data-toggle="collapse" data-target=".navbar-collapse.show">
             <i class="fa fa-power pr-2"></i>Restart Options</a>
         </li>
-        <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$settings.env.enableAccessories">
+        <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$settings.formAuth">
           <a class="nav-link" routerLink="/accessories" [translate]="'menu.tooltip_logout'"
             data-toggle="collapse" data-target=".navbar-collapse.show">
             <i class="fa fa-right-from-bracket pr-2"></i>Logout - {{ $auth.user.username }}</a>
@@ -147,90 +147,88 @@
     </div>
     <ul class="nav-links">
       <li>
-        <a routerLink="/">
+        <a routerLink="/" [translate]="'menu.label_status'">
           <i class="fa fa-house"></i>
-          <span class="link_name">Dashboard</span>
+          <span class="link_name">Status</span>
         </a>
         <ul class="sub-menu blank">
-          <li><a class="link_name" routerLink="/">Dashboard</a></li>
+          <li><a class="link_name" routerLink="/" [translate]="'menu.label_status'">Status</a></li>
         </ul>
       </li>
-      <li>
-        <a routerLink="/plugins">
+      <li *ngIf="$auth.user.admin">
+        <a routerLink="/plugins" [translate]="'menu.label_plugins'">
           <i class="fa fa-plug"></i>
           <span class="link_name">Plugins</span>
         </a>
         <ul class="sub-menu blank">
-          <li><a class="link_name" routerLink="/plugins">Plugins</a></li>
+          <li><a class="link_name" routerLink="/plugins" [translate]="'menu.label_plugins'">Plugins</a></li>
         </ul>
       </li>
-      <li>
-        <a routerLink="/accessories">
+      <li *ngIf="$settings.env.enableAccessories">
+        <a routerLink="/accessories" [translate]="'menu.label_accessories'">
           <i class="fa fa-lightbulb"></i>
           <span class="link_name">Accessories</span>
         </a>
         <ul class="sub-menu blank">
-          <li><a class="link_name" routerLink="/accessories">Accessories</a></li>
+          <li><a class="link_name" routerLink="/accessories" [translate]="'menu.label_accessories'">Accessories</a></li>
         </ul>
       </li>
       <li>
-        <a href="#">
+        <a routerLink="/logs" [translate]="'menu.linux.label_logs'">
           <i class="fa fa-code"></i>
           <span class="link_name">Logs</span>
         </a>
         <ul class="sub-menu blank">
-          <li><a class="link_name" href="#">Logs</a></li>
+          <li><a class="link_name" routerLink="/logs" [translate]="'menu.linux.label_logs'">Logs</a></li>
         </ul>
       </li>
-      <li>
-        <a href="#">
+      <li *ngIf="$settings.env.enableTerminalAccess && $auth.user.admin">
+        <a routerLink="/platform-tools/terminal" [translate]="'menu.linux.label_terminal'">
           <i class="fa fa-terminal"></i>
           <span class="link_name">Terminal</span>
         </a>
         <ul class="sub-menu blank">
-          <li><a class="link_name" href="#">Terminal</a></li>
+          <li><a class="link_name" routerLink="/platform-tools/terminal" [translate]="'menu.linux.label_terminal'">Terminal</a></li>
         </ul>
       </li>
-      <li class="li-link1">
+      <li class="li-link1" *ngIf="$auth.user.admin">
         <div class="iocn-link">
-          <a href="#">
+          <a routerLink="/settings" [translate]="'menu.label_settings_hb'">
             <i class="fa fa-cog"></i>
             <span class="link_name">Settings</span>
           </a>
           <i class="fa fa-chevron-down arrow" data-toggle="collapse"  data-target=".li-link1"></i>
         </div>
         <ul class="sub-menu">
-          <li><a class="link_name" href="#">Homebridge settings</a></li>
-          <li><a href="#">Homebridge settings</a></li>
-          <li><a href="#">UI Settings</a></li>
-          <li><a href="#">Backup</a></li>
-          <li><a href="#">Config</a></li>
-          <li><a href="#">Users</a></li>
+          <li><a class="link_name" routerLink="/settings" [translate]="'menu.label_settings_hb'">Homebridge settings</a></li>
+          <li><a routerLink="/settings" [translate]="'menu.label_settings_hb'"><i class="fa fa-cog">Homebridge settings</a></li>
+          <li><a href="javascript:void(0)" (click)="openUiSettings()" [translate]="'menu.label_settings_ui'"><i class="fa fa-sliders">UI Settings</a></li>
+          <li><a href="javascript:void(0)" (click)="backupRestoreHomebridge()" [translate]="'backup.title_backup_restore'"><i class="fa fa-clock-rotate-left">Backup</a></li>
+          <li><a routerLink="/config" [translate]="'menu.label_config'"><i class="fa fa-file-lines">Config</a></li>
+          <li><a routerLink="/users" [translate]="'menu.tooltip_user_accounts'"><i class="fa fa-user">Users</a></li>
         </ul>
       </li>
-      <li class="li-link2">
+      <li *ngIf="$auth.user.admin">
         <div class="iocn-link">
-          <a href="#">
-            <i class="fa fa-power-off"></i>
-            <span class="link_name">Restart</span>
-          </a>
-          <i class="fa fa-chevron-down arrow" data-toggle="collapse"  data-target=".li-link2"></i>
-        </div>
-        <ul class="sub-menu">
-          <li><a class="link_name" href="#">Restart Homebridge</a></li>
-          <li><a href="#">Restart server</a></li>
-          <li><a href="#">Shutdown server</a></li>
-        </ul>
-      </li>
-      <li>
-        <div class="iocn-link">
-          <a href="#">
-            <i class="fa fa-right-from-bracket"></i>
-            <span class="link_name">Logout<br><span class="text-muted">admin</span></span>
+          <a href="javascript:void(0)" (click)="openRestartOptionsModal()" [translate]="'menu.restart.title'">
+            <i class="fa fa-power"></i>
+            <span class="link_name"><span>Restart Options</span>
           </a>       
         </div>
         <ul class="sub-menu blank">
-          <li><a class="link_name" href="#">Logout - admin</a></li>
+          <li><a class="link_name" href="javascript:void(0)" (click)="openRestartOptionsModal()" [translate]="'menu.restart.title'">Restart Options</a></li>
+        </ul>
+      </li>
+      <li>
+      <li>
+        <div class="iocn-link">
+          <a href="javascript:void(0)" (click)="$auth.logout()" [translate]="'menu.tooltip_logout'">
+            <i class="fa fa-right-from-bracket"></i>
+            <span class="link_name"><span>Logout<br><span class="text-muted">usernam</span>
+          </a>       
+        </div>
+        <ul class="sub-menu blank">
+          <li><a class="link_name" href="javascript:void(0)" (click)="$auth.logout()" [translate]="'menu.tooltip_logout'">Logout - username</a></li>
         </ul>
       </li>
       <li>
