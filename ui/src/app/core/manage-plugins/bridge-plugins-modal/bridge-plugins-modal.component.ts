@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import {Router} from '@angular/router';
+import { Router } from '@angular/router';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
@@ -111,6 +111,18 @@ export class BridgePluginsModalComponent implements OnInit {
     }
   }
 
+  openPluginConfig() {
+    // Close the existing modal
+    this.activeModal.close();
+
+    // Open the plugin config modal
+    this.$plugins.settings({
+      name: this.plugin.name,
+      settingsSchema: true,
+      links: {},
+    });
+  }
+
   async restartChildBridge(username: string) {
     this.restartInProgress[username] = true;
     try {
@@ -146,18 +158,6 @@ export class BridgePluginsModalComponent implements OnInit {
       }
     }
     return username;
-  }
-
-  openPluginConfig() {
-    // Close the existing modal
-    this.activeModal.close();
-
-    // Open the plugin config modal
-    this.$plugins.settings({
-      name: this.plugin.name,
-      settingsSchema: true,
-      links: {},
-    });
   }
 
   openFullConfigEditor() {

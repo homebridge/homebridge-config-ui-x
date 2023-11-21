@@ -9,7 +9,7 @@ const preventDefault = (e) => {
   providedIn: 'root',
 })
 export class MobileDetectService {
-  public detect;
+  public detect: MobileDetect;
   public isTouchMoveLocked = false;
 
   constructor() {

@@ -79,7 +79,7 @@ export class TerminalService {
     });
 
     // subscribe to incoming data events from server to client
-    this.io.socket.on('stdout', data => {
+    this.io.socket.on('stdout', (data: string) => {
       this.term.write(data);
     });
 

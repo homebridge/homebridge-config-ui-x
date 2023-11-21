@@ -10,6 +10,10 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - standardise modal footers (#1753)
 - Fix table width, avoid overflow (#1758) (@jsiegenthaler)
 
+### Translation Changes
+
+- **i18n:** Update fr.json ([#1705](https://github.com/homebridge/homebridge-config-ui-x/pull/1705))
+
 ### Other Changes
 
 - Add Alpha Releases (#1740)

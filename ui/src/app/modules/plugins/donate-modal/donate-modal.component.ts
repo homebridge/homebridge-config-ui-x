@@ -72,5 +72,4 @@ export class DonateModalComponent implements OnInit {
         return 'fas fa-fw fa-fw fa-link';
     }
   }
-
 }

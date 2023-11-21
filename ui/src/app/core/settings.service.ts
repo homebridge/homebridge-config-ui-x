@@ -112,7 +112,7 @@ export class SettingsService {
     this.$title.setTitle(title || 'Homebridge');
   }
 
-  setUiVersion(version) {
+  setUiVersion(version: string) {
     if (!this.uiVersion) {
       this.uiVersion = version;
     }
