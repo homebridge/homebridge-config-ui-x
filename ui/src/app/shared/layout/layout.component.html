@@ -15,16 +15,52 @@
       <ul class="navbar-nav mr-auto">
         <li class="nav-item waves-effect waves-light" routerLinkActive="active"
           [routerLinkActiveOptions]="{exact: true}">
-          <a class="nav-link" routerLink="/" [translate]="'menu.label_status'">Status</a>
+          <a class="nav-link" routerLink="/" [translate]="'menu.label_status'">
+            <i class='fa fa-house'>Status</a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
-          <a class="nav-link" routerLink="/plugins" [translate]="'menu.label_plugins'">Plugins</a>
-        </li>
-        <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
-          <a class="nav-link" routerLink="/config" [translate]="'menu.label_config'">Config</a>
+          <a class="nav-link" routerLink="/plugins" [translate]="'menu.label_plugins'">
+            <i class="fa fa-plug pr-2"></i>Plugins</a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$settings.env.enableAccessories">
-          <a class="nav-link" routerLink="/accessories" [translate]="'menu.label_accessories'">Accessories</a>
+          <a class="nav-link" routerLink="/accessories" [translate]="'menu.label_accessories'">
+            <i class="fa fa-lightbulb pr-2"></i>Accessories</a>
+        </li>
+        <li class="nav-item waves-effect waves-light" routerLinkActive="active" >
+          <a class="nav-link" routerLink="/logs" [translate]="'menu.linux.label_logs'">
+            <i class="fa fa-timeline pr-2"></i>Logs</a>
+        </li>
+        <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$settings.env.enableTerminalAccess && $auth.user.admin">
+          <a class="nav-link" routerLink="/platform-tools/terminal" [translate]="'menu.linux.label_terminal'">
+            <i class="fa fa-terminal pr-2"></i>Terminal</a>
+        </li>
+        <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
+          <a class="nav-link" routerLink="/settings" [translate]="'menu.label_settings_hb'">
+            <i class="fa fa-cog pr-2"></i>Homebridge Settings</a>
+        </li>
+        <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
+          <a class="nav-link" href="javascript:void(0)" (click)="openUiSettings() [translate]="'menu.label_settings_ui'">
+            <i class="fa fa-sliders pr-2"></i>UI Settings</a>
+        </li>
+        <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
+          <a class="nav-link" href="javascript:void(0)" (click)="backupRestoreHomebridge()" [translate]="'backup.title_backup_restore'">
+            <i class="fa fa-clock-rotate-left pr-2"></i>Backup</a>
+        </li>
+        <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
+          <a class="nav-link" routerLink="/config" [translate]="'menu.label_config'">
+            <i class="fa fa-file-lines pr-2"></i>Config</a>
+        </li>
+        <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
+          <a class="nav-link" routerLink="/users" [translate]="'menu.tooltip_user_accounts'">
+            <i class="fa fa-user pr-2"></i>Users</a>
+        </li>
+        <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
+          <a class="nav-link" href="javascript:void(0)" (click)="openRestartOptionsModal()" [translate]="'menu.restart.title'">
+            <i class="fa fa-power pr-2"></i>Restart Options</a>
+        </li>
+        <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$settings.env.enableAccessories">
+          <a class="nav-link" routerLink="/accessories" [translate]="'menu.tooltip_logout'">
+            <i class="fa fa-right-from-bracket pr-2"></i>Logout - {{ $auth.user.username }}</a>
         </li>
       </ul>
       <ul class="navbar-nav nav-flex-icons hb-nav-right">
