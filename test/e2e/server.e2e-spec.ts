@@ -7,7 +7,7 @@ import {
   pathExists,
   readJson,
   remove,
-  writeJson
+  writeJson,
 } from 'fs-extra';
 import { AuthModule } from '../../src/core/auth/auth.module';
 import { ConfigService, HomebridgeConfig } from '../../src/core/config/config.service';

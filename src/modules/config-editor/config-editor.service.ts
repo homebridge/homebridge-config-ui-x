@@ -11,7 +11,7 @@ import {
   remove,
   rename,
   unlink,
-  writeJsonSync
+  writeJsonSync,
 } from 'fs-extra';
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
 import { Logger } from '../../core/logger/logger.service';

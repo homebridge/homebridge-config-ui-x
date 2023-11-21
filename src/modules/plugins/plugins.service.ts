@@ -4,7 +4,7 @@ import {
   arch,
   cpus,
   platform,
-  userInfo
+  userInfo,
 } from 'os';
 import {
   basename,

@@ -15,7 +15,7 @@ import {
   readdir,
   remove,
   unlink,
-  writeJson
+  writeJson,
 } from 'fs-extra';
 import * as NodeCache from 'node-cache';
 import { Systeminformation, networkInterfaces } from 'systeminformation';

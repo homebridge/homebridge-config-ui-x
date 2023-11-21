@@ -11,7 +11,7 @@ import {
   readJson,
   readJsonSync,
   stat,
-  writeJsonSync
+  writeJsonSync,
 } from 'fs-extra';
 import { isEqual } from 'lodash';
 import { satisfies } from 'semver';

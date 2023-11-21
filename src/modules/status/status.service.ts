@@ -3,7 +3,7 @@ import {
   cpus,
   loadavg,
   platform,
-  userInfo
+  userInfo,
 } from 'os';
 import { dirname, resolve } from 'path';
 import { promisify } from 'util';
