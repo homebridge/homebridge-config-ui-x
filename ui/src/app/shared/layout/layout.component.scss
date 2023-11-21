@@ -36,6 +36,10 @@
     transition: .25s ease-in-out;
 }
 
+.navbar-nav i {
+  width: 40px;
+}
+
 .middle-bar {
     margin-top: 0px;
 }
@@ -50,7 +54,7 @@
 
 .navbar-toggler .bottom-bar {
   position: absolute;
-  top: 18px;
+  top: 20px;
   transform: rotate(0deg);
 }
 
@@ -70,6 +74,10 @@
 .navbar-toggler:not(.collapsed) .bottom-bar {
   top: 10px;
   transform: rotate(-135deg);
+}
+
+.nav-link {
+  background-color: transparent !important;
 }
 
 /* SIDEBAR NAVBAR */
@@ -171,7 +179,7 @@
   pointer-events: none;
 }
 .sidebar .nav-links li .sub-menu{
-  padding: 6px 6px 14px 30px;
+  padding: 6px 6px 14px 0px;
   margin-top: -10px;
   display: none;
   transition: all 0.3s ease;
@@ -254,6 +262,13 @@
   -webkit-transition: none;
   transition: none;
   display: none;
+}
+
+.sub-menu li i {
+  height: 10px !important;
+  width: 10px !important;
+  line-height: 10px !important;
+  font-size: 16px !important;
 }
 
 /* ELSE */

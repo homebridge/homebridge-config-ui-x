@@ -1,7 +1,7 @@
 <!--Main Navigation-->
 <header *ngIf="$settings.theme && $auth.user">
   <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary scrolling-navbar d-lg-none">
-    <a class="navbar-brand" routerLink="/">
+    <a class="navbar-brand" routerLink="/" data-toggle="collapse" data-target=".navbar-collapse.show">
       <img class="menu-logo" src="/assets/homebridge-logo.svg" />
       <strong>Homebridge</strong>
     </a>
@@ -15,7 +15,7 @@
       <ul class="navbar-nav mr-auto">
         <li class="nav-item waves-effect waves-light" routerLinkActive="active"
           [routerLinkActiveOptions]="{exact: true}">
-          <a class="nav-link" routerLink="/" [translate]="'menu.label_status'"
+          <a class="nav-link" routerLink="/status" [translate]="'menu.label_status'"
             data-toggle="collapse" data-target=".navbar-collapse.show">
             <i class='fa fa-house'></i>Status</a>
         </li>
@@ -67,12 +67,12 @@
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
           <a class="nav-link" href="javascript:void(0)" (click)="openRestartOptionsModal()" [translate]="'menu.restart.title'"
             data-toggle="collapse" data-target=".navbar-collapse.show">
-            <i class="fa fa-power pr-2"></i>Restart Options</a>
+            <i class="fa fa-power-off pr-2"></i>Restart Options</a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$settings.formAuth">
-          <a class="nav-link" routerLink="/accessories" [translate]="'menu.tooltip_logout'"
+          <a class="nav-link" href="javascript:void(0)" (click)="$auth.logout()" [translate]="'menu.tooltip_logout'"
             data-toggle="collapse" data-target=".navbar-collapse.show">
-            <i class="fa fa-right-from-bracket pr-2"></i>Logout - {{ $auth.user.username }}</a>
+            <i class="fa fa-right-from-bracket pr-2"></i>{{ 'menu.tooltip_logout' | translate }} - {{ $auth.user.username }}</a>
         </li>
       </ul>
       <ul class="navbar-nav nav-flex-icons hb-nav-right">
@@ -211,7 +211,7 @@
       <li *ngIf="$auth.user.admin">
         <div class="iocn-link">
           <a href="javascript:void(0)" (click)="openRestartOptionsModal()" [translate]="'menu.restart.title'">
-            <i class="fa fa-power"></i>
+            <i class="fa fa-power-off"></i>
             <span class="link_name">Restart Options</span>
           </a>       
         </div>
@@ -222,13 +222,13 @@
       <li>
       <li>
         <div class="iocn-link">
-          <a href="javascript:void(0)" (click)="$auth.logout()" [translate]="'menu.tooltip_logout'">
+          <a href="javascript:void(0)" (click)="$auth.logout()">
             <i class="fa fa-right-from-bracket"></i>
-            <span class="link_name">Logout<br><span class="text-muted">{{ $auth.user.username }}</span></span>
+            <span class="link_name">{{ 'menu.tooltip_logout' | translate }}<br><span class="text-muted">{{ $auth.user.username }}</span></span>
           </a>       
         </div>
         <ul class="sub-menu blank">
-          <li><a class="link_name" href="javascript:void(0)" (click)="$auth.logout()" [translate]="'menu.tooltip_logout'">Logout - {{ $auth.user.username }}</a></li>
+          <li><a class="link_name" href="javascript:void(0)" (click)="$auth.logout()" [translate]="'menu.tooltip_logout'">{{ 'menu.tooltip_logout' | translate }} - {{ $auth.user.username }}</a></li>
         </ul>
       </li>
       <li>
