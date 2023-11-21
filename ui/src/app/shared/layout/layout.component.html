@@ -57,6 +57,7 @@
               <i class="fa fa-user pr-2"></i>Users</a>
           </div>
         </li>
+        <!--
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
           <a class="nav-link" routerLink="/settings" [translate]="'menu.label_settings_hb'"
             data-toggle="collapse" data-target=".navbar-collapse.show">
@@ -82,6 +83,7 @@
             data-toggle="collapse" data-target=".navbar-collapse.show">
             <i class="fa fa-user pr-2"></i>Users</a>
         </li>
+        -->
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
           <a class="nav-link" href="javascript:void(0)" (click)="openRestartOptionsModal()" [translate]="'menu.restart.title'"
             data-toggle="collapse" data-target=".navbar-collapse.show">
@@ -93,6 +95,7 @@
             <i class="fa fa-right-from-bracket pr-2"></i>{{ 'menu.tooltip_logout' | translate }} - {{ $auth.user.username }}</a>
         </li>
       </ul>
+      <!--
       <ul class="navbar-nav nav-flex-icons hb-nav-right">
         <li class="nav-item mr-3" *ngIf="rPiWasUnderVoltage || rPiCurrentlyUnderVoltage">
           <a href="javascript:void(0)" class="nav-link dropdown-toggle waves-effect waves-light"
@@ -154,6 +157,7 @@
           </div>
         </li>
       </ul>
+      -->
     </div>
   </nav>
 </header>
