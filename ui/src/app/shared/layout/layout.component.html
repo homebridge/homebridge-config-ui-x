@@ -67,7 +67,7 @@
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
           <a class="nav-link" href="javascript:void(0)" (click)="openRestartOptionsModal()" [translate]="'menu.restart.title'"
             data-toggle="collapse" data-target=".navbar-collapse.show">
-            <i class="fa fa-power pr-2"></i>Restart Options</a>
+            <i class="fa fa-power-off pr-2"></i>Restart Options</a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$settings.formAuth">
           <a class="nav-link" routerLink="/accessories" [translate]="'menu.tooltip_logout'"
@@ -211,7 +211,7 @@
       <li *ngIf="$auth.user.admin">
         <div class="iocn-link">
           <a href="javascript:void(0)" (click)="openRestartOptionsModal()" [translate]="'menu.restart.title'">
-            <i class="fa fa-power"></i>
+            <i class="fa fa-power-off"></i>
             <span class="link_name">Restart Options</span>
           </a>       
         </div>
