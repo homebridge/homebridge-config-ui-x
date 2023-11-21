@@ -73,8 +73,10 @@ export class AppComponent {
     router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         const dropdownMenu = window.document.querySelector('#navbarSupportedContent');
+        const hamburgerMenuButton = window.document.querySelector('.navbar-toggler');
         if (dropdownMenu) {
           dropdownMenu.classList.remove('show');
+          hamburgerMenuButton.classList.add('collapsed');
         }
       }
     });
