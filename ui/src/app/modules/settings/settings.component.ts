@@ -114,9 +114,9 @@ export class SettingsComponent implements OnInit {
         this.$settings.env.runningInSynologyPackage ||
         this.$settings.env.runningInPackageMode
       );
-        if (onLinux) {
-          this.showAvahiMdnsOption = true;
-          this.showResolvedMdnsOption = true;
+      if (onLinux) {
+        this.showAvahiMdnsOption = true;
+        this.showResolvedMdnsOption = true;
       }
     } catch (e) {
 
