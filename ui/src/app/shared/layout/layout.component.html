@@ -70,7 +70,7 @@
             <i class="fa fa-power-off pr-2"></i>Restart Options</a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$settings.formAuth">
-          <a class="nav-link" routerLink="/accessories" [translate]="'menu.tooltip_logout'"
+          <a class="nav-link" href="javascript:void(0)" (click)="$auth.logout()" [translate]="'menu.tooltip_logout'"
             data-toggle="collapse" data-target=".navbar-collapse.show">
             <i class="fa fa-right-from-bracket pr-2"></i>Logout - {{ $auth.user.username }}</a>
         </li>
