@@ -16,27 +16,27 @@
         <li class="nav-item waves-effect waves-light" routerLinkActive="active"
           [routerLinkActiveOptions]="{exact: true}">
           <a class="nav-link" routerLink="/status" [translate]="'menu.label_status'"
-            data-toggle="collapse" data-target=".navbar-collapse.show">
+            data-toggle="collapse" data-target=".navbar-toggler:not(.collapsed),.navbar-collapse.show=">
             <i class='fa fa-house'></i>Status</a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
           <a class="nav-link" routerLink="/plugins" [translate]="'menu.label_plugins'"
-            data-toggle="collapse" data-target=".navbar-collapse.show">
+            data-toggle="collapse" data-target=".navbar-toggler:not(.collapsed),.navbar-collapse.show">
             <i class="fa fa-plug pr-2"></i>Plugins</a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$settings.env.enableAccessories">
           <a class="nav-link" routerLink="/accessories" [translate]="'menu.label_accessories'"
-            data-toggle="collapse" data-target=".navbar-collapse.show">
+            data-toggle="collapse" data-target=".navbar-toggler:not(.collapsed),.navbar-collapse.show,.navbar-toggler:not(.collapsed)">
             <i class="fa fa-lightbulb pr-2"></i>Accessories</a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active">
           <a class="nav-link" routerLink="/logs" [translate]="'menu.linux.label_logs'"
-            data-toggle="collapse" data-target=".navbar-collapse.show">
+            data-toggle="collapse" data-target=".navbar-collapse.show,.navbar-toggler:not(.collapsed)">
             <i class="fa fa-code pr-2"></i>Logs</a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$settings.env.enableTerminalAccess && $auth.user.admin">
           <a class="nav-link" routerLink="/platform-tools/terminal" [translate]="'menu.linux.label_terminal'"
-            data-toggle="collapse" data-target=".navbar-collapse.show">
+            data-toggle="collapse" data-target=".navbar-collapse.show,.navbar-toggler:not(.collapsed)">
             <i class="fa fa-terminal pr-2"></i>Terminal</a>
         </li>
         <li class="nav-item dropdown" *ngIf="$auth.user.admin">
