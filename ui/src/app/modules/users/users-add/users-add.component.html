@@ -7,7 +7,6 @@
       </button>
     </div>
     <div class="modal-body">
-      <p class="h4 text-center mb-4" [innerText]="page.title | translate"></p>
       <div class="md-form">
         <i class="fas fa-fw fa-user-shield prefix grey-text"></i>
         <input formControlName="username" [attr.disabled]="(page.title === 'users.title_edit_user') ? true : null"

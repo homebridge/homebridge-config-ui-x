@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
+import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { ApiService } from '@/app/core/api.service';
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
@@ -25,7 +26,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
   });
 
   public loading = true;
-  private navigationSubscription;
+  private navigationSubscription: Subscription;
 
   constructor(
     private $settings: SettingsService,

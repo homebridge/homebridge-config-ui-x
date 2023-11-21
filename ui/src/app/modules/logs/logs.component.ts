@@ -69,7 +69,7 @@ export class LogsComponent implements OnInit, OnDestroy {
             saveAs(res.body, 'homebridge.log.txt');
           },
           async (err: HttpErrorResponse) => {
-            let message;
+            let message: string;
             try {
               message = JSON.parse(await err.error.text()).message;
             } catch (e) {
@@ -109,12 +109,3 @@ export class LogsComponent implements OnInit, OnDestroy {
   }
 
 }
-
-export const LogsStates = {
-  name: 'logs',
-  url: '/logs',
-  component: LogsComponent,
-  data: {
-    requiresAuth: true,
-  },
-};

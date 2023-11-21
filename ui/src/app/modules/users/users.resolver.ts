@@ -1,10 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  ActivatedRouteSnapshot,
-  Resolve,
-  Router,
-  RouterStateSnapshot,
-} from '@angular/router';
+import { Resolve, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '@/app/core/api.service';
 
@@ -16,10 +11,7 @@ export class UsersResolver implements Resolve<any> {
     private $router: Router,
   ) { }
 
-  resolve(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot,
-  ) {
+  resolve() {
     return this.$api.get('/users').toPromise()
       .catch((err) => {
         this.$toastr.error(err.message, 'Failed to Load Users');

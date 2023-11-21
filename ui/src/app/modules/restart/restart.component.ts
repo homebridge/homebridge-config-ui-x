@@ -89,5 +89,4 @@ export class RestartComponent implements OnInit, OnDestroy {
     clearTimeout(this.checkDelay);
     clearTimeout(this.checkTimeout);
   }
-
 }

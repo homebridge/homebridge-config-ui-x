@@ -54,7 +54,7 @@ export class UsersSetup2faComponent implements OnInit {
     );
   }
 
-  checkTimeDiff(timestamp) {
+  checkTimeDiff(timestamp: string) {
     const diffMs = dayjs(timestamp).diff(new Date(), 'millisecond');
     if (diffMs < -5000 || diffMs > 5000) {
       this.timeDiffError = diffMs;

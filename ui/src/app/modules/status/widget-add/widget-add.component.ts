@@ -156,5 +156,4 @@ export class WidgetAddComponent implements OnInit {
     this.unlockLayout();
     this.activeModal.dismiss();
   }
-
 }
