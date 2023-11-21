@@ -1,9 +1,13 @@
+
+
 .log-buttons {
   position: fixed;
-  top: 80px;
+  top: 0px;
   right: 10px;
   z-index: 1000;
-
+  background-color: #000000;
+  padding: 10px 0 10px 10px;
+  
   button {
     opacity: 0.4;
     -webkit-transition: opacity 200ms ease-in;
@@ -18,5 +22,11 @@
         opacity: 1;
       }
     }
+  }
+}
+
+@media (max-width: 991px) {
+  .log-buttons {
+    top: 67px !important
   }
 }
