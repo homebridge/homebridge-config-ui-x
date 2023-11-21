@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-
 import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
@@ -9,8 +8,6 @@ import { SettingsService } from '@/app/core/settings.service';
   templateUrl: './app.component.html',
 })
 export class AppComponent {
-  public langdir = 'ltr';
-
   constructor(
     router: Router,
     translate: TranslateService,
@@ -50,18 +47,14 @@ export class AppComponent {
       'he',
     ];
 
-    // which langs should use RTL
+    // which languages should use RTL
     const rtlLanguages = [
       'he',
     ];
 
     // watch for lang changes
     translate.onLangChange.subscribe(() => {
-      if (rtlLanguages.includes(translate.currentLang)) {
-        $settings.rtl = true;
-      } else {
-        $settings.rtl = false;
-      }
+      $settings.rtl = rtlLanguages.includes(translate.currentLang);
     });
 
     const browserLang = languages.find(x => x === translate.getBrowserLang() || x === translate.getBrowserCultureLang());
@@ -81,8 +74,10 @@ export class AppComponent {
       var target = event.target;
       if (event instanceof NavigationEnd && !target.hasClass('dropdown-toggle')) {
         const dropdownMenu = window.document.querySelector('#navbarSupportedContent');
+        const hamburgerMenuButton = window.document.querySelector('.navbar-toggler');
         if (dropdownMenu) {
           dropdownMenu.classList.remove('show');
+          hamburgerMenuButton.classList.add('collapsed');
         }
       }
     });

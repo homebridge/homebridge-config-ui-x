@@ -1,8 +1,8 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { Subject } from 'rxjs';
 import { ServiceTypeX } from '../../accessories.interfaces';
 
-import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-valve-manage',

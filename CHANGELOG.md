@@ -2,6 +2,28 @@
 
 All notable changes to homebridge-config-ui-x will be documented in this file.
 
+## BETA
+
+### UI Changes
+
+- Add Child Bridge Pin Code (#1739)
+- standardise modal footers (#1753)
+- Fix table width, avoid overflow (#1758) (@jsiegenthaler)
+
+### Translation Changes
+
+- **i18n:** Update fr.json ([#1705](https://github.com/homebridge/homebridge-config-ui-x/pull/1705))
+
+### Other Changes
+
+- Add Alpha Releases (#1740)
+- update dependencies (#1745)
+- update github release workflow (#1746)
+- ui lint sort imports and exports (#1750)
+- update lang sync - remove old translations (#1751)
+- various code improvements + simplifications (#1754)
+- remove node 11 polyfill from self-check (#1777)
+
 ## 4.52.3 (2023-11-14)
 
 ### Bug Fixes

@@ -1,10 +1,16 @@
-import { Component, OnInit, Input } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, of } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map, tap, switchMap, catchError } from 'rxjs/operators';
-
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  switchMap,
+  tap,
+} from 'rxjs/operators';
 import { environment } from '@/environments/environment';
 
 @Component({
@@ -19,7 +25,7 @@ export class WidgetControlComponent implements OnInit {
     private $http: HttpClient,
     private $translate: TranslateService,
   ) { }
-  @Input() widget;
+  @Input() widget: any;
 
   // weather
   public searching: boolean;
@@ -71,7 +77,7 @@ export class WidgetControlComponent implements OnInit {
       switchMap(term =>
         term.length < 3 ? [] :
           this.findOpenWeatherMapCity(term).pipe(
-            catchError((e) => {
+            catchError(() => {
               this.searching = false;
               return of([]);
             })),
@@ -106,7 +112,7 @@ export class WidgetControlComponent implements OnInit {
           },
         }),
       }).pipe(
-        map((response: any) => response.list.map((item) => ({
+        map((response: any) => response.list.map((item: any) => ({
               id: item.id,
               name: item.name,
               country: item.sys.country,
@@ -114,5 +120,4 @@ export class WidgetControlComponent implements OnInit {
             }))),
       );
   }
-
 }

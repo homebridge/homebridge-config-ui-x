@@ -1,7 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
-
 import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
@@ -10,7 +9,7 @@ import { SettingsService } from '@/app/core/settings.service';
   styleUrls: ['./widget-add.component.scss'],
 })
 export class WidgetAddComponent implements OnInit {
-  @Input() dashboard;
+  @Input() dashboard: any;
   @Input() resetLayout: () => void;
   @Input() lockLayout: () => void;
   @Input() unlockLayout: () => void;
@@ -136,10 +135,10 @@ export class WidgetAddComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.availableWidgets = this.allWidgets.filter(x => !this.dashboard.some(i => i.component === x.component) && !x.hidden);
+    this.availableWidgets = this.allWidgets.filter(x => !this.dashboard.some((i: any) => i.component === x.component) && !x.hidden);
   }
 
-  selectWidget(widget) {
+  selectWidget(widget: any) {
     this.activeModal.close(widget);
   }
 
@@ -157,5 +156,4 @@ export class WidgetAddComponent implements OnInit {
     this.unlockLayout();
     this.activeModal.dismiss();
   }
-
 }

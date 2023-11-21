@@ -1,11 +1,15 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import {
+  Component,
+  Input,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Subject, Subscription, interval } from 'rxjs';
 import * as dayjs from 'dayjs';
-
-import { WsService } from '@/app/core/ws.service';
+import { Subject, Subscription, interval } from 'rxjs';
 import { AuthService } from '@/app/core/auth/auth.service';
+import { WsService } from '@/app/core/ws.service';
 import { environment } from '@/environments/environment';
 
 @Component({
@@ -50,7 +54,7 @@ export class WeatherWidgetComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Get the current weather forcast from OpenWeatherMap
+   * Get the current weather forecast from OpenWeatherMap
    * Cache for 20 minutes to prevent repeat requests
    */
   getCurrentWeather() {

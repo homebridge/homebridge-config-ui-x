@@ -115,7 +115,7 @@ describe('ConfigEditorController (e2e)', () => {
       await fs.writeFile(path.resolve(backupFilePath, backupFileName), 'xyz');
     }
 
-    // do a sanity check before hand
+    // do a sanity check beforehand
     const backupsBeforeCleanup = await fs.readdir(backupFilePath);
     expect(backupsBeforeCleanup).toHaveLength(11);
 
@@ -867,7 +867,7 @@ describe('ConfigEditorController (e2e)', () => {
 
     // there is a race condition here whereby we might read the backup file
     // path before the deletion has actually happened, causing the test to fail,
-    // so I have added a 1 second delay.
+    // so I have added a 1-second delay.
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const backups = await fs.readdir(backupFilePath);

@@ -1,17 +1,16 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
+import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-
-import { CoreModule } from '@/app/core/core.module';
-import { UsersRoutingModule } from './users-routing.module';
-import { UsersComponent } from './users.component';
+import { TranslateModule } from '@ngx-translate/core';
 import { UsersAddComponent } from './users-add/users-add.component';
-import { UsersEditComponent } from './users-edit/users-edit.component';
-import { UsersResolver } from './users.resolver';
-import { UsersSetup2faComponent } from './users-setup2fa/users-setup2fa.component';
 import { UsersDisable2faComponent } from './users-disable2fa/users-disable2fa.component';
+import { UsersEditComponent } from './users-edit/users-edit.component';
+import { UsersRoutingModule } from './users-routing.module';
+import { UsersSetup2faComponent } from './users-setup2fa/users-setup2fa.component';
+import { UsersComponent } from './users.component';
+import { UsersResolver } from './users.resolver';
+import { CoreModule } from '@/app/core/core.module';
 
 @NgModule({
     declarations: [

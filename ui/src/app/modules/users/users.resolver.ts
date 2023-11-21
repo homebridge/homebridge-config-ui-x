@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Resolve, RouterStateSnapshot, ActivatedRouteSnapshot, Router } from '@angular/router';
+import { Resolve, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-
 import { ApiService } from '@/app/core/api.service';
 
 @Injectable()
@@ -12,14 +11,12 @@ export class UsersResolver implements Resolve<any> {
     private $router: Router,
   ) { }
 
-  resolve(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot,
-  ) {
-    return this.$api.get('/users').toPromise()
-      .catch((err) => {
-        this.$toastr.error(err.message, 'Failed to Load Users');
-        this.$router.navigate(['/']);
-      });
+  async resolve() {
+    try {
+      return await this.$api.get('/users').toPromise();
+    } catch (err) {
+      this.$toastr.error(err.message, 'Failed to Load Users');
+      this.$router.navigate(['/']);
+    }
   }
 }

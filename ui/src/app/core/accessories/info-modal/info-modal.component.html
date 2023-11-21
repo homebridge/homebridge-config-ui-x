@@ -2,7 +2,7 @@
   <div class="modal-header">
     <h5 class="modal-title">{{ service.customName || service.serviceName }}</h5>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-      (click)="activeModal.dismiss('Cross click')">
+      (click)="activeModal.dismiss('Dismiss')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
@@ -28,7 +28,7 @@
         type="text" id="form-name" autocomplete="off" class="form-control pl-0 pr-0">
       <label for="form-name" class="active" [translate]="'accessories.label_name'">Name</label>
     </div>
-    <table class="table table-borderless table-hover table-striped table-sm">
+    <table class="table table-borderless table-hover table-striped table-sm" style="table-layout:fixed; width:100%;">
       <tbody>
         <tr>
           <th>{{ service.humanType }}</th>
@@ -70,5 +70,14 @@
         </tr>
       </tbody>
     </table>
+  </div>
+  <div class="modal-footer justify-content-between">
+    <div class="text-left"></div>
+    <div class="text-center">
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
+        {{ 'form.button_close' | translate }}
+      </button>
+    </div>
+    <div class="text-right"></div>
   </div>
 </div>

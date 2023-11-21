@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-
 import * as MobileDetect from 'mobile-detect';
 
 const preventDefault = (e) => {
@@ -10,7 +9,7 @@ const preventDefault = (e) => {
   providedIn: 'root',
 })
 export class MobileDetectService {
-  public detect;
+  public detect: MobileDetect;
   public isTouchMoveLocked = false;
 
   constructor() {

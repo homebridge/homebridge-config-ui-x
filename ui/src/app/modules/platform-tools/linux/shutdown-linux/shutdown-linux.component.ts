@@ -1,11 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-
 import { ApiService } from '@/app/core/api.service';
-import { WsService } from '@/app/core/ws.service';
 import { SettingsService } from '@/app/core/settings.service';
+import { WsService } from '@/app/core/ws.service';
 
 @Component({
   selector: 'app-shutdown-linux',

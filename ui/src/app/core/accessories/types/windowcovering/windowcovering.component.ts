@@ -1,7 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ServiceTypeX } from '../../accessories.interfaces';
-
 import { WindowcoveringManageComponent } from './windowcovering.manage.component';
 
 @Component({
@@ -28,7 +27,7 @@ export class WindowcoveringComponent implements OnInit {
 
   onLongClick() {
     const ref = this.modalService.open(WindowcoveringManageComponent, {
-      size: 'sm',
+      size: 'md',
     });
     ref.componentInstance.service = this.service;
   }

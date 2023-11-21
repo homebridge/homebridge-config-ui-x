@@ -35,13 +35,28 @@
         </div>
       </div>
       <div class="row mb-4">
-        <div class="col-md-12 d-flex flex-wrap noselect services-bag" *ngIf="room.services.length"
+        <div class="col-md-12 d-flex flex-wrap justify-content-between noselect services-bag" *ngIf="room.services.length"
           [dragula]='"services-bag"' [(dragulaModel)]='room.services'>
           <div *ngFor="let service of room.services" [ngSwitch]="service.type" class="accessory-item accessory-tab">
             <ng-container *ngIf="!hideHidden || !service.hidden">
               <app-accessory-tile [service]="service"></app-accessory-tile>
             </ng-container>
           </div>
+          <div style="height:0px !important;" class="accessory-box invisible py-0 my-0"></div>
+          <div style="height:0px !important;" class="accessory-box invisible py-0 my-0"></div>
+          <div style="height:0px !important;" class="accessory-box invisible py-0 my-0"></div>
+          <div style="height:0px !important;" class="accessory-box invisible py-0 my-0"></div>
+          <div style="height:0px !important;" class="accessory-box invisible py-0 my-0"></div>
+          <div style="height:0px !important;" class="accessory-box invisible py-0 my-0"></div>
+          <div style="height:0px !important;" class="accessory-box invisible py-0 my-0"></div>
+          <div style="height:0px !important;" class="accessory-box invisible py-0 my-0"></div>
+          <div style="height:0px !important;" class="accessory-box invisible py-0 my-0"></div>
+          <div style="height:0px !important;" class="accessory-box invisible py-0 my-0"></div>
+          <div style="height:0px !important;" class="accessory-box invisible py-0 my-0"></div>
+          <div style="height:0px !important;" class="accessory-box invisible py-0 my-0"></div>
+          <div style="height:0px !important;" class="accessory-box invisible py-0 my-0"></div>
+          <div style="height:0px !important;" class="accessory-box invisible py-0 my-0"></div>
+          <div style="height:0px !important;" class="accessory-box invisible py-0 my-0"></div>
         </div>
         <div class="col-md-12 d-flex flex-wrap noselect" *ngIf="!room.services.length && !isMobile"
           [dragula]='"services-bag"' [(dragulaModel)]='room.services'>

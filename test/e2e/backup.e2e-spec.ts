@@ -148,7 +148,7 @@ describe('BackupController (e2e)', () => {
       await fs.writeFile(path.resolve(configService.instanceBackupPath, backupFileName), 'xyz');
     }
 
-    // do a sanity check before hand
+    // do a sanity check beforehand
     const backupsBeforeCleanup = await fs.readdir(configService.instanceBackupPath);
     expect(backupsBeforeCleanup).toHaveLength(10);
 
@@ -223,7 +223,7 @@ describe('BackupController (e2e)', () => {
     // save the backup to disk
     await fs.writeFile(tempBackupPath, downloadBackup.rawPayload);
 
-    // create multi-part form
+    // create multipart form
     const payload = new FormData();
     payload.append('backup.tar.gz', await fs.readFile(tempBackupPath));
 
@@ -249,7 +249,7 @@ describe('BackupController (e2e)', () => {
     expect(await fs.pathExists(pluginsJson)).toBe(true);
     expect(await fs.pathExists(infoJson)).toBe(true);
 
-    // mark the "homebridge-mock-plugin" dummy plugin as public so we can test the mock install
+    // mark the "homebridge-mock-plugin" dummy plugin as public, so we can test the mock install
     const installedPlugins = (await fs.readJson(pluginsJson)).map(x => {
       x.publicPackage = true;
       return x;

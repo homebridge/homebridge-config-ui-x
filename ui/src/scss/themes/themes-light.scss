@@ -6,8 +6,39 @@
       background-color: $primary-dark !important;
     }
 
+    .sidebar {
+      background-color: $primary;
+    }
+
+    .sidebar .nav-links li:hover,
+    .sidebar .nav-links li .sub-menu,
+    .li-link1.show, .li-link2.show {
+      background: $primary;
+    }
+    
+    .sidebar .logo-details i, .sidebar .logo-details img,
+    .sidebar .logo-details .logo_name,
+    .sidebar .nav-links li i,
+    .sidebar .nav-links li a .link_name,
+    .sidebar .nav-links li .sub-menu a {
+      color: #ffffff;
+    }
+
+    // .sidebar .logo-details img {
+    //   filter: invert(1);
+    // }
+
+    .hb-npm-search {
+        border: 0px !important;
+        background-color: #eeeeee !important;
+    }
+
     .primary-text {
       color: $primary;
+    }
+
+    .notif-dot {
+      background-color: $primary;
     }
 
     .btn-primary,
@@ -105,6 +136,11 @@
 
     .login-container {
       background-color: $primary-dark  !important;
+    }
+
+    .switch-on, .light-on, .window-on {
+      background-color: #fff;
+      color: #000000;
     }
 
     @keyframes uix-glow-icon {

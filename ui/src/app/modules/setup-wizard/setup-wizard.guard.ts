@@ -1,6 +1,6 @@
-import { SettingsService } from '@/app/core/settings.service';
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
+import { CanActivate, Router } from '@angular/router';
+import { SettingsService } from '@/app/core/settings.service';
 
 @Injectable({
   providedIn: 'root',
@@ -11,10 +11,7 @@ export class SetupWizardGuard implements CanActivate {
     private $settings: SettingsService,
   ) { }
 
-  async canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Promise<boolean> {
-
+  async canActivate(): Promise<boolean> {
     if (!this.$settings.settingsLoaded) {
       await this.$settings.onSettingsLoaded.toPromise();
     }
@@ -24,8 +21,6 @@ export class SetupWizardGuard implements CanActivate {
     }
 
     this.$router.navigate(['/']);
-
     return true;
   }
-
 }

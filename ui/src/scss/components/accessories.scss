@@ -7,11 +7,31 @@
   }
 
   .switch-on {
-    background-color: #fff;
+    background-color: #fff !important;
 
     #accessoryIcon {
-      fill: #1976d2 !important;
+      fill: #02d700 !important;
     }
+  }
+  .light-on {
+    background-color: #fff !important;
+
+    #accessoryIcon {
+      fill: #ffcf55 !important;
+    }
+  }
+  .window-on {
+    background-color: #fff !important;
+
+    #accessoryIcon {
+      fill: #00acff !important;
+    }
+  }
+  .window-on .st0 {
+    fill: #00acff !important;
+  }
+  .st0 {
+    fill: #666666 !important;
   }
 }
 
