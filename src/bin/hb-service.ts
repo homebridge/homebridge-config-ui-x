@@ -50,9 +50,9 @@ import {
 } from 'fs-extra';
 import * as ora from 'ora';
 import { gt, gte, parse } from 'semver';
-import { networkInterfaceDefault } from 'systeminformation';
+import { networkInterfaceDefault, networkInterfaces } from 'systeminformation';
 import { Tail } from 'tail';
-import { x as extract} from 'tar';
+import { x as extract } from 'tar';
 import { check as tcpCheck } from 'tcp-port-used';
 import type { HomebridgeIpcService } from '../core/homebridge-ipc/homebridge-ipc.service';
 import { BasePlatform } from './base-platform';
@@ -1112,11 +1112,9 @@ export class HomebridgeServiceHelper {
           this.homebridgeOpts.push('-D');
         }
 
-        // check if keep orphans should be enabled, only for Homebridge v1.0.2 and later
-        if (this.homebridgePackage && gte(this.homebridgePackage.version, '1.0.2')) {
-          if (homebridgeStartupOptions.keepOrphans && !this.homebridgeOpts.includes('-K')) {
-            this.homebridgeOpts.push('-K');
-          }
+        // check if keep orphans should be enabled
+        if (homebridgeStartupOptions.keepOrphans && !this.homebridgeOpts.includes('-K')) {
+          this.homebridgeOpts.push('-K');
         }
 
         // insecure mode is enabled by default, allow it to be removed if set to false
@@ -1161,7 +1159,7 @@ export class HomebridgeServiceHelper {
    * Prefer LTS versions
    * If current version is > LTS, update to the latest version while retaining the major version number
    */
-  private async checkForNodejsUpdates(requestedVersion) {
+  private async checkForNodejsUpdates(requestedVersion: string) {
     const versionList = (await get('https://nodejs.org/dist/index.json')).data;
     const currentLts = versionList.filter(x => x.lts)[0];
 

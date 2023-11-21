@@ -388,7 +388,6 @@ export class LinuxInstaller extends BasePlatform {
       default:
         this.hbService.logger(`Architecture not supported: ${process.arch}.`, 'fail');
         process.exit(1);
-        break;
     }
 
     this.hbService.logger(`Target: ${targetPath}`);
