@@ -113,6 +113,18 @@ export class BridgePluginsModalComponent implements OnInit {
     }
   }
 
+  openPluginConfig() {
+    // Close the existing modal
+    this.activeModal.close();
+
+    // Open the plugin config modal
+    this.$plugins.settings({
+      name: this.plugin.name,
+      settingsSchema: true,
+      links: {},
+    });
+  }
+
   async restartChildBridge(username: string) {
     this.restartInProgress[username] = true;
     try {
@@ -148,18 +160,6 @@ export class BridgePluginsModalComponent implements OnInit {
       }
     }
     return username;
-  }
-
-  openPluginConfig() {
-    // Close the existing modal
-    this.activeModal.close();
-
-    // Open the plugin config modal
-    this.$plugins.settings({
-      name: this.plugin.name,
-      settingsSchema: true,
-      links: {},
-    });
   }
 
   openFullConfigEditor() {

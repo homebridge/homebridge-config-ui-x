@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
+import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { gt } from 'semver';
 import { ApiService } from '@/app/core/api.service';
@@ -24,7 +25,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
   });
 
   private io = this.$ws.connectToNamespace('child-bridges');
-  private navigationSubscription;
+  private navigationSubscription: Subscription;
 
   constructor(
     private $settings: SettingsService,

@@ -149,7 +149,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
           this.translate.instant('config.toast_config_bridge_missing'),
           this.translate.instant('config.toast_title_config_error'),
         );
-      } else if (!/^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$/.test(config.bridge.username)) {
+      } else if (!/^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$/.test(config.bridge.username)) {
         this.$toastr.error(
           this.translate.instant('config.toast_config_username_format_error'),
           this.translate.instant('config.toast_title_config_error'),
@@ -309,7 +309,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     return true;
   }
 
-  validatePlugins(plugins: any[], key) {
+  validatePlugins(plugins: any[], key: string) {
     for (const item of plugins) {
       if (typeof item !== 'string') {
         this.$toastr.error(`Each item in the ${key} array must be a string.`);
@@ -322,7 +322,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   /**
    * Highlight the problematic rows in the editor
    */
-  highlightOffendingArrayItem(block) {
+  highlightOffendingArrayItem(block: string) {
     if (!this.monacoEditor) {
       return;
     }

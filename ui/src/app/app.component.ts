@@ -47,7 +47,7 @@ export class AppComponent {
       'he',
     ];
 
-    // which longs should use RTL
+    // which languages should use RTL
     const rtlLanguages = [
       'he',
     ];

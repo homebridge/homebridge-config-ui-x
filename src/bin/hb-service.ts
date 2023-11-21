@@ -1217,7 +1217,7 @@ export class HomebridgeServiceHelper {
   /**
    * Extract the Node.js tarball
    */
-  public async extractNodejs(targetVersion: string, extractConfig) {
+  public async extractNodejs(targetVersion: string, extractConfig: tar.ExtractOptions) {
     const spinner = ora(`Installing Node.js ${targetVersion}`).start();
 
     try {

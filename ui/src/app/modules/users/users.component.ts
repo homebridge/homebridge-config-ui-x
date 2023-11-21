@@ -62,7 +62,7 @@ export class UsersComponent implements OnInit {
     });
   }
 
-  deleteUser(id) {
+  deleteUser(id: string) {
     this.$api.delete(`/users/${id}`).subscribe(
       data => {
         this.toastr.success(this.translate.instant('users.toast_user_deleted'), this.translate.instant('toast.title_success'));
