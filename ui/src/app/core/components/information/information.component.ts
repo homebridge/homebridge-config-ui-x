@@ -15,7 +15,7 @@ export class InformationComponent implements OnInit {
 
   constructor(
     public activeModal: NgbActiveModal,
-  ) { }
+  ) {}
 
   ngOnInit() {}
 }

@@ -21,7 +21,7 @@ export class SelectPreviousVersionComponent implements OnInit {
     private $api: ApiService,
     private $toastr: ToastrService,
     private $translate: TranslateService,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.selectedVersion = this.plugin.installedVersion || this.plugin.latestVersion;

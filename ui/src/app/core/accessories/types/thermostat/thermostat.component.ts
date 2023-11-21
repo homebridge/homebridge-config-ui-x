@@ -14,10 +14,9 @@ export class ThermostatComponent implements OnInit {
 
   constructor(
     private modalService: NgbModal,
-  ) { }
+  ) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   onClick() {
     const ref = this.modalService.open(ThermostatManageComponent, {
@@ -25,5 +24,4 @@ export class ThermostatComponent implements OnInit {
     });
     ref.componentInstance.service = this.service;
   }
-
 }

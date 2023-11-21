@@ -5,4 +5,4 @@ import { NodePtyService } from './node-pty.service';
   providers: [NodePtyService],
   exports: [NodePtyService],
 })
-export class NodePtyModule { }
+export class NodePtyModule {}

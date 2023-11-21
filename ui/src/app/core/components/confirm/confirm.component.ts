@@ -14,7 +14,7 @@ export class ConfirmComponent implements OnInit {
 
   constructor(
     public activeModal: NgbActiveModal,
-  ) { }
+  ) {}
 
   ngOnInit() {}
 }

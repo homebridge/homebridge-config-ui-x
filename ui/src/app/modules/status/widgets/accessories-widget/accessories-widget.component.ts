@@ -99,5 +99,4 @@ export class AccessoriesWidgetComponent implements OnInit, OnDestroy {
     this.accessoryDataSubscription.unsubscribe();
     this.dragulaService.destroy('widget-accessories-bag');
   }
-
 }

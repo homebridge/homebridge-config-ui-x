@@ -13,24 +13,24 @@ import { UsersResolver } from './users.resolver';
 import { CoreModule } from '@/app/core/core.module';
 
 @NgModule({
-    declarations: [
-        UsersComponent,
-        UsersAddComponent,
-        UsersEditComponent,
-        UsersSetup2faComponent,
-        UsersDisable2faComponent,
-    ],
-    imports: [
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        TranslateModule.forChild(),
-        NgbModule,
-        CoreModule,
-        UsersRoutingModule,
-    ],
-    providers: [
-        UsersResolver,
-    ],
+  declarations: [
+    UsersComponent,
+    UsersAddComponent,
+    UsersEditComponent,
+    UsersSetup2faComponent,
+    UsersDisable2faComponent,
+  ],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    TranslateModule.forChild(),
+    NgbModule,
+    CoreModule,
+    UsersRoutingModule,
+  ],
+  providers: [
+    UsersResolver,
+  ],
 })
-export class UsersModule { }
+export class UsersModule {}

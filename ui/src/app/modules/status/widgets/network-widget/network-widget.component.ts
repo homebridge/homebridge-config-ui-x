@@ -17,9 +17,6 @@ import { WsService } from '@/app/core/ws.service';
   styleUrls: ['./network-widget.component.scss'],
 })
 export class NetworkWidgetComponent implements OnInit, OnDestroy {
-  private io = this.$ws.getExistingNamespace('status');
-  private intervalSubscription: Subscription;
-
   @ViewChild(BaseChartDirective, { static: true }) public chart: BaseChartDirective;
   @ViewChild('widgetbackground', { static: true }) private widgetBackground: ElementRef;
 
@@ -64,10 +61,13 @@ export class NetworkWidgetComponent implements OnInit, OnDestroy {
     },
   ];
 
+  private io = this.$ws.getExistingNamespace('status');
+  private intervalSubscription: Subscription;
+
   constructor(
     private $ws: WsService,
     public $auth: AuthService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.io.connected.subscribe(async () => {
@@ -123,5 +123,4 @@ export class NetworkWidgetComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.intervalSubscription.unsubscribe();
   }
-
 }

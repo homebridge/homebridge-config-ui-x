@@ -8,6 +8,8 @@ import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebr
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { SettingsService } from '@/app/core/settings.service';
 
+/* eslint-disable no-underscore-dangle */
+
 @Component({
   selector: 'app-bridge-plugins-modal',
   templateUrl: './bridge-plugins-modal.component.html',
@@ -35,7 +37,7 @@ export class BridgePluginsModalComponent implements OnInit {
     private $router: Router,
     private $toastr: ToastrService,
     private $translate: TranslateService,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.loadPluginConfig();
@@ -77,7 +79,7 @@ export class BridgePluginsModalComponent implements OnInit {
   async getUnusedPort() {
     this.saveInProgress = true;
     try {
-      const lookup = await this.$api.get(`/server/port/new`).toPromise();
+      const lookup = await this.$api.get('/server/port/new').toPromise();
       return lookup.port;
     } catch (e) {
       return Math.floor(Math.random() * (60000 - 30000 + 1) + 30000);

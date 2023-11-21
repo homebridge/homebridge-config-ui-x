@@ -7,6 +7,6 @@ interface NodeModule {
 
 declare module 'jwt-decode' {
   function decode(token: string): any;
-  namespace decode { }
+  namespace decode {}
   export = decode;
 }

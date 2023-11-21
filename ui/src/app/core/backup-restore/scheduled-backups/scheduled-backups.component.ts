@@ -20,7 +20,7 @@ export class ScheduledBackupsComponent implements OnInit {
     private $toastr: ToastrService,
     private $translate: TranslateService,
     private $api: ApiService,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.getScheduledBackups();
@@ -64,5 +64,4 @@ export class ScheduledBackupsComponent implements OnInit {
   openBackupRestore() {
     this.activeModal.close();
   }
-
 }

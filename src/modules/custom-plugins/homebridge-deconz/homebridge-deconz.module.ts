@@ -20,4 +20,4 @@ import { HomebridgeDeconzService } from './homebridge-deconz.service';
     HomebridgeDeconzController,
   ],
 })
-export class HomebridgeDeconzModule { }
+export class HomebridgeDeconzModule {}

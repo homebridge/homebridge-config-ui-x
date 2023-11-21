@@ -11,20 +11,20 @@ import { CoreModule } from '@/app/core/core.module';
 import { ManagePluginsModule } from '@/app/core/manage-plugins/manage-plugins.module';
 
 @NgModule({
-    declarations: [
-        PluginsComponent,
-        DonateModalComponent,
-        PluginCardComponent,
-    ],
-    imports: [
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        TranslateModule.forChild(),
-        NgbModule,
-        CoreModule,
-        ManagePluginsModule,
-        PluginsRoutingModule,
-    ],
+  declarations: [
+    PluginsComponent,
+    DonateModalComponent,
+    PluginCardComponent,
+  ],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    TranslateModule.forChild(),
+    NgbModule,
+    CoreModule,
+    ManagePluginsModule,
+    PluginsRoutingModule,
+  ],
 })
-export class PluginsModule { }
+export class PluginsModule {}

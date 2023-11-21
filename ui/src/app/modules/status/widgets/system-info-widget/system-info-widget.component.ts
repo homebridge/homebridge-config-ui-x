@@ -11,17 +11,17 @@ import { WsService } from '@/app/core/ws.service';
   styleUrls: ['./system-info-widget.component.scss'],
 })
 export class SystemInfoWidgetComponent implements OnInit {
-  private io = this.$ws.getExistingNamespace('status');
-
   public serverInfo: any;
   public nodejsInfo = {} as any;
+
+  private io = this.$ws.getExistingNamespace('status');
 
   constructor(
     private $ws: WsService,
     public $auth: AuthService,
     private $modal: NgbModal,
     private $translate: TranslateService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.io.connected.subscribe(async () => {

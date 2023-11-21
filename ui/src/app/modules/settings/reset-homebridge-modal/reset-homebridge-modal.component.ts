@@ -17,7 +17,7 @@ export class ResetHomebridgeModalComponent {
     private translate: TranslateService,
     private $route: Router,
     private $api: ApiService,
-  ) { }
+  ) {}
 
   onResetHomebridgeAccessoryClick() {
     this.clicked = true;

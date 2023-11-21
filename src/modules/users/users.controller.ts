@@ -8,7 +8,7 @@ import {
   Patch,
   Post,
   Req,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -17,7 +17,7 @@ import {
   ApiOperation,
   ApiParam,
   ApiResponse,
-  ApiTags
+  ApiTags,
 } from '@nestjs/swagger';
 import { AuthService } from '../../core/auth/auth.service';
 import { AdminGuard } from '../../core/auth/guards/admin.guard';
@@ -25,7 +25,7 @@ import {
   UserActivateOtpDto,
   UserDeactivateOtpDto,
   UserDto,
-  UserUpdatePasswordDto
+  UserUpdatePasswordDto,
 } from './users.dto';
 
 @ApiTags('User Management')
@@ -36,7 +36,7 @@ export class UsersController {
 
   constructor(
     private authService: AuthService,
-  ) { }
+  ) {}
 
   @UseGuards(AdminGuard)
   @ApiResponse({ type: UserDto, isArray: true, status: 200 })

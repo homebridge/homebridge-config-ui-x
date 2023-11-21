@@ -13,16 +13,14 @@ import { WsService } from '@/app/core/ws.service';
   styleUrls: ['./plugins.component.scss'],
 })
 export class PluginsComponent implements OnInit, OnDestroy {
-  private io = this.$ws.connectToNamespace('child-bridges');
-
+  public loading = true;
   public installedPlugins: any = [];
   public childBridges = [];
-
   public form = new FormGroup({
     query: new FormControl('', [Validators.required]),
   });
 
-  public loading = true;
+  private io = this.$ws.connectToNamespace('child-bridges');
   private navigationSubscription: Subscription;
 
   constructor(
@@ -31,7 +29,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
     private $router: Router,
     private $toastr: ToastrService,
     private $translate: TranslateService,
-  ) { }
+  ) {}
 
   async ngOnInit() {
     this.io.connected.subscribe(async () => {
@@ -66,7 +64,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
     this.loading = true;
 
     try {
-      this.installedPlugins = await this.$api.get(`/plugins`).toPromise();
+      this.installedPlugins = await this.$api.get('/plugins').toPromise();
       this.loading = false;
     } catch (err) {
       this.$toastr.error(

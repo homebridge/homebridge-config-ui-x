@@ -29,4 +29,4 @@ import { UnpairAccessoryModalComponent } from './unpair-accessory-modal/unpair-a
     SettingsRoutingModule,
   ],
 })
-export class SettingsModule { }
+export class SettingsModule {}

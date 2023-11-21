@@ -9,13 +9,11 @@ import { ServiceTypeX } from '../../accessories.interfaces';
 export class OutletComponent implements OnInit {
   @Input() public service: ServiceTypeX;
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   onClick() {
     this.service.getCharacteristic('On').setValue(!this.service.values.On);
   }
-
 }

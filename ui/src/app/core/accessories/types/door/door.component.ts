@@ -13,9 +13,9 @@ export class DoorComponent implements OnInit {
 
   constructor(
     private modalService: NgbModal,
-  ) { }
+  ) {}
 
-  ngOnInit() { }
+  ngOnInit() {}
 
   onClick() {
     if (this.service.values.TargetPosition) {
@@ -31,5 +31,4 @@ export class DoorComponent implements OnInit {
     });
     ref.componentInstance.service = this.service;
   }
-
 }

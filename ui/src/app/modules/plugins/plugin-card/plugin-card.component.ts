@@ -21,17 +21,16 @@ import { DonateModalComponent } from '@/app/modules/plugins/donate-modal/donate-
 export class PluginCardComponent implements OnInit {
   @Input() plugin: any;
 
-  private io = this.$ws.getExistingNamespace('child-bridges');
-
-  public isMobile = this.$md.detect.mobile();
-
-  private _childBridges = [];
   public hasChildBridges = false;
   public hasUnpairedChildBridges = false;
   public allChildBridgesStopped = false;
   public childBridgeStatus = 'pending';
   public childBridgeRestartInProgress = false;
   public recommendChildBridge = false;
+  public isMobile = this.$md.detect.mobile();
+
+  private io = this.$ws.getExistingNamespace('child-bridges');
+  private setChildBridges = [];
 
   constructor(
     public $plugin: ManagePluginsService,
@@ -43,24 +42,6 @@ export class PluginCardComponent implements OnInit {
     private $md: MobileDetectService,
     private $settings: SettingsService,
   ) {}
-
-  ngOnInit(): void {
-    if (
-      !this.$settings.env.recommendChildBridges
-      || !this.$settings.env.serviceMode
-      || ['homebridge', 'homebridge-config-ui-x'].includes(this.plugin.name)
-    ) {
-      this.recommendChildBridge = false;
-      return;
-    }
-    this.$api.get(`/plugins/config-schema/${encodeURIComponent(this.plugin.name)}`, {}).toPromise()
-      .then((schema) => {
-        this.recommendChildBridge = schema.pluginType === 'platform';
-      })
-      .catch(() => {
-        this.recommendChildBridge = false;
-      });
-  }
 
   @Input() set childBridges(childBridges: any[]) {
     this.hasChildBridges = childBridges.length > 0;
@@ -78,7 +59,25 @@ export class PluginCardComponent implements OnInit {
       }
     }
 
-    this._childBridges = childBridges;
+    this.setChildBridges = childBridges;
+  }
+
+  ngOnInit(): void {
+    if (
+      !this.$settings.env.recommendChildBridges
+      || !this.$settings.env.serviceMode
+      || ['homebridge', 'homebridge-config-ui-x'].includes(this.plugin.name)
+    ) {
+      this.recommendChildBridge = false;
+      return;
+    }
+    this.$api.get(`/plugins/config-schema/${encodeURIComponent(this.plugin.name)}`, {}).toPromise()
+      .then((schema) => {
+        this.recommendChildBridge = schema.pluginType === 'platform';
+      })
+      .catch(() => {
+        this.recommendChildBridge = false;
+      });
   }
 
   openFundingModal(plugin: any) {
@@ -159,7 +158,7 @@ export class PluginCardComponent implements OnInit {
   async doChildBridgeAction(action: 'stop' | 'start' | 'restart') {
     this.childBridgeRestartInProgress = true;
     try {
-      for (const bridge of this._childBridges) {
+      for (const bridge of this.setChildBridges) {
         await this.io.request(action + '-child-bridge', bridge.username).toPromise();
       }
     } catch (err) {

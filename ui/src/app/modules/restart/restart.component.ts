@@ -15,15 +15,14 @@ import { WsService } from '@/app/core/ws.service';
   ],
 })
 export class RestartComponent implements OnInit, OnDestroy {
-  private io = this.$ws.connectToNamespace('status');
-
   checkTimeout: NodeJS.Timeout;
   checkDelay: NodeJS.Timeout;
   resp: any = {};
   timeout = false;
   error: any = false;
-
   public uiOnline = false;
+
+  private io = this.$ws.connectToNamespace('status');
 
   constructor(
     private $api: ApiService,
@@ -33,7 +32,7 @@ export class RestartComponent implements OnInit, OnDestroy {
     public $toastr: ToastrService,
     private translate: TranslateService,
     private $router: Router,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.$notification.restartTriggered.next(undefined);

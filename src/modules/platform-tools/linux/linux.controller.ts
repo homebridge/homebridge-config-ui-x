@@ -11,7 +11,7 @@ import { LinuxService } from './linux.service';
 export class LinuxController {
   constructor(
     private readonly linuxServer: LinuxService,
-  ) { }
+  ) {}
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Restart / reboot the host server.' })

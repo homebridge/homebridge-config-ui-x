@@ -25,7 +25,7 @@ export class ValveComponent implements OnInit, OnDestroy {
 
   constructor(
     private modalService: NgbModal,
-  ) { }
+  ) {}
 
   ngOnInit() {
     // setup the RemainingDuration countdown handlers, if the valve has the RemainingDuration Characteristic

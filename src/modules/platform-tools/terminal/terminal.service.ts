@@ -15,7 +15,7 @@ export class TerminalService {
     private configService: ConfigService,
     private logger: Logger,
     private nodePtyService: NodePtyService,
-  ) { }
+  ) {}
 
   /**
    * Create a new terminal session
@@ -71,7 +71,7 @@ export class TerminalService {
     client.on('resize', (resize: TermSize) => {
       try {
         term.resize(resize.cols, resize.rows);
-      } catch (e) { }
+      } catch (e) {}
     });
 
     // cleanup on disconnect
@@ -86,7 +86,7 @@ export class TerminalService {
       try {
         this.logger.log('Terminal session ended.');
         term.kill();
-      } catch (e) { }
+      } catch (e) {}
     };
 
     client.on('end', onEnd.bind(this));

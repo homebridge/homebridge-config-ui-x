@@ -31,7 +31,7 @@ export class TerminalWidgetComponent implements OnInit, OnDestroy {
 
   constructor(
     private $terminal: TerminalService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.fontSize = this.widget.fontSize || 15;

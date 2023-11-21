@@ -16,4 +16,4 @@ import { LogService } from './log.service';
     LogGateway,
   ],
 })
-export class LogModule { }
+export class LogModule {}

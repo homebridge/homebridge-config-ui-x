@@ -58,7 +58,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   }
 
   addRoom() {
-    const ref = this.modalService.open(AddRoomModalComponent, {
+    this.modalService.open(AddRoomModalComponent, {
       size: 'lg',
     }).result.then((roomName) => {
       // no room name provided
@@ -105,5 +105,4 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     this.dragulaService.destroy('rooms-bag');
     this.dragulaService.destroy('services-bag');
   }
-
 }

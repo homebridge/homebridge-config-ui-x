@@ -7,7 +7,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -15,7 +15,7 @@ import {
   ApiBody,
   ApiOperation,
   ApiParam,
-  ApiTags
+  ApiTags,
 } from '@nestjs/swagger';
 import { AdminGuard } from '../../core/auth/guards/admin.guard';
 import { ConfigEditorService } from './config-editor.service';
@@ -27,7 +27,7 @@ import { ConfigEditorService } from './config-editor.service';
 export class ConfigEditorController {
   constructor(
     private configEditorService: ConfigEditorService,
-  ) { }
+  ) {}
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Return the current Homebridge config.json file.' })

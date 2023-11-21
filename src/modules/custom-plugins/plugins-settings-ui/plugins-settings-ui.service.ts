@@ -21,7 +21,7 @@ export class PluginsSettingsUiService {
     private pluginsService: PluginsService,
     private configService: ConfigService,
     private httpService: HttpService,
-  ) { }
+  ) {}
 
   /**
    * Serve Custom HTML Assets for a plugin
@@ -215,7 +215,7 @@ export class PluginsSettingsUiService {
       setTimeout(() => {
         try {
           process.kill(childPid, 'SIGTERM');
-        } catch (e) { }
+        } catch (e) {}
       }, 5000);
 
       client.removeAllListeners('end');

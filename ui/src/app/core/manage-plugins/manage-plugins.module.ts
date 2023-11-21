@@ -19,31 +19,31 @@ import { CoreModule } from '@/app/core/core.module';
 import { PluginLogModalComponent } from '@/app/core/manage-plugins/plugin-log-modal/plugin-log-modal.component';
 
 @NgModule({
-    declarations: [
-        SettingsPluginsModalComponent,
-        ManagePluginsModalComponent,
-        UninstallPluginsModalComponent,
-        NodeUpdateRequiredModalComponent,
-        InterpolateMdPipe,
-        ManualPluginConfigModalComponent,
-        SelectPreviousVersionComponent,
-        BridgePluginsModalComponent,
-        PluginLogModalComponent,
-    ],
-    imports: [
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        TranslateModule.forChild(),
-        NgbModule,
-        NgxMdModule,
-        MonacoEditorModule,
-        NgbModule,
-        CoreModule,
-        CustomPluginsModule,
-    ],
-    providers: [
-        ManagePluginsService,
-    ],
+  declarations: [
+    SettingsPluginsModalComponent,
+    ManagePluginsModalComponent,
+    UninstallPluginsModalComponent,
+    NodeUpdateRequiredModalComponent,
+    InterpolateMdPipe,
+    ManualPluginConfigModalComponent,
+    SelectPreviousVersionComponent,
+    BridgePluginsModalComponent,
+    PluginLogModalComponent,
+  ],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    TranslateModule.forChild(),
+    NgbModule,
+    NgxMdModule,
+    MonacoEditorModule,
+    NgbModule,
+    CoreModule,
+    CustomPluginsModule,
+  ],
+  providers: [
+    ManagePluginsService,
+  ],
 })
-export class ManagePluginsModule { }
+export class ManagePluginsModule {}

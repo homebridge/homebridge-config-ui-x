@@ -9,7 +9,7 @@ export class ConfigEditorResolver implements Resolve<any> {
     private $api: ApiService,
     private $toastr: ToastrService,
     private $router: Router,
-  ) { }
+  ) {}
 
   async resolve() {
     try {

@@ -42,7 +42,7 @@ export class SettingsComponent implements OnInit {
     public $toastr: ToastrService,
     private $modal: NgbModal,
     private $router: Router,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.initNetworkingOptions();
@@ -184,7 +184,6 @@ export class SettingsComponent implements OnInit {
       }
     });
   }
-
 
   selectNetworkInterfaces() {
     const ref = this.$modal.open(SelectNetworkInterfacesComponent, {
