@@ -358,7 +358,6 @@ export class ConfigService {
   public streamCustomWallpaper(): ReadStream {
     return createReadStream(this.ui.loginWallpaper || this.customWallpaperPath);
   }
-
 }
 
 export interface HomebridgeConfig {

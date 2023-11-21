@@ -11,9 +11,8 @@ export class AirqualitysensorComponent implements OnInit {
 
   public labels = ['Unknown', 'Excellent', 'Good', 'Fair', 'Inferior', 'Poor'];
 
-  constructor() { }
+  constructor() {}
 
   ngOnInit() {
   }
-
 }

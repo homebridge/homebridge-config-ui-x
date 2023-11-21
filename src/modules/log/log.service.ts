@@ -111,7 +111,7 @@ export class LogService {
     client.on('resize', (resize: { rows: number; cols: number }) => {
       try {
         term.resize(resize.cols, resize.rows);
-      } catch (e) { }
+      } catch (e) {}
     });
 
     // cleanup on disconnect
@@ -124,7 +124,7 @@ export class LogService {
 
       try {
         term.kill();
-      } catch (e) { }
+      } catch (e) {}
       // really make sure the log tail command is killed when using sudo mode
       if (this.configService.ui.sudo && term && term.pid) {
         exec(`sudo -n kill -9 ${term.pid}`);
@@ -264,7 +264,6 @@ export class LogService {
   private logNotConfigured() {
     this.command = null;
   }
-
 }
 
 export type LogTermSize = { cols: number; rows: number };

@@ -19,12 +19,16 @@ export class TerminalComponent implements OnInit, OnDestroy {
 
   constructor(
     private $terminal: TerminalService,
-  ) {
+  ) {}
+
+  @HostListener('window:resize', ['$event'])
+  onWindowResize(event) {
+    this.resizeEvent.next(undefined);
   }
 
   ngOnInit() {
     // set body bg color
-    window.document.querySelector('body').classList.add(`bg-black`);
+    window.document.querySelector('body').classList.add('bg-black');
 
     // start the terminal
     this.$terminal.startTerminal(this.termTarget, {}, this.resizeEvent);
@@ -33,17 +37,11 @@ export class TerminalComponent implements OnInit, OnDestroy {
     this.$terminal.term.focus();
   }
 
-  @HostListener('window:resize', ['$event'])
-  onWindowResize(event) {
-    this.resizeEvent.next(undefined);
-  }
-
   ngOnDestroy() {
     // unset body bg color
-    window.document.querySelector('body').classList.remove(`bg-black`);
+    window.document.querySelector('body').classList.remove('bg-black');
 
     // destroy the terminal
     this.$terminal.destroyTerminal();
   }
-
 }

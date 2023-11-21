@@ -12,10 +12,9 @@ export class InfoModalComponent implements OnInit {
 
   constructor(
     public activeModal: NgbActiveModal,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.accessoryInformation = Object.entries(this.service.accessoryInformation).map(([key, value]) => ({ key, value }));
   }
-
 }

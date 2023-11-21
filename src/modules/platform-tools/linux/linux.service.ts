@@ -8,7 +8,7 @@ export class LinuxService {
   constructor(
     private readonly configService: ConfigService,
     private readonly logger: Logger,
-  ) { }
+  ) {}
 
   /**
    * Reboot the host

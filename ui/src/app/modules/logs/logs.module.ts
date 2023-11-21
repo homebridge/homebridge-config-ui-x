@@ -14,4 +14,4 @@ import { LogsComponent } from './logs.component';
     NgbModule,
   ],
 })
-export class LogsModule { }
+export class LogsModule {}

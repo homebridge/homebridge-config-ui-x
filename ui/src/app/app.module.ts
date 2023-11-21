@@ -19,58 +19,58 @@ import { supportedLocales } from '@/app/core/locales';
 import { onMonacoLoad } from '@/app/core/monaco-editor.service';
 
 @NgModule({
-    declarations: [
-        AppComponent,
-        LayoutComponent,
-    ],
-    imports: [
-        BrowserModule,
-        BrowserAnimationsModule,
-        HttpClientModule,
-        TranslateModule.forRoot(),
-        ToastrModule.forRoot({
-            autoDismiss: true,
-            newestOnTop: false,
-            closeButton: true,
-            maxOpened: 2,
-            positionClass: 'toast-bottom-right',
-        }),
-        NgbModule,
-        MonacoEditorModule.forRoot({
-            defaultOptions: {
-                scrollBeyondLastLine: false,
-                quickSuggestions: true,
-                parameterHints: true,
-                formatOnType: true,
-                formatOnPaste: true,
-                folding: true,
-                minimap: {
-                    enabled: false,
-                },
-            },
-            onMonacoLoad,
-        }),
-        DragulaModule.forRoot(),
-        CoreModule,
-        AuthModule,
-        LoginModule,
-        StatusModule,
-        RestartModule,
-        AppRoutingModule,
-    ],
-    providers: [
-        {
-            provide: LOCALE_ID,
-            useFactory: (translate: TranslateService) => {
-                if (translate.currentLang in supportedLocales) {
-                    return supportedLocales[translate.currentLang];
-                } else {
-                    return 'en';
-                }
-            },
-            deps: [TranslateService],
+  declarations: [
+    AppComponent,
+    LayoutComponent,
+  ],
+  imports: [
+    BrowserModule,
+    BrowserAnimationsModule,
+    HttpClientModule,
+    TranslateModule.forRoot(),
+    ToastrModule.forRoot({
+      autoDismiss: true,
+      newestOnTop: false,
+      closeButton: true,
+      maxOpened: 2,
+      positionClass: 'toast-bottom-right',
+    }),
+    NgbModule,
+    MonacoEditorModule.forRoot({
+      defaultOptions: {
+        scrollBeyondLastLine: false,
+        quickSuggestions: true,
+        parameterHints: true,
+        formatOnType: true,
+        formatOnPaste: true,
+        folding: true,
+        minimap: {
+          enabled: false,
         },
-    ],
-    bootstrap: [AppComponent],
+      },
+      onMonacoLoad,
+    }),
+    DragulaModule.forRoot(),
+    CoreModule,
+    AuthModule,
+    LoginModule,
+    StatusModule,
+    RestartModule,
+    AppRoutingModule,
+  ],
+  providers: [
+    {
+      provide: LOCALE_ID,
+      useFactory: (translate: TranslateService) => {
+        if (translate.currentLang in supportedLocales) {
+          return supportedLocales[translate.currentLang];
+        } else {
+          return 'en';
+        }
+      },
+      deps: [TranslateService],
+    },
+  ],
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

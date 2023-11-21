@@ -21,7 +21,7 @@ export class ConfigRestoreBackupComponent implements OnInit {
     private translate: TranslateService,
     public $toastr: ToastrService,
     private $api: ApiService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.$api.get('/config-editor/backups').subscribe(
@@ -49,5 +49,4 @@ export class ConfigRestoreBackupComponent implements OnInit {
       (err) => this.$toastr.error(err.error.message, this.translate.instant('config.restore.toast_failed_to_delete_backups')),
     );
   }
-
 }

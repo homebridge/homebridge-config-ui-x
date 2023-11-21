@@ -3,7 +3,7 @@ import {
   IsArray,
   IsDefined,
   IsIn,
-  IsString
+  IsString,
 } from 'class-validator';
 
 export class HomebridgeMdnsSettingDto {
@@ -20,4 +20,3 @@ export class HomebridgeNetworkInterfacesDto {
   @ApiProperty()
     adapters: string[];
 }
-

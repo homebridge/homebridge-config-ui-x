@@ -9,4 +9,4 @@ import { PlatformToolsRoutingModule } from './platform-tools-routing.module';
     PlatformToolsRoutingModule,
   ],
 })
-export class PlatformToolsModule { }
+export class PlatformToolsModule {}

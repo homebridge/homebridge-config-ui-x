@@ -18,30 +18,30 @@ import { UninstallPluginsModalComponent } from './uninstall-plugins-modal/uninst
 import { CoreModule } from '@/app/core/core.module';
 
 @NgModule({
-    declarations: [
-        SettingsPluginsModalComponent,
-        ManagePluginsModalComponent,
-        UninstallPluginsModalComponent,
-        NodeUpdateRequiredModalComponent,
-        InterpolateMdPipe,
-        ManualPluginConfigModalComponent,
-        SelectPreviousVersionComponent,
-        BridgePluginsModalComponent,
-    ],
-    imports: [
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        TranslateModule.forChild(),
-        NgbModule,
-        NgxMdModule,
-        MonacoEditorModule,
-        NgbModule,
-        CoreModule,
-        CustomPluginsModule,
-    ],
-    providers: [
-        ManagePluginsService,
-    ],
+  declarations: [
+    SettingsPluginsModalComponent,
+    ManagePluginsModalComponent,
+    UninstallPluginsModalComponent,
+    NodeUpdateRequiredModalComponent,
+    InterpolateMdPipe,
+    ManualPluginConfigModalComponent,
+    SelectPreviousVersionComponent,
+    BridgePluginsModalComponent,
+  ],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    TranslateModule.forChild(),
+    NgbModule,
+    NgxMdModule,
+    MonacoEditorModule,
+    NgbModule,
+    CoreModule,
+    CustomPluginsModule,
+  ],
+  providers: [
+    ManagePluginsService,
+  ],
 })
-export class ManagePluginsModule { }
+export class ManagePluginsModule {}

@@ -7,7 +7,7 @@ import { ConfigService } from '../../../core/config/config.service';
 export class HomebridgeDeconzService {
   constructor(
     private configService: ConfigService,
-  ) { }
+  ) {}
 
   async streamDumpFile(): Promise<StreamableFile> {
     const dumpPath = resolve(this.configService.storagePath, 'homebridge-deconz.json.gz');

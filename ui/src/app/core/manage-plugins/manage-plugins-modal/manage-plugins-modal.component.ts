@@ -26,12 +26,6 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   @Input() targetVersion = 'latest';
   @Input() action: string;
 
-  private io = this.$ws.connectToNamespace('plugins');
-
-  private term = new Terminal();
-  private termTarget: HTMLElement;
-  private fitAddon = new FitAddon();
-
   public actionComplete = false;
   public actionFailed = false;
   public showReleaseNotes = false;
@@ -40,12 +34,15 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   public changeLog: string;
   public childBridges: any[] = [];
   public release: any;
-
-  private toastSuccess: string;
   public presentTenseVerb: string;
   public pastTenseVerb: string;
-
   public onlineUpdateOk: boolean;
+
+  private io = this.$ws.connectToNamespace('plugins');
+  private toastSuccess: string;
+  private term = new Terminal();
+  private termTarget: HTMLElement;
+  private fitAddon = new FitAddon();
 
   constructor(
     public activeModal: NgbActiveModal,

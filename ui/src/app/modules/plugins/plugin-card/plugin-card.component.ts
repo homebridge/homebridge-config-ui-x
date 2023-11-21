@@ -8,7 +8,6 @@ import { InformationComponent } from '@/app/core/components/information/informat
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { NotificationService } from '@/app/core/notification.service';
-import { SettingsService } from '@/app/core/settings.service';
 import { WsService } from '@/app/core/ws.service';
 import { DonateModalComponent } from '@/app/modules/plugins/donate-modal/donate-modal.component';
 
@@ -20,20 +19,18 @@ import { DonateModalComponent } from '@/app/modules/plugins/donate-modal/donate-
 export class PluginCardComponent implements OnInit {
   @Input() plugin: any;
 
-  private io = this.$ws.getExistingNamespace('child-bridges');
-
-  public isMobile = this.$md.detect.mobile();
-
-  private _childBridges = [];
   public hasChildBridges = false;
   public hasUnpairedChildBridges = false;
   public allChildBridgesStopped = false;
   public childBridgeStatus = 'pending';
   public childBridgeRestartInProgress = false;
+  public isMobile = this.$md.detect.mobile();
+
+  private io = this.$ws.getExistingNamespace('child-bridges');
+  private setChildBridges = [];
 
   constructor(
     public $plugin: ManagePluginsService,
-    private $settings: SettingsService,
     private $api: ApiService,
     private $ws: WsService,
     private $notification: NotificationService,
@@ -41,10 +38,7 @@ export class PluginCardComponent implements OnInit {
     private $modal: NgbModal,
     private $toastr: ToastrService,
     private $md: MobileDetectService,
-  ) { }
-
-  ngOnInit(): void {
-  }
+  ) {}
 
   @Input() set childBridges(childBridges: any[]) {
     this.hasChildBridges = childBridges.length > 0;
@@ -62,8 +56,10 @@ export class PluginCardComponent implements OnInit {
       }
     }
 
-    this._childBridges = childBridges;
+    this.setChildBridges = childBridges;
   }
+
+  ngOnInit(): void {}
 
   openFundingModal(plugin: any) {
     const ref = this.$modal.open(DonateModalComponent);
@@ -141,7 +137,7 @@ export class PluginCardComponent implements OnInit {
   async doChildBridgeAction(action: 'stop' | 'start' | 'restart') {
     this.childBridgeRestartInProgress = true;
     try {
-      for (const bridge of this._childBridges) {
+      for (const bridge of this.setChildBridges) {
         await this.io.request(action + '-child-bridge', bridge.username).toPromise();
       }
     } catch (err) {

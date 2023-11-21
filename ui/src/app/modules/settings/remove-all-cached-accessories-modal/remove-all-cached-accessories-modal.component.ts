@@ -17,7 +17,7 @@ export class RemoveAllCachedAccessoriesModalComponent {
     public toastr: ToastrService,
     private translate: TranslateService,
     private $api: ApiService,
-  ) { }
+  ) {}
 
   onResetCachedAccessoriesClick() {
     this.clicked = true;

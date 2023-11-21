@@ -5,14 +5,14 @@ import {
   Put,
   Query,
   Req,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiQuery,
-  ApiTags
+  ApiTags,
 } from '@nestjs/swagger';
 import { AdminGuard } from '../../../core/auth/guards/admin.guard';
 import { HbServiceStartupSettings } from './hb-service.dto';
@@ -25,7 +25,7 @@ import { HbServiceService } from './hb-service.service';
 export class HbServiceController {
   constructor(
     private readonly hbServiceService: HbServiceService,
-  ) { }
+  ) {}
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Return the startup flags and env variables for Homebridge.' })

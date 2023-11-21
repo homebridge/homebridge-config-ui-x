@@ -16,10 +16,6 @@ export class MobileDetectService {
     this.detect = new MobileDetect(window.navigator.userAgent);
   }
 
-  private preventDefault(e) {
-    e.preventDefault();
-  }
-
   public disableTouchMove() {
     if (!this.isTouchMoveLocked) {
       document.body.addEventListener('touchmove', preventDefault, { passive: false });
@@ -34,4 +30,7 @@ export class MobileDetectService {
     console.log('Re-enabling touchmove');
   }
 
+  private preventDefault(e) {
+    e.preventDefault();
+  }
 }

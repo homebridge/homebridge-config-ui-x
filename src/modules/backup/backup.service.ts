@@ -10,7 +10,7 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-  StreamableFile
+  StreamableFile,
 } from '@nestjs/common';
 import {
   cyan,
@@ -120,7 +120,7 @@ export class BackupService {
             'recordings',         // homebridge-camera-ui recordings path
             '.homebridge.sock',   // homebridge ipc socket
             '#recycle',           // synology dsm recycle bin
-            '@eaDir'              // synology dsm metadata
+            '@eaDir',             // synology dsm metadata
           ].includes(basename(filePath))) {
             return false;
           }
@@ -220,7 +220,7 @@ export class BackupService {
       const { backupDir, backupPath, instanceId } = await this.createBackup();
       await copy(backupPath, resolve(
         this.configService.instanceBackupPath,
-        'homebridge-backup-' + instanceId + '.' + new Date().getTime().toString() + '.tar.gz'
+        'homebridge-backup-' + instanceId + '.' + new Date().getTime().toString() + '.tar.gz',
       ));
       await remove(resolve(backupDir));
     } catch (e) {
@@ -247,7 +247,7 @@ export class BackupService {
   async getNextBackupTime() {
     if (this.configService.ui.scheduledBackupDisable === true) {
       return {
-        next: false
+        next: false,
       };
     } else {
       return {

@@ -10,21 +10,21 @@ import { ConfigEditorResolver } from './config-editor.resolver';
 import { ConfigRestoreBackupComponent } from './config-restore-backup/config.restore-backup.component';
 
 @NgModule({
-    declarations: [
-        ConfigEditorComponent,
-        ConfigRestoreBackupComponent,
-    ],
-    imports: [
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        MonacoEditorModule,
-        NgbModule,
-        TranslateModule.forChild(),
-        ConfigEditorRoutingModule,
-    ],
-    providers: [
-        ConfigEditorResolver,
-    ],
+  declarations: [
+    ConfigEditorComponent,
+    ConfigRestoreBackupComponent,
+  ],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MonacoEditorModule,
+    NgbModule,
+    TranslateModule.forChild(),
+    ConfigEditorRoutingModule,
+  ],
+  providers: [
+    ConfigEditorResolver,
+  ],
 })
-export class ConfigEditorModule { }
+export class ConfigEditorModule {}

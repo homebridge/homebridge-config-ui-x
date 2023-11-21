@@ -18,4 +18,4 @@ import { TerminalService } from './terminal.service';
     TerminalGateway,
   ],
 })
-export class TerminalModule { }
+export class TerminalModule {}

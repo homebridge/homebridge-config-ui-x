@@ -8,7 +8,7 @@ import {
   UserActivateOtpDto,
   UserDeactivateOtpDto,
   UserDto,
-  UserUpdatePasswordDto
+  UserUpdatePasswordDto,
 } from '../../src/modules/users/users.dto';
 import { UsersModule } from '../../src/modules/users/users.module';
 

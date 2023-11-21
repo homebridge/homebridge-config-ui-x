@@ -6,7 +6,7 @@ import {
   HttpException,
   Injectable,
   NotFoundException,
-  UnauthorizedException
+  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { pathExists, readJson, writeJson } from 'fs-extra';

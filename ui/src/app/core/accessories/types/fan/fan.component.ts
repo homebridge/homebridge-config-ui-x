@@ -13,10 +13,9 @@ export class FanComponent implements OnInit {
 
   constructor(
     private modalService: NgbModal,
-  ) { }
+  ) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   onClick() {
     this.service.getCharacteristic('On').setValue(!this.service.values.On);
@@ -33,5 +32,4 @@ export class FanComponent implements OnInit {
     });
     ref.componentInstance.service = this.service;
   }
-
 }

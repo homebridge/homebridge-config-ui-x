@@ -23,7 +23,7 @@ export class UsersDisable2faComponent implements OnInit {
     private toastr: ToastrService,
     private translate: TranslateService,
     private $api: ApiService,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
 
@@ -42,5 +42,4 @@ export class UsersDisable2faComponent implements OnInit {
       },
     );
   }
-
 }

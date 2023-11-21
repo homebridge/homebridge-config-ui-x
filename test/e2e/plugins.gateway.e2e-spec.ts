@@ -171,7 +171,7 @@ describe('PluginsGateway (e2e)', () => {
 
     try {
       await pluginsGateway.installPlugin(client, { name: 'homebridge-mock-plugin', version: 'latest' });
-    } catch (e) { }
+    } catch (e) {}
 
     // expect the npm command to be spawned
     if (platform() === 'win32') {
@@ -196,7 +196,7 @@ describe('PluginsGateway (e2e)', () => {
 
     try {
       await pluginsGateway.uninstallPlugin(client, { name: 'homebridge-mock-plugin' });
-    } catch (e) { }
+    } catch (e) {}
 
     // expect the npm command to be spawned
     if (platform() === 'win32') {
@@ -221,7 +221,7 @@ describe('PluginsGateway (e2e)', () => {
 
     try {
       await pluginsGateway.uninstallPlugin(client, { name: 'homebridge-config-ui-x' });
-    } catch (e) { }
+    } catch (e) {}
 
     // expect the npm command not to have to be spawned
     expect(mockSpawn).not.toHaveBeenCalled();
@@ -242,7 +242,7 @@ describe('PluginsGateway (e2e)', () => {
 
     try {
       await pluginsGateway.updatePlugin(client, { name: 'homebridge-mock-plugin', version: 'latest' });
-    } catch (e) { }
+    } catch (e) {}
 
     // expect the npm command to be spawned
     if (platform() === 'win32') {
@@ -267,7 +267,7 @@ describe('PluginsGateway (e2e)', () => {
 
     try {
       await pluginsGateway.updatePlugin(client, { name: 'homebridge-mock-plugin', version: '3.4.6' });
-    } catch (e) { }
+    } catch (e) {}
 
     // expect the npm command to be spawned
     if (platform() === 'win32') {
@@ -302,7 +302,7 @@ describe('PluginsGateway (e2e)', () => {
 
     try {
       await pluginsGateway.homebridgeUpdate(client, {});
-    } catch (e) { }
+    } catch (e) {}
 
     // expect the npm command to be spawned
     if (platform() === 'win32') {
@@ -338,7 +338,7 @@ describe('PluginsGateway (e2e)', () => {
 
     try {
       await pluginsGateway.homebridgeUpdate(client, { version: '1.2.5' });
-    } catch (e) { }
+    } catch (e) {}
 
     // expect the npm command to be spawned
     if (platform() === 'win32') {

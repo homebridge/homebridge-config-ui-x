@@ -7,7 +7,7 @@ import { ConfigService } from '../../../core/config/config.service';
 export class HomebridgeHueService {
   constructor(
     private configService: ConfigService,
-  ) { }
+  ) {}
 
   async streamDumpFile(): Promise<StreamableFile> {
     const dumpPath = resolve(this.configService.storagePath, 'homebridge-hue.json.gz');

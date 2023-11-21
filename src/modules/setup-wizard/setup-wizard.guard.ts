@@ -6,7 +6,7 @@ import { ConfigService } from '../../core/config/config.service';
 export class SetupWizardGuard implements CanActivate {
   constructor(
     private configService: ConfigService,
-  ) { }
+  ) {}
 
   canActivate(
     context: ExecutionContext,

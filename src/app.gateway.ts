@@ -6,8 +6,8 @@ import { WsGuard } from './core/auth/guards/ws.guard';
 @WebSocketGateway({
   namespace: 'app', allowEIO3: true, cors: {
     origin: ['http://localhost:8080', 'http://localhost:4200'],
-    credentials: true
-  }
+    credentials: true,
+  },
 })
 export class AppGateway {
 

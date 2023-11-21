@@ -18,7 +18,7 @@ export class RemoveSingleCachedAccessoryModalComponent implements OnInit {
     public toastr: ToastrService,
     private translate: TranslateService,
     private $api: ApiService,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.loadCachedAccessories();
@@ -61,10 +61,9 @@ export class RemoveSingleCachedAccessoryModalComponent implements OnInit {
         this.deleting = null;
         this.toastr.error(this.translate.instant(
           'reset.toast_failed_to_delete_cached_accessory'),
-          this.translate.instant('toast.title_error'),
+        this.translate.instant('toast.title_error'),
         );
       },
     );
   }
-
 }

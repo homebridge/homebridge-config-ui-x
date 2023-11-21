@@ -53,7 +53,7 @@ export class WidgetsComponent implements OnInit, OnDestroy {
     private appRef: ApplicationRef,
     private injector: Injector,
     private el: ElementRef,
-  ) { }
+  ) {}
 
   ngOnInit() {
     if (this.availableWidgets.hasOwnProperty(this.widget.component)) {
@@ -95,5 +95,4 @@ export class WidgetsComponent implements OnInit, OnDestroy {
     // 6. Attach component to the appRef so that it's inside the ng component tree
     this.appRef.attachView(this.componentRef.hostView);
   }
-
 }

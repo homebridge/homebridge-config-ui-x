@@ -9,7 +9,7 @@ export class DockerService {
   constructor(
     private readonly configService: ConfigService,
     private readonly logger: Logger,
-  ) { }
+  ) {}
 
   /**
    * Returns the docker startup.sh script

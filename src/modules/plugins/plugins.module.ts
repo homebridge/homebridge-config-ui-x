@@ -34,4 +34,4 @@ import { PluginsService } from './plugins.service';
     PluginsController,
   ],
 })
-export class PluginsModule { }
+export class PluginsModule {}

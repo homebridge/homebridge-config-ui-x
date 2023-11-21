@@ -7,9 +7,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LinuxComponent implements OnInit {
 
-  constructor() { }
+  constructor() {}
 
   ngOnInit() {
   }
-
 }

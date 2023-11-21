@@ -433,12 +433,12 @@ export class HomebridgeServiceHelper {
       this.logger('Stopping services...');
       try {
         this.homebridge.kill();
-      } catch (e) { }
+      } catch (e) {}
 
       setTimeout(() => {
         try {
           this.homebridge.kill('SIGKILL');
-        } catch (e) { }
+        } catch (e) {}
         process.exit(1282);
       }, 7000);
     };
@@ -579,7 +579,7 @@ export class HomebridgeServiceHelper {
         env: Object.assign({
           npm_config_loglevel: 'silent',
           npm_update_notifier: 'false',
-        }, process.env)
+        }, process.env),
       }).toString('utf8').trim();
       return platform() === 'win32' ? join(npmPrefix, 'node_modules') : join(npmPrefix, 'lib', 'node_modules');
     } catch (e) {
@@ -663,7 +663,7 @@ export class HomebridgeServiceHelper {
         '  Using hb-service with NVM may not work unless you have configured NVM for the\n' +
         '  user this service will run as. See https://homebridge.io/w/JUZ2g for instructions on how\n' +
         '  to remove NVM, then follow the wiki instructions to install Node.js and Homebridge.',
-        'warn'
+        'warn',
       );
     }
   }
@@ -1370,7 +1370,6 @@ export class HomebridgeServiceHelper {
       this.logger('Plugin installation failed.', 'fail');
     }
   }
-
 }
 
 function bootstrap() {

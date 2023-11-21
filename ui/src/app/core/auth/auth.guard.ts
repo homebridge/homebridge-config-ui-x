@@ -16,7 +16,7 @@ export class AuthGuard implements CanActivate {
     private $router: Router,
     private $auth: AuthService,
     private $settings: SettingsService,
-  ) { }
+  ) {}
 
   async canActivate(
     next: ActivatedRouteSnapshot,

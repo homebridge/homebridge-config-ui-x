@@ -9,13 +9,11 @@ import { ServiceTypeX } from '../../accessories.interfaces';
 export class GaragedooropenerComponent implements OnInit {
   @Input() public service: ServiceTypeX;
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   onClick() {
     this.service.getCharacteristic('TargetDoorState').setValue(this.service.values.TargetDoorState ? 0 : 1);
   }
-
 }
