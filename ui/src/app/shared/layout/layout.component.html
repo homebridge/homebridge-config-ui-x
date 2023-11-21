@@ -201,11 +201,11 @@
         </div>
         <ul class="sub-menu">
           <li><a class="link_name" routerLink="/settings" [translate]="'menu.label_settings_hb'">Homebridge settings</a></li>
-          <li><a routerLink="/settings" [translate]="'menu.label_settings_hb'"><i class="fa fa-cog">Homebridge settings</a></li>
-          <li><a href="javascript:void(0)" (click)="openUiSettings()" [translate]="'menu.label_settings_ui'"><i class="fa fa-sliders">UI Settings</a></li>
-          <li><a href="javascript:void(0)" (click)="backupRestoreHomebridge()" [translate]="'backup.title_backup_restore'"><i class="fa fa-clock-rotate-left">Backup</a></li>
-          <li><a routerLink="/config" [translate]="'menu.label_config'"><i class="fa fa-file-lines">Config</a></li>
-          <li><a routerLink="/users" [translate]="'menu.tooltip_user_accounts'"><i class="fa fa-user">Users</a></li>
+          <li><a routerLink="/settings" [translate]="'menu.label_settings_hb'"><i class="fa fa-cog"></i>Homebridge settings</a></li>
+          <li><a href="javascript:void(0)" (click)="openUiSettings()" [translate]="'menu.label_settings_ui'"><i class="fa fa-sliders"></i>UI Settings</a></li>
+          <li><a href="javascript:void(0)" (click)="backupRestoreHomebridge()" [translate]="'backup.title_backup_restore'"><i class="fa fa-clock-rotate-left"></i>Backup</a></li>
+          <li><a routerLink="/config" [translate]="'menu.label_config'"><i class="fa fa-file-lines"></i>Config</a></li>
+          <li><a routerLink="/users" [translate]="'menu.tooltip_user_accounts'"><i class="fa fa-user"></i>Users</a></li>
         </ul>
       </li>
       <li *ngIf="$auth.user.admin">
