@@ -72,7 +72,7 @@
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$settings.formAuth">
           <a class="nav-link" href="javascript:void(0)" (click)="$auth.logout()" [translate]="'menu.tooltip_logout'"
             data-toggle="collapse" data-target=".navbar-collapse.show">
-            <i class="fa fa-right-from-bracket pr-2"></i>Logout - {{ $auth.user.username }}</a>
+            <i class="fa fa-right-from-bracket pr-2"></i>{{ 'menu.tooltip_logout' | translate }} - {{ $auth.user.username }}</a>
         </li>
       </ul>
       <ul class="navbar-nav nav-flex-icons hb-nav-right">
