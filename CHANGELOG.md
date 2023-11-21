@@ -12,7 +12,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 
 ### Translation Changes
 
-- **i18n:** Update fr.json ([#1705](https://github.com/homebridge/homebridge-config-ui-x/pull/1705)) (in alpha, pending beta)
+- **i18n:** Update fr.json ([#1705](https://github.com/homebridge/homebridge-config-ui-x/pull/1705))
 
 ### Other Changes
 

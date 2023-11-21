@@ -12,7 +12,6 @@ export class SetupWizardGuard implements CanActivate {
   ) { }
 
   async canActivate(): Promise<boolean> {
-
     if (!this.$settings.settingsLoaded) {
       await this.$settings.onSettingsLoaded.toPromise();
     }

@@ -120,5 +120,4 @@ export class WidgetControlComponent implements OnInit {
             }))),
       );
   }
-
 }
