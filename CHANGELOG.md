@@ -17,6 +17,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - ui lint sort imports and exports (#1750)
 - update lang sync - remove old translations (#1751)
 - various code improvements + simplifications (#1754)
+- stricter lint rules in api and ui (#1783)
 
 ## 4.52.3 (2023-11-14)
 
