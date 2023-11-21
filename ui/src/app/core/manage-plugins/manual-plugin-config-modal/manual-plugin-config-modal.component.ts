@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
-import * as JSON5 from 'json5';
+import { parse } from 'json5';
 import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '@/app/core/api.service';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
@@ -133,7 +133,7 @@ export class ManualPluginConfigModalComponent implements OnInit {
       }
 
       try {
-        currentBlockNew = JSON5.parse(currentBlockString);
+        currentBlockNew = parse(currentBlockString);
       } catch (e) {
         this.$toastr.error(
           this.translate.instant('config.toast_config_invalid_json'),

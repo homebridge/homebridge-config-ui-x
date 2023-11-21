@@ -1,25 +1,35 @@
-import * as crypto from 'crypto';
-import * as os from 'os';
-import * as path from 'path';
+import { createHash, randomBytes } from 'crypto';
+import { homedir, platform, totalmem } from 'os';
+import { resolve } from 'path';
 import { Injectable } from '@nestjs/common';
-import * as fs from 'fs-extra';
-import * as _ from 'lodash';
-import * as semver from 'semver';
+import {
+  ReadStream,
+  createReadStream,
+  pathExists,
+  pathExistsSync,
+  readJSONSync,
+  readJson,
+  readJsonSync,
+  stat,
+  writeJsonSync
+} from 'fs-extra';
+import { isEqual } from 'lodash';
+import { satisfies } from 'semver';
 
 @Injectable()
 export class ConfigService {
   public name = 'homebridge-config-ui-x';
 
   // homebridge env
-  public configPath = process.env.UIX_CONFIG_PATH || path.resolve(os.homedir(), '.homebridge/config.json');
-  public storagePath = process.env.UIX_STORAGE_PATH || path.resolve(os.homedir(), '.homebridge');
+  public configPath = process.env.UIX_CONFIG_PATH || resolve(homedir(), '.homebridge/config.json');
+  public storagePath = process.env.UIX_STORAGE_PATH || resolve(homedir(), '.homebridge');
   public customPluginPath = process.env.UIX_CUSTOM_PLUGIN_PATH;
   public strictPluginResolution = (process.env.UIX_STRICT_PLUGIN_RESOLUTION === '1');
-  public secretPath = path.resolve(this.storagePath, '.uix-secrets');
-  public authPath = path.resolve(this.storagePath, 'auth.json');
-  public accessoryLayoutPath = path.resolve(this.storagePath, 'accessories', 'uiAccessoriesLayout.json');
-  public configBackupPath = path.resolve(this.storagePath, 'backups/config-backups');
-  public instanceBackupPath = path.resolve(this.storagePath, 'backups/instance-backups');
+  public secretPath = resolve(this.storagePath, '.uix-secrets');
+  public authPath = resolve(this.storagePath, 'auth.json');
+  public accessoryLayoutPath = resolve(this.storagePath, 'accessories', 'uiAccessoriesLayout.json');
+  public configBackupPath = resolve(this.storagePath, 'backups/config-backups');
+  public instanceBackupPath = resolve(this.storagePath, 'backups/instance-backups');
   public homebridgeInsecureMode = Boolean(process.env.UIX_INSECURE_MODE === '1');
   public homebridgeVersion: string;
 
@@ -29,8 +39,8 @@ export class ConfigService {
   public runningInDocker = Boolean(process.env.HOMEBRIDGE_CONFIG_UI === '1');
   public runningInSynologyPackage = Boolean(process.env.HOMEBRIDGE_SYNOLOGY_PACKAGE === '1');
   public runningInPackageMode = Boolean(process.env.HOMEBRIDGE_APT_PACKAGE === '1');
-  public runningInLinux = (!this.runningInDocker && !this.runningInSynologyPackage && !this.runningInPackageMode && os.platform() === 'linux');
-  public runningInFreeBSD = (os.platform() === 'freebsd');
+  public runningInLinux = (!this.runningInDocker && !this.runningInSynologyPackage && !this.runningInPackageMode && platform() === 'linux');
+  public runningInFreeBSD = (platform() === 'freebsd');
   public canShutdownRestartHost = (this.runningInLinux || process.env.UIX_CAN_SHUTDOWN_RESTART_HOST === '1');
   public enableTerminalAccess = this.runningInDocker || this.runningInSynologyPackage || this.runningInPackageMode || Boolean(process.env.HOMEBRIDGE_CONFIG_UI_TERMINAL === '1');
 
@@ -39,23 +49,23 @@ export class ConfigService {
   public usePluginBundles = (process.env.UIX_USE_PLUGIN_BUNDLES === '1');
 
   // recommend child bridges on platforms with > 2GB ram
-  public recommendChildBridges = (os.totalmem() > 2e+9);
+  public recommendChildBridges = (totalmem() > 2e+9);
 
   // check this async
   public runningOnRaspberryPi = false;
 
   // docker settings
-  public startupScript = path.resolve(this.storagePath, 'startup.sh');
-  public dockerOfflineUpdate = this.runningInDocker && semver.satisfies(process.env.CONFIG_UI_VERSION, '>=4.6.2 <=4.44.1', { includePrerelease: true });
+  public startupScript = resolve(this.storagePath, 'startup.sh');
+  public dockerOfflineUpdate = this.runningInDocker && satisfies(process.env.CONFIG_UI_VERSION, '>=4.6.2 <=4.44.1', { includePrerelease: true });
 
   // package.json
-  public package = fs.readJsonSync(path.resolve(process.env.UIX_BASE_PATH, 'package.json'));
+  public package = readJsonSync(resolve(process.env.UIX_BASE_PATH, 'package.json'));
 
   // first user setup wizard
   public setupWizardComplete = true;
 
   // custom wallpaper
-  public customWallpaperPath = path.resolve(this.storagePath, 'ui-wallpaper.jpg');
+  public customWallpaperPath = resolve(this.storagePath, 'ui-wallpaper.jpg');
   public customWallpaperHash: string;
 
   // set true to force the ui to restart on next restart request
@@ -116,7 +126,7 @@ export class ConfigService {
   public instanceId: string;
 
   constructor() {
-    const homebridgeConfig = fs.readJSONSync(this.configPath);
+    const homebridgeConfig = readJSONSync(this.configPath);
     this.parseConfig(homebridgeConfig);
     this.checkIfRunningOnRaspberryPi();
   }
@@ -160,7 +170,7 @@ export class ConfigService {
     if (this.ui.scheduledBackupPath) {
       this.instanceBackupPath = this.ui.scheduledBackupPath;
     } else {
-      this.instanceBackupPath = path.resolve(this.storagePath, 'backups/instance-backups');
+      this.instanceBackupPath = resolve(this.storagePath, 'backups/instance-backups');
     }
 
     this.secrets = this.getSecrets();
@@ -183,7 +193,7 @@ export class ConfigService {
         nodeVersion: process.version,
         packageName: this.package.name,
         packageVersion: this.package.version,
-        platform: os.platform(),
+        platform: platform(),
         runningInDocker: this.runningInDocker,
         runningInSynologyPackage: this.runningInSynologyPackage,
         runningInPackageMode: this.runningInPackageMode,
@@ -216,13 +226,13 @@ export class ConfigService {
     }
 
     // if the ui version has changed on disk, a restart is required
-    const currentPackage = await fs.readJson(path.resolve(process.env.UIX_BASE_PATH, 'package.json'));
+    const currentPackage = await readJson(resolve(process.env.UIX_BASE_PATH, 'package.json'));
     if (currentPackage.version !== this.package.version) {
       return true;
     }
 
     // if the ui or bridge config has changed, a restart is required
-    return !(_.isEqual(this.ui, this.uiFreeze) && _.isEqual(this.homebridgeConfig.bridge, this.bridgeFreeze));
+    return !(isEqual(this.ui, this.uiFreeze) && isEqual(this.homebridgeConfig.bridge, this.bridgeFreeze));
   }
 
   /**
@@ -270,10 +280,10 @@ export class ConfigService {
   private setConfigForServiceMode() {
     this.homebridgeInsecureMode = Boolean(process.env.UIX_INSECURE_MODE === '1');
     this.ui.restart = undefined;
-    this.ui.sudo = (os.platform() === 'linux' && !this.runningInDocker && !this.runningInSynologyPackage && !this.runningInPackageMode) || os.platform() === 'freebsd';
+    this.ui.sudo = (platform() === 'linux' && !this.runningInDocker && !this.runningInSynologyPackage && !this.runningInPackageMode) || platform() === 'freebsd';
     this.ui.log = {
       method: 'native',
-      path: path.resolve(this.storagePath, 'homebridge.log'),
+      path: resolve(this.storagePath, 'homebridge.log'),
     };
   }
 
@@ -281,9 +291,9 @@ export class ConfigService {
    * Gets the unique secrets for signing JWTs
    */
   private getSecrets() {
-    if (fs.pathExistsSync(this.secretPath)) {
+    if (pathExistsSync(this.secretPath)) {
       try {
-        const secrets = fs.readJsonSync(this.secretPath);
+        const secrets = readJsonSync(this.secretPath);
         if (!secrets.secretKey) {
           return this.generateSecretToken();
         } else {
@@ -302,10 +312,10 @@ export class ConfigService {
    */
   private generateSecretToken() {
     const secrets = {
-      secretKey: crypto.randomBytes(32).toString('hex'),
+      secretKey: randomBytes(32).toString('hex'),
     };
 
-    fs.writeJsonSync(this.secretPath, secrets);
+    writeJsonSync(this.secretPath, secrets);
 
     return secrets;
   }
@@ -314,7 +324,7 @@ export class ConfigService {
    * Generates a public instance id from a sha256 has of the secret key
    */
   private getInstanceId(): string {
-    return crypto.createHash('sha256').update(this.secrets.secretKey).digest('hex');
+    return createHash('sha256').update(this.secrets.secretKey).digest('hex');
   }
 
   /**
@@ -322,9 +332,9 @@ export class ConfigService {
    */
   private async getCustomWallpaperHash(): Promise<void> {
     try {
-      const stat = await fs.stat(this.ui.loginWallpaper || this.customWallpaperPath);
-      const hash = crypto.createHash('sha256');
-      hash.update(`${stat.birthtime}${stat.ctime}${stat.size}${stat.blocks}`);
+      const fileStat = await stat(this.ui.loginWallpaper || this.customWallpaperPath);
+      const hash = createHash('sha256');
+      hash.update(`${fileStat.birthtime}${fileStat.ctime}${fileStat.size}${fileStat.blocks}`);
       this.customWallpaperHash = hash.digest('hex') + '.jpg';
     } catch (e) {
       // do nothing
@@ -336,7 +346,7 @@ export class ConfigService {
    */
   private async checkIfRunningOnRaspberryPi() {
     try {
-      this.runningOnRaspberryPi = await fs.pathExists('/usr/bin/vcgencmd') && await fs.pathExists('/usr/bin/raspi-config');
+      this.runningOnRaspberryPi = await pathExists('/usr/bin/vcgencmd') && await pathExists('/usr/bin/raspi-config');
     } catch (e) {
       this.runningOnRaspberryPi = false;
     }
@@ -345,8 +355,8 @@ export class ConfigService {
   /**
    * Stream the custom wallpaper
    */
-  public streamCustomWallpaper(): fs.ReadStream {
-    return fs.createReadStream(this.ui.loginWallpaper || this.customWallpaperPath);
+  public streamCustomWallpaper(): ReadStream {
+    return createReadStream(this.ui.loginWallpaper || this.customWallpaperPath);
   }
 
 }

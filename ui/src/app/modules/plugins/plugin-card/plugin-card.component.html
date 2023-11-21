@@ -99,7 +99,7 @@
           </span>
         </a>
         <div ngbDropdownMenu aria-labelledby="Plugin actions drop down menu">
-          <ng-container *ngIf="canStopStartChildBridges && hasChildBridges && !plugin.disabled">
+          <ng-container *ngIf="hasChildBridges && !plugin.disabled">
             <button ngbDropdownItem *ngIf="!allChildBridgesStopped" (click)="doChildBridgeAction('stop')">
               <i class="fas fa-fw fa-stop"></i> {{ 'child_bridge.label_child_stop' | translate }}
             </button>
@@ -113,7 +113,7 @@
             {{ 'plugins.manage.message_install_alternate_version' | translate }}
           </button>
           <button ngbDropdownItem (click)="$plugin.bridgeSettings(plugin)"
-            *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x' && canManageBridgeSettings">
+            *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x'">
             <i class="fas fa-fw fa-fw fa-project-diagram"></i> {{ 'child_bridge.label_bridge_settings' | translate }}
           </button>
           <button ngbDropdownItem (click)="$plugin.jsonEditor(plugin)"
@@ -121,7 +121,7 @@
             <i class="fas fa-fw fa-fw fa-code"></i> {{ 'plugins.manage.json_config' | translate }}
           </button>
           <button ngbDropdownItem (click)="disablePlugin(plugin)"
-            *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x' && !plugin.disabled && canDisablePlugins">
+            *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x' && !plugin.disabled">
             <i class="far fa-fw fa-times-circle"></i> {{ 'plugins.manage.disable' | translate }}
           </button>
           <button ngbDropdownItem (click)="enablePlugin(plugin)"

@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { debounceTime } from 'rxjs/operators';
-import * as semver from 'semver';
 // eslint-disable-next-line max-len
 import { RemoveAllCachedAccessoriesModalComponent } from './remove-all-cached-accessories-modal/remove-all-cached-accessories-modal.component';
 // eslint-disable-next-line max-len
@@ -33,7 +32,6 @@ export class SettingsComponent implements OnInit {
   public legacyMdnsFormControl = new UntypedFormControl(false);
   public saved = false;
 
-  public showNetworking = false;
   public showAvahiMdnsOption = false;
   public showResolvedMdnsOption = false;
   public availableNetworkAdapters: Record<string, any> = [];
@@ -112,28 +110,18 @@ export class SettingsComponent implements OnInit {
   async initNetworkingOptions() {
     try {
       const homebridgePackage = await this.$api.get('/status/homebridge-version').toPromise();
-      if (semver.gte(homebridgePackage.installedVersion, '1.3.0-beta.0')) {
-        this.showNetworking = true;
-        this.getNetworkSettings();
-      }
+      this.getNetworkSettings();
       const onLinux = (
         this.$settings.env.runningInLinux ||
         this.$settings.env.runningInDocker ||
         this.$settings.env.runningInSynologyPackage ||
         this.$settings.env.runningInPackageMode
       );
-      if (semver.gte(homebridgePackage.installedVersion, '1.4.0-beta.0')) {
-        if (onLinux) {
-          this.showAvahiMdnsOption = true;
-        }
-      }
-      if (semver.gte(homebridgePackage.installedVersion, '1.6.0-beta.0')) {
-        if (onLinux) {
-          this.showResolvedMdnsOption = true;
-        }
+      if (onLinux) {
+        this.showAvahiMdnsOption = true;
+        this.showResolvedMdnsOption = true;
       }
     } catch (e) {
-
     }
   }
 

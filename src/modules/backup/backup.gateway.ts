@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import { UseGuards } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets';
-import * as color from 'bash-color';
+import { red } from 'bash-color';
 import { WsAdminGuard } from '../../core/auth/guards/ws-admin-guard';
 import { Logger } from '../../core/logger/logger.service';
 import { BackupService } from './backup.service';
@@ -25,7 +25,7 @@ export class BackupGateway {
       return await this.backupService.restoreFromBackup(client);
     } catch (e) {
       this.logger.error(e);
-      client.emit('stdout', '\n\r' + color.red(e.toString()) + '\n\r');
+      client.emit('stdout', '\n\r' + red(e.toString()) + '\n\r');
       return new WsException(e);
     }
   }
@@ -36,7 +36,7 @@ export class BackupGateway {
       return await this.backupService.restoreHbfxBackup(client);
     } catch (e) {
       this.logger.error(e);
-      client.emit('stdout', '\n\r' + color.red(e.toString()) + '\n\r');
+      client.emit('stdout', '\n\r' + red(e.toString()) + '\n\r');
       return new WsException(e);
     }
   }

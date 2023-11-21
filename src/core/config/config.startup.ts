@@ -1,6 +1,7 @@
-import * as os from 'os';
-import * as path from 'path';
-import * as fs from 'fs-extra';
+import { homedir } from 'os';
+import { resolve } from 'path';
+import { readFile, readJson, stat } from 'fs-extra';
+import { networkInterfaces } from 'systeminformation';
 import { Logger } from '../logger/logger.service';
 
 /**
@@ -9,9 +10,9 @@ import { Logger } from '../logger/logger.service';
 export async function getStartupConfig() {
   const logger = new Logger();
 
-  const configPath = process.env.UIX_CONFIG_PATH || path.resolve(os.homedir(), '.homebridge/config.json');
+  const configPath = process.env.UIX_CONFIG_PATH || resolve(homedir(), '.homebridge/config.json');
 
-  const homebridgeConfig = await fs.readJSON(configPath);
+  const homebridgeConfig = await readJson(configPath);
   const ui = Array.isArray(homebridgeConfig.platforms) ? homebridgeConfig.platforms.find((x: any) => x.platform === 'config') : undefined;
 
   const config = {} as {
@@ -27,7 +28,7 @@ export async function getStartupConfig() {
   };
 
   // check if IPv6 is available on this host
-  const ipv6 = Object.entries(os.networkInterfaces()).filter(([, addresses]) => {
+  const ipv6 = Object.entries(networkInterfaces()).filter(([, addresses]) => {
     return addresses.find(x => x.family === 'IPv6');
   }).length;
 
@@ -47,7 +48,7 @@ export async function getStartupConfig() {
   if (ui.ssl && ((ui.ssl.key && ui.ssl.cert) || ui.ssl.pfx)) {
     for (const attribute of ['key', 'cert', 'pfx']) {
       if (ui.ssl[attribute]) {
-        if (!(await (fs.stat(ui.ssl[attribute]))).isFile()) {
+        if (!(await (stat(ui.ssl[attribute]))).isFile()) {
           logger.error(`SSL Config Error: ui.ssl.${attribute}: ${ui.ssl[attribute]} is not a valid file`);
         }
       }
@@ -55,9 +56,9 @@ export async function getStartupConfig() {
 
     try {
       config.httpsOptions = {
-        key: ui.ssl.key ? await fs.readFile(ui.ssl.key) : undefined,
-        cert: ui.ssl.cert ? await fs.readFile(ui.ssl.cert) : undefined,
-        pfx: ui.ssl.pfx ? await fs.readFile(ui.ssl.pfx) : undefined,
+        key: ui.ssl.key ? await readFile(ui.ssl.key) : undefined,
+        cert: ui.ssl.cert ? await readFile(ui.ssl.cert) : undefined,
+        pfx: ui.ssl.pfx ? await readFile(ui.ssl.pfx) : undefined,
         passphrase: ui.ssl.passphrase,
       };
     } catch (e) {

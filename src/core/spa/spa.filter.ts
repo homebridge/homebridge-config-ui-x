@@ -1,4 +1,4 @@
-import * as path from 'path';
+import { resolve } from 'path';
 import {
   ArgumentsHost,
   Catch,
@@ -6,7 +6,7 @@ import {
   HttpException,
   NotFoundException
 } from '@nestjs/common';
-import * as fs from 'fs-extra';
+import { readFileSync } from 'fs-extra';
 
 @Catch(NotFoundException)
 export class SpaFilter implements ExceptionFilter {
@@ -19,7 +19,7 @@ export class SpaFilter implements ExceptionFilter {
       return res.code(404).send('Not Found');
     }
 
-    const file = fs.readFileSync(path.resolve(process.env.UIX_BASE_PATH, 'public/index.html'), 'utf-8');
+    const file = readFileSync(resolve(process.env.UIX_BASE_PATH, 'public/index.html'), 'utf-8');
     res.type('text/html');
     res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.header('Pragma', 'no-cache');

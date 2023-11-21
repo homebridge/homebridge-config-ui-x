@@ -1,6 +1,6 @@
-import * as child_process from 'child_process';
+import { exec } from 'child_process';
 import { Injectable } from '@nestjs/common';
-import * as fs from 'fs-extra';
+import { readFile, writeFile } from 'fs-extra';
 import { ConfigService } from '../../../core/config/config.service';
 import { Logger } from '../../../core/logger/logger.service';
 
@@ -15,7 +15,7 @@ export class DockerService {
    * Returns the docker startup.sh script
    */
   async getStartupScript() {
-    const script = await fs.readFile(this.configService.startupScript, 'utf-8');
+    const script = await readFile(this.configService.startupScript, 'utf-8');
     return { script };
   }
 
@@ -24,7 +24,7 @@ export class DockerService {
    * @param script
    */
   async updateStartupScript(script: string) {
-    await fs.writeFile(this.configService.startupScript, script);
+    await writeFile(this.configService.startupScript, script);
     return { script };
   }
 
@@ -37,7 +37,7 @@ export class DockerService {
     this.logger.log('Restarting the docker container, make sure you have --restart=always turned on or the container will not come back online');
 
     setTimeout(() => {
-      child_process.exec(cmd);
+      exec(cmd);
     }, 500);
 
     return { ok: true, command: cmd };

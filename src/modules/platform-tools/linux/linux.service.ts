@@ -1,4 +1,4 @@
-import * as child_process from 'child_process';
+import { exec } from 'child_process';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '../../../core/config/config.service';
 import { Logger } from '../../../core/logger/logger.service';
@@ -20,7 +20,7 @@ export class LinuxService {
     this.logger.warn(`Rebooting linux server with command: "${cmd.join(' ')}"`);
 
     setTimeout(() => {
-      child_process.exec(cmd.join(' '), (err) => {
+      exec(cmd.join(' '), (err) => {
         if (err) {
           this.logger.error(err.message);
         }
@@ -40,7 +40,7 @@ export class LinuxService {
     this.logger.warn(`Shutting down linux server with command: "${cmd.join(' ')}"`);
 
     setTimeout(() => {
-      child_process.exec(cmd.join(' '), (err) => {
+      exec(cmd.join(' '), (err) => {
         if (err) {
           this.logger.error(err.message);
         }

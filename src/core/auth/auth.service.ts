@@ -1,4 +1,4 @@
-import * as crypto from 'crypto';
+import { pbkdf2, randomBytes, timingSafeEqual } from 'crypto';
 import {
   BadRequestException,
   ConflictException,
@@ -9,9 +9,7 @@ import {
   UnauthorizedException
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { WsException } from '@nestjs/websockets';
-import * as fs from 'fs-extra';
-import * as jwt from 'jsonwebtoken';
+import { pathExists, readJson, writeJson } from 'fs-extra';
 import * as NodeCache from 'node-cache';
 import { authenticator } from 'otplib';
 import { UserDto } from '../../modules/users/users.dto';
@@ -91,7 +89,7 @@ export class AuthService {
    */
   async signIn(username: string, password: string, otp?: string): Promise<any> {
     const user = await this.authenticate(username, password, otp);
-    const token = await this.jwtService.sign(user);
+    const token = this.jwtService.sign(user);
 
     return {
       access_token: token,
@@ -109,7 +107,7 @@ export class AuthService {
     const passwordAttemptHashBuff = Buffer.from(passwordAttemptHash, 'hex');
     const knownPasswordHashBuff = Buffer.from(user.hashedPassword, 'hex');
 
-    if (crypto.timingSafeEqual(passwordAttemptHashBuff, knownPasswordHashBuff)) {
+    if (timingSafeEqual(passwordAttemptHashBuff, knownPasswordHashBuff)) {
       return user;
     } else {
       throw new ForbiddenException();
@@ -130,7 +128,7 @@ export class AuthService {
     const user = users.find(x => x.admin === true);
 
     // generate a token
-    const token = await this.jwtService.sign({
+    const token = this.jwtService.sign({
       username: user.username,
       name: user.name,
       admin: user.admin,
@@ -154,26 +152,13 @@ export class AuthService {
   }
 
   /**
-   * Verify a token is signed correctly
-   * @param client
-   */
-  async verifyWsConnection(client: any) {
-    try {
-      return jwt.verify(client.handshake.query.token, this.configService.secrets.secretKey);
-    } catch (e) {
-      client.disconnect();
-      throw new WsException('Unauthorized');
-    }
-  }
-
-  /**
    * Hash a password
    * @param password
    * @param salt
    */
   private async hashPassword(password: string, salt: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      crypto.pbkdf2(password, salt, 1000, 64, 'sha512', (err, derivedKey) => {
+      pbkdf2(password, salt, 1000, 64, 'sha512', (err, derivedKey) => {
         if (err) return reject(err);
         return resolve(derivedKey.toString('hex'));
       });
@@ -185,7 +170,7 @@ export class AuthService {
    */
   private async genSalt(): Promise<string> {
     return new Promise((resolve, reject) => {
-      crypto.randomBytes(32, (err, buf) => {
+      randomBytes(32, (err, buf) => {
         if (err) return reject(err);
         return resolve(buf.toString('hex'));
       });
@@ -207,7 +192,7 @@ export class AuthService {
     // first user must be admin
     user.admin = true;
 
-    await fs.writeJson(this.configService.authPath, []);
+    await writeJson(this.configService.authPath, []);
 
     const createdUser = await this.addUser(user);
 
@@ -226,7 +211,7 @@ export class AuthService {
     }
 
     // generate a token
-    const token = await this.jwtService.sign({
+    const token = this.jwtService.sign({
       username: 'setup-wizard',
       name: 'setup-wizard',
       admin: true,
@@ -244,12 +229,12 @@ export class AuthService {
    * Executed on startup to see if the auth file is set up yet
    */
   async checkAuthFile() {
-    if (!await fs.pathExists(this.configService.authPath)) {
+    if (!await pathExists(this.configService.authPath)) {
       this.configService.setupWizardComplete = false;
       return;
     }
     try {
-      const authfile: UserDto[] = await fs.readJson(this.configService.authPath);
+      const authfile: UserDto[] = await readJson(this.configService.authPath);
       // there must be at least one admin user
       if (!authfile.find(x => x.admin === true)) {
         this.configService.setupWizardComplete = false;
@@ -277,22 +262,13 @@ export class AuthService {
    * @param strip if true, remove the users salt and hashed password from the response
    */
   async getUsers(strip?: boolean): Promise<UserDto[]> {
-    const users: UserDto[] = await fs.readJson(this.configService.authPath);
+    const users: UserDto[] = await readJson(this.configService.authPath);
 
     if (strip) {
       return users.map(this.desensitiseUserProfile);
     }
 
     return users;
-  }
-
-  /**
-   * Return a user by id
-   * @param id
-   */
-  async findById(id: number): Promise<UserDto> {
-    const users = await this.getUsers();
-    return users.find(x => x.id === id);
   }
 
   /**
@@ -311,7 +287,7 @@ export class AuthService {
   private async saveUserFile(users: UserDto[]) {
     // update the auth.json
     try {
-      return await fs.writeJson(this.configService.authPath, users, { spaces: 4 });
+      return await writeJson(this.configService.authPath, users, { spaces: 4 });
     } catch (err) {
       throw err;
     }

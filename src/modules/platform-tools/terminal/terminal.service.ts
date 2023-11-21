@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import { Injectable } from '@nestjs/common';
-import * as fs from 'fs-extra';
+import { pathExists } from 'fs-extra';
 import { ConfigService } from '../../../core/config/config.service';
 import { Logger } from '../../../core/logger/logger.service';
 import { NodePtyService } from '../../../core/node-pty/node-pty.service';
@@ -35,7 +35,7 @@ export class TerminalService {
     this.logger.log('Starting terminal session');
 
     // check if we should use bash or sh
-    const shell = await fs.pathExists('/bin/bash') ? '/bin/bash' : '/bin/sh';
+    const shell = await pathExists('/bin/bash') ? '/bin/bash' : '/bin/sh';
 
     // spawn a new shell
     const term = this.nodePtyService.spawn(shell, [], {

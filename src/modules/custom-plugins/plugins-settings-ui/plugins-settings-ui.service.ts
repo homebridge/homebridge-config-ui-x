@@ -1,10 +1,15 @@
-
-import * as child_process from 'child_process';
+import { fork } from 'child_process';
 import { EventEmitter } from 'events';
-import * as path from 'path';
+import {
+  basename,
+  dirname,
+  join,
+  normalize,
+  resolve,
+} from 'path';
 import { HttpService } from '@nestjs/axios';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import * as fs from 'fs-extra';
+import { pathExists, readFile } from 'fs-extra';
 import * as NodeCache from 'node-cache';
 import { ConfigService } from '../../../core/config/config.service';
 import { Logger } from '../../../core/logger/logger.service';
@@ -41,10 +46,10 @@ export class PluginsSettingsUiService {
       const pluginUi: HomebridgePluginUiMetadata = (this.pluginUiMetadataCache.get(pluginName) as any)
         || (await this.getPluginUiMetadata(pluginName));
 
-      const safeSuffix = path.normalize(assetPath).replace(/^(\.\.(\/|\\|$))+/, '');
-      const filePath = path.join(pluginUi.publicPath, safeSuffix);
+      const safeSuffix = normalize(assetPath).replace(/^(\.\.(\/|\\|$))+/, '');
+      const filePath = join(pluginUi.publicPath, safeSuffix);
 
-      if (!filePath.startsWith(path.resolve(pluginUi.publicPath))) {
+      if (!filePath.startsWith(resolve(pluginUi.publicPath))) {
         return reply.code(404).send('Not Found');
       }
 
@@ -62,12 +67,12 @@ export class PluginsSettingsUiService {
       }
 
       // fallback path (to serve static assets from the plugin ui public folder)
-      const fallbackPath = path.resolve(process.env.UIX_BASE_PATH, 'public', path.basename(filePath));
+      const fallbackPath = resolve(process.env.UIX_BASE_PATH, 'public', basename(filePath));
 
-      if (await fs.pathExists(filePath)) {
-        return reply.sendFile(path.basename(filePath), path.dirname(filePath));
-      } else if (fallbackPath.match(/^.*\.(jpe?g|gif|png|svg|ttf|woff2|css)$/i) && await fs.pathExists(fallbackPath)) {
-        return reply.sendFile(path.basename(fallbackPath), path.dirname(fallbackPath));
+      if (await pathExists(filePath)) {
+        return reply.sendFile(basename(filePath), dirname(filePath));
+      } else if (fallbackPath.match(/^.*\.(jpe?g|gif|png|svg|ttf|woff2|css)$/i) && await pathExists(fallbackPath)) {
+        return reply.sendFile(basename(fallbackPath), dirname(fallbackPath));
       } else {
         this.loggerService.warn('Asset Not Found:', pluginName + '/' + assetPath);
         return reply.code(404).send('Not Found');
@@ -118,7 +123,7 @@ export class PluginsSettingsUiService {
       return (await this.httpService.get(pluginUi.devServer, { responseType: 'text' }).toPromise()).data;
     } else {
       try {
-        return await fs.readFile(path.join(pluginUi.publicPath, 'index.html'), 'utf8');
+        return await readFile(join(pluginUi.publicPath, 'index.html'), 'utf8');
       } catch (err) {
         throw err;
       }
@@ -131,7 +136,7 @@ export class PluginsSettingsUiService {
   async buildIndexHtml(pluginUi: HomebridgePluginUiMetadata, origin: string) {
     const body = await this.getIndexHtmlBody(pluginUi);
 
-    const htmlDocument = `
+    return `
       <!doctype html>
       <html>
         <head>
@@ -156,8 +161,6 @@ export class PluginsSettingsUiService {
         </body>
       </html>
     `;
-
-    return htmlDocument;
   }
 
   /**
@@ -168,7 +171,7 @@ export class PluginsSettingsUiService {
       || (await this.getPluginUiMetadata(pluginName));
 
     // check the plugin has a server side script
-    if (!await fs.pathExists(path.resolve(pluginUi.serverPath))) {
+    if (!await pathExists(resolve(pluginUi.serverPath))) {
       client.emit('ready', { server: false });
       return;
     }
@@ -180,7 +183,7 @@ export class PluginsSettingsUiService {
     childEnv.HOMEBRIDGE_UI_VERSION = this.configService.package.version;
 
     // launch the server side script
-    const child = child_process.fork(pluginUi.serverPath, [], {
+    const child = fork(pluginUi.serverPath, [], {
       silent: true,
       env: childEnv,
     });

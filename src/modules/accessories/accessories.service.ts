@@ -1,7 +1,12 @@
-import * as path from 'path';
+import { join } from 'path';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { HapClient, ServiceType } from '@oznu/hap-client';
-import * as fs from 'fs-extra';
+import {
+  mkdirp,
+  pathExists,
+  readJson,
+  writeJsonSync,
+} from 'fs-extra';
 import * as NodeCache from 'node-cache';
 import { ConfigService } from '../../core/config/config.service';
 import { Logger } from '../../core/logger/logger.service';
@@ -233,7 +238,7 @@ export class AccessoriesService {
    */
   public async getAccessoryLayout(username: string) {
     try {
-      const accessoryLayout = await fs.readJson(this.configService.accessoryLayoutPath);
+      const accessoryLayout = await readJson(this.configService.accessoryLayoutPath);
       if (username in accessoryLayout) {
         return accessoryLayout[username];
       } else {
@@ -258,17 +263,17 @@ export class AccessoriesService {
     let accessoryLayout: any;
 
     try {
-      accessoryLayout = await fs.readJson(this.configService.accessoryLayoutPath);
+      accessoryLayout = await readJson(this.configService.accessoryLayoutPath);
     } catch (e) {
       accessoryLayout = {};
     }
 
-    if (!await fs.pathExists(path.join(this.configService.storagePath, 'accessories'))) {
-      await fs.mkdirp(path.join(this.configService.storagePath, 'accessories'));
+    if (!await pathExists(join(this.configService.storagePath, 'accessories'))) {
+      await mkdirp(join(this.configService.storagePath, 'accessories'));
     }
 
     accessoryLayout[user] = layout;
-    fs.writeJsonSync(this.configService.accessoryLayoutPath, accessoryLayout);
+    writeJsonSync(this.configService.accessoryLayoutPath, accessoryLayout);
     this.logger.log(`[${user}] Accessory layout changes saved.`);
     return layout;
   }
