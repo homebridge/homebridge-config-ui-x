@@ -228,7 +228,7 @@
           </a>       
         </div>
         <ul class="sub-menu blank">
-          <li><a class="link_name" href="javascript:void(0)" (click)="$auth.logout()" [translate]="'menu.tooltip_logout'">Logout - username</a></li>
+          <li><a class="link_name" href="javascript:void(0)" (click)="$auth.logout()" [translate]="'menu.tooltip_logout'">Logout - {{ $auth.user.username }}</a></li>
         </ul>
       </li>
       <li>
