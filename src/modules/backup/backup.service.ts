@@ -100,7 +100,7 @@ export class BackupService {
             'recordings',         // homebridge-camera-ui recordings path
             '.homebridge.sock',   // homebridge ipc socket
             '#recycle',           // synology dsm recycle bin
-            '@eaDir',              // synology dsm metadata
+            '@eaDir',             // synology dsm metadata
           ].includes(path.basename(filePath))) {
             return false;
           }
