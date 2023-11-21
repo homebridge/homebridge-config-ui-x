@@ -22,7 +22,7 @@ import {
   type,
 } from 'os';
 import { dirname, join, resolve } from 'path';
-import get from 'axios';
+import axios from 'axios';
 import { program } from 'commander';
 import {
   PathLike,
@@ -1160,7 +1160,7 @@ export class HomebridgeServiceHelper {
    * If current version is > LTS, update to the latest version while retaining the major version number
    */
   private async checkForNodejsUpdates(requestedVersion: string) {
-    const versionList = (await get('https://nodejs.org/dist/index.json')).data;
+    const versionList = (await axios.get('https://nodejs.org/dist/index.json')).data;
     const currentLts = versionList.filter(x => x.lts)[0];
 
     if (requestedVersion) {
@@ -1217,7 +1217,7 @@ export class HomebridgeServiceHelper {
       const tempFilePath = join(tempDir, 'node.tar.gz');
       const tempFile = createWriteStream(tempFilePath);
 
-      await get(downloadUrl, { responseType: 'stream' })
+      await axios.get(downloadUrl, { responseType: 'stream' })
         .then((response) => {
           return new Promise((res, rej) => {
             response.data.pipe(tempFile)
@@ -1278,7 +1278,7 @@ export class HomebridgeServiceHelper {
     this.logger(`Testing hb-service is running on port ${this.uiPort}...`);
 
     try {
-      const res = await get(`http://localhost:${this.uiPort}/api`);
+      const res = await axios.get(`http://localhost:${this.uiPort}/api`);
       if (res.data === 'Hello World!') {
         this.logger('Homebridge UI Running', 'succeed');
       } else {
