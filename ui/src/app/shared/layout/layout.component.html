@@ -1,7 +1,7 @@
 <!--Main Navigation-->
 <header *ngIf="$settings.theme && $auth.user">
   <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary scrolling-navbar d-lg-none">
-    <a class="navbar-brand" routerLink="/" data-toggle="collapse" data-target=".navbar-collapse.show">
+    <a class="navbar-brand" routerLink="/">
       <img class="menu-logo" src="/assets/homebridge-logo.svg" />
       <strong>Homebridge</strong>
     </a>
@@ -15,34 +15,28 @@
       <ul class="navbar-nav mr-auto">
         <li class="nav-item waves-effect waves-light" routerLinkActive="active"
           [routerLinkActiveOptions]="{exact: true}">
-          <a class="nav-link" routerLink="/status" [translate]="'menu.label_status'"
-            data-toggle="collapse" data-target=".navbar-toggler:not(.collapsed),.navbar-collapse.show=">
+          <a class="nav-link" routerLink="/status" [translate]="'menu.label_status'">
             <i class='fa fa-house'></i>Status</a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
-          <a class="nav-link" routerLink="/plugins" [translate]="'menu.label_plugins'"
-            data-toggle="collapse" data-target=".navbar-toggler:not(.collapsed),.navbar-collapse.show">
+          <a class="nav-link" routerLink="/plugins" [translate]="'menu.label_plugins'">
             <i class="fa fa-plug pr-2"></i>Plugins</a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$settings.env.enableAccessories">
-          <a class="nav-link" routerLink="/accessories" [translate]="'menu.label_accessories'"
-            data-toggle="collapse" data-target=".navbar-toggler:not(.collapsed),.navbar-collapse.show,.navbar-toggler:not(.collapsed)">
+          <a class="nav-link" routerLink="/accessories" [translate]="'menu.label_accessories'">
             <i class="fa fa-lightbulb pr-2"></i>Accessories</a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active">
-          <a class="nav-link" routerLink="/logs" [translate]="'menu.linux.label_logs'"
-            data-toggle="collapse" data-target=".navbar-collapse.show,.navbar-toggler:not(.collapsed)">
+          <a class="nav-link" routerLink="/logs" [translate]="'menu.linux.label_logs'">
             <i class="fa fa-code pr-2"></i>Logs</a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$settings.env.enableTerminalAccess && $auth.user.admin">
-          <a class="nav-link" routerLink="/platform-tools/terminal" [translate]="'menu.linux.label_terminal'"
-            data-toggle="collapse" data-target=".navbar-collapse.show,.navbar-toggler:not(.collapsed)">
+          <a class="nav-link" routerLink="/platform-tools/terminal" [translate]="'menu.linux.label_terminal'">
             <i class="fa fa-terminal pr-2"></i>Terminal</a>
         </li>
         <li class="nav-item dropdown" *ngIf="$auth.user.admin">
-          <a class="nav-link dropdown-toggle" href="#" role="button" 
-            data-toggle="dropdown" aria-expanded="false" [translate]="'menu.label_settings_hb'">
-            <i class="fa fa-cog pr-2"></i>Homebridge Settings
+          <a class="nav-link dropdown-toggle" href="#" role="button">
+            <i class="fa fa-cog pr-2"></i>Homebridge Settings<i class="fa fa-caret-down pl-2"></i>
           </a>
           <div class="dropdown-menu">
             <a class="dropdown-item" routerLink="/settings" [translate]="'menu.label_settings_hb'"
@@ -59,39 +53,32 @@
         </li>
         <!--
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
-          <a class="nav-link" routerLink="/settings" [translate]="'menu.label_settings_hb'"
-            data-toggle="collapse" data-target=".navbar-collapse.show">
+          <a class="nav-link" routerLink="/settings" [translate]="'menu.label_settings_hb'">
             <i class="fa fa-cog pr-2"></i>Homebridge Settings</a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
-          <a class="nav-link" href="javascript:void(0)" (click)="openUiSettings()" [translate]="'menu.label_settings_ui'"
-            data-toggle="collapse" data-target=".navbar-collapse.show">
+          <a class="nav-link" href="javascript:void(0)" (click)="openUiSettings()" [translate]="'menu.label_settings_ui'">
             <i class="fa fa-sliders pr-2"></i>UI Settings</a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
-          <a class="nav-link" href="javascript:void(0)" (click)="backupRestoreHomebridge()" [translate]="'backup.title_backup_restore'"
-            data-toggle="collapse" data-target=".navbar-collapse.show">
+          <a class="nav-link" href="javascript:void(0)" (click)="backupRestoreHomebridge()" [translate]="'backup.title_backup_restore'">
             <i class="fa fa-clock-rotate-left pr-2"></i>Backup</a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
-          <a class="nav-link" routerLink="/config" [translate]="'menu.label_config'"
-            data-toggle="collapse" data-target=".navbar-collapse.show">
+          <a class="nav-link" routerLink="/config" [translate]="'menu.label_config'">
             <i class="fa fa-file-lines pr-2"></i>Config</a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
-          <a class="nav-link" routerLink="/users" [translate]="'menu.tooltip_user_accounts'"
-            data-toggle="collapse" data-target=".navbar-collapse.show">
+          <a class="nav-link" routerLink="/users" [translate]="'menu.tooltip_user_accounts'">
             <i class="fa fa-user pr-2"></i>Users</a>
         </li>
         -->
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
-          <a class="nav-link" href="javascript:void(0)" (click)="openRestartOptionsModal()" [translate]="'menu.restart.title'"
-            data-toggle="collapse" data-target=".navbar-collapse.show">
+          <a class="nav-link" href="javascript:void(0)" (click)="openRestartOptionsModal()" [translate]="'menu.restart.title'">
             <i class="fa fa-power-off pr-2"></i>Restart Options</a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$settings.formAuth">
-          <a class="nav-link" href="javascript:void(0)" (click)="$auth.logout()" [translate]="'menu.tooltip_logout'"
-            data-toggle="collapse" data-target=".navbar-collapse.show">
+          <a class="nav-link" href="javascript:void(0)" (click)="$auth.logout()" [translate]="'menu.tooltip_logout'">
             <i class="fa fa-right-from-bracket pr-2"></i>{{ 'menu.tooltip_logout' | translate }} - {{ $auth.user.username }}</a>
         </li>
       </ul>

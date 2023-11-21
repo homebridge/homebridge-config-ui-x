@@ -117,7 +117,7 @@
   line-height: 50px;
 }
 .sidebar .logo-details .logo_name{
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 600;
   transition: 0.3s ease;
   transition-delay: 0.1s;
@@ -175,7 +175,7 @@
   text-decoration: none;
 }
 .sidebar .nav-links li a .link_name{
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 400;
   transition: all 0.4s ease;
 }
@@ -276,6 +276,16 @@
   font-size: 16px !important;
   min-width: 20px !important;
   margin-right: 10px;
+}
+
+.navbar .dropdown-menu {
+  max-width: 100% !important;
+  margin: 0px !important;
+  padding-left: 20px !important;
+}
+
+.navbar .dropdown-item {
+  background-color: transparent !important;
 }
 
 /* ELSE */
