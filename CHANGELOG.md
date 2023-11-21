@@ -8,6 +8,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 
 - Add Child Bridge Pin Code (#1739)
 - standardise modal footers (#1753)
+- Fix table width, avoid overflow (#1758) (@jsiegenthaler)
 
 ### Other Changes
 
@@ -17,6 +18,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - ui lint sort imports and exports (#1750)
 - update lang sync - remove old translations (#1751)
 - various code improvements + simplifications (#1754)
+- remove node 11 polyfill from self-check (TBC)
 
 ## 4.52.3 (2023-11-14)
 
