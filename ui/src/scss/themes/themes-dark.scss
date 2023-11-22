@@ -19,6 +19,17 @@
       border-bottom-width: 1px;
     }
 
+    .nav-overlay {
+      display: initial;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: -999;
+      background-color: rgba(0,0,0,0.8);
+    }
+
     .sidebar {
       background-color: #0f0f0f;
     }

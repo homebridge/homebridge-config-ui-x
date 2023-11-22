@@ -12,6 +12,7 @@
       <span class="toggler-icon bottom-bar"></span>
     </button>
     <div class="collapse navbar-collapse my-3" id="navbarSupportedContent">
+      <div class="nav-overlay"></div>
       <ul class="navbar-nav mr-auto">
         <li class="nav-item waves-effect waves-light" routerLinkActive="active"
           [routerLinkActiveOptions]="{exact: true}">
@@ -37,7 +38,9 @@
        
         <li class="nav-item" *ngIf="$auth.user.admin"> 
           <div class="dropdown">
-            <button class="btn btn-link dropdown-toggle px-0 mx-0 text-decoration-none" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button class="btn btn-link dropdown-toggle px-0 mx-0 text-decoration-none" type="button" 
+              id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+              [translate]="'plugins.button_settings'">
               <i class="fa fa-cog pr-2"></i>Homebridge Settings<i class="fa fa-caret-down pl-2"></i>
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -205,14 +208,14 @@
       </li>
       <li class="li-link1" *ngIf="$auth.user.admin">
         <div class="iocn-link">
-          <a routerLink="/settings" [translate]="'menu.label_settings_hb'">
+          <a routerLink="/settings" [translate]="'plugins.button_settings'">
             <i class="fa fa-cog"></i>
             <span class="link_name">Settings</span>
           </a>
           <i class="fa fa-chevron-down arrow" data-toggle="collapse"  data-target=".li-link1"></i>
         </div>
         <ul class="sub-menu">
-          <li><a class="link_name" routerLink="/settings" [translate]="'menu.label_settings_hb'">Homebridge settings</a></li>
+          <li><a class="link_name" routerLink="/settings" [translate]="'plugins.button_settings'">Settings</a></li>
           <li><a routerLink="/settings" [translate]="'menu.label_settings_hb'"><i class="fa fa-cog"></i>Homebridge settings</a></li>
           <li><a href="javascript:void(0)" (click)="openUiSettings()" [translate]="'menu.label_settings_ui'"><i class="fa fa-sliders"></i>UI Settings</a></li>
           <li><a href="javascript:void(0)" (click)="backupRestoreHomebridge()" [translate]="'backup.title_backup_restore'"><i class="fa fa-clock-rotate-left"></i>Backup</a></li>
