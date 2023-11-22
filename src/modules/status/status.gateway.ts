@@ -47,6 +47,15 @@ export class StatusGateway {
     }
   }
 
+  @SubscribeMessage('homebridge-ui-version-check')
+  async homebridgeUiVersionCheck(client, payload) {
+    try {
+      return await this.pluginsService.getHomebridgeUiPackage();
+    } catch (e) {
+      return new WsException(e.message);
+    }
+  }
+
   @SubscribeMessage('npm-version-check')
   async npmVersionCheck(client, payload) {
     try {

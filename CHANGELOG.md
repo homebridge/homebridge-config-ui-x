@@ -9,6 +9,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - Add Child Bridge Pin Code (#1739)
 - standardise modal footers (#1753)
 - Fix table width, avoid overflow (#1758) (@jsiegenthaler)
+- add UI details to status widget (#1789)
 
 ### Translation Changes
 
