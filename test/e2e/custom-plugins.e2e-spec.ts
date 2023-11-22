@@ -1,9 +1,9 @@
-import * as path from 'path';
+import { resolve } from 'path';
 import { HttpService } from '@nestjs/axios';
 import { ValidationPipe } from '@nestjs/common';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as fs from 'fs-extra';
+import { copy, remove, writeJson } from 'fs-extra';
 import { AuthModule } from '../../src/core/auth/auth.module';
 import { CustomPluginsModule } from '../../src/modules/custom-plugins/custom-plugins.module';
 
@@ -18,19 +18,19 @@ describe('CustomPluginsController (e2e)', () => {
   beforeAll(async () => {
     jest.resetAllMocks();
 
-    process.env.UIX_BASE_PATH = path.resolve(__dirname, '../../');
-    process.env.UIX_STORAGE_PATH = path.resolve(__dirname, '../', '.homebridge');
-    process.env.UIX_CONFIG_PATH = path.resolve(process.env.UIX_STORAGE_PATH, 'config.json');
+    process.env.UIX_BASE_PATH = resolve(__dirname, '../../');
+    process.env.UIX_STORAGE_PATH = resolve(__dirname, '../', '.homebridge');
+    process.env.UIX_CONFIG_PATH = resolve(process.env.UIX_STORAGE_PATH, 'config.json');
 
-    authFilePath = path.resolve(process.env.UIX_STORAGE_PATH, 'auth.json');
-    secretsFilePath = path.resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets');
+    authFilePath = resolve(process.env.UIX_STORAGE_PATH, 'auth.json');
+    secretsFilePath = resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets');
 
     // setup test config
-    await fs.copy(path.resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
 
     // setup test auth file
-    await fs.copy(path.resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
-    await fs.copy(path.resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
+    await copy(resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
+    await copy(resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
 
     // create httpService instance
     httpService = new HttpService();
@@ -66,7 +66,7 @@ describe('CustomPluginsController (e2e)', () => {
   });
 
   it('GET /plugins/custom-plugins/homebridge-hue/dump-file (dump file exists)', async () => {
-    await fs.writeJson(path.resolve(process.env.UIX_STORAGE_PATH, 'homebridge-hue.json.gz'), {});
+    await writeJson(resolve(process.env.UIX_STORAGE_PATH, 'homebridge-hue.json.gz'), {});
 
     const res = await app.inject({
       method: 'GET',
@@ -80,7 +80,7 @@ describe('CustomPluginsController (e2e)', () => {
   });
 
   it('GET /plugins/custom-plugins/homebridge-hue/dump-file (dump file missing)', async () => {
-    await fs.remove(path.resolve(process.env.UIX_STORAGE_PATH, 'homebridge-hue.json.gz'));
+    await remove(resolve(process.env.UIX_STORAGE_PATH, 'homebridge-hue.json.gz'));
 
     const res = await app.inject({
       method: 'GET',
@@ -94,7 +94,7 @@ describe('CustomPluginsController (e2e)', () => {
   });
 
   it('GET /plugins/custom-plugins/homebridge-deconz/dump-file (dump file exists)', async () => {
-    await fs.writeJson(path.resolve(process.env.UIX_STORAGE_PATH, 'homebridge-deconz.json.gz'), {});
+    await writeJson(resolve(process.env.UIX_STORAGE_PATH, 'homebridge-deconz.json.gz'), {});
 
     const res = await app.inject({
       method: 'GET',
@@ -108,7 +108,7 @@ describe('CustomPluginsController (e2e)', () => {
   });
 
   it('GET /plugins/custom-plugins/homebridge-deconz/dump-file (dump file missing)', async () => {
-    await fs.remove(path.resolve(process.env.UIX_STORAGE_PATH, 'homebridge-deconz.json.gz'));
+    await remove(resolve(process.env.UIX_STORAGE_PATH, 'homebridge-deconz.json.gz'));
 
     const res = await app.inject({
       method: 'GET',

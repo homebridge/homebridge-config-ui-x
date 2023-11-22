@@ -1,8 +1,14 @@
-import * as path from 'path';
+import { resolve } from 'path';
 import { ValidationPipe } from '@nestjs/common';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as fs from 'fs-extra';
+import {
+  copy,
+  readFile,
+  readJson,
+  remove,
+  writeFile,
+} from 'fs-extra';
 import { AuthModule } from '../../src/core/auth/auth.module';
 import { ConfigService } from '../../src/core/config/config.service';
 import { HbServiceModule } from '../../src/modules/platform-tools/hb-service/hb-service.module';
@@ -18,21 +24,21 @@ describe('PlatformToolsHbService (e2e)', () => {
   let configService: ConfigService;
 
   beforeAll(async () => {
-    process.env.UIX_BASE_PATH = path.resolve(__dirname, '../../');
-    process.env.UIX_STORAGE_PATH = path.resolve(__dirname, '../', '.homebridge');
-    process.env.UIX_CONFIG_PATH = path.resolve(process.env.UIX_STORAGE_PATH, 'config.json');
+    process.env.UIX_BASE_PATH = resolve(__dirname, '../../');
+    process.env.UIX_STORAGE_PATH = resolve(__dirname, '../', '.homebridge');
+    process.env.UIX_CONFIG_PATH = resolve(process.env.UIX_STORAGE_PATH, 'config.json');
 
-    authFilePath = path.resolve(process.env.UIX_STORAGE_PATH, 'auth.json');
-    secretsFilePath = path.resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets');
-    envFilePath = path.resolve(process.env.UIX_STORAGE_PATH, '.uix-hb-service-homebridge-startup.json');
-    logFilePath = path.resolve(process.env.UIX_STORAGE_PATH, 'homebridge.log');
+    authFilePath = resolve(process.env.UIX_STORAGE_PATH, 'auth.json');
+    secretsFilePath = resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets');
+    envFilePath = resolve(process.env.UIX_STORAGE_PATH, '.uix-hb-service-homebridge-startup.json');
+    logFilePath = resolve(process.env.UIX_STORAGE_PATH, 'homebridge.log');
 
     // setup test config
-    await fs.copy(path.resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
 
     // setup test auth file
-    await fs.copy(path.resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
-    await fs.copy(path.resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
+    await copy(resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
+    await copy(resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [HbServiceModule, AuthModule],
@@ -53,7 +59,7 @@ describe('PlatformToolsHbService (e2e)', () => {
 
   beforeEach(async () => {
     // restore hb-service env file
-    await fs.copy(path.resolve(__dirname, '../mocks', '.uix-hb-service-homebridge-startup.json'), envFilePath);
+    await copy(resolve(__dirname, '../mocks', '.uix-hb-service-homebridge-startup.json'), envFilePath);
 
     // ensure restart required flag is cleared
     configService.hbServiceUiRestartRequired = false;
@@ -89,7 +95,7 @@ describe('PlatformToolsHbService (e2e)', () => {
   });
 
   it('GET /platform-tools/hb-service/homebridge-startup-settings (env file does not exist)', async () => {
-    await fs.remove(envFilePath);
+    await remove(envFilePath);
 
     const res = await app.inject({
       method: 'GET',
@@ -122,7 +128,7 @@ describe('PlatformToolsHbService (e2e)', () => {
 
     expect(res.statusCode).toBe(200);
 
-    const envFile = await fs.readJson(envFilePath);
+    const envFile = await readJson(envFilePath);
     expect(envFile.debugMode).toBe(true);
     expect(envFile.keepOrphans).toBe(true);
     expect(envFile.insecureMode).toBe(false);
@@ -152,7 +158,7 @@ describe('PlatformToolsHbService (e2e)', () => {
   it('GET /platform-tools/hb-service/log/download', async () => {
     // write some data to the log file
     const sampleLogData = ['line 1', 'line 2', 'line 3'].join('\n');
-    await fs.writeFile(logFilePath, sampleLogData);
+    await writeFile(logFilePath, sampleLogData);
 
     const res = await app.inject({
       method: 'GET',
@@ -169,7 +175,7 @@ describe('PlatformToolsHbService (e2e)', () => {
   it('GET /platform-tools/hb-service/log/download (with colour)', async () => {
     // write some data to the log file
     const sampleLogData = ['line 1', 'line 2', 'line 3'].join('\n');
-    await fs.writeFile(logFilePath, sampleLogData);
+    await writeFile(logFilePath, sampleLogData);
 
     const res = await app.inject({
       method: 'GET',
@@ -186,7 +192,7 @@ describe('PlatformToolsHbService (e2e)', () => {
   it('PUT /platform-tools/hb-service/log/truncate', async () => {
     // write some data to the log file
     const sampleLogData = ['line 1', 'line 2', 'line 3'].join('\n');
-    await fs.writeFile(logFilePath, sampleLogData);
+    await writeFile(logFilePath, sampleLogData);
 
     const res = await app.inject({
       method: 'PUT',
@@ -197,7 +203,7 @@ describe('PlatformToolsHbService (e2e)', () => {
     });
 
     expect(res.statusCode).toBe(200);
-    expect(await fs.readFile(logFilePath, 'utf8')).toBe('');
+    expect(await readFile(logFilePath, 'utf8')).toBe('');
   });
 
   afterAll(async () => {

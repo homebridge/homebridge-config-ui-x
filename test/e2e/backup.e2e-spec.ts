@@ -1,12 +1,23 @@
 import { EventEmitter } from 'events';
-import * as path from 'path';
+import { join, resolve } from 'path';
 import fastifyMultipart from '@fastify/multipart';
 import { ValidationPipe } from '@nestjs/common';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as dayjs from 'dayjs';
 import * as FormData from 'form-data';
-import * as fs from 'fs-extra';
+import {
+  copy,
+  emptyDir,
+  ensureDir,
+  pathExists,
+  readFile,
+  readJson,
+  readdir,
+  remove,
+  writeFile,
+  writeJson,
+} from 'fs-extra';
 import { AuthModule } from '../../src/core/auth/auth.module';
 import { ConfigService } from '../../src/core/config/config.service';
 import { SchedulerService } from '../../src/core/scheduler/scheduler.service';
@@ -30,26 +41,26 @@ describe('BackupController (e2e)', () => {
   let backupGateway: BackupGateway;
   let pluginsService: PluginsService;
   let schedulerService: SchedulerService;
-  let postBackupRestoreRestartFn;
+  let postBackupRestoreRestartFn: jest.Mock;
 
   beforeAll(async () => {
-    process.env.UIX_BASE_PATH = path.resolve(__dirname, '../../');
-    process.env.UIX_STORAGE_PATH = path.resolve(__dirname, '../', '.homebridge');
-    process.env.UIX_CONFIG_PATH = path.resolve(process.env.UIX_STORAGE_PATH, 'config.json');
-    process.env.UIX_CUSTOM_PLUGIN_PATH = path.resolve(process.env.UIX_STORAGE_PATH, 'plugins/node_modules');
+    process.env.UIX_BASE_PATH = resolve(__dirname, '../../');
+    process.env.UIX_STORAGE_PATH = resolve(__dirname, '../', '.homebridge');
+    process.env.UIX_CONFIG_PATH = resolve(process.env.UIX_STORAGE_PATH, 'config.json');
+    process.env.UIX_CUSTOM_PLUGIN_PATH = resolve(process.env.UIX_STORAGE_PATH, 'plugins/node_modules');
 
-    authFilePath = path.resolve(process.env.UIX_STORAGE_PATH, 'auth.json');
-    secretsFilePath = path.resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets');
-    tempBackupPath = path.resolve(process.env.UIX_STORAGE_PATH, 'backup.tar.gz');
-    instanceBackupPath = path.resolve(process.env.UIX_STORAGE_PATH, 'backups/instance-backups');
-    customInstanceBackupPath = path.resolve(process.env.UIX_STORAGE_PATH, 'backups/instance-backups-custom');
+    authFilePath = resolve(process.env.UIX_STORAGE_PATH, 'auth.json');
+    secretsFilePath = resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets');
+    tempBackupPath = resolve(process.env.UIX_STORAGE_PATH, 'backup.tar.gz');
+    instanceBackupPath = resolve(process.env.UIX_STORAGE_PATH, 'backups/instance-backups');
+    customInstanceBackupPath = resolve(process.env.UIX_STORAGE_PATH, 'backups/instance-backups-custom');
 
     // setup test config
-    await fs.copy(path.resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
 
     // setup test auth file
-    await fs.copy(path.resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
-    await fs.copy(path.resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
+    await copy(resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
+    await copy(resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [BackupModule, AuthModule],
@@ -124,8 +135,8 @@ describe('BackupController (e2e)', () => {
 
   it('should remove scheduled instance backups older than 7 days', async () => {
     // empty the instance backup path
-    await fs.remove(configService.instanceBackupPath);
-    await fs.ensureDir(configService.instanceBackupPath);
+    await remove(configService.instanceBackupPath);
+    await ensureDir(configService.instanceBackupPath);
 
     // create some fake backups
     const backupDates = [
@@ -145,42 +156,42 @@ describe('BackupController (e2e)', () => {
 
     for (const fakeBackupDate of backupDates) {
       const backupFileName = `homebridge-backup-${instanceId}.${fakeBackupDate.getTime().toString()}.tar.gz`;
-      await fs.writeFile(path.resolve(configService.instanceBackupPath, backupFileName), 'xyz');
+      await writeFile(resolve(configService.instanceBackupPath, backupFileName), 'xyz');
     }
 
     // do a sanity check beforehand
-    const backupsBeforeCleanup = await fs.readdir(configService.instanceBackupPath);
+    const backupsBeforeCleanup = await readdir(configService.instanceBackupPath);
     expect(backupsBeforeCleanup).toHaveLength(10);
 
     // run backup job
     await backupService.runScheduledBackupJob();
 
     // there should only be 7 backups on disk
-    const backupsAfterJob = await fs.readdir(configService.instanceBackupPath);
+    const backupsAfterJob = await readdir(configService.instanceBackupPath);
     expect(backupsAfterJob).toHaveLength(7);
   });
 
   it('saves scheduled backups to the custom path if set and exists', async () => {
     // cleanup
-    await fs.remove(customInstanceBackupPath);
+    await remove(customInstanceBackupPath);
 
     configService.ui.scheduledBackupPath = customInstanceBackupPath;
     configService.instanceBackupPath = customInstanceBackupPath;
 
     // ensure the directory exists, custom backup paths are not automatically created
-    await fs.ensureDir(customInstanceBackupPath);
+    await ensureDir(customInstanceBackupPath);
 
     // run backup job
     await backupService.runScheduledBackupJob();
 
-    const backups = await fs.readdir(customInstanceBackupPath);
+    const backups = await readdir(customInstanceBackupPath);
 
     expect(backups).toHaveLength(1);
   });
 
   it('throws an error if the custom scheduled backup path does not exist', async () => {
     // cleanup
-    await fs.remove(customInstanceBackupPath);
+    await remove(customInstanceBackupPath);
 
     configService.ui.scheduledBackupPath = customInstanceBackupPath;
     configService.instanceBackupPath = customInstanceBackupPath;
@@ -190,11 +201,11 @@ describe('BackupController (e2e)', () => {
 
   it('creates the non-custom scheduled backup path if it does not exist', async () => {
     // cleanup
-    await fs.remove(instanceBackupPath);
+    await remove(instanceBackupPath);
 
     await backupService.ensureScheduledBackupPath();
 
-    expect(await fs.pathExists(instanceBackupPath)).toBe(true);
+    expect(await pathExists(instanceBackupPath)).toBe(true);
   });
 
   it('GET /backup/download', async () => {
@@ -221,11 +232,11 @@ describe('BackupController (e2e)', () => {
     });
 
     // save the backup to disk
-    await fs.writeFile(tempBackupPath, downloadBackup.rawPayload);
+    await writeFile(tempBackupPath, downloadBackup.rawPayload);
 
     // create multipart form
     const payload = new FormData();
-    payload.append('backup.tar.gz', await fs.readFile(tempBackupPath));
+    payload.append('backup.tar.gz', await readFile(tempBackupPath));
 
     const headers = payload.getHeaders();
     headers.authorization = authorization;
@@ -239,22 +250,22 @@ describe('BackupController (e2e)', () => {
 
     expect(res.statusCode).toBe(201);
 
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((r) => setTimeout(r, 100));
 
     // check the backup contains the required files
     const restoreDirectory = (backupService as any).restoreDirectory;
-    const pluginsJson = path.join(restoreDirectory, 'plugins.json');
-    const infoJson = path.join(restoreDirectory, 'info.json');
+    const pluginsJson = join(restoreDirectory, 'plugins.json');
+    const infoJson = join(restoreDirectory, 'info.json');
 
-    expect(await fs.pathExists(pluginsJson)).toBe(true);
-    expect(await fs.pathExists(infoJson)).toBe(true);
+    expect(await pathExists(pluginsJson)).toBe(true);
+    expect(await pathExists(infoJson)).toBe(true);
 
     // mark the "homebridge-mock-plugin" dummy plugin as public, so we can test the mock install
-    const installedPlugins = (await fs.readJson(pluginsJson)).map(x => {
+    const installedPlugins = (await readJson(pluginsJson)).map((x) => {
       x.publicPackage = true;
       return x;
     });
-    await fs.writeJson(pluginsJson, installedPlugins);
+    await writeJson(pluginsJson, installedPlugins);
 
     // create some mocks
     const client = new EventEmitter();
@@ -274,7 +285,7 @@ describe('BackupController (e2e)', () => {
     expect(pluginsService.managePlugin).toHaveBeenCalledWith('install', expect.objectContaining({ name: 'homebridge-mock-plugin', version: expect.anything() }), client);
 
     // ensure the temp restore directory was removed
-    expect(await fs.pathExists(restoreDirectory)).toBe(false);
+    expect(await pathExists(restoreDirectory)).toBe(false);
   });
 
   it('GET /backup/restart', async () => {
@@ -292,7 +303,7 @@ describe('BackupController (e2e)', () => {
 
   it('GET /backup/scheduled-backups (path missing)', async () => {
     // empty the instance backup path
-    await fs.remove(configService.instanceBackupPath);
+    await remove(configService.instanceBackupPath);
 
     const res = await app.inject({
       method: 'GET',
@@ -306,12 +317,12 @@ describe('BackupController (e2e)', () => {
     expect(res.json()).toHaveLength(0);
 
     // the path should have been re-created
-    expect(await fs.pathExists(configService.instanceBackupPath)).toBe(true);
+    expect(await pathExists(configService.instanceBackupPath)).toBe(true);
   });
 
   it('GET /backup/scheduled-backups', async () => {
     // empty the instance backup path
-    await fs.emptyDir(configService.instanceBackupPath);
+    await emptyDir(configService.instanceBackupPath);
 
     // run the scheduled backup job
     await backupService.runScheduledBackupJob();

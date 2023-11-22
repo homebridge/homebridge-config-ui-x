@@ -1,8 +1,8 @@
-import * as path from 'path';
+import { resolve } from 'path';
 import { ValidationPipe } from '@nestjs/common';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as fs from 'fs-extra';
+import { copy, pathExists, remove } from 'fs-extra';
 import { AuthModule } from '../../src/core/auth/auth.module';
 import { AuthService } from '../../src/core/auth/auth.service';
 import { ConfigService } from '../../src/core/config/config.service';
@@ -17,19 +17,19 @@ describe('AuthController (e2e)', () => {
   let secretsFilePath: string;
 
   beforeAll(async () => {
-    process.env.UIX_BASE_PATH = path.resolve(__dirname, '../../');
-    process.env.UIX_STORAGE_PATH = path.resolve(__dirname, '../', '.homebridge');
-    process.env.UIX_CONFIG_PATH = path.resolve(process.env.UIX_STORAGE_PATH, 'config.json');
+    process.env.UIX_BASE_PATH = resolve(__dirname, '../../');
+    process.env.UIX_STORAGE_PATH = resolve(__dirname, '../', '.homebridge');
+    process.env.UIX_CONFIG_PATH = resolve(process.env.UIX_STORAGE_PATH, 'config.json');
 
-    authFilePath = path.resolve(process.env.UIX_STORAGE_PATH, 'auth.json');
-    secretsFilePath = path.resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets');
+    authFilePath = resolve(process.env.UIX_STORAGE_PATH, 'auth.json');
+    secretsFilePath = resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets');
 
     // setup test config
-    await fs.copy(path.resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
 
     // remove any existing auth / secret files
-    await fs.remove(authFilePath);
-    await fs.remove(secretsFilePath);
+    await remove(authFilePath);
+    await remove(secretsFilePath);
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AuthModule],
@@ -51,7 +51,7 @@ describe('AuthController (e2e)', () => {
 
   beforeEach(async () => {
     // setup test auth file
-    await fs.copy(path.resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
+    await copy(resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
     configService.setupWizardComplete = true;
   });
 
@@ -62,12 +62,12 @@ describe('AuthController (e2e)', () => {
   });
 
   it('should .uix-secrets on launch', async () => {
-    expect(await fs.pathExists(secretsFilePath)).toBe(true);
+    expect(await pathExists(secretsFilePath)).toBe(true);
   });
 
   it('should flag first run setup wizard as not complete if authfile not created', async () => {
     // remove test auth file
-    await fs.remove(authFilePath);
+    await remove(authFilePath);
     await authService.checkAuthFile();
     expect(configService.setupWizardComplete).toBe(false);
   });
