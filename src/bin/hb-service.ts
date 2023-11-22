@@ -1161,6 +1161,14 @@ export class HomebridgeServiceHelper {
    */
   private async checkForNodejsUpdates(requestedVersion: string) {
     const versionList = (await axios.get('https://nodejs.org/dist/index.json')).data;
+
+    // Check response is valid array
+    if (!Array.isArray(versionList)) {
+      this.logger('Failed to check for Node.js updates.', 'fail');
+      return { update: false };
+    }
+
+    // Filter out non-LTS versions and find the latest LTS version
     const currentLts = versionList.filter((x) => x.lts)[0];
 
     if (requestedVersion) {
