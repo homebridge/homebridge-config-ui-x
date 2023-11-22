@@ -109,7 +109,6 @@ export class SettingsComponent implements OnInit {
 
   async initNetworkingOptions() {
     try {
-      const homebridgePackage = await this.$api.get('/status/homebridge-version').toPromise();
       this.getNetworkSettings();
       const onLinux = (
         this.$settings.env.runningInLinux ||
@@ -121,8 +120,7 @@ export class SettingsComponent implements OnInit {
         this.showAvahiMdnsOption = true;
         this.showResolvedMdnsOption = true;
       }
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   async getNetworkSettings() {
