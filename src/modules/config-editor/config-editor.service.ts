@@ -1,7 +1,18 @@
-import * as path from 'path';
+import { resolve } from 'path';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import * as dayjs from 'dayjs';
-import * as fs from 'fs-extra';
+import {
+  ensureDir,
+  move,
+  pathExists,
+  readFile,
+  readJson,
+  readdir,
+  remove,
+  rename,
+  unlink,
+  writeJsonSync,
+} from 'fs-extra';
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
 import { Logger } from '../../core/logger/logger.service';
 import { SchedulerService } from '../../core/scheduler/scheduler.service';
@@ -48,7 +59,7 @@ export class ConfigEditorService {
    * Returns the config file
    */
   public async getConfigFile(): Promise<HomebridgeConfig> {
-    const config = await fs.readJson(this.configService.configPath);
+    const config = await readJson(this.configService.configPath);
 
     // ensure bridge is an object
     if (!config.bridge || typeof config.bridge !== 'object') {
@@ -158,7 +169,7 @@ export class ConfigEditorService {
 
     // create backup of existing config
     try {
-      await fs.rename(this.configService.configPath, path.resolve(this.configService.configBackupPath, 'config.json.' + now.getTime().toString()));
+      await rename(this.configService.configPath, resolve(this.configService.configBackupPath, 'config.json.' + now.getTime().toString()));
     } catch (e) {
       if (e.code === 'ENOENT') {
         await this.ensureBackupPathExists();
@@ -168,7 +179,7 @@ export class ConfigEditorService {
     }
 
     // save config file
-    fs.writeJsonSync(this.configService.configPath, config, { spaces: 4 });
+    writeJsonSync(this.configService.configPath, config, { spaces: 4 });
 
     this.logger.log('Changes to config.json saved.');
 
@@ -299,7 +310,7 @@ export class ConfigEditorService {
    * List config backups
    */
   public async listConfigBackups() {
-    const dirContents = await fs.readdir(this.configService.configBackupPath);
+    const dirContents = await readdir(this.configService.configBackupPath);
 
     return dirContents
       .filter(x => x.match(/^config.json.[0-9]{09,15}/))
@@ -325,16 +336,16 @@ export class ConfigEditorService {
    * @param backupId
    */
   public async getConfigBackup(backupId: number) {
-    const requestedBackupPath = path.resolve(this.configService.configBackupPath, 'config.json.' + backupId);
+    const requestedBackupPath = resolve(this.configService.configBackupPath, 'config.json.' + backupId);
 
     // check backup file exists
-    if (!await fs.pathExists(requestedBackupPath)) {
+    if (!await pathExists(requestedBackupPath)) {
       throw new NotFoundException(`Backup ${backupId} Not Found`);
     }
 
     // read source backup
     try {
-      return await fs.readFile(requestedBackupPath);
+      return await readFile(requestedBackupPath);
     } catch (err) {
       throw err;
     }
@@ -348,7 +359,7 @@ export class ConfigEditorService {
 
     // delete each backup file
     backups.forEach(async (backupFile) => {
-      await fs.unlink(path.resolve(this.configService.configBackupPath, backupFile.file));
+      await unlink(resolve(this.configService.configBackupPath, backupFile.file));
     });
   }
 
@@ -357,7 +368,7 @@ export class ConfigEditorService {
    */
   private async ensureBackupPathExists() {
     try {
-      await fs.ensureDir(this.configService.configBackupPath);
+      await ensureDir(this.configService.configBackupPath);
     } catch (e) {
       this.logger.error('Could not create directory for config backups:', this.configService.configBackupPath, e.message);
       this.logger.error('Config backups will continue to use', this.configService.storagePath);
@@ -374,7 +385,7 @@ export class ConfigEditorService {
 
       for (const backup of backups) {
         if (dayjs().diff(dayjs(backup.timestamp), 'day') >= 60) {
-          await fs.remove(path.resolve(this.configService.configBackupPath, backup.file));
+          await remove(resolve(this.configService.configBackupPath, backup.file));
         }
       }
     } catch (e) {
@@ -392,7 +403,7 @@ export class ConfigEditorService {
         return;
       }
 
-      const dirContents = await fs.readdir(this.configService.storagePath);
+      const dirContents = await readdir(this.configService.storagePath);
 
       const backups = dirContents
         .filter(x => x.match(/^config.json.[0-9]{09,15}/))
@@ -401,15 +412,15 @@ export class ConfigEditorService {
 
       // move the last 100 to the new location
       for (const backupFileName of backups.splice(0, 100)) {
-        const sourcePath = path.resolve(this.configService.storagePath, backupFileName);
-        const targetPath = path.resolve(this.configService.configBackupPath, backupFileName);
-        await fs.move(sourcePath, targetPath, { overwrite: true });
+        const sourcePath = resolve(this.configService.storagePath, backupFileName);
+        const targetPath = resolve(this.configService.configBackupPath, backupFileName);
+        await move(sourcePath, targetPath, { overwrite: true });
       }
 
       // delete the rest
       for (const backupFileName of backups) {
-        const sourcePath = path.resolve(this.configService.storagePath, backupFileName);
-        await fs.remove(sourcePath);
+        const sourcePath = resolve(this.configService.storagePath, backupFileName);
+        await remove(sourcePath);
       }
     } catch (e) {
       this.logger.warn('An error occurred while migrating config.json backups to new location', e.message);

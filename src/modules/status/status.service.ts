@@ -1,14 +1,29 @@
-import * as child_process from 'child_process';
-import * as os from 'os';
-import * as path from 'path';
-import * as util from 'util';
+import { exec, execSync } from 'child_process';
+import {
+  cpus,
+  loadavg,
+  platform,
+  userInfo,
+} from 'os';
+import { dirname, resolve } from 'path';
+import { promisify } from 'util';
 import { HttpService } from '@nestjs/axios';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import * as fs from 'fs-extra';
+import { readFile, readJson, writeJsonSync } from 'fs-extra';
 import * as NodeCache from 'node-cache';
 import { Subject, Subscription } from 'rxjs';
-import * as semver from 'semver';
-import * as si from 'systeminformation';
+import { gt, lt } from 'semver';
+import {
+  Systeminformation,
+  cpuTemperature,
+  currentLoad,
+  mem,
+  networkInterfaceDefault,
+  networkInterfaces,
+  networkStats,
+  osInfo,
+  time,
+} from 'systeminformation';
 import { ConfigService } from '../../core/config/config.service';
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service';
 import { Logger } from '../../core/logger/logger.service';
@@ -30,7 +45,7 @@ export interface HomebridgeStatusUpdate {
   pin?: string;
 }
 
-const execAsync = util.promisify(child_process.exec);
+const execAsync = promisify(exec);
 
 @Injectable()
 export class StatusService {
@@ -42,7 +57,7 @@ export class StatusService {
   private cpuLoadHistory: number[] = [];
   private memoryUsageHistory: number[] = [];
 
-  private memoryInfo: si.Systeminformation.MemData;
+  private memoryInfo: Systeminformation.MemData;
 
   private rpiGetThrottledMapping = {
     0: 'Under-voltage detected',
@@ -65,7 +80,7 @@ export class StatusService {
   ) {
 
     // systeminformation cpu data is not supported in FreeBSD Jail Shells
-    if (os.platform() === 'freebsd') {
+    if (platform() === 'freebsd') {
       this.getCpuLoadPoint = this.getCpuLoadPointAlt;
       this.getCpuTemp = this.getCpuTempAlt;
     }
@@ -96,19 +111,19 @@ export class StatusService {
    * Looks up the cpu current load % and stores the last 60 points
    */
   private async getCpuLoadPoint() {
-    const currentLoad = (await si.currentLoad()).currentLoad;
+    const load = (await currentLoad()).currentLoad;
     this.cpuLoadHistory = this.cpuLoadHistory.slice(-60);
-    this.cpuLoadHistory.push(currentLoad);
+    this.cpuLoadHistory.push(load);
   }
 
   /**
    * Looks up the current memory usage and stores the last 60 points
    */
   private async getMemoryUsagePoint() {
-    const mem = await si.mem();
-    this.memoryInfo = mem;
+    const memory = await mem();
+    this.memoryInfo = memory;
 
-    const memoryFreePercent = ((mem.total - mem.available) / mem.total) * 100;
+    const memoryFreePercent = ((memory.total - memory.available) / memory.total) * 100;
     this.memoryUsageHistory = this.memoryUsageHistory.slice(-60);
     this.memoryUsageHistory.push(memoryFreePercent);
   }
@@ -118,16 +133,16 @@ export class StatusService {
    * This is currently only used on FreeBSD
    */
   private async getCpuLoadPointAlt() {
-    const currentLoad = (os.loadavg()[0] * 100 / os.cpus().length);
+    const load = (loadavg()[0] * 100 / cpus().length);
     this.cpuLoadHistory = this.cpuLoadHistory.slice(-60);
-    this.cpuLoadHistory.push(currentLoad);
+    this.cpuLoadHistory.push(load);
   }
 
   /**
    * Get the current CPU temperature using systeminformation.cpuTemperature
    */
   private async getCpuTemp() {
-    const cpuTempData = await si.cpuTemperature();
+    const cpuTempData = await cpuTemperature();
 
     if (cpuTempData.main === -1 && this.configService.ui.temp) {
       return this.getCpuTempLegacy();
@@ -141,7 +156,7 @@ export class StatusService {
    */
   private async getCpuTempLegacy() {
     try {
-      const tempData = await fs.readFile(this.configService.ui.temp, 'utf-8');
+      const tempData = await readFile(this.configService.ui.temp, 'utf-8');
       const cpuTemp = parseInt(tempData, 10) / 1000;
       return {
         main: cpuTemp,
@@ -169,11 +184,11 @@ export class StatusService {
   /**
    * Returns the current network usage
    */
-  public async getCurrentNetworkUsage(): Promise<{ net: si.Systeminformation.NetworkStatsData; point: number }> {
+  public async getCurrentNetworkUsage(): Promise<{ net: Systeminformation.NetworkStatsData; point: number }> {
     // TODO: be able to specify in the UI which interfaces to aggregate
-    const defaultInterfaceName = await si.networkInterfaceDefault();
+    const defaultInterfaceName = await networkInterfaceDefault();
 
-    const net = await si.networkStats(defaultInterfaceName);
+    const net = await networkStats(defaultInterfaceName);
 
     // TODO: be able to specify in the ui the unit size (i.e. bytes, megabytes, gigabytes)
     const txRxSec = (net[0].tx_sec + net[0].rx_sec) / 1024 / 1024;
@@ -189,7 +204,7 @@ export class StatusService {
   public async getDashboardLayout() {
     if (!this.dashboardLayout) {
       try {
-        const layout = await fs.readJSON(path.resolve(this.configService.storagePath, '.uix-dashboard.json'));
+        const layout = await readJson(resolve(this.configService.storagePath, '.uix-dashboard.json'));
         this.dashboardLayout = layout;
         return layout;
       } catch (e) {
@@ -204,7 +219,7 @@ export class StatusService {
    * Saves the current dashboard layout
    */
   public async setDashboardLayout(layout: any) {
-    fs.writeJSONSync(path.resolve(this.configService.storagePath, '.uix-dashboard.json'), layout);
+    writeJsonSync(resolve(this.configService.storagePath, '.uix-dashboard.json'), layout);
     this.dashboardLayout = layout;
     return { status: 'ok' };
   }
@@ -243,7 +258,7 @@ export class StatusService {
    */
   public async getServerUptimeInfo() {
     return {
-      time: si.time(),
+      time: time(),
       processUptime: process.uptime(),
     };
   }
@@ -283,8 +298,8 @@ export class StatusService {
 
     client.emit('homebridge-status', await this.getHomebridgeStats());
 
-    // ipc status events are only available in Homebridge 1.3.3 or later - and when running in service mode
-    if (this.configService.serviceMode && this.configService.homebridgeVersion && semver.gt(this.configService.homebridgeVersion, '1.3.3-beta.5')) {
+    // ipc status events are only available when running in service mode
+    if (this.configService.serviceMode) {
       homebridgeStatusChangeSub = this.homebridgeStatusChange.subscribe(async () => {
         client.emit('homebridge-status', await this.getHomebridgeStats());
       });
@@ -330,7 +345,7 @@ export class StatusService {
    * Check if homebridge is running on the local system
    */
   public async checkHomebridgeStatus() {
-    if (this.configService.serviceMode && this.configService.homebridgeVersion && semver.gt(this.configService.homebridgeVersion, '1.3.3-beta.5')) {
+    if (this.configService.serviceMode) {
       return this.homebridgeStatus;
     }
 
@@ -349,19 +364,19 @@ export class StatusService {
   /**
    * Get / Cache the default interface
    */
-  private async getDefaultInterface(): Promise<si.Systeminformation.NetworkInterfacesData> {
-    const cachedResult = this.statusCache.get('defaultInterface') as si.Systeminformation.NetworkInterfacesData;
+  private async getDefaultInterface(): Promise<Systeminformation.NetworkInterfacesData> {
+    const cachedResult = this.statusCache.get('defaultInterface') as Systeminformation.NetworkInterfacesData;
 
     if (cachedResult) {
       return cachedResult;
     }
 
-    const defaultInterfaceName = await si.networkInterfaceDefault();
+    const defaultInterfaceName = await networkInterfaceDefault();
     // These ts-ignore should be able to be removed in the next major release of 'systeminformation' (v6)
     // See https://github.com/sebhildebrandt/systeminformation/issues/775#issuecomment-1741836906
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    const defaultInterface = defaultInterfaceName ? (await si.networkInterfaces()).find(x => x.iface === defaultInterfaceName) : undefined;
+    const defaultInterface = defaultInterfaceName ? (await networkInterfaces()).find((x) => x.iface === defaultInterfaceName) : undefined;
 
     if (defaultInterface) {
       this.statusCache.set('defaultInterface', defaultInterface);
@@ -373,24 +388,24 @@ export class StatusService {
   /**
    * Get / Cache the OS Information
    */
-  private async getOsInfo(): Promise<si.Systeminformation.OsData> {
-    const cachedResult = this.statusCache.get('osInfo') as si.Systeminformation.OsData;
+  private async getOsInfo(): Promise<Systeminformation.OsData> {
+    const cachedResult = this.statusCache.get('osInfo') as Systeminformation.OsData;
 
     if (cachedResult) {
       return cachedResult;
     }
 
-    const osInfo = await si.osInfo();
+    const osInformation = await osInfo();
 
-    this.statusCache.set('osInfo', osInfo, 86400);
-    return osInfo;
+    this.statusCache.set('osInfo', osInformation, 86400);
+    return osInformation;
   }
 
   /**
    * Get / Cache the GLIBC version
    */
   private getGlibcVersion(): string {
-    if (os.platform() !== 'linux') {
+    if (platform() !== 'linux') {
       return '';
     }
 
@@ -400,7 +415,7 @@ export class StatusService {
     }
 
     try {
-      const glibcVersion = child_process.execSync('getconf GNU_LIBC_VERSION 2>/dev/null').toString().split('glibc')[1].trim();
+      const glibcVersion = execSync('getconf GNU_LIBC_VERSION 2>/dev/null').toString().split('glibc')[1].trim();
       this.statusCache.set('glibcVersion', glibcVersion, 86400);
       return glibcVersion;
     } catch (e) {
@@ -414,12 +429,12 @@ export class StatusService {
    */
   public async getHomebridgeServerInfo() {
     return {
-      serviceUser: os.userInfo().username,
+      serviceUser: userInfo().username,
       homebridgeConfigJsonPath: this.configService.configPath,
       homebridgeStoragePath: this.configService.storagePath,
       homebridgeInsecureMode: this.configService.homebridgeInsecureMode,
       homebridgeCustomPluginPath: this.configService.customPluginPath,
-      homebridgePluginPath: path.resolve(process.env.UIX_BASE_PATH, '..'),
+      homebridgePluginPath: resolve(process.env.UIX_BASE_PATH, '..'),
       homebridgeRunningInDocker: this.configService.runningInDocker,
       homebridgeRunningInSynologyPackage: this.configService.runningInSynologyPackage,
       homebridgeRunningInPackageMode: this.configService.runningInPackageMode,
@@ -427,7 +442,7 @@ export class StatusService {
       nodeVersion: process.version,
       os: await this.getOsInfo(),
       glibcVersion: this.getGlibcVersion(),
-      time: si.time(),
+      time: time(),
       network: await this.getDefaultInterface() || {},
     };
   }
@@ -460,10 +475,10 @@ export class StatusService {
       const versionInformation = {
         currentVersion: process.version,
         latestVersion: currentLts.version,
-        updateAvailable: semver.gt(currentLts.version, process.version),
-        showUpdateWarning: semver.lt(process.version, '18.15.0'),
+        updateAvailable: gt(currentLts.version, process.version),
+        showUpdateWarning: lt(process.version, '18.15.0'),
         showNextUpdateWarning,
-        installPath: path.dirname(process.execPath),
+        installPath: dirname(process.execPath),
       };
       this.statusCache.set('nodeJsVersion', versionInformation, 86400);
       return versionInformation;

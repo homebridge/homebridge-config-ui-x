@@ -2,14 +2,12 @@ import { Component, Input, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-import { gt } from 'semver';
 import { ApiService } from '@/app/core/api.service';
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
 import { InformationComponent } from '@/app/core/components/information/information.component';
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { NotificationService } from '@/app/core/notification.service';
-import { SettingsService } from '@/app/core/settings.service';
 import { WsService } from '@/app/core/ws.service';
 import { DonateModalComponent } from '@/app/modules/plugins/donate-modal/donate-modal.component';
 
@@ -26,9 +24,6 @@ export class PluginCardComponent implements OnInit {
   public allChildBridgesStopped = false;
   public childBridgeStatus = 'pending';
   public childBridgeRestartInProgress = false;
-  public canStopStartChildBridges = false;
-  public canDisablePlugins = false;
-  public canManageBridgeSettings = false;
   public isMobile = this.$md.detect.mobile();
 
   private io = this.$ws.getExistingNamespace('child-bridges');
@@ -36,7 +31,6 @@ export class PluginCardComponent implements OnInit {
 
   constructor(
     public $plugin: ManagePluginsService,
-    private $settings: SettingsService,
     private $api: ApiService,
     private $ws: WsService,
     private $notification: NotificationService,
@@ -65,19 +59,7 @@ export class PluginCardComponent implements OnInit {
     this.setChildBridges = childBridges;
   }
 
-  ngOnInit(): void {
-    // check if the homebridge version supports disabled plugins
-    this.canDisablePlugins = this.$settings.env.homebridgeVersion ?
-      gt(this.$settings.env.homebridgeVersion, '1.3.0-beta.46') : false;
-
-    // check if the homebridge version supports external bridges
-    this.canManageBridgeSettings = this.$settings.env.homebridgeVersion ?
-      gt(this.$settings.env.homebridgeVersion, '1.3.0-beta.47') : false;
-
-    // check if the homebridge version supports stopping / starting child bridges
-    this.canStopStartChildBridges = this.$settings.env.homebridgeVersion ?
-      gt(this.$settings.env.homebridgeVersion, '1.5.0-beta.1') : false;
-  }
+  ngOnInit(): void {}
 
   openFundingModal(plugin: any) {
     const ref = this.$modal.open(DonateModalComponent);
@@ -106,7 +88,7 @@ export class PluginCardComponent implements OnInit {
         // mark as disabled
         plugin.disabled = true;
         // stop all child bridges
-        if (this.hasChildBridges && this.canStopStartChildBridges) {
+        if (this.hasChildBridges) {
           this.doChildBridgeAction('stop');
         }
         this.$toastr.success(
@@ -136,7 +118,7 @@ export class PluginCardComponent implements OnInit {
         // mark as enabled
         plugin.disabled = false;
         // start all child bridges
-        if (this.hasChildBridges && this.canStopStartChildBridges) {
+        if (this.hasChildBridges) {
           await this.doChildBridgeAction('start');
         }
         this.$toastr.success(

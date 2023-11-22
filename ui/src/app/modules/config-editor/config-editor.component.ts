@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
-import * as JSON5 from 'json5';
+import { parse } from 'json5';
 import { NgxEditorModel } from 'ngx-monaco-editor';
 import { ToastrService } from 'ngx-toastr';
 import { ConfigRestoreBackupComponent } from './config-restore-backup/config.restore-backup.component';
@@ -193,7 +193,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     try {
       return JSON.parse(this.homebridgeConfig);
     } catch (e) {
-      const config = JSON5.parse(this.homebridgeConfig);
+      const config = parse(this.homebridgeConfig);
       this.homebridgeConfig = JSON.stringify(config, null, 4);
       if (this.monacoEditor) {
         this.monacoEditor.getModel().setValue(this.homebridgeConfig);

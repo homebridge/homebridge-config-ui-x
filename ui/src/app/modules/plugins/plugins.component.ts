@@ -5,7 +5,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { gt } from 'semver';
 import { ApiService } from '@/app/core/api.service';
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { SettingsService } from '@/app/core/settings.service';
@@ -130,7 +129,6 @@ export class PluginsComponent implements OnInit, OnDestroy {
     if (
       this.$settings.env.recommendChildBridges &&
       this.$settings.env.serviceMode &&
-      gt(this.$settings.env.homebridgeVersion, '1.5.0-beta.1') &&
       schema &&
       schema.pluginType === 'platform'
     ) {

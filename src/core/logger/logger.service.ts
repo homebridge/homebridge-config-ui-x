@@ -1,5 +1,11 @@
 import { ConsoleLogger } from '@nestjs/common';
-import * as color from 'bash-color';
+import {
+  cyan,
+  green,
+  red,
+  white,
+  yellow,
+} from 'bash-color';
 
 export class Logger extends ConsoleLogger {
   private pluginName = ('Homebridge UI');
@@ -7,9 +13,9 @@ export class Logger extends ConsoleLogger {
 
   private get prefix() {
     if (this.useTimestamps) {
-      return color.white(`[${new Date().toLocaleString()}] `) + color.cyan(`[${this.pluginName}]`);
+      return white(`[${new Date().toLocaleString()}] `) + cyan(`[${this.pluginName}]`);
     } else {
-      return color.cyan(`[${this.pluginName}]`);
+      return cyan(`[${this.pluginName}]`);
     }
   }
 
@@ -23,14 +29,14 @@ export class Logger extends ConsoleLogger {
   error(...args: any[]) {
     console.error(
       this.prefix,
-      ...args.map(x => color.red(x)),
+      ...args.map(x => red(x)),
     );
   }
 
   warn(...args: any[]) {
     console.warn(
       this.prefix,
-      ...args.map(x => color.yellow(x)),
+      ...args.map(x => yellow(x)),
     );
   }
 
@@ -38,7 +44,7 @@ export class Logger extends ConsoleLogger {
     if (process.env.UIX_DEBUG_LOGGING === '1') {
       console.debug(
         this.prefix,
-        ...args.map(x => color.green(x)),
+        ...args.map(x => green(x)),
       );
     }
   }
