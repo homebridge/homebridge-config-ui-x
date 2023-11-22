@@ -35,22 +35,24 @@
             <i class="fa fa-terminal pr-2"></i>Terminal</a>
         </li>
        
-        <li class="nav-item dropdown" *ngIf="$auth.user.admin"> 
-          <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="fa fa-cog pr-2"></i>Homebridge Settings<i class="fa fa-caret-down pl-2"></i>
-          </button>
-          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <div class="dropdown-menu">
-              <a class="dropdown-item" routerLink="/settings" [translate]="'menu.label_settings_hb'">
-                <i class="fa fa-cog pr-2"></i>Homebridge Settings</a>
-              <a class="dropdown-item" href="javascript:void(0)" (click)="openUiSettings()" [translate]="'menu.label_settings_ui'">
-                <i class="fa fa-sliders pr-2"></i>UI Settings</a>
-              <a class="dropdown-item" href="javascript:void(0)" (click)="backupRestoreHomebridge()" [translate]="'backup.title_backup_restore'">
-                <i class="fa fa-clock-rotate-left pr-2"></i>Backup</a>
-              <a class="dropdown-item" routerLink="/config" [translate]="'menu.label_config'">
-                <i class="fa fa-file-lines pr-2"></i>Config</a>
-              <a class="dropdown-item" routerLink="/users" [translate]="'menu.tooltip_user_accounts'">
-                <i class="fa fa-user pr-2"></i>Users</a>
+        <li class="nav-item" *ngIf="$auth.user.admin"> 
+          <div class="dropdown">
+            <button class="btn btn-link dropdown-toggle px-0 mx-0" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="fa fa-cog pr-2"></i>Homebridge Settings<i class="fa fa-caret-down pl-2"></i>
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <div class="dropdown-menu">
+                <a class="dropdown-item" routerLink="/settings" [translate]="'menu.label_settings_hb'">
+                  <i class="fa fa-cog pr-2"></i>Homebridge Settings</a>
+                <a class="dropdown-item" href="javascript:void(0)" (click)="openUiSettings()" [translate]="'menu.label_settings_ui'">
+                  <i class="fa fa-sliders pr-2"></i>UI Settings</a>
+                <a class="dropdown-item" href="javascript:void(0)" (click)="backupRestoreHomebridge()" [translate]="'backup.title_backup_restore'">
+                  <i class="fa fa-clock-rotate-left pr-2"></i>Backup</a>
+                <a class="dropdown-item" routerLink="/config" [translate]="'menu.label_config'">
+                  <i class="fa fa-file-lines pr-2"></i>Config</a>
+                <a class="dropdown-item" routerLink="/users" [translate]="'menu.tooltip_user_accounts'">
+                  <i class="fa fa-user pr-2"></i>Users</a>
+              </div>
             </div>
           </div>
         </li>
