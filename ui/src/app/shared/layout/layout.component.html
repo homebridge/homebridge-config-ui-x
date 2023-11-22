@@ -208,9 +208,9 @@
       </li>
       <li class="li-link1" *ngIf="$auth.user.admin">
         <div class="iocn-link">
-          <a routerLink="/settings" [translate]="'plugins.button_settings'">
+          <a routerLink="/settings">
             <i class="fa fa-cog"></i>
-            <span class="link_name">Settings</span>
+            <span class="link_name">{{ 'plugins.button_settings' | translate }}</span>
           </a>
           <i class="fa fa-chevron-down arrow" data-toggle="collapse"  data-target=".li-link1"></i>
         </div>
@@ -239,7 +239,9 @@
         <div class="iocn-link">
           <a href="javascript:void(0)" (click)="$auth.logout()">
             <i class="fa fa-right-from-bracket"></i>
-            <span class="link_name">{{ 'menu.tooltip_logout' | translate }}<br><span class="text-muted">{{ $auth.user.username }}</span></span>
+            <span class="link_name">{{ 'menu.tooltip_logout' | translate }}<br>
+              <span class="small text-truncate" style="display:block;width:120px;">{{ $auth.user.username }}</span>
+            </span>
           </a>       
         </div>
         <ul class="sub-menu blank">
