@@ -588,6 +588,14 @@ export class PluginsService {
   }
 
   /**
+   * Gets the Homebridge UI package details
+   */
+  public async getHomebridgeUiPackage(): Promise<HomebridgePlugin> {
+    const plugins = await this.getInstalledPlugins();
+    return plugins.find((x: HomebridgePlugin) => x.name === this.configService.name);
+  }
+
+  /**
    * Gets the npm module details
    */
   public async getNpmPackage() {

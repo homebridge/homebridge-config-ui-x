@@ -10,9 +10,10 @@ import { WsService } from '@/app/core/ws.service';
   styleUrls: ['./homebridge-status-widget.component.scss'],
 })
 export class HomebridgeStatusWidgetComponent implements OnInit {
-  @Input() widget;
+  @Input() widget: any;
 
   public homebridgePkg = {} as any;
+  public homebridgeUiPkg = {} as any;
   public homebridgeStatus = {} as any;
   public homebridgePluginStatus = [] as any;
 
@@ -31,15 +32,21 @@ export class HomebridgeStatusWidgetComponent implements OnInit {
     });
 
     this.io.connected.subscribe(async () => {
-      await this.getHomebridgeStatus();
-      await this.checkHomebridgeVersion();
-      await this.getOutOfDatePlugins();
+      await Promise.all([
+        this.getHomebridgeStatus(),
+        this.checkHomebridgeVersion(),
+        this.checkHomebridgeUiVersion(),
+        this.getOutOfDatePlugins(),
+      ]);
     });
 
     if (this.io.socket.connected) {
-      await this.getHomebridgeStatus();
-      await this.checkHomebridgeVersion();
-      await this.getOutOfDatePlugins();
+      await Promise.all([
+        this.getHomebridgeStatus(),
+        this.checkHomebridgeVersion(),
+        this.checkHomebridgeUiVersion(),
+        this.getOutOfDatePlugins(),
+      ]);
     }
 
     this.io.socket.on('disconnect', () => {
@@ -47,31 +54,35 @@ export class HomebridgeStatusWidgetComponent implements OnInit {
     });
   }
 
-  getHomebridgeStatus() {
-    return this.io.request('get-homebridge-status').toPromise()
-      .then((response) => {
-        this.homebridgeStatus = response;
-      });
+  async getHomebridgeStatus() {
+    this.homebridgeStatus = await this.io.request('get-homebridge-status').toPromise();
   }
 
-  checkHomebridgeVersion() {
-    return this.io.request('homebridge-version-check').toPromise()
-      .then((response) => {
-        this.homebridgePkg = response;
-        this.$settings.env.homebridgeVersion = response.installedVersion;
-      })
-      .catch((err) => {
-        this.$toastr.error(err.message);
-      });
+  async checkHomebridgeVersion() {
+    try {
+      const response = await this.io.request('homebridge-version-check').toPromise();
+      this.homebridgePkg = response;
+      this.$settings.env.homebridgeVersion = response.installedVersion;
+    } catch (err) {
+      this.$toastr.error(err.message);
+    }
   }
 
-  getOutOfDatePlugins() {
-    return this.io.request('get-out-of-date-plugins').toPromise()
-      .then((response) => {
-        this.homebridgePluginStatus = response;
-      })
-      .catch((err) => {
-        this.$toastr.error(err.message);
-      });
+  async checkHomebridgeUiVersion() {
+    try {
+      const response = await this.io.request('homebridge-ui-version-check').toPromise();
+      this.homebridgeUiPkg = response;
+      this.$settings.env.homebridgeUiVersion = response.installedVersion;
+    } catch (err) {
+      this.$toastr.error(err.message);
+    }
+  }
+
+  async getOutOfDatePlugins() {
+    try {
+      this.homebridgePluginStatus = await this.io.request('get-out-of-date-plugins').toPromise();
+    } catch (err) {
+      this.$toastr.error(err.message);
+    }
   }
 }
