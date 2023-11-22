@@ -5,6 +5,16 @@
       <img class="menu-logo" src="/assets/homebridge-logo.svg" />
       <strong>Homebridge</strong>
     </a>
+    <div class="nav-item ml-auto mr-3" *ngIf="rPiWasUnderVoltage || rPiCurrentlyUnderVoltage">
+      <a href="javascript:void(0)" class="nav-link dropdown-toggle waves-effect waves-light"
+        [popoverTitle]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_title' : 'rpi.throttled.previously_undervoltage_title') | translate"
+        [ngbPopover]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_message' : 'rpi.throttled.previously_undervoltage_message') | translate"
+        [ngbTooltip]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_title' : 'rpi.throttled.previously_undervoltage_title') | translate"
+        container="body" [placement]="['bottom', 'auto']">
+        <i class="fa-solid fa-bolt yellow-text " style="--fa-beat-scale: 2.0;"
+          [ngClass]="{ 'fa-beat': rPiCurrentlyUnderVoltage }"></i>
+      </a>
+    </div>
     <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
       aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="toggler-icon top-bar"></span>
@@ -247,6 +257,16 @@
         <ul class="sub-menu blank">
           <li><a class="link_name" href="javascript:void(0)" (click)="$auth.logout()" [translate]="'menu.tooltip_logout'">{{ 'menu.tooltip_logout' | translate }} - {{ $auth.user.username }}</a></li>
         </ul>
+      </li>
+      <li class="pl-3 mt-5" *ngIf="rPiWasUnderVoltage || rPiCurrentlyUnderVoltage">
+        <a href="javascript:void(0)" class="nav-link dropdown-toggle waves-effect waves-light"
+          [popoverTitle]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_title' : 'rpi.throttled.previously_undervoltage_title') | translate"
+          [ngbPopover]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_message' : 'rpi.throttled.previously_undervoltage_message') | translate"
+          [ngbTooltip]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_title' : 'rpi.throttled.previously_undervoltage_title') | translate"
+          container="body" [placement]="['bottom', 'auto']">
+            <i class="fa-solid fa-bolt yellow-text " style="--fa-beat-scale: 2.0;"
+              [ngClass]="{ 'fa-beat': rPiCurrentlyUnderVoltage }"></i>
+        </a>
       </li>
       <li>
         <div class="iocn-link" style="position: fixed; bottom:0;">
