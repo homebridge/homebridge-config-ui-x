@@ -10,9 +10,9 @@ import { IoNamespace, WsService } from '@/app/core/ws.service';
   providedIn: 'root',
 })
 export class LogService {
-  private io: IoNamespace;
   public term: Terminal;
 
+  private io: IoNamespace;
   private fitAddon: FitAddon;
   private webLinksAddon: WebLinksAddon;
   private resize: Subject<any>;
@@ -21,7 +21,7 @@ export class LogService {
 
   constructor(
     private $ws: WsService,
-  ) { }
+  ) {}
 
   startTerminal(
     targetElement: ElementRef,

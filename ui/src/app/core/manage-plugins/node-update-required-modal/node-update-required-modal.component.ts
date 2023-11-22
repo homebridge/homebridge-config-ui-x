@@ -17,7 +17,7 @@ export class NodeUpdateRequiredModalComponent implements OnInit {
   constructor(
     public activeModal: NgbActiveModal,
     private $settings: SettingsService,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.minVersion = minVersion(this.plugin.engines.node);

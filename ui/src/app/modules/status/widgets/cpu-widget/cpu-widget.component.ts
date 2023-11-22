@@ -20,9 +20,6 @@ import { WsService } from '@/app/core/ws.service';
 export class CpuWidgetComponent implements OnInit, OnDestroy {
   @Input() public widget;
 
-  private io = this.$ws.getExistingNamespace('status');
-  private intervalSubscription: Subscription;
-
   @ViewChild(BaseChartDirective, { static: true }) private chart: BaseChartDirective;
   @ViewChild('widgetbackground', { static: true }) private widgetBackground: ElementRef;
 
@@ -71,10 +68,13 @@ export class CpuWidgetComponent implements OnInit, OnDestroy {
     },
   ];
 
+  private io = this.$ws.getExistingNamespace('status');
+  private intervalSubscription: Subscription;
+
   constructor(
     private $ws: WsService,
     public $settings: SettingsService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.io.connected.subscribe(async () => {

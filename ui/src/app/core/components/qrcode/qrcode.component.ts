@@ -37,5 +37,4 @@ export class QrcodeComponent implements OnChanges {
       svgPathElement.classList.add('qr-code-theme-color');
     }
   }
-
 }

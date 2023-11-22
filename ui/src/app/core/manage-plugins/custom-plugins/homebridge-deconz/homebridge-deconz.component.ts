@@ -15,7 +15,7 @@ export class HomebridgeDeconzComponent {
     private translate: TranslateService,
     public $toastr: ToastrService,
     private $api: ApiService,
-  ) { }
+  ) {}
 
   downloadDumpFile() {
     this.$api.get('/plugins/custom-plugins/homebridge-deconz/dump-file', { observe: 'response', responseType: 'blob' })
@@ -28,5 +28,4 @@ export class HomebridgeDeconzComponent {
         },
       );
   }
-
 }

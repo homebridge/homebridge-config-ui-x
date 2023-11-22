@@ -19,17 +19,16 @@ export class HapQrcodeWidgetComponent implements OnInit {
 
   @Input() resizeEvent: Subject<any>;
 
-  private io = this.$ws.getExistingNamespace('status');
-
   public pin = 'Loading...';
   public setupUri: string | null = null;
+  public qrCodeHeight: number;
+  public qrCodeWidth: number;
 
-  public qrCodeHeight;
-  public qrCodeWidth;
+  private io = this.$ws.getExistingNamespace('status');
 
   constructor(
     private $ws: WsService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.resizeQrCode();
@@ -69,5 +68,4 @@ export class HapQrcodeWidgetComponent implements OnInit {
       this.setupUri = data.setupUri;
     });
   }
-
 }

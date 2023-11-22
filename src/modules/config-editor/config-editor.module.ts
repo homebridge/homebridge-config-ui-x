@@ -25,4 +25,4 @@ import { ConfigEditorService } from './config-editor.service';
     ConfigEditorService,
   ],
 })
-export class ConfigEditorModule { }
+export class ConfigEditorModule {}

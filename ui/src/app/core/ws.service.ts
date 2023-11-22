@@ -16,11 +16,11 @@ export interface IoNamespace {
   providedIn: 'root',
 })
 export class WsService {
+  private namespaceConnectionCache = {};
+
   constructor(
     private $auth: AuthService,
-  ) { }
-
-  private namespaceConnectionCache = {};
+  ) {}
 
   /**
    * Wrapper function to reuse the same connecting

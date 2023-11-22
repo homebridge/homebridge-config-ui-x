@@ -10,9 +10,9 @@ import { IoNamespace, WsService } from '@/app/core/ws.service';
   providedIn: 'root',
 })
 export class TerminalService {
-  private io: IoNamespace;
   public term: Terminal;
 
+  private io: IoNamespace;
   private fitAddon: FitAddon;
   private webLinksAddon: WebLinksAddon;
   private resize: Subject<any>;
@@ -20,7 +20,16 @@ export class TerminalService {
 
   constructor(
     private $ws: WsService,
-  ) { }
+  ) {}
+
+  destroyTerminal() {
+    this.io.end();
+    this.term.dispose();
+    this.resize.complete();
+    if (this.elementResize) {
+      this.elementResize.complete();
+    }
+  }
 
   startTerminal(
     targetElement: ElementRef,
@@ -107,14 +116,5 @@ export class TerminalService {
     this.term.reset();
     this.io.socket.emit('start-session', { cols: this.term.cols, rows: this.term.rows });
     this.resize.next({ cols: this.term.cols, rows: this.term.rows });
-  }
-
-  destroyTerminal() {
-    this.io.end();
-    this.term.dispose();
-    this.resize.complete();
-    if (this.elementResize) {
-      this.elementResize.complete();
-    }
   }
 }

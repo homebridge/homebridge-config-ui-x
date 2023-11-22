@@ -27,6 +27,6 @@ import { ServerService } from './server.service';
   ],
   exports: [
     ServerService,
-  ]
+  ],
 })
-export class ServerModule { }
+export class ServerModule {}

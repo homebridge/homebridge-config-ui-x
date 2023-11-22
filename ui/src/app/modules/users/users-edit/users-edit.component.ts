@@ -36,7 +36,7 @@ export class UsersEditComponent implements OnInit {
     private translate: TranslateService,
     private $api: ApiService,
     private $auth: AuthService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.isCurrentUser = this.$auth.user.username === this.user.username;
@@ -71,5 +71,4 @@ export class UsersEditComponent implements OnInit {
       },
     );
   }
-
 }

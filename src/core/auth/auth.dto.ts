@@ -3,7 +3,7 @@ import {
   IsDefined,
   IsNotEmpty,
   IsOptional,
-  IsString
+  IsString,
 } from 'class-validator';
 
 export class AuthDto {

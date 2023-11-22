@@ -13,7 +13,7 @@ export class DonateModalComponent implements OnInit {
 
   constructor(
     public activeModal: NgbActiveModal,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     if (!this.plugin.funding) {

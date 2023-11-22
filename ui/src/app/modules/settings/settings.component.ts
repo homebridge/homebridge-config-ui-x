@@ -42,7 +42,7 @@ export class SettingsComponent implements OnInit {
     public $toastr: ToastrService,
     private $modal: NgbModal,
     private $router: Router,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.initNetworkingOptions();
@@ -114,9 +114,9 @@ export class SettingsComponent implements OnInit {
         this.$settings.env.runningInSynologyPackage ||
         this.$settings.env.runningInPackageMode
       );
-        if (onLinux) {
-          this.showAvahiMdnsOption = true;
-          this.showResolvedMdnsOption = true;
+      if (onLinux) {
+        this.showAvahiMdnsOption = true;
+        this.showResolvedMdnsOption = true;
       }
     } catch (e) {
 
@@ -184,7 +184,6 @@ export class SettingsComponent implements OnInit {
       }
     });
   }
-
 
   selectNetworkInterfaces() {
     const ref = this.$modal.open(SelectNetworkInterfacesComponent, {

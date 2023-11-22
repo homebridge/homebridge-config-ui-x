@@ -24,7 +24,7 @@ export class UsersComponent implements OnInit {
     private $api: ApiService,
     private $route: ActivatedRoute,
     public $auth: AuthService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.$route.data
@@ -99,5 +99,4 @@ export class UsersComponent implements OnInit {
       this.reloadUsers();
     });
   }
-
 }

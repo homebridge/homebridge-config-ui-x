@@ -29,4 +29,4 @@ import { CoreModule } from '@/app/core/core.module';
     StartupScriptResolver,
   ],
 })
-export class DockerModule { }
+export class DockerModule {}

@@ -9,10 +9,9 @@ import { ServiceTypeX } from '../../accessories.interfaces';
 export class OccupancysensorComponent implements OnInit {
   @Input() public service: ServiceTypeX;
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   onClick() {
     console.log('short click');
@@ -21,5 +20,4 @@ export class OccupancysensorComponent implements OnInit {
   onLongClick() {
     console.log('long clicked');
   }
-
 }

@@ -79,5 +79,4 @@ export class HeaterCoolerManageComponent implements OnInit {
   onTemperatureStateChange() {
     this.targetTemperatureChanged.next(undefined);
   }
-
 }

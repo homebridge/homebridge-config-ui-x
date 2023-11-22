@@ -31,7 +31,7 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
 
   constructor(
     private $log: LogService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.fontSize = this.widget.fontSize || 15;
@@ -80,5 +80,4 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.$log.destroyTerminal();
   }
-
 }

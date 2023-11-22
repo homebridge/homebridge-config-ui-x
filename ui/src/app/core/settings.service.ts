@@ -47,9 +47,11 @@ export class SettingsService {
   public rtl = false;
 
   // track to see if settings have been loaded
+  /* eslint-disable @typescript-eslint/member-ordering */
   private settingsLoadedSubject = new Subject();
   public onSettingsLoaded = this.settingsLoadedSubject.pipe(first());
   public settingsLoaded = false;
+  /* eslint-enable @typescript-eslint/member-ordering */
 
   constructor(
     private $api: ApiService,
@@ -90,12 +92,12 @@ export class SettingsService {
     const bodySelector = window.document.querySelector('body');
     if (this.theme) {
       bodySelector.classList.remove(`config-ui-x-${this.theme}`);
-      bodySelector.classList.remove(`dark-mode`);
+      bodySelector.classList.remove('dark-mode');
     }
     this.theme = theme;
     bodySelector.classList.add(`config-ui-x-${this.theme}`);
     if (this.theme.startsWith('dark-mode')) {
-      bodySelector.classList.add(`dark-mode`);
+      bodySelector.classList.add('dark-mode');
     }
   }
 
@@ -136,4 +138,3 @@ export class SettingsService {
     }
   }
 }
-

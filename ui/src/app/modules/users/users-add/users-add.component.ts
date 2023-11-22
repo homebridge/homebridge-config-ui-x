@@ -30,7 +30,7 @@ export class UsersAddComponent implements OnInit {
     public toastr: ToastrService,
     private translate: TranslateService,
     private $api: ApiService,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
 
@@ -47,8 +47,8 @@ export class UsersAddComponent implements OnInit {
   }
 
   onSubmit({ value }) {
-    this.$api.post(`/users`, value).subscribe(
-      () => {
+    this.$api.post('/users', value).subscribe(
+      data => {
         this.activeModal.close();
         this.toastr.success(this.translate.instant('users.toast_added_new_user'), this.translate.instant('toast.title_success'));
       },
@@ -60,5 +60,4 @@ export class UsersAddComponent implements OnInit {
       },
     );
   }
-
 }

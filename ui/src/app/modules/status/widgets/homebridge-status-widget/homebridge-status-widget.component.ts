@@ -12,18 +12,18 @@ import { WsService } from '@/app/core/ws.service';
 export class HomebridgeStatusWidgetComponent implements OnInit {
   @Input() widget;
 
-  private io = this.$ws.getExistingNamespace('status');
-
   public homebridgePkg = {} as any;
   public homebridgeStatus = {} as any;
   public homebridgePluginStatus = [] as any;
+
+  private io = this.$ws.getExistingNamespace('status');
 
   constructor(
     private $ws: WsService,
     private $settings: SettingsService,
     public $toastr: ToastrService,
     public $plugin: ManagePluginsService,
-  ) { }
+  ) {}
 
   async ngOnInit() {
     this.io.socket.on('homebridge-status', (data) => {

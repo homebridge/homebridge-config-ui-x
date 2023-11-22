@@ -18,4 +18,4 @@ import { DockerService } from './docker.service';
     DockerController,
   ],
 })
-export class DockerModule { }
+export class DockerModule {}

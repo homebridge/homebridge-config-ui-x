@@ -14,10 +14,9 @@ export class HeaterCoolerComponent implements OnInit {
 
   constructor(
     private modalService: NgbModal,
-  ) { }
+  ) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   onClick() {
     this.service.getCharacteristic('Active').setValue(this.service.values.Active ? 0 : 1);
@@ -29,5 +28,4 @@ export class HeaterCoolerComponent implements OnInit {
     });
     ref.componentInstance.service = this.service;
   }
-
 }

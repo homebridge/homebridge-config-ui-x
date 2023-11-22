@@ -7,7 +7,7 @@ import { environment } from '@/environments/environment';
   providedIn: 'root',
 })
 export class ApiService {
-  constructor(private $http: HttpClient) { }
+  constructor(private $http: HttpClient) {}
 
   get(url: string, options?): Observable<any> {
     return this.$http.get(`${environment.api.base}${url}`, options);

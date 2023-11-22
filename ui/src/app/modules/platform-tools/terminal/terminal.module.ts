@@ -12,4 +12,4 @@ import { TerminalComponent } from './terminal.component';
     TerminalRoutingModule,
   ],
 })
-export class TerminalModule { }
+export class TerminalModule {}

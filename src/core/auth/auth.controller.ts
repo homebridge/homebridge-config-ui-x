@@ -4,14 +4,14 @@ import {
   Get,
   Header,
   Post,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBearerAuth,
   ApiExcludeEndpoint,
   ApiOperation,
-  ApiTags
+  ApiTags,
 } from '@nestjs/swagger';
 import { ConfigService } from '../config/config.service';
 import { AuthDto } from './auth.dto';
@@ -23,7 +23,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
-  ) { }
+  ) {}
 
   @ApiOperation({ summary: 'Exchange a username and password for an authentication token.' })
   @Post('login')
@@ -58,5 +58,4 @@ export class AuthController {
   checkAuth() {
     return { status: 'OK' };
   }
-
 }

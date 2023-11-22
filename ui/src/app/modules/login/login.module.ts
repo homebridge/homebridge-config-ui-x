@@ -19,4 +19,4 @@ import { LoginGuard } from './login.guard';
     LoginGuard,
   ],
 })
-export class LoginModule { }
+export class LoginModule {}

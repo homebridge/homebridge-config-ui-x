@@ -7,7 +7,7 @@ import {
   Param,
   Put,
   Query,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -15,7 +15,7 @@ import {
   ApiOperation,
   ApiParam,
   ApiQuery,
-  ApiTags
+  ApiTags,
 } from '@nestjs/swagger';
 import { AdminGuard } from '../../core/auth/guards/admin.guard';
 import { ChildBridgesService } from '../child-bridges/child-bridges.service';
@@ -31,7 +31,7 @@ export class ServerController {
   constructor(
     private serverService: ServerService,
     private childBridgesService: ChildBridgesService,
-  ) { }
+  ) {}
 
   @Put('/restart')
   @ApiOperation({ summary: 'Restart the Homebridge instance.' })
@@ -43,7 +43,7 @@ export class ServerController {
   @Put('/restart/:deviceId')
   @ApiOperation({
     summary: 'Restart a child bridge instance.',
-    description: 'This method is only supported on setups running hb-service.'
+    description: 'This method is only supported on setups running hb-service.',
   })
   restartChildBridge(@Param('deviceId') deviceId: string) {
     return this.childBridgesService.restartChildBridge(deviceId);
@@ -53,7 +53,7 @@ export class ServerController {
   @Put('/stop/:deviceId')
   @ApiOperation({
     summary: 'Stop a child bridge instance.',
-    description: 'This method is only supported on setups running hb-service.'
+    description: 'This method is only supported on setups running hb-service.',
   })
   stopChildBridge(@Param('deviceId') deviceId: string) {
     return this.childBridgesService.stopChildBridge(deviceId);
@@ -63,7 +63,7 @@ export class ServerController {
   @Put('/start/:deviceId')
   @ApiOperation({
     summary: 'Start a child bridge instance.',
-    description: 'This method is only supported on setups running hb-service.'
+    description: 'This method is only supported on setups running hb-service.',
   })
   startChildBridge(@Param('deviceId') deviceId: string) {
     return this.childBridgesService.startChildBridge(deviceId);

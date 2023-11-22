@@ -54,5 +54,4 @@ export class WindowcoveringManageComponent implements OnInit {
   onTargetPositionChange() {
     this.targetPositionChanged.next(this.targetPosition.value);
   }
-
 }

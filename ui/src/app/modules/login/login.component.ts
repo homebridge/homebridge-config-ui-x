@@ -33,7 +33,7 @@ export class LoginComponent implements OnInit {
     private $router: Router,
     public $auth: AuthService,
     public $settings: SettingsService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.form = new FormGroup({
@@ -97,14 +97,14 @@ export class LoginComponent implements OnInit {
       })
       .catch((err) => {
         if (err.status === 412) {
-          if (!this.form.controls['otp']) {
+          if (!this.form.controls.otp) {
             this.form.addControl('otp', new FormControl('', [
               Validators.required,
               Validators.minLength(6),
               Validators.maxLength(6),
             ]));
           } else {
-            this.form.controls['otp'].setErrors(['Invalid Code']);
+            this.form.controls.otp.setErrors(['Invalid Code']);
             this.invalid2faCode = true;
           }
           this.twoFactorCodeRequired = true;
@@ -118,5 +118,4 @@ export class LoginComponent implements OnInit {
 
     this.inProgress = false;
   }
-
 }

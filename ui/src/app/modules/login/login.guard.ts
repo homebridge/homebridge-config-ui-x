@@ -16,7 +16,7 @@ export class LoginGuard implements CanActivate {
     private $router: Router,
     private $auth: AuthService,
     private $settings: SettingsService,
-  ) { }
+  ) {}
 
   async canActivate(
     next: ActivatedRouteSnapshot,

@@ -32,13 +32,13 @@ export class PluginLogModalComponent implements OnInit, OnDestroy {
     private $translate: TranslateService,
   ) { }
 
-  ngOnInit(): void {
-    this.getPluginLog();
-  }
-
   @HostListener('window:resize', ['$event'])
   onWindowResize() {
     this.resizeEvent.next(undefined);
+  }
+
+  ngOnInit(): void {
+    this.getPluginLog();
   }
 
   getPluginLog() {

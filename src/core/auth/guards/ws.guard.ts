@@ -8,7 +8,7 @@ import { ConfigService } from '../../config/config.service';
 export class WsGuard implements CanActivate {
   constructor(
     private configService: ConfigService,
-  ) { }
+  ) {}
 
   async canActivate(context: ExecutionContext) {
     const client = context.switchToWs().getClient();

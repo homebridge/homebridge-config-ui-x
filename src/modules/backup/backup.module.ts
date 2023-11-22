@@ -26,4 +26,4 @@ import { BackupService } from './backup.service';
     BackupController,
   ],
 })
-export class BackupModule { }
+export class BackupModule {}

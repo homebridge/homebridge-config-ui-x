@@ -7,13 +7,13 @@ import { ChildBridgesService } from './child-bridges.service';
 @WebSocketGateway({
   namespace: '/child-bridges', allowEIO3: true, cors: {
     origin: ['http://localhost:8080', 'http://localhost:4200'],
-    credentials: true
-  }
+    credentials: true,
+  },
 })
 export class ChildBridgesGateway {
   constructor(
     private childBridgesService: ChildBridgesService,
-  ) { }
+  ) {}
 
   @SubscribeMessage('get-homebridge-child-bridge-status')
   async getChildBridges(client, payload) {

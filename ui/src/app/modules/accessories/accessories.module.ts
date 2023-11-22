@@ -12,20 +12,20 @@ import { AccessoriesCoreModule } from '@/app/core/accessories/accessories.module
 import { CoreModule } from '@/app/core/core.module';
 
 @NgModule({
-    declarations: [
-        AccessoriesComponent,
-        DragHerePlaceholderComponent,
-        AddRoomModalComponent,
-    ],
-    imports: [
-        CommonModule,
-        FormsModule,
-        NgbModule,
-        DragulaModule,
-        TranslateModule.forChild(),
-        CoreModule,
-        AccessoriesCoreModule,
-        AccessoriesRoutingModule,
-    ],
+  declarations: [
+    AccessoriesComponent,
+    DragHerePlaceholderComponent,
+    AddRoomModalComponent,
+  ],
+  imports: [
+    CommonModule,
+    FormsModule,
+    NgbModule,
+    DragulaModule,
+    TranslateModule.forChild(),
+    CoreModule,
+    AccessoriesCoreModule,
+    AccessoriesRoutingModule,
+  ],
 })
-export class AccessoriesModule { }
+export class AccessoriesModule {}

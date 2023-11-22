@@ -8,13 +8,13 @@ import { LogService, LogTermSize } from './log.service';
 @WebSocketGateway({
   namespace: 'log', allowEIO3: true, cors: {
     origin: ['http://localhost:8080', 'http://localhost:4200'],
-    credentials: true
-  }
+    credentials: true,
+  },
 })
 export class LogGateway {
   constructor(
     private logService: LogService,
-  ) { }
+  ) {}
 
   @SubscribeMessage('tail-log')
   connect(client: EventEmitter, payload: LogTermSize) {
