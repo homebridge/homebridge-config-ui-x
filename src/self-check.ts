@@ -1,31 +1,31 @@
-import * as child_process from 'child_process';
-import * as os from 'os';
-import * as path from 'path';
+import { execSync } from 'child_process';
+import { platform } from 'os';
+import { dirname } from 'path';
 import { Logger } from './core/logger/logger.service';
 
 const logger = new Logger();
 
 function tryRebuildNodePtyModule() {
   // using eval('require') here so it does not break with webpack
-  const modulePath = path.dirname(path.dirname(eval('require').resolve('@homebridge/node-pty-prebuilt-multiarch')));
+  const modulePath = dirname(dirname(eval('require').resolve('@homebridge/node-pty-prebuilt-multiarch')));
 
   logger.warn('[node-pty] Trying to rebuild automatically...');
   logger.warn(`[node-pty] Path: ${modulePath}`);
   try {
     if (process.env.UIX_USE_PNPM === '1' && process.env.UIX_CUSTOM_PLUGIN_PATH) {
-      child_process.execSync('pnpm rebuild @homebridge/node-pty-prebuilt-multiarch', {
+      execSync('pnpm rebuild @homebridge/node-pty-prebuilt-multiarch', {
         cwd: process.env.UIX_CUSTOM_PLUGIN_PATH,
         stdio: 'ignore',
       });
     } else {
-      child_process.execSync('npm run install --unsafe-perm', {
+      execSync('npm run install --unsafe-perm', {
         cwd: modulePath,
         stdio: 'ignore',
       });
     }
   } catch (e) {
-    if (os.platform() !== 'win32') {
-      child_process.execSync('sudo -E -n run install --unsafe-perm', {
+    if (platform() !== 'win32') {
+      execSync('sudo -E -n run install --unsafe-perm', {
         cwd: modulePath,
         stdio: 'ignore',
       });
@@ -57,10 +57,10 @@ function main() {
       logger.error('[node-pty] Failed to rebuild npm modules automatically. Manual operation is now required.');
     }
 
-    const modulePath = path.dirname(__dirname);
+    const modulePath = dirname(__dirname);
 
     if ((process.env.UIX_SERVICE_MODE === '1')) {
-      if (os.platform() === 'win32') {
+      if (platform() === 'win32') {
         logger.warn('[node-pty] From the Node.js command prompt (run as Administrator) run this command to rebuild npm modules:\n');
         logger.warn('hb-service rebuild\n');
       } else {
@@ -69,11 +69,11 @@ function main() {
       }
       throw new Error('Node.js global modules rebuild required. See log errors above.');
     } else {
-      if (os.platform() === 'win32') {
+      if (platform() === 'win32') {
         logger.warn('[node-pty] From the Node.js command prompt (run as Administrator) run these commands (exact commands may vary):\n');
         logger.warn('npm uninstall -g homebridge-config-ui-x');
         logger.warn('npm install -g homebridge-config-ui-x\n');
-      } else if (os.platform() === 'darwin') {
+      } else if (platform() === 'darwin') {
         logger.warn('[node-pty] From the terminal run these commands (exact commands may vary):\n');
         logger.warn(`cd ${modulePath}`);
         logger.warn('sudo npm rebuild --unsafe-perm\n');

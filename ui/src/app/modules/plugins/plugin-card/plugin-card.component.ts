@@ -109,7 +109,7 @@ export class PluginCardComponent implements OnInit {
         plugin.disabled = true;
         // stop all child bridges
         if (this.hasChildBridges) {
-          await this.doChildBridgeAction('stop');
+          this.doChildBridgeAction('stop');
         }
         this.$modal.open(RestartHomebridgeComponent);
       } catch (err) {

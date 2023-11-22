@@ -2,10 +2,10 @@
  * Homebridge Entry Point
  */
 
-import * as child_process from 'child_process';
-import * as path from 'path';
+import { fork } from 'child_process';
+import { resolve } from 'path';
 import { program } from 'commander';
-import * as semver from 'semver';
+import { satisfies } from 'semver';
 
 let homebridge: any;
 
@@ -26,7 +26,7 @@ class HomebridgeConfigUi {
       .option('-T, --no-timestamp', '', () => process.env.UIX_LOG_NO_TIMESTAMPS = '1')
       .parse(process.argv);
 
-    if (!semver.satisfies(process.version, '>=18.15.0')) {
+    if (!satisfies(process.version, '>=18.15.0')) {
       const msg = `Node.js v18.15.0 higher is required. You may experience issues running this plugin running on ${process.version}.`;
       log.error(msg);
       log.warn(msg);
@@ -36,8 +36,8 @@ class HomebridgeConfigUi {
       this.log('Running in Service Mode');
       return;
     } else if (config.standalone || process.env.UIX_SERVICE_MODE === '1' ||
-      (process.env.HOMEBRIDGE_CONFIG_UI === '1' && semver.satisfies(process.env.CONFIG_UI_VERSION, '>=3.5.5', { includePrerelease: true }))) {
-      this.log.warn('*********** Homebridge Standalone Mode Is Depreciated **********');
+      (process.env.HOMEBRIDGE_CONFIG_UI === '1' && satisfies(process.env.CONFIG_UI_VERSION, '>=3.5.5', { includePrerelease: true }))) {
+      this.log.warn('*********** Homebridge Standalone Mode Is Deprecated **********');
       this.log.warn('* Please swap to "service mode" using the hb-service command.  *');
       this.log.warn('* See https://homebridge.io/w/JUvQr for instructions on how to migrate. *');
       this.log('Running in Standalone Mode.');
@@ -52,7 +52,7 @@ class HomebridgeConfigUi {
    * Run plugin as a separate node.js process
    */
   fork() {
-    const ui = child_process.fork(path.resolve(__dirname, 'bin/fork'), null, {
+    const ui = fork(resolve(__dirname, 'bin/fork'), null, {
       env: process.env,
     });
 

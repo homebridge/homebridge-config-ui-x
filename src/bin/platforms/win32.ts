@@ -1,8 +1,8 @@
-import * as child_process from 'child_process';
-import * as os from 'os';
-import * as path from 'path';
+import { execSync } from 'child_process';
+import { arch } from 'os';
+import { resolve } from 'path';
 import axios from 'axios';
-import * as fs from 'fs-extra';
+import { createWriteStream, pathExists, remove } from 'fs-extra';
 import { BasePlatform } from '../base-platform';
 
 export class Win32Installer extends BasePlatform {
@@ -24,8 +24,8 @@ export class Win32Installer extends BasePlatform {
     const setUserDirCmd = `"${nssmPath}" set ${this.hbService.serviceName} AppEnvironmentExtra ":UIX_STORAGE_PATH=${this.hbService.storagePath}"`;
 
     try {
-      child_process.execSync(installCmd);
-      child_process.execSync(setUserDirCmd);
+      execSync(installCmd);
+      execSync(setUserDirCmd);
       await this.configureFirewall();
       await this.start();
       await this.hbService.printPostInstallInstructions();
@@ -45,7 +45,7 @@ export class Win32Installer extends BasePlatform {
     await this.stop();
 
     try {
-      child_process.execSync(`sc delete ${this.hbService.serviceName}`);
+      execSync(`sc delete ${this.hbService.serviceName}`);
       this.hbService.logger(`Removed ${this.hbService.serviceName} Service`, 'succeed');
     } catch (e) {
       console.error(e.toString());
@@ -61,7 +61,7 @@ export class Win32Installer extends BasePlatform {
 
     try {
       this.hbService.logger(`Starting ${this.hbService.serviceName} Service...`);
-      child_process.execSync(`sc start ${this.hbService.serviceName}`);
+      execSync(`sc start ${this.hbService.serviceName}`);
       this.hbService.logger(`${this.hbService.serviceName} Started`, 'succeed');
     } catch (e) {
       this.hbService.logger(`Failed to start ${this.hbService.serviceName}`, 'fail');
@@ -76,7 +76,7 @@ export class Win32Installer extends BasePlatform {
 
     try {
       this.hbService.logger(`Stopping ${this.hbService.serviceName} Service...`);
-      child_process.execSync(`sc stop ${this.hbService.serviceName}`);
+      execSync(`sc stop ${this.hbService.serviceName}`);
       this.hbService.logger(`${this.hbService.serviceName} Stopped`, 'succeed');
     } catch (e) {
       this.hbService.logger(`Failed to stop ${this.hbService.serviceName}`, 'fail');
@@ -101,7 +101,7 @@ export class Win32Installer extends BasePlatform {
     this.checkIsAdmin();
 
     try {
-      child_process.execSync('npm rebuild --unsafe-perm', {
+      execSync('npm rebuild --unsafe-perm', {
         cwd: process.env.UIX_BASE_PATH,
         stdio: 'inherit',
       });
@@ -126,7 +126,7 @@ export class Win32Installer extends BasePlatform {
    */
   private checkIsAdmin() {
     try {
-      child_process.execSync('fsutil dirty query %systemdrive% >nul');
+      execSync('fsutil dirty query %systemdrive% >nul');
     } catch (e) {
       this.hbService.logger('ERROR: This command must be run as an Administrator', 'fail');
       this.hbService.logger('Node.js command prompt shortcut -> Right Click -> Run as administrator', 'fail');
@@ -140,18 +140,18 @@ export class Win32Installer extends BasePlatform {
    * This is used to create the Windows Services
    */
   private async downloadNssm(): Promise<string> {
-    const downloadUrl = `https://github.com/homebridge/nssm/releases/download/2.24-101-g897c7ad/nssm_${os.arch()}.exe`;
-    const nssmPath = path.resolve(this.hbService.storagePath, 'nssm.exe');
+    const downloadUrl = `https://github.com/homebridge/nssm/releases/download/2.24-101-g897c7ad/nssm_${arch()}.exe`;
+    const nssmPath = resolve(this.hbService.storagePath, 'nssm.exe');
 
-    if (await fs.pathExists(nssmPath)) {
+    if (await pathExists(nssmPath)) {
       return nssmPath;
     }
 
-    const nssmFile = fs.createWriteStream(nssmPath);
+    const nssmFile = createWriteStream(nssmPath);
 
     this.hbService.logger(`Downloading NSSM from ${downloadUrl}`);
 
-    return new Promise((resolve, reject) => {
+    return new Promise((res, rej) => {
       axios({
         method: 'GET',
         url: downloadUrl,
@@ -159,15 +159,15 @@ export class Win32Installer extends BasePlatform {
       }).then((response) => {
         response.data.pipe(nssmFile)
           .on('finish', () => {
-            return resolve(nssmPath);
+            return res(nssmPath);
           })
           .on('error', (err: any) => {
-            return reject(err);
+            return rej(err);
           });
       }).catch(async (e) => {
         // cleanup
         nssmFile.close();
-        await fs.remove(nssmPath);
+        await remove(nssmPath);
 
         this.hbService.logger(`Failed to download nssm: ${e.message}`, 'fail');
         process.exit(0);
@@ -185,14 +185,14 @@ export class Win32Installer extends BasePlatform {
 
     // try and remove any existing rules so there are not any duplicates
     try {
-      child_process.execSync(cleanFirewallCmd);
+      execSync(cleanFirewallCmd);
     } catch (e) {
       // this is probably ok, the firewall rule may not exist to remove
     }
 
     // create a new firewall rule
     try {
-      child_process.execSync(openFirewallCmd);
+      execSync(openFirewallCmd);
     } catch (e) {
       this.hbService.logger('Failed to configure firewall rule for Homebridge.', 'warn');
       this.hbService.logger(e);

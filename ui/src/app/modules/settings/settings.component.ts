@@ -107,7 +107,7 @@ export class SettingsComponent implements OnInit {
 
   async initNetworkingOptions() {
     try {
-      await this.getNetworkSettings();
+      this.getNetworkSettings();
       const onLinux = (
         this.$settings.env.runningInLinux ||
         this.$settings.env.runningInDocker ||
@@ -118,9 +118,7 @@ export class SettingsComponent implements OnInit {
         this.showAvahiMdnsOption = true;
         this.showResolvedMdnsOption = true;
       }
-    } catch (e) {
-
-    }
+    } catch (e) {}
   }
 
   async getNetworkSettings() {

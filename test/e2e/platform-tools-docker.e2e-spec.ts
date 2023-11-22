@@ -1,8 +1,8 @@
-import * as path from 'path';
+import { resolve } from 'path';
 import { ValidationPipe } from '@nestjs/common';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as fs from 'fs-extra';
+import { copy, readFile } from 'fs-extra';
 import { AuthModule } from '../../src/core/auth/auth.module';
 import { DockerModule } from '../../src/modules/platform-tools/docker/docker.module';
 import { DockerService } from '../../src/modules/platform-tools/docker/docker.service';
@@ -14,24 +14,24 @@ describe('PlatformToolsDocker (e2e)', () => {
   let secretsFilePath: string;
   let startupFilePath: string;
   let authorization: string;
-  let restartDockerContainerFn;
+  let restartDockerContainerFn: jest.Mock;
   let dockerService: DockerService;
 
   beforeAll(async () => {
-    process.env.UIX_BASE_PATH = path.resolve(__dirname, '../../');
-    process.env.UIX_STORAGE_PATH = path.resolve(__dirname, '../', '.homebridge');
-    process.env.UIX_CONFIG_PATH = path.resolve(process.env.UIX_STORAGE_PATH, 'config.json');
+    process.env.UIX_BASE_PATH = resolve(__dirname, '../../');
+    process.env.UIX_STORAGE_PATH = resolve(__dirname, '../', '.homebridge');
+    process.env.UIX_CONFIG_PATH = resolve(process.env.UIX_STORAGE_PATH, 'config.json');
 
-    authFilePath = path.resolve(process.env.UIX_STORAGE_PATH, 'auth.json');
-    secretsFilePath = path.resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets');
-    startupFilePath = path.resolve(process.env.UIX_STORAGE_PATH, 'startup.sh');
+    authFilePath = resolve(process.env.UIX_STORAGE_PATH, 'auth.json');
+    secretsFilePath = resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets');
+    startupFilePath = resolve(process.env.UIX_STORAGE_PATH, 'startup.sh');
 
     // setup test config
-    await fs.copy(path.resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
 
     // setup test auth file
-    await fs.copy(path.resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
-    await fs.copy(path.resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
+    await copy(resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
+    await copy(resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [DockerModule, AuthModule],
@@ -56,7 +56,7 @@ describe('PlatformToolsDocker (e2e)', () => {
     dockerService.restartDockerContainer = restartDockerContainerFn;
 
     // restore startup.sh
-    await fs.copy(path.resolve(__dirname, '../mocks', 'startup.sh'), startupFilePath);
+    await copy(resolve(__dirname, '../mocks', 'startup.sh'), startupFilePath);
 
     // get auth token before each test
     authorization = 'bearer ' + (await app.inject({
@@ -70,7 +70,7 @@ describe('PlatformToolsDocker (e2e)', () => {
   });
 
   it('GET /platform-tools/docker/startup-script', async () => {
-    const startupScript = await fs.readFile(startupFilePath, 'utf8');
+    const startupScript = await readFile(startupFilePath, 'utf8');
 
     const res = await app.inject({
       method: 'GET',
@@ -99,7 +99,7 @@ describe('PlatformToolsDocker (e2e)', () => {
     });
 
     expect(res.statusCode).toBe(200);
-    expect(await fs.readFile(startupFilePath, 'utf8')).toEqual(startupScript);
+    expect(await readFile(startupFilePath, 'utf8')).toEqual(startupScript);
   });
 
   it('GET /platform-tools/docker/restart-container', async () => {

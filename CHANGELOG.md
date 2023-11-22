@@ -23,6 +23,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - update lang sync - remove old translations (#1751)
 - various code improvements + simplifications (#1754)
 - remove node 11 polyfill from self-check (#1777)
+- remove old hb checks, import functions directly (#1780)
 - stricter lint rules in api and ui (#1783)
 
 ## 4.52.3 (2023-11-14)

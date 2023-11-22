@@ -1,9 +1,14 @@
-import * as path from 'path';
+import { resolve } from 'path';
 import { HttpService } from '@nestjs/axios';
 import { ValidationPipe } from '@nestjs/common';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as fs from 'fs-extra';
+import {
+  copy,
+  ensureDir,
+  remove,
+  writeFile,
+} from 'fs-extra';
 import { AuthModule } from '../../src/core/auth/auth.module';
 import { PluginsSettingsUiModule } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui.module';
 
@@ -16,24 +21,24 @@ describe('PluginsSettingsUiController (e2e)', () => {
   let pluginsPath: string;
 
   beforeAll(async () => {
-    process.env.UIX_BASE_PATH = path.resolve(__dirname, '../../');
-    process.env.UIX_STORAGE_PATH = path.resolve(__dirname, '../', '.homebridge');
-    process.env.UIX_CONFIG_PATH = path.resolve(process.env.UIX_STORAGE_PATH, 'config.json');
-    process.env.UIX_CUSTOM_PLUGIN_PATH = path.resolve(process.env.UIX_STORAGE_PATH, 'plugins/node_modules');
+    process.env.UIX_BASE_PATH = resolve(__dirname, '../../');
+    process.env.UIX_STORAGE_PATH = resolve(__dirname, '../', '.homebridge');
+    process.env.UIX_CONFIG_PATH = resolve(process.env.UIX_STORAGE_PATH, 'config.json');
+    process.env.UIX_CUSTOM_PLUGIN_PATH = resolve(process.env.UIX_STORAGE_PATH, 'plugins/node_modules');
 
-    authFilePath = path.resolve(process.env.UIX_STORAGE_PATH, 'auth.json');
-    secretsFilePath = path.resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets');
+    authFilePath = resolve(process.env.UIX_STORAGE_PATH, 'auth.json');
+    secretsFilePath = resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets');
     pluginsPath = process.env.UIX_CUSTOM_PLUGIN_PATH;
 
     // setup test config
-    await fs.copy(path.resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
 
     // setup test auth file
-    await fs.copy(path.resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
-    await fs.copy(path.resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
+    await copy(resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
+    await copy(resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
 
-    await fs.remove(pluginsPath);
-    await fs.copy(path.resolve(__dirname, '../mocks', 'plugins'), pluginsPath);
+    await remove(pluginsPath);
+    await copy(resolve(__dirname, '../mocks', 'plugins'), pluginsPath);
 
     // create httpService instance
     httpService = new HttpService();
@@ -52,8 +57,8 @@ describe('PluginsSettingsUiController (e2e)', () => {
     await app.init();
     await app.getHttpAdapter().getInstance().ready();
 
-    await fs.ensureDir(path.resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/public'));
-    await fs.writeFile(path.resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/public/index.html'), '<h1>Hello World</h1>');
+    await ensureDir(resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/public'));
+    await writeFile(resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/public/index.html'), '<h1>Hello World</h1>');
   });
 
   beforeEach(async () => {

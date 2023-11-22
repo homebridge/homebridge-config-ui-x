@@ -1,8 +1,15 @@
-import * as child_process from 'child_process';
-import * as os from 'os';
-import * as path from 'path';
-import * as fs from 'fs-extra';
-import * as semver from 'semver';
+import { execSync } from 'child_process';
+import { homedir, release, userInfo } from 'os';
+import { dirname, resolve } from 'path';
+import {
+  PathLike,
+  existsSync,
+  pathExists,
+  remove,
+  unlinkSync,
+  writeFile,
+} from 'fs-extra';
+import { gte, lt } from 'semver';
 import { BasePlatform } from '../base-platform';
 
 export class DarwinInstaller extends BasePlatform {
@@ -13,7 +20,7 @@ export class DarwinInstaller extends BasePlatform {
   }
 
   private get plistPath() {
-    return path.resolve('/Library/LaunchDaemons/', this.plistName + '.plist');
+    return resolve('/Library/LaunchDaemons/', this.plistName + '.plist');
   }
 
   /**
@@ -45,9 +52,9 @@ export class DarwinInstaller extends BasePlatform {
     await this.stop();
 
     try {
-      if (fs.existsSync(this.plistPath)) {
+      if (existsSync(this.plistPath)) {
         this.hbService.logger(`Removed ${this.hbService.serviceName} Service`, 'succeed');
-        fs.unlinkSync(this.plistPath);
+        unlinkSync(this.plistPath);
       } else {
         this.hbService.logger(`Could not find installed ${this.hbService.serviceName} Service.`, 'fail');
       }
@@ -64,7 +71,7 @@ export class DarwinInstaller extends BasePlatform {
     this.checkForRoot();
     try {
       this.hbService.logger(`Starting ${this.hbService.serviceName} Service...`);
-      child_process.execSync(`launchctl load -w ${this.plistPath}`);
+      execSync(`launchctl load -w ${this.plistPath}`);
       this.hbService.logger(`${this.hbService.serviceName} Started`, 'succeed');
     } catch (e) {
       this.hbService.logger(`Failed to start ${this.hbService.serviceName}`, 'fail');
@@ -78,7 +85,7 @@ export class DarwinInstaller extends BasePlatform {
     this.checkForRoot();
     try {
       this.hbService.logger(`Stopping ${this.hbService.serviceName} Service...`);
-      child_process.execSync(`launchctl unload -w ${this.plistPath}`);
+      execSync(`launchctl unload -w ${this.plistPath}`);
       this.hbService.logger(`${this.hbService.serviceName} Stopped`, 'succeed');
     } catch (e) {
       this.hbService.logger(`Failed to stop ${this.hbService.serviceName}`, 'fail');
@@ -105,32 +112,32 @@ export class DarwinInstaller extends BasePlatform {
         this.checkForRoot(); // do not need root in package mode
       }
 
-      const targetNodeVersion = child_process.execSync('node -v').toString('utf8').trim();
+      const targetNodeVersion = execSync('node -v').toString('utf8').trim();
 
       if (this.isPackage() && process.env.UIX_USE_PNPM === '1' && process.env.UIX_CUSTOM_PLUGIN_PATH) {
         // pnpm+package mode
-        const cwd = path.dirname(process.env.UIX_CUSTOM_PLUGIN_PATH);
+        const cwd = dirname(process.env.UIX_CUSTOM_PLUGIN_PATH);
 
-        if (!await fs.pathExists(cwd)) {
+        if (!await pathExists(cwd)) {
           this.hbService.logger(`Path does not exist: "${cwd}"`, 'fail');
           process.exit(1);
         }
 
-        child_process.execSync(`pnpm -C "${cwd}" rebuild`, {
+        execSync(`pnpm -C "${cwd}" rebuild`, {
           cwd: cwd,
           stdio: 'inherit',
         });
         this.hbService.logger(`Rebuilt plugins in ${process.env.UIX_CUSTOM_PLUGIN_PATH} for Node.js ${targetNodeVersion}.`, 'succeed');
       } else {
         // normal global npm setups
-        const npmGlobalPath = child_process.execSync('/bin/echo -n "$(npm -g prefix)/lib/node_modules"', {
+        const npmGlobalPath = execSync('/bin/echo -n "$(npm -g prefix)/lib/node_modules"', {
           env: Object.assign({
             npm_config_loglevel: 'silent',
             npm_update_notifier: 'false',
           }, process.env),
         }).toString('utf8');
 
-        child_process.execSync('npm rebuild --unsafe-perm', {
+        execSync('npm rebuild --unsafe-perm', {
           cwd: process.env.UIX_BASE_PATH,
           stdio: 'inherit',
         });
@@ -139,7 +146,7 @@ export class DarwinInstaller extends BasePlatform {
         if (all === true) {
           // rebuild all modules
           try {
-            child_process.execSync('npm rebuild --unsafe-perm', {
+            execSync('npm rebuild --unsafe-perm', {
               cwd: npmGlobalPath,
               stdio: 'inherit',
             });
@@ -162,16 +169,16 @@ export class DarwinInstaller extends BasePlatform {
    */
   public async getId(): Promise<{ uid: number; gid: number }> {
     if (process.getuid() === 0 && this.hbService.asUser || process.env.SUDO_USER) {
-      const uid = child_process.execSync(`id -u ${this.hbService.asUser || process.env.SUDO_USER}`).toString('utf8');
-      const gid = child_process.execSync(`id -g ${this.hbService.asUser || process.env.SUDO_USER}`).toString('utf8');
+      const uid = execSync(`id -u ${this.hbService.asUser || process.env.SUDO_USER}`).toString('utf8');
+      const gid = execSync(`id -g ${this.hbService.asUser || process.env.SUDO_USER}`).toString('utf8');
       return {
         uid: parseInt(uid, 10),
         gid: parseInt(gid, 10),
       };
     } else {
       return {
-        uid: os.userInfo().uid,
-        gid: os.userInfo().gid,
+        uid: userInfo().uid,
+        gid: userInfo().gid,
       };
     }
   }
@@ -181,7 +188,7 @@ export class DarwinInstaller extends BasePlatform {
    */
   public getPidOfPort(port: number) {
     try {
-      return child_process.execSync(`lsof -n -iTCP:${port} -sTCP:LISTEN -t 2> /dev/null`).toString('utf8').trim();
+      return execSync(`lsof -n -iTCP:${port} -sTCP:LISTEN -t 2> /dev/null`).toString('utf8').trim();
     } catch (e) {
       return null;
     }
@@ -209,7 +216,7 @@ export class DarwinInstaller extends BasePlatform {
    */
   private fixStoragePath() {
     if (!this.hbService.usingCustomStoragePath) {
-      this.hbService.storagePath = path.resolve(this.getUserHomeDir(), `.${this.hbService.serviceName.toLowerCase()}`);
+      this.hbService.storagePath = resolve(this.getUserHomeDir(), `.${this.hbService.serviceName.toLowerCase()}`);
     }
   }
 
@@ -218,13 +225,13 @@ export class DarwinInstaller extends BasePlatform {
    */
   private getUserHomeDir() {
     try {
-      const realHomeDir = child_process.execSync(`eval echo "~${this.user}"`).toString('utf8').trim();
+      const realHomeDir = execSync(`eval echo "~${this.user}"`).toString('utf8').trim();
       if (realHomeDir.charAt(0) === '~') {
         throw new Error('Could not resolve user home directory');
       }
       return realHomeDir;
     } catch (e) {
-      return os.homedir();
+      return homedir();
     }
   }
 
@@ -239,19 +246,19 @@ export class DarwinInstaller extends BasePlatform {
       process.exit(1);
     }
 
-    if (process.arch === 'arm64' && semver.lt(job.target, '18.0.0')) {
+    if (process.arch === 'arm64' && lt(job.target, '18.0.0')) {
       this.hbService.logger('macOS M1 / arm64 support is only available from Node.js v18 or later', 'fail');
       process.exit(1);
     }
 
     // Node.js 18+ requires macOS 10.15 or later, which starts with Darwin 19.0.0
-    if (semver.lt(os.release(), '19.0.0') && semver.gte(job.target, '18.0.0')) {
+    if (lt(release(), '19.0.0') && gte(job.target, '18.0.0')) {
       this.hbService.logger('macOS Catalina 10.15 or later is required to install Node.js v18 or later', 'fail');
       process.exit(1);
     }
 
     const downloadUrl = `https://nodejs.org/dist/${job.target}/node-${job.target}-darwin-${process.arch}.tar.gz`;
-    const targetPath = path.dirname(path.dirname(process.execPath));
+    const targetPath = dirname(dirname(process.execPath));
 
     // only allow updates when installed using the official Node.js installer / Homebridge package
     if (targetPath !== '/usr/local' && !targetPath.startsWith('/Library/Application Support/Homebridge/node-')) {
@@ -273,19 +280,19 @@ export class DarwinInstaller extends BasePlatform {
       };
 
       // remove npm package as this can cause issues when overwritten by the node tarball
-      await this.hbService.removeNpmPackage(path.resolve(targetPath, 'lib', 'node_modules', 'npm'));
+      await this.hbService.removeNpmPackage(resolve(targetPath, 'lib', 'node_modules', 'npm'));
 
       // extract
       await this.hbService.extractNodejs(job.target, extractConfig);
 
       // clean up
-      await fs.remove(archivePath);
+      await remove(archivePath);
 
       // rebuild / fix perms
       await this.rebuild(true);
 
       // restart
-      if (await fs.pathExists(this.plistPath)) {
+      if (await pathExists(this.plistPath)) {
         await this.restart();
       } else {
         this.hbService.logger('Please restart Homebridge for the changes to take effect.', 'warn');
@@ -300,7 +307,7 @@ export class DarwinInstaller extends BasePlatform {
    * Checks if the user has write access to the global npm directory
    */
   private async checkGlobalNpmAccess() {
-    const npmGlobalPath = child_process.execSync('/bin/echo -n "$(npm -g prefix)/lib/node_modules"', {
+    const npmGlobalPath = execSync('/bin/echo -n "$(npm -g prefix)/lib/node_modules"', {
       env: Object.assign({
         npm_config_loglevel: 'silent',
         npm_update_notifier: 'false',
@@ -309,11 +316,11 @@ export class DarwinInstaller extends BasePlatform {
     const { uid, gid } = await this.getId();
 
     try {
-      child_process.execSync(`test -w "${npmGlobalPath}"`, {
+      execSync(`test -w "${npmGlobalPath}"`, {
         uid,
         gid,
       });
-      child_process.execSync('test -w "$(dirname $(which npm))"', {
+      execSync('test -w "$(dirname $(which npm))"', {
         uid,
         gid,
       });
@@ -325,13 +332,13 @@ export class DarwinInstaller extends BasePlatform {
   /**
    * Set permissions on global npm path
    */
-  private async setNpmPermissions(npmGlobalPath: fs.PathLike) {
+  private async setNpmPermissions(npmGlobalPath: PathLike) {
     if (this.isPackage()) {
       return; // we don't need to check this in package mode
     }
     try {
-      child_process.execSync(`chown -R ${this.user}:admin "${npmGlobalPath}"`);
-      child_process.execSync(`chown -R ${this.user}:admin "$(dirname $(which npm))"`);
+      execSync(`chown -R ${this.user}:admin "${npmGlobalPath}"`);
+      execSync(`chown -R ${this.user}:admin "$(dirname $(which npm))"`);
     } catch (e) {
       this.hbService.logger(`ERROR: User "${this.user}" does not have write access to the global npm modules path.`, 'fail');
       this.hbService.logger('You can fix this issue by running the following commands:', 'fail');
@@ -398,6 +405,6 @@ export class DarwinInstaller extends BasePlatform {
       '</plist>',
     ].filter(x => x).join('\n');
 
-    await fs.writeFile(this.plistPath, plistFileContents);
+    await writeFile(this.plistPath, plistFileContents);
   }
 }
