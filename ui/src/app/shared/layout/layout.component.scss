@@ -83,13 +83,15 @@
 .navbar .dropdown-menu {
   position: static !important;
   background-color: transparent !important;
+  border: 0px !important;
 }
 
 .nav-item .btn {
-  padding: 0 6px !important;
+  padding: 3px 6px !important;
   text-align: left !important;
   text-transform: none !important;
   width: 100% !important;
+  font-weight: 300 !important;
 }
 
 /* SIDEBAR NAVBAR */
