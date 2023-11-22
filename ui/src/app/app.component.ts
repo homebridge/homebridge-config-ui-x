@@ -70,7 +70,7 @@ export class AppComponent {
     }
 
     // ensure the menu closes when we navigate
-    router.events.subscribe((event) => {
+    router.events.subscribe((event: any) => {
       const target = event.target;
       if (event instanceof NavigationEnd && !target.hasClass('dropdown-toggle')) {
         const dropdownMenu = window.document.querySelector('#navbarSupportedContent');
