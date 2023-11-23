@@ -6,3 +6,13 @@
 .dropup .dropdown-toggle:after {
   display: none;
 }
+
+.card-title {
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  display: -webkit-box !important;
+  overflow: hidden !important;
+  height: 4rem !important;
+  line-height: 2rem !important;
+  max-height: 4rem !important;
+}
