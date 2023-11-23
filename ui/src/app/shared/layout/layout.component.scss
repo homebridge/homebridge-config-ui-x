@@ -95,6 +95,17 @@
   color: #ffffff !important;
 }
 
+.dropdown.show .fa-caret-down {
+    transform: rotate(-180deg);
+    transition: 0.5s;
+}
+
+.dropdown .fa-caret-down {
+    transition: 0.5s;
+    transform-origin: center 9px;
+    text-align: center;
+}
+
 /* SIDEBAR NAVBAR */
 
 .sidebar {
