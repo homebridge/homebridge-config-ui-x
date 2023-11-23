@@ -26,6 +26,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - remove node 11 polyfill from self-check (#1777)
 - remove old hb checks, import functions directly (#1780)
 - stricter lint rules in api and ui (#1783)
+- graceful fail when issue with node dist list response (#1800)
 
 ## 4.52.3 (2023-11-14)
 
