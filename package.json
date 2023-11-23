@@ -58,7 +58,7 @@
     "@fastify/multipart": "8.0.0",
     "@fastify/static": "6.12.0",
     "@fastify/swagger": "8.12.0",
-    "@homebridge/node-pty-prebuilt-multiarch": "0.11.11",
+    "@homebridge/node-pty-prebuilt-multiarch": "0.11.12",
     "@nestjs/axios": "3.0.1",
     "@nestjs/common": "10.2.10",
     "@nestjs/core": "10.2.10",
