@@ -1,14 +1,21 @@
 <div class="modal-content">
   <div class="modal-header">
-    <h5 class="modal-title" translate="plugins.donate.tile_donate_to"
-      [translateParams]="{author: plugin.author || plugin.name}">
+    <h5 class="modal-title" translate="plugins.donate.tile_donate_to" [translateParams]="{author: plugin.author || plugin.name}">
     </h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-      (click)="activeModal.dismiss('Dismiss')">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="activeModal.dismiss('Dismiss')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body">
+    <div class="w-100 text-center pink-text mb-4">
+      <i class="fas fa-fw fa-heart" style="font-size: 75px;"></i>
+    </div>
+    <p class="w-100 text-center">
+      As more users install their plugins through the Homebridge UI, they are less likely to visit the projects' GitHub page where the ways to support a developer would typically be displayed.
+    </p>
+    <p class="w-100 text-center">
+      Adding donation links directly in the Homebridge UI ensures users know how to support Homebridge developers if they wish to do so.
+    </p>
     <ul class="list-group">
       <li class="list-group-item" *ngFor="let option of fundingOptions">
         <a [href]="option.url" target="_blank" rel="noopener noreferrer" class="text-break-all">

@@ -7,7 +7,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
   styleUrls: ['./donate-modal.component.scss'],
 })
 export class DonateModalComponent implements OnInit {
-  @Input() plugin;
+  @Input() plugin: any;
 
   public fundingOptions: { type: string; url: string }[];
 
@@ -27,7 +27,7 @@ export class DonateModalComponent implements OnInit {
 
     // normalise the different funding attribute formats
     if (Array.isArray(this.plugin.funding)) {
-      this.fundingOptions = this.plugin.funding.map((option) => {
+      this.fundingOptions = this.plugin.funding.map((option: any) => {
         if (typeof option === 'string') {
           return {
             type: 'other',

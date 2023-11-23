@@ -11,6 +11,7 @@ export class InformationComponent implements OnInit {
   @Input() message: string;
   @Input() ctaButtonLabel: string;
   @Input() ctaButtonLink: string;
+  @Input() faIconClass: string;
 
   constructor(
     public activeModal: NgbActiveModal,
