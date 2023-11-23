@@ -5,6 +5,16 @@
       <img class="menu-logo" src="/assets/homebridge-logo.svg" />
       <strong>Homebridge</strong>
     </a>
+    <div class="nav-item ml-auto mr-3" *ngIf="rPiWasUnderVoltage || rPiCurrentlyUnderVoltage">
+      <a href="javascript:void(0)" class="nav-link dropdown-toggle waves-effect waves-light"
+        [popoverTitle]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_title' : 'rpi.throttled.previously_undervoltage_title') | translate"
+        [ngbPopover]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_message' : 'rpi.throttled.previously_undervoltage_message') | translate"
+        [ngbTooltip]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_title' : 'rpi.throttled.previously_undervoltage_title') | translate"
+        container="body" [placement]="['bottom', 'auto']">
+        <i class="fa-solid fa-bolt yellow-text " style="--fa-beat-scale: 2.0;"
+          [ngClass]="{ 'fa-beat': rPiCurrentlyUnderVoltage }"></i>
+      </a>
+    </div>
     <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
       aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="toggler-icon top-bar"></span>
@@ -208,9 +218,9 @@
       </li>
       <li class="li-link1" *ngIf="$auth.user.admin">
         <div class="iocn-link">
-          <a routerLink="/settings" [translate]="'plugins.button_settings'">
+          <a routerLink="/settings">
             <i class="fa fa-cog"></i>
-            <span class="link_name">Settings</span>
+            <span class="link_name">{{ 'plugins.button_settings' | translate }}</span>
           </a>
           <i class="fa fa-chevron-down arrow" data-toggle="collapse"  data-target=".li-link1"></i>
         </div>
@@ -239,12 +249,24 @@
         <div class="iocn-link">
           <a href="javascript:void(0)" (click)="$auth.logout()">
             <i class="fa fa-right-from-bracket"></i>
-            <span class="link_name">{{ 'menu.tooltip_logout' | translate }}<br><span class="text-muted">{{ $auth.user.username }}</span></span>
+            <span class="link_name">{{ 'menu.tooltip_logout' | translate }}<br>
+              <span class="small text-truncate" style="display:block;width:120px;">{{ $auth.user.username }}</span>
+            </span>
           </a>       
         </div>
         <ul class="sub-menu blank">
           <li><a class="link_name" href="javascript:void(0)" (click)="$auth.logout()" [translate]="'menu.tooltip_logout'">{{ 'menu.tooltip_logout' | translate }} - {{ $auth.user.username }}</a></li>
         </ul>
+      </li>
+      <li class="pl-3 mt-5" *ngIf="rPiWasUnderVoltage || rPiCurrentlyUnderVoltage">
+        <a href="javascript:void(0)" class="nav-link dropdown-toggle waves-effect waves-light"
+          [popoverTitle]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_title' : 'rpi.throttled.previously_undervoltage_title') | translate"
+          [ngbPopover]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_message' : 'rpi.throttled.previously_undervoltage_message') | translate"
+          [ngbTooltip]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_title' : 'rpi.throttled.previously_undervoltage_title') | translate"
+          container="body" [placement]="['bottom', 'auto']">
+            <i class="fa-solid fa-bolt yellow-text " style="--fa-beat-scale: 2.0;"
+              [ngClass]="{ 'fa-beat': rPiCurrentlyUnderVoltage }"></i>
+        </a>
       </li>
       <li>
         <div class="iocn-link" style="position: fixed; bottom:0;">

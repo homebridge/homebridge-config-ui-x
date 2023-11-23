@@ -10,7 +10,7 @@
 
     <!-- plugins -->
     <div class="w-100" *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)">
-      <i class="fab fa-fw fa-node primary-text" style="font-size: 100px;"></i>
+      <i class="fab fa-fw fa-node-js primary-text" style="font-size: 75px;"></i>
       <p class="mt-4" translate="plugins.node_update.node_version_too_low"
         [translateParams]="{pluginName: plugin.name, minVersion: minVersion, installedVersion: installedVersion}">
       </p>
@@ -25,7 +25,7 @@
 
     <!-- homebridge -->
     <div class="w-100" *ngIf="plugin.name === 'homebridge'">
-      <i class="fab fa-fw fa-node primary-text" style="font-size: 100px;"></i>
+      <i class="fab fa-fw fa-node-js primary-text" style="font-size: 75px;"></i>
       <p class="mt-4" translate="plugins.node_update.homebridge_node_version_too_low"
         [translateParams]="{minVersion: minVersion, installedVersion: installedVersion, latestVersion: plugin.latestVersion}">
       </p>
@@ -40,7 +40,7 @@
 
     <!-- homebridge ui -->
     <div class="w-100" *ngIf="plugin.name === 'homebridge-config-ui-x'">
-      <i class="fab fa-fw fa-node primary-text" style="font-size: 100px;"></i>
+      <i class="fab fa-fw fa-node-js primary-text" style="font-size: 75px;"></i>
       <p class="mt-4" translate="plugins.node_update.homebridge_node_version_too_low"
          [translateParams]="{minVersion: minVersion, installedVersion: installedVersion, latestVersion: plugin.latestVersion}">
       </p>

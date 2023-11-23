@@ -89,7 +89,7 @@ export class PluginCardComponent implements OnInit {
     const ref = this.$modal.open(InformationComponent);
     ref.componentInstance.title = this.$translate.instant('plugins.manage.modal_verified_title');
     ref.componentInstance.message = this.$translate.instant('plugins.manage.modal_verified_message');
-    ref.componentInstance.ctaButtonLabel = this.$translate.instant('plugins.manage.modal_verified_cta');
+    ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info');
     ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/homebridge/wiki/verified-Plugins';
     ref.componentInstance.faIconClass = 'fa-shield-alt green-text';
   }
