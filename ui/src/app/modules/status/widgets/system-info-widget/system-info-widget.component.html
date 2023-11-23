@@ -51,8 +51,7 @@
             Node.js Version
           </th>
           <td>
-            <a href="https://homebridge.io/w/JTKEF" rel="noopener noreferrer" target="_blank" class="system-info-link"
-              ngbTooltip="{{ nodejsInfo.updateAvailable ? ('plugins.status_update_available' | translate) + ' - ' + nodejsInfo.latestVersion : ''}}">
+            <a href="javascript:void(0)" class="system-info-link" (click)="nodeUpdateModal()">
               <i *ngIf="nodejsInfo.updateAvailable" class="primary-text fas fa-fw fa-circle-up"></i>
             </a> {{ serverInfo.nodeVersion }}
           </td>

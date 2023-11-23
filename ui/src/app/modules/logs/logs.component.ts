@@ -61,6 +61,7 @@ export class LogsComponent implements OnInit, OnDestroy {
     ref.componentInstance.title = this.$translate.instant('logs.title_download_log_file');
     ref.componentInstance.message = this.$translate.instant('logs.message_download_warning');
     ref.componentInstance.confirmButtonLabel = this.$translate.instant('logs.label_download');
+    ref.componentInstance.faIconClass = 'fas fa-fw fa-user-secret primary-text';
 
     ref.result.then(() => {
       this.$api.get('/platform-tools/hb-service/log/download', { observe: 'response', responseType: 'blob' })
@@ -88,6 +89,7 @@ export class LogsComponent implements OnInit, OnDestroy {
     ref.componentInstance.title = this.$translate.instant('logs.title_truncate_log_file');
     ref.componentInstance.message = this.$translate.instant('logs.message_truncate_log_warning');
     ref.componentInstance.confirmButtonLabel = this.$translate.instant('logs.label_truncate');
+    ref.componentInstance.faIconClass = 'fas fa-fw fa-circle-exclamation primary-text';
 
     ref.result.then(() => {
       this.$api.put('/platform-tools/hb-service/log/truncate', {})
