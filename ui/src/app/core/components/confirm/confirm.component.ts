@@ -10,7 +10,7 @@ export class ConfirmComponent implements OnInit {
   @Input() title: string;
   @Input() message: string;
   @Input() confirmButtonLabel: string;
-  @Input() faIconClass: string | undefined;
+  @Input() faIconClass: string;
 
   constructor(
     public activeModal: NgbActiveModal,
