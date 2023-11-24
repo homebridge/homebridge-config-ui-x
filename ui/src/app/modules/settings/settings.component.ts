@@ -4,10 +4,8 @@ import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { debounceTime } from 'rxjs/operators';
-// eslint-disable-next-line max-len
-import { RemoveAllCachedAccessoriesModalComponent } from './remove-all-cached-accessories-modal/remove-all-cached-accessories-modal.component';
-// eslint-disable-next-line max-len
-import { RemoveSingleCachedAccessoryModalComponent } from './remove-single-cached-accessory-modal/remove-single-cached-accessory-modal.component';
+import { RemoveAllCachedAccessoriesModalComponent } from './remove-all-cached-accessories-modal/remove-all-cached-accessories-modal.component'; // eslint-disable-line max-len
+import { RemoveSingleCachedAccessoryModalComponent } from './remove-single-cached-accessory-modal/remove-single-cached-accessory-modal.component'; // eslint-disable-line max-len
 import { ResetHomebridgeModalComponent } from './reset-homebridge-modal/reset-homebridge-modal.component';
 import { SelectNetworkInterfacesComponent } from './select-network-interfaces/select-network-interfaces.component';
 import { UnpairAccessoryModalComponent } from './unpair-accessory-modal/unpair-accessory-modal.component';
@@ -171,7 +169,7 @@ export class SettingsComponent implements OnInit {
     }
 
     this.bridgeNetworkAdapters = adapters.map((interfaceName) => {
-      const i = this.availableNetworkAdapters.find((x => x.iface === interfaceName));
+      const i = this.availableNetworkAdapters.find(((x: any) => x.iface === interfaceName));
       if (i) {
         i.selected = true;
         i.missing = false;

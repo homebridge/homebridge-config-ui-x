@@ -18,7 +18,7 @@ import { ApiService } from '@/app/core/api.service';
   styleUrls: ['./users-setup2fa.component.scss'],
 })
 export class UsersSetup2faComponent implements OnInit {
-  @Input() public user;
+  @Input() public user: any;
 
   @ViewChild('qrcode', { static: true }) qrcodeElement: ElementRef;
 
@@ -65,7 +65,7 @@ export class UsersSetup2faComponent implements OnInit {
 
   enable2fa() {
     this.$api.post('/users/otp/activate', this.formGroup.value).subscribe(
-      data => {
+      () => {
         this.toastr.success(this.translate.instant('users.setup_2fa_enabled_success'), this.translate.instant('toast.title_success'));
         this.activeModal.close();
       },

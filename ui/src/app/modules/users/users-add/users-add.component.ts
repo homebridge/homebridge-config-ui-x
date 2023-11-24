@@ -46,7 +46,7 @@ export class UsersAddComponent implements OnInit {
     }
   }
 
-  onSubmit({ value, valid }) {
+  onSubmit({ value }) {
     this.$api.post('/users', value).subscribe(
       data => {
         this.activeModal.close();

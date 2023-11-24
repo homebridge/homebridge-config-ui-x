@@ -466,7 +466,7 @@ export class StatusService {
 
     try {
       const versionList = (await this.httpService.get('https://nodejs.org/dist/index.json').toPromise()).data;
-      const currentLts = versionList.filter(x => x.lts)[0];
+      const currentLts = versionList.filter((x: any) => x.lts)[0];
 
       // See why this is set to 2.29 at https://homebridge.io/w/JJSun
       const glibcVersion = this.getGlibcVersion();

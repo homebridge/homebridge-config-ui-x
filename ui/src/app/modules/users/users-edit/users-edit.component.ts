@@ -12,7 +12,7 @@ import { AuthService } from '@/app/core/auth/auth.service';
   templateUrl: './users-edit.component.html',
 })
 export class UsersEditComponent implements OnInit {
-  @Input() user;
+  @Input() user: any;
 
   public form = new FormGroup({
     username: new FormControl('', [Validators.required]),
@@ -53,9 +53,9 @@ export class UsersEditComponent implements OnInit {
     }
   }
 
-  onSubmit({ value, valid }) {
+  onSubmit({ value }) {
     this.$api.patch(`/users/${this.user.id}`, value).subscribe(
-      data => {
+      () => {
         this.activeModal.close();
         this.toastr.success(this.translate.instant('users.toast_updated_user'), this.translate.instant('toast.title_success'));
 

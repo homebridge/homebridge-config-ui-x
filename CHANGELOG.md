@@ -28,6 +28,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - remove old hb checks, import functions directly (#1780)
 - stricter lint rules in api and ui (#1783)
 - graceful fail when issue with node dist list response (#1800)
+- Update node-pty-prebuilt-multiarch to 0.11.12
 
 ## 4.52.3 (2023-11-14)
 

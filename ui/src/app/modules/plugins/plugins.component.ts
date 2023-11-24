@@ -1,13 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
 import { ApiService } from '@/app/core/api.service';
-import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
-import { SettingsService } from '@/app/core/settings.service';
 import { WsService } from '@/app/core/ws.service';
 
 @Component({
@@ -27,12 +24,9 @@ export class PluginsComponent implements OnInit, OnDestroy {
   private navigationSubscription: Subscription;
 
   constructor(
-    private $settings: SettingsService,
     private $api: ApiService,
     private $ws: WsService,
-    private $plugin: ManagePluginsService,
     private $router: Router,
-    private $route: ActivatedRoute,
     private $toastr: ToastrService,
     private $translate: TranslateService,
   ) {}
@@ -43,7 +37,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
       this.io.socket.emit('monitor-child-bridge-status');
     });
 
-    this.io.socket.on('child-bridge-status-update', (data) => {
+    this.io.socket.on('child-bridge-status-update', (data: any) => {
       const existingBridge = this.childBridges.find(x => x.username === data.username);
       if (existingBridge) {
         Object.assign(existingBridge, data);
@@ -78,21 +72,6 @@ export class PluginsComponent implements OnInit, OnDestroy {
         this.$translate.instant('toast.title_error'),
       );
     }
-
-    this.$route.queryParams.pipe(take(1)).subscribe(async (params) => {
-      if (params.installed && this.installedPlugins.find(x => x.name === params.installed)) {
-        const plugin = this.installedPlugins.find(x => x.name === params.installed);
-        this.$plugin.settings(plugin)
-          .then((schema?) => {
-            this.recommendChildBridge(plugin, schema);
-          })
-          .finally(() => {
-            this.$router.navigate([], {
-              queryParams: {},
-            });
-          });
-      }
-    });
   }
 
   search() {
@@ -117,22 +96,11 @@ export class PluginsComponent implements OnInit, OnDestroy {
     this.loadInstalledPlugins();
   }
 
-  onSubmit({ value, valid }) {
+  onSubmit({ value }) {
     if (!value.query.length) {
       this.loadInstalledPlugins();
     } else {
       this.search();
-    }
-  }
-
-  recommendChildBridge(plugin, schema) {
-    if (
-      this.$settings.env.recommendChildBridges &&
-      this.$settings.env.serviceMode &&
-      schema &&
-      schema.pluginType === 'platform'
-    ) {
-      this.$plugin.bridgeSettings(plugin);
     }
   }
 
@@ -142,7 +110,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
     });
   }
 
-  getPluginChildBridges(plugin) {
+  getPluginChildBridges(plugin: any) {
     return this.childBridges.filter(x => x.plugin === plugin.name);
   }
 

@@ -12,9 +12,9 @@ import { environment } from '@/environments/environment';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
-  @ViewChild('password') private passwordInput;
-  @ViewChild('username') private usernameInput;
-  @ViewChild('otp') private otpInput;
+  @ViewChild('password') private passwordInput: any;
+  @ViewChild('username') private usernameInput: any;
+  @ViewChild('otp') private otpInput: any;
 
   public form: FormGroup<{
     username: FormControl<string>;
@@ -91,7 +91,7 @@ export class LoginComponent implements OnInit {
     }
 
     await this.$auth.login(this.form.getRawValue())
-      .then((user) => {
+      .then(() => {
         this.$router.navigateByUrl(this.targetRoute);
         window.sessionStorage.removeItem('target_route');
       })
