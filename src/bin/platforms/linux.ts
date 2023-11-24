@@ -317,6 +317,21 @@ export class LinuxInstaller extends BasePlatform {
     }
   }
 
+  /**
+   * Debian Version - Supplied GLIBC Version
+   *
+   *  9 - Stretch       2.24
+   * 10 - Buster        2.28
+   * 11 - Bullseye      2.31
+   * 12 - Bookworm      2.36
+   * 13 - Trixie
+   *
+   * NodeJS Version - Minimum GLIBC Version
+   *
+   *      18            2.28
+   *      20            2.31
+   */
+
   private async glibcVersionCheck(target: string) {
     const glibcVersion = parseFloat(execSync('getconf GNU_LIBC_VERSION 2>/dev/null').toString().split('glibc')[1].trim());
     if (glibcVersion < 2.23) {
@@ -329,7 +344,7 @@ export class LinuxInstaller extends BasePlatform {
         `Wanted: >=2.28. Installed: ${glibcVersion} - see https://homebridge.io/w/JJSun`, 'fail');
       process.exit(1);
     }
-    if (gte(target, '20.0.0') && glibcVersion < 2.29) {
+    if (gte(target, '20.0.0') && glibcVersion < 2.31) {
       this.hbService.logger('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
         `Wanted: >=2.29. Installed: ${glibcVersion} - see https://homebridge.io/w/JJSun`, 'fail');
       process.exit(1);

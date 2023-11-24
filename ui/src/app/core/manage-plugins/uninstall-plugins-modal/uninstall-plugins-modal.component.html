@@ -7,14 +7,12 @@
     </button>
   </div>
   <div class="modal-body d-flex flex-row flex-grow-1 align-items-center w-100 text-center">
-
     <div *ngIf="loading" class="w-100 text-center primary-text">
       <i class="fa fa-fw fa-cog fa-spin" style="font-size: 72px;"></i>
     </div>
-
     <div class="w-100" *ngIf="!loading">
-      <i class="fas fa-fw fa-trash primary-text" style="font-size: 50px;"></i>
-      <p class="mt-4" [translate]="'plugins.manage.message_uninstall_remove_confirmation'"
+      <i class="fas fa-fw fa-trash primary-text mb-4" style="font-size: 75px;"></i>
+      <p [translate]="'plugins.manage.message_uninstall_remove_confirmation'"
         [translateParams]="{pluginName: plugin.name}">
       </p>
       <p *ngIf="pluginAlias && pluginType">
@@ -28,7 +26,6 @@
         {{ 'plugins.manage.message_uninstall_remove_config_required' | translate }}
       </ngb-alert>
     </div>
-
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-left">
