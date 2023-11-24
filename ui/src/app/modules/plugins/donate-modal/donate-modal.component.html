@@ -18,10 +18,8 @@
     </p>
     <ul class="list-group">
       <li class="list-group-item" *ngFor="let option of fundingOptions">
-        <a [href]="option.url" target="_blank" rel="noopener noreferrer" class="text-break-all">
-          <i [ngClass]="getIconClass(option.type)" class="mr-2 primary-text fa-fw"></i>
-          {{ option.url }}
-        </a>
+        <i [ngClass]="getIconClass(option.type)" class="mr-2 primary-text fa-fw"></i>
+        <a [href]="option.url" target="_blank" rel="noopener noreferrer" class="text-break-all">{{ option.url }}</a>
       </li>
     </ul>
   </div>

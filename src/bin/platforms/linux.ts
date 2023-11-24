@@ -319,15 +319,15 @@ export class LinuxInstaller extends BasePlatform {
 
   /**
    * Debian Version - Supplied GLIBC Version
-   * 
+   *
    *  9 - Stretch       2.24
    * 10 - Buster        2.28
    * 11 - Bullseye      2.31
    * 12 - Bookworm      2.36
    * 13 - Trixie
-   * 
+   *
    * NodeJS Version - Minimum GLIBC Version
-   * 
+   *
    *      18            2.28
    *      20            2.31
    */
