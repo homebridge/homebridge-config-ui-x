@@ -44,7 +44,9 @@
       </div>
       <div class="d-flex flex-row justify-content-between">
         <p class="card-text mb-0 mr-auto">
-          {{ plugin.name }} v{{ plugin.installedVersion || plugin.latestVersion }}
+          <span>{{ plugin.name }}</span>
+          </br>
+          v{{ plugin.installedVersion || plugin.latestVersion }}
           <span *ngIf="plugin.lastUpdated">({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
           <span class="" *ngIf="plugin.author">
             <span> </span>
