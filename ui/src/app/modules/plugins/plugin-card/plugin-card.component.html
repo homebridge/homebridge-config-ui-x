@@ -120,7 +120,7 @@
                 (click)="$plugin.uninstallPlugin(plugin)">
                 <i class="fas fa-fw fa-fw fa-trash"></i> {{ 'plugins.button_uninstall' | translate }}
               </button>
-              <button ngbDropdownItem *ngIf="plugin.installedVersion" (click)="$plugin.settings(plugin)>
+              <button ngbDropdownItem *ngIf="plugin.installedVersion" (click)="$plugin.settings(plugin)">
                  <i class="fas fa-fw fa-cog"></i> {{ 'plugins.button_settings' | translate | uppercase }}
               </button>
               <div class="dropdown-divider" *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x'"></div>
