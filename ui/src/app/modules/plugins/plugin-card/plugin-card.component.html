@@ -1,11 +1,11 @@
 <!--Panel-->
-<div class="card card-body mb-3">
+<div class="card card-body mb-3 p-3">
   <div class="d-flex flex-row justify-content-between">
-    <div class="d-flex flex-column justify-content-between mr-3">
+    <div class="d-flex flex-column justify-content-between mr-2">
       <img src="https://raw.githubusercontent.com/homebridge/branding/master/logos/homebridge-color-round-stylized.png"
-          alt="" class="rounded-circle" style="width:60px;height:60px;">
+          alt="" class="rounded-circle" style="width:50px;height:50px;">
     </div>
-    <div class="d-flex flex-column justify-content-between w-100 pr-3">
+    <div class="d-flex flex-column justify-content-between w-100">
       <div class="d-flex flex-row justify-content-between">
         <div class="">
           <p class="mb-0 info-text"
@@ -71,14 +71,14 @@
             {{ 'plugins.button_install' | translate | uppercase }}
           </a> -->
           <span ngbDropdown placement="bottom-left top-left left auto" class="d-inline-block ml-3 mt-auto">
-            <a class="card-link text-decoration-none" href="javascript:void(0)" style="outline:none;"
+            <a class="card-link text-decoration-none mt-auto" href="javascript:void(0)" style="outline:none;"
               aria-label="Plugin actions drop down menu" ngbDropdownToggle>
-              <span>   </span><span>MENU </span><i class="fas fa-fw fa-caret-down"></i>
+              <span class="pl-3">MENU</span><i class="fas fa-fw fa-caret-down"></i>
               <span *ngIf="
                 (plugin.updateAvailable || plugin.betaUpdateAvailable)
                 || (!hasChildBridges && !plugin.disabled && recommendChildBridge)
-                || (hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled)
-              " class="position-absolute p-1 notif-dot rounded-circle fa-beat-fade" style="left:0;top:7px;--fa-animation-duration:3s;--fa-fade-opacity:0.6;"></span>
+                || (hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled)" 
+                class="position-absolute p-1 notif-dot rounded-circle fa-beat-fade" style="left:0;top:7px;--fa-animation-duration:3s;--fa-fade-opacity:0.6;"></span>
             </a>
             <div ngbDropdownMenu aria-labelledby="Plugin actions drop down menu">
               <button ngbDropdownItem (click)="$plugin.updatePlugin(plugin, plugin.betaUpdateAvailable ? 'beta' : 'latest')"
@@ -102,6 +102,9 @@
                   || (!hasChildBridges && !plugin.disabled && recommendChildBridge)
                   || (hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled)
                  "></div>
+              <button ngbDropdownItem *ngIf="!plugin.installedVersion" (click)="$plugin.installPlugin(plugin.name)">
+                 <i class="fas fa-fw fa-arrow-down"></i>{{ 'plugins.button_install' | translate }}
+              </button>
               <button ngbDropdownItem *ngIf="plugin.publicPackage" (click)="$plugin.installPreviousVersion(plugin)">
                 <i class="fas fa-fw fa-fw fa-history"></i>
                 {{ 'plugins.manage.message_install_alternate_version' | translate }}
@@ -124,9 +127,6 @@
               <button ngbDropdownItem *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x'"
                 (click)="$plugin.uninstallPlugin(plugin)">
                 <i class="fas fa-fw fa-fw fa-trash"></i> {{ 'plugins.button_uninstall' | translate }}
-              </button>
-              <button ngbDropdownItem *ngIf="!plugin.installedVersion" (click)="$plugin.installPlugin(plugin.name)">
-                 <i class="fas fa-fw fa-arrow-down"></i>{{ 'plugins.button_install' | translate }}
               </button>
               <button ngbDropdownItem *ngIf="plugin.installedVersion" (click)="$plugin.settings(plugin)">
                  <i class="fas fa-fw fa-cog"></i>{{ 'plugins.button_settings' | translate }}
