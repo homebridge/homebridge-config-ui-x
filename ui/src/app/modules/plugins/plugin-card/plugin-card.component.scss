@@ -16,3 +16,12 @@
   line-height: 2rem !important;
   max-height: 4rem !important;
 }
+
+.dropdown.show .fa-caret-down {
+  transform: rotate(-180deg);
+  transition: 0.5s;
+}
+
+.dropdown .fa-caret-down {
+  transition: 0.5s;
+}
