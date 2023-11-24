@@ -96,14 +96,14 @@
 }
 
 .dropdown.show .fa-caret-down {
-    transform: rotate(-180deg);
-    transition: 0.5s;
+  transform: rotate(-180deg);
+  transform-origin: center 9px;
+  transition: 0.5s;
 }
 
 .dropdown .fa-caret-down {
-    transition: 0.5s;
-    transform-origin: center 9px;
-    text-align: center;
+  transition: 0.5s;
+  text-align: center;
 }
 
 /* SIDEBAR NAVBAR */
