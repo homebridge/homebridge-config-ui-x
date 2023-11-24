@@ -23,10 +23,6 @@
           </p>
         </div>
         <div class="">
-          <p class="mb-0 grey-text text-right" *ngIf="plugin.author && !plugin.verifiedPlugin">
-            <a class="card-link grey-text" target="_blank" rel="noopener noreferrer"
-              [href]="'https://www.npmjs.com/~' + plugin.author">@{{ plugin.author }}</a>
-          </p>
           <p class="mb-0 grey-text text-right" *ngIf="plugin.verifiedPlugin">
             <a href="javascript:void(0)" class="card-link pink-text text-decoration-none ml-3" *ngIf="plugin.funding"
                ngbTooltip="@{{ plugin.name === 'homebridge-config-ui-x' ? 'oznu' : plugin.author }}" (click)="openFundingModal(plugin)">
@@ -47,7 +43,13 @@
         </h4>
       </div>
       <div class="d-flex flex-row justify-content-between">
-        <p class="card-text mb-0 mr-auto">{{ plugin.name }} v{{ plugin.installedVersion || plugin.latestVersion }}
+        <p class="card-text mb-0 mr-auto">
+          <span> class="" *ngIf="plugin.author && !plugin.verifiedPlugin">
+            <a class="card-link grey-text" target="_blank" rel="noopener noreferrer"
+              [href]="'https://www.npmjs.com/~' + plugin.author">@{{ plugin.author }}</a>
+          </span>
+          <span> </span>
+          {{ plugin.name }} v{{ plugin.installedVersion || plugin.latestVersion }}
           <span *ngIf="plugin.lastUpdated">({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
         </p>
 <!--         <a href="javascript:void(0)" class="card-link" *ngIf="plugin.installedVersion" (click)="$plugin.settings(plugin)">
