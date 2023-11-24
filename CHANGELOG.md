@@ -2,7 +2,11 @@
 
 All notable changes to homebridge-config-ui-x will be documented in this file.
 
-## BETA
+## 4.53.0 (2023-11-24)
+
+Happy Thanksgiving to our American friends! :turkey:
+
+⚠️ The minimum version of Homebridge needed for this version of UI is `v1.6.0`. If you are running a lower version of Homebridge, you should consider updating before installing this UI update.
 
 ### UI Changes
 
