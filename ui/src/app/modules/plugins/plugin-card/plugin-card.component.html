@@ -44,8 +44,8 @@
       </div>
       <div class="d-flex flex-row justify-content-between">
         <p class="card-text mb-0 mr-auto">
-          <span> class="" *ngIf="plugin.author && !plugin.verifiedPlugin">
-            <a class="card-link grey-text" target="_blank" rel="noopener noreferrer"
+          <span class="" *ngIf="plugin.author">
+            <a class="" target="_blank" rel="noopener noreferrer"
               [href]="'https://www.npmjs.com/~' + plugin.author">@{{ plugin.author }}</a>
           </span>
           <span> </span>
