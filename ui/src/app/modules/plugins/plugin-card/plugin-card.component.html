@@ -118,9 +118,9 @@
                 (click)="$plugin.uninstallPlugin(plugin)">
                 <i class="fas fa-fw fa-fw fa-trash"></i> {{ 'plugins.button_uninstall' | translate }}
               </button>
-              <a href="javascript:void(0)" class="card-link" *ngIf="plugin.installedVersion" (click)="$plugin.settings(plugin)">
-                {{ 'plugins.button_settings' | translate | uppercase }}
-              </a>
+              <button ngbDropdownItem *ngIf="plugin.installedVersion" (click)="$plugin.settings(plugin)>
+                 <i class="fas fa-fw fa-cog"></i> {{ 'plugins.button_settings' | translate | uppercase }}
+              </button>
               <div class="dropdown-divider" *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x'"></div>
               <ng-container *ngIf="hasChildBridges && !plugin.disabled">
                 <button ngbDropdownItem *ngIf="!childBridgeRestartInProgress && !plugin.disabled" (click)="doChildBridgeAction('restart')">
