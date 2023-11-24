@@ -62,10 +62,10 @@
             'text-warning': childBridgeStatus === 'pending',
             'red-text': childBridgeStatus === 'down'
           }"></i> -->
-          <a href="javascript:void(0)" class="card-link" *ngIf="!plugin.installedVersion" 
+<!--           <a href="javascript:void(0)" class="card-link" *ngIf="!plugin.installedVersion" 
             (click)="$plugin.installPlugin(plugin.name)">
             {{ 'plugins.button_install' | translate | uppercase }}
-          </a>
+          </a> -->
           <span ngbDropdown placement="bottom-left top-left left auto" class="d-inline-block ml-3 mt-auto">
             <a class="card-link text-decoration-none" href="javascript:void(0)" style="outline:none;"
               aria-label="Plugin actions drop down menu" ngbDropdownToggle>
@@ -120,6 +120,9 @@
               <button ngbDropdownItem *ngIf="plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x'"
                 (click)="$plugin.uninstallPlugin(plugin)">
                 <i class="fas fa-fw fa-fw fa-trash"></i> {{ 'plugins.button_uninstall' | translate }}
+              </button>
+              <button ngbDropdownItem *ngIf="!plugin.installedVersion" (click)="$plugin.installPlugin(plugin.name)">
+                 <i class="fas fa-fw fa-arrow-down"></i>{{ 'plugins.button_install' | translate }}
               </button>
               <button ngbDropdownItem *ngIf="plugin.installedVersion" (click)="$plugin.settings(plugin)">
                  <i class="fas fa-fw fa-cog"></i>{{ 'plugins.button_settings' | translate }}
