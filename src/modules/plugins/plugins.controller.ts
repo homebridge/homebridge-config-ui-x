@@ -2,14 +2,14 @@ import {
   Controller,
   Get,
   Param,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiParam,
-  ApiTags
+  ApiTags,
 } from '@nestjs/swagger';
 import { AdminGuard } from '../../core/auth/guards/admin.guard';
 import { PluginsService } from './plugins.service';
@@ -21,7 +21,7 @@ import { PluginsService } from './plugins.service';
 export class PluginsController {
   constructor(
     private pluginsService: PluginsService,
-  ) { }
+  ) {}
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'List of currently installed Homebridge plugins.' })

@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
-
+import {
+  ActivatedRouteSnapshot,
+  CanActivate,
+  Router,
+  RouterStateSnapshot,
+} from '@angular/router';
 import { AuthService } from '@/app/core/auth/auth.service';
 import { SettingsService } from '@/app/core/settings.service';
 
@@ -12,7 +16,7 @@ export class LoginGuard implements CanActivate {
     private $router: Router,
     private $auth: AuthService,
     private $settings: SettingsService,
-  ) { }
+  ) {}
 
   async canActivate(
     next: ActivatedRouteSnapshot,
@@ -23,7 +27,7 @@ export class LoginGuard implements CanActivate {
     }
 
     if (this.$settings.env.setupWizardComplete === false) {
-      // redirect to setup wizard page
+      // redirect to set up wizard page
       this.$router.navigate(['/setup']);
       return false;
     }

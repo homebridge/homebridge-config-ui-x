@@ -1,12 +1,11 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { v4 as uuid } from 'uuid';
-
 import { ApiService } from '@/app/core/api.service';
-import { SettingsService } from '@/app/core/settings.service';
 import { NotificationService } from '@/app/core/notification.service';
+import { SettingsService } from '@/app/core/settings.service';
 
 export interface PluginConfigBlock {
   config: Record<string, any>;
@@ -25,7 +24,6 @@ export class SettingsPluginsModalComponent implements OnInit {
 
   public pluginAlias: string;
   public pluginType: 'platform' | 'accessory';
-
   public pluginConfig: PluginConfigBlock[] = [];
   public form: any = {};
   public show = '';
@@ -38,16 +36,16 @@ export class SettingsPluginsModalComponent implements OnInit {
     private $notification: NotificationService,
     private $toastr: ToastrService,
     private translate: TranslateService,
-  ) { }
+  ) {}
+
+  get arrayKey() {
+    return this.pluginType === 'accessory' ? 'accessories' : 'platforms';
+  }
 
   ngOnInit() {
     this.pluginAlias = this.schema.pluginAlias;
     this.pluginType = this.schema.pluginType;
     this.loadPluginConfig();
-  }
-
-  get arrayKey() {
-    return this.pluginType === 'accessory' ? 'accessories' : 'platforms';
   }
 
   loadPluginConfig() {
@@ -65,7 +63,7 @@ export class SettingsPluginsModalComponent implements OnInit {
         if (!this.pluginConfig.length) {
           this.addBlock();
         } else {
-          this.show = this.pluginConfig[0].__uuid__;
+          this.show = this.pluginConfig[0].__uuid__; // eslint-disable-line no-underscore-dangle
         }
 
         if (this.plugin.name === 'homebridge-hue' && this.pluginConfig.length) {
@@ -112,7 +110,7 @@ export class SettingsPluginsModalComponent implements OnInit {
   }
 
   addBlock() {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+    // eslint-disable-next-line @typescript-eslint/naming-convention, no-underscore-dangle
     const __uuid__ = uuid();
 
     this.pluginConfig.push({
@@ -128,7 +126,7 @@ export class SettingsPluginsModalComponent implements OnInit {
   }
 
   removeBlock(__uuid__: string) {
-    const pluginConfigIndex = this.pluginConfig.findIndex(x => x.__uuid__ === __uuid__);
+    const pluginConfigIndex = this.pluginConfig.findIndex(x => x.__uuid__ === __uuid__); // eslint-disable-line no-underscore-dangle
     this.pluginConfig.splice(pluginConfigIndex, 1);
   }
 

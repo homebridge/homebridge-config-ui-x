@@ -1,7 +1,6 @@
 .hb-npm-search {
   outline: none;
   box-sizing: inherit !important;
-  border: 1px solid #d0d0d0;
   background-color: inherit;
   height: 50px !important;
   width: 100%;
@@ -9,7 +8,7 @@
   padding: 10px;
   margin-bottom: 15px;
 
-  
+
   @media (hover: hover) {
     &:hover {
       border: 1px solid #000000;

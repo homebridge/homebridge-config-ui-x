@@ -1,9 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { ToastrService } from 'ngx-toastr';
-
-import { ApiService } from '@/app/core/api.service';
 import { TranslateService } from '@ngx-translate/core';
+import { ToastrService } from 'ngx-toastr';
+import { ApiService } from '@/app/core/api.service';
 
 @Component({
   selector: 'app-select-previous-version',
@@ -22,7 +21,7 @@ export class SelectPreviousVersionComponent implements OnInit {
     private $api: ApiService,
     private $toastr: ToastrService,
     private $translate: TranslateService,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.selectedVersion = this.plugin.installedVersion || this.plugin.latestVersion;

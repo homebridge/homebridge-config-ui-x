@@ -2,6 +2,38 @@
 
 All notable changes to homebridge-config-ui-x will be documented in this file.
 
+## 4.53.0 (2023-11-24)
+
+Happy Thanksgiving to our American friends! :turkey:
+
+⚠️ The minimum version of Homebridge needed for this version of UI is `v1.6.0`. If you are running a lower version of Homebridge, you should consider updating before installing this UI update.
+
+### UI Changes
+
+- Add Child Bridge Pin Code (#1739)
+- standardise modal footers (#1753)
+- Fix table width, avoid overflow (#1758) (@jsiegenthaler)
+- add UI details to status widget (#1789)
+- modal pics + node update modal (#1806)
+
+### Translation Changes
+
+- **i18n:** Update fr.json (#1705) (@SonnyT72)
+
+### Other Changes
+
+- Add Alpha Releases (#1740)
+- update dependencies (#1745)
+- update github release workflow (#1746)
+- ui lint sort imports and exports (#1750)
+- update lang sync - remove old translations (#1751)
+- various code improvements + simplifications (#1754)
+- remove node 11 polyfill from self-check (#1777)
+- remove old hb checks, import functions directly (#1780)
+- stricter lint rules in api and ui (#1783)
+- graceful fail when issue with node dist list response (#1800)
+- Update node-pty-prebuilt-multiarch to 0.11.12
+
 ## 4.52.3 (2023-11-14)
 
 ### Bug Fixes

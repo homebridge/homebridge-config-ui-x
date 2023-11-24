@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import { UseGuards } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets';
-import * as color from 'bash-color';
+import { red } from 'bash-color';
 import { WsAdminGuard } from '../../core/auth/guards/ws-admin-guard';
 import { Logger } from '../../core/logger/logger.service';
 import { BackupService } from '../backup/backup.service';
@@ -10,14 +10,14 @@ import { BackupService } from '../backup/backup.service';
 @WebSocketGateway({
   namespace: '/backup', allowEIO3: true, cors: {
     origin: ['http://localhost:8080', 'http://localhost:4200'],
-    credentials: true
-  }
+    credentials: true,
+  },
 })
 export class SetupWizardGateway {
   constructor(
     private backupService: BackupService,
     private logger: Logger,
-  ) { }
+  ) {}
 
   @SubscribeMessage('do-restore')
   async doRestore(client: EventEmitter) {
@@ -25,7 +25,7 @@ export class SetupWizardGateway {
       return await this.backupService.restoreFromBackup(client);
     } catch (e) {
       this.logger.error(e);
-      client.emit('stdout', '\n\r' + color.red(e.toString()) + '\n\r');
+      client.emit('stdout', '\n\r' + red(e.toString()) + '\n\r');
       return new WsException(e);
     }
   }
@@ -36,7 +36,7 @@ export class SetupWizardGateway {
       return await this.backupService.restoreHbfxBackup(client);
     } catch (e) {
       this.logger.error(e);
-      client.emit('stdout', '\n\r' + color.red(e.toString()) + '\n\r');
+      client.emit('stdout', '\n\r' + red(e.toString()) + '\n\r');
       return new WsException(e);
     }
   }

@@ -1,9 +1,8 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { ServiceTypeX } from '../../accessories.interfaces';
-
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
+import { ServiceTypeX } from '../../accessories.interfaces';
 
 @Component({
   selector: 'app-heatercooler-manage',
@@ -80,5 +79,4 @@ export class HeaterCoolerManageComponent implements OnInit {
   onTemperatureStateChange() {
     this.targetTemperatureChanged.next(undefined);
   }
-
 }

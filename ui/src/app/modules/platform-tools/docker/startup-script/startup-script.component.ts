@@ -1,13 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { ToastrService } from 'ngx-toastr';
 import { NgxEditorModel } from 'ngx-monaco-editor';
-
-import { SettingsService } from '@/app/core/settings.service';
+import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '@/app/core/api.service';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
-import { MonacoEditorService } from '@/app/core/monaco-editor.service';
+import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
   selector: 'app-startup-script',
@@ -36,7 +34,6 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
     private $settings: SettingsService,
     private $api: ApiService,
     private $md: MobileDetectService,
-    private $monacoEditor: MonacoEditorService,
     public $toastr: ToastrService,
     private translate: TranslateService,
     private $route: ActivatedRoute,
@@ -49,8 +46,8 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
     this.visualViewPortEventCallback = () => this.visualViewPortChanged();
     this.lastHeight = window.innerHeight;
 
-    if (window['visualViewport'] && !this.isMobile) {
-      window['visualViewport'].addEventListener('resize', this.visualViewPortEventCallback, true);
+    if (window.visualViewport && !this.isMobile) {
+      window.visualViewport.addEventListener('resize', this.visualViewPortEventCallback, true);
       this.$md.disableTouchMove();
     }
 
@@ -116,24 +113,24 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
   }
 
   visualViewPortChanged() {
-    if (this.lastHeight < window['visualViewport'].height) {
+    if (this.lastHeight < window.visualViewport.height) {
       (document.activeElement as HTMLElement).blur();
     }
 
-    if (window['visualViewport'].height < window.innerHeight) {
+    if (window.visualViewport.height < window.innerHeight) {
       // keyboard may have opened
       this.$md.enableTouchMove();
-      this.lastHeight = window['visualViewport'].height;
-    } else if (window['visualViewport'].height === window.innerHeight) {
+      this.lastHeight = window.visualViewport.height;
+    } else if (window.visualViewport.height === window.innerHeight) {
       // keyboard is closed
       this.$md.disableTouchMove();
-      this.lastHeight = window['visualViewport'].height;
+      this.lastHeight = window.visualViewport.height;
     }
   }
 
   ngOnDestroy() {
-    if (window['visualViewport']) {
-      window['visualViewport'].removeEventListener('resize', this.visualViewPortEventCallback, true);
+    if (window.visualViewport) {
+      window.visualViewport.removeEventListener('resize', this.visualViewPortEventCallback, true);
       this.$md.enableTouchMove();
     }
 

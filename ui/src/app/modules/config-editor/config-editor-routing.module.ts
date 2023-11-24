@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 import { ConfigEditorComponent } from './config-editor.component';
 import { ConfigEditorResolver } from './config-editor.resolver';
 
@@ -17,4 +17,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class ConfigEditorRoutingModule { }
+export class ConfigEditorRoutingModule {}

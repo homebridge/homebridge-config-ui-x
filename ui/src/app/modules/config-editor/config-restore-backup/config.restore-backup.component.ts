@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-
 import { ApiService } from '@/app/core/api.service';
 
 @Component({
@@ -22,7 +21,7 @@ export class ConfigRestoreBackupComponent implements OnInit {
     private translate: TranslateService,
     public $toastr: ToastrService,
     private $api: ApiService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.$api.get('/config-editor/backups').subscribe(
@@ -50,5 +49,4 @@ export class ConfigRestoreBackupComponent implements OnInit {
       (err) => this.$toastr.error(err.error.message, this.translate.instant('config.restore.toast_failed_to_delete_backups')),
     );
   }
-
 }

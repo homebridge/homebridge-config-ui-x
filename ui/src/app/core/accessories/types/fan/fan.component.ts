@@ -1,7 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ServiceTypeX } from '../../accessories.interfaces';
-
 import { FanManageComponent } from './fan.manage.component';
 
 @Component({
@@ -14,10 +13,9 @@ export class FanComponent implements OnInit {
 
   constructor(
     private modalService: NgbModal,
-  ) { }
+  ) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   onClick() {
     this.service.getCharacteristic('On').setValue(!this.service.values.On);
@@ -34,5 +32,4 @@ export class FanComponent implements OnInit {
     });
     ref.componentInstance.service = this.service;
   }
-
 }

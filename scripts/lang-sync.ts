@@ -1,26 +1,35 @@
-
 /**
- * Script to copy new english translation strings to the other language files
+ * Script to:
+ * - copy new english translation strings to the other language files
+ * - remove old translation strings from the other language files
  */
 
-import * as fs from 'fs-extra';
-import * as path from 'path';
+import { dirname, resolve } from 'path';
+import { readJsonSync, readdirSync, writeJSONSync } from 'fs-extra';
 
-const basePath = path.dirname(__dirname);
+const basePath = dirname(__dirname);
 
-const langFiles = fs.readdirSync(path.resolve(basePath, 'ui/src/i18n'))
+const langFiles = readdirSync(resolve(basePath, 'ui/src/i18n'))
   .filter(x => x.endsWith('.json'));
 
-const main = fs.readJsonSync(path.resolve(basePath, 'ui/src/i18n/en.json'));
+const main = readJsonSync(resolve(basePath, 'ui/src/i18n/en.json'));
 
 for (const lang of langFiles) {
-  const langPath = path.resolve(basePath, 'ui/src/i18n', lang);
-  const translationStrings = fs.readJsonSync(langPath);
+  const langPath = resolve(basePath, 'ui/src/i18n', lang);
+  const translationStrings = readJsonSync(langPath);
 
   if (lang !== 'en.json') {
+    // find any keys in the main file that are not in the translation file, and add
     for (const [key, value] of Object.entries(main)) {
       if (!translationStrings.hasOwnProperty(key)) {
         translationStrings[key] = value;
+      }
+    }
+
+    // find any keys in the translation file that are not in the main file, and remove
+    for (const key of Object.keys(translationStrings)) {
+      if (!main.hasOwnProperty(key)) {
+        delete translationStrings[key];
       }
     }
   }
@@ -31,5 +40,5 @@ for (const lang of langFiles) {
     ordered[key] = translationStrings[key];
   });
 
-  fs.writeJSONSync(langPath, ordered, { spaces: 4 });
+  writeJSONSync(langPath, ordered, { spaces: 4 });
 }

@@ -2,13 +2,12 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
+import { parse } from 'json5';
 import { ToastrService } from 'ngx-toastr';
-import * as JSON5 from 'json5';
-
 import { ApiService } from '@/app/core/api.service';
-import { SettingsService } from '@/app/core/settings.service';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { NotificationService } from '@/app/core/notification.service';
+import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
   selector: 'app-manual-plugin-config-modal',
@@ -46,7 +45,10 @@ export class ManualPluginConfigModalComponent implements OnInit {
     private translate: TranslateService,
     private $router: Router,
     private $md: MobileDetectService,
-  ) {
+  ) {}
+
+  get arrayKey() {
+    return this.pluginType === 'accessory' ? 'accessories' : 'platforms';
   }
 
   ngOnInit(): void {
@@ -58,13 +60,9 @@ export class ManualPluginConfigModalComponent implements OnInit {
     }
   }
 
-  get arrayKey() {
-    return this.pluginType === 'accessory' ? 'accessories' : 'platforms';
-  }
-
   async onEditorInit(editor: any) {
     this.monacoEditor = editor;
-    window['editor'] = editor;
+    window['editor'] = editor; // eslint-disable-line @typescript-eslint/dot-notation
     await this.monacoEditor.getModel().setValue(this.currentBlock);
     await this.monacoEditor.getAction('editor.action.formatDocument').run();
   }
@@ -129,12 +127,12 @@ export class ManualPluginConfigModalComponent implements OnInit {
       let currentBlockNew;
 
       // fix the object if the user has pasted an example that did not include the opening and closing brackets
-      if (currentBlockString.charAt(0) === `"` && currentBlockString.charAt(currentBlockString.length - 1) === ']') {
+      if (currentBlockString.charAt(0) === '"' && currentBlockString.charAt(currentBlockString.length - 1) === ']') {
         currentBlockString = '{' + currentBlockString + '}';
       }
 
       try {
-        currentBlockNew = JSON5.parse(currentBlockString);
+        currentBlockNew = parse(currentBlockString);
       } catch (e) {
         this.$toastr.error(
           this.translate.instant('config.toast_config_invalid_json'),

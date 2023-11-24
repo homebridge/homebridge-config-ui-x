@@ -1,4 +1,9 @@
-import { Directive, ElementRef, Input, OnInit } from '@angular/core';
+import {
+  Directive,
+  ElementRef,
+  Input,
+  OnInit,
+} from '@angular/core';
 import { SettingsService } from '@/app/core/settings.service';
 
 @Directive({
@@ -10,7 +15,7 @@ export class RtlDirective implements OnInit {
   constructor(
     private $settings: SettingsService,
     private el: ElementRef,
-  ) { }
+  ) {}
 
   ngOnInit() {
     if (this.$settings.rtl) {
@@ -22,5 +27,4 @@ export class RtlDirective implements OnInit {
       }
     }
   }
-
 }

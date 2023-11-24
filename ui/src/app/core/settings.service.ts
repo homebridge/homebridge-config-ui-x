@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
+import * as dayjs from 'dayjs';
+import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { first } from 'rxjs/operators';
-import * as dayjs from 'dayjs';
-
 import { ApiService } from '@/app/core/api.service';
 
 interface EnvInterface {
@@ -14,6 +13,7 @@ interface EnvInterface {
   enableTerminalAccess: boolean;
   homebridgeInstanceName: string;
   homebridgeVersion?: string;
+  homebridgeUiVersion?: string;
   nodeVersion: string;
   packageName: string;
   packageVersion: string;
@@ -55,9 +55,11 @@ export class SettingsService {
   public rtl = false;
 
   // track to see if settings have been loaded
+  /* eslint-disable @typescript-eslint/member-ordering */
   private settingsLoadedSubject = new Subject();
   public onSettingsLoaded = this.settingsLoadedSubject.pipe(first());
   public settingsLoaded = false;
+  /* eslint-enable @typescript-eslint/member-ordering */
 
   constructor(
     private $api: ApiService,
@@ -100,12 +102,12 @@ export class SettingsService {
     const bodySelector = window.document.querySelector('body');
     if (this.theme) {
       bodySelector.classList.remove(`config-ui-x-${this.theme}`);
-      bodySelector.classList.remove(`dark-mode`);
+      bodySelector.classList.remove('dark-mode');
     }
     this.theme = theme;
     bodySelector.classList.add(`config-ui-x-${this.theme}`);
     if (this.theme.startsWith('dark-mode')) {
-      bodySelector.classList.add(`dark-mode`);
+      bodySelector.classList.add('dark-mode');
     }
   }
 
@@ -113,7 +115,7 @@ export class SettingsService {
     this.$title.setTitle(title || 'Homebridge');
   }
 
-  setUiVersion(version) {
+  setUiVersion(version: string) {
     if (!this.uiVersion) {
       this.uiVersion = version;
     }
@@ -146,4 +148,3 @@ export class SettingsService {
     }
   }
 }
-

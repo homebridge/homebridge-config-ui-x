@@ -1,7 +1,6 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-
 import { LogsRoutingModule } from './logs-routing.module';
 import { LogsComponent } from './logs.component';
 
@@ -15,4 +14,4 @@ import { LogsComponent } from './logs.component';
     NgbModule,
   ],
 })
-export class LogsModule { }
+export class LogsModule {}

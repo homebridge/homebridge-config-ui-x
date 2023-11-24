@@ -15,10 +15,14 @@
         "createDefaultProgram": true
       },
       "extends": [
+        "airbnb-typescript/base",
+        "plugin:@typescript-eslint/recommended",
         "plugin:@angular-eslint/ng-cli-compat",
         "plugin:@angular-eslint/ng-cli-compat--formatting-add-on",
         "plugin:@angular-eslint/template/process-inline-templates"
       ],
+      "plugins": [
+        "@typescript-eslint/eslint-plugin", "import", "import-newlines", "sort-exports"],
       "rules": {
         "@angular-eslint/component-selector": [
           "error",
@@ -43,16 +47,8 @@
           }
         ],
         "@typescript-eslint/consistent-type-definitions": "error",
-        "@typescript-eslint/dot-notation": "off",
-        "@typescript-eslint/explicit-member-accessibility": [
-          "off",
-          {
-            "accessibility": "explicit"
-          }
-        ],
-        "@typescript-eslint/member-ordering": [
-          "off"
-        ],
+        "@typescript-eslint/lines-between-class-members": [
+          "warn", "always", { "exceptAfterOverload": true, "exceptAfterSingleLine": true }],
         "@typescript-eslint/naming-convention": [
           "error",
           {
@@ -67,17 +63,23 @@
             ]
           }
         ],
-        "brace-style": [
-          "error",
-          "1tbs"
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-useless-constructor": "off",
+        "@typescript-eslint/no-unused-vars": [
+          "warn", { "args": "none", "vars": "local", "varsIgnorePattern": "key" }],
+        "eol-last": ["error", "always"],
+        "import-newlines/enforce": ["error", 3],
+        "import/extensions": ["off"],
+        "import/order": ["warn", { "alphabetize": { "order": "asc" }, "newlines-between": "never" }],
+        "indent": [
+          "error", 2, { "SwitchCase": 1 }],
+        "no-multiple-empty-lines": [
+          "error", { "max": 1, "maxEOF": 0 }],
+        "quotes": [
+          "error", "single"
         ],
-        "comma-dangle": [
-          "error",
-          "always-multiline"
-        ],
-        "id-blacklist": "off",
-        "id-match": "off",
-        "no-underscore-dangle": "off",
+        "sort-exports/sort-exports": ["warn", { "sortDir": "asc" }],
+        "sort-imports": ["warn", { "ignoreDeclarationSort": true }],
         "space-before-function-paren": "error"
       }
     },

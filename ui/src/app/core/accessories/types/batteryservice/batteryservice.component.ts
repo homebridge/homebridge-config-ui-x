@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ServiceTypeX } from '../../accessories.interfaces';
 
 @Component({
@@ -9,8 +9,7 @@ import { ServiceTypeX } from '../../accessories.interfaces';
 export class BatteryserviceComponent implements OnInit {
   @Input() public service: ServiceTypeX;
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 }

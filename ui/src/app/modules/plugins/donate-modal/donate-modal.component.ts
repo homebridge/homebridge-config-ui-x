@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -7,13 +7,13 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
   styleUrls: ['./donate-modal.component.scss'],
 })
 export class DonateModalComponent implements OnInit {
-  @Input() plugin;
+  @Input() plugin: any;
 
   public fundingOptions: { type: string; url: string }[];
 
   constructor(
     public activeModal: NgbActiveModal,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     if (!this.plugin.funding) {
@@ -27,7 +27,7 @@ export class DonateModalComponent implements OnInit {
 
     // normalise the different funding attribute formats
     if (Array.isArray(this.plugin.funding)) {
-      this.fundingOptions = this.plugin.funding.map((option) => {
+      this.fundingOptions = this.plugin.funding.map((option: any) => {
         if (typeof option === 'string') {
           return {
             type: 'other',
@@ -72,5 +72,4 @@ export class DonateModalComponent implements OnInit {
         return 'fas fa-fw fa-fw fa-link';
     }
   }
-
 }

@@ -1,19 +1,18 @@
-import { Injectable, ElementRef } from '@angular/core';
-import { Terminal, ITerminalOptions } from 'xterm';
+import { ElementRef, Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
+import { ITerminalOptions, Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 import { WebLinksAddon } from 'xterm-addon-web-links';
-import { Subject, Subscription } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
-
-import { WsService, IoNamespace } from '@/app/core/ws.service';
+import { IoNamespace, WsService } from '@/app/core/ws.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TerminalService {
-  private io: IoNamespace;
   public term: Terminal;
 
+  private io: IoNamespace;
   private fitAddon: FitAddon;
   private webLinksAddon: WebLinksAddon;
   private resize: Subject<any>;
@@ -21,7 +20,16 @@ export class TerminalService {
 
   constructor(
     private $ws: WsService,
-  ) { }
+  ) {}
+
+  destroyTerminal() {
+    this.io.end();
+    this.term.dispose();
+    this.resize.complete();
+    if (this.elementResize) {
+      this.elementResize.complete();
+    }
+  }
 
   startTerminal(
     targetElement: ElementRef,
@@ -80,7 +88,7 @@ export class TerminalService {
     });
 
     // subscribe to incoming data events from server to client
-    this.io.socket.on('stdout', data => {
+    this.io.socket.on('stdout', (data: string) => {
       this.term.write(data);
     });
 
@@ -108,14 +116,5 @@ export class TerminalService {
     this.term.reset();
     this.io.socket.emit('start-session', { cols: this.term.cols, rows: this.term.rows });
     this.resize.next({ cols: this.term.cols, rows: this.term.rows });
-  }
-
-  destroyTerminal() {
-    this.io.end();
-    this.term.dispose();
-    this.resize.complete();
-    if (this.elementResize) {
-      this.elementResize.complete();
-    }
   }
 }

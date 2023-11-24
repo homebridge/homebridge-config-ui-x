@@ -1,10 +1,15 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { interval, Subscription } from 'rxjs';
+import {
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { ChartOptions } from 'chart.js';
-import { Color, BaseChartDirective } from 'ng2-charts';
-
-import { WsService } from '@/app/core/ws.service';
+import { BaseChartDirective, Color } from 'ng2-charts';
+import { Subscription, interval } from 'rxjs';
 import { AuthService } from '@/app/core/auth/auth.service';
+import { WsService } from '@/app/core/ws.service';
 
 @Component({
   selector: 'app-memory-widget',
@@ -12,15 +17,11 @@ import { AuthService } from '@/app/core/auth/auth.service';
   styleUrls: ['./memory-widget.component.scss'],
 })
 export class MemoryWidgetComponent implements OnInit, OnDestroy {
-  private io = this.$ws.getExistingNamespace('status');
-  private intervalSubscription: Subscription;
-
   @ViewChild(BaseChartDirective, { static: true }) public chart: BaseChartDirective;
   @ViewChild('widgetbackground', { static: true }) private widgetBackground: ElementRef;
 
   public totalMemory: number;
   public freeMemory: number;
-
   public lineChartData = [{ data: [] }];
   public lineChartLabels = [];
 
@@ -62,10 +63,13 @@ export class MemoryWidgetComponent implements OnInit, OnDestroy {
     },
   ];
 
+  private io = this.$ws.getExistingNamespace('status');
+  private intervalSubscription: Subscription;
+
   constructor(
     private $ws: WsService,
     public $auth: AuthService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.io.connected.subscribe(async () => {
@@ -114,5 +118,4 @@ export class MemoryWidgetComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.intervalSubscription.unsubscribe();
   }
-
 }

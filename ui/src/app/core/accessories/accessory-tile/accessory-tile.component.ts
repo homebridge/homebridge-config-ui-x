@@ -12,9 +12,8 @@ export class AccessoryTileComponent implements OnInit {
 
   constructor(
     public $accessories: AccessoriesService,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
   }
-
 }

@@ -1,8 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-
 import { ApiService } from '@/app/core/api.service';
 import { ManagePluginsModalComponent } from '@/app/core/manage-plugins/manage-plugins-modal/manage-plugins-modal.component';
 
@@ -27,7 +26,7 @@ export class UninstallPluginsModalComponent implements OnInit {
     private translate: TranslateService,
     private $toastr: ToastrService,
     private $api: ApiService,
-  ) { }
+  ) {}
 
   async ngOnInit() {
     try {
@@ -60,7 +59,7 @@ export class UninstallPluginsModalComponent implements OnInit {
   }
 
   async getAlias() {
-    return await this.$api.get(`/plugins/alias/${encodeURIComponent(this.plugin.name)}`).toPromise();
+    return this.$api.get(`/plugins/alias/${encodeURIComponent(this.plugin.name)}`).toPromise();
   }
 
   async removePluginConfig() {

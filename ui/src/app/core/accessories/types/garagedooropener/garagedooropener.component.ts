@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ServiceTypeX } from '../../accessories.interfaces';
 
 @Component({
@@ -9,13 +9,11 @@ import { ServiceTypeX } from '../../accessories.interfaces';
 export class GaragedooropenerComponent implements OnInit {
   @Input() public service: ServiceTypeX;
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   onClick() {
     this.service.getCharacteristic('TargetDoorState').setValue(this.service.values.TargetDoorState ? 0 : 1);
   }
-
 }

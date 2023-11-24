@@ -1,12 +1,16 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
+import { JwtHelperService } from '@auth0/angular-jwt';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
-import { JwtHelperService } from '@auth0/angular-jwt';
 import { ToastrService } from 'ngx-toastr';
-
 import { ApiService } from '@/app/core/api.service';
-import { SettingsService } from '@/app/core/settings.service';
 import { NotificationService } from '@/app/core/notification.service';
+import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
   selector: 'app-homebridge-google-smarthome',
@@ -14,14 +18,13 @@ import { NotificationService } from '@/app/core/notification.service';
   styleUrls: ['./homebridge-google-smarthome.component.scss'],
 })
 export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
-  private linkDomain = 'https://homebridge-gsh.iot.oz.nu';
-  private linkUrl = this.linkDomain + '/link-account';
-  private popup;
-  private originCheckInterval;
+  @Input() public plugin;
+  @Input() public schema;
+  @Input() pluginConfig: Record<string, any>[];
+
   public justLinked = false;
   public gshConfig: Record<string, any>;
   public linkType: string;
-
   public jsonFormOptions = {
     addSubmit: false,
     loadExternalAssets: false,
@@ -29,9 +32,10 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
     setSchemaDefaults: true,
   };
 
-  @Input() public plugin;
-  @Input() public schema;
-  @Input() pluginConfig: Record<string, any>[];
+  private linkDomain = 'https://homebridge-gsh.iot.oz.nu';
+  private linkUrl = this.linkDomain + '/link-account';
+  private popup;
+  private originCheckInterval;
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -145,7 +149,6 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
     this.gshConfig.platform = this.schema.pluginAlias;
     this.pluginConfig[0] = this.gshConfig;
 
-
     await this.saveConfig();
     this.activeModal.close();
     this.$notification.configUpdated.next(undefined);
@@ -162,5 +165,4 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
       this.popup.close();
     }
   }
-
 }

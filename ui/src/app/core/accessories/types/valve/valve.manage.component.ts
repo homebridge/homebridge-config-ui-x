@@ -1,8 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ServiceTypeX } from '../../accessories.interfaces';
-
-import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-valve-manage',
@@ -11,13 +9,14 @@ import { Subject } from 'rxjs';
 })
 export class ValveManageComponent implements OnInit {
   @Input() public service: ServiceTypeX;
-  private durationSeconds = [300, 600, 900, 1200, 1500, 1800, 2100, 2400, 2700, 3000, 3300, 3600];
   public availableSetDurations = [];
   public targetSetDuration: number;
 
+  private durationSeconds = [300, 600, 900, 1200, 1500, 1800, 2100, 2400, 2700, 3000, 3300, 3600];
+
   constructor(
     public activeModal: NgbActiveModal,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.targetSetDuration = this.service.values.SetDuration;

@@ -1,7 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
-
 import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
@@ -15,6 +14,8 @@ export class WidgetAddComponent implements OnInit {
   @Input() lockLayout: () => void;
   @Input() unlockLayout: () => void;
   @Input() public isLayoutUnlocked: boolean;
+
+  public availableWidgets = [];
 
   private allWidgets = [
     {
@@ -127,13 +128,11 @@ export class WidgetAddComponent implements OnInit {
     },
   ];
 
-  public availableWidgets = [];
-
   constructor(
     public activeModal: NgbActiveModal,
     private translate: TranslateService,
     private $settings: SettingsService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.availableWidgets = this.allWidgets.filter(x => !this.dashboard.some(i => i.component === x.component) && !x.hidden);
@@ -157,5 +156,4 @@ export class WidgetAddComponent implements OnInit {
     this.unlockLayout();
     this.activeModal.dismiss();
   }
-
 }

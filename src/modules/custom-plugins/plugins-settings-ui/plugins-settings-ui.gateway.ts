@@ -8,14 +8,14 @@ import { PluginsSettingsUiService } from './plugins-settings-ui.service';
 @WebSocketGateway({
   namespace: 'plugins/settings-ui', allowEIO3: true, cors: {
     origin: ['http://localhost:8080', 'http://localhost:4200'],
-    credentials: true
-  }
+    credentials: true,
+  },
 })
 export class PluginsSettingsUiGateway {
 
   constructor(
     private pluginSettingsUiService: PluginsSettingsUiService,
-  ) { }
+  ) {}
 
   @SubscribeMessage('start')
   startCustomUiHandler(client: EventEmitter, payload: string) {

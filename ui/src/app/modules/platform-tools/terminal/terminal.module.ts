@@ -1,6 +1,5 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
+import { NgModule } from '@angular/core';
 import { TerminalRoutingModule } from './terminal-routing.module';
 import { TerminalComponent } from './terminal.component';
 
@@ -13,4 +12,4 @@ import { TerminalComponent } from './terminal.component';
     TerminalRoutingModule,
   ],
 })
-export class TerminalModule { }
+export class TerminalModule {}

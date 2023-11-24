@@ -7,13 +7,13 @@ import { AccessoriesService } from './accessories.service';
 @WebSocketGateway({
   namespace: 'accessories', allowEIO3: true, cors: {
     origin: ['http://localhost:8080', 'http://localhost:4200'],
-    credentials: true
-  }
+    credentials: true,
+  },
 })
 export class AccessoriesGateway {
   constructor(
     private accessoriesService: AccessoriesService,
-  ) { }
+  ) {}
 
   @SubscribeMessage('get-accessories')
   connect(client: any, payload: any) {

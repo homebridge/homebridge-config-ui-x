@@ -1,6 +1,5 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-
 import { ServiceTypeX } from '../../accessories.interfaces';
 import { SecuritysystemManageComponent } from './securitysystem.manage.component';
 
@@ -14,10 +13,9 @@ export class SecuritysystemComponent implements OnInit {
 
   constructor(
     private modalService: NgbModal,
-  ) { }
+  ) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   onClick() {
     const ref = this.modalService.open(SecuritysystemManageComponent, {
@@ -25,5 +23,4 @@ export class SecuritysystemComponent implements OnInit {
     });
     ref.componentInstance.service = this.service;
   }
-
 }

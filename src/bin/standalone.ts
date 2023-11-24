@@ -2,8 +2,8 @@
 
 process.title = 'homebridge-config-ui-x';
 
-import * as os from 'os';
-import * as path from 'path';
+import { homedir } from 'os';
+import { resolve } from 'path';
 import { program } from 'commander';
 
 program
@@ -15,9 +15,9 @@ program
   .parse(process.argv);
 
 if (!process.env.UIX_STORAGE_PATH) {
-  process.env.UIX_STORAGE_PATH = path.resolve(os.homedir(), '.homebridge');
+  process.env.UIX_STORAGE_PATH = resolve(homedir(), '.homebridge');
 }
 
-process.env.UIX_CONFIG_PATH = path.resolve(process.env.UIX_STORAGE_PATH, 'config.json');
+process.env.UIX_CONFIG_PATH = resolve(process.env.UIX_STORAGE_PATH, 'config.json');
 
 import('../main');

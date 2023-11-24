@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
 
@@ -12,10 +12,9 @@ export class InfoModalComponent implements OnInit {
 
   constructor(
     public activeModal: NgbActiveModal,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.accessoryInformation = Object.entries(this.service.accessoryInformation).map(([key, value]) => ({ key, value }));
   }
-
 }

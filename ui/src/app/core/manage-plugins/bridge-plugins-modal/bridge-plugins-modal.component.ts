@@ -1,11 +1,14 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-
 import { ApiService } from '@/app/core/api.service';
-import { SettingsService } from '@/app/core/settings.service';
+import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { NotificationService } from '@/app/core/notification.service';
+import { SettingsService } from '@/app/core/settings.service';
+
+/* eslint-disable no-underscore-dangle */
 
 @Component({
   selector: 'app-bridge-plugins-modal',
@@ -30,9 +33,11 @@ export class BridgePluginsModalComponent implements OnInit {
     public $settings: SettingsService,
     private $notification: NotificationService,
     private $api: ApiService,
+    private $plugins: ManagePluginsService,
+    private $router: Router,
     private $toastr: ToastrService,
     private $translate: TranslateService,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.loadPluginConfig();
@@ -74,7 +79,7 @@ export class BridgePluginsModalComponent implements OnInit {
   async getUnusedPort() {
     this.saveInProgress = true;
     try {
-      const lookup = await this.$api.get(`/server/port/new`).toPromise();
+      const lookup = await this.$api.get('/server/port/new').toPromise();
       return lookup.port;
     } catch (e) {
       return Math.floor(Math.random() * (60000 - 30000 + 1) + 30000);
@@ -106,6 +111,18 @@ export class BridgePluginsModalComponent implements OnInit {
     } finally {
       this.saveInProgress = false;
     }
+  }
+
+  openPluginConfig() {
+    // Close the existing modal
+    this.activeModal.close();
+
+    // Open the plugin config modal
+    this.$plugins.settings({
+      name: this.plugin.name,
+      settingsSchema: true,
+      links: {},
+    });
   }
 
   async restartChildBridge(username: string) {
@@ -145,4 +162,8 @@ export class BridgePluginsModalComponent implements OnInit {
     return username;
   }
 
+  openFullConfigEditor() {
+    this.$router.navigate(['/config']);
+    this.activeModal.close();
+  }
 }

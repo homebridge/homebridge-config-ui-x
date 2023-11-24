@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import { UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets';
-import * as color from 'bash-color';
+import { red } from 'bash-color';
 import { WsAdminGuard } from '../../core/auth/guards/ws-admin-guard';
 import { Logger } from '../../core/logger/logger.service';
 import { HomebridgeUpdateActionDto, PluginActionDto } from './plugins.dto';
@@ -11,8 +11,8 @@ import { PluginsService } from './plugins.service';
 @WebSocketGateway({
   namespace: '/plugins', allowEIO3: true, cors: {
     origin: ['http://localhost:8080', 'http://localhost:4200'],
-    credentials: true
-  }
+    credentials: true,
+  },
 })
 @UsePipes(new ValidationPipe({
   whitelist: true,
@@ -26,7 +26,7 @@ export class PluginsGateway {
   constructor(
     private pluginsService: PluginsService,
     private logger: Logger,
-  ) { }
+  ) {}
 
   @SubscribeMessage('install')
   async installPlugin(client: EventEmitter, pluginAction: PluginActionDto) {
@@ -34,7 +34,7 @@ export class PluginsGateway {
       return await this.pluginsService.managePlugin('install', pluginAction, client);
     } catch (e) {
       this.logger.error(e);
-      client.emit('stdout', '\n\r' + color.red(e.toString()) + '\n\r');
+      client.emit('stdout', '\n\r' + red(e.toString()) + '\n\r');
       return new WsException(e);
     }
   }
@@ -45,7 +45,7 @@ export class PluginsGateway {
       return await this.pluginsService.managePlugin('uninstall', pluginAction, client);
     } catch (e) {
       this.logger.error(e);
-      client.emit('stdout', '\n\r' + color.red(e.toString()) + '\n\r');
+      client.emit('stdout', '\n\r' + red(e.toString()) + '\n\r');
       return new WsException(e);
     }
   }
@@ -56,7 +56,7 @@ export class PluginsGateway {
       return await this.pluginsService.managePlugin('install', pluginAction, client);
     } catch (e) {
       this.logger.error(e);
-      client.emit('stdout', '\n\r' + color.red(e.toString()) + '\n\r');
+      client.emit('stdout', '\n\r' + red(e.toString()) + '\n\r');
       return new WsException(e);
     }
   }
@@ -67,7 +67,7 @@ export class PluginsGateway {
       return await this.pluginsService.updateHomebridgePackage(homebridgeUpdateAction, client);
     } catch (e) {
       this.logger.error(e);
-      client.emit('stdout', '\n\r' + color.red(e.toString()) + '\n\r');
+      client.emit('stdout', '\n\r' + red(e.toString()) + '\n\r');
       return new WsException(e);
     }
   }

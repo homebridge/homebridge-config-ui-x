@@ -1,10 +1,16 @@
-import { Component, OnInit, Input } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, of } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map, tap, switchMap, catchError } from 'rxjs/operators';
-
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  switchMap,
+  tap,
+} from 'rxjs/operators';
 import { environment } from '@/environments/environment';
 
 @Component({
@@ -13,12 +19,6 @@ import { environment } from '@/environments/environment';
   styleUrls: ['./widget-control.component.scss'],
 })
 export class WidgetControlComponent implements OnInit {
-
-  constructor(
-    public activeModal: NgbActiveModal,
-    private $http: HttpClient,
-    private $translate: TranslateService,
-  ) { }
   @Input() widget;
 
   // weather
@@ -62,6 +62,12 @@ export class WidgetControlComponent implements OnInit {
     { label: 'status.widget.label_temperature_units_celsius', value: 'c' },
     { label: 'status.widget.label_temperature_units_fahrenheit', value: 'f' },
   ];
+
+  constructor(
+    public activeModal: NgbActiveModal,
+    private $http: HttpClient,
+    private $translate: TranslateService,
+  ) {}
 
   public searchCountryCodes = (text$: Observable<string>) =>
     text$.pipe(
@@ -107,12 +113,11 @@ export class WidgetControlComponent implements OnInit {
         }),
       }).pipe(
         map((response: any) => response.list.map((item) => ({
-              id: item.id,
-              name: item.name,
-              country: item.sys.country,
-              coord: item.coord,
-            }))),
+          id: item.id,
+          name: item.name,
+          country: item.sys.country,
+          coord: item.coord,
+        }))),
       );
   }
-
 }

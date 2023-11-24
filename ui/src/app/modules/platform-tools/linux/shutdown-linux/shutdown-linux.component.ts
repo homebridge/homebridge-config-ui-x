@@ -1,11 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-
 import { ApiService } from '@/app/core/api.service';
-import { WsService } from '@/app/core/ws.service';
 import { SettingsService } from '@/app/core/settings.service';
+import { WsService } from '@/app/core/ws.service';
 
 @Component({
   selector: 'app-shutdown-linux',
@@ -13,13 +12,13 @@ import { SettingsService } from '@/app/core/settings.service';
   styleUrls: ['./shutdown-linux.component.scss'],
 })
 export class ShutdownLinuxComponent implements OnInit, OnDestroy {
-  private io = this.$ws.connectToNamespace('status');
-
   checkTimeout: NodeJS.Timeout;
   checkDelay: NodeJS.Timeout;
   resp: any = {};
   timeout = false;
   error: any = false;
+
+  private io = this.$ws.connectToNamespace('status');
 
   constructor(
     private $api: ApiService,
@@ -28,7 +27,7 @@ export class ShutdownLinuxComponent implements OnInit, OnDestroy {
     public $toastr: ToastrService,
     private translate: TranslateService,
     private $router: Router,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.io.connected.subscribe(() => {
@@ -67,8 +66,8 @@ export class ShutdownLinuxComponent implements OnInit, OnDestroy {
         this.translate.instant('platform.linux.restart.toast_server_taking_long_time_to_come_online'),
         this.translate.instant('toast.title_warning',
         ), {
-        timeOut: 10000,
-      });
+          timeOut: 10000,
+        });
       this.timeout = true;
     }, 120000);
   }

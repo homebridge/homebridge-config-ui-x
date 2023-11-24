@@ -9,10 +9,10 @@ import { HomebridgeIpcService } from './homebridge-ipc.service';
     ConfigModule,
   ],
   providers: [
-    HomebridgeIpcService
+    HomebridgeIpcService,
   ],
   exports: [
-    HomebridgeIpcService
+    HomebridgeIpcService,
   ],
 })
-export class HomebridgeIpcModule { }
+export class HomebridgeIpcModule {}

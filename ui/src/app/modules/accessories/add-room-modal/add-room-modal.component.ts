@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -10,9 +10,8 @@ export class AddRoomModalComponent implements OnInit {
 
   constructor(
     public activeModal: NgbActiveModal,
-  ) { }
+  ) {}
 
   ngOnInit() {
   }
-
 }

@@ -4,7 +4,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
-  Matches
+  Matches,
 } from 'class-validator';
 
 export class HomebridgeUpdateActionDto {

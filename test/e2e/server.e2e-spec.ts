@@ -1,8 +1,14 @@
-import * as path from 'path';
+import { resolve } from 'path';
 import { ValidationPipe } from '@nestjs/common';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as fs from 'fs-extra';
+import {
+  copy,
+  pathExists,
+  readJson,
+  remove,
+  writeJson,
+} from 'fs-extra';
 import { AuthModule } from '../../src/core/auth/auth.module';
 import { ConfigService, HomebridgeConfig } from '../../src/core/config/config.service';
 import { ServerModule } from '../../src/modules/server/server.module';
@@ -20,21 +26,21 @@ describe('ServerController (e2e)', () => {
   let serverService: ServerService;
 
   beforeAll(async () => {
-    process.env.UIX_BASE_PATH = path.resolve(__dirname, '../../');
-    process.env.UIX_STORAGE_PATH = path.resolve(__dirname, '../', '.homebridge');
-    process.env.UIX_CONFIG_PATH = path.resolve(process.env.UIX_STORAGE_PATH, 'config.json');
+    process.env.UIX_BASE_PATH = resolve(__dirname, '../../');
+    process.env.UIX_STORAGE_PATH = resolve(__dirname, '../', '.homebridge');
+    process.env.UIX_CONFIG_PATH = resolve(process.env.UIX_STORAGE_PATH, 'config.json');
 
-    authFilePath = path.resolve(process.env.UIX_STORAGE_PATH, 'auth.json');
-    secretsFilePath = path.resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets');
-    accessoriesPath = path.resolve(process.env.UIX_STORAGE_PATH, 'accessories');
-    persistPath = path.resolve(process.env.UIX_STORAGE_PATH, 'persist');
+    authFilePath = resolve(process.env.UIX_STORAGE_PATH, 'auth.json');
+    secretsFilePath = resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets');
+    accessoriesPath = resolve(process.env.UIX_STORAGE_PATH, 'accessories');
+    persistPath = resolve(process.env.UIX_STORAGE_PATH, 'persist');
 
     // setup test config
-    await fs.copy(path.resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
 
     // setup test auth file
-    await fs.copy(path.resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
-    await fs.copy(path.resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
+    await copy(resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
+    await copy(resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [ServerModule, AuthModule],
@@ -68,12 +74,12 @@ describe('ServerController (e2e)', () => {
     })).json().access_token;
 
     // ensure it's clean
-    await fs.remove(persistPath);
-    await fs.remove(accessoriesPath);
+    await remove(persistPath);
+    await remove(accessoriesPath);
 
     // copy mock accessories and persist
-    await fs.copy(path.resolve(__dirname, '../mocks', 'persist'), persistPath);
-    await fs.copy(path.resolve(__dirname, '../mocks', 'accessories'), accessoriesPath);
+    await copy(resolve(__dirname, '../mocks', 'persist'), persistPath);
+    await copy(resolve(__dirname, '../mocks', 'accessories'), accessoriesPath);
   });
 
   it('PUT /server/restart', async () => {
@@ -112,7 +118,7 @@ describe('ServerController (e2e)', () => {
 
   it('GET /server/pairing (not ready)', async () => {
     // remove the persist folder
-    await fs.remove(persistPath);
+    await remove(persistPath);
 
     const res = await app.inject({
       method: 'GET',
@@ -138,8 +144,8 @@ describe('ServerController (e2e)', () => {
     expect(res.statusCode).toBe(200);
 
     // check the persist and accessories folders were removed
-    expect(await fs.pathExists(persistPath)).toBe(false);
-    expect(await fs.pathExists(accessoriesPath)).toBe(false);
+    expect(await pathExists(persistPath)).toBe(false);
+    expect(await pathExists(accessoriesPath)).toBe(false);
   });
 
   it('PUT /server/reset-cached-accessories (service mode enabled)', async () => {
@@ -157,7 +163,7 @@ describe('ServerController (e2e)', () => {
     expect(res.statusCode).toBe(200);
   });
 
-  it('PUT /server/reset-cached-accessories (service mode disabed)', async () => {
+  it('PUT /server/reset-cached-accessories (service mode disabled)', async () => {
     // enable service mode
     configService.serviceMode = false;
 
@@ -193,7 +199,7 @@ describe('ServerController (e2e)', () => {
     configService.serviceMode = true;
 
     // sanity check to ensure one cached accessory is preset
-    let cachedAccessories = await fs.readJson(path.resolve(accessoriesPath, 'cachedAccessories'));
+    let cachedAccessories = await readJson(resolve(accessoriesPath, 'cachedAccessories'));
     expect(cachedAccessories).toHaveLength(1);
 
     const res = await app.inject({
@@ -207,7 +213,7 @@ describe('ServerController (e2e)', () => {
     expect(res.statusCode).toBe(204);
 
     // check the cached accessory was removed
-    cachedAccessories = await fs.readJson(path.resolve(accessoriesPath, 'cachedAccessories'));
+    cachedAccessories = await readJson(resolve(accessoriesPath, 'cachedAccessories'));
     expect(cachedAccessories).toHaveLength(0);
   });
 
@@ -216,7 +222,7 @@ describe('ServerController (e2e)', () => {
     configService.serviceMode = true;
 
     // sanity check to ensure one cached accessory is preset
-    let cachedAccessories = await fs.readJson(path.resolve(accessoriesPath, 'cachedAccessories'));
+    let cachedAccessories = await readJson(resolve(accessoriesPath, 'cachedAccessories'));
     expect(cachedAccessories).toHaveLength(1);
 
     const res = await app.inject({
@@ -230,7 +236,7 @@ describe('ServerController (e2e)', () => {
     expect(res.statusCode).toBe(404);
 
     // check the cached accessory was not removed
-    cachedAccessories = await fs.readJson(path.resolve(accessoriesPath, 'cachedAccessories'));
+    cachedAccessories = await readJson(resolve(accessoriesPath, 'cachedAccessories'));
     expect(cachedAccessories).toHaveLength(1);
   });
 
@@ -315,7 +321,7 @@ describe('ServerController (e2e)', () => {
     expect(res.statusCode).toBe(200);
 
     // check the value was saved
-    const config = await fs.readJson(configService.configPath);
+    const config = await readJson(configService.configPath);
     expect(config.bridge.bind).toEqual(['en0']);
   });
 
@@ -334,7 +340,7 @@ describe('ServerController (e2e)', () => {
     expect(res.statusCode).toBe(200);
 
     // check the value was saved
-    const config = await fs.readJson(configService.configPath);
+    const config = await readJson(configService.configPath);
     expect(config.bridge.bind).toBeUndefined();
   });
 
@@ -355,9 +361,9 @@ describe('ServerController (e2e)', () => {
   });
 
   it('GET /server/mdns-advertiser (when not set - default to bonjour-hap)', async () => {
-    const config: HomebridgeConfig = await fs.readJson(configService.configPath);
+    const config: HomebridgeConfig = await readJson(configService.configPath);
     delete config.bridge.advertiser;
-    await fs.writeJson(configService.configPath, config);
+    await writeJson(configService.configPath, config);
 
     const res = await app.inject({
       method: 'GET',
@@ -372,9 +378,9 @@ describe('ServerController (e2e)', () => {
   });
 
   it('GET /server/mdns-advertiser (when set to ciao)', async () => {
-    const config: HomebridgeConfig = await fs.readJson(configService.configPath);
+    const config: HomebridgeConfig = await readJson(configService.configPath);
     config.bridge.advertiser = 'ciao';
-    await fs.writeJson(configService.configPath, config);
+    await writeJson(configService.configPath, config);
 
     const res = await app.inject({
       method: 'GET',
@@ -389,9 +395,9 @@ describe('ServerController (e2e)', () => {
   });
 
   it('GET /server/mdns-advertiser (when set to avahi)', async () => {
-    const config: HomebridgeConfig = await fs.readJson(configService.configPath);
+    const config: HomebridgeConfig = await readJson(configService.configPath);
     config.bridge.advertiser = 'avahi';
-    await fs.writeJson(configService.configPath, config);
+    await writeJson(configService.configPath, config);
 
     const res = await app.inject({
       method: 'GET',
@@ -406,9 +412,9 @@ describe('ServerController (e2e)', () => {
   });
 
   it('GET /server/mdns-advertiser (when set to resolved)', async () => {
-    const config: HomebridgeConfig = await fs.readJson(configService.configPath);
+    const config: HomebridgeConfig = await readJson(configService.configPath);
     config.bridge.advertiser = 'resolved';
-    await fs.writeJson(configService.configPath, config);
+    await writeJson(configService.configPath, config);
 
     const res = await app.inject({
       method: 'GET',
@@ -423,9 +429,9 @@ describe('ServerController (e2e)', () => {
   });
 
   it('PUT /server/mdns-advertiser (bonjour-hap)', async () => {
-    const initialConfig: HomebridgeConfig = await fs.readJson(configService.configPath);
+    const initialConfig: HomebridgeConfig = await readJson(configService.configPath);
     delete initialConfig.bridge.advertiser;
-    await fs.writeJson(configService.configPath, initialConfig);
+    await writeJson(configService.configPath, initialConfig);
 
     const res = await app.inject({
       method: 'PUT',
@@ -441,14 +447,14 @@ describe('ServerController (e2e)', () => {
     expect(res.statusCode).toBe(200);
 
     // check the value was saved
-    const config = await fs.readJson(configService.configPath);
+    const config = await readJson(configService.configPath);
     expect(config.bridge.advertiser).toBe('bonjour-hap');
   });
 
   it('PUT /server/mdns-advertiser (ciao)', async () => {
-    const initialConfig: HomebridgeConfig = await fs.readJson(configService.configPath);
+    const initialConfig: HomebridgeConfig = await readJson(configService.configPath);
     delete initialConfig.mdns;
-    await fs.writeJson(configService.configPath, initialConfig);
+    await writeJson(configService.configPath, initialConfig);
 
     const res = await app.inject({
       method: 'PUT',
@@ -464,14 +470,14 @@ describe('ServerController (e2e)', () => {
     expect(res.statusCode).toBe(200);
 
     // check the value was saved
-    const config = await fs.readJson(configService.configPath);
+    const config = await readJson(configService.configPath);
     expect(config.bridge.advertiser).toBe('ciao');
   });
 
   it('PUT /server/mdns-advertiser (avahi)', async () => {
-    const initialConfig: HomebridgeConfig = await fs.readJson(configService.configPath);
+    const initialConfig: HomebridgeConfig = await readJson(configService.configPath);
     delete initialConfig.mdns;
-    await fs.writeJson(configService.configPath, initialConfig);
+    await writeJson(configService.configPath, initialConfig);
 
     const res = await app.inject({
       method: 'PUT',
@@ -487,14 +493,14 @@ describe('ServerController (e2e)', () => {
     expect(res.statusCode).toBe(200);
 
     // check the value was saved
-    const config = await fs.readJson(configService.configPath);
+    const config = await readJson(configService.configPath);
     expect(config.bridge.advertiser).toBe('avahi');
   });
 
   it('PUT /server/mdns-advertiser (invalid value)', async () => {
-    const initialConfig: HomebridgeConfig = await fs.readJson(configService.configPath);
+    const initialConfig: HomebridgeConfig = await readJson(configService.configPath);
     delete initialConfig.mdns;
-    await fs.writeJson(configService.configPath, initialConfig);
+    await writeJson(configService.configPath, initialConfig);
 
     const res = await app.inject({
       method: 'PUT',

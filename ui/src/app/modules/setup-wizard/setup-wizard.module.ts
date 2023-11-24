@@ -1,13 +1,12 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-
-import { CoreModule } from '@/app/core/core.module';
+import { TranslateModule } from '@ngx-translate/core';
 import { SetupWizardRoutingModule } from './setup-wizard-routing.module';
 import { SetupWizardComponent } from './setup-wizard.component';
 import { SetupWizardGuard } from './setup-wizard.guard';
+import { CoreModule } from '@/app/core/core.module';
 
 @NgModule({
   declarations: [
@@ -26,4 +25,4 @@ import { SetupWizardGuard } from './setup-wizard.guard';
     SetupWizardGuard,
   ],
 })
-export class SetupWizardModule { }
+export class SetupWizardModule {}

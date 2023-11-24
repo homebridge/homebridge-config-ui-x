@@ -1,5 +1,11 @@
-import { Component, ElementRef, Input, OnChanges, ViewChild } from '@angular/core';
-import * as QRCode from 'qrcode';
+import {
+  Component,
+  ElementRef,
+  Input,
+  OnChanges,
+  ViewChild,
+} from '@angular/core';
+import { toString } from 'qrcode';
 
 @Component({
   selector: 'app-qrcode',
@@ -17,7 +23,7 @@ export class QrcodeComponent implements OnChanges {
 
   async renderQrCode() {
     if (this.data) {
-      const qrcodeSvg = await QRCode.toString(this.data, {
+      this.qrcodeElement.nativeElement.innerHTML = await toString(this.data, {
         type: 'svg',
         margin: 0,
         color: {
@@ -25,11 +31,9 @@ export class QrcodeComponent implements OnChanges {
           dark: document.body.classList.contains('dark-mode') ? '#FFF' : '#000',
         },
       });
-      this.qrcodeElement.nativeElement.innerHTML = qrcodeSvg;
       const svgElement = this.qrcodeElement.nativeElement.querySelector('svg') as SVGElement;
       const svgPathElement = svgElement.querySelector('path') as SVGPathElement;
       svgPathElement.classList.add('qr-code-theme-color');
     }
   }
-
 }

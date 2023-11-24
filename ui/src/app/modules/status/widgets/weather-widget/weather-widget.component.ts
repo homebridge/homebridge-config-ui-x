@@ -1,11 +1,15 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import {
+  Component,
+  Input,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Subject, Subscription, interval } from 'rxjs';
 import * as dayjs from 'dayjs';
-
-import { WsService } from '@/app/core/ws.service';
+import { Subject, Subscription, interval } from 'rxjs';
 import { AuthService } from '@/app/core/auth/auth.service';
+import { WsService } from '@/app/core/ws.service';
 import { environment } from '@/environments/environment';
 
 @Component({
@@ -17,17 +21,17 @@ export class WeatherWidgetComponent implements OnInit, OnDestroy {
   @Input() widget;
   @Input() configureEvent: Subject<any>;
 
+  public currentWeather;
+
   private io = this.$ws.getExistingNamespace('status');
   private intervalSubscription: Subscription;
-
-  public currentWeather;
 
   constructor(
     private $ws: WsService,
     public $auth: AuthService,
     private $http: HttpClient,
     private $translate: TranslateService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.io.connected.subscribe(async () => {
@@ -50,7 +54,7 @@ export class WeatherWidgetComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Get the current weather forcast from OpenWeatherMap
+   * Get the current weather forecast from OpenWeatherMap
    * Cache for 20 minutes to prevent repeat requests
    */
   getCurrentWeather() {
@@ -66,7 +70,7 @@ export class WeatherWidgetComponent implements OnInit, OnDestroy {
           return;
         }
       }
-    } catch (e) { }
+    } catch (e) {}
 
     this.$http.get('https://api.openweathermap.org/data/2.5/weather', {
       params: new HttpParams({
@@ -131,5 +135,4 @@ export class WeatherWidgetComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.intervalSubscription.unsubscribe();
   }
-
 }

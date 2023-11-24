@@ -1,9 +1,8 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { ServiceTypeX } from '../../accessories.interfaces';
-
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { ServiceTypeX } from '../../accessories.interfaces';
 
 @Component({
   selector: 'app-door-manage',
@@ -55,5 +54,4 @@ export class DoorManageComponent implements OnInit {
   onTargetPositionChange() {
     this.targetPositionChanged.next(this.targetPosition.value);
   }
-
 }

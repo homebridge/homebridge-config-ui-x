@@ -1,8 +1,8 @@
-import * as path from 'path';
+import { resolve } from 'path';
 import { ValidationPipe } from '@nestjs/common';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as fs from 'fs-extra';
+import { copy, readJson, remove } from 'fs-extra';
 import { ConfigService } from '../../src/core/config/config.service';
 import { SetupWizardModule } from '../../src/modules/setup-wizard/setup-wizard.module';
 import { UserDto } from '../../src/modules/users/users.dto';
@@ -16,19 +16,19 @@ describe('SetupWizard (e2e)', () => {
   let secretsFilePath: string;
 
   beforeAll(async () => {
-    process.env.UIX_BASE_PATH = path.resolve(__dirname, '../../');
-    process.env.UIX_STORAGE_PATH = path.resolve(__dirname, '../', '.homebridge');
-    process.env.UIX_CONFIG_PATH = path.resolve(process.env.UIX_STORAGE_PATH, 'config.json');
+    process.env.UIX_BASE_PATH = resolve(__dirname, '../../');
+    process.env.UIX_STORAGE_PATH = resolve(__dirname, '../', '.homebridge');
+    process.env.UIX_CONFIG_PATH = resolve(process.env.UIX_STORAGE_PATH, 'config.json');
 
-    authFilePath = path.resolve(process.env.UIX_STORAGE_PATH, 'auth.json');
-    secretsFilePath = path.resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets');
+    authFilePath = resolve(process.env.UIX_STORAGE_PATH, 'auth.json');
+    secretsFilePath = resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets');
 
     // setup test config
-    await fs.copy(path.resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
 
     // remove any existing auth / secret files
-    await fs.remove(authFilePath);
-    await fs.remove(secretsFilePath);
+    await remove(authFilePath);
+    await remove(secretsFilePath);
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [SetupWizardModule],
@@ -49,7 +49,7 @@ describe('SetupWizard (e2e)', () => {
 
   beforeEach(async () => {
     // remove auth file
-    await fs.remove(authFilePath);
+    await remove(authFilePath);
     configService.setupWizardComplete = false;
   });
 
@@ -78,7 +78,7 @@ describe('SetupWizard (e2e)', () => {
     });
 
     // check the user was saved to the auth.json file
-    expect(await fs.readJson(authFilePath)).toHaveLength(1);
+    expect(await readJson(authFilePath)).toHaveLength(1);
   });
 
   it('POST /create-first-user (always create first user as admin)', async () => {
@@ -106,7 +106,7 @@ describe('SetupWizard (e2e)', () => {
     });
 
     // check the user was saved to the auth.json file
-    expect(await fs.readJson(authFilePath)).toHaveLength(1);
+    expect(await readJson(authFilePath)).toHaveLength(1);
   });
 
   it('POST /create-first-user (rejects if password is missing)', async () => {

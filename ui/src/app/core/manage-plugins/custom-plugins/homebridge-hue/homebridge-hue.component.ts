@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { ToastrService } from 'ngx-toastr';
 import { saveAs } from 'file-saver';
-
+import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '@/app/core/api.service';
 
 @Component({
@@ -16,7 +15,7 @@ export class HomebridgeHueComponent {
     private translate: TranslateService,
     public $toastr: ToastrService,
     private $api: ApiService,
-  ) { }
+  ) {}
 
   downloadDumpFile() {
     this.$api.get('/plugins/custom-plugins/homebridge-hue/dump-file', { observe: 'response', responseType: 'blob' })
@@ -29,5 +28,4 @@ export class HomebridgeHueComponent {
         },
       );
   }
-
 }
