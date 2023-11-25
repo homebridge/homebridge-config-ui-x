@@ -43,72 +43,17 @@
         </h4>
       </div>
       <div class="d-flex flex-row justify-content-between mt-2">
-        <div class="card-text grey-text mb-0 mr-auto">
+        <div class="card-text mb-0 mr-auto">
           <a href="javascript:void(0)" class="card-link text-decoration-none pr-1" (click)="pluginInfoModal(plugin)">
-            <i class="fas fa-fw fa-info"></i>
+            <i class="fas fa-fw fa-circle-info"></i>
           </a>
-          <a class="" data-toggle="modal" data-target="#pluginInfo">
-            <i class="fas fa-fw fa-circle-info pr-1" ></i>
-          </a>
-          <!-- Modal -->
-          <div class="modal fade" id="pluginInfo" tabindex="-1" role="dialog" aria-labelledby="pluginInfo" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLabel">
-                    {{ plugin.displayName || ((plugin.name.charAt(0) === '@' ? plugin.name.split('/')[1] : plugin.name) |
-                    replace:'-':' ' | titlecase) }}</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-body">
-                  <p class="grey-text">{{ plugin.name }}</p>
-                  <p class="grey-text text-decoration-none" *ngIf="plugin.author">
-                    <a class="grey-text " target="_blank" rel="noopener noreferrer"
-                    [href]="'https://www.npmjs.com/~' + plugin.author">@{{ plugin.author }}</a>
-                  </p>
-                  <p class="grey-text">
-                    v{{ plugin.installedVersion || plugin.latestVersion }}
-                  </p>
-                  <p class="grey-text text-decoration-none">
-                    ({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})
-                  </p>
-                </div>
-                <div class="modal-footer">
-                  <div class="modal-footer justify-content-between">
-                    <div class="text-left">
-                      <button type="button" class="btn btn-elegant" data-dismiss="modal">{{ 'form.button_close' | translate }}</button>
-                    </div>
-                    <div class="text-center">
-                    </div>
-                    <div class="text-right">
-                      <a ngbDropdownItem target="_blank" rel="noopener noreferrer" class="btn btn-primary text-decoration-none"
-                        *ngIf="plugin.links.homepage || plugin.links.npm" [href]="plugin.links.homepage || plugin.links.npm">
-                          <i *ngIf="plugin.links.homepage"
-                            class="{{ plugin.links.homepage.startsWith('https://github.com/') ? 'fab fa-fw fa-github' : 'fas fa-external-link-alt' }}"></i>
-                          <i *ngIf="!plugin.links.homepage && plugin.links.npm" class="fab fa-fw fa-npm"></i>
-                            {{ 'plugins.button_homepage' | translate }}
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <span class="grey-text">
+          <span class="">
             v{{ plugin.installedVersion || plugin.latestVersion }}
           </span>
-          <span class="grey-text text-decoration-none" *ngIf="plugin.lastUpdated">
+          <span class="text-decoration-none" *ngIf="plugin.lastUpdated">
              ({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})
           </span>
         </div>
-<!--         <a href="javascript:void(0)" class="card-link" *ngIf="plugin.installedVersion" (click)="$plugin.settings(plugin)">
-          {{ 'plugins.button_settings' | translate | uppercase }}
-        </a> -->
-
-
         <div class="ml-auto">
 <!--           <i *ngIf="!hasChildBridges && plugin.installedVersion" class="fas fa-fw fa-circle ml-3 green-text"></i>
           <i *ngIf="hasChildBridges" class="fas fa-fw fa-circle ml-3" [ngClass]="{
