@@ -100,13 +100,13 @@ export class PluginCardComponent implements OnInit {
     const author = plugin.author;
     const version = plugin.installedVersion || plugin.latestVersion;
 
-    const lastUpdated = '';
+    let lastUpdated = '';
     
     if (plugin.lastUpdated) {
       lastUpdated = ` (${plugin.lastUpdated})`;
     } 
 
-    const link = '';
+    let link = '';
     
     if (plugin.links.homepage) {
       link = plugin.links.homepage;
