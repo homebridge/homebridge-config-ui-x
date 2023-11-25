@@ -59,8 +59,8 @@
 <!--         <a href="javascript:void(0)" class="card-link" *ngIf="plugin.installedVersion" (click)="$plugin.settings(plugin)">
           {{ 'plugins.button_settings' | translate | uppercase }}
         </a> -->
-        
-    
+
+
         <div class="ml-auto">
 <!--           <i *ngIf="!hasChildBridges && plugin.installedVersion" class="fas fa-fw fa-circle ml-3 green-text"></i>
           <i *ngIf="hasChildBridges" class="fas fa-fw fa-circle ml-3" [ngClass]="{
@@ -68,7 +68,7 @@
             'text-warning': childBridgeStatus === 'pending',
             'red-text': childBridgeStatus === 'down'
           }"></i> -->
-<!--           <a href="javascript:void(0)" class="card-link" *ngIf="!plugin.installedVersion" 
+<!--           <a href="javascript:void(0)" class="card-link" *ngIf="!plugin.installedVersion"
             (click)="$plugin.installPlugin(plugin.name)">
             {{ 'plugins.button_install' | translate | uppercase }}
           </a> -->
@@ -79,7 +79,7 @@
               <span *ngIf="
                 (plugin.updateAvailable || plugin.betaUpdateAvailable)
                 || (!hasChildBridges && !plugin.disabled && recommendChildBridge)
-                || (hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled)" 
+                || (hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled)"
                 class="position-absolute p-1 notif-dot rounded-circle fa-beat-fade" style="right:0;top:0;--fa-animation-duration:3s;--fa-fade-opacity:0.6;"></span>
             </a>
             <div ngbDropdownMenu aria-labelledby="Plugin actions drop down menu">

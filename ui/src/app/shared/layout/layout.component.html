@@ -44,10 +44,10 @@
           <a class="nav-link" routerLink="/platform-tools/terminal" [translate]="'menu.linux.label_terminal'">
             <i class="fa fa-terminal pr-2"></i>Terminal</a>
         </li>
-       
-        <li class="nav-item" *ngIf="$auth.user.admin"> 
+
+        <li class="nav-item" *ngIf="$auth.user.admin">
           <div class="dropdown">
-            <button class="btn btn-link dropdown-toggle px-0 mx-0 text-decoration-none" type="button" 
+            <button class="btn btn-link dropdown-toggle px-0 mx-0 text-decoration-none" type="button"
               id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
               [translate]="'plugins.button_settings'">
               <i class="fa fa-cog pr-2"></i>Homebridge Settings<i class="fa fa-caret-down"></i>
@@ -152,7 +152,7 @@
           <a href="javascript:void(0)" (click)="openRestartOptionsModal()" [translate]="'menu.restart.title'">
             <i class="fa fa-power-off"></i>
             <span class="link_name">Restart Options</span>
-          </a>       
+          </a>
         </div>
         <ul class="sub-menu blank">
           <li><a class="link_name" href="javascript:void(0)" (click)="openRestartOptionsModal()" [translate]="'menu.restart.title'">Restart Options</a></li>
@@ -166,7 +166,7 @@
             <span class="link_name">{{ 'menu.tooltip_logout' | translate }}<br>
               <span class="small text-truncate" style="display:block;width:120px;">{{ $auth.user.username }}</span>
             </span>
-          </a>       
+          </a>
         </div>
         <ul class="sub-menu blank">
           <li><a class="link_name" href="javascript:void(0)" (click)="$auth.logout()" [translate]="'menu.tooltip_logout'">{{ 'menu.tooltip_logout' | translate }} - {{ $auth.user.username }}</a></li>
@@ -186,7 +186,7 @@
         <div class="iocn-link" style="position: fixed; bottom:0;">
           <a href="#" data-toggle="collapse" data-target=".sidebar,#chevron" aria-expanded="false" aria-controls=".sidebar">
             <i id="chevron" class="fa fa-chevron-right"></i>
-          </a>        
+          </a>
         </div>
       </li>
     </ul>

@@ -6,6 +6,18 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 
 ### UI Changes
 
+### Translation Changes
+
+### Other Changes
+
+## 4.53.0 (2023-11-24)
+
+Happy Thanksgiving to our American friends! :turkey:
+
+⚠️ The minimum version of Homebridge needed for this version of UI is `v1.6.0`. If you are running a lower version of Homebridge, you should consider updating before installing this UI update.
+
+### UI Changes
+
 - Add Child Bridge Pin Code (#1739)
 - standardise modal footers (#1753)
 - Fix table width, avoid overflow (#1758) (@jsiegenthaler)
