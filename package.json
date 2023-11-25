@@ -76,7 +76,6 @@
     "class-validator": "0.14.0",
     "commander": "11.1.0",
     "dayjs": "1.11.10",
-    "emoji-js": "3.8.0",
     "fastify": "4.24.3",
     "fs-extra": "11.1.1",
     "jsonwebtoken": "9.0.2",
