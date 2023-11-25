@@ -41,7 +41,11 @@
           {{ plugin.displayName || ((plugin.name.charAt(0) === '@' ? plugin.name.split('/')[1] : plugin.name) |
           replace:'-':' ' | titlecase) }}
         </h4>
-        <span class="grey-text truncate1 py-2">{{ plugin.name }}</span>
+        <span class="grey-text py-0">{{ plugin.name }}</span>
+        <span class="grey-text p-1 text-decoration-none" *ngIf="plugin.author">
+            <a class="grey-text " target="_blank" rel="noopener noreferrer"
+              [href]="'https://www.npmjs.com/~' + plugin.author">@{{ plugin.author }}</a>
+        </span>
       </div>
       <div class="d-flex flex-row justify-content-between">
         <p class="card-text grey-text mb-0 mr-auto">
@@ -49,11 +53,7 @@
             v{{ plugin.installedVersion || plugin.latestVersion }}
           </span>
           <span class="grey-text text-decoration-none" *ngIf="plugin.lastUpdated">
-            ({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})
-          </span>
-          <span class="grey-text text-decoration-none" *ngIf="plugin.author">
-            <a class="grey-text " target="_blank" rel="noopener noreferrer"
-              [href]="'https://www.npmjs.com/~' + plugin.author">@{{ plugin.author }}</a>
+             ({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})
           </span>
         </p>
 <!--         <a href="javascript:void(0)" class="card-link" *ngIf="plugin.installedVersion" (click)="$plugin.settings(plugin)">
