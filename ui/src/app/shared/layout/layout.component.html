@@ -67,7 +67,7 @@
           </div>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
-          <a class="nav-link" href="javascript:void(0)" (click)="openRestartOptionsModal()" [translate]="'menu.restart.title'">
+          <a class="nav-link" href="javascript:void(0)" (click)="openRestartModal()" [translate]="'menu.restart.title'">
             <i class="fa fa-power-off pr-2"></i>Restart Options</a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$settings.formAuth">

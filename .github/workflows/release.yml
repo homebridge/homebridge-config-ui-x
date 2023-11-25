@@ -2,11 +2,11 @@ name: Node Release
 run-name: Production Release ${{ github.event.release.tag_name }}
 
 on:
-# Removed publish on push, and forced manual release from github
-#  push:
-#    branches: [latest]
-#    tags:
-#      - '*.*.*'
+  # Removed publish on push, and forced manual release from github
+  #  push:
+  #    branches: [latest]
+  #    tags:
+  #      - '*.*.*'
   workflow_dispatch:
 
 jobs:
@@ -64,4 +64,4 @@ jobs:
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@v2
         with:
-            event-type: attach-artifacts
+          event-type: attach-artifacts

@@ -153,7 +153,7 @@
     "menu.linux.label_restart_server": "รีสตาร์ทเซิร์ฟเวอร์",
     "menu.linux.label_shutdown_server": "ปิดเซิร์ฟเวอร์",
     "menu.linux.label_terminal": "เทอร์มินอล",
-    "menu.restart.title": "Restart Options",
+    "menu.restart.title": "Power Options",
     "menu.tooltip_logout": "ออกจากระบบ",
     "menu.tooltip_restart": "รีสตาร์ท",
     "menu.tooltip_user_accounts": "บัญชีผู้ใช้",

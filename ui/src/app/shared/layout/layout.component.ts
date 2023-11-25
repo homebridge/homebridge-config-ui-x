@@ -16,7 +16,7 @@ import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.s
 import { NotificationService } from '@/app/core/notification.service';
 import { SettingsService } from '@/app/core/settings.service';
 import { WsService } from '@/app/core/ws.service';
-import { RestartOptionsModalComponent } from '@/app/shared/layout/restart-options-modal/restart-options-modal.component';
+import { RestartModalComponent } from '@/app/shared/layout/restart-modal/restart-modal.component';
 import { environment } from '@/environments/environment';
 
 @Component({
@@ -92,8 +92,8 @@ export class LayoutComponent implements OnInit {
     });
   }
 
-  openRestartOptionsModal() {
-    this.$modal.open(RestartOptionsModalComponent);
+  openRestartModal() {
+    this.$modal.open(RestartModalComponent);
   }
 
   async compareServerUiVersion() {

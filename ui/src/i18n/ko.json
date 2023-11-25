@@ -153,7 +153,7 @@
     "menu.linux.label_restart_server": "서버 재시작",
     "menu.linux.label_shutdown_server": "서버 종료",
     "menu.linux.label_terminal": "터미널",
-    "menu.restart.title": "Restart Options",
+    "menu.restart.title": "Power Options",
     "menu.tooltip_logout": "로그아웃",
     "menu.tooltip_restart": "재시작",
     "menu.tooltip_user_accounts": "사용자 계정",

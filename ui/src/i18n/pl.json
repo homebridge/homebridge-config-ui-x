@@ -153,7 +153,7 @@
     "menu.linux.label_restart_server": "Zrestartuj serwer",
     "menu.linux.label_shutdown_server": "Wyłącz serwer",
     "menu.linux.label_terminal": "Terminal",
-    "menu.restart.title": "Restart / Wyłącz",
+    "menu.restart.title": "Power Options",
     "menu.tooltip_logout": "Wyloguj",
     "menu.tooltip_restart": "Zrestartuj Homebridge",
     "menu.tooltip_user_accounts": "Użytkownicy",
