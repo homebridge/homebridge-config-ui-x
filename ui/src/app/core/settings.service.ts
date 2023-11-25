@@ -70,19 +70,17 @@ export class SettingsService {
     this.getAppSettings();
   }
 
-  getAppSettings() {
-    return this.$api.get('/auth/settings').toPromise()
-      .then((data: AppSettingsInterface) => {
-        this.formAuth = data.formAuth;
-        this.env = data.env;
-        this.setTheme(data.theme || 'auto');
-        this.setTitle(this.env.homebridgeInstanceName);
-        this.checkServerTime(data.serverTimestamp);
-        this.setUiVersion(data.env.packageVersion);
-        this.setLang(this.env.lang);
-        this.settingsLoaded = true;
-        this.settingsLoadedSubject.next(undefined);
-      });
+  async getAppSettings() {
+    const data = await this.$api.get('/auth/settings').toPromise() as AppSettingsInterface;
+    this.formAuth = data.formAuth;
+    this.env = data.env;
+    this.setTheme(data.theme || 'auto');
+    this.setTitle(this.env.homebridgeInstanceName);
+    this.checkServerTime(data.serverTimestamp);
+    this.setUiVersion(data.env.packageVersion);
+    this.setLang(this.env.lang);
+    this.settingsLoaded = true;
+    this.settingsLoadedSubject.next(undefined);
   }
 
   setTheme(theme: string) {
