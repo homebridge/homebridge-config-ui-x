@@ -42,7 +42,7 @@
           replace:'-':' ' | titlecase) }}
         </h4>
       </div>
-      <div class="d-flex flex-row justify-content-between">
+      <div class="d-flex flex-row justify-content-between mt-2">
         <div class="card-text grey-text mb-0 mr-auto">
           <a class="" data-toggle="modal" data-target="#pluginInfo">
             <i class="fas fa-fw fa-circle-info pr-1" ></i>
@@ -65,9 +65,30 @@
                     <a class="grey-text " target="_blank" rel="noopener noreferrer"
                     [href]="'https://www.npmjs.com/~' + plugin.author">@{{ plugin.author }}</a>
                   </p>
+                  <p class="grey-text">
+                    v{{ plugin.installedVersion || plugin.latestVersion }}
+                  </p>
+                  <p class="grey-text text-decoration-none">
+                    ({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})
+                  </p>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-elegant" data-dismiss="modal">Close</button>
+                  <div class="modal-footer justify-content-between">
+                    <div class="text-left">
+                      <button type="button" class="btn btn-elegant" data-dismiss="modal">{{ 'form.button_close' | translate }}</button>
+                    </div>
+                    <div class="text-center">
+                    </div>
+                    <div class="text-right">
+                      <a ngbDropdownItem target="_blank" rel="noopener noreferrer" class="btn btn-primary text-decoration-none"
+                        *ngIf="plugin.links.homepage || plugin.links.npm" [href]="plugin.links.homepage || plugin.links.npm">
+                          <i *ngIf="plugin.links.homepage"
+                            class="{{ plugin.links.homepage.startsWith('https://github.com/') ? 'fab fa-fw fa-github' : 'fas fa-external-link-alt' }}"></i>
+                          <i *ngIf="!plugin.links.homepage && plugin.links.npm" class="fab fa-fw fa-npm"></i>
+                            {{ 'plugins.button_homepage' | translate }}
+                      </a>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -96,7 +117,7 @@
             (click)="$plugin.installPlugin(plugin.name)">
             {{ 'plugins.button_install' | translate | uppercase }}
           </a> -->
-          <span ngbDropdown placement="bottom-left top-left left auto" class="d-inline-block ml-3 mt-auto">
+          <span ngbDropdown placement="bottom-right top-right left" class="d-inline-block ml-2 mt-auto">
             <a class="card-link text-decoration-none mt-auto" href="javascript:void(0)" style="outline:none;"
               aria-label="Plugin actions drop down menu" ngbDropdownToggle>
               <span class="pl-3"><i class="fas fa-fw fa-circle-chevron-down"></i></span>
