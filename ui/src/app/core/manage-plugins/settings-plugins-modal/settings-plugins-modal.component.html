@@ -11,8 +11,13 @@
   </div>
   <div class="modal-body">
     <div>
-      <markdown class="plugin-md" [data]="schema.headerDisplay | interpolateMd"
-        *ngIf="schema.headerDisplay"></markdown>
+      <markdown class="plugin-md" [data]="schema.headerDisplay | interpolateMd" *ngIf="schema.headerDisplay"></markdown>
+    </div>
+    <div class="text-center mb-4" *ngIf="plugin.name === 'homebridge-config-ui-x'">
+      <button class="btn btn-primary" type="button" (click)="openFundingModalForUi()">
+        <i class="fa fa-fw fa-heart red-text pr-2"></i>
+        <span translate="plugins.donate.ui" [translateParams]="{ author: 'oznu' }"></span>
+      </button>
     </div>
 
     <!-- MULTIPLE CONFIG BLOCKS-->

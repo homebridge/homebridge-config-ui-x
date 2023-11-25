@@ -135,7 +135,7 @@
           <div class="dropdown-divider" *ngIf="plugin.links.homepage || plugin.links.npm"></div>
             <a ngbDropdownItem target="_blank" rel="noopener noreferrer" class="text-decoration-none"
                *ngIf="plugin.name === 'homebridge-config-ui-x'" href="/swagger">
-            <i class="fas fa-fw fa-passport"></i> {{ 'plugins.button_api_documentation' | translate }}
+            <i class="fas fa-fw fa-passport"></i> API Documentation
           </a>
           <a ngbDropdownItem target="_blank" rel="noopener noreferrer" class="text-decoration-none"
             *ngIf="plugin.links.homepage || plugin.links.npm" [href]="plugin.links.homepage || plugin.links.npm">

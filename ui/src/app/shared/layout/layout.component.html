@@ -80,15 +80,13 @@
             <a class="dropdown-item waves-effect waves-light" routerLink="/users" *ngIf=" $auth.user.admin">
               {{'menu.tooltip_user_accounts' | translate}}
             </a>
-
-
-            <div class="dropdown-divider waves-effect waves-light" *ngIf="$auth.user.admin"></div>
+            <div class="dropdown-divider" *ngIf="$auth.user.admin"></div>
+            <a class="dropdown-item waves-effect waves-light" routerLink="/support">
+              {{ 'support.title' | translate }}
+            </a>
             <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light" (click)="openRestartModal()" *ngIf="$auth.user.admin">
               {{ 'menu.restart.title' | translate }}
             </a>
-
-
-            <div class="dropdown-divider" *ngIf="$settings.formAuth && $auth.user.admin"></div>
             <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light" (click)="$auth.logout()" *ngIf="$settings.formAuth">
               {{ 'menu.tooltip_logout' | translate }} - {{ $auth.user.username }}
             </a>
