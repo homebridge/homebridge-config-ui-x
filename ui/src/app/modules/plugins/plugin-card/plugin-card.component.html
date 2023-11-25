@@ -41,21 +41,45 @@
           {{ plugin.displayName || ((plugin.name.charAt(0) === '@' ? plugin.name.split('/')[1] : plugin.name) |
           replace:'-':' ' | titlecase) }}
         </h4>
-        <span class="grey-text py-0">{{ plugin.name }}</span>
-        <span class="grey-text p-1 text-decoration-none" *ngIf="plugin.author">
-            <a class="grey-text " target="_blank" rel="noopener noreferrer"
-              [href]="'https://www.npmjs.com/~' + plugin.author">@{{ plugin.author }}</a>
-        </span>
       </div>
       <div class="d-flex flex-row justify-content-between">
-        <p class="card-text grey-text mb-0 mr-auto">
+        <div class="card-text grey-text mb-0 mr-auto">
+
+          <i class="fas fa-fw fa-circle-info pr-1" data-toggle="modal" data-target="#pluginInfo"></i>
+          
+          <!-- Modal -->
+          <div class="modal fade" id="pluginInfo" tabindex="-1" role="dialog" aria-labelledby="pluginInfo" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">
+                    {{ plugin.displayName || ((plugin.name.charAt(0) === '@' ? plugin.name.split('/')[1] : plugin.name) |
+                    replace:'-':' ' | titlecase) }}</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <span class="grey-text py-0">{{ plugin.name }}</span>
+                  <span class="grey-text p-1 text-decoration-none" *ngIf="plugin.author">
+                    <a class="grey-text " target="_blank" rel="noopener noreferrer"
+                    [href]="'https://www.npmjs.com/~' + plugin.author">@{{ plugin.author }}</a>
+                  </span>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
           <span class="grey-text">
             v{{ plugin.installedVersion || plugin.latestVersion }}
           </span>
           <span class="grey-text text-decoration-none" *ngIf="plugin.lastUpdated">
              ({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})
           </span>
-        </p>
+        </div>
 <!--         <a href="javascript:void(0)" class="card-link" *ngIf="plugin.installedVersion" (click)="$plugin.settings(plugin)">
           {{ 'plugins.button_settings' | translate | uppercase }}
         </a> -->
