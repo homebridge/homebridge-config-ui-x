@@ -7,6 +7,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 ### UI Changes
 
 - add power options modal (#1820)
+- remove hb-ui card from plugins page (#1830)
 
 ### Translation Changes
 
