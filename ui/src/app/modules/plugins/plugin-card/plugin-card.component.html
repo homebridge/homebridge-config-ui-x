@@ -44,9 +44,9 @@
       </div>
       <div class="d-flex flex-row justify-content-between">
         <div class="card-text grey-text mb-0 mr-auto">
-
-          <i class="fas fa-fw fa-circle-info pr-1" data-toggle="modal" data-target="#pluginInfo"></i>
-          
+          <a class="" data-toggle="modal" data-target="#pluginInfo">
+            <i class="fas fa-fw fa-circle-info pr-1" ></i>
+          </a>
           <!-- Modal -->
           <div class="modal fade" id="pluginInfo" tabindex="-1" role="dialog" aria-labelledby="pluginInfo" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -60,11 +60,11 @@
                   </button>
                 </div>
                 <div class="modal-body">
-                  <span class="grey-text py-0">{{ plugin.name }}</span>
-                  <span class="grey-text p-1 text-decoration-none" *ngIf="plugin.author">
+                  <p class="grey-text">{{ plugin.name }}</p>
+                  <p class="grey-text text-decoration-none" *ngIf="plugin.author">
                     <a class="grey-text " target="_blank" rel="noopener noreferrer"
                     [href]="'https://www.npmjs.com/~' + plugin.author">@{{ plugin.author }}</a>
-                  </span>
+                  </p>
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
