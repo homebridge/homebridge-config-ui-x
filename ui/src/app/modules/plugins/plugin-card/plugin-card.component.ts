@@ -5,11 +5,11 @@ import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '@/app/core/api.service';
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
 import { InformationComponent } from '@/app/core/components/information/information.component';
+import { DonateModalComponent } from '@/app/core/manage-plugins/donate-modal/donate-modal.component';
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { NotificationService } from '@/app/core/notification.service';
 import { WsService } from '@/app/core/ws.service';
-import { DonateModalComponent } from '@/app/modules/plugins/donate-modal/donate-modal.component';
 
 @Component({
   selector: 'app-plugin-card',
