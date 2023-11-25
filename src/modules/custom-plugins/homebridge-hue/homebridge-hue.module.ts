@@ -20,4 +20,4 @@ import { HomebridgeHueService } from './homebridge-hue.service';
     HomebridgeHueController,
   ],
 })
-export class HomebridgeHueModule { }
+export class HomebridgeHueModule {}

@@ -1,15 +1,14 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
+import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { gt } from 'semver';
-
-import { SettingsService } from '@/app/core/settings.service';
 import { ApiService } from '@/app/core/api.service';
-import { WsService } from '@/app/core/ws.service';
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
+import { SettingsService } from '@/app/core/settings.service';
+import { WsService } from '@/app/core/ws.service';
 
 @Component({
   selector: 'app-plugins',
@@ -17,18 +16,15 @@ import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.s
   styleUrls: ['./plugins.component.scss'],
 })
 export class PluginsComponent implements OnInit, OnDestroy {
-  private io = this.$ws.connectToNamespace('child-bridges');
-
+  public loading = true;
   public installedPlugins: any = [];
   public childBridges = [];
-
   public form = new FormGroup({
     query: new FormControl('', [Validators.required]),
   });
 
-  public loading = true;
-  public searchQuery: string;
-  private navigationSubscription;
+  private io = this.$ws.connectToNamespace('child-bridges');
+  private navigationSubscription: Subscription;
 
   constructor(
     private $settings: SettingsService,
@@ -39,7 +35,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
     private $route: ActivatedRoute,
     private $toastr: ToastrService,
     private $translate: TranslateService,
-  ) { }
+  ) {}
 
   async ngOnInit() {
     this.io.connected.subscribe(async () => {
@@ -74,7 +70,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
     this.loading = true;
 
     try {
-      this.installedPlugins = await this.$api.get(`/plugins`).toPromise();
+      this.installedPlugins = await this.$api.get('/plugins').toPromise();
       this.loading = false;
     } catch (err) {
       this.$toastr.error(
@@ -133,7 +129,6 @@ export class PluginsComponent implements OnInit, OnDestroy {
     if (
       this.$settings.env.recommendChildBridges &&
       this.$settings.env.serviceMode &&
-      gt(this.$settings.env.homebridgeVersion, '1.5.0-beta.1') &&
       schema &&
       schema.pluginType === 'platform'
     ) {

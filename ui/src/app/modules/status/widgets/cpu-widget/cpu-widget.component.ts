@@ -1,10 +1,16 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
-import { Subscription, interval } from 'rxjs';
+import {
+  Component,
+  ElementRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { ChartOptions } from 'chart.js';
-import { Color, BaseChartDirective } from 'ng2-charts';
-
-import { WsService } from '@/app/core/ws.service';
+import { BaseChartDirective, Color } from 'ng2-charts';
+import { Subscription, interval } from 'rxjs';
 import { SettingsService } from '@/app/core/settings.service';
+import { WsService } from '@/app/core/ws.service';
 
 @Component({
   selector: 'app-cpu-widget',
@@ -13,9 +19,6 @@ import { SettingsService } from '@/app/core/settings.service';
 })
 export class CpuWidgetComponent implements OnInit, OnDestroy {
   @Input() public widget;
-
-  private io = this.$ws.getExistingNamespace('status');
-  private intervalSubscription: Subscription;
 
   @ViewChild(BaseChartDirective, { static: true }) private chart: BaseChartDirective;
   @ViewChild('widgetbackground', { static: true }) private widgetBackground: ElementRef;
@@ -65,10 +68,13 @@ export class CpuWidgetComponent implements OnInit, OnDestroy {
     },
   ];
 
+  private io = this.$ws.getExistingNamespace('status');
+  private intervalSubscription: Subscription;
+
   constructor(
     private $ws: WsService,
     public $settings: SettingsService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.io.connected.subscribe(async () => {

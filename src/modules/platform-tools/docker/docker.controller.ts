@@ -3,7 +3,7 @@ import {
   Controller,
   Get,
   Put,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -17,7 +17,7 @@ import { DockerService } from './docker.service';
 export class DockerController {
   constructor(
     private readonly dockerService: DockerService,
-  ) { }
+  ) {}
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Return the homebridge/homebridge docker image startup.sh file contents.' })

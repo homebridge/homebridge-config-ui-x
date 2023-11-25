@@ -1,9 +1,9 @@
 import { EventEmitter } from 'events';
-import * as path from 'path';
+import { resolve } from 'path';
 import type { IPty } from '@homebridge/node-pty-prebuilt-multiarch';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as fs from 'fs-extra';
+import { copy } from 'fs-extra';
 import { ConfigService } from '../../src/core/config/config.service';
 import { NodePtyService } from '../../src/core/node-pty/node-pty.service';
 import { TerminalGateway } from '../../src/modules/platform-tools/terminal/terminal.gateway';
@@ -37,19 +37,19 @@ describe('PlatformToolsTerminal (e2e)', () => {
   } as IPty;
 
   beforeAll(async () => {
-    process.env.UIX_BASE_PATH = path.resolve(__dirname, '../../');
-    process.env.UIX_STORAGE_PATH = path.resolve(__dirname, '../', '.homebridge');
-    process.env.UIX_CONFIG_PATH = path.resolve(process.env.UIX_STORAGE_PATH, 'config.json');
+    process.env.UIX_BASE_PATH = resolve(__dirname, '../../');
+    process.env.UIX_STORAGE_PATH = resolve(__dirname, '../', '.homebridge');
+    process.env.UIX_CONFIG_PATH = resolve(process.env.UIX_STORAGE_PATH, 'config.json');
 
-    authFilePath = path.resolve(process.env.UIX_STORAGE_PATH, 'auth.json');
-    secretsFilePath = path.resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets');
+    authFilePath = resolve(process.env.UIX_STORAGE_PATH, 'auth.json');
+    secretsFilePath = resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets');
 
     // setup test config
-    await fs.copy(path.resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
 
     // setup test auth file
-    await fs.copy(path.resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
-    await fs.copy(path.resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
+    await copy(resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
+    await copy(resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [TerminalModule],
@@ -97,7 +97,7 @@ describe('PlatformToolsTerminal (e2e)', () => {
   it('ON /platform-tools/terminal/start-session', async () => {
     terminalGateway.startTerminalSession(client, size);
 
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((res) => setTimeout(res, 100));
 
     expect(nodePtyService.spawn).toHaveBeenCalled();
   });
@@ -105,7 +105,7 @@ describe('PlatformToolsTerminal (e2e)', () => {
   it('ON /platform-tools/terminal/start-session (cleanup)', async () => {
     terminalGateway.startTerminalSession(client, size);
 
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((res) => setTimeout(res, 100));
 
     expect(nodePtyService.spawn).toHaveBeenCalled();
 
@@ -132,7 +132,7 @@ describe('PlatformToolsTerminal (e2e)', () => {
   it('ON /platform-tools/terminal/start-session (stdin)', async () => {
     terminalGateway.startTerminalSession(client, size);
 
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((res) => setTimeout(res, 100));
 
     expect(nodePtyService.spawn).toHaveBeenCalled();
 
@@ -144,7 +144,7 @@ describe('PlatformToolsTerminal (e2e)', () => {
   it('ON /platform-tools/terminal/start-session (resize)', async () => {
     terminalGateway.startTerminalSession(client, size);
 
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((res) => setTimeout(res, 100));
 
     expect(nodePtyService.spawn).toHaveBeenCalled();
 

@@ -1,15 +1,19 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
-
 import { ApiService } from '@/app/core/api.service';
+import { NotificationService } from '@/app/core/notification.service';
 import { SettingsService } from '@/app/core/settings.service';
 import { WsService } from '@/app/core/ws.service';
-import { NotificationService } from '@/app/core/notification.service';
 
 @Component({
   selector: 'app-manage-plugins-modal',
@@ -22,12 +26,6 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   @Input() targetVersion = 'latest';
   @Input() action: string;
 
-  private io = this.$ws.connectToNamespace('plugins');
-
-  private term = new Terminal();
-  private termTarget: HTMLElement;
-  private fitAddon = new FitAddon();
-
   public actionComplete = false;
   public actionFailed = false;
   public showReleaseNotes = false;
@@ -36,12 +34,15 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   public changeLog: string;
   public childBridges: any[] = [];
   public release: any;
-
-  private toastSuccess: string;
   public presentTenseVerb: string;
   public pastTenseVerb: string;
-
   public onlineUpdateOk: boolean;
+
+  private io = this.$ws.connectToNamespace('plugins');
+  private toastSuccess: string;
+  private term = new Terminal();
+  private termTarget: HTMLElement;
+  private fitAddon = new FitAddon();
 
   constructor(
     public activeModal: NgbActiveModal,

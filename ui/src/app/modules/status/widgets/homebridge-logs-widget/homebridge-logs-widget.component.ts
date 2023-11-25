@@ -1,7 +1,13 @@
-import { Component, OnInit, ViewChild, ElementRef, Input, OnDestroy } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { Subject } from 'rxjs';
 import { ITerminalOptions } from 'xterm';
-
 import { LogService } from '@/app/core/log.service';
 
 @Component({
@@ -25,7 +31,7 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
 
   constructor(
     private $log: LogService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.fontSize = this.widget.fontSize || 15;
@@ -74,5 +80,4 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.$log.destroyTerminal();
   }
-
 }

@@ -5,4 +5,4 @@ import { SchedulerService } from './scheduler.service';
   providers: [SchedulerService],
   exports: [SchedulerService],
 })
-export class SchedulerModule { }
+export class SchedulerModule {}

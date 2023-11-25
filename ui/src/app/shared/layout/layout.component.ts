@@ -1,19 +1,22 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { lt } from 'semver';
+import { TranslateService } from '@ngx-translate/core';
 import { throttleTime } from 'rxjs/operators';
-
-import { environment } from '@/environments/environment';
-import { WsService } from '@/app/core/ws.service';
-import { SettingsService } from '@/app/core/settings.service';
+import { lt } from 'semver';
 import { AuthService } from '@/app/core/auth/auth.service';
-import { NotificationService } from '@/app/core/notification.service';
-
 import { BackupRestoreComponent } from '@/app/core/backup-restore/backup-restore.component';
-import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
+import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
+import { NotificationService } from '@/app/core/notification.service';
+import { SettingsService } from '@/app/core/settings.service';
+import { WsService } from '@/app/core/ws.service';
+import { environment } from '@/environments/environment';
 
 @Component({
   selector: 'app-layout',
@@ -21,12 +24,12 @@ import { ConfirmComponent } from '@/app/core/components/confirm/confirm.componen
   styleUrls: ['./layout.component.scss'],
 })
 export class LayoutComponent implements OnInit {
-  private io = this.$ws.connectToNamespace('app');
-
-  public rPiCurrentlyUndervoltage = false;
-  public rPiWasUndervoltage = false;
-
   @ViewChild('restartHomebridgeIcon') restartHomebridgeIcon: ElementRef;
+
+  public rPiCurrentlyUnderVoltage = false;
+  public rPiWasUnderVoltage = false;
+
+  private io = this.$ws.connectToNamespace('app');
 
   constructor(
     public translate: TranslateService,
@@ -37,7 +40,7 @@ export class LayoutComponent implements OnInit {
     private $notification: NotificationService,
     private $modal: NgbModal,
     private $router: Router,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.io.socket.on('reconnect', () => {
@@ -63,10 +66,10 @@ export class LayoutComponent implements OnInit {
 
     this.$notification.raspberryPiThrottled.subscribe((throttled) => {
       if (throttled['Under-voltage detected']) {
-        this.rPiCurrentlyUndervoltage = true;
+        this.rPiCurrentlyUnderVoltage = true;
       }
       if (throttled['Under-voltage has occurred']) {
-        this.rPiWasUndervoltage = true;
+        this.rPiWasUnderVoltage = true;
       }
     });
 
@@ -93,6 +96,7 @@ export class LayoutComponent implements OnInit {
     ref.componentInstance.title = this.translate.instant('menu.hbrestart.title');
     ref.componentInstance.message = this.translate.instant('menu.hbrestart.confirmation');
     ref.componentInstance.confirmButtonLabel = this.translate.instant('menu.hbrestart.confirm_button');
+    ref.componentInstance.faIconClass = 'fas fa-fw-power-off';
 
     ref.result
       .then(() => {
@@ -108,6 +112,7 @@ export class LayoutComponent implements OnInit {
     ref.componentInstance.title = this.translate.instant('menu.linux.label_restart_server');
     ref.componentInstance.message = this.translate.instant('platform.linux.restart.confirmation');
     ref.componentInstance.confirmButtonLabel = this.translate.instant('menu.linux.label_restart_server');
+    ref.componentInstance.faIconClass = 'fas fa-fw-power-off';
 
     ref.result
       .then(() => {
@@ -123,6 +128,7 @@ export class LayoutComponent implements OnInit {
     ref.componentInstance.title = this.translate.instant('menu.linux.label_shutdown_server');
     ref.componentInstance.message = this.translate.instant('platform.linux.shutdown.confirmation');
     ref.componentInstance.confirmButtonLabel = this.translate.instant('menu.linux.label_shutdown_server');
+    ref.componentInstance.faIconClass = 'fas fa-fw-power-off';
 
     ref.result
       .then(() => {
@@ -148,6 +154,7 @@ export class LayoutComponent implements OnInit {
         serverVersion: this.$settings.uiVersion,
         uiVersion: environment.serverTarget,
       });
+      ref.componentInstance.faIconClass = 'fas fa-fw-power-off';
 
       ref.result.then(() => {
         this.$router.navigate(['/restart']);

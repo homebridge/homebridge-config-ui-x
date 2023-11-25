@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AbstractControl } from '@angular/forms';
-import { TranslateService } from '@ngx-translate/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-
 import { ApiService } from '@/app/core/api.service';
 
 @Component({
@@ -31,7 +30,7 @@ export class UsersAddComponent implements OnInit {
     public toastr: ToastrService,
     private translate: TranslateService,
     private $api: ApiService,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
 
@@ -48,7 +47,7 @@ export class UsersAddComponent implements OnInit {
   }
 
   onSubmit({ value, valid }) {
-    this.$api.post(`/users`, value).subscribe(
+    this.$api.post('/users', value).subscribe(
       data => {
         this.activeModal.close();
         this.toastr.success(this.translate.instant('users.toast_added_new_user'), this.translate.instant('toast.title_success'));
@@ -61,5 +60,4 @@ export class UsersAddComponent implements OnInit {
       },
     );
   }
-
 }

@@ -1,8 +1,8 @@
-import * as path from 'path';
+import { resolve } from 'path';
 import { ValidationPipe } from '@nestjs/common';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as fs from 'fs-extra';
+import { copy } from 'fs-extra';
 import { AuthModule } from '../../src/core/auth/auth.module';
 import { ConfigService } from '../../src/core/config/config.service';
 import { AccessoriesModule } from '../../src/modules/accessories/accessories.module';
@@ -64,19 +64,19 @@ describe('AccessoriesController (e2e)', () => {
   ];
 
   beforeAll(async () => {
-    process.env.UIX_BASE_PATH = path.resolve(__dirname, '../../');
-    process.env.UIX_STORAGE_PATH = path.resolve(__dirname, '../', '.homebridge');
-    process.env.UIX_CONFIG_PATH = path.resolve(process.env.UIX_STORAGE_PATH, 'config.json');
+    process.env.UIX_BASE_PATH = resolve(__dirname, '../../');
+    process.env.UIX_STORAGE_PATH = resolve(__dirname, '../', '.homebridge');
+    process.env.UIX_CONFIG_PATH = resolve(process.env.UIX_STORAGE_PATH, 'config.json');
 
-    authFilePath = path.resolve(process.env.UIX_STORAGE_PATH, 'auth.json');
-    secretsFilePath = path.resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets');
+    authFilePath = resolve(process.env.UIX_STORAGE_PATH, 'auth.json');
+    secretsFilePath = resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets');
 
     // setup test config
-    await fs.copy(path.resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
 
     // setup test auth file
-    await fs.copy(path.resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
-    await fs.copy(path.resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
+    await copy(resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
+    await copy(resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
 
     // enable insecure mode for this test suite.
     configService = new ConfigService();

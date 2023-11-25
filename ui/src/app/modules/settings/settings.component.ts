@@ -1,25 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, FormGroup, FormControl } from '@angular/forms';
-import { ToastrService } from 'ngx-toastr';
-import { ActivatedRoute, Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
+import { FormControl, FormGroup, UntypedFormControl } from '@angular/forms';
+import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ToastrService } from 'ngx-toastr';
 import { debounceTime } from 'rxjs/operators';
-import * as semver from 'semver';
-
-import { SettingsService } from '@/app/core/settings.service';
+import { RemoveAllCachedAccessoriesModalComponent } from './remove-all-cached-accessories-modal/remove-all-cached-accessories-modal.component'; // eslint-disable-line max-len
+import { RemoveSingleCachedAccessoryModalComponent } from './remove-single-cached-accessory-modal/remove-single-cached-accessory-modal.component'; // eslint-disable-line max-len
+import { ResetHomebridgeModalComponent } from './reset-homebridge-modal/reset-homebridge-modal.component';
+import { SelectNetworkInterfacesComponent } from './select-network-interfaces/select-network-interfaces.component';
+import { UnpairAccessoryModalComponent } from './unpair-accessory-modal/unpair-accessory-modal.component';
 import { ApiService } from '@/app/core/api.service';
 import { NotificationService } from '@/app/core/notification.service';
-
-import {
-  RemoveAllCachedAccessoriesModalComponent,
-} from './remove-all-cached-accessories-modal/remove-all-cached-accessories-modal.component';
-import { ResetHomebridgeModalComponent } from './reset-homebridge-modal/reset-homebridge-modal.component';
-import {
-  RemoveSingleCachedAccessoryModalComponent,
-} from './remove-single-cached-accessory-modal/remove-single-cached-accessory-modal.component';
-import { UnpairAccessoryModalComponent } from './unpair-accessory-modal/unpair-accessory-modal.component';
-import { SelectNetworkInterfacesComponent } from './select-network-interfaces/select-network-interfaces.component';
+import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
   selector: 'app-settings',
@@ -38,7 +30,6 @@ export class SettingsComponent implements OnInit {
   public legacyMdnsFormControl = new UntypedFormControl(false);
   public saved = false;
 
-  public showNetworking = false;
   public showAvahiMdnsOption = false;
   public showResolvedMdnsOption = false;
   public availableNetworkAdapters: Record<string, any> = [];
@@ -48,13 +39,10 @@ export class SettingsComponent implements OnInit {
     public $settings: SettingsService,
     private $api: ApiService,
     private $notification: NotificationService,
-    public $fb: UntypedFormBuilder,
     public $toastr: ToastrService,
     private $modal: NgbModal,
-    private $route: ActivatedRoute,
     private $router: Router,
-    private translate: TranslateService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.initNetworkingOptions();
@@ -112,37 +100,25 @@ export class SettingsComponent implements OnInit {
         this.$router.navigate(['/restart']);
       },
       (err) => {
-        this.$toastr.error(err.message, 'Failed to set force setvice restart flag.');
+        this.$toastr.error(err.message, 'Failed to set force service restart flag.');
       },
     );
   }
 
   async initNetworkingOptions() {
     try {
-      const homebridgePackage = await this.$api.get('/status/homebridge-version').toPromise();
-      if (semver.gte(homebridgePackage.installedVersion, '1.3.0-beta.0')) {
-        this.showNetworking = true;
-        this.getNetworkSettings();
-      }
+      this.getNetworkSettings();
       const onLinux = (
         this.$settings.env.runningInLinux ||
         this.$settings.env.runningInDocker ||
         this.$settings.env.runningInSynologyPackage ||
         this.$settings.env.runningInPackageMode
       );
-      if (semver.gte(homebridgePackage.installedVersion, '1.4.0-beta.0')) {
-        if (onLinux) {
-          this.showAvahiMdnsOption = true;
-        }
+      if (onLinux) {
+        this.showAvahiMdnsOption = true;
+        this.showResolvedMdnsOption = true;
       }
-      if (semver.gte(homebridgePackage.installedVersion, '1.6.0-beta.0')) {
-        if (onLinux) {
-          this.showResolvedMdnsOption = true;
-        }
-      }
-    } catch (e) {
-
-    }
+    } catch (e) {}
   }
 
   async getNetworkSettings() {
@@ -206,7 +182,6 @@ export class SettingsComponent implements OnInit {
       }
     });
   }
-
 
   selectNetworkInterfaces() {
     const ref = this.$modal.open(SelectNetworkInterfacesComponent, {

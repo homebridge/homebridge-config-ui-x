@@ -1,17 +1,16 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ToastrService } from 'ngx-toastr';
+import { TranslateService } from '@ngx-translate/core';
+import { parse } from 'json5';
 import { NgxEditorModel } from 'ngx-monaco-editor';
-import * as JSON5 from 'json5';
-
+import { ToastrService } from 'ngx-toastr';
+import { ConfigRestoreBackupComponent } from './config-restore-backup/config.restore-backup.component';
 import { ApiService } from '@/app/core/api.service';
-import { SettingsService } from '@/app/core/settings.service';
-import { NotificationService } from '@/app/core/notification.service';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { MonacoEditorService } from '@/app/core/monaco-editor.service';
-import { ConfigRestoreBackupComponent } from './config-restore-backup/config.restore-backup.component';
+import { NotificationService } from '@/app/core/notification.service';
+import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
   selector: 'app-config',
@@ -22,8 +21,6 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   public originalConfig: string;
   public saveInProgress: boolean;
   public isMobile: any = false;
-  public backupUrl: string;
-
   public monacoEditor;
   public editorOptions = {
     language: 'json',
@@ -31,9 +28,9 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     automaticLayout: true,
   };
 
-  private editorDecoractions = [];
   public monacoEditorModel: NgxEditorModel;
 
+  private editorDecorations = [];
   private lastHeight: number;
   private visualViewPortEventCallback: () => void;
 
@@ -56,8 +53,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     this.visualViewPortEventCallback = () => this.visualViewPortChanged();
     this.lastHeight = window.innerHeight;
 
-    if (window['visualViewport'] && !this.isMobile) {
-      window['visualViewport'].addEventListener('resize', this.visualViewPortEventCallback, true);
+    if (window.visualViewport && !this.isMobile) {
+      window.visualViewport.addEventListener('resize', this.visualViewPortEventCallback, true);
       this.$md.disableTouchMove();
     }
 
@@ -70,11 +67,11 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     this.monacoEditorModel = {
       value: '{}',
       language: 'json',
-      uri: window['monaco'] ? window['monaco'].Uri.parse('a://homebridge/config.json') : undefined,
+      uri: window.monaco ? window.monaco.Uri.parse('a://homebridge/config.json') : undefined,
     };
 
-    //  if monaco is not loaded yet, wait for it, otherwise setup the editor now
-    if (!window['monaco']) {
+    //  if monaco is not loaded yet, wait for it, otherwise set up the editor now
+    if (!window.monaco) {
       this.$monacoEditor.readyEvent.subscribe({
         next: () => {
           this.setMonacoEditorModel();
@@ -91,7 +88,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   onEditorInit(editor) {
     this.monacoEditor = editor;
     this.monacoEditor.getModel().setValue(this.homebridgeConfig);
-    window['editor'] = editor;
+    window['editor'] = editor; // eslint-disable-line @typescript-eslint/dot-notation
   }
 
   onInitDiffEditor(editor) {
@@ -100,7 +97,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     editor.getModel().original.setValue(this.originalConfig);
     editor.getModel().modified.setValue(this.homebridgeConfig);
 
-    window['editor'] = editor;
+    window['editor'] = editor; // eslint-disable-line @typescript-eslint/dot-notation
   }
 
   async onSave() {
@@ -110,7 +107,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
     // hide decorations
     if (this.monacoEditor) {
-      this.editorDecoractions = this.monacoEditor.deltaDecorations(this.editorDecoractions, []);
+      this.editorDecorations = this.monacoEditor.deltaDecorations(this.editorDecorations, []);
     }
 
     this.saveInProgress = true;
@@ -123,7 +120,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
         await this.monacoEditor.getAction('editor.action.formatDocument').run();
 
         // check for issues, specifically block saving if there are any duplicate keys
-        const issues = window['monaco'].editor.getModelMarkers({ owner: 'json' });
+        const issues = window.monaco.editor.getModelMarkers({ owner: 'json' });
 
         for (const issue of issues) {
           if (issue.message === 'Duplicate object key') {
@@ -152,7 +149,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
           this.translate.instant('config.toast_config_bridge_missing'),
           this.translate.instant('config.toast_title_config_error'),
         );
-      } else if (!/^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$/.test(config.bridge.username)) {
+      } else if (!/^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$/.test(config.bridge.username)) {
         this.$toastr.error(
           this.translate.instant('config.toast_config_username_format_error'),
           this.translate.instant('config.toast_title_config_error'),
@@ -196,7 +193,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     try {
       return JSON.parse(this.homebridgeConfig);
     } catch (e) {
-      const config = JSON5.parse(this.homebridgeConfig);
+      const config = parse(this.homebridgeConfig);
       this.homebridgeConfig = JSON.stringify(config, null, 4);
       if (this.monacoEditor) {
         this.monacoEditor.getModel().setValue(this.homebridgeConfig);
@@ -238,9 +235,9 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
             this.homebridgeConfig = JSON.stringify(json, null, 4);
 
             // update the editor
-            if (this.monacoEditor && window['editor'].modifiedEditor) {
+            if (this.monacoEditor && window['editor'].modifiedEditor) { // eslint-disable-line @typescript-eslint/dot-notation
               // remove all decorations
-              this.editorDecoractions = this.monacoEditor.deltaDecorations(this.editorDecoractions, []);
+              this.editorDecorations = this.monacoEditor.deltaDecorations(this.editorDecorations, []);
 
               // remove existing config
               this.monacoEditor.executeEdits('beautifier', [
@@ -312,7 +309,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     return true;
   }
 
-  validatePlugins(plugins: any[], key) {
+  validatePlugins(plugins: any[], key: string) {
     for (const item of plugins) {
       if (typeof item !== 'string') {
         this.$toastr.error(`Each item in the ${key} array must be a string.`);
@@ -325,7 +322,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   /**
    * Highlight the problematic rows in the editor
    */
-  highlightOffendingArrayItem(block) {
+  highlightOffendingArrayItem(block: string) {
     if (!this.monacoEditor) {
       return;
     }
@@ -345,7 +342,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
           matchRange.endColumn,
         );
 
-        this.editorDecoractions = this.monacoEditor.deltaDecorations(this.editorDecoractions, [
+        this.editorDecorations = this.monacoEditor.deltaDecorations(this.editorDecorations, [
           { range, options: { isWholeLine: true, linesDecorationsClassName: 'hb-monaco-editor-line-error' } },
         ]);
       }
@@ -353,16 +350,16 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Setup a json schema object used to check the config against
+   * Set up a json schema object used to check the config against
    */
   setMonacoEditorModel() {
-    if (window['monaco'].languages.json.jsonDefaults.diagnosticsOptions.schemas.some(x => x.uri === 'http://homebridge/config.json')) {
+    if (window.monaco.languages.json.jsonDefaults.diagnosticsOptions.schemas.some(x => x.uri === 'http://homebridge/config.json')) {
       return;
     }
 
     const uri = monaco.Uri.parse('a://homebridge/config.json');
 
-    window['monaco'].languages.json.jsonDefaults.setDiagnosticsOptions({
+    window.monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
       allowComments: false,
       validate: true,
       schemas: [
@@ -484,7 +481,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
               platforms: {
                 type: 'array',
                 description: 'Plugins that expose a "Platform" should have there config entered in this array.' +
-                  '\nSeperate each plugin config block using a comma.',
+                  '\nSeparate each plugin config block using a comma.',
                 items: {
                   type: 'object',
                   required: ['platform'],
@@ -526,7 +523,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
               accessories: {
                 type: 'array',
                 description: 'Plugins that expose a "Accessory" should have there config entered in this array.' +
-                  '\nSeperate each plugin config block using a comma.',
+                  '\nSeparate each plugin config block using a comma.',
                 items: {
                   type: 'object',
                   required: ['accessory', 'name'],
@@ -552,24 +549,24 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   }
 
   visualViewPortChanged() {
-    if (this.lastHeight < window['visualViewport'].height) {
+    if (this.lastHeight < window.visualViewport.height) {
       (document.activeElement as HTMLElement).blur();
     }
 
-    if (window['visualViewport'].height < window.innerHeight) {
+    if (window.visualViewport.height < window.innerHeight) {
       // keyboard may have opened
       this.$md.enableTouchMove();
-      this.lastHeight = window['visualViewport'].height;
-    } else if (window['visualViewport'].height === window.innerHeight) {
+      this.lastHeight = window.visualViewport.height;
+    } else if (window.visualViewport.height === window.innerHeight) {
       // keyboard is closed
       this.$md.disableTouchMove();
-      this.lastHeight = window['visualViewport'].height;
+      this.lastHeight = window.visualViewport.height;
     }
   }
 
   ngOnDestroy() {
-    if (window['visualViewport']) {
-      window['visualViewport'].removeEventListener('resize', this.visualViewPortEventCallback, true);
+    if (window.visualViewport) {
+      window.visualViewport.removeEventListener('resize', this.visualViewPortEventCallback, true);
       this.$md.enableTouchMove();
     }
 
@@ -577,5 +574,4 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       this.monacoEditor.dispose();
     }
   }
-
 }

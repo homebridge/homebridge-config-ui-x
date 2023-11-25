@@ -1,7 +1,13 @@
-import { Component, OnInit, ViewChild, ElementRef, Input, OnDestroy } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { Subject } from 'rxjs';
 import { ITerminalOptions } from 'xterm';
-
 import { TerminalService } from '@/app/core/terminal.service';
 
 @Component({
@@ -25,7 +31,7 @@ export class TerminalWidgetComponent implements OnInit, OnDestroy {
 
   constructor(
     private $terminal: TerminalService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.fontSize = this.widget.fontSize || 15;

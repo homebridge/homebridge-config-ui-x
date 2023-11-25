@@ -1,7 +1,13 @@
-import * as child_process from 'child_process';
-import * as os from 'os';
-import * as path from 'path';
-import * as fs from 'fs-extra';
+import { execSync } from 'child_process';
+import { userInfo } from 'os';
+import { resolve } from 'path';
+import {
+  chmod,
+  existsSync,
+  outputFile,
+  readFileSync,
+  unlinkSync,
+} from 'fs-extra';
 import { BasePlatform } from '../base-platform';
 
 export class FreeBSDInstaller extends BasePlatform {
@@ -10,7 +16,7 @@ export class FreeBSDInstaller extends BasePlatform {
   }
 
   private get rcServicePath() {
-    return path.resolve('/usr/local/etc/rc.d', this.rcServiceName);
+    return resolve('/usr/local/etc/rc.d', this.rcServiceName);
   }
 
   /**
@@ -47,9 +53,9 @@ export class FreeBSDInstaller extends BasePlatform {
     await this.disableService();
 
     try {
-      if (fs.existsSync(this.rcServicePath)) {
+      if (existsSync(this.rcServicePath)) {
         this.hbService.logger(`Removed ${this.rcServiceName} Service`, 'succeed');
-        fs.unlinkSync(this.rcServicePath);
+        unlinkSync(this.rcServicePath);
       } else {
         this.hbService.logger(`Could not find installed ${this.rcServiceName} Service.`, 'fail');
       }
@@ -66,7 +72,7 @@ export class FreeBSDInstaller extends BasePlatform {
     this.checkForRoot();
     try {
       this.hbService.logger(`Starting ${this.rcServiceName} Service...`);
-      child_process.execSync(`service ${this.rcServiceName} start`, { stdio: 'inherit' });
+      execSync(`service ${this.rcServiceName} start`, { stdio: 'inherit' });
       this.hbService.logger(`${this.rcServiceName} Started`, 'succeed');
     } catch (e) {
       this.hbService.logger(`Failed to start ${this.rcServiceName}`, 'fail');
@@ -80,7 +86,7 @@ export class FreeBSDInstaller extends BasePlatform {
     this.checkForRoot();
     try {
       this.hbService.logger(`Stopping ${this.rcServiceName} Service...`);
-      child_process.execSync(`service ${this.rcServiceName} stop`, { stdio: 'inherit' });
+      execSync(`service ${this.rcServiceName} stop`, { stdio: 'inherit' });
       this.hbService.logger(`${this.rcServiceName} Stopped`, 'succeed');
     } catch (e) {
       this.hbService.logger(`Failed to stop ${this.rcServiceName}`, 'fail');
@@ -94,7 +100,7 @@ export class FreeBSDInstaller extends BasePlatform {
     this.checkForRoot();
     try {
       this.hbService.logger(`Restarting ${this.rcServiceName} Service...`);
-      child_process.execSync(`service ${this.rcServiceName} restart`, { stdio: 'inherit' });
+      execSync(`service ${this.rcServiceName} restart`, { stdio: 'inherit' });
       this.hbService.logger(`${this.rcServiceName} Restarted`, 'succeed');
     } catch (e) {
       this.hbService.logger(`Failed to restart ${this.rcServiceName}`, 'fail');
@@ -107,15 +113,15 @@ export class FreeBSDInstaller extends BasePlatform {
   public async rebuild(all = false) {
     try {
       this.checkForRoot();
-      const npmGlobalPath = child_process.execSync('/bin/echo -n "$(npm -g prefix)/lib/node_modules"', {
+      const npmGlobalPath = execSync('/bin/echo -n "$(npm -g prefix)/lib/node_modules"', {
         env: Object.assign({
           npm_config_loglevel: 'silent',
           npm_update_notifier: 'false',
         }, process.env),
       }).toString('utf8');
-      const targetNodeVersion = child_process.execSync('node -v').toString('utf8').trim();
+      const targetNodeVersion = execSync('node -v').toString('utf8').trim();
 
-      child_process.execSync('npm rebuild --unsafe-perm', {
+      execSync('npm rebuild --unsafe-perm', {
         cwd: process.env.UIX_BASE_PATH,
         stdio: 'inherit',
       });
@@ -123,7 +129,7 @@ export class FreeBSDInstaller extends BasePlatform {
       if (all === true) {
         // rebuild all modules
         try {
-          child_process.execSync('npm rebuild --unsafe-perm', {
+          execSync('npm rebuild --unsafe-perm', {
             cwd: npmGlobalPath,
             stdio: 'inherit',
           });
@@ -144,16 +150,16 @@ export class FreeBSDInstaller extends BasePlatform {
    */
   public async getId(): Promise<{ uid: number; gid: number }> {
     if (process.getuid() === 0 && this.hbService.asUser || process.env.SUDO_USER) {
-      const uid = child_process.execSync(`id -u ${this.hbService.asUser || process.env.SUDO_USER}`).toString('utf8');
-      const gid = child_process.execSync(`id -g ${this.hbService.asUser || process.env.SUDO_USER}`).toString('utf8');
+      const uid = execSync(`id -u ${this.hbService.asUser || process.env.SUDO_USER}`).toString('utf8');
+      const gid = execSync(`id -g ${this.hbService.asUser || process.env.SUDO_USER}`).toString('utf8');
       return {
         uid: parseInt(uid, 10),
         gid: parseInt(gid, 10),
       };
     } else {
       return {
-        uid: os.userInfo().uid,
-        gid: os.userInfo().gid,
+        uid: userInfo().uid,
+        gid: userInfo().gid,
       };
     }
   }
@@ -163,7 +169,7 @@ export class FreeBSDInstaller extends BasePlatform {
    */
   public getPidOfPort(port: number) {
     try {
-      return child_process.execSync(`sockstat -P tcp -p ${port} -l -q 2> /dev/null | awk '{print $3}' | head -n 1`).toString('utf8').trim();
+      return execSync(`sockstat -P tcp -p ${port} -l -q 2> /dev/null | awk '{print $3}' | head -n 1`).toString('utf8').trim();
     } catch (e) {
       return null;
     }
@@ -174,7 +180,7 @@ export class FreeBSDInstaller extends BasePlatform {
    */
   private async enableService() {
     try {
-      child_process.execSync(`sysrc ${this.rcServiceName}_enable="YES" 2> /dev/null`);
+      execSync(`sysrc ${this.rcServiceName}_enable="YES" 2> /dev/null`);
     } catch (e) {
       this.hbService.logger(`WARNING: failed to run "sysrc ${this.rcServiceName}_enable=\"YES\"`, 'warn');
     }
@@ -185,7 +191,7 @@ export class FreeBSDInstaller extends BasePlatform {
    */
   private async disableService() {
     try {
-      child_process.execSync(`sysrc ${this.rcServiceName}_enable="NO" 2> /dev/null`);
+      execSync(`sysrc ${this.rcServiceName}_enable="NO" 2> /dev/null`);
     } catch (e) {
       this.hbService.logger(`WARNING: failed to run "sysrc ${this.rcServiceName}_enable=\"NO\"`, 'warn');
     }
@@ -213,10 +219,10 @@ export class FreeBSDInstaller extends BasePlatform {
   private async checkUser() {
     try {
       // check if user exists
-      child_process.execSync(`id ${this.hbService.asUser} 2> /dev/null`);
+      execSync(`id ${this.hbService.asUser} 2> /dev/null`);
     } catch (e) {
       // if not create the user
-      child_process.execSync(`pw useradd -q -n ${this.hbService.asUser} -s /usr/sbin/nologin 2> /dev/null`);
+      execSync(`pw useradd -q -n ${this.hbService.asUser} -s /usr/sbin/nologin 2> /dev/null`);
       this.hbService.logger(`Created service user: ${this.hbService.asUser}`, 'info');
     }
   }
@@ -227,17 +233,17 @@ export class FreeBSDInstaller extends BasePlatform {
    */
   private setupSudo() {
     try {
-      const npmPath = child_process.execSync('which npm').toString('utf8').trim();
+      const npmPath = execSync('which npm').toString('utf8').trim();
       const sudoersEntry = `${this.hbService.asUser}    ALL=(ALL) NOPASSWD:SETENV: ${npmPath}, /usr/local/bin/npm`;
 
       // check if the sudoers file already contains the entry
-      const sudoers = fs.readFileSync('/usr/local/etc/sudoers', 'utf-8');
+      const sudoers = readFileSync('/usr/local/etc/sudoers', 'utf-8');
       if (sudoers.includes(sudoersEntry)) {
         return;
       }
 
       // grant the user restricted sudo privileges to /sbin/shutdown
-      child_process.execSync(`echo '${sudoersEntry}' | sudo EDITOR='tee -a' visudo`);
+      execSync(`echo '${sudoersEntry}' | sudo EDITOR='tee -a' visudo`);
     } catch (e) {
       this.hbService.logger('WARNING: Failed to setup /etc/sudoers, you may not be able to shutdown/restart your server from the Homebridge UI.', 'warn');
     }
@@ -300,7 +306,7 @@ export class FreeBSDInstaller extends BasePlatform {
       'run_rc_command "$1"',
     ].filter(x => x).join('\n');
 
-    await fs.outputFile(this.rcServicePath, rcFileContents);
-    await fs.chmod(this.rcServicePath, '755');
+    await outputFile(this.rcServicePath, rcFileContents);
+    await chmod(this.rcServicePath, '755');
   }
 }

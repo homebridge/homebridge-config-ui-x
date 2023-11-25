@@ -1,10 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import * as schedule from 'node-schedule';
+import {
+  RecurrenceRule,
+  cancelJob,
+  scheduleJob,
+  scheduledJobs,
+} from 'node-schedule';
 
 @Injectable()
 export class SchedulerService {
-  public readonly scheduleJob = schedule.scheduleJob;
-  public readonly scheduledJobs = schedule.scheduledJobs;
-  public readonly cancelJob = schedule.cancelJob;
-  public readonly RecurrenceRule = schedule.RecurrenceRule;
+  public readonly scheduleJob = scheduleJob;
+  public readonly scheduledJobs = scheduledJobs;
+  public readonly cancelJob = cancelJob;
+  public readonly RecurrenceRule = RecurrenceRule;
 }

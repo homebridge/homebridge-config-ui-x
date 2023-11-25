@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import { Injectable } from '@nestjs/common';
-import * as fs from 'fs-extra';
+import { pathExists } from 'fs-extra';
 import { ConfigService } from '../../../core/config/config.service';
 import { Logger } from '../../../core/logger/logger.service';
 import { NodePtyService } from '../../../core/node-pty/node-pty.service';
@@ -15,7 +15,7 @@ export class TerminalService {
     private configService: ConfigService,
     private logger: Logger,
     private nodePtyService: NodePtyService,
-  ) { }
+  ) {}
 
   /**
    * Create a new terminal session
@@ -35,7 +35,7 @@ export class TerminalService {
     this.logger.log('Starting terminal session');
 
     // check if we should use bash or sh
-    const shell = await fs.pathExists('/bin/bash') ? '/bin/bash' : '/bin/sh';
+    const shell = await pathExists('/bin/bash') ? '/bin/bash' : '/bin/sh';
 
     // spawn a new shell
     const term = this.nodePtyService.spawn(shell, [], {
@@ -71,7 +71,7 @@ export class TerminalService {
     client.on('resize', (resize: TermSize) => {
       try {
         term.resize(resize.cols, resize.rows);
-      } catch (e) { }
+      } catch (e) {}
     });
 
     // cleanup on disconnect
@@ -86,7 +86,7 @@ export class TerminalService {
       try {
         this.logger.log('Terminal session ended.');
         term.kill();
-      } catch (e) { }
+      } catch (e) {}
     };
 
     client.on('end', onEnd.bind(this));

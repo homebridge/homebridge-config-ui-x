@@ -1,4 +1,4 @@
-import * as https from 'https';
+import { Agent } from 'https';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
@@ -17,7 +17,7 @@ import { PluginsService } from './plugins.service';
         'User-Agent': 'homebridge-config-ui-x',
       },
       timeout: 10000,
-      httpsAgent: new https.Agent({ keepAlive: true }),
+      httpsAgent: new Agent({ keepAlive: true }),
     }),
     NodePtyModule,
     ConfigModule,
@@ -34,4 +34,4 @@ import { PluginsService } from './plugins.service';
     PluginsController,
   ],
 })
-export class PluginsModule { }
+export class PluginsModule {}

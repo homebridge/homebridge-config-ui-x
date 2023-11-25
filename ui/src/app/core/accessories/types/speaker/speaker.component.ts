@@ -1,7 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ServiceTypeX } from '../../accessories.interfaces';
-
 import { SpeakerManageComponent } from './speaker.manage.component';
 
 @Component({
@@ -14,10 +13,9 @@ export class SpeakerComponent implements OnInit {
 
   constructor(
     private modalService: NgbModal,
-  ) { }
+  ) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   onClick() {
     this.service.getCharacteristic('Mute').setValue(!this.service.values.Mute);

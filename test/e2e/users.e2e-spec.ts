@@ -1,14 +1,14 @@
-import * as path from 'path';
+import { resolve } from 'path';
 import { ValidationPipe } from '@nestjs/common';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as fs from 'fs-extra';
+import { copy, readJson, writeJson } from 'fs-extra';
 import { authenticator } from 'otplib';
 import {
   UserActivateOtpDto,
   UserDeactivateOtpDto,
   UserDto,
-  UserUpdatePasswordDto
+  UserUpdatePasswordDto,
 } from '../../src/modules/users/users.dto';
 import { UsersModule } from '../../src/modules/users/users.module';
 
@@ -20,19 +20,19 @@ describe('UsersController (e2e)', () => {
   let authorization: string;
 
   beforeAll(async () => {
-    process.env.UIX_BASE_PATH = path.resolve(__dirname, '../../');
-    process.env.UIX_STORAGE_PATH = path.resolve(__dirname, '../', '.homebridge');
-    process.env.UIX_CONFIG_PATH = path.resolve(process.env.UIX_STORAGE_PATH, 'config.json');
+    process.env.UIX_BASE_PATH = resolve(__dirname, '../../');
+    process.env.UIX_STORAGE_PATH = resolve(__dirname, '../', '.homebridge');
+    process.env.UIX_CONFIG_PATH = resolve(process.env.UIX_STORAGE_PATH, 'config.json');
 
-    authFilePath = path.resolve(process.env.UIX_STORAGE_PATH, 'auth.json');
-    secretsFilePath = path.resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets');
+    authFilePath = resolve(process.env.UIX_STORAGE_PATH, 'auth.json');
+    secretsFilePath = resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets');
 
     // setup test config
-    await fs.copy(path.resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
 
     // setup test auth file
-    await fs.copy(path.resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
-    await fs.copy(path.resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
+    await copy(resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
+    await copy(resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [UsersModule],
@@ -63,7 +63,7 @@ describe('UsersController (e2e)', () => {
 
   afterEach(async () => {
     // restore auth.json after each test
-    await fs.copy(path.resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
+    await copy(resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
   });
 
   it('GET /users (with auth token)', async () => {
@@ -116,7 +116,7 @@ describe('UsersController (e2e)', () => {
     });
 
     // check the user was saved to the auth.json file
-    expect(await fs.readJson(authFilePath)).toHaveLength(2);
+    expect(await readJson(authFilePath)).toHaveLength(2);
   });
 
   it('PATCH /users/:userId', async () => {
@@ -145,7 +145,7 @@ describe('UsersController (e2e)', () => {
       otpActive: false,
     });
 
-    expect((await fs.readJson(authFilePath))[0].name).toBe('New Name');
+    expect((await readJson(authFilePath))[0].name).toBe('New Name');
   });
 
   it('PATCH /users/:userId (change username)', async () => {
@@ -174,8 +174,8 @@ describe('UsersController (e2e)', () => {
       otpActive: false,
     });
 
-    expect((await fs.readJson(authFilePath))[0].name).toBe('New Name');
-    expect((await fs.readJson(authFilePath))[0].username).toBe('newUsername');
+    expect((await readJson(authFilePath))[0].name).toBe('New Name');
+    expect((await readJson(authFilePath))[0].username).toBe('newUsername');
   });
 
   it('PATCH /users/:userId (change username - conflict)', async () => {
@@ -231,7 +231,7 @@ describe('UsersController (e2e)', () => {
     })).json();
 
     // check the user was saved to the auth.json file as a sanity check
-    expect(await fs.readJson(authFilePath)).toHaveLength(2);
+    expect(await readJson(authFilePath)).toHaveLength(2);
 
     // delete the user
     const res = await app.inject({
@@ -246,7 +246,7 @@ describe('UsersController (e2e)', () => {
     expect(res.statusCode).toBe(200);
 
     // check the user was deleted from the auth.json file
-    expect(await fs.readJson(authFilePath)).toHaveLength(1);
+    expect(await readJson(authFilePath)).toHaveLength(1);
   });
 
   it('DELETE /users/:userId (do not allow deletion of only admin)', async () => {
@@ -268,7 +268,7 @@ describe('UsersController (e2e)', () => {
     });
 
     // check the user was saved to the auth.json file as a sanity check
-    expect(await fs.readJson(authFilePath)).toHaveLength(2);
+    expect(await readJson(authFilePath)).toHaveLength(2);
 
     // delete user #1 (admin)
     const res = await app.inject({
@@ -338,7 +338,7 @@ describe('UsersController (e2e)', () => {
     expect(res.statusCode).toBe(201);
     expect(res.json()).toHaveProperty('otpauth');
 
-    const authFile: UserDto[] = await fs.readJson(authFilePath);
+    const authFile: UserDto[] = await readJson(authFilePath);
     expect(authFile[0].otpSecret).toBeTruthy();
     expect(authFile[0].otpActive).toBeFalsy();
   });
@@ -353,7 +353,7 @@ describe('UsersController (e2e)', () => {
       },
     });
 
-    let authFile: UserDto[] = await fs.readJson(authFilePath);
+    let authFile: UserDto[] = await readJson(authFilePath);
     const otpSecret = authFile[0].otpSecret;
     const code = authenticator.generate(otpSecret);
     const payload: UserActivateOtpDto = {
@@ -372,7 +372,7 @@ describe('UsersController (e2e)', () => {
     expect(res.statusCode).toBe(201);
 
     // check otp was activated
-    authFile = await fs.readJson(authFilePath);
+    authFile = await readJson(authFilePath);
     expect(authFile[0].otpActive).toBe(true);
 
     // check logins now prompt for otp
@@ -420,12 +420,12 @@ describe('UsersController (e2e)', () => {
   });
 
   it('POST /users/otp/deactivate (valid password)', async () => {
-    let authFile: UserDto[] = await fs.readJson(authFilePath);
+    let authFile: UserDto[] = await readJson(authFilePath);
 
     authFile[0].otpActive = true;
     authFile[0].otpSecret = 'blah';
 
-    await fs.writeJson(authFilePath, authFile);
+    await writeJson(authFilePath, authFile);
 
     const payload: UserDeactivateOtpDto = {
       password: 'admin',
@@ -442,18 +442,18 @@ describe('UsersController (e2e)', () => {
 
     expect(res.statusCode).toBe(201);
 
-    authFile = await fs.readJson(authFilePath);
+    authFile = await readJson(authFilePath);
     expect(authFile[0].otpActive).toBeFalsy();
     expect(authFile[0]).not.toHaveProperty('otpSecret');
   });
 
   it('POST /users/otp/deactivate (invalid password)', async () => {
-    let authFile: UserDto[] = await fs.readJson(authFilePath);
+    let authFile: UserDto[] = await readJson(authFilePath);
 
     authFile[0].otpActive = true;
     authFile[0].otpSecret = 'blah';
 
-    await fs.writeJson(authFilePath, authFile);
+    await writeJson(authFilePath, authFile);
 
     const payload: UserDeactivateOtpDto = {
       password: 'not-the-password',
@@ -470,7 +470,7 @@ describe('UsersController (e2e)', () => {
 
     expect(res.statusCode).toBe(403);
 
-    authFile = await fs.readJson(authFilePath);
+    authFile = await readJson(authFilePath);
     expect(authFile[0].otpActive).toBe(true);
     expect(authFile[0].otpSecret).toBeTruthy();
   });

@@ -1,12 +1,11 @@
 import { Pipe, PipeTransform } from '@angular/core';
-
 import { SettingsService } from '@/app/core/settings.service';
 
 @Pipe({ name: 'convertTemp' })
 export class ConvertTempPipe implements PipeTransform {
   constructor(
     private $settings: SettingsService,
-  ) { }
+  ) {}
 
   transform(value: number, unit: 'c' | 'f' = this.$settings.env.temperatureUnits): number {
     if (unit === 'f') {

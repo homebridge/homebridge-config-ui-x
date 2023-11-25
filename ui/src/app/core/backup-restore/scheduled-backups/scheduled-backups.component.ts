@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
-import { ToastrService } from 'ngx-toastr';
 import { saveAs } from 'file-saver';
-
+import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '@/app/core/api.service';
 
 @Component({
@@ -21,7 +20,7 @@ export class ScheduledBackupsComponent implements OnInit {
     private $toastr: ToastrService,
     private $translate: TranslateService,
     private $api: ApiService,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.getScheduledBackups();
@@ -65,5 +64,4 @@ export class ScheduledBackupsComponent implements OnInit {
   openBackupRestore() {
     this.activeModal.close();
   }
-
 }

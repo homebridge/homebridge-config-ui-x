@@ -37,7 +37,7 @@
       <div class="restart-progress-box text-center primary-text">
         <span [ngClass]="{ 'grey-text': !uiOnline }">
           <i [ngClass]="{
-            'far fa-pause-circle': !uiOnline,
+            'far fa-fw fa-pause-circle': !uiOnline,
             'fas fa-fw fa-spinner fa-spin': uiOnline
           }"></i> {{ 'restart.message_homebridge_service_ready' | translate }}
         </span>

@@ -1,11 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Validators, FormGroup, FormControl } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { debounceTime } from 'rxjs/operators';
-
-import { environment } from '@/environments/environment';
-import { SettingsService } from '@/app/core/settings.service';
 import { AuthService } from '@/app/core/auth/auth.service';
+import { SettingsService } from '@/app/core/settings.service';
+import { environment } from '@/environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -34,7 +33,7 @@ export class LoginComponent implements OnInit {
     private $router: Router,
     public $auth: AuthService,
     public $settings: SettingsService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.form = new FormGroup({
@@ -98,14 +97,14 @@ export class LoginComponent implements OnInit {
       })
       .catch((err) => {
         if (err.status === 412) {
-          if (!this.form.controls['otp']) {
+          if (!this.form.controls.otp) {
             this.form.addControl('otp', new FormControl('', [
               Validators.required,
               Validators.minLength(6),
               Validators.maxLength(6),
             ]));
           } else {
-            this.form.controls['otp'].setErrors(['Invalid Code']);
+            this.form.controls.otp.setErrors(['Invalid Code']);
             this.invalid2faCode = true;
           }
           this.twoFactorCodeRequired = true;
@@ -119,5 +118,4 @@ export class LoginComponent implements OnInit {
 
     this.inProgress = false;
   }
-
 }

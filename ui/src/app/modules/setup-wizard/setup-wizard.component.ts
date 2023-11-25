@@ -1,16 +1,19 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-
-import { environment } from '@/environments/environment';
 import { ApiService } from '@/app/core/api.service';
 import { AuthService } from '@/app/core/auth/auth.service';
-import { SettingsService } from '@/app/core/settings.service';
 import { BackupRestoreComponent } from '@/app/core/backup-restore/backup-restore.component';
+import { SettingsService } from '@/app/core/settings.service';
+import { environment } from '@/environments/environment';
 
 @Component({
   selector: 'app-setup-wizard',
@@ -33,7 +36,6 @@ export class SetupWizardComponent implements OnInit, OnDestroy {
   public restoreUploading = false;
 
   constructor(
-    private $router: Router,
     private $modal: NgbModal,
     private $translate: TranslateService,
     private $toastr: ToastrService,
@@ -41,12 +43,12 @@ export class SetupWizardComponent implements OnInit, OnDestroy {
     private $api: ApiService,
     private $auth: AuthService,
     private $settings: SettingsService,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.previousTitle = this.$title.getTitle();
     this.$title.setTitle('Setup Homebridge');
-    window.document.querySelector('body').classList.remove(`body-top-padding`);
+    window.document.querySelector('body').classList.remove('body-top-padding');
   }
 
   matchPassword(AC: AbstractControl) {
@@ -61,7 +63,7 @@ export class SetupWizardComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.$title.setTitle(this.previousTitle);
-    window.document.querySelector('body').classList.add(`body-top-padding`);
+    window.document.querySelector('body').classList.add('body-top-padding');
   }
 
   onClickGettingStarted() {

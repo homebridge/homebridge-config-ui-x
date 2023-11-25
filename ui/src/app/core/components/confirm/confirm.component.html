@@ -1,4 +1,4 @@
-<div class="modal-content" style="min-height: 300px;">
+<div class="modal-content">
   <div class="modal-header">
     <h5 class="modal-title">{{ title }}</h5>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"
@@ -6,15 +6,21 @@
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
-  <div class="modal-body d-flex flex-row flex-grow-1 align-items-center w-100">
+  <div class="modal-body w-100 text-center">
+    <i *ngIf="faIconClass" class="fas fa-fw {{ faIconClass }} mb-4" style="font-size: 75px;"></i>
     <p class="w-100 text-center">{{ message }}</p>
   </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-elegant mr-auto" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
-      {{ cancelButtonLabel }}
-    </button>
-    <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="activeModal.close()">
-      {{ confirmButtonLabel }}
-    </button>
+  <div class="modal-footer justify-content-between">
+    <div class="text-left">
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
+        {{ 'form.button_close' | translate }}
+      </button>
+    </div>
+    <div class="text-center"></div>
+    <div class="text-right">
+      <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="activeModal.close()">
+        {{ confirmButtonLabel }}
+      </button>
+    </div>
   </div>
 </div>

@@ -5,7 +5,7 @@
       {{ plugin.displayName || plugin.name }}
     </h5>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-      (click)="activeModal.close('Cross click')">
+      (click)="activeModal.close('Dismiss')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
@@ -57,7 +57,7 @@
   </div>
   <div class="modal-footer justify-content-between">
     <div style="min-width: 25%;" class="text-left">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.close('Cross click')"
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.close('Dismiss')"
         [translate]="'form.button_cancel'">Cancel</button>
     </div>
 

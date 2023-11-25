@@ -1,10 +1,10 @@
-import * as child_process from 'child_process';
+import { exec } from 'child_process';
 import { EventEmitter } from 'events';
-import * as os from 'os';
+import { platform } from 'os';
 import { Injectable } from '@nestjs/common';
-import * as color from 'bash-color';
-import * as fs from 'fs-extra';
-import * as semver from 'semver';
+import { cyan, red, yellow } from 'bash-color';
+import { createReadStream, existsSync, stat } from 'fs-extra';
+import { satisfies } from 'semver';
 import { Tail } from 'tail';
 import { ConfigService } from '../../core/config/config.service';
 import { NodePtyService } from '../../core/node-pty/node-pty.service';
@@ -52,22 +52,22 @@ export class LogService {
   public connect(client: EventEmitter, size: LogTermSize) {
     this.ending = false;
 
-    if (!semver.satisfies(process.version, `>=${this.configService.minimumNodeVersion}`)) {
-      client.emit('stdout', color.yellow(`Node.js v${this.configService.minimumNodeVersion} higher is required for ${this.configService.name}.\n\r`));
-      client.emit('stdout', color.yellow(`You may experience issues while running on Node.js ${process.version}.\n\r\n\r`));
+    if (!satisfies(process.version, `>=${this.configService.minimumNodeVersion}`)) {
+      client.emit('stdout', yellow(`Node.js v${this.configService.minimumNodeVersion} higher is required for ${this.configService.name}.\n\r`));
+      client.emit('stdout', yellow(`You may experience issues while running on Node.js ${process.version}.\n\r\n\r`));
     }
 
     if (this.command) {
-      client.emit('stdout', color.cyan(`Loading logs using "${this.configService.ui.log.method}" method...\r\n`));
-      client.emit('stdout', color.cyan(`CMD: ${this.command.join(' ')}\r\n\r\n`));
+      client.emit('stdout', cyan(`Loading logs using "${this.configService.ui.log.method}" method...\r\n`));
+      client.emit('stdout', cyan(`CMD: ${this.command.join(' ')}\r\n\r\n`));
       this.tailLog(client, size);
     } else if (this.useNative) {
-      client.emit('stdout', color.cyan('Loading logs using native method...\r\n'));
-      client.emit('stdout', color.cyan(`File: ${this.configService.ui.log.path}\r\n\r\n`));
+      client.emit('stdout', cyan('Loading logs using native method...\r\n'));
+      client.emit('stdout', cyan(`File: ${this.configService.ui.log.path}\r\n\r\n`));
       this.tailLogFromFileNative(client);
     } else {
-      client.emit('stdout', color.red('Cannot show logs. "log" option is not configured correctly in your Homebridge config.json file.\r\n\r\n'));
-      client.emit('stdout', color.cyan('See https://homebridge.io/w/JtHrm for instructions or use hb-service.\r\n'));
+      client.emit('stdout', red('Cannot show logs. "log" option is not configured correctly in your Homebridge config.json file.\r\n\r\n'));
+      client.emit('stdout', cyan('See https://homebridge.io/w/JtHrm for instructions or use hb-service.\r\n'));
     }
   }
 
@@ -98,9 +98,9 @@ export class LogService {
       try {
         if (!this.ending) {
           client.emit('stdout', '\n\r');
-          client.emit('stdout', color.red(`The log tail command "${command.join(' ')}" exited with code ${code.exitCode}.\n\r`));
-          client.emit('stdout', color.red('Please check the command in your config.json is correct.\n\r\n\r'));
-          client.emit('stdout', color.cyan('See https://github.com/homebridge/homebridge-config-ui-x/wiki/Manual-Configuration#log-viewer-configuration for instructions.\r\n'));
+          client.emit('stdout', red(`The log tail command "${command.join(' ')}" exited with code ${code.exitCode}.\n\r`));
+          client.emit('stdout', red('Please check the command in your config.json is correct.\n\r\n\r'));
+          client.emit('stdout', cyan('See https://github.com/homebridge/homebridge-config-ui-x/wiki/Manual-Configuration#log-viewer-configuration for instructions.\r\n'));
         }
       } catch (e) {
         // the client socket probably closed
@@ -111,7 +111,7 @@ export class LogService {
     client.on('resize', (resize: { rows: number; cols: number }) => {
       try {
         term.resize(resize.cols, resize.rows);
-      } catch (e) { }
+      } catch (e) {}
     });
 
     // cleanup on disconnect
@@ -124,10 +124,10 @@ export class LogService {
 
       try {
         term.kill();
-      } catch (e) { }
+      } catch (e) {}
       // really make sure the log tail command is killed when using sudo mode
       if (this.configService.ui.sudo && term && term.pid) {
-        child_process.exec(`sudo -n kill -9 ${term.pid}`);
+        exec(`sudo -n kill -9 ${term.pid}`);
       }
     };
 
@@ -140,7 +140,7 @@ export class LogService {
    */
   private logFromFile() {
     let command: string[];
-    if (os.platform() === 'win32') {
+    if (platform() === 'win32') {
       // windows - use powershell to tail log
       command = ['powershell.exe', '-command', `Get-Content -Path '${this.configService.ui.log.path}' -Wait -Tail 200`];
     } else {
@@ -174,16 +174,16 @@ export class LogService {
    * Logs from a file without spawning a child_process
    */
   private async tailLogFromFileNative(client: EventEmitter) {
-    if (!fs.existsSync(this.configService.ui.log.path)) {
+    if (!existsSync(this.configService.ui.log.path)) {
       client.emit('stdout', '\n\r');
-      client.emit('stdout', color.red(`No log file exists at path: ${this.configService.ui.log.path}\n\r`));
+      client.emit('stdout', red(`No log file exists at path: ${this.configService.ui.log.path}\n\r`));
     }
 
     // read the first 50000 bytes of the log and emit to the client
     try {
-      const logStats = await fs.stat(this.configService.ui.log.path);
+      const logStats = await stat(this.configService.ui.log.path);
       const logStartPosition = logStats.size <= 50000 ? 0 : logStats.size - 50000;
-      const logStream = fs.createReadStream(this.configService.ui.log.path, { start: logStartPosition });
+      const logStream = createReadStream(this.configService.ui.log.path, { start: logStartPosition });
 
       logStream.on('data', (buffer) => {
         client.emit('stdout', buffer.toString('utf8').split('\n').join('\n\r'));
@@ -193,7 +193,7 @@ export class LogService {
         logStream.close();
       });
     } catch (e) {
-      client.emit('stdout', color.red(`Failed to read log file: ${e.message}\n\r`));
+      client.emit('stdout', red(`Failed to read log file: ${e.message}\n\r`));
       return;
     }
 
@@ -264,7 +264,6 @@ export class LogService {
   private logNotConfigured() {
     this.command = null;
   }
-
 }
 
 export type LogTermSize = { cols: number; rows: number };

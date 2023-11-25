@@ -1,9 +1,8 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { ServiceTypeX } from '../../accessories.interfaces';
-
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { ServiceTypeX } from '../../accessories.interfaces';
 
 @Component({
   selector: 'app-lightbulb-manage',
@@ -70,5 +69,4 @@ export class LightbulbManageComponent implements OnInit {
   onBrightnessStateChange() {
     this.targetBrightnessChanged.next(this.targetBrightness.value);
   }
-
 }

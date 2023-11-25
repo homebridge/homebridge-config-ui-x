@@ -1,6 +1,5 @@
 import './self-check';
-
-import * as path from 'path';
+import { resolve } from 'path';
 import helmet from '@fastify/helmet';
 import fastifyMultipart from '@fastify/multipart';
 import { ValidationPipe } from '@nestjs/common';
@@ -8,7 +7,7 @@ import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import * as fs from 'fs-extra';
+import { readFile } from 'fs-extra';
 import { AppModule } from './app.module';
 import { ConfigService } from './core/config/config.service';
 import { getStartupConfig } from './core/config/config.startup';
@@ -17,7 +16,7 @@ import { SpaFilter } from './core/spa/spa.filter';
 
 export { HomebridgeIpcService } from './core/homebridge-ipc/homebridge-ipc.service';
 
-process.env.UIX_BASE_PATH = process.env.UIX_BASE_PATH_OVERRIDE || path.resolve(__dirname, '../');
+process.env.UIX_BASE_PATH = process.env.UIX_BASE_PATH_OVERRIDE || resolve(__dirname, '../');
 
 async function bootstrap(): Promise<NestFastifyApplication> {
   const startupConfig = await getStartupConfig();
@@ -81,12 +80,12 @@ async function bootstrap(): Promise<NestFastifyApplication> {
     res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.header('Pragma', 'no-cache');
     res.header('Expires', '0');
-    res.send(await fs.readFile(path.resolve(process.env.UIX_BASE_PATH, 'public/index.html')));
+    res.send(await readFile(resolve(process.env.UIX_BASE_PATH, 'public/index.html')));
   });
 
   // serve static assets with a long cache timeout
   app.useStaticAssets({
-    root: path.resolve(process.env.UIX_BASE_PATH, 'public'),
+    root: resolve(process.env.UIX_BASE_PATH, 'public'),
     setHeaders(res) {
       res.setHeader('Cache-Control', 'public,max-age=31536000,immutable');
     },

@@ -1,7 +1,11 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-
 import { WsService } from '@/app/core/ws.service';
 
 @Component({
@@ -12,15 +16,15 @@ import { WsService } from '@/app/core/ws.service';
 export class ChildBridgeWidgetComponent implements OnInit, OnDestroy {
   @Input() widget: any;
 
-  private io = this.$ws.connectToNamespace('child-bridges');
-
   public childBridges = [];
+
+  private io = this.$ws.connectToNamespace('child-bridges');
 
   constructor(
     private $toastr: ToastrService,
     private $translate: TranslateService,
     private $ws: WsService,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.io.connected.subscribe(async () => {

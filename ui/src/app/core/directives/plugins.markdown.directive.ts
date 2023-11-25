@@ -8,7 +8,7 @@ export class PluginsMarkdownDirective implements OnInit {
 
   constructor(
     private el: ElementRef,
-  ) { }
+  ) {}
 
   ngOnInit() {
     // ensure third party links open in a new window without a referrer
@@ -22,5 +22,4 @@ export class PluginsMarkdownDirective implements OnInit {
     const emoji = new EmojiConvertor();
     this.el.nativeElement.innerHTML = emoji.replace_colons(this.el.nativeElement.innerHTML);
   }
-
 }

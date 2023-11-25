@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl, Validators, FormGroup, FormControl } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
-
+import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '@/app/core/api.service';
 
 @Component({
@@ -24,7 +23,7 @@ export class UsersDisable2faComponent implements OnInit {
     private toastr: ToastrService,
     private translate: TranslateService,
     private $api: ApiService,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
 
@@ -43,5 +42,4 @@ export class UsersDisable2faComponent implements OnInit {
       },
     );
   }
-
 }

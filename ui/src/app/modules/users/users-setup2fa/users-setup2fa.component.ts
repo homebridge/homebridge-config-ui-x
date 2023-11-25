@@ -1,10 +1,15 @@
-import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Input,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { UntypedFormGroup, UntypedFormControl, Validators, FormGroup, FormControl } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
-import { ToastrService } from 'ngx-toastr';
 import * as dayjs from 'dayjs';
-
+import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '@/app/core/api.service';
 
 @Component({
@@ -29,7 +34,7 @@ export class UsersSetup2faComponent implements OnInit {
     private toastr: ToastrService,
     private translate: TranslateService,
     private $api: ApiService,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.$api.post('/users/otp/setup', {}).subscribe(
@@ -42,14 +47,14 @@ export class UsersSetup2faComponent implements OnInit {
       err => {
         this.activeModal.dismiss();
         this.toastr.error(
-          err.error.message || 'An error occured while attempting to setup 2FA',
+          err.error.message || 'An error occurred while attempting to setup 2FA',
           this.translate.instant('toast.title_error'),
         );
       },
     );
   }
 
-  checkTimeDiff(timestamp) {
+  checkTimeDiff(timestamp: string) {
     const diffMs = dayjs(timestamp).diff(new Date(), 'millisecond');
     if (diffMs < -5000 || diffMs > 5000) {
       this.timeDiffError = diffMs;
@@ -65,9 +70,8 @@ export class UsersSetup2faComponent implements OnInit {
         this.activeModal.close();
       },
       err => {
-        this.toastr.error(err.error.message || 'An error occured', this.translate.instant('toast.title_error'));
+        this.toastr.error(err.error.message || 'An error occurred', this.translate.instant('toast.title_error'));
       },
     );
   }
-
 }

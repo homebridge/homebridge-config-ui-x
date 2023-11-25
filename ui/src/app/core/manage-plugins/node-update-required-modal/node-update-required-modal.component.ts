@@ -1,7 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import {  NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { minVersion, SemVer } from 'semver';
-
+import { SemVer, minVersion } from 'semver';
 import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
@@ -18,7 +17,7 @@ export class NodeUpdateRequiredModalComponent implements OnInit {
   constructor(
     public activeModal: NgbActiveModal,
     private $settings: SettingsService,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.minVersion = minVersion(this.plugin.engines.node);

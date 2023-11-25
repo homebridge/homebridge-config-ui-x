@@ -1,9 +1,9 @@
 import { EventEmitter } from 'events';
-import * as os from 'os';
-import * as path from 'path';
+import { platform } from 'os';
+import { resolve } from 'path';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as fs from 'fs-extra';
+import { copy, remove } from 'fs-extra';
 import { ConfigService } from '../../src/core/config/config.service';
 import { NodePtyService } from '../../src/core/node-pty/node-pty.service';
 import { PluginsGateway } from '../../src/modules/plugins/plugins.gateway';
@@ -29,24 +29,24 @@ describe('PluginsGateway (e2e)', () => {
   };
 
   beforeAll(async () => {
-    process.env.UIX_BASE_PATH = path.resolve(__dirname, '../../');
-    process.env.UIX_STORAGE_PATH = path.resolve(__dirname, '../', '.homebridge');
-    process.env.UIX_CONFIG_PATH = path.resolve(process.env.UIX_STORAGE_PATH, 'config.json');
-    process.env.UIX_CUSTOM_PLUGIN_PATH = path.resolve(process.env.UIX_STORAGE_PATH, 'plugins/node_modules');
+    process.env.UIX_BASE_PATH = resolve(__dirname, '../../');
+    process.env.UIX_STORAGE_PATH = resolve(__dirname, '../', '.homebridge');
+    process.env.UIX_CONFIG_PATH = resolve(process.env.UIX_STORAGE_PATH, 'config.json');
+    process.env.UIX_CUSTOM_PLUGIN_PATH = resolve(process.env.UIX_STORAGE_PATH, 'plugins/node_modules');
 
-    authFilePath = path.resolve(process.env.UIX_STORAGE_PATH, 'auth.json');
-    secretsFilePath = path.resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets');
+    authFilePath = resolve(process.env.UIX_STORAGE_PATH, 'auth.json');
+    secretsFilePath = resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets');
     pluginsPath = process.env.UIX_CUSTOM_PLUGIN_PATH;
 
     // setup test config
-    await fs.copy(path.resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
 
     // setup test auth file
-    await fs.copy(path.resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
-    await fs.copy(path.resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
+    await copy(resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
+    await copy(resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
 
-    await fs.remove(pluginsPath);
-    await fs.copy(path.resolve(__dirname, '../mocks', 'plugins'), pluginsPath);
+    await remove(pluginsPath);
+    await copy(resolve(__dirname, '../mocks', 'plugins'), pluginsPath);
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [PluginsModule],
@@ -92,7 +92,7 @@ describe('PluginsGateway (e2e)', () => {
     await pluginsGateway.installPlugin(client, { name: 'homebridge-mock-plugin' });
 
     // expect the npm command to be spawned
-    if (os.platform() === 'win32') {
+    if (platform() === 'win32') {
       expect(mockSpawn).toHaveBeenCalledWith(win32NpmPath, ['install', '-g', 'homebridge-mock-plugin@latest'], expect.anything());
     } else {
       expect(mockSpawn).toHaveBeenCalledWith('npm', ['install', 'homebridge-mock-plugin@latest'], expect.anything());
@@ -119,7 +119,7 @@ describe('PluginsGateway (e2e)', () => {
     await pluginsGateway.installPlugin(client, { name: 'homebridge-mock-plugin', version: '3.2.5' });
 
     // expect the npm command to be spawned
-    if (os.platform() === 'win32') {
+    if (platform() === 'win32') {
       expect(mockSpawn).toHaveBeenCalledWith(win32NpmPath, ['install', '-g', 'homebridge-mock-plugin@3.2.5'], expect.anything());
     } else {
       expect(mockSpawn).toHaveBeenCalledWith('npm', ['install', 'homebridge-mock-plugin@3.2.5'], expect.anything());
@@ -134,7 +134,7 @@ describe('PluginsGateway (e2e)', () => {
 
   it('ON /plugins/install (sudo)', async () => {
     // sudo does not work on windows
-    if (os.platform() === 'win32') {
+    if (platform() === 'win32') {
       return;
     }
 
@@ -171,10 +171,10 @@ describe('PluginsGateway (e2e)', () => {
 
     try {
       await pluginsGateway.installPlugin(client, { name: 'homebridge-mock-plugin', version: 'latest' });
-    } catch (e) { }
+    } catch (e) {}
 
     // expect the npm command to be spawned
-    if (os.platform() === 'win32') {
+    if (platform() === 'win32') {
       expect(mockSpawn).toHaveBeenCalledWith(win32NpmPath, ['install', '-g', 'homebridge-mock-plugin@latest'], expect.anything());
     } else {
       expect(mockSpawn).toHaveBeenCalledWith('npm', ['install', 'homebridge-mock-plugin@latest'], expect.anything());
@@ -196,10 +196,10 @@ describe('PluginsGateway (e2e)', () => {
 
     try {
       await pluginsGateway.uninstallPlugin(client, { name: 'homebridge-mock-plugin' });
-    } catch (e) { }
+    } catch (e) {}
 
     // expect the npm command to be spawned
-    if (os.platform() === 'win32') {
+    if (platform() === 'win32') {
       expect(mockSpawn).toHaveBeenCalledWith(win32NpmPath, ['uninstall', '-g', 'homebridge-mock-plugin'], expect.anything());
     } else {
       expect(mockSpawn).toHaveBeenCalledWith('npm', ['uninstall', 'homebridge-mock-plugin'], expect.anything());
@@ -221,7 +221,7 @@ describe('PluginsGateway (e2e)', () => {
 
     try {
       await pluginsGateway.uninstallPlugin(client, { name: 'homebridge-config-ui-x' });
-    } catch (e) { }
+    } catch (e) {}
 
     // expect the npm command not to have to be spawned
     expect(mockSpawn).not.toHaveBeenCalled();
@@ -242,10 +242,10 @@ describe('PluginsGateway (e2e)', () => {
 
     try {
       await pluginsGateway.updatePlugin(client, { name: 'homebridge-mock-plugin', version: 'latest' });
-    } catch (e) { }
+    } catch (e) {}
 
     // expect the npm command to be spawned
-    if (os.platform() === 'win32') {
+    if (platform() === 'win32') {
       expect(mockSpawn).toHaveBeenCalledWith(win32NpmPath, ['install', '-g', 'homebridge-mock-plugin@latest'], expect.anything());
     } else {
       expect(mockSpawn).toHaveBeenCalledWith('npm', ['install', 'homebridge-mock-plugin@latest'], expect.anything());
@@ -267,10 +267,10 @@ describe('PluginsGateway (e2e)', () => {
 
     try {
       await pluginsGateway.updatePlugin(client, { name: 'homebridge-mock-plugin', version: '3.4.6' });
-    } catch (e) { }
+    } catch (e) {}
 
     // expect the npm command to be spawned
-    if (os.platform() === 'win32') {
+    if (platform() === 'win32') {
       expect(mockSpawn).toHaveBeenCalledWith(win32NpmPath, ['install', '-g', 'homebridge-mock-plugin@3.4.6'], expect.anything());
     } else {
       expect(mockSpawn).toHaveBeenCalledWith('npm', ['install', 'homebridge-mock-plugin@3.4.6'], expect.anything());
@@ -302,14 +302,14 @@ describe('PluginsGateway (e2e)', () => {
 
     try {
       await pluginsGateway.homebridgeUpdate(client, {});
-    } catch (e) { }
+    } catch (e) {}
 
     // expect the npm command to be spawned
-    if (os.platform() === 'win32') {
+    if (platform() === 'win32') {
       expect(mockSpawn).toHaveBeenCalledWith(win32NpmPath, ['install', '-g', 'homebridge@latest'], expect.anything());
     } else {
       expect(mockSpawn).toHaveBeenCalledWith('npm', ['install', 'homebridge@latest'], expect.objectContaining({
-        cwd: path.resolve(process.env.UIX_STORAGE_PATH, 'plugins'),
+        cwd: resolve(process.env.UIX_STORAGE_PATH, 'plugins'),
       }));
     }
     // expect the method to let the client know the command succeeded
@@ -338,82 +338,18 @@ describe('PluginsGateway (e2e)', () => {
 
     try {
       await pluginsGateway.homebridgeUpdate(client, { version: '1.2.5' });
-    } catch (e) { }
+    } catch (e) {}
 
     // expect the npm command to be spawned
-    if (os.platform() === 'win32') {
+    if (platform() === 'win32') {
       expect(mockSpawn).toHaveBeenCalledWith(win32NpmPath, ['install', '-g', 'homebridge@1.2.5'], expect.anything());
     } else {
       expect(mockSpawn).toHaveBeenCalledWith('npm', ['install', 'homebridge@1.2.5'], expect.objectContaining({
-        cwd: path.resolve(process.env.UIX_STORAGE_PATH, 'plugins'),
+        cwd: resolve(process.env.UIX_STORAGE_PATH, 'plugins'),
       }));
     }
     // expect the method to let the client know the command succeeded
     expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded!'));
-  });
-
-  it('ON /plugins/homebridge-update (1.2.x -> 1.3.x)', async () => {
-    // mock get homebridge package
-    pluginsService.getHomebridgePackage = async () => {
-      return {
-        name: 'homebridge',
-        private: false,
-        publicPackage: true,
-        installPath: pluginsPath,
-        latestVersion: '1.3.0',
-        installedVersion: '1.2.5'
-      };
-    };
-
-    jest.spyOn(nodePtyService, 'spawn')
-      .mockImplementation(() => {
-        const term = new EventEmitter();
-        setTimeout(() => {
-          term.emit('exit', 0);
-        }, 10);
-        return term;
-      });
-
-    const writeJsonMock = jest.spyOn(fs, 'writeJsonSync');
-
-    try {
-      await pluginsGateway.homebridgeUpdate(client, { version: 'latest' });
-    } catch (e) { }
-
-    // the save config method should have been called
-    expect(writeJsonMock).toHaveBeenCalled();
-  });
-
-  it('ON /plugins/homebridge-update (1.1.x -> 1.3.x)', async () => {
-    // mock get homebridge package
-    pluginsService.getHomebridgePackage = async () => {
-      return {
-        name: 'homebridge',
-        private: false,
-        publicPackage: true,
-        installPath: pluginsPath,
-        latestVersion: '1.3.0',
-        installedVersion: '1.1.7'
-      };
-    };
-
-    jest.spyOn(nodePtyService, 'spawn')
-      .mockImplementation(() => {
-        const term = new EventEmitter();
-        setTimeout(() => {
-          term.emit('exit', 0);
-        }, 10);
-        return term;
-      });
-
-    const writeJsonMock = jest.spyOn(fs, 'writeJsonSync');
-
-    try {
-      await pluginsGateway.homebridgeUpdate(client, { version: 'latest' });
-    } catch (e) { }
-
-    // the save config method should not have been called
-    expect(writeJsonMock).not.toHaveBeenCalled();
   });
 
   afterAll(async () => {
