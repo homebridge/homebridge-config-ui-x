@@ -94,7 +94,7 @@ export class PluginCardComponent implements OnInit {
     ref.componentInstance.faIconClass = 'fa-shield-alt green-text';
   }
 
-  pluginInfoModal() {
+  pluginInfoModal(plugin: any) {
     const ref = this.$modal.open(InformationComponent);
     ref.componentInstance.title = plugin.name;
     ref.componentInstance.message = 'test';
