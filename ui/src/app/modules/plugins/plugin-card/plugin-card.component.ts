@@ -98,6 +98,11 @@ export class PluginCardComponent implements OnInit {
     const ref = this.$modal.open(InformationComponent);
     const displayName = ( plugin.displayName || ((plugin.name.charAt(0) === '@' ? plugin.name.split('/')[1] : plugin.name) | replace:'-':' ' | titlecase) );
     const author = plugin.author;
+    const version = plugin.installedVersion || plugin.latestVersion;
+    const lastUpdated = "";
+
+    if (plugin.lastUpdated) {
+      const lastUpdated = ` (${plugin.lastUpdated})`;
     
     const link = "";
     
@@ -108,7 +113,7 @@ export class PluginCardComponent implements OnInit {
     }
 
     ref.componentInstance.title = plugin.displayName;
-    ref.componentInstance.message = `name: ${plugin.name}, author: ${author}`;
+    ref.componentInstance.message = `${plugin.name}, ${author}, v${version}${lastUpdated}`;
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('plugins.button_homepage');
     ref.componentInstance.ctaButtonLink = link;
     ref.componentInstance.faIconClass = 'fa-info';
