@@ -43,14 +43,14 @@
         </h4>
       </div>
       <div class="d-flex flex-row justify-content-between mt-2">
-        <div class="card-text grey-text mb-0 mr-auto">
+        <div class="card-text mb-0 mr-auto">
           <a href="javascript:void(0)" class="card-link text-decoration-none pr-1" (click)="pluginInfoModal(plugin)">
             <i class="fas fa-fw fa-circle-info"></i>
           </a>
-          <span class="grey-text">
+          <span class="">
             v{{ plugin.installedVersion || plugin.latestVersion }}
           </span>
-          <span class="grey-text text-decoration-none" *ngIf="plugin.lastUpdated">
+          <span class="text-decoration-none" *ngIf="plugin.lastUpdated">
              ({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})
           </span>
         </div>
