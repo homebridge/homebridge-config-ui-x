@@ -96,7 +96,7 @@ export class PluginCardComponent implements OnInit {
 
   pluginInfoModal(plugin: any) {
     const ref = this.$modal.open(InformationComponent);
-    const displayName = ( plugin.displayName || plugin.name );
+    const name = ( plugin.displayName || plugin.name );
     const author = plugin.author;
     const version = plugin.installedVersion || plugin.latestVersion;
     let lastUpdated = '';
@@ -109,7 +109,7 @@ export class PluginCardComponent implements OnInit {
     } else if (plugin.links.npm) {
       link = plugin.links.npm;
     }
-    ref.componentInstance.title = plugin.displayName;
+    ref.componentInstance.title = name;
     ref.componentInstance.message = `${plugin.name}, ${author}, v${version}${lastUpdated}`;
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('plugins.button_homepage');
     ref.componentInstance.ctaButtonLink = link;
