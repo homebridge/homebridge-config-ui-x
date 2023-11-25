@@ -51,7 +51,7 @@
           <span class="grey-text text-decoration-none" *ngIf="plugin.lastUpdated">
             ({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})
           </span>
-          <span class="grey-text" *ngIf="plugin.author">
+          <span class="grey-text text-decoration-none" *ngIf="plugin.author">
             <a class="grey-text " target="_blank" rel="noopener noreferrer"
               [href]="'https://www.npmjs.com/~' + plugin.author">@{{ plugin.author }}</a>
           </span>
