@@ -94,6 +94,28 @@ export class PluginCardComponent implements OnInit {
     ref.componentInstance.faIconClass = 'fa-shield-alt green-text';
   }
 
+  pluginInfoModal(plugin: any) {
+    const ref = this.$modal.open(InformationComponent);
+    const name = ( plugin.displayName || plugin.name );
+    const author = plugin.author;
+    const version = plugin.installedVersion || plugin.latestVersion;
+    let lastUpdated = '';
+    if (plugin.lastUpdated) {
+      lastUpdated = ` (${plugin.lastUpdated})`;
+    }
+    let link = '';
+    if (plugin.links.homepage) {
+      link = plugin.links.homepage;
+    } else if (plugin.links.npm) {
+      link = plugin.links.npm;
+    }
+    ref.componentInstance.title = name;
+    ref.componentInstance.message = `${plugin.name}, ${author}, v${version}${lastUpdated}`;
+    ref.componentInstance.ctaButtonLabel = this.$translate.instant('plugins.button_homepage');
+    ref.componentInstance.ctaButtonLink = link;
+    ref.componentInstance.faIconClass = 'fa-info';
+  }
+
   disablePlugin(plugin: any) {
     const ref = this.$modal.open(ConfirmComponent);
 
