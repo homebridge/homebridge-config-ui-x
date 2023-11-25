@@ -103,7 +103,7 @@ export class PluginCardComponent implements OnInit {
     if (plugin.lastUpdated) {
       const lastUpdated = ` (${plugin.lastUpdated})`;
     } else {
-      const lastUpdated = "";
+      const lastUpdated = '';
     }
     
     if (plugin.links.homepage) {
@@ -111,7 +111,7 @@ export class PluginCardComponent implements OnInit {
     } else if (plugin.links.npm) {
       const link = plugin.links.npm;
     } else {
-      const link = "";
+      const link = '';
     }
 
     ref.componentInstance.title = plugin.displayName;
