@@ -32,4 +32,17 @@
     </nouislider>
 
   </div>
+  <div class="modal-footer justify-content-between">
+    <div class="text-left">
+      <button type="button" class="btn btn-elegant" (click)="showAccessoryInformation(service)">
+        Settings
+      </button>
+    </div>
+    <div class="text-center"></div>
+    <div class="text-right">
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
+        {{ 'form.button_close' | translate }}
+      </button>
+    </div>
+  </div>
 </div>
