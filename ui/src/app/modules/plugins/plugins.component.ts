@@ -70,7 +70,8 @@ export class PluginsComponent implements OnInit, OnDestroy {
     this.loading = true;
 
     try {
-      this.installedPlugins = await this.$api.get('/plugins').toPromise();
+      const installedPlugins = await this.$api.get('/plugins').toPromise();
+      this.installedPlugins = installedPlugins.filter((x) => x.name !== 'homebridge-config-ui-x');
       this.loading = false;
     } catch (err) {
       this.$toastr.error(
@@ -101,7 +102,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
 
     this.$api.get(`/plugins/search/${encodeURIComponent(this.form.value.query)}`).subscribe(
       (data) => {
-        this.installedPlugins = data;
+        this.installedPlugins = data.filter((x) => x.name !== 'homebridge-config-ui-x');
         this.loading = false;
       },
       (err) => {
