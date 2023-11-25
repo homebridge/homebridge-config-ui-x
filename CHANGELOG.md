@@ -4,6 +4,12 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 
 ## BETA
 
+### UI Changes
+
+### Translation Changes
+
+### Other Changes
+
 ## 4.53.0 (2023-11-24)
 
 Happy Thanksgiving to our American friends! :turkey:
