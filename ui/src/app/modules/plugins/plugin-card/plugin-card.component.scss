@@ -7,7 +7,7 @@
   display: none;
 }
 
-.card-title {
+.truncate2 {
   -webkit-line-clamp: 2 !important;
   -webkit-box-orient: vertical !important;
   display: -webkit-box !important;
@@ -17,11 +17,15 @@
   max-height: 4rem !important;
 }
 
-.dropdown.show .fa-caret-down {
-  transform: rotate(-180deg);
-  transition: 0.5s;
+.truncate1 {
+  -webkit-line-clamp: 1 !important;
+  -webkit-box-orient: vertical !important;
+  display: -webkit-box !important;
+  overflow: hidden !important;
+  height: 2rem !important;
+  line-height: 2rem !important;
+  max-height: 2rem !important;
 }
 
-.dropdown .fa-caret-down {
-  transition: 0.5s;
-}
+
+
