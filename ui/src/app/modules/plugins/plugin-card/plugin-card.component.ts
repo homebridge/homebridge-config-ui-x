@@ -99,19 +99,16 @@ export class PluginCardComponent implements OnInit {
     const displayName = ( plugin.displayName || plugin.name );
     const author = plugin.author;
     const version = plugin.installedVersion || plugin.latestVersion;
-    
     let lastUpdated = '';
     if (plugin.lastUpdated) {
       lastUpdated = ` (${plugin.lastUpdated})`;
     }
-    
     let link = '';
     if (plugin.links.homepage) {
       link = plugin.links.homepage;
     } else if (plugin.links.npm) {
       link = plugin.links.npm;
     }
-    
     ref.componentInstance.title = plugin.displayName;
     ref.componentInstance.message = `${plugin.name}, ${author}, v${version}${lastUpdated}`;
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('plugins.button_homepage');
