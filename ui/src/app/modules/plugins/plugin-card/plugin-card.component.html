@@ -2,13 +2,8 @@
 <div class="card card-body mb-3 p-3">
   <div class="d-flex flex-row justify-content-between">
     <div class="d-flex flex-column justify-content-between mr-2">
-      <a target="_blank" rel="noopener noreferrer" class="text-decoration-none"
-        *ngIf="plugin.links.homepage || plugin.links.npm" [href]="plugin.links.homepage || plugin.links.npm">
-        <img src="https://raw.githubusercontent.com/homebridge/branding/master/logos/homebridge-color-round-stylized.png"
-          alt="" class="rounded-circle" style="width:50px;height:50px;">
-      </a>
       <img src="https://raw.githubusercontent.com/homebridge/branding/master/logos/homebridge-color-round-stylized.png"
-          alt="" *ngIf="!plugin.links.homepage && !plugin.links.npm" class="rounded-circle" style="width:50px;height:50px;">
+          alt="" class="rounded-circle" style="width:50px;height:50px;">
     </div>
     <div class="d-flex flex-column justify-content-between w-100">
       <div class="d-flex flex-row justify-content-between">
