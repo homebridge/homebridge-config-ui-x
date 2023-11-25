@@ -7,6 +7,7 @@ import { ConfirmComponent } from '@/app/core/components/confirm/confirm.componen
 import { InformationComponent } from '@/app/core/components/information/information.component';
 import { DonateModalComponent } from '@/app/core/manage-plugins/donate-modal/donate-modal.component';
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
+import { PluginLogModalComponent } from '@/app/core/manage-plugins/plugin-log-modal/plugin-log-modal.component';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { NotificationService } from '@/app/core/notification.service';
 import { WsService } from '@/app/core/ws.service';
@@ -135,6 +136,15 @@ export class PluginCardComponent implements OnInit {
     }).finally(() => {
       //
     });
+  }
+
+  viewPluginLog(plugin: any) {
+    const ref = this.$modal.open(PluginLogModalComponent, {
+      size: 'xl',
+      backdrop: 'static',
+    });
+
+    ref.componentInstance.plugin = plugin;
   }
 
   async doChildBridgeAction(action: 'stop' | 'start' | 'restart') {
