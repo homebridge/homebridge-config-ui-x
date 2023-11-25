@@ -96,7 +96,7 @@ export class PluginCardComponent implements OnInit {
 
   pluginInfoModal(plugin: any) {
     const ref = this.$modal.open(InformationComponent);
-    const displayName = ( plugin.displayName || ((plugin.name.charAt(0) === '@' ? plugin.name.split('/')[1] : plugin.name) | replace:'-':' ' | titlecase) );
+    const displayName = ( plugin.displayName || plugin.name );
     const author = plugin.author;
     const version = plugin.installedVersion || plugin.latestVersion;
     const lastUpdated = "";
