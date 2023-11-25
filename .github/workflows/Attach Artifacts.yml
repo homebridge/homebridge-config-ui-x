@@ -1,5 +1,5 @@
-name: Manually Attach Artifacts ( If the automation fails )
-run-name: Manually Attach Artifacts against ${{ github.event.inputs.tag }}
+name: Attach Artifacts from Node Release or Manually ( If the automation fails )
+run-name: From Node Release or Manually Attach Artifacts against ${{ github.event.inputs.tag }}
 
 on:
   repository_dispatch:
@@ -23,7 +23,7 @@ jobs:
 
       - name: Get previous tag
         id: previoustag
-        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+        uses: 'WyriHaximus/github-action-get-previous-tag@v1'
 
       # Sanity check to ensure that release tags don't start with a 'v' version prefix but adhere to the X.Y.Z format
       - name: Check for Tag name Format
@@ -44,8 +44,8 @@ jobs:
 
       - name: Create Bundle
         run: |
-          tar -C $(pwd)/package --owner=0 --group=0 --format=posix -czvf homebridge-config-ui-x-${{ github.event.inputs.tag }}.tar.gz .
-          shasum -a 256 homebridge-config-ui-x-${{ needs.analyze-tags.outputs.previous-tag }}.tar.gz > SHASUMS256.txt
+          tar -C $(pwd)/package --owner=0 --group=0 --format=posix -czvf homebridge-config-ui-x-${{ needs.analyze-tags.outputs.previous-tag || github.event.inputs.tag }}.tar.gz .
+          shasum -a 256 homebridge-config-ui-x-${{ needs.analyze-tags.outputs.previous-tag || github.event.inputs.tag }}.tar.gz > SHASUMS256.txt
 
       - name: Attach Bundle
         uses: AButler/upload-release-assets@v2.0
