@@ -96,10 +96,21 @@ export class PluginCardComponent implements OnInit {
 
   pluginInfoModal(plugin: any) {
     const ref = this.$modal.open(InformationComponent);
-    ref.componentInstance.title = plugin.name;
-    ref.componentInstance.message = 'test';
+    const displayName = ( plugin.displayName || ((plugin.name.charAt(0) === '@' ? plugin.name.split('/')[1] : plugin.name) | replace:'-':' ' | titlecase) );
+    const author = plugin.author;
+    
+    const link = "";
+    
+    if (plugin.links.homepage) {
+      const link = plugin.links.homepage;
+    } else if (plugin.links.npm) {
+      const link = plugin.links.npm;
+    }
+
+    ref.componentInstance.title = plugin.displayName;
+    ref.componentInstance.message = `name: ${plugin.name}, author: ${author}`;
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('plugins.button_homepage');
-    ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/homebridge/';
+    ref.componentInstance.ctaButtonLink = link;
     ref.componentInstance.faIconClass = 'fa-info';
   }
 
