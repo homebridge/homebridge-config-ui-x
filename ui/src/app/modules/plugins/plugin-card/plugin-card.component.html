@@ -43,7 +43,7 @@
         </h4>
         <span class="grey-text truncate1 py-2">{{ plugin.name }}</span>
       </div>
-      <div class="d-flex flex-row justify-content-between truncate1">
+      <div class="d-flex flex-row justify-content-between">
         <p class="card-text grey-text mb-0 mr-auto">
           <span class="grey-text">
             v{{ plugin.installedVersion || plugin.latestVersion }}
@@ -51,7 +51,7 @@
           <span class="grey-text text-decoration-none" *ngIf="plugin.lastUpdated">
             ({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})
           </span>
-          <span class="grey-text" *ngIf="plugin.author">
+          <span class="grey-text text-decoration-none" *ngIf="plugin.author">
             <a class="grey-text " target="_blank" rel="noopener noreferrer"
               [href]="'https://www.npmjs.com/~' + plugin.author">@{{ plugin.author }}</a>
           </span>
@@ -75,7 +75,7 @@
           <span ngbDropdown placement="bottom-left top-left left auto" class="d-inline-block ml-3 mt-auto">
             <a class="card-link text-decoration-none mt-auto" href="javascript:void(0)" style="outline:none;"
               aria-label="Plugin actions drop down menu" ngbDropdownToggle>
-              <span class="pl-3"><i class="fas fa-fw fa-circle-ellipsis-vertical"></i></span>
+              <span class="pl-3"><i class="fas fa-fw fa-circle-chevron-down"></i></span>
               <span *ngIf="
                 (plugin.updateAvailable || plugin.betaUpdateAvailable)
                 || (!hasChildBridges && !plugin.disabled && recommendChildBridge)
