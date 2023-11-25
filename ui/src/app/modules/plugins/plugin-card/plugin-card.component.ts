@@ -103,6 +103,7 @@ export class PluginCardComponent implements OnInit {
 
     if (plugin.lastUpdated) {
       const lastUpdated = ` (${plugin.lastUpdated})`;
+    }
     
     const link = "";
     
