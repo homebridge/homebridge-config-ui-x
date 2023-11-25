@@ -1,10 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { v4 as uuid } from 'uuid';
 import { ApiService } from '@/app/core/api.service';
+import { DonateModalComponent } from '@/app/core/manage-plugins/donate-modal/donate-modal.component';
 import { NotificationService } from '@/app/core/notification.service';
 import { SettingsService } from '@/app/core/settings.service';
 
@@ -36,16 +37,13 @@ export class SettingsPluginsModalComponent implements OnInit {
   constructor(
     public activeModal: NgbActiveModal,
     private $api: ApiService,
+    private $modal: NgbModal,
     private $settings: SettingsService,
     private $notification: NotificationService,
     private $router: Router,
     private $toastr: ToastrService,
     private translate: TranslateService,
   ) {}
-
-  get arrayKey() {
-    return this.pluginType === 'accessory' ? 'accessories' : 'platforms';
-  }
 
   ngOnInit() {
     this.pluginAlias = this.schema.pluginAlias;
@@ -196,6 +194,18 @@ export class SettingsPluginsModalComponent implements OnInit {
       this.schema.schema.properties.users.properties[key] = {
         type: 'string',
       };
+    }
+  }
+
+  openFundingModalForUi() {
+    try {
+      this.$api.get('/plugins').subscribe((plugins) => {
+        this.activeModal.dismiss();
+        const ref = this.$modal.open(DonateModalComponent);
+        ref.componentInstance.plugin = plugins.find((x) => x.name === 'homebridge-config-ui-x');
+      });
+    } catch (e) {
+      // ignore
     }
   }
 }

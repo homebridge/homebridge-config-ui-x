@@ -6,12 +6,12 @@ import { ApiService } from '@/app/core/api.service';
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
 import { InformationComponent } from '@/app/core/components/information/information.component';
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component';
+import { DonateModalComponent } from '@/app/core/manage-plugins/donate-modal/donate-modal.component';
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { PluginLogModalComponent } from '@/app/core/manage-plugins/plugin-log-modal/plugin-log-modal.component';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { SettingsService } from '@/app/core/settings.service';
 import { WsService } from '@/app/core/ws.service';
-import { DonateModalComponent } from '@/app/modules/plugins/donate-modal/donate-modal.component';
 
 @Component({
   selector: 'app-plugin-card',

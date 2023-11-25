@@ -7,10 +7,15 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 ### UI Changes
 
 - add power options modal (#1820)
+- remove hb-ui card from plugins page (#1830)
 
 ### Translation Changes
 
+- Add missing DE translations for child bridges (#1825) (@jsiegenthaler)
+
 ### Other Changes
+
+- Add Raspberry Pi 5 to list of Pi devices in bug-report template (#1824) (@jsiegenthaler)
 
 ## 4.53.0 (2023-11-24)
 
