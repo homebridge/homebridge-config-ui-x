@@ -99,18 +99,19 @@ export class PluginCardComponent implements OnInit {
     const displayName = ( plugin.displayName || plugin.name );
     const author = plugin.author;
     const version = plugin.installedVersion || plugin.latestVersion;
-    const lastUpdated = "";
 
     if (plugin.lastUpdated) {
       const lastUpdated = ` (${plugin.lastUpdated})`;
+    } else {
+      const lastUpdated = "";
     }
-    
-    const link = "";
     
     if (plugin.links.homepage) {
       const link = plugin.links.homepage;
     } else if (plugin.links.npm) {
       const link = plugin.links.npm;
+    } else {
+      const link = "";
     }
 
     ref.componentInstance.title = plugin.displayName;
