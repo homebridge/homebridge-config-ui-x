@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { formatDate } from '@angular/common';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
