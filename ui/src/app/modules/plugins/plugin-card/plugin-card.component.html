@@ -41,18 +41,18 @@
           {{ plugin.displayName || ((plugin.name.charAt(0) === '@' ? plugin.name.split('/')[1] : plugin.name) |
           replace:'-':' ' | titlecase) }}
         </h4>
-        <span>{{ plugin.name }}</span>
+        <span class="grey-text">{{ plugin.name }}</span>
       </div>
       <div class="d-flex flex-row justify-content-between">
         <p class="card-text grey-text mb-0 mr-auto">
-          <span class="grey-text" *ngIf="plugin.lastUpdated">
+          <span class="grey-text">
             v{{ plugin.installedVersion || plugin.latestVersion }}
           </span>
           <span class="grey-text" *ngIf="plugin.lastUpdated">
             ({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})
           </span>
           <span class="grey-text" *ngIf="plugin.author">
-            <a class="" target="_blank" rel="noopener noreferrer"
+            <a class="grey-text" target="_blank" rel="noopener noreferrer"
               [href]="'https://www.npmjs.com/~' + plugin.author">@{{ plugin.author }}</a>
           </span>
         </p>
