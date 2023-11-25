@@ -57,7 +57,7 @@
             </span>
             <a href="javascript:void(0)" (click)="$plugin.upgradeHomebridge(homebridgePkg, homebridgePkg.betaUpdateAvailable ? 'beta' : 'latest')"
                class="primary-text" *ngIf="homebridgePkg.installedVersion && (homebridgePkg.updateAvailable || homebridgePkg.betaUpdateAvailable)"
-              [translate]="'status.homebridge.label_update_available'" [translateParams]="homebridgePkg">
+              [translate]="'status.plugin_out_of_date'">
               Update Available
             </a>
           </span>
@@ -90,7 +90,7 @@
             </span>
             <a href="javascript:void(0)" (click)="$plugin.upgradeHomebridge(homebridgeUiPkg, homebridgeUiPkg.betaUpdateAvailable ? 'beta' : 'latest')"
                class="primary-text" *ngIf="homebridgeUiPkg.installedVersion && (homebridgeUiPkg.updateAvailable || homebridgeUiPkg.betaUpdateAvailable)"
-               [translate]="'status.homebridge.label_update_available'" [translateParams]="homebridgeUiPkg">
+               [translate]="'status.plugin_out_of_date'">
               Update Available
             </a>
           </span>
