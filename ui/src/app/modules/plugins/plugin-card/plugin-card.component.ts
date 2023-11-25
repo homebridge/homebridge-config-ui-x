@@ -104,9 +104,7 @@ export class PluginCardComponent implements OnInit {
     
     if (plugin.lastUpdated) {
       lastUpdated = ` (${plugin.lastUpdated})`;
-    } else {
-      lastUpdated = '';
-    }
+    } 
 
     const link = '';
     
@@ -114,10 +112,8 @@ export class PluginCardComponent implements OnInit {
       link = plugin.links.homepage;
     } else if (plugin.links.npm) {
       link = plugin.links.npm;
-    } else {
-      
-    }
-
+    } 
+    
     ref.componentInstance.title = plugin.displayName;
     ref.componentInstance.message = `${plugin.name}, ${author}, v${version}${lastUpdated}`;
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('plugins.button_homepage');
