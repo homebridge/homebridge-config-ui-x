@@ -94,6 +94,15 @@ export class PluginCardComponent implements OnInit {
     ref.componentInstance.faIconClass = 'fa-shield-alt green-text';
   }
 
+  pluginInfoModal() {
+    const ref = this.$modal.open(InformationComponent);
+    ref.componentInstance.title = plugin.name;
+    ref.componentInstance.message = 'test';
+    ref.componentInstance.ctaButtonLabel = this.$translate.instant('plugins.button_homepage');
+    ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/homebridge/';
+    ref.componentInstance.faIconClass = 'fa-info';
+  }
+
   disablePlugin(plugin: any) {
     const ref = this.$modal.open(ConfirmComponent);
 
