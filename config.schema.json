@@ -596,7 +596,8 @@
           "flex-flow": "column",
           "items": [
             "port",
-            "tempUnits"
+            "tempUnits",
+            "temp"
           ]
         }
       ]
@@ -672,8 +673,16 @@
           "notitle": true,
           "placeholder": "eg. /home/pi/mywallpaper.jpg"
         },
-        "linux.shutdown",
-        "linux.restart",
+        {
+          "ref": "Linux",
+          "type": "fieldset",
+          "expandable": true,
+          "title": "Linux Options",
+          "items": [
+            "linux.shutdown",
+            "linux.restart"
+          ]
+        },
         "accessoryControl.debug",
         {
           "key": "accessoryControl.instanceBlacklist",
