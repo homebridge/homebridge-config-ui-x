@@ -17,11 +17,13 @@ import { AuthModule } from '@/app/core/auth/auth.module';
 import { CoreModule } from '@/app/core/core.module';
 import { supportedLocales } from '@/app/core/locales';
 import { onMonacoLoad } from '@/app/core/monaco-editor.service';
+import { RestartModalComponent } from '@/app/shared/layout/restart-modal/restart-modal.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LayoutComponent,
+    RestartModalComponent,
   ],
   imports: [
     BrowserModule,
