@@ -149,13 +149,13 @@
       </li>
       <li *ngIf="$auth.user.admin">
         <div class="iocn-link">
-          <a href="javascript:void(0)" (click)="openRestartOptionsModal()" [translate]="'menu.restart.title'">
+          <a href="javascript:void(0)" (click)="openRestartModal()" [translate]="'menu.restart.title'">
             <i class="fa fa-power-off"></i>
-            <span class="link_name">Restart Options</span>
+            <span class="link_name">Power Options</span>
           </a>
         </div>
         <ul class="sub-menu blank">
-          <li><a class="link_name" href="javascript:void(0)" (click)="openRestartOptionsModal()" [translate]="'menu.restart.title'">Restart Options</a></li>
+          <li><a class="link_name" href="javascript:void(0)" (click)="openRestartModal()" [translate]="'menu.restart.title'">Power Options</a></li>
         </ul>
       </li>
       <li>

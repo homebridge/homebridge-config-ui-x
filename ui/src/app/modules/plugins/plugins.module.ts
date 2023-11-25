@@ -3,7 +3,6 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
-import { DonateModalComponent } from './donate-modal/donate-modal.component';
 import { PluginCardComponent } from './plugin-card/plugin-card.component';
 import { PluginsRoutingModule } from './plugins-routing.module';
 import { PluginsComponent } from './plugins.component';
@@ -13,7 +12,6 @@ import { ManagePluginsModule } from '@/app/core/manage-plugins/manage-plugins.mo
 @NgModule({
   declarations: [
     PluginsComponent,
-    DonateModalComponent,
     PluginCardComponent,
   ],
   imports: [
