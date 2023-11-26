@@ -8,7 +8,7 @@
       "name": {
         "title": "Name",
         "type": "string",
-        "default": "Config",
+        "default": "Homebridge UI",
         "minLength": 1,
         "required": true
       },
@@ -443,10 +443,7 @@
       },
       "debug": {
         "title": " Enable / disable debug level logging",
-        "type": "boolean",
-        "condition": {
-          "functionBody": "return (model.debug === true)"
-        }
+        "type": "boolean"
       },
       "standalone": {
         "title": "Tell Homebridge the plugin is operating in standalone mode",
@@ -466,6 +463,12 @@
             "title": "Log Method",
             "type": "string",
             "oneOf": [
+              {
+                "title": "Default",
+                "enum": [
+                  ""
+                ]
+              },
               {
                 "title": "From File",
                 "enum": [
@@ -516,11 +519,17 @@
           },
           "tail": {
             "type": "string",
-            "description": "Depreciated"
+            "description": "Depreciated",
+            "condition": {
+              "functionBody": "return (model.log && (model.log.method==='custom' || model.log.method==='systemd' || model.log.method==='file'))"
+            }
           },
           "systemd": {
             "type": "string",
-            "description": "Depreciated"
+            "description": "Depreciated",
+            "condition": {
+              "functionBody": "return (model.log && (model.log.method==='custom' || model.log.method==='systemd' || model.log.method==='file'))"
+            }
           }
         }
       },
@@ -610,8 +619,9 @@
           "type": "flex",
           "flex-flow": "column",
           "items": [
-            "name",
-            "theme"
+            "theme",
+            "lang",
+            "auth"
           ]
         },
         {
@@ -619,7 +629,11 @@
           "flex-flow": "column",
           "items": [
             "port",
-            "tempUnits"
+            "tempUnits",
+            {
+              "key": "sessionTimeout",
+              "type": "number"
+            }
           ]
         }
       ]
@@ -632,13 +646,7 @@
       "items": [
         "sudo",
         "debug",
-        "lang",
         "temp",
-        "auth",
-        {
-          "key": "sessionTimeout",
-          "type": "number"
-        },
         "restart",
         "proxyHost",
         {
