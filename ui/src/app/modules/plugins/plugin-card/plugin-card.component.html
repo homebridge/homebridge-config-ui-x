@@ -8,7 +8,7 @@
           class="card-link text-decoration-none green-text mx-0" (click)="openVerifiedModal()">
           <i class="fas fa-fw fa-shield-alt fa-lg"></i>
         </a>
-        <a href="javascript:void(0)" class="card-link pink-text mr-0 ml-1"
+        <a href="javascript:void(0)" class="card-link pink-text mr-0 ml-1" *ngIf="plugin.verifiedPlugin && plugin.funding"
            ngbTooltip="@{{ plugin.author }}" (click)="openFundingModal(plugin)">
           <i class="fas fa-fw fa-heart fa-lg"></i>
         </a>
