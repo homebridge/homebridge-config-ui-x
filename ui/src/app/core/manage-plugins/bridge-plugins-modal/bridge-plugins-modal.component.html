@@ -12,13 +12,17 @@
   <div class="modal-body">
     <p>
       {{ 'child_bridge.message_about' | translate }}
+      <a href="https://github.com/homebridge/homebridge/wiki/Child-Bridges" target="_blank" rel="noopener noreferrer"
+         class="primary-text">
+        {{ 'child_bridge.message_wiki_link' | translate }}
+        <i class='fas fa-fw fa-external-link-alt'></i>
+      </a>
     </p>
     <div *ngIf="configBlocks.length">
-      <p>
-        <strong>
-          {{ 'child_bridge.message_select_platforms_accessories' | translate }}:
-        </strong>
+      <p class="alert alert-info">
+        {{ 'child_bridge.message_child_bridges_must_be_paired_separately' | translate }}
       </p>
+      <p>{{ 'child_bridge.message_select_platforms_accessories' | translate }}:</p>
       <ul class="list-group mt-2 mb-3" *ngIf="configBlocks.length">
         <li class="list-group-item " *ngFor="let item of configBlocks; let i = index">
           <div class="d-flex justify-content-between align-items-center">
@@ -28,7 +32,7 @@
               </strong>
             </h5>
             <input type="checkbox" class="rendux-input" [id]="'toggleExternalBridgeInput_' + i"
-              (change)="toggleExternalBridge(item, enabledBlocks[i], i)" [(ngModel)]="enabledBlocks[i]">
+                   (change)="toggleExternalBridge(item, enabledBlocks[i], i)" [(ngModel)]="enabledBlocks[i]">
             <label [for]="'toggleExternalBridgeInput_' + i" class="rendux-label"></label>
           </div>
           <div *ngIf="item._bridge?.username">
@@ -42,7 +46,7 @@
             <div *ngIf="deviceInfo[item._bridge?.username]">
               <div *ngIf="deviceInfo[item._bridge?.username]._isPaired === false" class="w-100 d-flex flex-column">
                 <app-qrcode [data]="deviceInfo[item._bridge?.username]._setupCode" class="mr-auto ml-auto mt-2 mb-2"
-                  style="width: 180px; height: 180px;">
+                            style="width: 180px; height: 180px;">
                 </app-qrcode>
                 <p class="mr-auto ml-auto text-center">
                   {{ deviceInfo[item._bridge?.username].pincode }}
@@ -53,8 +57,8 @@
               </div>
               <div *ngIf="deviceInfo[item._bridge?.username]._isPaired=== true">
                 <div class="text-center">
-                  <i class="fa fa-fw fa-check-circle primary-text" style="font-size: 50px;"></i>
-                  <p class="mt-2">
+                  <i class="fa fa-fw fa-check-circle primary-text mb-4" style="font-size: 75px;"></i>
+                  <p>
                     {{ 'child_bridge.label_bridge_paired' | translate }}
                   </p>
                 </div>
@@ -74,9 +78,6 @@
           </div>
         </li>
       </ul>
-      <p>
-        {{ 'child_bridge.message_child_bridges_must_be_paired_separately' | translate }}
-      </p>
     </div>
     <ngb-alert *ngIf="!configBlocks.length && canConfigure" type="info" [dismissible]="false">
       <i class="fa fa-fw fa-info-circle"></i>
@@ -94,13 +95,6 @@
         </button>
       </div>
     </div>
-    <p>
-      <a href="https://github.com/homebridge/homebridge/wiki/Child-Bridges" target="_blank" rel="noopener noreferrer"
-        class="primary-text">
-        {{ 'child_bridge.message_wiki_link' | translate }}
-        <i class='fas fa-fw fa-external-link-alt'></i>
-      </a>
-    </p>
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-left">
