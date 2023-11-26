@@ -596,8 +596,7 @@
           "flex-flow": "column",
           "items": [
             "port",
-            "tempUnits",
-            "temp"
+            "tempUnits"
           ]
         }
       ]
@@ -650,6 +649,7 @@
           }
         },
         "lang",
+        "temp",
         "auth",
         {
           "key": "sessionTimeout",
@@ -674,25 +674,39 @@
           "placeholder": "eg. /home/pi/mywallpaper.jpg"
         },
         {
-          "ref": "Linux",
+          "ref": "linux",
           "type": "fieldset",
           "expandable": true,
           "title": "Linux Options",
           "items": [
-            "linux.shutdown",
-            "linux.restart"
+            {
+              "key": "linux.shutdown",
+              "placeholder": "eg. shutdown"
+            },
+            {
+              "key": "linux.restart",
+              "placeholder": "eg. reboot"
+            }
           ]
         },
-        "accessoryControl.debug",
         {
-          "key": "accessoryControl.instanceBlacklist",
-          "type": "array",
-          "items": {
-            "key": "accessoryControl.instanceBlacklist[]",
-            "type": "string",
-            "pattern": "^([A-Fa-f0-9]{2}:){5}[A-Fa-f0-9]{2}$",
-            "title": "Instance Username"
-          }
+          "ref": "accessoryControl",
+          "type": "fieldset",
+          "expandable": true,
+          "title": "Accessory Control",
+          "items": [
+            "accessoryControl.debug",
+            {
+              "key": "accessoryControl.instanceBlacklist",
+              "type": "array",
+              "items": {
+                "key": "accessoryControl.instanceBlacklist[]",
+                "type": "string",
+                "pattern": "^([A-Fa-f0-9]{2}:){5}[A-Fa-f0-9]{2}$",
+                "title": "Instance Username"
+              }
+            }
+          ]
         },
         {
           "key": "homebridgePackagePath",
