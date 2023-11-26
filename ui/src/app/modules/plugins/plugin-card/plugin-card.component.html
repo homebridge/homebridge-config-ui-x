@@ -53,7 +53,7 @@
             <i class="fa-solid fa-fw fa-circle-down fa-xl ml-3"></i>
           </a>
           <span *ngIf="plugin.installedVersion" ngbDropdown placement="bottom-right top-right left" class="mt-auto">
-            <a class="mt-auto ml-3" href="javascript:void(0)" style="outline:none;"
+            <a class="mt-auto ml-3 card-link" href="javascript:void(0)" style="outline:none;"
               aria-label="Plugin actions drop down menu" ngbDropdownToggle>
               <i class="fa-solid fa-fw fa-chevron-circle-down fa-xl" [ngClass]="{
                 'fa-fade primary-text': (plugin.updateAvailable || plugin.betaUpdateAvailable)
