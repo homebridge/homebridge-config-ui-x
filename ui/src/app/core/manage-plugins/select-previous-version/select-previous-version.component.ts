@@ -15,6 +15,7 @@ export class SelectPreviousVersionComponent implements OnInit {
   public loading = true;
   public versions: Array<{ name: string; version: string }> = [];
   public selectedVersion: string;
+  public curVersion: string;
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -25,6 +26,7 @@ export class SelectPreviousVersionComponent implements OnInit {
 
   ngOnInit(): void {
     this.selectedVersion = this.plugin.installedVersion || this.plugin.latestVersion;
+    this.curVersion = this.plugin.installedVersion || '';
     this.lookupVersions();
   }
 

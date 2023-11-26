@@ -14,10 +14,10 @@
 
     <div class="w-100  text-center" *ngIf="!loading">
       <i class="fas fa-fw fa-history primary-text mb-4" style="font-size: 75px;"></i>
-      <p>Current / latest version: {{ selectedVersion }}</p>
       <p>
         {{ 'plugins.manage.message_select_version_to_install' | translate }}:
       </p>
+      <p class="small" *ngIf="curVersion">v{{ 'plugins.status_installed' | translate }}: {{ curVersion }}</p>
       <select class="custom-select" [(ngModel)]="selectedVersion">
         <option *ngFor="let version of versions" [value]="version.version">
           {{ version.name }}
