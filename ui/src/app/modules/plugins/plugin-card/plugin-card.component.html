@@ -1,18 +1,21 @@
 <!--Panel-->
 <div class="card card-body mb-3 p-3">
   <div class="d-flex flex-row justify-content-between">
-    <div class="d-flex flex-column mr-3 align-items-center">
+    <div class="d-flex flex-column mr-3 align-items-center justify-content-between">
       <img [src]="plugin.icon" (error)="handleIconError()" alt="" class="plugin-icon">
-      <p class="mb-0 mt-2" *ngIf="plugin.verifiedPlugin">
-        <a href="javascript:void(0)" class="card-link pink-text" *ngIf="plugin.funding"
+      <p class="mb-0 mt-2">
+        <a href="javascript:void(0)" *ngIf="plugin.verifiedPlugin"
+          class="card-link text-decoration-none green-text " (click)="openVerifiedModal()">
+          <i class="fas fa-fw fa-shield-alt fa-lg"></i>
+        </a>
+        <i *ngIf="!plugin.verifiedPlugin" class="fas fa-fw fa-shield-alt fa-lg grey-text" style="opacity: 0.15"></i>
+      </p>
+      <p class="mb-0 mt-2">
+        <a href="javascript:void(0)" class="card-link pink-text" *ngIf="plugin.verifiedPlugin && plugin.funding"
            ngbTooltip="@{{ plugin.author }}" (click)="openFundingModal(plugin)">
           <i class="fas fa-fw fa-heart fa-lg"></i>
         </a>
-      </p>
-      <p class="mb-0 mt-2" *ngIf="plugin.verifiedPlugin">
-        <a href="javascript:void(0)" class="card-link text-decoration-none green-text " (click)="openVerifiedModal()">
-          <i class="fas fa-fw fa-shield-alt fa-lg"></i>
-        </a>
+        <i class="fas fa-fw fa-heart fa-lg grey-text" style="opacity: 0.15" *ngIf="!plugin.verifiedPlugin || !plugin.funding"></i>
       </p>
     </div>
     <div class="d-flex flex-column justify-content-between w-100">
