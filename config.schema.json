@@ -217,7 +217,8 @@
       },
       "restart": {
         "title": "Restart Command",
-        "type": "string"
+        "type": "string",
+        "description": "If no restart command is set the process will terminate with a non-zero exit code."
       },
       "temp": {
         "title": "Path to OS Temp File",
@@ -421,7 +422,8 @@
       },
       "loginWallpaper": {
         "title": "Path to Login Wallpaper Image File",
-        "type": "string"
+        "type": "string",
+        "placeholder": "eg. /home/pi/mywallpaper.jpg"
       },
       "sudo": {
         "title": " Use Sudo",
@@ -441,7 +443,10 @@
       },
       "debug": {
         "title": " Enable / disable debug level logging",
-        "type": "boolean"
+        "type": "boolean",
+        "condition": {
+          "functionBody": "return (model.debug === true)"
+        }
       },
       "standalone": {
         "title": "Tell Homebridge the plugin is operating in standalone mode",
@@ -483,15 +488,31 @@
           },
           "path": {
             "title": "Log File Path",
-            "type": "string"
+            "type": "string",
+            "description": "Enter the full file path to your log file.",
+            "required": true,
+            "condition": {
+              "functionBody": "return (model.log && model.log.method==='file')"
+            }
           },
           "service": {
             "title": "Systemd Service",
-            "type": "string"
+            "type": "string",
+            "description": "Enter the systemd service name. Defaults to 'homebridge'.",
+            "placeholder": "homebridge",
+            "required": true,
+            "condition": {
+              "functionBody": "return (model.log && model.log.method==='systemd')"
+            }
           },
           "command": {
             "title": "Custom Command",
-            "type": "string"
+            "description": "This command should stream the logs to stdout.",
+            "type": "string",
+            "required": true,
+            "condition": {
+              "functionBody": "return (model.log && model.log.method==='custom')"
+            }
           },
           "tail": {
             "type": "string",
@@ -561,7 +582,9 @@
       "proxyHost": {
         "title": "Reverse Proxy Hostname",
         "type": "string",
-        "pattern": "^[^{}/ :\\\\]+(?::\\d+)?$"
+        "pattern": "^[^{}/ :\\\\]+(?::\\d+)?$",
+        "placeholder": "eg. example.com:8443",
+        "description": "When running behind a reverse proxy you may need to enter the hostname you use to access the UI."
       },
       "scheduledBackupPath": {
         "title": "Scheduled backup destination path",
@@ -602,52 +625,13 @@
       ]
     },
     {
-      "ref": "log",
-      "type": "fieldset",
-      "expandable": true,
-      "title": "Log Viewer Setup",
-      "items": [
-        "log.method",
-        {
-          "key": "log.path",
-          "description": "Enter the full file path to your log file.",
-          "required": true,
-          "condition": {
-            "functionBody": "return (model.log && model.log.method==='file')"
-          }
-        },
-        {
-          "key": "log.service",
-          "description": "Enter the systemd service name. Defaults to 'homebridge'.",
-          "placeholder": "homebridge",
-          "required": true,
-          "condition": {
-            "functionBody": "return (model.log && model.log.method==='systemd')"
-          }
-        },
-        {
-          "key": "log.command",
-          "description": "This command should stream the logs to stdout.",
-          "required": true,
-          "condition": {
-            "functionBody": "return (model.log && model.log.method==='custom')"
-          }
-        }
-      ]
-    },
-    {
       "ref": "advanced",
       "type": "fieldset",
       "expandable": true,
       "title": "Advanced",
       "items": [
         "sudo",
-        {
-          "key": "debug",
-          "condition": {
-            "functionBody": "return (model.debug === true)"
-          }
-        },
+        "debug",
         "lang",
         "temp",
         "auth",
@@ -655,23 +639,29 @@
           "key": "sessionTimeout",
           "type": "number"
         },
-        {
-          "key": "restart",
-          "description": "If no restart command is set the process will terminate with a non-zero exit code."
-        },
-        {
-          "key": "proxyHost",
-          "placeholder": "eg. example.com:8443",
-          "description": "When running behind a reverse proxy you may need to enter the hostname you use to access the UI."
-        },
+        "restart",
+        "proxyHost",
         {
           "type": "help",
           "helpvalue": "<label class='control-label'>Custom Login Wallpaper</label><br><p class='help-block'>Custom login wallpaper can be set by adding a 'ui-wallpaper.jpg' file to your Homebridge storage directory, or by providing the full path to the .jpg file below:</p>"
         },
         {
           "key": "loginWallpaper",
-          "notitle": true,
-          "placeholder": "eg. /home/pi/mywallpaper.jpg"
+          "notitle": true
+        },
+        {
+          "ref": "log",
+          "type": "fieldset",
+          "expandable": true,
+          "title": "Log Viewer Setup",
+          "items": [
+            "log.method",
+            "log.path",
+            "log.service",
+            "log.command",
+            "log.tail",
+            "log.systemd"
+          ]
         },
         {
           "ref": "linux",
