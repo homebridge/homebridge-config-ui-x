@@ -169,7 +169,7 @@ export class SettingsComponent implements OnInit {
     }
 
     this.bridgeNetworkAdapters = adapters.map((interfaceName) => {
-      const i = this.availableNetworkAdapters.find(((x: any) => x.iface === interfaceName));
+      const i = this.availableNetworkAdapters.find(((x) => x.iface === interfaceName));
       if (i) {
         i.selected = true;
         i.missing = false;

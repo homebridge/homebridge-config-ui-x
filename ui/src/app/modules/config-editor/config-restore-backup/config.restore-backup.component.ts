@@ -36,7 +36,7 @@ export class ConfigRestoreBackupComponent implements OnInit {
     );
   }
 
-  restore(backupId: any) {
+  restore(backupId) {
     return this.activeModal.close(backupId);
   }
 

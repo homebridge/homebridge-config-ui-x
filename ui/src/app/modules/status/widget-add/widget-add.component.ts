@@ -9,7 +9,7 @@ import { SettingsService } from '@/app/core/settings.service';
   styleUrls: ['./widget-add.component.scss'],
 })
 export class WidgetAddComponent implements OnInit {
-  @Input() dashboard: any;
+  @Input() dashboard;
   @Input() resetLayout: () => void;
   @Input() lockLayout: () => void;
   @Input() unlockLayout: () => void;
@@ -135,10 +135,10 @@ export class WidgetAddComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.availableWidgets = this.allWidgets.filter(x => !this.dashboard.some((i: any) => i.component === x.component) && !x.hidden);
+    this.availableWidgets = this.allWidgets.filter((x) => !this.dashboard.some((i) => i.component === x.component) && !x.hidden);
   }
 
-  selectWidget(widget: any) {
+  selectWidget(widget) {
     this.activeModal.close(widget);
   }
 

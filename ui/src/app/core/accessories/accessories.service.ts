@@ -171,14 +171,14 @@ export class AccessoriesService {
   /**
    * Parse the incoming accessory data and refresh existing accessory statuses
    */
-  private parseServices(services: any) {
+  private parseServices(services) {
     if (!this.accessories.services.length) {
       this.accessories.services = services;
       return;
     }
 
     // update the existing objects to avoid re-painting the dom element each refresh
-    services.forEach((service: any) => {
+    services.forEach((service) => {
       const existing = this.accessories.services.find(x => x.uniqueId === service.uniqueId);
 
       if (existing) {

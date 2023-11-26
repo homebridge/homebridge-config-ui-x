@@ -86,7 +86,7 @@ export class StatusComponent implements OnInit, OnDestroy {
       this.consoleStatus = 'down';
     });
 
-    this.io.socket.on('homebridge-status', (data: any) => {
+    this.io.socket.on('homebridge-status', (data) => {
       // check if client is up-to-date
       if (data.packageVersion && data.packageVersion !== this.$settings.uiVersion) {
         window.location.reload();
@@ -245,7 +245,7 @@ export class StatusComponent implements OnInit, OnDestroy {
       });
   }
 
-  manageWidget(item: any) {
+  manageWidget(item) {
     const ref = this.$modal.open(WidgetControlComponent);
     ref.componentInstance.widget = item;
 

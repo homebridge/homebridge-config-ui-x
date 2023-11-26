@@ -12,9 +12,9 @@ import { environment } from '@/environments/environment';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
-  @ViewChild('password') private passwordInput: any;
-  @ViewChild('username') private usernameInput: any;
-  @ViewChild('otp') private otpInput: any;
+  @ViewChild('password') private passwordInput;
+  @ViewChild('username') private usernameInput;
+  @ViewChild('otp') private otpInput;
 
   public form: FormGroup<{
     username: FormControl<string>;

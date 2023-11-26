@@ -51,7 +51,7 @@ export class UsersComponent implements OnInit {
     });
   }
 
-  openEditUser(user: any) {
+  openEditUser(user) {
     const ref = this.modalService.open(UsersEditComponent, {
       size: 'lg',
     });
@@ -77,7 +77,7 @@ export class UsersComponent implements OnInit {
     );
   }
 
-  setup2fa(user: any) {
+  setup2fa(user) {
     const ref = this.modalService.open(UsersSetup2faComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -89,7 +89,7 @@ export class UsersComponent implements OnInit {
     });
   }
 
-  disable2fa(user: any) {
+  disable2fa(user) {
     const ref = this.modalService.open(UsersDisable2faComponent, {
       backdrop: 'static',
     });

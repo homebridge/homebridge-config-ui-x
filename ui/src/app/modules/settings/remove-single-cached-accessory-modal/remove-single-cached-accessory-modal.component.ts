@@ -36,7 +36,7 @@ export class RemoveSingleCachedAccessoryModalComponent implements OnInit {
     }
   }
 
-  removeAccessory(item: any) {
+  removeAccessory(item) {
     this.deleting = item.UUID;
 
     this.toastr.info(this.translate.instant('reset.toast_removing_cached_accessory_please_wait'));

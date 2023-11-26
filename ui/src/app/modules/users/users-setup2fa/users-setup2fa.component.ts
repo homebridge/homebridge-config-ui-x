@@ -18,7 +18,7 @@ import { ApiService } from '@/app/core/api.service';
   styleUrls: ['./users-setup2fa.component.scss'],
 })
 export class UsersSetup2faComponent implements OnInit {
-  @Input() public user: any;
+  @Input() public user;
 
   @ViewChild('qrcode', { static: true }) qrcodeElement: ElementRef;
 

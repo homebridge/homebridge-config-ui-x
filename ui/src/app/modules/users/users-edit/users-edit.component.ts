@@ -12,7 +12,7 @@ import { AuthService } from '@/app/core/auth/auth.service';
   templateUrl: './users-edit.component.html',
 })
 export class UsersEditComponent implements OnInit {
-  @Input() user: any;
+  @Input() user;
 
   public form = new FormGroup({
     username: new FormControl('', [Validators.required]),
