@@ -11,7 +11,7 @@
       <p class="text-center grey-text" translate="plugins.manage.message_thanks_for_updating"
         [translateParams]="{ pluginName: pluginName, targetVersion: targetVersion }"></p>
       <p *ngIf="['homebridge', 'homebridge-config-ui-x'].includes(pluginName) || childBridges.length === 0" class="text-center grey-text"
-         [translate]="'plugins.manage.message_thanks_for_updating_restart'">
+        [translate]="'plugins.manage.message_thanks_for_updating_restart'">
         Please restart Homebridge for the changes to apply.
       </p>
       <p *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(pluginName) && childBridges.length > 0" class="text-center grey-text"
@@ -38,7 +38,7 @@
       </p>
       <pre class="p-2" style="background-color: #efefef;">hb-service stop
 npm install -g {{ pluginName }}@{{targetVersion}}
-hb-service start</pre>
+        hb-service start</pre>
     </div>
   </div>
   <div *ngIf="showReleaseNotes && !actionComplete" class="modal-body plugin-modal-body">

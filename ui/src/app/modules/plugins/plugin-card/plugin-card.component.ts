@@ -46,16 +46,16 @@ export class PluginCardComponent implements OnInit {
 
   @Input() set childBridges(childBridges: any[]) {
     this.hasChildBridges = childBridges.length > 0;
-    this.hasUnpairedChildBridges = childBridges.filter((x: any) => x.paired === false).length > 0;
-    this.allChildBridgesStopped = childBridges.filter((x: any) => x.manuallyStopped === true).length === childBridges.length;
+    this.hasUnpairedChildBridges = childBridges.filter((x) => x.paired === false).length > 0;
+    this.allChildBridgesStopped = childBridges.filter((x) => x.manuallyStopped === true).length === childBridges.length;
 
     if (this.hasChildBridges) {
       // get the "worse" status of all child bridges and use that for colour icon
-      if (childBridges.some((x: any) => x.status === 'down')) {
+      if (childBridges.some((x) => x.status === 'down')) {
         this.childBridgeStatus = 'down';
-      } else if (childBridges.some((x: any) => x.status === 'pending')) {
+      } else if (childBridges.some((x) => x.status === 'pending')) {
         this.childBridgeStatus = 'pending';
-      } else if (childBridges.some((x: any) => x.status === 'ok')) {
+      } else if (childBridges.some((x) => x.status === 'ok')) {
         this.childBridgeStatus = 'ok';
       }
     }

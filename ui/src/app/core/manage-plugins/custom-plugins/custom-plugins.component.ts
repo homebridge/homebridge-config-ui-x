@@ -427,13 +427,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     return this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig)
       .toPromise()
       .then(data => {
-        // this.$toastr.success(
-        //   this.$translate.instant('plugins.settings.toast_restart_required'),
-        //   this.$translate.instant('plugins.settings.toast_plugin_config_saved'),
-        // );
-
         this.saveInProgress = false;
-        // this.$notification.configUpdated.next(undefined);
 
         if (exit) {
           this.getChildBridges();

@@ -86,12 +86,6 @@ export class SettingsPluginsModalComponent implements OnInit {
     try {
       await this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, configBlocks)
         .toPromise();
-      // this.$toastr.success(
-      //   this.translate.instant('plugins.settings.toast_restart_required'),
-      //   this.translate.instant('plugins.settings.toast_plugin_config_saved'));
-      //
-      // this.activeModal.close(configBlocks.length ? this.schema : null);
-      // this.$notification.configUpdated.next(undefined);
 
       // reload app settings if the config was changed for Homebridge UI
       if (this.plugin.name === 'homebridge-config-ui-x') {

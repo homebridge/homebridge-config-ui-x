@@ -33,22 +33,20 @@
     </iframe>
 
     <div *ngIf="uiLoaded && pluginConfig.length && schema.singular && showSchemaForm" class="card card-body">
-      <app-schema-form [configSchema]="schema" [(data)]="pluginConfig[0]"
-        (dataChanged)="schemaFormUpdatedSubject.next($event)">
+      <app-schema-form [configSchema]="schema" [(data)]="pluginConfig[0]" (dataChanged)="schemaFormUpdatedSubject.next($event)">
       </app-schema-form>
     </div>
 
     <div *ngIf="formId" class="card card-body">
       <app-schema-form [configSchema]="formSchema" [(data)]="formData" (dataChanged)="formUpdatedSubject.next($event)"
-        (isValid)="formValidEvent($event)">
+       (isValid)="formValidEvent($event)">
       </app-schema-form>
-
       <div class="text-right custom-form-action-buttons">
         <button class="btn btn-elegant" *ngIf="formCancelButtonLabel" (click)="formActionSubject.next('cancel')">
           {{ formCancelButtonLabel }}
         </button>
         <button class="btn btn-primary" *ngIf="formSubmitButtonLabel" (click)="formActionSubject.next('submit')"
-          [disabled]="!formValid">
+                [disabled]="!formValid">
           {{ formSubmitButtonLabel }}
         </button>
       </div>
@@ -74,8 +72,8 @@
     </div>
     <div class="text-right">
       <button *ngIf="plugin.name !== 'homebridge-config-ui-x'" class="btn btn-danger"
-              [ngbTooltip]="'form.button_delete' | translate" container="body" [disabled]="saveInProgress"
-              (click)="deletePluginConfig()">
+        [ngbTooltip]="'form.button_delete' | translate" container="body" [disabled]="saveInProgress"
+        (click)="deletePluginConfig()">
         <i class="fa fa-fw fa-trash"></i>
       </button>
       <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="savePluginConfig(true)"

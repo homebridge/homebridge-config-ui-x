@@ -34,7 +34,7 @@
                 <i class="fa fa-fw fa-trash"></i>
               </button>
               <button class="btn btn-primary ml-2" ngbPanelToggle [ngbTooltip]="'form.button_edit' | translate"
-                container="body" openDelay="150">
+                      container="body" openDelay="150">
                 <i class="fa fa-fw fa-edit"></i>
               </button>
             </div>
@@ -63,11 +63,11 @@
   <div class="modal-body text-center" [hidden]="!justSavedAndExited">
     <i class="fa fa-fw fa-power-off primary-text mb-4" style="font-size: 75px;"></i>
     <p *ngIf="['homebridge', 'homebridge-config-ui-x'].includes(plugin.name) || childBridges.length === 0" class="text-center grey-text"
-       [translate]="'plugins.manage.message_thanks_for_updating_restart'">
+      [translate]="'plugins.manage.message_thanks_for_updating_restart'">
       Please restart Homebridge for the changes to apply.
     </p>
     <p *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name) && childBridges.length > 0" class="text-center grey-text"
-       [translate]="'plugins.manage.message_thanks_for_updating_restart_child_bridges'">
+      [translate]="'plugins.manage.message_thanks_for_updating_restart_child_bridges'">
       Please restart the plugin's child bridges for the changes to apply.
     </p>
   </div>
