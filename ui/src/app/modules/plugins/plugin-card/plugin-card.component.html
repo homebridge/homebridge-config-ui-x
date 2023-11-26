@@ -5,12 +5,12 @@
       <img [src]="plugin.icon" (error)="handleIconError()" alt="" class="plugin-icon">
       <p class="mb-0 mt-2">
         <a href="javascript:void(0)" *ngIf="plugin.verifiedPlugin"
-          class="card-link text-decoration-none green-text " (click)="openVerifiedModal()">
-          <i class="fas fa-fw fa-shield-alt fa-lg mx-1"></i>
+          class="card-link text-decoration-none green-text mx-0" (click)="openVerifiedModal()">
+          <i class="fas fa-fw fa-shield-alt fa-lg"></i>
         </a>
-        <a href="javascript:void(0)" class="card-link pink-text" *ngIf="plugin.verifiedPlugin && plugin.funding"
+        <a href="javascript:void(0)" class="card-link pink-text mr-0 ml-1"
            ngbTooltip="@{{ plugin.author }}" (click)="openFundingModal(plugin)">
-          <i class="fas fa-fw fa-heart fa-lg mx-1"></i>
+          <i class="fas fa-fw fa-heart fa-lg"></i>
         </a>
       </p>
     </div>
