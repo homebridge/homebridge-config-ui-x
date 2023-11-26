@@ -15,7 +15,7 @@
     .custom-select {
       background: #333333 url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='white' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") right .75rem center/8px 10px no-repeat !important;
       color: #eeeeee !important;
-      border: 0px !important;
+      border: 0 !important;
     }
 
     .hb-plain-text-editor {
@@ -54,7 +54,7 @@
     .li-link1.show, .li-link2.show {
       background: #2b2b2b;
     }
-    
+
     .sidebar .logo-details i, .sidebar .logo-details img,
     .sidebar .logo-details .logo_name,
     .sidebar .nav-links li i,
@@ -64,8 +64,8 @@
     }
 
     .hb-npm-search {
-        border: 0px !important;
-        background-color: #111111 !important;
+      border: 0 !important;
+      background-color: #111111 !important;
     }
 
     .dropdown-menu {
