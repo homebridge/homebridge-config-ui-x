@@ -1,27 +1,27 @@
 <!--Panel-->
 <div class="card card-body mb-3 p-3">
   <div class="d-flex flex-row justify-content-between">
-    <div class="d-flex flex-column justify-content-between mr-3">
+    <div class="d-flex flex-column mr-3 align-items-center">
       <img [src]="plugin.icon" (error)="handleIconError()" alt="" class="plugin-icon">
+      <p class="mb-0 mt-2" *ngIf="plugin.verifiedPlugin">
+        <a href="javascript:void(0)" class="card-link pink-text" *ngIf="plugin.funding"
+           ngbTooltip="@{{ plugin.author }}" (click)="openFundingModal(plugin)">
+          <i class="fas fa-fw fa-heart fa-lg"></i>
+        </a>
+      </p>
+      <p class="mb-0 mt-2" *ngIf="plugin.verifiedPlugin">
+        <a href="javascript:void(0)" class="card-link text-decoration-none green-text " (click)="openVerifiedModal()">
+          <i class="fas fa-fw fa-shield-alt fa-lg"></i>
+        </a>
+      </p>
     </div>
     <div class="d-flex flex-column justify-content-between w-100">
-      <div class="d-flex flex-row justify-content-between">
-        <h4 class="card-title truncate2 mb-0">
-          {{ plugin.displayName || ((plugin.name.charAt(0) === '@' ? plugin.name.split('/')[1] : plugin.name) |
-          replace:'-':' ' | titlecase) }}
-        </h4>
-        <p class="mb-0 grey-text" *ngIf="plugin.verifiedPlugin">
-          <a href="javascript:void(0)" class="card-link pink-text text-decoration-none ml-3" *ngIf="plugin.funding"
-             ngbTooltip="@{{ plugin.author }}" (click)="openFundingModal(plugin)">
-            <i class="fas fa-fw fa-heart fa-xl"></i>
-          </a>
-          <a href="javascript:void(0)" class="card-link text-decoration-none green-text ml-3" (click)="openVerifiedModal()">
-            <i class="fas fa-fw fa-shield-alt fa-xl"></i>
-          </a>
-        </p>
-      </div>
-      <div class="d-flex flex-column justify-content-between">
-        <div class="mb-0 grey-text">
+      <h5 class="card-title truncate2 mt-0 mb-0">
+        {{ plugin.displayName || ((plugin.name.charAt(0) === '@' ? plugin.name.split('/')[1] : plugin.name) |
+        replace:'-':' ' | titlecase) }}
+      </h5>
+      <div class="d-flex flex-column justify-content-between mt-1 mb-0">
+        <div class="grey-text">
           <a href="javascript:void(0)" class="card-link text-decoration-none" (click)="pluginInfoModal(plugin)">
             <i class="fas fa-fw fa-circle-info"></i>
           </a>
@@ -29,7 +29,7 @@
           <span class="text-decoration-none" *ngIf="plugin.lastUpdated"> ({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
         </div>
       </div>
-      <div class="d-flex flex-row justify-content-between mt-2">
+      <div class="d-flex flex-row justify-content-between mt-1 mb-0">
         <p class="mb-0 info-text"
            *ngIf="plugin.installedVersion && !plugin.updateAvailable && !plugin.betaUpdateAvailable && !plugin.disabled">
           <i class="far fa-fw fa-circle-check"></i> {{ 'plugins.status_installed' | translate }}
@@ -44,18 +44,18 @@
           <i class="far fa-fw fa-circle-pause"></i> {{ 'plugins.status_disabled' | translate }}
         </p>
         <div>
-          <i *ngIf="plugin.hasChildBridges && !plugin.disabled" class="fas fa-fw fa-circle ml-3 fa-xl" [ngClass]="{
+          <i *ngIf="plugin.hasChildBridges && !plugin.disabled" class="fas fa-fw fa-circle ml-3 fa-lg" [ngClass]="{
             'green-text': childBridgeStatus === 'ok',
             'text-warning': childBridgeStatus === 'pending',
             'red-text': childBridgeStatus === 'down'
           }"></i>
           <a *ngIf="!plugin.installedVersion" href="javascript:void(0)" class="card-link text-decoration-none" (click)="$plugin.installPreviousVersion(plugin)">
-            <i class="fa-solid fa-fw fa-circle-down fa-xl ml-3"></i>
+            <i class="fa-solid fa-fw fa-circle-down fa-lg ml-3"></i>
           </a>
           <span *ngIf="plugin.installedVersion" ngbDropdown placement="bottom-right top-right left" class="mt-auto">
             <a class="mt-auto ml-3 card-link" href="javascript:void(0)" style="outline:none;"
               aria-label="Plugin actions drop down menu" ngbDropdownToggle>
-              <i class="fa-solid fa-fw fa-chevron-circle-down fa-xl" [ngClass]="{
+              <i class="fa-solid fa-fw fa-chevron-circle-down fa-lg" [ngClass]="{
                 'fa-fade primary-text': (plugin.updateAvailable || plugin.betaUpdateAvailable)
                   || (!plugin.hasChildBridges && !plugin.disabled && recommendChildBridge)
                   || (plugin.hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled)
