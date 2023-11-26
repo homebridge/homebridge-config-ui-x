@@ -65,26 +65,25 @@ export class PluginCardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (
-      !this.$settings.env.recommendChildBridges
-      || !this.$settings.env.serviceMode
-      || ['homebridge', 'homebridge-config-ui-x'].includes(this.plugin.name)
-    ) {
-      this.recommendChildBridge = false;
-      return;
-    }
-    this.$api.get(`/plugins/config-schema/${encodeURIComponent(this.plugin.name)}`, {}).toPromise()
-      .then((schema) => {
-        this.recommendChildBridge = schema.pluginType === 'platform';
-      })
-      .catch(() => {
-        this.recommendChildBridge = false;
-      });
-
-    this.plugin.icon =  this.plugin?.links?.homepage
+    this.plugin.icon = this.plugin.verifiedPlugin && this.plugin?.links?.homepage
       ? `${this.plugin.links.homepage.split('#')[0]}/latest/branding/icon.png`
         .replace('github.com', 'raw.githubusercontent.com')
       : this.defaultIcon;
+
+    if (
+      this.plugin.installedVersion
+      && this.$settings.env.recommendChildBridges
+      && this.$settings.env.serviceMode
+      && !['homebridge', 'homebridge-config-ui-x'].includes(this.plugin.name)
+    ) {
+      this.$api.get(`/plugins/config-schema/${encodeURIComponent(this.plugin.name)}`, {}).toPromise()
+        .then((schema) => {
+          this.recommendChildBridge = schema.pluginType === 'platform';
+        })
+        .catch(() => {
+          this.recommendChildBridge = false;
+        });
+    }
   }
 
   openFundingModal(plugin: any) {
