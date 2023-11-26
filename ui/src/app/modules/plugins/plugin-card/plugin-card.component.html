@@ -70,7 +70,7 @@
                   || (!hasChildBridges && !plugin.disabled && recommendChildBridge)
                   || (hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled)
                   || (plugin.installedVersion && !plugin.isConfigured && !plugin.disabled)
-                }"></i>
+                }" style="--fa-animation-duration: 2s;"></i>
             </a>
             <div ngbDropdownMenu aria-labelledby="Plugin actions drop down menu">
               <button ngbDropdownItem (click)="$plugin.settings(plugin)">
