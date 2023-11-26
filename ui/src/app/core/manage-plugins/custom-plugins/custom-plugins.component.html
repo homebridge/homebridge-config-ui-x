@@ -61,7 +61,7 @@
   <div class="modal-footer justify-content-between" [hidden]="justSavedAndExited">
     <div class="text-left">
       <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')"
-      [translate]="'form.button_close'" [disabled]="saveInProgress">Close</button>
+        [translate]="'form.button_close'" [disabled]="saveInProgress">Close</button>
     </div>
     <div class="d-none d-lg-block text-center">
       <a *ngIf="plugin.links.npm" [href]="plugin.links.npm" target="_blank" rel="noopener noreferrer"
