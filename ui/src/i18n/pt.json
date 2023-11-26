@@ -221,7 +221,7 @@
   "plugins.manage.message_uninstall_remove_plugin_config": "Remover a Configuração do Plugin?",
   "plugins.manage.modal_verified_message": "Homebridge plugins that are marked as verified have been reviewed by the Homebridge project team to ensure they meet various requirements that encourage best practices and a trouble-free user experience.",
   "plugins.manage.modal_verified_title": "Verified Plugins",
-  "plugins.manage.plugin_logs": "View Plugin Logs",
+  "plugins.manage.plugin_logs": "Plugin Logs",
   "plugins.node_update.are_you_sure_you_want_to_update": "Tem a certeza que deseja atualizar  {{ pluginName }}?",
   "plugins.node_update.homebridge_node_version_too_low": "O Homebridge v{{latestVersion}} requer Node.js v{{minVersion}} ou posterior. Neste momento encontra-se na versão Node.js {{ installedVersion }}.",
   "plugins.node_update.node_version_too_low": "É recomendado executar o plugin {{ pluginName }} na versão do Node.js v{{ minVersion }} ou posterior. Neste momento encontra-se na versão Node.js {{ installedVersion }}.",

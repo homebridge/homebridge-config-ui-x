@@ -221,7 +221,7 @@
   "plugins.manage.message_uninstall_remove_plugin_config": "ลบ Plugin Config ด้วยหรือไม่",
   "plugins.manage.modal_verified_message": "ปลั๊กอิน Homebridge ที่ทำเครื่องหมายว่าตรวจสอบแล้วได้รับการตรวจสอบโดยทีมงานโครงการ Homebridge เพื่อให้แน่ใจว่าเป็นไปตามข้อกำหนดต่างๆ ที่ส่งเสริมแนวทางปฏิบัติที่ดีที่สุดและประสบการณ์ผู้ใช้ที่ปราศจากปัญหา",
   "plugins.manage.modal_verified_title": "ปลั๊กอินที่ได้รับการตรวจสอบแล้ว",
-  "plugins.manage.plugin_logs": "View Plugin Logs",
+  "plugins.manage.plugin_logs": "Plugin Logs",
   "plugins.node_update.are_you_sure_you_want_to_update": "แน่ใจไหมว่าต้องการอัปเดต {{ pluginName }}?",
   "plugins.node_update.homebridge_node_version_too_low": "Homebridge รุ่น{{latestVersion}} ต้องการ Node.js รุ่น{{minVersion}} หรือใหม่กว่า. โดยที่คุณกำลังใช้ Node.js {{ installedVersion }}.",
   "plugins.node_update.node_version_too_low": "{{ pluginName }} ปลั๊กอินแนะนำให้ทำงานบน Node.js รุ่น{{ minVersion }} หรือใหม่กว่า. โดยที่คุณกำลังใช้ Node.js {{ installedVersion }}.",

@@ -100,12 +100,9 @@
                   || (!hasChildBridges && !plugin.disabled && recommendChildBridge)
                   || (hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled)
                 "></div>
-              <button ngbDropdownItem *ngIf="!plugin.installedVersion" (click)="$plugin.installPlugin(plugin.name)">
-                <i class="fas fa-fw fa-arrow-down"></i>{{ 'plugins.button_install' | translate }}
-              </button>
-              <button ngbDropdownItem *ngIf="plugin.publicPackage" (click)="$plugin.installPreviousVersion(plugin)">
-                <i class="fas fa-fw fa-fw fa-history"></i>
-                {{ 'plugins.manage.message_install_alternate_version' | translate }}
+              <button ngbDropdownItem (click)="$plugin.installPreviousVersion(plugin)">
+                <span *ngIf="plugin.installedVersion"><i class="fas fa-fw fa-fw fa-history"></i> {{ 'plugins.manage.message_install_alternate_version' | translate }}</span>
+                <span *ngIf="!plugin.installedVersion"><i class="fas fa-fw fa-circle-down"></i> {{ 'plugins.button_install' | translate }}</span>
               </button>
               <button ngbDropdownItem (click)="viewPluginLog(plugin)" *ngIf="plugin.installedVersion">
                 <i class="fas fa-fw fa-fw fa-wave-square"></i> {{ 'plugins.manage.plugin_logs' | translate }}
