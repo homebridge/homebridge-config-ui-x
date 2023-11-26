@@ -22,7 +22,7 @@
       <div class="d-flex flex-column justify-content-between mt-1 mb-0">
         <div class="grey-text">
           <a href="javascript:void(0)" class="card-link text-decoration-none" (click)="pluginInfoModal(plugin)">
-            <i class="fas fa-fw fa-circle-info fa-lg"></i>
+            <i class="fas fa-fw fa-circle-info fa-lg grey-text"></i>
           </a>
           v{{ plugin.installedVersion || plugin.latestVersion }}
           <span class="text-decoration-none" *ngIf="plugin.lastUpdated"> ({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
