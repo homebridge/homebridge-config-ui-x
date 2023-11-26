@@ -29,6 +29,7 @@ export class PluginCardComponent implements OnInit {
   public childBridgeRestartInProgress = false;
   public recommendChildBridge = false;
   public isMobile = this.$md.detect.mobile();
+  public defaultIcon = 'https://raw.githubusercontent.com/homebridge/branding/master/logos/homebridge-color-round-stylized.png';
 
   private io = this.$ws.getExistingNamespace('child-bridges');
   private setChildBridges = [];
@@ -195,5 +196,9 @@ export class PluginCardComponent implements OnInit {
         this.childBridgeRestartInProgress = false;
       }, action === 'restart' ? 12000 : action === 'stop' ? 6000 : 1000);
     }
+  }
+
+  handleIconError() {
+    this.plugin.icon = this.defaultIcon;
   }
 }

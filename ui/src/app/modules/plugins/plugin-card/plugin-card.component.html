@@ -2,8 +2,7 @@
 <div class="card card-body mb-3 p-3">
   <div class="d-flex flex-row justify-content-between">
     <div class="d-flex flex-column justify-content-between mr-2">
-      <img src="https://raw.githubusercontent.com/homebridge/branding/master/logos/homebridge-color-round-stylized.png"
-          alt="" class="rounded-circle" style="width:50px;height:50px;">
+      <img [src]="plugin.icon || defaultIcon" (error)="handleIconError()" alt="" style="width:50px;height:50px;">
     </div>
     <div class="d-flex flex-column justify-content-between w-100">
       <div class="d-flex flex-row justify-content-between">

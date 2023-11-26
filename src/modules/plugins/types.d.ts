@@ -2,6 +2,7 @@ export interface HomebridgePlugin {
   name: string;
   private: boolean;
   displayName?: string;
+  icon?: string;
   description?: string;
   verifiedPlugin?: boolean;
   publicPackage?: boolean;
@@ -122,6 +123,7 @@ export interface IPackageJson {
   author?: string | INpmPerson;
   maintainers?: INpmPerson[];
   contributors?: string[] | INpmPerson[];
+  icon?: string;
   funding?: NpmFunding;
   files?: string[];
   main?: string;
