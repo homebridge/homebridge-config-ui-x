@@ -29,7 +29,7 @@ export class PluginCardComponent implements OnInit {
   public childBridgeRestartInProgress = false;
   public recommendChildBridge = false;
   public isMobile = this.$md.detect.mobile();
-  public defaultIcon = 'https://raw.githubusercontent.com/homebridge/branding/latest/logos/homebridge-color-square.png';
+  public defaultIcon = 'assets/hb-icon.png';
 
   private io = this.$ws.getExistingNamespace('child-bridges');
   private setChildBridges = [];
