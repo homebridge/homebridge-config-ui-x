@@ -70,12 +70,14 @@ export class AppComponent {
     }
 
     // ensure the menu closes when we navigate
-    router.events.subscribe((event: any) => {
+    router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         const dropdownMenu = window.document.querySelector('#navbarSupportedContent');
-        const hamburgerMenuButton = window.document.querySelector('.navbar-toggler');
         if (dropdownMenu) {
           dropdownMenu.classList.remove('show');
+        }
+        const hamburgerMenuButton = window.document.querySelector('.navbar-toggler');
+        if (hamburgerMenuButton) {
           hamburgerMenuButton.classList.add('collapsed');
         }
       }

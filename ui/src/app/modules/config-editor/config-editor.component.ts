@@ -21,7 +21,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   public originalConfig: string;
   public saveInProgress: boolean;
   public isMobile: any = false;
-  public monacoEditor: any;
+  public monacoEditor;
   public editorOptions = {
     language: 'json',
     theme: this.$settings.theme.startsWith('dark-mode') ? 'vs-dark' : 'vs-light',
@@ -85,7 +85,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   /**
    * Called when the monaco editor is ready
    */
-  onEditorInit(editor: any) {
+  onEditorInit(editor) {
     this.monacoEditor = editor;
     this.monacoEditor.getModel().setValue(this.homebridgeConfig);
     window['editor'] = editor; // eslint-disable-line @typescript-eslint/dot-notation

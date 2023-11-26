@@ -37,7 +37,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
       this.io.socket.emit('monitor-child-bridge-status');
     });
 
-    this.io.socket.on('child-bridge-status-update', (data: any) => {
+    this.io.socket.on('child-bridge-status-update', (data) => {
       const existingBridge = this.childBridges.find(x => x.username === data.username);
       if (existingBridge) {
         Object.assign(existingBridge, data);
@@ -111,7 +111,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
     });
   }
 
-  getPluginChildBridges(plugin: any) {
+  getPluginChildBridges(plugin) {
     return this.childBridges.filter(x => x.plugin === plugin.name);
   }
 
