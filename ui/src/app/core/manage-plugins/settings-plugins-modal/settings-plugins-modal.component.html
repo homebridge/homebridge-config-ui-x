@@ -80,8 +80,8 @@
         Add {{ schema.pluginType }}
       </button>
       <button *ngIf="plugin.name !== 'homebridge-config-ui-x' && schema.singular && pluginConfig.length > 0"
-              class="btn btn-danger ml-2" (click)="removeBlock(pluginConfig[0].__uuid__)"
-              [ngbTooltip]="'form.button_delete' | translate" container="body" openDelay="150">
+        class="btn btn-danger ml-2" (click)="removeBlock(pluginConfig[0].__uuid__)"
+        [ngbTooltip]="'form.button_delete' | translate" container="body" openDelay="150">
         <i class="fa fa-fw fa-trash"></i>
       </button>
       <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="save()" [disabled]="saveInProgress">

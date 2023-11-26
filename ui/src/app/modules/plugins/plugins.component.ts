@@ -118,7 +118,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
     this.loadInstalledPlugins();
   }
 
-  onSubmit({ value, valid }) {
+  onSubmit({ value }) {
     if (!value.query.length) {
       this.loadInstalledPlugins();
     } else {

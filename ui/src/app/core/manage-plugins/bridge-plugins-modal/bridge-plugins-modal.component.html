@@ -10,18 +10,15 @@
     </button>
   </div>
   <div class="modal-body">
-
     <p>
       {{ 'child_bridge.message_about' | translate }}
     </p>
-
     <div *ngIf="configBlocks.length">
       <p>
         <strong>
           {{ 'child_bridge.message_select_platforms_accessories' | translate }}:
         </strong>
       </p>
-
       <ul class="list-group mt-2 mb-3" *ngIf="configBlocks.length">
         <li class="list-group-item " *ngFor="let item of configBlocks; let i = index">
           <div class="d-flex justify-content-between align-items-center">
@@ -62,7 +59,6 @@
                   </p>
                 </div>
               </div>
-
               <div class="text-right">
                 <button *ngIf="$settings.env.serviceMode" class="btn btn-primary waves-effect mr-0"
                   [disabled]="restartInProgress[item._bridge?.username]"
@@ -78,31 +74,26 @@
           </div>
         </li>
       </ul>
-
       <p>
         {{ 'child_bridge.message_child_bridges_must_be_paired_separately' | translate }}
       </p>
     </div>
-
     <ngb-alert *ngIf="!configBlocks.length && canConfigure" type="info" [dismissible]="false">
       <i class="fa fa-fw fa-info-circle"></i>
       {{ 'child_bridge.message_must_configure_plugin_first' | translate }}
     </ngb-alert>
-
     <div *ngIf="!canConfigure" class="mb-2">
       <ngb-alert type="info" [dismissible]="false">
         <i class="fa fa-fw fa-info-circle"></i>
         {{ 'plugins.settings.message_manual_config_required' | translate }}
         {{ 'plugins.settings.message_consult_documentation' | translate }}
       </ngb-alert>
-
       <div class="text-center">
         <button class="btn btn-primary" (click)="openFullConfigEditor()">
           {{ 'plugins.settings.label_open_config_editor' | translate }}
         </button>
       </div>
     </div>
-
     <p>
       <a href="https://github.com/homebridge/homebridge/wiki/Child-Bridges" target="_blank" rel="noopener noreferrer"
         class="primary-text">
@@ -110,7 +101,6 @@
         <i class='fas fa-fw fa-external-link-alt'></i>
       </a>
     </p>
-
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-left">

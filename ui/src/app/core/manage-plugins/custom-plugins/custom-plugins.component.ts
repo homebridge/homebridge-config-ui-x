@@ -60,10 +60,6 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     private $notification: NotificationService,
   ) {}
 
-  get arrayKey() {
-    return this.pluginType === 'accessory' ? 'accessories' : 'platforms';
-  }
-
   ngOnInit(): void {
     this.pluginAlias = this.schema.pluginAlias;
     this.pluginType = this.schema.pluginType;

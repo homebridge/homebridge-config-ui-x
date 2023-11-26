@@ -92,7 +92,7 @@ export class WsService {
       },
     });
 
-    const request = (resource, payload): Observable<any> => new Observable((observer) => {
+    const request = (resource: string, payload): Observable<any> => new Observable((observer) => {
       socket.emit(resource, payload, (resp) => {
         if (typeof resp === 'object' && resp.error) {
           observer.error(resp);
