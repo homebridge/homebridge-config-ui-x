@@ -119,8 +119,8 @@ export class PluginCardComponent implements OnInit {
       link = plugin.links.npm;
     }
     ref.componentInstance.title = displayName;
-    ref.componentInstance.message = `<p class="m-0">${name}</p><p class="m-0">${author}</p><p class="m-0">v${version}</p>
-    <p class="m-0">${lastUpdated}</p><p class="m-3">${description}</p>`;
+    ref.componentInstance.message = `<p class="my-3">${description}</p><p class="m-0">${name}</p><p class="m-0">${author}</p>
+    <p class="m-0">v${version}</p><p class="m-0">${lastUpdated}</p>`;
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('plugins.button_homepage');
     ref.componentInstance.ctaButtonLink = link;
     ref.componentInstance.faIconClass = 'fa-circle-info';
