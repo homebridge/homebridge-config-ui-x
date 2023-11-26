@@ -21,6 +21,15 @@
         </p>
       </div>
       <div class="d-flex flex-column justify-content-between">
+        <div class="mb-0 grey-text">
+          <a href="javascript:void(0)" class="card-link text-decoration-none" (click)="pluginInfoModal(plugin)">
+            <i class="fas fa-fw fa-circle-info"></i>
+          </a>
+          v{{ plugin.installedVersion || plugin.latestVersion }}
+          <span class="text-decoration-none" *ngIf="plugin.lastUpdated"> ({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
+        </div>
+      </div>
+      <div class="d-flex flex-row justify-content-between mt-2">
         <p class="mb-0 info-text"
            *ngIf="plugin.installedVersion && !plugin.updateAvailable && !plugin.betaUpdateAvailable && !plugin.disabled">
           <i class="far fa-fw fa-circle-check"></i> {{ 'plugins.status_installed' | translate }}
@@ -34,15 +43,6 @@
         <p class="mb-0 red-text" *ngIf="plugin.installedVersion && plugin.disabled">
           <i class="far fa-fw fa-circle-pause"></i> {{ 'plugins.status_disabled' | translate }}
         </p>
-      </div>
-      <div class="d-flex flex-row justify-content-between mt-2">
-        <div class="mb-0 grey-text">
-          <a href="javascript:void(0)" class="card-link text-decoration-none" (click)="pluginInfoModal(plugin)">
-            <i class="fas fa-fw fa-circle-info"></i>
-          </a>
-          v{{ plugin.installedVersion || plugin.latestVersion }}
-          <span class="text-decoration-none" *ngIf="plugin.lastUpdated"> ({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
-        </div>
         <div>
           <i *ngIf="plugin.hasChildBridges && !plugin.disabled" class="fas fa-fw fa-circle ml-3 fa-xl" [ngClass]="{
             'green-text': childBridgeStatus === 'ok',
@@ -57,8 +57,8 @@
               aria-label="Plugin actions drop down menu" ngbDropdownToggle>
               <i class="fa-solid fa-fw fa-chevron-circle-down fa-xl" [ngClass]="{
                 'fa-fade primary-text': (plugin.updateAvailable || plugin.betaUpdateAvailable)
-                  || (!hasChildBridges && !plugin.disabled && recommendChildBridge)
-                  || (hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled)
+                  || (!plugin.hasChildBridges && !plugin.disabled && recommendChildBridge)
+                  || (plugin.hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled)
                   || (plugin.installedVersion && !plugin.isConfigured && !plugin.disabled)
                 }" style="--fa-animation-duration: 2s;"></i>
             </a>
@@ -74,12 +74,12 @@
                 <i class="fas fa-fw fa-arrow-alt-circle-up primary-text"></i>
                 {{ 'plugins.button_update' | translate }}
               </button>
-              <button ngbDropdownItem *ngIf="!hasChildBridges && !plugin.disabled && recommendChildBridge"
+              <button ngbDropdownItem *ngIf="!plugin.hasChildBridges && !plugin.disabled && recommendChildBridge"
                 (click)="$plugin.bridgeSettings(plugin)">
                 <i class="fa-fw icon-button fas fa-fw fa-circle-exclamation primary-text"></i>
                 {{ 'child_bridge.label_child_setup' | translate }}
               </button>
-              <button ngbDropdownItem *ngIf="hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled"
+              <button ngbDropdownItem *ngIf="plugin.hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled"
                 (click)="$plugin.bridgeSettings(plugin)">
                 <i class="fa-fw icon-button fas fa-fw fa-circle-exclamation primary-text"></i>
                 {{ 'child_bridge.label_bridge_connect_to_homekit' | translate }}
@@ -87,8 +87,8 @@
               <div class="dropdown-divider"
                 *ngIf="
                   (plugin.updateAvailable || plugin.betaUpdateAvailable)
-                  || (!hasChildBridges && !plugin.disabled && recommendChildBridge)
-                  || (hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled)
+                  || (!plugin.hasChildBridges && !plugin.disabled && recommendChildBridge)
+                  || (plugin.hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled)
                 "></div>
               <button ngbDropdownItem (click)="$plugin.installPreviousVersion(plugin)">
                 <i class="fas fa-fw fa-fw fa-history"></i> {{ 'plugins.manage.message_install_alternate_version' | translate }}
@@ -112,7 +112,7 @@
               <button ngbDropdownItem (click)="$plugin.uninstallPlugin(plugin)">
                 <i class="fas fa-fw fa-fw fa-trash"></i> {{ 'plugins.button_uninstall' | translate }}
               </button>
-              <ng-container *ngIf="hasChildBridges && !plugin.disabled">
+              <ng-container *ngIf="plugin.hasChildBridges && !plugin.disabled">
                 <div class="dropdown-divider"></div>
                 <button ngbDropdownItem *ngIf="!childBridgeRestartInProgress && !plugin.disabled" (click)="doChildBridgeAction('restart')">
                   <i class="fa-fw icon-button fas fa-fw fa-power-off"></i> {{ 'child_bridge.label_child_restart' | translate }}
