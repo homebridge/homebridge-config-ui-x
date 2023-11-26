@@ -103,9 +103,11 @@ export class PluginCardComponent implements OnInit {
 
   pluginInfoModal(plugin: any) {
     const ref = this.$modal.open(InformationComponent);
-    const name = ( plugin.displayName || plugin.name );
+    const displayName = ( plugin.displayName || plugin.name );
+    const name = plugin.name;
     const author = `@${plugin.author}`;
     const version = plugin.installedVersion || plugin.latestVersion;
+    const description = plugin.description || '';
     let lastUpdated = '';
     if (plugin.lastUpdated) {
       lastUpdated = ` (${formatDate(plugin.lastUpdated, 'yyyy-MM-dd', 'en-US')})`;
@@ -116,8 +118,9 @@ export class PluginCardComponent implements OnInit {
     } else if (plugin.links.npm) {
       link = plugin.links.npm;
     }
-    ref.componentInstance.title = name;
-    ref.componentInstance.message = `${plugin.name}, ${author}, v${version}${lastUpdated}`;
+    ref.componentInstance.title = displayName;
+    ref.componentInstance.message = `<p class="m-0">${name}</p><p class="m-0">${author}</p><p class="m-0">v${version}</p>
+    <p class="m-0">${lastUpdated}</p><p class="m-3">${description}</p>`;
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('plugins.button_homepage');
     ref.componentInstance.ctaButtonLink = link;
     ref.componentInstance.faIconClass = 'fa-circle-info';
