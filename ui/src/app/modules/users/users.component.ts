@@ -68,7 +68,7 @@ export class UsersComponent implements OnInit {
         this.toastr.success(this.translate.instant('users.toast_user_deleted'), this.translate.instant('toast.title_success'));
         this.reloadUsers();
       },
-      err => {
+      (err) => {
         this.toastr.error(
           err.error.message || this.translate.instant('users.toast_failed_to_delete_user'),
           this.translate.instant('toast.title_error'),
