@@ -38,7 +38,7 @@
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active">
           <a class="nav-link" routerLink="/logs" [translate]="'menu.linux.label_logs'">
-            <i class="fa fa-fw fa-code pr-2"></i>Logs</a>
+            <i class="fa fa-fw fa-wave-square pr-2"></i>Logs</a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$settings.env.enableTerminalAccess && $auth.user.admin">
           <a class="nav-link" routerLink="/platform-tools/terminal" [translate]="'menu.linux.label_terminal'">
@@ -118,7 +118,7 @@
       </li>
       <li>
         <a routerLink="/logs" [translate]="'menu.linux.label_logs'">
-          <i class="fa fa-fw fa-code"></i>
+          <i class="fa fa-fw fa-wave-square"></i>
           <span class="link_name">Logs</span>
         </a>
         <ul class="sub-menu blank">
@@ -140,7 +140,7 @@
             <i class="fa fa-fw fa-cog"></i>
             <span class="link_name">{{ 'plugins.button_settings' | translate }}</span>
           </a>
-          <i class="fa fa-fw fa-chevron-down arrow" data-toggle="collapse"  data-target=".li-link1"></i>
+          <i class="fa fa-fw fa-chevron-down arrow" data-toggle="collapse" data-target=".li-link1"></i>
         </div>
         <ul class="sub-menu">
           <li><a class="link_name" routerLink="/settings" [translate]="'plugins.button_settings'">Settings</a></li>
