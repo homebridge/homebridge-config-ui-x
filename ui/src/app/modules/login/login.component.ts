@@ -67,7 +67,7 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  async onSubmit({ value, valid }) {
+  async onSubmit() {
     this.invalidCredentials = false;
     this.invalid2faCode = false;
     this.inProgress = true;

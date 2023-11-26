@@ -48,11 +48,11 @@ export class UsersAddComponent implements OnInit {
 
   onSubmit({ value }) {
     this.$api.post('/users', value).subscribe(
-      data => {
+      () => {
         this.activeModal.close();
         this.toastr.success(this.translate.instant('users.toast_added_new_user'), this.translate.instant('toast.title_success'));
       },
-      err => {
+      (err) => {
         this.toastr.error(
           err.error.message || this.translate.instant('users.toast_failed_to_add_user'),
           this.translate.instant('toast.title_error'),
