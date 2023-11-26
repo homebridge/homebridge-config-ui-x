@@ -29,7 +29,7 @@ export class PluginCardComponent implements OnInit {
   public childBridgeRestartInProgress = false;
   public recommendChildBridge = false;
   public isMobile = this.$md.detect.mobile();
-  public defaultIcon = 'https://raw.githubusercontent.com/homebridge/branding/master/logos/homebridge-color-round-stylized.png';
+  public defaultIcon = 'https://raw.githubusercontent.com/homebridge/branding/latest/logos/homebridge-color-square.png';
 
   private io = this.$ws.getExistingNamespace('child-bridges');
   private setChildBridges = [];
@@ -80,6 +80,11 @@ export class PluginCardComponent implements OnInit {
       .catch(() => {
         this.recommendChildBridge = false;
       });
+
+    this.plugin.icon =  this.plugin?.links?.homepage
+      ? `${this.plugin.links.homepage.split('#')[0]}/latest/branding/icon.png`
+        .replace('github.com', 'raw.githubusercontent.com')
+      : this.defaultIcon;
   }
 
   openFundingModal(plugin: any) {

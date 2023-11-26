@@ -293,7 +293,6 @@ export class PluginsService {
         plugin.links = pkg.package.links;
         plugin.author = (pkg.package.publisher) ? pkg.package.publisher.username : null;
         plugin.verifiedPlugin = this.verifiedPlugins.includes(pkg.package.name);
-
         return plugin;
       });
 
@@ -1201,7 +1200,6 @@ export class PluginsService {
       displayName: pjson.displayName,
       description: (pjson.description) ?
         pjson.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pjson.name,
-      icon: pjson.icon || null,
       verifiedPlugin: this.verifiedPlugins.includes(pjson.name),
       installedVersion: installPath ? (pjson.version || '0.0.1') : null,
       globalInstall: (installPath !== this.configService.customPluginPath),

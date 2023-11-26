@@ -2,7 +2,6 @@ export interface HomebridgePlugin {
   name: string;
   private: boolean;
   displayName?: string;
-  icon?: string;
   description?: string;
   verifiedPlugin?: boolean;
   publicPackage?: boolean;
