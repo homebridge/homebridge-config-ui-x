@@ -183,6 +183,7 @@
   "plugins.button_homepage": "Plugin Homepage",
   "plugins.button_install": "Installere",
   "plugins.button_settings": "innstillinger",
+  "plugins.button_setup": "Setup Plugin",
   "plugins.button_uninstall": "Avinstallere",
   "plugins.button_update": "Oppdatering",
   "plugins.button_upgrade": "oppgradering",

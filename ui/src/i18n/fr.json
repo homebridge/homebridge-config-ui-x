@@ -183,6 +183,7 @@
   "plugins.button_homepage": "Site du Plugin",
   "plugins.button_install": "Installer",
   "plugins.button_settings": "Réglages",
+  "plugins.button_setup": "Setup Plugin",
   "plugins.button_uninstall": "Désinstaller",
   "plugins.button_update": "Mettre à jour",
   "plugins.button_upgrade": "Mettre à niveau",
