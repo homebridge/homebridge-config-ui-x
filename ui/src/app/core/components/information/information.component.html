@@ -8,7 +8,7 @@
   </div>
   <div class="modal-body w-100 text-center">
     <i *ngIf="faIconClass" class="fas fa-fw {{ faIconClass }} mb-4" style="font-size: 75px;"></i>
-    <p class="w-100 text-center">{{ message }}</p>
+    <p class="w-100 text-center" [innerHTML]="message"></p>
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-left">

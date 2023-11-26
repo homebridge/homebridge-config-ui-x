@@ -183,6 +183,7 @@
   "plugins.button_homepage": "ปลั๊กอิน Homepage",
   "plugins.button_install": "ติดตั้ง",
   "plugins.button_settings": "การตั้งค่า",
+  "plugins.button_setup": "Setup Plugin",
   "plugins.button_uninstall": "ถอนการติดตั้ง",
   "plugins.button_update": "อัปเดท",
   "plugins.button_upgrade": "อัพเกรด",

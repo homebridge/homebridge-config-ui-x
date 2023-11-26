@@ -183,6 +183,7 @@
   "plugins.button_homepage": "Strona wtyczki",
   "plugins.button_install": "Instaluj",
   "plugins.button_settings": "Ustawienia",
+  "plugins.button_setup": "Setup Plugin",
   "plugins.button_uninstall": "Odinstaluj",
   "plugins.button_update": "Aktualizuj",
   "plugins.button_upgrade": "Aktualizuj (upgrade)",

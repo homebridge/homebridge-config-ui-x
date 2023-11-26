@@ -183,6 +183,7 @@
   "plugins.button_homepage": "Plugin Homepage",
   "plugins.button_install": "安装",
   "plugins.button_settings": "设置",
+  "plugins.button_setup": "Setup Plugin",
   "plugins.button_uninstall": "卸载",
   "plugins.button_update": "更新",
   "plugins.button_upgrade": "升级",
