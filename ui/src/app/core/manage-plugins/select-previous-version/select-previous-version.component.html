@@ -17,7 +17,7 @@
       <p>
         {{ 'plugins.manage.message_select_version_to_install' | translate }}:
       </p>
-      <p class="small" *ngIf="curVersion">v{{ 'plugins.status_installed' | translate }}: {{ curVersion }}</p>
+      <p class="small" *ngIf="curVersion">{{ 'plugins.status_installed' | translate }}: v{{ curVersion }}</p>
       <select class="custom-select" [(ngModel)]="selectedVersion">
         <option *ngFor="let version of versions" [value]="version.version">
           {{ version.name }}
