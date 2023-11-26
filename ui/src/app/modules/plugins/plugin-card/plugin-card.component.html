@@ -78,7 +78,7 @@
                 <i class="fa-fw icon-button fas fa-fw fa-circle-exclamation primary-text"></i>
                 {{ 'child_bridge.label_child_setup' | translate }}
               </button>
-              <button ngbDropdownItem *ngIf="plugin.hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled"
+              <button ngbDropdownItem *ngIf="plugin.isConfigured && plugin.hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled"
                 (click)="$plugin.bridgeSettings(plugin)">
                 <i class="fa-fw icon-button fas fa-fw fa-circle-exclamation primary-text"></i>
                 {{ 'child_bridge.label_bridge_connect_to_homekit' | translate }}
@@ -86,8 +86,8 @@
               <div class="dropdown-divider"
                 *ngIf="
                   (plugin.updateAvailable || plugin.betaUpdateAvailable)
-                  || (!plugin.hasChildBridges && !plugin.disabled && recommendChildBridge)
-                  || (plugin.hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled)
+                  || (plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && recommendChildBridge)
+                  || (plugin.isConfigured && plugin.hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled)
                 "></div>
               <button ngbDropdownItem (click)="$plugin.installPreviousVersion(plugin)">
                 <i class="fas fa-fw fa-fw fa-history"></i> {{ 'plugins.manage.message_install_alternate_version' | translate }}
