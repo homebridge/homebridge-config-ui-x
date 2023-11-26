@@ -1,7 +1,9 @@
-name: Manually Attach Artifacts ( If the automation fails )
-run-name: Manually Attach Artifacts against ${{ github.event.inputs.tag }}
+name: Attach Artifacts from Node Release or Manually ( If the automation fails )
+run-name: From Node Release or Manually Attach Artifacts against ${{ github.event.inputs.tag }}
 
 on:
+  repository_dispatch:
+    types: [attach-artifacts]
   workflow_dispatch:
     inputs:
       tag:
@@ -19,6 +21,10 @@ jobs:
         with:
           node-version: 20.x
 
+      - name: Get previous tag
+        id: previoustag
+        uses: 'WyriHaximus/github-action-get-previous-tag@v1'
+
       # Sanity check to ensure that release tags don't start with a 'v' version prefix but adhere to the X.Y.Z format
       - name: Check for Tag name Format
         # https://github.com/orgs/community/discussions/25017
@@ -30,7 +36,7 @@ jobs:
       - name: Install package
         run: |
           export npm_config_prefix=$(pwd)/package
-          npm install -g homebridge-config-ui-x@${{ github.event.inputs.tag }}
+          npm install -g homebridge-config-ui-x@$${{ needs.analyze-tags.outputs.previous-tag || github.event.inputs.tag }}
 
       - name: Remove invalid node-pty node-gyp run
         run: |
@@ -38,12 +44,12 @@ jobs:
 
       - name: Create Bundle
         run: |
-          tar -C $(pwd)/package --owner=0 --group=0 --format=posix -czvf homebridge-config-ui-x-${{ github.event.inputs.tag }}.tar.gz .
-          shasum -a 256 homebridge-config-ui-x-${{ github.event.inputs.tag }}.tar.gz > SHASUMS256.txt
+          tar -C $(pwd)/package --owner=0 --group=0 --format=posix -czvf homebridge-config-ui-x-${{ needs.analyze-tags.outputs.previous-tag || github.event.inputs.tag }}.tar.gz .
+          shasum -a 256 homebridge-config-ui-x-${{ needs.analyze-tags.outputs.previous-tag || github.event.inputs.tag }}.tar.gz > SHASUMS256.txt
 
       - name: Attach Bundle
         uses: AButler/upload-release-assets@v2.0
         with:
-          files: 'homebridge-config-ui-x-${{ github.event.inputs.tag }}.tar.gz;SHASUMS256.txt'
+          files: 'homebridge-config-ui-x-${{ needs.analyze-tags.outputs.previous-tag || github.event.inputs.tag }}.tar.gz;SHASUMS256.txt'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           release-tag: ${{ github.event.inputs.tag }}

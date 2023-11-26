@@ -9,10 +9,15 @@
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
-  <div class="modal-body">
+  <div class="modal-body" [hidden]="justSavedAndExited">
     <div>
-      <markdown class="plugin-md" [data]="schema.headerDisplay | interpolateMd"
-        *ngIf="schema.headerDisplay"></markdown>
+      <markdown class="plugin-md" [data]="schema.headerDisplay | interpolateMd" *ngIf="schema.headerDisplay"></markdown>
+    </div>
+    <div class="text-center mb-4" *ngIf="plugin.name === 'homebridge-config-ui-x'">
+      <button class="btn btn-primary" type="button" (click)="openFundingModalForUi()">
+        <i class="fa fa-fw fa-heart red-text pr-2"></i>
+        <span translate="plugins.donate.ui" [translateParams]="{ author: 'oznu' }"></span>
+      </button>
     </div>
 
     <!-- MULTIPLE CONFIG BLOCKS-->
@@ -29,7 +34,7 @@
                 <i class="fa fa-fw fa-trash"></i>
               </button>
               <button class="btn btn-primary ml-2" ngbPanelToggle [ngbTooltip]="'form.button_edit' | translate"
-                container="body" openDelay="150">
+                      container="body" openDelay="150">
                 <i class="fa fa-fw fa-edit"></i>
               </button>
             </div>
@@ -55,13 +60,23 @@
         *ngIf="schema.footerDisplay"></markdown>
     </div>
   </div>
-  <div class="modal-footer justify-content-between">
-    <div style="min-width: 25%;" class="text-left">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.close('Dismiss')"
-        [translate]="'form.button_cancel'">Cancel</button>
+  <div class="modal-body text-center" [hidden]="!justSavedAndExited">
+    <i class="fa fa-fw fa-power-off primary-text mb-4" style="font-size: 75px;"></i>
+    <p *ngIf="['homebridge', 'homebridge-config-ui-x'].includes(plugin.name) || childBridges.length === 0" class="text-center grey-text"
+      [translate]="'plugins.manage.message_thanks_for_updating_restart'">
+      Please restart Homebridge for the changes to apply.
+    </p>
+    <p *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name) && childBridges.length > 0" class="text-center grey-text"
+      [translate]="'plugins.manage.message_thanks_for_updating_restart_child_bridges'">
+      Please restart the plugin's child bridges for the changes to apply.
+    </p>
+  </div>
+  <div class="modal-footer justify-content-between" [hidden]="justSavedAndExited">
+    <div class="text-left">
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.close()"
+        [translate]="'form.button_close'">Close</button>
     </div>
-
-    <div style="min-width: 25%;" class="d-none d-lg-block text-center">
+    <div class="d-none d-lg-block text-center">
       <a *ngIf="plugin.links.npm" [href]="plugin.links.npm" target="_blank" rel="noopener noreferrer"
         class="pr-3 manage-plugin-config-external-icons dark-mode-highlight"><i class="fab fa-fw fa-npm"></i></a>
       <a *ngIf="plugin.links.homepage" [href]="plugin.links.homepage" target="_blank" rel="noopener noreferrer"
@@ -69,18 +84,35 @@
         <i [ngClass]="plugin.links.homepage | externalLinkIcon"></i>
       </a>
     </div>
-
-    <div style="min-width: 25%;" class="text-right">
+    <div class="text-right">
       <button *ngIf="!schema.singular || pluginConfig.length === 0" type="button" class="btn btn-elegant" data-dismiss="modal" (click)="addBlock()">
         Add {{ schema.pluginType }}
       </button>
       <button *ngIf="plugin.name !== 'homebridge-config-ui-x' && schema.singular && pluginConfig.length > 0"
-              class="btn btn-danger ml-2" (click)="removeBlock(pluginConfig[0].__uuid__)"
-              [ngbTooltip]="'form.button_delete' | translate" container="body" openDelay="150">
+        class="btn btn-danger ml-2" (click)="removeBlock(pluginConfig[0].__uuid__)"
+        [ngbTooltip]="'form.button_delete' | translate" container="body" openDelay="150">
         <i class="fa fa-fw fa-trash"></i>
       </button>
       <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="save()" [disabled]="saveInProgress">
         {{ 'form.button_save' | translate }} <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
+      </button>
+    </div>
+  </div>
+  <div class="modal-footer justify-content-between" [hidden]="!justSavedAndExited">
+    <div class="text-left">
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.close('Dismiss')">
+        {{ 'form.button_close' | translate }}
+      </button>
+    </div>
+    <div class="text-center"></div>
+    <div class="text-right">
+      <button type="button" class="btn btn-primary" *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name) && childBridges.length > 0"
+        (click)="onRestartChildBridgeClick()">
+        {{ (childBridges.length === 1 ? 'plugins.manage.child_bridge_button_restart_now_one' : 'plugins.manage.child_bridge_button_restart_now') | translate }}
+      </button>
+      <button type="button" class="btn btn-primary"
+        *ngIf="['homebridge', 'homebridge-config-ui-x'].includes(plugin.name) || childBridges.length === 0" (click)="onRestartHomebridgeClick()">
+        {{ 'plugins.manage.button_restart_now' | translate }}
       </button>
     </div>
   </div>

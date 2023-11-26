@@ -2,11 +2,11 @@ name: Node Release
 run-name: Production Release ${{ github.event.release.tag_name }}
 
 on:
-# Removed publish on push, and forced manual release from github
-#  push:
-#    branches: [latest]
-#    tags:
-#      - '*.*.*'
+  # Removed publish on push, and forced manual release from github
+  #  push:
+  #    branches: [latest]
+  #    tags:
+  #      - '*.*.*'
   workflow_dispatch:
 
 jobs:
@@ -61,9 +61,7 @@ jobs:
           tar -C $(pwd)/package --owner=0 --group=0 --format=posix -czvf homebridge-config-ui-x-${{ github.event.release.tag_name }}.tar.gz .
           shasum -a 256 homebridge-config-ui-x-${{ github.event.release.tag_name }}.tar.gz > SHASUMS256.txt
 
-      - name: Attach Bundle
-        uses: AButler/upload-release-assets@v2.0
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v2
         with:
-          files: 'homebridge-config-ui-x-${{ github.event.release.tag_name }}.tar.gz;SHASUMS256.txt'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          release-tag: ${{ github.event.release.tag_name }}
+          event-type: attach-artifacts

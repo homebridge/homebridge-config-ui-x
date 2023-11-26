@@ -65,11 +65,11 @@ export class UsersSetup2faComponent implements OnInit {
 
   enable2fa() {
     this.$api.post('/users/otp/activate', this.formGroup.value).subscribe(
-      data => {
+      () => {
         this.toastr.success(this.translate.instant('users.setup_2fa_enabled_success'), this.translate.instant('toast.title_success'));
         this.activeModal.close();
       },
-      err => {
+      (err) => {
         this.toastr.error(err.error.message || 'An error occurred', this.translate.instant('toast.title_error'));
       },
     );

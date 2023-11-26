@@ -7,6 +7,7 @@ import { NgxMdModule } from 'ngx-md';
 import { MonacoEditorModule } from 'ngx-monaco-editor';
 import { BridgePluginsModalComponent } from './bridge-plugins-modal/bridge-plugins-modal.component';
 import { CustomPluginsModule } from './custom-plugins/custom-plugins.module';
+import { DonateModalComponent } from './donate-modal/donate-modal.component';
 import { InterpolateMdPipe } from './interpolate-md.pipe';
 import { ManagePluginsModalComponent } from './manage-plugins-modal/manage-plugins-modal.component';
 import { ManagePluginsService } from './manage-plugins.service';
@@ -16,6 +17,7 @@ import { SelectPreviousVersionComponent } from './select-previous-version/select
 import { SettingsPluginsModalComponent } from './settings-plugins-modal/settings-plugins-modal.component';
 import { UninstallPluginsModalComponent } from './uninstall-plugins-modal/uninstall-plugins-modal.component';
 import { CoreModule } from '@/app/core/core.module';
+import { PluginLogModalComponent } from '@/app/core/manage-plugins/plugin-log-modal/plugin-log-modal.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +29,8 @@ import { CoreModule } from '@/app/core/core.module';
     ManualPluginConfigModalComponent,
     SelectPreviousVersionComponent,
     BridgePluginsModalComponent,
+    PluginLogModalComponent,
+    DonateModalComponent,
   ],
   imports: [
     CommonModule,

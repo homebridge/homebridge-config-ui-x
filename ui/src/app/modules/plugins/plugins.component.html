@@ -8,7 +8,6 @@
       <a class="hb-npm-search-clear" href="javascript:void(0)" (click)="onClearSearch()">
         <i class="far fa-fw fa-times-circle" *ngIf="form.controls['query'].value"></i>
       </a>
-
     </form>
   </div>
 </div>
@@ -16,5 +15,9 @@
 <div class="d-flex flex-wrap justify-content-between">
   <div class="hb-plugin-space-between" *ngFor="let plugin of installedPlugins">
     <app-plugin-card [plugin]="plugin" [childBridges]="getPluginChildBridges(plugin)"></app-plugin-card>
+  </div>
+  <div class="alert alert-info mt-4 text-center w-100" *ngIf="installedPlugins.length === 0 && !loading">
+    <i class="fas fa-fw fa-magnifying-glass primary-text my-3" style="font-size: 75px;"></i>
+    <p>{{ 'plugins.placeholder_search_first' | translate }}</p>
   </div>
 </div>

@@ -5,11 +5,13 @@ import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '@/app/core/api.service';
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
 import { InformationComponent } from '@/app/core/components/information/information.component';
+import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component';
+import { DonateModalComponent } from '@/app/core/manage-plugins/donate-modal/donate-modal.component';
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
+import { PluginLogModalComponent } from '@/app/core/manage-plugins/plugin-log-modal/plugin-log-modal.component';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
-import { NotificationService } from '@/app/core/notification.service';
+import { SettingsService } from '@/app/core/settings.service';
 import { WsService } from '@/app/core/ws.service';
-import { DonateModalComponent } from '@/app/modules/plugins/donate-modal/donate-modal.component';
 
 @Component({
   selector: 'app-plugin-card',
@@ -24,6 +26,7 @@ export class PluginCardComponent implements OnInit {
   public allChildBridgesStopped = false;
   public childBridgeStatus = 'pending';
   public childBridgeRestartInProgress = false;
+  public recommendChildBridge = false;
   public isMobile = this.$md.detect.mobile();
 
   private io = this.$ws.getExistingNamespace('child-bridges');
@@ -33,25 +36,25 @@ export class PluginCardComponent implements OnInit {
     public $plugin: ManagePluginsService,
     private $api: ApiService,
     private $ws: WsService,
-    private $notification: NotificationService,
     private $translate: TranslateService,
     private $modal: NgbModal,
     private $toastr: ToastrService,
     private $md: MobileDetectService,
+    private $settings: SettingsService,
   ) {}
 
   @Input() set childBridges(childBridges: any[]) {
     this.hasChildBridges = childBridges.length > 0;
-    this.hasUnpairedChildBridges = childBridges.filter(x => x.paired === false).length > 0;
-    this.allChildBridgesStopped = childBridges.filter(x => x.manuallyStopped === true).length === childBridges.length;
+    this.hasUnpairedChildBridges = childBridges.filter((x) => x.paired === false).length > 0;
+    this.allChildBridgesStopped = childBridges.filter((x) => x.manuallyStopped === true).length === childBridges.length;
 
     if (this.hasChildBridges) {
       // get the "worse" status of all child bridges and use that for colour icon
-      if (childBridges.some(x => x.status === 'down')) {
+      if (childBridges.some((x) => x.status === 'down')) {
         this.childBridgeStatus = 'down';
-      } else if (childBridges.some(x => x.status === 'pending')) {
+      } else if (childBridges.some((x) => x.status === 'pending')) {
         this.childBridgeStatus = 'pending';
-      } else if (childBridges.some(x => x.status === 'ok')) {
+      } else if (childBridges.some((x) => x.status === 'ok')) {
         this.childBridgeStatus = 'ok';
       }
     }
@@ -59,7 +62,23 @@ export class PluginCardComponent implements OnInit {
     this.setChildBridges = childBridges;
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    if (
+      !this.$settings.env.recommendChildBridges
+      || !this.$settings.env.serviceMode
+      || ['homebridge', 'homebridge-config-ui-x'].includes(this.plugin.name)
+    ) {
+      this.recommendChildBridge = false;
+      return;
+    }
+    this.$api.get(`/plugins/config-schema/${encodeURIComponent(this.plugin.name)}`, {}).toPromise()
+      .then((schema) => {
+        this.recommendChildBridge = schema.pluginType === 'platform';
+      })
+      .catch(() => {
+        this.recommendChildBridge = false;
+      });
+  }
 
   openFundingModal(plugin: any) {
     const ref = this.$modal.open(DonateModalComponent);
@@ -81,7 +100,6 @@ export class PluginCardComponent implements OnInit {
     ref.componentInstance.title = `${this.$translate.instant('plugins.manage.disable')}: ${plugin.name}`;
     ref.componentInstance.message = this.$translate.instant('plugins.manage.message_confirm_disable', { pluginName: plugin.name });
     ref.componentInstance.confirmButtonLabel = this.$translate.instant('plugins.manage.disable');
-    ref.componentInstance.cancelButtonLabel = this.$translate.instant('form.button_cancel');
     ref.componentInstance.faIconClass = 'fa-circle-pause primary-text';
 
     ref.result.then(async () => {
@@ -93,11 +111,7 @@ export class PluginCardComponent implements OnInit {
         if (this.hasChildBridges) {
           this.doChildBridgeAction('stop');
         }
-        this.$toastr.success(
-          this.$translate.instant('plugins.settings.toast_restart_required'),
-          this.$translate.instant('toast.title_success'),
-        );
-        this.$notification.configUpdated.next(undefined);
+        this.$modal.open(RestartHomebridgeComponent);
       } catch (err) {
         this.$toastr.error(`Failed to disable plugin: ${err.message}`, this.$translate.instant('toast.title_error'));
       }
@@ -112,7 +126,6 @@ export class PluginCardComponent implements OnInit {
     ref.componentInstance.title = `${this.$translate.instant('plugins.manage.enable')}: ${plugin.name}`;
     ref.componentInstance.message = this.$translate.instant('plugins.manage.message_confirm_enable', { pluginName: plugin.name });
     ref.componentInstance.confirmButtonLabel = this.$translate.instant('plugins.manage.enable');
-    ref.componentInstance.cancelButtonLabel = this.$translate.instant('form.button_cancel');
     ref.componentInstance.faIconClass = 'fa-circle-play primary-text';
 
     ref.result.then(async () => {
@@ -124,17 +137,22 @@ export class PluginCardComponent implements OnInit {
         if (this.hasChildBridges) {
           await this.doChildBridgeAction('start');
         }
-        this.$toastr.success(
-          this.$translate.instant('plugins.settings.toast_restart_required'),
-          this.$translate.instant('toast.title_success'),
-        );
-        this.$notification.configUpdated.next(undefined);
+        this.$modal.open(RestartHomebridgeComponent);
       } catch (err) {
         this.$toastr.error(`Failed to enable plugin: ${err.message}`, this.$translate.instant('toast.title_error'));
       }
     }).finally(() => {
       //
     });
+  }
+
+  viewPluginLog(plugin: any) {
+    const ref = this.$modal.open(PluginLogModalComponent, {
+      size: 'xl',
+      backdrop: 'static',
+    });
+
+    ref.componentInstance.plugin = plugin;
   }
 
   async doChildBridgeAction(action: 'stop' | 'start' | 'restart') {
