@@ -216,13 +216,15 @@
         "required": true
       },
       "restart": {
-        "title": "Restart Command",
+        "title": "Custom Restart Command",
         "type": "string",
-        "description": "If no restart command is set the process will terminate with a non-zero exit code."
+        "description": "If no restart command is set the process will terminate with a non-zero exit code.",
+        "placeholder": "eg. sudo systemctl restart homebridge"
       },
       "temp": {
         "title": "Path to OS Temp File",
-        "type": "string"
+        "type": "string",
+        "placeholder": "eg. /sys/class/thermal/thermal_zone0/temp"
       },
       "tempUnits": {
         "title": "Temperature Display Units",
@@ -431,7 +433,9 @@
       },
       "homebridgePackagePath": {
         "title": "Path To Homebridge Module",
-        "type": "string"
+        "type": "string",
+        "description": "If you have multiple versions of Homebridge installed, you can specify the path to the version you want to use here.",
+        "placeholder": "eg. /usr/local/lib/node_modules/homebridge"
       },
       "noFork": {
         "title": "Do not run the Config UI web server in a separate process/thread",
@@ -439,7 +443,8 @@
       },
       "host": {
         "title": "The host ip address to listen on. In most cases this will be '::' or '0.0.0.0'",
-        "type": "string"
+        "type": "string",
+        "placeholder": "eg. 0.0.0.0"
       },
       "debug": {
         "title": " Enable / disable debug level logging",
@@ -462,6 +467,7 @@
           "method": {
             "title": "Log Method",
             "type": "string",
+            "default": "",
             "oneOf": [
               {
                 "title": "Default",
@@ -645,7 +651,6 @@
       "title": "Advanced",
       "items": [
         "sudo",
-        "debug",
         "temp",
         "restart",
         "proxyHost",
@@ -661,8 +666,9 @@
           "ref": "log",
           "type": "fieldset",
           "expandable": true,
-          "title": "Log Viewer Setup",
+          "title": "Log Settings",
           "items": [
+            "debug",
             "log.method",
             "log.path",
             "log.service",
