@@ -60,17 +60,11 @@
 
       <div class="d-flex flex-row justify-content-between ml-auto mt-auto">
         <div>
-          <i *ngIf="plugin.hasChildBridges && !plugin.disabled && plugin.childBridgeStatus === 'ok'"
-            class="fas fa-fw fa-bridge-circle-check green-text ml-3 fa-lg"></i>
-          <i *ngIf="plugin.hasChildBridges && !plugin.disabled && plugin.childBridgeStatus === 'pending'"
-            class="fas fa-fw fa-bridge-circle-exclamation text-warning ml-3 fa-lg"></i>
-          <i *ngIf="plugin.hasChildBridges && !plugin.disabled && plugin.childBridgeStatus === 'down'"
-            class="fas fa-fw fa-bridge-circle-xmark red-text ml-3 fa-lg"></i>
-<!--           <i *ngIf="plugin.hasChildBridges && !plugin.disabled" class="fas fa-fw fa-circle ml-3 fa-lg" [ngClass]="{
-            'green-text': childBridgeStatus === 'ok',
-            'text-warning': childBridgeStatus === 'pending',
-            'red-text': childBridgeStatus === 'down'
-          }"></i> -->
+          <i *ngIf="plugin.hasChildBridges && !plugin.disabled" class="fas fa-fw ml-3 fa-lg" [ngClass]="{
+            'fa-bridge-circle-check green-text': childBridgeStatus === 'ok',
+            'fa-bridge-circle-exclamation text-warning': childBridgeStatus === 'pending',
+            'fa-bridge-circle-xmark red-text': childBridgeStatus === 'down'
+          }"></i>
         </div>
         <div>
           <a *ngIf="!plugin.installedVersion" href="javascript:void(0)" class="card-link text-decoration-none" (click)="$plugin.installPreviousVersion(plugin)">
