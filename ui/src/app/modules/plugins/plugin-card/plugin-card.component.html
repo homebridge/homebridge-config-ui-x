@@ -30,7 +30,7 @@
     
     <div class="d-flex flex-column ml-3 justify-content-between">
       
-      <div class="d-flex flex-row justify-content-between ml-auto">
+      <div class="d-flex flex-row justify-content-end ml-auto">
         <a href="javascript:void(0)" *ngIf="plugin.verifiedPlugin"
           class="card-link text-decoration-none green-text" (click)="openVerifiedModal()">
           <i class="fas fa-fw fa-shield-alt fa-lg"></i>
@@ -41,7 +41,7 @@
         </a>
       </div>
 
-      <div class="d-flex flex-row justify-content-between ml-auto mt-auto">
+      <div class="d-flex flex-row justify-content-end ml-auto mt-auto">
         <div>
           <i *ngIf="plugin.hasChildBridges && !plugin.disabled" class="fas fa-fw ml-3 fa-lg" [ngClass]="{
             'fa-bridge-circle-check green-text': childBridgeStatus === 'ok',
@@ -59,7 +59,10 @@
           <a *ngIf="!plugin.installedVersion" href="javascript:void(0)" class="card-link text-decoration-none ml-2" (click)="$plugin.installPreviousVersion(plugin)">
             <i class="fa-solid fa-fw fa-circle-down fa-lg"></i>
           </a>
-          <span *ngIf="plugin.installedVersion" ngbDropdown placement="bottom-right top-right left" class="">
+          <a *ngIf="!plugin.installedVersion" href="javascript:void(0)" class="card-link text-decoration-none ml-2" (click)="pluginInfoModal(plugin)">
+            <i class="fa-solid fa-fw fa-circle-info fa-lg"></i>
+          </a>
+          <span *ngIf="" ngbDropdown placement="bottom-right top-right left" class="">
             <a class="mt-auto ml-2 card-link" href="javascript:void(0)" style="outline:none;"
               aria-label="Plugin actions drop down menu" ngbDropdownToggle>
               <i class="fa-solid fa-fw fa-cog fa-lg" [ngClass]="{
