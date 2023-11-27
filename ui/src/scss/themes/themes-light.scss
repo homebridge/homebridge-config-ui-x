@@ -2,8 +2,13 @@
 
 @mixin make-theme($name, $primary, $primary-dark) {
   .config-ui-x-#{$name} {
+    
     .bg-primary {
       background-color: $primary-dark !important;
+    }
+
+    .main-text {
+      color: #333333;
     }
 
     .nav-overlay {
