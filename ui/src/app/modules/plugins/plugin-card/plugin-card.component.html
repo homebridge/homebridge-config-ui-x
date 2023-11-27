@@ -9,15 +9,7 @@
         {{ plugin.displayName || ((plugin.name.charAt(0) === '@' ? plugin.name.split('/')[1] : plugin.name) |
         replace:'-':' ' | titlecase) }}
       </h4>
-      <div class="d-flex flex-column justify-content-between my-2">
-        <div class="grey-text">
-          <a href="javascript:void(0)" class="card-link text-decoration-none" (click)="pluginInfoModal(plugin)">
-            <i class="fas fa-fw fa-circle-info fa-lg grey-text"></i>
-          </a>
-          v{{ plugin.installedVersion || plugin.latestVersion }}
-          <span class="text-decoration-none" *ngIf="plugin.lastUpdated"> ({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
-        </div>
-      </div>
+      
       <div class="d-flex flex-row justify-content-start mb-0 mt-2">
         <p class="mb-0 mr-3 info-text"
            *ngIf="plugin.installedVersion && !plugin.updateAvailable && !plugin.betaUpdateAvailable && !plugin.disabled">
@@ -31,6 +23,7 @@
         </p>      
       </div>
     </div>
+    
     <div class="d-flex flex-column ml-3 justify-content-between">
       
       <div class="d-flex flex-row justify-content-between ml-auto">
