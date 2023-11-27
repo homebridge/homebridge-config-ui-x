@@ -12,7 +12,7 @@
       
       <div class="d-flex flex-row justify-content-start mb-0 mt-2">
         <p class="mb-0 mr-3 main-text"
-           *ngIf="plugin.installedVersion && !plugin.updateAvailable && !plugin.betaUpdateAvailable && !plugin.disabled">
+           *ngIf="plugin.installedVersion && !plugin.updateAvailable && !plugin.betaUpdateAvailable">
           <a href="javascript:void(0)" class="text-decoration-none" style="outline:none;" (click)="$plugin.installPreviousVersion(plugin)">
             <i class="far fa-fw fa-circle-check fa-lg pr-1 main-text"></i>
             <span class="d-none d-md-inline-block pr-1 main-text"> {{ 'plugins.status_installed' | translate }}:</span>
@@ -27,7 +27,7 @@
             <span *ngIf="plugin.lastUpdated" class="d-none d-sm-inline-block pl-1 grey-text">({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
           </a>
         </p>
-        <p class="mb-0 mr-3 primary-text" *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable && !plugin.disabled">
+        <p class="mb-0 mr-3 primary-text" *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable">
           <a href="javascript:void(0)" class="text-decoration-none" style="outline:none;" (click)="$plugin.updatePlugin(plugin, plugin.betaUpdateAvailable ? 'beta' : 'latest')">
             <i class="far fa-fw fa-arrow-alt-circle-up fa-lg pr-1 primary-text"></i>
               <span class="d-none d-xl-inline-block pr-1 primary-text"> {{ 'plugins.button_update' | translate }}:</span>
