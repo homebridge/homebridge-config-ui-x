@@ -24,7 +24,7 @@
             <i class="far fa-fw fa-circle-down fa-lg pr-1 grey-text"></i>
             <span class="d-none d-md-inline-block pr-1 grey-text">{{ 'plugins.button_install' | translate }}:</span>
             <span class="text-decoration-none">v{{ plugin.latestVersion}}</span>
-            <span *ngIf="plugin.lastUpdated" class="d-none d-xl-inline-block pl-1">({{plugin.lastUpdated}})</span>
+            <span *ngIf="plugin.lastUpdated" class="d-none d-xl-inline-block pl-1">({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
           </a>
         </p>
         <p class="mb-0 mr-3 primary-text" *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable && !plugin.disabled">
