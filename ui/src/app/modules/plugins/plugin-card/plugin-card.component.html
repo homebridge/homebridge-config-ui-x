@@ -43,17 +43,11 @@
           <i class="far fa-fw fa-circle-pause fa-lg"></i><span class="d-none d-lg-inline-block pl-1"> {{ 'plugins.status_disabled' | translate }}</span>
         </p>
         <div class="ml-auto pl-3">
-          <i *ngIf="plugin.hasChildBridges && !plugin.disabled && plugin.childBridgeStatus === 'ok'"
-            class="fas fa-fw fa-bridge-circle-check green-text ml-3 fa-lg"></i>
-          <i *ngIf="plugin.hasChildBridges && !plugin.disabled && plugin.childBridgeStatus === 'pending'"
-            class="fas fa-fw fa-bridge-circle-exclamation text-warning ml-3 fa-lg"></i>
-          <i *ngIf="plugin.hasChildBridges && !plugin.disabled && plugin.childBridgeStatus === 'down'"
-            class="fas fa-fw fa-bridge-circle-xmark red-text ml-3 fa-lg"></i>
-<!--           <i *ngIf="plugin.hasChildBridges && !plugin.disabled" class="fas fa-fw fa-circle ml-3 fa-lg" [ngClass]="{
-            'green-text': childBridgeStatus === 'ok',
-            'text-warning': childBridgeStatus === 'pending',
-            'red-text': childBridgeStatus === 'down'
-          }"></i> -->
+          <i *ngIf="plugin.hasChildBridges && !plugin.disabled" class="fas fa-fw ml-3 fa-lg" [ngClass]="{
+            'fa-bridge-circle-check green-text': childBridgeStatus === 'ok',
+            'fa-bridge-circle-exclamation text-warning': childBridgeStatus === 'pending',
+            'fa-bridge-circle-xmark red-text': childBridgeStatus === 'down'
+          }"></i>
           <a *ngIf="!plugin.installedVersion" href="javascript:void(0)" class="card-link text-decoration-none" (click)="$plugin.installPreviousVersion(plugin)">
             <i class="fa-solid fa-fw fa-circle-down fa-lg ml-3"></i>
           </a>
