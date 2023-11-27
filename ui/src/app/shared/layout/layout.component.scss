@@ -26,7 +26,7 @@
 .toggler-icon {
     display: block;
     position: absolute;
-    height: 3px;
+    height: 2px;
     width: 100%;
     background: #ffffff;
     border-radius: 1px;
@@ -48,7 +48,7 @@
 
 .navbar-toggler .top-bar {
   position: absolute;
-  top: 0px;
+  top: 0;
   transform: rotate(0deg);
 }
 
@@ -83,7 +83,7 @@
 .navbar .dropdown-menu {
   position: static !important;
   background-color: transparent !important;
-  border: 0px !important;
+  border: 0 !important;
 }
 
 .nav-item .btn {
