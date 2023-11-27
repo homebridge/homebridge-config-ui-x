@@ -65,10 +65,9 @@ export class PluginCardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.plugin.icon = this.plugin.verifiedPlugin && this.plugin?.links?.homepage
-      ? `${this.plugin.links.homepage.split('#')[0]}/latest/branding/icon.png`
-        .replace('github.com', 'raw.githubusercontent.com')
-      : this.defaultIcon;
+    if (!this.plugin.icon) {
+      this.plugin.icon = this.defaultIcon;
+    }
 
     if (
       this.plugin.installedVersion
