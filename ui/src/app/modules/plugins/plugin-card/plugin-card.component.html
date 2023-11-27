@@ -18,20 +18,17 @@
           <span class="text-decoration-none" *ngIf="plugin.lastUpdated"> ({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
         </div>
       </div>
-      <div class="d-flex flex-row justify-content-start mb-0">
-        <p class="mb-0 mr-3 grey-text"
+      <div class="d-flex flex-row justify-content-start mb-0 mt-2">
+        <p class="mb-0 mr-3 info-text"
            *ngIf="plugin.installedVersion && !plugin.updateAvailable && !plugin.betaUpdateAvailable && !plugin.disabled">
-          <i class="far fa-fw fa-circle-check fa-lg"></i><span class="d-none d-sm-inline-block pl-1"> {{ 'plugins.status_installed' | translate }}</span>
+          <i class="far fa-fw fa-circle-check fa-lg"></i><span class="d-none d-sm-inline-block pl-1"> v{{ plugin.installedVersion}}</span>
         </p>
         <p class="mb-0 mr-3 grey-text" *ngIf="!plugin.installedVersion">
-          <i class="far fa-fw fa-circle-down fa-lg"></i><span class="d-none d-sm-inline-block pl-1"> {{ 'plugins.status_not_installed' | translate }}</span>
+          <i class="far fa-fw fa-circle-down fa-lg"></i><span class="d-none d-sm-inline-block pl-1"> v{{ plugin.latestVersion}}</span>
         </p>
         <p class="mb-0 mr-3 primary-text" *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable && !plugin.disabled">
-          <i class="far fa-fw fa-arrow-alt-circle-up fa-lg"></i><span class="d-none d-sm-inline-block pl-1"> {{ 'plugins.status_update_available' | translate }}</span>
-        </p>
-        <p class="mb-0 mr-3 red-text" *ngIf="plugin.installedVersion && plugin.disabled">
-          <i class="far fa-fw fa-circle-pause fa-lg"></i><span class="d-none d-lg-inline-block pl-1"> {{ 'plugins.status_disabled' | translate }}</span>
-        </p>        
+          <i class="far fa-fw fa-arrow-alt-circle-up fa-lg"></i><span class="d-none d-sm-inline-block pl-1"> v{{ plugin.installedVersion}} - v{{ plugin.latestVersion}}</span>
+        </p>      
       </div>
     </div>
     <div class="d-flex flex-column ml-3 justify-content-between">
@@ -55,6 +52,9 @@
             'fa-bridge-circle-xmark red-text': childBridgeStatus === 'down'
           }"></i>
         </div>
+        <div class="mb-0 ml-3 red-text" *ngIf="plugin.installedVersion && plugin.disabled">
+          <a style="outline:none;" (click)="enablePlugin(plugin)"><i class="far fa-fw fa-circle-pause fa-lg"></i></a>
+        </div>  
         <div>
           <a *ngIf="!plugin.installedVersion" href="javascript:void(0)" class="card-link text-decoration-none ml-2" (click)="$plugin.installPreviousVersion(plugin)">
             <i class="fa-solid fa-fw fa-circle-down fa-lg"></i>
@@ -70,11 +70,6 @@
                 }" style="--fa-animation-duration: 2s;"></i>
             </a>
             <div ngbDropdownMenu aria-labelledby="Plugin actions drop down menu">
-              <button ngbDropdownItem (click)="$plugin.settings(plugin)">
-                <i class="fas fa-fw fa-cog" [ngClass]="{ 'primary-text': !plugin.isConfigured }"></i>
-                <span *ngIf="plugin.isConfigured || plugin.disabled"> {{ 'plugins.button_settings' | translate }}</span>
-                <span *ngIf="!plugin.isConfigured && !plugin.disabled"> {{ 'plugins.button_setup' | translate }}</span>
-              </button>
               <div class="dropdown-divider"></div>
               <button ngbDropdownItem (click)="$plugin.updatePlugin(plugin, plugin.betaUpdateAvailable ? 'beta' : 'latest')"
                 *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable">
@@ -130,7 +125,16 @@
                 <button ngbDropdownItem *ngIf="allChildBridgesStopped" (click)="doChildBridgeAction('start')">
                   <i class="fas fa-fw fa-play"></i> {{ 'child_bridge.label_child_start' | translate }}
                 </button>
+                <div class="dropdown-divider"></div>
               </ng-container>
+              <button ngbDropdownItem (click)="$plugin.settings(plugin)">
+                <i class="fas fa-fw fa-cog" [ngClass]="{ 'primary-text': !plugin.isConfigured }"></i>
+                <span *ngIf="plugin.isConfigured || plugin.disabled"> {{ 'plugins.button_settings' | translate }}</span>
+                <span *ngIf="!plugin.isConfigured && !plugin.disabled"> {{ 'plugins.button_setup' | translate }}</span>
+              </button>
+              <button ngbDropdownItem (click)="pluginInfoModal(plugin)">
+                <i class="fas fa-fw fa-circle-info "></i> Plugin Info
+              </button>
             </div>
           </span>
         </div>
