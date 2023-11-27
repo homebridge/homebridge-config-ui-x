@@ -39,7 +39,7 @@ export class UnpairAccessoryModalComponent implements OnInit {
     this.deleting = id;
 
     this.$api.delete(`/server/pairings/${id}`).subscribe(
-      async data => {
+      async () => {
         await this.loadPairings();
 
         if (!this.pairings.length) {
@@ -53,7 +53,7 @@ export class UnpairAccessoryModalComponent implements OnInit {
           this.translate.instant('toast.title_success'),
         );
       },
-      err => {
+      () => {
         this.deleting = null;
         this.toastr.error('Failed to un-pair accessory.', this.translate.instant('toast.title_error'));
       },

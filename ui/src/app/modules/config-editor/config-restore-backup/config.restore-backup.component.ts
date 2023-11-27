@@ -42,7 +42,7 @@ export class ConfigRestoreBackupComponent implements OnInit {
 
   deleteAllBackups() {
     return this.$api.delete('/config-editor/backups').subscribe(
-      (data) => {
+      () => {
         this.activeModal.dismiss();
         this.$toastr.success(this.translate.instant('config.restore.toast_backups_deleted'), this.translate.instant('toast.title_success'));
       },

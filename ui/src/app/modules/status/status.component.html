@@ -4,7 +4,7 @@
   </div>
   <div class="col-sm-6 text-right d-none d-sm-block">
     <button *ngIf="consoleStatus === 'up' && $auth.user.admin" (click)="addWidget()"
-      class="btn btn-primary add-widget-button"
+      class="btn btn-primary add-widget-button m-0"
       ngbTooltip="{{ (options.draggable.enabled ? 'form.button_edit' : 'status.widget.label_layout_locked') | translate }}">
       <i class="fas fa-fw fa-table" [ngClass]="{
         'fa-table': options.draggable.enabled,

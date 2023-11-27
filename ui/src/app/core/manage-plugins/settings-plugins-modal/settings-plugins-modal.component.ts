@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
@@ -29,6 +30,9 @@ export class SettingsPluginsModalComponent implements OnInit {
   public form: any = {};
   public show = '';
   public saveInProgress: boolean;
+  public justSavedAndExited = false;
+
+  public childBridges: any[] = [];
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -36,6 +40,7 @@ export class SettingsPluginsModalComponent implements OnInit {
     private $modal: NgbModal,
     private $settings: SettingsService,
     private $notification: NotificationService,
+    private $router: Router,
     private $toastr: ToastrService,
     private translate: TranslateService,
   ) {}
@@ -81,17 +86,14 @@ export class SettingsPluginsModalComponent implements OnInit {
     try {
       await this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, configBlocks)
         .toPromise();
-      this.$toastr.success(
-        this.translate.instant('plugins.settings.toast_restart_required'),
-        this.translate.instant('plugins.settings.toast_plugin_config_saved'));
-
-      this.activeModal.close(configBlocks.length ? this.schema : null);
-      this.$notification.configUpdated.next(undefined);
 
       // reload app settings if the config was changed for Homebridge UI
       if (this.plugin.name === 'homebridge-config-ui-x') {
         this.$settings.getAppSettings().catch();
       }
+
+      this.getChildBridges();
+      this.justSavedAndExited = true;
     } catch (err) {
       this.$toastr.error(
         this.translate.instant('config.toast_failed_to_save_config') + ': ' + err.error?.message,
@@ -126,6 +128,47 @@ export class SettingsPluginsModalComponent implements OnInit {
   removeBlock(__uuid__: string) {
     const pluginConfigIndex = this.pluginConfig.findIndex(x => x.__uuid__ === __uuid__); // eslint-disable-line no-underscore-dangle
     this.pluginConfig.splice(pluginConfigIndex, 1);
+  }
+
+  getChildBridges(): any[] {
+    try {
+      this.$api.get('/status/homebridge/child-bridges').subscribe((data: any[]) => {
+        data.forEach((bridge) => {
+          if (this.plugin.name === bridge.plugin) {
+            this.childBridges.push(bridge);
+          }
+        });
+      });
+      return this.childBridges;
+    } catch (err) {
+      this.$toastr.error(err.message, this.translate.instant('toast.title_error'));
+      return [];
+    }
+  }
+
+  public onRestartHomebridgeClick() {
+    this.$router.navigate(['/restart']);
+    this.activeModal.close();
+  }
+
+  public async onRestartChildBridgeClick() {
+    try {
+      for (const bridge of this.childBridges) {
+        await this.$api.put(`/server/restart/${bridge.username}`, {}).toPromise();
+      }
+      this.$toastr.success(
+        this.translate.instant('plugins.manage.child_bridge_restart_success'),
+        this.translate.instant('toast.title_success'),
+      );
+    } catch (err) {
+      this.$notification.configUpdated.next(undefined); // highlight the restart icon in the navbar
+      this.$toastr.error(
+        this.translate.instant('plugins.manage.child_bridge_restart_failed'),
+        this.translate.instant('toast.title_error'),
+      );
+    } finally {
+      this.activeModal.close();
+    }
   }
 
   /**

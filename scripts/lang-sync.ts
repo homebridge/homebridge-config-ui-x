@@ -40,5 +40,5 @@ for (const lang of langFiles) {
     ordered[key] = translationStrings[key];
   });
 
-  writeJSONSync(langPath, ordered, { spaces: 4 });
+  writeJSONSync(langPath, ordered, { spaces: 2 });
 }

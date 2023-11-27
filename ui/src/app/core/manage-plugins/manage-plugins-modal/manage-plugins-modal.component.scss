@@ -1,8 +1,8 @@
 .plugin-modal-body {
   max-height: 60vh;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
-
 
 ::ng-deep .plugin-md {
   font-size: 0.95rem;
