@@ -10,19 +10,22 @@
         "type": "string",
         "default": "Homebridge UI",
         "minLength": 1,
-        "required": true
+        "required": true,
+        "description": "The name of the Homebridge instance."
       },
       "port": {
         "title": "Port",
         "type": "integer",
         "default": 8080,
         "maximum": 65535,
-        "required": true
+        "required": true,
+        "description": "The port number to run the Homebridge UI on."
       },
       "auth": {
         "title": "Homebridge UI Authentication",
         "type": "string",
         "default": "form",
+        "description": "The type of authentication to use for the Homebridge UI.",
         "oneOf": [
           {
             "title": "Require Authentication",
@@ -41,6 +44,7 @@
       },
       "theme": {
         "title": "UI Theme",
+        "description": "The theme used for the UI.",
         "type": "string",
         "default": "auto",
         "oneOf": [
@@ -216,16 +220,20 @@
         "required": true
       },
       "restart": {
-        "title": "Restart Command",
+        "title": "Custom Restart Command",
         "type": "string",
-        "description": "If no restart command is set the process will terminate with a non-zero exit code."
+        "description": "If no restart command is set the process will terminate with a non-zero exit code.",
+        "placeholder": "eg. sudo systemctl restart homebridge"
       },
       "temp": {
         "title": "Path to OS Temp File",
-        "type": "string"
+        "type": "string",
+        "placeholder": "eg. /sys/class/thermal/thermal_zone0/temp",
+        "description": "If you are running Homebridge on a Raspberry Pi, you can enter the path to the OS temp file here. This will display the current temperature on the Homebridge status page."
       },
       "tempUnits": {
         "title": "Temperature Display Units",
+        "description": "The units used to display the temperature.",
         "type": "string",
         "required": true,
         "default": "c",
@@ -248,6 +256,7 @@
         "title": "Language",
         "type": "string",
         "default": "auto",
+        "description": "The language used for the UI.",
         "required": true,
         "oneOf": [
           {
@@ -422,46 +431,62 @@
       },
       "loginWallpaper": {
         "title": "Path to Login Wallpaper Image File",
+        "description": "The full path to the .jpg file.",
         "type": "string",
         "placeholder": "eg. /home/pi/mywallpaper.jpg"
       },
       "sudo": {
-        "title": " Use Sudo",
-        "type": "boolean"
+        "title": "Use Sudo",
+        "type": "boolean",
+        "description": "If you are running Homebridge as root, you may need to enable this option."
       },
       "homebridgePackagePath": {
         "title": "Path To Homebridge Module",
-        "type": "string"
+        "type": "string",
+        "description": "If you have multiple versions of Homebridge installed, you can specify the path to the version you want to use here.",
+        "placeholder": "eg. /usr/local/lib/node_modules/homebridge"
       },
       "noFork": {
         "title": "Do not run the Config UI web server in a separate process/thread",
-        "type": "boolean"
+        "type": "boolean",
+        "description": "If you are running Homebridge in a container, you may need to enable this option."
       },
       "host": {
-        "title": "The host ip address to listen on. In most cases this will be '::' or '0.0.0.0'",
-        "type": "string"
+        "title": "Host IP Address",
+        "type": "string",
+        "pattern": "^[^{}/ :\\\\]+(?::\\d+)?$",
+        "description": "The host ip address to listen on. In most cases this will be '::' or '0.0.0.0'",
+        "placeholder": "eg. 0.0.0.0"
       },
       "debug": {
         "title": " Enable / disable debug level logging",
-        "type": "boolean"
+        "type": "boolean",
+        "description": "If enabled, the Homebridge UI will log debug level messages to the console."
       },
       "standalone": {
         "title": "Tell Homebridge the plugin is operating in standalone mode",
-        "type": "boolean"
+        "type": "boolean",
+        "description": "If you are running Homebridge in a container, you may need to enable this option."
       },
       "sessionTimeout": {
         "title": "Session Timeout (in seconds)",
         "type": "integer",
         "placeholder": 28800,
         "minimum": 600,
-        "maximum": 86400000
+        "maximum": 86400000,
+        "description": "The number of seconds before a user session will timeout. Defaults to 8 hours."
       },
       "log": {
         "type": "object",
+        "title": "Log Settings",
+        "description": "The log settings for the Homebridge UI.",
         "properties": {
           "method": {
             "title": "Log Method",
             "type": "string",
+            "default": "",
+            "description": "The method used to read the Homebridge log file.",
+            "required": true,
             "oneOf": [
               {
                 "title": "Default",
@@ -493,6 +518,7 @@
             "title": "Log File Path",
             "type": "string",
             "description": "Enter the full file path to your log file.",
+            "placeholder": "/var/log/homebridge.log",
             "required": true,
             "condition": {
               "functionBody": "return (model.log && model.log.method==='file')"
@@ -512,6 +538,7 @@
             "title": "Custom Command",
             "description": "This command should stream the logs to stdout.",
             "type": "string",
+            "placeholder": "journalctl -f -n 100 -u homebridge",
             "required": true,
             "condition": {
               "functionBody": "return (model.log && model.log.method==='custom')"
@@ -536,36 +563,49 @@
       "ssl": {
         "title": "SSL Setup",
         "type": "object",
+        "description": "The SSL settings for the Homebridge UI.",
         "properties": {
           "key": {
             "title": "Path To Private Key",
-            "type": "string"
+            "type": "string",
+            "description": "The full path to the private key file.",
+            "placeholder": "eg. /Users/homebridge/.homebridge/certs/server.key"
           },
           "cert": {
             "title": "Path To Certificate",
-            "type": "string"
+            "type": "string",
+            "description": "The full path to the certificate file.",
+            "placeholder": "eg. /Users/homebridge/.homebridge/certs/server.crt"
           },
           "pfx": {
             "title": "Path To PKCS#12 Certificate",
-            "type": "string"
+            "type": "string",
+            "description": "The full path to the PKCS#12 certificate file.",
+            "placeholder": "eg. /Users/homebridge/.homebridge/certs/server.pfx"
           },
           "passphrase": {
             "title": "PKCS#12 Certificate Passphrase",
-            "type": "string"
+            "type": "string",
+            "description": "The passphrase for the PKCS#12 certificate file.",
+            "placeholder": "eg. mypassphrase"
           }
         }
       },
       "accessoryControl": {
         "title": "Accessory Control Setup",
         "type": "object",
+        "description": "The accessory control settings for the Homebridge UI.",
         "properties": {
           "debug": {
             "title": " Enable / disable debug level logging for accessory control via the web UI",
-            "type": "boolean"
+            "type": "boolean",
+            "description": "If enabled, the Homebridge UI will log debug level messages to the console."
           },
           "instanceBlacklist": {
             "title": "Blacklisted Instances",
             "type": "array",
+            "description": "A list of instances that should not be controlled via the web UI.",
+            "placeholder": "eg. 00:00:00:00:00:00",
             "items": {
               "title": "Instance Username",
               "type": "string",
@@ -577,14 +617,19 @@
       "linux": {
         "title": "Linux Server Commands",
         "type": "object",
+        "description": "The Linux server commands for the Homebridge UI.",
         "properties": {
           "shutdown": {
             "title": "Shutdown Command",
-            "type": "string"
+            "type": "string",
+            "placeholder": "eg. shutdown",
+            "description": "If no shutdown command is set the process will terminate with a non-zero exit code."
           },
           "restart": {
             "title": "Restart Command",
-            "type": "string"
+            "type": "string",
+            "placeholder": "eg. reboot",
+            "description": "If no restart command is set the process will terminate with a non-zero exit code."
           }
         }
       },
@@ -598,14 +643,17 @@
       "scheduledBackupPath": {
         "title": "Scheduled backup destination path",
         "description": "The full path to where the service should save daily scheduled backups archives",
-        "type": "string"
+        "type": "string",
+        "placeholder": "eg. /home/pi/homebridge-backups"
       },
       "scheduledBackupDisable": {
         "title": "Disable Scheduled Backups",
-        "type": "boolean"
+        "type": "boolean",
+        "description": "When enabled, the Homebridge UI will not create daily scheduled backups"
       },
       "disableServerMetricsMonitoring": {
         "title": "Disable Server Metrics Monitoring",
+        "type": "boolean",
         "description": "When enabled, the Homebridge UI will not collect or report cpu / memory stats"
       }
     }
@@ -620,8 +668,7 @@
           "flex-flow": "column",
           "items": [
             "theme",
-            "lang",
-            "auth"
+            "lang"
           ]
         },
         {
@@ -629,11 +676,7 @@
           "flex-flow": "column",
           "items": [
             "port",
-            "tempUnits",
-            {
-              "key": "sessionTimeout",
-              "type": "number"
-            }
+            "tempUnits"
           ]
         }
       ]
@@ -644,47 +687,40 @@
       "expandable": true,
       "title": "Advanced",
       "items": [
-        "sudo",
-        "debug",
-        "temp",
-        "restart",
-        "proxyHost",
         {
-          "type": "help",
-          "helpvalue": "<label class='control-label'>Custom Login Wallpaper</label><br><p class='help-block'>Custom login wallpaper can be set by adding a 'ui-wallpaper.jpg' file to your Homebridge storage directory, or by providing the full path to the .jpg file below:</p>"
-        },
-        {
-          "key": "loginWallpaper",
-          "notitle": true
+          "ref": "login",
+          "type": "fieldset",
+          "expandable": true,
+          "title": "Login Settings",
+          "items": [
+            "auth",
+            {
+              "key": "sessionTimeout",
+              "type": "number"
+            },
+            {
+              "type": "help",
+              "helpvalue": "<label class='control-label'>Custom Login Wallpaper</label><br><p class='help-block'>Custom login wallpaper can be set by adding a 'ui-wallpaper.jpg' file to your Homebridge storage directory, or by providing the full path to the .jpg file below:</p>"
+            },
+            {
+              "key": "loginWallpaper",
+              "notitle": true
+            }
+          ]
         },
         {
           "ref": "log",
           "type": "fieldset",
           "expandable": true,
-          "title": "Log Viewer Setup",
+          "title": "Log Settings",
           "items": [
+            "debug",
             "log.method",
             "log.path",
             "log.service",
             "log.command",
             "log.tail",
             "log.systemd"
-          ]
-        },
-        {
-          "ref": "linux",
-          "type": "fieldset",
-          "expandable": true,
-          "title": "Linux Options",
-          "items": [
-            {
-              "key": "linux.shutdown",
-              "placeholder": "eg. shutdown"
-            },
-            {
-              "key": "linux.restart",
-              "placeholder": "eg. reboot"
-            }
           ]
         },
         {
@@ -707,44 +743,85 @@
           ]
         },
         {
-          "key": "homebridgePackagePath",
-          "description": "If you have multiple versions of Homebridge installed, you can specify the path to the version you want to use here."
+          "ref": "hostname",
+          "type": "fieldset",
+          "expandable": true,
+          "title": "Hostname Settings",
+          "items": [
+            "proxyHost",
+            "host"
+          ]
         },
         {
-          "key": "noFork",
-          "description": "If you are running Homebridge in a container, you may need to enable this option."
+          "ref": "homebridge",
+          "type": "fieldset",
+          "expandable": true,
+          "title": "Homebridge Settings",
+          "items": [
+            "sudo",
+            "restart",
+            {
+              "key": "homebridgePackagePath",
+              "description": "If you have multiple versions of Homebridge installed, you can specify the path to the version you want to use here."
+            }
+          ]
         },
         {
-          "key": "standalone",
-          "description": "If you are running Homebridge in a container, you may need to enable this option."
+          "ref": "operatingSystem",
+          "type": "fieldset",
+          "expandable": true,
+          "title": "Operating System Specific Settings",
+          "items": [
+            "disableServerMetricsMonitoring",
+            {
+              "ref": "linux",
+              "type": "fieldset",
+              "expandable": true,
+              "title": "Linux Settings",
+              "items": [
+                {
+                  "key": "linux.shutdown",
+                  "placeholder": "eg. shutdown"
+                },
+                {
+                  "key": "linux.restart",
+                  "placeholder": "eg. reboot"
+                },
+                "temp"
+              ]
+            },
+            {
+              "ref": "container",
+              "type": "fieldset",
+              "expandable": true,
+              "title": "Container Settings",
+              "items": [
+                "standalone",
+                "noFork"
+              ]
+            }
+          ]
         },
-        {
-          "key": "disableServerMetricsMonitoring",
-          "description": "When enabled, the Homebridge UI will not collect or report cpu / memory stats"
-        },
-        "host",
         {
           "ref": "ssl",
           "type": "fieldset",
           "expandable": true,
-          "title": "SSL Setup",
+          "title": "SSL Settings",
           "items": [
-            {
-              "key": "ssl.key",
-              "placeholder": "eg. /Users/homebridge/.homebridge/certs/server.key"
-            },
-            {
-              "key": "ssl.cert",
-              "placeholder": "eg. /Users/homebridge/.homebridge/certs/server.crt"
-            },
-            {
-              "key": "ssl.pfx",
-              "placeholder": "eg. /Users/homebridge/.homebridge/certs/server.pfx"
-            },
-            {
-              "key": "ssl.passphrase",
-              "placeholder": "eg. mypassphrase"
-            }
+            "ssl.key",
+            "ssl.cert",
+            "ssl.pfx",
+            "ssl.passphrase"
+          ]
+        },
+        {
+          "ref": "scheduledBackup",
+          "type": "fieldset",
+          "expandable": true,
+          "title": "Scheduled Backup Settings",
+          "items": [
+            "scheduledBackupDisable",
+            "scheduledBackupPath"
           ]
         }
       ]
