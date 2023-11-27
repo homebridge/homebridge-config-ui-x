@@ -485,6 +485,8 @@
             "title": "Log Method",
             "type": "string",
             "default": "",
+            "description": "The method used to read the Homebridge log file.",
+            "required": true,
             "oneOf": [
               {
                 "title": "Default",
@@ -757,7 +759,6 @@
           "title": "Homebridge Settings",
           "items": [
             "sudo",
-            "temp",
             "restart",
             {
               "key": "homebridgePackagePath",
@@ -771,8 +772,7 @@
           "expandable": true,
           "title": "Operating System Specific Settings",
           "items": [
-            "sudo",
-            "temp",
+            "disableServerMetricsMonitoring",
             {
               "ref": "linux",
               "type": "fieldset",
@@ -786,7 +786,8 @@
                 {
                   "key": "linux.restart",
                   "placeholder": "eg. reboot"
-                }
+                },
+                "temp"
               ]
             },
             {
@@ -796,8 +797,7 @@
               "title": "Container Settings",
               "items": [
                 "standalone",
-                "noFork",
-                "disableServerMetricsMonitoring"
+                "noFork"
               ]
             }
           ]
