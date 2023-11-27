@@ -22,15 +22,15 @@
         <p class="mb-0 mr-3 grey-text" *ngIf="!plugin.installedVersion">
           <a href="javascript:void(0)" class="text-decoration-none" style="outline:none;" (click)="$plugin.installPlugin(plugin.name)">
             <i class="far fa-fw fa-circle-down fa-lg pr-1 grey-text"></i>
-            <span class="d-none d-md-inline-block pr-1 grey-text">{{ 'plugins.button_install' | translate }}:</span>
+            <span class="d-none d-xl-inline-block pr-1 grey-text">{{ 'plugins.button_install' | translate }}:</span>
             <span class="text-decoration-none grey-text">v{{ plugin.latestVersion}}</span>
-            <span *ngIf="plugin.lastUpdated" class="d-none d-xl-inline-block pl-1 grey-text">({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
+            <span *ngIf="plugin.lastUpdated" class="d-none d-sm-inline-block pl-1 grey-text">({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
           </a>
         </p>
         <p class="mb-0 mr-3 primary-text" *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable && !plugin.disabled">
           <a href="javascript:void(0)" class="text-decoration-none" style="outline:none;" (click)="$plugin.updatePlugin(plugin, plugin.betaUpdateAvailable ? 'beta' : 'latest')">
             <i class="far fa-fw fa-arrow-alt-circle-up fa-lg pr-1 primary-text"></i>
-              <span class="d-none d-md-inline-block pr-1 primary-text"> {{ 'plugins.button_update' | translate }}:</span>
+              <span class="d-none d-xl-inline-block pr-1 primary-text"> {{ 'plugins.button_update' | translate }}:</span>
               <span class="text-decoration-none primary-text">v{{ plugin.installedVersion}} - v{{ plugin.latestVersion}}</span>
           </a>
         </p>      
