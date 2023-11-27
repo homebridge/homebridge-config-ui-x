@@ -11,12 +11,12 @@
       </h4>
       
       <div class="d-flex flex-row justify-content-start mb-0 mt-2">
-        <p class="mb-0 mr-3 grey-text"
+        <p class="mb-0 mr-3 main-text"
            *ngIf="plugin.installedVersion && !plugin.updateAvailable && !plugin.betaUpdateAvailable && !plugin.disabled">
           <a href="javascript:void(0)" class="text-decoration-none" style="outline:none;" (click)="$plugin.installPreviousVersion(plugin)">
-            <i class="far fa-fw fa-circle-check fa-lg pr-1 grey-text"></i>
-            <span class="d-none d-md-inline-block pr-1 grey-text"> {{ 'plugins.status_installed' | translate }}:</span>
-            <span class="text-decoration-none grey-text">v{{ plugin.installedVersion}}</span>
+            <i class="far fa-fw fa-circle-check fa-lg pr-1 main-text"></i>
+            <span class="d-none d-md-inline-block pr-1 main-text"> {{ 'plugins.status_installed' | translate }}:</span>
+            <span class="text-decoration-none main-text">v{{ plugin.installedVersion}}</span>
           </a>
         </p>
         <p class="mb-0 mr-3 grey-text" *ngIf="!plugin.installedVersion">
