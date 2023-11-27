@@ -25,7 +25,7 @@
             <span class="d-none d-md-inline-block pr-1">
               {{ 'plugins.button_install' | translate }}:</span>
             v{{ plugin.latestVersion}} 
-            <span *ngIf="plugin.lastUpdated class="d-none d-xl-inline-block pl-1">({{plugin.lastUpdated}})</span>
+            <span *ngIf="plugin.lastUpdated" class="d-none d-xl-inline-block pl-1">({{plugin.lastUpdated}})</span>
           </a>
         </p>
         <p class="mb-0 mr-3 primary-text" *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable && !plugin.disabled">
