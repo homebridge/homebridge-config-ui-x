@@ -41,17 +41,35 @@
         </p>
         <p class="mb-0 mr-3 red-text" *ngIf="plugin.installedVersion && plugin.disabled">
           <i class="far fa-fw fa-circle-pause fa-lg"></i><span class="d-none d-lg-inline-block pl-1"> {{ 'plugins.status_disabled' | translate }}</span>
-        </p>
-        <div class="ml-auto pl-3">
+        </p>        
+      </div>
+    </div>
+    <div class="d-flex flex-column ml-3 justify-content-between">
+      
+      <div class="d-flex flex-row justify-content-between ml-auto">
+        <a href="javascript:void(0)" *ngIf="plugin.verifiedPlugin"
+          class="card-link text-decoration-none green-text" (click)="openVerifiedModal()">
+          <i class="fas fa-fw fa-shield-alt fa-lg"></i>
+        </a>
+        <a href="javascript:void(0)" class="card-link pink-text ml-2" *ngIf="plugin.verifiedPlugin && plugin.funding"
+           ngbTooltip="@{{ plugin.author }}" (click)="openFundingModal(plugin)">
+          <i class="fas fa-fw fa-heart fa-lg"></i>
+        </a>
+      </div>
+
+      <div class="d-flex flex-row justify-content-between ml-auto mt-auto">
+        <div>
           <i *ngIf="plugin.hasChildBridges && !plugin.disabled" class="fas fa-fw ml-3 fa-lg" [ngClass]="{
             'fa-bridge-circle-check green-text': childBridgeStatus === 'ok',
             'fa-bridge-circle-exclamation text-warning': childBridgeStatus === 'pending',
             'fa-bridge-circle-xmark red-text': childBridgeStatus === 'down'
           }"></i>
+        </div>
+        <div>
           <a *ngIf="!plugin.installedVersion" href="javascript:void(0)" class="card-link text-decoration-none" (click)="$plugin.installPreviousVersion(plugin)">
             <i class="fa-solid fa-fw fa-circle-down fa-lg ml-3"></i>
           </a>
-          <span *ngIf="plugin.installedVersion" ngbDropdown placement="bottom-right top-right left" class="mt-auto">
+          <span *ngIf="plugin.installedVersion" ngbDropdown placement="bottom-right top-right left" class="ml-3">
             <a class="mt-auto ml-3 card-link" href="javascript:void(0)" style="outline:none;"
               aria-label="Plugin actions drop down menu" ngbDropdownToggle>
               <i class="fa-solid fa-fw fa-cog fa-lg" [ngClass]="{
@@ -127,6 +145,7 @@
           </span>
         </div>
       </div>
+      
     </div>
   </div>
 </div>
