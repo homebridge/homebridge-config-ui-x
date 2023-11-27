@@ -62,7 +62,7 @@
             style="--fa-animation-duration: 2s;"></i>
         </div>
         <div class="mb-0 ml-3 red-text" *ngIf="plugin.installedVersion && plugin.disabled">
-          <a href="javascript:void(0)" style="outline:none;" (click)="enablePlugin(plugin)"><i class="far fa-fw fa-circle-pause fa-lg"></i></a>
+          <a href="javascript:void(0)" style="outline:none;" (click)="enablePlugin(plugin)"><i class="far fa-fw fa-circle-pause fa-lg red-text"></i></a>
         </div>  
     
         <a *ngIf="!plugin.installedVersion" href="javascript:void(0)" class="card-link text-decoration-none ml-2" (click)="$plugin.installPreviousVersion(plugin)">
