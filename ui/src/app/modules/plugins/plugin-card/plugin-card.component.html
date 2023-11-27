@@ -49,7 +49,7 @@
             'fa-bridge-circle-xmark red-text': childBridgeStatus === 'down'
           }"></i>
           <i *ngIf="!plugin.hasChildBridges && !plugin.disabled" 
-            class="fas fa-fw ml-3 fa-lg fa-bridge fa-beat-fade primary-text"
+            class="fas fa-fw ml-3 fa-lg fa-bridge fa-fade primary-text"
             style="--fa-animation-duration: 2s;"></i>
         </div>
         <div class="mb-0 ml-3 red-text" *ngIf="plugin.installedVersion && plugin.disabled">
@@ -63,7 +63,7 @@
             <a class="mt-auto ml-2 card-link" href="javascript:void(0)" style="outline:none;"
               aria-label="Plugin actions drop down menu" ngbDropdownToggle>
               <i class="fa-solid fa-fw fa-cog fa-lg" [ngClass]="{
-                'fa-beat-fade primary-text': 
+                'fa-fade primary-text': 
                   (!plugin.hasChildBridges && !plugin.disabled && recommendChildBridge)
                   || (plugin.hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled)
                   || (plugin.installedVersion && !plugin.isConfigured && !plugin.disabled)
