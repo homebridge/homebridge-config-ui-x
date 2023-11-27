@@ -21,13 +21,13 @@
       <div class="d-flex flex-row justify-content-start mb-0 mt-2">
         <p class="mb-0 mr-3 info-text"
            *ngIf="plugin.installedVersion && !plugin.updateAvailable && !plugin.betaUpdateAvailable && !plugin.disabled">
-          <i class="far fa-fw fa-circle-check fa-lg"></i><span class="d-none d-sm-inline-block pl-1"> v{{ plugin.installedVersion}}</span>
+          <i class="far fa-fw fa-circle-check fa-lg pr-1"></i><span class="d-none d-sm-inline-block pr-1"> {{ 'plugins.status_installed' | translate }}:</span>v{{ plugin.installedVersion}}
         </p>
         <p class="mb-0 mr-3 grey-text" *ngIf="!plugin.installedVersion">
-          <i class="far fa-fw fa-circle-down fa-lg"></i><span class="d-none d-sm-inline-block pl-1"> v{{ plugin.latestVersion}}</span>
+          <i class="far fa-fw fa-circle-down fa-lg pr-1"></i><span class="d-none d-sm-inline-block pr-1"> {{ 'plugins.status__not_installed' | translate }}:</span>v{{ plugin.latestVersion}}
         </p>
         <p class="mb-0 mr-3 primary-text" *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable && !plugin.disabled">
-          <i class="far fa-fw fa-arrow-alt-circle-up fa-lg"></i><span class="d-none d-sm-inline-block pl-1"> v{{ plugin.installedVersion}} - v{{ plugin.latestVersion}}</span>
+          <i class="far fa-fw fa-arrow-alt-circle-up fa-lg pr-1"></i><span class="d-none d-sm-inline-block pr-1"> {{ 'plugins.status_update_available' | translate }}:</span>v{{ plugin.installedVersion}} - v{{ plugin.latestVersion}}</span>
         </p>      
       </div>
     </div>
