@@ -439,7 +439,8 @@
       },
       "noFork": {
         "title": "Do not run the Config UI web server in a separate process/thread",
-        "type": "boolean"
+        "type": "boolean",
+        "description": "If you are running Homebridge in a container, you may need to enable this option."
       },
       "host": {
         "title": "The host ip address to listen on. In most cases this will be '::' or '0.0.0.0'",
@@ -452,7 +453,8 @@
       },
       "standalone": {
         "title": "Tell Homebridge the plugin is operating in standalone mode",
-        "type": "boolean"
+        "type": "boolean",
+        "description": "If you are running Homebridge in a container, you may need to enable this option."
       },
       "sessionTimeout": {
         "title": "Session Timeout (in seconds)",
@@ -626,8 +628,7 @@
           "flex-flow": "column",
           "items": [
             "theme",
-            "lang",
-            "auth"
+            "lang"
           ]
         },
         {
@@ -635,11 +636,7 @@
           "flex-flow": "column",
           "items": [
             "port",
-            "tempUnits",
-            {
-              "key": "sessionTimeout",
-              "type": "number"
-            }
+            "tempUnits"
           ]
         }
       ]
@@ -655,12 +652,25 @@
         "restart",
         "proxyHost",
         {
-          "type": "help",
-          "helpvalue": "<label class='control-label'>Custom Login Wallpaper</label><br><p class='help-block'>Custom login wallpaper can be set by adding a 'ui-wallpaper.jpg' file to your Homebridge storage directory, or by providing the full path to the .jpg file below:</p>"
-        },
-        {
-          "key": "loginWallpaper",
-          "notitle": true
+          "ref": "login",
+          "type": "fieldset",
+          "expandable": true,
+          "title": "Login Settings",
+          "items": [
+            "auth",
+            {
+              "key": "sessionTimeout",
+              "type": "number"
+            },
+            {
+              "type": "help",
+              "helpvalue": "<label class='control-label'>Custom Login Wallpaper</label><br><p class='help-block'>Custom login wallpaper can be set by adding a 'ui-wallpaper.jpg' file to your Homebridge storage directory, or by providing the full path to the .jpg file below:</p>"
+            },
+            {
+              "key": "loginWallpaper",
+              "notitle": true
+            }
+          ]
         },
         {
           "ref": "log",
@@ -681,7 +691,7 @@
           "ref": "linux",
           "type": "fieldset",
           "expandable": true,
-          "title": "Linux Options",
+          "title": "Linux Settings",
           "items": [
             {
               "key": "linux.shutdown",
@@ -713,27 +723,26 @@
           ]
         },
         {
+          "ref": "container",
+          "type": "fieldset",
+          "expandable": true,
+          "title": "Container Settings",
+          "items": [
+            "standalone",
+            "noFork",
+            "disableServerMetricsMonitoring"
+          ]
+        },
+        {
           "key": "homebridgePackagePath",
           "description": "If you have multiple versions of Homebridge installed, you can specify the path to the version you want to use here."
-        },
-        {
-          "key": "noFork",
-          "description": "If you are running Homebridge in a container, you may need to enable this option."
-        },
-        {
-          "key": "standalone",
-          "description": "If you are running Homebridge in a container, you may need to enable this option."
-        },
-        {
-          "key": "disableServerMetricsMonitoring",
-          "description": "When enabled, the Homebridge UI will not collect or report cpu / memory stats"
         },
         "host",
         {
           "ref": "ssl",
           "type": "fieldset",
           "expandable": true,
-          "title": "SSL Setup",
+          "title": "SSL Settings",
           "items": [
             {
               "key": "ssl.key",
