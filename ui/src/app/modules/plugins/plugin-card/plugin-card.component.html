@@ -29,25 +29,31 @@
         </div>
       </div>
       <div class="d-flex flex-row justify-content-between mt-1 mb-0">
-        <p class="mb-0 info-text"
+        <p class="mb-0 mr-3 info-text"
            *ngIf="plugin.installedVersion && !plugin.updateAvailable && !plugin.betaUpdateAvailable && !plugin.disabled">
-          <i class="far fa-fw fa-circle-check fa-lg"></i> {{ 'plugins.status_installed' | translate }}
+          <i class="far fa-fw fa-circle-check fa-lg"></i><span class="d-none d-sm-inline-block pl-1"> {{ 'plugins.status_installed' | translate }}</span>
         </p>
-        <p class="mb-0 grey-text" *ngIf="!plugin.installedVersion">
-          <i class="far fa-fw fa-circle-down fa-lg"></i> {{ 'plugins.status_not_installed' | translate }}
+        <p class="mb-0 mr-3 grey-text" *ngIf="!plugin.installedVersion">
+          <i class="far fa-fw fa-circle-down fa-lg"></i><span class="d-none d-sm-inline-block pl-1"> {{ 'plugins.status_not_installed' | translate }}</span>
         </p>
-        <p class="mb-0 primary-text" *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable && !plugin.disabled">
-          <i class="far fa-fw fa-arrow-alt-circle-up fa-lg"></i> {{ 'plugins.status_update_available' | translate }}
+        <p class="mb-0 mr-3 primary-text" *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable && !plugin.disabled">
+          <i class="far fa-fw fa-arrow-alt-circle-up fa-lg"></i><span class="d-none d-sm-inline-block pl-1"> {{ 'plugins.status_update_available' | translate }}</span>
         </p>
-        <p class="mb-0 red-text" *ngIf="plugin.installedVersion && plugin.disabled">
-          <i class="far fa-fw fa-circle-pause fa-lg"></i> {{ 'plugins.status_disabled' | translate }}
+        <p class="mb-0 mr-3 red-text" *ngIf="plugin.installedVersion && plugin.disabled">
+          <i class="far fa-fw fa-circle-pause fa-lg"></i><span class="d-none d-lg-inline-block pl-1"> {{ 'plugins.status_disabled' | translate }}</span>
         </p>
-        <div>
-          <i *ngIf="plugin.hasChildBridges && !plugin.disabled" class="fas fa-fw fa-circle ml-3 fa-lg" [ngClass]="{
+        <div class="ml-auto pl-3">
+          <i *ngIf="plugin.hasChildBridges && !plugin.disabled && plugin.childBridgeStatus === 'ok'"
+            class="fas fa-fw fa-bridge-circle-check green-text ml-3 fa-lg"></i>
+          <i *ngIf="plugin.hasChildBridges && !plugin.disabled && plugin.childBridgeStatus === 'pending'"
+            class="fas fa-fw fa-bridge-circle-exclamation text-warning ml-3 fa-lg"></i>
+          <i *ngIf="plugin.hasChildBridges && !plugin.disabled && plugin.childBridgeStatus === 'down'"
+            class="fas fa-fw fa-bridge-circle-xmark red-text ml-3 fa-lg"></i>
+<!--           <i *ngIf="plugin.hasChildBridges && !plugin.disabled" class="fas fa-fw fa-circle ml-3 fa-lg" [ngClass]="{
             'green-text': childBridgeStatus === 'ok',
             'text-warning': childBridgeStatus === 'pending',
             'red-text': childBridgeStatus === 'down'
-          }"></i>
+          }"></i> -->
           <a *ngIf="!plugin.installedVersion" href="javascript:void(0)" class="card-link text-decoration-none" (click)="$plugin.installPreviousVersion(plugin)">
             <i class="fa-solid fa-fw fa-circle-down fa-lg ml-3"></i>
           </a>
