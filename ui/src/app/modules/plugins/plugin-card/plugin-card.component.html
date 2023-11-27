@@ -19,7 +19,7 @@
           <i class="far fa-fw fa-circle-down fa-lg pr-1"></i><span class="d-none d-md-inline-block pr-1"> {{ 'plugins.status__not_installed' | translate }}:</span>v{{ plugin.latestVersion}}
         </p>
         <p class="mb-0 mr-3 primary-text" *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable && !plugin.disabled">
-          <a (click)="$plugin.updatePlugin(plugin, plugin.betaUpdateAvailable ? 'beta' : 'latest')">
+          <a href="javascript:void(0)" style="outline:none;" (click)="$plugin.updatePlugin(plugin, plugin.betaUpdateAvailable ? 'beta' : 'latest')">
             <i class="far fa-fw fa-arrow-alt-circle-up fa-lg pr-1"></i>
               <span class="d-none d-md-inline-block pr-1"> {{ 'plugins.status_update_available' | translate }}:</span>
               v{{ plugin.installedVersion}} - v{{ plugin.latestVersion}}
@@ -50,7 +50,7 @@
           }"></i>
         </div>
         <div class="mb-0 ml-3 red-text" *ngIf="plugin.installedVersion && plugin.disabled">
-          <a style="outline:none;" (click)="enablePlugin(plugin)"><i class="far fa-fw fa-circle-pause fa-lg"></i></a>
+          <a href="javascript:void(0)" style="outline:none;" (click)="enablePlugin(plugin)"><i class="far fa-fw fa-circle-pause fa-lg"></i></a>
         </div>  
         <div>
           <a *ngIf="!plugin.installedVersion" href="javascript:void(0)" class="card-link text-decoration-none ml-2" (click)="$plugin.installPreviousVersion(plugin)">
