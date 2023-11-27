@@ -53,9 +53,9 @@ export class UsersEditComponent implements OnInit {
     }
   }
 
-  onSubmit({ value, valid }) {
+  onSubmit({ value }) {
     this.$api.patch(`/users/${this.user.id}`, value).subscribe(
-      data => {
+      () => {
         this.activeModal.close();
         this.toastr.success(this.translate.instant('users.toast_updated_user'), this.translate.instant('toast.title_success'));
 
@@ -63,7 +63,7 @@ export class UsersEditComponent implements OnInit {
           this.$auth.logout();
         }
       },
-      err => {
+      (err) => {
         this.toastr.error(
           err.error.message ||
           this.translate.instant('users.toast_failed_to_add_user'), this.translate.instant('toast.title_error'),

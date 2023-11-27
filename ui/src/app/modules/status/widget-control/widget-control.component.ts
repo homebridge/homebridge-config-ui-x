@@ -77,7 +77,7 @@ export class WidgetControlComponent implements OnInit {
       switchMap(term =>
         term.length < 3 ? [] :
           this.findOpenWeatherMapCity(term).pipe(
-            catchError((e) => {
+            catchError(() => {
               this.searching = false;
               return of([]);
             })),

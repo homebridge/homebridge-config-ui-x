@@ -36,7 +36,7 @@ export class LogsComponent implements OnInit, OnDestroy {
   ) {}
 
   @HostListener('window:resize', ['$event'])
-  onWindowResize(event) {
+  onWindowResize() {
     this.resizeEvent.next(undefined);
   }
 
@@ -94,7 +94,7 @@ export class LogsComponent implements OnInit, OnDestroy {
     ref.result.then(() => {
       this.$api.put('/platform-tools/hb-service/log/truncate', {})
         .subscribe(
-          (res) => {
+          () => {
             this.$toastr.success(
               this.$translate.instant('logs.message_log_file_truncated'),
               this.$translate.instant('toast.title_success'),

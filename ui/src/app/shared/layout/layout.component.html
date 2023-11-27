@@ -67,11 +67,11 @@
             </a>
             <div class="dropdown-divider" *ngIf="$auth.user.admin"></div>
             <a class="dropdown-item waves-effect waves-light" routerLink="/settings" *ngIf="$auth.user.admin">
-              Homebridge {{ 'menu.docker.label_settings' | translate }}
+              {{ 'menu.label_settings_hb' | translate }}
             </a>
             <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light" (click)="openUiSettings()"
               *ngIf="$auth.user.admin">
-              {{ 'menu.label_ui_settings' | translate }}
+              {{ 'menu.label_settings_ui' | translate }}
             </a>
             <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light"
               (click)="backupRestoreHomebridge()" *ngIf="$auth.user.admin">

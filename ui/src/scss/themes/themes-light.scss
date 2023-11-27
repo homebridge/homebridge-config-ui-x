@@ -6,8 +6,17 @@
       background-color: $primary-dark !important;
     }
 
+    .hb-npm-search {
+      border: 0 !important;
+      background-color: #eeeeee !important;
+    }
+
     .primary-text {
       color: $primary;
+    }
+
+    .notif-dot {
+      background-color: $primary;
     }
 
     .btn-primary,

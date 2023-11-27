@@ -67,7 +67,7 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  async onSubmit({ value, valid }) {
+  async onSubmit() {
     this.invalidCredentials = false;
     this.invalid2faCode = false;
     this.inProgress = true;
@@ -91,7 +91,7 @@ export class LoginComponent implements OnInit {
     }
 
     await this.$auth.login(this.form.getRawValue())
-      .then((user) => {
+      .then(() => {
         this.$router.navigateByUrl(this.targetRoute);
         window.sessionStorage.removeItem('target_route');
       })
