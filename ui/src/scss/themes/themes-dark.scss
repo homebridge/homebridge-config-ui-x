@@ -383,6 +383,13 @@
         text-shadow: 0 0 5px $darkModePrimary, 0 0 10px $darkModePrimary, 0 0 15px $darkModePrimary;
       }
     }
+
+    .plugin-icon-card {
+      width: 60px;
+      height: 60px;
+      border-radius: 15px;
+      border: 1px solid #222222;
+    }
   }
 }
 

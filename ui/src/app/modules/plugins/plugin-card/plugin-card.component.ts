@@ -28,6 +28,7 @@ export class PluginCardComponent implements OnInit {
   public childBridgeRestartInProgress = false;
   public recommendChildBridge = false;
   public isMobile = this.$md.detect.mobile();
+  public defaultIcon = 'assets/hb-icon.png';
 
   private io = this.$ws.getExistingNamespace('child-bridges');
   private setChildBridges = [];
@@ -63,21 +64,24 @@ export class PluginCardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (
-      !this.$settings.env.recommendChildBridges
-      || !this.$settings.env.serviceMode
-      || ['homebridge', 'homebridge-config-ui-x'].includes(this.plugin.name)
-    ) {
-      this.recommendChildBridge = false;
-      return;
+    if (!this.plugin.icon) {
+      this.plugin.icon = this.defaultIcon;
     }
-    this.$api.get(`/plugins/config-schema/${encodeURIComponent(this.plugin.name)}`, {}).toPromise()
-      .then((schema) => {
-        this.recommendChildBridge = schema.pluginType === 'platform';
-      })
-      .catch(() => {
-        this.recommendChildBridge = false;
-      });
+
+    if (
+      this.plugin.installedVersion
+      && this.$settings.env.recommendChildBridges
+      && this.$settings.env.serviceMode
+      && !['homebridge', 'homebridge-config-ui-x'].includes(this.plugin.name)
+    ) {
+      this.$api.get(`/plugins/config-schema/${encodeURIComponent(this.plugin.name)}`, {}).toPromise()
+        .then((schema) => {
+          this.recommendChildBridge = schema.pluginType === 'platform';
+        })
+        .catch(() => {
+          this.recommendChildBridge = false;
+        });
+    }
   }
 
   openFundingModal(plugin: any) {
@@ -172,5 +176,9 @@ export class PluginCardComponent implements OnInit {
         this.childBridgeRestartInProgress = false;
       }, action === 'restart' ? 12000 : action === 'stop' ? 6000 : 1000);
     }
+  }
+
+  handleIconError() {
+    this.plugin.icon = this.defaultIcon;
   }
 }
