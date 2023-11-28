@@ -9,9 +9,9 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - add power options modal (#1820)
 - remove hb-ui card from plugins page (#1830)
 - add some support links (#1833)
-- plugin logs feature (#1834)
+- add plugin logs feature (#1834)
 - update module headers (#1836)
-- restart modals, tidy plugin card
+- use restart modals, tidy plugin card
 
 ### Translation Changes
 
@@ -20,6 +20,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 ### Other Changes
 
 - Add Raspberry Pi 5 to list of Pi devices in bug-report template (#1824) (@jsiegenthaler)
+- add api work for plugin icons
 
 ## 4.53.0 (2023-11-24)
 

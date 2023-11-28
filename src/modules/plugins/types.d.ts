@@ -4,6 +4,7 @@ export interface HomebridgePlugin {
   displayName?: string;
   description?: string;
   verifiedPlugin?: boolean;
+  icon?: string;
   publicPackage?: boolean;
   installedVersion?: string;
   latestVersion?: string;
