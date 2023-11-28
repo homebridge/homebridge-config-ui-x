@@ -22,6 +22,7 @@ jobs:
           node-version: 20.x
 
       - name: Get previous tag
+        if: !github.event.inputs.tag
         id: previoustag
         uses: 'WyriHaximus/github-action-get-previous-tag@v1'
 
