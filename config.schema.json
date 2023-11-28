@@ -802,6 +802,36 @@
             }
           ]
         },
+        "linux.shutdown",
+        "linux.restart",
+        "accessoryControl.debug",
+        {
+          "key": "accessoryControl.instanceBlacklist",
+          "type": "array",
+          "items": {
+            "key": "accessoryControl.instanceBlacklist[]",
+            "type": "string",
+            "pattern": "^([A-Fa-f0-9]{2}:){5}[A-Fa-f0-9]{2}$",
+            "title": "Instance Username"
+          }
+        },
+        {
+          "key": "homebridgePackagePath",
+          "description": "If you have multiple versions of Homebridge installed, you can specify the path to the version you want to use here."
+        },
+        {
+          "key": "noFork",
+          "description": "If you are running Homebridge in a container, you may need to enable this option."
+        },
+        {
+          "key": "standalone",
+          "description": "If you are running Homebridge in a container, you may need to enable this option."
+        },
+        {
+          "key": "disableServerMetricsMonitoring",
+          "description": "When enabled, the Homebridge UI will not collect or report cpu / memory stats"
+        },
+        "host",
         {
           "ref": "ssl",
           "type": "fieldset",
