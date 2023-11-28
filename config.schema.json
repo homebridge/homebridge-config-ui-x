@@ -753,6 +753,18 @@
           ]
         },
         {
+          "ref": "ssl",
+          "type": "fieldset",
+          "expandable": true,
+          "title": "SSL Settings",
+          "items": [
+            "ssl.key",
+            "ssl.cert",
+            "ssl.pfx",
+            "ssl.passphrase"
+          ]
+        },
+        {
           "ref": "homebridge",
           "type": "fieldset",
           "expandable": true,
@@ -791,18 +803,6 @@
                 "noFork"
               ]
             }
-          ]
-        },
-        {
-          "ref": "ssl",
-          "type": "fieldset",
-          "expandable": true,
-          "title": "SSL Settings",
-          "items": [
-            "ssl.key",
-            "ssl.cert",
-            "ssl.pfx",
-            "ssl.passphrase"
           ]
         },
         {
