@@ -13,6 +13,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - update module headers (#1836)
 - use restart modals, tidy plugin card
 - add plugin homepage link to UI settings screen
+- add icons to main menu
 
 ### Translation Changes
 
