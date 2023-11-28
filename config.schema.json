@@ -760,10 +760,7 @@
           "items": [
             "sudo",
             "restart",
-            {
-              "key": "homebridgePackagePath",
-              "description": "If you have multiple versions of Homebridge installed, you can specify the path to the version you want to use here."
-            }
+            "homebridgePackagePath"
           ]
         },
         {
@@ -779,14 +776,8 @@
               "expandable": true,
               "title": "Linux Settings",
               "items": [
-                {
-                  "key": "linux.shutdown",
-                  "placeholder": "eg. shutdown"
-                },
-                {
-                  "key": "linux.restart",
-                  "placeholder": "eg. reboot"
-                },
+                "linux.shutdown",
+                "linux.restart",
                 "temp"
               ]
             },
@@ -802,9 +793,6 @@
             }
           ]
         },
-        "linux.shutdown",
-        "linux.restart",
-        "accessoryControl.debug",
         {
           "key": "accessoryControl.instanceBlacklist",
           "type": "array",
@@ -815,23 +803,6 @@
             "title": "Instance Username"
           }
         },
-        {
-          "key": "homebridgePackagePath",
-          "description": "If you have multiple versions of Homebridge installed, you can specify the path to the version you want to use here."
-        },
-        {
-          "key": "noFork",
-          "description": "If you are running Homebridge in a container, you may need to enable this option."
-        },
-        {
-          "key": "standalone",
-          "description": "If you are running Homebridge in a container, you may need to enable this option."
-        },
-        {
-          "key": "disableServerMetricsMonitoring",
-          "description": "When enabled, the Homebridge UI will not collect or report cpu / memory stats"
-        },
-        "host",
         {
           "ref": "ssl",
           "type": "fieldset",
