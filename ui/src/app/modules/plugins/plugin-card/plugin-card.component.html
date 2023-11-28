@@ -132,7 +132,7 @@
             <button ngbDropdownItem (click)="$plugin.settings(plugin)">
               <i class="fas fa-fw fa-cog" [ngClass]="{ 'primary-text': !plugin.isConfigured && !plugin.disabled }"></i>
               <span *ngIf="plugin.isConfigured || plugin.disabled"> {{ 'plugins.button_settings' | translate }}</span>
-              <span *ngIf="!plugin.isConfigured && !plugin.disabled"> {{ 'plugins.button_setup' | translate }}</span>
+              <span *ngIf="!plugin.isConfigured && !plugin.disabled"> {{ 'plugins.button_set_up' | translate }}</span>
             </button>
             <button ngbDropdownItem (click)="pluginInfoModal(plugin)">
               <i class="fas fa-fw fa-circle-info "></i> Plugin Info
