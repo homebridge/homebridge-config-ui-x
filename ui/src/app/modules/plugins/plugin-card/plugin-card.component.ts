@@ -69,7 +69,8 @@ export class PluginCardComponent implements OnInit {
     }
 
     if (
-      this.$settings.env.recommendChildBridges
+      this.plugin.installedVersion
+      && this.$settings.env.recommendChildBridges
       && this.$settings.env.serviceMode
       && !['homebridge', 'homebridge-config-ui-x'].includes(this.plugin.name)
     ) {
@@ -81,7 +82,6 @@ export class PluginCardComponent implements OnInit {
           this.recommendChildBridge = false;
         });
     }
-
   }
 
   openFundingModal(plugin: any) {
