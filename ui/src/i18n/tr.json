@@ -182,6 +182,7 @@
   "platform.version.title_service_restart_required": "Servisin Yeniden Başlatılması Gerekli",
   "plugins.button_homepage": "Plugin Homepage",
   "plugins.button_install": "Yükle",
+  "plugins.button_set_up": "Set Up",
   "plugins.button_settings": "Ayarlar",
   "plugins.button_setup": "Setup Plugin",
   "plugins.button_uninstall": "Kaldır",

@@ -182,6 +182,7 @@
   "platform.version.title_service_restart_required": "需要重新啟動服務",
   "plugins.button_homepage": "Plugin Homepage",
   "plugins.button_install": "安裝",
+  "plugins.button_set_up": "Set Up",
   "plugins.button_settings": "設定",
   "plugins.button_setup": "Setup Plugin",
   "plugins.button_uninstall": "移除",

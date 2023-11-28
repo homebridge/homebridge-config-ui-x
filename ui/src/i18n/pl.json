@@ -182,6 +182,7 @@
   "platform.version.title_service_restart_required": "Wymagany restart serwera",
   "plugins.button_homepage": "Strona wtyczki",
   "plugins.button_install": "Instaluj",
+  "plugins.button_set_up": "Konfiguruj",
   "plugins.button_settings": "Ustawienia",
   "plugins.button_setup": "Konfiguruj",
   "plugins.button_uninstall": "Odinstaluj",

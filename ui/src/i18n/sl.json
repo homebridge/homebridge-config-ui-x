@@ -182,6 +182,7 @@
   "platform.version.title_service_restart_required": "Potreben ponovni zagon storitve",
   "plugins.button_homepage": "Plugin Homepage",
   "plugins.button_install": "Namestitev",
+  "plugins.button_set_up": "Set Up",
   "plugins.button_settings": "Nastavitve",
   "plugins.button_setup": "Setup Plugin",
   "plugins.button_uninstall": "Odstranitev",

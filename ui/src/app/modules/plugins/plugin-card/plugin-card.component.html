@@ -52,7 +52,7 @@
 
       <div class="d-flex flex-row justify-content-end ml-auto mt-auto">
         <div>
-          <a href="javascript:void(0" (click)="$plugin.bridgeSettings(plugin)">
+          <a href="javascript:void(0)" (click)="$plugin.bridgeSettings(plugin)">
             <i *ngIf="plugin.hasChildBridges && !plugin.disabled && plugin.installedVersion" class="fas fa-fw ml-3 fa-lg" [ngClass]="{
               'fa-bridge-circle-check green-text': childBridgeStatus === 'ok',
               'fa-bridge-circle-exclamation text-warning': childBridgeStatus === 'pending',
