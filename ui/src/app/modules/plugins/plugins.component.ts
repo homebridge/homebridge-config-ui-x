@@ -67,7 +67,6 @@ export class PluginsComponent implements OnInit, OnDestroy {
       const installedPlugins = await this.$api.get('/plugins').toPromise();
       this.installedPlugins = installedPlugins.filter((x) => x.name !== 'homebridge-config-ui-x');
       this.appendMetaInfo();
-
       this.loading = false;
     } catch (err) {
       this.$toastr.error(
@@ -79,18 +78,21 @@ export class PluginsComponent implements OnInit, OnDestroy {
 
   async appendMetaInfo() {
     // Also get the current configuration for each plugin
-    await Promise.all(this.installedPlugins.filter((plugin) => plugin.installedVersion).map(async (plugin) => {
-      try {
-        const configBlocks = await this.$api.get(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`).toPromise();
-        plugin.isConfigured = configBlocks.length > 0;
-        // eslint-disable-next-line no-underscore-dangle
-        plugin.hasChildBridges = plugin.isConfigured && configBlocks.some((x) => x._bridge && x._bridge.username);
-      } catch (err) {
-        // may not be technically correct, but if we can't load the config, assume it is configured
-        plugin.isConfigured = true;
-        plugin.hasChildBridges = true;
-      }
-    }));
+    await Promise.all(this.installedPlugins
+      .filter((plugin) => plugin.installedVersion)
+      .map(async (plugin) => {
+        try {
+          const configBlocks = await this.$api.get(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`).toPromise();
+          plugin.isConfigured = configBlocks.length > 0;
+          // eslint-disable-next-line no-underscore-dangle
+          plugin.hasChildBridges = plugin.isConfigured && configBlocks.some((x) => x._bridge && x._bridge.username);
+        } catch (err) {
+          // may not be technically correct, but if we can't load the config, assume it is configured
+          plugin.isConfigured = true;
+          plugin.hasChildBridges = true;
+        }
+      }),
+    );
   }
 
   search() {

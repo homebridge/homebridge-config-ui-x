@@ -123,7 +123,6 @@ export interface IPackageJson {
   author?: string | INpmPerson;
   maintainers?: INpmPerson[];
   contributors?: string[] | INpmPerson[];
-  icon?: string;
   funding?: NpmFunding;
   files?: string[];
   main?: string;

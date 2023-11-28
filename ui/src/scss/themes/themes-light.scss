@@ -2,7 +2,7 @@
 
 @mixin make-theme($name, $primary, $primary-dark) {
   .config-ui-x-#{$name} {
-    
+
     .bg-primary {
       background-color: $primary-dark !important;
     }
@@ -169,10 +169,10 @@
       }
     }
 
-    .plugin-icon {
+    .plugin-icon-card {
       width: 60px;
       height: 60px;
-      border-radius: 10px;
+      border-radius: 15px;
       border: 1px solid #dddddd;
     }
   }
