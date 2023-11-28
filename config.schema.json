@@ -794,16 +794,6 @@
           ]
         },
         {
-          "key": "accessoryControl.instanceBlacklist",
-          "type": "array",
-          "items": {
-            "key": "accessoryControl.instanceBlacklist[]",
-            "type": "string",
-            "pattern": "^([A-Fa-f0-9]{2}:){5}[A-Fa-f0-9]{2}$",
-            "title": "Instance Username"
-          }
-        },
-        {
           "ref": "ssl",
           "type": "fieldset",
           "expandable": true,
