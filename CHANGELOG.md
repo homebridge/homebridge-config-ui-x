@@ -12,6 +12,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - add plugin logs feature (#1834)
 - update module headers (#1836)
 - use restart modals, tidy plugin card
+- add plugin homepage link to UI settings screen
 
 ### Translation Changes
 
