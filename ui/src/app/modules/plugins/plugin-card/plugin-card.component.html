@@ -68,8 +68,11 @@
         <a class="card-link text-decoration-none mt-auto" href="javascript:void(0)" style="outline:none;"
            aria-label="Plugin actions drop down menu" ngbDropdownToggle>
             <i class="fa-solid fa-fw fa-cog fa-lg" [ngClass]="{
-              'fa-fade primary-text': (plugin.isConfigured && plugin.hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled)}"
-               style="--fa-animation-duration: 2s;"></i>
+                'fa-fade primary-text': (plugin.updateAvailable || plugin.betaUpdateAvailable)
+                  || (plugin.isConfigured && !hasChildBridges && !plugin.disabled && recommendChildBridge)
+                  || (plugin.isConfigured && hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled)
+              }"
+              style="--fa-animation-duration: 2s;"></i>
         </a>
         <div ngbDropdownMenu aria-labelledby="Plugin actions drop down menu">
           <button ngbDropdownItem (click)="$plugin.updatePlugin(plugin, plugin.betaUpdateAvailable ? 'beta' : 'latest')"
