@@ -132,6 +132,7 @@
     .manage-accessory-button {
       // display: none;
       opacity: 1 !important;
+      filter: grayscale();
     }
   }
 
