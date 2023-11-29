@@ -131,7 +131,7 @@
   @media (max-width: 991px) {
     .manage-accessory-button {
       // display: none;
-      opacity: 0.5
+      opacity: 1 !important;
     }
   }
 
@@ -139,8 +139,15 @@
     &:hover,
     &:active {
       .manage-accessory-button {
-        opacity: 0.6;
+        opacity: 0.5;
       }
+    }
+  }
+
+  @media (max-width: 575px) {
+   .manage-accessory-button {
+    top: 5px !important;
+    right: 5px !important;
     }
   }
 
@@ -152,6 +159,8 @@
     top: 25px;
     right: 15px;
     padding: 10px;
+
+    
 
     @media (hover: hover) {
       &:active,
