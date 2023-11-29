@@ -80,7 +80,7 @@
   "child_bridge.label_bridge_settings": "Bridge 設定",
   "child_bridge.label_child_bridges": "子 Bridges",
   "child_bridge.label_child_restart": "Restart Child Bridges",
-  "child_bridge.label_child_setup": "Setup Child Bridges",
+  "child_bridge.label_child_setup": "Set Up Child Bridges",
   "child_bridge.label_child_start": "Start child bridge",
   "child_bridge.label_child_stop": "Stop child bridge",
   "child_bridge.message_about": "Homebridge 允許以獨立的子 Bridge 模式執行 Plugin 平台或配件，將有助於改善 Homebridge 的回應速度與穩定度。",

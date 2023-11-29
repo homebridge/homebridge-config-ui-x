@@ -80,7 +80,7 @@
   "child_bridge.label_bridge_settings": "网桥设置",
   "child_bridge.label_child_bridges": "子网桥",
   "child_bridge.label_child_restart": "Restart Child Bridges",
-  "child_bridge.label_child_setup": "Setup Child Bridges",
+  "child_bridge.label_child_setup": "Set Up Child Bridges",
   "child_bridge.label_child_start": "Start child bridge",
   "child_bridge.label_child_stop": "Stop child bridge",
   "child_bridge.message_about": "Homebridge 允许您以子网桥的方式运行插件或者配件。该操作通常可以增加设备的响应速度以及稳定性。",
