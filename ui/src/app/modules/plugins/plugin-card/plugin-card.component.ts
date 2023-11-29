@@ -92,11 +92,23 @@ export class PluginCardComponent implements OnInit {
 
   openVerifiedModal() {
     const ref = this.$modal.open(InformationComponent);
-    ref.componentInstance.title = this.$translate.instant('plugins.manage.modal_verified_title');
-    ref.componentInstance.message = this.$translate.instant('plugins.manage.modal_verified_message');
+    if (this.plugin.verifiedPlugin) {
+      ref.componentInstance.title = this.$translate.instant('plugins.manage.modal_verified_title');
+      ref.componentInstance.subtitle = this.$translate.instant('plugins.manage.modal_verified_subtitle', {
+        pluginName: this.plugin.displayName || this.plugin.name,
+      });
+      ref.componentInstance.message = this.$translate.instant('plugins.manage.modal_verified_message');
+      ref.componentInstance.faIconClass = 'fa-shield-alt green-text';
+    } else {
+      ref.componentInstance.title = this.$translate.instant('plugins.manage.modal_unverified_title');
+      ref.componentInstance.subtitle = this.$translate.instant('plugins.manage.modal_unverified_subtitle', {
+        pluginName: this.plugin.displayName || this.plugin.name,
+      });
+      ref.componentInstance.message = this.$translate.instant('plugins.manage.modal_unverified_message');
+      ref.componentInstance.faIconClass = 'fa-shield-alt grey-text';
+    }
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info');
     ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/homebridge/wiki/verified-Plugins';
-    ref.componentInstance.faIconClass = 'fa-shield-alt green-text';
   }
 
   pluginInfoModal(plugin: any) {

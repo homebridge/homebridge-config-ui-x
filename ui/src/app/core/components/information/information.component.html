@@ -8,6 +8,9 @@
   </div>
   <div class="modal-body w-100 text-center">
     <i *ngIf="faIconClass" class="fas fa-fw {{ faIconClass }} mb-4" style="font-size: 75px;"></i>
+    <div class="alert alert-info" role="alert" *ngIf="subtitle">
+      <h5 class="mb-0">{{ subtitle }}</h5>
+    </div>
     <p class="w-100 text-center" [innerHTML]="message"></p>
   </div>
   <div class="modal-footer justify-content-between">

@@ -1,8 +1,8 @@
 <div class="row mb-3">
-  <div class="col-sm-6">
-    <h3 class="primary-text m-0">Status</h3>
+  <div class="col-6">
+    <h3 class="primary-text m-0">{{ 'menu.label_status' | translate }}</h3>
   </div>
-  <div class="col-sm-6 text-right d-none d-sm-block">
+  <div class="col-6 text-right d-none d-sm-block">
     <button *ngIf="consoleStatus === 'up' && $auth.user.admin" (click)="addWidget()"
       class="btn btn-primary add-widget-button m-0"
       ngbTooltip="{{ (options.draggable.enabled ? 'form.button_edit' : 'status.widget.label_layout_locked') | translate }}">

@@ -8,6 +8,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 })
 export class InformationComponent implements OnInit {
   @Input() title: string;
+  @Input() subtitle: string | null;
   @Input() message: string;
   @Input() ctaButtonLabel: string;
   @Input() ctaButtonLink: string;
