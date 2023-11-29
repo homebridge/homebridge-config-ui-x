@@ -132,7 +132,7 @@
     .manage-accessory-button {
       // display: none;
       opacity: 1 !important;
-      filter: grayscale();
+      filter: grayscale(100);
     }
   }
 
@@ -161,7 +161,7 @@
     right: 15px;
     padding: 10px;
 
-    
+
 
     @media (hover: hover) {
       &:active,
