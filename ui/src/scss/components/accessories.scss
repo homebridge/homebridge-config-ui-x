@@ -128,9 +128,10 @@
 }
 
 .accessory-item {
-  @media (max-width: 575px) {
+  @media (max-width: 991px) {
     .manage-accessory-button {
-      display: none;
+      // display: none;
+      opacity: 0.5
     }
   }
 
@@ -147,8 +148,10 @@
     cursor: pointer;
     float: right;
     opacity: 0;
-    margin-right: 20px;
-    margin-top: 30px;
+    position: relative;
+    top: 25px;
+    right: 15px;
+    padding: 10px;
 
     @media (hover: hover) {
       &:active,
