@@ -17,6 +17,8 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - updates to plugin card
 - add all config options to UI Settings (#1838)
 - add spanner settings icons to hb+ui on status
+- various ui enhancements
+- add modal to explain unverified plugin status
 
 ### Translation Changes
 
