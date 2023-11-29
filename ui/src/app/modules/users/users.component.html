@@ -18,7 +18,7 @@
         <span class="mr-auto mt-0 mb-0">
           <h4 [innerText]="user.name"></h4>
           <h5 class="small text-truncate primary-text" [innerText]="user.username"></h5>
-        <span>
+        </span>
         <button class="btn btn-elegant btn-sml mt-0 mb-0" (click)="deleteUser(user.id)"
           [translate]="'form.button_delete'" *ngIf="$auth.user.username !== user.username">
           Delete
