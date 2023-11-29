@@ -80,7 +80,7 @@
   "child_bridge.label_bridge_settings": "הגדרות מגשר",
   "child_bridge.label_child_bridges": "מגשר ילד",
   "child_bridge.label_child_restart": "Restart Child Bridges",
-  "child_bridge.label_child_setup": "Setup Child Bridges",
+  "child_bridge.label_child_setup": "Set Up Child Bridges",
   "child_bridge.label_child_start": "Start child bridge",
   "child_bridge.label_child_stop": "Stop child bridge",
   "child_bridge.message_about": "Homebridge allows you to run your plugin's platform or accessory as an isolated child bridge. This can improve the general responsiveness and reliability of Homebridge.",
