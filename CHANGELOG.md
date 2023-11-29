@@ -16,6 +16,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - add icons to main menu
 - updates to plugin card
 - add all config options to UI Settings (#1838)
+- add spanner settings icons to hb+ui on status
 
 ### Translation Changes
 
