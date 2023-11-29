@@ -22,15 +22,16 @@
         <i class="fas fa-fw fa-heart fa-lg"></i>
       </a>
       <span *ngIf="!plugin.verifiedPlugin || !plugin.funding" ngbTooltip="@{{ plugin.author }}">
-        <i class="fas fa-fw fa-heart fa-lg" style="opacity: 0.15;"></i>
+        <i class="fas fa-fw fa-heart fa-lg" style="opacity: 0.25;"></i>
       </span>
       <a href="javascript:void(0)" class="card-link text-decoration-none green-text ml-3" ngbTooltip="{{ 'plugins.donate.button_verified' | translate }}"
         (click)="openVerifiedModal()" *ngIf="plugin.verifiedPlugin">
         <i class="fas fa-fw fa-shield-alt fa-lg"></i>
       </a>
-      <span *ngIf="!plugin.verifiedPlugin" class="ml-3">
-        <i class="fas fa-fw fa-shield-alt fa-lg" style="opacity: 0.15;"></i>
-      </span>
+      <a href="javascript:void(0)" class="card-link text-decoration-none ml-3" ngbTooltip="Not Verified"
+         (click)="openVerifiedModal()" *ngIf="!plugin.verifiedPlugin">
+        <i class="fas fa-fw fa-shield-alt fa-lg" style="opacity: 0.25;"></i>
+      </a>
     </p>
   </div>
   <h4 class="card-title mb-0">
@@ -54,7 +55,7 @@
 
     <div class="ml-auto">
       <ng-container *ngIf="hasChildBridges">
-        <i class="fas fa-fw fa-circle ml-3" [ngClass]="{
+        <i class="fas fa-fw fa-circle fa-lg ml-3" [ngClass]="{
           'green-text': childBridgeStatus === 'ok',
           'text-warning': childBridgeStatus === 'pending',
           'red-text': childBridgeStatus === 'down'
