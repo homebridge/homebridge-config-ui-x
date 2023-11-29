@@ -9,9 +9,9 @@
         <div class="flex-child">
 
           <i class="fas fa-fw mr-1" [ngClass]="{
-            'fa-bridge-circle-check green-text': childBridgeStatus === 'ok',
-            'fa-bridge-circle-exclamation text-warning': childBridgeStatus === 'pending',
-            'fa-bridge-circle-xmark red-text': childBridgeStatus === 'down'
+            'fa-bridge-circle-check green-text': bridge.status === 'ok',
+            'fa-bridge-circle-exclamation text-warning': bridge.status === 'pending',
+            'fa-bridge-circle-xmark red-text': bridge.status === 'down'
         }"></i>
           {{ bridge.name }}
         </div>
