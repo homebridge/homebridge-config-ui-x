@@ -80,7 +80,7 @@
   "child_bridge.label_bridge_settings": "Nastavení Mostu",
   "child_bridge.label_child_bridges": "Podřízený Most",
   "child_bridge.label_child_restart": "Restartovat Podřízený Most",
-  "child_bridge.label_child_setup": "Setup Child Bridges",
+  "child_bridge.label_child_setup": "Set Up Child Bridges",
   "child_bridge.label_child_start": "Start child bridge",
   "child_bridge.label_child_stop": "Stop child bridge",
   "child_bridge.message_about": "Homebridge umožňuje spustit platformu nebo příslušenství zásuvného modulu jako izolovaný podřízený most. To může zlepšit celkovou odezvu a spolehlivost systému Homebridge.",

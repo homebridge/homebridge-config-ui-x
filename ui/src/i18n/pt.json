@@ -80,7 +80,7 @@
   "child_bridge.label_bridge_settings": "Definições da Ponte",
   "child_bridge.label_child_bridges": "Pontes Secundárias",
   "child_bridge.label_child_restart": "Reiniciar Pontes Secundárias",
-  "child_bridge.label_child_setup": "Setup Child Bridges",
+  "child_bridge.label_child_setup": "Set Up Child Bridges",
   "child_bridge.label_child_start": "Start child bridge",
   "child_bridge.label_child_stop": "Stop child bridge",
   "child_bridge.message_about": "O Homebridge permite que possa executar uma plataforma de um plugin ou um acessório como uma ponte secundária isolada. Isto pode melhorar a fiabilidade e o tempo de resposta do Homebridge.",
