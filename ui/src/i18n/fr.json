@@ -191,7 +191,6 @@
   "plugins.donate.button_verified": "Verified",
   "plugins.donate.message_learn_more": "En savoir plus sur les liens de don pour les plugins",
   "plugins.donate.tile_donate_to": "Faire un don à {{ author }}",
-  "plugins.donate.ui": "UI developed by {{ author }}",
   "plugins.manage.button_restart_now": "Redémarrer Homebridge",
   "plugins.manage.child_bridge_button_restart_now": "Redémarrer les Ponts Secondaires",
   "plugins.manage.child_bridge_button_restart_now_one": "Redémarrer le Pont Secondaire",

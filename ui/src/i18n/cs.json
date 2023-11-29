@@ -191,7 +191,6 @@
   "plugins.donate.button_verified": "Ověřeno",
   "plugins.donate.message_learn_more": "Zjistěte více o odkazech podpory na pluginech",
   "plugins.donate.tile_donate_to": "Podpořit {{ author }}",
-  "plugins.donate.ui": "UI developed by {{ author }}",
   "plugins.manage.button_restart_now": "Restartujte Homebridge nyní",
   "plugins.manage.child_bridge_button_restart_now": "Restart Child Bridges",
   "plugins.manage.child_bridge_button_restart_now_one": "Restart Child Bridge",

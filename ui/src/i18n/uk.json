@@ -191,7 +191,6 @@
   "plugins.donate.button_verified": "Перевірено",
   "plugins.donate.message_learn_more": "Дізнайтесь більше про посилання на пожертви у плагінах",
   "plugins.donate.tile_donate_to": "Пожертувати для {{ author }}",
-  "plugins.donate.ui": "UI developed by {{ author }}",
   "plugins.manage.button_restart_now": "Перезапустити Homebridge негайно",
   "plugins.manage.child_bridge_button_restart_now": "Restart Child Bridges",
   "plugins.manage.child_bridge_button_restart_now_one": "Restart Child Bridge",

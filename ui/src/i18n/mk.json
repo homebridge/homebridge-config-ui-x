@@ -191,7 +191,6 @@
   "plugins.donate.button_verified": "Потврдено",
   "plugins.donate.message_learn_more": "Дознај повеќе за донациски линкови",
   "plugins.donate.tile_donate_to": "Донирај на {{ author }}",
-  "plugins.donate.ui": "UI developed by {{ author }}",
   "plugins.manage.button_restart_now": "Рестартирај Homebridge",
   "plugins.manage.child_bridge_button_restart_now": "Restart Child Bridges",
   "plugins.manage.child_bridge_button_restart_now_one": "Restart Child Bridge",

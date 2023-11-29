@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { v4 as uuid } from 'uuid';
 import { ApiService } from '@/app/core/api.service';
 import { DonateModalComponent } from '@/app/core/manage-plugins/donate-modal/donate-modal.component';
+import { PluginLogModalComponent } from '@/app/core/manage-plugins/plugin-log-modal/plugin-log-modal.component';
 import { NotificationService } from '@/app/core/notification.service';
 import { SettingsService } from '@/app/core/settings.service';
 
@@ -195,6 +196,21 @@ export class SettingsPluginsModalComponent implements OnInit {
     try {
       this.$api.get('/plugins').subscribe((plugins) => {
         const ref = this.$modal.open(DonateModalComponent);
+        ref.componentInstance.plugin = plugins.find((x) => x.name === 'homebridge-config-ui-x');
+      });
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  openPluginLogModalForUi() {
+    try {
+      this.$api.get('/plugins').subscribe((plugins) => {
+        const ref = this.$modal.open(PluginLogModalComponent, {
+          size: 'xl',
+          backdrop: 'static',
+        });
+
         ref.componentInstance.plugin = plugins.find((x) => x.name === 'homebridge-config-ui-x');
       });
     } catch (e) {

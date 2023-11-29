@@ -191,7 +191,6 @@
   "plugins.donate.button_verified": "確認済み",
   "plugins.donate.message_learn_more": "プラグインの寄付リンクについてさらに詳しく",
   "plugins.donate.tile_donate_to": "{{ author }} に寄付する",
-  "plugins.donate.ui": "UI developed by {{ author }}",
   "plugins.manage.button_restart_now": "いますぐHomebridgeを再起動",
   "plugins.manage.child_bridge_button_restart_now": "Restart Child Bridges",
   "plugins.manage.child_bridge_button_restart_now_one": "Restart Child Bridge",

@@ -1,5 +1,11 @@
 <app-spinner *ngIf="loading"></app-spinner>
 
+<div class="row mb-3">
+  <div class="col-12">
+    <h3 class="primary-text m-0">{{ 'menu.label_plugins' | translate }}</h3>
+  </div>
+</div>
+
 <div class="row">
   <div class="col-md-12">
     <form novalidate (ngSubmit)="onSubmit(form)" [formGroup]="form">

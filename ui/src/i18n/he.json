@@ -191,7 +191,6 @@
   "plugins.donate.button_verified": "מְאוּמָת",
   "plugins.donate.message_learn_more": "למה יותר על לינקי תרומה לתוספים",
   "plugins.donate.tile_donate_to": "תרום ל {{ author }}",
-  "plugins.donate.ui": "UI developed by {{ author }}",
   "plugins.manage.button_restart_now": "אתחל הומברידג' עכשיו",
   "plugins.manage.child_bridge_button_restart_now": "Restart Child Bridges",
   "plugins.manage.child_bridge_button_restart_now_one": "Restart Child Bridge",

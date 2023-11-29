@@ -191,7 +191,6 @@
   "plugins.donate.button_verified": "Zweryfikowany",
   "plugins.donate.message_learn_more": "Przeczytaj więcej o stosowaniu linków wspomagania we wtyczkach",
   "plugins.donate.tile_donate_to": "Wspomóż {{ author }}",
-  "plugins.donate.ui": "UI developed by {{ author }}",
   "plugins.manage.button_restart_now": "Restartuj",
   "plugins.manage.child_bridge_button_restart_now": "Restartuj mostki",
   "plugins.manage.child_bridge_button_restart_now_one": "Restartuj mostek",
