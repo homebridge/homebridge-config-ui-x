@@ -76,7 +76,7 @@
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$settings.formAuth">
           <a class="nav-link" href="javascript:void(0)" (click)="$auth.logout()" [translate]="'menu.tooltip_logout'">
-            <i class="fa fa-fw fa-right-from-bracket pr-2"></i>{{ 'menu.tooltip_logout' | translate }} - {{ $auth.user.username }}</a>
+            <i class="fa fa-fw fa-right-from-bracket pr-2"></i>{{ 'menu.tooltip_logout' | translate }} - {{ $auth.user.name }}</a>
         </li>
       </ul>
     </div>
@@ -178,12 +178,12 @@
           <a href="javascript:void(0)" (click)="$auth.logout()">
             <i class="fa fa-fw fa-right-from-bracket"></i>
             <span class="link_name">{{ 'menu.tooltip_logout' | translate }}<br>
-              <span class="small text-truncate" style="display:block;width:120px;">{{ $auth.user.username }}</span>
+              <span class="small text-truncate" style="display:block;width:120px;">{{ $auth.user.name }}</span>
             </span>
           </a>
         </div>
         <ul class="sub-menu blank">
-          <li><a class="link_name" href="javascript:void(0)" (click)="$auth.logout()" [translate]="'menu.tooltip_logout'">{{ 'menu.tooltip_logout' | translate }} - {{ $auth.user.username }}</a></li>
+          <li><a class="link_name" href="javascript:void(0)" (click)="$auth.logout()" [translate]="'menu.tooltip_logout'">{{ 'menu.tooltip_logout' | translate }} - {{ $auth.user.name }}</a></li>
         </ul>
       </li>
       <li class="pl-3 mt-5" *ngIf="rPiWasUnderVoltage || rPiCurrentlyUnderVoltage">
