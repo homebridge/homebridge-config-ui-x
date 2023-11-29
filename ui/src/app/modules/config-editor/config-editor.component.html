@@ -1,19 +1,20 @@
 <div class="flex-column d-flex align-items-stretch h-100">
 
   <div class="row">
-    <div class="col-sm-6 d-none d-sm-block">
-      <h3 class="primary-text m-0">
-        {{'config.title_config' | translate}}
-      </h3>
+    <div class="col-6">
+      <h3 class="primary-text m-0">{{ 'config.title_config' | translate }}</h3>
     </div>
-    <div class="col-sm-6 text-right">
-      <button class="btn btn-elegant waves-effect" (click)="onRestore()" [translate]="'config.button_restore'"></button>
-      <button class="btn btn-elegant waves-effect" (click)="onExportConfig()" container="body"
+    <div class="col-6 text-right">
+      <button class="btn btn-elegant waves-effect m-0 mr-2" (click)="onRestore()" container="body"
+        ngbTooltip="{{ 'config.button_restore' | translate }}"><i class="fas fa-fw fa-fw fa-history"></i></button>
+      <button class="btn btn-elegant waves-effect m-0 mr-2" (click)="onExportConfig()" container="body"
         ngbTooltip="{{ 'logs.label_download' | translate }}"><i class="fas fa-fw fa-download"></i></button>
-      <button class="btn btn-danger waves-effect" (click)="onCancelRestore()" [disabled]="saveInProgress"
-        *ngIf="originalConfig" translate="form.button_cancel"></button>
-      <button class="btn btn-primary waves-effect" (click)="onSave()" [disabled]="saveInProgress">
-        {{ 'form.button_save' | translate }} <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
+      <button class="btn btn-danger waves-effect m-0 mr-2" (click)="onCancelRestore()" [disabled]="saveInProgress"
+        *ngIf="originalConfig" container="body" ngbTooltip="{{ 'form.button_cancel' | translate }}"><i class="fas fa-fw fa-times"></i></button>
+      <button class="btn btn-primary waves-effect m-0" (click)="onSave()" [disabled]="saveInProgress" container="body"
+        ngbTooltip="{{ 'form.button_save' | translate }}">
+        <i *ngIf="!saveInProgress" class="fas fa-fw fa-floppy-disk"></i>
+        <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
       </button>
     </div>
   </div>

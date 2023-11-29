@@ -191,7 +191,6 @@
   "plugins.donate.button_verified": "Verificado",
   "plugins.donate.message_learn_more": "Saber mais sobre links de doações em plugins",
   "plugins.donate.tile_donate_to": "Doar para {{ author }}",
-  "plugins.donate.ui": "UI developed by {{ author }}",
   "plugins.manage.button_restart_now": "Reiniciar Homebridge",
   "plugins.manage.child_bridge_button_restart_now": "Restart Child Bridges",
   "plugins.manage.child_bridge_button_restart_now_one": "Restart Child Bridge",

@@ -1,11 +1,17 @@
-<div class="log-buttons" *ngIf="$settings.env.serviceMode">
-  <button class="btn btn-primary" (click)="downloadLogFile()">
-    <i class="fas fa-fw fa-download"></i>
-  </button>
-
-  <button class="btn btn-danger" (click)="truncateLogFile()">
-    <i class="fas fa-fw fa-trash-alt"></i>
-  </button>
+<div class="row mb-3">
+  <div class="col-6">
+    <h3 class="primary-text m-0">{{ 'menu.linux.label_logs' | translate }}</h3>
+  </div>
+  <div class="col-6 text-right">
+    <button class="btn btn-elegant m-0 mr-2" (click)="downloadLogFile()" container="body"
+      ngbTooltip="{{ 'logs.label_download' | translate }}">
+      <i class="fas fa-fw fa-download"></i>
+    </button>
+    <button class="btn btn-danger m-0" (click)="truncateLogFile()" container="body"
+      ngbTooltip="{{ 'logs.title_truncate_log_file' | translate }}">
+      <i class="fas fa-fw fa-trash-alt"></i>
+    </button>
+  </div>
 </div>
 
 <div class="flex-column d-flex align-items-stretch h-100">

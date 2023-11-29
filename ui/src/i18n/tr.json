@@ -191,7 +191,6 @@
   "plugins.donate.button_verified": "Doğrulandı",
   "plugins.donate.message_learn_more": "Eklentilerdeki bağış bağlantıları hakkkında daha fazla bilgi edinin",
   "plugins.donate.tile_donate_to": "{{ author }} Kişisine Bağış Yap.",
-  "plugins.donate.ui": "UI developed by {{ author }}",
   "plugins.manage.button_restart_now": "Homebridge'i Şimdi Yeniden Başlat",
   "plugins.manage.child_bridge_button_restart_now": "Restart Child Bridges",
   "plugins.manage.child_bridge_button_restart_now_one": "Restart Child Bridge",

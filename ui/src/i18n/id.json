@@ -191,7 +191,6 @@
   "plugins.donate.button_verified": "Diverifikasi",
   "plugins.donate.message_learn_more": "Pelajari lebih lanjut tentang link donasi plugin",
   "plugins.donate.tile_donate_to": "Donasi ke {{ author }}",
-  "plugins.donate.ui": "UI developed by {{ author }}",
   "plugins.manage.button_restart_now": "Mengulang Kembali Homebridge Sekarang",
   "plugins.manage.child_bridge_button_restart_now": "Restart Child Bridges",
   "plugins.manage.child_bridge_button_restart_now_one": "Restart Child Bridge",

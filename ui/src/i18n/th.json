@@ -191,7 +191,6 @@
   "plugins.donate.button_verified": "ตรวจสอบแล้ว",
   "plugins.donate.message_learn_more": "เรียนรู้เพิ่มเติมเกี่ยวกับลิงก์การบริจาคในปลั๊กอิน",
   "plugins.donate.tile_donate_to": "บริจาคให้ {{ author }}",
-  "plugins.donate.ui": "UI developed by {{ author }}",
   "plugins.manage.button_restart_now": "รีสตาร์ท Homebridge ทันที",
   "plugins.manage.child_bridge_button_restart_now": "รีสตาร์ท Child Bridges",
   "plugins.manage.child_bridge_button_restart_now_one": "รีสตาร์ท Child Bridge",

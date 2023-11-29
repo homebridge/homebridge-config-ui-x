@@ -191,7 +191,6 @@
   "plugins.donate.button_verified": "Verifierad",
   "plugins.donate.message_learn_more": "Läs mer om donationslänkar i plugins",
   "plugins.donate.tile_donate_to": "Donera till {{ author }}",
-  "plugins.donate.ui": "UI developed by {{ author }}",
   "plugins.manage.button_restart_now": "Starta om Homebridge nu",
   "plugins.manage.child_bridge_button_restart_now": "Restart Child Bridges",
   "plugins.manage.child_bridge_button_restart_now_one": "Restart Child Bridge",
