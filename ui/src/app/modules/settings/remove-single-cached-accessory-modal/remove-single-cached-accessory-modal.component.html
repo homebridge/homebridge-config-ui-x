@@ -19,8 +19,8 @@
         <span>
           {{ item.displayName }} ({{ item.plugin }})
           <br>
-          <p class="small grey-text">UUID: {{ item.UUID }}</p>
-          <p class="small grey-text">UUID 2: {{ item.services.UUID }}</p>
+          <p class="small grey-text">Cache UUID: {{ item.UUID }}</p>
+          <p class="small grey-text">Accessory UUID: {{ item.services.UUID }}</p>
         </span>
         <button class="btn btn-danger" (click)="removeAccessory(item)" [disabled]="deleting"><i class="fas"
             [ngClass]="{'fa-trash': item.UUID !== deleting, 'fa-cog fa-spin': item.UUID === deleting}"></i></button>
