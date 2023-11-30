@@ -24,6 +24,7 @@
       </select>
       <p class="small mt-3" *ngIf="curVersion">{{ 'plugins.status_installed' | translate }}: v{{ curVersion }}</p>
     </div>
+    <p class="small mt-3" *ngIf="plugin.installedVersion">{{ 'plugins.status_installed' | translate }}: v{{ plugin.installedVersion }}</p>
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-left">
