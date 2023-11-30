@@ -832,6 +832,9 @@ export class PluginsService {
         manufacturer: {
           type: 'string',
         },
+        firmwareRevision: {
+          type: 'string',
+        },
         model: {
           type: 'string',
         },
