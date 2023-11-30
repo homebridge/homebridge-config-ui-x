@@ -20,10 +20,9 @@
           {{ item.displayName }} ({{ item.plugin }})
           <br>
           <p class="small grey-text m-0">Cache UUID: {{ item.UUID }}</p>
-          <p class="small grey-text m-0">Serial number: {{ item.properties[0].serialNumber }}</p>
-          <p class="small grey-text m-0">Serial number2: {{ item.contex[0].device[0].properties[0].serialNumber }}</p>
+          <p class="small grey-text m-0">Accessory UUID: {{ item.services[0].UUID }}</p>
         </span>
-        <button class="btn btn-danger ml-3" (click)="removeAccessory(item)" [disabled]="deleting"><i class="fas"
+        <button class="btn btn-danger" (click)="removeAccessory(item)" [disabled]="deleting"><i class="fas"
             [ngClass]="{'fa-trash': item.UUID !== deleting, 'fa-cog fa-spin': item.UUID === deleting}"></i></button>
       </li>
     </ul>
