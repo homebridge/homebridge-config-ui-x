@@ -21,29 +21,21 @@
         <label for="form-name" [ngClass]="{'active': page.title === 'users.title_edit_user'}"
           [translate]="'users.label_full_name'">Full Name</label>
       </div>
-
-      <div class="row pb-3">
-        <div class="col-md-6">
-          <div class="md-form">
-            <i class="fas fa-fw fa-lock prefix grey-text"></i>
-            <input formControlName="password" type="password" autocomplete="new-password" id="form-pass"
-              class="form-control pl-0 pr-0" [ngClass]="{
-                'is-invalid': form.controls.password.dirty && form.controls.password.errors
-              }">
-            <label for="form-pass" [innerText]="page.password | translate"></label>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="md-form">
-            <input formControlName="passwordConfirm" type="password" autocomplete="new-password" id="form-pass-confirm"
-              class="form-control pl-0 pr-0" [ngClass]="{
-                'is-invalid': form.controls.passwordConfirm.dirty && form.controls.passwordConfirm.errors
-              }">
-            <label for="form-pass-confirm" [translate]="'users.label_confirm_password'"></label>
-          </div>
-        </div>
+      <div class="md-form">
+        <i class="fas fa-fw fa-lock prefix grey-text"></i>
+        <input formControlName="password" type="password" autocomplete="new-password" id="form-pass"
+          class="form-control pl-0 pr-0" [ngClass]="{
+            'is-invalid': form.controls.password.dirty && form.controls.password.errors
+          }">
+        <label for="form-pass" [innerText]="page.password | translate"></label>
       </div>
-
+      <div class="md-form" style="margin-left: 38px;">
+        <input formControlName="passwordConfirm" type="password" autocomplete="new-password" id="form-pass-confirm"
+          class="form-control pl-0 pr-0" [ngClass]="{
+            'is-invalid': form.controls.passwordConfirm.dirty && form.controls.passwordConfirm.errors
+          }">
+        <label for="form-pass-confirm" [translate]="'users.label_confirm_password'"></label>
+      </div>
       <div class="form-check text-center">
         <input formControlName="admin" type="checkbox" class="form-check-input" id="isAdmin">
         <label class="form-check-label" for="isAdmin" [translate]="'users.label_admin_user'">Admin User?</label>
