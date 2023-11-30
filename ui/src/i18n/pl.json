@@ -80,7 +80,7 @@
   "child_bridge.label_bridge_settings": "Ustawienia mostka",
   "child_bridge.label_child_bridges": "Mostki podrzędne",
   "child_bridge.label_child_restart": "Zrestartuj mostek",
-  "child_bridge.label_child_setup": "Set Up Child Bridges",
+  "child_bridge.label_child_setup": "Ustaw mostek",
   "child_bridge.label_child_start": "Uruchom mostek",
   "child_bridge.label_child_stop": "Wyłącz mostek",
   "child_bridge.message_about": "Homebridge pozwoli ci na uruchomienie twoich wtyczek (platform, akcesoriów) w trybie mostka podrzędnego. Ta funkcja może poprawić szybkość i jakość działania Homebridge.",
