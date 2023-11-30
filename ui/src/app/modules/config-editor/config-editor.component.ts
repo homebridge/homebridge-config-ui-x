@@ -403,6 +403,10 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                     type: 'string',
                     description: 'The bridge manufacturer to be displayed in HomeKit',
                   },
+                  firmwareRevision: {
+                    type: 'string',
+                    description: 'The bridge firmware version to be displayed in HomeKit',
+                  },
                   model: {
                     type: 'string',
                     description: 'The bridge model to be displayed  in HomeKit',
