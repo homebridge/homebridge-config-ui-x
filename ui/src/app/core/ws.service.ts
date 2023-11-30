@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Subject } from 'rxjs';
-import { connect } from 'socket.io-client';
+import { Socket, io as ioFn } from 'socket.io-client';
 import { AuthService } from '@/app/core/auth/auth.service';
 import { environment } from '@/environments/environment';
 
 export interface IoNamespace {
   connected?: Subject<any>;
-  socket: SocketIOClient.Socket;
+  socket: Socket;
   request: (resource: string, payload?: string | Record<string, any> | Array<any>) => Observable<any>;
   end?: () => void;
 }
@@ -86,7 +86,7 @@ export class WsService {
    * @param namespace
    */
   private establishConnectionToNamespace(namespace: string): IoNamespace {
-    const socket: SocketIOClient.Socket = connect(`${environment.api.socket}/${namespace}`, {
+    const socket: Socket = ioFn(`${environment.api.socket}/${namespace}`, {
       query: {
         token: this.$auth.token,
       },
