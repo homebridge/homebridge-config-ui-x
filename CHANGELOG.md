@@ -19,6 +19,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - add spanner settings icons to hb+ui on status
 - various ui enhancements
 - add modal to explain unverified plugin status
+- various minor ui changes (@mkz212)
 
 ### Translation Changes
 
@@ -28,6 +29,9 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 
 - Add Raspberry Pi 5 to list of Pi devices in bug-report template (#1824) (@jsiegenthaler)
 - add api work for plugin icons
+- update `socket.io-client` dependency
+- update dependencies
+- update ui dependencies
 
 ## 4.53.0 (2023-11-24)
 

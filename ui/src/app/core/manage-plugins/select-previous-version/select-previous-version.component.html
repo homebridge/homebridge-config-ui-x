@@ -7,12 +7,10 @@
     </button>
   </div>
   <div class="modal-body d-flex flex-row flex-grow-1 w-100">
-
     <div *ngIf="loading" class="w-100 text-center primary-text">
       <i class="fa fa-fw fa-cog fa-spin" style="font-size: 72px;"></i>
     </div>
-
-    <div class="w-100  text-center" *ngIf="!loading">
+    <div class="w-100 text-center" *ngIf="!loading">
       <i class="fas fa-fw fa-history primary-text mb-4" style="font-size: 75px;"></i>
       <p>
         {{ 'plugins.manage.message_select_version_to_install' | translate }}:
@@ -22,6 +20,7 @@
           {{ version.name }}
         </option>
       </select>
+      <p class="small mt-3 mb-0" *ngIf="plugin.installedVersion">{{ 'plugins.status_installed' | translate }}: v{{ plugin.installedVersion }}</p>
     </div>
   </div>
   <div class="modal-footer justify-content-between">
