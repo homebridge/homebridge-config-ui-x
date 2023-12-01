@@ -278,6 +278,7 @@
   "reset.toast_accessory_reset": "Homebridge Accessory Reset",
   "reset.toast_cached_accessory_removed": "Cached accessory removed.",
   "reset.toast_clear_cached_accessories_success": "Restarting Homebridge and clearing accessory cache.",
+  "reset.toast_error_message": "Accessory cache could not be loaded. You may not have any cached accessories.",
   "reset.toast_failed_to_delete_cached_accessory": "Failed to delete accessory.",
   "reset.toast_failed_to_reset": "Failed to reset Homebridge. See Logs.",
   "reset.toast_removing_cached_accessory_please_wait": "Removing accessory from cache, please wait…",
