@@ -11,6 +11,5 @@ export class TemperaturesensorComponent implements OnInit {
 
   constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 }

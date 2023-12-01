@@ -13,6 +13,5 @@ export class AirqualitysensorComponent implements OnInit {
 
   constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 }

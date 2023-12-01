@@ -11,6 +11,5 @@ export class StatelessprogrammableswitchComponent implements OnInit {
 
   constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 }

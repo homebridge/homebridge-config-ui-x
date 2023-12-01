@@ -12,6 +12,5 @@ export class AddRoomModalComponent implements OnInit {
     public activeModal: NgbActiveModal,
   ) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 }

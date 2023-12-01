@@ -20,6 +20,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - various ui enhancements
 - add modal to explain unverified plugin status
 - various minor ui changes (@mkz212)
+- refactor main page sub-icons
 
 ### Translation Changes
 
