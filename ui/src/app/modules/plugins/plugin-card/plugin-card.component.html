@@ -135,7 +135,7 @@
               <span *ngIf="!plugin.isConfigured && !plugin.disabled"> {{ 'plugins.button_set_up' | translate }}</span>
             </button>
             <button ngbDropdownItem (click)="pluginInfoModal(plugin)">
-              <i class="fas fa-fw fa-circle-info "></i> Plugin Info
+              <i class="fas fa-fw fa-circle-info "></i> {{ 'plugins.button_info' | translate }}
             </button>
           </div>
         </span>
