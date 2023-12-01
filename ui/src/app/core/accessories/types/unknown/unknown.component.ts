@@ -11,6 +11,5 @@ export class UnknownComponent implements OnInit {
 
   constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 }

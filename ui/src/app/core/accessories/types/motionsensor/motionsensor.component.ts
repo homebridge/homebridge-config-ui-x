@@ -11,6 +11,5 @@ export class MotionsensorComponent implements OnInit {
 
   constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 }

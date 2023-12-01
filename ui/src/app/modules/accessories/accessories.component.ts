@@ -89,11 +89,9 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     if (this.isMobile) {
       // layout locked
       window.localStorage.setItem('accessories-layout-locked', 'yes');
-      this.$toastr.success(this.translate.instant('accessories.layout_locked'), this.translate.instant('accessories.title_accessories'));
     } else {
       // layout unlocked
       window.localStorage.removeItem('accessories-layout-locked');
-      this.$toastr.success(this.translate.instant('accessories.layout_unlocked'), this.translate.instant('accessories.title_accessories'));
     }
   }
 
