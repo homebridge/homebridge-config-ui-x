@@ -1,84 +1,86 @@
 <!--Main Navigation-->
 <header *ngIf="$settings.theme && $auth.user">
   <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary scrolling-navbar d-lg-none">
-    <a class="navbar-brand" routerLink="/">
-      <img class="menu-logo" src="/assets/homebridge-logo.svg" />
-      <strong>Homebridge</strong>
-    </a>
-    <div class="nav-item ml-auto mr-3" *ngIf="rPiWasUnderVoltage || rPiCurrentlyUnderVoltage">
-      <a href="javascript:void(0)" class="nav-link dropdown-toggle waves-effect waves-light"
-        [popoverTitle]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_title' : 'rpi.throttled.previously_undervoltage_title') | translate"
-        [ngbPopover]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_message' : 'rpi.throttled.previously_undervoltage_message') | translate"
-        [ngbTooltip]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_title' : 'rpi.throttled.previously_undervoltage_title') | translate"
-        container="body" [placement]="['bottom', 'auto']">
-        <i class="fa-solid fa-fw fa-bolt yellow-text " style="--fa-beat-scale: 2.0;"
-          [ngClass]="{ 'fa-beat': rPiCurrentlyUnderVoltage }"></i>
+    <div class="container-fluid">
+      <a class="navbar-brand" routerLink="/">
+        <img class="menu-logo" src="/assets/homebridge-logo.svg" />
+        <strong>Homebridge</strong>
       </a>
-    </div>
-    <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="toggler-icon top-bar"></span>
-      <span class="toggler-icon middle-bar"></span>
-      <span class="toggler-icon bottom-bar"></span>
-    </button>
-    <div class="collapse navbar-collapse my-3" id="navbarSupportedContent">
-      <ul class="navbar-nav mr-auto">
-        <li class="nav-item waves-effect waves-light" routerLinkActive="active"
-          [routerLinkActiveOptions]="{exact: true}">
-          <a class="nav-link" routerLink="/" [translate]="'menu.label_status'">
-            <i class='fa fa-fw fa-house pr-2'></i>Status</a>
-        </li>
-        <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
-          <a class="nav-link" routerLink="/plugins" [translate]="'menu.label_plugins'">
-            <i class="fa fa-fw fa-plug pr-2"></i>Plugins</a>
-        </li>
-        <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$settings.env.enableAccessories">
-          <a class="nav-link" routerLink="/accessories" [translate]="'menu.label_accessories'">
-            <i class="fa fa-fw fa-lightbulb pr-2"></i>Accessories</a>
-        </li>
-        <li class="nav-item waves-effect waves-light" routerLinkActive="active">
-          <a class="nav-link" routerLink="/logs" [translate]="'menu.linux.label_logs'">
-            <i class="fa fa-fw fa-wave-square pr-2"></i>Logs</a>
-        </li>
-        <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$settings.env.enableTerminalAccess && $auth.user.admin">
-          <a class="nav-link" routerLink="/platform-tools/terminal" [translate]="'menu.linux.label_terminal'">
-            <i class="fa fa-fw fa-terminal pr-2"></i>Terminal</a>
-        </li>
+      <div class="nav-item ms-auto me-3" *ngIf="rPiWasUnderVoltage || rPiCurrentlyUnderVoltage">
+        <a href="javascript:void(0)" class="nav-link dropdown-toggle waves-effect waves-light"
+          [popoverTitle]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_title' : 'rpi.throttled.previously_undervoltage_title') | translate"
+          [ngbPopover]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_message' : 'rpi.throttled.previously_undervoltage_message') | translate"
+          [ngbTooltip]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_title' : 'rpi.throttled.previously_undervoltage_title') | translate"
+          container="body" [placement]="['bottom', 'auto']">
+          <i class="fa-solid fa-fw fa-bolt yellow-text " style="--fa-beat-scale: 2.0;"
+            [ngClass]="{ 'fa-beat': rPiCurrentlyUnderVoltage }"></i>
+        </a>
+      </div>
+      <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="toggler-icon top-bar"></span>
+        <span class="toggler-icon middle-bar"></span>
+        <span class="toggler-icon bottom-bar"></span>
+      </button>
+      <div class="collapse navbar-collapse my-3" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item waves-effect waves-light" routerLinkActive="active"
+            [routerLinkActiveOptions]="{exact: true}">
+            <a class="nav-link" routerLink="/" [translate]="'menu.label_status'">
+              <i class='fa fa-fw fa-house pe-2'></i>Status</a>
+          </li>
+          <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
+            <a class="nav-link" routerLink="/plugins" [translate]="'menu.label_plugins'">
+              <i class="fa fa-fw fa-plug pe-2"></i>Plugins</a>
+          </li>
+          <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$settings.env.enableAccessories">
+            <a class="nav-link" routerLink="/accessories" [translate]="'menu.label_accessories'">
+              <i class="fa fa-fw fa-lightbulb pe-2"></i>Accessories</a>
+          </li>
+          <li class="nav-item waves-effect waves-light" routerLinkActive="active">
+            <a class="nav-link" routerLink="/logs" [translate]="'menu.linux.label_logs'">
+              <i class="fa fa-fw fa-wave-square pe-2"></i>Logs</a>
+          </li>
+          <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$settings.env.enableTerminalAccess && $auth.user.admin">
+            <a class="nav-link" routerLink="/platform-tools/terminal" [translate]="'menu.linux.label_terminal'">
+              <i class="fa fa-fw fa-terminal pe-2"></i>Terminal</a>
+          </li>
 
-        <li class="nav-item" *ngIf="$auth.user.admin">
-          <div class="dropdown">
-            <button class="btn btn-link dropdown-toggle px-0 mx-0 text-decoration-none" type="button"
-              id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-              [translate]="'plugins.button_settings'">
-              <i class="fa fa-fw fa-cog pr-2"></i>Homebridge Settings<i class="fa fa-fw fa-caret-down"></i>
-            </button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" routerLink="/settings" [translate]="'menu.label_settings_hb'">
-                  <i class="fa fa-fw fa-cog pr-2"></i>Homebridge Settings</a>
-                <a class="dropdown-item" href="javascript:void(0)" (click)="openUiSettings()" [translate]="'menu.label_settings_ui'">
-                  <i class="fa fa-fw fa-sliders pr-2"></i>UI Settings</a>
-                <a class="dropdown-item" href="javascript:void(0)" (click)="backupRestoreHomebridge()" [translate]="'backup.title_backup_restore'">
-                  <i class="fa fa-fw fa-clock-rotate-left pr-2"></i>Backup</a>
-                <a class="dropdown-item" routerLink="/config" [translate]="'menu.label_config'">
-                  <i class="fa fa-fw fa-file-lines pr-2"></i>Config</a>
-                <a class="dropdown-item" routerLink="/users" [translate]="'menu.tooltip_user_accounts'">
-                  <i class="fa fa-fw fa-user pr-2"></i>Users</a>
+          <li class="nav-item" *ngIf="$auth.user.admin">
+            <div class="dropdown">
+              <button class="btn btn-link dropdown-toggle px-0 mx-0 text-decoration-none" type="button"
+                id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                [translate]="'plugins.button_settings'">
+                <i class="fa fa-fw fa-cog pe-2"></i>Homebridge Settings<i class="fa fa-fw fa-caret-down"></i>
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  <a class="dropdown-item" routerLink="/settings" [translate]="'menu.label_settings_hb'">
+                    <i class="fa fa-fw fa-cog pe-2"></i>Homebridge Settings</a>
+                  <a class="dropdown-item" href="javascript:void(0)" (click)="openUiSettings()" [translate]="'menu.label_settings_ui'">
+                    <i class="fa fa-fw fa-sliders pe-2"></i>UI Settings</a>
+                  <a class="dropdown-item" href="javascript:void(0)" (click)="backupRestoreHomebridge()" [translate]="'backup.title_backup_restore'">
+                    <i class="fa fa-fw fa-clock-rotate-left pe-2"></i>Backup</a>
+                  <a class="dropdown-item" routerLink="/config" [translate]="'menu.label_config'">
+                    <i class="fa fa-fw fa-file-lines pe-2"></i>Config</a>
+                  <a class="dropdown-item" routerLink="/users" [translate]="'menu.tooltip_user_accounts'">
+                    <i class="fa fa-fw fa-user pe-2"></i>Users</a>
+              </div>
             </div>
-          </div>
-        </li>
-        <li class="nav-item waves-effect waves-light" routerLinkActive="active">
-          <a class="nav-link" routerLink="/support" [translate]="'support.title'">
-            <i class="fa fa-fw fa-question-circle-o pr-2"></i>Support</a>
-        </li>
-        <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
-          <a class="nav-link" href="javascript:void(0)" (click)="openRestartModal()" [translate]="'menu.restart.title'">
-            <i class="fa fa-fw fa-power-off pr-2"></i>Restart Options</a>
-        </li>
-        <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$settings.formAuth">
-          <a class="nav-link" href="javascript:void(0)" (click)="$auth.logout()" [translate]="'menu.tooltip_logout'">
-            <i class="fa fa-fw fa-right-from-bracket pr-2"></i>{{ 'menu.tooltip_logout' | translate }} - {{ $auth.user.name }}</a>
-        </li>
-      </ul>
+          </li>
+          <li class="nav-item waves-effect waves-light" routerLinkActive="active">
+            <a class="nav-link" routerLink="/support" [translate]="'support.title'">
+              <i class="fa fa-fw fa-question-circle-o pe-2"></i>Support</a>
+          </li>
+          <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
+            <a class="nav-link" href="javascript:void(0)" (click)="openRestartModal()" [translate]="'menu.restart.title'">
+              <i class="fa fa-fw fa-power-off pe-2"></i>Restart Options</a>
+          </li>
+          <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$settings.formAuth">
+            <a class="nav-link" href="javascript:void(0)" (click)="$auth.logout()" [translate]="'menu.tooltip_logout'">
+              <i class="fa fa-fw fa-right-from-bracket pe-2"></i>{{ 'menu.tooltip_logout' | translate }} - {{ $auth.user.name }}</a>
+          </li>
+        </ul>
+      </div>
     </div>
   </nav>
 </header>
@@ -186,7 +188,7 @@
           <li><a class="link_name" href="javascript:void(0)" (click)="$auth.logout()" [translate]="'menu.tooltip_logout'">{{ 'menu.tooltip_logout' | translate }} - {{ $auth.user.name }}</a></li>
         </ul>
       </li>
-      <li class="pl-3 mt-5" *ngIf="rPiWasUnderVoltage || rPiCurrentlyUnderVoltage">
+      <li class="ps-3 mt-5" *ngIf="rPiWasUnderVoltage || rPiCurrentlyUnderVoltage">
         <a href="javascript:void(0)" class="nav-link dropdown-toggle waves-effect waves-light"
           [popoverTitle]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_title' : 'rpi.throttled.previously_undervoltage_title') | translate"
           [ngbPopover]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_message' : 'rpi.throttled.previously_undervoltage_message') | translate"

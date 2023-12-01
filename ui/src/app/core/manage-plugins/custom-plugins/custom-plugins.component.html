@@ -4,9 +4,9 @@
       {{ 'plugins.settings.title_settings' | translate }}:
       {{ plugin.displayName || plugin.name }}
     </h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
       (click)="activeModal.dismiss('Dismiss')">
-      <span aria-hidden="true">&times;</span>
+
     </button>
   </div>
 
@@ -41,7 +41,7 @@
       <app-schema-form [configSchema]="formSchema" [(data)]="formData" (dataChanged)="formUpdatedSubject.next($event)"
        (isValid)="formValidEvent($event)">
       </app-schema-form>
-      <div class="text-right custom-form-action-buttons">
+      <div class="text-end custom-form-action-buttons">
         <button class="btn btn-elegant" *ngIf="formCancelButtonLabel" (click)="formActionSubject.next('cancel')">
           {{ formCancelButtonLabel }}
         </button>
@@ -59,37 +59,37 @@
   </div>
 
   <div class="modal-footer justify-content-between" [hidden]="justSavedAndExited">
-    <div class="text-left">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')"
+    <div class="text-start">
+      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="activeModal.dismiss('Dismiss')"
         [translate]="'form.button_close'" [disabled]="saveInProgress">Close</button>
     </div>
     <div class="d-none d-lg-block text-center">
       <a *ngIf="plugin.links.npm" [href]="plugin.links.npm" target="_blank" rel="noopener noreferrer"
-        class="pr-3 manage-plugin-config-external-icons dark-mode-highlight"><i class="fab fa-fw fa-npm"></i></a>
+        class="pe-3 manage-plugin-config-external-icons dark-mode-highlight"><i class="fab fa-fw fa-npm"></i></a>
       <a *ngIf="plugin.links.homepage" [href]="plugin.links.homepage" target="_blank" rel="noopener noreferrer"
         class="manage-plugin-config-external-icons dark-mode-highlight">
         <i [ngClass]="plugin.links.homepage | externalLinkIcon"></i></a>
     </div>
-    <div class="text-right">
+    <div class="text-end">
       <button *ngIf="plugin.name !== 'homebridge-config-ui-x'" class="btn btn-danger"
         [ngbTooltip]="'form.button_delete' | translate" container="body" [disabled]="saveInProgress"
         (click)="deletePluginConfig()">
         <i class="fa fa-fw fa-trash"></i>
       </button>
-      <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="savePluginConfig(true)"
+      <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="savePluginConfig(true)"
         [disabled]="saveInProgress">
         {{ 'form.button_save' | translate }} <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
       </button>
     </div>
   </div>
   <div class="modal-footer justify-content-between" [hidden]="!justSavedAndExited">
-    <div class="text-left">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.close('Dismiss')">
+    <div class="text-start">
+      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="activeModal.close('Dismiss')">
         {{ 'form.button_close' | translate }}
       </button>
     </div>
     <div class="text-center"></div>
-    <div class="text-right">
+    <div class="text-end">
       <button type="button" class="btn btn-primary" *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name) && childBridges.length > 0"
         (click)="onRestartChildBridgeClick()">
         {{ (childBridges.length === 1 ? 'plugins.manage.child_bridge_button_restart_now_one' : 'plugins.manage.child_bridge_button_restart_now') | translate }}

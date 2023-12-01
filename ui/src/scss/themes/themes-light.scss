@@ -66,10 +66,6 @@
       @extend .btn-#{$name} !optional;
     }
 
-    .badge-primary {
-      background-color: $primary-dark !important;
-    }
-
     a {
       &.card-link {
         color: #000000;
@@ -199,9 +195,6 @@
     background-color: #000099 !important;
   }
 
-  .badge-primary {
-    background-color: #000070 !important;
-  }
   .widget-control-button {
     &.primary-text {
       color: #2196f3;

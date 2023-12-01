@@ -1,9 +1,9 @@
 <div class="modal-content">
   <div class="modal-header">
     <h5 class="modal-title">{{ 'users.setup_2fa' | translate }}</h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
       (click)="activeModal.dismiss('Dismiss')">
-      <span aria-hidden="true">&times;</span>
+
     </button>
   </div>
 
@@ -23,7 +23,7 @@
     </div>
 
     <div class="text-center w-100 d-flex justify-content-center ">
-      <app-qrcode [data]="otpString" class="mr-auto ml-auto mt-2 mb-2" style="width: 180px; height: 180px;">
+      <app-qrcode [data]="otpString" class="me-auto ms-auto mt-2 mb-2" style="width: 180px; height: 180px;">
       </app-qrcode>
     </div>
 
@@ -38,14 +38,14 @@
   </div>
 
   <div class="modal-footer justify-content-between">
-    <div class="text-left">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
+    <div class="text-start">
+      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
         {{ 'form.button_close' | translate }}
       </button>
     </div>
     <div class="text-center"></div>
-    <div class="text-right">
-      <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="enable2fa()" *ngIf="!timeDiffError" [disabled]="formGroup.invalid">
+    <div class="text-end">
+      <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="enable2fa()" *ngIf="!timeDiffError" [disabled]="formGroup.invalid">
         {{ 'form.button_enable' | translate }}
       </button>
     </div>

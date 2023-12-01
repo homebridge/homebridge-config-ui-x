@@ -1,7 +1,7 @@
 <!--Panel-->
 <div class="card card-body mb-3 p-3">
   <div class="d-flex flex-row justify-content-between">
-    <div class="d-flex flex-column mr-3 align-items-center justify-content-between">
+    <div class="d-flex flex-column me-3 align-items-center justify-content-between">
       <img [src]="plugin.icon" (error)="handleIconError()" alt="" class="plugin-icon-card">
     </div>
     <div class="d-flex flex-column justify-content-between w-100">
@@ -11,70 +11,70 @@
       </h4>
 
       <div class="d-flex flex-row justify-content-start mb-0 mt-2">
-        <p class="mb-0 mr-3 main-text"
+        <p class="mb-0 me-3 main-text"
            *ngIf="plugin.installedVersion && !plugin.updateAvailable && !plugin.betaUpdateAvailable">
           <a href="javascript:void(0)" class="text-decoration-none" style="outline:none;" (click)="$plugin.installPreviousVersion(plugin)">
-            <i class="far fa-fw fa-circle-check fa-lg pr-1 main-text"></i>
-            <span class="d-none d-md-inline-block pr-1 main-text"> {{ 'plugins.status_installed' | translate }}:</span>
+            <i class="far fa-fw fa-circle-check fa-lg pe-1 main-text"></i>
+            <span class="d-none d-md-inline-block pe-1 main-text"> {{ 'plugins.status_installed' | translate }}:</span>
             <span class="text-decoration-none main-text">v{{ plugin.installedVersion}}</span>
           </a>
         </p>
-        <p class="mb-0 mr-3 grey-text" *ngIf="!plugin.installedVersion">
+        <p class="mb-0 me-3 grey-text" *ngIf="!plugin.installedVersion">
           <a href="javascript:void(0)" class="text-decoration-none" style="outline:none;" (click)="$plugin.installPlugin(plugin.name)">
-            <i class="far fa-fw fa-circle-down fa-lg pr-1 grey-text"></i>
-            <span class="d-none d-xl-inline-block pr-1 grey-text">{{ 'plugins.button_install' | translate }}:</span>
+            <i class="far fa-fw fa-circle-down fa-lg pe-1 grey-text"></i>
+            <span class="d-none d-xl-inline-block pe-1 grey-text">{{ 'plugins.button_install' | translate }}:</span>
             <span class="text-decoration-none grey-text">v{{ plugin.latestVersion}}</span>
-            <span *ngIf="plugin.lastUpdated" class="d-none d-sm-inline-block pl-1 grey-text">({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
+            <span *ngIf="plugin.lastUpdated" class="d-none d-sm-inline-block ps-1 grey-text">({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
           </a>
         </p>
-        <p class="mb-0 mr-3 primary-text" *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable">
+        <p class="mb-0 me-3 primary-text" *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable">
           <a href="javascript:void(0)" class="text-decoration-none" style="outline:none;" (click)="$plugin.updatePlugin(plugin, plugin.betaUpdateAvailable ? 'beta' : 'latest')">
-            <i class="far fa-fw fa-arrow-alt-circle-up fa-lg pr-1 primary-text"></i>
-              <span class="d-none d-xl-inline-block pr-1 primary-text"> {{ 'plugins.button_update' | translate }}:</span>
+            <i class="far fa-fw fa-arrow-alt-circle-up fa-lg pe-1 primary-text"></i>
+              <span class="d-none d-xl-inline-block pe-1 primary-text"> {{ 'plugins.button_update' | translate }}:</span>
               <span class="text-decoration-none primary-text">v{{ plugin.installedVersion}} - v{{ plugin.latestVersion}}</span>
           </a>
         </p>
       </div>
     </div>
 
-    <div class="d-flex flex-column ml-3 justify-content-between">
+    <div class="d-flex flex-column ms-3 justify-content-between">
 
-      <div class="d-flex flex-row justify-content-end ml-auto">
+      <div class="d-flex flex-row justify-content-end ms-auto">
         <a href="javascript:void(0)" *ngIf="plugin.verifiedPlugin"
           class="card-link text-decoration-none green-text" (click)="openVerifiedModal()">
           <i class="fas fa-fw fa-shield-alt fa-lg"></i>
         </a>
-        <a href="javascript:void(0)" class="card-link pink-text ml-2" *ngIf="plugin.verifiedPlugin && plugin.funding"
+        <a href="javascript:void(0)" class="card-link pink-text ms-2" *ngIf="plugin.verifiedPlugin && plugin.funding"
            ngbTooltip="@{{ plugin.author }}" (click)="openFundingModal(plugin)">
           <i class="fas fa-fw fa-heart fa-lg"></i>
         </a>
       </div>
 
-      <div class="d-flex flex-row justify-content-end ml-auto mt-auto">
+      <div class="d-flex flex-row justify-content-end ms-auto mt-auto">
         <div>
           <a href="javascript:void(0)" (click)="$plugin.bridgeSettings(plugin)">
-            <i *ngIf="plugin.hasChildBridges && !plugin.disabled && plugin.installedVersion" class="fas fa-fw ml-3 fa-lg" [ngClass]="{
+            <i *ngIf="plugin.hasChildBridges && !plugin.disabled && plugin.installedVersion" class="fas fa-fw ms-3 fa-lg" [ngClass]="{
               'fa-bridge-circle-check green-text': childBridgeStatus === 'ok',
               'fa-bridge-circle-exclamation text-warning': childBridgeStatus === 'pending',
               'fa-bridge-circle-xmark red-text': childBridgeStatus === 'down'
             }"></i>
             <i *ngIf="!plugin.hasChildBridges && !plugin.disabled && plugin.installedVersion"
-              class="fas fa-fw ml-3 fa-lg fa-bridge fa-fade primary-text"
+              class="fas fa-fw ms-3 fa-lg fa-bridge fa-fade primary-text"
               style="--fa-animation-duration: 2s;"></i>
           </a>
         </div>
-        <div class="mb-0 ml-3 red-text" *ngIf="plugin.installedVersion && plugin.disabled">
+        <div class="mb-0 ms-3 red-text" *ngIf="plugin.installedVersion && plugin.disabled">
           <a href="javascript:void(0)" style="outline:none;" (click)="enablePlugin(plugin)"><i class="far fa-fw fa-circle-pause fa-lg red-text"></i></a>
         </div>
 
-        <a *ngIf="!plugin.installedVersion" href="javascript:void(0)" class="card-link text-decoration-none ml-2" (click)="$plugin.installPreviousVersion(plugin)">
+        <a *ngIf="!plugin.installedVersion" href="javascript:void(0)" class="card-link text-decoration-none ms-2" (click)="$plugin.installPreviousVersion(plugin)">
           <i class="fa-solid fa-fw fa-history fa-lg"></i>
         </a>
-        <a *ngIf="!plugin.installedVersion" href="javascript:void(0)" class="card-link text-decoration-none ml-2" (click)="pluginInfoModal(plugin)">
+        <a *ngIf="!plugin.installedVersion" href="javascript:void(0)" class="card-link text-decoration-none ms-2" (click)="pluginInfoModal(plugin)">
           <i class="fa-solid fa-fw fa-circle-info fa-lg"></i>
         </a>
         <span *ngIf="plugin.installedVersion" ngbDropdown placement="bottom-right top-right left" class="">
-          <a class="mt-auto ml-2 card-link" href="javascript:void(0)" style="outline:none;"
+          <a class="mt-auto ms-2 card-link" href="javascript:void(0)" style="outline:none;"
             aria-label="Plugin actions drop down menu" ngbDropdownToggle>
             <i class="fa-solid fa-fw fa-cog fa-lg" [ngClass]="{
               'fa-fade primary-text': (plugin.installedVersion && !plugin.isConfigured && !plugin.disabled)
