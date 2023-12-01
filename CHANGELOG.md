@@ -30,6 +30,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - Add Raspberry Pi 5 to list of Pi devices in bug-report template (#1824) (@jsiegenthaler)
 - add api work for plugin icons
 - update `socket.io-client` dependency
+- update dependencies
 
 ## 4.53.0 (2023-11-24)
 

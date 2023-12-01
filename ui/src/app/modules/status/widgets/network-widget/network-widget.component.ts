@@ -5,8 +5,8 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { ChartOptions } from 'chart.js';
-import { BaseChartDirective, Color } from 'ng2-charts';
+import { ChartConfiguration } from 'chart.js';
+import { BaseChartDirective } from 'ng2-charts';
 import { Subscription, interval } from 'rxjs';
 import { AuthService } from '@/app/core/auth/auth.service';
 import { WsService } from '@/app/core/ws.service';
@@ -24,42 +24,44 @@ export class NetworkWidgetComponent implements OnInit, OnDestroy {
   public receivedPerSec: number;
   public sentPerSec: number;
 
-  public lineChartData = [{ data: [] }];
-  public lineChartLabels = [];
+  public lineChartType: ChartConfiguration['type'] = 'line';
 
-  public lineChartOptions: (ChartOptions & { annotation: any }) = {
-    responsive: true,
-    legend: {
-      display: false,
-    },
-    tooltips: {
-      enabled: false,
-    },
-    scales: {
-      xAxes: [
-        {
-          display: false,
-        },
-      ],
-      yAxes: [
-        {
-          display: false,
-        },
-      ],
-    },
-    annotation: {
-      annotations: [],
-    },
+  public lineChartData: ChartConfiguration['data'] = {
+    datasets: [{ data: [] }],
   };
 
-  public lineChartColors: Color[] = [
-    { // grey
-      backgroundColor: 'rgba(148,159,177,0.2)',
-      borderColor: 'rgba(148,159,177,0.2)',
-      pointRadius: 0,
-      borderWidth: 1,
+  public lineChartLabels = [];
+
+  public lineChartOptions: ChartConfiguration['options'] = {
+    responsive: true,
+    elements: {
+      point: {
+        radius: 0,
+      },
+      line: {
+        tension: 0.4,
+        backgroundColor: 'rgba(148,159,177,0.2)',
+        borderColor: 'rgba(148,159,177,0.2)',
+        fill: 'origin',
+      },
     },
-  ];
+    plugins: {
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        enabled: false,
+      },
+    },
+    scales: {
+      x: {
+        display: false,
+      },
+      y: {
+        display: false,
+      },
+    },
+  };
 
   private io = this.$ws.getExistingNamespace('status');
   private intervalSubscription: Subscription;
@@ -70,6 +72,13 @@ export class NetworkWidgetComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    // lookup the chart color based on the current theme
+    const userColor = getComputedStyle(this.widgetBackground.nativeElement).backgroundColor;
+    if (userColor) {
+      this.lineChartOptions.elements.line.backgroundColor = userColor;
+      this.lineChartOptions.elements.line.borderColor = userColor;
+    }
+
     this.io.connected.subscribe(async () => {
       this.getServerNetworkInfo();
     });
@@ -84,13 +93,6 @@ export class NetworkWidgetComponent implements OnInit, OnDestroy {
         this.getServerNetworkInfo();
       }
     });
-
-    // lookup the chart color based on the current theme
-    const chartColor = getComputedStyle(this.widgetBackground.nativeElement).backgroundColor;
-    if (chartColor) {
-      this.lineChartColors[0].backgroundColor = chartColor;
-      this.lineChartColors[0].borderColor = chartColor;
-    }
   }
 
   getServerNetworkInfo() {
@@ -104,15 +106,17 @@ export class NetworkWidgetComponent implements OnInit, OnDestroy {
         data.point = 0;
       }
 
-      if (!this.lineChartData[0].data.length) {
-        this.lineChartData[0].data = [data.point];
+      if (!this.lineChartData.datasets[0].data.length) {
+        this.lineChartData.datasets[0].data = {
+          ...data.point,
+        };
         this.lineChartLabels = ['point'];
       } else {
-        this.lineChartData[0].data.push(data.point);
+        this.lineChartData.datasets[0].data.push(data.point);
         this.lineChartLabels.push('point');
 
-        if (this.lineChartData[0].data.length > 60) {
-          this.lineChartData[0].data.shift();
+        if (this.lineChartData.datasets[0].data.length > 60) {
+          this.lineChartData.datasets[0].data.shift();
           this.lineChartLabels.shift();
           this.chart.update();
         }
