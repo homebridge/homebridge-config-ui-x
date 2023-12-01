@@ -90,9 +90,9 @@
     <ul class="list-group mt-2">
       <li class="list-group-item d-flex justify-content-between align-items-center">
         <span>
-          DEBUG
+          {{ 'settings.service.debug' | translate }}
           <a href="javascript:void(0)"
-            ngbTooltip="Some plugins require you to set the DEBUG environment variable to enable debug level logging.">
+            ngbTooltip="{{ 'settings.service.debug_tooltip' | translate }}">
             <i class="fas fa-fw fa-info-circle primary-text"></i>
           </a>
         </span>
@@ -102,9 +102,9 @@
       </li>
       <li class="list-group-item d-flex justify-content-between align-items-center">
         <span>
-          NODE_OPTIONS
+          {{ 'settings.service.node' | translate }}
           <a href="https://nodejs.org/api/cli.html" target="_blank"
-            ngbTooltip="Node.js runtime options for the Homebridge process. This should be kept blank unless you know what you are doing.">
+            ngbTooltip="{{ 'settings.service.node_tooltip' | translate }}">
             <i class="fas fa-fw fa-info-circle primary-text"></i>
           </a>
         </span>
