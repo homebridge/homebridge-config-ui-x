@@ -1,12 +1,21 @@
 <div class="modal-content">
   <div class="modal-header">
     <h5 class="modal-title">Logs: {{ plugin.displayName || plugin.name }}</h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
       (click)="activeModal.dismiss('Dismiss')">
-      <span aria-hidden="true">&times;</span>
+
     </button>
   </div>
   <div class="modal-body d-flex flex-row flex-grow-1 w-100 p-0">
     <div #pluginlogoutput class="w-100 bg-black plugin-log-output terminal align-self-end w-100 h-100 mb-0 p-2"></div>
+  </div>
+  <div class="modal-footer justify-content-between">
+    <div class="text-left"> </div>
+    <div class="text-center">
+      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
+        {{ 'form.button_close' | translate }}
+      </button>
+    </div>
+    <div class="text-right"></div>
   </div>
 </div>

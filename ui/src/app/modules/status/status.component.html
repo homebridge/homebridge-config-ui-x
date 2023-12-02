@@ -2,40 +2,39 @@
   <div class="col-6">
     <h3 class="primary-text m-0">{{ 'menu.label_status' | translate }}</h3>
   </div>
-  <div class="col-6 text-right d-none d-sm-block">
-    <button *ngIf="consoleStatus === 'up' && $auth.user.admin" (click)="addWidget()"
-      class="btn btn-primary add-widget-button m-0"
-      ngbTooltip="{{ (options.draggable.enabled ? 'form.button_edit' : 'status.widget.label_layout_locked') | translate }}">
-      <i class="fas fa-fw fa-table" [ngClass]="{
-        'fa-table': options.draggable.enabled,
-        'fa-lock': !options.draggable.enabled
-      }"></i>
-    </button>
+  <div class="col-6 text-end d-none d-sm-block">
+    <div class="btn-group" role="group" *ngIf="consoleStatus === 'up' && $auth.user.admin">
+      <button type="button" class="btn btn-elegant status-button my-0" [disabled]="options.draggable.enabled" (click)="unlockLayout()"
+        container="body" [ngbTooltip]="'form.button_unlock' | translate">
+        <i class="fas fa-fw fa-unlock"></i>
+      </button>
+      <button type="button" class="btn btn-elegant status-button my-0" [disabled]="!options.draggable.enabled" (click)="lockLayout()"
+        container="body" [ngbTooltip]="'form.button_lock' | translate">
+        <i class="fas fa-fw fa-lock"></i>
+      </button>
+      <button type="button" class="btn btn-elegant status-button my-0 me-0" [disabled]="!options.draggable.enabled" (click)="addWidget()">
+        <i class="fas fa-fw fa-cog"></i>
+      </button>
+    </div>
   </div>
 </div>
-
 <div class="status-container d-flex flex-column mt-0">
-
   <app-spinner *ngIf="consoleStatus === 'down'"></app-spinner>
-
   <div class="row flex-column flex-grow-1">
-    <!-- <div>
-      <button (click)="addWidget()" class="btn btn-primary">Hi</button>
-    </div> -->
     <gridster [options]="options" class="flex-grow-1 no-scrollbars py-0" [hidden]="consoleStatus === 'down'"
       *ngIf="dashboard.length">
       <ng-container *ngFor="let item of dashboard">
         <gridster-item *ngIf="!(item.hideOnMobile && page.mobile)" class="widget-item" [item]="item"
           [id]="item.component">
           <div class="gridster-item-content">
-            <i class="fas fa-fw fa-cog widget-control-button primary-text" (click)="manageWidget(item)"></i>
+            <i *ngIf="options.draggable.enabled" class="fas fa-fw fa-cog widget-control-button primary-text"
+              (click)="manageWidget(item)"></i>
           </div>
           <app-widgets [widget]="item" class="d-flex h-100 w-100"></app-widgets>
         </gridster-item>
       </ng-container>
     </gridster>
   </div>
-
   <div class="row mb-auto">
     <div class="col-md-12 text-center px-4 py-1 grey-text">
       <!-- The below copyright notice shall be included and displayed on all copies or substantial portions of this software. -->

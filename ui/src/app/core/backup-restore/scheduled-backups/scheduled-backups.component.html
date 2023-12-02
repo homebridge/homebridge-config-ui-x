@@ -1,10 +1,8 @@
 <div class="modal-content hb-backup-modal">
   <div class="modal-header">
     <h5 class="modal-title" translate="backup.title_scheduled_backups"></h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-      (click)="activeModal.dismiss('Dismiss')">
-      <span aria-hidden="true">&times;</span>
-    </button>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+      (click)="activeModal.dismiss('Dismiss')"></button>
   </div>
   <div class="modal-body">
 
@@ -46,13 +44,13 @@
   </div>
 
   <div class="modal-footer justify-content-between">
-    <div class="text-left">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
+    <div class="text-start">
+      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
         {{ 'form.button_close' | translate }}
       </button>
     </div>
     <div class="text-center"></div>
-    <div class="text-right">
+    <div class="text-end">
       <button type="button" class="btn btn-primary" (click)="openBackupRestore()">
         <i class="fas fa-fw fa-arrow-left"></i> {{ 'backup.title_backup_restore' | translate }}
       </button>

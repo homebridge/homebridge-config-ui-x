@@ -1,10 +1,8 @@
 <div class="modal-content">
   <div class="modal-header">
     <h5 class="modal-title" [innerText]="service.customName || service.serviceName"></h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-      (click)="activeModal.dismiss('Dismiss')">
-      <span aria-hidden="true">&times;</span>
-    </button>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+      (click)="activeModal.dismiss('Dismiss')"></button>
   </div>
   <div class="modal-body text-center">
 

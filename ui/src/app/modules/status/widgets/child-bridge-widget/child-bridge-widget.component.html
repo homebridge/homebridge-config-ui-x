@@ -1,35 +1,31 @@
 <div class="flex-column d-flex align-items-stretch h-100 w-100 pb-1 overflow-auto no-scrollbars">
-  <div style="cursor: move;" class="drag-handler pl-2 pt-1 pb-2 pr-2">
+  <div style="cursor: move;" class="drag-handler ps-2 pt-1 pb-2 pe-2">
     {{ 'child_bridge.label_child_bridges' | translate }}
   </div>
-  <div class="d-flex flex-wrap w-100 pl-2 pr-2">
-
+  <div class="d-flex flex-wrap w-100 ps-2 pe-2">
     <ul class="list-group w-100 gridster-item-content">
-      <li class="list-group-item border-0 pl-2 pr-2 d-flex flex-row justify-content-between" *ngFor="let bridge of childBridges">
+      <li class="list-group-item border-0 ps-2 pe-2 d-flex flex-row justify-content-between" *ngFor="let bridge of childBridges">
         <div class="flex-child">
-
-          <i class="fas fa-fw mr-1" [ngClass]="{
+          <i class="fas fa-fw me-1" [ngClass]="{
             'fa-bridge-circle-check green-text': bridge.status === 'ok',
             'fa-bridge-circle-exclamation text-warning': bridge.status === 'pending',
             'fa-bridge-circle-xmark red-text': bridge.status === 'down'
-        }"></i>
+          }"></i>
           {{ bridge.name | replace:'Homebridge':'' | replace:'homebridge':'' }}
         </div>
-
-        <div style="min-width: 48px;" class="grey-text text-right">
+        <div style="min-width: 48px;" class="grey-text text-end">
           <!-- <a *ngIf="!bridge.restartInProgress && bridge.paired === false" href="javascript:void(0)"
-            (click)="restartChildBridge(bridge)" class="grey-text mr-1"
+            (click)="restartChildBridge(bridge)" class="grey-text me-1"
             ngbTooltip="{{'child_bridge.label_bridge_connect_to_homekit' | translate}}" container="body" openDelay="150"
             [placement]="['left', 'top', 'bottom']">
             <i class="fa-fw icon-button fas fa-fw fa-qrcode"></i>
           </a> -->
-
           <a *ngIf="!bridge.restartInProgress" href="javascript:void(0)" (click)="restartChildBridge(bridge)"
             class="grey-text" ngbTooltip="{{'menu.tooltip_restart' | translate}}" container="body" openDelay="150"
             [placement]="['left', 'top', 'bottom']">
             <i class="fa-fw icon-button fas fa-fw fa-power-off"></i>
           </a>
-          <i *ngIf="bridge.restartInProgress" class="fas fa-fw fa-fw fa-spinner fa-pulse"></i>
+          <i *ngIf="bridge.restartInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
         </div>
       </li>
     </ul>

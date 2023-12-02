@@ -25,6 +25,8 @@ import { WsService } from '@/app/core/ws.service';
 export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   @Input() pluginName: string;
   @Input() targetVersion = 'latest';
+  @Input() latestVersion: string;
+  @Input() installedVersion: string;
   @Input() action: string;
 
   public actionComplete = false;

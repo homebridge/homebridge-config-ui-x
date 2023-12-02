@@ -4,10 +4,8 @@
       {{ 'child_bridge.label_bridge_settings' | translate }}:
       {{ plugin.displayName || plugin.name }}
     </h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-      (click)="activeModal.close('Dismiss')">
-      <span aria-hidden="true">&times;</span>
-    </button>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+      (click)="activeModal.close('Dismiss')"></button>
   </div>
   <div class="modal-body">
     <p>
@@ -45,13 +43,13 @@
             </div>
             <div *ngIf="deviceInfo[item._bridge?.username]">
               <div *ngIf="deviceInfo[item._bridge?.username]._isPaired === false" class="w-100 d-flex flex-column">
-                <app-qrcode [data]="deviceInfo[item._bridge?.username]._setupCode" class="mr-auto ml-auto mt-2 mb-2"
+                <app-qrcode [data]="deviceInfo[item._bridge?.username]._setupCode" class="me-auto ms-auto mt-2 mb-2"
                             style="width: 180px; height: 180px;">
                 </app-qrcode>
-                <p class="mr-auto ml-auto text-center">
+                <p class="me-auto ms-auto text-center">
                   {{ deviceInfo[item._bridge?.username].pincode }}
                 </p>
-                <p class="grey-text  mr-auto ml-auto text-center" style="max-width: 400px;">
+                <p class="grey-text  me-auto ms-auto text-center" style="max-width: 400px;">
                   {{ 'status.message_code_scan_instructions' | translate }}
                 </p>
               </div>
@@ -63,12 +61,12 @@
                   </p>
                 </div>
               </div>
-              <div class="text-right">
-                <button *ngIf="$settings.env.serviceMode" class="btn btn-primary waves-effect mr-0"
+              <div class="text-end">
+                <button *ngIf="$settings.env.serviceMode" class="btn btn-primary waves-effect me-0"
                   [disabled]="restartInProgress[item._bridge?.username]"
                   ngbTooltip="{{'menu.tooltip_restart' | translate}}" container="body" openDelay="150"
                   (click)="restartChildBridge(item._bridge?.username)">
-                  <i class="fas fa-fw fa-fw nav-menu-icon" [ngClass]="{
+                  <i class="fas fa-fw nav-menu-icon" [ngClass]="{
                     'fa-power-off': !restartInProgress[item._bridge?.username],
                     'fa-spinner fa-pulse': restartInProgress[item._bridge?.username]
                   }"></i>
@@ -97,25 +95,25 @@
     </div>
   </div>
   <div class="modal-footer justify-content-between">
-    <div class="text-left">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.close('Dismiss')">
+    <div class="text-start">
+      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="activeModal.close('Dismiss')">
         {{ 'form.button_close' | translate }}
       </button>
     </div>
     <div class="d-none d-lg-block text-center" *ngIf="configBlocks.length">
       <a *ngIf="plugin.links.npm" [href]="plugin.links.npm" target="_blank" rel="noopener noreferrer"
-         class="pr-3 manage-plugin-config-external-icons dark-mode-highlight"><i class="fab fa-fw fa-npm"></i></a>
+         class="pe-3 manage-plugin-config-external-icons dark-mode-highlight"><i class="fab fa-fw fa-npm"></i></a>
       <a *ngIf="plugin.links.homepage" [href]="plugin.links.homepage" target="_blank" rel="noopener noreferrer"
          class="manage-plugin-config-external-icons dark-mode-highlight">
         <i [ngClass]="plugin.links.homepage | externalLinkIcon"></i>
       </a>
     </div>
     <div class="text-center" *ngIf="!configBlocks.length"></div>
-    <div class="text-right">
+    <div class="text-end">
       <button type="button" class="btn btn-primary" (click)="save()" [disabled]="saveInProgress" *ngIf="configBlocks.length">
         {{ 'form.button_save' | translate }} <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
       </button>
-      <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="openPluginConfig()" *ngIf="!configBlocks.length">
+      <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="openPluginConfig()" *ngIf="!configBlocks.length">
         {{ 'plugins.button_settings' | translate }}
       </button>
     </div>

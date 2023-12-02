@@ -11,6 +11,5 @@ export class SmokesensorComponent implements OnInit {
 
   constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 }
