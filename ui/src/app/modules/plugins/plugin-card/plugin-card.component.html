@@ -46,7 +46,7 @@
               </a>
               <i class="far fa-fw fa-pause-circle fa-lg red-text" *ngIf="plugin.installedVersion && plugin.disabled"
                 [ngbTooltip]="'plugins.status_disabled' | translate" container="body"></i>
-              <span *ngIf="plugin.installedVersion"> {{ 'plugins.status_installed' | translate }}: </span>
+              <span *ngIf="plugin.installedVersion" class="d-none d-md-inline"> {{ 'plugins.status_installed' | translate }}: </span>
               v{{ plugin.installedVersion || plugin.latestVersion }}
               <span *ngIf="!plugin.installedVersion && plugin.lastUpdated">({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
             </p>
