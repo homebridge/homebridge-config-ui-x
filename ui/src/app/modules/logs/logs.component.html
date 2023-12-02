@@ -3,14 +3,12 @@
     <h3 class="primary-text m-0">{{ 'menu.linux.label_logs' | translate }}</h3>
   </div>
   <div class="col-6 text-right">
-    <div class="btn-group" role="group">
-      <button class="btn btn-elegant my-0" (click)="downloadLogFile()">
-        <i class="fas fa-fw fa-download"></i>
-      </button>
-      <button class="btn btn-elegant my-0 mr-0" (click)="truncateLogFile()">
-        <i class="fas fa-fw fa-trash-alt"></i>
-      </button>
-    </div>
+    <button class="btn btn-elegant my-0" (click)="downloadLogFile()">
+      <i class="fas fa-fw fa-download"></i>
+    </button>
+    <button class="btn btn-elegant my-0 mr-0" (click)="truncateLogFile()">
+      <i class="fas fa-fw fa-trash-alt"></i>
+    </button>
   </div>
 </div>
 
