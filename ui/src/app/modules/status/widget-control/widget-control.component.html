@@ -2,9 +2,7 @@
   <div class="modal-header">
     <h5 class="modal-title" [translate]="'status.widget.title_manage_widget'">Manage Widget</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-      (click)="activeModal.dismiss('Dismiss')">
-
-    </button>
+      (click)="activeModal.dismiss('Dismiss')"></button>
   </div>
   <div class="modal-body" [ngSwitch]="widget.component">
     <div *ngSwitchCase="'WeatherWidgetComponent'">
@@ -144,7 +142,7 @@
     </div>
     <div class="text-center"></div>
     <div class="text-end">
-      <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="activeModal.close('remove')">
+      <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="activeModal.close('remove')">
         {{ 'form.button_remove' | translate }}
       </button>
     </div>

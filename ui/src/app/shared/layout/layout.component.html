@@ -16,7 +16,7 @@
             [ngClass]="{ 'fa-beat': rPiCurrentlyUnderVoltage }"></i>
         </a>
       </div>
-      <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+      <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="toggler-icon top-bar"></span>
         <span class="toggler-icon middle-bar"></span>
@@ -49,7 +49,7 @@
           <li class="nav-item" *ngIf="$auth.user.admin">
             <div class="dropdown">
               <button class="btn btn-link dropdown-toggle px-0 mx-0 text-decoration-none" type="button"
-                id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                 [translate]="'plugins.button_settings'">
                 <i class="fa fa-fw fa-cog pe-2"></i>Homebridge Settings<i class="fa fa-fw fa-caret-down"></i>
               </button>
@@ -142,7 +142,7 @@
             <i class="fa fa-fw fa-cog"></i>
             <span class="link_name">{{ 'plugins.button_settings' | translate }}</span>
           </a>
-          <i class="fa fa-fw fa-chevron-down arrow" data-toggle="collapse" data-target=".li-link1"></i>
+          <i class="fa fa-fw fa-chevron-down arrow" data-bs-toggle="collapse" data-bs-target=".li-link1"></i>
         </div>
         <ul class="sub-menu">
           <li><a class="link_name" routerLink="/settings" [translate]="'plugins.button_settings'">Settings</a></li>
@@ -200,7 +200,7 @@
       </li>
       <li>
         <div class="icon-link" style="position: fixed; bottom:0;">
-          <a href="javascript:void(0)" data-toggle="collapse" data-target=".sidebar,#chevron" aria-expanded="false" aria-controls=".sidebar">
+          <a href="javascript:void(0)" data-bs-toggle="collapse" data-bs-target=".sidebar,#chevron" aria-expanded="false" aria-controls=".sidebar">
             <i id="chevron" class="fa fa-fw fa-chevron-right"></i>
           </a>
         </div>

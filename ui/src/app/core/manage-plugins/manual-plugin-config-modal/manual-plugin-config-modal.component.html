@@ -4,9 +4,8 @@
       {{ 'plugins.settings.title_settings' | translate }}:
       {{ plugin.displayName || plugin.name }}
     </h5>
-    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="activeModal.close()">
-
-    </button>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+      (click)="activeModal.close()"></button>
   </div>
   <div class="modal-body">
     <div *ngIf="loading" class="text-center primary-text">

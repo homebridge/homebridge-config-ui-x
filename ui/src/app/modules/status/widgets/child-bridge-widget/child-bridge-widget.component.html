@@ -10,7 +10,7 @@
             'fa-bridge-circle-check green-text': bridge.status === 'ok',
             'fa-bridge-circle-exclamation text-warning': bridge.status === 'pending',
             'fa-bridge-circle-xmark red-text': bridge.status === 'down'
-        }"></i>
+          }"></i>
           {{ bridge.name | replace:'Homebridge':'' | replace:'homebridge':'' }}
         </div>
         <div style="min-width: 48px;" class="grey-text text-end">

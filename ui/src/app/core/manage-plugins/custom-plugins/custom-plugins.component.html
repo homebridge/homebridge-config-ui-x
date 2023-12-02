@@ -5,9 +5,7 @@
       {{ plugin.displayName || plugin.name }}
     </h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-      (click)="activeModal.dismiss('Dismiss')">
-
-    </button>
+      (click)="activeModal.dismiss('Dismiss')"></button>
   </div>
 
   <div class="modal-body text-center" [hidden]="!justSavedAndExited">
