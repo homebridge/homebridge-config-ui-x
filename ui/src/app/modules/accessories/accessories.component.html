@@ -5,16 +5,20 @@
     </div>
     <div class="col-sm-6 text-right d-none d-sm-block">
       <div class="btn-group" role="group">
-        <button type="button" class="btn btn-elegant status-button my-0" [disabled]="!isMobile" (click)="toggleLayoutLock()">
+        <button type="button" class="btn btn-elegant status-button my-0" [disabled]="!isMobile" (click)="toggleLayoutLock()"
+          container="body" [ngbTooltip]="'form.button_unlock' | translate">
           <i class="fas fa-fw fa-unlock"></i>
         </button>
-        <button type="button" class="btn btn-elegant status-button my-0" [disabled]="isMobile" (click)="toggleLayoutLock()">
+        <button type="button" class="btn btn-elegant status-button my-0" [disabled]="isMobile" (click)="toggleLayoutLock()"
+          container="body" [ngbTooltip]="'form.button_lock' | translate">
           <i class="fas fa-fw fa-lock"></i>
         </button>
-        <button type="button" class="btn btn-elegant status-button my-0" [disabled]="isMobile || !hideHidden" (click)="hideHidden = !hideHidden">
+        <button type="button" class="btn btn-elegant status-button my-0" [disabled]="isMobile || !hideHidden" (click)="hideHidden = !hideHidden"
+          container="body" [ngbTooltip]="'accessories.button_toggle_hidden' | translate">
           <i class="fas fa-fw fa-eye"></i>
         </button>
-        <button type="button" class="btn btn-elegant status-button my-0" [disabled]="isMobile || hideHidden" (click)="hideHidden = !hideHidden">
+        <button type="button" class="btn btn-elegant status-button my-0" [disabled]="isMobile || hideHidden" (click)="hideHidden = !hideHidden"
+          container="body" [ngbTooltip]="'accessories.button_toggle_hidden' | translate">
           <i class="fas fa-fw fa-eye-slash"></i>
         </button>
         <button type="button" class="btn btn-elegant status-button my-0" [disabled]="isMobile" (click)="addRoom()">
