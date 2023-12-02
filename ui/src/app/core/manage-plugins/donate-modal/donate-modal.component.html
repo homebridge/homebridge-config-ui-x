@@ -10,10 +10,10 @@
       <i class="fas fa-fw fa-heart" style="font-size: 75px;"></i>
     </div>
     <p class="w-100 text-center">
-      As more users install their plugins through the Homebridge UI, they are less likely to visit the projects' GitHub page where the ways to support a developer would typically be displayed.
+      {{ 'plugins.donate.message_1' | translate }}
     </p>
     <p class="w-100 text-center">
-      Adding donation links directly in the Homebridge UI ensures users know how to support Homebridge developers if they wish to do so.
+      {{ 'plugins.donate.message_2' | translate }}
     </p>
     <ul class="list-group">
       <li class="list-group-item" *ngFor="let option of fundingOptions">
