@@ -12,6 +12,23 @@ body {
   background-color: #f4f4f4;
 }
 
+a, a:hover, a:focus {
+text-decoration: none !important;
+--bs-link-decoration: none !important;
+}
+
+.grey-text, .grey-text a {
+color: #999999 !important;
+}
+
+.pink-text, .pink-text a {
+color: #ff20db !important;
+}
+
+.green-text, .green-text a {
+color: #00c128 !important
+}
+
 @media (min-width: 992px) {
   .body-top-padding {
     padding-top: 0px !important;
