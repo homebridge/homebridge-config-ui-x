@@ -13,14 +13,18 @@
           container="body" [ngbTooltip]="'form.button_lock' | translate">
           <i class="fas fa-fw fa-lock"></i>
         </button>
+      </div>
+      <div class="btn-group" role="group">
         <button type="button" class="btn btn-elegant status-button my-0" [disabled]="isMobile || !hideHidden" (click)="hideHidden = !hideHidden"
-          container="body" [ngbTooltip]="'accessories.button_toggle_hidden' | translate">
+          container="body" [ngbTooltip]="'accessories.button_hidden_show' | translate">
           <i class="fas fa-fw fa-eye"></i>
         </button>
         <button type="button" class="btn btn-elegant status-button my-0" [disabled]="isMobile || hideHidden" (click)="hideHidden = !hideHidden"
-          container="body" [ngbTooltip]="'accessories.button_toggle_hidden' | translate">
+          container="body" [ngbTooltip]="'accessories.button_hidden_hide' | translate">
           <i class="fas fa-fw fa-eye-slash"></i>
         </button>
+      </div>
+      <div class="btn-group" role="group">
         <button type="button" class="btn btn-elegant status-button my-0" [disabled]="isMobile" (click)="addRoom()">
           <i class="fas fa-fw fa-plus"></i>
         </button>
@@ -72,20 +76,25 @@
 
 <div *ngIf="!$settings.env.enableAccessories">
   <div class="row">
-    <div class="col-md-12 text-center">
-      <h3 class="primary-text" [translate]="'accessories.title_accessory_control_disabled'">Homebridge Accessory Control
-        Disabled</h3>
-      <div>
-        <p [innerHTML]="'accessories.message_must_use_insecure_mode' | translate">To control your accessories you must
-          be running Homebridge in <strong>insecure</strong> mode.</p>
-        <p>
-          <span [translate]="'accessories.message_please_see'">Please see</span>
-          <a target="_blank" rel="noopener noreferrer"
-            href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Enabling-Accessory-Control">
-            https://github.com/homebridge/homebridge-config-ui-x/wiki/Enabling-Accessory-Control
-          </a>
-          <span [translate]="'accessories.message_for_more_information'">for more information.</span>
-        </p>
+    <div class="col-12">
+      <h3 class="primary-text m-0 mb-3">{{'accessories.title_accessories' | translate}}</h3>
+    </div>
+    <div class="col-12 text-center">
+      <div class="alert alert-danger p-4" role="alert">
+        <h4 class="primary-text mb-3 mt-0" [translate]="'accessories.title_accessory_control_disabled'">Homebridge Accessory Control
+          Disabled</h4>
+        <div>
+          <p [innerHTML]="'accessories.message_must_use_insecure_mode' | translate">To control your accessories you must
+            be running Homebridge in <strong>insecure</strong> mode.</p>
+          <p class="mb-0">
+            <span [translate]="'accessories.message_please_see'">Please see</span>
+            <a target="_blank" rel="noopener noreferrer"
+              href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Enabling-Accessory-Control">
+              https://github.com/homebridge/homebridge-config-ui-x/wiki/Enabling-Accessory-Control
+            </a>
+            <span [translate]="'accessories.message_for_more_information'">for more information.</span>
+          </p>
+        </div>
       </div>
     </div>
   </div>

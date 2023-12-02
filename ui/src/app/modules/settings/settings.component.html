@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-between">
   <h3 class="primary-text m-0">
-    <span class="d-none d-md-inline">Homebridge</span> Settings
+    {{ 'menu.label_settings_hb' | translate }}
   </h3>
   <button class="btn btn-primary waves-effect m-0" *ngIf="saved" routerLink="/restart"
     [translate]="'platform.docker.settings.button_restart_required'">Restart Required</button>
@@ -28,7 +28,7 @@
           </span>
         </span>
       </span>
-      <button class="btn btn-primary waves-effect m-0" [translate]="'reset.title_clear_cached_accessories'"
+      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;" [translate]="'reset.title_clear_cached_accessories'"
         (click)="selectNetworkInterfaces()" [disabled]="!availableNetworkAdapters.length"
         [attr.aria-label]="'settings.network.title_network_interfaces' | translate">
         <i class="fas fa-fw fa-cog" [ngClass]="{ 'fa-pulse': !availableNetworkAdapters.length }"></i>
@@ -61,24 +61,24 @@
 
   <ul class="list-group">
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span>Homebridge Debug Mode <code>-D</code></span>
-      <input type="checkbox" class="rendux-input" id="homebridgeDebugMode" formControlName="HOMEBRIDGE_DEBUG"
+      <span>{{ 'settings.startup.debug' | translate }} <code>-D</code></span>
+      <input type="checkbox" class="rendux-input ml-3" style="min-width: 45px;" id="homebridgeDebugMode" formControlName="HOMEBRIDGE_DEBUG"
         aria-label="Debug Mode">
       <label for="homebridgeDebugMode" class="rendux-label"></label>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span>
-        Homebridge "Insecure" Mode
-        <span class="d-none d-md-inline"> / Enable Accessory Control </span>
+        {{ 'settings.startup.insecure_1' | translate }}
+        <span class="d-none d-md-inline"> / {{ 'settings.startup.insecure_2' | translate }} </span>
         <code>-I</code>
       </span>
-      <input type="checkbox" class="rendux-input" id="homebridgeInsecureMode" formControlName="HOMEBRIDGE_INSECURE"
+      <input type="checkbox" class="rendux-input ml-3" style="min-width: 45px;" id="homebridgeInsecureMode" formControlName="HOMEBRIDGE_INSECURE"
         aria-label="Insecure Mode">
       <label for="homebridgeInsecureMode" class="rendux-label"></label>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="$settings.env.serviceMode">
-      <span>Keep accessories of uninstalled plugins <code>-K</code></span>
-      <input type="checkbox" class="rendux-input" id="homebridgeKeepOrphans" formControlName="HOMEBRIDGE_KEEP_ORPHANS"
+      <span>{{ 'settings.startup.keep_accessories' | translate }} <code>-K</code></span>
+      <input type="checkbox" class="rendux-input ml-3" style="min-width: 45px;" id="homebridgeKeepOrphans" formControlName="HOMEBRIDGE_KEEP_ORPHANS"
         aria-label="Keep accessories of uninstall plugins">
       <label for="homebridgeKeepOrphans" class="rendux-label"></label>
     </li>
@@ -92,7 +92,7 @@
         <span>
           DEBUG
           <a href="javascript:void(0)"
-            ngbTooltip="Some plugins require you to set the DEBUG environment variable to enable debug level logging.">
+            ngbTooltip="{{ 'settings.service.debug_tooltip' | translate }}">
             <i class="fas fa-fw fa-info-circle primary-text"></i>
           </a>
         </span>
@@ -104,7 +104,7 @@
         <span>
           NODE_OPTIONS
           <a href="https://nodejs.org/api/cli.html" target="_blank"
-            ngbTooltip="Node.js runtime options for the Homebridge process. This should be kept blank unless you know what you are doing.">
+            ngbTooltip="{{ 'settings.service.node_tooltip' | translate }}">
             <i class="fas fa-fw fa-info-circle primary-text"></i>
           </a>
         </span>
@@ -134,7 +134,7 @@
           <i class="fas fa-fw fa-info-circle primary-text"></i>
         </a>
       </span>
-      <button class="btn btn-primary waves-effect m-0" (click)="unpairAccessory()"
+      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;" (click)="unpairAccessory()"
         [attr.aria-label]="'reset.title_unpair_bridges_cameras_tv_external_accessories' | translate">
         <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
       </button>
@@ -146,7 +146,7 @@
           <i class="fas fa-fw fa-info-circle primary-text"></i>
         </a>
       </span>
-      <button class="btn btn-primary waves-effect m-0" (click)="resetHomebridgeState()"
+      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;" (click)="resetHomebridgeState()"
         [attr.aria-label]="'reset.title_reset_homebridge_accessory' | translate">
         <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
       </button>
@@ -171,8 +171,8 @@
           <i class="fas fa-fw fa-info-circle primary-text"></i>
         </a>
       </span>
-      <button class="btn btn-primary waves-effect m-0" [translate]="'reset.title_clear_cached_accessories_single'"
-        (click)="removeSingleCachedAccessories()"
+      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;"
+        [translate]="'reset.title_clear_cached_accessories_single'" (click)="removeSingleCachedAccessories()"
         [attr.aria-label]="'reset.title_clear_cached_accessories_single' | translate">
         <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
       </button>
@@ -184,8 +184,9 @@
           <i class="fas fa-fw fa-info-circle primary-text"></i>
         </a>
       </span>
-      <button class="btn btn-primary waves-effect m-0" [translate]="'reset.title_clear_cached_accessories'"
-        (click)="removeAllCachedAccessories()" [attr.aria-label]="'reset.title_clear_cached_accessories' | translate">
+      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;"
+        [translate]="'reset.title_clear_cached_accessories'" (click)="removeAllCachedAccessories()"
+        [attr.aria-label]="'reset.title_clear_cached_accessories' | translate">
         <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
       </button>
     </li>
@@ -201,10 +202,9 @@
           <i class="fas fa-fw fa-info-circle primary-text"></i>
         </a>
       </span>
-      <button class="btn btn-primary waves-effect m-0" (click)="forceRestartService()"
-        [attr.aria-label]="'reset.title_force_restart_hb_service' | translate">
-        <i class="fas fa-fw fa-sync"></i>
-      </button>
+      <span class="red-text text-right">
+        Moved to Main Menu &rarr; {{ 'menu.restart.title' | translate }} &rarr; {{ 'menu.hbrestart.confirm_service_button' | translate }}
+      </span>
     </li>
   </ul>
 </div>

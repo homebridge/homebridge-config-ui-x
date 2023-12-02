@@ -5,19 +5,17 @@
       <h3 class="primary-text m-0">{{ 'config.title_config' | translate }}</h3>
     </div>
     <div class="col-6 text-right">
-      <div class="btn-group" role="group">
-        <button class="btn btn-danger waves-effect my-0" (click)="onCancelRestore()" [disabled]="saveInProgress"
-          *ngIf="originalConfig" container="body" ngbTooltip="{{ 'form.button_cancel' | translate }}"><i class="fas fa-fw fa-times"></i></button>
-        <button class="btn btn-elegant waves-effect my-0" (click)="onRestore()" container="body"
-          ngbTooltip="{{ 'config.button_restore' | translate }}"><i class="fas fa-fw fa-history"></i></button>
-        <button class="btn btn-elegant waves-effect my-0" (click)="onExportConfig()" container="body"
-          ngbTooltip="{{ 'logs.label_download' | translate }}"><i class="fas fa-fw fa-download"></i></button>
-        <button class="btn btn-primary waves-effect my-0 mr-0" (click)="onSave()" [disabled]="saveInProgress" container="body"
-          ngbTooltip="{{ 'form.button_save' | translate }}">
-          <i *ngIf="!saveInProgress" class="fas fa-fw fa-floppy-disk"></i>
-          <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
-        </button>
-      </div>
+      <button class="btn btn-danger waves-effect my-0" (click)="onCancelRestore()" [disabled]="saveInProgress"
+        *ngIf="originalConfig" container="body" ngbTooltip="{{ 'form.button_cancel' | translate }}"><i class="fas fa-fw fa-times"></i></button>
+      <button class="btn btn-elegant waves-effect my-0" (click)="onRestore()" container="body"
+        ngbTooltip="{{ 'config.button_restore' | translate }}"><i class="fas fa-fw fa-history"></i></button>
+      <button class="btn btn-elegant waves-effect my-0" (click)="onExportConfig()" container="body"
+        ngbTooltip="{{ 'logs.label_download' | translate }}"><i class="fas fa-fw fa-download"></i></button>
+      <button class="btn btn-primary waves-effect my-0 mr-0" (click)="onSave()" [disabled]="saveInProgress" container="body"
+        ngbTooltip="{{ 'form.button_save' | translate }}">
+        <i *ngIf="!saveInProgress" class="fas fa-fw fa-floppy-disk"></i>
+        <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
+      </button>
     </div>
   </div>
 
