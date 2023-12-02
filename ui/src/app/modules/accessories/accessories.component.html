@@ -3,22 +3,26 @@
     <div class="col-sm-6">
       <h3 class="primary-text m-0">{{'accessories.title_accessories' | translate}}</h3>
     </div>
-    <div class="col-sm-6 text-end d-none d-sm-block">
-      <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
-        <div class="btn-group" role="group">
-          <button id="accessory-dropdown-menu" type="button" class="btn btn-primary dropdown-toggle m-0"
-            data-bs-toggle="dropdown">
-            <i class="fas fa-fw fa-cog"></i>
-          </button>
-          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="accessory-dropdown-menu">
-            <a href="javascript:void(0)" class="dropdown-item" (click)="addRoom()"
-              [translate]="'accessories.button_add_room'">Add Room</a>
-            <a href="javascript:void(0)" class="dropdown-item" (click)="hideHidden = !hideHidden"
-              [translate]="'accessories.button_toggle_hidden'">Toggle Hidden</a>
-            <a href="javascript:void(0)" class="dropdown-item" (click)="toggleLayoutLock()"
-              [translate]="'accessories.button_toggle_layout_lock'">Toggle Layout Lock</a>
-          </div>
-        </div>
+      <div class="btn-group" role="group">
+        <button type="button" class="btn btn-elegant status-button my-0" [disabled]="!isMobile" (click)="toggleLayoutLock()"
+          container="body" [ngbTooltip]="'form.button_unlock' | translate">
+          <i class="fas fa-fw fa-unlock"></i>
+        </button>
+        <button type="button" class="btn btn-elegant status-button my-0" [disabled]="isMobile" (click)="toggleLayoutLock()"
+          container="body" [ngbTooltip]="'form.button_lock' | translate">
+          <i class="fas fa-fw fa-lock"></i>
+        </button>
+        <button type="button" class="btn btn-elegant status-button my-0" [disabled]="isMobile || !hideHidden" (click)="hideHidden = !hideHidden"
+          container="body" [ngbTooltip]="'accessories.button_toggle_hidden' | translate">
+          <i class="fas fa-fw fa-eye"></i>
+        </button>
+        <button type="button" class="btn btn-elegant status-button my-0" [disabled]="isMobile || hideHidden" (click)="hideHidden = !hideHidden"
+          container="body" [ngbTooltip]="'accessories.button_toggle_hidden' | translate">
+          <i class="fas fa-fw fa-eye-slash"></i>
+        </button>
+        <button type="button" class="btn btn-elegant status-button my-0" [disabled]="isMobile" (click)="addRoom()">
+          <i class="fas fa-fw fa-plus"></i>
+        </button>
       </div>
     </div>
   </div>

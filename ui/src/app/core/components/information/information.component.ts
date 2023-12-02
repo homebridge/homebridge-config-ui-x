@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-  selector: 'app-confirm',
+  selector: 'app-information',
   templateUrl: './information.component.html',
   styleUrls: ['./information.component.scss'],
 })

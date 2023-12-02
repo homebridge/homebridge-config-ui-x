@@ -24,14 +24,7 @@
         {{ 'form.button_close' | translate }}
       </button>
     </div>
-    <div class="text-center">
-      <button *ngIf="!isLayoutUnlocked" type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="doLockLayout()">
-        {{ 'form.button_lock' | translate }}
-      </button>
-      <button *ngIf="isLayoutUnlocked" type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="doUnlockLayout()">
-        {{ 'form.button_unlock' | translate }}
-      </button>
-    </div>
+    <div class="text-center"></div>
     <div class="text-end">
       <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="doResetLayout()">
         {{ 'form.button_reset' | translate }}
