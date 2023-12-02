@@ -4,10 +4,12 @@
   </div>
   <div class="col-6 text-right d-none d-sm-block">
     <div class="btn-group" role="group" *ngIf="consoleStatus === 'up' && $auth.user.admin">
-      <button type="button" class="btn btn-elegant status-button my-0" [disabled]="options.draggable.enabled" (click)="unlockLayout()">
+      <button type="button" class="btn btn-elegant status-button my-0" [disabled]="options.draggable.enabled" (click)="unlockLayout()"
+        container="body" [ngbTooltip]="'form.button_unlock' | translate">
         <i class="fas fa-fw fa-unlock"></i>
       </button>
-      <button type="button" class="btn btn-elegant status-button my-0" [disabled]="!options.draggable.enabled" (click)="lockLayout()">
+      <button type="button" class="btn btn-elegant status-button my-0" [disabled]="!options.draggable.enabled" (click)="lockLayout()"
+        container="body" [ngbTooltip]="'form.button_lock' | translate">
         <i class="fas fa-fw fa-lock"></i>
       </button>
       <button type="button" class="btn btn-elegant status-button my-0 mr-0" [disabled]="!options.draggable.enabled" (click)="addWidget()">
@@ -25,7 +27,8 @@
         <gridster-item *ngIf="!(item.hideOnMobile && page.mobile)" class="widget-item" [item]="item"
           [id]="item.component">
           <div class="gridster-item-content">
-            <i class="fas fa-fw fa-cog widget-control-button primary-text" (click)="manageWidget(item)"></i>
+            <i *ngIf="options.draggable.enabled" class="fas fa-fw fa-cog widget-control-button primary-text"
+              (click)="manageWidget(item)"></i>
           </div>
           <app-widgets [widget]="item" class="d-flex h-100 w-100"></app-widgets>
         </gridster-item>
