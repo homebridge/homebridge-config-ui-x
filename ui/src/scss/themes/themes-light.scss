@@ -15,10 +15,6 @@
       color: $primary;
     }
 
-    .notif-dot {
-      background-color: $primary;
-    }
-
     .btn-primary,
     .btn-default {
       @extend .btn-#{$name} !optional;
@@ -38,6 +34,10 @@
           }
         }
       }
+    }
+
+    .card-text-defined {
+      color: #000000;
     }
 
     .icon-button {

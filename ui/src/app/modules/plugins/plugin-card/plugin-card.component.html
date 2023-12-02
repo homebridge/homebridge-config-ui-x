@@ -3,25 +3,24 @@
   <div class="d-flex flex-row justify-content-between">
     <div class="d-flex flex-column mr-3 align-items-center justify-content-between">
       <img [src]="plugin.icon" (error)="handleIconError()" alt="" class="plugin-icon-card mb-3">
-      <a href="javascript:void(0)" (click)="pluginInfoModal(plugin)">
-        <i class="fas fa-fw fa-info-circle fa-lg grey-text"></i>
-      </a>
     </div>
-    <div class="d-flex flex-column justify-content-between w-100 text-truncate">
-      <h5 class="card-title mb-2">
-        {{ plugin.displayName || ((plugin.name.charAt(0) === '@' ? plugin.name.split('/')[1] : plugin.name) |
+    <div class="d-flex flex-column justify-content-between" style="width: calc(100% - 80px)">
+      <h5 class="card-title mb-2 text-truncate">
+        <a href="javascript:void(0)" (click)="pluginInfoModal(plugin)">
+          <i class="fas fa-fw fa-info-circle grey-text fa-sm mr-1"></i>
+        </a>{{ plugin.displayName || ((plugin.name.charAt(0) === '@' ? plugin.name.split('/')[1] : plugin.name) |
         replace:'-':' ' | titlecase) }}
       </h5>
       <div class="d-flex flex-row align-items-end">
-        <div class="d-flex flex-column w-100 text-truncate">
-          <p class="card-text mb-2">
+        <div class="d-flex flex-column w-100">
+          <p class="card-text mb-2 text-truncate">
             <a href="javascript:void(0)" class="card-link pink-text text-decoration-none" *ngIf="plugin.verifiedPlugin && plugin.funding"
                (click)="openFundingModal(plugin)" ngbTooltip="{{ 'plugins.donate.button_donate' | translate }}">
               <i class="fas fa-fw fa-heart fa-lg"></i>
             </a>
             <span *ngIf="!plugin.verifiedPlugin || !plugin.funding" ngbTooltip="@{{ plugin.author }}">
-            <i class="fas fa-fw fa-heart fa-lg" style="opacity: 0.5;"></i>
-          </span>
+              <i class="fas fa-fw fa-heart fa-lg" style="opacity: 0.5;"></i>
+            </span>
             {{ plugin.name }}
           </p>
           <p class="card-text mb-2" *ngIf="plugin.verifiedPlugin">
@@ -36,7 +35,7 @@
           </p>
           <div class="d-flex flex-row">
             <p class="card-text mb-0">
-              <i class="far fa-fw fa-circle-check fa-lg" *ngIf="plugin.installedVersion && !plugin.updateAvailable && !plugin.betaUpdateAvailable && !plugin.disabled"
+              <i class="far fa-fw fa-circle-check fa-lg card-text-defined" *ngIf="plugin.installedVersion && !plugin.updateAvailable && !plugin.betaUpdateAvailable && !plugin.disabled"
                 [ngbTooltip]="'plugins.status_installed' | translate" container="body"></i>
               <i class="far fa-fw fa-circle fa-lg grey-text" *ngIf="!plugin.installedVersion"
                 [ngbTooltip]="'plugins.status_not_installed' | translate" container="body"></i>
@@ -45,7 +44,7 @@
                 [ngbTooltip]="'plugins.status_update_available' | translate" container="body">
                 <i class="far fa-fw fa-arrow-alt-circle-up fa-lg primary-text"></i>
               </a>
-              <i class="far fa-fw fa-times-circle fa-lg red-text" *ngIf="plugin.installedVersion && plugin.disabled"
+              <i class="far fa-fw fa-pause-circle fa-lg red-text" *ngIf="plugin.installedVersion && plugin.disabled"
                 [ngbTooltip]="'plugins.status_disabled' | translate" container="body"></i>
               <span *ngIf="plugin.installedVersion"> {{ 'plugins.status_installed' | translate }}: </span>
               v{{ plugin.installedVersion || plugin.latestVersion }}
@@ -53,10 +52,10 @@
             </p>
             <div class="ml-auto">
               <ng-container *ngIf="hasChildBridges">
-                <i class="fas fa-fw fa-circle fa-lg ml-3" [ngClass]="{
-                  'green-text': childBridgeStatus === 'ok',
-                  'text-warning': childBridgeStatus === 'pending',
-                  'red-text': childBridgeStatus === 'down'
+                <i class="fas fa-fw fa-lg ml-3" [ngClass]="{
+                  'fa-bridge-circle-check green-text': childBridgeStatus === 'ok',
+                  'fa-bridge-circle-exclamation text-warning': childBridgeStatus === 'pending',
+                  'fa-bridge-circle-xmark red-text': childBridgeStatus === 'down'
                 }" [hidden]="childBridgeRestartInProgress"></i>
                 <i [hidden]="!childBridgeRestartInProgress" class="ml-3 grey-text fas fa-fw fa-spinner fa-pulse"></i>
               </ng-container>
