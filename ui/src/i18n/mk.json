@@ -251,7 +251,6 @@
   "plugins.settings.toast_restart_required": "Рестартирајте го Homebridge за промените да бидат рефлектирани.",
   "plugins.status_disabled": "Disabled",
   "plugins.status_installed": "Инсталиран",
-  "plugins.status_latest": "Latest",
   "plugins.status_not_installed": "Не е инсталиран",
   "plugins.status_update_available": "Ажурирање достапно",
   "plugins.toast_failed_to_load_plugins": "Грешка при вчитување плагини.",

@@ -251,7 +251,6 @@
   "plugins.settings.toast_restart_required": "Za uveljavitev sprememb znova zaženite Homebridge.",
   "plugins.status_disabled": "Onemogočeno",
   "plugins.status_installed": "Nameščeno",
-  "plugins.status_latest": "Latest",
   "plugins.status_not_installed": "Ni nameščeno",
   "plugins.status_update_available": "Posodobitev je na voljo",
   "plugins.toast_failed_to_load_plugins": "Vtičnikov ni bilo mogoče naložiti",

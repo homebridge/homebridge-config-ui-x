@@ -251,7 +251,6 @@
   "plugins.settings.toast_restart_required": "Değişiklikleri uygulamak için Homebridge'i yeniden başlatın.",
   "plugins.status_disabled": "Devre Dışı Bırakıldı",
   "plugins.status_installed": "Yüklü",
-  "plugins.status_latest": "Latest",
   "plugins.status_not_installed": "Yüklü Değil",
   "plugins.status_update_available": "Güncelleme Mevcut",
   "plugins.toast_failed_to_load_plugins": "Eklentiler yüklenemedi",

@@ -251,7 +251,6 @@
   "plugins.settings.toast_restart_required": "Перезавантажте Homebridge, щоб зміни вступили в силу.",
   "plugins.status_disabled": "Вимкнено",
   "plugins.status_installed": "Встановлено",
-  "plugins.status_latest": "Latest",
   "plugins.status_not_installed": "Не встановлено",
   "plugins.status_update_available": "Доступне оновлення",
   "plugins.toast_failed_to_load_plugins": "Не вдалося завантажити плагіни",

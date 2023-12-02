@@ -251,7 +251,6 @@
   "plugins.settings.toast_restart_required": "변경사항을 반영하려면 Homebridge 재시작해야합니다.",
   "plugins.status_disabled": "Disabled",
   "plugins.status_installed": "설치됨",
-  "plugins.status_latest": "Latest",
   "plugins.status_not_installed": "설치 안됨",
   "plugins.status_update_available": "업데이트 가능",
   "plugins.toast_failed_to_load_plugins": "플러그인 로드 실패",

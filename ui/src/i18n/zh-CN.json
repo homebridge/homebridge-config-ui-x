@@ -251,7 +251,6 @@
   "plugins.settings.toast_restart_required": "重启 Homebridge 以应用更改。",
   "plugins.status_disabled": "Disabled",
   "plugins.status_installed": "已安装",
-  "plugins.status_latest": "Latest",
   "plugins.status_not_installed": "未安装",
   "plugins.status_update_available": "可更新",
   "plugins.toast_failed_to_load_plugins": "载入插件失败",

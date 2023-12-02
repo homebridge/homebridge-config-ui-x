@@ -251,7 +251,6 @@
   "plugins.settings.toast_restart_required": "รีสตาร์ท Homebridge เพื่อใช้การเปลี่ยนแปลง",
   "plugins.status_disabled": "ปิดการใช้งาน",
   "plugins.status_installed": "ติดตั้งแล้ว",
-  "plugins.status_latest": "Latest",
   "plugins.status_not_installed": "ไม่ได้ติดตั้ง",
   "plugins.status_update_available": "มีการอัปเดต",
   "plugins.toast_failed_to_load_plugins": "โหลดปลั๊กอินไม่สำเร็จ",

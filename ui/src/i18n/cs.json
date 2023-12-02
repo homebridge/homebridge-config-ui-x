@@ -251,7 +251,6 @@
   "plugins.settings.toast_restart_required": "Chcete-li použít změny, restartujte aplikaci Homebridge.",
   "plugins.status_disabled": "Zakázáno",
   "plugins.status_installed": "Instalováno",
-  "plugins.status_latest": "Latest",
   "plugins.status_not_installed": "Není instalován",
   "plugins.status_update_available": "Aktualizace k dispozici",
   "plugins.toast_failed_to_load_plugins": "Nepodařilo se načíst pluginy",

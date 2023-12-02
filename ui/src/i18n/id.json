@@ -251,7 +251,6 @@
   "plugins.settings.toast_restart_required": "Homebridge perlu diulang kembali untuk menerapkan perubahan.",
   "plugins.status_disabled": "Disabled",
   "plugins.status_installed": "Terpasang",
-  "plugins.status_latest": "Latest",
   "plugins.status_not_installed": "Tidak Terpasang",
   "plugins.status_update_available": "Pembaruan Tersedia",
   "plugins.toast_failed_to_load_plugins": "Gagal memuat plugin",

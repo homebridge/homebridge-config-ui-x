@@ -251,7 +251,6 @@
   "plugins.settings.toast_restart_required": "Restart Homebridge to apply the changes.",
   "plugins.status_disabled": "Disabled",
   "plugins.status_installed": "Installed",
-  "plugins.status_latest": "Latest",
   "plugins.status_not_installed": "Not Installed",
   "plugins.status_update_available": "Update Available",
   "plugins.toast_failed_to_load_plugins": "Failed to load plugins",

@@ -251,7 +251,6 @@
   "plugins.settings.toast_restart_required": "Zrestartuj serwer, aby zastosować zmiany.",
   "plugins.status_disabled": "Wyłączony",
   "plugins.status_installed": "Zainstalowane",
-  "plugins.status_latest": "Latest",
   "plugins.status_not_installed": "Niezainstalowane",
   "plugins.status_update_available": "Dostępna aktualizacja",
   "plugins.toast_failed_to_load_plugins": "Nie udało się załadować wtyczek",

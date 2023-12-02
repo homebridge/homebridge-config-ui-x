@@ -251,7 +251,6 @@
   "plugins.settings.toast_restart_required": "Рестартирай Homebridge за да влезнат в сила промените.",
   "plugins.status_disabled": "Disabled",
   "plugins.status_installed": "Инсталиран",
-  "plugins.status_latest": "Latest",
   "plugins.status_not_installed": "Не е инсталиран",
   "plugins.status_update_available": "Налична е актуализация",
   "plugins.toast_failed_to_load_plugins": "Неуспешно зареждане на добавките",

@@ -251,7 +251,6 @@
   "plugins.settings.toast_restart_required": "אתחל את הומברידג' כדי להחיל את השינויים",
   "plugins.status_disabled": "לא פעיל",
   "plugins.status_installed": "מותקן",
-  "plugins.status_latest": "Latest",
   "plugins.status_not_installed": "לא מותקן",
   "plugins.status_update_available": "עדכון זמין",
   "plugins.toast_failed_to_load_plugins": "כשל בהעלאת התוספים",
