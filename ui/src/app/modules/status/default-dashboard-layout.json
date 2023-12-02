@@ -1,10 +1,10 @@
 [
   {
     "x": 0,
-    "y": 9,
+    "y": 0,
     "component": "HomebridgeStatusWidgetComponent",
     "cols": 5,
-    "rows": 6,
+    "rows": 7,
     "mobileOrder": 10,
     "hidePort": true,
     "hideOnMobile": false
@@ -65,10 +65,10 @@
   },
   {
     "x": 0,
-    "y": 0,
+    "y": 7,
     "component": "HapQrcodeWidgetComponent",
     "cols": 5,
-    "rows": 9,
+    "rows": 8,
     "mobileOrder": 100,
     "hideOnMobile": false
   },
