@@ -38,6 +38,10 @@ color: #ffffff;
 background-color: #333333;
 }
 
+.table {
+--bs-table-color: initial;
+--bs-table-bg: initial;
+}
 
 
 @media (min-width: 992px) {
