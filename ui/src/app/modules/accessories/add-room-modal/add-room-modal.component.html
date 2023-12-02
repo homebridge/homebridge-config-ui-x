@@ -2,30 +2,28 @@
   <form>
     <div class="modal-header">
       <h5 class="modal-title" [translate]="'accessories.title_create_new_room'">Create New Room</h5>
-      <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-        (click)="activeModal.dismiss('Dismiss')">
-        <span aria-hidden="true">&times;</span>
-      </button>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+        (click)="activeModal.dismiss('Dismiss')"></button>
     </div>
     <div class="modal-body">
       <div class="alert alert-info" role="alert" [translate]="'accessories.message_rooms_not_appear_in_homekit'">
       </div>
       <div class="md-form">
         <i class="fas fa-fw fa-home prefix grey-text"></i>
-        <input type="text" id="form-name" autofocus class="form-control pl-0 pr-0" [(ngModel)]="roomName"
+        <input type="text" id="form-name" autofocus class="form-control ps-0 pe-0" [(ngModel)]="roomName"
           [ngModelOptions]="{standalone: true}" (keyup.enter)="activeModal.close(roomName)">
         <label for="form-name" [translate]="'accessories.label_room_name'">Room Name</label>
       </div>
     </div>
     <div class="modal-footer justify-content-between">
-      <div class="text-left">
-        <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
+      <div class="text-start">
+        <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
           {{ 'form.button_close' | translate }}
         </button>
       </div>
       <div class="text-center"></div>
-      <div class="text-right">
-        <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="activeModal.close(roomName)">
+      <div class="text-end">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="activeModal.close(roomName)">
           {{ 'form.button_save' | translate }}
         </button>
       </div>

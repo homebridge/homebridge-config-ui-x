@@ -21,7 +21,7 @@
               "src/favicon.ico",
               {
                 "glob": "**/*",
-                "input": "node_modules/ngx-monaco-editor/assets/monaco",
+                "input": "node_modules/monaco-editor",
                 "output": "./assets/monaco/"
               },
               {
@@ -33,12 +33,7 @@
             "styles": [
               "src/scss/styles.scss"
             ],
-            "scripts": [
-              "node_modules/jquery/dist/jquery.min.js",
-              "node_modules/popper.js/dist/umd/popper.min.js",
-              "node_modules/mdbootstrap/js/bootstrap.min.js",
-              "node_modules/mdbootstrap/js/mdb.js"
-            ],
+            "scripts": [],
             "allowedCommonJsDependencies": [
               "dragula",
               "file-saver",

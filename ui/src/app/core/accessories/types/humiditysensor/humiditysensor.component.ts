@@ -11,6 +11,5 @@ export class HumiditysensorComponent implements OnInit {
 
   constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 }

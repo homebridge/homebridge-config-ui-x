@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
@@ -13,6 +12,7 @@ import { PluginLogModalComponent } from '@/app/core/manage-plugins/plugin-log-mo
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { SettingsService } from '@/app/core/settings.service';
 import { WsService } from '@/app/core/ws.service';
+import { PluginInfoComponent } from '@/app/modules/plugins/plugin-card/plugin-info/plugin-info.component';
 
 @Component({
   selector: 'app-plugin-card',
@@ -112,28 +112,8 @@ export class PluginCardComponent implements OnInit {
   }
 
   pluginInfoModal(plugin: any) {
-    const ref = this.$modal.open(InformationComponent);
-    const displayName = ( plugin.displayName || plugin.name );
-    const name = plugin.name;
-    const author = `@${plugin.author}`;
-    const version = plugin.installedVersion || plugin.latestVersion;
-    const description = plugin.description || '';
-    let lastUpdated = '';
-    if (plugin.lastUpdated) {
-      lastUpdated = ` (${formatDate(plugin.lastUpdated, 'yyyy-MM-dd', 'en-US')})`;
-    }
-    let link = '';
-    if (plugin.links.homepage) {
-      link = plugin.links.homepage;
-    } else if (plugin.links.npm) {
-      link = plugin.links.npm;
-    }
-    ref.componentInstance.title = displayName;
-    ref.componentInstance.message = `<p class="my-3">${description}</p><p class="m-0">${name}</p><p class="m-0">${author}</p>
-    <p class="m-0">v${version}</p><p class="m-0">${lastUpdated}</p>`;
-    ref.componentInstance.ctaButtonLabel = this.$translate.instant('plugins.button_homepage');
-    ref.componentInstance.ctaButtonLink = link;
-    ref.componentInstance.faIconClass = 'fa-circle-info';
+    const ref = this.$modal.open(PluginInfoComponent);
+    ref.componentInstance.plugin = plugin;
   }
 
   disablePlugin(plugin: any) {

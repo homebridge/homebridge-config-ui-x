@@ -57,17 +57,9 @@
       color: $primary;
     }
 
-    .notif-dot {
-      background-color: $primary;
-    }
-
     .btn-primary,
     .btn-default {
       @extend .btn-#{$name} !optional;
-    }
-
-    .badge-primary {
-      background-color: $primary-dark !important;
     }
 
     a {
@@ -80,6 +72,10 @@
           }
         }
       }
+    }
+
+    .card-text-defined {
+      color: #000000;
     }
 
     .icon-button {
@@ -170,8 +166,8 @@
     }
 
     .plugin-icon-card {
-      width: 60px;
-      height: 60px;
+      width: 70px;
+      height: 70px;
       border-radius: 15px;
       border: 1px solid #dddddd;
     }
@@ -199,9 +195,6 @@
     background-color: #000099 !important;
   }
 
-  .badge-primary {
-    background-color: #000070 !important;
-  }
   .widget-control-button {
     &.primary-text {
       color: #2196f3;

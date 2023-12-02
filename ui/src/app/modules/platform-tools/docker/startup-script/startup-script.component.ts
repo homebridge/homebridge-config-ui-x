@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { NgxEditorModel } from 'ngx-monaco-editor';
+import { NgxEditorModel } from 'ngx-monaco-editor-v2';
 import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '@/app/core/api.service';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';

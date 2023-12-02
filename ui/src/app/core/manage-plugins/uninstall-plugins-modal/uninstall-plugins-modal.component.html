@@ -1,14 +1,12 @@
 <div class="modal-content" style="min-height: 300px;">
   <div class="modal-header">
     <h5 class="modal-title">{{'plugins.manage.label_uninstall' | translate}}: {{ plugin.displayName || plugin.name }}</h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-      (click)="activeModal.dismiss('Dismiss')">
-      <span aria-hidden="true">&times;</span>
-    </button>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+      (click)="activeModal.dismiss('Dismiss')"></button>
   </div>
   <div class="modal-body d-flex flex-row flex-grow-1 align-items-center w-100 text-center">
     <div *ngIf="loading" class="w-100 text-center primary-text">
-      <i class="fa fa-fw fa-cog fa-spin" style="font-size: 72px;"></i>
+      <i class="fa fa-fw fa-cog fa-spin" style="font-size: 75px;"></i>
     </div>
     <div class="w-100" *ngIf="!loading">
       <i class="fas fa-fw fa-trash primary-text mb-4" style="font-size: 75px;"></i>
@@ -28,14 +26,14 @@
     </div>
   </div>
   <div class="modal-footer justify-content-between">
-    <div class="text-left">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
+    <div class="text-start">
+      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
         {{ 'form.button_close' | translate }}
       </button>
     </div>
     <div class="text-center"></div>
-    <div class="text-right">
-      <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="doUninstall()" [disabled]="loading">
+    <div class="text-end">
+      <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="doUninstall()" [disabled]="loading">
         {{ 'plugins.manage.label_uninstall' | translate }}
       </button>
     </div>

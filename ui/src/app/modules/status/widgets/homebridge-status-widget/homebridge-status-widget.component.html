@@ -1,7 +1,7 @@
 <div class="flex-column d-flex align-items-stretch h-100 w-100 pb-1">
-  <div style="cursor: move;" class="drag-handler pl-2 pt-1 pb-1 pr-2">Homebridge</div>
-  <div class="d-flex flex-wrap w-100 pr-3 pl-2 justify-content-start gridster-item-content overflow-auto no-scrollbars">
-    <div class="hb-status-item d-flex flex-row mr-4">
+  <div style="cursor: move;" class="drag-handler ps-2 pt-1 pb-1 pe-2">Homebridge</div>
+  <div class="d-flex flex-wrap w-100 pe-3 ps-2 justify-content-start gridster-item-content overflow-auto no-scrollbars">
+    <div class="hb-status-item d-flex flex-row me-4">
       <div class="d-flex">
         <div class="mb-0 px-3 py-1 hb-status-icon">
           <i class="fas fa-fw primary-text" [ngClass]="{
@@ -32,7 +32,7 @@
       </div>
     </div>
 
-    <div class="hb-status-item d-flex flex-row mr-4 pr-4">
+    <div class="hb-status-item d-flex flex-row me-4 pe-4">
       <div class="d-flex">
         <div class="mb-0 px-3 py-1 hb-status-icon">
           <i class="fas fa-fw fa-cog fa-spin primary-text" *ngIf="!homebridgePkg.installedVersion"></i>
@@ -45,7 +45,7 @@
           <a href="javascript:void(0)" (click)="$plugin.installPreviousVersion(homebridgePkg)" *ngIf="homebridgePkg.installedVersion"
             class="card-link card-link-title">Homebridge</a>
           <span *ngIf="!homebridgePkg.installedVersion">Homebridge</span>
-          <a routerLink="/settings" class="card-link ml-1" *ngIf="homebridgePkg.installedVersion"><i class="fa fa-fw fa-cog"></i></a>
+          <a routerLink="/settings" class="card-link ms-1" *ngIf="homebridgePkg.installedVersion"><i class="fa fa-fw fa-cog"></i></a>
           <br>
           <span class="grey-text">
             <span *ngIf="!homebridgePkg.installedVersion">
@@ -65,7 +65,7 @@
       </div>
     </div>
 
-    <div class="hb-status-item d-flex flex-row mr-4 pr-4">
+    <div class="hb-status-item d-flex flex-row me-4 pe-4">
       <div class="d-flex">
         <div class="mb-0 px-3 py-1 hb-status-icon">
           <i class="fas fa-fw fa-cog fa-spin primary-text" *ngIf="!homebridgeUiPkg.installedVersion"></i>
@@ -78,7 +78,7 @@
           <a href="javascript:void(0)" (click)="$plugin.installPreviousVersion(homebridgeUiPkg)" *ngIf="homebridgeUiPkg.installedVersion"
             class="card-link card-link-title">Homebridge UI</a>
           <span *ngIf="!homebridgeUiPkg.installedVersion">Homebridge UI</span>
-          <a href="javascript:void(0)" (click)="openUiSettings()" class="card-link ml-1" *ngIf="homebridgeUiPkg.installedVersion"><i class="fa fa-fw fa-cog"></i></a>
+          <a href="javascript:void(0)" (click)="openUiSettings()" class="card-link ms-1" *ngIf="homebridgeUiPkg.installedVersion"><i class="fa fa-fw fa-cog"></i></a>
           <br>
           <span class="grey-text">
             <span *ngIf="!homebridgeUiPkg.installedVersion">
@@ -98,7 +98,7 @@
       </div>
     </div>
 
-    <div class="hb-status-item d-flex flex-row mr-4 pr-4">
+    <div class="hb-status-item d-flex flex-row me-4 pe-4">
       <div class="d-flex">
         <div class="mb-0 px-3 py-1 hb-status-icon">
           <i class="fas fa-fw fa-arrow-alt-circle-up primary-text" *ngIf="homebridgePluginStatus.length"></i>

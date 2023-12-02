@@ -12,7 +12,7 @@
 
   <ul class="list-group mt-2">
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pr-2">
+      <span class="pe-2">
         <div>{{ 'settings.network.title_network_interfaces' | translate }}
           <a href="javascript:void(0)" ngbTooltip="{{ 'settings.network.message_network_interface_one' | translate }}">
             <i class="fas fa-fw fa-info-circle primary-text"></i>
@@ -20,7 +20,7 @@
         </div>
 
         <span *ngFor="let adapter of bridgeNetworkAdapters">
-          <span class="badge badge-pill mr-1"
+          <span class="badge rounded-pill me-1"
             [ngbTooltip]="adapter.missing ? 'Not Connected' : adapter.ip4 || adapter.ip6" placement="bottom-left"
             openDelay="150" [ngClass]="{'badge-danger': adapter.missing, 'badge-info': !adapter.missing}">
             <i class="fas fa-fw fa-exclamation-triangle" *ngIf="adapter.missing"></i>
@@ -127,7 +127,7 @@
 
   <ul class="list-group mt-2">
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pr-2">
+      <span class="pe-2">
         {{ 'reset.title_unpair_bridges_cameras_tv_external_accessories' | translate }}
         <a href="javascript:void(0)"
           ngbTooltip="{{ 'reset.message_unpair_bridges_cameras_tv_external_accessories' | translate }}">
@@ -140,7 +140,7 @@
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pr-2">
+      <span class="pe-2">
         {{ 'reset.title_reset_homebridge_accessory' | translate | titlecase }}
         <a href="javascript:void(0)" ngbTooltip="{{ 'reset.message_reset_will_unpair_from_homekit' | translate }}">
           <i class="fas fa-fw fa-info-circle primary-text"></i>
@@ -165,7 +165,7 @@
 
   <ul class="list-group mt-2">
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pr-2">
+      <span class="pe-2">
         {{ 'reset.title_clear_cached_accessories_single' | translate }}
         <a href="javascript:void(0)" ngbTooltip="{{ 'reset.message_remove_cached_accessories_single' | translate }}">
           <i class="fas fa-fw fa-info-circle primary-text"></i>
@@ -178,7 +178,7 @@
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pr-2">
+      <span class="pe-2">
         {{ 'reset.title_clear_cached_accessories' | translate }}
         <a href="javascript:void(0)" ngbTooltip="{{ 'reset.message_remove_cached_accessories' | translate }}">
           <i class="fas fa-fw fa-info-circle primary-text"></i>
@@ -195,7 +195,7 @@
 
   <ul class="list-group mt-2">
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pr-2">
+      <span class="pe-2">
         {{ 'reset.title_force_restart_hb_service' | translate }}
         <a href="javascript:void(0)" ngbTooltip="{{ 'reset.message_force_restart_hb_help_text' | translate }}">
           <i class="fas fa-fw fa-info-circle primary-text"></i>
