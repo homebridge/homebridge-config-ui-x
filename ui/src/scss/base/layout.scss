@@ -12,6 +12,8 @@ body {
   background-color: #f4f4f4;
 }
 
+
+
 a, a:hover, a:focus {
 text-decoration: none !important;
 --bs-link-decoration: none !important;
@@ -29,6 +31,10 @@ color: #ff20db !important;
 color: #00c128 !important
 }
 
+.red-text, .red-text a {
+color: #ff0000 !important
+}
+
 .navbar-brand {
   color: #ffffff !important;
 }
@@ -43,6 +49,9 @@ background-color: #333333;
 --bs-table-bg: initial;
 }
 
+.list-group {
+--bs-list-group-border-width: 0 !important;
+}
 
 @media (min-width: 992px) {
   .body-top-padding {
