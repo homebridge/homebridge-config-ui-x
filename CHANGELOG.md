@@ -4,6 +4,14 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 
 ## BETA
 
+### Notable Changes
+
+- Homebridge UI removed from the plugins page
+  - Status and update notifications moved to the status page (next to / under Homebridge itself)
+  - UI settings is accessible from the main menu
+- Various changes to the plugin cards
+  - Plugin settings now accessible from the plugin card menu, called 'Config'
+
 ### UI Changes
 
 - add power options modal (#1820)
@@ -22,10 +30,16 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - various minor ui changes (@mkz212)
 - refactor main page sub-icons
 - add new concept for plugin card with icons
+- always show 'Accessories' tab to show issue in UI if insecure mode is not enabled
+- for plugins that don't have a GitHub domain homepage, try parsing the bugs URL to be able to obtain release information
+
+_Thanks to @mkz212 for his contributions to the UI_
 
 ### Translation Changes
 
 - Add missing DE translations for child bridges (#1825) (@jsiegenthaler)
+
+_Also thanks to @mkz212 and @Staubgeborener for their contributions to the translation files_
 
 ### Other Changes
 
@@ -34,6 +48,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - update `socket.io-client` dependency
 - update dependencies
 - update ui dependencies
+- save bugs link as part of `IPackageJson` type
 
 ## 4.53.0 (2023-11-24)
 
