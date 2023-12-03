@@ -23,7 +23,7 @@ export class HomebridgeHueComponent {
         (res) => {
           saveAs(res.body, 'homebridge-hue.json.gz');
         },
-        (err) => {
+        () => {
           this.$toastr.error('Homebridge Hue dump file does not exist yet.', this.translate.instant('toast.title_error'));
         },
       );

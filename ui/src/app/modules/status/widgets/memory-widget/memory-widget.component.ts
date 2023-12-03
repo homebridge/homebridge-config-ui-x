@@ -105,7 +105,7 @@ export class MemoryWidgetComponent implements OnInit, OnDestroy {
         this.lineChartData.datasets[0].data = {
           ...data.memoryUsageHistory,
         };
-        this.lineChartLabels = data.memoryUsageHistory.map(x => 'point');
+        this.lineChartLabels = data.memoryUsageHistory.map(() => 'point');
       } else {
         this.lineChartData.datasets[0].data.push(data.memoryUsageHistory.slice(-1)[0]);
         this.lineChartLabels.push('point');
