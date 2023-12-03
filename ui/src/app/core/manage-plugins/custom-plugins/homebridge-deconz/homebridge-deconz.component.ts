@@ -23,8 +23,8 @@ export class HomebridgeDeconzComponent {
         (res) => {
           saveAs(res.body, 'homebridge-deconz.json.gz');
         },
-        (err) => {
-          this.$toastr.error('Homebridge Deconz dump file does not exist yet.', this.translate.instant('toast.title_error'));
+        () => {
+          this.$toastr.error('Homebridge deCONZ dump file does not exist yet.', this.translate.instant('toast.title_error'));
         },
       );
   }

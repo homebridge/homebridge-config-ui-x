@@ -35,7 +35,7 @@ export class AccessoriesWidgetComponent implements OnInit, OnDestroy {
 
     // disable drag and drop for the .no-drag class
     dragulaService.createGroup('widget-accessories-bag', {
-      moves: (el, source, handle, sibling) => !this.isMobile && !el.classList.contains('no-drag'),
+      moves: (el) => !this.isMobile && !el.classList.contains('no-drag'),
     });
 
     // save the room and service layout
@@ -49,7 +49,7 @@ export class AccessoriesWidgetComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
     // subscribe to accessory data events
-    this.accessoryDataSubscription = this.$accessories.accessoryData.subscribe((data) => {
+    this.accessoryDataSubscription = this.$accessories.accessoryData.subscribe(() => {
       this.getDashboardAccessories();
     });
 

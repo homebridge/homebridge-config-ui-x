@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { TranslateService } from '@ngx-translate/core';
 import { DragulaService } from 'ng2-dragula';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
@@ -25,19 +24,18 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     private modalService: NgbModal,
     public $settings: SettingsService,
     private $md: MobileDetectService,
-    private translate: TranslateService,
     private $accessories: AccessoriesService,
   ) {
     this.isMobile = this.$md.detect.mobile();
 
     // disable drag and drop for everything except the room title
     dragulaService.createGroup('rooms-bag', {
-      moves: (el, container, handle) => !this.isMobile && handle.classList.contains('drag-handle'),
+      moves: (_el, _container, handle) => !this.isMobile && handle.classList.contains('drag-handle'),
     });
 
     // disable drag and drop for the .no-drag class
     dragulaService.createGroup('services-bag', {
-      moves: (el, source, handle, sibling) => !this.isMobile && !el.classList.contains('no-drag'),
+      moves: (el) => !this.isMobile && !el.classList.contains('no-drag'),
     });
 
     // save the room and service layout

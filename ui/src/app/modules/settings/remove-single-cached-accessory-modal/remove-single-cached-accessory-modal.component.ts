@@ -29,7 +29,7 @@ export class RemoveSingleCachedAccessoryModalComponent implements OnInit {
       this.cachedAccessories = await this.$api.get('/server/cached-accessories').toPromise();
     } catch (e) {
       this.toastr.error(
-        'Accessory cache could not be loaded. You may not have any cached accessories.',
+        this.translate.instant('reset.toast_error_message'),
         this.translate.instant('toast.title_error'),
       );
       this.activeModal.close();

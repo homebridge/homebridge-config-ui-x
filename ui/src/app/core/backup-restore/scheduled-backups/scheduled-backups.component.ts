@@ -55,7 +55,7 @@ export class ScheduledBackupsComponent implements OnInit {
         const archiveName = backup.fileName || 'homebridge-backup.tar.gz';
         saveAs(res.body, archiveName);
       },
-      (err) => {
+      () => {
         this.$toastr.error(this.$translate.instant('backup.message_backup_download_failed'), this.$translate.instant('toast.title_error'));
       },
     );
