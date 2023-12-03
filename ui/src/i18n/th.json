@@ -1,8 +1,8 @@
 {
   "--language": "Thai, ภาษาไทย",
   "accessories.button_add_room": "เพิ่มห้อง",
-  "accessories.button_toggle_hidden": "Toggle Hidden",
-  "accessories.button_toggle_layout_lock": "Toggle Layout Lock",
+  "accessories.button_hidden_hide": "Hide Hidden",
+  "accessories.button_hidden_show": "Show Hidden",
   "accessories.control.default_room": "ห้องเริ่มต้น",
   "accessories.control.drag_here": "ลากมาที่นี่",
   "accessories.control.label_auto": "อัตโนมัติ",
