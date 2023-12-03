@@ -108,7 +108,7 @@ export class CpuWidgetComponent implements OnInit, OnDestroy {
         this.lineChartData.datasets[0].data = {
           ...data.cpuLoadHistory,
         };
-        this.lineChartLabels = data.cpuLoadHistory.map(x => 'point');
+        this.lineChartLabels = data.cpuLoadHistory.map(() => 'point');
       } else {
         this.lineChartData.datasets[0].data.push(data.currentLoad);
         this.lineChartLabels.push('point');
