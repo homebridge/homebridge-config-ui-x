@@ -172,8 +172,13 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       termRows: this.term.rows,
     }).subscribe(
       () => {
+        this.actionComplete = true;
         this.justUpdatedPlugin = true;
-        this.$router.navigate(['/plugins']);
+        if (this.pluginName === 'homebridge-config-ui-x') {
+          this.$router.navigate(['/']);
+        } else {
+          this.$router.navigate(['/plugins']);
+        }
         this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);
         this.getChangeLog();
         this.getChildBridges();
@@ -206,15 +211,10 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   getChangeLog() {
     this.$api.get(`/plugins/changelog/${encodeURIComponent(this.pluginName)}`).subscribe(
       (data: { changelog: string }) => {
-        if (data.changelog) {
-          this.actionComplete = true;
-          this.changeLog = data.changelog;
-        } else {
-          this.activeModal.close();
-        }
+        this.changeLog = data.changelog;
       },
       () => {
-        this.activeModal.close();
+        this.changeLog = null;
       },
     );
   }
