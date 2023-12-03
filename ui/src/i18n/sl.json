@@ -1,8 +1,8 @@
 {
   "--language": "Slovenian, Słoweński",
   "accessories.button_add_room": "Dodaj sobo",
-  "accessories.button_toggle_hidden": "Toggle Hidden",
-  "accessories.button_toggle_layout_lock": "Toggle Layout Lock",
+  "accessories.button_hidden_hide": "Hide Hidden",
+  "accessories.button_hidden_show": "Show Hidden",
   "accessories.control.default_room": "Privzeta soba",
   "accessories.control.drag_here": "Povleci sem",
   "accessories.control.label_auto": "Auto",

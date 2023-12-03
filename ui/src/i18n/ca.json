@@ -1,8 +1,8 @@
 {
   "--language": "Catalan, Kataloński",
   "accessories.button_add_room": "Afegir Habitació",
-  "accessories.button_toggle_hidden": "Toggle Hidden",
-  "accessories.button_toggle_layout_lock": "Toggle Layout Lock",
+  "accessories.button_hidden_hide": "Hide Hidden",
+  "accessories.button_hidden_show": "Show Hidden",
   "accessories.control.default_room": "Habitació per defecte",
   "accessories.control.drag_here": "Arrossegar i deixar anar aquí",
   "accessories.control.label_auto": "Auto",
