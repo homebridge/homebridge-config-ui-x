@@ -6,7 +6,7 @@
   </div>
   <div class="modal-body" [ngSwitch]="widget.component">
     <div *ngSwitchCase="'WeatherWidgetComponent'">
-      <div class="alert alert-primary" role="alert" [translate]="'status.widget.weather.label_add_city_instructions'">
+      <div class="alert alert-info" role="alert" [translate]="'status.widget.weather.label_add_city_instructions'">
         To enable the weather widget please search for your city name in English.
       </div>
 
@@ -28,7 +28,7 @@
       </p>
     </div>
     <div *ngSwitchCase="'AccessoriesWidgetComponent'">
-      <div class="alert alert-primary" role="alert"
+      <div class="alert alert-info" role="alert"
         [translate]="'status.widget.accessories.label_choose_accessories_to_display'">
         Choose the Accessories to display in this widget from the Accessories tab.
       </div>
