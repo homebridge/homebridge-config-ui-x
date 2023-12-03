@@ -18,6 +18,7 @@ export interface HomebridgePlugin {
   links?: {
     npm?: string;
     homepage?: string;
+    bugs?: string;
   };
   author?: string;
   engines?: {

@@ -45,9 +45,9 @@
                 <i class="far fa-fw fa-arrow-alt-circle-down fa-lg"></i>
               </a>
               <a href="javascript:void(0)" (click)="$plugin.updatePlugin(plugin, plugin.betaUpdateAvailable ? 'beta' : 'latest')"
-                 *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable" class="card-link primary-text"
+                 *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable" class="card-link"
                  [ngbTooltip]="'plugins.status_update_available' | translate" container="body">
-                <i class="far fa-fw fa-arrow-alt-circle-up fa-lg"></i>
+                <i class="far fa-fw fa-arrow-alt-circle-up fa-lg primary-text"></i>
               </a>
               <span *ngIf="plugin.installedVersion" class="d-none d-md-inline"> {{ 'plugins.status_installed' | translate }}: </span>
               v{{ plugin.installedVersion || plugin.latestVersion }}
