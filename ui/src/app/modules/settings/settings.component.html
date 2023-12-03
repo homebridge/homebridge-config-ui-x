@@ -28,7 +28,7 @@
           </span>
         </span>
       </span>
-      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;" [translate]="'reset.title_clear_cached_accessories'"
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 45px;" [translate]="'reset.title_clear_cached_accessories'"
         (click)="selectNetworkInterfaces()" [disabled]="!availableNetworkAdapters.length"
         [attr.aria-label]="'settings.network.title_network_interfaces' | translate">
         <i class="fas fa-fw fa-cog" [ngClass]="{ 'fa-pulse': !availableNetworkAdapters.length }"></i>
@@ -62,7 +62,7 @@
   <ul class="list-group">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span>{{ 'settings.startup.debug' | translate }} <code>-D</code></span>
-      <input type="checkbox" class="rendux-input ml-3" style="min-width: 45px;" id="homebridgeDebugMode" formControlName="HOMEBRIDGE_DEBUG"
+      <input type="checkbox" class="rendux-input ms-3" style="min-width: 45px;" id="homebridgeDebugMode" formControlName="HOMEBRIDGE_DEBUG"
         aria-label="Debug Mode">
       <label for="homebridgeDebugMode" class="rendux-label"></label>
     </li>
@@ -72,13 +72,13 @@
         <span class="d-none d-md-inline"> / {{ 'settings.startup.insecure_2' | translate }} </span>
         <code>-I</code>
       </span>
-      <input type="checkbox" class="rendux-input ml-3" style="min-width: 45px;" id="homebridgeInsecureMode" formControlName="HOMEBRIDGE_INSECURE"
+      <input type="checkbox" class="rendux-input ms-3" style="min-width: 45px;" id="homebridgeInsecureMode" formControlName="HOMEBRIDGE_INSECURE"
         aria-label="Insecure Mode">
       <label for="homebridgeInsecureMode" class="rendux-label"></label>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="$settings.env.serviceMode">
       <span>{{ 'settings.startup.keep_accessories' | translate }} <code>-K</code></span>
-      <input type="checkbox" class="rendux-input ml-3" style="min-width: 45px;" id="homebridgeKeepOrphans" formControlName="HOMEBRIDGE_KEEP_ORPHANS"
+      <input type="checkbox" class="rendux-input ms-3" style="min-width: 45px;" id="homebridgeKeepOrphans" formControlName="HOMEBRIDGE_KEEP_ORPHANS"
         aria-label="Keep accessories of uninstall plugins">
       <label for="homebridgeKeepOrphans" class="rendux-label"></label>
     </li>
@@ -134,7 +134,7 @@
           <i class="fas fa-fw fa-info-circle primary-text"></i>
         </a>
       </span>
-      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;" (click)="unpairAccessory()"
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 45px;" (click)="unpairAccessory()"
         [attr.aria-label]="'reset.title_unpair_bridges_cameras_tv_external_accessories' | translate">
         <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
       </button>
@@ -146,7 +146,7 @@
           <i class="fas fa-fw fa-info-circle primary-text"></i>
         </a>
       </span>
-      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;" (click)="resetHomebridgeState()"
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 45px;" (click)="resetHomebridgeState()"
         [attr.aria-label]="'reset.title_reset_homebridge_accessory' | translate">
         <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
       </button>
@@ -171,7 +171,7 @@
           <i class="fas fa-fw fa-info-circle primary-text"></i>
         </a>
       </span>
-      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;"
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 45px;"
         [translate]="'reset.title_clear_cached_accessories_single'" (click)="removeSingleCachedAccessories()"
         [attr.aria-label]="'reset.title_clear_cached_accessories_single' | translate">
         <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
@@ -184,7 +184,7 @@
           <i class="fas fa-fw fa-info-circle primary-text"></i>
         </a>
       </span>
-      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;"
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 45px;"
         [translate]="'reset.title_clear_cached_accessories'" (click)="removeAllCachedAccessories()"
         [attr.aria-label]="'reset.title_clear_cached_accessories' | translate">
         <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
