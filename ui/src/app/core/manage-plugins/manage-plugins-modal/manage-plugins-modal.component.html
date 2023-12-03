@@ -22,7 +22,7 @@
         Please restart the plugin's child bridges for the changes to apply.
       </p>
     </div>
-    <div class="alert show alert-info pt-3 px-3 pb-0 mb-0">
+    <div class="alert show alert-info pt-3 px-3 pb-0 mb-0" *ngIf="changeLog">
       <markdown class="plugin-md" [data]="changeLog"></markdown>
     </div>
   </div>
@@ -45,7 +45,7 @@ hb-service start</pre>
     </div>
   </div>
   <div *ngIf="showReleaseNotes && !actionComplete" class="modal-body plugin-modal-body">
-    <div class="alert alert-primary text-center" *ngIf="!updateToBeta && latestVersion">
+    <div class="alert alert-info text-center" *ngIf="!updateToBeta && latestVersion">
       <h5 class="mb-0"><span *ngIf="installedVersion">v{{ installedVersion }} &rarr; </span>v{{ latestVersion }}</h5>
     </div>
     <h5 *ngIf="!updateToBeta">{{ 'plugins.manage.label_release_notes' | translate }} <span *ngIf="release.name">({{ release.name }})</span></h5>

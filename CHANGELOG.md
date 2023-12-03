@@ -11,6 +11,8 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
   - UI settings is accessible from the main menu
 - Various changes to the plugin cards
   - Plugin settings now accessible from the plugin card menu, called 'Config'
+  - Icons: plugin devs can request an icon for their verified plugin at:
+    - https://github.com/homebridge/verified/issues/new/choose
 
 ### UI Changes
 
