@@ -22,7 +22,7 @@ export class TerminalComponent implements OnInit, OnDestroy {
   ) {}
 
   @HostListener('window:resize', ['$event'])
-  onWindowResize(event) {
+  onWindowResize() {
     this.resizeEvent.next(undefined);
   }
 

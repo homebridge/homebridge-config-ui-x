@@ -135,7 +135,7 @@ export class WidgetAddComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.availableWidgets = this.allWidgets.filter(x => !this.dashboard.some(i => i.component === x.component) && !x.hidden);
+    this.availableWidgets = this.allWidgets.filter((x) => !this.dashboard.some((i) => i.component === x.component) && !x.hidden);
   }
 
   selectWidget(widget) {
@@ -144,16 +144,6 @@ export class WidgetAddComponent implements OnInit {
 
   doResetLayout() {
     this.resetLayout();
-    this.activeModal.dismiss();
-  }
-
-  doLockLayout() {
-    this.lockLayout();
-    this.activeModal.dismiss();
-  }
-
-  doUnlockLayout() {
-    this.unlockLayout();
     this.activeModal.dismiss();
   }
 }

@@ -2,6 +2,39 @@
 
 All notable changes to homebridge-config-ui-x will be documented in this file.
 
+## BETA
+
+### UI Changes
+
+- add power options modal (#1820)
+- remove hb-ui card from plugins page (#1830)
+- add some support links (#1833)
+- add plugin logs feature (#1834)
+- update module headers (#1836)
+- use restart modals, tidy plugin card
+- add plugin homepage link to UI settings screen
+- add icons to main menu
+- updates to plugin card
+- add all config options to UI Settings (#1838)
+- add spanner settings icons to hb+ui on status
+- various ui enhancements
+- add modal to explain unverified plugin status
+- various minor ui changes (@mkz212)
+- refactor main page sub-icons
+- add new concept for plugin card with icons
+
+### Translation Changes
+
+- Add missing DE translations for child bridges (#1825) (@jsiegenthaler)
+
+### Other Changes
+
+- Add Raspberry Pi 5 to list of Pi devices in bug-report template (#1824) (@jsiegenthaler)
+- add api work for plugin icons
+- update `socket.io-client` dependency
+- update dependencies
+- update ui dependencies
+
 ## 4.53.0 (2023-11-24)
 
 Happy Thanksgiving to our American friends! :turkey:
@@ -176,7 +209,7 @@ Happy Thanksgiving to our American friends! :turkey:
 
 - Improved guard rails around the Node.js 20 update for environments that can not support Node.js 20 (#1604)
 - Include commentary in the release notes about the possibility of needing to run `sudo hb-service rebuild` after updating, and how to determine if your system is compatible with Node.js 20.
-  
+
 ## 4.51.1 (2023-10-25)
 
 ### Bug Fixes
@@ -191,6 +224,7 @@ Happy Thanksgiving to our American friends! :turkey:
 ### Notable Changes
 
 - **Node Support**
+
   - ⚠️ Node 16 has reached end-of-life and is no longer supported by the Homebridge UI.
     - Starting with v4.51.0, the Homebridge UI will no longer work with Node 16, only Node 18 and 20
     - Homebridge UI follows the same Node support schedule as Homebridge. See the [How-To-Update-Node.js](https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js) page in the Homebridge wiki for more information

@@ -5,7 +5,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DragulaModule } from 'ng2-dragula';
-import { MonacoEditorModule } from 'ngx-monaco-editor';
+import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
 import { ToastrModule } from 'ngx-toastr';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -17,11 +17,13 @@ import { AuthModule } from '@/app/core/auth/auth.module';
 import { CoreModule } from '@/app/core/core.module';
 import { supportedLocales } from '@/app/core/locales';
 import { onMonacoLoad } from '@/app/core/monaco-editor.service';
+import { RestartModalComponent } from '@/app/shared/layout/restart-modal/restart-modal.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LayoutComponent,
+    RestartModalComponent,
   ],
   imports: [
     BrowserModule,

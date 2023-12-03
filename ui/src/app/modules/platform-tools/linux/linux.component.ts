@@ -9,6 +9,5 @@ export class LinuxComponent implements OnInit {
 
   constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 }

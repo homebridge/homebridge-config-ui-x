@@ -11,7 +11,7 @@
 }
 
 .status-container {
-  min-height: 100%;
+  min-height: calc(100% - 52px)
 }
 
 gridster {
@@ -46,25 +46,8 @@ gridster {
   }
 }
 
-.add-widget-button {
-  position: fixed;
-  bottom: 10px;
-  right: 10px;
+.status-button {
   z-index: 1000;
-  opacity: 0.4;
-
-  -webkit-transition: opacity 200ms ease-in;
-  -moz-transition: opacity 200ms ease-in;
-  -ms-transition: opacity 200ms ease-in;
-  -o-transition: opacity 200ms ease-in;
-  transition: opacity 200ms ease-in;
-
-  @media (hover: hover) {
-    &:hover,
-    &:active {
-      opacity: 1;
-    }
-  }
 
   @media (max-width: 1023px) {
     display: none;

@@ -36,7 +36,7 @@ export class LogsComponent implements OnInit, OnDestroy {
   ) {}
 
   @HostListener('window:resize', ['$event'])
-  onWindowResize(event) {
+  onWindowResize() {
     this.resizeEvent.next(undefined);
   }
 
@@ -88,13 +88,13 @@ export class LogsComponent implements OnInit, OnDestroy {
     const ref = this.$modal.open(ConfirmComponent);
     ref.componentInstance.title = this.$translate.instant('logs.title_truncate_log_file');
     ref.componentInstance.message = this.$translate.instant('logs.message_truncate_log_warning');
-    ref.componentInstance.confirmButtonLabel = this.$translate.instant('logs.label_truncate');
+    ref.componentInstance.confirmButtonLabel = this.$translate.instant('form.button_delete');
     ref.componentInstance.faIconClass = 'fas fa-fw fa-circle-exclamation primary-text';
 
     ref.result.then(() => {
       this.$api.put('/platform-tools/hb-service/log/truncate', {})
         .subscribe(
-          (res) => {
+          () => {
             this.$toastr.success(
               this.$translate.instant('logs.message_log_file_truncated'),
               this.$translate.instant('toast.title_success'),

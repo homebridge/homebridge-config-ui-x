@@ -6,6 +6,11 @@
       background-color: $primary-dark !important;
     }
 
+    .hb-npm-search {
+      border: 0 !important;
+      background-color: #eeeeee !important;
+    }
+
     .primary-text {
       color: $primary;
     }
@@ -29,6 +34,10 @@
           }
         }
       }
+    }
+
+    .card-text-defined {
+      color: #000000;
     }
 
     .icon-button {
@@ -111,6 +120,13 @@
       from {
         text-shadow: 0 0 5px #fff, 0 0 10px #fff;
       }
+    }
+
+    .plugin-icon-card {
+      width: 70px;
+      height: 70px;
+      border-radius: 15px;
+      border: 1px solid #dddddd;
     }
   }
 }

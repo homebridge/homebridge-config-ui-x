@@ -1,10 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  ActivatedRouteSnapshot,
-  CanActivate,
-  Router,
-  RouterStateSnapshot,
-} from '@angular/router';
+import { CanActivate, Router } from '@angular/router';
 import { AuthService } from '@/app/core/auth/auth.service';
 import { SettingsService } from '@/app/core/settings.service';
 
@@ -18,9 +13,7 @@ export class LoginGuard implements CanActivate {
     private $settings: SettingsService,
   ) {}
 
-  async canActivate(
-    next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Promise<boolean> {
+  async canActivate(): Promise<boolean> {
     // ensure app settings are loaded
     if (!this.$settings.settingsLoaded) {
       await this.$settings.onSettingsLoaded.toPromise();

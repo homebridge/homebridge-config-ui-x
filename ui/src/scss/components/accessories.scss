@@ -7,11 +7,31 @@
   }
 
   .switch-on {
-    background-color: #fff;
+    background-color: #fff !important;
 
     #accessoryIcon {
-      fill: #1976d2 !important;
+      fill: #02d700 !important;
     }
+  }
+  .light-on {
+    background-color: #fff !important;
+
+    #accessoryIcon {
+      fill: #ffcf55 !important;
+    }
+  }
+  .window-on {
+    background-color: #fff !important;
+
+    #accessoryIcon {
+      fill: #00acff !important;
+    }
+  }
+  .window-on .st0 {
+    fill: #00acff !important;
+  }
+  .st0 {
+    fill: #666666 !important;
   }
 }
 
@@ -19,7 +39,7 @@
   cursor: pointer;
   height: 150px;
   width: 150px;
-  margin: 10px;
+  margin: 20px 10px;
   border-radius: 5px;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
   padding: 15px;
@@ -108,9 +128,11 @@
 }
 
 .accessory-item {
-  @media (max-width: 575px) {
+  @media (max-width: 991px) {
     .manage-accessory-button {
-      display: none;
+      // display: none;
+      opacity: 1 !important;
+      filter: grayscale(100);
     }
   }
 
@@ -118,8 +140,15 @@
     &:hover,
     &:active {
       .manage-accessory-button {
-        opacity: 0.6;
+        opacity: 0.5;
       }
+    }
+  }
+
+  @media (max-width: 575px) {
+    .manage-accessory-button {
+      top: 5px !important;
+      right: 5px !important;
     }
   }
 
@@ -127,8 +156,10 @@
     cursor: pointer;
     float: right;
     opacity: 0;
-    margin-right: 15px;
-    margin-top: 15px;
+    position: relative;
+    top: 25px;
+    right: 15px;
+    padding: 10px;
 
     @media (hover: hover) {
       &:active,

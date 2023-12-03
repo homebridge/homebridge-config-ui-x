@@ -169,7 +169,7 @@ export class StatusComponent implements OnInit, OnDestroy {
     this.options.api.optionsChanged();
   }
 
-  gridResizeEvent(item: any, itemComponent: any) {
+  gridResizeEvent(_item: any, itemComponent: any) {
     itemComponent.item.$resizeEvent.next('resize');
     this.page.mobile = (window.innerWidth < 1024);
   }

@@ -16,6 +16,7 @@ import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.s
 import { NotificationService } from '@/app/core/notification.service';
 import { SettingsService } from '@/app/core/settings.service';
 import { WsService } from '@/app/core/ws.service';
+import { RestartModalComponent } from '@/app/shared/layout/restart-modal/restart-modal.component';
 import { environment } from '@/environments/environment';
 
 @Component({
@@ -91,52 +92,8 @@ export class LayoutComponent implements OnInit {
     });
   }
 
-  restartHomebridge() {
-    const ref = this.$modal.open(ConfirmComponent);
-    ref.componentInstance.title = this.translate.instant('menu.hbrestart.title');
-    ref.componentInstance.message = this.translate.instant('menu.hbrestart.confirmation');
-    ref.componentInstance.confirmButtonLabel = this.translate.instant('menu.hbrestart.confirm_button');
-    ref.componentInstance.faIconClass = 'fas fa-fw-power-off';
-
-    ref.result
-      .then(() => {
-        this.$router.navigate(['/restart']);
-      })
-      .finally(() => {
-        // do nothing
-      });
-  }
-
-  restartServer() {
-    const ref = this.$modal.open(ConfirmComponent);
-    ref.componentInstance.title = this.translate.instant('menu.linux.label_restart_server');
-    ref.componentInstance.message = this.translate.instant('platform.linux.restart.confirmation');
-    ref.componentInstance.confirmButtonLabel = this.translate.instant('menu.linux.label_restart_server');
-    ref.componentInstance.faIconClass = 'fas fa-fw-power-off';
-
-    ref.result
-      .then(() => {
-        this.$router.navigate(['/platform-tools/linux/restart-server']);
-      })
-      .finally(() => {
-        // do nothing
-      });
-  }
-
-  shutdownServer() {
-    const ref = this.$modal.open(ConfirmComponent);
-    ref.componentInstance.title = this.translate.instant('menu.linux.label_shutdown_server');
-    ref.componentInstance.message = this.translate.instant('platform.linux.shutdown.confirmation');
-    ref.componentInstance.confirmButtonLabel = this.translate.instant('menu.linux.label_shutdown_server');
-    ref.componentInstance.faIconClass = 'fas fa-fw-power-off';
-
-    ref.result
-      .then(() => {
-        this.$router.navigate(['/platform-tools/linux/shutdown-server']);
-      })
-      .finally(() => {
-        // do nothing
-      });
+  openRestartModal() {
+    this.$modal.open(RestartModalComponent);
   }
 
   async compareServerUiVersion() {
@@ -149,11 +106,11 @@ export class LayoutComponent implements OnInit {
       const ref = this.$modal.open(ConfirmComponent);
 
       ref.componentInstance.title = this.translate.instant('platform.version.title_service_restart_required');
-      ref.componentInstance.confirmButtonLabel = this.translate.instant('menu.tooltip_restart');
       ref.componentInstance.message = this.translate.instant('platform.version.message_service_restart_required', {
         serverVersion: this.$settings.uiVersion,
         uiVersion: environment.serverTarget,
       });
+      ref.componentInstance.confirmButtonLabel = this.translate.instant('menu.tooltip_restart');
       ref.componentInstance.faIconClass = 'fas fa-fw-power-off';
 
       ref.result.then(() => {

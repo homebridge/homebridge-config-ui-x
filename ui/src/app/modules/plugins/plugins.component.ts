@@ -1,13 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
 import { ApiService } from '@/app/core/api.service';
-import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
-import { SettingsService } from '@/app/core/settings.service';
 import { WsService } from '@/app/core/ws.service';
 
 @Component({
@@ -27,12 +24,9 @@ export class PluginsComponent implements OnInit, OnDestroy {
   private navigationSubscription: Subscription;
 
   constructor(
-    private $settings: SettingsService,
     private $api: ApiService,
     private $ws: WsService,
-    private $plugin: ManagePluginsService,
     private $router: Router,
-    private $route: ActivatedRoute,
     private $toastr: ToastrService,
     private $translate: TranslateService,
   ) {}
@@ -70,7 +64,9 @@ export class PluginsComponent implements OnInit, OnDestroy {
     this.loading = true;
 
     try {
-      this.installedPlugins = await this.$api.get('/plugins').toPromise();
+      const installedPlugins = await this.$api.get('/plugins').toPromise();
+      this.installedPlugins = installedPlugins.filter((x) => x.name !== 'homebridge-config-ui-x');
+      this.appendMetaInfo();
       this.loading = false;
     } catch (err) {
       this.$toastr.error(
@@ -78,21 +74,25 @@ export class PluginsComponent implements OnInit, OnDestroy {
         this.$translate.instant('toast.title_error'),
       );
     }
+  }
 
-    this.$route.queryParams.pipe(take(1)).subscribe(async (params) => {
-      if (params.installed && this.installedPlugins.find(x => x.name === params.installed)) {
-        const plugin = this.installedPlugins.find(x => x.name === params.installed);
-        this.$plugin.settings(plugin)
-          .then((schema?) => {
-            this.recommendChildBridge(plugin, schema);
-          })
-          .finally(() => {
-            this.$router.navigate([], {
-              queryParams: {},
-            });
-          });
-      }
-    });
+  async appendMetaInfo() {
+    // Also get the current configuration for each plugin
+    await Promise.all(this.installedPlugins
+      .filter((plugin) => plugin.installedVersion)
+      .map(async (plugin) => {
+        try {
+          const configBlocks = await this.$api.get(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`).toPromise();
+          plugin.isConfigured = configBlocks.length > 0;
+          // eslint-disable-next-line no-underscore-dangle
+          plugin.hasChildBridges = plugin.isConfigured && configBlocks.some((x) => x._bridge && x._bridge.username);
+        } catch (err) {
+          // may not be technically correct, but if we can't load the config, assume it is configured
+          plugin.isConfigured = true;
+          plugin.hasChildBridges = true;
+        }
+      }),
+    );
   }
 
   search() {
@@ -101,7 +101,8 @@ export class PluginsComponent implements OnInit, OnDestroy {
 
     this.$api.get(`/plugins/search/${encodeURIComponent(this.form.value.query)}`).subscribe(
       (data) => {
-        this.installedPlugins = data;
+        this.installedPlugins = data.filter((x) => x.name !== 'homebridge-config-ui-x');
+        this.appendMetaInfo();
         this.loading = false;
       },
       (err) => {
@@ -117,22 +118,11 @@ export class PluginsComponent implements OnInit, OnDestroy {
     this.loadInstalledPlugins();
   }
 
-  onSubmit({ value, valid }) {
+  onSubmit({ value }) {
     if (!value.query.length) {
       this.loadInstalledPlugins();
     } else {
       this.search();
-    }
-  }
-
-  recommendChildBridge(plugin, schema) {
-    if (
-      this.$settings.env.recommendChildBridges &&
-      this.$settings.env.serviceMode &&
-      schema &&
-      schema.pluginType === 'platform'
-    ) {
-      this.$plugin.bridgeSettings(plugin);
     }
   }
 
