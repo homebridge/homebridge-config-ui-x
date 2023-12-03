@@ -25,12 +25,6 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
   public justLinked = false;
   public gshConfig: Record<string, any>;
   public linkType: string;
-  public jsonFormOptions = {
-    addSubmit: false,
-    loadExternalAssets: false,
-    returnEmptyFields: false,
-    setSchemaDefaults: true,
-  };
 
   private linkDomain = 'https://homebridge-gsh.iot.oz.nu';
   private linkUrl = this.linkDomain + '/link-account';
@@ -87,7 +81,7 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
       'width=' + w + ', height=' + h + ', top=' + y + ', left=' + x,
     );
 
-    // simple message to popup to provide the current hostname
+    // simple message popup to provide the current hostname
     this.originCheckInterval = setInterval(() => {
       this.popup.postMessage('origin-check', this.linkDomain);
     }, 2000);
@@ -131,18 +125,16 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
     }
   }
 
-  saveConfig() {
-    return this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig).toPromise()
-      .then((result) => {
-        this.justLinked = true;
-        this.$toastr.success(
-          this.translate.instant('plugins.settings.toast_restart_required'),
-          this.translate.instant('plugins.settings.toast_plugin_config_saved'),
-        );
-      })
-      .catch((err) => {
-        this.$toastr.error(this.translate.instant('config.toast_failed_to_save_config'), this.translate.instant('toast.title_error'));
-      });
+  async saveConfig() {
+    try {
+      await this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig).toPromise();
+      this.justLinked = true;
+      this.$toastr.success(
+        this.translate.instant('plugins.settings.toast_restart_required'),
+        this.translate.instant('plugins.settings.toast_plugin_config_saved'));
+    } catch {
+      this.$toastr.error(this.translate.instant('config.toast_failed_to_save_config'), this.translate.instant('toast.title_error'));
+    }
   }
 
   async saveAndClose() {

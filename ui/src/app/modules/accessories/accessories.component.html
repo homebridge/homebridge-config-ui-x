@@ -16,11 +16,11 @@
       </div>
       <div class="btn-group" role="group">
         <button type="button" class="btn btn-elegant status-button my-0" [disabled]="isMobile || !hideHidden" (click)="hideHidden = !hideHidden"
-          container="body" [ngbTooltip]="'accessories.button_toggle_hidden' | translate">
+          container="body" [ngbTooltip]="'accessories.button_hidden_show' | translate">
           <i class="fas fa-fw fa-eye"></i>
         </button>
         <button type="button" class="btn btn-elegant status-button my-0" [disabled]="isMobile || hideHidden" (click)="hideHidden = !hideHidden"
-          container="body" [ngbTooltip]="'accessories.button_toggle_hidden' | translate">
+          container="body" [ngbTooltip]="'accessories.button_hidden_hide' | translate">
           <i class="fas fa-fw fa-eye-slash"></i>
         </button>
       </div>

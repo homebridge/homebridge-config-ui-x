@@ -77,7 +77,7 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
           this.translate.instant('toast.title_success'),
         );
       },
-      (err) => {
+      () => {
         this.clicked = false;
         this.$toastr.error(this.translate.instant('backup.message_backup_download_failed'), this.translate.instant('toast.title_error'));
       },
@@ -98,7 +98,7 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
     const formData: FormData = new FormData();
     formData.append('restoreArchive', this.selectedFile, this.selectedFile.name);
     this.$api.post('/backup/restore', formData).subscribe(
-      (res) => {
+      () => {
         this.restoreStarted = true;
         this.restoreInProgress = true;
         setTimeout(() => {
@@ -118,14 +118,14 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
 
   async startRestore() {
     await this.io.request('do-restore').subscribe(
-      (res) => {
+      () => {
         this.restoreInProgress = false;
         this.$toastr.success(this.translate.instant('backup.message_backup_restored'), this.translate.instant('toast.title_success'));
         if (this.setupWizardRestore) {
           this.postBackupRestart();
         }
       },
-      (err) => {
+      () => {
         this.restoreFailed = true;
         this.$toastr.error(this.translate.instant('backup.message_restore_failed'), this.translate.instant('toast.title_error'));
       },
@@ -164,12 +164,12 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
   }
 
   async startHbfxRestore() {
-    await this.io.request('do-restore-hbfx').subscribe(
-      (res) => {
+    this.io.request('do-restore-hbfx').subscribe(
+      () => {
         this.restoreInProgress = false;
         this.$toastr.success(this.translate.instant('backup.message_backup_restored'), this.translate.instant('toast.title_success'));
       },
-      (err) => {
+      () => {
         this.restoreFailed = true;
         this.$toastr.error(this.translate.instant('backup.message_restore_failed'), this.translate.instant('toast.title_error'));
       },
@@ -191,13 +191,11 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
 
   postBackupRestart() {
     this.$api.put('/backup/restart', {}).subscribe(
-      (res) => {
+      () => {
         this.activeModal.close(true);
         this.$route.navigate(['/']);
       },
-      (err) => {
-
-      },
+      () => {},
     );
   }
 

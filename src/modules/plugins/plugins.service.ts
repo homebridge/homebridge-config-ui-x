@@ -294,7 +294,7 @@ export class PluginsService {
         plugin.latestVersion = pkg.package.version;
         plugin.lastUpdated = pkg.package.date;
         plugin.description = (pkg.package.description) ?
-          pkg.package.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkg.package.name;
+          pkg.package.description.replace(/\(?(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkg.package.name;
         plugin.links = pkg.package.links;
         plugin.author = (pkg.package.publisher) ? pkg.package.publisher.username : null;
         plugin.verifiedPlugin = this.verifiedPlugins.includes(pkg.package.name);
