@@ -28,7 +28,7 @@
           </span>
         </span>
       </span>
-      <button class="btn btn-primary waves-effect m-0" [translate]="'reset.title_clear_cached_accessories'"
+      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width:45px;" [translate]="'reset.title_clear_cached_accessories'"
         (click)="selectNetworkInterfaces()" [disabled]="!availableNetworkAdapters.length"
         [attr.aria-label]="'settings.network.title_network_interfaces' | translate">
         <i class="fas fa-fw fa-cog" [ngClass]="{ 'fa-pulse': !availableNetworkAdapters.length }"></i>
@@ -134,7 +134,7 @@
           <i class="fas fa-fw fa-info-circle primary-text"></i>
         </a>
       </span>
-      <button class="btn btn-primary waves-effect m-0" (click)="unpairAccessory()"
+      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width:45px;" (click)="unpairAccessory()"
         [attr.aria-label]="'reset.title_unpair_bridges_cameras_tv_external_accessories' | translate">
         <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
       </button>
@@ -146,7 +146,7 @@
           <i class="fas fa-fw fa-info-circle primary-text"></i>
         </a>
       </span>
-      <button class="btn btn-primary waves-effect m-0" (click)="resetHomebridgeState()"
+      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width:45px;" (click)="resetHomebridgeState()"
         [attr.aria-label]="'reset.title_reset_homebridge_accessory' | translate">
         <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
       </button>
@@ -171,7 +171,8 @@
           <i class="fas fa-fw fa-info-circle primary-text"></i>
         </a>
       </span>
-      <button class="btn btn-primary waves-effect m-0" [translate]="'reset.title_clear_cached_accessories_single'"
+      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width:45px;" 
+        [translate]="'reset.title_clear_cached_accessories_single'"
         (click)="removeSingleCachedAccessories()"
         [attr.aria-label]="'reset.title_clear_cached_accessories_single' | translate">
         <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
@@ -184,7 +185,7 @@
           <i class="fas fa-fw fa-info-circle primary-text"></i>
         </a>
       </span>
-      <button class="btn btn-primary waves-effect m-0" [translate]="'reset.title_clear_cached_accessories'"
+      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width:45px;" [translate]="'reset.title_clear_cached_accessories'"
         (click)="removeAllCachedAccessories()" [attr.aria-label]="'reset.title_clear_cached_accessories' | translate">
         <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
       </button>
@@ -201,7 +202,7 @@
           <i class="fas fa-fw fa-info-circle primary-text"></i>
         </a>
       </span>
-      <button class="btn btn-primary waves-effect m-0" (click)="forceRestartService()"
+      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width:45px;" (click)="forceRestartService()"
         [attr.aria-label]="'reset.title_force_restart_hb_service' | translate">
         <i class="fas fa-fw fa-sync"></i>
       </button>
