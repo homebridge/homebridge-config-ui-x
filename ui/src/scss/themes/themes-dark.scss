@@ -18,6 +18,17 @@
       border: 0 !important;
     }
 
+    .form-control {
+      background-color: #333333 !important;
+      border: none !important;
+      color: #eeeeee !important;
+    }
+
+    .hb-plain-text-editor {
+      background-color: #333333 !important;
+      color: #eeeeee !important;
+    }
+
     .navbar-dark {
       background-color: #0f0f0f !important;
       border-bottom: #0f0f0f;
@@ -54,10 +65,6 @@
 
     .primary-text {
       color: $darkModePrimary;
-    }
-
-    .notif-dot {
-      background-color: $darkModePrimary;
     }
 
     .dark-mode-highlight {
@@ -99,6 +106,10 @@
     .card {
       color: #ffffff;
       background-color: $secondaryBackground !important;
+    }
+
+    .card-text-defined {
+      color: #ffffff;
     }
 
     .login-card {
@@ -385,8 +396,8 @@
     }
 
     .plugin-icon-card {
-      width: 60px;
-      height: 60px;
+      width: 70px;
+      height: 70px;
       border-radius: 15px;
       border: 1px solid #222222;
     }

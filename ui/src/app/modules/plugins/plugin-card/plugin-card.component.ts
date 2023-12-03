@@ -12,6 +12,7 @@ import { PluginLogModalComponent } from '@/app/core/manage-plugins/plugin-log-mo
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { SettingsService } from '@/app/core/settings.service';
 import { WsService } from '@/app/core/ws.service';
+import { PluginInfoComponent } from '@/app/modules/plugins/plugin-card/plugin-info/plugin-info.component';
 
 @Component({
   selector: 'app-plugin-card',
@@ -108,6 +109,11 @@ export class PluginCardComponent implements OnInit {
     }
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info');
     ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/homebridge/wiki/verified-Plugins';
+  }
+
+  pluginInfoModal(plugin: any) {
+    const ref = this.$modal.open(PluginInfoComponent);
+    ref.componentInstance.plugin = plugin;
   }
 
   disablePlugin(plugin: any) {

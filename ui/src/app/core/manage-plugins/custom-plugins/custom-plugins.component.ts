@@ -92,7 +92,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
       this.iframe.contentWindow.postMessage(data, environment.api.origin);
     });
 
-    this.io.socket.on('ready', (data) => {
+    this.io.socket.on('ready', () => {
       this.loading = false;
       this.loadUi();
     });
@@ -426,7 +426,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     this.saveInProgress = true;
     return this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig)
       .toPromise()
-      .then(data => {
+      .then(() => {
         this.saveInProgress = false;
 
         if (exit) {
@@ -434,7 +434,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
           this.justSavedAndExited = true;
         }
       })
-      .catch(err => {
+      .catch(() => {
         this.saveInProgress = false;
         this.$toastr.error(this.$translate.instant('config.toast_failed_to_save_config'), this.$translate.instant('toast.title_error'));
       });

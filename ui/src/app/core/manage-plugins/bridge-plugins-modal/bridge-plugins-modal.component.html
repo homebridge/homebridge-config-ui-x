@@ -68,7 +68,7 @@
                   [disabled]="restartInProgress[item._bridge?.username]"
                   ngbTooltip="{{'menu.tooltip_restart' | translate}}" container="body" openDelay="150"
                   (click)="restartChildBridge(item._bridge?.username)">
-                  <i class="fas fa-fw fa-fw nav-menu-icon" [ngClass]="{
+                  <i class="fas fa-fw nav-menu-icon" [ngClass]="{
                     'fa-power-off': !restartInProgress[item._bridge?.username],
                     'fa-spinner fa-pulse': restartInProgress[item._bridge?.username]
                   }"></i>
