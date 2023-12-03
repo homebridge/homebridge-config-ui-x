@@ -21,7 +21,7 @@
         Please restart the plugin's child bridges for the changes to apply.
       </p>
     </div>
-    <div class="alert show alert-info pt-3 px-3 pb-0 mb-0">
+    <div class="alert show alert-info pt-3 px-3 pb-0 mb-0" *ngIf="changeLog">
       <markdown class="plugin-md" [data]="changeLog"></markdown>
     </div>
   </div>
