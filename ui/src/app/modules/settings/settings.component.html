@@ -62,25 +62,24 @@
   <ul class="list-group">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span>{{ 'settings.startup.debug' | translate }} <code>-D</code></span>
-      <input type="checkbox" class="rendux-input ms-3" style="min-width: 45px;" id="homebridgeDebugMode" formControlName="HOMEBRIDGE_DEBUG"
+      <input type="checkbox" class="rendux-input" id="homebridgeDebugMode" formControlName="HOMEBRIDGE_DEBUG"
         aria-label="Debug Mode">
-      <label for="homebridgeDebugMode" class="rendux-label"></label>
+      <label for="homebridgeDebugMode" class="rendux-label ms-3" style="min-width: 45px;"></label>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span>
-        {{ 'settings.startup.insecure_1' | translate }}
-        <span class="d-none d-md-inline"> / {{ 'settings.startup.insecure_2' | translate }} </span>
+        {{ 'settings.startup.insecure_1' | translate }} ({{ 'settings.startup.insecure_2' | translate }})
         <code>-I</code>
       </span>
-      <input type="checkbox" class="rendux-input ms-3" style="min-width: 45px;" id="homebridgeInsecureMode" formControlName="HOMEBRIDGE_INSECURE"
+      <input type="checkbox" class="rendux-input" id="homebridgeInsecureMode" formControlName="HOMEBRIDGE_INSECURE"
         aria-label="Insecure Mode">
-      <label for="homebridgeInsecureMode" class="rendux-label"></label>
+      <label for="homebridgeInsecureMode" class="rendux-label ms-3" style="min-width: 45px;"></label>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="$settings.env.serviceMode">
       <span>{{ 'settings.startup.keep_accessories' | translate }} <code>-K</code></span>
-      <input type="checkbox" class="rendux-input ms-3" style="min-width: 45px;" id="homebridgeKeepOrphans" formControlName="HOMEBRIDGE_KEEP_ORPHANS"
+      <input type="checkbox" class="rendux-input" id="homebridgeKeepOrphans" formControlName="HOMEBRIDGE_KEEP_ORPHANS"
         aria-label="Keep accessories of uninstall plugins">
-      <label for="homebridgeKeepOrphans" class="rendux-label"></label>
+      <label for="homebridgeKeepOrphans" class="rendux-label ms-3" style="min-width: 45px;"></label>
     </li>
   </ul>
 

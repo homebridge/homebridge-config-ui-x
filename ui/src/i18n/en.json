@@ -311,7 +311,7 @@
   "settings.startup.debug": "Homebridge Debug Mode",
   "settings.startup.insecure_1": "Homebridge 'Insecure' Mode",
   "settings.startup.insecure_2": "Enable Accessory Control",
-  "settings.startup.keep_accessories": "Keep Accessories Of Uninstalled Plugins",
+  "settings.startup.keep_accessories": "Keep Accessories Of Disabled/Uninstalled Platform Plugins",
   "settings.title_actions": "Actions",
   "settings.title_environment_variables": "Environment Variables",
   "settings.title_manage_cached_accessories": "Manage Cached Accessories",
