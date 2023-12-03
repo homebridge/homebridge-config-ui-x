@@ -33,7 +33,7 @@
             <a class="nav-link" routerLink="/plugins" [translate]="'menu.label_plugins'">
               <i class="fa fa-fw fa-plug pe-2"></i>Plugins</a>
           </li>
-          <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$settings.env.enableAccessories">
+          <li class="nav-item waves-effect waves-light" routerLinkActive="active">
             <a class="nav-link" routerLink="/accessories" [translate]="'menu.label_accessories'">
               <i class="fa fa-fw fa-lightbulb pe-2"></i>Accessories</a>
           </li>
@@ -109,7 +109,7 @@
           <li><a class="link_name" routerLink="/plugins" [translate]="'menu.label_plugins'">Plugins</a></li>
         </ul>
       </li>
-      <li *ngIf="$settings.env.enableAccessories">
+      <li>
         <a routerLink="/accessories" >
           <i class="fa fa-fw fa-lightbulb"></i>
           <span class="link_name" [translate]="'menu.label_accessories'">Accessories</span>

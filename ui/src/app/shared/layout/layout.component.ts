@@ -87,6 +87,7 @@ export class LayoutComponent implements OnInit {
   openUiSettings() {
     this.$plugins.settings({
       name: 'homebridge-config-ui-x',
+      displayName: 'Homebridge UI',
       settingsSchema: true,
       links: {},
     });
