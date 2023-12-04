@@ -1,0 +1,12 @@
+# Add 'workflow' to any changes within 'workflow' folder or any subfolders
+workflow:
+  - .github/workflows/*
+
+beta:
+- base-branch: 'beta*'
+
+alpha:
+- base-branch: 'alpha*'
+
+latest:
+- base-branch: 'latest'
