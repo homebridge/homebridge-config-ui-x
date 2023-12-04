@@ -50,6 +50,7 @@
   "accessories.message_must_use_insecure_mode": "Щоб керувати своїми аксесуарами, Ви повинні запустити Homebridge <strong>в безпечному</strong> режимі.",
   "accessories.message_please_see": "Будь ласка, подивіться",
   "accessories.message_rooms_not_appear_in_homekit": "Створені тут кімнати не зявляться в HomeKit, вони призначені для організації аксесуарів в Інтерфейсі Homebridge Config X.",
+  "accessories.message_settings_link": "You can access the Homebridge Settings at any time from the main menu or by clicking the cog",
   "accessories.title_accessories": "Аксесуари",
   "accessories.title_accessory_control_disabled": "Керування аксесуарами вимнено",
   "accessories.title_create_new_room": "Створити нову кімнату",

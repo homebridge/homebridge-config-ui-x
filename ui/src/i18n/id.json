@@ -50,6 +50,7 @@
   "accessories.message_must_use_insecure_mode": "Untuk mengontrol aksesoris anda, anda harus menjalankan Homebridge dalam mode <strong>tidak aman</strong>.",
   "accessories.message_please_see": "Tolong lihat",
   "accessories.message_rooms_not_appear_in_homekit": "Ruangan yang anda buat di sini tidak akan muncul di HomeKit, hanya untuk pengaturan aksesoris di Homebridge UI.",
+  "accessories.message_settings_link": "You can access the Homebridge Settings at any time from the main menu or by clicking the cog",
   "accessories.title_accessories": "Aksesoris",
   "accessories.title_accessory_control_disabled": "Homebridge Kontrol Aksesoris Dinonaktifkan",
   "accessories.title_create_new_room": "Buat Ruangan Baru",

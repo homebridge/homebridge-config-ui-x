@@ -50,6 +50,7 @@
   "accessories.message_must_use_insecure_mode": "Um deine Geräte zu steuern, musst du Homebridge im <strong>unsicheren</strong> Modus ausführen.",
   "accessories.message_please_see": "Bitte beachten",
   "accessories.message_rooms_not_appear_in_homekit": "Die Räume, die du hier erstellst, werden nicht in HomeKit erscheinen. Sie sind nur zum Ordnen der Geräte innerhalb von Homebridge UI gedacht.",
+  "accessories.message_settings_link": "You can access the Homebridge Settings at any time from the main menu or by clicking the cog",
   "accessories.title_accessories": "Geräte",
   "accessories.title_accessory_control_disabled": "Homebridge-Gerätesteuerung deaktiviert",
   "accessories.title_create_new_room": "Erstelle neuen Raum",

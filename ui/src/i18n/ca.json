@@ -50,6 +50,7 @@
   "accessories.message_must_use_insecure_mode": "Per controlar els teus accessoris has d'executar Homebridge en la manera <strong> insegur </ strong>",
   "accessories.message_please_see": "Si us plau, mira",
   "accessories.message_rooms_not_appear_in_homekit": "Les habitacions creades aquí no apareixeran en HomeKit, només són per a organitzar els accessoris en Homebridge UI.",
+  "accessories.message_settings_link": "You can access the Homebridge Settings at any time from the main menu or by clicking the cog",
   "accessories.title_accessories": "Accessoris",
   "accessories.title_accessory_control_disabled": "Control d'accessoris Homebridge desactivat",
   "accessories.title_create_new_room": "Crear habitació nova",

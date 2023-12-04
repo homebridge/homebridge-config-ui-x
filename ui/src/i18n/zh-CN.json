@@ -50,6 +50,7 @@
   "accessories.message_must_use_insecure_mode": "您必须以 <strong>insecure(-I)</strong> 模式启动 Homebridge 才可以控制配件。",
   "accessories.message_please_see": "请看",
   "accessories.message_rooms_not_appear_in_homekit": "你创建的房间将不会在 HomeKit 中显示, 他们的作用在于您可以在 Homebridge UI 中整理所有配件。",
+  "accessories.message_settings_link": "You can access the Homebridge Settings at any time from the main menu or by clicking the cog",
   "accessories.title_accessories": "配件",
   "accessories.title_accessory_control_disabled": "Homebridge 配件控制已禁用",
   "accessories.title_create_new_room": "添加房间",

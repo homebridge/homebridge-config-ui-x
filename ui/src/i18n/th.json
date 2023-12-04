@@ -50,6 +50,7 @@
   "accessories.message_must_use_insecure_mode": "ในการควบคุมอุปกรณ์เสริมของคุณคุณต้องใช้ Homebridge โหมด <strong>ไม่ปลอดภัย</strong>",
   "accessories.message_please_see": "โปรดมอง",
   "accessories.message_rooms_not_appear_in_homekit": "ห้องที่คุณสร้างที่นี่จะไม่ปรากฏใน HomeKit แต่มีไว้สำหรับการจัดระเบียบอุปกรณ์เสริมใน Homebridge UI เท่านั้น",
+  "accessories.message_settings_link": "You can access the Homebridge Settings at any time from the main menu or by clicking the cog",
   "accessories.title_accessories": "อุปกรณ์เสริม",
   "accessories.title_accessory_control_disabled": "การควบคุมอุปกรณ์เสริม Homebridge ถูกปิดใช้งาน",
   "accessories.title_create_new_room": "สร้างห้องใหม่",
