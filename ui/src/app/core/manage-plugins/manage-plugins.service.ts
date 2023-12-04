@@ -76,6 +76,8 @@ export class ManagePluginsService {
     ref.componentInstance.action = 'Update';
     ref.componentInstance.pluginName = homebridgePkg.name;
     ref.componentInstance.targetVersion = targetVersion;
+    ref.componentInstance.latestVersion = homebridgePkg.latestVersion;
+    ref.componentInstance.installedVersion = homebridgePkg.installedVersion;
   }
 
   /**

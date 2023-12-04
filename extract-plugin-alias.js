@@ -44,7 +44,7 @@ const HomebridgeApiMock = {
             return {
               UUID: '0000003E-0000-1000-8000-0026BB765291',
             };
-          }
+          },
         });
       }
     },
@@ -56,7 +56,7 @@ const HomebridgeApiMock = {
             return {
               UUID: '0000003E-0000-1000-8000-0026BB765291',
             };
-          }
+          },
         });
       }
     },
@@ -66,8 +66,8 @@ const HomebridgeApiMock = {
     Categories: {},
     Units: {},
     uuid: {
-      generate: () => { /** mock */ }
-    }
+      generate: () => { /** mock */ },
+    },
   },
   platformAccessory() {
     return {
@@ -75,7 +75,7 @@ const HomebridgeApiMock = {
       getService() { /** mock */ },
       removeService() { /** mock */ },
       context() { /** mock */ },
-      services() { /** mock */ }
+      services() { /** mock */ },
     };
   },
   registerPlatformAccessories() { /** mock */ },
@@ -94,8 +94,8 @@ const HomebridgeApiMock = {
     },
     persistPath() {
       return path.join(process.cwd(), 'persist');
-    }
-  }
+    },
+  },
 };
 
 function main() {

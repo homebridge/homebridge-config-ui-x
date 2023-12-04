@@ -90,6 +90,7 @@ export class HomebridgeStatusWidgetComponent implements OnInit {
   openUiSettings() {
     this.$plugin.settings({
       name: 'homebridge-config-ui-x',
+      displayName: 'Homebridge UI',
       settingsSchema: true,
       links: {},
     });

@@ -369,6 +369,7 @@ export class PluginsService {
       plugin.links = {
         npm: `https://www.npmjs.com/package/${plugin.name}`,
         homepage: pkg.homepage,
+        bugs: typeof pkg.bugs === 'object' && pkg.bugs?.url ? pkg.bugs.url : null,
       };
       plugin.author = (pkg.maintainers.length) ? pkg.maintainers[0].name : null;
       plugin.verifiedPlugin = this.verifiedPlugins.includes(pkg.name);
@@ -884,14 +885,20 @@ export class PluginsService {
     }
 
     // Plugin must have a homepage to work out Git Repo
-    if (!plugin.links.homepage) {
+    // Some plugins have a custom homepage, so often we can also use the bugs link too
+    if (!plugin.links.homepage && !plugin.links.bugs) {
       throw new NotFoundException();
     }
 
     // make sure the repo is GitHub
     const repoMatch = plugin.links.homepage.match(/https:\/\/github.com\/([^\/]+)\/([^\/#]+)/);
+    const bugsMatch = plugin.links.bugs?.match(/https:\/\/github.com\/([^\/]+)\/([^\/#]+)/);
+    let match: RegExpMatchArray | null = repoMatch;
     if (!repoMatch) {
-      throw new NotFoundException();
+      if (!bugsMatch) {
+        throw new NotFoundException();
+      }
+      match = bugsMatch;
     }
 
     // Special case for beta npm tags for homebridge, homebridge ui and all plugins
@@ -916,14 +923,14 @@ export class PluginsService {
         name: 'v' + plugin.latestVersion,
         changelog: `Thank you for helping improve ${plugin.displayName || `\`${plugin.name}\``} by testing a beta version.\n\n` +
           'You can use the Homebridge UI at any time to revert back to the stable version.\n\n' +
-          'Please remember this is a **test** version, and report any issues to the GitHub repository page:\n' +
+          'Please remember this is a **beta** version, and report any issues to the GitHub repository page:\n' +
           `- https://github.com/${repoMatch[1]}/${repoMatch[2]}/issues` +
           (betaBranch ? `\n\nSee the commit history for recent changes:\n- https://github.com/${repoMatch[1]}/${repoMatch[2]}/commits/${betaBranch}` : ''),
       };
     }
 
     try {
-      const release = (await this.httpService.get(`https://api.github.com/repos/${repoMatch[1]}/${repoMatch[2]}/releases/latest`).toPromise()).data;
+      const release = (await this.httpService.get(`https://api.github.com/repos/${match[1]}/${match[2]}/releases/latest`).toPromise()).data;
       return {
         name: release.name,
         changelog: release.body,
@@ -1284,6 +1291,7 @@ export class PluginsService {
       plugin.links = {
         npm: `https://www.npmjs.com/package/${plugin.name}`,
         homepage: pkg.homepage,
+        bugs: typeof pkg.bugs === 'object' && pkg.bugs?.url ? pkg.bugs.url : null,
       };
       plugin.author = (pkg.maintainers.length) ? pkg.maintainers[0].name : null;
       plugin.engines = pkg.engines;
