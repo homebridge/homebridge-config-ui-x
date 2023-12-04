@@ -50,6 +50,7 @@
   "accessories.message_must_use_insecure_mode": "Chcete-li ovládat své příslušenství, musíte mít systém Homebridge v režimu <strong>insecure</strong> (nedůvěryhodný).",
   "accessories.message_please_see": "Prosím podívej se",
   "accessories.message_rooms_not_appear_in_homekit": "Místnosti, které zde vytvoříte, se v HomeKit neobjeví. Jsou pouze pro přehlednost zobrazení příslušenství v Homebridge UI.",
+  "accessories.message_settings_link": "You can access the Homebridge Settings at any time from the main menu or by clicking the cog",
   "accessories.title_accessories": "Příslušenství",
   "accessories.title_accessory_control_disabled": "Ovládání příslušenství pro Homebridge je zakázáno",
   "accessories.title_create_new_room": "Vytvořit novou místnost",

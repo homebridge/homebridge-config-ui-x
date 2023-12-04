@@ -50,6 +50,7 @@
   "accessories.message_must_use_insecure_mode": "За да ги контролирате Вашите уреди мора да го извршите Homebridge во <strong>insecure</strong> мод.",
   "accessories.message_please_see": "Проверете на",
   "accessories.message_rooms_not_appear_in_homekit": "Собите што ги креирате тука нема да бидат прикажани во Home апликацијата, истите се користат само за организација во Homebridge UI.",
+  "accessories.message_settings_link": "You can access the Homebridge Settings at any time from the main menu or by clicking the cog",
   "accessories.title_accessories": "Уреди",
   "accessories.title_accessory_control_disabled": "Контрола на уреди исклучена",
   "accessories.title_create_new_room": "Создади нова Соба",
