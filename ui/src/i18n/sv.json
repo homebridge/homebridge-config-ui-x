@@ -50,6 +50,7 @@
   "accessories.message_must_use_insecure_mode": "För att kontrollera dina tillbehör måste du köra Homebridge i <strong>osäkert</strong> läge.",
   "accessories.message_please_see": "Snälla se",
   "accessories.message_rooms_not_appear_in_homekit": "Rummen du skapar här visas inte i HomeKit, de är endast avsedda för organisering av tillbehör i Homebridge UI.",
+  "accessories.message_settings_link": "You can access the Homebridge Settings at any time from the main menu or by clicking the cog",
   "accessories.title_accessories": "Tillbehör",
   "accessories.title_accessory_control_disabled": "Homebridge Tillbehörs Kontroll Inaktiverad",
   "accessories.title_create_new_room": "Skapa nytt rum",

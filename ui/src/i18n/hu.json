@@ -50,6 +50,7 @@
   "accessories.message_must_use_insecure_mode": "A kiegészítők vezérléseihez a Homebridge-t <strong>insecure</strong> módban kell futtatni.",
   "accessories.message_please_see": "Keresd meg",
   "accessories.message_rooms_not_appear_in_homekit": "The rooms you create here will not appear in HomeKit, they are only for the organisation of accessories in the Homebridge UI.",
+  "accessories.message_settings_link": "You can access the Homebridge Settings at any time from the main menu or by clicking the cog",
   "accessories.title_accessories": "Kiegészítők",
   "accessories.title_accessory_control_disabled": "Homebridge kiegészítő vezérlő kikapcsolva",
   "accessories.title_create_new_room": "Új szoba készítése",

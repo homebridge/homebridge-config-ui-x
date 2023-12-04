@@ -50,6 +50,7 @@
   "accessories.message_must_use_insecure_mode": "TČe želite nadzirati dodatno opremo, morate v načinu <strong> nezaščiteno </strong> uporabljati Homebridge.",
   "accessories.message_please_see": "Prosim poglej",
   "accessories.message_rooms_not_appear_in_homekit": "Prostori, ki jih ustvarite tukaj, se ne bodo prikazali v programu HomeKit, temveč so samo za organizacijo dodatne opreme v programu Homebridge UI.",
+  "accessories.message_settings_link": "You can access the Homebridge Settings at any time from the main menu or by clicking the cog",
   "accessories.title_accessories": "Dodatki",
   "accessories.title_accessory_control_disabled": "Homebridge Nadzor dodatne opreme onemogočen",
   "accessories.title_create_new_room": "Ustvari novo sobo",

@@ -50,6 +50,7 @@
   "accessories.message_must_use_insecure_mode": "アクセサリを操作するにはHomebridgeを <strong>非セキュア</strong> モードで起動する必要があります",
   "accessories.message_please_see": "注意",
   "accessories.message_rooms_not_appear_in_homekit": "ここで作成した部屋はHomebridge UIでアクセサリを整理するためのもので、HomeKitアプリには反映されません。",
+  "accessories.message_settings_link": "You can access the Homebridge Settings at any time from the main menu or by clicking the cog",
   "accessories.title_accessories": "アクセサリ",
   "accessories.title_accessory_control_disabled": "Homebridgeアクセサリ操作は無効です",
   "accessories.title_create_new_room": "新しい部屋を作成",

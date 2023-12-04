@@ -5,6 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
 import { AddRoomModalComponent } from './add-room-modal/add-room-modal.component';
 import { AccessoriesService } from '@/app/core/accessories/accessories.service';
+import { AuthService } from '@/app/core/auth/auth.service';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { SettingsService } from '@/app/core/settings.service';
 
@@ -19,6 +20,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   private orderSubscription: Subscription;
 
   constructor(
+    public $auth: AuthService,
     private dragulaService: DragulaService,
     public $toastr: ToastrService,
     private modalService: NgbModal,

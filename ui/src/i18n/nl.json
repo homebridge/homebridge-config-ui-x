@@ -50,6 +50,7 @@
   "accessories.message_must_use_insecure_mode": "Om uw accessoires te bedienen, moet u Homebridge in <strong>onveilige</strong> modus gebruiken.",
   "accessories.message_please_see": "Bekijk alsjeblieft",
   "accessories.message_rooms_not_appear_in_homekit": "De kamers die hier worden aangemaakt verschijnen niet in HomeKit, ze zijn alleen voor organisatie van accessoires in the Homebridge UI.",
+  "accessories.message_settings_link": "You can access the Homebridge Settings at any time from the main menu or by clicking the cog",
   "accessories.title_accessories": "Accessoires",
   "accessories.title_accessory_control_disabled": "Homebridge accessoirebesturing uitgeschakeld",
   "accessories.title_create_new_room": "Maak Nieuwe Kamer",

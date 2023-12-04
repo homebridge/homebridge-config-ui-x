@@ -50,6 +50,7 @@
   "accessories.message_must_use_insecure_mode": "For å kontrollere dine tilbehør må du kjøre Homebridge i <strong>usikker</strong> modus.",
   "accessories.message_please_see": "Vennligst se",
   "accessories.message_rooms_not_appear_in_homekit": "The rooms you create here will not appear in HomeKit, they are only for the organisation of accessories in the Homebridge UI.",
+  "accessories.message_settings_link": "You can access the Homebridge Settings at any time from the main menu or by clicking the cog",
   "accessories.title_accessories": "Tilbehør",
   "accessories.title_accessory_control_disabled": "Homebridge Accessory Control deaktivert",
   "accessories.title_create_new_room": "Lag nytt rom",
