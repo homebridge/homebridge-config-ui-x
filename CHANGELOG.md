@@ -2,7 +2,9 @@
 
 All notable changes to homebridge-config-ui-x will be documented in this file.
 
-## BETA
+## 4.54.0 (2023-12-05)
+
+Merry Christmas and Happy Holidays to all our users celebrating later this month! :christmas_tree:
 
 ### Notable Changes
 
@@ -21,15 +23,11 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - add some support links (#1833)
 - add plugin logs feature (#1834)
 - update module headers (#1836)
-- use restart modals, tidy plugin card
 - add plugin homepage link to UI settings screen
 - add icons to main menu
-- updates to plugin card
-- add all config options to UI Settings (#1838)
+- Add All Config Options to UI Settings (#1838)
 - add spanner settings icons to hb+ui on status
-- various ui enhancements
 - add modal to explain unverified plugin status
-- various minor ui changes (@mkz212)
 - refactor main page sub-icons
 - add new concept for plugin card with icons
 - always show 'Accessories' tab to show issue in UI if insecure mode is not enabled
@@ -45,11 +43,11 @@ _Also thanks to @mkz212 and @Staubgeborener for their contributions to the trans
 
 ### Other Changes
 
+- update github release workflow (#1818)
+- add generic restart hb modal, future use (#1821)
 - Add Raspberry Pi 5 to list of Pi devices in bug-report template (#1824) (@jsiegenthaler)
 - add api work for plugin icons
-- update `socket.io-client` dependency
 - update dependencies
-- update ui dependencies
 - save bugs link as part of `IPackageJson` type
 
 ## 4.53.0 (2023-11-24)
