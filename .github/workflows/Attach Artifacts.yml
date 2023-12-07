@@ -37,7 +37,7 @@ jobs:
       - name: Install package
         run: |
           export npm_config_prefix=$(pwd)/package
-          npm install -g homebridge-config-ui-x@$${{ needs.analyze-tags.outputs.previous-tag || github.event.inputs.tag }}
+          npm install -g homebridge-config-ui-x@${{ needs.analyze-tags.outputs.previous-tag || github.event.inputs.tag }}
 
       - name: Remove invalid node-pty node-gyp run
         run: |
