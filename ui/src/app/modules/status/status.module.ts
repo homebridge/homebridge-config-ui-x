@@ -5,7 +5,7 @@ import { RouterModule } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 import { GridsterModule } from 'angular-gridster2';
-import { ChartsModule } from 'ng2-charts';
+import { NgChartsModule } from 'ng2-charts';
 import { DragulaModule } from 'ng2-dragula';
 import { StatusComponent } from './status.component';
 import { WidgetAddComponent } from './widget-add/widget-add.component';
@@ -57,7 +57,7 @@ import { ManagePluginsModule } from '@/app/core/manage-plugins/manage-plugins.mo
     NgbModule,
     GridsterModule,
     DragulaModule,
-    ChartsModule,
+    NgChartsModule,
     CoreModule,
     AccessoriesCoreModule,
     ManagePluginsModule,

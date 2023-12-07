@@ -9,6 +9,5 @@ export class DragHerePlaceholderComponent implements OnInit {
 
   constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 }

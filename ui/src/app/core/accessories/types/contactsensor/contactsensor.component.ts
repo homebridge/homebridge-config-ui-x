@@ -11,6 +11,5 @@ export class ContactsensorComponent implements OnInit {
 
   constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 }

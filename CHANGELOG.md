@@ -2,6 +2,54 @@
 
 All notable changes to homebridge-config-ui-x will be documented in this file.
 
+## 4.54.0 (2023-12-05)
+
+Merry Christmas and Happy Holidays to all our users celebrating later this month! :christmas_tree:
+
+### Notable Changes
+
+- Homebridge UI removed from the plugins page
+  - Status and update notifications moved to the status page (next to / under Homebridge itself)
+  - UI settings is accessible from the main menu
+- Various changes to the plugin cards
+  - Plugin settings now accessible from the plugin card menu, called 'Config'
+  - Icons: plugin devs can request an icon for their verified plugin at:
+    - https://github.com/homebridge/verified/issues/new/choose
+
+### UI Changes
+
+- add power options modal (#1820)
+- remove hb-ui card from plugins page (#1830)
+- add some support links (#1833)
+- add plugin logs feature (#1834)
+- update module headers (#1836)
+- add plugin homepage link to UI settings screen
+- add icons to main menu
+- Add All Config Options to UI Settings (#1838)
+- add spanner settings icons to hb+ui on status
+- add modal to explain unverified plugin status
+- refactor main page sub-icons
+- add new concept for plugin card with icons
+- always show 'Accessories' tab to show issue in UI if insecure mode is not enabled
+- for plugins that don't have a GitHub domain homepage, try parsing the bugs URL to be able to obtain release information
+
+_Thanks to @mkz212 for his contributions to the UI_
+
+### Translation Changes
+
+- Add missing DE translations for child bridges (#1825) (@jsiegenthaler)
+
+_Also thanks to @mkz212 and @Staubgeborener for their contributions to the translation files_
+
+### Other Changes
+
+- update github release workflow (#1818)
+- add generic restart hb modal, future use (#1821)
+- Add Raspberry Pi 5 to list of Pi devices in bug-report template (#1824) (@jsiegenthaler)
+- add api work for plugin icons
+- update dependencies
+- save bugs link as part of `IPackageJson` type
+
 ## 4.53.0 (2023-11-24)
 
 Happy Thanksgiving to our American friends! :turkey:
@@ -176,7 +224,7 @@ Happy Thanksgiving to our American friends! :turkey:
 
 - Improved guard rails around the Node.js 20 update for environments that can not support Node.js 20 (#1604)
 - Include commentary in the release notes about the possibility of needing to run `sudo hb-service rebuild` after updating, and how to determine if your system is compatible with Node.js 20.
-  
+
 ## 4.51.1 (2023-10-25)
 
 ### Bug Fixes
@@ -191,6 +239,7 @@ Happy Thanksgiving to our American friends! :turkey:
 ### Notable Changes
 
 - **Node Support**
+
   - ⚠️ Node 16 has reached end-of-life and is no longer supported by the Homebridge UI.
     - Starting with v4.51.0, the Homebridge UI will no longer work with Node 16, only Node 18 and 20
     - Homebridge UI follows the same Node support schedule as Homebridge. See the [How-To-Update-Node.js](https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js) page in the Homebridge wiki for more information

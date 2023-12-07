@@ -5,8 +5,8 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { ChartOptions } from 'chart.js';
-import { BaseChartDirective, Color } from 'ng2-charts';
+import { ChartConfiguration } from 'chart.js';
+import { BaseChartDirective } from 'ng2-charts';
 import { Subscription, interval } from 'rxjs';
 import { AuthService } from '@/app/core/auth/auth.service';
 import { WsService } from '@/app/core/ws.service';
@@ -22,46 +22,48 @@ export class MemoryWidgetComponent implements OnInit, OnDestroy {
 
   public totalMemory: number;
   public freeMemory: number;
-  public lineChartData = [{ data: [] }];
-  public lineChartLabels = [];
 
-  public lineChartOptions: (ChartOptions & { annotation: any }) = {
-    responsive: true,
-    legend: {
-      display: false,
-    },
-    tooltips: {
-      enabled: false,
-    },
-    scales: {
-      xAxes: [
-        {
-          display: false,
-        },
-      ],
-      yAxes: [
-        {
-          display: false,
-          ticks: {
-            max: 100,
-            min: 0,
-          },
-        },
-      ],
-    },
-    annotation: {
-      annotations: [],
-    },
+  public lineChartType: ChartConfiguration['type'] = 'line';
+
+  public lineChartData: ChartConfiguration['data'] = {
+    datasets: [{ data: [] }],
   };
 
-  public lineChartColors: Color[] = [
-    { // grey
-      backgroundColor: 'rgba(148,159,177,0.2)',
-      borderColor: 'rgba(148,159,177,0.2)',
-      pointRadius: 0,
-      borderWidth: 1,
+  public lineChartLabels = [];
+
+  public lineChartOptions: ChartConfiguration['options'] = {
+    responsive: true,
+    elements: {
+      point: {
+        radius: 0,
+      },
+      line: {
+        tension: 0.4,
+        backgroundColor: 'rgba(148,159,177,0.2)',
+        borderColor: 'rgba(148,159,177,0.2)',
+        fill: 'origin',
+      },
     },
-  ];
+    plugins: {
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        enabled: false,
+      },
+    },
+    scales: {
+      x: {
+        display: false,
+      },
+      y:
+        {
+          display: false,
+          max: 100,
+          min: 0,
+        },
+    },
+  };
 
   private io = this.$ws.getExistingNamespace('status');
   private intervalSubscription: Subscription;
@@ -72,6 +74,13 @@ export class MemoryWidgetComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    // lookup the chart color based on the current theme
+    const userColor = getComputedStyle(this.widgetBackground.nativeElement).backgroundColor;
+    if (userColor) {
+      this.lineChartOptions.elements.line.backgroundColor = userColor;
+      this.lineChartOptions.elements.line.borderColor = userColor;
+    }
+
     this.io.connected.subscribe(async () => {
       this.getServerMemoryInfo();
     });
@@ -85,13 +94,6 @@ export class MemoryWidgetComponent implements OnInit, OnDestroy {
         this.getServerMemoryInfo();
       }
     });
-
-    // lookup the chart color based on the current theme
-    const chartColor = getComputedStyle(this.widgetBackground.nativeElement).backgroundColor;
-    if (chartColor) {
-      this.lineChartColors[0].backgroundColor = chartColor;
-      this.lineChartColors[0].borderColor = chartColor;
-    }
   }
 
   getServerMemoryInfo() {
@@ -99,15 +101,17 @@ export class MemoryWidgetComponent implements OnInit, OnDestroy {
       this.totalMemory = data.mem.total / 1024 / 1024 / 1024;
       this.freeMemory = data.mem.available / 1024 / 1024 / 1024;
 
-      if (!this.lineChartData[0].data.length) {
-        this.lineChartData[0].data = data.memoryUsageHistory;
-        this.lineChartLabels = data.memoryUsageHistory.map(x => 'point');
+      if (!this.lineChartData.datasets[0].data.length) {
+        this.lineChartData.datasets[0].data = {
+          ...data.memoryUsageHistory,
+        };
+        this.lineChartLabels = data.memoryUsageHistory.map(() => 'point');
       } else {
-        this.lineChartData[0].data.push(data.memoryUsageHistory.slice(-1)[0]);
+        this.lineChartData.datasets[0].data.push(data.memoryUsageHistory.slice(-1)[0]);
         this.lineChartLabels.push('point');
 
-        if (this.lineChartData[0].data.length > 60) {
-          this.lineChartData[0].data.shift();
+        if (this.lineChartData.datasets[0].data.length > 60) {
+          this.lineChartData.datasets[0].data.shift();
           this.lineChartLabels.shift();
           this.chart.update();
         }

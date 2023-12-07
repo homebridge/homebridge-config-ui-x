@@ -10,7 +10,7 @@
   </div>
   <div class="modal-body">
     <div *ngIf="loading" class="text-center primary-text">
-      <i class="fa fa-fw fa-cog fa-spin" style="font-size: 72px;"></i>
+      <i class="fa fa-fw fa-cog fa-spin" style="font-size: 75px;"></i>
     </div>
 
     <div *ngIf="!loading && !canConfigure">
@@ -77,7 +77,7 @@
     </div>
     <div class="text-right">
       <button type="button" class="btn btn-elegant mr-auto" data-dismiss="modal" (click)="addBlock()" *ngIf="canConfigure">
-        Add {{ pluginType }}
+        <i class="fa fa-fw fa-plus"></i>
       </button>
       <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="save()" [disabled]="saveInProgress" *ngIf="canConfigure">
         {{ 'form.button_save' | translate }} <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>

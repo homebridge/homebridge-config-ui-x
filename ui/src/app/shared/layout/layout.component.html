@@ -1,6 +1,5 @@
 <!--Main Navigation-->
 <header *ngIf="$settings.theme && $auth.user">
-
   <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary scrolling-navbar">
     <a class="navbar-brand" routerLink="/">
       <img class="menu-logo" src="/assets/homebridge-logo.svg" />
@@ -22,11 +21,10 @@
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
           <a class="nav-link" routerLink="/config" [translate]="'menu.label_config'">Config</a>
         </li>
-        <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$settings.env.enableAccessories">
+        <li class="nav-item waves-effect waves-light" routerLinkActive="active">
           <a class="nav-link" routerLink="/accessories" [translate]="'menu.label_accessories'">Accessories</a>
         </li>
       </ul>
-
       <ul class="navbar-nav nav-flex-icons hb-nav-right">
         <li class="nav-item mr-3" *ngIf="rPiWasUnderVoltage || rPiCurrentlyUnderVoltage">
           <a href="javascript:void(0)" class="nav-link dropdown-toggle waves-effect waves-light"
@@ -38,7 +36,6 @@
               [ngClass]="{ 'fa-beat': rPiCurrentlyUnderVoltage }"></i>
           </a>
         </li>
-
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" placement="bottom"
           ngbTooltip="{{'menu.tooltip_view_logs' | translate}}" container="body">
           <a class="nav-link" routerLink="/logs" aria-label="View Homebridge Logs">
@@ -51,7 +48,6 @@
             <i #restartHomebridgeIcon class="fas fa-fw fa-power-off nav-menu-icon"></i>
           </a>
         </li>
-
         <li class="nav-item dropdown">
           <a href="javascript:void(0)" class="nav-link dropdown-toggle waves-effect waves-light" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false" aria-label="more actions dropdown menu">
@@ -60,57 +56,50 @@
           <div class="dropdown-menu dropdown-menu-right dropdown-info">
             <a class="dropdown-item waves-effect waves-light"
               *ngIf="$settings.env.enableTerminalAccess && $auth.user.admin" routerLink="/platform-tools/terminal">
+              <i class="fa fa-fw fa-terminal pr-2"></i>
               {{ 'menu.linux.label_terminal' | translate }}
             </a>
             <a class="dropdown-item waves-effect waves-light" *ngIf="$auth.user.admin" routerLink="/logs">
+              <i class="fa fa-fw fa-wave-square pr-2"></i>
               {{ 'menu.linux.label_logs' | translate }}
             </a>
             <div class="dropdown-divider" *ngIf="$auth.user.admin"></div>
             <a class="dropdown-item waves-effect waves-light" routerLink="/settings" *ngIf="$auth.user.admin">
-              Homebridge {{ 'menu.docker.label_settings' | translate }}
+              <i class="fa fa-fw fa-cog pr-2"></i>
+              {{ 'menu.label_settings_hb' | translate }}
             </a>
             <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light" (click)="openUiSettings()"
               *ngIf="$auth.user.admin">
-              {{ 'menu.label_ui_settings' | translate }}
+              <i class="fa fa-fw fa-sliders pr-2"></i>
+              {{ 'menu.label_settings_ui' | translate }}
             </a>
             <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light"
               (click)="backupRestoreHomebridge()" *ngIf="$auth.user.admin">
+              <i class="fa fa-fw fa-clock-rotate-left pr-2"></i>
               {{ 'backup.title_backup_restore' | translate }}
             </a>
             <a class="dropdown-item waves-effect waves-light" routerLink="/users" *ngIf=" $auth.user.admin">
+              <i class="fa fa-fw fa-user pr-2"></i>
               {{'menu.tooltip_user_accounts' | translate}}
             </a>
-            <div class="dropdown-divider waves-effect waves-light" *ngIf="$auth.user.admin"></div>
-            <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light" (click)="restartHomebridge()" *ngIf="$auth.user.admin">
-              {{ 'menu.tooltip_restart' | translate }}
+            <div class="dropdown-divider" *ngIf="$auth.user.admin"></div>
+            <a class="dropdown-item waves-effect waves-light" routerLink="/support">
+              <i class="fa fa-fw fa-question-circle-o pr-2"></i>
+              {{ 'support.title' | translate }}
             </a>
-            <a class="dropdown-item waves-effect waves-light" routerLink="/platform-tools/docker/startup-script"
-              *ngIf="$settings.env.runningInDocker && $auth.user.admin">
-              {{ 'menu.docker.label_startup_script' | translate }}
+            <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light" (click)="openRestartModal()" *ngIf="$auth.user.admin">
+              <i class="fa fa-fw fa-power-off pr-2"></i>
+              {{ 'menu.restart.title' | translate }}
             </a>
-            <a class="dropdown-item waves-effect waves-light" routerLink="/platform-tools/docker/restart-container"
-              *ngIf="$settings.env.runningInDocker && $auth.user.admin">
-              {{ 'menu.docker.label_restart_container' | translate }}
-            </a>
-            <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light"
-              *ngIf="$settings.env.canShutdownRestartHost && $auth.user.admin" (click)="restartServer()">
-              {{ 'menu.linux.label_restart_server' | translate }}
-            </a>
-            <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light"
-              *ngIf="$settings.env.canShutdownRestartHost && $auth.user.admin" (click)="shutdownServer()">
-              {{ 'menu.linux.label_shutdown_server' | translate }}
-            </a>
-            <div class="dropdown-divider" *ngIf="$settings.formAuth && $auth.user.admin"></div>
             <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light" (click)="$auth.logout()" *ngIf="$settings.formAuth">
+              <i class="fa fa-fw fa-right-from-bracket pr-2"></i>
               {{ 'menu.tooltip_logout' | translate }} - {{ $auth.user.username }}
             </a>
           </div>
         </li>
-
       </ul>
     </div>
   </nav>
-
 </header>
 
 <div class="container-fluid d-flex flex-col h-100 w-100">

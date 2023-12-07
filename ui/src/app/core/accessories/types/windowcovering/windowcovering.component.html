@@ -1,4 +1,4 @@
-<div class="accessory-box" [ngClass]="{'switch-on': service.values.TargetPosition}" appLongclick
+<div class="accessory-box" [ngClass]="{'window-on': service.values.TargetPosition}" appLongclick
   (longclick)="onLongClick()" (shortclick)="onClick()" tabindex="0">
   <div class="d-flex flex-column h-100">
     <div *ngIf="!service.values.TargetPosition" [inlineSVG]="'/assets/hap-icons/windowcovering-closed.svg'"
@@ -9,7 +9,7 @@
     <div class="accessory-label grey-text" *ngIf="service.values.PositionState === 2">
       <span *ngIf="service.values.CurrentPosition === 0">{{ 'accessories.control.label_closed' | translate }}</span>
       <span *ngIf="service.values.CurrentPosition > 0 && service.values.CurrentPosition < 100">
-        {{ service.values.CurrentPosition }}% {{ 'accessories.control.label_open' | translate }}
+        {{ service.values.CurrentPosition }}%
       </span>
       <span *ngIf="service.values.CurrentPosition === 100">{{ 'accessories.control.label_open' | translate }}</span>
     </div>

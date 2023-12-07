@@ -79,6 +79,11 @@ export class PluginsService {
 
   // verified plugins cache
   private verifiedPlugins: string[] = [];
+  private verifiedPluginsIcons: { [key: string]: string } = {};
+  private verifiedPluginsIconsPrefix = 'https://raw.githubusercontent.com/homebridge/verified/latest/';
+
+  private verifiedPluginsJson = 'https://raw.githubusercontent.com/homebridge/verified/latest/verified-plugins.json';
+  private verifiedPluginsIconsJson = 'https://raw.githubusercontent.com/homebridge/verified/latest/plugin-icons.json';
 
   // misc schemas
   private miscSchemas = {
@@ -289,11 +294,13 @@ export class PluginsService {
         plugin.latestVersion = pkg.package.version;
         plugin.lastUpdated = pkg.package.date;
         plugin.description = (pkg.package.description) ?
-          pkg.package.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkg.package.name;
+          pkg.package.description.replace(/\(?(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkg.package.name;
         plugin.links = pkg.package.links;
         plugin.author = (pkg.package.publisher) ? pkg.package.publisher.username : null;
         plugin.verifiedPlugin = this.verifiedPlugins.includes(pkg.package.name);
-
+        plugin.icon = this.verifiedPluginsIcons[pkg.package.name]
+          ? `${this.verifiedPluginsIconsPrefix}${this.verifiedPluginsIcons[pkg.package.name]}`
+          : null;
         return plugin;
       });
 
@@ -350,6 +357,7 @@ export class PluginsService {
         description: (pkg.description) ?
           pkg.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkg.name,
         verifiedPlugin: this.verifiedPlugins.includes(pkg.name),
+        icon: this.verifiedPluginsIcons[pkg.name],
       } as HomebridgePlugin;
 
       // it's not installed; finish building the response
@@ -361,9 +369,13 @@ export class PluginsService {
       plugin.links = {
         npm: `https://www.npmjs.com/package/${plugin.name}`,
         homepage: pkg.homepage,
+        bugs: typeof pkg.bugs === 'object' && pkg.bugs?.url ? pkg.bugs.url : null,
       };
       plugin.author = (pkg.maintainers.length) ? pkg.maintainers[0].name : null;
       plugin.verifiedPlugin = this.verifiedPlugins.includes(pkg.name);
+      plugin.icon = this.verifiedPluginsIcons[pkg.name]
+        ? `${this.verifiedPluginsIconsPrefix}${this.verifiedPluginsIcons[pkg.name]}`
+        : null;
 
       return [plugin];
     } catch (e) {
@@ -821,6 +833,9 @@ export class PluginsService {
         manufacturer: {
           type: 'string',
         },
+        firmwareRevision: {
+          type: 'string',
+        },
         model: {
           type: 'string',
         },
@@ -870,14 +885,20 @@ export class PluginsService {
     }
 
     // Plugin must have a homepage to work out Git Repo
-    if (!plugin.links.homepage) {
+    // Some plugins have a custom homepage, so often we can also use the bugs link too
+    if (!plugin.links.homepage && !plugin.links.bugs) {
       throw new NotFoundException();
     }
 
     // make sure the repo is GitHub
     const repoMatch = plugin.links.homepage.match(/https:\/\/github.com\/([^\/]+)\/([^\/#]+)/);
+    const bugsMatch = plugin.links.bugs?.match(/https:\/\/github.com\/([^\/]+)\/([^\/#]+)/);
+    let match: RegExpMatchArray | null = repoMatch;
     if (!repoMatch) {
-      throw new NotFoundException();
+      if (!bugsMatch) {
+        throw new NotFoundException();
+      }
+      match = bugsMatch;
     }
 
     // Special case for beta npm tags for homebridge, homebridge ui and all plugins
@@ -902,14 +923,14 @@ export class PluginsService {
         name: 'v' + plugin.latestVersion,
         changelog: `Thank you for helping improve ${plugin.displayName || `\`${plugin.name}\``} by testing a beta version.\n\n` +
           'You can use the Homebridge UI at any time to revert back to the stable version.\n\n' +
-          'Please remember this is a **test** version, and report any issues to the GitHub repository page:\n' +
+          'Please remember this is a **beta** version, and report any issues to the GitHub repository page:\n' +
           `- https://github.com/${repoMatch[1]}/${repoMatch[2]}/issues` +
           (betaBranch ? `\n\nSee the commit history for recent changes:\n- https://github.com/${repoMatch[1]}/${repoMatch[2]}/commits/${betaBranch}` : ''),
       };
     }
 
     try {
-      const release = (await this.httpService.get(`https://api.github.com/repos/${repoMatch[1]}/${repoMatch[2]}/releases/latest`).toPromise()).data;
+      const release = (await this.httpService.get(`https://api.github.com/repos/${match[1]}/${match[2]}/releases/latest`).toPromise()).data;
       return {
         name: release.name,
         changelog: release.body,
@@ -1202,6 +1223,9 @@ export class PluginsService {
       description: (pjson.description) ?
         pjson.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pjson.name,
       verifiedPlugin: this.verifiedPlugins.includes(pjson.name),
+      icon: this.verifiedPluginsIcons[pjson.name]
+        ? `${this.verifiedPluginsIconsPrefix}${this.verifiedPluginsIcons[pjson.name]}`
+        : null,
       installedVersion: installPath ? (pjson.version || '0.0.1') : null,
       globalInstall: (installPath !== this.configService.customPluginPath),
       settingsSchema: await pathExists(resolve(installPath, pjson.name, 'config.schema.json')) || this.miscSchemas[pjson.name],
@@ -1267,6 +1291,7 @@ export class PluginsService {
       plugin.links = {
         npm: `https://www.npmjs.com/package/${plugin.name}`,
         homepage: pkg.homepage,
+        bugs: typeof pkg.bugs === 'object' && pkg.bugs?.url ? pkg.bugs.url : null,
       };
       plugin.author = (pkg.maintainers.length) ? pkg.maintainers[0].name : null;
       plugin.engines = pkg.engines;
@@ -1475,7 +1500,13 @@ export class PluginsService {
     clearTimeout(this.verifiedPluginsRetryTimeout);
     try {
       this.verifiedPlugins = (
-        await this.httpService.get('https://raw.githubusercontent.com/homebridge/verified/latest/verified-plugins.json', {
+        await this.httpService.get(this.verifiedPluginsJson, {
+          httpsAgent: null,
+        }).toPromise()
+      ).data;
+
+      this.verifiedPluginsIcons = (
+        await this.httpService.get(this.verifiedPluginsIconsJson, {
           httpsAgent: null,
         }).toPromise()
       ).data;

@@ -11,6 +11,5 @@ export class LightsensorComponent implements OnInit {
 
   constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 }

@@ -11,11 +11,12 @@ export class UsersResolver implements Resolve<any> {
     private $router: Router,
   ) {}
 
-  resolve() {
-    return this.$api.get('/users').toPromise()
-      .catch((err) => {
-        this.$toastr.error(err.message, 'Failed to Load Users');
-        this.$router.navigate(['/']);
-      });
+  async resolve() {
+    try {
+      return await this.$api.get('/users').toPromise();
+    } catch (err) {
+      this.$toastr.error(err.message, 'Failed to Load Users');
+      this.$router.navigate(['/']);
+    }
   }
 }

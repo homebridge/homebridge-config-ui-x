@@ -3,13 +3,13 @@ import { ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { parse } from 'json5';
-import { NgxEditorModel } from 'ngx-monaco-editor';
+import { NgxEditorModel } from 'ngx-monaco-editor-v2';
 import { ToastrService } from 'ngx-toastr';
 import { ConfigRestoreBackupComponent } from './config-restore-backup/config.restore-backup.component';
 import { ApiService } from '@/app/core/api.service';
+import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { MonacoEditorService } from '@/app/core/monaco-editor.service';
-import { NotificationService } from '@/app/core/notification.service';
 import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
@@ -38,8 +38,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     private $settings: SettingsService,
     private $api: ApiService,
     private $md: MobileDetectService,
+    private $modal: NgbModal,
     private $monacoEditor: MonacoEditorService,
-    private $notification: NotificationService,
     public $toastr: ToastrService,
     private $route: ActivatedRoute,
     private translate: TranslateService,
@@ -67,11 +67,11 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     this.monacoEditorModel = {
       value: '{}',
       language: 'json',
-      uri: window.monaco ? window.monaco.Uri.parse('a://homebridge/config.json') : undefined,
+      uri: (window as any).monaco ? (window as any).monaco.Uri.parse('a://homebridge/config.json') : undefined,
     };
 
     //  if monaco is not loaded yet, wait for it, otherwise set up the editor now
-    if (!window.monaco) {
+    if (!(window as any).monaco) {
       this.$monacoEditor.readyEvent.subscribe({
         next: () => {
           this.setMonacoEditorModel();
@@ -120,7 +120,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
         await this.monacoEditor.getAction('editor.action.formatDocument').run();
 
         // check for issues, specifically block saving if there are any duplicate keys
-        const issues = window.monaco.editor.getModelMarkers({ owner: 'json' });
+        const issues = (window as any).monaco.editor.getModelMarkers({ owner: 'json' });
 
         for (const issue of issues) {
           if (issue.message === 'Duplicate object key') {
@@ -202,17 +202,15 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     }
   }
 
-  saveConfig(config) {
-    return this.$api.post('/config-editor', config)
-      .toPromise()
-      .then(data => {
-        this.$notification.configUpdated.next(undefined);
-        this.$toastr.success(this.translate.instant('config.toast_config_saved'), this.translate.instant('toast.title_success'));
-        this.homebridgeConfig = JSON.stringify(data, null, 4);
-      })
-      .catch(err => {
-        this.$toastr.error(this.translate.instant('config.toast_failed_to_save_config'), this.translate.instant('toast.title_error'));
-      });
+  async saveConfig(config: any) {
+    try {
+      const data = await this.$api.post('/config-editor', config)
+        .toPromise();
+      this.homebridgeConfig = JSON.stringify(data, null, 4);
+      this.$modal.open(RestartHomebridgeComponent);
+    } catch {
+      this.$toastr.error(this.translate.instant('config.toast_failed_to_save_config'), this.translate.instant('toast.title_error'));
+    }
   }
 
   onRestore() {
@@ -243,6 +241,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
               this.monacoEditor.executeEdits('beautifier', [
                 {
                   identifier: 'delete' as any,
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  // @ts-ignore
                   range: new monaco.Range(1, 1, this.monacoEditor.getModel().getLineCount() + 10, 1),
                   text: '',
                   forceMoveMarkers: true,
@@ -253,6 +253,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
               this.monacoEditor.executeEdits('beautifier', [
                 {
                   identifier: 'insert' as any,
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  // @ts-ignore
                   range: new monaco.Range(1, 1, 1, 1),
                   text: this.homebridgeConfig,
                   forceMoveMarkers: true,
@@ -335,6 +337,9 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
       if (matches.length) {
         const matchRange = matches[0].range;
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         const range = new monaco.Range(
           matchRange.startLineNumber,
           matchRange.startColumn,
@@ -353,13 +358,16 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
    * Set up a json schema object used to check the config against
    */
   setMonacoEditorModel() {
-    if (window.monaco.languages.json.jsonDefaults.diagnosticsOptions.schemas.some(x => x.uri === 'http://homebridge/config.json')) {
+    // eslint-disable-next-line max-len
+    if ((window as any).monaco.languages.json.jsonDefaults.diagnosticsOptions.schemas.some((x) => x.uri === 'http://homebridge/config.json')) {
       return;
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const uri = monaco.Uri.parse('a://homebridge/config.json');
 
-    window.monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+    (window as any).monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
       allowComments: false,
       validate: true,
       schemas: [
@@ -404,6 +412,10 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                   manufacturer: {
                     type: 'string',
                     description: 'The bridge manufacturer to be displayed in HomeKit',
+                  },
+                  firmwareRevision: {
+                    type: 'string',
+                    description: 'The bridge firmware version to be displayed in HomeKit',
                   },
                   model: {
                     type: 'string',
@@ -545,6 +557,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       ],
     });
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     this.monacoEditorModel.uri = monaco.Uri.parse('a://homebridge/config.json');
   }
 

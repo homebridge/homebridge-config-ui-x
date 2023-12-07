@@ -12,11 +12,33 @@
       background-color: #242424 !important;
     }
 
+    .custom-select {
+      background: #333333 url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='white' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") right .75rem center/8px 10px no-repeat !important;
+      color: #eeeeee !important;
+      border: 0 !important;
+    }
+
+    .container-fluid .form-control, .setup2fa .form-control {
+      background-color: #333333 !important;
+      border: none !important;
+      color: #eeeeee !important;
+    }
+
+    .hb-plain-text-editor {
+      background-color: #333333 !important;
+      color: #eeeeee !important;
+    }
+
     .navbar-dark {
       background-color: #0f0f0f !important;
       border-bottom: #0f0f0f;
       border-bottom-style: solid;
       border-bottom-width: 1px;
+    }
+
+    .hb-npm-search {
+      border: 0 !important;
+      background-color: #111111 !important;
     }
 
     .dropdown-menu {
@@ -84,6 +106,10 @@
     .card {
       color: #ffffff;
       background-color: $secondaryBackground !important;
+    }
+
+    .card-text-defined {
+      color: #ffffff;
     }
 
     .login-card {
@@ -367,6 +393,13 @@
       from {
         text-shadow: 0 0 5px $darkModePrimary, 0 0 10px $darkModePrimary, 0 0 15px $darkModePrimary;
       }
+    }
+
+    .plugin-icon-card {
+      width: 70px;
+      height: 70px;
+      border-radius: 15px;
+      border: 1px solid #222222;
     }
   }
 }
