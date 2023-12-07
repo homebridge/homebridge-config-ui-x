@@ -109,13 +109,12 @@
 /* MOBILE MENU SLIDE */
 
 .navbar-collapse:not(.show), .collapsing {
-  background-color: #000 !important;
   width: 80%;
   left: -40%; 
   opacity: 0;
   transition: left 0.5s ease-out, opacity 0.5s ease-out !important;
   position: absolute !important;
-  top: 58px;
+  top: 57px;
   z-index: 999;
   display: flex !important;
   height: 100% !important;
@@ -124,13 +123,12 @@
 
 
 .navbar-collapse.show { 
-  background-color: #000 !important;
   width: 80%;
   left: 0px;
   opacity: 1;
   transition: left 0.5s ease-out, opacity 0.5s ease-out !important;
   position: absolute !important;
-  top: 58px;
+  top: 57px;
   z-index: 999;
   display: flex !important;
   height: 100% !important;
@@ -140,6 +138,33 @@
 .collapsing {
   transition: none !important;
   -webkit-transition: none !important;
+}
+
+.navbar-collapse:after{
+  content: ''; 
+  top: 57px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transition: opacity 0.5s ease-in-out;
+  opacity: 0;
+  visibility:hidden;
+  background-color: rgba(0,0,0,.8);
+  pointer-events: none;
+}
+
+.navbar-collapse.show:after{
+  z-index:10; 
+  opacity:1; 
+  visibility:visible;
+  position: fixed;
+}
+
+.navbar-nav {
+  z-index: 20;
+  background-color: black;
+  width: 100%;
+  height: 100%;
 }
 
 
