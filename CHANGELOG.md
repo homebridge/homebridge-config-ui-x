@@ -9,6 +9,10 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - Restore missing 'set up child bridge' option on plugin card when system doesn't automatically recommend it
 - Fix artifact attachment GitHub workflow
 
+### Other Changes
+
+- Do not attach artifacts to GitHub releases if the tarball is smaller than 10MB
+
 ## 4.54.0 (2023-12-05)
 
 Merry Christmas and Happy Holidays to all our users celebrating later this month! :christmas_tree:
