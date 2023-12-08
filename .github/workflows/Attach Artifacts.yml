@@ -37,7 +37,7 @@ jobs:
       - name: Install package
         run: |
           export npm_config_prefix=$(pwd)/package
-          npm install -g homebridge-config-ui-x@$${{ needs.analyze-tags.outputs.previous-tag || github.event.inputs.tag }}
+          npm install -g homebridge-config-ui-x@${{ needs.analyze-tags.outputs.previous-tag || github.event.inputs.tag }}
 
       - name: Remove invalid node-pty node-gyp run
         run: |
@@ -47,6 +47,13 @@ jobs:
         run: |
           tar -C $(pwd)/package --owner=0 --group=0 --format=posix -czvf homebridge-config-ui-x-${{ needs.analyze-tags.outputs.previous-tag || github.event.inputs.tag }}.tar.gz .
           shasum -a 256 homebridge-config-ui-x-${{ needs.analyze-tags.outputs.previous-tag || github.event.inputs.tag }}.tar.gz > SHASUMS256.txt
+
+      - name: Check Bundle
+        run: |
+          if [ $(stat -c%s "homebridge-config-ui-x-${{ needs.analyze-tags.outputs.previous-tag || github.event.inputs.tag }}.tar.gz") -lt 10000000 ]; then
+            echo "Bundle is under 10MB, stopping"
+            exit 1
+          fi
 
       - name: Attach Bundle
         uses: AButler/upload-release-assets@v2.0

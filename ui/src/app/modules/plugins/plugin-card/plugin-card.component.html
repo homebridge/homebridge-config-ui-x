@@ -1,7 +1,7 @@
 <!--Panel-->
 <div class="card card-body mb-3 p-3">
   <div class="d-flex flex-row justify-content-between">
-    <div class="d-flex flex-column me--3 align-items-center justify-content-between">
+    <div class="d-flex flex-column me-3 align-items-center justify-content-between">
       <img [src]="plugin.icon" (error)="handleIconError()" alt="" class="plugin-icon-card mb-3">
     </div>
     <div class="d-flex flex-column justify-content-between" style="width: calc(100% - 80px)">
@@ -76,7 +76,7 @@
                 (click)="$plugin.installPreviousVersion(plugin)">
                 <i class="far fa-fw fa-arrow-alt-circle-down fa-lg"></i>
               </a>
-              <span *ngIf="plugin.installedVersion" ngbDropdown placement="bottom-right top-right left" class="d-inline-block ms--3 mt-auto">
+              <span *ngIf="plugin.installedVersion" ngbDropdown placement="bottom-right bottom-left" class="d-inline-block ms-3 mt-auto">
                 <a class="card-link text-decoration-none mt-auto" href="javascript:void(0)" style="outline:none;"
                   aria-label="Plugin actions drop down menu" ngbDropdownToggle>
                   <i class="fa-solid fa-fw fa-cog fa-lg" [ngClass]="{
@@ -154,8 +154,14 @@
                     </button>
                   </ng-container>
                   <button ngbDropdownItem (click)="$plugin.bridgeSettings(plugin)"
-                    *ngIf="plugin.isConfigured && !plugin.disabled && plugin.hasChildBridges && plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x'">
+                    *ngIf="plugin.isConfigured && !plugin.disabled && plugin.hasChildBridges && plugin.installedVersion">
                     <i class="fas fa-fw fa-bridge"></i> {{ 'child_bridge.label_bridge_settings' | translate }}
+                  </button>
+                  <div class="dropdown-divider" *ngIf="plugin.isConfigured && !hasChildBridges && !plugin.disabled && !recommendChildBridge"></div>
+                  <button ngbDropdownItem *ngIf="plugin.isConfigured && !hasChildBridges && !plugin.disabled && !recommendChildBridge"
+                    (click)="$plugin.bridgeSettings(plugin)">
+                    <i class="icon-button fas fa-fw fa-bridge"></i>
+                    {{ 'child_bridge.label_child_setup' | translate }}
                   </button>
                 </div>
               </span>

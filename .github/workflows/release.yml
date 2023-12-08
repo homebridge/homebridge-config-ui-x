@@ -61,6 +61,13 @@ jobs:
           tar -C $(pwd)/package --owner=0 --group=0 --format=posix -czvf homebridge-config-ui-x-${{ github.event.release.tag_name }}.tar.gz .
           shasum -a 256 homebridge-config-ui-x-${{ github.event.release.tag_name }}.tar.gz > SHASUMS256.txt
 
+      - name: Check Bundle
+        run: |
+          if [ $(stat -c%s "homebridge-config-ui-x-${{ github.event.release.tag_name }}.tar.gz") -lt 10000000 ]; then
+            echo "Bundle is under 10MB, stopping"
+            exit 1
+          fi
+
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@v2
         with:
