@@ -154,8 +154,14 @@
                     </button>
                   </ng-container>
                   <button ngbDropdownItem (click)="$plugin.bridgeSettings(plugin)"
-                    *ngIf="plugin.isConfigured && !plugin.disabled && plugin.hasChildBridges && plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x'">
+                    *ngIf="plugin.isConfigured && !plugin.disabled && plugin.hasChildBridges && plugin.installedVersion">
                     <i class="fas fa-fw fa-bridge"></i> {{ 'child_bridge.label_bridge_settings' | translate }}
+                  </button>
+                  <div class="dropdown-divider" *ngIf="plugin.isConfigured && !hasChildBridges && !plugin.disabled && !recommendChildBridge"></div>
+                  <button ngbDropdownItem *ngIf="plugin.isConfigured && !hasChildBridges && !plugin.disabled && !recommendChildBridge"
+                    (click)="$plugin.bridgeSettings(plugin)">
+                    <i class="icon-button fas fa-fw fa-bridge"></i>
+                    {{ 'child_bridge.label_child_setup' | translate }}
                   </button>
                 </div>
               </span>
