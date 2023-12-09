@@ -5,36 +5,40 @@
       <img [src]="plugin.icon" (error)="handleIconError()" alt="" class="plugin-icon-card mb-3">
     </div>
     <div class="d-flex flex-column justify-content-between" style="width: calc(100% - 80px)">
+      <a href="javascript:void(0)" (click)="pluginInfoModal(plugin)" >
       <h5 class="card-title mb-2 text-truncate">
         {{ plugin.displayName || ((plugin.name.charAt(0) === '@' ? plugin.name.split('/')[1] : plugin.name) |
         replace:'-':' ' | titlecase) }}
       </h5>
+      </a>
       <div class="d-flex flex-row align-items-end">
         <div class="d-flex flex-column w-100">
           <p class="card-text mb-2 text-truncate">
             <a href="javascript:void(0)" (click)="pluginInfoModal(plugin)" class="card-link grey-text">
               <i class="fas fa-fw fa-info-circle fa-lg"></i>
+              {{ plugin.name }}
             </a>
-            {{ plugin.name }}
           </p>
           <p class="card-text mb-2" *ngIf="plugin.verifiedPlugin">
             <a href="javascript:void(0)" class="card-link green-text" (click)="openVerifiedModal()">
               <i class="fas fa-fw fa-shield-alt fa-lg"></i>
-            </a> {{ 'plugins.donate.button_verified' | translate }}
+              {{ 'plugins.donate.button_verified' | translate }}
+            </a>
           </p>
           <p class="card-text mb-2" *ngIf="!plugin.verifiedPlugin">
             <a href="javascript:void(0)" class="card-link" (click)="openVerifiedModal()">
               <i class="fas fa-fw fa-shield-alt fa-lg" style="opacity: 0.25;"></i>
-            </a> {{ 'plugins.donate.button_not_verified' | translate }}
+              {{ 'plugins.donate.button_not_verified' | translate }}
+            </a> 
           </p>
           <p class="card-text mb-2">
             <a href="javascript:void(0)" class="card-link pink-text" *ngIf="plugin.verifiedPlugin && plugin.funding"
                (click)="openFundingModal(plugin)">
               <i class="fas fa-fw fa-heart fa-lg"></i>
+              <span *ngIf="!plugin.verifiedPlugin || !plugin.funding">
+                <i class="fas fa-fw fa-heart fa-lg" style="opacity: 0.5;"></i>
+              </span> @{{ plugin.author }}
             </a>
-            <span *ngIf="!plugin.verifiedPlugin || !plugin.funding">
-              <i class="fas fa-fw fa-heart fa-lg" style="opacity: 0.5;"></i>
-            </span> @{{ plugin.author }}
           </p>
           <div class="d-flex flex-row">
             <p class="card-text mb-0">
