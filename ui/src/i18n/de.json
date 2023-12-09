@@ -154,7 +154,7 @@
   "menu.linux.label_restart_server": "Server neustarten",
   "menu.linux.label_shutdown_server": "Server herunterfahren",
   "menu.linux.label_terminal": "Konsole",
-  "menu.restart.title": "Power Optionen",
+  "menu.restart.title": "Energieoptionen",
   "menu.tooltip_logout": "Ausloggen",
   "menu.tooltip_restart": "Neustart",
   "menu.tooltip_user_accounts": "Benutzerkonten",
