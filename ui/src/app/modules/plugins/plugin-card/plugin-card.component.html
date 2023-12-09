@@ -35,10 +35,12 @@
             <a href="javascript:void(0)" class="card-link pink-text" *ngIf="plugin.verifiedPlugin && plugin.funding"
                (click)="openFundingModal(plugin)">
               <i class="fas fa-fw fa-heart fa-lg"></i>
-              <span *ngIf="!plugin.verifiedPlugin || !plugin.funding">
-                <i class="fas fa-fw fa-heart fa-lg" style="opacity: 0.5;"></i>
-              </span> @{{ plugin.author }}
+              @{{ plugin.author }}
             </a>
+            <span *ngIf="!plugin.verifiedPlugin || !plugin.funding">
+              <i class="fas fa-fw fa-heart fa-lg" style="opacity: 0.5;"></i>
+              @{{ plugin.author }}
+            </span> 
           </p>
           <div class="d-flex flex-row">
             <p class="card-text mb-0">
