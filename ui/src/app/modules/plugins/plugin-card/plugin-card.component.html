@@ -33,9 +33,10 @@
             <a href="javascript:void(0)" class="card-link pink-text" *ngIf="plugin.verifiedPlugin && plugin.funding"
                (click)="openFundingModal(plugin)">
               <i class="fas fa-fw fa-heart fa-lg"></i>
+
               @{{ plugin.author }}
             </a>
-            <span *ngIf="!plugin.verifiedPlugin || !plugin.funding">
+            <span class="grey-text" *ngIf="!plugin.verifiedPlugin || !plugin.funding">
               <i class="fas fa-fw fa-heart fa-lg" style="opacity: 0.5;"></i>
               @{{ plugin.author }}
             </span> 
@@ -112,8 +113,8 @@
                     *ngIf="
                       (plugin.updateAvailable || plugin.betaUpdateAvailable)
                       || !plugin.isConfigured
-                      || (plugin.isConfigured && !hasChildBridges && !plugin.disabled && recommendChildBridge)
-                      || (plugin.isConfigured && hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled)
+                      || (plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && recommendChildBridge)
+                      || (plugin.isConfigured && plugin.hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled)
                     "></div>
                   <button ngbDropdownItem *ngIf="plugin.publicPackage" (click)="$plugin.installPreviousVersion(plugin)">
                     <i class="fas fa-fw fa-history"></i>
@@ -139,7 +140,7 @@
                     <i class="fas fa-fw fa-trash"></i> {{ 'plugins.button_uninstall' | translate }}
                   </button>
                   <div class="dropdown-divider" *ngIf="!plugin.disabled && plugin.isConfigured && plugin.hasChildBridges && plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x'"></div>
-                  <ng-container *ngIf="hasChildBridges && !plugin.disabled">
+                  <ng-container *ngIf="plugin.hasChildBridges && !plugin.disabled">
                     <button ngbDropdownItem *ngIf="!childBridgeRestartInProgress && !plugin.disabled" (click)="doChildBridgeAction('restart')">
                       <i class="fa-fw icon-button fas fa-fw fa-power-off"></i> {{ 'child_bridge.label_child_restart' | translate }}
                     </button>
@@ -154,8 +155,8 @@
                     *ngIf="plugin.isConfigured && !plugin.disabled && plugin.hasChildBridges && plugin.installedVersion">
                     <i class="fas fa-fw fa-bridge"></i> {{ 'child_bridge.label_bridge_settings' | translate }}
                   </button>
-                  <div class="dropdown-divider" *ngIf="plugin.isConfigured && !hasChildBridges && !plugin.disabled && !recommendChildBridge"></div>
-                  <button ngbDropdownItem *ngIf="plugin.isConfigured && !hasChildBridges && !plugin.disabled && !recommendChildBridge"
+                  <div class="dropdown-divider" *ngIf="plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && !recommendChildBridge"></div>
+                  <button ngbDropdownItem *ngIf="plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && !recommendChildBridge"
                     (click)="$plugin.bridgeSettings(plugin)">
                     <i class="icon-button fas fa-fw fa-bridge"></i>
                     {{ 'child_bridge.label_child_setup' | translate }}
