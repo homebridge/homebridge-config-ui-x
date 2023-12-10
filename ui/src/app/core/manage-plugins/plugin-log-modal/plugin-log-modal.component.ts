@@ -26,6 +26,7 @@ export class PluginLogModalComponent implements OnInit, OnDestroy {
   @Input() plugin: any;
   @ViewChild('pluginlogoutput', { static: true }) termTarget: ElementRef;
   private resizeEvent = new Subject();
+  private pluginAlias: string;
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -49,8 +50,8 @@ export class PluginLogModalComponent implements OnInit, OnDestroy {
     // Get the plugin name as configured in the config file
     this.$api.get(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`).subscribe(
       (result) => {
-        const logAlias = this.plugin.name === 'homebridge-config-ui-x' ? 'Homebridge UI' : (result[0]?.name || this.plugin.name);
-        this.$log.startTerminal(this.termTarget, {}, this.resizeEvent, logAlias);
+        this.pluginAlias = this.plugin.name === 'homebridge-config-ui-x' ? 'Homebridge UI' : (result[0]?.name || this.plugin.name);
+        this.$log.startTerminal(this.termTarget, {}, this.resizeEvent, this.pluginAlias);
       },
       (err) => {
         this.$toastr.error(`${err.error.message || err.message}`, this.$translate.instant('toast.title_error'));
@@ -78,17 +79,21 @@ export class PluginLogModalComponent implements OnInit, OnDestroy {
             let includeNextLine = false;
 
             lines.forEach((line: string) => {
+              if (!line) {
+                return;
+              }
+
               if (includeNextLine) {
                 if (line.match(/36m\[.*?]/)) {
                   includeNextLine = false;
                 } else {
-                  finalOutput += line + '\r\n';
+                  finalOutput += line.replace(/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]/g, '') + '\r\n';
                   return;
                 }
               }
 
-              if (line.includes(`36m[${this.plugin.name}]`)) {
-                finalOutput += line + '\r\n';
+              if (line.includes(`36m[${this.pluginAlias}]`)) {
+                finalOutput += line.replace(/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]/g, '') + '\r\n';
                 includeNextLine = true;
               }
             });
