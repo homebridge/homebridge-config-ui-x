@@ -7,7 +7,7 @@
     <div class="d-flex flex-column justify-content-between" style="width: calc(100% - 80px)">
       <h5 class="card-title mb-2 text-truncate">
         {{ plugin.displayName || ((plugin.name.charAt(0) === '@' ? plugin.name.split('/')[1] : plugin.name) |
-        replace:'-':' ' | titlecase) }}
+        replace:'-':' ' | titlecase) | replace:'Homebridge':'' | replace:'homebridge':'' }}
       </h5>
       <div class="d-flex flex-row align-items-end">
         <div class="d-flex flex-column w-100">
