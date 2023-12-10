@@ -7,6 +7,7 @@ import {
 import { Router } from '@angular/router';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
+import { saveAs } from 'file-saver';
 import { ToastrService } from 'ngx-toastr';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
@@ -46,6 +47,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   private term = new Terminal();
   private termTarget: HTMLElement;
   private fitAddon = new FitAddon();
+  private errorLog = '';
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -68,6 +70,13 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
 
     this.io.socket.on('stdout', (data: string | Uint8Array) => {
       this.term.write(data);
+      const dataCleaned = data
+        .toString()
+        .replace(/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]/g, '')
+        .trimEnd();
+      if (dataCleaned) {
+        this.errorLog += dataCleaned + '\r\n';
+      }
     });
 
     this.toastSuccess = this.$translate.instant('toast.title_success');
@@ -272,6 +281,11 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
     } finally {
       this.activeModal.close();
     }
+  }
+
+  downloadLogFile() {
+    const blob = new Blob([this.errorLog], { type: 'text/plain;charset=utf-8' });
+    saveAs(blob, `${this.pluginName}-error.log`);
   }
 
   ngOnDestroy() {
