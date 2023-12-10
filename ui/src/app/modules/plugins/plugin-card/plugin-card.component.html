@@ -97,10 +97,6 @@
                     <i class="far fa-fw fa-arrow-alt-circle-up primary-text"></i>
                     {{ 'plugins.button_update' | translate }} (v{{ plugin.latestVersion }})
                   </button>
-                  <button ngbDropdownItem *ngIf="!plugin.isConfigured" (click)="$plugin.settings(plugin)">
-                    <i class="fas fa-fw fa-sliders primary-text"></i>
-                    {{ 'plugins.button_set_up' | translate }}
-                  </button>
                   <button ngbDropdownItem *ngIf="plugin.isConfigured && !hasChildBridges && !plugin.disabled && recommendChildBridge"
                     (click)="$plugin.bridgeSettings(plugin)">
                     <i class="icon-button fas fa-fw fa-bridge primary-text"></i>
@@ -166,6 +162,15 @@
                     (click)="$plugin.bridgeSettings(plugin)">
                     <i class="icon-button fas fa-fw fa-bridge"></i>
                     {{ 'child_bridge.label_child_setup' | translate }}
+                  </button>
+                  <div class="dropdown-divider"></div>
+                  <button ngbDropdownItem *ngIf="plugin.isConfigured" (click)="$plugin.settings(plugin)">
+                    <i class="fas fa-fw fa-sliders"></i>
+                    {{ 'plugins.button_settings' | translate }}
+                  </button>
+                  <button ngbDropdownItem (click)="pluginInfoModal(plugin)">
+                    <i class="fas fa-fw fa-info"></i>
+                    {{ 'plugins.manage.information' | translate }}
                   </button>
                 </div>
               </span>
