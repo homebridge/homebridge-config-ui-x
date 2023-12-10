@@ -42,20 +42,24 @@
           </p>
           <div class="d-flex flex-row">
             <p class="card-text mb-0">
-              <i class="far fa-fw fa-circle-check fa-lg card-text-defined" *ngIf="plugin.installedVersion && !plugin.updateAvailable && !plugin.betaUpdateAvailable"
-                [ngbTooltip]="'plugins.status_installed' | translate" container="body"></i>
+              <a href="javascript:void(0)" *ngIf="plugin.installedVersion && !plugin.updateAvailable && !plugin.betaUpdateAvailable" class="card-link grey-text"
+                 (click)="$plugin.installPreviousVersion(plugin)" [ngbTooltip]="'plugins.status_installed' | translate" container="body">
+                <i class="far fa-fw fa-circle-check fa-lg card-text-defined"></i>
+                <span class="d-none d-md-inline"> {{ 'plugins.status_installed' | translate }}: </span>
+                v{{ plugin.installedVersion }}
+              </a>
               <a href="javascript:void(0)" *ngIf="plugin.publicPackage && !plugin.installedVersion" class="card-link grey-text"
                  (click)="$plugin.installPreviousVersion(plugin)" [ngbTooltip]="'plugins.status_not_installed' | translate" container="body">
                 <i class="far fa-fw fa-arrow-alt-circle-down fa-lg"></i>
+                <span *ngIf="!plugin.installedVersion && plugin.lastUpdated">({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
               </a>
               <a href="javascript:void(0)" (click)="$plugin.updatePlugin(plugin, plugin.betaUpdateAvailable ? 'beta' : 'latest')"
                  *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable" class="card-link"
                  [ngbTooltip]="'plugins.status_update_available' | translate" container="body">
                 <i class="far fa-fw fa-arrow-alt-circle-up fa-lg primary-text"></i>
+                <span class="d-none d-md-inline"> {{ 'plugins.button_update' | translate }}: </span>
+                v{{ plugin.latestVersion }}
               </a>
-              <span *ngIf="plugin.installedVersion" class="d-none d-md-inline"> {{ 'plugins.status_installed' | translate }}: </span>
-              v{{ plugin.installedVersion || plugin.latestVersion }}
-              <span *ngIf="!plugin.installedVersion && plugin.lastUpdated">({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
             </p>
             <div class="ml-auto">
               <ng-container *ngIf="!plugin.disabled && hasChildBridges">
