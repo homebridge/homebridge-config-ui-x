@@ -2,6 +2,12 @@
 
 All notable changes to homebridge-config-ui-x will be documented in this file.
 
+## BETA
+
+### UI Changes
+
+- Add plugin log download button
+
 ## 4.54.1 (2023-12-08)
 
 ### Bug Fixes
