@@ -110,7 +110,7 @@
 
 .navbar-collapse:not(.show), .collapsing {
   width: 80%;
-  left: -40%; 
+  left: -40%;
   opacity: 0;
   transition: left 0.5s ease-out, opacity 0.5s ease-out !important;
   position: absolute !important;
@@ -118,11 +118,11 @@
   z-index: 999;
   display: flex !important;
   height: 100% !important;
-  align-items: start !important;
+  align-items: flex-start !important;
 }
 
 
-.navbar-collapse.show { 
+.navbar-collapse.show {
   width: 80%;
   left: 0px;
   opacity: 1;
@@ -132,7 +132,7 @@
   z-index: 999;
   display: flex !important;
   height: 100% !important;
-  align-items: start !important;
+  align-items: flex-start !important;
 }
 
 .collapsing {
@@ -141,7 +141,7 @@
 }
 
 .navbar-collapse:after{
-  content: ''; 
+  content: '';
   top: 57px;
   right: 0;
   bottom: 0;
@@ -154,8 +154,8 @@
 }
 
 .navbar-collapse.show:after{
-  z-index:10; 
-  opacity:1; 
+  z-index:10;
+  opacity:1;
   visibility:visible;
   position: fixed;
 }
