@@ -6,3 +6,7 @@
 .dropup .dropdown-toggle:after {
   display: none;
 }
+
+.card .dropdown-menu {
+  transform: translate(-240px, -180px) !important;
+}
