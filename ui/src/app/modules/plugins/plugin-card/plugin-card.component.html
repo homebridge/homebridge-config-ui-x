@@ -42,7 +42,7 @@
           </p>
           <div class="d-flex flex-row">
             <p class="card-text mb-0">
-              <a href="javascript:void(0)" *ngIf="plugin.installedVersion && !plugin.updateAvailable && !plugin.betaUpdateAvailable" class="card-link grey-text"
+              <a href="javascript:void(0)" *ngIf="plugin.installedVersion && !plugin.updateAvailable && !plugin.betaUpdateAvailable" class="card-link card-text-defined"
                  (click)="$plugin.installPreviousVersion(plugin)" [ngbTooltip]="'plugins.status_installed' | translate" container="body">
                 <i class="far fa-fw fa-circle-check fa-lg card-text-defined"></i>
                 <span class="d-none d-md-inline"> {{ 'plugins.status_installed' | translate }}: </span>
@@ -54,10 +54,10 @@
                 <span *ngIf="!plugin.installedVersion && plugin.lastUpdated">({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
               </a>
               <a href="javascript:void(0)" (click)="$plugin.updatePlugin(plugin, plugin.betaUpdateAvailable ? 'beta' : 'latest')"
-                 *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable" class="card-link"
+                 *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable" class="card-link primary-text"
                  [ngbTooltip]="'plugins.status_update_available' | translate" container="body">
                 <i class="far fa-fw fa-arrow-alt-circle-up fa-lg primary-text"></i>
-                <span class="d-none d-md-inline"> {{ 'plugins.button_update' | translate }}: </span>
+                <span class="d-none d-md-inline primary-text"> {{ 'plugins.button_update' | translate }}: </span>
                 v{{ plugin.latestVersion }}
               </a>
             </p>
