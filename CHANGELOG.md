@@ -7,6 +7,8 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 ### UI Changes
 
 - Add plugin log download button
+- Improve plugin card hyperlinks (#1918) (@jsiegenthaler)
+- Download logs option for when a plugin install/update/uninstall fails
 
 ### Translation Changes
 
