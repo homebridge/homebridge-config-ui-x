@@ -25,7 +25,9 @@ export class LogService {
 
   startTerminal(
     targetElement: ElementRef,
-    termOpts: ITerminalOptions = {},
+    termOpts: ITerminalOptions = {
+      scrollback: 1000,
+    },
     elementResize?: Subject<any>,
     pluginName?: string,
   ) {
