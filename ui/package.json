@@ -29,7 +29,7 @@
     "@popperjs/core": "2.11.8",
     "angular-gridster2": "14.1.5",
     "bootstrap": "4.6.2",
-    "chart.js": "4.4.0",
+    "chart.js": "4.4.1",
     "dayjs": "1.11.10",
     "emoji-js": "3.8.0",
     "file-saver": "2.0.5",
