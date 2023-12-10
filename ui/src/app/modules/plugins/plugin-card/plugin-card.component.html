@@ -56,7 +56,7 @@
               <a href="javascript:void(0)" (click)="$plugin.updatePlugin(plugin, plugin.betaUpdateAvailable ? 'beta' : 'latest')"
                  *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable" class="card-link primary-text"
                  [ngbTooltip]="'plugins.status_update_available' | translate" container="body">
-                <i class="far fa-fw fa-arrow-alt-circle-up fa-lg primary-text"></i>
+                <i class="far fa-fw fa-fade fa-arrow-alt-circle-up fa-lg primary-text"></i>
                 <span class="d-none d-md-inline primary-text"> {{ 'plugins.button_update' | translate }}: </span>
                 v{{ plugin.latestVersion }}
               </a>
