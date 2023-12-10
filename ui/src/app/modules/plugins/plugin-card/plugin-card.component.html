@@ -114,10 +114,6 @@
                       || (plugin.isConfigured && !hasChildBridges && !plugin.disabled && recommendChildBridge)
                       || (plugin.isConfigured && hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled)
                     "></div>
-                  <button ngbDropdownItem *ngIf="plugin.isConfigured" (click)="$plugin.settings(plugin)">
-                    <i class="fas fa-fw fa-sliders"></i>
-                    {{ 'plugins.button_settings' | translate }}
-                  </button>
                   <button ngbDropdownItem *ngIf="plugin.publicPackage" (click)="$plugin.installPreviousVersion(plugin)">
                     <i class="fas fa-fw fa-history"></i>
                     {{ 'plugins.manage.message_install_alternate_version' | translate }}
@@ -162,6 +158,15 @@
                     (click)="$plugin.bridgeSettings(plugin)">
                     <i class="icon-button fas fa-fw fa-bridge"></i>
                     {{ 'child_bridge.label_child_setup' | translate }}
+                  </button>
+                  <div class="dropdown-divider"></div>
+                  <button ngbDropdownItem *ngIf="plugin.isConfigured" (click)="$plugin.settings(plugin)">
+                    <i class="fas fa-fw fa-sliders"></i>
+                    {{ 'plugins.button_settings' | translate }}
+                  </button>
+                  <button ngbDropdownItem (click)="pluginInfoModal(plugin)">
+                    <i class="fas fa-fw fa-info"></i>
+                    {{ 'plugins.manage.information' | translate }}
                   </button>
                 </div>
               </span>
