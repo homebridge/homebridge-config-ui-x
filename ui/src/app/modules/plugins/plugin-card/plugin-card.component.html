@@ -100,18 +100,16 @@
                     style="--fa-animation-duration: 2s;"></i>
                 </a>
                 <div ngbDropdownMenu aria-labelledby="Plugin actions drop down menu">
-                  <button ngbDropdownItem (click)="$plugin.updatePlugin(plugin, plugin.betaUpdateAvailable ? 'beta' : 'latest')"
-                    *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable">
-                    <i class="far fa-fw fa-arrow-alt-circle-up primary-text"></i>
-                    {{ 'plugins.button_update' | translate }} (v{{ plugin.latestVersion }})
-                  </button>
                   <button ngbDropdownItem *ngIf="!plugin.isConfigured" (click)="$plugin.settings(plugin)">
                     <i class="fas fa-fw fa-sliders primary-text"></i>
                     {{ 'plugins.button_set_up' | translate }}
                   </button>              
-                  <div class="dropdown-divider" *ngIf="(plugin.updateAvailable || plugin.betaUpdateAvailable)
-                      || !plugin.isConfigured">  
-                  </div>
+                  <div class="dropdown-divider" *ngIf="!plugin.isConfigured"></div>
+                  <button ngbDropdownItem (click)="$plugin.updatePlugin(plugin, plugin.betaUpdateAvailable ? 'beta' : 'latest')"
+                    *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable">
+                    <i class="far fa-fw fa-arrow-alt-circle-up"></i>
+                    {{ 'plugins.button_update' | translate }} (v{{ plugin.latestVersion }})
+                  </button>
                   <button ngbDropdownItem *ngIf="plugin.publicPackage" (click)="$plugin.installPreviousVersion(plugin)">
                     <i class="fas fa-fw fa-history"></i>
                     {{ 'plugins.manage.message_install_alternate_version' | translate }}
