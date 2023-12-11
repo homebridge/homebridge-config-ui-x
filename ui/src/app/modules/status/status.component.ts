@@ -10,7 +10,7 @@ import { AuthService } from '@/app/core/auth/auth.service';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { NotificationService } from '@/app/core/notification.service';
 import { SettingsService } from '@/app/core/settings.service';
-import { WsService } from '@/app/core/ws.service';
+import { IoNamespace, WsService } from '@/app/core/ws.service';
 
 @Component({
   selector: 'app-status',
@@ -28,7 +28,7 @@ export class StatusComponent implements OnInit, OnDestroy {
     mobile: (window.innerWidth < 1024),
   };
 
-  private io = this.$ws.connectToNamespace('status');
+  private io: IoNamespace;
 
   constructor(
     public $toastr: ToastrService,
@@ -41,6 +41,7 @@ export class StatusComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.io = this.$ws.connectToNamespace('status');
     this.options = {
       mobileBreakpoint: 1023,
       keepFixedHeightInMobile: false,

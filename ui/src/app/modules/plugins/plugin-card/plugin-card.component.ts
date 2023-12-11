@@ -11,7 +11,7 @@ import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.s
 import { PluginLogModalComponent } from '@/app/core/manage-plugins/plugin-log-modal/plugin-log-modal.component';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { SettingsService } from '@/app/core/settings.service';
-import { WsService } from '@/app/core/ws.service';
+import { IoNamespace, WsService } from '@/app/core/ws.service';
 import { PluginInfoComponent } from '@/app/modules/plugins/plugin-card/plugin-info/plugin-info.component';
 
 @Component({
@@ -28,10 +28,10 @@ export class PluginCardComponent implements OnInit {
   public childBridgeStatus = 'pending';
   public childBridgeRestartInProgress = false;
   public recommendChildBridge = false;
-  public isMobile = this.$md.detect.mobile();
   public defaultIcon = 'assets/hb-icon.png';
+  public isMobile: string;
 
-  private io = this.$ws.getExistingNamespace('child-bridges');
+  private io: IoNamespace;
   private setChildBridges = [];
 
   constructor(
@@ -65,6 +65,9 @@ export class PluginCardComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.isMobile = this.$md.detect.mobile();
+    this.io = this.$ws.getExistingNamespace('child-bridges');
+
     if (!this.plugin.icon) {
       this.plugin.icon = this.defaultIcon;
     }

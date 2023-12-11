@@ -22,11 +22,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   public saveInProgress: boolean;
   public isMobile: any = false;
   public monacoEditor;
-  public editorOptions = {
-    language: 'json',
-    theme: this.$settings.theme.startsWith('dark-mode') ? 'vs-dark' : 'vs-light',
-    automaticLayout: true,
-  };
+  public editorOptions: any;
 
   public monacoEditorModel: NgxEditorModel;
 
@@ -49,6 +45,12 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.editorOptions = {
+      language: 'json',
+      theme: this.$settings.theme.startsWith('dark-mode') ? 'vs-dark' : 'vs-light',
+      automaticLayout: true,
+    };
+
     // capture viewport events
     this.visualViewPortEventCallback = () => this.visualViewPortChanged();
     this.lastHeight = window.innerHeight;

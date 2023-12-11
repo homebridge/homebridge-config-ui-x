@@ -15,7 +15,7 @@ import { ApiService } from '@/app/core/api.service';
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component';
 import { NotificationService } from '@/app/core/notification.service';
 import { SettingsService } from '@/app/core/settings.service';
-import { WsService } from '@/app/core/ws.service';
+import { IoNamespace, WsService } from '@/app/core/ws.service';
 
 @Component({
   selector: 'app-manage-plugins-modal',
@@ -42,7 +42,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   public pastTenseVerb: string;
   public onlineUpdateOk: boolean;
 
-  private io = this.$ws.connectToNamespace('plugins');
+  private io: IoNamespace;
   private toastSuccess: string;
   private term = new Terminal();
   private termTarget: HTMLElement;
@@ -64,6 +64,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.io = this.$ws.connectToNamespace('plugins');
     this.termTarget = document.getElementById('plugin-log-output');
     this.term.open(this.termTarget);
     this.fitAddon.fit();

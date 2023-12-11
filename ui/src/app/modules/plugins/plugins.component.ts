@@ -5,7 +5,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
 import { ApiService } from '@/app/core/api.service';
-import { WsService } from '@/app/core/ws.service';
+import { IoNamespace, WsService } from '@/app/core/ws.service';
 
 @Component({
   selector: 'app-plugins',
@@ -20,7 +20,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
     query: new FormControl('', [Validators.required]),
   });
 
-  private io = this.$ws.connectToNamespace('child-bridges');
+  private io: IoNamespace;
   private navigationSubscription: Subscription;
 
   constructor(
@@ -32,6 +32,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
+    this.io = this.$ws.connectToNamespace('child-bridges');
     this.io.connected.subscribe(async () => {
       this.getChildBridgeMetadata();
       this.io.socket.emit('monitor-child-bridge-status');

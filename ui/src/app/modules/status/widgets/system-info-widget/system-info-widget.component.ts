@@ -3,7 +3,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '@/app/core/auth/auth.service';
 import { InformationComponent } from '@/app/core/components/information/information.component';
-import { WsService } from '@/app/core/ws.service';
+import { IoNamespace, WsService } from '@/app/core/ws.service';
 
 @Component({
   selector: 'app-system-info-widget',
@@ -14,7 +14,7 @@ export class SystemInfoWidgetComponent implements OnInit {
   public serverInfo: any;
   public nodejsInfo = {} as any;
 
-  private io = this.$ws.getExistingNamespace('status');
+  private io: IoNamespace;
 
   constructor(
     private $ws: WsService,
@@ -24,6 +24,7 @@ export class SystemInfoWidgetComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.io = this.$ws.getExistingNamespace('status');
     this.io.connected.subscribe(async () => {
       this.getSystemInfo();
     });

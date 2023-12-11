@@ -24,7 +24,7 @@ export class ThermostatManageComponent implements OnInit {
         debounceTime(300),
         distinctUntilChanged(),
       )
-      .subscribe((value) => {
+      .subscribe(() => {
         this.service.getCharacteristic('TargetTemperature').setValue(this.targetTemperature.value);
       });
   }
