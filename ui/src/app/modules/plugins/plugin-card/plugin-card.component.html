@@ -135,7 +135,7 @@
                     (click)="$plugin.uninstallPlugin(plugin)">
                     <i class="fas fa-fw fa-trash"></i> {{ 'plugins.button_uninstall' | translate }}
                   </button>
-                  <div class="dropdown-divider" *ngIf="!plugin.disabled && plugin.isConfigured && plugin.hasChildBridges && plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x'"></div>
+                  <div class="dropdown-divider" *ngIf="!plugin.disabled && plugin.isConfigured plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x'"></div>
                   <ng-container *ngIf="plugin.hasChildBridges && !plugin.disabled">
                     <button ngbDropdownItem *ngIf="!childBridgeRestartInProgress && !plugin.disabled" (click)="doChildBridgeAction('restart')">
                       <i class="fa-fw icon-button fas fa-fw fa-power-off"></i> {{ 'child_bridge.label_child_restart' | translate }}
@@ -148,14 +148,8 @@
                     </button>
                   </ng-container>
                   <button ngbDropdownItem (click)="$plugin.bridgeSettings(plugin)"
-                    *ngIf="plugin.isConfigured && !plugin.disabled && plugin.hasChildBridges && plugin.installedVersion">
+                    *ngIf="plugin.isConfigured && !plugin.disabled && plugin.installedVersion">
                     <i class="fas fa-fw fa-bridge"></i> {{ 'child_bridge.label_bridge_settings' | translate }}
-                  </button>
-                  <div class="dropdown-divider" *ngIf="plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && !recommendChildBridge"></div>
-                  <button ngbDropdownItem *ngIf="plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && !recommendChildBridge"
-                    (click)="$plugin.bridgeSettings(plugin)">
-                    <i class="icon-button fas fa-fw fa-bridge"></i>
-                    {{ 'child_bridge.label_child_setup' | translate }}
                   </button>
                   <div class="dropdown-divider"></div>
                   <button ngbDropdownItem *ngIf="plugin.isConfigured" (click)="$plugin.settings(plugin)">
