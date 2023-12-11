@@ -48,7 +48,7 @@ export class SetupWizardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.previousTitle = this.$title.getTitle();
     this.$title.setTitle('Setup Homebridge');
-    window.document.querySelector('body').classList.remove('body-top-padding');
+    // window.document.querySelector('body').classList.remove('body-top-padding');
   }
 
   matchPassword(AC: AbstractControl) {
@@ -63,7 +63,7 @@ export class SetupWizardComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.$title.setTitle(this.previousTitle);
-    window.document.querySelector('body').classList.remove('body-top-padding');
+    // window.document.querySelector('body').classList.remove('body-top-padding');
   }
 
   onClickGettingStarted() {

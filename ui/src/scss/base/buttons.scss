@@ -4,6 +4,7 @@
   font-size: 1rem;
   line-height: 1.5;
   border-radius: 0.25rem;
+  text-transform: uppercase;
 }
 
 .btn-floating {
@@ -42,4 +43,12 @@ button {
 
 .dropdown-toggle::after {
   display: none;
+}
+
+// disabled button background color
+.btn.disabled,
+.btn:disabled {
+  background-color: #111111;
+  color: #999999;
+  border-color: #111111;
 }

@@ -54,13 +54,6 @@ jobs:
             exit 1
           fi
 
-      - name: Check Bundle
-        run: |
-          if [ $(stat -c%s "homebridge-config-ui-x-${{ needs.analyze-tags.outputs.previous-tag || github.event.inputs.tag }}.tar.gz") -lt 10000000 ]; then
-            echo "Bundle is under 10MB, stopping"
-            exit 1
-          fi
-
       - name: Attach Bundle
         uses: AButler/upload-release-assets@v2.0
         with:

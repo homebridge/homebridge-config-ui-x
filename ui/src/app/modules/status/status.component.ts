@@ -7,7 +7,6 @@ import { take } from 'rxjs/operators';
 import { WidgetAddComponent } from './widget-add/widget-add.component';
 import { WidgetControlComponent } from './widget-control/widget-control.component';
 import { AuthService } from '@/app/core/auth/auth.service';
-import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { NotificationService } from '@/app/core/notification.service';
 import { SettingsService } from '@/app/core/settings.service';
 import { IoNamespace, WsService } from '@/app/core/ws.service';
@@ -37,7 +36,6 @@ export class StatusComponent implements OnInit, OnDestroy {
     private $notification: NotificationService,
     public $auth: AuthService,
     public $settings: SettingsService,
-    public $md: MobileDetectService,
   ) {}
 
   ngOnInit() {

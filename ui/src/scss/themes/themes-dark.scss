@@ -40,39 +40,6 @@
       border-bottom-width: 1px;
     }
 
-    .nav-item .btn {
-      color: #ffffff;
-    }
-
-    .nav-overlay {
-      display: initial;
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: -999;
-      background-color: rgba(0,0,0,0.8);
-    }
-
-    .sidebar {
-      background-color: #0f0f0f;
-    }
-
-    .sidebar .nav-links li:hover,
-    .sidebar .nav-links li .sub-menu,
-    .li-link1.show, .li-link2.show {
-      background: #2b2b2b;
-    }
-
-    .sidebar .logo-details i, .sidebar .logo-details img,
-    .sidebar .logo-details .logo_name,
-    .sidebar .nav-links li i,
-    .sidebar .nav-links li a .link_name,
-    .sidebar .nav-links li .sub-menu a {
-      color: #ffffff;
-    }
-
     .hb-npm-search {
       border: 0 !important;
       background-color: #111111 !important;

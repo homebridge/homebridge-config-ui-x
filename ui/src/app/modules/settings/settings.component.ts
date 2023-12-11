@@ -9,6 +9,8 @@ import { ResetHomebridgeModalComponent } from './reset-homebridge-modal/reset-ho
 import { SelectNetworkInterfacesComponent } from './select-network-interfaces/select-network-interfaces.component';
 import { UnpairAccessoryModalComponent } from './unpair-accessory-modal/unpair-accessory-modal.component';
 import { ApiService } from '@/app/core/api.service';
+import { BackupRestoreComponent } from '@/app/core/backup-restore/backup-restore.component';
+import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { NotificationService } from '@/app/core/notification.service';
 import { SettingsService } from '@/app/core/settings.service';
 
@@ -40,6 +42,7 @@ export class SettingsComponent implements OnInit {
     private $notification: NotificationService,
     public $toastr: ToastrService,
     private $modal: NgbModal,
+    public $plugin: ManagePluginsService,
   ) {}
 
   ngOnInit() {
@@ -47,6 +50,22 @@ export class SettingsComponent implements OnInit {
     if (this.$settings.env.serviceMode) {
       this.initServiceModeForm();
     }
+  }
+
+  openUiSettings() {
+    this.$plugin.settings({
+      name: 'homebridge-config-ui-x',
+      displayName: 'Homebridge UI',
+      settingsSchema: true,
+      links: {},
+    });
+  }
+
+  backupRestoreHomebridge() {
+    this.$modal.open(BackupRestoreComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    });
   }
 
   initServiceModeForm() {

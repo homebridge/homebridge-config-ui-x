@@ -44,7 +44,7 @@
           {{ formCancelButtonLabel }}
         </button>
         <button class="btn btn-primary" *ngIf="formSubmitButtonLabel" (click)="formActionSubject.next('submit')"
-                [disabled]="!formValid">
+          [disabled]="!formValid">
           {{ formSubmitButtonLabel }}
         </button>
       </div>

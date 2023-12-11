@@ -21,24 +21,24 @@
           </p>
           <p class="card-text mb-2" *ngIf="plugin.verifiedPlugin">
             <a href="javascript:void(0)" class="card-link green-text" (click)="openVerifiedModal()">
-              <i class="fas fa-fw fa-shield-alt fa-lg mr-1"></i>
+              <i class="fas fa-fw fa-shield-alt fa-lg me-1"></i>
               <span class="grey-text">{{ 'plugins.donate.button_verified' | translate }}</span>
             </a>
           </p>
           <p class="card-text mb-2" *ngIf="!plugin.verifiedPlugin">
             <a href="javascript:void(0)" class="card-link" (click)="openVerifiedModal()">
-              <i class="fas fa-fw fa-shield-alt fa-lg mr-1" style="opacity: 0.25;"></i>
+              <i class="fas fa-fw fa-shield-alt fa-lg me-1" style="opacity: 0.25;"></i>
               <span class="grey-text">{{ 'plugins.donate.button_not_verified' | translate }}</span>
             </a>
           </p>
           <p class="card-text mb-2">
             <a href="javascript:void(0)" class="card-link pink-text" *ngIf="plugin.verifiedPlugin && plugin.funding"
                (click)="openFundingModal(plugin)">
-              <i class="fas fa-fw fa-heart fa-lg mr-1"></i>
+              <i class="fas fa-fw fa-heart fa-lg me-1"></i>
               <span class="grey-text">@{{ plugin.author }}</span>
             </a>
             <span class="grey-text" *ngIf="!plugin.verifiedPlugin || !plugin.funding">
-              <i class="fas fa-fw fa-heart fa-lg mr-1" style="opacity: 0.5;"></i>@{{ plugin.author }}
+              <i class="fas fa-fw fa-heart fa-lg me-1" style="opacity: 0.5;"></i>@{{ plugin.author }}
             </span>
           </p>
           <div class="d-flex flex-row">
@@ -47,7 +47,7 @@
               <span *ngIf="plugin.publicPackage && !plugin.installedVersion">
                 <a href="javascript:void(0)" class="card-link grey-text" (click)="$plugin.installPreviousVersion(plugin)"
                   [ngbTooltip]="'plugins.status_not_installed' | translate" container="body">
-                  <i class="far fa-fw fa-arrow-alt-circle-down fa-lg mr-1"></i>
+                  <i class="far fa-fw fa-arrow-alt-circle-down fa-lg me-1"></i>
                   <span class="grey-text">v{{ plugin.latestVersion }}
                     <span *ngIf="plugin.lastUpdated">({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
                   </span>
@@ -55,17 +55,17 @@
               </span>
               <!-- // -->
               <!-- installed, no updates available -->
-              <span *ngIf="plugin.installedVersion && !plugin.updateAvailable && !plugin.betaUpdateAvailable">
-                <i class="far fa-fw fa-circle-check fa-lg card-text-defined mr-1"></i>
+              <span *ngIf="plugin.installedVersion && !plugin.updateAvailable">
+                <i class="far fa-fw fa-circle-check fa-lg card-text-defined me-1"></i>
                 <span class="d-none d-md-inline">{{ 'plugins.status_installed' | translate }}:</span>
                 v{{ plugin.installedVersion }}
               </span>
               <!-- // -->
               <!-- installed, updates available -->
-              <span *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable">
-                <a href="javascript:void(0)" (click)="$plugin.updatePlugin(plugin, plugin.betaUpdateAvailable ? 'beta' : 'latest')"
+              <span *ngIf="plugin.updateAvailable">
+                <a href="javascript:void(0)" (click)="$plugin.updatePlugin(plugin, plugin.updateTag || 'latest')"
                   class="card-link" [ngbTooltip]="'plugins.status_update_available' | translate" container="body">
-                  <i class="far fa-fw fa-arrow-alt-circle-up fa-lg primary-text mr-1"></i>
+                  <i class="far fa-fw fa-arrow-alt-circle-up fa-lg primary-text me-1"></i>
                   <span class="d-none d-md-inline grey-text">{{ 'plugins.status_installed' | translate }}: </span>
                   <span class="grey-text">v{{ plugin.installedVersion }}</span>
                 </a>
@@ -99,7 +99,7 @@
                 <a class="card-link text-decoration-none mt-auto" href="javascript:void(0)" style="outline:none;"
                   aria-label="Plugin actions drop down menu" ngbDropdownToggle>
                   <i class="fa-solid fa-fw fa-cog fa-lg" [ngClass]="{
-                    'fa-fade primary-text': (plugin.updateAvailable || plugin.betaUpdateAvailable)
+                    'fa-fade primary-text': plugin.updateAvailable
                       || !plugin.isConfigured
                       || (plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && recommendChildBridge)
                       || (plugin.isConfigured && plugin.hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled)
@@ -107,8 +107,8 @@
                     style="--fa-animation-duration: 2s;"></i>
                 </a>
                 <div ngbDropdownMenu aria-labelledby="Plugin actions drop down menu">
-                  <button ngbDropdownItem (click)="$plugin.updatePlugin(plugin, plugin.betaUpdateAvailable ? 'beta' : 'latest')"
-                    *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable">
+                  <button ngbDropdownItem (click)="$plugin.updatePlugin(plugin, plugin.updateTag || 'latest')"
+                    *ngIf="plugin.updateAvailable">
                     <i class="far fa-fw fa-arrow-alt-circle-up primary-text"></i>
                     {{ 'plugins.button_update' | translate }} (v{{ plugin.latestVersion }})
                   </button>
@@ -128,7 +128,7 @@
                   </button>
                   <div class="dropdown-divider"
                     *ngIf="
-                      (plugin.updateAvailable || plugin.betaUpdateAvailable)
+                      plugin.updateAvailable
                       || !plugin.isConfigured
                       || (plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && recommendChildBridge)
                       || (plugin.isConfigured && plugin.hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled)

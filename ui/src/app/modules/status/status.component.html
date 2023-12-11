@@ -13,7 +13,7 @@
         <i class="fas fa-fw fa-lock"></i>
       </button>
     </div>
-    <div class="btn-group" role="group" *ngIf="consoleStatus === 'up' && $auth.user.admin">
+    <div class="btn-group ms-3" role="group" *ngIf="consoleStatus === 'up' && $auth.user.admin">
       <button type="button" class="btn btn-elegant status-button my-0 me-0" [disabled]="!options.draggable.enabled" (click)="addWidget()">
         <i class="fas fa-fw fa-cog"></i>
       </button>

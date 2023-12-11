@@ -9,21 +9,23 @@ import { MonacoEditorModule } from 'ngx-monaco-editor';
 import { ToastrModule } from 'ngx-toastr';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { AuthModule } from './core/auth/auth.module';
+import { CoreModule } from './core/core.module';
+import { supportedLocales } from './core/locales';
+import { onMonacoLoad } from './core/monaco-editor.service';
 import { LoginModule } from './modules/login/login.module';
 import { RestartModule } from './modules/restart/restart.module';
 import { StatusModule } from './modules/status/status.module';
 import { LayoutComponent } from './shared/layout/layout.component';
-import { AuthModule } from '@/app/core/auth/auth.module';
-import { CoreModule } from '@/app/core/core.module';
-import { supportedLocales } from '@/app/core/locales';
-import { onMonacoLoad } from '@/app/core/monaco-editor.service';
-import { RestartModalComponent } from '@/app/shared/layout/restart-modal/restart-modal.component';
+import { PowerOptionsComponent } from '@/app/shared/layout/power-options/power-options.component';
+import { SidebarComponent } from '@/app/shared/layout/sidebar/sidebar.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LayoutComponent,
-    RestartModalComponent,
+    PowerOptionsComponent,
+    SidebarComponent,
   ],
   imports: [
     BrowserModule,

@@ -101,7 +101,9 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
             this.updateToBeta = false;
             this.getReleaseNotes();
             break;
+          case 'alpha':
           case 'beta':
+          case 'test':
             this.updateToBeta = true;
             this.getReleaseNotes();
             break;

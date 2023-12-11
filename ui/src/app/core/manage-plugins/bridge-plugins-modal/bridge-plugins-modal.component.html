@@ -30,7 +30,7 @@
               </strong>
             </h5>
             <input type="checkbox" class="rendux-input" [id]="'toggleExternalBridgeInput_' + i"
-                   (change)="toggleExternalBridge(item, enabledBlocks[i], i)" [(ngModel)]="enabledBlocks[i]">
+              (change)="toggleExternalBridge(item, enabledBlocks[i], i)" [(ngModel)]="enabledBlocks[i]">
             <label [for]="'toggleExternalBridgeInput_' + i" class="rendux-label"></label>
           </div>
           <div *ngIf="item._bridge?.username">
@@ -44,12 +44,12 @@
             <div *ngIf="deviceInfo[item._bridge?.username]">
               <div *ngIf="deviceInfo[item._bridge?.username]._isPaired === false" class="w-100 d-flex flex-column">
                 <app-qrcode [data]="deviceInfo[item._bridge?.username]._setupCode" class="me-auto ms-auto mt-2 mb-2"
-                            style="width: 180px; height: 180px;">
+                  style="width: 180px; height: 180px;">
                 </app-qrcode>
                 <p class="me-auto ms-auto text-center">
                   {{ deviceInfo[item._bridge?.username].pincode }}
                 </p>
-                <p class="grey-text  me-auto ms-auto text-center" style="max-width: 400px;">
+                <p class="grey-text me-auto ms-auto text-center" style="max-width: 400px;">
                   {{ 'status.message_code_scan_instructions' | translate }}
                 </p>
               </div>

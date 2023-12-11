@@ -11,43 +11,6 @@
       color: #333333;
     }
 
-    .nav-overlay {
-      display: initial;
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: -999;
-      background-color: rgba(255,255,255,0.8);
-    }
-
-    .nav-item .btn, .navbar .dropdown-menu a:not(.active) {
-      color: #ffffff;
-    }
-
-    .sidebar {
-      background-color: $primary-dark;
-    }
-
-    .sidebar .nav-links li:hover,
-    .sidebar .nav-links li .sub-menu,
-    .li-link1.show, .li-link2.show {
-      background: $primary;
-    }
-
-    .sidebar .logo-details i, .sidebar .logo-details img,
-    .sidebar .logo-details .logo_name,
-    .sidebar .nav-links li i,
-    .sidebar .nav-links li a .link_name,
-    .sidebar .nav-links li .sub-menu a {
-      color: #ffffff;
-    }
-
-    // .sidebar .logo-details img {
-    //   filter: invert(1);
-    // }
-
     .hb-npm-search {
       border: 0 !important;
       background-color: #eeeeee !important;

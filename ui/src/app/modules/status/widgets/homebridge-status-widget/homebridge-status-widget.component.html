@@ -1,5 +1,5 @@
 <div class="flex-column d-flex align-items-stretch h-100 w-100 pb-1">
-  <div style="cursor: move;" class="drag-handler ps-2 pt-1 pb-1 pe-2">Homebridge</div>
+  <div style="cursor: move;" class="drag-handler p-2">Homebridge</div>
   <div class="d-flex flex-wrap w-100 pe-3 ps-2 justify-content-start gridster-item-content overflow-auto no-scrollbars">
     <div class="hb-status-item d-flex flex-row" style="min-width:max(25%, 250px);">
       <div class="d-flex">
@@ -37,9 +37,9 @@
         <div class="mb-0 px-3 py-1 hb-status-icon">
           <i class="fas fa-fw fa-cog fa-spin primary-text" *ngIf="!homebridgePkg.installedVersion"></i>
           <i class="fas fa-fw fa-check-circle primary-text"
-            *ngIf="homebridgePkg.installedVersion && !homebridgePkg.updateAvailable && !homebridgePkg.betaUpdateAvailable"></i>
+            *ngIf="homebridgePkg.installedVersion && !homebridgePkg.updateAvailable"></i>
           <i class="fas fa-fw fa-arrow-alt-circle-up primary-text"
-            *ngIf="homebridgePkg.installedVersion && (homebridgePkg.updateAvailable || homebridgePkg.betaUpdateAvailable)"></i>
+            *ngIf="homebridgePkg.installedVersion && homebridgePkg.updateAvailable"></i>
         </div>
         <div class="align-self-center">
           <a href="javascript:void(0)" (click)="$plugin.installPreviousVersion(homebridgePkg)" *ngIf="homebridgePkg.installedVersion"
@@ -51,12 +51,12 @@
             <span *ngIf="!homebridgePkg.installedVersion">
               {{ 'status.homebridge.label_checking_for_updates' | translate }}
             </span>
-            <span *ngIf="homebridgePkg.installedVersion && !homebridgePkg.updateAvailable && !homebridgePkg.betaUpdateAvailable"
+            <span *ngIf="homebridgePkg.installedVersion && !homebridgePkg.updateAvailable"
               [translate]="'status.homebridge.label_up_to_date'">
               Up To Date
             </span>
-            <a href="javascript:void(0)" (click)="$plugin.upgradeHomebridge(homebridgePkg, homebridgePkg.betaUpdateAvailable ? 'beta' : 'latest')"
-               class="primary-text" *ngIf="homebridgePkg.installedVersion && (homebridgePkg.updateAvailable || homebridgePkg.betaUpdateAvailable)"
+            <a href="javascript:void(0)" (click)="$plugin.upgradeHomebridge(homebridgePkg, homebridgePkg.updateTag || 'latest')"
+               class="primary-text" *ngIf="homebridgePkg.installedVersion && homebridgePkg.updateAvailable"
               [translate]="'status.plugin_out_of_date'">
               Update Available
             </a>
@@ -70,9 +70,9 @@
         <div class="mb-0 px-3 py-1 hb-status-icon">
           <i class="fas fa-fw fa-cog fa-spin primary-text" *ngIf="!homebridgeUiPkg.installedVersion"></i>
           <i class="fas fa-fw fa-check-circle primary-text"
-             *ngIf="homebridgeUiPkg.installedVersion && !homebridgeUiPkg.updateAvailable && !homebridgeUiPkg.betaUpdateAvailable"></i>
+             *ngIf="homebridgeUiPkg.installedVersion && !homebridgeUiPkg.updateAvailable"></i>
           <i class="fas fa-fw fa-arrow-alt-circle-up primary-text"
-             *ngIf="homebridgeUiPkg.installedVersion && (homebridgeUiPkg.updateAvailable || homebridgeUiPkg.betaUpdateAvailable)"></i>
+             *ngIf="homebridgeUiPkg.installedVersion && homebridgeUiPkg.updateAvailable"></i>
         </div>
         <div class="align-self-center">
           <a href="javascript:void(0)" (click)="$plugin.installPreviousVersion(homebridgeUiPkg)" *ngIf="homebridgeUiPkg.installedVersion"
@@ -84,12 +84,12 @@
             <span *ngIf="!homebridgeUiPkg.installedVersion">
               {{ 'status.homebridge.label_checking_for_updates' | translate }}
             </span>
-            <span *ngIf="homebridgeUiPkg.installedVersion && !homebridgeUiPkg.updateAvailable && !homebridgeUiPkg.betaUpdateAvailable"
+            <span *ngIf="homebridgeUiPkg.installedVersion && !homebridgeUiPkg.updateAvailable"
               [translate]="'status.homebridge.label_up_to_date'">
               Up To Date
             </span>
-            <a href="javascript:void(0)" (click)="$plugin.upgradeHomebridge(homebridgeUiPkg, homebridgeUiPkg.betaUpdateAvailable ? 'beta' : 'latest')"
-               class="primary-text" *ngIf="homebridgeUiPkg.installedVersion && (homebridgeUiPkg.updateAvailable || homebridgeUiPkg.betaUpdateAvailable)"
+            <a href="javascript:void(0)" (click)="$plugin.upgradeHomebridge(homebridgeUiPkg, homebridgeUiPkg.updateTag || 'latest')"
+               class="primary-text" *ngIf="homebridgeUiPkg.installedVersion && homebridgeUiPkg.updateAvailable"
                [translate]="'status.plugin_out_of_date'">
               Update Available
             </a>

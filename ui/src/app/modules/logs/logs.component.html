@@ -6,12 +6,12 @@
     <button class="btn btn-elegant my-0" (click)="downloadLogFile()">
       <i class="fas fa-fw fa-download"></i>
     </button>
-    <button class="btn btn-elegant my-0 me-0" (click)="truncateLogFile()">
+    <button class="btn btn-elegant my-0 me-0 ms-3" (click)="truncateLogFile()">
       <i class="fas fa-fw fa-trash-alt"></i>
     </button>
   </div>
 </div>
 
-<div class="flex-column d-flex align-items-stretch" style="height: calc(100% - 52px);">
+<div class="flex-column d-flex align-items-stretch" style="height: calc(100% - 30px); width: calc(100% + 20px); overflow: hidden;">
   <div #logoutput id="log-output" class="terminal align-self-end w-100 h-100 mb-1"></div>
 </div>

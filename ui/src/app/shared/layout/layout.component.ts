@@ -1,22 +1,13 @@
-import {
-  Component,
-  ElementRef,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
-import { throttleTime } from 'rxjs/operators';
 import { lt } from 'semver';
 import { AuthService } from '@/app/core/auth/auth.service';
-import { BackupRestoreComponent } from '@/app/core/backup-restore/backup-restore.component';
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
-import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { NotificationService } from '@/app/core/notification.service';
 import { SettingsService } from '@/app/core/settings.service';
 import { IoNamespace, WsService } from '@/app/core/ws.service';
-import { RestartModalComponent } from '@/app/shared/layout/restart-modal/restart-modal.component';
 import { environment } from '@/environments/environment';
 
 @Component({
@@ -25,10 +16,9 @@ import { environment } from '@/environments/environment';
   styleUrls: ['./layout.component.scss'],
 })
 export class LayoutComponent implements OnInit {
-  @ViewChild('restartHomebridgeIcon') restartHomebridgeIcon: ElementRef;
-
   public rPiCurrentlyUnderVoltage = false;
   public rPiWasUnderVoltage = false;
+  public sidebarExpanded = false;
   private io: IoNamespace;
 
   constructor(
@@ -36,7 +26,6 @@ export class LayoutComponent implements OnInit {
     private $ws: WsService,
     public $auth: AuthService,
     public $settings: SettingsService,
-    private $plugins: ManagePluginsService,
     private $notification: NotificationService,
     private $modal: NgbModal,
     private $router: Router,
@@ -46,23 +35,6 @@ export class LayoutComponent implements OnInit {
     this.io = this.$ws.connectToNamespace('app');
     this.io.socket.on('reconnect', () => {
       this.$auth.checkToken();
-    });
-
-    this.$notification.configUpdated.pipe(throttleTime(15000)).subscribe(() => {
-      // highlight the homebridge restart icon
-      const element = (this.restartHomebridgeIcon.nativeElement as HTMLElement);
-      element.classList.add('fa-beat');
-      setTimeout(() => {
-        element.classList.remove('fa-beat');
-      }, 14900);
-    });
-
-    this.$notification.restartTriggered.subscribe(() => {
-      // ensure restart icon is not highlighted when restart is triggered
-      const element = (this.restartHomebridgeIcon?.nativeElement as HTMLElement);
-      if (element) {
-        element.classList.remove('fa-beat');
-      }
     });
 
     this.$notification.raspberryPiThrottled.subscribe((throttled) => {
@@ -75,26 +47,6 @@ export class LayoutComponent implements OnInit {
     });
 
     this.compareServerUiVersion();
-  }
-
-  backupRestoreHomebridge() {
-    this.$modal.open(BackupRestoreComponent, {
-      size: 'lg',
-      backdrop: 'static',
-    });
-  }
-
-  openUiSettings() {
-    this.$plugins.settings({
-      name: 'homebridge-config-ui-x',
-      displayName: 'Homebridge UI',
-      settingsSchema: true,
-      links: {},
-    });
-  }
-
-  openRestartModal() {
-    this.$modal.open(RestartModalComponent);
   }
 
   async compareServerUiVersion() {
