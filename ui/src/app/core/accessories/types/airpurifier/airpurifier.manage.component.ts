@@ -23,7 +23,7 @@ export class AirpurifierManageComponent implements OnInit {
         debounceTime(300),
         distinctUntilChanged(),
       )
-      .subscribe((value) => {
+      .subscribe(() => {
         this.service.getCharacteristic('RotationSpeed').setValue(this.targetRotationSpeed.value);
 
         // turn bulb on or off when brightness is adjusted

@@ -30,11 +30,7 @@ export class ManualPluginConfigModalComponent implements OnInit {
   public saveInProgress = false;
 
   public monacoEditor: any;
-  public editorOptions = {
-    language: 'json',
-    theme: this.$settings.theme.startsWith('dark-mode') ? 'vs-dark' : 'vs-light',
-    automaticLayout: true,
-  };
+  public editorOptions: any;
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -52,6 +48,12 @@ export class ManualPluginConfigModalComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.editorOptions = {
+      language: 'json',
+      theme: this.$settings.theme.startsWith('dark-mode') ? 'vs-dark' : 'vs-light',
+      automaticLayout: true,
+    };
+
     if (this.$md.detect.mobile()) {
       this.loading = false;
       this.canConfigure = false;

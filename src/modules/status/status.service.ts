@@ -12,7 +12,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { readFile, readJson, writeJsonSync } from 'fs-extra';
 import * as NodeCache from 'node-cache';
 import { Subject, Subscription } from 'rxjs';
-import { gt, lt } from 'semver';
+import { gt } from 'semver';
 import {
   Systeminformation,
   cpuTemperature,
@@ -466,18 +466,80 @@ export class StatusService {
 
     try {
       const versionList = (await this.httpService.get('https://nodejs.org/dist/index.json').toPromise()).data;
-      const currentLts = versionList.filter((x) => x.lts)[0];
 
-      // See why this is set to 2.29 at https://homebridge.io/w/JJSun
-      const glibcVersion = this.getGlibcVersion();
-      const showNextUpdateWarning = glibcVersion && parseFloat(glibcVersion) < 2.29;
+      // Get the newest v18 and v20 in the list
+      const latest18 = versionList.filter((x: { version: string }) => x.version.startsWith('v18'))[0];
+      const latest20 = versionList.filter((x: { version: string }) => x.version.startsWith('v20'))[0];
+
+      let updateAvailable = false;
+      let latestVersion = process.version;
+      let showNodeUnsupportedWarning = false;
+      let showGlibcUnsupportedWarning = false;
+
+      /**
+       * NodeJS Version - Minimum GLIBC Version
+       *
+       *      18            2.28
+       *      20            2.31
+       */
+
+      // Behaviour depends on the installed version of node
+      switch (process.version.split('.')[0]) {
+        case 'v18': {
+          // Currently using v18, but v20 is available
+          // If the user is running linux, then check their glibc version
+          //   If they are running glibc 2.31 or higher, then show the option to update to v20
+          //   Otherwise we would still want to see if there is a minor/patch update available for v18
+          // Otherwise, already show the option for updating to node 20
+          if (platform() === 'linux') {
+            const glibcVersion = this.getGlibcVersion();
+            if (glibcVersion) {
+              if (parseFloat(glibcVersion) >= 2.31) {
+                // glibc version is high enough to support v20
+                updateAvailable = true;
+                latestVersion = latest20.version;
+              } else {
+                // glibc version is too low to support v20
+                // Check if there is a new minor/patch version available
+                if (gt(latest18.version, process.version)) {
+                  updateAvailable = true;
+                  latestVersion = latest18.version;
+                }
+
+                // Show the user a warning about the glibc version for upcoming end-of-life Node 18
+                if (parseFloat(glibcVersion) < 2.31) {
+                  showGlibcUnsupportedWarning = true;
+                }
+              }
+            }
+          } else {
+            // Not running linux, so show the option for updating to node 20
+            updateAvailable = true;
+            latestVersion = latest20.version;
+          }
+          break;
+        }
+        case 'v20': {
+          // Currently using v20
+          // Check if there is a new minor/patch version available
+          if (gt(latest20.version, process.version)) {
+            updateAvailable = true;
+            latestVersion = latest20.version;
+          }
+          break;
+        }
+        default: {
+          // Using an unsupported version of node
+          showNodeUnsupportedWarning = true;
+        }
+      }
 
       const versionInformation = {
         currentVersion: process.version,
-        latestVersion: currentLts.version,
-        updateAvailable: gt(currentLts.version, process.version),
-        showUpdateWarning: lt(process.version, '18.15.0'),
-        showNextUpdateWarning,
+        latestVersion,
+        updateAvailable,
+        showNodeUnsupportedWarning,
+        showGlibcUnsupportedWarning,
         installPath: dirname(process.execPath),
       };
       this.statusCache.set('nodeJsVersion', versionInformation, 86400);
@@ -488,8 +550,8 @@ export class StatusService {
         currentVersion: process.version,
         latestVersion: process.version,
         updateAvailable: false,
-        showUpdateWarning: false,
-        showNextUpdateWarning: false,
+        showNodeUnsupportedWarning: false,
+        showGlibcUnsupportedWarning: false,
       };
       this.statusCache.set('nodeJsVersion', versionInformation, 3600);
       return versionInformation;

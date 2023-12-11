@@ -9,7 +9,7 @@ import { ChartConfiguration } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { Subscription, interval } from 'rxjs';
 import { AuthService } from '@/app/core/auth/auth.service';
-import { WsService } from '@/app/core/ws.service';
+import { IoNamespace, WsService } from '@/app/core/ws.service';
 
 @Component({
   selector: 'app-memory-widget',
@@ -65,7 +65,7 @@ export class MemoryWidgetComponent implements OnInit, OnDestroy {
     },
   };
 
-  private io = this.$ws.getExistingNamespace('status');
+  private io: IoNamespace;
   private intervalSubscription: Subscription;
 
   constructor(
@@ -74,6 +74,8 @@ export class MemoryWidgetComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.io = this.$ws.getExistingNamespace('status');
+
     // lookup the chart color based on the current theme
     const userColor = getComputedStyle(this.widgetBackground.nativeElement).backgroundColor;
     if (userColor) {

@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, UntypedFormControl } from '@angular/forms';
-import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { debounceTime } from 'rxjs/operators';
@@ -41,7 +40,6 @@ export class SettingsComponent implements OnInit {
     private $notification: NotificationService,
     public $toastr: ToastrService,
     private $modal: NgbModal,
-    private $router: Router,
   ) {}
 
   ngOnInit() {
@@ -92,17 +90,6 @@ export class SettingsComponent implements OnInit {
     this.$modal.open(RemoveSingleCachedAccessoryModalComponent, {
       size: 'lg',
     });
-  }
-
-  forceRestartService() {
-    this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}).subscribe(
-      () => {
-        this.$router.navigate(['/restart']);
-      },
-      (err) => {
-        this.$toastr.error(err.message, 'Failed to set force service restart flag.');
-      },
-    );
   }
 
   async initNetworkingOptions() {

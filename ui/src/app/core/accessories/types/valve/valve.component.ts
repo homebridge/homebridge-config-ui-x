@@ -28,7 +28,7 @@ export class ValveComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    // setup the RemainingDuration countdown handlers, if the valve has the RemainingDuration Characteristic
+    // set up the RemainingDuration countdown handlers, if the valve has the RemainingDuration Characteristic
     if (this.service.getCharacteristic('RemainingDuration')) {
       this.setupRemainingDurationCounter();
     }

@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-import { WsService } from '@/app/core/ws.service';
+import { IoNamespace, WsService } from '@/app/core/ws.service';
 
 @Component({
   selector: 'app-child-bridge-widget',
@@ -18,7 +18,7 @@ export class ChildBridgeWidgetComponent implements OnInit, OnDestroy {
 
   public childBridges = [];
 
-  private io = this.$ws.connectToNamespace('child-bridges');
+  private io: IoNamespace;
 
   constructor(
     private $toastr: ToastrService,
@@ -27,6 +27,7 @@ export class ChildBridgeWidgetComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.io = this.$ws.connectToNamespace('child-bridges');
     this.io.connected.subscribe(async () => {
       this.getChildBridgeMetadata();
       this.io.socket.emit('monitor-child-bridge-status');
