@@ -78,4 +78,17 @@ export class SystemInfoWidgetComponent implements OnInit {
     // eslint-disable-next-line max-len
     ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js';
   }
+
+  nodeUnsupportedModal() {
+    const ref = this.$modal.open(InformationComponent);
+
+    // eslint-disable-next-line max-len
+    ref.componentInstance.title = this.$translate.instant('status.widget.systeminfo.modal_node_unsupp_title');
+    ref.componentInstance.message = this.$translate.instant('status.widget.systeminfo.modal_node_unsupp_message');
+    ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info');
+    ref.componentInstance.faIconClass = 'fab fa-fw fa-node-js primary-text';
+
+    // eslint-disable-next-line max-len
+    ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js';
+  }
 }
