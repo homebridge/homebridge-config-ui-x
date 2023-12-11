@@ -118,9 +118,8 @@
   max-height: 1rem * 2;
 
   @media (max-width: 575px) {
-    margin-top: 0px;
+    margin-top: 0;
     font-size: 12px;
-    line-height: 17px;
     -webkit-line-clamp: 2;
     line-height: 1rem;
     max-height: 1rem * 2;
