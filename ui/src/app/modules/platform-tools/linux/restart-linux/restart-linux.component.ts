@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '@/app/core/api.service';
 import { SettingsService } from '@/app/core/settings.service';
-import { WsService } from '@/app/core/ws.service';
+import { IoNamespace, WsService } from '@/app/core/ws.service';
 
 @Component({
   selector: 'app-restart-linux',
@@ -18,7 +18,7 @@ export class RestartLinuxComponent implements OnInit, OnDestroy {
   timeout = false;
   error: any = false;
 
-  private io = this.$ws.connectToNamespace('status');
+  private io: IoNamespace;
 
   constructor(
     private $api: ApiService,
@@ -30,6 +30,7 @@ export class RestartLinuxComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.io = this.$ws.connectToNamespace('status');
     this.io.connected.subscribe(() => {
       this.io.socket.emit('monitor-server-status');
       this.$settings.getAppSettings().catch(/* do nothing */);

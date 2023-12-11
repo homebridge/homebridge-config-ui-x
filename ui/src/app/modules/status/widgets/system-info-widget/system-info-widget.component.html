@@ -15,15 +15,13 @@
               {{ serverInfo.os.distro }}
             </span>
             <span *ngSwitchDefault>
-              <a *ngIf="nodejsInfo.showNextUpdateWarning" class="system-info-link" href="javascript:void(0)" (click)="glibcVersionModal()">
+              <a *ngIf="nodejsInfo.showGlibcUnsupportedWarning" class="system-info-link" href="javascript:void(0)" (click)="glibcVersionModal()">
                 <i class="primary-text fas fa-fw fa-exclamation-circle"></i>
               </a> {{ serverInfo.os.distro }} {{ serverInfo.os.codename | titlecase }} ({{ serverInfo.os.release }})
             </span>
           </td>
           <td *ngIf="serverInfo.homebridgeRunningInSynologyPackage">
-            <a *ngIf="nodejsInfo.showNextUpdateWarning" class="system-info-link" href="javascript:void(0)" (click)="glibcVersionModal()">
-              <i class="primary-text fas fa-fw fa-exclamation-circle"></i>
-            </a> Synology DSM
+            Synology DSM
           </td>
         </tr>
         <tr *ngIf="serverInfo.network.ip4">
@@ -51,9 +49,17 @@
             Node.js Version
           </th>
           <td>
-            <a href="javascript:void(0)" class="system-info-link" (click)="nodeUpdateModal()">
-              <i *ngIf="nodejsInfo.updateAvailable" class="primary-text fas fa-fw fa-circle-up"></i>
-            </a> {{ serverInfo.nodeVersion }}
+            <a *ngIf="nodejsInfo.updateAvailable && !nodejsInfo.showNodeUnsupportedWarning" href="javascript:void(0)" class="system-info-link"
+              (click)="nodeUpdateModal()">
+              <i class="primary-text fas fa-fw fa-circle-up"></i> {{ serverInfo.nodeVersion }}
+            </a>
+            <a *ngIf="nodejsInfo.showNodeUnsupportedWarning && !nodejsInfo.updateAvailable" href="javascript:void(0)" class="system-info-link"
+              (click)="nodeUnsupportedModal()">
+              <i class="primary-text fas fa-fw fa-exclamation-circle"></i> {{ serverInfo.nodeVersion }}
+            </a>
+            <span *ngIf="!nodejsInfo.showNodeUnsupportedWarning && !nodejsInfo.updateAvailable">
+              {{ serverInfo.nodeVersion }}
+            </span>
           </td>
         </tr>
         <tr>

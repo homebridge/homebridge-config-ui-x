@@ -12,7 +12,6 @@ import { ServiceTypeX } from '../../accessories.interfaces';
 export class HumidifierDehumidifierManageComponent implements OnInit {
   @Input() public service: ServiceTypeX;
   public targetMode: any;
-  public targetHumidity: any;
   public targetHumidityChanged: Subject<any> = new Subject<any>();
 
   public RelativeHumidityDehumidifierThreshold;
@@ -29,7 +28,7 @@ export class HumidifierDehumidifierManageComponent implements OnInit {
       .pipe(
         debounceTime(300),
       )
-      .subscribe((value) => {
+      .subscribe(() => {
         switch (this.targetMode) {
           case 0:
             // auto

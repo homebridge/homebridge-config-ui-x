@@ -1,41 +1,41 @@
 /* You can add global styles to this file, and also import other style files */
 
-$image-path: "../../img";
+$image-path: '../../img';
 
 @font-face {
-  font-family: 'Font Awesome 5 Free';
+  font-family: 'Font Awesome 6 Free';
   src: local('Font Awesome 6 Free');
 }
 
-@import "@fortawesome/fontawesome-free/scss/fontawesome.scss";
-@import "@fortawesome/fontawesome-free/scss/solid.scss";
-@import "@fortawesome/fontawesome-free/scss/regular.scss";
-@import "@fortawesome/fontawesome-free/scss/brands.scss";
-@import "@fortawesome/fontawesome-free/scss/v4-shims.scss";
+@import '@fortawesome/fontawesome-free/scss/fontawesome.scss';
+@import '@fortawesome/fontawesome-free/scss/solid.scss';
+@import '@fortawesome/fontawesome-free/scss/regular.scss';
+@import '@fortawesome/fontawesome-free/scss/brands.scss';
+@import '@fortawesome/fontawesome-free/scss/v4-shims.scss';
 
-@import "bootstrap/scss/bootstrap";
-@import "mdb-ui-kit/src/scss/mdb.free";
+@import 'bootstrap/scss/bootstrap';
+@import 'mdb-ui-kit/src/scss/mdb.free';
 
-@import "xterm/css/xterm.css";
-@import "nouislider/dist/nouislider.min.css";
-@import "dragula/dist/dragula.min.css";
+@import 'xterm/css/xterm.css';
+@import 'nouislider/dist/nouislider.min.css';
+@import 'dragula/dist/dragula.min.css';
 
-@import "./base/checkbox.scss";
-@import "./base/layout.scss";
-@import "./base/buttons.scss";
-@import "./base/form.scss";
-@import "./base/background.scss";
-@import "./base/modal.scss";
+@import './base/checkbox.scss';
+@import './base/layout.scss';
+@import './base/buttons.scss';
+@import './base/form.scss';
+@import './base/background.scss';
+@import './base/modal.scss';
 
-@import "./components/toastr.scss";
-@import "./components/accessories.scss";
-@import "./components/json-schema-form.scss";
-@import "./components/sliding-checkbox.scss";
+@import './components/toastr.scss';
+@import './components/accessories.scss';
+@import './components/json-schema-form.scss';
+@import './components/sliding-checkbox.scss';
 
-@import "./components/spinner.scss";
-@import "./components/widgets.scss";
-@import "./components/terminal.scss";
-@import "./components/editor.scss";
+@import './components/spinner.scss';
+@import './components/widgets.scss';
+@import './components/terminal.scss';
+@import './components/editor.scss';
 
-@import "./themes/themes-light.scss";
-@import "./themes/themes-dark.scss";
+@import './themes/themes-light.scss';
+@import './themes/themes-dark.scss';

@@ -12,7 +12,6 @@ import { ServiceTypeX } from '../../accessories.interfaces';
 export class HeaterCoolerManageComponent implements OnInit {
   @Input() public service: ServiceTypeX;
   public targetMode: any;
-  public targetTemperature: any;
   public targetTemperatureChanged: Subject<any> = new Subject<any>();
 
   public CoolingThresholdTemperature;
@@ -29,7 +28,7 @@ export class HeaterCoolerManageComponent implements OnInit {
       .pipe(
         debounceTime(300),
       )
-      .subscribe((value) => {
+      .subscribe(() => {
         switch (this.targetMode) {
           case 0:
             // auto

@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 import { NgxMdModule } from 'ngx-md';
-import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
+import { MonacoEditorModule } from 'ngx-monaco-editor';
 import { BridgePluginsModalComponent } from './bridge-plugins-modal/bridge-plugins-modal.component';
 import { CustomPluginsModule } from './custom-plugins/custom-plugins.module';
 import { DonateModalComponent } from './donate-modal/donate-modal.component';

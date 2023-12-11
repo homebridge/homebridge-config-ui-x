@@ -387,6 +387,8 @@
   "status.widget.systeminfo.label_yes": "Ja",
   "status.widget.systeminfo.modal_glibc_message": "Diese Meldung zeigt an, dass Ihr Betriebssystem keine neueren Versionen von Node.js unterstützt. Um dieses Problem zu beheben und in Zukunft aktualisierte Versionen von Node.js installieren zu können, müssen Sie Ihr Betriebssystem auf eine neuere Version aktualisieren.",
   "status.widget.systeminfo.modal_glibc_title": "OS Update",
+  "status.widget.systeminfo.modal_node_unsupp_message": "You are running a version of Node.js that is not officially supported by Homebridge. You should consider changing to a supported version.",
+  "status.widget.systeminfo.modal_node_unsupp_title": "Unsupported Node Version",
   "status.widget.systeminfo.modal_node_update_message": "Für die Ausführung von Homebridge muss Node.js auf Ihrem System installiert sein. Ab und an müssen Sie die Node.js-Laufzeitumgebung aktualisieren, um die Unterstützung für neue Funktionen zu aktivieren. Homebridge (und verifizierte Plugins) unterstützen alle aktuellen Active und Maintenance LTS-Versionen von Node.js.",
   "status.widget.systeminfo.modal_node_update_title": "Node Update",
   "status.widget.systeminfo.modal_servicemode_message": "Der Standalone-Modus wird nicht mehr empfohlen. Die Einrichtung von Homebridge und Homebridge UI mit hb-service bietet dieselben Vorteile wie der Standalone-Modus, ist aber viel einfacher einzurichten und zu warten.",

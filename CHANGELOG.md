@@ -8,11 +8,17 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 
 - Add plugin log download button
 - Improve plugin card hyperlinks (#1918) (@jsiegenthaler)
+- Download logs option for when a plugin install/update/uninstall fails
 
 ### Translation Changes
 
 - updates to pl.json language file (#1929) (@mkz212)
 - updates to de.json language file (@Staubgeborener)
+
+### Other Changes
+
+- revert ngx-monaco-editor dependency update
+- ui: update to angular v15
 
 ## 4.54.1 (2023-12-08)
 

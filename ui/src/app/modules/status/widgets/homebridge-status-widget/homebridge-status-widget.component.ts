@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { SettingsService } from '@/app/core/settings.service';
-import { WsService } from '@/app/core/ws.service';
+import { IoNamespace, WsService } from '@/app/core/ws.service';
 
 @Component({
   selector: 'app-homebridge-status-widget',
@@ -17,7 +17,7 @@ export class HomebridgeStatusWidgetComponent implements OnInit {
   public homebridgeStatus = {} as any;
   public homebridgePluginStatus = [] as any;
 
-  private io = this.$ws.getExistingNamespace('status');
+  private io: IoNamespace;
 
   constructor(
     private $ws: WsService,
@@ -27,6 +27,7 @@ export class HomebridgeStatusWidgetComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
+    this.io = this.$ws.getExistingNamespace('status');
     this.io.socket.on('homebridge-status', (data) => {
       this.homebridgeStatus = data;
     });
