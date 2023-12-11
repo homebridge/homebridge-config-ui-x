@@ -51,7 +51,7 @@
               <a href="javascript:void(0)" *ngIf="plugin.publicPackage && !plugin.installedVersion" class="card-link grey-text"
                  (click)="$plugin.installPreviousVersion(plugin)" [ngbTooltip]="'plugins.status_not_installed' | translate" container="body">
                 <i class="far fa-fw fa-arrow-alt-circle-down fa-lg"></i>
-                <span *ngIf="!plugin.installedVersion && plugin.lastUpdated" class="grey-text">({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
+                <span *ngIf="!plugin.installedVersion && plugin.lastUpdated" class="grey-text">v{{ plugin.latestVersion }} ({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
               </a>
               <a href="javascript:void(0)" (click)="$plugin.updatePlugin(plugin, plugin.betaUpdateAvailable ? 'beta' : 'latest')"
                  *ngIf="plugin.updateAvailable || plugin.betaUpdateAvailable" class="card-link primary-text"
