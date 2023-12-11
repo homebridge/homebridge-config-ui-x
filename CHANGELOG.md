@@ -9,6 +9,9 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - Add plugin log download button
 - Improve plugin card hyperlinks (#1918) (@jsiegenthaler)
 - Download logs option for when a plugin install/update/uninstall fails
+- revise system information icons (os/node)
+- accessory title fix (lights + windows) (#1933) (@mkz212)
+- improve spacing in plugin card
 
 ### Translation Changes
 
@@ -17,6 +20,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 
 ### Other Changes
 
+- add `passport` as dependency to BE
 - revert ngx-monaco-editor dependency update
 - ui: update to angular v15
 
