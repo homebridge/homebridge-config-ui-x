@@ -66,7 +66,7 @@
               <a href="javascript:void(0)" *ngIf="plugin.isConfigured && !hasChildBridges && !plugin.disabled && recommendChildBridge"
                     (click)="$plugin.bridgeSettings(plugin)">
                     <i class="icon-button fas fa-fade fa-fw fa-bridge primary-text fa-lg" style="--fa-animation-duration: 2s;"
-                      [ngbTooltip]="'child_bridge.label_child_setup"></i>
+                      [ngbTooltip]="'child_bridge.label_child_setup'"></i>
               </a>
               <a href="javascript:void(0)" *ngIf="plugin.isConfigured && hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled"
                     (click)="$plugin.bridgeSettings(plugin)">
