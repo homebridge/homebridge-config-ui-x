@@ -43,7 +43,7 @@
     "ng2-dragula": "3.2.0",
     "ng2-nouislider": "2.0.0",
     "ngx-md": "14.0.9",
-    "ngx-monaco-editor-v2": "14.0.4",
+    "ngx-monaco-editor": "8.1.1",
     "ngx-toastr": "15.2.2",
     "popper.js": "1.16.1",
     "qrcode": "1.5.3",

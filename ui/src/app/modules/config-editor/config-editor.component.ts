@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { parse } from 'json5';
-import { NgxEditorModel } from 'ngx-monaco-editor-v2';
+import { NgxEditorModel } from 'ngx-monaco-editor';
 import { ToastrService } from 'ngx-toastr';
 import { ConfigRestoreBackupComponent } from './config-restore-backup/config.restore-backup.component';
 import { ApiService } from '@/app/core/api.service';
