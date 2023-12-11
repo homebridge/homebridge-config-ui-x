@@ -71,7 +71,7 @@
               <a href="javascript:void(0)" *ngIf="plugin.isConfigured && hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled"
                     (click)="$plugin.bridgeSettings(plugin)">
                     <i class="icon-button fas fa-fade fa-fw fa-qrcode primary-text fa-lg" style="--fa-animation-duration: 2s;"
-                      [ngbTooltip]="'child_bridge.label_bridge_connect_to_homekit"></i>
+                      [ngbTooltip]="'child_bridge.label_bridge_connect_to_homekit'"></i>
               </a>
               <ng-container *ngIf="!plugin.disabled && hasChildBridges && !hasUnpairedChildBridges">
                 <a href="javascript:void(0)" (click)="$plugin.bridgeSettings(plugin)" class="card-link" [ngClass]="{
@@ -79,7 +79,7 @@
                   'text-warning': childBridgeStatus === 'pending',
                   'red-text': childBridgeStatus === 'down'
                 }">
-                  <i class="fas fa-fw fa-lg ml-3" [ngbTooltip]="'child_bridge.label_bridge_settings"
+                  <i class="fas fa-fw fa-lg ml-3" [ngbTooltip]="'child_bridge.label_bridge_settings'"
                     [ngClass]="{
                     'fa-bridge-circle-check': childBridgeStatus === 'ok',
                     'fa-bridge-circle-exclamation': childBridgeStatus === 'pending',
