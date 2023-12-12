@@ -15,7 +15,7 @@
         <div class="d-flex flex-column w-100">
           <p class="card-text mb-2 text-truncate">
             <a href="javascript:void(0)" (click)="pluginInfoModal(plugin)" class="card-link grey-text">
-              <i class="fas fa-fw fa-info-circle fa-lg grey-text"></i>
+              <i class="fas fa-fw fa-info-circle fa-lg me-1 grey-text"></i>
               <span class="grey-text">{{ plugin.name }}</span>
             </a>
           </p>
@@ -66,8 +66,8 @@
                 <a href="javascript:void(0)" (click)="$plugin.updatePlugin(plugin, plugin.updateTag || 'latest')"
                   class="card-link" [ngbTooltip]="'plugins.status_update_available' | translate" container="body">
                   <i class="far fa-fw fa-arrow-alt-circle-up fa-lg primary-text me-1"></i>
-                  <span class="d-none d-md-inline grey-text">{{ 'plugins.status_installed' | translate }}: </span>
-                  <span class="grey-text">v{{ plugin.installedVersion }}</span>
+                  <span class="d-none d-md-inline primary-text">{{ 'plugins.button_update' | translate }}: </span>
+                  <span class="primary-text">v{{ plugin.latestVersion }}</span>
                 </a>
               </span>
               <!-- // -->
@@ -76,12 +76,12 @@
               <a href="javascript:void(0)" *ngIf="plugin.isConfigured && !hasChildBridges && !plugin.disabled && recommendChildBridge"
                  (click)="$plugin.bridgeSettings(plugin)">
                 <i class="icon-button fas fa-fade fa-fw fa-bridge primary-text fa-lg" style="--fa-animation-duration: 2s;"
-                   [ngbTooltip]="'child_bridge.label_child_setup'"></i>
+                   [ngbTooltip]="'child_bridge.label_child_setup' | translate"></i>
               </a>
               <a href="javascript:void(0)" *ngIf="plugin.isConfigured && hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled"
                  (click)="$plugin.bridgeSettings(plugin)">
                 <i class="icon-button fas fa-fade fa-fw fa-qrcode primary-text fa-lg" style="--fa-animation-duration: 2s;"
-                   [ngbTooltip]="'child_bridge.label_bridge_connect_to_homekit'"></i>
+                   [ngbTooltip]="'child_bridge.label_bridge_connect_to_homekit' | translate"></i>
               </a>
               <ng-container *ngIf="!plugin.disabled && hasChildBridges && !hasUnpairedChildBridges">
                 <a href="javascript:void(0)" (click)="$plugin.bridgeSettings(plugin)" class="card-link" [ngClass]="{
@@ -89,7 +89,7 @@
                   'text-warning': childBridgeStatus === 'pending',
                   'red-text': childBridgeStatus === 'down'
                 }">
-                  <i class="fas fa-fw fa-lg ml-3" [ngbTooltip]="'child_bridge.label_bridge_settings'"
+                  <i class="fas fa-fw fa-lg ml-3" [ngbTooltip]="'child_bridge.label_bridge_settings' | translate"
                      [ngClass]="{
                     'fa-bridge-circle-check': childBridgeStatus === 'ok',
                     'fa-bridge-circle-exclamation': childBridgeStatus === 'pending',
