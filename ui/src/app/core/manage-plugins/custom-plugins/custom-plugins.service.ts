@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ApiService } from '../../api.service';
-import { CustomPluginsComponent } from './custom-plugins.component';
-import { HomebridgeGoogleSmarthomeComponent } from './homebridge-google-smarthome/homebridge-google-smarthome.component';
+import { CustomPluginsComponent } from '@/app/core/manage-plugins/custom-plugins/custom-plugins.component';
+import { HomebridgeGoogleSmarthomeComponent } from '@/app/core/manage-plugins/custom-plugins/homebridge-google-smarthome/homebridge-google-smarthome.component'; // eslint-disable-line max-len
 
 @Injectable({
   providedIn: 'root',

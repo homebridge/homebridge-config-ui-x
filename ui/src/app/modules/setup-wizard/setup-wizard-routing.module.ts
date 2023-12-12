@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { SetupWizardComponent } from './setup-wizard.component';
+import { SetupWizardComponent } from '@/app/modules/setup-wizard/setup-wizard.component';
 
 const routes: Routes = [
   {

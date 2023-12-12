@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { RestartLinuxComponent } from './restart-linux/restart-linux.component';
-import { ShutdownLinuxComponent } from './shutdown-linux/shutdown-linux.component';
+import { RestartLinuxComponent } from '@/app/modules/platform-tools/linux/restart-linux/restart-linux.component';
+import { ShutdownLinuxComponent } from '@/app/modules/platform-tools/linux/shutdown-linux/shutdown-linux.component';
 
 const routes: Routes = [
   {

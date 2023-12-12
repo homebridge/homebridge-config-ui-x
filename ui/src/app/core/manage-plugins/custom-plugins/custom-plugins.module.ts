@@ -5,12 +5,12 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 import { Bootstrap4FrameworkModule } from '@oznu/ngx-bs4-jsonform';
 import { NgxMdModule } from 'ngx-md';
-import { CustomPluginsComponent } from './custom-plugins.component';
-import { CustomPluginsService } from './custom-plugins.service';
-import { HomebridgeDeconzComponent } from './homebridge-deconz/homebridge-deconz.component';
-import { HomebridgeGoogleSmarthomeComponent } from './homebridge-google-smarthome/homebridge-google-smarthome.component';
-import { HomebridgeHueComponent } from './homebridge-hue/homebridge-hue.component';
 import { CoreModule } from '@/app/core/core.module';
+import { CustomPluginsComponent } from '@/app/core/manage-plugins/custom-plugins/custom-plugins.component';
+import { CustomPluginsService } from '@/app/core/manage-plugins/custom-plugins/custom-plugins.service';
+import { HomebridgeDeconzComponent } from '@/app/core/manage-plugins/custom-plugins/homebridge-deconz/homebridge-deconz.component';
+import { HomebridgeGoogleSmarthomeComponent } from '@/app/core/manage-plugins/custom-plugins/homebridge-google-smarthome/homebridge-google-smarthome.component'; // eslint-disable-line max-len
+import { HomebridgeHueComponent } from '@/app/core/manage-plugins/custom-plugins/homebridge-hue/homebridge-hue.component';
 
 @NgModule({
   declarations: [

@@ -8,7 +8,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subscription, interval } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { ServiceTypeX } from '../../accessories.interfaces';
-import { ValveManageComponent } from './valve.manage.component';
+import { ValveManageComponent } from '@/app/core/accessories/types/valve/valve.manage.component';
 
 @Component({
   selector: 'app-valve',

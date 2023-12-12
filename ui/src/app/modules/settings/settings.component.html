@@ -6,6 +6,44 @@
     [translate]="'platform.docker.settings.button_restart_required'">Restart Required</button>
 </div>
 
+<div class="mb-3">
+  <h5 class="primary-text mt-3">General</h5>
+  <ul class="list-group mt-2">
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span class="pr-2">
+          {{ 'menu.label_settings_ui' | translate }}
+        </span>
+      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;" (click)="openUiSettings()">
+        <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
+      </button>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span class="pr-2">
+          {{ 'backup.title_backup_restore' | translate }}
+        </span>
+      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;" (click)="backupRestoreHomebridge()">
+        <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
+      </button>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span class="pr-2">
+          {{ 'menu.tooltip_user_accounts' | translate }}
+        </span>
+      <a class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;" routerLink="/users">
+        <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
+      </a>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span class="pr-2">
+          {{ 'menu.config_json_editor' | translate }}
+        </span>
+      <a class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;" routerLink="/config">
+        <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
+      </a>
+    </li>
+  </ul>
+</div>
+
 <!-- ALL USERS -->
 <div class="mb-3">
   <h5 class="primary-text mt-3" translate="settings.network.title_network"></h5>

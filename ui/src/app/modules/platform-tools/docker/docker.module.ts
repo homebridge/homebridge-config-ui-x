@@ -4,11 +4,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 import { MonacoEditorModule } from 'ngx-monaco-editor';
-import { ContainerRestartComponent } from './container-restart/container-restart.component';
-import { DockerRoutingModule } from './docker-routing.module';
-import { StartupScriptComponent } from './startup-script/startup-script.component';
-import { StartupScriptResolver } from './startup-script/startup-script.resolver';
 import { CoreModule } from '@/app/core/core.module';
+import { ContainerRestartComponent } from '@/app/modules/platform-tools/docker/container-restart/container-restart.component';
+import { DockerRoutingModule } from '@/app/modules/platform-tools/docker/docker-routing.module';
+import { StartupScriptComponent } from '@/app/modules/platform-tools/docker/startup-script/startup-script.component';
+import { StartupScriptResolver } from '@/app/modules/platform-tools/docker/startup-script/startup-script.resolver';
 
 @NgModule({
   declarations: [
