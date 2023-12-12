@@ -136,6 +136,7 @@
   "logs.message_truncate_log_warning": "Deze actie verwijdert je Homebridge logs en is onomkeerbaar. Weet je zeker dat je door wilt gaan?",
   "logs.title_download_log_file": "Download Log Bestanden",
   "logs.title_truncate_log_file": "Kap Log Bestanden Af",
+  "menu.config_json_editor": "Config JSON Editor",
   "menu.docker.label_restart_container": "Herstart Container",
   "menu.docker.label_settings": "Instellingen",
   "menu.docker.label_startup_script": "Opstart Script",

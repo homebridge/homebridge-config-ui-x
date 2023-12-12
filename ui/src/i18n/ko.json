@@ -136,6 +136,7 @@
   "logs.message_truncate_log_warning": "이 작업은 Homebridge 로그를 영구적으로 삭제합니다. 계속하시겠습니까?",
   "logs.title_download_log_file": "로그파일 다운로드",
   "logs.title_truncate_log_file": "로그파일 자르기",
+  "menu.config_json_editor": "Config JSON Editor",
   "menu.docker.label_restart_container": "컨테이너 재시작",
   "menu.docker.label_settings": "설정",
   "menu.docker.label_startup_script": "시작 스크립트",

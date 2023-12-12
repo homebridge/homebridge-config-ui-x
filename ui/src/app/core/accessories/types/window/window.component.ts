@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ServiceTypeX } from '../../accessories.interfaces';
-import { WindowManageComponent } from './window.manage.component';
+import { WindowManageComponent } from '@/app/core/accessories/types/window/window.manage.component';
 
 @Component({
   selector: 'app-window',

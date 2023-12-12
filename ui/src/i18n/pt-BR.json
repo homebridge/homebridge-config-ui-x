@@ -136,6 +136,7 @@
   "logs.message_truncate_log_warning": "Esta ação irá remover os antigos arquivos de LOG. Tem certeza de que quer continuar?",
   "logs.title_download_log_file": "Baixar arquivo de LOG",
   "logs.title_truncate_log_file": "Truncar arquivo de LOG",
+  "menu.config_json_editor": "Config JSON Editor",
   "menu.docker.label_restart_container": "Reiniciar o Container",
   "menu.docker.label_settings": "Configurações",
   "menu.docker.label_startup_script": "Script de Inicialização",

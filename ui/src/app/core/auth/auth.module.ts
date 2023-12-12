@@ -3,9 +3,9 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { JwtModule } from '@auth0/angular-jwt';
 import { TranslateModule } from '@ngx-translate/core';
-import { AdminGuard } from './admin.guard';
-import { AuthGuard } from './auth.guard';
-import { AuthService } from './auth.service';
+import { AdminGuard } from '@/app/core/auth/admin.guard';
+import { AuthGuard } from '@/app/core/auth/auth.guard';
+import { AuthService } from '@/app/core/auth/auth.service';
 import { environment } from '@/environments/environment';
 
 const tokenGetter = () => localStorage.getItem(environment.jwt.tokenKey);

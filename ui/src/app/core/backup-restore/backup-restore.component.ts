@@ -12,8 +12,8 @@ import { saveAs } from 'file-saver';
 import { ToastrService } from 'ngx-toastr';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
-import { ScheduledBackupsComponent } from './scheduled-backups/scheduled-backups.component';
 import { ApiService } from '@/app/core/api.service';
+import { ScheduledBackupsComponent } from '@/app/core/backup-restore/scheduled-backups/scheduled-backups.component';
 import { IoNamespace, WsService } from '@/app/core/ws.service';
 
 @Component({
