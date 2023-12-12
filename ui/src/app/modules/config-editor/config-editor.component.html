@@ -4,7 +4,7 @@
     <div class="col-6">
       <h3 class="primary-text m-0">{{ 'config.title_config' | translate }}</h3>
     </div>
-    <div class="col-6 text-right">
+    <div class="col-6 text-end">
       <button class="btn btn-danger waves-effect my-0" (click)="onCancelRestore()" [disabled]="saveInProgress"
         *ngIf="originalConfig" container="body" ngbTooltip="{{ 'form.button_cancel' | translate }}"><i class="fas fa-fw fa-times"></i></button>
       <button class="btn btn-elegant waves-effect my-0" (click)="onRestore()" container="body"
