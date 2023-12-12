@@ -2,12 +2,24 @@ name: Node Release
 run-name: Production Release
 
 on:
-  release:
-    types: [published]
+  push:
+    branches: [ latest ]
+    tags: [ 'v*.*.*', '*.*.*' ]
   workflow_dispatch:
 
 jobs:
+  ref:
+    name: Branch/Tag That Triggered Workflow
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install package
+        run:  |
+          echo ${{github.ref}}
+          echo ${{github.ref_name}}
   build_and_test:
+    needs: ref
+    if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }} && contains(github.ref_name, "latest")
     uses: homebridge/.github/.github/workflows/nodejs-build-and-test.yml@latest
     with:
       enable_coverage: true
@@ -16,7 +28,7 @@ jobs:
       token: ${{ secrets.GITHUB_TOKEN }}
   publish:
     needs: build_and_test
-    if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }} & contains(github.ref, "latest")
+    if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }} && contains(github.ref_name, "latest")
 
     uses: homebridge/.github/.github/workflows/npm-publish.yml@latest
     with:
