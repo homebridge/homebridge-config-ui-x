@@ -6,7 +6,7 @@
     </div>
     <div class="d-flex flex-column justify-content-between" style="width: calc(100% - 80px)">
       <a href="javascript:void(0)" (click)="pluginInfoModal(plugin)" >
-      <h5 class="card-title mb-2 text-truncate">
+      <h5 class="card-title card-text-defined mb-2 text-truncate">
         {{ plugin.displayName || ((plugin.name.charAt(0) === '@' ? plugin.name.split('/')[1] : plugin.name) |
         replace:'-':' ' | titlecase) | replace:'Homebridge':'' | replace:'homebridge':'' }}
       </h5>
