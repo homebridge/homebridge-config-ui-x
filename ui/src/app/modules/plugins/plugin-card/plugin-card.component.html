@@ -48,8 +48,9 @@
                 <a href="javascript:void(0)" class="card-link grey-text" (click)="$plugin.installPreviousVersion(plugin)"
                   [ngbTooltip]="'plugins.status_not_installed' | translate" container="body">
                   <i class="far fa-fw fa-arrow-alt-circle-down fa-lg me-1"></i>
+                  <span class="d-none d-md-inline">{{ 'plugins.button_install' | translate }}:</span>
                   <span class="grey-text">v{{ plugin.latestVersion }}
-                    <span *ngIf="plugin.lastUpdated">({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
+                  <span *ngIf="plugin.lastUpdated">({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
                   </span>
                 </a>
               </span>
