@@ -47,8 +47,8 @@
               <span *ngIf="plugin.publicPackage && !plugin.installedVersion">
                 <a href="javascript:void(0)" class="card-link grey-text" (click)="$plugin.installPreviousVersion(plugin)"
                   [ngbTooltip]="'plugins.status_not_installed' | translate" container="body">
-                  <i class="far fa-fw fa-arrow-alt-circle-down fa-lg me-1"></i>
-                  <span class="d-none d-md-inline">{{ 'plugins.button_install' | translate }}:</span>
+                  <i class="far fa-fw fa-arrow-alt-circle-down fa-lg me-1 grey-text"></i>
+                  <span class="d-none d-md-inline grey-text">{{ 'plugins.button_install' | translate }}:</span>
                   <span class="grey-text">v{{ plugin.latestVersion }}
                   <span *ngIf="plugin.lastUpdated">({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
                   </span>
@@ -58,8 +58,8 @@
               <!-- installed, no updates available -->
               <span *ngIf="plugin.installedVersion && !plugin.updateAvailable">
                 <i class="far fa-fw fa-circle-check fa-lg card-text-defined me-1"></i>
-                <span class="d-none d-md-inline">{{ 'plugins.status_installed' | translate }}:</span>
-                v{{ plugin.installedVersion }}
+                <span class="d-none d-md-inline grey-text">{{ 'plugins.status_installed' | translate }}:</span>
+                <span class="grey-text">v{{ plugin.installedVersion }}</span>
               </span>
               <!-- // -->
               <!-- installed, updates available -->
