@@ -12,6 +12,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - revise system information icons (os/node)
 - accessory title fix (lights + windows) (#1933) (@mkz212)
 - improve spacing in plugin card
+- more items in homebridge settings
 
 ### Translation Changes
 

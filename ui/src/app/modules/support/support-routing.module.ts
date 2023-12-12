@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { SupportComponent } from './support.component';
+import { SupportComponent } from '@/app/modules/support/support.component';
 
 const routes: Routes = [
   {

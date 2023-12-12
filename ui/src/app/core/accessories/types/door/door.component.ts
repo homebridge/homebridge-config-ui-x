@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ServiceTypeX } from '../../accessories.interfaces';
-import { DoorManageComponent } from './door.manage.component';
+import { DoorManageComponent } from '@/app/core/accessories/types/door/door.manage.component';
 
 @Component({
   selector: 'app-door',

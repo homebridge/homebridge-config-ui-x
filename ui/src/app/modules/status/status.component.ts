@@ -4,12 +4,12 @@ import { GridsterConfig, GridsterItem } from 'angular-gridster2';
 import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { WidgetAddComponent } from './widget-add/widget-add.component';
-import { WidgetControlComponent } from './widget-control/widget-control.component';
 import { AuthService } from '@/app/core/auth/auth.service';
 import { NotificationService } from '@/app/core/notification.service';
 import { SettingsService } from '@/app/core/settings.service';
 import { IoNamespace, WsService } from '@/app/core/ws.service';
+import { WidgetAddComponent } from '@/app/modules/status/widget-add/widget-add.component';
+import { WidgetControlComponent } from '@/app/modules/status/widget-control/widget-control.component';
 
 @Component({
   selector: 'app-status',

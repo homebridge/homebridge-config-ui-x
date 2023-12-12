@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ServiceTypeX } from '../../accessories.interfaces';
-import { HumidifierDehumidifierManageComponent } from './humidifierdehumidifier.manage.component';
+import { HumidifierDehumidifierManageComponent } from '@/app/core/accessories/types/humidifierdehumidifier/humidifierdehumidifier.manage.component'; // eslint-disable-line max-len
 
 @Component({
   selector: 'app-humidifierdehumidifier',

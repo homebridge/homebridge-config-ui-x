@@ -3,16 +3,16 @@ import { FormControl, FormGroup, UntypedFormControl } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { debounceTime } from 'rxjs/operators';
-import { RemoveAllCachedAccessoriesModalComponent } from './remove-all-cached-accessories-modal/remove-all-cached-accessories-modal.component'; // eslint-disable-line max-len
-import { RemoveSingleCachedAccessoryModalComponent } from './remove-single-cached-accessory-modal/remove-single-cached-accessory-modal.component'; // eslint-disable-line max-len
-import { ResetHomebridgeModalComponent } from './reset-homebridge-modal/reset-homebridge-modal.component';
-import { SelectNetworkInterfacesComponent } from './select-network-interfaces/select-network-interfaces.component';
-import { UnpairAccessoryModalComponent } from './unpair-accessory-modal/unpair-accessory-modal.component';
 import { ApiService } from '@/app/core/api.service';
 import { BackupRestoreComponent } from '@/app/core/backup-restore/backup-restore.component';
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { NotificationService } from '@/app/core/notification.service';
 import { SettingsService } from '@/app/core/settings.service';
+import { RemoveAllCachedAccessoriesModalComponent } from '@/app/modules/settings/remove-all-cached-accessories-modal/remove-all-cached-accessories-modal.component'; // eslint-disable-line max-len
+import { RemoveSingleCachedAccessoryModalComponent } from '@/app/modules/settings/remove-single-cached-accessory-modal/remove-single-cached-accessory-modal.component'; // eslint-disable-line max-len
+import { ResetHomebridgeModalComponent } from '@/app/modules/settings/reset-homebridge-modal/reset-homebridge-modal.component';
+import { SelectNetworkInterfacesComponent } from '@/app/modules/settings/select-network-interfaces/select-network-interfaces.component';
+import { UnpairAccessoryModalComponent } from '@/app/modules/settings/unpair-accessory-modal/unpair-accessory-modal.component';
 
 @Component({
   selector: 'app-settings',

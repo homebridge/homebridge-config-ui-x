@@ -6,7 +6,7 @@ import { ApiService } from '@/app/core/api.service';
 import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
-  selector: 'app-confirm',
+  selector: 'app-power-options',
   templateUrl: './power-options.component.html',
   styleUrls: ['./power-options.component.scss'],
 })
