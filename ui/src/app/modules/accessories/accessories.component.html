@@ -32,7 +32,7 @@
     </div>
   </div>
 
-  <div [dragula]='"rooms-bag"' [(dragulaModel)]='$accessories.rooms'>
+  <div [dragula]="'rooms-bag'" [(dragulaModel)]="$accessories.rooms">
     <div *ngFor="let room of $accessories.rooms">
       <div class="row" *ngIf="!isMobile || room.services.length">
         <div class="col-md-12">
@@ -43,7 +43,7 @@
       </div>
       <div class="row mb-4">
         <div class="col-md-12 d-flex flex-wrap justify-content-between noselect services-bag" *ngIf="room.services.length"
-          [dragula]='"services-bag"' [(dragulaModel)]='room.services'>
+          [dragula]="'services-bag'" [(dragulaModel)]="room.services">
           <div *ngFor="let service of room.services" [ngSwitch]="service.type" class="accessory-item accessory-tab">
             <ng-container *ngIf="!hideHidden || !service.hidden">
               <app-accessory-tile [service]="service"></app-accessory-tile>

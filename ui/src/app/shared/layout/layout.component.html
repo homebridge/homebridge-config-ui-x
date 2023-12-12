@@ -1,4 +1,4 @@
 <app-sidebar [isExpanded]="sidebarExpanded" (toggleSidebar)="sidebarExpanded = !sidebarExpanded"></app-sidebar>
-<div class="content px-3 py-4 p-md-4" [ngClass]="{ 'sidebarExpanded': sidebarExpanded }">
+<div class="content px-3 p-md-4" [ngClass]="{ 'sidebarExpanded': sidebarExpanded }">
   <router-outlet></router-outlet>
 </div>
