@@ -34,7 +34,7 @@
           <p class="card-text mb-2">
             <a href="javascript:void(0)" class="card-link" *ngIf="plugin.verifiedPlugin && plugin.funding"
                (click)="openFundingModal(plugin)">
-              <i class="fas fa-fw fa-heart fa-lg me-1"></i>
+              <i class="fas fa-fw fa-heart fa-lg me-1 pink-text"></i>
               <span class="grey-text">@{{ plugin.author }}</span>
             </a>
             <span class="grey-text" *ngIf="!plugin.verifiedPlugin || !plugin.funding">
@@ -48,7 +48,7 @@
                 <a href="javascript:void(0)" class="card-link grey-text" (click)="$plugin.installPreviousVersion(plugin)"
                   [ngbTooltip]="'plugins.status_not_installed' | translate" container="body">
                   <i class="far fa-fw fa-arrow-alt-circle-down fa-lg me-1 grey-text"></i>
-                  <span class="d-none d-md-inline grey-text">{{ 'plugins.button_install' | translate }}: </span>
+                  <span class="d-none d-sm-inline grey-text">{{ 'plugins.button_install' | translate }}: </span>
                   <span class="grey-text">v{{ plugin.latestVersion }}
                   <span *ngIf="plugin.lastUpdated">({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
                   </span>
@@ -58,7 +58,7 @@
               <!-- installed, no updates available -->
               <span *ngIf="plugin.installedVersion && !plugin.updateAvailable">
                 <i class="far fa-fw fa-circle-check fa-lg card-text-defined me-1"></i>
-                <span class="d-none d-md-inline grey-text">{{ 'plugins.status_installed' | translate }}: </span>
+                <span class="d-none d-sm-inline grey-text">{{ 'plugins.status_installed' | translate }}: </span>
                 <span class="grey-text">v{{ plugin.installedVersion }}</span>
               </span>
               <!-- // -->
@@ -67,7 +67,7 @@
                 <a href="javascript:void(0)" (click)="$plugin.updatePlugin(plugin, plugin.updateTag || 'latest')"
                   class="card-link" [ngbTooltip]="'plugins.status_update_available' | translate" container="body">
                   <i class="far fa-fw fa-arrow-alt-circle-up fa-lg primary-text me-1"></i>
-                  <span class="d-none d-md-inline primary-text">{{ 'plugins.button_update' | translate }}: </span>
+                  <span class="d-none d-sm-inline primary-text">{{ 'plugins.button_update' | translate }}: </span>
                   <span class="primary-text">v{{ plugin.latestVersion }}</span>
                 </a>
               </span>
