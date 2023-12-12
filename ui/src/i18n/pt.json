@@ -136,6 +136,7 @@
   "logs.message_truncate_log_warning": "Esta ação é irreversível e irá apagar os ficheiros de registo existentes do Homebridge. Tem a certeza que deseja continuar?",
   "logs.title_download_log_file": "Descarregar o Ficheiro de Registo",
   "logs.title_truncate_log_file": "Apagar o Ficheiro de Registo",
+  "menu.config_json_editor": "Config JSON Editor",
   "menu.docker.label_restart_container": "Reiniciar o Container",
   "menu.docker.label_settings": "Definições",
   "menu.docker.label_startup_script": "Script de Inicialização",

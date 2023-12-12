@@ -136,6 +136,7 @@
   "logs.message_truncate_log_warning": "Aksi ini akan menghapus catatan Homebridge secara permanen. Apakah anda yakin yakin ingin melanjutkan?",
   "logs.title_download_log_file": "Unduh Berkas Catatan",
   "logs.title_truncate_log_file": "Potong Berkas Catatan",
+  "menu.config_json_editor": "Config JSON Editor",
   "menu.docker.label_restart_container": "Memulai Kembali Kontainer",
   "menu.docker.label_settings": "Pengaturan",
   "menu.docker.label_startup_script": "Skrip Startup",

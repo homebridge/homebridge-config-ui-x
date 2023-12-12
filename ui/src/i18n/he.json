@@ -136,6 +136,7 @@
   "logs.message_truncate_log_warning": "This action will irreversibly delete your existing Homebridge logs. Are you sure you want to continue?",
   "logs.title_download_log_file": "הורד קובץ לוג",
   "logs.title_truncate_log_file": "מחק קובץ לוג",
+  "menu.config_json_editor": "Config JSON Editor",
   "menu.docker.label_restart_container": "אתחל מחדש מיכל",
   "menu.docker.label_settings": "הגדרות",
   "menu.docker.label_startup_script": "Startup Script",

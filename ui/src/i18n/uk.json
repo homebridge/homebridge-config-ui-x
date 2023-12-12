@@ -136,6 +136,7 @@
   "logs.message_truncate_log_warning": "Ця дія безповоротно видалить наявні журнали Homebridge. Ви впевнені, що хочете продовжити?",
   "logs.title_download_log_file": "Завантажити файл журналу",
   "logs.title_truncate_log_file": "Скоротити файл журналу",
+  "menu.config_json_editor": "Config JSON Editor",
   "menu.docker.label_restart_container": "Перезапуск контейнера",
   "menu.docker.label_settings": "Налаштування",
   "menu.docker.label_startup_script": "Скрипт запуску",
