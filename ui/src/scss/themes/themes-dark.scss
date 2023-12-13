@@ -13,7 +13,11 @@
     }
 
     .main-text {
-      color: #ffffff;
+      color: #ffffff !important;
+    }
+
+    .btn-close {
+      filter: invert(1);
     }
 
     .custom-select {
