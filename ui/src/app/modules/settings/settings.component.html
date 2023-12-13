@@ -80,7 +80,7 @@
         </a>
       </span>
       <div>
-        <select class="custom-select" [formControl]="legacyMdnsFormControl"
+        <select class="form-select" [formControl]="legacyMdnsFormControl"
           [attr.aria-label]=" 'settings.mdns_advertiser' | translate">
           <option value="bonjour-hap">Bonjour HAP</option>
           <option value="avahi" *ngIf="showAvahiMdnsOption">Avahi</option>
