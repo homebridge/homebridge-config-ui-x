@@ -200,7 +200,7 @@ export class PluginsService {
         'updateAvailable',
         'name',
       ],
-      ['desc', 'desc', 'desc', 'asc'],
+      ['desc', 'desc', 'asc'],
     );
   }
 
