@@ -3,14 +3,14 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
-import { UsersAddComponent } from './users-add/users-add.component';
-import { UsersDisable2faComponent } from './users-disable2fa/users-disable2fa.component';
-import { UsersEditComponent } from './users-edit/users-edit.component';
-import { UsersRoutingModule } from './users-routing.module';
-import { UsersSetup2faComponent } from './users-setup2fa/users-setup2fa.component';
-import { UsersComponent } from './users.component';
-import { UsersResolver } from './users.resolver';
 import { CoreModule } from '@/app/core/core.module';
+import { UsersAddComponent } from '@/app/modules/users/users-add/users-add.component';
+import { UsersDisable2faComponent } from '@/app/modules/users/users-disable2fa/users-disable2fa.component';
+import { UsersEditComponent } from '@/app/modules/users/users-edit/users-edit.component';
+import { UsersRoutingModule } from '@/app/modules/users/users-routing.module';
+import { UsersSetup2faComponent } from '@/app/modules/users/users-setup2fa/users-setup2fa.component';
+import { UsersComponent } from '@/app/modules/users/users.component';
+import { UsersResolver } from '@/app/modules/users/users.resolver';
 
 @NgModule({
   declarations: [

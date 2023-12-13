@@ -80,21 +80,25 @@ export class LogService {
     // subscribe to incoming data events from server to client
     this.io.socket.on('stdout', (data: string) => {
       if (this.pluginName) {
-        const lines = data.split('\n');
+        const lines = data.split('\n\r');
         let includeNextLine = false;
 
-        lines.forEach((line) => {
+        lines.forEach((line: string) => {
+          if (!line) {
+            return;
+          }
+
           if (includeNextLine) {
             if (line.match(/36m\[.*?]/)) {
               includeNextLine = false;
             } else {
-              this.term.write(line + '\r\n');
+              this.term.write(line + '\n\r');
               return;
             }
           }
 
           if (line.includes(`36m[${this.pluginName}]`)) {
-            this.term.write(line + '\r\n');
+            this.term.write(line + '\n\r');
             includeNextLine = true;
           }
         });

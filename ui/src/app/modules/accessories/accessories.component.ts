@@ -3,11 +3,11 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DragulaService } from 'ng2-dragula';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
-import { AddRoomModalComponent } from './add-room-modal/add-room-modal.component';
 import { AccessoriesService } from '@/app/core/accessories/accessories.service';
 import { AuthService } from '@/app/core/auth/auth.service';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { SettingsService } from '@/app/core/settings.service';
+import { AddRoomModalComponent } from '@/app/modules/accessories/add-room-modal/add-room-modal.component';
 
 @Component({
   selector: 'app-accessories',

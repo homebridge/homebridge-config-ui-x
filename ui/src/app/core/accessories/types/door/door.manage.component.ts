@@ -23,7 +23,7 @@ export class DoorManageComponent implements OnInit {
         debounceTime(300),
         distinctUntilChanged(),
       )
-      .subscribe((value) => {
+      .subscribe(() => {
         if (this.service.getCharacteristic('CurrentPosition').value < this.targetPosition.value) {
           this.service.values.PositionState = 1;
         } else if (this.service.getCharacteristic('CurrentPosition').value > this.targetPosition.value) {

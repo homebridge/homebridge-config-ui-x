@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ServiceTypeX } from '../../accessories.interfaces';
-import { FanManageComponent } from './fan.manage.component';
+import { FanManageComponent } from '@/app/core/accessories/types/fan/fan.manage.component';
 
 @Component({
   selector: 'app-fan',

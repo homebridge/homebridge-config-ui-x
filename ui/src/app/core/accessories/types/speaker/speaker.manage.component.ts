@@ -23,7 +23,7 @@ export class SpeakerManageComponent implements OnInit {
         debounceTime(300),
         distinctUntilChanged(),
       )
-      .subscribe((value) => {
+      .subscribe(() => {
         this.service.getCharacteristic('Volume').setValue(this.targetVolume.value);
       });
   }

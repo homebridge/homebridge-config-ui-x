@@ -4,20 +4,20 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 import { NgxMdModule } from 'ngx-md';
-import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
-import { BridgePluginsModalComponent } from './bridge-plugins-modal/bridge-plugins-modal.component';
-import { CustomPluginsModule } from './custom-plugins/custom-plugins.module';
-import { DonateModalComponent } from './donate-modal/donate-modal.component';
-import { InterpolateMdPipe } from './interpolate-md.pipe';
-import { ManagePluginsModalComponent } from './manage-plugins-modal/manage-plugins-modal.component';
-import { ManagePluginsService } from './manage-plugins.service';
-import { ManualPluginConfigModalComponent } from './manual-plugin-config-modal/manual-plugin-config-modal.component';
-import { NodeUpdateRequiredModalComponent } from './node-update-required-modal/node-update-required-modal.component';
-import { SelectPreviousVersionComponent } from './select-previous-version/select-previous-version.component';
-import { SettingsPluginsModalComponent } from './settings-plugins-modal/settings-plugins-modal.component';
-import { UninstallPluginsModalComponent } from './uninstall-plugins-modal/uninstall-plugins-modal.component';
+import { MonacoEditorModule } from 'ngx-monaco-editor';
 import { CoreModule } from '@/app/core/core.module';
+import { BridgePluginsModalComponent } from '@/app/core/manage-plugins/bridge-plugins-modal/bridge-plugins-modal.component';
+import { CustomPluginsModule } from '@/app/core/manage-plugins/custom-plugins/custom-plugins.module';
+import { DonateModalComponent } from '@/app/core/manage-plugins/donate-modal/donate-modal.component';
+import { InterpolateMdPipe } from '@/app/core/manage-plugins/interpolate-md.pipe';
+import { ManagePluginsModalComponent } from '@/app/core/manage-plugins/manage-plugins-modal/manage-plugins-modal.component';
+import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
+import { ManualPluginConfigModalComponent } from '@/app/core/manage-plugins/manual-plugin-config-modal/manual-plugin-config-modal.component'; // eslint-disable-line max-len
+import { NodeUpdateRequiredModalComponent } from '@/app/core/manage-plugins/node-update-required-modal/node-update-required-modal.component'; // eslint-disable-line max-len
 import { PluginLogModalComponent } from '@/app/core/manage-plugins/plugin-log-modal/plugin-log-modal.component';
+import { SelectPreviousVersionComponent } from '@/app/core/manage-plugins/select-previous-version/select-previous-version.component';
+import { SettingsPluginsModalComponent } from '@/app/core/manage-plugins/settings-plugins-modal/settings-plugins-modal.component';
+import { UninstallPluginsModalComponent } from '@/app/core/manage-plugins/uninstall-plugins-modal/uninstall-plugins-modal.component';
 
 @NgModule({
   declarations: [

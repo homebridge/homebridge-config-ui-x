@@ -6,7 +6,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { Subject } from 'rxjs';
-import { WsService } from '@/app/core/ws.service';
+import { IoNamespace, WsService } from '@/app/core/ws.service';
 
 @Component({
   selector: 'app-hap-qrcode-widget',
@@ -24,13 +24,15 @@ export class HapQrcodeWidgetComponent implements OnInit {
   public qrCodeHeight: number;
   public qrCodeWidth: number;
 
-  private io = this.$ws.getExistingNamespace('status');
+  private io: IoNamespace;
 
   constructor(
     private $ws: WsService,
   ) {}
 
   ngOnInit() {
+    this.io = this.$ws.getExistingNamespace('status');
+
     this.resizeQrCode();
 
     this.io.socket.on('homebridge-status', (data) => {

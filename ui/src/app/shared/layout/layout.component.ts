@@ -15,8 +15,8 @@ import { ConfirmComponent } from '@/app/core/components/confirm/confirm.componen
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { NotificationService } from '@/app/core/notification.service';
 import { SettingsService } from '@/app/core/settings.service';
-import { WsService } from '@/app/core/ws.service';
-import { RestartModalComponent } from '@/app/shared/layout/restart-modal/restart-modal.component';
+import { IoNamespace, WsService } from '@/app/core/ws.service';
+import { PowerOptionsComponent } from '@/app/shared/layout/power-options/power-options.component';
 import { environment } from '@/environments/environment';
 
 @Component({
@@ -29,8 +29,7 @@ export class LayoutComponent implements OnInit {
 
   public rPiCurrentlyUnderVoltage = false;
   public rPiWasUnderVoltage = false;
-
-  private io = this.$ws.connectToNamespace('app');
+  private io: IoNamespace;
 
   constructor(
     public translate: TranslateService,
@@ -44,6 +43,7 @@ export class LayoutComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.io = this.$ws.connectToNamespace('app');
     this.io.socket.on('reconnect', () => {
       this.$auth.checkToken();
     });
@@ -94,7 +94,7 @@ export class LayoutComponent implements OnInit {
   }
 
   openRestartModal() {
-    this.$modal.open(RestartModalComponent);
+    this.$modal.open(PowerOptionsComponent);
   }
 
   async compareServerUiVersion() {

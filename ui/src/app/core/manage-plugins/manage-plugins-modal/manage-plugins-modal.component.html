@@ -56,15 +56,11 @@ hb-service start</pre>
   </div>
   <div class="modal-footer justify-content-between" *ngIf="!onlineUpdateOk || actionComplete || showReleaseNotes || actionFailed">
     <div class="text-left">
-      <button *ngIf="!actionFailed" type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
         {{ 'form.button_close' | translate }}
       </button>
     </div>
-    <div class="text-center">
-      <button *ngIf="actionFailed" type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
-        {{ 'form.button_close' | translate }}
-      </button>
-    </div>
+    <div class="text-center"></div>
     <div class="text-right">
       <button *ngIf="onlineUpdateOk && showReleaseNotes" type="button" class="btn btn-primary" (click)="update()">
         {{ 'plugins.button_update' | translate }}
@@ -76,6 +72,9 @@ hb-service start</pre>
       <button type="button" class="btn btn-primary" *ngIf="justUpdatedPlugin && (['homebridge', 'homebridge-config-ui-x'].includes(pluginName) || childBridges.length === 0)"
         (click)="onRestartHomebridgeClick()">
         {{ 'plugins.manage.button_restart_now' | translate }}
+      </button>
+      <button *ngIf="actionFailed" class="btn btn-primary" (click)="downloadLogFile()">
+        {{ 'logs.label_download' | translate }}
       </button>
     </div>
   </div>

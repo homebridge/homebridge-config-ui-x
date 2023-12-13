@@ -5,8 +5,8 @@ import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { IoNamespace, WsService } from '../ws.service';
-import { ServiceTypeX } from './accessories.interfaces';
-import { InfoModalComponent } from './info-modal/info-modal.component';
+import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
+import { InfoModalComponent } from '@/app/core/accessories/info-modal/info-modal.component';
 
 @Injectable({
   providedIn: 'root',

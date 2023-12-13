@@ -3,8 +3,8 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
-import { SupportRoutingModule } from './support-routing.module';
-import { SupportComponent } from './support.component';
+import { SupportRoutingModule } from '@/app/modules/support/support-routing.module';
+import { SupportComponent } from '@/app/modules/support/support.component';
 
 @NgModule({
   declarations: [

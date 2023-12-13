@@ -23,7 +23,7 @@ export class LightbulbManageComponent implements OnInit {
         debounceTime(300),
         distinctUntilChanged(),
       )
-      .subscribe((value) => {
+      .subscribe(() => {
         this.service.getCharacteristic('Brightness').setValue(this.targetBrightness.value);
 
         // turn bulb on or off when brightness is adjusted

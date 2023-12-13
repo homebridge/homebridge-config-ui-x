@@ -1,5 +1,5 @@
-name: Attach Artifacts from Node Release or Manually ( If the automation fails )
-run-name: From Node Release or Manually Attach Artifacts against ${{ github.event.inputs.tag }}
+name: Attach Artifacts Manually ( If the automation fails )
+run-name: Manually Attach Artifacts against ${{ github.event.inputs.tag }}
 
 on:
   repository_dispatch:
@@ -17,14 +17,13 @@ jobs:
 
     steps:
       - name: Setup node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
           node-version: 20.x
 
-      - name: Get previous tag
-        if: github.event.inputs.tag == ''
-        id: previoustag
-        uses: 'WyriHaximus/github-action-get-previous-tag@v1'
+      - name: Tag
+        id: tag
+        uses: JinoArch/get-latest-tag@latest
 
       # Sanity check to ensure that release tags don't start with a 'v' version prefix but adhere to the X.Y.Z format
       - name: Check for Tag name Format
@@ -37,7 +36,7 @@ jobs:
       - name: Install package
         run: |
           export npm_config_prefix=$(pwd)/package
-          npm install -g homebridge-config-ui-x@${{ needs.analyze-tags.outputs.previous-tag || github.event.inputs.tag }}
+          npm install -g homebridge-config-ui-x@${{ steps.tag.outputs.latestTag || github.event.inputs.tag }}
 
       - name: Remove invalid node-pty node-gyp run
         run: |
@@ -45,19 +44,19 @@ jobs:
 
       - name: Create Bundle
         run: |
-          tar -C $(pwd)/package --owner=0 --group=0 --format=posix -czvf homebridge-config-ui-x-${{ needs.analyze-tags.outputs.previous-tag || github.event.inputs.tag }}.tar.gz .
-          shasum -a 256 homebridge-config-ui-x-${{ needs.analyze-tags.outputs.previous-tag || github.event.inputs.tag }}.tar.gz > SHASUMS256.txt
+          tar -C $(pwd)/package --owner=0 --group=0 --format=posix -czvf homebridge-config-ui-x-${{ steps.tag.outputs.latestTag || github.event.inputs.tag }}.tar.gz .
+          shasum -a 256 homebridge-config-ui-x-${{ steps.tag.outputs.latestTag || github.event.inputs.tag }}.tar.gz > SHASUMS256.txt
 
       - name: Check Bundle
         run: |
-          if [ $(stat -c%s "homebridge-config-ui-x-${{ needs.analyze-tags.outputs.previous-tag || github.event.inputs.tag }}.tar.gz") -lt 10000000 ]; then
+          if [ $(stat -c%s "homebridge-config-ui-x-${{ steps.tag.outputs.latestTag || github.event.inputs.tag }}.tar.gz") -lt 10000000 ]; then
             echo "Bundle is under 10MB, stopping"
             exit 1
           fi
 
       - name: Attach Bundle
-        uses: AButler/upload-release-assets@v2.0
+        uses: AButler/upload-release-assets@v3.0
         with:
-          files: 'homebridge-config-ui-x-${{ needs.analyze-tags.outputs.previous-tag || github.event.inputs.tag }}.tar.gz;SHASUMS256.txt'
+          files: 'homebridge-config-ui-x-${{ steps.tag.outputs.latestTag || github.event.inputs.tag }}.tar.gz;SHASUMS256.txt'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          release-tag: ${{ github.event.inputs.tag }}
+          release-tag: ${{ steps.tag.outputs.latestTag || github.event.inputs.tag }}
