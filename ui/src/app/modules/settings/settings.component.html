@@ -10,37 +10,37 @@
   <h5 class="primary-text mt-3">General</h5>
   <ul class="list-group mt-2">
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pe-2">
+      <span class="w-75 pe-2">
         {{ 'menu.label_settings_ui' | translate }}
       </span>
-      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 45px;" (click)="openUiSettings()">
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" (click)="openUiSettings()">
         <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pe-2">
-        {{ 'backup.title_backup_restore' | translate }}
-      </span>
-      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 45px;" (click)="backupRestoreHomebridge()">
-        <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
-      </button>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pe-2">
-        {{ 'menu.tooltip_user_accounts' | translate }}
-      </span>
-      <a class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 45px;" routerLink="/users">
-        <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
-      </a>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pe-2">
+      <span class="w-75 pe-2">
         {{ 'menu.config_json_editor' | translate }}
       </span>
-      <a class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 45px;" routerLink="/config">
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" routerLink="/config">
         <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
-      </a>
+      </button>
     </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span class="w-75 pe-2">
+        {{ 'backup.title_backup_restore' | translate }}
+      </span>
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" (click)="backupRestoreHomebridge()">
+        <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
+      </button>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span class="w-75 pe-2">
+        {{ 'menu.tooltip_user_accounts' | translate }}
+      </span>
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" routerLink="/users">
+        <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
+      </button>
+    </li> 
   </ul>
 </div>
 
@@ -50,7 +50,7 @@
 
   <ul class="list-group mt-2">
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pe-2">
+      <span class="w-75 pe-2">
         <div>{{ 'settings.network.title_network_interfaces' | translate }}
           <a href="javascript:void(0)" ngbTooltip="{{ 'settings.network.message_network_interface_one' | translate }}">
             <i class="fas fa-fw fa-info-circle primary-text"></i>
@@ -66,21 +66,21 @@
           </span>
         </span>
       </span>
-      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 45px;" [translate]="'reset.title_clear_cached_accessories'"
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" [translate]="'reset.title_clear_cached_accessories'"
         (click)="selectNetworkInterfaces()" [disabled]="!availableNetworkAdapters.length"
         [attr.aria-label]="'settings.network.title_network_interfaces' | translate">
         <i class="fas fa-fw fa-cog" [ngClass]="{ 'fa-pulse': !availableNetworkAdapters.length }"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span>
+      <span class="w-75">
         {{ 'settings.mdns_advertiser' | translate }}
         <a href="javascript:void(0)" ngbTooltip="{{ 'settings.mdns_advertiser_help' | translate }}">
           <i class="fas fa-fw fa-info-circle primary-text"></i>
         </a>
       </span>
       <div>
-        <select class="custom-select" [formControl]="legacyMdnsFormControl"
+        <select class="form-select" [formControl]="legacyMdnsFormControl"
           [attr.aria-label]=" 'settings.mdns_advertiser' | translate">
           <option value="bonjour-hap">Bonjour HAP</option>
           <option value="avahi" *ngIf="showAvahiMdnsOption">Avahi</option>
@@ -99,25 +99,25 @@
 
   <ul class="list-group">
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span>{{ 'settings.startup.debug' | translate }} <code>-D</code></span>
+      <span class="w-75">{{ 'settings.startup.debug' | translate }} <code>-D</code></span>
       <input type="checkbox" class="rendux-input" id="homebridgeDebugMode" formControlName="HOMEBRIDGE_DEBUG"
         aria-label="Debug Mode">
-      <label for="homebridgeDebugMode" class="rendux-label ms-3" style="min-width: 45px;"></label>
+      <label for="homebridgeDebugMode" class="rendux-label ms-3" style="min-width: 50px;"></label>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span>
+      <span class="w-75">
         {{ 'settings.startup.insecure_1' | translate }} ({{ 'settings.startup.insecure_2' | translate }})
         <code>-I</code>
       </span>
       <input type="checkbox" class="rendux-input" id="homebridgeInsecureMode" formControlName="HOMEBRIDGE_INSECURE"
         aria-label="Insecure Mode">
-      <label for="homebridgeInsecureMode" class="rendux-label ms-3" style="min-width: 45px;"></label>
+      <label for="homebridgeInsecureMode" class="rendux-label ms-3" style="min-width: 50px;"></label>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="$settings.env.serviceMode">
-      <span>{{ 'settings.startup.keep_accessories' | translate }} <code>-K</code></span>
+      <span class="w-75">{{ 'settings.startup.keep_accessories' | translate }} <code>-K</code></span>
       <input type="checkbox" class="rendux-input" id="homebridgeKeepOrphans" formControlName="HOMEBRIDGE_KEEP_ORPHANS"
         aria-label="Keep accessories of uninstall plugins">
-      <label for="homebridgeKeepOrphans" class="rendux-label ms-3" style="min-width: 45px;"></label>
+      <label for="homebridgeKeepOrphans" class="rendux-label ms-3" style="min-width: 50px;"></label>
     </li>
   </ul>
 
@@ -126,7 +126,7 @@
 
     <ul class="list-group mt-2">
       <li class="list-group-item d-flex justify-content-between align-items-center">
-        <span>
+        <span class="w-75">
           DEBUG
           <a href="javascript:void(0)"
             ngbTooltip="{{ 'settings.service.debug_tooltip' | translate }}">
@@ -138,7 +138,7 @@
         </div>
       </li>
       <li class="list-group-item d-flex justify-content-between align-items-center">
-        <span>
+        <span class="w-75">
           NODE_OPTIONS
           <a href="https://nodejs.org/api/cli.html" target="_blank"
             ngbTooltip="{{ 'settings.service.node_tooltip' | translate }}">
@@ -164,26 +164,26 @@
 
   <ul class="list-group mt-2">
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pe-2">
+      <span class="w-75 pe-2">
         {{ 'reset.title_unpair_bridges_cameras_tv_external_accessories' | translate }}
         <a href="javascript:void(0)"
           ngbTooltip="{{ 'reset.message_unpair_bridges_cameras_tv_external_accessories' | translate }}">
           <i class="fas fa-fw fa-info-circle primary-text"></i>
         </a>
       </span>
-      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 45px;" (click)="unpairAccessory()"
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" (click)="unpairAccessory()"
         [attr.aria-label]="'reset.title_unpair_bridges_cameras_tv_external_accessories' | translate">
         <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pe-2">
+      <span class="w-75 pe-2">
         {{ 'reset.title_reset_homebridge_accessory' | translate | titlecase }}
         <a href="javascript:void(0)" ngbTooltip="{{ 'reset.message_reset_will_unpair_from_homekit' | translate }}">
           <i class="fas fa-fw fa-info-circle primary-text"></i>
         </a>
       </span>
-      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 45px;" (click)="resetHomebridgeState()"
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" (click)="resetHomebridgeState()"
         [attr.aria-label]="'reset.title_reset_homebridge_accessory' | translate">
         <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
       </button>
@@ -202,26 +202,26 @@
 
   <ul class="list-group mt-2">
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pe-2">
+      <span class="w-75 pe-2">
         {{ 'reset.title_clear_cached_accessories_single' | translate }}
         <a href="javascript:void(0)" ngbTooltip="{{ 'reset.message_remove_cached_accessories_single' | translate }}">
           <i class="fas fa-fw fa-info-circle primary-text"></i>
         </a>
       </span>
-      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 45px;"
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;"
         [translate]="'reset.title_clear_cached_accessories_single'" (click)="removeSingleCachedAccessories()"
         [attr.aria-label]="'reset.title_clear_cached_accessories_single' | translate">
         <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pe-2">
+      <span class="w-75 pe-2">
         {{ 'reset.title_clear_cached_accessories' | translate }}
         <a href="javascript:void(0)" ngbTooltip="{{ 'reset.message_remove_cached_accessories' | translate }}">
           <i class="fas fa-fw fa-info-circle primary-text"></i>
         </a>
       </span>
-      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 45px;"
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;"
         [translate]="'reset.title_clear_cached_accessories'" (click)="removeAllCachedAccessories()"
         [attr.aria-label]="'reset.title_clear_cached_accessories' | translate">
         <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
