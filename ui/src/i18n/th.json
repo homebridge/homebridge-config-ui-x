@@ -404,7 +404,7 @@
   "status.widget.weather.label_search_for_your_city": "ค้นหาเมืองของคุณ :",
   "status.widget.weather.title_weather": "สภาพอากาศ",
   "support.developers.api": "Homebridge API",
-  "support.developers.api_hap": "Hap-NodeJS API",
+  "support.developers.api_hap": "HAP-NodeJS API",
   "support.developers.item_swagger": "Swagger Docs",
   "support.developers.template": "Plugin Template Repo",
   "support.developers.title": "Developers",

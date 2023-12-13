@@ -33,12 +33,9 @@
 }
 
 /* Prevent outlines around the close button when a modal opens */
-button {
-  &.close {
-    &:focus {
-      outline: none;
-    }
-  }
+.btn-close:focus {
+  outline: none;
+  box-shadow: none !important;
 }
 
 .dropdown-toggle::after {
