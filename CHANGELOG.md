@@ -18,12 +18,14 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 
 - updates to pl.json language file (#1929) (@mkz212)
 - updates to de.json language file (@Staubgeborener)
+- updates to fr.json language file (@SonnyT72)
 
 ### Other Changes
 
 - add `passport` as dependency to BE
 - revert ngx-monaco-editor dependency update
 - ui: update to angular v15
+- update action versions
 
 ## 4.54.1 (2023-12-08)
 
