@@ -75,7 +75,7 @@
     "class-validator": "0.14.0",
     "commander": "11.1.0",
     "dayjs": "1.11.10",
-    "fastify": "4.24.3",
+    "fastify": "4.25.0",
     "fs-extra": "11.2.0",
     "jsonwebtoken": "9.0.2",
     "lodash": "4.17.21",
