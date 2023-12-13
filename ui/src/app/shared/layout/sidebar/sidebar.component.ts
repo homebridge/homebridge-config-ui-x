@@ -31,7 +31,7 @@ export class SidebarComponent {
     router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         if (this.isExpanded) {
-          this.toggleSidebar.emit(!this.isExpanded);
+          this.toggleSidebar.emit(false);
         }
       }
     });
@@ -42,6 +42,9 @@ export class SidebarComponent {
   }
 
   openRestartModal() {
+    if (this.isExpanded) {
+      this.toggleSidebar.emit(false);
+    }
     this.$modal.open(PowerOptionsComponent);
   }
 }
