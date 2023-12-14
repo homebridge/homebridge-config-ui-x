@@ -6,11 +6,8 @@ on:
   workflow_dispatch:
 
 jobs:
-
   publish:
-
     if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
-
     uses: homebridge/.github/.github/workflows/npm-publish.yml@latest
     with:
       tag: 'alpha'

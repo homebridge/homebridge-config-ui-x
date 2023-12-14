@@ -1,6 +1,11 @@
 name: Test
 
-on: [pull_request, push]
+on:
+  push:
+    branches: [latest, beta-*.*.*, beta, alpha-*.*.*, alpha]
+  pull_request:
+    branches: [latest, beta-*.*.*, beta]
+  workflow_dispatch:
 
 jobs:
   build:

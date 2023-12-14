@@ -2,8 +2,9 @@ name: Node Build
 
 on:
   push:
-    branches: [latest]
+    branches: [latest, beta-*.*.*, beta, alpha-*.*.*, alpha]
   pull_request:
+    branches: [latest, beta-*.*.*, beta]
   workflow_dispatch:
 
 jobs:
