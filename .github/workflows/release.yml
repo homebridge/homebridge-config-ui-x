@@ -2,11 +2,8 @@ name: Node Release
 run-name: Production Release
 
 on:
-  # Removed publish on push, and forced manual release from github
-  #  push:
-  #    branches: [latest]
-  #    tags:
-  #      - '*.*.*'
+  release:
+    types: [published]
   workflow_dispatch:
 
 jobs:
@@ -17,11 +14,9 @@ jobs:
       install_cmd: npm ci && cd ui && npm ci
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
-
   publish:
     needs: build_and_test
-
-    if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
+    if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }} & contains(github.ref, "latest")
 
     uses: homebridge/.github/.github/workflows/npm-publish.yml@latest
     with:
