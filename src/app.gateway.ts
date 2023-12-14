@@ -9,6 +9,4 @@ import { WsGuard } from './core/auth/guards/ws.guard';
     credentials: true,
   },
 })
-export class AppGateway {
-
-}
+export class AppGateway {}
