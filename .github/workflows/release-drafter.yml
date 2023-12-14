@@ -4,6 +4,7 @@ on:
   push:
     branches: [latest]
   pull_request: # required for autolabeler
+    branches: [latest]
     types: [opened, reopened, synchronize]
   workflow_dispatch:
 
