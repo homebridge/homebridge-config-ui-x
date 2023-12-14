@@ -5,6 +5,7 @@ on:
     branches: [latest, beta-*.*.*, beta, alpha-*.*.*, alpha]
   pull_request:
     branches: [latest, beta-*.*.*, beta]
+    types: [review_requested, ready_for_review]
   workflow_dispatch:
 
 jobs:
