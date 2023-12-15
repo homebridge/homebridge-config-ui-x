@@ -47,11 +47,11 @@
           <span *ngIf="!homebridgePkg.installedVersion">Homebridge</span>
           <a routerLink="/settings" class="card-link ms-1" *ngIf="homebridgePkg.installedVersion"><i class="fa fa-fw fa-cog"></i></a>
           <br>
-          <span class="grey-text">
-            <span *ngIf="!homebridgePkg.installedVersion">
+          <span>
+            <span class="grey-text" *ngIf="!homebridgePkg.installedVersion">
               {{ 'status.homebridge.label_checking_for_updates' | translate }}
             </span>
-            <span *ngIf="homebridgePkg.installedVersion && !homebridgePkg.updateAvailable"
+            <span class="grey-text" *ngIf="homebridgePkg.installedVersion && !homebridgePkg.updateAvailable"
               [translate]="'status.homebridge.label_up_to_date'">
               Up To Date
             </span>
@@ -80,11 +80,11 @@
           <span *ngIf="!homebridgeUiPkg.installedVersion">Homebridge UI</span>
           <a href="javascript:void(0)" (click)="openUiSettings()" class="card-link ms-1" *ngIf="homebridgeUiPkg.installedVersion"><i class="fa fa-fw fa-cog"></i></a>
           <br>
-          <span class="grey-text">
-            <span *ngIf="!homebridgeUiPkg.installedVersion">
+          <span>
+            <span class="grey-text" *ngIf="!homebridgeUiPkg.installedVersion">
               {{ 'status.homebridge.label_checking_for_updates' | translate }}
             </span>
-            <span *ngIf="homebridgeUiPkg.installedVersion && !homebridgeUiPkg.updateAvailable"
+            <span class="grey-text" *ngIf="homebridgeUiPkg.installedVersion && !homebridgeUiPkg.updateAvailable"
               [translate]="'status.homebridge.label_up_to_date'">
               Up To Date
             </span>
