@@ -18,8 +18,9 @@ jobs:
           echo ${{github.ref}}
           echo ${{github.ref_name}}
   build_and_test:
+    name: Build and Test
     needs: ref
-    if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }} && ${{ github.ref_name != '*.*.*-' }}
+    if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }} && ${{ github.ref_name == '*.*.*' }}
     uses: homebridge/.github/.github/workflows/nodejs-build-and-test.yml@latest
     with:
       enable_coverage: true
@@ -28,7 +29,7 @@ jobs:
       token: ${{ secrets.GITHUB_TOKEN }}
   publish:
     needs: build_and_test
-    if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }} && contains(github.ref_name, "latest")
+    if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }} && ${{ github.ref_name == '*.*.*' }}
 
     uses: homebridge/.github/.github/workflows/npm-publish.yml@latest
     with:

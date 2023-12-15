@@ -1,5 +1,5 @@
 name: Attach Artifacts Manually ( If the automation fails )
-run-name: Manually Attach Artifacts against ${{ github.event.inputs.tag }}
+run-name: Manually Attach Artifacts
 
 on:
   release:
