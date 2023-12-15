@@ -2,6 +2,8 @@ name: Attach Artifacts Manually ( If the automation fails )
 run-name: Manually Attach Artifacts against ${{ github.event.inputs.tag }}
 
 on:
+  release:
+    types: [prereleased]
   repository_dispatch:
     types: [attach-artifacts]
   workflow_dispatch:
