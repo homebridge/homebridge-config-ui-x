@@ -2,8 +2,9 @@ name: Node Release
 run-name: Production Release
 
 on:
-  release:
-    types: [published]
+  push:
+    branches: [ latest ]
+    tags: [ v*.*.*, *.*.* ]
   workflow_dispatch:
 
 jobs:
