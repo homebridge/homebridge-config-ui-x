@@ -80,7 +80,7 @@
           <span *ngIf="!homebridgeUiPkg.installedVersion">Homebridge UI</span>
           <a href="javascript:void(0)" (click)="openUiSettings()" class="card-link ms-1" *ngIf="homebridgeUiPkg.installedVersion"><i class="fa fa-fw fa-cog"></i></a>
           <br>
-          <span class="">
+          <span>
             <span class="grey-text" *ngIf="!homebridgeUiPkg.installedVersion">
               {{ 'status.homebridge.label_checking_for_updates' | translate }}
             </span>
