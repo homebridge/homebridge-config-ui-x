@@ -47,7 +47,7 @@
           <span *ngIf="!homebridgePkg.installedVersion">Homebridge</span>
           <a routerLink="/settings" class="card-link ms-1" *ngIf="homebridgePkg.installedVersion"><i class="fa fa-fw fa-cog"></i></a>
           <br>
-          <span class="">
+          <span>
             <span class="grey-text" *ngIf="!homebridgePkg.installedVersion">
               {{ 'status.homebridge.label_checking_for_updates' | translate }}
             </span>
