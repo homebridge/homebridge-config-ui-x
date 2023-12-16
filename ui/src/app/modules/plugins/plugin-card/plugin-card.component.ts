@@ -30,9 +30,9 @@ export class PluginCardComponent implements OnInit {
   public recommendChildBridge = false;
   public defaultIcon = 'assets/hb-icon.png';
   public isMobile: string;
+  public setChildBridges = [];
 
   private io: IoNamespace;
-  private setChildBridges = [];
 
   constructor(
     public $plugin: ManagePluginsService,
