@@ -25,8 +25,9 @@
     "@ng-bootstrap/ng-bootstrap": "14.2.0",
     "@ngx-translate/core": "14.0.0",
     "@oznu/hap-client": "1.9.0",
-    "@oznu/ngx-bs4-jsonform": "7.3.7",
     "@popperjs/core": "2.11.8",
+    "@zajsf/bootstrap5": "^16.1.0-RC.1",
+    "@zajsf/core": "^16.1.0-RC.2",
     "angular-gridster2": "15.0.4",
     "bootstrap": "5.3.2",
     "chart.js": "4.4.1",
@@ -93,6 +94,7 @@
     "@angular/common": "15.2.10",
     "@angular/core": "15.2.10",
     "@angular/forms": "15.2.10",
-    "@angular/localize": "15.2.10"
+    "@angular/localize": "15.2.10",
+    "@angular/platform-browser": "15.2.10"
   }
 }

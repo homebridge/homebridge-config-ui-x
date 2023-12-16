@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
-import { Bootstrap4FrameworkModule } from '@oznu/ngx-bs4-jsonform';
+import { Bootstrap5FrameworkModule } from '@zajsf/bootstrap5';
 import { BackupRestoreComponent } from '@/app/core/backup-restore/backup-restore.component';
 import { ScheduledBackupsComponent } from '@/app/core/backup-restore/scheduled-backups/scheduled-backups.component';
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
@@ -39,7 +39,7 @@ import { ReplacePipe } from '@/app/core/pipes/replace.pipe';
   imports: [
     CommonModule,
     TranslateModule,
-    Bootstrap4FrameworkModule,
+    Bootstrap5FrameworkModule,
   ],
   providers: [],
   exports: [

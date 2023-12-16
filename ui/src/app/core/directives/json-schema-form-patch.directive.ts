@@ -5,7 +5,7 @@ import {
   Optional,
   Self,
 } from '@angular/core';
-import { JsonSchemaFormComponent } from '@oznu/ngx-bs4-jsonform';
+import { JsonSchemaFormComponent } from '@zajsf/core';
 import { cloneDeep, merge, uniqueId } from 'lodash-es';
 
 @Directive({

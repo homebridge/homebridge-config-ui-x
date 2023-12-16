@@ -1,6 +1,6 @@
 <ng-container>
   <json-schema-form *ngIf="configSchema.schema" [jsfPatch]="configSchema.fixArrays" [options]="jsonFormOptions" [schema]="configSchema.schema"
-    [layout]="configSchema.layout" [form]="configSchema.form" [data]="currentData" framework="bootstrap-4"
-    (onChanges)="onChanges($event)" (isValid)="validChange($event)" class="ng-bs4-validate">
+    [layout]="configSchema.layout" [form]="configSchema.form" [data]="currentData" framework="bootstrap-5"
+    (onChanges)="onChanges($event)" (isValid)="validChange($event)" class="ng-bs5-validate">
   </json-schema-form>
 </ng-container>
