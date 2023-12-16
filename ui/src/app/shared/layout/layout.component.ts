@@ -10,7 +10,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { throttleTime } from 'rxjs/operators';
 import { lt } from 'semver';
 import { AuthService } from '@/app/core/auth/auth.service';
-import { BackupRestoreComponent } from '@/app/core/backup-restore/backup-restore.component';
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { NotificationService } from '@/app/core/notification.service';
@@ -75,13 +74,6 @@ export class LayoutComponent implements OnInit {
     });
 
     this.compareServerUiVersion();
-  }
-
-  backupRestoreHomebridge() {
-    this.$modal.open(BackupRestoreComponent, {
-      size: 'lg',
-      backdrop: 'static',
-    });
   }
 
   openUiSettings() {

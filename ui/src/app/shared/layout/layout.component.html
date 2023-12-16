@@ -31,7 +31,7 @@
             [popoverTitle]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_title' : 'rpi.throttled.previously_undervoltage_title') | translate"
             [ngbPopover]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_message' : 'rpi.throttled.previously_undervoltage_message') | translate"
             [ngbTooltip]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_title' : 'rpi.throttled.previously_undervoltage_title') | translate"
-            container="body" [placement]="['bottom', 'auto']">
+            container="body" [placement]="'bottom auto'">
             <i class="fa-solid fa-bolt yellow-text " style="--fa-beat-scale: 2.0;"
               [ngClass]="{ 'fa-beat': rPiCurrentlyUnderVoltage }"></i>
           </a>
@@ -73,15 +73,6 @@
               <i class="fa fa-fw fa-sliders pr-2"></i>
               {{ 'menu.label_settings_ui' | translate }}
             </a>
-            <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light"
-              (click)="backupRestoreHomebridge()" *ngIf="$auth.user.admin">
-              <i class="fa fa-fw fa-clock-rotate-left pr-2"></i>
-              {{ 'backup.title_backup_restore' | translate }}
-            </a>
-            <a class="dropdown-item waves-effect waves-light" routerLink="/users" *ngIf=" $auth.user.admin">
-              <i class="fa fa-fw fa-user pr-2"></i>
-              {{'menu.tooltip_user_accounts' | translate}}
-            </a>
             <div class="dropdown-divider" *ngIf="$auth.user.admin"></div>
             <a class="dropdown-item waves-effect waves-light" routerLink="/support">
               <i class="fa fa-fw fa-question-circle-o pr-2"></i>
@@ -91,6 +82,7 @@
               <i class="fa fa-fw fa-power-off pr-2"></i>
               {{ 'menu.restart.title' | translate }}
             </a>
+            <div class="dropdown-divider" *ngIf="$settings.formAuth"></div>
             <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light" (click)="$auth.logout()" *ngIf="$settings.formAuth">
               <i class="fa fa-fw fa-right-from-bracket pr-2"></i>
               {{ 'menu.tooltip_logout' | translate }} - {{ $auth.user.username }}

@@ -14,6 +14,8 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - improve spacing in plugin card
 - more items in homebridge settings
 - confirm restart after updating Homebridge instead of automatically restarting
+- improve child bridge sing/plu in dropdown
+- move backup/restore + users to hb settings
 
 ### Translation Changes
 
