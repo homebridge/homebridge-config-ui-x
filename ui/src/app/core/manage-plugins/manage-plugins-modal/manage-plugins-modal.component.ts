@@ -209,9 +209,8 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       termRows: this.term.rows,
     }).subscribe(
       () => {
-        this.$router.navigate(['/restart']);
         this.activeModal.close();
-        this.$toastr.success(this.pastTenseVerb, this.toastSuccess);
+        this.$modal.open(RestartHomebridgeComponent);
       },
       (err) => {
         this.actionFailed = true;
