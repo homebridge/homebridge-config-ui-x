@@ -159,6 +159,7 @@
   "menu.linux.label_shutdown_server": "Server Stoppen",
   "menu.linux.label_terminal": "Terminal",
   "menu.restart.title": "Power Options",
+  "menu.settings.title": "Settings",
   "menu.tooltip_logout": "Uitloggen",
   "menu.tooltip_restart": "Herstart",
   "menu.tooltip_user_accounts": "Gebruikers Accounts",

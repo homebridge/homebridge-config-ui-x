@@ -159,6 +159,7 @@
   "menu.linux.label_shutdown_server": "Apagar Servidor",
   "menu.linux.label_terminal": "Terminal",
   "menu.restart.title": "Power Options",
+  "menu.settings.title": "Settings",
   "menu.tooltip_logout": "Tancar Sessió",
   "menu.tooltip_restart": "Reiniciar",
   "menu.tooltip_user_accounts": "Comptes d'usuari",

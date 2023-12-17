@@ -159,6 +159,7 @@
   "menu.linux.label_shutdown_server": "כבה שרת",
   "menu.linux.label_terminal": "קונסולה",
   "menu.restart.title": "Power Options",
+  "menu.settings.title": "Settings",
   "menu.tooltip_logout": "התנתק",
   "menu.tooltip_restart": "התחל מחדש",
   "menu.tooltip_user_accounts": "משתמשים",

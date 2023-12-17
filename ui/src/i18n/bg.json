@@ -159,6 +159,7 @@
   "menu.linux.label_shutdown_server": "Изключи Сървъра",
   "menu.linux.label_terminal": "Терминал",
   "menu.restart.title": "Power Options",
+  "menu.settings.title": "Settings",
   "menu.tooltip_logout": "Излез",
   "menu.tooltip_restart": "Рестарт",
   "menu.tooltip_user_accounts": "Потребители",

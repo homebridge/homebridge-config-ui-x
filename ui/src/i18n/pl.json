@@ -159,6 +159,7 @@
   "menu.linux.label_shutdown_server": "Wyłącz serwer",
   "menu.linux.label_terminal": "Terminal",
   "menu.restart.title": "Opcje zasilania",
+  "menu.settings.title": "Settings",
   "menu.tooltip_logout": "Wyloguj",
   "menu.tooltip_restart": "Zrestartuj",
   "menu.tooltip_user_accounts": "Użytkownicy",
