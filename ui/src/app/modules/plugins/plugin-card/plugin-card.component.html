@@ -150,13 +150,13 @@
                   <div class="dropdown-divider" *ngIf="!plugin.disabled && plugin.isConfigured && plugin.installedVersion"></div>
                   <ng-container *ngIf="plugin.hasChildBridges && !plugin.disabled">
                     <button ngbDropdownItem *ngIf="!childBridgeRestartInProgress && !plugin.disabled" (click)="doChildBridgeAction('restart')">
-                      <i class="fa-fw icon-button fas fa-fw fa-power-off"></i> {{ 'child_bridge.label_child_restart' | translate }}
+                      <i class="fa-fw icon-button fas fa-fw fa-power-off"></i> {{ setChildBridges.length > 1 ? 'child_bridge.label_child_restart_plural' : 'child_bridge.label_child_restart' | translate }}
                     </button>
                     <button ngbDropdownItem *ngIf="!allChildBridgesStopped" (click)="doChildBridgeAction('stop')">
-                      <i class="fas fa-fw fa-stop"></i> {{ 'child_bridge.label_child_stop' | translate }}
+                      <i class="fas fa-fw fa-stop"></i> {{ setChildBridges.length > 1 ? 'child_bridge.label_child_stop_plural' : 'child_bridge.label_child_stop' | translate }}
                     </button>
                     <button ngbDropdownItem *ngIf="allChildBridgesStopped" (click)="doChildBridgeAction('start')">
-                      <i class="fas fa-fw fa-play"></i> {{ 'child_bridge.label_child_start' | translate }}
+                      <i class="fas fa-fw fa-play"></i> {{ setChildBridges.length > 1 ? 'child_bridge.label_child_start_plural' : 'child_bridge.label_child_start' | translate }}
                     </button>
                   </ng-container>
                   <button ngbDropdownItem (click)="$plugin.bridgeSettings(plugin)"

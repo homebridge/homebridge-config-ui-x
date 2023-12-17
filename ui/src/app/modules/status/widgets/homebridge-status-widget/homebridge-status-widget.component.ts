@@ -87,13 +87,4 @@ export class HomebridgeStatusWidgetComponent implements OnInit {
       this.$toastr.error(err.message);
     }
   }
-
-  openUiSettings() {
-    this.$plugin.settings({
-      name: 'homebridge-config-ui-x',
-      displayName: 'Homebridge UI',
-      settingsSchema: true,
-      links: {},
-    });
-  }
 }
