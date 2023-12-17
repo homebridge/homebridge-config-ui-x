@@ -159,6 +159,7 @@
   "menu.linux.label_shutdown_server": "Szerver leállítása",
   "menu.linux.label_terminal": "Terminál",
   "menu.restart.title": "Power Options",
+  "menu.settings.title": "Settings",
   "menu.tooltip_logout": "Kijelentkezés",
   "menu.tooltip_restart": "Újraindítás",
   "menu.tooltip_user_accounts": "Felhasználói fiókok",

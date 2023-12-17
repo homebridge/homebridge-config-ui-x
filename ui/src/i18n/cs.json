@@ -159,6 +159,7 @@
   "menu.linux.label_shutdown_server": "Vypnutí serveru",
   "menu.linux.label_terminal": "Terminál",
   "menu.restart.title": "Power Options",
+  "menu.settings.title": "Settings",
   "menu.tooltip_logout": "Odhlásit",
   "menu.tooltip_restart": "Restartovat",
   "menu.tooltip_user_accounts": "Uživatelský účet",

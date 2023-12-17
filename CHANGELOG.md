@@ -17,6 +17,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - improve child bridge sing/plu in dropdown
 - move backup/restore + users to hb settings
 - move hb/ui settings to main menu
+- create standard settings page + link at top
 
 ### Translation Changes
 

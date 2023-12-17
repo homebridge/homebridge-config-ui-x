@@ -11,7 +11,6 @@ import { throttleTime } from 'rxjs/operators';
 import { lt } from 'semver';
 import { AuthService } from '@/app/core/auth/auth.service';
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
-import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { NotificationService } from '@/app/core/notification.service';
 import { SettingsService } from '@/app/core/settings.service';
 import { IoNamespace, WsService } from '@/app/core/ws.service';
@@ -35,7 +34,6 @@ export class LayoutComponent implements OnInit {
     private $ws: WsService,
     public $auth: AuthService,
     public $settings: SettingsService,
-    private $plugins: ManagePluginsService,
     private $notification: NotificationService,
     private $modal: NgbModal,
     private $router: Router,
@@ -74,15 +72,6 @@ export class LayoutComponent implements OnInit {
     });
 
     this.compareServerUiVersion();
-  }
-
-  openUiSettings() {
-    this.$plugins.settings({
-      name: 'homebridge-config-ui-x',
-      displayName: 'Homebridge UI',
-      settingsSchema: true,
-      links: {},
-    });
   }
 
   openRestartModal() {

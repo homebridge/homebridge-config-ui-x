@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-between">
   <h3 class="primary-text m-0">
-    {{ 'menu.label_settings_hb' | translate }}
+    {{ 'menu.settings.title' | translate }}
   </h3>
   <button class="btn btn-primary waves-effect m-0" *ngIf="saved" routerLink="/restart"
     [translate]="'platform.docker.settings.button_restart_required'">Restart Required</button>
@@ -19,6 +19,14 @@
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
+        {{ 'menu.config_json_editor' | translate }}
+      </span>
+      <a class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;" routerLink="/config">
+        <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
+      </a>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span class="pr-2">
         {{ 'backup.title_backup_restore' | translate }}
       </span>
       <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;" (click)="backupRestoreHomebridge()">
@@ -30,14 +38,6 @@
         {{ 'menu.tooltip_user_accounts' | translate }}
       </span>
       <a class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;" routerLink="/users">
-        <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
-      </a>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pr-2">
-        {{ 'menu.config_json_editor' | translate }}
-      </span>
-      <a class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;" routerLink="/config">
         <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
       </a>
     </li>

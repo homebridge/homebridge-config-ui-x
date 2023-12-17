@@ -159,6 +159,7 @@
   "menu.linux.label_shutdown_server": "サーバーを終了",
   "menu.linux.label_terminal": "ターミナル",
   "menu.restart.title": "Power Options",
+  "menu.settings.title": "Settings",
   "menu.tooltip_logout": "ログアウト",
   "menu.tooltip_restart": "再起動",
   "menu.tooltip_user_accounts": "ユーザーアカウント",

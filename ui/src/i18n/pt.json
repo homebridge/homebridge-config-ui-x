@@ -159,6 +159,7 @@
   "menu.linux.label_shutdown_server": "Desligar o Servidor",
   "menu.linux.label_terminal": "Consola",
   "menu.restart.title": "Power Options",
+  "menu.settings.title": "Settings",
   "menu.tooltip_logout": "Terminar Sessão",
   "menu.tooltip_restart": "Reiniciar",
   "menu.tooltip_user_accounts": "Contas de Utilizador",
