@@ -210,7 +210,7 @@ export class PluginCardComponent implements OnInit {
     let pluginName = this.plugin.displayName || (this.plugin.name.charAt(0) === '@' ? this.plugin.name.split('/')[1] : this.plugin.name);
     pluginName = pluginName.replace(/-/g, ' ');
     if (this.isMobile && pluginName.toLowerCase().startsWith('homebridge ')) {
-      pluginName = pluginName.replace('homebridge ', '');
+      pluginName = pluginName.replace(new RegExp('^homebridge ', 'i'), '');
     }
     return pluginName.replace(/\w\S*/g, (txt: string) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
   }
