@@ -114,6 +114,7 @@ export class BackupService {
             'package.json',       // npm
             'package-lock.json',  // npm
             '.npmrc',             // npm
+            '.npm',               // npm
             'FFmpeg',             // ffmpeg
             'fdk-aac',            // ffmpeg
             '.git',               // git
