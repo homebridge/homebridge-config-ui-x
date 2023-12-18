@@ -19,6 +19,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - move hb/ui settings to main menu
 - create standard settings page + link at top
 - small changes to plugin card (based on feedback)
+- fix overflow in markdown changelog
 
 ### Translation Changes
 
