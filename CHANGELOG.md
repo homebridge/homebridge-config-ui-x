@@ -2,12 +2,6 @@
 
 All notable changes to homebridge-config-ui-x will be documented in this file.
 
-## 4.54.2 (2023-12-18)
-
-### Bug Fixes
-
-- Fix for backups including npm's cache, and therefore being too large to upload and restore.
-
 ## 4.54.1 (2023-12-08)
 
 ### Bug Fixes
