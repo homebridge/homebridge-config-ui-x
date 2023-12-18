@@ -21,8 +21,8 @@
         Please restart the plugin's child bridges for the changes to apply.
       </p>
     </div>
-    <div class="alert show alert-info pt-3 px-3 pb-0 mb-0" style="overflow: scroll;" *ngIf="changeLog">
-      <markdown class="plugin-md" [data]="changeLog"></markdown>
+    <div class="alert show alert-info pt-3 px-3 pb-0 mb-0" *ngIf="changeLog">
+      <markdown class="plugin-md" [data]="changeLog" style="word-wrap: break-word;"></markdown>
     </div>
   </div>
   <div *ngIf="!onlineUpdateOk" class="modal-body">
