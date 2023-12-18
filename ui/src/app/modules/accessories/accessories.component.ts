@@ -26,7 +26,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     private modalService: NgbModal,
     public $settings: SettingsService,
     private $md: MobileDetectService,
-    private $accessories: AccessoriesService,
+    protected $accessories: AccessoriesService,
   ) {
     this.isMobile = this.$md.detect.mobile();
 
