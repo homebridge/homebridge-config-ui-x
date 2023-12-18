@@ -20,6 +20,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - create standard settings page + link at top
 - small changes to plugin card (based on feedback)
 - fix overflow in markdown changelog
+- prettify plugin display names on list
 
 ### Translation Changes
 
@@ -32,7 +33,8 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - add `passport` as dependency to BE
 - revert ngx-monaco-editor dependency update
 - ui: update to angular v15
-- update action versions
+- improve github actions
+- Fix for backup service including npm's cache (#1949) (@sapireli)
 
 ## 4.54.1 (2023-12-08)
 
