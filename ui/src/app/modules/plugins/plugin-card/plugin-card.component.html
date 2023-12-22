@@ -29,12 +29,11 @@
                 <i class="icon-button fas fa-fw fa-qrcode primary-text fa-lg fa-fad ml-3" style="--fa-animation-duration: 2s;"></i>
               </a>
               <i [hidden]="!childBridgeRestartInProgress" class="fas fa-fw fa-spinner fa-pulse fa-lg grey-text ml-3"></i>
-              <i class="fas fa-fw fa-circle fa-lg ml-3"
-                *ngIf="plugin.installedVersion && !plugin.updateAvailable && plugin.isConfigured && plugin.hasChildBridges && !childBridgeRestartInProgress && !hasUnpairedChildBridges && !plugin.disabled"
+              <i class="fas fa-fw fa-lg ml-3"
+                *ngIf="plugin.installedVersion && !plugin.updateAvailable && plugin.isConfigured && plugin.hasChildBridges && !childBridgeRestartInProgress && !hasUnpairedChildBridges && childBridgeStatus !== 'ok' && !plugin.disabled"
                 [ngClass]="{
-                  'green-text': childBridgeStatus === 'ok',
-                  'orange-text': childBridgeStatus === 'pending',
-                  'red-text': childBridgeStatus === 'down'
+                  'fa-bridge-circle-exclamation orange-text': childBridgeStatus === 'pending',
+                  'fa-bridge-circle-xmark red-text': childBridgeStatus === 'down'
                 }"></i>
             </div>
           </div>
@@ -88,7 +87,7 @@
             <div class="ml-auto">
               <a href="javascript:void(0)" (click)="doChildBridgeAction('restart')" class="card-link"
                 [ngbTooltip]="setChildBridges.length > 1 ? 'child_bridge.label_child_restart_plural' : 'child_bridge.label_child_restart' | translate"
-                *ngIf="!plugin.disabled && plugin.hasChildBridges && childBridgeStatus === 'ok'">
+                *ngIf="!plugin.disabled && plugin.hasChildBridges && !hasUnpairedChildBridges && childBridgeStatus === 'ok'">
                 <i class="fas fa-fw fa-lg fa-power-off ml-3"></i>
               </a>
               <a href="javascript:void(0)" (click)="enablePlugin(plugin)" *ngIf="plugin.installedVersion && plugin.disabled"
