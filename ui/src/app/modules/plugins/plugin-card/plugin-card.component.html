@@ -69,19 +69,15 @@
             <p class="card-text mb-0 grey-text">
               <!-- not installed -->
               <span *ngIf="plugin.publicPackage && !plugin.installedVersion">
-                <a href="javascript:void(0)" class="card-link grey-text" (click)="$plugin.installPreviousVersion(plugin)"
-                  [ngbTooltip]="'plugins.status_not_installed' | translate" container="body">
-                  <i class="far fa-fw fa-arrow-alt-circle-down fa-lg me-1 grey-text"></i>
-                  <span class="d-none d-sm-inline grey-text">{{ 'plugins.button_install' | translate }}: </span>
-                  <span class="grey-text">v{{ plugin.latestVersion }}
+                <i class="far fa-fw fa-circle-dot fa-lg me-1"></i>
+                <span class="grey-text">v{{ plugin.latestVersion }}
                   <span *ngIf="plugin.lastUpdated">({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
-                  </span>
-                </a>
+                </span>
               </span>
               <!-- // -->
               <!-- installed -->
               <span *ngIf="plugin.installedVersion">
-                <i class="far fa-fw fa-circle-check fa-lg mr-1"></i> v{{ plugin.installedVersion }}
+                <i class="far fa-fw fa-circle-check fa-lg me-1"></i> v{{ plugin.installedVersion }}
               </span>
               <!-- // -->
             </p>
@@ -89,7 +85,7 @@
               <a href="javascript:void(0)" (click)="doChildBridgeAction('restart')" class="card-link"
                 [ngbTooltip]="setChildBridges.length > 1 ? 'child_bridge.label_child_restart_plural' : 'child_bridge.label_child_restart' | translate"
                 *ngIf="!plugin.disabled && plugin.hasChildBridges && !hasUnpairedChildBridges && childBridgeStatus === 'ok'">
-                <i class="fas fa-fw fa-lg fa-power-off me-3"></i>
+                <i class="fas fa-fw fa-lg fa-power-off ms-3"></i>
               </a>
               <a href="javascript:void(0)" (click)="enablePlugin(plugin)" *ngIf="plugin.installedVersion && plugin.disabled"
                 class="card-link red-text">
