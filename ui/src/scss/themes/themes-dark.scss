@@ -401,6 +401,13 @@
       border-radius: 15px;
       border: 1px solid #222222;
     }
+
+    @media (max-width: 991px) {
+      .plugin-icon-card {
+        width: 60px;
+        height: 60px;
+      }
+    }
   }
 }
 
