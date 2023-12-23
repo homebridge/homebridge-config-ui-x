@@ -4,32 +4,37 @@
     <div class="d-flex flex-column mr-3 align-items-center justify-content-between">
       <img [src]="plugin.icon" (error)="handleIconError()" alt="" class="plugin-icon-card mb-3">
     </div>
-    <div class="d-flex flex-column justify-content-between" style="width: calc(100% - 80px)">
+    <div class="d-flex flex-column justify-content-between" style="min-width: calc(100% - 80px)">
       <div class="d-flex flex-row align-items-end">
         <div class="d-flex flex-column w-100">
           <div class="d-flex flex-row">
             <h5 class="card-title mb-2 text-truncate">
-              {{ plugin.displayName || ((plugin.name.charAt(0) === '@' ? plugin.name.split('/')[1] : plugin.name) |
-              replace:'-':' ' | titlecase) }}
+              {{ prettyDisplayName }}
             </h5>
             <div class="ml-auto">
               <a href="javascript:void(0)" class="card-link" (click)="$plugin.updatePlugin(plugin, plugin.updateTag || 'latest')"
                 *ngIf="plugin.installedVersion && plugin.updateAvailable && !childBridgeRestartInProgress" [ngbTooltip]="'plugins.button_update' | translate" container="body">
-                <i class="fas fa-fw fa-arrow-alt-circle-up primary-text fa-lg fa-fade" style="--fa-animation-duration: 2s;"></i>
+                <i class="fas fa-fw fa-arrow-alt-circle-up primary-text fa-lg fa-fade ml-3" style="--fa-animation-duration: 2s;"></i>
               </a>
               <a href="javascript:void(0)" class="card-link" *ngIf="plugin.installedVersion && !plugin.updateAvailable && !plugin.isConfigured && !childBridgeRestartInProgress"
                 (click)="$plugin.settings(plugin)" [ngbTooltip]="'plugins.button_set_up' | translate" container="body">
-                <i class="fas fa-fw fa-sliders primary-text fa-lg fa-fade" style="--fa-animation-duration: 2s;"></i>
+                <i class="fas fa-fw fa-sliders primary-text fa-lg fa-fade ml-3" style="--fa-animation-duration: 2s;"></i>
               </a>
               <a href="javascript:void(0)" class="card-link" (click)="$plugin.bridgeSettings(plugin)" [ngbTooltip]="'child_bridge.label_child_setup' | translate" container="body"
                  *ngIf="plugin.installedVersion && !plugin.updateAvailable && plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && recommendChildBridge && !childBridgeRestartInProgress">
-                <i class="icon-button fas fa-fw fa-bridge primary-text fa-lg fa-fade" style="--fa-animation-duration: 2s;"></i>
+                <i class="icon-button fas fa-fw fa-bridge primary-text fa-lg fa-fade ml-3" style="--fa-animation-duration: 2s;"></i>
               </a>
               <a href="javascript:void(0)" class="card-link" (click)="$plugin.bridgeSettings(plugin)" [ngbTooltip]="'child_bridge.label_bridge_connect_to_homekit' | translate" container="body"
                  *ngIf="plugin.installedVersion && !plugin.updateAvailable && plugin.isConfigured && plugin.hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled">
-                <i class="icon-button fas fa-fw fa-qrcode primary-text fa-lg fa-fade" style="--fa-animation-duration: 2s;"></i>
+                <i class="icon-button fas fa-fw fa-qrcode primary-text fa-lg fa-fad ml-3" style="--fa-animation-duration: 2s;"></i>
               </a>
-              <i [hidden]="!childBridgeRestartInProgress" class="fas fa-fw fa-spinner fa-pulse fa-lg grey-text"></i>
+              <i [hidden]="!childBridgeRestartInProgress" class="fas fa-fw fa-spinner fa-pulse fa-lg grey-text ml-3"></i>
+              <i class="fas fa-fw fa-lg ml-3"
+                *ngIf="plugin.installedVersion && !plugin.updateAvailable && plugin.isConfigured && plugin.hasChildBridges && !childBridgeRestartInProgress && !hasUnpairedChildBridges && childBridgeStatus !== 'ok' && !plugin.disabled"
+                [ngClass]="{
+                  'fa-bridge-circle-exclamation orange-text': childBridgeStatus === 'pending',
+                  'fa-bridge-circle-xmark red-text': childBridgeStatus === 'down'
+                }"></i>
             </div>
           </div>
           <p class="card-text mb-2 text-truncate">
@@ -64,37 +69,24 @@
             <p class="card-text mb-0 grey-text">
               <!-- not installed -->
               <span *ngIf="plugin.publicPackage && !plugin.installedVersion">
-                <a href="javascript:void(0)" class="card-link grey-text" (click)="$plugin.installPreviousVersion(plugin)"
-                  [ngbTooltip]="'plugins.status_not_installed' | translate" container="body">
-                  <i class="far fa-fw fa-arrow-alt-circle-down fa-lg mr-1"></i>
-                  <span class="grey-text">v{{ plugin.latestVersion }}
-                    <span *ngIf="plugin.lastUpdated">({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
-                  </span>
-                </a>
+                <i class="far fa-fw fa-circle-dot fa-lg mr-1"></i>
+                <span class="grey-text">v{{ plugin.latestVersion }}
+                  <span *ngIf="plugin.lastUpdated">({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
+                </span>
               </span>
               <!-- // -->
-              <!-- installed, no updates available -->
+              <!-- installed -->
               <span *ngIf="plugin.installedVersion">
-                <i class="far fa-fw fa-circle-check fa-lg mr-1"></i>
-                <span class="d-none d-md-inline">{{ 'plugins.status_installed' | translate }}: </span>
-                <span>v{{ plugin.installedVersion }}</span>
+                <i class="far fa-fw fa-circle-check fa-lg mr-1"></i> v{{ plugin.installedVersion }}
               </span>
               <!-- // -->
             </p>
             <div class="ml-auto">
-              <ng-container *ngIf="!plugin.disabled && plugin.hasChildBridges">
-                <a href="javascript:void(0)" (click)="doChildBridgeAction('restart')" class="card-link" [ngClass]="{
-                  'green-text': childBridgeStatus === 'ok',
-                  'text-warning': childBridgeStatus === 'pending',
-                  'red-text': childBridgeStatus === 'down'
-                }" [ngbTooltip]="setChildBridges.length > 1 ? 'child_bridge.label_child_restart_plural' : 'child_bridge.label_child_restart' | translate">
-                  <i class="fas fa-fw fa-lg ml-3" [ngClass]="{
-                    'fa-bridge-circle-check': childBridgeStatus === 'ok',
-                    'fa-bridge-circle-exclamation': childBridgeStatus === 'pending',
-                    'fa-bridge-circle-xmark': childBridgeStatus === 'down'
-                  }"></i>
-                </a>
-              </ng-container>
+              <a href="javascript:void(0)" (click)="doChildBridgeAction('restart')" class="card-link"
+                [ngbTooltip]="setChildBridges.length > 1 ? 'child_bridge.label_child_restart_plural' : 'child_bridge.label_child_restart' | translate"
+                *ngIf="!plugin.disabled && plugin.hasChildBridges && !hasUnpairedChildBridges && childBridgeStatus === 'ok'">
+                <i class="fas fa-fw fa-lg fa-power-off ml-3"></i>
+              </a>
               <a href="javascript:void(0)" (click)="enablePlugin(plugin)" *ngIf="plugin.installedVersion && plugin.disabled"
                 class="card-link red-text">
                 <i class="far fa-fw fa-pause-circle fa-lg" [ngbTooltip]="'plugins.status_disabled' | translate" container="body"></i>
