@@ -32,7 +32,7 @@
               </span>
               <!-- // -->
               <!-- installed -->
-              <span *ngIf="plugin.installedVersion">
+              <span *ngIf="plugin.installedVersion && !plugin.updateAvailable">
                 <i class="far fa-fw fa-circle-check fa-lg mr-1 grey-text"></i>
                 <span class="grey-text">v{{ plugin.installedVersion }}</span>
               </span>
