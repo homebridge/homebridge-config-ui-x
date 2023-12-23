@@ -332,6 +332,7 @@
   "status.cpu.label_load": "โหลด",
   "status.cpu.label_temp": "อุณหภูมิ",
   "status.cpu.title_cpu": "CPU",
+  "status.credits.title": "Credits",
   "status.homebridge.label_checking_for_updates": "ตรวจสอบการอัปเดท…",
   "status.homebridge.label_up_to_date": "เป็นปัจจุบันแล้ว",
   "status.memory.label_available": "เหลือว่าง",

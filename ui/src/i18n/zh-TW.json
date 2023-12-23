@@ -332,6 +332,7 @@
   "status.cpu.label_load": "負載",
   "status.cpu.label_temp": "溫度",
   "status.cpu.title_cpu": "CPU",
+  "status.credits.title": "Credits",
   "status.homebridge.label_checking_for_updates": "正在檢查可用更新…",
   "status.homebridge.label_up_to_date": "已經是最新版本",
   "status.memory.label_available": "閒置",

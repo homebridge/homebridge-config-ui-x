@@ -332,6 +332,7 @@
   "status.cpu.label_load": "Auslastung",
   "status.cpu.label_temp": "Temperatur",
   "status.cpu.title_cpu": "Prozessor",
+  "status.credits.title": "Credits",
   "status.homebridge.label_checking_for_updates": "Nach Updates suchen …",
   "status.homebridge.label_up_to_date": "Auf dem neuesten Stand",
   "status.memory.label_available": "Frei",

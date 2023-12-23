@@ -332,6 +332,7 @@
   "status.cpu.label_load": "Naloži",
   "status.cpu.label_temp": "Temp",
   "status.cpu.title_cpu": "CPU",
+  "status.credits.title": "Credits",
   "status.homebridge.label_checking_for_updates": "Preverjanje posodobitev …",
   "status.homebridge.label_up_to_date": "Posodobljeno",
   "status.memory.label_available": "Na voljo",

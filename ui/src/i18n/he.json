@@ -332,6 +332,7 @@
   "status.cpu.label_load": "עומס",
   "status.cpu.label_temp": "טמפרטורה",
   "status.cpu.title_cpu": "מעבד",
+  "status.credits.title": "Credits",
   "status.homebridge.label_checking_for_updates": "בודק עדכונים…",
   "status.homebridge.label_up_to_date": "מעודכן",
   "status.memory.label_available": "פנוי",
