@@ -333,6 +333,7 @@
   "status.cpu.label_load": "Terhelés",
   "status.cpu.label_temp": "Hőmérséklet",
   "status.cpu.title_cpu": "CPU",
+  "status.credits.title": "Credits",
   "status.homebridge.label_checking_for_updates": "Frissítések keresése…",
   "status.homebridge.label_up_to_date": "Legfrissebb",
   "status.memory.label_available": "Szabad",

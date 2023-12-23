@@ -333,6 +333,7 @@
   "status.cpu.label_load": "Carga",
   "status.cpu.label_temp": "Temperatura",
   "status.cpu.title_cpu": "CPU",
+  "status.credits.title": "Credits",
   "status.homebridge.label_checking_for_updates": "Buscando actualizaciones…",
   "status.homebridge.label_up_to_date": "Actualizado",
   "status.memory.label_available": "Libre",

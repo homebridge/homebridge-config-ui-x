@@ -8,6 +8,7 @@ import { AuthService } from '@/app/core/auth/auth.service';
 import { NotificationService } from '@/app/core/notification.service';
 import { SettingsService } from '@/app/core/settings.service';
 import { IoNamespace, WsService } from '@/app/core/ws.service';
+import { CreditsComponent } from '@/app/modules/status/credits/credits.component';
 import { WidgetAddComponent } from '@/app/modules/status/widget-add/widget-add.component';
 import { WidgetControlComponent } from '@/app/modules/status/widget-control/widget-control.component';
 
@@ -260,6 +261,13 @@ export class StatusComponent implements OnInit, OnDestroy {
         this.gridChangedEvent();
         item.$configureEvent.next(undefined);
       });
+  }
+
+  openCreditsModal() {
+    this.$modal.open(CreditsComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    });
   }
 
   ngOnDestroy() {

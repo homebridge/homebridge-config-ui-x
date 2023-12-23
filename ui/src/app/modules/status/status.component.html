@@ -41,7 +41,7 @@
     <div class="col-md-12 text-center px-4 py-1 grey-text">
       <!-- The below copyright notice shall be included and displayed on all copies or substantial portions of this software. -->
       <small>
-        &copy; 2023
+        &copy; 2024
         &middot;
         <a class="grey-text" target="_blank" rel="noopener noreferrer" href="https://github.com/homebridge">
           Homebridge v{{ $settings.env.homebridgeVersion }}</a>
@@ -49,8 +49,8 @@
         <a class="grey-text" target="_blank" rel="noopener noreferrer" href="https://github.com/homebridge/homebridge-config-ui-x">
           UI v{{ $settings.env.packageVersion }}</a>
         &middot;
-        UI developed by
-        <a class="grey-text" target="_blank" rel="noopener noreferrer" href="https://github.com/oznu">oznu</a>
+        <a class="primary-text" href="javascript: void(0);" (click)="openCreditsModal()">
+          <i class="fas fa-fw fa-heart"></i></a>
       </small>
       <!-- The above copyright notice shall be included and displayed on all copies or substantial portions of this software. -->
     </div>

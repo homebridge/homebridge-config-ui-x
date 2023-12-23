@@ -333,6 +333,7 @@
   "status.cpu.label_load": "Товар",
   "status.cpu.label_temp": "Температура",
   "status.cpu.title_cpu": "CPU",
+  "status.credits.title": "Credits",
   "status.homebridge.label_checking_for_updates": "Се проверува за ажурирање…",
   "status.homebridge.label_up_to_date": "Најнова верзија",
   "status.memory.label_available": "Достапно",
