@@ -62,6 +62,7 @@
           <!-- // -->
           <!-- verified + dropdown -->
           <div class="d-flex flex-row">
+            <!-- verified -->
             <p class="card-text" *ngIf="plugin.verifiedPlugin">
               <a href="javascript:void(0)" class="card-link green-text" (click)="openVerifiedModal()">
                 <i class="fas fa-fw fa-shield-alt fa-lg mr-1"></i>
@@ -74,6 +75,8 @@
                 <span class="grey-text">{{ 'plugins.donate.button_not_verified' | translate }}</span>
               </a>
             </p>
+            <!-- // -->
+            <!-- button group -->
             <div class="ml-auto">
               <!-- plugin installed but not configured -->
               <a href="javascript:void(0)" class="card-link" *ngIf="plugin.installedVersion && !plugin.updateAvailable && !plugin.isConfigured && !childBridgeRestartInProgress"
@@ -130,7 +133,7 @@
                   <i class="fa-solid fa-fw fa-ellipsis-v fa-lg"></i>
                 </a>
                 <div ngbDropdownMenu aria-labelledby="Plugin actions drop down menu">
-                  <button ngbDropdownItem *ngIf="plugin.isConfigured" (click)="$plugin.settings(plugin)">
+                  <button ngbDropdownItem (click)="$plugin.settings(plugin)">
                     <i class="fas fa-fw fa-sliders"></i>
                     {{ 'plugins.button_settings' | translate }}
                   </button>
