@@ -332,6 +332,7 @@
   "status.cpu.label_load": "Beban",
   "status.cpu.label_temp": "Suhu",
   "status.cpu.title_cpu": "CPU",
+  "status.credits.title": "Credits",
   "status.homebridge.label_checking_for_updates": "Memeriksa pembaruan…",
   "status.homebridge.label_up_to_date": "Terkini",
   "status.memory.label_available": "Tersedia",

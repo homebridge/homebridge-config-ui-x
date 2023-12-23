@@ -332,6 +332,7 @@
   "status.cpu.label_load": "Zatížení",
   "status.cpu.label_temp": "Teplota",
   "status.cpu.title_cpu": "Procesor",
+  "status.credits.title": "Credits",
   "status.homebridge.label_checking_for_updates": "Kontrola aktualizací…",
   "status.homebridge.label_up_to_date": "Aktuální",
   "status.memory.label_available": "Volná",

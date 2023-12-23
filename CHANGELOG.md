@@ -21,6 +21,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - small changes to plugin card (based on feedback)
 - fix overflow in markdown changelog
 - plugin card updates
+- added credits link in status footer and modal for credits
 
 ### Translation Changes
 

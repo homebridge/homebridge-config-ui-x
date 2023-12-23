@@ -332,6 +332,7 @@
   "status.cpu.label_load": "로드",
   "status.cpu.label_temp": "온도",
   "status.cpu.title_cpu": "CPU",
+  "status.credits.title": "Credits",
   "status.homebridge.label_checking_for_updates": "업데이트 확인 중…",
   "status.homebridge.label_up_to_date": "최신 상태",
   "status.memory.label_available": "가능",

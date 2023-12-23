@@ -10,6 +10,7 @@ import { DragulaModule } from 'ng2-dragula';
 import { AccessoriesCoreModule } from '@/app/core/accessories/accessories.module';
 import { CoreModule } from '@/app/core/core.module';
 import { ManagePluginsModule } from '@/app/core/manage-plugins/manage-plugins.module';
+import { CreditsComponent } from '@/app/modules/status/credits/credits.component';
 import { StatusComponent } from '@/app/modules/status/status.component';
 import { WidgetAddComponent } from '@/app/modules/status/widget-add/widget-add.component';
 import { WidgetControlComponent } from '@/app/modules/status/widget-control/widget-control.component';
@@ -47,6 +48,7 @@ import { WidgetsComponent } from '@/app/modules/status/widgets/widgets.component
     AccessoriesWidgetComponent,
     ClockWidgetComponent,
     ChildBridgeWidgetComponent,
+    CreditsComponent,
   ],
   imports: [
     CommonModule,
