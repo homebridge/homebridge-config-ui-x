@@ -1,10 +1,10 @@
 <div class="accessory-box" [ngClass]="{'switch-on': service.values.SecuritySystemCurrentState !== 3}" appLongclick
   (shortclick)="onClick()" tabindex="0">
   <div class="d-flex flex-column h-100">
-    <div [inlineSVG]="'/assets/hap-icons/securitysystem-active.svg'" aria-label="Armed" class="accessory-svg"
+    <div [inlineSVG]="'/assets/hap-icons/securitysystem-active.svg'" [attr.aria-label]="'Armed'" class="accessory-svg"
       *ngIf="service.values.SecuritySystemCurrentState !== 3">
     </div>
-    <div [inlineSVG]="'/assets/hap-icons/securitysystem-off.svg'" aria-label="Disarmed" class="accessory-svg"
+    <div [inlineSVG]="'/assets/hap-icons/securitysystem-off.svg'" [attr.aria-label]="'Disarmed'" class="accessory-svg"
       *ngIf="service.values.SecuritySystemCurrentState === 3">
     </div>
 

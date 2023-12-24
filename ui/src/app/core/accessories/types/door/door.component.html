@@ -1,9 +1,9 @@
 <div class="accessory-box" [ngClass]="{'window-on': service.values.TargetPosition}" appLongclick
   (longclick)="onLongClick()" (shortclick)="onClick()" tabindex="0">
   <div class="d-flex flex-column h-100">
-    <div *ngIf="!service.values.TargetPosition" [inlineSVG]="'/assets/hap-icons/door-closed.svg'" aria-label="Door "
+    <div *ngIf="!service.values.TargetPosition" [inlineSVG]="'/assets/hap-icons/door-closed.svg'" [attr.aria-label]="'Door'"
       class="accessory-svg"></div>
-    <div *ngIf="service.values.TargetPosition" [inlineSVG]="'/assets/hap-icons/door-open.svg'" aria-label="Door "
+    <div *ngIf="service.values.TargetPosition" [inlineSVG]="'/assets/hap-icons/door-open.svg'" [attr.aria-label]="'Door'"
       class="accessory-svg"></div>
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
     <div class="accessory-label grey-text" *ngIf="service.values.PositionState === 2">

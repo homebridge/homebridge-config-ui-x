@@ -3,7 +3,7 @@
   'switch-off': !service.values.MotionDetected
 }">
   <div class="d-flex flex-column h-100">
-    <div [inlineSVG]="'/assets/hap-icons/motionsensor.svg'" aria-label="Switch" class="accessory-svg"></div>
+    <div [inlineSVG]="'/assets/hap-icons/motionsensor.svg'" [attr.aria-label]="'Motion Sensor'" class="accessory-svg"></div>
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
     <div class="accessory-label red-text" *ngIf="service.values.MotionDetected">
       {{ 'accessories.control.label_triggered' | translate }}

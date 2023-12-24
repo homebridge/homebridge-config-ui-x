@@ -6,7 +6,7 @@
       <strong>Homebridge</strong>
     </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      aria-controls="navbarSupportedContent" aria-expanded="false" [attr.aria-label]="'Toggle Navigation'">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -38,19 +38,19 @@
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" placement="bottom"
           ngbTooltip="{{'menu.tooltip_view_logs' | translate}}" container="body">
-          <a class="nav-link" routerLink="/logs" aria-label="View Homebridge Logs">
+          <a class="nav-link" routerLink="/logs" [attr.aria-label]="'menu.tooltip_view_logs' | translate">
             <i class="fas fa-fw fa-wave-square nav-menu-icon"></i>
           </a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" placement="bottom"
           ngbTooltip="{{'menu.tooltip_restart' | translate}}" container="body">
-          <a class="nav-link" routerLink="/restart" aria-label="Restart Homebridge">
+          <a class="nav-link" routerLink="/restart" [attr.aria-label]="'menu.hbrestart.confirm_button' | translate">
             <i #restartHomebridgeIcon class="fas fa-fw fa-power-off nav-menu-icon"></i>
           </a>
         </li>
         <li class="nav-item dropdown">
           <a href="javascript:void(0)" class="nav-link dropdown-toggle waves-effect waves-light" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false" aria-label="more actions dropdown menu">
+            aria-haspopup="true" aria-expanded="false" [attr.aria-label]="'More Actions Dropdown'">
             <i class="fas fa-fw fa-ellipsis-v nav-menu-icon"></i>
           </a>
           <div class="dropdown-menu dropdown-menu-right dropdown-info">
