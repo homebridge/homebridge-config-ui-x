@@ -6,26 +6,27 @@
     <div class="col-sm-6 text-end d-none d-sm-block">
       <div class="btn-group" role="group">
         <button type="button" class="btn btn-elegant status-button my-0" [disabled]="!isMobile" (click)="toggleLayoutLock()"
-          container="body" [ngbTooltip]="'form.button_unlock' | translate">
+          container="body" [ngbTooltip]="'form.button_unlock' | translate" [attr.aria-label]="'form.button_unlock' | translate">
           <i class="fas fa-fw fa-unlock"></i>
         </button>
         <button type="button" class="btn btn-elegant status-button my-0" [disabled]="isMobile" (click)="toggleLayoutLock()"
-          container="body" [ngbTooltip]="'form.button_lock' | translate">
+          container="body" [ngbTooltip]="'form.button_lock' | translate" [attr.aria-label]="'form.button_lock' | translate">
           <i class="fas fa-fw fa-lock"></i>
         </button>
       </div>
       <div class="btn-group ms-3" role="group">
         <button type="button" class="btn btn-elegant status-button my-0" [disabled]="isMobile || !hideHidden" (click)="hideHidden = !hideHidden"
-          container="body" [ngbTooltip]="'accessories.button_hidden_show' | translate">
+          container="body" [ngbTooltip]="'accessories.button_hidden_show' | translate" [attr.aria-label]="'accessories.button_hidden_show' | translate">
           <i class="fas fa-fw fa-eye"></i>
         </button>
         <button type="button" class="btn btn-elegant status-button my-0" [disabled]="isMobile || hideHidden" (click)="hideHidden = !hideHidden"
-          container="body" [ngbTooltip]="'accessories.button_hidden_hide' | translate">
+          container="body" [ngbTooltip]="'accessories.button_hidden_hide' | translate" [attr.aria-label]="'accessories.button_hidden_hide' | translate">
           <i class="fas fa-fw fa-eye-slash"></i>
         </button>
       </div>
       <div class="btn-group ms-3" role="group">
-        <button type="button" class="btn btn-elegant status-button my-0" [disabled]="isMobile" (click)="addRoom()">
+        <button type="button" class="btn btn-elegant status-button my-0" [disabled]="isMobile" (click)="addRoom()"
+          [attr.aria-label]="'accessories.button_add_room' | translate">
           <i class="fas fa-fw fa-plus"></i>
         </button>
       </div>

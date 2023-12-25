@@ -1,7 +1,7 @@
 <div class="modal-content">
   <div class="modal-header">
     <h5 class="modal-title">{{ 'plugins.manage.information' | translate }}</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+    <button type="button" class="btn-close" data-bs-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
       (click)="activeModal.dismiss('Dismiss')"></button>
   </div>
   <div class="modal-body w-100 text-center">

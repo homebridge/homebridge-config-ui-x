@@ -1,7 +1,7 @@
 <div class="modal-content hb-accessories-info-modal">
   <div class="modal-header">
     <h5 class="modal-title">{{ service.customName || service.serviceName }}</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+    <button type="button" class="btn-close" data-bs-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
       (click)="activeModal.dismiss('Dismiss')"></button>
   </div>
   <div class="modal-body">
@@ -26,14 +26,14 @@
         type="text" id="form-name" autocomplete="off" class="form-control ps-0 pe-0">
       <label for="form-name" class="active" [translate]="'accessories.label_name'">Name</label>
     </div>
-    
+
     <div class="input-group mb-3 p-2">
       <div class="input-group-prepend">
         <span class="input-group-text" id="inputGroup-sizing-default">Default</span>
       </div>
       <input type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
     </div>
-    
+
     <table class="table table-borderless table-hover" style="table-layout: fixed; width:100%; word-wrap: break-word;">
       <tbody>
         <tr>
@@ -80,7 +80,8 @@
   <div class="modal-footer justify-content-between">
     <div class="text-start"></div>
     <div class="text-center">
-      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
+      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="activeModal.dismiss('Dismiss')"
+        [attr.aria-label]="'form.button_close' | translate">
         {{ 'form.button_close' | translate }}
       </button>
     </div>

@@ -22,12 +22,15 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - fix overflow in markdown changelog
 - plugin card updates
 - added credits link in status footer and modal for credits
+- added more `aria-label` attributes to buttons to improve accessibility
 
 ### Translation Changes
 
 - updates to pl.json language file (#1929) (@mkz212)
 - updates to de.json language file (@Staubgeborener)
 - updates to fr.json language file (@SonnyT72)
+- updates to de.json language file (#1953) (@Staubgeborener)
+- updates to pl.json language file (#1954) (@mkz212)
 
 ### Other Changes
 

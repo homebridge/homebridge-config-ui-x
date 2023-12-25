@@ -13,19 +13,22 @@
             </h5>
             <div class="ms-auto">
               <a href="javascript:void(0)" class="card-link" (click)="$plugin.updatePlugin(plugin, plugin.updateTag || 'latest')"
-                *ngIf="plugin.installedVersion && plugin.updateAvailable && !childBridgeRestartInProgress" [ngbTooltip]="'plugins.button_update' | translate" container="body">
+                *ngIf="plugin.installedVersion && plugin.updateAvailable && !childBridgeRestartInProgress"
+                [ngbTooltip]="'plugins.button_update' | translate" container="body" [attr.aria-label]="'plugins.button_update' | translate">
                 <i class="fas fa-fw fa-arrow-alt-circle-up primary-text fa-lg fa-fade ms-3" style="--fa-animation-duration: 2s;"></i>
               </a>
               <a href="javascript:void(0)" class="card-link" *ngIf="plugin.installedVersion && !plugin.updateAvailable && !plugin.isConfigured && !childBridgeRestartInProgress"
-                (click)="$plugin.settings(plugin)" [ngbTooltip]="'plugins.button_set_up' | translate" container="body">
+                (click)="$plugin.settings(plugin)" [ngbTooltip]="'plugins.button_set_up' | translate" container="body" [attr.aria-label]="'plugins.button_set_up' | translate">
                 <i class="fas fa-fw fa-sliders primary-text fa-lg fa-fade ms-3" style="--fa-animation-duration: 2s;"></i>
               </a>
               <a href="javascript:void(0)" class="card-link" (click)="$plugin.bridgeSettings(plugin)" [ngbTooltip]="'child_bridge.label_child_setup' | translate" container="body"
-                 *ngIf="plugin.installedVersion && !plugin.updateAvailable && plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && recommendChildBridge && !childBridgeRestartInProgress">
+                *ngIf="plugin.installedVersion && !plugin.updateAvailable && plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && recommendChildBridge && !childBridgeRestartInProgress"
+                [attr.aria-label]="'child_bridge.label_child_setup' | translate">
                 <i class="icon-button fas fa-fw fa-bridge primary-text fa-lg fa-fade ms-3" style="--fa-animation-duration: 2s;"></i>
               </a>
               <a href="javascript:void(0)" class="card-link" (click)="$plugin.bridgeSettings(plugin)" [ngbTooltip]="'child_bridge.label_bridge_connect_to_homekit' | translate" container="body"
-                 *ngIf="plugin.installedVersion && !plugin.updateAvailable && plugin.isConfigured && plugin.hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled">
+                *ngIf="plugin.installedVersion && !plugin.updateAvailable && plugin.isConfigured && plugin.hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled"
+                [attr.aria-label]="'child_bridge.label_bridge_connect_to_homekit' | translate">
                 <i class="icon-button fas fa-fw fa-qrcode primary-text fa-lg fa-fad ms-3" style="--fa-animation-duration: 2s;"></i>
               </a>
               <i [hidden]="!childBridgeRestartInProgress" class="fas fa-fw fa-spinner fa-pulse fa-lg grey-text ms-3"></i>
@@ -97,11 +100,11 @@
               </a>
               <span *ngIf="plugin.installedVersion" ngbDropdown placement="left" class="d-inline-block ms-3 mt-auto">
                 <a class="card-link text-decoration-none mt-auto" href="javascript:void(0)" style="outline:none;"
-                  aria-label="Plugin actions drop down menu" ngbDropdownToggle>
+                  [attr.aria-label]="'Plugin Actions Dropdown'" ngbDropdownToggle>
                   <i class="fa-solid fa-fw fa-ellipsis-v fa-lg"></i>
                 </a>
                 <div ngbDropdownMenu aria-labelledby="Plugin actions drop down menu">
-                  <button ngbDropdownItem *ngIf="plugin.isConfigured" (click)="$plugin.settings(plugin)">
+                  <button ngbDropdownItem (click)="$plugin.settings(plugin)">
                     <i class="fas fa-fw fa-sliders"></i>
                     {{ 'plugins.button_settings' | translate }}
                   </button>

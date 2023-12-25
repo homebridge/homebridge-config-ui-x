@@ -4,7 +4,7 @@
       {{'plugins.settings.title_settings' | translate}}:
       {{ plugin.displayName || plugin.name }}
     </h5>
-    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+    <button type="button" class="btn-close" data-bs-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
       (click)="activeModal.close('Dismiss')"></button>
   </div>
   <div class="modal-body" [hidden]="justSavedAndExited">
