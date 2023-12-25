@@ -41,7 +41,7 @@
               <span *ngIf="plugin.installedVersion && plugin.updateAvailable" class="primary-text">
                 <a href="javascript:void(0)" class="card-link" (click)="$plugin.updatePlugin(plugin, plugin.updateTag || 'latest')">
                   <i class="fas fa-fw fa-arrow-alt-circle-up primary-text fa-lg fa-fade" style="--fa-animation-duration: 2s;"></i>
-                  <span class="primary-text"></i>v{{ plugin.installedVersion }} --> v{{ plugin.latestVersion }}</span>
+                  <span class="primary-text"></i>v{{ plugin.installedVersion }} → v{{ plugin.latestVersion }}</span>
                 </a>
               </span>
               <!-- // -->
@@ -123,7 +123,8 @@
               <!-- install plugin -->
               <a href="javascript:void(0)" *ngIf="plugin.publicPackage && !plugin.installedVersion"
                 (click)="$plugin.installPreviousVersion(plugin)">
-                <i class="far fa-fw fa-arrow-alt-circle-down fa-lg"></i>
+                <span class="d-none d-md-inline-block primary-text mr-1">{{ 'plugins.button_install' | translate }}</span>
+                <i class="far fa-fw fa-arrow-alt-circle-down fa-lg primary-text"></i>
               </a>
               <!-- // -->
               <!-- dropdown -->
