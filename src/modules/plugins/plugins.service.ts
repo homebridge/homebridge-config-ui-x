@@ -1434,7 +1434,7 @@ export class PluginsService {
           res(null);
         } else {
           clearTimeout(timeoutTimer);
-          rej('Operation failed. Please review log for details.');
+          rej(`Operation failed with code ${code}.\n\rYou can download this log file for future reference.\n\rSee https://github.com/homebridge/homebridge-config-ui-x/wiki/Troubleshooting for help.`);
         }
       });
 
