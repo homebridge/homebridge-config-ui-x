@@ -42,6 +42,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - improve github actions
 - Fix for backup service including npm's cache (#1949) (@sapireli)
 - updated dependencies
+- ignore `.venv` in hb backup files
 
 ## 4.54.1 (2023-12-08)
 
