@@ -212,6 +212,12 @@ export class PluginCardComponent implements OnInit {
     if (this.isMobile && pluginName.toLowerCase().startsWith('homebridge ')) {
       pluginName = pluginName.replace(new RegExp('^homebridge ', 'i'), '');
     }
-    return pluginName.replace(/\w\S*/g, (txt: string) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+
+    if (!this.plugin.displayName) {
+      // Do not overwrite capitalisation if displayName is set (for example Homebridge eWeLink)
+      // This changes the plugin name into title case
+      pluginName = pluginName.replace(/\w\S*/g, (txt: string) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+    }
+    return pluginName;
   }
 }
