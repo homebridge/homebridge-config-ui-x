@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ServiceTypeX } from '../../accessories.interfaces';
+import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
 import { ThermostatManageComponent } from '@/app/core/accessories/types/thermostat/thermostat.manage.component';
 
 @Component({

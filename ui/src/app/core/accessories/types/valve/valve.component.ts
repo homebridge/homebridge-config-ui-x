@@ -7,7 +7,7 @@ import {
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subscription, interval } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { ServiceTypeX } from '../../accessories.interfaces';
+import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
 import { ValveManageComponent } from '@/app/core/accessories/types/valve/valve.manage.component';
 
 @Component({
