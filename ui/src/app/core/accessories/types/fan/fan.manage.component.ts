@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { ServiceTypeX } from '../../accessories.interfaces';
+import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
 
 @Component({
   selector: 'app-fan-manage',
@@ -53,6 +53,7 @@ export class FanManageComponent implements OnInit {
         min: RotationSpeed.minValue,
         max: RotationSpeed.maxValue,
         step: RotationSpeed.minStep,
+        unit: RotationSpeed.unit,
       };
     }
   }
@@ -60,9 +61,9 @@ export class FanManageComponent implements OnInit {
   onTargetStateChange() {
     this.service.getCharacteristic('On').setValue(this.targetMode);
 
-    // set the brightness to 100% if on 0% when turned on
+    // set the rotation speed to max if on 0% when turned on
     if (this.targetMode && this.targetRotationSpeed && !this.targetRotationSpeed.value) {
-      this.targetRotationSpeed.value = 100;
+      this.targetRotationSpeed.value = this.service.getCharacteristic('RotationSpeed').maxValue;
     }
   }
 

@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ServiceTypeX } from '../../accessories.interfaces';
+import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
 import { WindowcoveringManageComponent } from '@/app/core/accessories/types/windowcovering/windowcovering.manage.component';
 
 @Component({
@@ -8,7 +8,7 @@ import { WindowcoveringManageComponent } from '@/app/core/accessories/types/wind
   templateUrl: './windowcovering.component.html',
   styleUrls: ['./windowcovering.component.scss'],
 })
-export class WindowcoveringComponent implements OnInit {
+export class WindowCoveringComponent implements OnInit {
   @Input() public service: ServiceTypeX;
 
   constructor(

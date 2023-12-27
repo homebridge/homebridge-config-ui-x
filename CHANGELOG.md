@@ -22,12 +22,17 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - fix overflow in markdown changelog
 - plugin card updates
 - added credits link in status footer and modal for credits
+- added more `aria-label` attributes to buttons to improve accessibility
+- add link to homebridge wiki in logs on plugin action error
+- allow fan/fanv2 rotation speed to be a different unit than percentage
 
 ### Translation Changes
 
 - updates to pl.json language file (#1929) (@mkz212)
 - updates to de.json language file (@Staubgeborener)
 - updates to fr.json language file (@SonnyT72)
+- updates to de.json language file (#1953) (@Staubgeborener)
+- updates to pl.json language file (#1954) (@mkz212)
 
 ### Other Changes
 
@@ -36,6 +41,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - ui: update to angular v15
 - improve github actions
 - Fix for backup service including npm's cache (#1949) (@sapireli)
+- updated dependencies
 
 ## 4.54.1 (2023-12-08)
 
