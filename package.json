@@ -68,7 +68,7 @@
     "@nestjs/swagger": "7.1.17",
     "@nestjs/websockets": "10.3.0",
     "@oznu/hap-client": "1.9.0",
-    "axios": "1.6.2",
+    "axios": "1.6.3",
     "bash-color": "0.0.4",
     "buffer-shims": "1.0.0",
     "class-transformer": "0.5.1",

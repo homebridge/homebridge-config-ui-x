@@ -23,6 +23,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - plugin card updates
 - added credits link in status footer and modal for credits
 - added more `aria-label` attributes to buttons to improve accessibility
+- add link to homebridge wiki in logs on plugin action error
 
 ### Translation Changes
 
@@ -39,6 +40,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - ui: update to angular v15
 - improve github actions
 - Fix for backup service including npm's cache (#1949) (@sapireli)
+- updated dependencies
 
 ## 4.54.1 (2023-12-08)
 
