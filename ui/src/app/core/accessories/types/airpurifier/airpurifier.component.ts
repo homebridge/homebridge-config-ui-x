@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ServiceTypeX } from '../../accessories.interfaces';
+import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
 import { AirpurifierManageComponent } from '@/app/core/accessories/types/airpurifier/airpurifier.manage.component';
 
 @Component({

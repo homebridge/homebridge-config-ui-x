@@ -51,7 +51,7 @@ import { ValveComponent } from '@/app/core/accessories/types/valve/valve.compone
 import { ValveManageComponent } from '@/app/core/accessories/types/valve/valve.manage.component';
 import { WindowComponent } from '@/app/core/accessories/types/window/window.component';
 import { WindowManageComponent } from '@/app/core/accessories/types/window/window.manage.component';
-import { WindowcoveringComponent } from '@/app/core/accessories/types/windowcovering/windowcovering.component';
+import { WindowCoveringComponent } from '@/app/core/accessories/types/windowcovering/windowcovering.component';
 import { WindowcoveringManageComponent } from '@/app/core/accessories/types/windowcovering/windowcovering.manage.component';
 import { CoreModule } from '@/app/core/core.module';
 
@@ -79,7 +79,7 @@ import { CoreModule } from '@/app/core/core.module';
     OccupancysensorComponent,
     HumiditysensorComponent,
     AirqualitysensorComponent,
-    WindowcoveringComponent,
+    WindowCoveringComponent,
     WindowcoveringManageComponent,
     WindowComponent,
     WindowManageComponent,

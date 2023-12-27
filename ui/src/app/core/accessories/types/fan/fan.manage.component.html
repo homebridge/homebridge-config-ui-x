@@ -6,7 +6,7 @@
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
-  <div class="modal-body text-center">
+  <div class="modal-body text-center px-5">
 
     <h5>
       <strong>
@@ -27,7 +27,7 @@
 
     <div *ngIf="targetRotationSpeed">
       <h5 class="mb-0">{{ 'accessories.control.label_rotation_speed' | translate }}</h5>
-      <p>{{ targetRotationSpeed.value }}%</p>
+      <p>{{ targetRotationSpeed.value }}<span *ngIf="targetRotationSpeed.unit === 'percentage'">%</span></p>
       <nouislider [min]="targetRotationSpeed.min" [max]="targetRotationSpeed.max" [step]="targetRotationSpeed.step"
         [(ngModel)]="targetRotationSpeed.value" (ngModelChange)="onTargetRotationSpeedChange()">
       </nouislider>

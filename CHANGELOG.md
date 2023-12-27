@@ -24,6 +24,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - added credits link in status footer and modal for credits
 - added more `aria-label` attributes to buttons to improve accessibility
 - add link to homebridge wiki in logs on plugin action error
+- allow fan/fanv2 rotation speed to be a different unit than percentage
 
 ### Translation Changes
 
