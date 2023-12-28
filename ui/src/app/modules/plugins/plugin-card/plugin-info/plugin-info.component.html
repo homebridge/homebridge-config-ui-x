@@ -7,8 +7,7 @@
     </button>
   </div>
   <div class="modal-body w-100 text-center">
-    <img [src]="plugin.icon" (error)="handleIconError()" alt="" class="plugin-icon-card mb-3"
-      style="height: 75px; width: 75px;">
+    <img [src]="plugin.icon" (error)="handleIconError()" alt="Plugin Icon" class="mb-3 plugin-icon">
     <h4>{{ plugin.displayName || plugin.name }}</h4>
     <p class="my-3">{{ plugin.description }}</p>
     <p class="m-0 grey-text">{{ plugin.name }}</p>
