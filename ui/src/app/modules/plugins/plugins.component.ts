@@ -38,6 +38,9 @@ export class PluginsComponent implements OnInit, OnDestroy {
     this.io.connected.subscribe(async () => {
       this.getChildBridgeMetadata();
       this.io.socket.emit('monitor-child-bridge-status');
+
+      // load list of installed plugins
+      await this.loadInstalledPlugins();
     });
 
     this.io.socket.on('child-bridge-status-update', (data) => {
@@ -55,9 +58,6 @@ export class PluginsComponent implements OnInit, OnDestroy {
         this.loadInstalledPlugins();
       }
     });
-
-    // load list of installed plugins
-    await this.loadInstalledPlugins();
   }
 
   async loadInstalledPlugins() {
@@ -67,24 +67,43 @@ export class PluginsComponent implements OnInit, OnDestroy {
     this.loading = true;
 
     try {
-      this.installedPlugins = await this.$api.get('/plugins').toPromise();
+      const installedPlugins = await this.$api.get('/plugins').toPromise();
+      this.installedPlugins = installedPlugins.filter((x) => x.name !== 'homebridge-config-ui-x');
       await this.appendMetaInfo();
       this.loading = false;
 
       // The backend used to sort this only by plugins with updates first
       // I removed this sorting since now we want the frontend to do more of the work
       // We have more things that we want to bring to the top of the list
-      return this.installedPlugins
-        // plugins with updates should appear first
-        .sort((a) => (a.updateAvailable ? -1 : 1))
-        // then plugins which have not been configured
-        .sort((a, b) => (a.isConfigured && !b.isConfigured ? 1 : -1))
-        // then plugins which have child bridges which are not paired
-        .sort((a, b) => (a.hasChildBridgesUnpaired && !b.hasChildBridgesUnpaired ? -1 : 1))
-        // then plugins which do not have child bridges, but child bridges are recommended via the settings
-        .sort((a, b) => (a.hasChildBridges && !b.hasChildBridges && this.$settings.env.recommendChildBridges ? -1 : 1))
-        // finally just sort alphabetically
-        .sort((a, b) => (a.displayName > b.displayName ? 1 : -1));
+      return this.installedPlugins.sort((a, b) =>{
+        // Priority 1: updateAvailable (true first, sorted alphabetically by 'name')
+        if (a.updateAvailable !== b.updateAvailable) {
+          return a.updateAvailable ? -1 : 1;
+        }
+
+        // Priority 2: isConfigured (false first, sorted alphabetically by 'name')
+        if (a.isConfigured !== b.isConfigured) {
+          return a.isConfigured ? 1 : -1;
+        }
+
+        // Priority 3: hasChildBridgesUnpaired (true first, sorted alphabetically by 'name')
+        if (a.hasChildBridgesUnpaired !== b.hasChildBridgesUnpaired) {
+          return a.hasChildBridgesUnpaired ? -1 : 1;
+        }
+
+        // Priority 4: hasChildBridges (false first, sorted alphabetically by 'name', only when recommendChildBridges is true)
+        if (a.hasChildBridges !== b.hasChildBridges && this.$settings.env.recommendChildBridges) {
+          return a.hasChildBridges ? 1 : -1;
+        }
+
+        // Priority 5: disabled (false first, sorted alphabetically by 'name')
+        if (a.disabled !== b.disabled) {
+          return a.disabled ? 1 : -1;
+        }
+
+        // If all criteria are equal, sort alphabetically by 'name'
+        return a.name.localeCompare(b.name);
+      });
     } catch (err) {
       this.$toastr.error(
         `${this.$translate.instant('plugins.toast_failed_to_load_plugins')}: ${err.message}`,
@@ -95,23 +114,21 @@ export class PluginsComponent implements OnInit, OnDestroy {
 
   async appendMetaInfo() {
     // Also get the current configuration for each plugin
-    await Promise.all(
-      this.installedPlugins
-        .filter((plugin) => plugin.installedVersion)
-        .map(async (plugin) => {
-          try {
-            const configBlocks = await this.$api.get(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`).toPromise();
-            const childBridges = this.getPluginChildBridges(plugin.name);
-            plugin.isConfigured = configBlocks.length > 0;
-            plugin.hasChildBridges = childBridges.length > 0;
-            plugin.hasChildBridgesUnpaired = childBridges.filter((x) => x.paired === false).length > 0;
-          } catch (err) {
-            // May not be technically correct, but if we can't load the config, assume the least worst state
-            plugin.isConfigured = true;
-            plugin.hasChildBridges = true;
-            plugin.hasChildBridgesUnpaired = false;
-          }
-        }),
+    await Promise.all(this.installedPlugins
+      .filter((plugin) => plugin.installedVersion)
+      .map(async (plugin) => {
+        try {
+          const configBlocks = await this.$api.get(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`).toPromise();
+          plugin.isConfigured = configBlocks.length > 0;
+          const pluginChildBridges = this.getPluginChildBridges(plugin);
+          plugin.hasChildBridges = pluginChildBridges.length > 0;
+          plugin.hasChildBridgesUnpaired = pluginChildBridges.some((x) => !x.paired);
+        } catch (err) {
+          // may not be technically correct, but if we can't load the config, assume it is configured
+          plugin.isConfigured = true;
+          plugin.hasChildBridges = true;
+        }
+      }),
     );
   }
 

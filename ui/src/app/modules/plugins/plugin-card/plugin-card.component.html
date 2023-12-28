@@ -1,7 +1,7 @@
 <div class="card card-body mb-3">
   <div class="d-flex flex-row justify-content-between">
-    <div class="d-flex flex-column me-2 me-md-3 align-items-center justify-content-between">
-      <img [src]="plugin.icon" (error)="handleIconError()" alt="" class="plugin-icon-card mb-3">
+    <div class="d-flex flex-column me-3 align-items-center justify-content-between">
+      <img [src]="plugin.icon" (error)="handleIconError()" alt="Plugin Icon" class="plugin-icon-card mb-3">
     </div>
     <div class="d-flex flex-column justify-content-between" style="min-width: calc(100% - 80px)">
       <div class="d-flex flex-row align-items-end">
@@ -36,7 +36,7 @@
               <a href="javascript:void(0)" class="card-link" (click)="$plugin.bridgeSettings(plugin)" [ngbTooltip]="'child_bridge.label_bridge_connect_to_homekit' | translate" container="body"
                 *ngIf="plugin.installedVersion && !plugin.updateAvailable && plugin.isConfigured && plugin.hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled"
                 [attr.aria-label]="'child_bridge.label_bridge_connect_to_homekit' | translate">
-                <i class="icon-button fas fa-fw fa-qrcode primary-text fa-lg fa-fad ms-3" style="--fa-animation-duration: 2s;"></i>
+                <i class="icon-button fas fa-fw fa-qrcode primary-text fa-lg fa-fade ms-3" style="--fa-animation-duration: 2s;"></i>
               </a>
               <!-- // -->
               <!-- restart in progress spinner -->
