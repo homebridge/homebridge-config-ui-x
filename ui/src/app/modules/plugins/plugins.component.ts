@@ -5,6 +5,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
 import { ApiService } from '@/app/core/api.service';
+import { SettingsService } from '@/app/core/settings.service';
 import { IoNamespace, WsService } from '@/app/core/ws.service';
 
 @Component({
@@ -27,6 +28,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
     private $api: ApiService,
     private $ws: WsService,
     private $router: Router,
+    private $settings: SettingsService,
     private $toastr: ToastrService,
     private $translate: TranslateService,
   ) {}
@@ -65,10 +67,24 @@ export class PluginsComponent implements OnInit, OnDestroy {
     this.loading = true;
 
     try {
-      const installedPlugins = await this.$api.get('/plugins').toPromise();
-      this.installedPlugins = installedPlugins.filter((x) => x.name !== 'homebridge-config-ui-x');
-      this.appendMetaInfo();
+      this.installedPlugins = await this.$api.get('/plugins').toPromise();
+      await this.appendMetaInfo();
       this.loading = false;
+
+      // The backend used to sort this only by plugins with updates first
+      // I removed this sorting since now we want the frontend to do more of the work
+      // We have more things that we want to bring to the top of the list
+      return this.installedPlugins
+        // plugins with updates should appear first
+        .sort((a) => (a.updateAvailable ? -1 : 1))
+        // then plugins which have not been configured
+        .sort((a, b) => (a.isConfigured && !b.isConfigured ? 1 : -1))
+        // then plugins which have child bridges which are not paired
+        .sort((a, b) => (a.hasChildBridgesUnpaired && !b.hasChildBridgesUnpaired ? -1 : 1))
+        // then plugins which do not have child bridges, but child bridges are recommended via the settings
+        .sort((a, b) => (a.hasChildBridges && !b.hasChildBridges && this.$settings.env.recommendChildBridges ? -1 : 1))
+        // finally just sort alphabetically
+        .sort((a, b) => (a.displayName > b.displayName ? 1 : -1));
     } catch (err) {
       this.$toastr.error(
         `${this.$translate.instant('plugins.toast_failed_to_load_plugins')}: ${err.message}`,
@@ -79,20 +95,23 @@ export class PluginsComponent implements OnInit, OnDestroy {
 
   async appendMetaInfo() {
     // Also get the current configuration for each plugin
-    await Promise.all(this.installedPlugins
-      .filter((plugin) => plugin.installedVersion)
-      .map(async (plugin) => {
-        try {
-          const configBlocks = await this.$api.get(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`).toPromise();
-          plugin.isConfigured = configBlocks.length > 0;
-          // eslint-disable-next-line no-underscore-dangle
-          plugin.hasChildBridges = plugin.isConfigured && configBlocks.some((x) => x._bridge && x._bridge.username);
-        } catch (err) {
-          // may not be technically correct, but if we can't load the config, assume it is configured
-          plugin.isConfigured = true;
-          plugin.hasChildBridges = true;
-        }
-      }),
+    await Promise.all(
+      this.installedPlugins
+        .filter((plugin) => plugin.installedVersion)
+        .map(async (plugin) => {
+          try {
+            const configBlocks = await this.$api.get(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`).toPromise();
+            const childBridges = this.getPluginChildBridges(plugin.name);
+            plugin.isConfigured = configBlocks.length > 0;
+            plugin.hasChildBridges = childBridges.length > 0;
+            plugin.hasChildBridgesUnpaired = childBridges.filter((x) => x.paired === false).length > 0;
+          } catch (err) {
+            // May not be technically correct, but if we can't load the config, assume the least worst state
+            plugin.isConfigured = true;
+            plugin.hasChildBridges = true;
+            plugin.hasChildBridgesUnpaired = false;
+          }
+        }),
     );
   }
 
@@ -134,7 +153,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
   }
 
   getPluginChildBridges(plugin) {
-    return this.childBridges.filter(x => x.plugin === plugin.name);
+    return this.childBridges.filter((x) => x.plugin === plugin.name);
   }
 
   ngOnDestroy() {
