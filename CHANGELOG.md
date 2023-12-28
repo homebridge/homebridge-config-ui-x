@@ -25,6 +25,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - added more `aria-label` attributes to buttons to improve accessibility
 - add link to homebridge wiki in logs on plugin action error
 - allow fan/fanv2 rotation speed to be a different unit than percentage
+- improve plugin sorting, with actionable plugins at the top
 
 ### Translation Changes
 
@@ -42,6 +43,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - improve github actions
 - Fix for backup service including npm's cache (#1949) (@sapireli)
 - updated dependencies
+- ignore `.venv` in hb backup files
 
 ## 4.54.1 (2023-12-08)
 

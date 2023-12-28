@@ -122,6 +122,7 @@ export class BackupService {
             '.homebridge.sock',   // homebridge ipc socket
             '#recycle',           // synology dsm recycle bin
             '@eaDir',             // synology dsm metadata
+            '.venv',              // python venv
           ].includes(basename(filePath))) {
             return false;
           }
