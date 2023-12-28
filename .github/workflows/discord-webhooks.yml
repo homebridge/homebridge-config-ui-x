@@ -1,0 +1,39 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Discord Webhooks
+
+# Controls when the workflow will run
+on:
+  release:
+    types: [released, prereleased]
+
+jobs:
+  github-releases-to-discord:
+    runs-on: ubuntu-latest
+    name: GitHub Releases to Discord
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Latest Release
+        if: ${{ github.event.release.prerelease == false }}
+        uses: SethCohen/github-releases-to-discord@v1.13.1
+        with:
+          webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL_LATEST }}
+          color: "4726621"
+          username: "Homebridge"
+          avatar_url: "https://raw.githubusercontent.com/homebridge/branding/latest/logos/homebridge-color-round-stylized.png"
+          footer_title: "Homebridge UI"
+          footer_icon_url: "https://raw.githubusercontent.com/homebridge/branding/latest/logos/homebridge-color-round-stylized.png"
+          footer_timestamp: true
+    
+      - name: Pre-Release
+        if: ${{ github.event.release.prerelease == true }}
+        uses: SethCohen/github-releases-to-discord@v1.13.1
+        with:
+          webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL_BETA }}
+          color: "4726621"
+          username: "Homebridge"
+          avatar_url: "https://raw.githubusercontent.com/homebridge/branding/latest/logos/homebridge-color-round-stylized.png"
+          footer_title: "Homebridge UI"
+          footer_icon_url: "https://raw.githubusercontent.com/homebridge/branding/latest/logos/homebridge-color-round-stylized.png"
+          footer_timestamp: true
