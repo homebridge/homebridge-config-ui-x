@@ -67,7 +67,6 @@ export class PluginCardComponent implements OnInit {
 
   ngOnInit(): void {
     this.isMobile = this.$md.detect.mobile();
-    this.isMobile = this.$md.detect.mobile();
     this.prettyDisplayName = this.prettifyName();
     this.io = this.$ws.getExistingNamespace('child-bridges');
 
