@@ -81,24 +81,24 @@ export class PluginsComponent implements OnInit, OnDestroy {
           return a.updateAvailable ? -1 : 1;
         }
 
-        // Priority 2: isConfigured (false first, sorted alphabetically by 'name')
+        // Priority 2: disabled (false first, sorted alphabetically by 'name')
+        if (a.disabled !== b.disabled) {
+          return a.disabled ? 1 : -1;
+        }
+
+        // Priority 3: isConfigured (false first, sorted alphabetically by 'name')
         if (a.isConfigured !== b.isConfigured) {
           return a.isConfigured ? 1 : -1;
         }
 
-        // Priority 3: hasChildBridgesUnpaired (true first, sorted alphabetically by 'name')
+        // Priority 4: hasChildBridgesUnpaired (true first, sorted alphabetically by 'name')
         if (a.hasChildBridgesUnpaired !== b.hasChildBridgesUnpaired) {
           return a.hasChildBridgesUnpaired ? -1 : 1;
         }
 
-        // Priority 4: hasChildBridges (false first, sorted alphabetically by 'name', only when recommendChildBridges is true)
+        // Priority 5: hasChildBridges (false first, sorted alphabetically by 'name', only when recommendChildBridges is true)
         if (a.hasChildBridges !== b.hasChildBridges && this.$settings.env.recommendChildBridges) {
           return a.hasChildBridges ? 1 : -1;
-        }
-
-        // Priority 5: disabled (false first, sorted alphabetically by 'name')
-        if (a.disabled !== b.disabled) {
-          return a.disabled ? 1 : -1;
         }
 
         // If all criteria are equal, sort alphabetically by 'name'
@@ -120,8 +120,11 @@ export class PluginsComponent implements OnInit, OnDestroy {
         try {
           const configBlocks = await this.$api.get(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`).toPromise();
           plugin.isConfigured = configBlocks.length > 0;
+
+          // eslint-disable-next-line no-underscore-dangle
+          plugin.hasChildBridges = plugin.isConfigured && configBlocks.some((x) => x._bridge && x._bridge.username);
+
           const pluginChildBridges = this.getPluginChildBridges(plugin);
-          plugin.hasChildBridges = pluginChildBridges.length > 0;
           plugin.hasChildBridgesUnpaired = pluginChildBridges.some((x) => !x.paired);
         } catch (err) {
           // may not be technically correct, but if we can't load the config, assume it is configured

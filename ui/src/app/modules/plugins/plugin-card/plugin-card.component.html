@@ -110,7 +110,7 @@
               <!-- icon for child bridge restart -->
               <a href="javascript:void(0)" (click)="doChildBridgeAction('restart')" class="card-link"
                 [ngbTooltip]="setChildBridges.length > 1 ? 'child_bridge.label_child_restart_plural' : 'child_bridge.label_child_restart' | translate"
-                *ngIf="!plugin.disabled && plugin.hasChildBridges && !hasUnpairedChildBridges && childBridgeStatus === 'ok'">
+                *ngIf="!plugin.disabled && plugin.hasChildBridges && childBridgeStatus === 'ok'">
                 <i class="fas fa-fw fa-lg fa-power-off ms-3"></i>
               </a>
               <!-- // -->
