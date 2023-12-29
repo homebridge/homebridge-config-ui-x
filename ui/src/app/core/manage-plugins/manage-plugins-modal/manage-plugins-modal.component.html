@@ -7,7 +7,7 @@
   </div>
   <div [hidden]="!onlineUpdateOk || actionComplete || showReleaseNotes" id="plugin-log-output" class="modal-body"></div>
   <div *ngIf="actionComplete" class="modal-body plugin-modal-body">
-    <div *ngIf="justUpdatedPlugin">
+    <div *ngIf="justUpdatedPlugin && !isDisabled">
       <h3 class="text-center primary-text" [translate]="'platform.version.title_service_restart_required'">
         Restart Required
       </h3>
@@ -57,20 +57,25 @@ hb-service start</pre>
   <div class="modal-footer justify-content-between" *ngIf="!onlineUpdateOk || actionComplete || showReleaseNotes || actionFailed">
     <div class="text-left">
       <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')"
-        [attr.aria-label]="'form.button_close' | translate">
+        [attr.aria-label]="'form.button_close' | translate" *ngIf="!justUpdatedPlugin || (justUpdatedPlugin && (!isDisabled || actionFailed))">
         {{ 'form.button_close' | translate }}
       </button>
     </div>
-    <div class="text-center"></div>
+    <div class="text-center">
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')"
+        [attr.aria-label]="'form.button_close' | translate" *ngIf="justUpdatedPlugin && isDisabled && !actionFailed">
+        {{ 'form.button_close' | translate }}
+      </button>
+    </div>
     <div class="text-right">
       <button *ngIf="onlineUpdateOk && showReleaseNotes" type="button" class="btn btn-primary" (click)="update()">
         {{ 'plugins.button_update' | translate }}
       </button>
-      <button type="button" class="btn btn-primary" *ngIf="justUpdatedPlugin && !['homebridge', 'homebridge-config-ui-x'].includes(pluginName) && childBridges.length > 0"
+      <button type="button" class="btn btn-primary" *ngIf="justUpdatedPlugin && !isDisabled && !['homebridge', 'homebridge-config-ui-x'].includes(pluginName) && childBridges.length > 0"
         (click)="onRestartChildBridgeClick()">
         {{ (childBridges.length === 1 ? 'plugins.manage.child_bridge_button_restart_now_one' : 'plugins.manage.child_bridge_button_restart_now') | translate }}
       </button>
-      <button type="button" class="btn btn-primary" *ngIf="justUpdatedPlugin && (['homebridge', 'homebridge-config-ui-x'].includes(pluginName) || childBridges.length === 0)"
+      <button type="button" class="btn btn-primary" *ngIf="justUpdatedPlugin && !isDisabled && (['homebridge', 'homebridge-config-ui-x'].includes(pluginName) || childBridges.length === 0)"
         (click)="onRestartHomebridgeClick()">
         {{ 'plugins.manage.button_restart_now' | translate }}
       </button>

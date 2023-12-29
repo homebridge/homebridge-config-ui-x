@@ -28,6 +28,7 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
   @Input() targetVersion = 'latest';
   @Input() latestVersion: string;
   @Input() installedVersion: string;
+  @Input() isDisabled: boolean;
   @Input() action: string;
 
   public actionComplete = false;

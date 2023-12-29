@@ -26,6 +26,8 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - add link to homebridge wiki in logs on plugin action error
 - allow fan/fanv2 rotation speed to be a different unit than percentage
 - improve plugin sorting, with actionable plugins at the top
+- fix footer paddings for mobile and desktop (#1956) (@mkz212)
+- no need to restart if updating disabled plugin
 
 ### Translation Changes
 
