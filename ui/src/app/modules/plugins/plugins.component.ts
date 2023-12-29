@@ -121,6 +121,10 @@ export class PluginsComponent implements OnInit, OnDestroy {
           const configBlocks = await this.$api.get(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`).toPromise();
           plugin.isConfigured = configBlocks.length > 0;
 
+          if (plugin.isConfigured) {
+            plugin.pluginType = Object.prototype.hasOwnProperty.call(configBlocks[0], 'platform') ? 'platform' : 'accessory';
+          }
+
           // eslint-disable-next-line no-underscore-dangle
           plugin.hasChildBridges = plugin.isConfigured && configBlocks.some((x) => x._bridge && x._bridge.username);
 

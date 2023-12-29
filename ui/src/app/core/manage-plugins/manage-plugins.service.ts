@@ -61,6 +61,7 @@ export class ManagePluginsService {
     ref.componentInstance.targetVersion = targetVersion;
     ref.componentInstance.latestVersion = plugin.latestVersion;
     ref.componentInstance.installedVersion = plugin.installedVersion;
+    ref.componentInstance.isDisabled = plugin.disabled;
   }
 
   async upgradeHomebridge(homebridgePkg: any, targetVersion = 'latest') {
