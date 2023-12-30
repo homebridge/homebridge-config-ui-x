@@ -214,7 +214,6 @@
   "plugins.manage.label_manual_update_required": "Manual Update Required",
   "plugins.manage.label_online_updates_not_supported_on_windows": "Online updates are not supported on Windows. You will need to upgrade Homebridge UI manually after stopping the Homebridge service.",
   "plugins.manage.label_release_notes": "Release Notes",
-  "plugins.manage.label_release_notes_beta": "Beta Information",
   "plugins.manage.label_uninstall": "Eltávolítás",
   "plugins.manage.label_uninstalled": "Eltávolítva",
   "plugins.manage.label_update": "Frissítés (update)",

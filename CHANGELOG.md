@@ -28,6 +28,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - improve plugin sorting, with actionable plugins at the top
 - fix footer paddings for mobile and desktop (#1956) (@mkz212)
 - no need to restart if updating disabled plugin
+- standardise update modal header
 
 ### Translation Changes
 

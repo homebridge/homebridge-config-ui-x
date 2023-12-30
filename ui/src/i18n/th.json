@@ -214,7 +214,6 @@
   "plugins.manage.label_manual_update_required": "จำเป็นต้องมีการอัปเดตด้วยตนเอง",
   "plugins.manage.label_online_updates_not_supported_on_windows": "Windows ไม่รองรับการอัปเดตออนไลน์ คุณจะต้องอัปเกรด Homebridge ด้วยตนเองหลังจากหยุดบริการ Homebridge",
   "plugins.manage.label_release_notes": "บันทึกประจำรุ่น",
-  "plugins.manage.label_release_notes_beta": "ข้อมูลเกี่ยวกับรุ่นเบต้า",
   "plugins.manage.label_uninstall": "ถอนการติดตั้ง",
   "plugins.manage.label_uninstalled": "นำออกแล้ว",
   "plugins.manage.label_update": "อัปเดท",
