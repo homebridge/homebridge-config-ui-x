@@ -47,6 +47,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - updated dependencies
 - ignore `.venv` in hb backup files
 - updated Discord Webhooks so notifications are seperated for `release` and `pre-release`
+- update maximum file upload size to 25mb
 
 ## 4.54.1 (2023-12-08)
 
