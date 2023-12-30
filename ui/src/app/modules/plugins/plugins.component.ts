@@ -70,12 +70,11 @@ export class PluginsComponent implements OnInit, OnDestroy {
       const installedPlugins = await this.$api.get('/plugins').toPromise();
       this.installedPlugins = installedPlugins.filter((x) => x.name !== 'homebridge-config-ui-x');
       await this.appendMetaInfo();
-      this.loading = false;
 
       // The backend used to sort this only by plugins with updates first
       // I removed this sorting since now we want the frontend to do more of the work
       // We have more things that we want to bring to the top of the list
-      return this.installedPlugins.sort((a, b) =>{
+      const sortedList =  this.installedPlugins.sort((a, b) => {
         // Priority 1: updateAvailable (true first, sorted alphabetically by 'name')
         if (a.updateAvailable !== b.updateAvailable) {
           return a.updateAvailable ? -1 : 1;
@@ -104,6 +103,9 @@ export class PluginsComponent implements OnInit, OnDestroy {
         // If all criteria are equal, sort alphabetically by 'name'
         return a.name.localeCompare(b.name);
       });
+
+      this.loading = false;
+      return sortedList;
     } catch (err) {
       this.$toastr.error(
         `${this.$translate.instant('plugins.toast_failed_to_load_plugins')}: ${err.message}`,
@@ -118,12 +120,15 @@ export class PluginsComponent implements OnInit, OnDestroy {
       .filter((plugin) => plugin.installedVersion)
       .map(async (plugin) => {
         try {
+          // Adds some extra properties to the plugin object for the plugin card
           const configBlocks = await this.$api.get(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`).toPromise();
           plugin.isConfigured = configBlocks.length > 0;
 
-          if (plugin.isConfigured) {
-            plugin.pluginType = Object.prototype.hasOwnProperty.call(configBlocks[0], 'platform') ? 'platform' : 'accessory';
-          }
+          plugin.recommendChildBridge = plugin.isConfigured
+            && Object.prototype.hasOwnProperty.call(configBlocks[0], 'platform')
+            && this.$settings.env.recommendChildBridges
+            && this.$settings.env.serviceMode
+            && !['homebridge', 'homebridge-config-ui-x'].includes(plugin.name);
 
           // eslint-disable-next-line no-underscore-dangle
           plugin.hasChildBridges = plugin.isConfigured && configBlocks.some((x) => x._bridge && x._bridge.username);

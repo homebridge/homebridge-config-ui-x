@@ -27,7 +27,6 @@ export class PluginCardComponent implements OnInit {
   public allChildBridgesStopped = false;
   public childBridgeStatus = 'pending';
   public childBridgeRestartInProgress = false;
-  public recommendChildBridge = false;
   public defaultIcon = 'assets/hb-icon.png';
   public isMobile: string;
   public setChildBridges = [];
@@ -72,16 +71,6 @@ export class PluginCardComponent implements OnInit {
 
     if (!this.plugin.icon) {
       this.plugin.icon = this.defaultIcon;
-    }
-
-    if (
-      this.plugin.installedVersion
-      && this.$settings.env.recommendChildBridges
-      && this.$settings.env.serviceMode
-      && !['homebridge', 'homebridge-config-ui-x'].includes(this.plugin.name)
-      && this.plugin.pluginType === 'platform'
-    ) {
-      this.recommendChildBridge = true;
     }
   }
 

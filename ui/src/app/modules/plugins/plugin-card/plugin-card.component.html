@@ -27,7 +27,7 @@
               <!-- // -->
               <!-- installed, configured, not setup as child bridge although recommended -->
               <a href="javascript:void(0)" class="card-link" (click)="$plugin.bridgeSettings(plugin)" [ngbTooltip]="'child_bridge.label_child_setup' | translate" container="body"
-                *ngIf="plugin.installedVersion && !plugin.updateAvailable && plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && recommendChildBridge && !childBridgeRestartInProgress"
+                *ngIf="plugin.installedVersion && !plugin.updateAvailable && plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && plugin.recommendChildBridge && !childBridgeRestartInProgress"
                 [attr.aria-label]="'child_bridge.label_child_setup' | translate">
                 <i class="icon-button fas fa-fw fa-bridge primary-text fa-lg fa-fade ms-3" style="--fa-animation-duration: 2s;"></i>
               </a>
@@ -198,9 +198,9 @@
                     </button>
                     <!-- // -->
                   </ng-container>
-                  <div class="dropdown-divider" *ngIf="plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && !recommendChildBridge"></div>
+                  <div class="dropdown-divider" *ngIf="plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && !plugin.recommendChildBridge"></div>
                   <!-- child bridge setup, when not recommended -->
-                  <button ngbDropdownItem *ngIf="plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && !recommendChildBridge" (click)="$plugin.bridgeSettings(plugin)">
+                  <button ngbDropdownItem *ngIf="plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && !plugin.recommendChildBridge" (click)="$plugin.bridgeSettings(plugin)">
                     <i class="icon-button fas fa-fw fa-bridge"></i>
                     {{ 'child_bridge.label_child_setup' | translate }}
                   </button>
