@@ -79,14 +79,9 @@ export class PluginCardComponent implements OnInit {
       && this.$settings.env.recommendChildBridges
       && this.$settings.env.serviceMode
       && !['homebridge', 'homebridge-config-ui-x'].includes(this.plugin.name)
+      && this.plugin.pluginType === 'platform'
     ) {
-      this.$api.get(`/plugins/config-schema/${encodeURIComponent(this.plugin.name)}`, {}).toPromise()
-        .then((schema) => {
-          this.recommendChildBridge = schema.pluginType === 'platform';
-        })
-        .catch(() => {
-          this.recommendChildBridge = false;
-        });
+      this.recommendChildBridge = true;
     }
   }
 
@@ -132,9 +127,10 @@ export class PluginCardComponent implements OnInit {
     ref.result.then(async () => {
       try {
         await this.$api.put(`/config-editor/plugin/${encodeURIComponent(plugin.name)}/disable`, {}).toPromise();
-        // mark as disabled
+        // Mark as disabled
         plugin.disabled = true;
-        // stop all child bridges
+
+        // Stop all child bridges
         if (this.hasChildBridges) {
           this.doChildBridgeAction('stop');
         }
