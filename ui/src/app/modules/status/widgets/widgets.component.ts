@@ -9,19 +9,19 @@ import {
   OnDestroy,
   OnInit,
 } from '@angular/core';
-import { AccessoriesWidgetComponent } from './accessories-widget/accessories-widget.component';
-import { ChildBridgeWidgetComponent } from './child-bridge-widget/child-bridge-widget.component';
-import { ClockWidgetComponent } from './clock-widget/clock-widget.component';
-import { CpuWidgetComponent } from './cpu-widget/cpu-widget.component';
-import { HapQrcodeWidgetComponent } from './hap-qrcode-widget/hap-qrcode-widget.component';
-import { HomebridgeLogsWidgetComponent } from './homebridge-logs-widget/homebridge-logs-widget.component';
-import { HomebridgeStatusWidgetComponent } from './homebridge-status-widget/homebridge-status-widget.component';
-import { MemoryWidgetComponent } from './memory-widget/memory-widget.component';
-import { NetworkWidgetComponent } from './network-widget/network-widget.component';
-import { SystemInfoWidgetComponent } from './system-info-widget/system-info-widget.component';
-import { TerminalWidgetComponent } from './terminal-widget/terminal-widget.component';
-import { UptimeWidgetComponent } from './uptime-widget/uptime-widget.component';
-import { WeatherWidgetComponent } from './weather-widget/weather-widget.component';
+import { AccessoriesWidgetComponent } from '@/app/modules/status/widgets/accessories-widget/accessories-widget.component';
+import { ChildBridgeWidgetComponent } from '@/app/modules/status/widgets/child-bridge-widget/child-bridge-widget.component';
+import { ClockWidgetComponent } from '@/app/modules/status/widgets/clock-widget/clock-widget.component';
+import { CpuWidgetComponent } from '@/app/modules/status/widgets/cpu-widget/cpu-widget.component';
+import { HapQrcodeWidgetComponent } from '@/app/modules/status/widgets/hap-qrcode-widget/hap-qrcode-widget.component';
+import { HomebridgeLogsWidgetComponent } from '@/app/modules/status/widgets/homebridge-logs-widget/homebridge-logs-widget.component';
+import { HomebridgeStatusWidgetComponent } from '@/app/modules/status/widgets/homebridge-status-widget/homebridge-status-widget.component';
+import { MemoryWidgetComponent } from '@/app/modules/status/widgets/memory-widget/memory-widget.component';
+import { NetworkWidgetComponent } from '@/app/modules/status/widgets/network-widget/network-widget.component';
+import { SystemInfoWidgetComponent } from '@/app/modules/status/widgets/system-info-widget/system-info-widget.component';
+import { TerminalWidgetComponent } from '@/app/modules/status/widgets/terminal-widget/terminal-widget.component';
+import { UptimeWidgetComponent } from '@/app/modules/status/widgets/uptime-widget/uptime-widget.component';
+import { WeatherWidgetComponent } from '@/app/modules/status/widgets/weather-widget/weather-widget.component';
 
 @Component({
   selector: 'app-widgets',

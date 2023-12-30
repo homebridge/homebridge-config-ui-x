@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ContainerRestartComponent } from './container-restart/container-restart.component';
-import { StartupScriptComponent } from './startup-script/startup-script.component';
-import { StartupScriptResolver } from './startup-script/startup-script.resolver';
+import { ContainerRestartComponent } from '@/app/modules/platform-tools/docker/container-restart/container-restart.component';
+import { StartupScriptComponent } from '@/app/modules/platform-tools/docker/startup-script/startup-script.component';
+import { StartupScriptResolver } from '@/app/modules/platform-tools/docker/startup-script/startup-script.resolver';
 
 const routes: Routes = [
   {

@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ServiceTypeX } from '../../accessories.interfaces';
-import { HeaterCoolerManageComponent } from './heatercooler.manage.component';
+import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
+import { HeaterCoolerManageComponent } from '@/app/core/accessories/types/heatercooler/heatercooler.manage.component';
 
 @Component({
   selector: 'app-heatercooler',

@@ -2,15 +2,15 @@ import { Injectable } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { gte, minVersion } from 'semver';
-import { BridgePluginsModalComponent } from './bridge-plugins-modal/bridge-plugins-modal.component';
-import { CustomPluginsService } from './custom-plugins/custom-plugins.service';
-import { ManagePluginsModalComponent } from './manage-plugins-modal/manage-plugins-modal.component';
-import { ManualPluginConfigModalComponent } from './manual-plugin-config-modal/manual-plugin-config-modal.component';
-import { NodeUpdateRequiredModalComponent } from './node-update-required-modal/node-update-required-modal.component';
-import { SelectPreviousVersionComponent } from './select-previous-version/select-previous-version.component';
-import { SettingsPluginsModalComponent } from './settings-plugins-modal/settings-plugins-modal.component';
-import { UninstallPluginsModalComponent } from './uninstall-plugins-modal/uninstall-plugins-modal.component';
 import { ApiService } from '@/app/core/api.service';
+import { BridgePluginsModalComponent } from '@/app/core/manage-plugins/bridge-plugins-modal/bridge-plugins-modal.component';
+import { CustomPluginsService } from '@/app/core/manage-plugins/custom-plugins/custom-plugins.service';
+import { ManagePluginsModalComponent } from '@/app/core/manage-plugins/manage-plugins-modal/manage-plugins-modal.component';
+import { ManualPluginConfigModalComponent } from '@/app/core/manage-plugins/manual-plugin-config-modal/manual-plugin-config-modal.component'; // eslint-disable-line max-len
+import { NodeUpdateRequiredModalComponent } from '@/app/core/manage-plugins/node-update-required-modal/node-update-required-modal.component'; // eslint-disable-line max-len
+import { SelectPreviousVersionComponent } from '@/app/core/manage-plugins/select-previous-version/select-previous-version.component';
+import { SettingsPluginsModalComponent } from '@/app/core/manage-plugins/settings-plugins-modal/settings-plugins-modal.component';
+import { UninstallPluginsModalComponent } from '@/app/core/manage-plugins/uninstall-plugins-modal/uninstall-plugins-modal.component';
 import { SettingsService } from '@/app/core/settings.service';
 
 @Injectable({
@@ -61,6 +61,7 @@ export class ManagePluginsService {
     ref.componentInstance.targetVersion = targetVersion;
     ref.componentInstance.latestVersion = plugin.latestVersion;
     ref.componentInstance.installedVersion = plugin.installedVersion;
+    ref.componentInstance.isDisabled = plugin.disabled;
   }
 
   async upgradeHomebridge(homebridgePkg: any, targetVersion = 'latest') {

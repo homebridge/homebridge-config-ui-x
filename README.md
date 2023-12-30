@@ -5,7 +5,7 @@
 
 Supported Languages: :gb: :de: :fr: :poland: :czech_republic: :ru: :cn: :hungary: :jp: :es: :netherlands: :tr: :it: :bulgaria: :sweden: :norway: :slovenia: :brazil: :portugal: :indonesia: :kr: :macedonia: :thailand: :israel: :ukraine:
 
-# Homebridge UI
+## Homebridge UI
 
 [Homebridge UI](https://www.npmjs.com/package/homebridge-config-ui-x) is a web based management tool for [Homebridge](https://github.com/homebridge/homebridge) that allows you to manage all aspects of your Homebridge setup.
 
@@ -24,7 +24,7 @@ Homebridge UI also provides a tool called [`hb-service`](https://github.com/home
 
 [![Status](screenshots/homebridge-config-ui-x-darkmode-status.png?2020-01-07)](#usage)
 
-# Installation Instructions
+## Installation Instructions
 
 For detailed instructions on how to set up Node.js and Homebridge with Homebridge UI as a service, see the guides on the wiki:
 
@@ -42,7 +42,7 @@ The default username is `admin` and the default password is `admin`.
 
 The UI can be accessed via web browser by default on port `8581` (e.g. `http://localhost:8581`).
 
-# Usage
+## Usage
 
 ### Status Screen
 
@@ -78,7 +78,7 @@ This shows you the Homebridge accessories for all the Homebridge instances on yo
 
 ![Accessories](screenshots/homebridge-config-ui-x-accessories.png?2020-01-07)
 
-# Supported Browsers
+## Supported Browsers
 
 The following browsers are supported by the Homebridge UI:
 
@@ -90,9 +90,9 @@ The following browsers are supported by the Homebridge UI:
 
 MS Internet Explorer (any version) is not supported!
 
-# Supported Node.js and Npm Versions
+## Supported Node.js Version
 
-The Homebridge UI follows the same Node support schedule as Homebridge. See the [How-To-Update-Node.js](https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js) page in the Homebridge wiki for currently supported versions.
+The Homebridge UI follows the same Node.js support schedule as Homebridge. See the [How-To-Update-Node.js](https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js) page in the Homebridge wiki for currently supported versions.
 
 You can check your current versions using these commands:
 
@@ -104,13 +104,20 @@ node -v
 npm -v
 ```
 
-# Contributing
+## Plugin Development
 
-Please see [CONTRIBUTING.md](CONTRIBUTING.md).
+The https://developers.homebridge.io website contains the Homebridge API reference, available service and characteristic types, and plugin examples.
 
-# Troubleshooting
+The [Homebridge Plugin Template](https://github.com/homebridge/homebridge-plugin-template) project provides a base you can use to create your own *platform* plugin.
 
-#### 1. Errors during installation
+There are many existing plugins you can study; you might start with the [Homebridge Example Plugins](https://github.com/homebridge/homebridge-examples) or a plugin that already implements the device type you need.
+
+When writing your plugin, you'll want Homebridge to load it from your development directory instead of publishing it to `npm` each time. Run this command inside your plugin project folder so your global installation of Homebridge can discover it:
+
+
+## Common Issues
+
+### Errors during installation
 
 Make sure you installed the package with `sudo` and used the  `--unsafe-perm` flag. Most installation errors can be fixed by removing the Homebridge UI and reinstalling:
 
@@ -124,18 +131,37 @@ sudo npm install -g --unsafe-perm homebridge-config-ui-x
 
 Make sure you are running [supported versions of node and npm](#supported-nodejs-and-npm-versions).
 
-#### 2. Accessories tab missing
+### Home App Says Accessory Already Added
 
-If the Accessories tab is not shown then you are not running Homebridge in insecure mode. See the [Enabling Accessory Control](https://github.com/homebridge/homebridge-config-ui-x/wiki/Enabling-Accessory-Control) wiki for details. If you have just enabled insecure mode make sure you have restarted Homebridge and refreshed the page in your browser.
+To fix this, [Reset Homebridge](https://github.com/homebridge/homebridge/wiki/Connecting-Homebridge-To-HomeKit#how-to-reset-homebridge).
 
-#### 3. Running in Docker
+### My iOS App Can't Find Homebridge
 
-The Homebridge UI supports the [homebridge/homebridge](https://github.com/homebridge/docker-homebridge) Docker image. You must enable the UI using the method described in [the wiki](https://github.com/homebridge/homebridge-config-ui-x/wiki/Enabling-UI-with-Docker).
+Try the following:
 
-#### 4. Ask on Discord
+1. Swap between the `Bonjour HAP` and `Ciao` mDNS Advertiser options. See [the wiki](https://github.com/homebridge/homebridge/wiki/mDNS-Options) for more details.
+2. iOS DNS cache has gone stale or gotten misconfigured. To fix this, turn airplane mode on and back off to flush the DNS cache.
 
-Join the [Official Homebridge Discord](https://discord.gg/C87Pvq3) community and ask in the [#ui-general](https://discord.gg/C87Pvq3) or [#ui-issues](https://discord.gg/C87Pvq3) channel.
 
-# Credit
+## Community
 
-Homebridge UI was originally created by [oznu](https://github.com/oznu).
+The official Homebridge Discord server and Reddit community are where users can discuss Homebridge and ask for help.
+
+<span align="center">
+
+[![Homebridge Discord](https://discordapp.com/api/guilds/432663330281226270/widget.png?style=banner2)](https://discord.gg/kqNCe2D) [![Homebridge Reddit](https://raw.githubusercontent.com/homebridge/homebridge/50f91541bc8731ed0c794f1370d9b76f49443d11/.github/homebridge-reddit.svg)](https://www.reddit.com/r/homebridge/)
+
+</span>
+
+HomeKit communities can also be found on both [Discord](https://discord.gg/RcV7fa8) and [Reddit](https://www.reddit.com/r/homekit).
+
+## Limitations
+
+* One bridge can only expose 150 accessories due to a HomeKit limit. You can however run your plugins as a [Child Bridge](https://github.com/homebridge/homebridge/wiki/Child-Bridges) or run [Multiple Homebridge Instances](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command#multiple-instances) to get around this limitation.
+* Once an accessory has been added to the Home app, changing its name via Homebridge won't be automatically reflected in iOS. You must change it via the Home app as well.
+
+## Credit
+
+- Homebridge was originally created by [Nick Farina](https://twitter.com/nfarina).
+- The original HomeKit API work was done by [Khaos Tian](https://twitter.com/khaost) in his [HAP-NodeJS](https://github.com/homebridge/HAP-NodeJS) project.
+- Homebridge UI was originally created by [oznu](https://github.com/oznu).

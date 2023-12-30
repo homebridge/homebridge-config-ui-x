@@ -3,7 +3,7 @@
   'switch-off': !service.values.LeakDetected
 }">
   <div class="d-flex flex-column h-100">
-    <div [inlineSVG]="'/assets/hap-icons/leaksensor.svg'" aria-label="Switch" class="accessory-svg"></div>
+    <div [inlineSVG]="'/assets/hap-icons/leaksensor.svg'" [attr.aria-label]="'Leak Sensor'" class="accessory-svg"></div>
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
     <div class="accessory-label red-text" *ngIf="service.values.LeakDetected">
       {{ 'accessories.control.label_triggered' | translate }}

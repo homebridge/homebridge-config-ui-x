@@ -6,11 +6,11 @@ import { ApiService } from '@/app/core/api.service';
 import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
-  selector: 'app-confirm',
-  templateUrl: './restart-modal.component.html',
-  styleUrls: ['./restart-modal.component.scss'],
+  selector: 'app-power-options',
+  templateUrl: './power-options.component.html',
+  styleUrls: ['./power-options.component.scss'],
 })
-export class RestartModalComponent implements OnInit {
+export class PowerOptionsComponent implements OnInit {
   constructor(
     public activeModal: NgbActiveModal,
     private $api: ApiService,

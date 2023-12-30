@@ -12,9 +12,9 @@ import { saveAs } from 'file-saver';
 import { ToastrService } from 'ngx-toastr';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
-import { ScheduledBackupsComponent } from './scheduled-backups/scheduled-backups.component';
 import { ApiService } from '@/app/core/api.service';
-import { WsService } from '@/app/core/ws.service';
+import { ScheduledBackupsComponent } from '@/app/core/backup-restore/scheduled-backups/scheduled-backups.component';
+import { IoNamespace, WsService } from '@/app/core/ws.service';
 
 @Component({
   selector: 'app-backup-restore',
@@ -36,7 +36,7 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
   private termTarget: HTMLElement;
   private fitAddon = new FitAddon();
 
-  private io = this.$ws.connectToNamespace('backup');
+  private io: IoNamespace;
 
   constructor(
     private $route: Router,
@@ -49,6 +49,7 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
+    this.io = this.$ws.connectToNamespace('backup');
     this.termTarget = document.getElementById('plugin-log-output');
     this.term.open(this.termTarget);
     this.fitAddon.fit();
