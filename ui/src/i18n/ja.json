@@ -215,7 +215,6 @@
   "plugins.manage.label_manual_update_required": "手動更新が必要です",
   "plugins.manage.label_online_updates_not_supported_on_windows": "Windowsではオンライン更新はサポートされていません。Homebridgeサービスを停止した後、手動でHomebridge UIをアップグレードする必要があります。",
   "plugins.manage.label_release_notes": "Release Notes",
-  "plugins.manage.label_release_notes_beta": "Beta Information",
   "plugins.manage.label_uninstall": "アンインストール",
   "plugins.manage.label_uninstalled": "削除済",
   "plugins.manage.label_update": "更新",

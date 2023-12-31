@@ -215,7 +215,6 @@
   "plugins.manage.label_manual_update_required": "수동 업데이트 필요",
   "plugins.manage.label_online_updates_not_supported_on_windows": "Windows에서 온라인 업데이트는 지원되지 않습니다. Homebridge 서비스를 중지한 후 수동으로 HomeBridge를 업그레이드해야합니다.",
   "plugins.manage.label_release_notes": "Release Notes",
-  "plugins.manage.label_release_notes_beta": "Beta Information",
   "plugins.manage.label_uninstall": "제거",
   "plugins.manage.label_uninstalled": "제거됨",
   "plugins.manage.label_update": "업데이트",

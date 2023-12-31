@@ -215,7 +215,6 @@
   "plugins.manage.label_manual_update_required": "Handmatige Update Vereist",
   "plugins.manage.label_online_updates_not_supported_on_windows": "Online updates worden niet ondersteund door Windows. Handmatige upgrade van Homebridge UI vereist na het stoppen van de Homebridge service.",
   "plugins.manage.label_release_notes": "Release Notes",
-  "plugins.manage.label_release_notes_beta": "Beta Information",
   "plugins.manage.label_uninstall": "Gedeïnstalleerd",
   "plugins.manage.label_uninstalled": "Verwijderd",
   "plugins.manage.label_update": "Update",

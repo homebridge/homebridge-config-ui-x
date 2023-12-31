@@ -215,7 +215,6 @@
   "plugins.manage.label_manual_update_required": "Manuell uppdatering krävs",
   "plugins.manage.label_online_updates_not_supported_on_windows": "Onlineuppdateringar stöds inte i Windows. Du måste uppgradera Homebridge UI manuellt efter att ha stoppat Homebridge-tjänsten.",
   "plugins.manage.label_release_notes": "Release Notes",
-  "plugins.manage.label_release_notes_beta": "Beta Information",
   "plugins.manage.label_uninstall": "Avinstallera",
   "plugins.manage.label_uninstalled": "Tog bort",
   "plugins.manage.label_update": "Uppdatering",
