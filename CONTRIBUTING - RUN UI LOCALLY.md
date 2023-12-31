@@ -25,7 +25,9 @@
 
 <img src="https://github.com/homebridge/homebridge-config-ui-x/assets/82271669/35c113fa-4e11-4557-ad4e-383aa905a1d2" width="400px">
 
-- If you don't have homebridge installed run in system Terminal: `sudo npm install -g homebridge`.
+- If you don't have Homebridge installed run in system Terminal: `sudo npm install -g homebridge`.
+
+- If you don't have Angular installed run in system Terminal `npm i -g @angular/cli`.
 
 # Watch changes
 - You should now be able to navigate to `https://localhost:4200` in your browser which will connect to your homebridge instance running on port `8581`. The UI will automatically reload whenever you make changes to the code.
