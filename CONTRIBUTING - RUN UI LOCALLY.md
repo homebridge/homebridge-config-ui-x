@@ -27,7 +27,7 @@
 
 - If you don't have Homebridge installed run in system Terminal: `sudo npm install -g homebridge`.
 
-- If you don't have Angular installed run in system Terminal `npm i -g @angular/cli`.
+- If you don't have Angular installed run in system Terminal `npm install @angular-devkit/build-angular --force`.
 
 # Watch changes
 - You should now be able to navigate to `https://localhost:4200` in your browser which will connect to your homebridge instance running on port `8581`. The UI will automatically reload whenever you make changes to the code.
