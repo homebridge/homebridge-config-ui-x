@@ -36,4 +36,11 @@ If you don't have installed, run system Terminal and type to install:
 - The UI will automatically reload whenever you make changes to the code.
 
 
+# Edit code and make new Pull Request
+...
+
+# Known Issues
+...
+
+
 
