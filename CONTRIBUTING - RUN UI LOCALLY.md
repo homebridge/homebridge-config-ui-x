@@ -31,7 +31,9 @@ If you don't have installed, run system Terminal and type to install:
 <img src="https://github.com/homebridge/homebridge-config-ui-x/assets/82271669/35c113fa-4e11-4557-ad4e-383aa905a1d2" width="400px">
 
 # Watch changes
-- You should now be able to navigate to `https://localhost:4200` in your browser which will connect to your homebridge instance running on port `8581`. The UI will automatically reload whenever you make changes to the code.
+- You should now be able to navigate to `https://localhost:4200` in your browser
+- It will connect to your homebridge instance running on `https://localhost:8581`.
+- The UI will automatically reload whenever you make changes to the code.
 
 
 
