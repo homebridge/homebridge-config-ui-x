@@ -27,6 +27,7 @@
 
 - If you don't have homebridge installed run in system Terminal: `sudo npm install -g homebridge`.
 
+# Watch changes
 - You should now be able to navigate to `https://localhost:4200` in your browser which will connect to your homebridge instance running on port `8581`. The UI will automatically reload whenever you make changes to the code.
 
 
