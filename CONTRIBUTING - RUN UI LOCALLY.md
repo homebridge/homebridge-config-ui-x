@@ -1,9 +1,14 @@
 # Contributing - run UI locally
 
-# Install
+# Install apps
 - Github desktop: [https://desktop.github.com](https://desktop.github.com)
 - VSCode: [https://code.visualstudio.com](https://code.visualstudio.com)
 - Node: [https://nodejs.org/en/download](https://nodejs.org/en/download)
+
+# Install packages
+If you don't have installed, run system Terminal and type to install:
+- Homebridge: `sudo npm install -g homebridge`.
+- Angular `npm install @angular-devkit/build-angular --force`.
 
 # Run locally
 
@@ -24,10 +29,6 @@
 - From there you can run these scripts. The watch script is what will let you run UI locally.
 
 <img src="https://github.com/homebridge/homebridge-config-ui-x/assets/82271669/35c113fa-4e11-4557-ad4e-383aa905a1d2" width="400px">
-
-- If you don't have Homebridge installed run in system Terminal: `sudo npm install -g homebridge`.
-
-- If you don't have Angular installed run in system Terminal `npm install @angular-devkit/build-angular --force`.
 
 # Watch changes
 - You should now be able to navigate to `https://localhost:4200` in your browser which will connect to your homebridge instance running on port `8581`. The UI will automatically reload whenever you make changes to the code.
