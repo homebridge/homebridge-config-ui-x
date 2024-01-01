@@ -122,52 +122,52 @@ jobs:
           release-tag: ${{ github.event.inputs.tag }}
 
       # Sanity check to ensure that release tags don't start with a 'v' version prefix but adhere to the X.Y.Z format
-      - name: Check for Tag name Format (github.ref.tag)
+      - name: Check for Tag name Format (github.ref)
         # https://github.com/orgs/community/discussions/25017
-        if: startsWith(github.ref.tag, 'v')
+        if: startsWith(github.ref, 'v')
         run: |
-          echo "Release Tag name must not start with 'v', this was supplied ${{ github.ref.tag }}"
+          echo "Release Tag name must not start with 'v', this was supplied ${{ github.ref }}"
           exit 1
 
-      - name: Install package (github.ref.tag)
+      - name: Install package (github.ref)
         run: |
           export npm_config_prefix=$(pwd)/package
-          npm install -g homebridge-config-ui-x@${{ github.ref.tag }}
+          npm install -g homebridge-config-ui-x@${{ github.ref }}
 
-      - name: Remove invalid node-pty node-gyp run (github.ref.tag)
+      - name: Remove invalid node-pty node-gyp run (github.ref)
         run: |
           rm -rf $(pwd)/package/lib/node_modules/homebridge-config-ui-x/node_modules/@homebridge/node-pty-prebuilt-multiarch/build
 
-      - name: Create Bundle (github.ref.tag)
+      - name: Create Bundle (github.ref)
         run: |
-          tar -C $(pwd)/package --owner=0 --group=0 --format=posix -czvf homebridge-config-ui-x-${{ github.ref.tag }}.tar.gz .
-          shasum -a 256 homebridge-config-ui-x-${{ github.ref.tag }}.tar.gz > SHASUMS256.txt
+          tar -C $(pwd)/package --owner=0 --group=0 --format=posix -czvf homebridge-config-ui-x-${{ github.ref }}.tar.gz .
+          shasum -a 256 homebridge-config-ui-x-${{ github.ref }}.tar.gz > SHASUMS256.txt
 
       - name: Check Bundle (github.ref.tag)
         run: |
-          if [ $(stat -c%s "homebridge-config-ui-x-${{ github.ref.tag }}.tar.gz") -lt 10000000 ]; then
+          if [ $(stat -c%s "homebridge-config-ui-x-${{ github.ref }}.tar.gz") -lt 10000000 ]; then
             echo "Bundle is under 10MB, stopping"
             exit 1
           fi
     
-      - name: Upload tar.gz Bundle to GitHub Artifacts (github.ref.tag)
+      - name: Upload tar.gz Bundle to GitHub Artifacts (github.ref)
         uses: actions/upload-artifact@v4
         with:
-          name: 'homebridge-config-ui-x-${{ github.ref.tag }}(github.ref.tag).tar.gz'
+          name: 'homebridge-config-ui-x-${{ github.ref }}(github.ref).tar.gz'
           path: |
-            ./homebridge-config-ui-x-${{ github.ref.tag }}.tar.gz
+            ./homebridge-config-ui-x-${{ github.ref }}.tar.gz
       
     
-      - name: Upload SHASUMS256.txt to GitHub Artifacts (github.ref.tag)
+      - name: Upload SHASUMS256.txt to GitHub Artifacts (github.ref)
         uses: actions/upload-artifact@v4
         with:
-          name: 'SHASUMS256(github.ref.tag).txt'
+          name: 'SHASUMS256(github.ref).txt'
           path: |
             ./SHASUMS256.txt
 
-      - name: Attach Bundle (github.ref.tag)
+      - name: Attach Bundle (github.ref)
         uses: AButler/upload-release-assets@v3.0
         with:
-          files: 'homebridge-config-ui-x-${{ github.ref.tag }}.tar.gz;SHASUMS256.txt'
+          files: 'homebridge-config-ui-x-${{ github.ref }}.tar.gz;SHASUMS256.txt'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          release-tag: ${{ github.ref.tag }}
+          release-tag: ${{ github.ref }}
