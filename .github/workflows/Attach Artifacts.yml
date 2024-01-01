@@ -136,52 +136,57 @@ jobs:
           release-tag: ${{ github.event.inputs.tag }}
 
       # github.ref
-      - name: Install package ${{ github.ref }}
+      - name: Get version from tag ${{ github.event_name }}
+        if: github.event_name == 'release'
+        id: get_version
+        uses: jannemattila/get-version-from-tag@v1
+
+      - name: Install package ${{ steps.get_version.outputs.version }}
         if: github.event_name == 'release'
         run: |
           export npm_config_prefix=$(pwd)/package
-          npm install -g homebridge-config-ui-x@${{ github.ref }}
+          npm install -g homebridge-config-ui-x@${{ steps.get_version.outputs.version }}
 
-      - name: Remove invalid node-pty node-gyp run ${{ github.ref }}
+      - name: Remove invalid node-pty node-gyp run ${{ steps.get_version.outputs.version }}
         if: github.event_name == 'release'
         run: |
           rm -rf $(pwd)/package/lib/node_modules/homebridge-config-ui-x/node_modules/@homebridge/node-pty-prebuilt-multiarch/build
 
-      - name: Create Bundle ${{ github.ref }}
+      - name: Create Bundle ${{ steps.get_version.outputs.version }}
         if: github.event_name == 'release'
         run: |
-          tar -C $(pwd)/package --owner=0 --group=0 --format=posix -czvf homebridge-config-ui-x-${{ github.ref }}.tar.gz .
-          shasum -a 256 homebridge-config-ui-x-${{ github.ref }}.tar.gz > SHASUMS256.txt
+          tar -C $(pwd)/package --owner=0 --group=0 --format=posix -czvf homebridge-config-ui-x-${{ steps.get_version.outputs.version }}.tar.gz .
+          shasum -a 256 homebridge-config-ui-x-${{ steps.get_version.outputs.version }}.tar.gz > SHASUMS256.txt
 
-      - name: Check Bundle ${{ github.ref }}
+      - name: Check Bundle ${{ steps.get_version.outputs.version }}
         if: github.event_name == 'release'
         run: |
-          if [ $(stat -c%s "homebridge-config-ui-x-${{ github.ref }}.tar.gz") -lt 10000000 ]; then
+          if [ $(stat -c%s "homebridge-config-ui-x-${{ steps.get_version.outputs.version }}.tar.gz") -lt 10000000 ]; then
             echo "Bundle is under 10MB, stopping"
             exit 1
           fi
     
-      - name: Upload tar.gz Bundle to GitHub Artifacts ${{ github.ref }}
+      - name: Upload tar.gz Bundle to GitHub Artifacts ${{ steps.get_version.outputs.version }}
         if: github.event_name == 'release'
         uses: actions/upload-artifact@v4
         with:
-          name: 'homebridge-config-ui-x-${{ github.ref }}(github.ref).tar.gz'
+          name: 'homebridge-config-ui-x-${{ steps.get_version.outputs.version }}.tar.gz'
           path: |
-            ./homebridge-config-ui-x-${{ github.ref }}.tar.gz
+            ./homebridge-config-ui-x-${{ steps.get_version.outputs.version }}.tar.gz
       
     
-      - name: Upload SHASUMS256.txt to GitHub Artifacts ${{ github.ref }}
+      - name: Upload SHASUMS256.txt to GitHub Artifacts ${{ steps.get_version.outputs.version }}
         if: github.event_name == 'release'
         uses: actions/upload-artifact@v4
         with:
-          name: 'SHASUMS256(github.ref).txt'
+          name: 'SHASUMS256.txt'
           path: |
             ./SHASUMS256.txt
 
-      - name: Attach Bundle ${{ github.ref }}
+      - name: Attach Bundle ${{ steps.get_version.outputs.version }}
         if: github.event_name == 'release'
         uses: AButler/upload-release-assets@v3.0
         with:
-          files: 'homebridge-config-ui-x-${{ github.ref }}.tar.gz;SHASUMS256.txt'
+          files: 'homebridge-config-ui-x-${{ steps.get_version.outputs.version }}.tar.gz;SHASUMS256.txt'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          release-tag: ${{ github.ref }}
+          release-tag: ${{ steps.get_version.outputs.version }}
