@@ -102,7 +102,7 @@ jobs:
       - name: Upload tar.gz Bundle to GitHub Artifacts (github.event.inputs.tag)
         uses: actions/upload-artifact@v4
         with:
-          name: 'homebridge-config-ui-x-${{ github.event.inputs.tag }}.tar.gz'
+          name: 'homebridge-config-ui-x-${{ github.event.inputs.tag }}(github.event.inputs.tag).tar.gz'
           path: |
             ./homebridge-config-ui-x-${{ github.event.inputs.tag }}.tar.gz
       
@@ -110,7 +110,7 @@ jobs:
       - name: Upload SHASUMS256.txt to GitHub Artifacts (github.event.inputs.tag)
         uses: actions/upload-artifact@v4
         with:
-          name: 'SHASUMS256.txt'
+          name: 'SHASUMS256(github.event.inputs.tag).txt'
           path: |
             ./SHASUMS256.txt
 
@@ -153,7 +153,7 @@ jobs:
       - name: Upload tar.gz Bundle to GitHub Artifacts (github.ref.tag)
         uses: actions/upload-artifact@v4
         with:
-          name: 'homebridge-config-ui-x-${{ github.ref.tag }}.tar.gz'
+          name: 'homebridge-config-ui-x-${{ github.ref.tag }}(github.ref.tag).tar.gz'
           path: |
             ./homebridge-config-ui-x-${{ github.ref.tag }}.tar.gz
       
@@ -161,7 +161,7 @@ jobs:
       - name: Upload SHASUMS256.txt to GitHub Artifacts (github.ref.tag)
         uses: actions/upload-artifact@v4
         with:
-          name: 'SHASUMS256.txt'
+          name: 'SHASUMS256(github.ref.tag).txt'
           path: |
             ./SHASUMS256.txt
 
