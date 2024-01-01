@@ -4,8 +4,6 @@ run-name: Attach Artifacts
 on:
   release:
     types: [prereleased]
-  repository_dispatch:
-    types: [attach-artifacts]
   workflow_dispatch:
     inputs:
       tag:
@@ -25,23 +23,28 @@ jobs:
 
       - name: Tag
         id: tag
+        if: github.event_name != 'workflow_dispatch' && github.event_name != 'release'
         uses: JinoArch/get-latest-tag@latest
 
       - name: Install package
+        if: github.event_name != 'workflow_dispatch' && github.event_name != 'release'
         run: |
           export npm_config_prefix=$(pwd)/package
           npm install -g homebridge-config-ui-x@${{ steps.tag.outputs.latestTag }}
 
       - name: Remove invalid node-pty node-gyp run
+        if: github.event_name != 'workflow_dispatch' && github.event_name != 'release'
         run: |
           rm -rf $(pwd)/package/lib/node_modules/homebridge-config-ui-x/node_modules/@homebridge/node-pty-prebuilt-multiarch/build
 
       - name: Create Bundle
+        if: github.event_name != 'workflow_dispatch' && github.event_name != 'release'
         run: |
           tar -C $(pwd)/package --owner=0 --group=0 --format=posix -czvf homebridge-config-ui-x-${{ steps.tag.outputs.latestTag }}.tar.gz .
           shasum -a 256 homebridge-config-ui-x-${{ steps.tag.outputs.latestTag }}.tar.gz > SHASUMS256.txt
 
       - name: Check Bundle
+        if: github.event_name != 'workflow_dispatch' && github.event_name != 'release'
         run: |
           if [ $(stat -c%s "homebridge-config-ui-x-${{ steps.tag.outputs.latestTag }}.tar.gz") -lt 10000000 ]; then
             echo "Bundle is under 10MB, stopping"
@@ -49,6 +52,7 @@ jobs:
           fi
     
       - name: Upload tar.gz Bundle to GitHub Artifacts
+        if: github.event_name != 'workflow_dispatch' && github.event_name != 'release'
         uses: actions/upload-artifact@v4
         with:
           name: 'homebridge-config-ui-x-${{ steps.tag.outputs.latestTag }}.tar.gz'
@@ -57,6 +61,7 @@ jobs:
       
     
       - name: Upload SHASUMS256.txt to GitHub Artifacts
+        if: github.event_name != 'workflow_dispatch' && github.event_name != 'release'
         uses: actions/upload-artifact@v4
         with:
           name: 'SHASUMS256.txt'
@@ -64,42 +69,49 @@ jobs:
             ./SHASUMS256.txt
 
       - name: Attach Bundle
+        if: github.event_name != 'workflow_dispatch' && github.event_name != 'release'
         uses: AButler/upload-release-assets@v3.0
         with:
           files: 'homebridge-config-ui-x-${{ steps.tag.outputs.latestTag }}.tar.gz;SHASUMS256.txt'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           release-tag: ${{ steps.tag.outputs.latestTag }}
 
+      # workflow_dispatch
       # Sanity check to ensure that release tags don't start with a 'v' version prefix but adhere to the X.Y.Z format
-      - name: Check for Tag name Format (github.event.inputs.tag)
+      - name: Check for Tag name Format ${{ github.event_name }}
         # https://github.com/orgs/community/discussions/25017
-        if: startsWith(github.event.inputs.tag, 'v')
+        if: startsWith(github.event.inputs.tag, 'v') && github.event_name == 'workflow_dispatch'
         run: |
           echo "Release Tag name must not start with 'v', this was supplied ${{ github.event.inputs.tag }}"
           exit 1
 
-      - name: Install package (github.event.inputs.tag)
+      - name: Install package ${{ github.event_name }}
+        if: github.event_name == 'workflow_dispatch'
         run: |
           export npm_config_prefix=$(pwd)/package
           npm install -g homebridge-config-ui-x@${{ github.event.inputs.tag }}
 
-      - name: Remove invalid node-pty node-gyp run (github.event.inputs.tag)
+      - name: Remove invalid node-pty node-gyp run ${{ github.event_name }}
+        if: github.event_name == 'workflow_dispatch'
         run: |
           rm -rf $(pwd)/package/lib/node_modules/homebridge-config-ui-x/node_modules/@homebridge/node-pty-prebuilt-multiarch/build
 
-      - name: Create Bundle (github.event.inputs.tag)
+      - name: Create Bundle ${{ github.event_name }}
+        if: github.event_name == 'workflow_dispatch'
         run: |
           tar -C $(pwd)/package --owner=0 --group=0 --format=posix -czvf homebridge-config-ui-x-${{ github.event.inputs.tag }}.tar.gz .
           shasum -a 256 homebridge-config-ui-x-${{ github.event.inputs.tag }}.tar.gz > SHASUMS256.txt
 
-      - name: Check Bundle (github.event.inputs.tag)
+      - name: Check Bundle ${{ github.event_name }}
+        if: github.event_name == 'workflow_dispatch'
         run: |
           if [ $(stat -c%s "homebridge-config-ui-x-${{ github.event.inputs.tag }}.tar.gz") -lt 10000000 ]; then
             echo "Bundle is under 10MB, stopping"
             exit 1
           fi
     
-      - name: Upload tar.gz Bundle to GitHub Artifacts (github.event.inputs.tag)
+      - name: Upload tar.gz Bundle to GitHub Artifacts ${{ github.event_name }}
+        if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v4
         with:
           name: 'homebridge-config-ui-x-${{ github.event.inputs.tag }}(github.event.inputs.tag).tar.gz'
@@ -107,50 +119,50 @@ jobs:
             ./homebridge-config-ui-x-${{ github.event.inputs.tag }}.tar.gz
       
     
-      - name: Upload SHASUMS256.txt to GitHub Artifacts (github.event.inputs.tag)
+      - name: Upload SHASUMS256.txt to GitHub Artifacts ${{ github.event_name }}
+        if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v4
         with:
           name: 'SHASUMS256(github.event.inputs.tag).txt'
           path: |
             ./SHASUMS256.txt
 
-      - name: Attach Bundle (github.event.inputs.tag)
+      - name: Attach Bundle ${{ github.event_name }}
+        if: github.event_name == 'workflow_dispatch'
         uses: AButler/upload-release-assets@v3.0
         with:
           files: 'homebridge-config-ui-x-${{ github.event.inputs.tag }}.tar.gz;SHASUMS256.txt'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           release-tag: ${{ github.event.inputs.tag }}
 
-      # Sanity check to ensure that release tags don't start with a 'v' version prefix but adhere to the X.Y.Z format
-      - name: Check for Tag name Format (github.ref)
-        # https://github.com/orgs/community/discussions/25017
-        if: startsWith(github.ref, 'v')
-        run: |
-          echo "Release Tag name must not start with 'v', this was supplied ${{ github.ref }}"
-          exit 1
-
-      - name: Install package (github.ref)
+      # github.ref
+      - name: Install package ${{ github.ref }}
+        if: github.event_name == 'release'
         run: |
           export npm_config_prefix=$(pwd)/package
           npm install -g homebridge-config-ui-x@${{ github.ref }}
 
-      - name: Remove invalid node-pty node-gyp run (github.ref)
+      - name: Remove invalid node-pty node-gyp run ${{ github.ref }}
+        if: github.event_name == 'release'
         run: |
           rm -rf $(pwd)/package/lib/node_modules/homebridge-config-ui-x/node_modules/@homebridge/node-pty-prebuilt-multiarch/build
 
-      - name: Create Bundle (github.ref)
+      - name: Create Bundle ${{ github.ref }}
+        if: github.event_name == 'release'
         run: |
           tar -C $(pwd)/package --owner=0 --group=0 --format=posix -czvf homebridge-config-ui-x-${{ github.ref }}.tar.gz .
           shasum -a 256 homebridge-config-ui-x-${{ github.ref }}.tar.gz > SHASUMS256.txt
 
-      - name: Check Bundle (github.ref.tag)
+      - name: Check Bundle ${{ github.ref }}
+        if: github.event_name == 'release'
         run: |
           if [ $(stat -c%s "homebridge-config-ui-x-${{ github.ref }}.tar.gz") -lt 10000000 ]; then
             echo "Bundle is under 10MB, stopping"
             exit 1
           fi
     
-      - name: Upload tar.gz Bundle to GitHub Artifacts (github.ref)
+      - name: Upload tar.gz Bundle to GitHub Artifacts ${{ github.ref }}
+        if: github.event_name == 'release'
         uses: actions/upload-artifact@v4
         with:
           name: 'homebridge-config-ui-x-${{ github.ref }}(github.ref).tar.gz'
@@ -158,14 +170,16 @@ jobs:
             ./homebridge-config-ui-x-${{ github.ref }}.tar.gz
       
     
-      - name: Upload SHASUMS256.txt to GitHub Artifacts (github.ref)
+      - name: Upload SHASUMS256.txt to GitHub Artifacts ${{ github.ref }}
+        if: github.event_name == 'release'
         uses: actions/upload-artifact@v4
         with:
           name: 'SHASUMS256(github.ref).txt'
           path: |
             ./SHASUMS256.txt
 
-      - name: Attach Bundle (github.ref)
+      - name: Attach Bundle ${{ github.ref }}
+        if: github.event_name == 'release'
         uses: AButler/upload-release-assets@v3.0
         with:
           files: 'homebridge-config-ui-x-${{ github.ref }}.tar.gz;SHASUMS256.txt'
