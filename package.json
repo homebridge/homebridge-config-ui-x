@@ -1,7 +1,7 @@
 {
   "name": "homebridge-config-ui-x",
   "displayName": "Homebridge UI",
-  "version": "4.54.1",
+  "version": "4.54.2",
   "description": "A web based management, configuration and control platform for Homebridge.",
   "license": "MIT",
   "author": "oznu <dev@oz.nu>",
@@ -84,6 +84,7 @@
     "ora": "5.4.1",
     "otplib": "12.0.1",
     "p-limit": "3.1.0",
+    "passport": "0.7.0",
     "passport-jwt": "4.0.1",
     "reflect-metadata": "0.1.14",
     "rxjs": "7.8.1",

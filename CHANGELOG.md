@@ -2,6 +2,12 @@
 
 All notable changes to homebridge-config-ui-x will be documented in this file.
 
+## 4.54.2 (2023-12-31)
+
+### Bug Fixes
+
+- Missing "passport" package from Synology builds - https://github.com/homebridge/homebridge-syno-spk/issues/141
+
 ## 4.54.1 (2023-12-08)
 
 ### Bug Fixes
