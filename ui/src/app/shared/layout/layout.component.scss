@@ -38,3 +38,80 @@
 a:hover {
   text-decoration: none !important;
 }
+
+
+
+// Hamburger icon animation
+
+.navbar-toggler {
+  width: 40px;
+  height: 30px;
+  position: relative;
+  margin: 0px;
+  -webkit-transform: rotate(0deg);
+  -moz-transform: rotate(0deg);
+  -o-transform: rotate(0deg);
+  transform: rotate(0deg);
+  -webkit-transition: .5s ease-in-out;
+  -moz-transition: .5s ease-in-out;
+  -o-transition: .5s ease-in-out;
+  transition: .5s ease-in-out;
+  cursor: pointer;
+}
+
+.navbar-toggler span {
+  display: block;
+  position: absolute;
+  height: 4px;
+  width: 100%;
+  background: #dfff;
+  border-radius: 5px;
+  opacity: 1;
+  left: 0;
+  -webkit-transform: rotate(0deg);
+  -moz-transform: rotate(0deg);
+  -o-transform: rotate(0deg);
+  transform: rotate(0deg);
+  -webkit-transition: .25s ease-in-out;
+  -moz-transition: .25s ease-in-out;
+  -o-transition: .25s ease-in-out;
+  transition: .25s ease-in-out;
+}
+
+.navbar-toggler span:nth-child(1) {
+  top: 0px;
+}
+
+.navbar-toggler span:nth-child(2),.navbar-toggler span:nth-child(3) {
+  top: 12px;
+}
+
+.navbar-toggler span:nth-child(4) {
+  top: 24px;
+}
+
+.navbar-toggler:not(.collapsed) span:nth-child(1) {
+  top: 12px;
+  width: 0%;
+  left: 50%;
+}
+
+.navbar-toggler:not(.collapsed) span:nth-child(2) {
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+.navbar-toggler:not(.collapsed) span:nth-child(3) {
+  -webkit-transform: rotate(-45deg);
+  -moz-transform: rotate(-45deg);
+  -o-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+}
+
+.navbar-toggler:not(.collapsed) span:nth-child(4) {
+  top: 12px;
+  width: 0%;
+  left: 50%;
+}
