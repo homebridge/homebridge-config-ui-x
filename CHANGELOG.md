@@ -50,6 +50,12 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - updated Discord Webhooks so notifications are seperated for `release` and `pre-release`
 - update maximum file upload size to 25mb
 
+## 4.54.2 (2024-01-02)
+
+### Bug Fixes
+
+- Missing "passport" package from Synology builds - https://github.com/homebridge/homebridge-syno-spk/issues/141
+
 ## 4.54.1 (2023-12-08)
 
 ### Bug Fixes
