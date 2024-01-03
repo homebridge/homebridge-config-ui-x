@@ -2,53 +2,11 @@
 
 All notable changes to homebridge-config-ui-x will be documented in this file.
 
-## BETA
+## 4.54.2 (2023-12-31)
 
-### UI Changes
+### Bug Fixes
 
-- Add plugin log download button
-- Improve plugin card hyperlinks (#1918) (@jsiegenthaler)
-- Download logs option for when a plugin install/update/uninstall fails
-- revise system information icons (os/node)
-- accessory title fix (lights + windows) (#1933) (@mkz212)
-- improve spacing in plugin card
-- more items in homebridge settings
-- confirm restart after updating Homebridge instead of automatically restarting
-- improve child bridge sing/plu in dropdown
-- move backup/restore + users to hb settings
-- move hb/ui settings to main menu
-- create standard settings page + link at top
-- small changes to plugin card (based on feedback)
-- fix overflow in markdown changelog
-- plugin card updates
-- added credits link in status footer and modal for credits
-- added more `aria-label` attributes to buttons to improve accessibility
-- add link to homebridge wiki in logs on plugin action error
-- allow fan/fanv2 rotation speed to be a different unit than percentage
-- improve plugin sorting, with actionable plugins at the top
-- fix footer paddings for mobile and desktop (#1956) (@mkz212)
-- no need to restart if updating disabled plugin
-- standardise update modal header
-
-### Translation Changes
-
-- updates to pl.json language file (#1929) (@mkz212)
-- updates to de.json language file (@Staubgeborener)
-- updates to fr.json language file (@SonnyT72)
-- updates to de.json language file (#1953) (@Staubgeborener)
-- updates to pl.json language file (#1954) (@mkz212)
-
-### Other Changes
-
-- add `passport` as dependency to BE
-- revert ngx-monaco-editor dependency update
-- ui: update to angular v15
-- improve github actions
-- Fix for backup service including npm's cache (#1949) (@sapireli)
-- updated dependencies
-- ignore `.venv` in hb backup files
-- updated Discord Webhooks so notifications are seperated for `release` and `pre-release`
-- update maximum file upload size to 25mb
+- Missing "passport" package from Synology builds - https://github.com/homebridge/homebridge-syno-spk/issues/141
 
 ## 4.54.1 (2023-12-08)
 
