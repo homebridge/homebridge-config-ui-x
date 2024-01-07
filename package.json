@@ -1,7 +1,7 @@
 {
   "name": "homebridge-config-ui-x",
   "displayName": "Homebridge UI",
-  "version": "4.55.0",
+  "version": "4.55.1",
   "description": "A web based management, configuration and control platform for Homebridge.",
   "license": "MIT",
   "author": "oznu <dev@oz.nu>",
@@ -70,6 +70,7 @@
     "@oznu/hap-client": "1.9.0",
     "axios": "1.6.5",
     "bash-color": "0.0.4",
+    "bonjour-service": "=1.1.1",
     "buffer-shims": "1.0.0",
     "class-transformer": "0.5.1",
     "class-validator": "0.14.0",

@@ -89,7 +89,7 @@ body:
         If your operating system is not listed, please provide it in the bug description.
     validations:
       required: true
-  - type: checkboxes
+  - type: dropdown
     attributes:
       label: Environment Info
       options:
@@ -97,7 +97,7 @@ body:
         - label: Using Hyper-V?
         - label: Using hb-service?
       description: |
-        Please check any boxes that apply to you.
+        If your Environment Info is not listed, please provide it in the bug description.
   - type: dropdown
     id: raspberry-pi-model
     attributes:
