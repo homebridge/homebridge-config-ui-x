@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { NgxEditorModel } from 'ngx-monaco-editor-v2';
+import { NgxEditorModel } from 'ngx-monaco-editor';
 import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '@/app/core/api.service';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
@@ -19,11 +19,7 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
   public options: any = { printMargin: false };
 
   public monacoEditor;
-  public editorOptions = {
-    language: 'shell',
-    theme: this.$settings.theme.startsWith('dark-mode') ? 'vs-dark' : 'vs-light',
-    automaticLayout: true,
-  };
+  public editorOptions: any;
 
   public monacoEditorModel: NgxEditorModel;
 
@@ -42,6 +38,12 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.editorOptions = {
+      language: 'shell',
+      theme: this.$settings.theme.startsWith('dark-mode') ? 'vs-dark' : 'vs-light',
+      automaticLayout: true,
+    };
+
     // capture viewport events
     this.visualViewPortEventCallback = () => this.visualViewPortChanged();
     this.lastHeight = window.innerHeight;

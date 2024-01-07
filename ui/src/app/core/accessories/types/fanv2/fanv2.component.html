@@ -8,6 +8,6 @@
       [innerText]="(service.values.Active ? 'accessories.control.label_on' : 'accessories.control.label_off') | translate">
     </div>
     <div class="accessory-label grey-text" *ngIf="service.values.RotationSpeed && service.values.Active">
-      {{ service.values.RotationSpeed }}%</div>
+      {{ service.values.RotationSpeed }}{{ rotationSpeedUnit }}</div>
   </div>
 </div>

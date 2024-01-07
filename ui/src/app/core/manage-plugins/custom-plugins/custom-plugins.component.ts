@@ -14,7 +14,7 @@ import { Subject } from 'rxjs';
 import { debounceTime, skip } from 'rxjs/operators';
 import { ApiService } from '@/app/core/api.service';
 import { NotificationService } from '@/app/core/notification.service';
-import { WsService } from '@/app/core/ws.service';
+import { IoNamespace, WsService } from '@/app/core/ws.service';
 import { environment } from '@/environments/environment';
 
 @Component({
@@ -47,7 +47,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   public formActionSubject = new Subject();
   public childBridges: any[] = [];
 
-  private io = this.$ws.connectToNamespace('plugins/settings-ui');
+  private io: IoNamespace;
   private basePath: string;
   private iframe: HTMLIFrameElement;
   private schemaFormRecentlyUpdated = false;
@@ -65,6 +65,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.io = this.$ws.connectToNamespace('plugins/settings-ui');
     this.pluginAlias = this.schema.pluginAlias;
     this.pluginType = this.schema.pluginType;
 

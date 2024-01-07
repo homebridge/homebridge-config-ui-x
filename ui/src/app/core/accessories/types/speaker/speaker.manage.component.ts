@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { ServiceTypeX } from '../../accessories.interfaces';
+import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
 
 @Component({
   selector: 'app-speaker-manage',
@@ -23,7 +23,7 @@ export class SpeakerManageComponent implements OnInit {
         debounceTime(300),
         distinctUntilChanged(),
       )
-      .subscribe((value) => {
+      .subscribe(() => {
         this.service.getCharacteristic('Volume').setValue(this.targetVolume.value);
       });
   }

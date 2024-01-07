@@ -6,7 +6,7 @@
       <strong>Homebridge</strong>
     </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      aria-controls="navbarSupportedContent" aria-expanded="false" [attr.aria-label]="'Toggle Navigation'">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -18,11 +18,11 @@
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
           <a class="nav-link" routerLink="/plugins" [translate]="'menu.label_plugins'">Plugins</a>
         </li>
-        <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
-          <a class="nav-link" routerLink="/config" [translate]="'menu.label_config'">Config</a>
-        </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active">
           <a class="nav-link" routerLink="/accessories" [translate]="'menu.label_accessories'">Accessories</a>
+        </li>
+        <li class="nav-item waves-effect waves-light" routerLinkActive="active" *ngIf="$auth.user.admin">
+          <a class="nav-link" routerLink="/settings" [translate]="'menu.settings.title'">Settings</a>
         </li>
       </ul>
       <ul class="navbar-nav nav-flex-icons hb-nav-right">
@@ -31,26 +31,26 @@
             [popoverTitle]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_title' : 'rpi.throttled.previously_undervoltage_title') | translate"
             [ngbPopover]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_message' : 'rpi.throttled.previously_undervoltage_message') | translate"
             [ngbTooltip]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_title' : 'rpi.throttled.previously_undervoltage_title') | translate"
-            container="body" [placement]="['bottom', 'auto']">
+            container="body" [placement]="'bottom auto'">
             <i class="fa-solid fa-bolt yellow-text " style="--fa-beat-scale: 2.0;"
               [ngClass]="{ 'fa-beat': rPiCurrentlyUnderVoltage }"></i>
           </a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" placement="bottom"
           ngbTooltip="{{'menu.tooltip_view_logs' | translate}}" container="body">
-          <a class="nav-link" routerLink="/logs" aria-label="View Homebridge Logs">
+          <a class="nav-link" routerLink="/logs" [attr.aria-label]="'menu.tooltip_view_logs' | translate">
             <i class="fas fa-fw fa-wave-square nav-menu-icon"></i>
           </a>
         </li>
         <li class="nav-item waves-effect waves-light" routerLinkActive="active" placement="bottom"
           ngbTooltip="{{'menu.tooltip_restart' | translate}}" container="body">
-          <a class="nav-link" routerLink="/restart" aria-label="Restart Homebridge">
+          <a class="nav-link" routerLink="/restart" [attr.aria-label]="'menu.hbrestart.confirm_button' | translate">
             <i #restartHomebridgeIcon class="fas fa-fw fa-power-off nav-menu-icon"></i>
           </a>
         </li>
         <li class="nav-item dropdown">
           <a href="javascript:void(0)" class="nav-link dropdown-toggle waves-effect waves-light" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false" aria-label="more actions dropdown menu">
+            aria-haspopup="true" aria-expanded="false" [attr.aria-label]="'More Actions Dropdown'">
             <i class="fas fa-fw fa-ellipsis-v nav-menu-icon"></i>
           </a>
           <div class="dropdown-menu dropdown-menu-right dropdown-info">
@@ -63,26 +63,10 @@
               <i class="fa fa-fw fa-wave-square pr-2"></i>
               {{ 'menu.linux.label_logs' | translate }}
             </a>
-            <div class="dropdown-divider" *ngIf="$auth.user.admin"></div>
             <a class="dropdown-item waves-effect waves-light" routerLink="/settings" *ngIf="$auth.user.admin">
               <i class="fa fa-fw fa-cog pr-2"></i>
-              {{ 'menu.label_settings_hb' | translate }}
+              {{ 'menu.settings.title' | translate }}
             </a>
-            <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light" (click)="openUiSettings()"
-              *ngIf="$auth.user.admin">
-              <i class="fa fa-fw fa-sliders pr-2"></i>
-              {{ 'menu.label_settings_ui' | translate }}
-            </a>
-            <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light"
-              (click)="backupRestoreHomebridge()" *ngIf="$auth.user.admin">
-              <i class="fa fa-fw fa-clock-rotate-left pr-2"></i>
-              {{ 'backup.title_backup_restore' | translate }}
-            </a>
-            <a class="dropdown-item waves-effect waves-light" routerLink="/users" *ngIf=" $auth.user.admin">
-              <i class="fa fa-fw fa-user pr-2"></i>
-              {{'menu.tooltip_user_accounts' | translate}}
-            </a>
-            <div class="dropdown-divider" *ngIf="$auth.user.admin"></div>
             <a class="dropdown-item waves-effect waves-light" routerLink="/support">
               <i class="fa fa-fw fa-question-circle-o pr-2"></i>
               {{ 'support.title' | translate }}

@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ServiceTypeX } from '../../accessories.interfaces';
-import { WindowManageComponent } from './window.manage.component';
+import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
+import { WindowManageComponent } from '@/app/core/accessories/types/window/window.manage.component';
 
 @Component({
   selector: 'app-window',
@@ -27,7 +27,7 @@ export class WindowComponent implements OnInit {
 
   onLongClick() {
     const ref = this.modalService.open(WindowManageComponent, {
-      size: 'sm',
+      size: 'md',
     });
     ref.componentInstance.service = this.service;
   }

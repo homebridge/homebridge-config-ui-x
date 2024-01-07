@@ -2,12 +2,12 @@
   (shortclick)="onClick()" tabindex="0">
   <div class="d-flex flex-column h-100">
     <div *ngIf="service.values.LockCurrentState === 0" [inlineSVG]="'/assets/hap-icons/lock-unlocked.svg'"
-      aria-label="Unlocked" class="accessory-svg">
+      [attr.aria-label]="'Unlocked'" class="accessory-svg">
     </div>
     <div *ngIf="service.values.LockCurrentState === 1" [inlineSVG]="'/assets/hap-icons/lock-locked.svg'"
-      aria-label="Locked" class="accessory-svg">
+      [attr.aria-label]="'Locked'" class="accessory-svg">
     </div>
-    <div *ngIf="service.values.LockCurrentState > 1" [inlineSVG]="'/assets/hap-icons/unknown.svg'" aria-label="Error"
+    <div *ngIf="service.values.LockCurrentState > 1" [inlineSVG]="'/assets/hap-icons/unknown.svg'" [attr.aria-label]="'Error'"
       class="accessory-svg">
     </div>
 

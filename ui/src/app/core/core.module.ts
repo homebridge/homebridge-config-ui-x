@@ -2,21 +2,21 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { Bootstrap4FrameworkModule } from '@oznu/ngx-bs4-jsonform';
-import { BackupRestoreComponent } from './backup-restore/backup-restore.component';
-import { ScheduledBackupsComponent } from './backup-restore/scheduled-backups/scheduled-backups.component';
-import { ConfirmComponent } from './components/confirm/confirm.component';
-import { QrcodeComponent } from './components/qrcode/qrcode.component';
-import { SchemaFormComponent } from './components/schema-form/schema-form.component';
-import { SpinnerComponent } from './components/spinner/spinner.component';
-import { JsonSchemaFormPatchDirective } from './directives/json-schema-form-patch.directive';
-import { LongClickDirective } from './directives/longclick.directive';
-import { PluginsMarkdownDirective } from './directives/plugins.markdown.directive';
-import { RtlDirective } from './directives/rtl.directive';
-import { ConvertTempPipe } from './pipes/convert-temp.pipe';
-import { ExternalLinkIconPipe } from './pipes/external-link-icon.pipe';
-import { ReplacePipe } from './pipes/replace.pipe';
+import { BackupRestoreComponent } from '@/app/core/backup-restore/backup-restore.component';
+import { ScheduledBackupsComponent } from '@/app/core/backup-restore/scheduled-backups/scheduled-backups.component';
+import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
 import { InformationComponent } from '@/app/core/components/information/information.component';
+import { QrcodeComponent } from '@/app/core/components/qrcode/qrcode.component';
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component';
+import { SchemaFormComponent } from '@/app/core/components/schema-form/schema-form.component';
+import { SpinnerComponent } from '@/app/core/components/spinner/spinner.component';
+import { JsonSchemaFormPatchDirective } from '@/app/core/directives/json-schema-form-patch.directive';
+import { LongClickDirective } from '@/app/core/directives/longclick.directive';
+import { PluginsMarkdownDirective } from '@/app/core/directives/plugins.markdown.directive';
+import { RtlDirective } from '@/app/core/directives/rtl.directive';
+import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe';
+import { ExternalLinkIconPipe } from '@/app/core/pipes/external-link-icon.pipe';
+import { ReplacePipe } from '@/app/core/pipes/replace.pipe';
 
 @NgModule({
   declarations: [

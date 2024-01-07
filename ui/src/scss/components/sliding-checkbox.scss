@@ -18,12 +18,12 @@
   padding: 2px;
   transition: all 0.4s ease;
   border: 1px solid #e8eae9;
-  margin-bottom: 0px;
+  margin-bottom: 0;
 }
 .rendux-input:hover + label::after,
 .rendux-input:focus + label::after,
 .rendux-input:active + label::after {
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 4px 0 rgba(0, 0, 0, 0.08), inset 0px 0px 0px 1.5px #9c9c9c;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 4px 0 rgba(0, 0, 0, 0.08), inset 0 0 0 1.5px #9c9c9c;
 }
 .rendux-label::after {
   left: 0;

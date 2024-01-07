@@ -346,7 +346,7 @@ export class LinuxInstaller extends BasePlatform {
     }
     if (gte(target, '20.0.0') && glibcVersion < 2.31) {
       this.hbService.logger('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. ' +
-        `Wanted: >=2.29. Installed: ${glibcVersion} - see https://homebridge.io/w/JJSun`, 'fail');
+        `Wanted: >=2.31. Installed: ${glibcVersion} - see https://homebridge.io/w/JJSun`, 'fail');
       process.exit(1);
     }
   }

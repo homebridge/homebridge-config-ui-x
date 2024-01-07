@@ -1,14 +1,13 @@
 <div class="modal-content">
   <div class="modal-header">
     <h5 class="modal-title">{{ 'plugins.manage.information' | translate }}</h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+    <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
       (click)="activeModal.dismiss('Dismiss')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body w-100 text-center">
-    <img [src]="plugin.icon" (error)="handleIconError()" alt="" class="plugin-icon-card mb-3"
-      style="height: 75px; width: 75px;">
+    <img [src]="plugin.icon" (error)="handleIconError()" alt="Plugin Icon" class="mb-3 plugin-icon">
     <h4>{{ plugin.displayName || plugin.name }}</h4>
     <p class="my-3">{{ plugin.description }}</p>
     <p class="m-0 grey-text">{{ plugin.name }}</p>

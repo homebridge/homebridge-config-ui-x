@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ServiceTypeX } from '../../accessories.interfaces';
-import { DoorManageComponent } from './door.manage.component';
+import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
+import { DoorManageComponent } from '@/app/core/accessories/types/door/door.manage.component';
 
 @Component({
   selector: 'app-door',
@@ -27,7 +27,7 @@ export class DoorComponent implements OnInit {
 
   onLongClick() {
     const ref = this.modalService.open(DoorManageComponent, {
-      size: 'sm',
+      size: 'md',
     });
     ref.componentInstance.service = this.service;
   }

@@ -3,7 +3,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '@/app/core/auth/auth.service';
 import { InformationComponent } from '@/app/core/components/information/information.component';
-import { WsService } from '@/app/core/ws.service';
+import { IoNamespace, WsService } from '@/app/core/ws.service';
 
 @Component({
   selector: 'app-system-info-widget',
@@ -14,7 +14,7 @@ export class SystemInfoWidgetComponent implements OnInit {
   public serverInfo: any;
   public nodejsInfo = {} as any;
 
-  private io = this.$ws.getExistingNamespace('status');
+  private io: IoNamespace;
 
   constructor(
     private $ws: WsService,
@@ -24,6 +24,7 @@ export class SystemInfoWidgetComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.io = this.$ws.getExistingNamespace('status');
     this.io.connected.subscribe(async () => {
       this.getSystemInfo();
     });
@@ -71,6 +72,19 @@ export class SystemInfoWidgetComponent implements OnInit {
     // eslint-disable-next-line max-len
     ref.componentInstance.title = `${this.$translate.instant('status.widget.systeminfo.modal_node_update_title')} - ${this.nodejsInfo.latestVersion}`;
     ref.componentInstance.message = this.$translate.instant('status.widget.systeminfo.modal_node_update_message');
+    ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info');
+    ref.componentInstance.faIconClass = 'fab fa-fw fa-node-js primary-text';
+
+    // eslint-disable-next-line max-len
+    ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js';
+  }
+
+  nodeUnsupportedModal() {
+    const ref = this.$modal.open(InformationComponent);
+
+    // eslint-disable-next-line max-len
+    ref.componentInstance.title = this.$translate.instant('status.widget.systeminfo.modal_node_unsupp_title');
+    ref.componentInstance.message = this.$translate.instant('status.widget.systeminfo.modal_node_unsupp_message');
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info');
     ref.componentInstance.faIconClass = 'fab fa-fw fa-node-js primary-text';
 

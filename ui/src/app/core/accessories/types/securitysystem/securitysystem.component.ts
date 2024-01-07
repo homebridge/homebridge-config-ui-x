@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ServiceTypeX } from '../../accessories.interfaces';
-import { SecuritysystemManageComponent } from './securitysystem.manage.component';
+import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
+import { SecuritysystemManageComponent } from '@/app/core/accessories/types/securitysystem/securitysystem.manage.component';
 
 @Component({
   selector: 'app-securitysystem',

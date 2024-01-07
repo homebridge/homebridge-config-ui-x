@@ -3,10 +3,10 @@
     <h3 class="primary-text m-0">{{ 'menu.linux.label_logs' | translate }}</h3>
   </div>
   <div class="col-6 text-right">
-    <button class="btn btn-elegant my-0" (click)="downloadLogFile()">
+    <button class="btn btn-elegant my-0" (click)="downloadLogFile()" [attr.aria-label]="'logs.label_download' | translate">
       <i class="fas fa-fw fa-download"></i>
     </button>
-    <button class="btn btn-elegant my-0 mr-0" (click)="truncateLogFile()">
+    <button class="btn btn-elegant my-0 mr-0" (click)="truncateLogFile()" [attr.aria-label]="'form.button_delete' | translate">
       <i class="fas fa-fw fa-trash-alt"></i>
     </button>
   </div>

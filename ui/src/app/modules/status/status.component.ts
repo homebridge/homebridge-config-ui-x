@@ -4,13 +4,13 @@ import { GridsterConfig, GridsterItem } from 'angular-gridster2';
 import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { WidgetAddComponent } from './widget-add/widget-add.component';
-import { WidgetControlComponent } from './widget-control/widget-control.component';
 import { AuthService } from '@/app/core/auth/auth.service';
-import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { NotificationService } from '@/app/core/notification.service';
 import { SettingsService } from '@/app/core/settings.service';
-import { WsService } from '@/app/core/ws.service';
+import { IoNamespace, WsService } from '@/app/core/ws.service';
+import { CreditsComponent } from '@/app/modules/status/credits/credits.component';
+import { WidgetAddComponent } from '@/app/modules/status/widget-add/widget-add.component';
+import { WidgetControlComponent } from '@/app/modules/status/widget-control/widget-control.component';
 
 @Component({
   selector: 'app-status',
@@ -28,7 +28,7 @@ export class StatusComponent implements OnInit, OnDestroy {
     mobile: (window.innerWidth < 1024),
   };
 
-  private io = this.$ws.connectToNamespace('status');
+  private io: IoNamespace;
 
   constructor(
     public $toastr: ToastrService,
@@ -37,10 +37,10 @@ export class StatusComponent implements OnInit, OnDestroy {
     private $notification: NotificationService,
     public $auth: AuthService,
     public $settings: SettingsService,
-    public $md: MobileDetectService,
   ) {}
 
   ngOnInit() {
+    this.io = this.$ws.connectToNamespace('status');
     this.options = {
       mobileBreakpoint: 1023,
       keepFixedHeightInMobile: false,
@@ -261,6 +261,13 @@ export class StatusComponent implements OnInit, OnDestroy {
         this.gridChangedEvent();
         item.$configureEvent.next(undefined);
       });
+  }
+
+  openCreditsModal() {
+    this.$modal.open(CreditsComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    });
   }
 
   ngOnDestroy() {

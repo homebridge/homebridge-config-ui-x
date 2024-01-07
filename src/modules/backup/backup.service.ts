@@ -114,6 +114,7 @@ export class BackupService {
             'package.json',       // npm
             'package-lock.json',  // npm
             '.npmrc',             // npm
+            '.npm',               // npm
             'FFmpeg',             // ffmpeg
             'fdk-aac',            // ffmpeg
             '.git',               // git
@@ -121,6 +122,7 @@ export class BackupService {
             '.homebridge.sock',   // homebridge ipc socket
             '#recycle',           // synology dsm recycle bin
             '@eaDir',             // synology dsm metadata
+            '.venv',              // python venv
           ].includes(basename(filePath))) {
             return false;
           }
