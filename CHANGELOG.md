@@ -2,15 +2,16 @@
 
 All notable changes to homebridge-config-ui-x will be documented in this file.
 
-## Beta (2024-XX-XX)
+## 4.55.1 (2024-01-07)
 
-### UI Changes
+### Bug Fixes
 
-- 
+- Force earlier version of bonjour-service to resolve [#1973](https://github.com/homebridge/homebridge-config-ui-x/issues/1973) and [#1975](https://github.com/homebridge/homebridge-config-ui-x/issues/1975)
+  - **If you experienced this issue, we would recommened you go into Homebridge Setting and turn off Homebridge 'Insecure' Mode (Enable Accessory Control) before upgrading**, after you upgrade you can renable.
 
 ### Translation Changes
 
-- 
+- updates to fr.json language file (#1974) (@SonnyT72)
 
 ### Other Changes
 
