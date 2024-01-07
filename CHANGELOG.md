@@ -2,6 +2,21 @@
 
 All notable changes to homebridge-config-ui-x will be documented in this file.
 
+## Beta (2024-XX-XX)
+
+### UI Changes
+
+- 
+
+### Translation Changes
+
+- 
+
+### Other Changes
+
+- attach artifacts to workflows
+- update issue templates
+
 ## 4.55.0 (2024-01-06)
 
 ### UI Changes
