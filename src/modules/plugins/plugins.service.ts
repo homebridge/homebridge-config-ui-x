@@ -158,9 +158,8 @@ export class PluginsService {
     const modules = await this.getInstalledModules();
     const disabledPlugins = await this.getDisabledPlugins();
 
-    // filter out the ui and non-homebridge plugins by name
+    // filter out non-homebridge plugins by name
     const homebridgePlugins = modules
-      .filter(module => module.name !== this.configService.name)
       .filter(module => (module.name.indexOf('homebridge-') === 0) || this.isScopedPlugin(module.name))
       .filter(module => pathExistsSync(join(module.installPath, 'package.json')));
 
