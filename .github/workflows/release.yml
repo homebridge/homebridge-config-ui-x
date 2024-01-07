@@ -2,20 +2,32 @@ name: Node Release
 run-name: Production Release
 
 on:
-  push:
-    branches: 
-      - latest
-      - '!beta'
-      - '!beta-[0-9]+.[0-9]+.[0-9]'
-      - '!alpha'
-      - '!alpha-[0-9]+.[0-9]+.[0-9]'
-    tags:
-      = 'v[0-9]+.[0-9]+.[0-9]'
-      = '[0-9]+.[0-9]+.[0-9]'
-  workflow_dispatch:
+  release:
+     types: [released]
 
 jobs:
+  tag:
+    name: Verify Release Tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Release Tag
+        id: get_version
+        uses: jannemattila/get-version-from-tag@v1
+      - name: Tag Info
+        run: |
+          echo "Release Tag: ${{github.ref}}"
+          echo "Latest Tag: ${{ steps.get_version.outputs.version }}"
+      - name: Tag Info Matches
+        if: endsWith(github.ref, steps.get_version.outputs.version )
+        run: |
+          echo Latest Tag matches Release tag
+      - name: Tag Info Doesn't Match
+        if: ${{ !endsWith(github.ref, steps.get_version.outputs.version ) }}
+        run: |
+          echo Latest Tag does not matches Release tag
+          exit 1
   build_and_test:
+    needs: tag
     name: Build and Test
     if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
     uses: homebridge/.github/.github/workflows/nodejs-build-and-test.yml@latest
@@ -35,6 +47,7 @@ jobs:
       npm_auth_token: ${{ secrets.npm_token }}
   build:
     needs: publish
+    if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
     name: Attach Artifact
     runs-on: ubuntu-latest
 
