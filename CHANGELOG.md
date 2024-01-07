@@ -2,7 +2,7 @@
 
 All notable changes to homebridge-config-ui-x will be documented in this file.
 
-## BETA
+## 4.55.0 (2024-01-06)
 
 ### UI Changes
 
