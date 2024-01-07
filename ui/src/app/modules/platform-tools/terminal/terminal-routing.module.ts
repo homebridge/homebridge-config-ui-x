@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { TerminalComponent } from './terminal.component';
+import { TerminalComponent } from '@/app/modules/platform-tools/terminal/terminal.component';
 
 const routes: Routes = [
   {

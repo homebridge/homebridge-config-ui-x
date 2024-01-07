@@ -7,8 +7,8 @@ import {
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subscription, interval } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { ServiceTypeX } from '../../accessories.interfaces';
-import { ValveManageComponent } from './valve.manage.component';
+import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
+import { ValveManageComponent } from '@/app/core/accessories/types/valve/valve.manage.component';
 
 @Component({
   selector: 'app-valve',
@@ -28,7 +28,7 @@ export class ValveComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    // setup the RemainingDuration countdown handlers, if the valve has the RemainingDuration Characteristic
+    // set up the RemainingDuration countdown handlers, if the valve has the RemainingDuration Characteristic
     if (this.service.getCharacteristic('RemainingDuration')) {
       this.setupRemainingDurationCounter();
     }

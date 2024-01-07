@@ -1,7 +1,7 @@
 <div class="accessory-box" [ngClass]="{'switch-on': service.values.Active}" appLongclick (shortclick)="onClick()"
   tabindex="0">
   <div class="d-flex flex-column h-100">
-    <div [inlineSVG]="'/assets/hap-icons/television.svg'" aria-label="Outlet" class="accessory-svg"></div>
+    <div [inlineSVG]="'/assets/hap-icons/television.svg'" [attr.aria-label]="'Television'" class="accessory-svg"></div>
     <div class="accessory-label mt-auto">
       {{ service.customName || service.values.ConfiguredName || service.serviceName }}</div>
     <div class="accessory-label grey-text" *ngIf="!service.values.Active">

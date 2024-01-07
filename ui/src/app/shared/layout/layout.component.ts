@@ -10,13 +10,11 @@ import { TranslateService } from '@ngx-translate/core';
 import { throttleTime } from 'rxjs/operators';
 import { lt } from 'semver';
 import { AuthService } from '@/app/core/auth/auth.service';
-import { BackupRestoreComponent } from '@/app/core/backup-restore/backup-restore.component';
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
-import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { NotificationService } from '@/app/core/notification.service';
 import { SettingsService } from '@/app/core/settings.service';
-import { WsService } from '@/app/core/ws.service';
-import { RestartModalComponent } from '@/app/shared/layout/restart-modal/restart-modal.component';
+import { IoNamespace, WsService } from '@/app/core/ws.service';
+import { PowerOptionsComponent } from '@/app/shared/layout/power-options/power-options.component';
 import { environment } from '@/environments/environment';
 
 @Component({
@@ -29,21 +27,20 @@ export class LayoutComponent implements OnInit {
 
   public rPiCurrentlyUnderVoltage = false;
   public rPiWasUnderVoltage = false;
-
-  private io = this.$ws.connectToNamespace('app');
+  private io: IoNamespace;
 
   constructor(
     public translate: TranslateService,
     private $ws: WsService,
     public $auth: AuthService,
     public $settings: SettingsService,
-    private $plugins: ManagePluginsService,
     private $notification: NotificationService,
     private $modal: NgbModal,
     private $router: Router,
   ) {}
 
   ngOnInit() {
+    this.io = this.$ws.connectToNamespace('app');
     this.io.socket.on('reconnect', () => {
       this.$auth.checkToken();
     });
@@ -77,24 +74,8 @@ export class LayoutComponent implements OnInit {
     this.compareServerUiVersion();
   }
 
-  backupRestoreHomebridge() {
-    this.$modal.open(BackupRestoreComponent, {
-      size: 'lg',
-      backdrop: 'static',
-    });
-  }
-
-  openUiSettings() {
-    this.$plugins.settings({
-      name: 'homebridge-config-ui-x',
-      displayName: 'Homebridge UI',
-      settingsSchema: true,
-      links: {},
-    });
-  }
-
   openRestartModal() {
-    this.$modal.open(RestartModalComponent);
+    this.$modal.open(PowerOptionsComponent);
   }
 
   async compareServerUiVersion() {

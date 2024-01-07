@@ -3,14 +3,14 @@ import { ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { parse } from 'json5';
-import { NgxEditorModel } from 'ngx-monaco-editor-v2';
+import { NgxEditorModel } from 'ngx-monaco-editor';
 import { ToastrService } from 'ngx-toastr';
-import { ConfigRestoreBackupComponent } from './config-restore-backup/config.restore-backup.component';
 import { ApiService } from '@/app/core/api.service';
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { MonacoEditorService } from '@/app/core/monaco-editor.service';
 import { SettingsService } from '@/app/core/settings.service';
+import { ConfigRestoreBackupComponent } from '@/app/modules/config-editor/config-restore-backup/config.restore-backup.component';
 
 @Component({
   selector: 'app-config',
@@ -22,11 +22,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   public saveInProgress: boolean;
   public isMobile: any = false;
   public monacoEditor;
-  public editorOptions = {
-    language: 'json',
-    theme: this.$settings.theme.startsWith('dark-mode') ? 'vs-dark' : 'vs-light',
-    automaticLayout: true,
-  };
+  public editorOptions: any;
 
   public monacoEditorModel: NgxEditorModel;
 
@@ -49,6 +45,12 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.editorOptions = {
+      language: 'json',
+      theme: this.$settings.theme.startsWith('dark-mode') ? 'vs-dark' : 'vs-light',
+      automaticLayout: true,
+    };
+
     // capture viewport events
     this.visualViewPortEventCallback = () => this.visualViewPortChanged();
     this.lastHeight = window.innerHeight;

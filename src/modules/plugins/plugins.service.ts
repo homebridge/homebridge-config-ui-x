@@ -169,11 +169,11 @@ export class PluginsService {
     await Promise.all(homebridgePlugins.map(async (pkg) => {
       return limit(async () => {
         try {
-          const pjson: IPackageJson = await readJson(join(pkg.installPath, 'package.json'));
+          const pkgJson: IPackageJson = await readJson(join(pkg.installPath, 'package.json'));
           // check each plugin has the 'homebridge-plugin' keyword
-          if (pjson.keywords && pjson.keywords.includes('homebridge-plugin')) {
+          if (pkgJson.keywords && pkgJson.keywords.includes('homebridge-plugin')) {
             // parse the package.json for each plugin
-            const plugin = await this.parsePackageJson(pjson, pkg.path);
+            const plugin = await this.parsePackageJson(pkgJson, pkg.path);
 
             // check if the plugin has been disabled
             plugin.disabled = disabledPlugins.includes(plugin.name);
@@ -193,7 +193,7 @@ export class PluginsService {
     }));
 
     this.installedPlugins = plugins;
-    return orderBy(plugins, [(resultItem: HomebridgePlugin) => { return resultItem.name === this.configService.name; }, 'updateAvailable', 'betaUpdateAvailable', 'name'], ['desc', 'desc', 'desc', 'asc']);
+    return plugins;
   }
 
   /**
@@ -201,7 +201,7 @@ export class PluginsService {
    */
   public async getOutOfDatePlugins(): Promise<HomebridgePlugin[]> {
     const plugins = await this.getInstalledPlugins();
-    return plugins.filter(x => x.updateAvailable || x.betaUpdateAvailable);
+    return plugins.filter((x) => x.updateAvailable);
   }
 
   /**
@@ -365,7 +365,7 @@ export class PluginsService {
       plugin.latestVersion = pkg['dist-tags'] ? pkg['dist-tags'].latest : undefined;
       plugin.lastUpdated = pkg.time.modified;
       plugin.updateAvailable = false;
-      plugin.betaUpdateAvailable = false;
+      plugin.updateTag = null;
       plugin.links = {
         npm: `https://www.npmjs.com/package/${plugin.name}`,
         homepage: pkg.homepage,
@@ -505,10 +505,10 @@ export class PluginsService {
   public async getHomebridgePackage() {
     // try load from the "homebridgePackagePath" option first
     if (this.configService.ui.homebridgePackagePath) {
-      const pjsonPath = join(this.configService.ui.homebridgePackagePath, 'package.json');
-      if (await pathExists(pjsonPath)) {
+      const pkgJsonPath = join(this.configService.ui.homebridgePackagePath, 'package.json');
+      if (await pathExists(pkgJsonPath)) {
         try {
-          return await this.parsePackageJson(await readJson(pjsonPath), this.configService.ui.homebridgePackagePath);
+          return await this.parsePackageJson(await readJson(pkgJsonPath), this.configService.ui.homebridgePackagePath);
         } catch (err) {
           throw err;
         }
@@ -535,22 +535,23 @@ export class PluginsService {
     }
 
     const homebridgeModule = homebridgeInstalls[0];
-    const pjson: IPackageJson = await readJson(join(homebridgeModule.installPath, 'package.json'));
-    const homebridge = await this.parsePackageJson(pjson, homebridgeModule.path);
+    const pkgJson: IPackageJson = await readJson(join(homebridgeModule.installPath, 'package.json'));
+    const homebridge = await this.parsePackageJson(pkgJson, homebridgeModule.path);
 
     if (!homebridge.latestVersion) {
       return homebridge;
     }
 
     const homebridgeVersion = parse(homebridge.installedVersion);
+    const installedTag = homebridgeVersion.prerelease[0]?.toString();
 
-    // show beta updates if the user is currently running a beta release
-    if (homebridgeVersion.prerelease[0] === 'beta' && gt(homebridge.installedVersion, homebridge.latestVersion)) {
+    // show pre-releases updates if the user is currently running an alpha/beta/test release
+    if (installedTag && ['alpha', 'beta', 'test'].includes(installedTag) && gt(homebridge.installedVersion, homebridge.latestVersion)) {
       const versions = await this.getAvailablePluginVersions('homebridge');
-      if (versions.tags.beta && gt(versions.tags.beta, homebridge.installedVersion)) {
-        homebridge.updateAvailable = false;
-        homebridge.betaUpdateAvailable = true;
-        homebridge.latestVersion = versions.tags.beta;
+      if (versions.tags[installedTag] && gt(versions.tags[installedTag], homebridge.installedVersion)) {
+        homebridge.updateAvailable = true;
+        homebridge.updateTag = installedTag;
+        homebridge.latestVersion = versions.tags[installedTag];
       }
     }
 
@@ -622,8 +623,8 @@ export class PluginsService {
         throw new Error('Could not find npm package');
       }
 
-      const pjson: IPackageJson = await readJson(join(npmPkg.installPath, 'package.json'));
-      const npm = await this.parsePackageJson(pjson, npmPkg.path) as HomebridgePlugin & { showUpdateWarning?: boolean };
+      const pkgJson: IPackageJson = await readJson(join(npmPkg.installPath, 'package.json'));
+      const npm = await this.parsePackageJson(pkgJson, npmPkg.path) as HomebridgePlugin & { showUpdateWarning?: boolean };
 
       // show the update warning if the installed version is below the minimum recommended
       // (bwp91) I set this to 9.5.0 to match a minimum node version of 18.15.0
@@ -878,7 +879,9 @@ export class PluginsService {
    * @param pluginName
    */
   public async getPluginRelease(pluginName: string) {
-    if (!this.installedPlugins) await this.getInstalledPlugins();
+    if (!this.installedPlugins) {
+      await this.getInstalledPlugins();
+    }
     const plugin = pluginName === 'homebridge' ? await this.getHomebridgePackage() : this.installedPlugins.find(x => x.name === pluginName);
     if (!plugin) {
       throw new NotFoundException();
@@ -902,17 +905,20 @@ export class PluginsService {
     }
 
     // Special case for beta npm tags for homebridge, homebridge ui and all plugins
-    if (plugin.latestVersion?.includes('beta')) {
-      let betaBranch: string | undefined;
+    const version = parse(plugin.latestVersion);
+    const tag = version.prerelease[0]?.toString();
+
+    if (tag) {
+      let branch: string | undefined;
 
       if (['homebridge-config-ui-x', 'homebridge'].includes(plugin.name)) {
         // If loading a homebridge/ui beta returned pre-defined help text
         // Query the list of branches for the repo, if the request doesn't work it doesn't matter too much
         try {
           // Find the first branch that starts with "beta"
-          betaBranch = (await this.httpService.get(`https://api.github.com/repos/homebridge/${plugin.name}/branches`).toPromise())
+          branch = (await this.httpService.get(`https://api.github.com/repos/homebridge/${plugin.name}/branches`).toPromise())
             .data
-            .find((branch: any) => branch.name.startsWith('beta-'))
+            .find((b: any) => b.name.startsWith(`${tag}-`))
             ?.name;
         } catch (e) {
           this.logger.error(`Failed to get list of branches from GitHub: ${e.message}`);
@@ -923,9 +929,10 @@ export class PluginsService {
         name: 'v' + plugin.latestVersion,
         changelog: `Thank you for helping improve ${plugin.displayName || `\`${plugin.name}\``} by testing a beta version.\n\n` +
           'You can use the Homebridge UI at any time to revert back to the stable version.\n\n' +
-          'Please remember this is a **beta** version, and report any issues to the GitHub repository page:\n' +
+          `Please remember this **${tag}** version is a pre-release, and report any issues to the GitHub repository page:
+` +
           `- https://github.com/${repoMatch[1]}/${repoMatch[2]}/issues` +
-          (betaBranch ? `\n\nSee the commit history for recent changes:\n- https://github.com/${repoMatch[1]}/${repoMatch[2]}/commits/${betaBranch}` : ''),
+          (branch ? `\n\nSee the commit history for recent changes:\n- https://github.com/${repoMatch[1]}/${repoMatch[2]}/commits/${branch}` : ''),
       };
     }
 
@@ -1212,35 +1219,34 @@ export class PluginsService {
 
   /**
    * Convert the package.json into a HomebridgePlugin
-   * @param pjson
+   * @param pkgJson
    * @param installPath
    */
-  private async parsePackageJson(pjson: IPackageJson, installPath: string): Promise<HomebridgePlugin> {
+  private async parsePackageJson(pkgJson: IPackageJson, installPath: string): Promise<HomebridgePlugin> {
     const plugin: HomebridgePlugin = {
-      name: pjson.name,
-      private: pjson.private || false,
-      displayName: pjson.displayName,
-      description: (pjson.description) ?
-        pjson.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pjson.name,
-      verifiedPlugin: this.verifiedPlugins.includes(pjson.name),
-      icon: this.verifiedPluginsIcons[pjson.name]
-        ? `${this.verifiedPluginsIconsPrefix}${this.verifiedPluginsIcons[pjson.name]}`
+      name: pkgJson.name,
+      private: pkgJson.private || false,
+      displayName: pkgJson.displayName,
+      description: (pkgJson.description) ?
+        pkgJson.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkgJson.name,
+      verifiedPlugin: this.verifiedPlugins.includes(pkgJson.name),
+      icon: this.verifiedPluginsIcons[pkgJson.name]
+        ? `${this.verifiedPluginsIconsPrefix}${this.verifiedPluginsIcons[pkgJson.name]}`
         : null,
-      installedVersion: installPath ? (pjson.version || '0.0.1') : null,
+      installedVersion: installPath ? (pkgJson.version || '0.0.1') : null,
       globalInstall: (installPath !== this.configService.customPluginPath),
-      settingsSchema: await pathExists(resolve(installPath, pjson.name, 'config.schema.json')) || this.miscSchemas[pjson.name],
+      settingsSchema: await pathExists(resolve(installPath, pkgJson.name, 'config.schema.json')) || this.miscSchemas[pkgJson.name],
       installPath,
     };
 
     // only verified plugins can show donation links
-    plugin.funding = plugin.verifiedPlugin ? pjson.funding : undefined;
+    plugin.funding = plugin.verifiedPlugin ? pkgJson.funding : undefined;
 
     // if the plugin is private, do not attempt to query npm
-    if (pjson.private) {
+    if (pkgJson.private) {
       plugin.publicPackage = false;
       plugin.latestVersion = null;
       plugin.updateAvailable = false;
-      plugin.betaUpdateAvailable = false;
       plugin.links = {};
       return plugin;
     }
@@ -1257,7 +1263,7 @@ export class PluginsService {
       // attempt to load from cache
       const fromCache = this.npmPluginCache.get(plugin.name);
       plugin.updateAvailable = false;
-      plugin.betaUpdateAvailable = false;
+      plugin.updateTag = null;
 
       // restore from cache, or load from npm
       const pkg: IPackageJson = fromCache || (
@@ -1270,14 +1276,17 @@ export class PluginsService {
       // check for beta updates, if no latest version is available
       if (!plugin.updateAvailable) {
         const pluginVersion = parse(plugin.installedVersion);
+        const installedTag = pluginVersion.prerelease[0]?.toString();
         if (
-          pluginVersion.prerelease[0] === 'beta' &&
-          gt(plugin.installedVersion, plugin.latestVersion)
+          installedTag
+          && ['alpha', 'beta', 'test'].includes(installedTag)
+          && gt(plugin.installedVersion, plugin.latestVersion)
         ) {
           const versions = await this.getAvailablePluginVersions(plugin.name);
-          if (versions.tags.beta && gt(versions.tags.beta, plugin.installedVersion)) {
-            plugin.betaUpdateAvailable = true;
-            plugin.latestVersion = versions.tags.beta;
+          if (versions.tags[installedTag] && gt(versions.tags[installedTag], plugin.installedVersion)) {
+            plugin.latestVersion = versions.tags[installedTag];
+            plugin.updateAvailable = true;
+            plugin.updateTag = installedTag;
           }
         }
       }
@@ -1302,7 +1311,7 @@ export class PluginsService {
       plugin.publicPackage = false;
       plugin.latestVersion = null;
       plugin.updateAvailable = false;
-      plugin.betaUpdateAvailable = false;
+      plugin.updateTag = null;
       plugin.links = {};
     }
     return plugin;
@@ -1417,7 +1426,7 @@ export class PluginsService {
           res(null);
         } else {
           clearTimeout(timeoutTimer);
-          rej('Operation failed. Please review log for details.');
+          rej(`Operation failed with code ${code}.\n\rYou can download this log file for future reference.\n\rSee https://github.com/homebridge/homebridge-config-ui-x/wiki/Troubleshooting for help.`);
         }
       });
 

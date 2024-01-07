@@ -5,25 +5,25 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DragulaModule } from 'ng2-dragula';
-import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
+import { MonacoEditorModule } from 'ngx-monaco-editor';
 import { ToastrModule } from 'ngx-toastr';
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { LoginModule } from './modules/login/login.module';
-import { RestartModule } from './modules/restart/restart.module';
-import { StatusModule } from './modules/status/status.module';
-import { LayoutComponent } from './shared/layout/layout.component';
+import { AppRoutingModule } from '@/app/app-routing.module';
+import { AppComponent } from '@/app/app.component';
 import { AuthModule } from '@/app/core/auth/auth.module';
 import { CoreModule } from '@/app/core/core.module';
 import { supportedLocales } from '@/app/core/locales';
 import { onMonacoLoad } from '@/app/core/monaco-editor.service';
-import { RestartModalComponent } from '@/app/shared/layout/restart-modal/restart-modal.component';
+import { LoginModule } from '@/app/modules/login/login.module';
+import { RestartModule } from '@/app/modules/restart/restart.module';
+import { StatusModule } from '@/app/modules/status/status.module';
+import { LayoutComponent } from '@/app/shared/layout/layout.component';
+import { PowerOptionsComponent } from '@/app/shared/layout/power-options/power-options.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LayoutComponent,
-    RestartModalComponent,
+    PowerOptionsComponent,
   ],
   imports: [
     BrowserModule,

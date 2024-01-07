@@ -11,7 +11,7 @@ import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.s
 import { PluginLogModalComponent } from '@/app/core/manage-plugins/plugin-log-modal/plugin-log-modal.component';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { SettingsService } from '@/app/core/settings.service';
-import { WsService } from '@/app/core/ws.service';
+import { IoNamespace, WsService } from '@/app/core/ws.service';
 import { PluginInfoComponent } from '@/app/modules/plugins/plugin-card/plugin-info/plugin-info.component';
 
 @Component({
@@ -27,12 +27,12 @@ export class PluginCardComponent implements OnInit {
   public allChildBridgesStopped = false;
   public childBridgeStatus = 'pending';
   public childBridgeRestartInProgress = false;
-  public recommendChildBridge = false;
-  public isMobile = this.$md.detect.mobile();
   public defaultIcon = 'assets/hb-icon.png';
+  public isMobile: string;
+  public setChildBridges = [];
+  public prettyDisplayName = '';
 
-  private io = this.$ws.getExistingNamespace('child-bridges');
-  private setChildBridges = [];
+  private io: IoNamespace;
 
   constructor(
     public $plugin: ManagePluginsService,
@@ -65,23 +65,12 @@ export class PluginCardComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.isMobile = this.$md.detect.mobile();
+    this.prettyDisplayName = this.prettifyName();
+    this.io = this.$ws.getExistingNamespace('child-bridges');
+
     if (!this.plugin.icon) {
       this.plugin.icon = this.defaultIcon;
-    }
-
-    if (
-      this.plugin.installedVersion
-      && this.$settings.env.recommendChildBridges
-      && this.$settings.env.serviceMode
-      && !['homebridge', 'homebridge-config-ui-x'].includes(this.plugin.name)
-    ) {
-      this.$api.get(`/plugins/config-schema/${encodeURIComponent(this.plugin.name)}`, {}).toPromise()
-        .then((schema) => {
-          this.recommendChildBridge = schema.pluginType === 'platform';
-        })
-        .catch(() => {
-          this.recommendChildBridge = false;
-        });
     }
   }
 
@@ -127,9 +116,10 @@ export class PluginCardComponent implements OnInit {
     ref.result.then(async () => {
       try {
         await this.$api.put(`/config-editor/plugin/${encodeURIComponent(plugin.name)}/disable`, {}).toPromise();
-        // mark as disabled
+        // Mark as disabled
         plugin.disabled = true;
-        // stop all child bridges
+
+        // Stop all child bridges
         if (this.hasChildBridges) {
           this.doChildBridgeAction('stop');
         }
@@ -198,5 +188,20 @@ export class PluginCardComponent implements OnInit {
 
   handleIconError() {
     this.plugin.icon = this.defaultIcon;
+  }
+
+  prettifyName() {
+    let pluginName = this.plugin.displayName || (this.plugin.name.charAt(0) === '@' ? this.plugin.name.split('/')[1] : this.plugin.name);
+    pluginName = pluginName.replace(/-/g, ' ');
+    if (this.isMobile && pluginName.toLowerCase().startsWith('homebridge ')) {
+      pluginName = pluginName.replace(new RegExp('^homebridge ', 'i'), '');
+    }
+
+    if (!this.plugin.displayName) {
+      // Do not overwrite capitalisation if displayName is set (for example Homebridge eWeLink)
+      // This changes the plugin name into title case
+      pluginName = pluginName.replace(/\w\S*/g, (txt: string) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+    }
+    return pluginName;
   }
 }

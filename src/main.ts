@@ -29,6 +29,7 @@ async function bootstrap(): Promise<NestFastifyApplication> {
   fAdapter.register(fastifyMultipart, {
     limits: {
       files: 1,
+      fileSize: 25 * 1024 * 1024, // 25mb
     },
   });
 

@@ -5,7 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '@/app/core/api.service';
 import { NotificationService } from '@/app/core/notification.service';
 import { SettingsService } from '@/app/core/settings.service';
-import { WsService } from '@/app/core/ws.service';
+import { IoNamespace, WsService } from '@/app/core/ws.service';
 
 @Component({
   selector: 'app-restart',
@@ -22,7 +22,7 @@ export class RestartComponent implements OnInit, OnDestroy {
   error: any = false;
   public uiOnline = false;
 
-  private io = this.$ws.connectToNamespace('status');
+  private io: IoNamespace;
 
   constructor(
     private $api: ApiService,
@@ -35,6 +35,7 @@ export class RestartComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.io = this.$ws.connectToNamespace('status');
     this.$notification.restartTriggered.next(undefined);
 
     this.io.connected.subscribe(() => {

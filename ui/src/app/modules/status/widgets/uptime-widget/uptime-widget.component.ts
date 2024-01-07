@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription, interval } from 'rxjs';
 import { AuthService } from '@/app/core/auth/auth.service';
-import { WsService } from '@/app/core/ws.service';
+import { IoNamespace, WsService } from '@/app/core/ws.service';
 
 @Component({
   selector: 'app-uptime-widget',
@@ -12,7 +12,7 @@ export class UptimeWidgetComponent implements OnInit, OnDestroy {
   public serverUptime: string;
   public processUptime: string;
 
-  private io = this.$ws.getExistingNamespace('status');
+  private io: IoNamespace;
   private intervalSubscription: Subscription;
 
   constructor(
@@ -21,6 +21,7 @@ export class UptimeWidgetComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.io = this.$ws.getExistingNamespace('status');
     this.io.connected.subscribe(async () => {
       this.getServerUptimeInfo();
     });

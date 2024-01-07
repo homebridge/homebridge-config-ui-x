@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ServiceTypeX } from '../../accessories.interfaces';
-import { FanManageComponent } from './fan.manage.component';
+import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
+import { FanManageComponent } from '@/app/core/accessories/types/fan/fan.manage.component';
 
 @Component({
   selector: 'app-fan',
@@ -10,25 +10,33 @@ import { FanManageComponent } from './fan.manage.component';
 })
 export class FanComponent implements OnInit {
   @Input() public service: ServiceTypeX;
+  public rotationSpeedUnit = '';
 
   constructor(
     private modalService: NgbModal,
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    // Find the unit for the rotation speed
+    const RotationSpeed = this.service.serviceCharacteristics.find((c) => c.type === 'RotationSpeed');
+    if (RotationSpeed && RotationSpeed.unit === 'percentage') {
+      this.rotationSpeedUnit = '%';
+    }
+  }
 
   onClick() {
     this.service.getCharacteristic('On').setValue(!this.service.values.On);
 
-    // set the brightness to 100% if on 0% when turned on
+    // set the rotation speed to max if on 0% when turned on
     if (!this.service.values.On && 'RotationSpeed' in this.service.values && !this.service.values.RotationSpeed) {
-      this.service.getCharacteristic('RotationSpeed').setValue(100);
+      const RotationSpeed = this.service.getCharacteristic('RotationSpeed');
+      RotationSpeed.setValue(RotationSpeed.maxValue);
     }
   }
 
   onLongClick() {
     const ref = this.modalService.open(FanManageComponent, {
-      size: 'sm',
+      size: 'md',
     });
     ref.componentInstance.service = this.service;
   }

@@ -1,6 +1,12 @@
 name: Test
 
-on: [pull_request, push]
+on:
+  push:
+    branches: [latest, beta-*.*.*, beta, alpha-*.*.*, alpha]
+  pull_request:
+    branches: [latest, beta-*.*.*, beta]
+    types: [review_requested, ready_for_review]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -19,8 +25,8 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
