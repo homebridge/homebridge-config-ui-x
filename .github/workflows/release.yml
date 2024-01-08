@@ -9,10 +9,12 @@ jobs:
   tag:
     name: Verify Release Tag
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
     steps:
       - name: Get Release Tag
         id: get_version
-        uses: jannemattila/get-version-from-tag@v1
+        uses: jannemattila/get-version-from-tag@v3
       - name: Tag Info
         run: |
           echo "Release Tag: ${{github.ref}}"
@@ -26,9 +28,10 @@ jobs:
         run: |
           echo Latest Tag does not matches Release tag
           exit 1
+
   build_and_test:
     needs: tag
-    name: Build and Test
+    name: Build and Test ${{ needs.tag.outputs.version }}
     if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
     uses: homebridge/.github/.github/workflows/nodejs-build-and-test.yml@latest
     with:
@@ -36,8 +39,10 @@ jobs:
       install_cmd: npm ci && cd ui && npm ci
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
+
   publish:
-    needs: build_and_test
+    needs: [tag, build_and_test]
+    name: Publish ${{ needs.tag.outputs.version }}
     if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
 
     uses: homebridge/.github/.github/workflows/npm-publish.yml@latest
@@ -45,10 +50,11 @@ jobs:
       install_cmd: npm ci && cd ui && npm ci
     secrets:
       npm_auth_token: ${{ secrets.npm_token }}
+
   build:
-    needs: publish
+    needs: [tag, publish]
     if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
-    name: Attach Artifact
+    name: Attach Artifact ${{ needs.tag.outputs.version }}
     runs-on: ubuntu-latest
 
     steps:
@@ -57,22 +63,10 @@ jobs:
         with:
           node-version: 20.x
 
-      - name: Tag
-        id: tag
-        uses: JinoArch/get-latest-tag@latest
-
-    # Sanity check to ensure that release tags don't start with a 'v' version prefix but adhere to the X.Y.Z format
-      - name: Check for Tag name Format
-        # https://github.com/orgs/community/discussions/25017
-        if: startsWith(steps.tag.outputs.latestTag, 'v')
-        run: |
-          echo "Release Tag name must not start with 'v', this was supplied ${{steps.tag.outputs.latestTag}}"
-          exit 1
-
       - name: Install package
         run: |
           export npm_config_prefix=$(pwd)/package
-          npm install -g homebridge-config-ui-x@${{ steps.tag.outputs.latestTag }}
+          npm install -g homebridge-config-ui-x@${{ needs.tag.outputs.version }}
 
       - name: Remove invalid node-pty node-gyp run
         run: |
@@ -80,12 +74,12 @@ jobs:
 
       - name: Create Bundle
         run: |
-          tar -C $(pwd)/package --owner=0 --group=0 --format=posix -czvf homebridge-config-ui-x-${{ steps.tag.outputs.latestTag }}.tar.gz .
-          shasum -a 256 homebridge-config-ui-x-${{ steps.tag.outputs.latestTag }}.tar.gz > SHASUMS256.txt
+          tar -C $(pwd)/package --owner=0 --group=0 --format=posix -czvf homebridge-config-ui-x-${{ needs.tag.outputs.version }}.tar.gz .
+          shasum -a 256 homebridge-config-ui-x-${{ needs.tag.outputs.version }}.tar.gz > SHASUMS256.txt
 
       - name: Check Bundle
         run: |
-          if [ $(stat -c%s "homebridge-config-ui-x-${{ steps.tag.outputs.latestTag }}.tar.gz") -lt 10000000 ]; then
+          if [ $(stat -c%s "homebridge-config-ui-x-${{ needs.tag.outputs.version }}.tar.gz") -lt 10000000 ]; then
             echo "Bundle is under 10MB, stopping"
             exit 1
           fi
@@ -93,9 +87,9 @@ jobs:
       - name: Upload tar.gz Bundle to GitHub Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: 'homebridge-config-ui-x-${{ steps.tag.outputs.latestTag }}.tar.gz'
+          name: 'homebridge-config-ui-x-${{ needs.tag.outputs.version }}.tar.gz'
           path: |
-            ./homebridge-config-ui-x-${{ steps.tag.outputs.latestTag }}.tar.gz
+            ./homebridge-config-ui-x-${{ needs.tag.outputs.version }}.tar.gz
       
     
       - name: Upload SHASUMS256.txt to GitHub Artifacts
@@ -108,6 +102,6 @@ jobs:
       - name: Attach Bundle
         uses: AButler/upload-release-assets@v3.0
         with:
-          files: 'homebridge-config-ui-x-${{ steps.tag.outputs.latestTag }}.tar.gz;SHASUMS256.txt'
+          files: 'homebridge-config-ui-x-${{ needs.tag.outputs.version }}.tar.gz;SHASUMS256.txt'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          release-tag: ${{ steps.tag.outputs.latestTag }}
+          release-tag: ${{ needs.tag.outputs.version }}
