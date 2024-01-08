@@ -4,9 +4,15 @@ Pull requests are welcome from everyone.
 
 This project is written in [TypeScript](https://www.typescriptlang.org/) and uses [Nest.js](https://nestjs.com/) for the server and [Angular](https://angular.io/) for the client UI.
 
-## Getting Setup
+> Note: The Raspberry Pi and similar boards do not meet the memory or CPU requirements required to set up the development environment.
 
-*Note: The Raspberry Pi and similar boards do not meet the memory or CPU requirements required to setup the development environment.*
+- [Local Setup (Quick Guide)](https://github.com/homebridge/homebridge-config-ui-x/blob/latest/CONTRIBUTING.md#local-setup-quick-start)
+- [Local Setup (Extended Guide)](https://github.com/homebridge/homebridge-config-ui-x/blob/latest/CONTRIBUTING.md#local-setup-extended-guide)
+- [Watching For Changes](https://github.com/homebridge/homebridge-config-ui-x/blob/latest/CONTRIBUTING.md#watching-for-changes)
+- [Running Tests](https://github.com/homebridge/homebridge-config-ui-x/blob/latest/CONTRIBUTING.md#running-tests)
+- [Contributing To Translations](https://github.com/homebridge/homebridge-config-ui-x/blob/latest/CONTRIBUTING.md#contributing-to-translations)
+
+## Local Setup (Quick Start)
 
 First, remove any globally installed versions of `homebridge-config-ui-x` you may have installed on your development machine:
 
@@ -49,6 +55,8 @@ If you don't have homebridge installed already run:
 ```
 npm install -g homebridge
 ```
+
+## Local Setup (Extended Guide)
 
 ## Watching For Changes
 

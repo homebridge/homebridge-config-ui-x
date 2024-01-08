@@ -89,15 +89,14 @@ jobs:
             echo "Bundle is under 10MB, stopping"
             exit 1
           fi
-    
+
       - name: Upload tar.gz Bundle to GitHub Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: 'homebridge-config-ui-x-${{ steps.get_version.outputs.version }}.tar.gz'
           path: |
             ./homebridge-config-ui-x-${{ steps.get_version.outputs.version }}.tar.gz
-      
-    
+
       - name: Upload SHASUMS256.txt to GitHub Artifacts
         uses: actions/upload-artifact@v4
         with:
