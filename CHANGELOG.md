@@ -2,15 +2,33 @@
 
 All notable changes to homebridge-config-ui-x will be documented in this file.
 
-## Beta (2024-XX-XX)
+## BETA (TBD)
 
 ### UI Changes
 
-- 
+- improve power options button display (#1961) (@mkz212)
+- update credits modal with supporters
 
 ### Translation Changes
 
-- 
+- updates to uk.json language file (#1978) (#1979) (@xrust83)
+
+### Other Changes
+
+- improve github actions
+- removed force of earlier version of `bonjour-service` as a fix has been implemented in latest version 
+- updated release drafter template so releases do not start with a `v`
+
+## 4.55.1 (2024-01-07)
+
+### Bug Fixes
+
+- Force earlier version of `bonjour-service` to resolve [#1973](https://github.com/homebridge/homebridge-config-ui-x/issues/1973) and [#1975](https://github.com/homebridge/homebridge-config-ui-x/issues/1975)
+  - **If you experienced this issue, we would recommend you go into Homebridge Setting and turn off Homebridge 'Insecure' Mode (Enable Accessory Control) before upgrading**, after you upgrade you can re-enable.
+
+### Translation Changes
+
+- updates to fr.json language file (#1974) (@SonnyT72)
 
 ### Other Changes
 
