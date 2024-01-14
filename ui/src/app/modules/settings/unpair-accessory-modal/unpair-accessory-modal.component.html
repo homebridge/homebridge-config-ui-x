@@ -8,8 +8,11 @@
     </button>
   </div>
   <div class="modal-body">
-    <ngb-alert type="info" [dismissible]="false">
-      {{ 'reset.message_need_to_remove_homebridge_accessory_from_home_app' | translate }}
+    <ngb-alert type="info" [dismissible]="false" style="margin-bottom: 0;">
+      <div class="text-center mt-2 mb-3"><i class="fas fa-fw fa-exclamation-circle" style="font-size: 75px;"></i></div>
+      <ul class="mb-0">
+        <li class="mb-0" [translate]="'reset.message_need_to_remove_homebridge_accessory_from_home_app'"></li>
+      </ul>
     </ngb-alert>
 
     <ul class="list-group mt-2">

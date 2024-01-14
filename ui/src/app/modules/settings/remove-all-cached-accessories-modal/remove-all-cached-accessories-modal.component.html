@@ -7,18 +7,21 @@
     </button>
   </div>
   <div class="modal-body">
-    <h3 class="text-center primary-text" [translate]="'reset.title_warning'">Warning</h3>
-    <p class="text-center grey-text" [translate]="'reset.message_action_is_irreversible'">This action is irreversible.
-      Please read carefully before proceeding.</p>
-    <ul>
-      <li [translate]="'reset.message_remove_cached_accessories'">
-        This action will remove all cached accessories from your Homebridge instance.
-      </li>
-      <li [translate]="'reset.accessories_will_may_need_to_be_reconfigured'">
-        After performing this action some accessories may need to be reconfigured in HomeKit or re-added to your
-        automations.
-      </li>
-    </ul>
+    <ngb-alert type="info" [dismissible]="false" style="margin-bottom: 0;">
+      <div class="text-center mt-2 mb-3"><i class="fas fa-fw fa-exclamation-circle" style="font-size: 75px;"></i></div>
+      <ul class="mb-0">
+        <li [translate]="'reset.message_action_is_irreversible'">
+          This action is irreversible. Please read carefully before proceeding.
+        </li>
+        <li [translate]="'reset.message_remove_cached_accessories'">
+          This action will remove all cached accessories from your Homebridge instance.
+        </li>
+        <li class="mb-0" [translate]="'reset.accessories_will_may_need_to_be_reconfigured'">
+          After performing this action some accessories may need to be reconfigured in HomeKit or re-added to your
+          automations.
+        </li>
+      </ul>
+    </ngb-alert>
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-left">
