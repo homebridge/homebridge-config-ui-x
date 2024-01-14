@@ -6,22 +6,20 @@ import {
   OnInit,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
-import { saveAs } from 'file-saver';
 import { ToastrService } from 'ngx-toastr';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 import { ApiService } from '@/app/core/api.service';
-import { ScheduledBackupsComponent } from '@/app/core/backup-restore/scheduled-backups/scheduled-backups.component';
 import { IoNamespace, WsService } from '@/app/core/ws.service';
 
 @Component({
-  selector: 'app-backup-restore',
-  templateUrl: './backup-restore.component.html',
-  styleUrls: ['./backup-restore.component.scss'],
+  selector: 'app-restore',
+  templateUrl: './restore.component.html',
+  styleUrls: ['./restore.component.scss'],
 })
-export class BackupRestoreComponent implements OnInit, OnDestroy {
+export class RestoreComponent implements OnInit, OnDestroy {
   @Input() setupWizardRestore = false;
 
   public clicked = false;
@@ -41,7 +39,6 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
   constructor(
     private $route: Router,
     public activeModal: NgbActiveModal,
-    private $modal: NgbModal,
     private translate: TranslateService,
     public $toastr: ToastrService,
     private $api: ApiService,
@@ -63,26 +60,6 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
       this.restoreInProgress = true;
       this.startRestore();
     }
-  }
-
-  async onDownloadBackupClick() {
-    this.clicked = true;
-    this.$api.get('/backup/download', { observe: 'response', responseType: 'blob' }).subscribe(
-      (res) => {
-        const archiveName = res.headers.get('File-Name') || 'homebridge-backup.tar.gz';
-        saveAs(res.body, archiveName);
-        this.clicked = false;
-        this.activeModal.close();
-        this.$toastr.success(
-          this.translate.instant('backup.message_backup_archive_created'),
-          this.translate.instant('toast.title_success'),
-        );
-      },
-      () => {
-        this.clicked = false;
-        this.$toastr.error(this.translate.instant('backup.message_backup_download_failed'), this.translate.instant('toast.title_error'));
-      },
-    );
   }
 
   onRestoreBackupClick() {
@@ -198,23 +175,6 @@ export class BackupRestoreComponent implements OnInit, OnDestroy {
       },
       () => {},
     );
-  }
-
-  openScheduledBackups() {
-    this.activeModal.close();
-    const ref = this.$modal.open(ScheduledBackupsComponent, {
-      size: 'lg',
-      backdrop: 'static',
-    });
-
-    ref.result.then(() => {
-      this.$modal.open(BackupRestoreComponent, {
-        size: 'lg',
-        backdrop: 'static',
-      });
-    }).catch(() => {
-      // do nothing
-    });
   }
 
   ngOnDestroy() {

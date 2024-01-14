@@ -28,10 +28,18 @@
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
-        {{ 'backup.title_backup_restore' | translate }}
+        {{ 'backup.title_backup' | translate }}
       </span>
-      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;" (click)="backupRestoreHomebridge()">
-        <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
+      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;" (click)="openBackupModal()">
+        <i class="fas fa-fw fa-cog"></i>
+      </button>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span class="pr-2">
+        {{ 'backup.title_restore' | translate }}
+      </span>
+      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;" (click)="openRestoreModal()">
+        <i class="fas fa-fw fa-cog"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
