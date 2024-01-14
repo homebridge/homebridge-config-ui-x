@@ -54,7 +54,7 @@
   "accessories.title_accessories": "Аксесоари",
   "accessories.title_accessory_control_disabled": "Homebridge управлението на аксесоарите е изключено",
   "accessories.title_create_new_room": "Създайте нова стая",
-  "backup.button_download_backup_archive": "Download Backup Archive",
+  "backup.button_download_backup_archive": "Download Backup",
   "backup.button_restore_backup": "Restore Backup",
   "backup.label_archive_name": "Archive Name",
   "backup.label_backup_time": "Backup Time",
