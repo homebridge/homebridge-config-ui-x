@@ -90,24 +90,28 @@ export class SettingsComponent implements OnInit {
   resetHomebridgeState() {
     this.$modal.open(ResetHomebridgeModalComponent, {
       size: 'lg',
+      backdrop: 'static',
     });
   }
 
   unpairAccessory() {
     this.$modal.open(UnpairAccessoryModalComponent, {
       size: 'lg',
+      backdrop: 'static',
     });
   }
 
   removeAllCachedAccessories() {
     this.$modal.open(RemoveAllCachedAccessoriesModalComponent, {
       size: 'lg',
+      backdrop: 'static',
     });
   }
 
   removeSingleCachedAccessories() {
     this.$modal.open(RemoveSingleCachedAccessoryModalComponent, {
       size: 'lg',
+      backdrop: 'static',
     });
   }
 
@@ -192,6 +196,7 @@ export class SettingsComponent implements OnInit {
   selectNetworkInterfaces() {
     const ref = this.$modal.open(SelectNetworkInterfacesComponent, {
       size: 'lg',
+      backdrop: 'static',
     });
 
     ref.componentInstance.availableNetworkAdapters = this.availableNetworkAdapters;

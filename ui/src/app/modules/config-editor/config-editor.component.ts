@@ -209,7 +209,10 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       const data = await this.$api.post('/config-editor', config)
         .toPromise();
       this.homebridgeConfig = JSON.stringify(data, null, 4);
-      this.$modal.open(RestartHomebridgeComponent);
+      this.$modal.open(RestartHomebridgeComponent, {
+        size: 'lg',
+        backdrop: 'static',
+      });
     } catch {
       this.$toastr.error(this.translate.instant('config.toast_failed_to_save_config'), this.translate.instant('toast.title_error'));
     }
@@ -218,6 +221,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   onRestore() {
     this.modalService.open(ConfigRestoreBackupComponent, {
       size: 'lg',
+      backdrop: 'static',
     })
       .result
       .then((backupId) => {
