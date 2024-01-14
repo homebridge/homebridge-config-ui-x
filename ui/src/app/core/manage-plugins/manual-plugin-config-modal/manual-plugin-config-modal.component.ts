@@ -217,7 +217,10 @@ export class ManualPluginConfigModalComponent implements OnInit {
       await this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig)
         .toPromise();
       this.activeModal.close();
-      this.$modal.open(RestartHomebridgeComponent);
+      this.$modal.open(RestartHomebridgeComponent, {
+        size: 'lg',
+        backdrop: 'static',
+      });
     } catch {
       this.$toastr.error(this.translate.instant('config.toast_failed_to_save_config'), this.translate.instant('toast.title_error'));
       this.saveInProgress = false;

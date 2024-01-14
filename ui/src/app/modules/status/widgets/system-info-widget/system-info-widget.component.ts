@@ -45,7 +45,10 @@ export class SystemInfoWidgetComponent implements OnInit {
   }
 
   glibcVersionModal() {
-    const ref = this.$modal.open(InformationComponent);
+    const ref = this.$modal.open(InformationComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    });
     ref.componentInstance.title = this.$translate.instant('status.widget.systeminfo.modal_glibc_title');
     ref.componentInstance.message = this.$translate.instant('status.widget.systeminfo.modal_glibc_message');
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info');
@@ -56,7 +59,10 @@ export class SystemInfoWidgetComponent implements OnInit {
   }
 
   serviceModeModal() {
-    const ref = this.$modal.open(InformationComponent);
+    const ref = this.$modal.open(InformationComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    });
     ref.componentInstance.title = this.$translate.instant('status.widget.systeminfo.modal_servicemode_title');
     ref.componentInstance.message = this.$translate.instant('status.widget.systeminfo.modal_servicemode_message');
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info');
@@ -67,7 +73,10 @@ export class SystemInfoWidgetComponent implements OnInit {
   }
 
   nodeUpdateModal() {
-    const ref = this.$modal.open(InformationComponent);
+    const ref = this.$modal.open(InformationComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    });
 
     // eslint-disable-next-line max-len
     ref.componentInstance.title = `${this.$translate.instant('status.widget.systeminfo.modal_node_update_title')} - ${this.nodejsInfo.latestVersion}`;
@@ -80,7 +89,10 @@ export class SystemInfoWidgetComponent implements OnInit {
   }
 
   nodeUnsupportedModal() {
-    const ref = this.$modal.open(InformationComponent);
+    const ref = this.$modal.open(InformationComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    });
 
     // eslint-disable-next-line max-len
     ref.componentInstance.title = this.$translate.instant('status.widget.systeminfo.modal_node_unsupp_title');

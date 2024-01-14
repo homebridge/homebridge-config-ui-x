@@ -21,8 +21,8 @@ export class CustomPluginsService {
   async openSettings(plugin, schema) {
     const pluginConfig = await this.loadPluginConfig(plugin.name);
     const ref = this.modalService.open(this.plugins[plugin.name], {
-      backdrop: 'static',
       size: 'lg',
+      backdrop: 'static',
     });
     ref.componentInstance.plugin = plugin;
     ref.componentInstance.schema = schema;
@@ -36,8 +36,8 @@ export class CustomPluginsService {
   async openCustomSettingsUi(plugin, schema) {
     const pluginConfig = await this.loadPluginConfig(plugin.name);
     const ref = this.modalService.open(CustomPluginsComponent, {
-      backdrop: 'static',
       size: 'lg',
+      backdrop: 'static',
     });
 
     ref.componentInstance.plugin = plugin;
