@@ -10,7 +10,11 @@
   </div>
   <div class="modal-body">
     <ngb-alert type="info" [dismissible]="false">
-      {{ 'reset.message_remove_cached_accessories_single_warning' | translate }}
+      <p>{{ 'reset.message_remove_cached_accessories_single_warning' | translate }}</p>
+      <p [translate]="'reset.accessories_will_may_need_to_be_reconfigured'">
+        After performing this action some accessories may need to be reconfigured in HomeKit or re-added to your
+        automations.
+      </p>
     </ngb-alert>
 
     <ul class="list-group mt-2">
