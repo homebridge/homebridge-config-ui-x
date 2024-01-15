@@ -1,15 +1,22 @@
 <div class="modal-content hb-backup-modal">
   <div class="modal-header">
-    <h5 class="modal-title" translate="backup.title_scheduled_backups"></h5>
+    <h5 class="modal-title" translate="backup.title_backup"></h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
       (click)="activeModal.dismiss('Dismiss')"></button>
   </div>
   <div class="modal-body">
-
+    <p [translate]="'backup.message_backup_help_one'"></p>
+    <p [translate]="'backup.message_backup_help_two'"></p>
+    <p [translate]="'backup.message_backup_warning'"></p>
+    <div class="text-center mb-3">
+      <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="onDownloadBackupClick()" [disabled]="clicked">
+        <i *ngIf="clicked" class="fa fa-fw fa-circle-notch fa-spin"></i>
+        <span *ngIf="!clicked" [translate]="'backup.button_download_backup_archive'"></span>
+      </button>
+    </div>
     <p translate="backup.message_scheduled_backup_time" *ngIf="backupTime"
       [translateParams]="{backupTime: backupTime | date:'shortTime', dayCount: 7}">
     </p>
-
     <ul class="list-group" *ngIf="scheduledBackups && scheduledBackups.length">
       <li class="mt-2 d-flex flex-row justify-content-between">
         <span><strong translate="backup.label_archive_name"></strong></span>
@@ -44,17 +51,13 @@
   </div>
 
   <div class="modal-footer justify-content-between">
-    <div class="text-start">
+    <div class="text-start"></div>
+    <div class="text-center">
       <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="activeModal.dismiss('Dismiss')"
         [attr.aria-label]="'form.button_close' | translate">
         {{ 'form.button_close' | translate }}
       </button>
     </div>
-    <div class="text-center"></div>
-    <div class="text-end">
-      <button type="button" class="btn btn-primary" (click)="openBackupRestore()">
-        <i class="fas fa-fw fa-arrow-left"></i> {{ 'backup.title_backup_restore' | translate }}
-      </button>
-    </div>
+    <div class="text-right"></div>
   </div>
 </div>

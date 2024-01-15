@@ -56,7 +56,10 @@ export class LayoutComponent implements OnInit {
 
     if (lt(this.$settings.uiVersion, environment.serverTarget)) {
       console.log(`Server restart required. UI Version: ${environment.serverTarget} - Server Version: ${this.$settings.uiVersion} `);
-      const ref = this.$modal.open(ConfirmComponent);
+      const ref = this.$modal.open(ConfirmComponent, {
+        size: 'lg',
+        backdrop: 'static',
+      });
 
       ref.componentInstance.title = this.translate.instant('platform.version.title_service_restart_required');
       ref.componentInstance.message = this.translate.instant('platform.version.message_service_restart_required', {

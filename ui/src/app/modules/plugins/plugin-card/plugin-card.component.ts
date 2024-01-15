@@ -75,12 +75,18 @@ export class PluginCardComponent implements OnInit {
   }
 
   openFundingModal(plugin: any) {
-    const ref = this.$modal.open(DonateModalComponent);
+    const ref = this.$modal.open(DonateModalComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    });
     ref.componentInstance.plugin = plugin;
   }
 
   openVerifiedModal() {
-    const ref = this.$modal.open(InformationComponent);
+    const ref = this.$modal.open(InformationComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    });
     if (this.plugin.verifiedPlugin) {
       ref.componentInstance.title = this.$translate.instant('plugins.manage.modal_verified_title');
       ref.componentInstance.subtitle = this.$translate.instant('plugins.manage.modal_verified_subtitle', {
@@ -101,12 +107,18 @@ export class PluginCardComponent implements OnInit {
   }
 
   pluginInfoModal(plugin: any) {
-    const ref = this.$modal.open(PluginInfoComponent);
+    const ref = this.$modal.open(PluginInfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    });
     ref.componentInstance.plugin = plugin;
   }
 
   disablePlugin(plugin: any) {
-    const ref = this.$modal.open(ConfirmComponent);
+    const ref = this.$modal.open(ConfirmComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    });
 
     ref.componentInstance.title = `${this.$translate.instant('plugins.manage.disable')}: ${plugin.name}`;
     ref.componentInstance.message = this.$translate.instant('plugins.manage.message_confirm_disable', { pluginName: plugin.name });
@@ -123,7 +135,10 @@ export class PluginCardComponent implements OnInit {
         if (this.hasChildBridges) {
           this.doChildBridgeAction('stop');
         }
-        this.$modal.open(RestartHomebridgeComponent);
+        this.$modal.open(RestartHomebridgeComponent, {
+          size: 'lg',
+          backdrop: 'static',
+        });
       } catch (err) {
         this.$toastr.error(`Failed to disable plugin: ${err.message}`, this.$translate.instant('toast.title_error'));
       }
@@ -133,7 +148,10 @@ export class PluginCardComponent implements OnInit {
   }
 
   enablePlugin(plugin: any) {
-    const ref = this.$modal.open(ConfirmComponent);
+    const ref = this.$modal.open(ConfirmComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    });
 
     ref.componentInstance.title = `${this.$translate.instant('plugins.manage.enable')}: ${plugin.name}`;
     ref.componentInstance.message = this.$translate.instant('plugins.manage.message_confirm_enable', { pluginName: plugin.name });
@@ -149,7 +167,10 @@ export class PluginCardComponent implements OnInit {
         if (this.hasChildBridges) {
           await this.doChildBridgeAction('start');
         }
-        this.$modal.open(RestartHomebridgeComponent);
+        this.$modal.open(RestartHomebridgeComponent, {
+          size: 'lg',
+          backdrop: 'static',
+        });
       } catch (err) {
         this.$toastr.error(`Failed to enable plugin: ${err.message}`, this.$translate.instant('toast.title_error'));
       }

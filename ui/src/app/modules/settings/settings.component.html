@@ -15,32 +15,40 @@
         {{ 'menu.label_settings_ui' | translate }}
       </span>
       <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" (click)="openUiSettings()">
-        <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
+        <i class="fas fa-fw fa-cog"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="w-75 pe-2">
         {{ 'menu.config_json_editor' | translate }}
       </span>
-      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" routerLink="/config">
-        <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
+      <a class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 45px;" routerLink="/config">
+        <i class="fas fa-fw fa-cog"></i>
+      </a>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span class="pe-2">
+        {{ 'backup.title_backup' | translate }}
+      </span>
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 45px;" (click)="openBackupModal()">
+        <i class="fas fa-fw fa-cog"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="w-75 pe-2">
-        {{ 'backup.title_backup_restore' | translate }}
+      <span class="pe-2">
+        {{ 'backup.title_restore' | translate }}
       </span>
-      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" (click)="backupRestoreHomebridge()">
-        <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 45px;" (click)="openRestoreModal()">
+        <i class="fas fa-fw fa-cog"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="w-75 pe-2">
         {{ 'menu.tooltip_user_accounts' | translate }}
       </span>
-      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" routerLink="/users">
-        <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
-      </button>
+      <a class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 45px;" routerLink="/users">
+        <i class="fas fa-fw fa-cog"></i>
+      </a>
     </li>
   </ul>
 </div>
@@ -174,7 +182,7 @@
       </span>
       <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" (click)="unpairAccessory()"
         [attr.aria-label]="'reset.title_unpair_bridges_cameras_tv_external_accessories' | translate">
-        <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
+        <i class="fas fa-fw fa-cog"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -186,7 +194,7 @@
       </span>
       <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" (click)="resetHomebridgeState()"
         [attr.aria-label]="'reset.title_reset_homebridge_accessory' | translate">
-        <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
+        <i class="fas fa-fw fa-cog"></i>
       </button>
     </li>
   </ul>
@@ -212,7 +220,7 @@
       <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;"
         [translate]="'reset.title_clear_cached_accessories_single'" (click)="removeSingleCachedAccessories()"
         [attr.aria-label]="'reset.title_clear_cached_accessories_single' | translate">
-        <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
+        <i class="fas fa-fw fa-cog"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -225,7 +233,7 @@
       <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;"
         [translate]="'reset.title_clear_cached_accessories'" (click)="removeAllCachedAccessories()"
         [attr.aria-label]="'reset.title_clear_cached_accessories' | translate">
-        <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
+        <i class="fas fa-fw fa-cog"></i>
       </button>
     </li>
   </ul>
