@@ -45,6 +45,9 @@ export class SidebarComponent {
     if (this.isExpanded) {
       this.toggleSidebar.emit(false);
     }
-    this.$modal.open(PowerOptionsComponent);
+    this.$modal.open(PowerOptionsComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    });
   }
 }
