@@ -93,9 +93,12 @@ body:
     attributes:
       label: Environment Info
       options:
-        - label: Using Docker?
-        - label: Using Hyper-V?
-        - label: Using hb-service?
+        - Using Docker
+        - Using Hyper-V
+        - Using hb-service
+        - Using systemd
+        - Using pm2
+        - Other (specify in description)
       description: |
         If your Environment Info is not listed, please provide it in the bug description.
   - type: dropdown
