@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
@@ -9,8 +9,9 @@ import { ApiService } from '@/app/core/api.service';
   templateUrl: './remove-all-cached-accessories-modal.component.html',
   styleUrls: ['./remove-all-cached-accessories-modal.component.scss'],
 })
-export class RemoveAllCachedAccessoriesModalComponent {
+export class RemoveAllCachedAccessoriesModalComponent implements OnInit {
   public clicked: boolean;
+  public cachedAccessories: any[];
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -18,6 +19,22 @@ export class RemoveAllCachedAccessoriesModalComponent {
     private translate: TranslateService,
     private $api: ApiService,
   ) {}
+
+  ngOnInit(): void {
+    this.loadCachedAccessories();
+  }
+
+  async loadCachedAccessories() {
+    try {
+      this.cachedAccessories = await this.$api.get('/server/cached-accessories').toPromise();
+    } catch (e) {
+      this.toastr.error(
+        this.translate.instant('reset.toast_error_message'),
+        this.translate.instant('toast.title_error'),
+      );
+      this.activeModal.close();
+    }
+  }
 
   onResetCachedAccessoriesClick() {
     this.clicked = true;

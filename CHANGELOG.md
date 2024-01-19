@@ -13,6 +13,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - refactor backup and restore modals, separate items on settings page
 - standardise modal sizes
 - standardise warning sections on settings modals
+- minor adjustments to settings page
 
 ### Translation Changes
 

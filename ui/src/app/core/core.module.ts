@@ -15,8 +15,6 @@ import { RtlDirective } from '@/app/core/directives/rtl.directive';
 import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe';
 import { ExternalLinkIconPipe } from '@/app/core/pipes/external-link-icon.pipe';
 import { ReplacePipe } from '@/app/core/pipes/replace.pipe';
-import { BackupComponent } from '@/app/modules/settings/backup/backup.component';
-import { RestoreComponent } from '@/app/modules/settings/restore/restore.component';
 
 @NgModule({
   declarations: [
@@ -29,8 +27,6 @@ import { RestoreComponent } from '@/app/modules/settings/restore/restore.compone
     LongClickDirective,
     RtlDirective,
     JsonSchemaFormPatchDirective,
-    RestoreComponent,
-    BackupComponent,
     ConfirmComponent,
     InformationComponent,
     RestartHomebridgeComponent,

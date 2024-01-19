@@ -46,24 +46,6 @@
       </button>
     </div>
   </div>
-
-  <div [hidden]="!restoreStarted" id="plugin-log-output" class="modal-body"></div>
-
-  <div class="modal-footer justify-content-between" *ngIf="!restoreStarted || restoreFailed === true">
-    <div class="text-start">
-      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="activeModal.dismiss('Dismiss')"
-        [attr.aria-label]="'form.button_close' | translate">
-        {{ 'form.button_close' | translate }}
-      </button>
-    </div>
-    <div class="text-center"></div>
-    <div class="text-end">
-      <button type="button" class="btn btn-primary me-auto" (click)="openScheduledBackups()">
-        {{ 'backup.title_scheduled_backups' | translate }}
-      </button>
-    </div>
-  </div>
-
   <div class="modal-footer justify-content-between" *ngIf="!restoreInProgress && restoreStarted">
     <div class="text-start"></div>
     <div class="text-center">
