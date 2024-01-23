@@ -23,6 +23,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 
 - improve github actions
 - fixed Environment Info selection on bug and support templates
+- add wiki change request issue template
 - removed force of earlier version of `bonjour-service` as a fix has been implemented in latest version 
 - updated release drafter template so releases do not start with a `v`
 

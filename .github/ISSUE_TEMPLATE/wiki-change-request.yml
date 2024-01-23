@@ -1,0 +1,33 @@
+name: Wiki Change Request
+description: want change?
+labels: ["wiki change request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please read the following before you start filling out this form:
+        
+        * This form is for requesting changes to the Homebridge Organization wiki pages only.
+  - type: textarea
+    id: proposed-change
+    attributes:
+      label: Proposed Change
+      description: |
+        Please describe the change you would like to see made to the wiki page.
+
+        If you are requesting a new page, please describe the page you would like to see created.
+
+      placeholder: |
+        Tip: You can attach images or files by clicking this area to highlight it and then dragging files in.
+    validations:
+      required: true
+  - type: input
+    id: wiki-page
+    attributes:
+      label: Wiki Page Link
+      description: |
+        Please provide a link to the wiki page you would like to see changed.
+
+        If you are requesting a new page, please provide details of where you would like to see this page linked from. 
+    validations:
+      required: true
