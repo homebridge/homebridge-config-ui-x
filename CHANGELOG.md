@@ -18,6 +18,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 
 - updates to uk.json language file (#1978) (#1979) (@xrust83)
 - updates to th.json language file (#1982) (@tomzt)
+- updates to fr.json language file (#1991) (@SonnyT72)
 
 ### Other Changes
 
