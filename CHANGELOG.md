@@ -13,6 +13,8 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - standardise modal sizes
 - standardise warning sections on settings modals
 - minor adjustments to settings page
+- update icons on settings page (#1990) (@mkz212)
+- break-word in plugin config (#1993) (@mkz212)
 
 ### Translation Changes
 
