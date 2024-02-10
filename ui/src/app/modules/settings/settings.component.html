@@ -14,40 +14,40 @@
       <span class="w-75 pe-2">
         {{ 'menu.label_settings_ui' | translate }}
       </span>
-      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" (click)="openUiSettings()">
-        <i class="fas fa-fw fa-cog"></i>
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 45px;" (click)="openUiSettings()">
+        <i class="fas fa-fw fa-sliders"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="w-75 pe-2">
         {{ 'menu.config_json_editor' | translate }}
       </span>
-      <a class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" routerLink="/config">
-        <i class="fas fa-fw fa-cog"></i>
+      <a class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 45px;" routerLink="/config">
+        <i class="fas fa-fw fa-chevron-right"></i>
       </a>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2">
         {{ 'backup.title_backup' | translate }}
       </span>
-      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" (click)="openBackupModal()">
-        <i class="fas fa-fw fa-cog"></i>
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 45px;" (click)="openBackupModal()">
+        <i class="fas fa-fw fa-chevron-right"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2">
         {{ 'backup.title_restore' | translate }}
       </span>
-      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" (click)="openRestoreModal()">
-        <i class="fas fa-fw fa-cog"></i>
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 45px;" (click)="openRestoreModal()">
+        <i class="fas fa-fw fa-chevron-right"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="w-75 pe-2">
         {{ 'menu.tooltip_user_accounts' | translate }}
       </span>
-      <a class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" routerLink="/users">
-        <i class="fas fa-fw fa-cog"></i>
+      <a class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 45px;" routerLink="/users">
+        <i class="fas fa-fw fa-chevron-right"></i>
       </a>
     </li>
   </ul>
@@ -74,7 +74,7 @@
       <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" [translate]="'reset.title_clear_cached_accessories'"
         (click)="selectNetworkInterfaces()" [disabled]="!availableNetworkAdapters.length"
         [attr.aria-label]="'settings.network.title_network_interfaces' | translate">
-        <i class="fas fa-fw fa-cog" [ngClass]="{ 'fa-pulse': !availableNetworkAdapters.length }"></i>
+        <i class="fas fa-fw fa-chevron-right" [ngClass]="{ 'fa-pulse': !availableNetworkAdapters.length }"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -149,15 +149,16 @@
 <!-- ALL USERS -->
 <div class="mb-4">
   <h5 class="primary-text mt-3">{{ 'reset.title_reset' | translate }}</h5>
+  <p class="small grey-text mb-2">{{ 'settings.reset.help' | translate }}</p>
   <ul class="list-group mt-2">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="w-75 pe-2">
-        {{ 'reset.title_unpair_bridges_cameras_tv_external_accessories' | translate }}
-        <small class="grey-text">{{ 'settings.reset.help' | translate }}</small>
+        {{ 'reset.title_unpair_bridges_cameras_tv_external_accessories' | translate }}<br/>
+        <small class="grey-text pr-2">{{ 'reset.message_unpair_bridges_cameras_tv_external_accessories' | translate }}</small>
       </span>
       <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" (click)="unpairAccessory()"
         [attr.aria-label]="'reset.title_unpair_bridges_cameras_tv_external_accessories' | translate">
-        <i class="fas fa-fw fa-cog"></i>
+        <i class="fas fa-fw fa-chevron-right"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -167,7 +168,7 @@
       </span>
       <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" (click)="resetHomebridgeState()"
         [attr.aria-label]="'reset.title_reset_homebridge_accessory' | translate">
-        <i class="fas fa-fw fa-cog"></i>
+        <i class="fas fa-fw fa-chevron-right"></i>
       </button>
     </li>
   </ul>
@@ -176,19 +177,17 @@
 <!-- SERVICE MODE USERS ONLY -->
 <div *ngIf="$settings.env.serviceMode" class="pb-3">
   <h5 class="primary-text mt-3">{{ 'settings.title_manage_cached_accessories' | translate }}</h5>
+  <p class="small grey-text mb-2">{{ 'settings.manage_cache.help' | translate }}</p>
   <ul class="list-group mb-4">
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <small class="grey-text pr-2">{{ 'settings.manage_cache.help' | translate }}</small>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="w-75 pe-2">
-        {{ 'reset.title_clear_cached_accessories_single' | translate }}
+        {{ 'reset.title_clear_cached_accessories_single' | translate }}<br>
         <small class="grey-text pr-2">{{ 'reset.message_remove_cached_accessories_single' | translate }}</small>
       </span>
       <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;"
         [translate]="'reset.title_clear_cached_accessories_single'" (click)="removeSingleCachedAccessories()"
         [attr.aria-label]="'reset.title_clear_cached_accessories_single' | translate">
-        <i class="fas fa-fw fa-cog"></i>
+        <i class="fas fa-fw fa-chevron-right"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -199,7 +198,7 @@
       <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;"
         [translate]="'reset.title_clear_cached_accessories'" (click)="removeAllCachedAccessories()"
         [attr.aria-label]="'reset.title_clear_cached_accessories' | translate">
-        <i class="fas fa-fw fa-cog"></i>
+        <i class="fas fa-fw fa-chevron-right"></i>
       </button>
     </li>
   </ul>
