@@ -87,7 +87,7 @@ export class PluginCardComponent implements OnInit {
       size: 'lg',
       backdrop: 'static',
     });
-    if (this.plugin.verifiedPlugin) {
+    if (this.plugin.verifiedPlugin || this.plugin.verifiedPlusPlugin) {
       ref.componentInstance.title = this.$translate.instant('plugins.manage.modal_verified_title');
       ref.componentInstance.subtitle = this.$translate.instant('plugins.manage.modal_verified_subtitle', {
         pluginName: this.plugin.displayName || this.plugin.name,
