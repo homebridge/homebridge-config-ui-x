@@ -79,7 +79,7 @@
           <!-- // -->
           <!-- plugin author and donate modal -->
           <p class="card-text mb-2">
-            <a href="javascript:void(0)" class="card-link pink-text" *ngIf="(plugin.verifiedPlugin || plugin.verifiedPlusPlugin) && plugin.funding"
+            <a href="javascript:void(0)" class="card-link pink-text" *ngIf="!((plugin.verifiedPlugin || plugin.verifiedPlusPlugin) && plugin.funding)"
               (click)="openFundingModal(plugin)">
               <i class="fas fa-fw fa-heart fa-lg me-1"></i>
               <span class="grey-text">@{{ plugin.author }}</span>
