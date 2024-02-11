@@ -62,7 +62,7 @@
           </p>
           <!-- // -->
           <!-- plugin verified -->
-          <p class="card-text mb-2" *ngIf="plugin.verifiedPlugin">
+          <p class="card-text mb-2" *ngIf="plugin.verifiedPlugin || plugin.verifiedPlusPlugin">
             <a href="javascript:void(0)" class="card-link green-text" (click)="openVerifiedModal()">
               <i class="fas fa-fw fa-shield-alt fa-lg me-1"></i>
               <span class="grey-text">{{ 'plugins.donate.button_verified' | translate }}</span>
@@ -70,7 +70,7 @@
           </p>
           <!-- // -->
           <!-- plugin not verified -->
-          <p class="card-text mb-2" *ngIf="!plugin.verifiedPlugin">
+          <p class="card-text mb-2" *ngIf="!plugin.verifiedPlugin && !plugin.verifiedPlusPlugin">
             <a href="javascript:void(0)" class="card-link" (click)="openVerifiedModal()">
               <i class="fas fa-fw fa-shield-alt fa-lg me-1" style="opacity: 0.25;"></i>
               <span class="grey-text">{{ 'plugins.donate.button_not_verified' | translate }}</span>
@@ -79,12 +79,12 @@
           <!-- // -->
           <!-- plugin author and donate modal -->
           <p class="card-text mb-2">
-            <a href="javascript:void(0)" class="card-link pink-text" *ngIf="plugin.verifiedPlugin && plugin.funding"
+            <a href="javascript:void(0)" class="card-link pink-text" *ngIf="(plugin.verifiedPlugin || plugin.verifiedPlusPlugin) && plugin.funding"
               (click)="openFundingModal(plugin)">
               <i class="fas fa-fw fa-heart fa-lg me-1"></i>
               <span class="grey-text">@{{ plugin.author }}</span>
             </a>
-            <span class="grey-text" *ngIf="!plugin.verifiedPlugin || !plugin.funding">
+            <span class="grey-text" *ngIf="(plugin.verifiedPlugin || plugin.verifiedPlusPlugin) && plugin.funding">
               <i class="fas fa-fw fa-heart fa-lg me-1" style="opacity: 0.5;"></i>@{{ plugin.author }}
             </span>
           </p>
