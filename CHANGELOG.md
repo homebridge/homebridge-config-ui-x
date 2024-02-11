@@ -29,6 +29,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - add wiki change request issue template
 - removed force of earlier version of `bonjour-service` as a fix has been implemented in latest version 
 - updated release drafter template so releases do not start with a `v`
+- updated special plugin lists
 
 ## 4.55.1 (2024-01-07)
 
