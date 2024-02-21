@@ -894,7 +894,7 @@ export class PluginsService {
     }
 
     // make sure the repo is GitHub
-    const repoMatch = plugin.links.homepage.match(/https:\/\/github.com\/([^\/]+)\/([^\/#]+)/);
+    const repoMatch = plugin.links.homepage?.match(/https:\/\/github.com\/([^\/]+)\/([^\/#]+)/);
     const bugsMatch = plugin.links.bugs?.match(/https:\/\/github.com\/([^\/]+)\/([^\/#]+)/);
     let match: RegExpMatchArray | null = repoMatch;
     if (!repoMatch) {
