@@ -24,7 +24,7 @@
     "@homebridge/plugin-ui-utils": "1.0.0",
     "@ng-bootstrap/ng-bootstrap": "11.0.1",
     "@ngx-translate/core": "14.0.0",
-    "@oznu/hap-client": "1.9.0",
+    "@oznu/hap-client": "1.10.0",
     "@oznu/ngx-bs4-jsonform": "7.3.7",
     "@popperjs/core": "2.11.8",
     "angular-gridster2": "15.0.4",
