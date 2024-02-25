@@ -23,6 +23,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - updates to th.json language file (#1982) (@tomzt)
 - updates to fr.json language file (#1991) (@SonnyT72)
 - updates to ja.json language file (@yima0913)
+- Correct slow restart message (#2006) (@jamieburchell)
 
 ### Other Changes
 
