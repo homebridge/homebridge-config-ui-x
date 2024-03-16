@@ -16,12 +16,15 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - minor adjustments to settings page
 - update icons on settings page (#1990) (@mkz212)
 - break-word in plugin config (#1993) (@mkz212)
+- Fix crash with missing homepage package.json property (#2013) (@regaw-leinad)
 
 ### Translation Changes
 
 - updates to uk.json language file (#1978) (#1979) (@xrust83)
 - updates to th.json language file (#1982) (@tomzt)
 - updates to fr.json language file (#1991) (@SonnyT72)
+- updates to ja.json language file (@yima0913)
+- Correct slow restart message (#2006) (@jamieburchell)
 
 ### Other Changes
 
@@ -31,6 +34,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - removed force of earlier version of `bonjour-service` as a fix has been implemented in latest version 
 - updated release drafter template so releases do not start with a `v`
 - updated special plugin lists
+- dependency updates
 
 ## 4.55.1 (2024-01-07)
 
