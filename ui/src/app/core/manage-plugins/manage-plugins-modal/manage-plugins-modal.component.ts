@@ -7,10 +7,10 @@ import {
 import { Router } from '@angular/router';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
-import { FitAddon } from '@xterm/addon-fit';
-import { Terminal } from '@xterm/xterm';
 import { saveAs } from 'file-saver';
 import { ToastrService } from 'ngx-toastr';
+import { Terminal } from 'xterm';
+import { FitAddon } from 'xterm-addon-fit';
 import { ApiService } from '@/app/core/api.service';
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component';
 import { NotificationService } from '@/app/core/notification.service';

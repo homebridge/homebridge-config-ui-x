@@ -6,8 +6,8 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { ITerminalOptions } from '@xterm/xterm';
 import { Subject } from 'rxjs';
+import { ITerminalOptions } from 'xterm';
 import { LogService } from '@/app/core/log.service';
 
 @Component({

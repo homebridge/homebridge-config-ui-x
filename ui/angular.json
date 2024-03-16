@@ -41,8 +41,6 @@
             ],
             "allowedCommonJsDependencies": [
               "@/app/modules/status/status.component",
-              "@xterm/xterm",
-              "@xterm/addon-fit",
               "ajv",
               "dayjs",
               "dragula",
@@ -53,7 +51,9 @@
               "mobile-detect",
               "prismjs",
               "qrcode",
-              "semver"
+              "semver",
+              "xterm",
+              "xterm-addon-fit"
             ],
             "aot": false,
             "stylePreprocessorOptions": {
