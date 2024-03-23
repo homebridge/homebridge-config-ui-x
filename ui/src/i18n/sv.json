@@ -151,6 +151,7 @@
   "menu.label_accessories": "Tillbehör",
   "menu.label_config": "Konfiguration",
   "menu.label_plugins": "Plugins",
+  "menu.label_settings": "Settings",
   "menu.label_settings_hb": "Homebridge Settings",
   "menu.label_settings_ui": "Användargränssnitt Inställningar",
   "menu.label_status": "Status",

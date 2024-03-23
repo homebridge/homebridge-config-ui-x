@@ -21,9 +21,9 @@ export class RtlDirective implements OnInit {
     if (this.$settings.rtl) {
       (this.el.nativeElement as HTMLElement).setAttribute('dir', 'rtl');
       if (this.rtl === 'right') {
-        (this.el.nativeElement as HTMLElement).classList.add('text-right');
+        (this.el.nativeElement as HTMLElement).classList.add('text-end');
       } else if (this.rtl === 'left') {
-        (this.el.nativeElement as HTMLElement).classList.add('text-left');
+        (this.el.nativeElement as HTMLElement).classList.add('text-start');
       }
     }
   }

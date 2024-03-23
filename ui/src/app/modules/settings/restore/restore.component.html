@@ -46,14 +46,13 @@
       </button>
     </div>
   </div>
-
   <div class="modal-footer justify-content-between" *ngIf="!restoreInProgress && restoreStarted">
-    <div class="text-left"></div>
+    <div class="text-start"></div>
     <div class="text-center">
-      <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="postBackupRestart()">
+      <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="postBackupRestart()">
         {{ 'menu.hbrestart.title' | translate }}
       </button>
     </div>
-    <div class="text-right"></div>
+    <div class="text-end"></div>
   </div>
 </div>

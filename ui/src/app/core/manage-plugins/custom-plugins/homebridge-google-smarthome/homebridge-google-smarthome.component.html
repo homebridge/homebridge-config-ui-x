@@ -1,10 +1,8 @@
 <div class="modal-content hb-plugin-settings-modal">
   <div class="modal-header">
     <h5 class="modal-title">Homebridge Google Smart Home</h5>
-    <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="activeModal.dismiss('Dismiss')">
-      <span aria-hidden="true">&times;</span>
-    </button>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
+      (click)="activeModal.dismiss('Dismiss')"></button>
   </div>
 
   <div class="modal-body" *ngIf="!$settings.env.enableAccessories">
@@ -57,12 +55,12 @@
   </div>
 
   <div class="modal-footer">
-    <button type="button" class="btn btn-elegant mr-auto" data-dismiss="modal" (click)="unlinkAccount()"
+    <button type="button" class="btn btn-elegant me-auto" data-bs-dismiss="modal" (click)="unlinkAccount()"
       *ngIf="gshConfig.token" translate="plugins.settings.custom.homebridge-gsh.label_unlink_account">
     </button>
-    <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="close()"
+    <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="close()"
       [translate]="'form.button_close'">Close</button>
-    <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="saveAndClose()" *ngIf="gshConfig.token"
+    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="saveAndClose()" *ngIf="gshConfig.token"
       [translate]="'form.button_save'">Save</button>
   </div>
 </div>

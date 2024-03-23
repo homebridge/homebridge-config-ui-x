@@ -1,10 +1,8 @@
 <div class="modal-content">
   <div class="modal-header">
     <h5 class="modal-title" translate="settings.network.title_network_interfaces"></h5>
-    <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="activeModal.dismiss('Dismiss')">
-      <span aria-hidden="true">&times;</span>
-    </button>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
+      (click)="activeModal.dismiss('Dismiss')"></button>
   </div>
   <div class="modal-body">
 
@@ -23,7 +21,7 @@
         <li *ngFor="let adapter of availableNetworkAdapters"
           class="mt-2 d-flex flex-row flex-wrap justify-content-between">
           <span>
-            <label class="hb-uix-switch d-inline pr-3" [for]="'adapter' + adapter.iface">
+            <label class="hb-uix-switch d-inline pe-3" [for]="'adapter' + adapter.iface">
               <input [id]="'adapter' + adapter.iface" type="checkbox" [(ngModel)]="adapter.selected">
               <span>{{ adapter.iface }}</span>
               <span class="hb-uix-slider hb-uix-round"></span>
@@ -38,15 +36,15 @@
   </div>
 
   <div class="modal-footer justify-content-between">
-    <div class="text-left">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')"
+    <div class="text-start">
+      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="activeModal.dismiss('Dismiss')"
         [attr.aria-label]="'form.button_close' | translate">
         {{ 'form.button_close' | translate }}
       </button>
     </div>
     <div class="text-center"></div>
-    <div class="text-right">
-      <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="submit()">
+    <div class="text-end">
+      <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="submit()">
         {{ 'form.button_save' | translate }}
       </button>
     </div>

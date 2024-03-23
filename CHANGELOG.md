@@ -6,6 +6,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 
 ### UI Changes
 
+- 
 - improve power options button display (#1961) (@mkz212)
 - update credits modal with supporters
 - add warning to remove-single-cached-accessory (#1985) (@mkz212)

@@ -1,23 +1,22 @@
 <div class="modal-content">
   <div class="modal-header">
     <h5 class="modal-title">{{ 'platform.version.title_service_restart_required' | translate }}</h5>
-    <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate" (click)="activeModal.dismiss('Dismiss')">
-      <span aria-hidden="true">&times;</span>
-    </button>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
+      (click)="activeModal.dismiss('Dismiss')"></button>
   </div>
   <div class="modal-body w-100 text-center">
     <i class="fas fa-fw fa-power-off primary-text mb-4" style="font-size: 75px;"></i>
     <p class="w-100">{{ 'plugins.manage.message_thanks_for_updating_restart'  | translate }}</p>
   </div>
   <div class="modal-footer justify-content-between">
-    <div class="text-left">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')"
+    <div class="text-start">
+      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="activeModal.dismiss('Dismiss')"
         [attr.aria-label]="'form.button_close' | translate">
         {{ 'form.button_close' | translate }}
       </button>
     </div>
     <div class="text-center"></div>
-    <div class="text-right">
+    <div class="text-end">
       <button type="button" class="btn btn-primary" (click)="onRestartHomebridgeClick()">
         {{ 'plugins.manage.button_restart_now' | translate }}
       </button>

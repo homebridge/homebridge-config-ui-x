@@ -1,6 +1,6 @@
 <div class="flex-column d-flex align-items-stretch h-100 w-100 pb-1">
   <div style="cursor: move;" class="drag-handler p-2">Homebridge</div>
-  <div class="d-flex flex-wrap w-100 pr-3 pl-2 justify-content-start gridster-item-content overflow-auto no-scrollbars">
+  <div class="d-flex flex-wrap w-100 pe-3 ps-2 justify-content-start gridster-item-content overflow-auto no-scrollbars">
     <div class="hb-status-item d-flex flex-row" style="min-width:max(25%, 225px);">
       <div class="d-flex">
         <div class="mb-0 px-3 py-1 hb-status-icon">
@@ -46,11 +46,11 @@
             class="card-link card-link-title">Homebridge</a>
           <span *ngIf="!homebridgePkg.installedVersion">Homebridge</span>
           <br>
-          <span class="grey-text">
-            <span *ngIf="!homebridgePkg.installedVersion">
+          <span>
+            <span class="grey-text" *ngIf="!homebridgePkg.installedVersion">
               {{ 'status.homebridge.label_checking_for_updates' | translate }}
             </span>
-            <span *ngIf="homebridgePkg.installedVersion && !homebridgePkg.updateAvailable"
+            <span class="grey-text" *ngIf="homebridgePkg.installedVersion && !homebridgePkg.updateAvailable"
               [translate]="'status.homebridge.label_up_to_date'">
               Up To Date
             </span>
@@ -78,11 +78,11 @@
             class="card-link card-link-title">Homebridge UI</a>
           <span *ngIf="!homebridgeUiPkg.installedVersion">Homebridge UI</span>
           <br>
-          <span class="grey-text">
-            <span *ngIf="!homebridgeUiPkg.installedVersion">
+          <span>
+            <span class="grey-text" *ngIf="!homebridgeUiPkg.installedVersion">
               {{ 'status.homebridge.label_checking_for_updates' | translate }}
             </span>
-            <span *ngIf="homebridgeUiPkg.installedVersion && !homebridgeUiPkg.updateAvailable"
+            <span class="grey-text" *ngIf="homebridgeUiPkg.installedVersion && !homebridgeUiPkg.updateAvailable"
               [translate]="'status.homebridge.label_up_to_date'">
               Up To Date
             </span>

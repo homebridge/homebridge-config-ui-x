@@ -4,7 +4,7 @@
     <div class="col-6">
       <h3 class="primary-text m-0">{{ 'config.title_config' | translate }}</h3>
     </div>
-    <div class="col-6 text-right">
+    <div class="col-6 text-end">
       <button class="btn btn-danger waves-effect my-0" (click)="onCancelRestore()" [disabled]="saveInProgress"
         *ngIf="originalConfig" container="body" ngbTooltip="{{ 'form.button_cancel' | translate }}"
         [attr.aria-label]="'form.button_cancel' | translate"><i class="fas fa-fw fa-times"></i></button>
@@ -12,7 +12,7 @@
         [attr.aria-label]="'config.button_restore' | translate" ngbTooltip="{{ 'config.button_restore' | translate }}"><i class="fas fa-fw fa-history"></i></button>
       <button class="btn btn-elegant waves-effect my-0" (click)="onExportConfig()" container="body"
         [attr.aria-label]="'logs.label_download' | translate" ngbTooltip="{{ 'logs.label_download' | translate }}"><i class="fas fa-fw fa-download"></i></button>
-      <button class="btn btn-primary waves-effect my-0 mr-0" (click)="onSave()" [disabled]="saveInProgress" container="body"
+      <button class="btn btn-primary waves-effect my-0 me-0" (click)="onSave()" [disabled]="saveInProgress" container="body"
         ngbTooltip="{{ 'form.button_save' | translate }}" [attr.aria-label]="'form.button_save' | translate">
         <i *ngIf="!saveInProgress" class="fas fa-fw fa-floppy-disk"></i>
         <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>

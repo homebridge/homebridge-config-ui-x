@@ -12,6 +12,14 @@
       background-color: #242424 !important;
     }
 
+    .main-text {
+      color: #ffffff !important;
+    }
+
+    .btn-close {
+      filter: invert(1);
+    }
+
     .custom-select {
       background: #333333 url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='white' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") right .75rem center/8px 10px no-repeat !important;
       color: #eeeeee !important;
@@ -97,10 +105,6 @@
 
     .btn-link {
       color: #9e9e9e !important;
-    }
-
-    .badge-primary {
-      background-color: #2b2b2b !important;
     }
 
     .card {
@@ -300,10 +304,6 @@
     .list-group-item {
       background-color: $secondaryBackground;
       color: #ffffff;
-
-      .badge-primary {
-        background-color: $darkModePrimary !important;
-      }
     }
 
     .hb-plugin-settings-modal,

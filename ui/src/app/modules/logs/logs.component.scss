@@ -1,0 +1,9 @@
+.adjust-for-mobile {
+  height: calc(100% - 30px);
+  width: calc(100% + 20px);
+  overflow: hidden;
+
+  @media (max-width: 767px) {
+    height: calc(100% - 55px);
+  }
+}

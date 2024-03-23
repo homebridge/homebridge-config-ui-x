@@ -18,12 +18,14 @@ import { RestartModule } from '@/app/modules/restart/restart.module';
 import { StatusModule } from '@/app/modules/status/status.module';
 import { LayoutComponent } from '@/app/shared/layout/layout.component';
 import { PowerOptionsComponent } from '@/app/shared/layout/power-options/power-options.component';
+import { SidebarComponent } from '@/app/shared/layout/sidebar/sidebar.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LayoutComponent,
     PowerOptionsComponent,
+    SidebarComponent,
   ],
   imports: [
     BrowserModule,
