@@ -1118,6 +1118,17 @@ export class PluginsService {
       });
     }
 
+    // if homebridge not found in default locations, check the folder above
+    if (allModules.findIndex(x => x.name === 'homebridge') === -1) {
+      if (existsSync(join(process.env.UIX_BASE_PATH, '..', 'homebridge'))) {
+        allModules.push({
+          name: 'homebridge',
+          installPath: join(process.env.UIX_BASE_PATH, '..', 'homebridge'),
+          path: dirname(join(process.env.UIX_BASE_PATH, '..', 'homebridge')),
+        });
+      }
+    }
+
     return allModules;
   }
 

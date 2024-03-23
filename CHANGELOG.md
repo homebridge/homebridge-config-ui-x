@@ -24,6 +24,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - updates to fr.json language file (#1991) (@SonnyT72)
 - updates to ja.json language file (@yima0913)
 - Correct slow restart message (#2006) (@jamieburchell)
+- updates to es.json language file (#2020) (@AxelDreemurr)
 
 ### Other Changes
 
@@ -33,6 +34,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - removed force of earlier version of `bonjour-service` as a fix has been implemented in latest version 
 - updated release drafter template so releases do not start with a `v`
 - updated special plugin lists
+- check local dir for homebridge when running dev
 - dependency updates
 
 ## 4.55.1 (2024-01-07)

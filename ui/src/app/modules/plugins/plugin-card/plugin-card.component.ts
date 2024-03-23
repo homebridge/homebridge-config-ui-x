@@ -10,7 +10,6 @@ import { DonateModalComponent } from '@/app/core/manage-plugins/donate-modal/don
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { PluginLogModalComponent } from '@/app/core/manage-plugins/plugin-log-modal/plugin-log-modal.component';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
-import { SettingsService } from '@/app/core/settings.service';
 import { IoNamespace, WsService } from '@/app/core/ws.service';
 import { PluginInfoComponent } from '@/app/modules/plugins/plugin-card/plugin-info/plugin-info.component';
 
@@ -42,7 +41,6 @@ export class PluginCardComponent implements OnInit {
     private $modal: NgbModal,
     private $toastr: ToastrService,
     private $md: MobileDetectService,
-    private $settings: SettingsService,
   ) {}
 
   @Input() set childBridges(childBridges: any[]) {
