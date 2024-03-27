@@ -6,11 +6,12 @@ import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '@/app/core/api.service';
 
 @Component({
-  selector: 'app-scheduled-backups',
-  templateUrl: './scheduled-backups.component.html',
-  styleUrls: ['./scheduled-backups.component.scss'],
+  selector: 'app-backup',
+  templateUrl: './backup.component.html',
+  styleUrls: ['./backup.component.scss'],
 })
-export class ScheduledBackupsComponent implements OnInit {
+export class BackupComponent implements OnInit {
+  public clicked = false;
   public scheduledBackups = [];
   public backupTime: string;
   public errorMessage = '';
@@ -61,7 +62,18 @@ export class ScheduledBackupsComponent implements OnInit {
     );
   }
 
-  openBackupRestore() {
-    this.activeModal.close();
+  async onDownloadBackupClick() {
+    this.clicked = true;
+    this.$api.get('/backup/download', { observe: 'response', responseType: 'blob' }).subscribe(
+      (res) => {
+        const archiveName = res.headers.get('File-Name') || 'homebridge-backup.tar.gz';
+        saveAs(res.body, archiveName);
+        this.clicked = false;
+      },
+      () => {
+        this.clicked = false;
+        this.$toastr.error(this.$translate.instant('backup.message_backup_download_failed'), this.$translate.instant('toast.title_error'));
+      },
+    );
   }
 }

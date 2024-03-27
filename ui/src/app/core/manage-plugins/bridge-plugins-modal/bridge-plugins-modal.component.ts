@@ -102,7 +102,10 @@ export class BridgePluginsModalComponent implements OnInit {
     try {
       await this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.configBlocks).toPromise();
       this.activeModal.close();
-      this.$modal.open(RestartHomebridgeComponent);
+      this.$modal.open(RestartHomebridgeComponent, {
+        size: 'lg',
+        backdrop: 'static',
+      });
     } catch (err) {
       this.$toastr.error(
         this.$translate.instant('config.toast_failed_to_save_config') + ': ' + err.error?.message,

@@ -31,8 +31,8 @@ import { HomebridgeMdnsSettingDto } from './server.dto';
 export class ServerService {
   private serverServiceCache = new NodeCache({ stdTTL: 300 });
 
-  private accessoryId = this.configService.homebridgeConfig.bridge.username.split(':').join('');
-  private accessoryInfoPath = join(this.configService.storagePath, 'persist', `AccessoryInfo.${this.accessoryId}.json`);
+  private readonly accessoryId: string;
+  private readonly accessoryInfoPath: string;
 
   public setupCode: string | null = null;
 
@@ -42,7 +42,10 @@ export class ServerService {
     private readonly accessoriesService: AccessoriesService,
     private readonly homebridgeIpcService: HomebridgeIpcService,
     private readonly logger: Logger,
-  ) {}
+  ) {
+    this.accessoryId = this.configService.homebridgeConfig.bridge.username.split(':').join('');
+    this.accessoryInfoPath = join(this.configService.storagePath, 'persist', `AccessoryInfo.${this.accessoryId}.json`);
+  }
 
   /**
    * Restart the server

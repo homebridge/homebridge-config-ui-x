@@ -195,7 +195,10 @@ export class SettingsPluginsModalComponent implements OnInit {
   openFundingModalForUi() {
     try {
       this.$api.get('/plugins').subscribe((plugins) => {
-        const ref = this.$modal.open(DonateModalComponent);
+        const ref = this.$modal.open(DonateModalComponent, {
+          size: 'lg',
+          backdrop: 'static',
+        });
         ref.componentInstance.plugin = plugins.find((x) => x.name === 'homebridge-config-ui-x');
       });
     } catch (e) {

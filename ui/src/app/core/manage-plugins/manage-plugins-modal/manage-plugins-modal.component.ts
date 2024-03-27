@@ -156,7 +156,10 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
       () => {
         this.activeModal.close();
         this.$router.navigate(['/plugins']);
-        this.$modal.open(RestartHomebridgeComponent);
+        this.$modal.open(RestartHomebridgeComponent, {
+          size: 'lg',
+          backdrop: 'static',
+        });
       },
       (err) => {
         this.actionFailed = true;
@@ -211,7 +214,10 @@ export class ManagePluginsModalComponent implements OnInit, OnDestroy {
     }).subscribe(
       () => {
         this.activeModal.close();
-        this.$modal.open(RestartHomebridgeComponent);
+        this.$modal.open(RestartHomebridgeComponent, {
+          size: 'lg',
+          backdrop: 'static',
+        });
       },
       (err) => {
         this.actionFailed = true;

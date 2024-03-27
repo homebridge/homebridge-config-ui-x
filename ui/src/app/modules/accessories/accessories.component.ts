@@ -60,6 +60,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   addRoom() {
     this.modalService.open(AddRoomModalComponent, {
       size: 'lg',
+      backdrop: 'static',
     }).result.then((roomName) => {
       // no room name provided
       if (!roomName || !roomName.length) {

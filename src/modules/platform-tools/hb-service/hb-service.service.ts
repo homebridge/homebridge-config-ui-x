@@ -16,12 +16,14 @@ import { HbServiceStartupSettings } from './hb-service.dto';
 
 @Injectable()
 export class HbServiceService {
-  private hbServiceSettingsPath = resolve(this.configService.storagePath, '.uix-hb-service-homebridge-startup.json');
+  private readonly hbServiceSettingsPath: string;
 
   constructor(
     private readonly configService: ConfigService,
     private readonly logger: Logger,
-  ) {}
+  ) {
+    this.hbServiceSettingsPath = resolve(this.configService.storagePath, '.uix-hb-service-homebridge-startup.json');
+  }
 
   /**
    * Returns the Homebridge startup settings

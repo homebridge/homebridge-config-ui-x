@@ -44,6 +44,7 @@ export class UsersComponent implements OnInit {
   openAddNewUser() {
     const ref = this.modalService.open(UsersAddComponent, {
       size: 'lg',
+      backdrop: 'static',
     });
 
     ref.result.finally(() => {
@@ -54,6 +55,7 @@ export class UsersComponent implements OnInit {
   openEditUser(user) {
     const ref = this.modalService.open(UsersEditComponent, {
       size: 'lg',
+      backdrop: 'static',
     });
     ref.componentInstance.user = user;
 
@@ -91,6 +93,7 @@ export class UsersComponent implements OnInit {
 
   disable2fa(user) {
     const ref = this.modalService.open(UsersDisable2faComponent, {
+      size: 'lg',
       backdrop: 'static',
     });
     ref.componentInstance.user = user;

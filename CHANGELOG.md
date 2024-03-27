@@ -2,12 +2,48 @@
 
 All notable changes to homebridge-config-ui-x will be documented in this file.
 
+## BETA (TBD)
+
+### UI Changes
+
+- improve power options button display (#1961) (@mkz212)
+- update credits modal with supporters
+- add warning to remove-single-cached-accessory (#1985) (@mkz212)
+- refactor backup and restore modals, separate items on settings page
+- standardise modal sizes
+- standardise warning sections on settings modals
+- minor adjustments to settings page
+- update icons on settings page (#1990) (@mkz212)
+- break-word in plugin config (#1993) (@mkz212)
+- Fix crash with missing homepage package.json property (#2013) (@regaw-leinad)
+- improve ui of settings page (#2016) (@mkz212)
+
+### Translation Changes
+
+- updates to uk.json language file (#1978) (#1979) (@xrust83)
+- updates to th.json language file (#1982) (@tomzt)
+- updates to fr.json language file (#1991) (@SonnyT72)
+- updates to ja.json language file (@yima0913)
+- Correct slow restart message (#2006) (@jamieburchell)
+- updates to es.json language file (#2020) (@AxelDreemurr)
+
+### Other Changes
+
+- improve github actions
+- fixed Environment Info selection on bug and support templates
+- add wiki change request issue template
+- removed force of earlier version of `bonjour-service` as a fix has been implemented in latest version 
+- updated release drafter template so releases do not start with a `v`
+- updated special plugin lists
+- check local dir for homebridge when running dev
+- dependency updates
+
 ## 4.55.1 (2024-01-07)
 
 ### Bug Fixes
 
-- Force earlier version of bonjour-service to resolve [#1973](https://github.com/homebridge/homebridge-config-ui-x/issues/1973) and [#1975](https://github.com/homebridge/homebridge-config-ui-x/issues/1975)
-  - **If you experienced this issue, we would recommened you go into Homebridge Setting and turn off Homebridge 'Insecure' Mode (Enable Accessory Control) before upgrading**, after you upgrade you can renable.
+- Force earlier version of `bonjour-service` to resolve [#1973](https://github.com/homebridge/homebridge-config-ui-x/issues/1973) and [#1975](https://github.com/homebridge/homebridge-config-ui-x/issues/1975)
+  - **If you experienced this issue, we would recommend you go into Homebridge Setting and turn off Homebridge 'Insecure' Mode (Enable Accessory Control) before upgrading**, after you upgrade you can re-enable.
 
 ### Translation Changes
 

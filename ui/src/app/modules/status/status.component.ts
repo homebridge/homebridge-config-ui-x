@@ -207,7 +207,10 @@ export class StatusComponent implements OnInit, OnDestroy {
   }
 
   addWidget() {
-    const ref = this.$modal.open(WidgetAddComponent, { size: 'lg' });
+    const ref = this.$modal.open(WidgetAddComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    });
     ref.componentInstance.dashboard = this.dashboard;
     ref.componentInstance.resetLayout = this.resetLayout.bind(this);
     ref.componentInstance.lockLayout = this.lockLayout.bind(this);
@@ -246,7 +249,10 @@ export class StatusComponent implements OnInit, OnDestroy {
   }
 
   manageWidget(item) {
-    const ref = this.$modal.open(WidgetControlComponent);
+    const ref = this.$modal.open(WidgetControlComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    });
     ref.componentInstance.widget = item;
 
     ref.result

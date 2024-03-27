@@ -49,6 +49,7 @@ export class AccessoriesService {
   showAccessoryInformation(service) {
     const ref = this.modalService.open(InfoModalComponent, {
       size: 'lg',
+      backdrop: 'static',
     });
 
     ref.componentInstance.service = service;

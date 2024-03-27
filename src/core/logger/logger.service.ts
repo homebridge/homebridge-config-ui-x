@@ -26,6 +26,13 @@ export class Logger extends ConsoleLogger {
     );
   }
 
+  success(...args: any[]) {
+    console.log(
+      this.prefix,
+      ...args.map(x => green(x)),
+    );
+  }
+
   error(...args: any[]) {
     console.error(
       this.prefix,
