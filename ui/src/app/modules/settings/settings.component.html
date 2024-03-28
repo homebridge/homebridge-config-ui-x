@@ -57,7 +57,7 @@
 <div class="mb-4">
   <h5 class="primary-text mt-3" translate="settings.network.title_network"></h5>
   <ul class="list-group mt-2">
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+    <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
         <div>{{ 'settings.network.title_network_interfaces' | translate }}<br>
           <small class="grey-text pr-2">{{ 'settings.network.message_network_interface_one' | translate }}</small>
@@ -77,12 +77,12 @@
         <i class="fas fa-fw fa-chevron-right" [ngClass]="{ 'fa-pulse': !availableNetworkAdapters.length }"></i>
       </button>
     </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.mdns_advertiser' | translate }}<br>
         <small class="grey-text pr-2">{{ 'settings.mdns_advertiser_help' | translate }}</small>
       </span>
-      <div class="mt-3 mt-md-0 pl-0 pl-md-5 w-100 w-md-50">
+      <div class="my-3 my-md-0 pl-0 pl-md-5 w-100" style="max-width:500px!important;">
         <select class="custom-select" [formControl]="legacyMdnsFormControl"
           [attr.aria-label]="'settings.mdns_advertiser' | translate">
           <option value="bonjour-hap">Bonjour HAP</option>
@@ -129,7 +129,7 @@
           DEBUG<br>
           <small class="grey-text pr-2">{{ 'settings.service.debug_tooltip' | translate }}</small>
         </span>
-        <div class="my-3 my-md-0 pl-0 pl-md-5 w-100 w-md-50">
+        <div class="my-3 my-md-0 pl-0 pl-md-5 w-100" style="max-width:500px!important;">
           <input class="form-control form-control-sm" formControlName="ENV_DEBUG" type="text" />
         </div>
       </li>
@@ -138,7 +138,7 @@
           NODE_OPTIONS<br>
           <small class="grey-text pr-2">{{ 'settings.service.node_tooltip' | translate }}</small>
         </span>
-        <div class="my-3 my-md-0 pl-0 pl-md-5 w-100 w-md-50">
+        <div class="my-3 my-md-0 pl-0 pl-md-5 w-100" style="max-width:500px!important;">
           <input class="form-control form-control-sm" formControlName="ENV_NODE_OPTIONS" type="text" />
         </div>
       </li>
