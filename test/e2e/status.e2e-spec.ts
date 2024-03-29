@@ -187,7 +187,6 @@ describe('StatusController (e2e)', () => {
   }, 30000);
 
   it('GET /status/nodejs', async () => {
-    // TODO why isn't this test mocking the response
     const data = [
       {
         'version': 'v21.6.1',

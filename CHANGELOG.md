@@ -17,6 +17,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - break-word in plugin config (#1993) (@mkz212)
 - Fix crash with missing homepage package.json property (#2013) (@regaw-leinad)
 - improve ui of settings page (#2016) (@mkz212)
+- improve ui of settings page (#2026) (@mkz212)
 
 ### Translation Changes
 
