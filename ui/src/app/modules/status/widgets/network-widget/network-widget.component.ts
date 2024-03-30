@@ -1,6 +1,7 @@
 import {
   Component,
   ElementRef,
+  Input,
   OnDestroy,
   OnInit,
   ViewChild,
@@ -17,6 +18,8 @@ import { IoNamespace, WsService } from '@/app/core/ws.service';
   styleUrls: ['./network-widget.component.scss'],
 })
 export class NetworkWidgetComponent implements OnInit, OnDestroy {
+  @Input() widget;
+
   @ViewChild(BaseChartDirective, { static: true }) public chart: BaseChartDirective;
   @ViewChild('widgetbackground', { static: true }) private widgetBackground: ElementRef;
 
@@ -88,8 +91,11 @@ export class NetworkWidgetComponent implements OnInit, OnDestroy {
       this.getServerNetworkInfo();
     }
 
-    // refresh data once per second
-    this.intervalSubscription = interval(1000).subscribe(() => {
+    if (!this.widget.refreshInterval) {
+      this.widget.refreshInterval = 1;
+    }
+
+    this.intervalSubscription = interval(this.widget.refreshInterval * 1000).subscribe(() => {
       if (this.io.socket.connected) {
         this.getServerNetworkInfo();
       }
@@ -97,7 +103,12 @@ export class NetworkWidgetComponent implements OnInit, OnDestroy {
   }
 
   getServerNetworkInfo() {
-    this.io.request('get-server-network-info').subscribe((data) => {
+    this.io.request('get-server-network-info', { netInterfaces: [this.widget.networkInterface] }).subscribe((data) => {
+      // If no param given, the backend will return the default network interface
+      if (!this.widget.networkInterface) {
+        this.widget.networkInterface = data.net.iface;
+      }
+
       this.receivedPerSec = (data.net.rx_sec / 1024 / 1024) * 8;
       this.sentPerSec = (data.net.tx_sec / 1024 / 1024) * 8;
       this.interface = data.net.iface;

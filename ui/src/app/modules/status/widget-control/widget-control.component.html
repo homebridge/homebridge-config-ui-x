@@ -7,6 +7,16 @@
     </button>
   </div>
   <div class="modal-body" [ngSwitch]="widget.component">
+    <div class="d-flex flex-row flex-grow-1 align-items-center w-100">
+      <div class="form-group w-100">
+        <div class="pt-1 text-center custom-control custom-checkbox c-pointer">
+          <input type="checkbox" class="custom-control-input" id="hideOnMobile" [(ngModel)]="widget.hideOnMobile">
+          <label class="custom-control-label" for="hideOnMobile" [translate]="'status.widget.label_hide_on_mobile'">
+            Hide in compact view (mobile displays)
+          </label>
+        </div>
+      </div>
+    </div>
     <div *ngSwitchCase="'WeatherWidgetComponent'">
       <div class="alert alert-info" role="alert" [translate]="'status.widget.weather.label_add_city_instructions'">
         To enable the weather widget please search for your city name in English.
@@ -17,11 +27,11 @@
       </label>
       <div class="input-group mb-3">
         <div class="input-group-prepend">
-          <span class="input-group-text" id="">
+          <span class="input-group-text custom-input" id="">
             <i class="fas" [ngClass]="{'fa-sync fa-spin': searching, 'fa-city': !searching}"></i>
           </span>
         </div>
-        <input id="city-search-input" type="text" class="form-control" [ngbTypeahead]="searchCountryCodes"
+        <input id="city-search-input" type="text" class="form-control custom-input" [ngbTypeahead]="searchCountryCodes"
           [resultFormatter]="searchCountryCodeFormatter" [inputFormatter]="searchCountryCodeFormatter"
           [editable]='false' [(ngModel)]="widget.location" />
       </div>
@@ -55,7 +65,7 @@
       <div class="form-group row">
         <label class="col-sm-4 col-form-label" [translate]="'status.widget.label_font_size'">Font Size</label>
         <div class="col-sm-8">
-          <select class="form-control" [(ngModel)]="widget.fontSize">
+          <select class="custom-select" [(ngModel)]="widget.fontSize">
             <option *ngFor="let size of fontSizes" [value]="size">{{ size }}</option>
           </select>
         </div>
@@ -63,7 +73,7 @@
       <div class="form-group row">
         <label class="col-sm-4 col-form-label" [translate]="'status.widget.label_font_weight'">Font Weight</label>
         <div class="col-sm-8">
-          <select class="form-control" [(ngModel)]="widget.fontWeight">
+          <select class="custom-select" [(ngModel)]="widget.fontWeight">
             <option *ngFor="let weight of fontWeights" [value]="weight">{{ weight }}</option>
           </select>
         </div>
@@ -73,7 +83,7 @@
       <div class="form-group row">
         <label class="col-sm-4 col-form-label" [translate]="'status.widget.label_font_size'">Font Size</label>
         <div class="col-sm-8">
-          <select class="form-control" [(ngModel)]="widget.fontSize">
+          <select class="custom-select" [(ngModel)]="widget.fontSize">
             <option *ngFor="let size of fontSizes" [value]="size">{{ size }}</option>
           </select>
         </div>
@@ -81,7 +91,7 @@
       <div class="form-group row">
         <label class="col-sm-4 col-form-label" [translate]="'status.widget.label_font_weight'">Font Weight</label>
         <div class="col-sm-8">
-          <select class="form-control" [(ngModel)]="widget.fontWeight">
+          <select class="custom-select" [(ngModel)]="widget.fontWeight">
             <option *ngFor="let weight of fontWeights" [value]="weight">{{ weight }}</option>
           </select>
         </div>
@@ -93,7 +103,7 @@
           Time Format
         </label>
         <div class="col-sm-8">
-          <select class="form-control" [(ngModel)]="widget.timeFormat">
+          <select class="custom-select" [(ngModel)]="widget.timeFormat">
             <option *ngFor="let timeFormat of timeFormats" [value]="timeFormat">{{ currentDate | date:timeFormat }}
             </option>
           </select>
@@ -104,7 +114,7 @@
           Date Format
         </label>
         <div class="col-sm-8">
-          <select class="form-control" [(ngModel)]="widget.dateFormat">
+          <select class="custom-select" [(ngModel)]="widget.dateFormat">
             <option *ngFor="let dateFormat of dateFormats" [value]="dateFormat">{{ currentDate | date:dateFormat }}
             </option>
           </select>
@@ -117,7 +127,7 @@
           Temperature Units
         </label>
         <div class="col-sm-8">
-          <select class="form-control" [(ngModel)]="widget.temperatureUnit">
+          <select class="custom-select" [(ngModel)]="widget.temperatureUnit">
             <option *ngFor="let unit of temperatureUnits" [value]="unit.value">
               {{ unit.label | translate }}
             </option>
@@ -125,16 +135,35 @@
         </div>
       </div>
     </div>
-    <div class="d-flex flex-row flex-grow-1 align-items-center w-100">
-      <div class="form-group w-100">
-        <div class="pt-1 text-center custom-control custom-checkbox c-pointer">
-          <input type="checkbox" class="custom-control-input" id="hideOnMobile" [(ngModel)]="widget.hideOnMobile">
-          <label class="custom-control-label" for="hideOnMobile" [translate]="'status.widget.label_hide_on_mobile'">
-            Hide in compact view (mobile displays)
-          </label>
+    <div *ngSwitchCase="'NetworkWidgetComponent'">
+      <div class="form-group row">
+        <label class="col-sm-4 col-form-label">
+          {{ 'status.widget.label_network_activity.network_interface' | translate }}
+        </label>
+        <div class="col-sm-8">
+          <select class="custom-select" [(ngModel)]="widget.networkInterface">
+            <option *ngFor="let networkInterface of networkInterfaces" [value]="networkInterface">
+              {{ networkInterface }}
+            </option>
+          </select>
         </div>
       </div>
+      <div class="form-group row">
+        <label class="col-sm-4 col-form-label">
+          {{ 'status.widget.label_network_activity.refresh_interval' | translate }}
+        </label>
+        <div class="col-sm-8">
+          <div class="input-group">
+            <input type="number" class="form-control custom-input" [(ngModel)]="widget.refreshInterval" min="1" max="60">
+            <div class="input-group-append">
+              <span class="input-group-text custom-input">{{ 'status.widget.label_network_activity.seconds' | translate }}</span>
+            </div>
+          </div>
+        </div>
     </div>
+    <p class="muted grey-text font-italic text-center">
+      {{ 'status.widget.label_network_activity.refresh_note' | translate }}
+    </p>
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-left">

@@ -1,6 +1,6 @@
 <div class="flex-column d-flex align-items-stretch h-100 w-100 pb-1">
   <div style="cursor: move;" class="drag-handler p-2">
-    {{ 'status.network.title_network' | translate }} ({{ interface }})
+    {{ 'status.network.title_network' | translate }} ({{ this.widget.networkInterface }})
   </div>
   <canvas class="widget-chart h-100 w-100" baseChart [data]="lineChartData" [labels]="lineChartLabels"
     [options]="lineChartOptions" [type]="lineChartType"></canvas>

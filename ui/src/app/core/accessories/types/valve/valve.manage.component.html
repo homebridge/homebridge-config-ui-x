@@ -10,7 +10,7 @@
   <div class="modal-body">
     <div class="form-group">
       <label [translate]="'accessories.control.label_default_running_time'">Default Running Time</label>
-      <select class="form-control" [(ngModel)]="targetSetDuration" (change)="onSetDurationChange()">
+      <select class="custom-select" [(ngModel)]="targetSetDuration" (change)="onSetDurationChange()">
         <option *ngFor="let duration of availableSetDurations" [value]="duration.seconds">{{ duration.label }}
         </option>
       </select>
