@@ -307,6 +307,7 @@
   "settings.manage_cache.help": "すでに所持していないアクセサリがまだHomeKit上に表示されている場合は、キャッシュから削除する必要があります。キャッシュから1つのアクセサリを削除するか、キャッシュされている全てのアクセサリを削除するかを選択できます。",
   "settings.mdns_advertiser": "mDNS広告主",
   "settings.mdns_advertiser_help": "Homebridgeへの接続に問題がある場合は、別のmDNS広告主を使用してみてください。",
+  "settings.mdns_advertiser_not_connected": "Not Connected",
   "settings.network.label_interface_name": "インターフェイス名",
   "settings.network.label_ip_address": "IPアドレス",
   "settings.network.message_network_interface_one": "Homebridgeが送受信を行うネットワークインターフェイスを選択してください。",

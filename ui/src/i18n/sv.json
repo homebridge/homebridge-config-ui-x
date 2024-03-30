@@ -307,6 +307,7 @@
   "settings.manage_cache.help": "Om ett tillbehör du inte längre har fortfarande visas i HomeKit kan du behöva ta bort det från cachen. Du kan välja att ta bort ett tillbehör från cachen eller ta bort alla cachade tillbehör.",
   "settings.mdns_advertiser": "mDNS-annonsör",
   "settings.mdns_advertiser_help": "Om du har problem med att ansluta till Homebridge, prova att använda någon av de alternativa mDNS-annonsörerna.",
+  "settings.mdns_advertiser_not_connected": "Not Connected",
   "settings.network.label_interface_name": "Gränssnittsnamn",
   "settings.network.label_ip_address": "IP Adress",
   "settings.network.message_network_interface_one": "Välj de nätverksgränssnitt som Homebridge ska annonsera och lyssna på.",

@@ -307,6 +307,7 @@
   "settings.manage_cache.help": "Jika aksesoris yang tidak lagi Anda miliki masih ditampilkan di HomeKit, Anda mungkin perlu menghapusnya dari cache. Anda dapat memilih untuk menghapus satu aksesoris dari cache, atau menghapus semua aksesoris yang di-cache.",
   "settings.mdns_advertiser": "Pengiklan mDNS",
   "settings.mdns_advertiser_help": "Jika Anda mengalami masalah saat menghubungkan ke Homebridge, coba gunakan salah satu pengiklan mDNS alternatif.",
+  "settings.mdns_advertiser_not_connected": "Not Connected",
   "settings.network.label_interface_name": "Nama Antarmuka",
   "settings.network.label_ip_address": "Alamat IP",
   "settings.network.message_network_interface_one": "Pilih antarmuka jaringan yang harus diiklankan dan didengarkan oleh Homebridge.",

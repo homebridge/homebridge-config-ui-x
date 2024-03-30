@@ -307,6 +307,7 @@
   "settings.manage_cache.help": "Če se dodatna oprema, ki je nimate več, še vedno prikazuje v programu HomeKit, jo boste morda morali odstraniti iz predpomnilnika. Iz predpomnilnika lahko odstranite posamezno dodatno opremo ali odstranite vso predpomnjeno dodatno opremo.",
   "settings.mdns_advertiser": "mDNS oglaševalec",
   "settings.mdns_advertiser_help": "Če imate težave s povezovanjem z Homebridgeom, poskusite uporabiti enega od nadomestnih oglaševalcev mDNS.",
+  "settings.mdns_advertiser_not_connected": "Not Connected",
   "settings.network.label_interface_name": "Ime vmesnika",
   "settings.network.label_ip_address": "IP naslov",
   "settings.network.message_network_interface_one": "Izberite omrežne vmesnike, ki naj jih Homebridge oglašuje in posluša.",

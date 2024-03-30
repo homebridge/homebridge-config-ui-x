@@ -15,14 +15,15 @@
     </div>
     <div class="text-center mb-4" *ngIf="plugin.name === 'homebridge-config-ui-x'">
       <div class="btn-group" role="group">
-        <button class="btn btn-elegant" type="button" (click)="openPluginLogModalForUi()" ngbTooltip="{{ 'plugins.manage.plugin_logs' | translate }}">
+        <button class="btn btn-elegant" type="button" (click)="openPluginLogModalForUi()" ngbTooltip="{{ 'plugins.manage.plugin_logs' | translate }}"
+          [attr.aria-label]="'plugins.manage.plugin_logs' | translate">
           <i class="fa fa-fw fa-wave-square"></i>
         </button>
-        <button class="btn btn-elegant" type="button" (click)="openFundingModalForUi()">
+        <button class="btn btn-elegant" type="button" (click)="openFundingModalForUi()" [attr.aria-label]="'plugins.donate.button_donate' | translate">
           <i class="fa fa-fw fa-heart red-text"></i>
         </button>
-        <a class="btn btn-elegant" href="https://github.com/homebridge/homebridge-config-ui-x" target="_blank"
-          rel="noopener noreferrer" ngbTooltip="{{ 'plugins.button_homepage' | translate }}">
+        <a class="btn btn-elegant" href="https://github.com/homebridge/homebridge-config-ui-x" target="_blank" rel="noopener noreferrer"
+          ngbTooltip="{{ 'plugins.button_homepage' | translate }}" [attr.aria-label]="'plugins.button_homepage' | translate">
           <i class="fab fa-fw fa-github"></i>
         </a>
       </div>

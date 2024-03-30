@@ -307,6 +307,7 @@
   "settings.manage_cache.help": "Indien een accessoire dat niet meer bestaat nog steeds in HomeKit getoond wordt, moet je het misschien uit de cache verwijderen. Je kan een enkel accessoire of alle accessoires uit de cache verwijderen.",
   "settings.mdns_advertiser": "mDNS Advertiser",
   "settings.mdns_advertiser_help": "Als U problemen ervaart bij het koppelen met Homebridge, probeer dan een van de alternatieve mDNS advertisers.",
+  "settings.mdns_advertiser_not_connected": "Not Connected",
   "settings.network.label_interface_name": "Interface Naam",
   "settings.network.label_ip_address": "IP Adres",
   "settings.network.message_network_interface_one": "Selecteer de netwerk interfaces waarop Homebridge moet advertisen en luisteren.",

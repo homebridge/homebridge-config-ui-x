@@ -307,6 +307,7 @@
   "settings.manage_cache.help": "Eğer artık sahip olmadığınız bir aksesuar halen HomeKiit'de gösteriliyorsa, onu ön bellekten kaldırmanız gerekebilir. Ön bellekten sadece tek bir aksesuarı kaldırmayı tercih edebilir veya ön belleğe alınmış tüm aksesuarları kaldırabilirsiniz.",
   "settings.mdns_advertiser": "mDNS Advertiser",
   "settings.mdns_advertiser_help": "If you're having trouble connecting to Homebridge, try using one of the alternate mDNS advertisers.",
+  "settings.mdns_advertiser_not_connected": "Not Connected",
   "settings.network.label_interface_name": "Arayüz Adı",
   "settings.network.label_ip_address": "IP Adresi",
   "settings.network.message_network_interface_one": "Homebridge'in yayın yapması ve dinlemesi gereken ağ arayüzlerini seçin.",

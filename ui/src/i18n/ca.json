@@ -307,6 +307,7 @@
   "settings.manage_cache.help": "Si encara es mostra un accessori que ja no tens a HomeKit, és possible que hàgiu de treure'l de la memòria cau. Pots optar per eliminar un sol accessori de la memòria cau o eliminar tots els accessoris emmagatzemats a la memòria cau.",
   "settings.mdns_advertiser": "Mètode de difusió mDNS",
   "settings.mdns_advertiser_help": "Si tens problemes per connectar a Homebridge, prova d’utilitzar un mètode de difusió mDNS alternatiu.",
+  "settings.mdns_advertiser_not_connected": "Not Connected",
   "settings.network.label_interface_name": "Nom de la interfície",
   "settings.network.label_ip_address": "Adreça IP",
   "settings.network.message_network_interface_one": "Selecciona les interfícies de xarxa que Hombridge hauria difondre i monitor.",
