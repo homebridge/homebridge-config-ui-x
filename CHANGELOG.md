@@ -19,6 +19,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - Fix crash with missing homepage package.json property (#2013) (@regaw-leinad)
 - improve ui of settings page (#2016) (@mkz212)
 - improve ui of settings page (#2026) (@mkz212)
+- remove mdns interface tooltips
 
 ### Translation Changes
 
@@ -39,6 +40,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - updated special plugin lists
 - check local dir for homebridge when running dev
 - dependency updates
+- update `@homebridge/` dependencies
 
 ## 4.55.1 (2024-01-07)
 

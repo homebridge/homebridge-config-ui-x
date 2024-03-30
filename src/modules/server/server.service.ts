@@ -1,5 +1,6 @@
 import { exec, spawn } from 'child_process';
 import { join, resolve } from 'path';
+import { Categories } from '@homebridge/hap-client/dist/hap-types';
 import {
   BadRequestException,
   Injectable,
@@ -7,7 +8,6 @@ import {
   NotFoundException,
   ServiceUnavailableException,
 } from '@nestjs/common';
-import { Categories } from '@oznu/hap-client/dist/hap-types';
 import { alloc } from 'buffer-shims';
 import {
   pathExists,

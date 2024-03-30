@@ -63,11 +63,9 @@
           <small class="grey-text">{{ 'settings.network.message_network_interface_one' | translate }}</small>
         </div>
         <span *ngFor="let adapter of bridgeNetworkAdapters">
-          <span class="badge rounded-pill me-1"
-            [ngbTooltip]="adapter.missing ? 'Not Connected' : adapter.ip4 || adapter.ip6" placement="bottom-left"
-            openDelay="150" [ngClass]="{'badge-danger': adapter.missing, 'badge-info': !adapter.missing}">
+          <span class="badge badge-pill me-1" [ngClass]="{'badge-danger': adapter.missing, 'badge-info': !adapter.missing}">
             <i class="fas fa-fw fa-exclamation-triangle" *ngIf="adapter.missing"></i>
-            {{ adapter.iface }}
+            {{ adapter.iface }}: <span class="font-weight-normal">{{ adapter.missing ? ('settings.mdns_advertiser_not_connected' | translate) : adapter.ip4 || adapter.ip6 }}</span>
           </span>
         </span>
       </span>

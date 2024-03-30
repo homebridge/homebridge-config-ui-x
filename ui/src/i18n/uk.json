@@ -308,6 +308,7 @@
   "settings.manage_cache.help": "Якщо аксесуар, якого у Вас більше немає, все ще відображається в HomeKit, можливо, Ви будете змушені видалити його з кешу. Ви можете вибрати видалення одного аксесуару з кешу або видалити всі кешовані аксесуари.",
   "settings.mdns_advertiser": "Рекламіст mDNS",
   "settings.mdns_advertiser_help": "Якщо у вас виникли проблеми з підключенням до Homebridge, спробуйте скористатися одним із альтернативних рекламвстів mDNS.",
+  "settings.mdns_advertiser_not_connected": "Not Connected",
   "settings.network.label_interface_name": "Назва інтерфейсу",
   "settings.network.label_ip_address": "IP Адреса",
   "settings.network.message_network_interface_one": "Виберіть мережеві інтерфейси, які Homebridge повинен рекламувати та слухати.",

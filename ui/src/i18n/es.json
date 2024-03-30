@@ -308,6 +308,7 @@
   "settings.manage_cache.help": "Si aún se muestra un accesorio que ya no tienes en HomeKit, es posible que tengas que sacarlo de la caché. Puedes optar por eliminar un solo accesorio de la caché o eliminar todos los accesorios almacenados en caché.",
   "settings.mdns_advertiser": "Difusión mDNS",
   "settings.mdns_advertiser_help": "Si experimentas problemas para conectarte a Homebridge, prueba con alguna de las alternativas de difusión mDNS.",
+  "settings.mdns_advertiser_not_connected": "Not Connected",
   "settings.network.label_interface_name": "Nombre de la Interfaz",
   "settings.network.label_ip_address": "Dirección IP",
   "settings.network.message_network_interface_one": "Selecciona las interfaces de red que Hombridge debería difundir y escuchar.",

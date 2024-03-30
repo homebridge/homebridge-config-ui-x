@@ -308,6 +308,7 @@
   "settings.manage_cache.help": "Pokud se příslušenství, které již nemáte, stále zobrazuje v HomeKit, bude nutné jej odstranit z cache. Můžete si vybrat, zdali chcete z cache odebrat jediné příslušenství nebo všechny.",
   "settings.mdns_advertiser": "mDNS Inzerent",
   "settings.mdns_advertiser_help": "Pokud máte potíže s připojením k Homebridge, zkuste použít některého z alternativních inzerentů mDNS.",
+  "settings.mdns_advertiser_not_connected": "Not Connected",
   "settings.network.label_interface_name": "Jméno rozhraní",
   "settings.network.label_ip_address": "IP Adresa",
   "settings.network.message_network_interface_one": "Vyberte síťová rozhraní, na kterých má Homebridge inzerovat a naslouchat.",

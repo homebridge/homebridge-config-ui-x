@@ -1,4 +1,4 @@
-import { ServiceType } from '@oznu/hap-client';
+import { ServiceType } from '@homebridge/hap-client';
 
 export type ServiceTypeX = ServiceType & {
   customName?: string;

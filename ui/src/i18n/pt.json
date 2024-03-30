@@ -308,6 +308,7 @@
   "settings.manage_cache.help": "Se um acessório que já não possui continuar a ser mostrado no HomeKit, poderá ser necessário remove-lo da cache. Pode escolher remover apenas um acessório, ou remover todos os acessórios em cache.",
   "settings.mdns_advertiser": "Encaminhamento mDNS",
   "settings.mdns_advertiser_help": "Se estiver a ter problemas a conectar ao Homebridge, tente um dos encaminhamentos mDNS alternativos.",
+  "settings.mdns_advertiser_not_connected": "Not Connected",
   "settings.network.label_interface_name": "Nome da Interface",
   "settings.network.label_ip_address": "Endereço IP",
   "settings.network.message_network_interface_one": "Selecione a interface de rede que o Homebridge deverá utilizar.",

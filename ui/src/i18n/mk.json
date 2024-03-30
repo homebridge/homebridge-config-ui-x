@@ -308,6 +308,7 @@
   "settings.manage_cache.help": "Ако уред кој веќе не го користите сеуште е прикажан во HomeKit, можно е да треба да го отстраните од кешот. Можете да одберете дали сакате да отстраните поединечен уред од кешот или сите кеширани уреди.",
   "settings.mdns_advertiser": "mDNS Advertiser",
   "settings.mdns_advertiser_help": "If you're having trouble connecting to Homebridge, try using one of the alternate mDNS advertisers.",
+  "settings.mdns_advertiser_not_connected": "Not Connected",
   "settings.network.label_interface_name": "Име на интерфејс",
   "settings.network.label_ip_address": "IP адреса",
   "settings.network.message_network_interface_one": "Одберете ги мрежните интерфејси на кои Homebridge ќе испраќа advertisements и ќе слуша.",

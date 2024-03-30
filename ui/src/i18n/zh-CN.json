@@ -308,6 +308,7 @@
   "settings.manage_cache.help": "如果您的 HomeKit 有还存在您不再拥有的配件，您也许需要从缓存中将它移除。 您可以选择在缓存中移除单一的配件或者直接移除所有的配件",
   "settings.mdns_advertiser": "mDNS Advertiser",
   "settings.mdns_advertiser_help": "如果你无法链接到 Homebridge, 请尝试更换 mDNS advertisers.",
+  "settings.mdns_advertiser_not_connected": "Not Connected",
   "settings.network.label_interface_name": "端口名称",
   "settings.network.label_ip_address": "IP 地址",
   "settings.network.message_network_interface_one": "选择一个 Homebridge 监听的网络端口。",

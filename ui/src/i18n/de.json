@@ -308,6 +308,7 @@
   "settings.manage_cache.help": "Wenn ein nicht mehr vorhandenes Gerät noch in HomeKit angezeigt wird, musst du es möglicherweise aus dem Cache entfernen. Du kannst entweder ein einzelnes Gerät oder alle zwischengespeicherten Geräte aus dem Cache entfernen.",
   "settings.mdns_advertiser": "mDNS Advertiser",
   "settings.mdns_advertiser_help": "Wenn du Probleme hast, dich mit Homebridge zu verbinden, versuche einen der alternativen mDNS Advertiser zu verwenden.",
+  "settings.mdns_advertiser_not_connected": "Not Connected",
   "settings.network.label_interface_name": "Schnittstellen-Name",
   "settings.network.label_ip_address": "IP-Adresse",
   "settings.network.message_network_interface_one": "Wähle die Netzwerkschnittstellen aus, welche Homebridge anzeigen und belauschen soll.",

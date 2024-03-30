@@ -308,6 +308,7 @@
   "settings.manage_cache.help": "Jeśli jest jakieś akcesorium, którego już nie masz zainstalowanego, a nadal jest wyświetlane w aplikacji HomeKit, prawdopodobnie musisz je usunąć z pamięci podręcznej. Możesz wybrać czy usunąć wszystkie lub jedno z akcesoriów.",
   "settings.mdns_advertiser": "Rozgłaszacz mDNS",
   "settings.mdns_advertiser_help": "Jeśli masz problem z połączeniem się z Homebridge, spróbuj użyć alternatywnego rozgłaszania mDNS.",
+  "settings.mdns_advertiser_not_connected": "Not Connected",
   "settings.network.label_interface_name": "Nazwa interfejsu",
   "settings.network.label_ip_address": "Adres IP",
   "settings.network.message_network_interface_one": "Wybierz interfejs sieciowy do wykorzystania przez Homebridge.",

@@ -308,6 +308,7 @@
   "settings.manage_cache.help": "Если аксессуар, которого у Вас больше нет, все еще отображается в HomeKit, возможно, Вам придется удалить его из кэша. Вы можете выбрать удаление одного аксессуара из кэша или удалить все кэшированные аксессуары.",
   "settings.mdns_advertiser": "mDNS Advertiser",
   "settings.mdns_advertiser_help": "If you're having trouble connecting to Homebridge, try using one of the alternate mDNS advertisers.",
+  "settings.mdns_advertiser_not_connected": "Not Connected",
   "settings.network.label_interface_name": "Interface Name",
   "settings.network.label_ip_address": "IP Address",
   "settings.network.message_network_interface_one": "Select the network interfaces that Homebridge should advertise and listen on.",

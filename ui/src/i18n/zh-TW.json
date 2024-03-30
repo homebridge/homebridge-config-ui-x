@@ -308,6 +308,7 @@
   "settings.manage_cache.help": "假如不再使用的配件、仍然顯示於 HomeKit 中，可能需要由暫存中進行移除。可選擇自暫存中移除單一配件、或移除所有暫存配件。",
   "settings.mdns_advertiser": "mDNS Advertiser",
   "settings.mdns_advertiser_help": "假如於連線 Homebridge 時遇到問題，請試著使用替代的 mDNS Advertiser。",
+  "settings.mdns_advertiser_not_connected": "Not Connected",
   "settings.network.label_interface_name": "介面名稱",
   "settings.network.label_ip_address": "IP 位址",
   "settings.network.message_network_interface_one": "請選擇 Homebridge 要使用的網路介面",
