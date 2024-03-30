@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
+import { ServiceType } from '@homebridge/hap-client';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ServiceType } from '@oznu/hap-client';
 import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { AuthService } from '../auth/auth.service';

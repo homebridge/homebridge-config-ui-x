@@ -1,6 +1,6 @@
 import { join } from 'path';
+import { HapClient, ServiceType } from '@homebridge/hap-client';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { HapClient, ServiceType } from '@oznu/hap-client';
 import {
   mkdirp,
   pathExists,

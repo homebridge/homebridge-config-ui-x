@@ -38,6 +38,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - updated special plugin lists
 - check local dir for homebridge when running dev
 - dependency updates
+- update `@homebridge/` dependencies
 
 ## 4.55.1 (2024-01-07)
 
