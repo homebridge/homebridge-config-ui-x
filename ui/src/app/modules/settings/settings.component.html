@@ -77,12 +77,12 @@
         <i class="fas fa-fw fa-chevron-right" [ngClass]="{ 'fa-pulse': !availableNetworkAdapters.length }"></i>
       </button>
     </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="w-75 pe-2">
-        {{ 'settings.mdns_advertiser' | translate }}
-        <small class="grey-text">{{ 'settings.mdns_advertiser_help' | translate }}</small>
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.mdns_advertiser' | translate }}<br>
+        <small class="grey-text pe-2">{{ 'settings.mdns_advertiser_help' | translate }}</small>
       </span>
-      <div>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-100" style="max-width:500px!important;">
         <select class="form-select" [formControl]="legacyMdnsFormControl"
           [attr.aria-label]="'settings.mdns_advertiser' | translate">
           <option value="bonjour-hap">Bonjour HAP</option>
@@ -124,21 +124,21 @@
   <div class="mb-4" *ngIf="$settings.env.serviceMode">
     <h5 class="primary-text">{{ 'settings.title_environment_variables' | translate }}</h5>
     <ul class="list-group mt-2">
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <span class="w-75 pe-2">
-          DEBUG
-          <small class="grey-text">{{ 'settings.service.debug_tooltip' | translate }}</small>
+      <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+        <span>
+          DEBUG<br>
+          <small class="grey-text pe-2">{{ 'settings.service.debug_tooltip' | translate }}</small>
         </span>
-        <div class="pull-right">
+        <div class="my-3 my-md-0 pl-0 pl-md-5 w-100" style="max-width:500px!important;">
           <input class="form-control form-control-sm" formControlName="ENV_DEBUG" type="text" />
         </div>
       </li>
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <span class="w-75 pe-2">
-          NODE_OPTIONS
-          <small class="grey-text">{{ 'settings.service.node_tooltip' | translate }}</small>
+      <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+        <span>
+          NODE_OPTIONS<br>
+          <small class="grey-text pe-2">{{ 'settings.service.node_tooltip' | translate }}</small>
         </span>
-        <div class="pull-right">
+        <div class="my-3 my-md-0 pl-0 pl-md-5 w-100" style="max-width:500px!important;">
           <input class="form-control form-control-sm" formControlName="ENV_NODE_OPTIONS" type="text" />
         </div>
       </li>
