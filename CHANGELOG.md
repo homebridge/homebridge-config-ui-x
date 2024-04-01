@@ -24,6 +24,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - add 'report an issue' link to plugin menu
 - configurable action button class on confirm component
 - refactor widget settings view with styled checkboxes
+- refactor accessory info view with styled checkboxes
 
 ### Translation Changes
 
