@@ -51,6 +51,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - dependency updates
 - update `@homebridge/` dependencies
 - standardise CHANGELOG to same as `homebridge`
+- standardise README to same as other hb repos
 
 ## v4.55.1 (2024-01-07)
 
