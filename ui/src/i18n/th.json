@@ -53,7 +53,6 @@
   "accessories.message_settings_link": "คุณสามารถเข้าถึงการตั้งค่า Homebridge ได้ตลอดเวลาจากเมนูหลักหรือคลิกที่ฟันเฟือง",
   "accessories.title_accessories": "อุปกรณ์เสริม",
   "accessories.title_accessory_control_disabled": "การควบคุมอุปกรณ์เสริม Homebridge ถูกปิดใช้งาน",
-  "accessories.title_create_new_room": "สร้างห้องใหม่",
   "backup.button_download_backup_archive": "ดาวน์โหลดการสำรองข้อมูลถาวร",
   "backup.button_restore_backup": "คืนค่าการสำรองข้อมูล",
   "backup.label_archive_name": "ชื่อที่เก็บถาวร",

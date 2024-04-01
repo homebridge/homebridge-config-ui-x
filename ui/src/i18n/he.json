@@ -53,7 +53,6 @@
   "accessories.message_settings_link": "You can access the Homebridge Settings at any time from the main menu or by clicking the cog",
   "accessories.title_accessories": "אביזרים",
   "accessories.title_accessory_control_disabled": "אביזר הומברידג' לא פעיל",
-  "accessories.title_create_new_room": "צור חדר חדש",
   "backup.button_download_backup_archive": "הורד גיבוי",
   "backup.button_restore_backup": "שחזר מגיבוי",
   "backup.label_archive_name": "שם גיבוי",

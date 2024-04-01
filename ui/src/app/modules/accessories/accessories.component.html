@@ -26,8 +26,8 @@
       </div>
       <div class="btn-group ms-3" role="group">
         <button type="button" class="btn btn-elegant status-button my-0" [disabled]="isMobile" (click)="addRoom()"
-          [attr.aria-label]="'accessories.button_add_room' | translate">
-          <i class="fas fa-fw fa-plus"></i>
+          container="body" [ngbTooltip]="'accessories.button_add_room' | translate" [attr.aria-label]="'accessories.button_add_room' | translate">
+          <i class="fas fa-fw fa-folder-plus"></i>
         </button>
       </div>
     </div>

@@ -28,6 +28,8 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - refactor accessory info view with styled checkboxes
 - remove npm/github icons from plugin modals
 - refactor user add/edit with styled checkboxes
+- hide plugin logs menu item when plugin is disabled
+- refactor add room button and modal
 
 ### Translation Changes
 

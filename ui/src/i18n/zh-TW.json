@@ -53,7 +53,6 @@
   "accessories.message_settings_link": "You can access the Homebridge Settings at any time from the main menu or by clicking the cog",
   "accessories.title_accessories": "配件",
   "accessories.title_accessory_control_disabled": "Homebridge 配件控制已關閉",
-  "accessories.title_create_new_room": "新增房間",
   "backup.button_download_backup_archive": "下載備份檔案",
   "backup.button_restore_backup": "回復備份",
   "backup.label_archive_name": "備份名稱",

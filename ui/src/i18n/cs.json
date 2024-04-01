@@ -53,7 +53,6 @@
   "accessories.message_settings_link": "You can access the Homebridge Settings at any time from the main menu or by clicking the cog",
   "accessories.title_accessories": "Příslušenství",
   "accessories.title_accessory_control_disabled": "Ovládání příslušenství pro Homebridge je zakázáno",
-  "accessories.title_create_new_room": "Vytvořit novou místnost",
   "backup.button_download_backup_archive": "Stáhnout zálohu",
   "backup.button_restore_backup": "Obnovit zálohu",
   "backup.label_archive_name": "Jméno Archivu",

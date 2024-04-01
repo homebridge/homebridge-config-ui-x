@@ -53,7 +53,6 @@
   "accessories.message_settings_link": "You can access the Homebridge Settings at any time from the main menu or by clicking the cog",
   "accessories.title_accessories": "Accessoris",
   "accessories.title_accessory_control_disabled": "Control d'accessoris Homebridge desactivat",
-  "accessories.title_create_new_room": "Crear habitació nova",
   "backup.button_download_backup_archive": "Descarregar arxiu de còpia de seguretat",
   "backup.button_restore_backup": "Restaurar còpia de seguretat",
   "backup.label_archive_name": "Nom de l'arxiu",

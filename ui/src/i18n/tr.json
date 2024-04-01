@@ -53,7 +53,6 @@
   "accessories.message_settings_link": "You can access the Homebridge Settings at any time from the main menu or by clicking the cog",
   "accessories.title_accessories": "Aksesuarlar",
   "accessories.title_accessory_control_disabled": "Homebridge Aksesuar Kontrolü Devre Dışı Bırakıldı",
-  "accessories.title_create_new_room": "Yeni Oda Oluştur",
   "backup.button_download_backup_archive": "Yedekleme Arşivini İndir",
   "backup.button_restore_backup": "Yedeği Geri Yükle",
   "backup.label_archive_name": "Arşiv Adı",

@@ -53,7 +53,6 @@
   "accessories.message_settings_link": "You can access the Homebridge Settings at any time from the main menu or by clicking the cog",
   "accessories.title_accessories": "Уреди",
   "accessories.title_accessory_control_disabled": "Контрола на уреди исклучена",
-  "accessories.title_create_new_room": "Создади нова Соба",
   "backup.button_download_backup_archive": "Симни бекап архива",
   "backup.button_restore_backup": "Поврати бекап",
   "backup.label_archive_name": "Име на архивата",
