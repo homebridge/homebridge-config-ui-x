@@ -53,7 +53,6 @@
   "accessories.message_settings_link": "You can access the Homebridge Settings at any time from the main menu or by clicking the cog",
   "accessories.title_accessories": "Tillbehör",
   "accessories.title_accessory_control_disabled": "Homebridge Tillbehörs Kontroll Inaktiverad",
-  "accessories.title_create_new_room": "Skapa nytt rum",
   "backup.button_download_backup_archive": "Ladda ner säkerhetskopiering",
   "backup.button_restore_backup": "Återställa säkerhetskopia",
   "backup.label_archive_name": "Arkivnamn",

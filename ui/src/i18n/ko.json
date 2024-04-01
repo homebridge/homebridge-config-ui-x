@@ -53,7 +53,6 @@
   "accessories.message_settings_link": "You can access the Homebridge Settings at any time from the main menu or by clicking the cog",
   "accessories.title_accessories": "액세서리",
   "accessories.title_accessory_control_disabled": "Homebridge 액세서리 제어 비활성화 됨",
-  "accessories.title_create_new_room": "새로운 방 추가",
   "backup.button_download_backup_archive": "백업 기록파일 다운로드",
   "backup.button_restore_backup": "백업 복원",
   "backup.label_archive_name": "기록파일 이름",

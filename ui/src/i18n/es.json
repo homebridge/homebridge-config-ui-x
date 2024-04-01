@@ -53,7 +53,6 @@
   "accessories.message_settings_link": "Puede acceder a la Configuración de Homebridge en cualquier momento desde el menú principal o haciendo clic en el engranaje (icono de rueda dentada).",
   "accessories.title_accessories": "Accesorios",
   "accessories.title_accessory_control_disabled": "Control de accesorios Homebridge desactivado",
-  "accessories.title_create_new_room": "Crear habitación nueva",
   "backup.button_download_backup_archive": "Crear y descargar copia de seguridad",
   "backup.button_restore_backup": "Restaurar un respaldo",
   "backup.label_archive_name": "Nombre del archivo",

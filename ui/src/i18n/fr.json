@@ -53,7 +53,6 @@
   "accessories.message_settings_link": "Vous pouvez accéder aux paramètres Homebridge à tout moment à partir du menu principal ou en cliquant sur la roue crantée",
   "accessories.title_accessories": "Accessoires",
   "accessories.title_accessory_control_disabled": "Contrôle des accessoires Homebridge désactivé",
-  "accessories.title_create_new_room": "Créer une nouvelle pièce",
   "backup.button_download_backup_archive": "Télécharger une Archive de Sauvegarde",
   "backup.button_restore_backup": "Restaurer une Sauvegarde",
   "backup.label_archive_name": "Nom de l'Archive",

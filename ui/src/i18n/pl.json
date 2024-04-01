@@ -53,7 +53,6 @@
   "accessories.message_settings_link": "Możesz uzyskać dostęp do ustawień Homebridge w dowolnym momencie z menu głównego lub klikając cog",
   "accessories.title_accessories": "Akcesoria",
   "accessories.title_accessory_control_disabled": "Sterowanie akcesoriami jest wyłączone",
-  "accessories.title_create_new_room": "Utwórz nowy pokój",
   "backup.button_download_backup_archive": "Utwórz backup",
   "backup.button_restore_backup": "Przywróć backup",
   "backup.label_archive_name": "Nazwa backupu",
