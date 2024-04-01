@@ -1,6 +1,6 @@
 # Change Log
 
-All notable changes to homebridge-config-ui-x will be documented in this file.
+All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
 ## BETA
 
@@ -25,7 +25,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - configurable action button class on confirm component
 - refactor widget settings view with styled checkboxes
 - refactor accessory info view with styled checkboxes
-- remove npm/github icons from plugin modals
+- remove NPM/GitHub icons from plugin modals
 - refactor user add/edit with styled checkboxes
 - hide plugin logs menu item when plugin is disabled
 - refactor add room button and modal
@@ -41,7 +41,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 
 ### Other Changes
 
-- improve github actions
+- improve GitHub actions
 - fixed Environment Info selection on bug and support templates
 - add wiki change request issue template
 - removed force of earlier version of `bonjour-service` as a fix has been implemented in latest version 
@@ -50,8 +50,9 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - check local dir for homebridge when running dev
 - dependency updates
 - update `@homebridge/` dependencies
+- standardise CHANGELOG to same as `homebridge`
 
-## 4.55.1 (2024-01-07)
+## v4.55.1 (2024-01-07)
 
 ### Bug Fixes
 
@@ -67,7 +68,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - attach artifacts to workflows
 - update issue templates
 
-## 4.55.0 (2024-01-06)
+## v4.55.0 (2024-01-06)
 
 ### UI Changes
 
@@ -108,20 +109,20 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - add `passport` as dependency to BE
 - revert ngx-monaco-editor dependency update
 - ui: update to angular v15
-- improve github actions
+- improve GitHub actions
 - Fix for backup service including npm's cache (#1949) (@sapireli)
 - updated dependencies
 - ignore `.venv` in hb backup files
 - updated Discord Webhooks so notifications are seperated for `release` and `pre-release`
 - update maximum file upload size to 25mb
 
-## 4.54.2 (2024-01-02)
+## v4.54.2 (2024-01-02)
 
 ### Bug Fixes
 
 - Missing "passport" package from Synology builds - https://github.com/homebridge/homebridge-syno-spk/issues/141
 
-## 4.54.1 (2023-12-08)
+## v4.54.1 (2023-12-08)
 
 ### Bug Fixes
 
@@ -132,7 +133,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 
 - Do not attach artifacts to GitHub releases if the tarball is smaller than 10MB
 
-## 4.54.0 (2023-12-05)
+## v4.54.0 (2023-12-05)
 
 Merry Christmas and Happy Holidays to all our users celebrating later this month! :christmas_tree:
 
@@ -173,14 +174,14 @@ _Also thanks to @mkz212 and @Staubgeborener for their contributions to the trans
 
 ### Other Changes
 
-- update github release workflow (#1818)
+- update GitHub release workflow (#1818)
 - add generic restart hb modal, future use (#1821)
 - Add Raspberry Pi 5 to list of Pi devices in bug-report template (#1824) (@jsiegenthaler)
 - add api work for plugin icons
 - update dependencies
 - save bugs link as part of `IPackageJson` type
 
-## 4.53.0 (2023-11-24)
+## v4.53.0 (2023-11-24)
 
 Happy Thanksgiving to our American friends! :turkey:
 
@@ -202,7 +203,7 @@ Happy Thanksgiving to our American friends! :turkey:
 
 - Add Alpha Releases (#1740)
 - update dependencies (#1745)
-- update github release workflow (#1746)
+- update GitHub release workflow (#1746)
 - ui lint sort imports and exports (#1750)
 - update lang sync - remove old translations (#1751)
 - various code improvements + simplifications (#1754)
@@ -212,13 +213,13 @@ Happy Thanksgiving to our American friends! :turkey:
 - graceful fail when issue with node dist list response (#1800)
 - Update node-pty-prebuilt-multiarch to 0.11.12
 
-## 4.52.3 (2023-11-14)
+## v4.52.3 (2023-11-14)
 
 ### Bug Fixes
 
 - Fixes for #1698, update-node failing with npm not found
 
-## 4.52.2 (2023-11-11)
+## v4.52.2 (2023-11-11)
 
 ### Notable Changes
 
@@ -307,7 +308,7 @@ Happy Thanksgiving to our American friends! :turkey:
 
 - Updated dependencies, including `@homebridge/node-pty-prebuilt-multiarch` to `0.11.10` (thanks [@NorthernMan54](https://github.com/NorthernMan54)!)
 
-## 4.52.1 (2023-11-04)
+## v4.52.1 (2023-11-04)
 
 ### Other Changes
 
@@ -318,7 +319,7 @@ Happy Thanksgiving to our American friends! :turkey:
 - Fix text in post-plugin-update modal which wasn't showing translated strings properly
 - Revert HomeKit code formatting change
 
-## 4.52.0 (2023-11-04)
+## v4.52.0 (2023-11-04)
 
 ### Notable Changes
 
@@ -348,14 +349,14 @@ Happy Thanksgiving to our American friends! :turkey:
 - Updated dependencies
 - Update `@homebridge/node-pty-prebuilt-multiarch` to version v0.11.8 (updated build process and back-level support for Synology DSM devices)
 
-## 4.51.2 (2023-10-27)
+## v4.51.2 (2023-10-27)
 
 ### Bug Fixes
 
 - Improved guard rails around the Node.js 20 update for environments that can not support Node.js 20 (#1604)
 - Include commentary in the release notes about the possibility of needing to run `sudo hb-service rebuild` after updating, and how to determine if your system is compatible with Node.js 20.
 
-## 4.51.1 (2023-10-25)
+## v4.51.1 (2023-10-25)
 
 ### Bug Fixes
 
@@ -364,7 +365,7 @@ Happy Thanksgiving to our American friends! :turkey:
 - Colon Markdown emojis are not parsed as they are on GitHub ([#1601](https://github.com/homebridge/homebridge-config-ui-x/pull/1601))
 - Prevent tooltip from displaying after Node.js modal ([#1600](https://github.com/homebridge/homebridge-config-ui-x/pull/1600))
 
-## 4.51.0 (2023-10-23)
+## v4.51.0 (2023-10-23)
 
 ### Notable Changes
 
@@ -385,7 +386,7 @@ Happy Thanksgiving to our American friends! :turkey:
   - Updated frontend dependencies (#1572)
   - Update @homebridge/node-pty-prebuilt-multiarch to version v0.11.7 ( Node 20 Support and upstream refresh )
 
-## 4.50.6 (2023-09-28)
+## v4.50.6 (2023-09-28)
 
 ### Bug Fixes
 
@@ -398,7 +399,7 @@ Happy Thanksgiving to our American friends! :turkey:
 - **i18n:** Wait for custom UI ([1526](https://github.com/homebridge/homebridge-config-ui-x/pull/1526))
 - Updated npm dependencies
 
-## 4.50.5 (2023-08-19)
+## v4.50.5 (2023-08-19)
 
 ### Notable Changes
 
@@ -415,13 +416,13 @@ Happy Thanksgiving to our American friends! :turkey:
 - **i18n:** Improve translations ([1459](https://github.com/homebridge/homebridge-config-ui-x/pull/1459))
 - **i18n:** Update zh-CN.json ([1503](https://github.com/homebridge/homebridge-config-ui-x/pull/1503))
 
-## 4.50.4 (2023-05-12)
+## v4.50.4 (2023-05-12)
 
 ### Notable Changes
 
 - **System:** Updates to workflow release process
 
-## 4.50.3 (2023-05-12)
+## v4.50.3 (2023-05-12)
 
 ### Notable Changes
 
@@ -437,7 +438,7 @@ Happy Thanksgiving to our American friends! :turkey:
 - **i18n:** No apostrophe in possessive "its" ([1450](https://github.com/homebridge/homebridge-config-ui-x/pull/1450))
 - **i18n:** Update de.json ([1477](https://github.com/homebridge/homebridge-config-ui-x/pull/1477))
 
-## 4.50.2 (2022-11-10)
+## v4.50.2 (2022-11-10)
 
 ### Notable Changes
 
@@ -447,7 +448,7 @@ Happy Thanksgiving to our American friends! :turkey:
 
 - **Backups:** Backups now ignore symlinks, sockets, pipes etc.
 
-## 4.50.1 (2022-08-09)
+## v4.50.1 (2022-08-09)
 
 ### Bug Fixes
 
@@ -462,7 +463,7 @@ Happy Thanksgiving to our American friends! :turkey:
 - **i18n:** Improvements to Spanish language translations ([#1396](https://github.com/oznu/homebridge-config-ui-x/pull/1396))
 - **i18n:** Improvements to German language translations ([#1399](https://github.com/oznu/homebridge-config-ui-x/pull/1399))
 
-## 4.50.0 (2022-07-16)
+## v4.50.0 (2022-07-16)
 
 ### Breaking Changes
 
@@ -483,7 +484,7 @@ Happy Thanksgiving to our American friends! :turkey:
 - **Plugins:** Changed "install previous version" to "Install Alternate Version" ([#1385](https://github.com/oznu/homebridge-config-ui-x/issues/1385))
 - **Auth:** Fixed form validation for autofilled username and password ([#1388](https://github.com/oznu/homebridge-config-ui-x/issues/1388))
 
-## 4.49.0 (2022-07-08)
+## v4.49.0 (2022-07-08)
 
 ### Notable Changes
 
@@ -504,7 +505,7 @@ Happy Thanksgiving to our American friends! :turkey:
 - **Backups:** Fixed an issue that could prevent backups being created on Synology DSM due to not being able to read the `#recycle` directory
 - **System:** Set a 60-second timeout on the pre-start job to clean up stale temporary npm directories on Linux running via `hb-service`; this should fix the errors some users were seeing when the task took more than the 90 seconds systemd allows by default ([#1371](https://github.com/oznu/homebridge-config-ui-x/issues/1371))
 
-## 4.48.1 (2022-06-24)
+## v4.48.1 (2022-06-24)
 
 ### Notable Changes
 
@@ -520,7 +521,7 @@ Happy Thanksgiving to our American friends! :turkey:
 
 - **i18n:** Improvements to Thai language translations ([#1364](https://github.com/oznu/homebridge-config-ui-x/pull/1364))
 
-## 4.47.0 (2022-06-15)
+## v4.47.0 (2022-06-15)
 
 ### Notable Changes
 
@@ -536,7 +537,7 @@ Happy Thanksgiving to our American friends! :turkey:
 
 - **Dashboard:** Fix some font size scaling issues ([#1360](https://github.com/oznu/homebridge-config-ui-x/issues/1360))
 
-## 4.46.0 (2022-05-27)
+## v4.46.0 (2022-05-27)
 
 ### Notable Changes
 
@@ -549,7 +550,7 @@ Happy Thanksgiving to our American friends! :turkey:
 - **Backups:** Fixed a bug preventing the storage directory from being backed up when it was a symbolic link
 - **Plugins:** Allow the modal to be closed when a plugin install or upgrade fails
 
-## 4.45.0 (2022-05-21)
+## v4.45.0 (2022-05-21)
 
 ### Notable Changes
 
@@ -575,13 +576,13 @@ The following features have been added, but will not be active until the **upcom
 
 - **Backups:** If a backup fails, the temporary directory it created is removed
 
-## 4.44.1 (2022-05-14)
+## v4.44.1 (2022-05-14)
 
 ### Bug Fixes
 
 - **Auth:** Fix a bug that prevented the 2FA prompt from showing up when logging in
 
-## 4.44.0 (2022-05-13)
+## v4.44.0 (2022-05-13)
 
 ### Notable Changes
 
@@ -594,7 +595,7 @@ The following features have been added, but will not be active until the **upcom
 - **i18n:** Improvements to Italian language translations ([#1333](https://github.com/oznu/homebridge-config-ui-x/pull/1333))
 - **i18n:** Improvements to Indonesian language translations ([#1336](https://github.com/oznu/homebridge-config-ui-x/pull/1336))
 
-## 4.43.3 (2022-05-07)
+## v4.43.3 (2022-05-07)
 
 ### Bug Fixes
 
@@ -604,7 +605,7 @@ The following features have been added, but will not be active until the **upcom
 
 - **i18n:** Improvements to Dutch language translations ([#1330](https://github.com/oznu/homebridge-config-ui-x/pull/1330))
 
-## 4.43.2 (2022-04-29)
+## v4.43.2 (2022-04-29)
 
 ### Other Changes
 
@@ -614,7 +615,7 @@ The following features have been added, but will not be active until the **upcom
 - **System:** Changes to support Homebridge `apt` package installation
 - **System:** Fresh installations on Linux will have the default mdns advertiser set to `avahi` if the `avahi-daemon` service is running
 
-## 4.43.1 (2022-04-23)
+## v4.43.1 (2022-04-23)
 
 ### Bug Fixes
 
@@ -625,7 +626,7 @@ The following features have been added, but will not be active until the **upcom
 - **System:** The [`hb-service update-node`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command#update-nodejs) command will now check glibc v2.28 or later is present on Linux systems before allowing an update to Node.js 18+
 - **System:** The [`hb-service update-node`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command#update-nodejs) will now check for macOS 10.15 Catalina or later before allowing an update to Node.js 18+
 
-## 4.43.0 (2022-04-14)
+## v4.43.0 (2022-04-14)
 
 ### Notable Changes
 
@@ -641,7 +642,7 @@ The following features have been added, but will not be active until the **upcom
 - **System:** The `hb-service update-node` command now works on the [native Homebridge Synology DSM Package](https://github.com/oznu/homebridge-syno-spk) (via integrated terminal only)
 - Updated npm dependencies
 
-## 4.42.0 (2022-01-20)
+## v4.42.0 (2022-01-20)
 
 ### Notable Changes
 
@@ -654,7 +655,7 @@ The following features have been added, but will not be active until the **upcom
 - **i18n:** Improvements to French language translations ([#1260](https://github.com/oznu/homebridge-config-ui-x/pull/1260))
 - Minor changes to support a native Homebridge Synology DSM Package
 
-## 4.41.5 (2021-12-18)
+## v4.41.5 (2021-12-18)
 
 ### Bug Fixes
 
@@ -665,14 +666,14 @@ The following features have been added, but will not be active until the **upcom
 - Accessibility improvements ([#1226](https://github.com/oznu/homebridge-config-ui-x/issues/1226))
 - Increase timeout for requests made to npm from 5 seconds to 10 seconds.
 
-## 4.41.4 (2021-12-12)
+## v4.41.4 (2021-12-12)
 
 ### Other Changes
 
 - **System:** Updated the [`hb-service update-node`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command#update-nodejs) command to allow updating Node.js on Apple M1 ([#1246](https://github.com/oznu/homebridge-config-ui-x/issues/1246))
 - Updated npm dependencies
 
-## 4.41.3 (2021-11-25)
+## v4.41.3 (2021-11-25)
 
 ### Bug Fixes
 
@@ -686,7 +687,7 @@ The following features have been added, but will not be active until the **upcom
 - **Plugins:** The following features have been added to assist plugin developers building [custom plugin user interfaces](https://github.com/homebridge/plugin-ui-utils):
   - The "loading" spinner is now correctly shown on top of schema generated forms ([#1198](https://github.com/oznu/homebridge-config-ui-x/pull/1198))
 
-## 4.41.2 (2021-07-30)
+## v4.41.2 (2021-07-30)
 
 ### Other Changes
 
@@ -696,7 +697,7 @@ The following features have been added, but will not be active until the **upcom
 - **i18n:** Improvements to Italian language translations ([#1166](https://github.com/oznu/homebridge-config-ui-x/pull/1166))
 - Updated npm dependencies
 
-## 4.41.1 (2021-04-27)
+## v4.41.1 (2021-04-27)
 
 ### Other Changes
 
@@ -707,7 +708,7 @@ The following features have been added, but will not be active until the **upcom
 - **Accessory Control:** Updated accessory categories ([#1154](https://github.com/oznu/homebridge-config-ui-x/issues/1154))
 - **System:** Preliminary support for Node.js 16 (please continue to use Node.js v14.16.1 LTS for now)
 
-## 4.41.0 (2021-03-22)
+## v4.41.0 (2021-03-22)
 
 ## Notable Changes
 
@@ -734,7 +735,7 @@ The following features have been added, but will not be active until the **upcom
 
 - The `/api/status/homebridge` endpoint can now return an additional status of `pending`.
 
-## 4.40.0 (2021-03-08)
+## v4.40.0 (2021-03-08)
 
 ### Notable Changes
 
@@ -748,7 +749,7 @@ The following features have been added, but will not be active until the **upcom
 - **i18n:** Improvements to Polish language translations ([#1111](https://github.com/oznu/homebridge-config-ui-x/pull/1111))
 - **i18n:** Improvements to Portuguese language translations ([#1112](https://github.com/oznu/homebridge-config-ui-x/pull/1112))
 
-## 4.39.1 (2021-02-25)
+## v4.39.1 (2021-02-25)
 
 ### Other Changes
 
@@ -767,7 +768,7 @@ The following features have been added, but will not be active until the **upcom
 - Fixed an issue where some valid network interfaces were not showing up in the network interface selector ([#1096](https://github.com/oznu/homebridge-config-ui-x/issues/1096))
 - Fixed an issue running the UI on Linux systems without outdated `libstdc++` libraries ([#1086](https://github.com/oznu/homebridge-config-ui-x/issues/1086))
 
-## 4.39.0 (2021-02-15)
+## v4.39.0 (2021-02-15)
 
 ### Other Changes
 
@@ -789,7 +790,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 
 - **Homebridge:** Added the ability to swap between the `ciao` and `bonjour-hap` mdns advertisers
 
-## 4.38.0 (2021-02-06)
+## v4.38.0 (2021-02-06)
 
 ### Other Changes
 
@@ -809,7 +810,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed ([cur
   - Child bridges allow you to run any plugin's platform or accessory as an isolated child bridge without having to manage multiple Homebridge instances
 - **Dashboard:** Added a new [Child Bridge Status](https://github.com/homebridge/homebridge/wiki/Child-Bridges#hb-service-features) widget the dashboard for [`hb-service`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command) users that shows the current status of a child bridge (down, pending, ready) and allows you to restart an individual child bridge
 
-## 4.37.0 (2021-01-30)
+## v4.37.0 (2021-01-30)
 
 ### Notable Changes
 
@@ -839,7 +840,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 - **Homebridge:** Added the ability to swap between the `ciao` and `bonjour-hap` mdns advertisers
 - **Plugins:** Added the ability to disable plugins without having to uninstall them or remove their config from the Homebridge `config.json` file ([#287](https://github.com/oznu/homebridge-config-ui-x/issues/287),[#790](https://github.com/oznu/homebridge-config-ui-x/issues/790),[#791](https://github.com/oznu/homebridge-config-ui-x/issues/791),[#864](https://github.com/oznu/homebridge-config-ui-x/issues/864),[#931](https://github.com/oznu/homebridge-config-ui-x/issues/931),[#990](https://github.com/oznu/homebridge-config-ui-x/issues/990),[#1029](https://github.com/oznu/homebridge-config-ui-x/issues/1029))
 
-## 4.36.0 (2020-12-07)
+## v4.36.0 (2020-12-07)
 
 ### Notable Changes
 
@@ -853,7 +854,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 
 - **Auth:** Fix an issue that prevented the "Login" button from being enabled when autofilling credentials on iOS ([#993](https://github.com/oznu/homebridge-config-ui-x/pull/993))
 
-## 4.35.0 (2020-11-30)
+## v4.35.0 (2020-11-30)
 
 ### Notable Changes
 
@@ -871,7 +872,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 - **Plugins:** Attempt to automatically clear the npm cache if a UI update fails ([#923](https://github.com/oznu/homebridge-config-ui-x/issues/923))
 - **System:** Lockdown the systeminformation dependency version ([#969](https://github.com/oznu/homebridge-config-ui-x/issues/969))
 
-## 4.34.0 (2020-11-20)
+## v4.34.0 (2020-11-20)
 
 ### Notable Changes
 
@@ -889,7 +890,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 
 - **Backup/Restore:** Ensure the UI is restarted along with the bridge after restoring a backup regardless of how the user triggers a restart ([#963](https://github.com/oznu/homebridge-config-ui-x/pull/963))
 
-## 4.33.0 (2020-11-15)
+## v4.33.0 (2020-11-15)
 
 ### Notable Changes
 
@@ -908,7 +909,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 - **API**: Added REST API endpoints to look up and update the config for a single plugin, see the [Swagger API documentation](https://github.com/oznu/homebridge-config-ui-x/wiki/API-Reference) for details
 - **System**: Display a warning in the UI when the client (browser) is running a newer version than the server - this can happen if the service is not restarted after updating the Homebridge UI
 
-## 4.32.0 (2020-11-06)
+## v4.32.0 (2020-11-06)
 
 ### Notable Changes
 
@@ -933,7 +934,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 - **i18n:** Improvements to French language translations ([#937](https://github.com/oznu/homebridge-config-ui-x/pull/937))
 - **i18n:** Improvements to Spanish language translations ([#939](https://github.com/oznu/homebridge-config-ui-x/pull/939))
 
-## 4.31.0 (2020-10-28)
+## v4.31.0 (2020-10-28)
 
 ### Notable Changes
 
@@ -955,7 +956,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 - **i18n:** Improvements to Spanish language translations ([#917](https://github.com/oznu/homebridge-config-ui-x/pull/917))
 - **i18n:** Improvements to Polish language translations ([#918](https://github.com/oznu/homebridge-config-ui-x/pull/918))
 
-## 4.30.0 (2020-10-21)
+## v4.30.0 (2020-10-21)
 
 ### Notable Changes
 
@@ -980,7 +981,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 - **i18n:** Improvements to German language translations ([#895](https://github.com/oznu/homebridge-config-ui-x/pull/895))
 - **i18n:** Improvements to Japanese language translations ([#897](https://github.com/oznu/homebridge-config-ui-x/pull/897))
 
-## 4.29.0 (2020-10-13)
+## v4.29.0 (2020-10-13)
 
 ### Notable Changes
 
@@ -1001,7 +1002,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 - **i18n:** Improvements to French language translations ([#881](https://github.com/oznu/homebridge-config-ui-x/pull/881),[#882](https://github.com/oznu/homebridge-config-ui-x/pull/882))
 - **i18n:** Improvements to Polish language translations ([#884](https://github.com/oznu/homebridge-config-ui-x/pull/884),[#886](https://github.com/oznu/homebridge-config-ui-x/pull/886))
 
-## 4.28.1 (2020-10-08)
+## v4.28.1 (2020-10-08)
 
 ### Notable Changes
 
@@ -1017,7 +1018,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 - **i18n:** Improvements to Italian language translations ([#876](https://github.com/oznu/homebridge-config-ui-x/pull/876))
 - **i18n:** Improvements to Simplified Chinese language translations ([#878](https://github.com/oznu/homebridge-config-ui-x/pull/878))
 
-## 4.28.0 (2020-10-01)
+## v4.28.0 (2020-10-01)
 
 ### Notable Changes
 
@@ -1029,7 +1030,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 
 - **API**: Added REST API endpoints to look up the plugin type and plugin alias that are needed to configure the plugin, see the [Swagger API documentation](https://github.com/oznu/homebridge-config-ui-x/wiki/API-Reference) for details
 
-## 4.27.2 (2020-09-25)
+## v4.27.2 (2020-09-25)
 
 ### Notable Changes
 
@@ -1048,7 +1049,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 - **User Management:** Fixed a typo in the toast error message when loading users ([#859](https://github.com/oznu/homebridge-config-ui-x/pull/859))
 - **Plugins:** Resolved an issue discovering the `npm` path on certain Windows installations ([#851](https://github.com/oznu/homebridge-config-ui-x/pull/851))
 
-## 4.27.1 (2020-09-01)
+## v4.27.1 (2020-09-01)
 
 ### Other Changes
 
@@ -1061,7 +1062,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 - **Plugins:** Settings GUI: Fixed a bug that caused the cursor to go to the end of the text input field when editing
 - **Plugins:** Fixed a bug that resulted in the verified plugins list being updated more frequently than it should have been
 
-## 4.27.0 (2020-08-25)
+## v4.27.0 (2020-08-25)
 
 ### Other Changes
 
@@ -1075,7 +1076,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 
 - **Plugins:** Plugins are now properly sorted in Firefox ([#762](https://github.com/oznu/homebridge-config-ui-x/issues/762))
 
-## 4.26.0 (2020-08-19)
+## v4.26.0 (2020-08-19)
 
 ### Bug Fixes
 
@@ -1088,7 +1089,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 - Updated npm dependencies
 - **Auth:** Improve two-factor authentication autocomplete ([#819](https://github.com/oznu/homebridge-config-ui-x/issues/819))
 
-## 4.25.2 (2020-08-14)
+## v4.25.2 (2020-08-14)
 
 ### Bug Fixes
 
@@ -1098,7 +1099,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 
 - **i18n:** Improvements to Indonesian language translations ([#810](https://github.com/oznu/homebridge-config-ui-x/pull/810))
 
-## 4.25.1 (2020-08-10)
+## v4.25.1 (2020-08-10)
 
 ### Node.js Version
 
@@ -1118,7 +1119,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 - **API:** [Swagger API documentation](https://github.com/oznu/homebridge-config-ui-x/wiki/API-Reference) is now complete ([#776](https://github.com/oznu/homebridge-config-ui-x/issues/776))
 - Updated npm dependencies
 
-## 4.24.0 (2020-07-22)
+## v4.24.0 (2020-07-22)
 
 ### Notable Changes
 
@@ -1128,14 +1129,14 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 
 - **Accessory Control:** Fixed an issue with HeaterCooler control ([#772](https://github.com/oznu/homebridge-config-ui-x/issues/772))
 
-## 4.23.2 (2020-06-29)
+## v4.23.2 (2020-06-29)
 
 ### Bug Fixes
 
 - **Log Viewer:** Fixed an issue that prevented scrolling back in Safari ([#755](https://github.com/oznu/homebridge-config-ui-x/issues/755))
 - **Dashboard:** Layout is locked by default on iPad Pro ([#756](https://github.com/oznu/homebridge-config-ui-x/issues/756))
 
-## 4.23.1 (2020-06-26)
+## v4.23.1 (2020-06-26)
 
 ### Notable Changes
 
@@ -1147,7 +1148,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 - **System:** The [`hb-service update-node`](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command#update-nodejs) command now explains why it cannot run on _Alpine Linux_, rather than showing a generic message that the platform is not supported ([#745](https://github.com/oznu/homebridge-config-ui-x/issues/745))
 - Updated npm dependencies
 
-## 4.23.0 (2020-06-18)
+## v4.23.0 (2020-06-18)
 
 ### Bug Fixes
 
@@ -1163,7 +1164,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
   - Update to latest LTS: `sudo hb-service update-node`
   - Install specific version: `sudo hb-service update-node 10.17.0`
 
-## 4.22.0 (2020-06-09)
+## v4.22.0 (2020-06-09)
 
 ### Notable Changes
 
@@ -1180,7 +1181,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 - **i18n:** Improvements to German language translations ([#730](https://github.com/oznu/homebridge-config-ui-x/pull/730))
 - **Login:** Login wallpaper now properly covers larger screens ([#723](https://github.com/oznu/homebridge-config-ui-x/pull/723))
 
-## 4.21.0 (2020-05-27)
+## v4.21.0 (2020-05-27)
 
 ### Notable Changes
 
@@ -1202,7 +1203,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 
 - **Plugins:** Fixed a bug that caused the UI to fail to check if a plugin's `package.json` file exists correctly before attempting to open it
 
-## 4.20.0 (2020-05-21)
+## v4.20.0 (2020-05-21)
 
 ### Notable Changes
 
@@ -1221,7 +1222,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 - **hb-service:** Fix a bug that caused strange behaviour on boot for users running macOS with home folders mounted on a remote network share ([#680](https://github.com/oznu/homebridge-config-ui-x/issues/680))
 - **Accessory Control:** Fixed an issue where the accessory name would sometimes not be displayed correctly ([#690](https://github.com/oznu/homebridge-config-ui-x/issues/690))
 
-## 4.19.0 (2020-05-14)
+## v4.19.0 (2020-05-14)
 
 ### Notable Changes
 
@@ -1237,7 +1238,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 - **i18n:** Improvements to Simplified Chinese language translations ([#672](https://github.com/oznu/homebridge-config-ui-x/pull/672),[#684](https://github.com/oznu/homebridge-config-ui-x/pull/684))
 - **i18n:** Improvements to Italian language translations ([#678](https://github.com/oznu/homebridge-config-ui-x/pull/678))
 
-## 4.18.0 (2020-05-07)
+## v4.18.0 (2020-05-07)
 
 ### Other Changes
 
@@ -1252,7 +1253,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 
 - **Plugins:** Fixed a bug that prevented the plugins from loading when there was a bad file in the global node_modules directory ([#657](https://github.com/oznu/homebridge-config-ui-x/issues/657))
 
-## 4.17.1 (2020-04-29)
+## v4.17.1 (2020-04-29)
 
 ### Notable Changes
 
@@ -1269,7 +1270,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 - **Homebridge Updates:** If Homebridge fails to update the error logs will now be displayed on the screen
 - **Accessory Control:** The accessory layout will now be unlocked when adding a new room ([#643](https://github.com/oznu/homebridge-config-ui-x/issues/643))
 
-## 4.16.0 (2020-04-21)
+## v4.16.0 (2020-04-21)
 
 ### Notable Changes
 
@@ -1289,7 +1290,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 
 - **Accessory Control:** Added support for HAP short-form UUIDs ([#624](https://github.com/oznu/homebridge-config-ui-x/pull/624))
 
-## 4.15.0 (2020-04-14)
+## v4.15.0 (2020-04-14)
 
 ### Notable Changes
 
@@ -1303,7 +1304,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 - **i18n:** Improvements to Russian language translations ([#609](https://github.com/oznu/homebridge-config-ui-x/pull/609))
 - Updated npm dependencies
 
-## 4.14.0 (2020-04-08)
+## v4.14.0 (2020-04-08)
 
 ### Notable Changes
 
@@ -1320,7 +1321,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 
 - **Plugins:** Fixed a bug that caused the plugin page not to load if the DNS lookup took a long time to timeout ([#598](https://github.com/oznu/homebridge-config-ui-x/issues/598))
 
-## 4.13.3 (2020-03-31)
+## v4.13.3 (2020-03-31)
 
 ### Other Changes
 
@@ -1331,7 +1332,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 
 - **hb-service:** Fixed a bug in the macOS installer that resulted in the wrong storage path being set in some circumstances ([homebridge#2464](https://github.com/homebridge/homebridge/issues/2464))
 
-## 4.13.2 (2020-03-25)
+## v4.13.2 (2020-03-25)
 
 ### Other Changes
 
@@ -1342,7 +1343,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 - **System:** When updating Homebridge, the release notes will now be shown prior to the update occurring
 - **hb-service:** improved discovery of Homebridge install path
 
-## 4.13.0 (2020-03-18)
+## v4.13.0 (2020-03-18)
 
 ### Notable Changes
 
@@ -1363,7 +1364,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 
 - **Accessory Control:** Address an issue that may have caused the UI to crash when Homebridge becomes unavailable ([#543](https://github.com/oznu/homebridge-config-ui-x/issues/543), [#583](https://github.com/oznu/homebridge-config-ui-x/issues/583))
 
-## 4.12.0 (2020-03-05)
+## v4.12.0 (2020-03-05)
 
 ### Notable Changes
 
@@ -1385,7 +1386,7 @@ These features will appear in once Homebridge v1.3.0 or later is installed (curr
 - **i18n:** Improvements to Russian language translations ([#573](https://github.com/oznu/homebridge-config-ui-x/pull/573), [#577](https://github.com/oznu/homebridge-config-ui-x/pull/577))
 - Updated npm dependencies
 
-## 4.11.0 (2020-02-27)
+## v4.11.0 (2020-02-27)
 
 ### Backup / Restore Feature
 
@@ -1417,7 +1418,7 @@ Highlights:
 - **i18n:** Improvements to Swedish language translations ([#561](https://github.com/oznu/homebridge-config-ui-x/pull/561))
 - **i18n:** Improvements to Polish language translations ([#562](https://github.com/oznu/homebridge-config-ui-x/pull/562))
 
-## 4.10.3 (2020-02-20)
+## v4.10.3 (2020-02-20)
 
 ### Other Changes
 
@@ -1429,7 +1430,7 @@ Highlights:
 
 - **Dashboard:** Fixed a bug that caused Homebridge to display as "Not Running" when the bridge port number was quoted as a string in the `config.json` ([#553](https://github.com/oznu/homebridge-config-ui-x/issues/553))
 
-## 4.10.2 (2020-02-19)
+## v4.10.2 (2020-02-19)
 
 ### Other Changes
 
@@ -1444,7 +1445,7 @@ Highlights:
 - **UI:** Fixed the dropdown menu display on very small screens ([#540](https://github.com/oznu/homebridge-config-ui-x/issues/540))
 - **Docker:** Fixed a bug that prevented the UI from restarting correctly when running the Debian Docker image
 
-## 4.10.1 (2020-02-12)
+## v4.10.1 (2020-02-12)
 
 ### Other Changes
 
@@ -1454,7 +1455,7 @@ Highlights:
 - **i18n:** Improvements to German language translations ([#529](https://github.com/oznu/homebridge-config-ui-x/pull/529))
 - **i18n:** Improvements to Russian language translations ([#531](https://github.com/oznu/homebridge-config-ui-x/pull/531))
 
-## 4.10.0 (2020-02-05)
+## v4.10.0 (2020-02-05)
 
 ### Notable Changes
 
@@ -1471,7 +1472,7 @@ Highlights:
 - **Accessory Control:** Minor tweaks to the Speaker accessory type
 - Updated npm dependencies
 
-## 4.9.0 (2020-01-29)
+## v4.9.0 (2020-01-29)
 
 ### Notable Changes
 
@@ -1485,7 +1486,7 @@ Highlights:
 - **Accessory Control:** `CameraRTPStreamManagement` accessory types will no longer be displayed
 - Updated npm dependencies
 
-## 4.8.1 (2020-01-22)
+## v4.8.1 (2020-01-22)
 
 ### Notable Changes
 
@@ -1496,7 +1497,7 @@ Highlights:
 - **System:** Fixed an issue causing the UI to crash when running in a FreeBSD Jailed Shell ([#488](https://github.com/oznu/homebridge-config-ui-x/issues/488))
 - **System:** Fixed an issue that may have caused Homebridge not to restart when a certain plugin was installed when running on Docker ([#494](https://github.com/oznu/homebridge-config-ui-x/issues/494))
 
-## 4.8.0 (2020-01-18)
+## v4.8.0 (2020-01-18)
 
 ### Notable Changes
 
@@ -1524,7 +1525,7 @@ https://user-images.githubusercontent.com/3979615/72317538-b92b6780-36ed-11ea-80
 - **Auth:** Fixed a warning about a depreciated option that was in use ([#473](https://github.com/oznu/homebridge-config-ui-x/issues/473))
 - **Config Editor:** Fixed an issue that prevented the on-screen keyboard from being able to be displayed after it was dismissed on an iPad Pro ([#480](https://github.com/oznu/homebridge-config-ui-x/issues/480))
 
-## 4.7.0 (2020-01-11)
+## v4.7.0 (2020-01-11)
 
 ### New Dashboard
 
@@ -1595,13 +1596,13 @@ In addition:
 - **System:** Fixed a bug that prevented the Windows 10 service installer (`hb-service`) from working when the user's login name contained spaces
 - **Linux:** Fixed a bug where the custom shutdown command was executing the custom restart command instead ([#442](https://github.com/oznu/homebridge-config-ui-x/issues/442))
 
-## 4.6.7 (2019-12-24)
+## v4.6.7 (2019-12-24)
 
 ### Bug Fixes
 
 - **System:** The Windows 10 service installer (`hb-service`) now configures the system firewall
 
-## 4.6.6 (2019-12-17)
+## v4.6.6 (2019-12-17)
 
 ### Bug Fixes
 
@@ -1611,7 +1612,7 @@ In addition:
 
 - Updated npm dependencies
 
-## 4.6.5 (2019-12-07)
+## v4.6.5 (2019-12-07)
 
 ### Notable Changes
 
@@ -1621,7 +1622,7 @@ In addition:
 
 - Updated npm dependencies
 
-## 4.6.4 (2019-11-24)
+## v4.6.4 (2019-11-24)
 
 ### Notable Changes
 
@@ -1631,7 +1632,7 @@ In addition:
 
 - Updated npm dependencies
 
-## 4.6.3 (2019-10-27)
+## v4.6.3 (2019-10-27)
 
 ### Notable Changes
 
@@ -1646,7 +1647,7 @@ In addition:
 
 - Updated npm dependencies
 
-## 4.6.2 (2019-10-08)
+## v4.6.2 (2019-10-08)
 
 ### Notable Changes
 
@@ -1660,7 +1661,7 @@ In addition:
 - **i18n:** French language improvements ([#400](https://github.com/oznu/homebridge-config-ui-x/pull/400))
 - **System:** Perform self-updates offline when using Docker - latest [oznu/homebridge](https://github.com/oznu/docker-homebridge) docker image required ([docker-homebridge#220](https://github.com/oznu/docker-homebridge/issues/220))
 
-## 4.6.1 (2019-08-24)
+## v4.6.1 (2019-08-24)
 
 ### Bug Fixes
 
@@ -1669,7 +1670,7 @@ In addition:
 - **i18n:** Bulgarian language improvements ([#364](https://github.com/oznu/homebridge-config-ui-x/issues/364))
 - **i18n:** German language improvements ([#365](https://github.com/oznu/homebridge-config-ui-x/pull/365))
 
-## 4.6.0 (2019-08-16)
+## v4.6.0 (2019-08-16)
 
 ### New Features
 
@@ -1706,14 +1707,14 @@ In addition:
 - Updated npm dependencies
 - Upgraded Angular from v8.0.0 to v8.2.0
 
-## 4.5.1 (2019-06-14)
+## v4.5.1 (2019-06-14)
 
 ### Bug Fixes
 
 - Fixed a display issues on iOS ([#322](https://github.com/oznu/homebridge-config-ui-x/issues/322))
 - Fixed an issue causing users to be logged out before their session had expired
 
-## 4.5.0 (2019-06-12)
+## v4.5.0 (2019-06-12)
 
 ### Notable Changes
 
@@ -1728,7 +1729,7 @@ In addition:
 - The footer links on the status page are now stuck to the bottom of the page, rather than the end of the content
 - Update Content Security Policy to allow remote images from `https://user-images.githubusercontent.com` in plugin Change Logs / Release Notes
 
-## 4.4.5 (2019-06-02)
+## v4.4.5 (2019-06-02)
 
 ### Bug Fixes
 
@@ -1738,13 +1739,13 @@ In addition:
 
 - Updated npm dependencies
 
-## 4.4.4 (2019-05-30)
+## v4.4.4 (2019-05-30)
 
 ### Other Changes
 
 - **Config Editor:** Prevent _Smart Punctuation_ autocorrect in the config editor on mobile devices ([#313](https://github.com/oznu/homebridge-config-ui-x/issues/313))
 
-## 4.4.3 (2019-05-28)
+## v4.4.3 (2019-05-28)
 
 ### Notable Changes
 
@@ -1755,7 +1756,7 @@ In addition:
 - Add an on-screen warning when attempting to install/update/uninstall a plugin, or view the logs on unsupported versions of Node.js ([#305](https://github.com/oznu/homebridge-config-ui-x/issues/305))
 - Added some more detailed log message to help when users are not able to log in, need to reset their password, are unable to view accessories
 
-## 4.4.2 (2019-05-19)
+## v4.4.2 (2019-05-19)
 
 ### Other Changes
 
@@ -1764,7 +1765,7 @@ In addition:
 - Added a warning message in the logs letting the user know if their Node.js version is too low (anything less than 8.15.1)
 - Updated npm dependencies
 
-## 4.4.1 (2019-05-16)
+## v4.4.1 (2019-05-16)
 
 ### Notable Changes
 
@@ -1776,7 +1777,7 @@ In addition:
 
 - Updated npm dependencies
 
-## 4.4.0 (2019-05-07)
+## v4.4.0 (2019-05-07)
 
 ### Notable Changes
 
@@ -1797,7 +1798,7 @@ In addition:
 - Updated npm dependencies
 - Bundle some dependencies using `bundledDependencies` in the `package.json` to try and reduce installation errors
 
-## 4.3.0 (2019-05-05)
+## v4.3.0 (2019-05-05)
 
 ### Notable Changes
 
@@ -1808,7 +1809,7 @@ In addition:
 - Updated npm dependencies
 - **Wiki**: Created [wiki page](https://github.com/oznu/homebridge-config-ui-x/wiki/Config-Options) showing all available config options
 
-## 4.2.0 (2019-05-03)
+## v4.2.0 (2019-05-03)
 
 ### Notable Changes
 
@@ -1816,7 +1817,7 @@ In addition:
 - **Plugins:** The status/homepage will now display a notice if you have any out-of-date plugins ([#200](https://github.com/oznu/homebridge-config-ui-x/issues/200))
 - **Config:** The "Backup Config" feature is back ([#279](https://github.com/oznu/homebridge-config-ui-x/issues/279))
 
-## 4.1.0 (2019-04-28)
+## v4.1.0 (2019-04-28)
 
 ### Notable Changes
 
@@ -1826,7 +1827,7 @@ In addition:
 
 - Updated npm dependencies
 
-## 4.0.6 (2019-04-22)
+## v4.0.6 (2019-04-22)
 
 ### Bug Fixes
 
@@ -1836,13 +1837,13 @@ In addition:
 
 - Updated npm dependencies
 
-## 4.0.5 (2019-04-21)
+## v4.0.5 (2019-04-21)
 
 ### Bug Fixes
 
 - Fixed issue preventing the web service from loading correctly in config-less [oznu/homebridge](https://github.com/oznu/docker-homebridge) docker containers ([#262](https://github.com/oznu/homebridge-config-ui-x/issues/262))
 
-## 4.0.4 (2019-04-20)
+## v4.0.4 (2019-04-20)
 
 ### Bug Fixes
 
@@ -1852,13 +1853,13 @@ In addition:
 
 - Added `host` config option to allow users to manually specify which interface/ip address the web interface should listen on
 
-## 4.0.3 (2019-04-20)
+## v4.0.3 (2019-04-20)
 
 ### Bug Fixes
 
 - Fixed bug that prevented the web service listening on IPv6 interfaces ([#260](https://github.com/oznu/homebridge-config-ui-x/issues/260))
 
-## 4.0.2 (2019-04-19)
+## v4.0.2 (2019-04-19)
 
 ### Notable Changes
 
@@ -1868,13 +1869,13 @@ In addition:
 
 - Updated npm dependencies
 
-## 4.0.1 (2019-04-17)
+## v4.0.1 (2019-04-17)
 
 ### Bug Fixes
 
 - Fixed resolving of custom plugin path for non-Docker installations
 
-## 4.0.0 (2019-04-16)
+## v4.0.0 (2019-04-16)
 
 ### Breaking Changes
 
@@ -1907,7 +1908,7 @@ In addition:
   - Split code into modules
   - Packaged code is now combined with Webpack, this should reduce startup times on slow I/O systems like the Raspberry Pi
 
-## 3.11.0 (2019-04-03)
+## v3.11.0 (2019-04-03)
 
 ### Notable Changes
 
@@ -1918,14 +1919,14 @@ In addition:
 - Swap to using a prebuilt version of the node-pty package to try and reduce errors during installation
 - Updated other npm dependencies
 
-## 3.10.0 (2019-03-23)
+## v3.10.0 (2019-03-23)
 
 ### Notable Changes
 
 - **Themes:** Dark mode and other themes added by [@RaymondMouthaan](https://github.com/RaymondMouthaan) ([#236](https://github.com/oznu/homebridge-config-ui-x/pull/236))
 - **Themes:** Make it easier to see that there are three separate links at the bottom of ths status page by adding hover effect ([#230](https://github.com/oznu/homebridge-config-ui-x/issues/230))
 
-## 3.9.7 (2019-03-16)
+## v3.9.7 (2019-03-16)
 
 ### Notable Changes
 
@@ -1936,13 +1937,13 @@ In addition:
 - Updated Angular to 7.2.9
 - Updated other npm dependencies
 
-## 3.9.6 (2019-02-04)
+## v3.9.6 (2019-02-04)
 
 ### Notable Changes
 
 - **i18n:** Spanish language translation added by [@Rubenfer](https://github.com/Rubenfer)
 
-## 3.9.5 (2019-02-02)
+## v3.9.5 (2019-02-02)
 
 ### Notable Changes
 
@@ -1953,7 +1954,7 @@ In addition:
 - Updated Angular from 7.2.0 -> 7.2.3
 - Updated other npm dependencies
 
-## 3.9.4 (2019-01-15)
+## v3.9.4 (2019-01-15)
 
 ### Other Changes
 
@@ -1961,7 +1962,7 @@ In addition:
 - Updated Angular from 7.1.0 -> 7.2.0
 - Updated other npm dependencies
 
-## 3.9.3 (2019-01-05)
+## v3.9.3 (2019-01-05)
 
 ### Notable Changes
 
@@ -1969,7 +1970,7 @@ In addition:
 - **i18n:** Improvements to Simplified Chinese language translations ([#195](https://github.com/oznu/homebridge-config-ui-x/pull/195))
 - **Accessory Control:** Added ability to lock the accessory layout ([#197](https://github.com/oznu/homebridge-config-ui-x/issues/197))
 
-## 3.9.2 (2018-12-18)
+## v3.9.2 (2018-12-18)
 
 ### Notable Changes
 
@@ -1982,7 +1983,7 @@ In addition:
 
 - Fixed a bug that prevented errors being handled correctly by the client
 
-## 3.9.1 (2018-12-03)
+## v3.9.1 (2018-12-03)
 
 ### Notable Changes
 
@@ -1995,7 +1996,7 @@ In addition:
 - Updated Angular from 6.1.9 to 7.1.1
 - Updated npm dependencies
 
-## 3.9.0 (2018-11-03)
+## v3.9.0 (2018-11-03)
 
 ### Notable Changes
 
@@ -2008,7 +2009,7 @@ In addition:
 - **Auth:** removed some unnecessary log messages ([#171](https://github.com/oznu/homebridge-config-ui-x/issues/171))
 - Updated npm dependencies
 
-## 3.8.11 (2018-10-06)
+## v3.8.11 (2018-10-06)
 
 ### Notable Changes
 
@@ -2019,7 +2020,7 @@ In addition:
 - Updated Angular to 6.1.9
 - Updated npm dependencies
 
-## 3.8.10 (2018-09-04)
+## v3.8.10 (2018-09-04)
 
 ### Notable Changes
 
@@ -2030,7 +2031,7 @@ In addition:
 - Updated Angular to 6.1.6
 - Updated npm dependencies
 
-## 3.8.9 (2018-08-06)
+## v3.8.9 (2018-08-06)
 
 ### Bug Fixes
 
@@ -2041,7 +2042,7 @@ In addition:
 - Updated Angular to 6.1.1
 - Updated npm dependencies
 
-## 3.8.8 (2018-07-30)
+## v3.8.8 (2018-07-30)
 
 ### Notable Changes
 
@@ -2055,7 +2056,7 @@ In addition:
 - **Config Editor:** Fixed issued using config editor on mobile devices ([#131](https://github.com/oznu/homebridge-config-ui-x/issues/131))
 - **Accessory Control:** Accessory layout changes are now persistent again
 
-## 3.8.7 (2018-07-28)
+## v3.8.7 (2018-07-28)
 
 ### Notable Changes
 
@@ -2064,7 +2065,7 @@ In addition:
 - **i18n:** Polish language translation added by [@mientki](https://github.com/mientki)
   - User contributions to the non-english translations are always welcome, [click here](https://github.com/oznu/homebridge-config-ui-x/blob/master/CONTRIBUTING.md#contributing-to-translations) for details on how you can help
 
-## 3.8.6 (2018-07-27)
+## v3.8.6 (2018-07-27)
 
 ### Bug Fixes
 
@@ -2076,20 +2077,20 @@ In addition:
 - Updated Angular to 6.1.0
 - Updated npm dependencies
 
-## 3.8.5 (2018-06-15)
+## v3.8.5 (2018-06-15)
 
 ### Bug Fixes
 
 - Handle loading config schema for [@homebridge](https://www.npmjs.com/org/homebridge) plugins correctly
 
-## 3.8.4 (2018-06-14)
+## v3.8.4 (2018-06-14)
 
 ### Notable Changes
 
 - Made `config.json` saves a bit more robust in an attempt to fix ([#122](https://github.com/oznu/homebridge-config-ui-x/issues/122))
 - Added `proxyHost` config option to make running behind a reverse proxy easier ([#119](https://github.com/oznu/homebridge-config-ui-x/issues/119))
 
-## 3.8.3 (2018-06-07)
+## v3.8.3 (2018-06-07)
 
 ### Notable Changes
 
@@ -2097,14 +2098,14 @@ In addition:
 - Allow web terminal access on Linux-based hosts _only_ if a certain environment variable is set ([#110](https://github.com/oznu/homebridge-config-ui-x/issues/110))
   - Homebridge must be running with the `HOMEBRIDGE_CONFIG_UI_TERMINAL=1` environment variable to access the terminal
 
-## 3.8.2 (2018-06-06)
+## v3.8.2 (2018-06-06)
 
 ### Other Changes
 
 - Minor bug fixes
 - Updated npm dependencies
 
-## 3.8.0 (2018-06-03)
+## v3.8.0 (2018-06-03)
 
 ### Notable Changes
 
@@ -2120,46 +2121,46 @@ In addition:
 - Updated npm dependencies
 - Config changes for the UI should require a full page refresh less often
 
-## 3.7.0 (2018-05-31)
+## v3.7.0 (2018-05-31)
 
 ### Notable Changes
 
 - Added support for imperial temperature display units ([#96](https://github.com/oznu/homebridge-config-ui-x/issues/96))
 
-## 3.6.6 (2018-05-26)
+## v3.6.6 (2018-05-26)
 
 ### Notable Changes
 
 - **ui**: upgraded from Angular 5.x to 6.x
 - updated npm dependencies
 
-## 3.6.5 (2018-05-20)
+## v3.6.5 (2018-05-20)
 
 ### Notable Changes
 
 - Updated npm dependencies
 
-## 3.6.3 (2018-05-10)
+## v3.6.3 (2018-05-10)
 
 ### Notable Changes
 
 - Removed the `nsp` package as the tool has been discontinued, vulnerability scanning is being added to `npm` natively
 - Updated npm dependencies
 
-## 3.6.2 (2018-05-09)
+## v3.6.2 (2018-05-09)
 
 ### Other Changes
 
 - Updated npm dependencies
 - Errors will no longer be thrown if a plugin is installed with CVSS alerts lower than 4 (Low Risk)
 
-## 3.6.1 (2018-05-08)
+## v3.6.1 (2018-05-08)
 
 ### Bug Fixes
 
 - Fixed bug that could cause plugins that take a long time to install or upgrade to fail
 
-## 3.6.0 (2018-05-08)
+## v3.6.0 (2018-05-08)
 
 ### Notable Changes
 
@@ -2182,39 +2183,39 @@ In addition:
 
 - Fixed bug that caused homebridge to crash when using Log Viewer on Windows 10
 
-## 3.5.5 (2018-04-21)
+## v3.5.5 (2018-04-21)
 
 ### Bug Fixes
 
 - Ensure forked process is killed if Homebridge is not running in a different way (@Damien via Slack & [#86](https://github.com/oznu/homebridge-config-ui-x/issues/86))
 
-## 3.5.4 (2018-04-19)
+## v3.5.4 (2018-04-19)
 
 ### Notable Changes
 
 - Added `wsocket` prefix to websocket connection to make reverse proxying easier for some users ([#85](https://github.com/oznu/homebridge-config-ui-x/issues/85))
 
-## 3.5.3 (2018-04-16)
+## v3.5.3 (2018-04-16)
 
 ### Bug Fixes
 
 - Fixed bug that could prevent the plugin from displaying in the browser after an update unless the cache was cleared ([#82](https://github.com/oznu/homebridge-config-ui-x/issues/82))
 - Ensure forked process is killed if Homebridge is not running ([#83](https://github.com/oznu/homebridge-config-ui-x/issues/83))
 
-## 3.5.2 (2018-04-15)
+## v3.5.2 (2018-04-15)
 
 ### Notable Changes
 
 - Accessory Control: Added message explaining that accessory control is disabled when navigating to `/accessories` when insecure mode is not enabled
 - Updated README to contain link to the [Enabling Accessory Control](https://github.com/oznu/homebridge-config-ui-x/wiki/Enabling-Accessory-Control) wiki article
 
-## 3.5.1 (2018-04-12)
+## v3.5.1 (2018-04-12)
 
 ### Bug Fixes
 
 - Docker: Fixed a bug that prevented users saving settings
 
-## 3.5.0 (2018-04-12)
+## v3.5.0 (2018-04-12)
 
 ### Notable Changes
 
@@ -2223,7 +2224,7 @@ In addition:
 - Added ability to set a custom image for the login screen using the `loginWallpaper` option ([#34](https://github.com/oznu/homebridge-config-ui-x/issues/34))
 - Updated npm dependencies
 
-## 3.4.1 (2018-04-06)
+## v3.4.1 (2018-04-06)
 
 ### Notable Changes
 
@@ -2234,7 +2235,7 @@ In addition:
 
 - Suppress npm update warnings in log output ([#66](https://github.com/oznu/homebridge-config-ui-x/issues/66))
 
-## 3.4.0 (2018-03-22)
+## v3.4.0 (2018-03-22)
 
 ### Notable Changes
 
@@ -2248,7 +2249,7 @@ In addition:
 
 - Log viewer terminal now adjusts the size of the pty shell according to the size of the browser window
 
-## 3.3.1 (2018-03-17)
+## v3.3.1 (2018-03-17)
 
 ### Bug Fixes
 
@@ -2256,21 +2257,21 @@ In addition:
 - Prevent the deletion of an admin user if there are no other admin users ([docker-homebridge#83](https://github.com/oznu/docker-homebridge/issues/83))
 - Fixed issue that prevented installed plugins from loading if one was missing a description in it's `package.json` ([#59](https://github.com/oznu/homebridge-config-ui-x/issues/59))
 
-## 3.3.0 (2018-03-16)
+## v3.3.0 (2018-03-16)
 
 ### Notable Changes
 
 - Added ability for Linux users to shut down and restart the server Homebridge is running on ([#39](https://github.com/oznu/homebridge-config-ui-x/issues/39))
 - Updated npm dependencies
 
-## 3.2.1 (2018-03-13)
+## v3.2.1 (2018-03-13)
 
 ### Bug Fixes
 
 - Fixed issue that prevented plugin scan from working on Windows ([#53](https://github.com/oznu/homebridge-config-ui-x/issues/53))
 - Fixed missing css class `.bg-yellow`
 
-## 3.2.0 (2018-03-12)
+## v3.2.0 (2018-03-12)
 
 ### Notable Changes
 
@@ -2280,19 +2281,19 @@ In addition:
 
 - Prevent users accidentally removing homebridge-config-ui-x using the web app
 
-## 3.1.2 (2018-03-11)
+## v3.1.2 (2018-03-11)
 
 ### Bug Fixes
 
 - Fixed an issue that prevented adding a new room to the accessories page in Safari ([#47#issuecomment-372101867](https://github.com/oznu/homebridge-config-ui-x/issues/47#issuecomment-372101867))
 
-## 3.1.1 (2018-03-11)
+## v3.1.1 (2018-03-11)
 
 ### Bug Fixes
 
 - Fixed missing css class `.bg-red`
 
-## 3.1.0 (2018-03-10)
+## v3.1.0 (2018-03-10)
 
 ### Notable Changes
 
@@ -2301,7 +2302,7 @@ In addition:
   - Ability to edit `startup.sh` script
   - Ability to restart entire docker container
 
-## 3.0.1 (2018-03-10)
+## v3.0.1 (2018-03-10)
 
 ### Notable Changes
 
@@ -2313,7 +2314,7 @@ In addition:
 
 - The mobile menu will now close when a nav item is clicked
 
-## 3.0.0 (2018-03-08)
+## v3.0.0 (2018-03-08)
 
 ### Notable Changes
 
@@ -2326,31 +2327,31 @@ In addition:
 
 - Non-admin users now have restricted access ([#37#issuecomment-368346991](https://github.com/oznu/homebridge-config-ui-x/issues/37#issuecomment-368346991))
 
-## 2.7.1 (2018-03-03)
+## v2.7.1 (2018-03-03)
 
 ### Bug Fixes
 
 - Ensure log process is killed after closing the page on older linux systems ([#41](https://github.com/oznu/homebridge-config-ui-x/issues/41))
 
-## 2.7.0 (2018-02-21)
+## v2.7.0 (2018-02-21)
 
 ### Notable Changes
 
 - Added mobile app icons provided by [@DJay-X](https://github.com/DJay-X) ([#34](https://github.com/oznu/homebridge-config-ui-x/issues/34))
 
-## 2.6.3 (2018-02-18)
+## v2.6.3 (2018-02-18)
 
 ### Bug Fixes
 
 - Fixed config screen not displaying correctly on some devices ([#31](https://github.com/oznu/homebridge-config-ui-x/issues/31))
 
-## 2.6.2 (2018-02-17)
+## v2.6.2 (2018-02-17)
 
 ### Bug Fixes
 
 - Fixed bug that prevented log file session closing when using sudo mode ([#29](https://github.com/oznu/homebridge-config-ui-x/issues/29))
 
-## 2.6.1 (2018-02-17)
+## v2.6.1 (2018-02-17)
 
 ### Bug Fixes
 
