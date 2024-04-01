@@ -141,7 +141,7 @@
                   </button>
                   <!-- // -->
                   <!-- plugin logs -->
-                  <button ngbDropdownItem (click)="viewPluginLog(plugin)" *ngIf="plugin.isConfigured">
+                  <button ngbDropdownItem (click)="viewPluginLog(plugin)" *ngIf="plugin.isConfigured && !plugin.disabled">
                     <i class="fas fa-fw fa-wave-square"></i> {{ 'plugins.manage.plugin_logs' | translate }}
                   </button>
                   <!-- // -->
