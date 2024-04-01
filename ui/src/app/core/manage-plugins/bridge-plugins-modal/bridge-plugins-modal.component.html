@@ -102,15 +102,7 @@
         {{ 'form.button_close' | translate }}
       </button>
     </div>
-    <div class="d-none d-lg-block text-center" *ngIf="configBlocks.length">
-      <a *ngIf="plugin.links.npm" [href]="plugin.links.npm" target="_blank" rel="noopener noreferrer"
-         class="pr-3 manage-plugin-config-external-icons dark-mode-highlight"><i class="fab fa-fw fa-npm"></i></a>
-      <a *ngIf="plugin.links.homepage" [href]="plugin.links.homepage" target="_blank" rel="noopener noreferrer"
-         class="manage-plugin-config-external-icons dark-mode-highlight">
-        <i [ngClass]="plugin.links.homepage | externalLinkIcon"></i>
-      </a>
-    </div>
-    <div class="text-center" *ngIf="!configBlocks.length"></div>
+    <div class="text-center"></div>
     <div class="text-right">
       <button type="button" class="btn btn-primary" (click)="save()" [disabled]="saveInProgress" *ngIf="configBlocks.length">
         {{ 'form.button_save' | translate }} <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>

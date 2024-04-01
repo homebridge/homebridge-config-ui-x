@@ -25,6 +25,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - configurable action button class on confirm component
 - refactor widget settings view with styled checkboxes
 - refactor accessory info view with styled checkboxes
+- remove npm/github icons from plugin modals
 
 ### Translation Changes
 
