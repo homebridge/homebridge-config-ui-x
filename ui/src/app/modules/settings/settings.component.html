@@ -127,7 +127,7 @@
           DEBUG<br>
           <small class="grey-text pe-2">{{ 'settings.service.debug_tooltip' | translate }}</small>
         </span>
-        <div class="my-3 my-md-0 pl-0 pl-md-5 w-100" style="max-width:500px!important;">
+        <div class="my-3 my-md-0 ps-0 ps-md-5 w-100" style="max-width:500px!important;">
           <input class="form-control form-control-sm" formControlName="ENV_DEBUG" type="text" />
         </div>
       </li>
@@ -136,7 +136,7 @@
           NODE_OPTIONS<br>
           <small class="grey-text pe-2">{{ 'settings.service.node_tooltip' | translate }}</small>
         </span>
-        <div class="my-3 my-md-0 pl-0 pl-md-5 w-100" style="max-width:500px!important;">
+        <div class="my-3 my-md-0 ps-0 ps-md-5 w-100" style="max-width:500px!important;">
           <input class="form-control form-control-sm" formControlName="ENV_NODE_OPTIONS" type="text" />
         </div>
       </li>
@@ -152,7 +152,7 @@
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="w-75 pe-2">
         {{ 'reset.title_unpair_bridges_cameras_tv_external_accessories' | translate }}<br/>
-        <small class="grey-text pr-2">{{ 'reset.message_unpair_bridges_cameras_tv_external_accessories' | translate }}</small>
+        <small class="grey-text pe-2">{{ 'reset.message_unpair_bridges_cameras_tv_external_accessories' | translate }}</small>
       </span>
       <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" (click)="unpairAccessory()"
         [attr.aria-label]="'reset.title_unpair_bridges_cameras_tv_external_accessories' | translate">
@@ -180,7 +180,7 @@
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="w-75 pe-2">
         {{ 'reset.title_clear_cached_accessories_single' | translate }}<br>
-        <small class="grey-text pr-2">{{ 'reset.message_remove_cached_accessories_single' | translate }}</small>
+        <small class="grey-text pe-2">{{ 'reset.message_remove_cached_accessories_single' | translate }}</small>
       </span>
       <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;"
         [translate]="'reset.title_clear_cached_accessories_single'" (click)="removeSingleCachedAccessories()"

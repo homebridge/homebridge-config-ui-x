@@ -9,7 +9,7 @@
     <p [translate]="'backup.message_backup_help_two'"></p>
     <p [translate]="'backup.message_backup_warning'"></p>
     <div class="text-center mb-3">
-      <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="onDownloadBackupClick()" [disabled]="clicked">
+      <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="onDownloadBackupClick()" [disabled]="clicked">
         <i *ngIf="clicked" class="fa fa-fw fa-circle-notch fa-spin"></i>
         <span *ngIf="!clicked" [translate]="'backup.button_download_backup_archive'"></span>
       </button>
@@ -58,6 +58,6 @@
         {{ 'form.button_close' | translate }}
       </button>
     </div>
-    <div class="text-right"></div>
+    <div class="text-end"></div>
   </div>
 </div>

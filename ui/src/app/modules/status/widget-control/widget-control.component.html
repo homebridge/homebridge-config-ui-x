@@ -8,7 +8,7 @@
     <div class="container px-1">
       <div class="form-group row align-items-center">
         <label class="col-6 col-form-label" [translate]="'status.widget.label_hide_on_mobile'"></label>
-        <div class="col-6 text-right">
+        <div class="col-6 text-end">
           <input type="checkbox" class="rendux-input" id="hideOnMobile" [(ngModel)]="widget.hideOnMobile"
             [attr.aria-label]="'settings.startup.insecure_1' | translate">
           <label for="hideOnMobile" class="rendux-label ms-3" style="min-width: 45px;"></label>
@@ -165,7 +165,7 @@
         {{ 'form.button_hide' | translate }}
       </button>
     </div>
-    <div class="text-right">
+    <div class="text-end">
       <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="activeModal.dismiss('Dismiss')"
         [translate]="'form.button_save'">
         {{ 'form.button_save' | translate }}
