@@ -2,7 +2,7 @@
 
 All notable changes to homebridge-config-ui-x will be documented in this file.
 
-## BETA (TBD)
+## BETA
 
 ### UI Changes
 
@@ -26,6 +26,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - refactor widget settings view with styled checkboxes
 - refactor accessory info view with styled checkboxes
 - remove npm/github icons from plugin modals
+- refactor user add/edit with styled checkboxes
 
 ### Translation Changes
 
