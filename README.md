@@ -112,9 +112,6 @@ The [Homebridge Plugin Template](https://github.com/homebridge/homebridge-plugin
 
 There are many existing plugins you can study; you might start with the [Homebridge Example Plugins](https://github.com/homebridge/homebridge-examples) or a plugin that already implements the device type you need.
 
-When writing your plugin, you'll want Homebridge to load it from your development directory instead of publishing it to `npm` each time. Run this command inside your plugin project folder so your global installation of Homebridge can discover it:
-
-
 ## Common Issues
 
 ### Errors during installation
@@ -141,7 +138,6 @@ Try the following:
 
 1. Swap between the `Bonjour HAP` and `Ciao` mDNS Advertiser options. See [the wiki](https://github.com/homebridge/homebridge/wiki/mDNS-Options) for more details.
 2. iOS DNS cache has gone stale or gotten misconfigured. To fix this, turn airplane mode on and back off to flush the DNS cache.
-
 
 ## Community
 

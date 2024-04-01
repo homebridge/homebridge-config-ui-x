@@ -205,6 +205,13 @@
                     {{ 'child_bridge.label_child_setup' | translate }}
                   </button>
                   <!-- // -->
+                  <!-- report an issue link -->
+                  <div class="dropdown-divider" *ngIf="plugin.links?.bugs"></div>
+                  <a ngbDropdownItem *ngIf="plugin.links?.bugs" rel="noopener noreferrer" target="_blank" [href]="plugin.links.bugs">
+                    <i class="icon-button fa fa-fw fa-question-circle-o"></i>
+                    {{ 'support.useful_links.issue' | translate }}
+                  </a>
+                  <!-- // -->
                 </div>
               </span>
             </div>
