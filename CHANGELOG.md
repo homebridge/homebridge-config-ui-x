@@ -19,6 +19,8 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - improve ui of settings page (#2016) (@mkz212)
 - improve ui of settings page (#2026) (@mkz212)
 - remove mdns interface tooltips
+- network interface widget: custom interface
+- fix status widget graphs
 
 ### Translation Changes
 

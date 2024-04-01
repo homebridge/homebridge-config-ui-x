@@ -62,6 +62,7 @@ export class NetworkWidgetComponent implements OnInit, OnDestroy {
       },
       y: {
         display: false,
+        min: 0,
       },
     },
   };
@@ -92,10 +93,12 @@ export class NetworkWidgetComponent implements OnInit, OnDestroy {
     }
 
     if (!this.widget.refreshInterval) {
-      this.widget.refreshInterval = 1;
+      this.widget.refreshInterval = 10;
     }
 
-    this.intervalSubscription = interval(this.widget.refreshInterval * 1000).subscribe(() => {
+    // Interval should be in [1, 60]
+    const refreshInterval = Math.min(60, Math.max(1, parseInt(this.widget.refreshInterval, 10)));
+    this.intervalSubscription = interval(refreshInterval * 1000).subscribe(() => {
       if (this.io.socket.connected) {
         this.getServerNetworkInfo();
       }
@@ -105,34 +108,41 @@ export class NetworkWidgetComponent implements OnInit, OnDestroy {
   getServerNetworkInfo() {
     this.io.request('get-server-network-info', { netInterfaces: [this.widget.networkInterface] }).subscribe((data) => {
       // If no param given, the backend will return the default network interface
-      if (!this.widget.networkInterface) {
+      // Clear the current chart if the network interface has changed
+      if (this.interface !== data.net.iface) {
         this.widget.networkInterface = data.net.iface;
+        this.interface = data.net.iface;
+        this.lineChartData.datasets[0].data = { ...[] };
+        this.lineChartLabels = [];
+        this.chart.update();
       }
 
       this.receivedPerSec = (data.net.rx_sec / 1024 / 1024) * 8;
       this.sentPerSec = (data.net.tx_sec / 1024 / 1024) * 8;
-      this.interface = data.net.iface;
 
       // the chart looks strange if the data rate is < 1.
       if (data.point < 1) {
         data.point = 0;
       }
 
-      if (!this.lineChartData.datasets[0].data.length) {
+      const dataLength = Object.keys(this.lineChartData.datasets[0].data).length;
+      if (!dataLength) {
         this.lineChartData.datasets[0].data = {
-          ...data.point,
+          ...[data.point],
         };
-        this.lineChartLabels = ['point'];
+        this.lineChartLabels.push('point');
       } else {
-        this.lineChartData.datasets[0].data.push(data.point);
+        this.lineChartData.datasets[0].data[dataLength] = data.point;
         this.lineChartLabels.push('point');
 
-        if (this.lineChartData.datasets[0].data.length > 60) {
-          this.lineChartData.datasets[0].data.shift();
+        if (dataLength > 60) {
+          delete this.lineChartData.datasets[0].data[0];
+          this.lineChartData.datasets[0].data = { ...this.lineChartData.datasets[0].data };
           this.lineChartLabels.shift();
-          this.chart.update();
         }
       }
+
+      this.chart.update();
     });
   }
 
