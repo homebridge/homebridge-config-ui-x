@@ -10,6 +10,7 @@ export class ConfirmComponent implements OnInit {
   @Input() title: string;
   @Input() message: string;
   @Input() confirmButtonLabel: string;
+  @Input() confirmButtonClass: string;
   @Input() faIconClass: string;
 
   constructor(

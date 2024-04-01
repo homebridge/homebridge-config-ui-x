@@ -4,133 +4,152 @@
     <button type="button" class="btn-close" data-bs-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
       (click)="activeModal.dismiss('Dismiss')"></button>
   </div>
-  <div class="modal-body" [ngSwitch]="widget.component">
-    <div *ngSwitchCase="'WeatherWidgetComponent'">
-      <div class="alert alert-info" role="alert" [translate]="'status.widget.weather.label_add_city_instructions'">
-        To enable the weather widget please search for your city name in English.
-      </div>
-
-      <label for="city-search-input" [translate]="'status.widget.weather.label_search_for_your_city'">
-        Search for your city:
-      </label>
-      <div class="input-group mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="">
-            <i class="fas" [ngClass]="{'fa-sync fa-spin': searching, 'fa-city': !searching}"></i>
-          </span>
+  <div class="modal-body w-100" [ngSwitch]="widget.component">
+    <div class="container px-1">
+      <div class="form-group row align-items-center">
+        <label class="col-6 col-form-label" [translate]="'status.widget.label_hide_on_mobile'"></label>
+        <div class="col-6 text-right">
+          <input type="checkbox" class="rendux-input" id="hideOnMobile" [(ngModel)]="widget.hideOnMobile"
+            [attr.aria-label]="'settings.startup.insecure_1' | translate">
+          <label for="hideOnMobile" class="rendux-label ms-3" style="min-width: 45px;"></label>
         </div>
-        <input id="city-search-input" type="text" class="form-control" [ngbTypeahead]="searchCountryCodes"
-          [resultFormatter]="searchCountryCodeFormatter" [inputFormatter]="searchCountryCodeFormatter"
-          [editable]='false' [(ngModel)]="widget.location" />
       </div>
-      <p class="muted grey-text font-italic text-center">
-        Weather data is provided by OpenWeather.
-      </p>
-    </div>
-    <div *ngSwitchCase="'AccessoriesWidgetComponent'">
-      <div class="alert alert-info" role="alert"
-        [translate]="'status.widget.accessories.label_choose_accessories_to_display'">
-        Choose the Accessories to display in this widget from the Accessories tab.
+      <div *ngSwitchCase="'WeatherWidgetComponent'">
+        <label for="city-search-input" [translate]="'status.widget.weather.label_search_for_your_city'">
+          Search for your city:
+        </label>
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text custom-input" id="">
+              <i class="fas" [ngClass]="{'fa-sync fa-spin': searching, 'fa-city': !searching}"></i>
+            </span>
+          </div>
+          <input id="city-search-input" type="text" class="form-control custom-input" [ngbTypeahead]="searchCountryCodes"
+            [resultFormatter]="searchCountryCodeFormatter" [inputFormatter]="searchCountryCodeFormatter"
+            [editable]='false' [(ngModel)]="widget.location" />
+        </div>
+        <p class="muted grey-text font-italic text-center">
+          Weather data is provided by OpenWeather.
+        </p>
       </div>
-      <div class="text-center">
-        <a class="btn btn-primary" routerLink="/accessories" (click)="activeModal.dismiss()"
-          [translate]="'accessories.title_accessories'">Accessories</a>
+      <div *ngSwitchCase="'AccessoriesWidgetComponent'">
+        <p class="muted grey-text font-italic text-center">
+          {{ 'status.widget.accessories.label_choose_accessories_to_display' | translate }}
+        </p>
       </div>
-    </div>
-    <div *ngSwitchCase="'HomebridgeStatusWidgetComponent'">
-      <div class="d-flex flex-row flex-grow-1 align-items-center w-100">
-        <div class="form-group w-100">
-          <div class="pt-1 text-center form-check custom-checkbox c-pointer">
-            <input type="checkbox" class="form-check-input" id="hidePort" [(ngModel)]="widget.hidePort">
-            <label class="form-check-label" for="hidePort"
-              [translate]="'status.widget.homebridgestatus.label_port'">Hide the Homebridge Port
-            </label>
+      <div *ngSwitchCase="'HomebridgeStatusWidgetComponent'">
+        <div class="form-group row align-items-center">
+          <label class="col-6 col-form-label" [translate]="'status.widget.homebridgestatus.label_port'"></label>
+          <div class="col-6 text-end">
+            <input type="checkbox" class="rendux-input" id="hidePort" [(ngModel)]="widget.hidePort"
+              [attr.aria-label]="'status.widget.homebridgestatus.label_port' | translate">
+            <label for="hideOnMobile" class="rendux-label ms-3" style="min-width: 45px;"></label>
           </div>
         </div>
       </div>
-    </div>
-    <div *ngSwitchCase="'HomebridgeLogsWidgetComponent'">
-      <div class="form-group row">
-        <label class="col-sm-4 col-form-label" [translate]="'status.widget.label_font_size'">Font Size</label>
-        <div class="col-sm-8">
-          <select class="form-control" [(ngModel)]="widget.fontSize">
-            <option *ngFor="let size of fontSizes" [value]="size">{{ size }}</option>
-          </select>
+      <div *ngSwitchCase="'HomebridgeLogsWidgetComponent'">
+        <div class="form-group row align-items-center">
+          <label class="col-6 col-form-label" [translate]="'status.widget.label_font_size'">Font Size</label>
+          <div class="col-6">
+            <select class="custom-select" [(ngModel)]="widget.fontSize">
+              <option *ngFor="let size of fontSizes" [value]="size">{{ size }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group row align-items-center">
+          <label class="col-6 col-form-label" [translate]="'status.widget.label_font_weight'">Font Weight</label>
+          <div class="col-6">
+            <select class="custom-select" [(ngModel)]="widget.fontWeight">
+              <option *ngFor="let weight of fontWeights" [value]="weight">{{ weight }}</option>
+            </select>
+          </div>
         </div>
       </div>
-      <div class="form-group row">
-        <label class="col-sm-4 col-form-label" [translate]="'status.widget.label_font_weight'">Font Weight</label>
-        <div class="col-sm-8">
-          <select class="form-control" [(ngModel)]="widget.fontWeight">
-            <option *ngFor="let weight of fontWeights" [value]="weight">{{ weight }}</option>
-          </select>
+      <div *ngSwitchCase="'TerminalWidgetComponent'">
+        <div class="form-group row align-items-center">
+          <label class="col-6 col-form-label" [translate]="'status.widget.label_font_size'">Font Size</label>
+          <div class="col-6">
+            <select class="custom-select" [(ngModel)]="widget.fontSize">
+              <option *ngFor="let size of fontSizes" [value]="size">{{ size }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group row align-items-center">
+          <label class="col-6 col-form-label" [translate]="'status.widget.label_font_weight'">Font Weight</label>
+          <div class="col-6">
+            <select class="custom-select" [(ngModel)]="widget.fontWeight">
+              <option *ngFor="let weight of fontWeights" [value]="weight">{{ weight }}</option>
+            </select>
+          </div>
         </div>
       </div>
-    </div>
-    <div *ngSwitchCase="'TerminalWidgetComponent'">
-      <div class="form-group row">
-        <label class="col-sm-4 col-form-label" [translate]="'status.widget.label_font_size'">Font Size</label>
-        <div class="col-sm-8">
-          <select class="form-control" [(ngModel)]="widget.fontSize">
-            <option *ngFor="let size of fontSizes" [value]="size">{{ size }}</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-group row">
-        <label class="col-sm-4 col-form-label" [translate]="'status.widget.label_font_weight'">Font Weight</label>
-        <div class="col-sm-8">
-          <select class="form-control" [(ngModel)]="widget.fontWeight">
-            <option *ngFor="let weight of fontWeights" [value]="weight">{{ weight }}</option>
-          </select>
-        </div>
-      </div>
-    </div>
-    <div *ngSwitchCase="'ClockWidgetComponent'">
-      <div class="form-group row">
-        <label class="col-sm-4 col-form-label" [translate]="'status.widget.label_clock_timeformat'">
-          Time Format
-        </label>
-        <div class="col-sm-8">
-          <select class="form-control" [(ngModel)]="widget.timeFormat">
-            <option *ngFor="let timeFormat of timeFormats" [value]="timeFormat">{{ currentDate | date:timeFormat }}
-            </option>
-          </select>
-        </div>
-      </div>
-      <div class="form-group row">
-        <label class="col-sm-4 col-form-label" [translate]="'status.widget.label_clock_dateformat'">
-          Date Format
-        </label>
-        <div class="col-sm-8">
-          <select class="form-control" [(ngModel)]="widget.dateFormat">
-            <option *ngFor="let dateFormat of dateFormats" [value]="dateFormat">{{ currentDate | date:dateFormat }}
-            </option>
-          </select>
-        </div>
-      </div>
-    </div>
-    <div *ngSwitchCase="'CpuWidgetComponent'">
-      <div class="form-group row">
-        <label class="col-sm-4 col-form-label" [translate]="'status.widget.label_temperature_units'">
-          Temperature Units
-        </label>
-        <div class="col-sm-8">
-          <select class="form-control" [(ngModel)]="widget.temperatureUnit">
-            <option *ngFor="let unit of temperatureUnits" [value]="unit.value">
-              {{ unit.label | translate }}
-            </option>
-          </select>
-        </div>
-      </div>
-    </div>
-    <div class="d-flex flex-row flex-grow-1 align-items-center w-100">
-      <div class="form-group w-100">
-        <div class="pt-1 text-center form-check custom-checkbox c-pointer">
-          <input type="checkbox" class="form-check-input" id="hideOnMobile" [(ngModel)]="widget.hideOnMobile">
-          <label class="form-check-label" for="hideOnMobile" [translate]="'status.widget.label_hide_on_mobile'">
-            Hide in compact view (mobile displays)
+      <div *ngSwitchCase="'ClockWidgetComponent'">
+        <div class="form-group row align-items-center">
+          <label class="col-6 col-form-label" [translate]="'status.widget.label_clock_timeformat'">
+            Time Format
           </label>
+          <div class="col-6">
+            <select class="custom-select" [(ngModel)]="widget.timeFormat">
+              <option *ngFor="let timeFormat of timeFormats" [value]="timeFormat">{{ currentDate | date:timeFormat }}
+              </option>
+            </select>
+          </div>
         </div>
+        <div class="form-group row align-items-center">
+          <label class="col-6 col-form-label" [translate]="'status.widget.label_clock_dateformat'">
+            Date Format
+          </label>
+          <div class="col-6">
+            <select class="custom-select" [(ngModel)]="widget.dateFormat">
+              <option *ngFor="let dateFormat of dateFormats" [value]="dateFormat">{{ currentDate | date:dateFormat }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div *ngSwitchCase="'CpuWidgetComponent'">
+        <div class="form-group row align-items-center">
+          <label class="col-6 col-form-label" [translate]="'status.widget.label_temperature_units'">
+            Temperature Units
+          </label>
+          <div class="col-6">
+            <select class="custom-select" [(ngModel)]="widget.temperatureUnit">
+              <option *ngFor="let unit of temperatureUnits" [value]="unit.value">
+                {{ unit.label | translate }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div *ngSwitchCase="'NetworkWidgetComponent'">
+        <div class="form-group row align-items-center">
+          <label class="col-6 col-form-label">
+            {{ 'status.widget.label_network_activity.network_interface' | translate }}
+          </label>
+          <div class="col-6">
+            <select class="custom-select" [(ngModel)]="widget.networkInterface">
+              <option *ngFor="let networkInterface of networkInterfaces" [value]="networkInterface">
+                {{ networkInterface }}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group row align-items-center">
+          <label class="col-6 col-form-label">
+            {{ 'status.widget.label_network_activity.refresh_interval' | translate }}
+          </label>
+          <div class="col-6">
+            <div class="input-group">
+              <input type="number" class="form-control custom-input" [(ngModel)]="widget.refreshInterval" min="1" max="60">
+              <div class="input-group-append">
+                <span class="input-group-text custom-input">{{ 'status.widget.label_network_activity.seconds' | translate }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="muted grey-text font-italic text-center">
+          {{ 'status.widget.label_network_activity.refresh_note' | translate }}
+        </p>
       </div>
     </div>
   </div>
@@ -141,10 +160,15 @@
         {{ 'form.button_close' | translate }}
       </button>
     </div>
-    <div class="text-center"></div>
-    <div class="text-end">
+    <div class="text-center">
       <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="activeModal.close('remove')">
-        {{ 'form.button_remove' | translate }}
+        {{ 'form.button_hide' | translate }}
+      </button>
+    </div>
+    <div class="text-right">
+      <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="activeModal.dismiss('Dismiss')"
+        [translate]="'form.button_save'">
+        {{ 'form.button_save' | translate }}
       </button>
     </div>
   </div>

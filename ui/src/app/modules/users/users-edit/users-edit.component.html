@@ -6,38 +6,49 @@
         (click)="activeModal.dismiss('Dismiss')"></button>
     </div>
     <div class="modal-body">
-      <div class="md-form">
-        <i class="fas fa-fw fa-user-shield prefix grey-text"></i>
-        <input formControlName="username" type="text" id="form-username" autocomplete="off" autocapitalize="none"
-          class="form-control ps-0 pe-0">
-        <label for="form-username" [ngClass]="{'active': page.title === 'users.title_edit_user'}"
-          [translate]="'users.label_username'">Username</label>
-      </div>
-
-      <div class="md-form">
-        <i class="fas fa-fw fa-user prefix grey-text"></i>
-        <input formControlName="name" type="text" id="form-name" autocomplete="name" class="form-control ps-0 pe-0">
-        <label for="form-name" [ngClass]="{'active': page.title === 'users.title_edit_user'}"
-          [translate]="'users.label_full_name'">Full Name</label>
-      </div>
-      <div class="md-form">
-        <i class="fas fa-fw fa-lock prefix grey-text"></i>
-        <input formControlName="password" type="password" autocomplete="new-password" id="form-pass"
-          class="form-control ps-0 pe-0" [ngClass]="{
-            'is-invalid': form.controls.password.dirty && form.controls.password.errors
-          }">
-        <label for="form-pass" [innerText]="page.password | translate"></label>
-      </div>
-      <div class="md-form" style="margin-left: 38px;">
-        <input formControlName="passwordConfirm" type="password" autocomplete="new-password" id="form-pass-confirm"
-          class="form-control ps-0 pe-0" [ngClass]="{
-            'is-invalid': form.controls.passwordConfirm.dirty && form.controls.passwordConfirm.errors
-          }">
-        <label for="form-pass-confirm" [translate]="'users.label_confirm_password'"></label>
-      </div>
-      <div class="form-check text-center">
-        <input formControlName="admin" type="checkbox" class="form-check-input" id="isAdmin">
-        <label class="form-check-label" for="isAdmin" [translate]="'users.label_admin_user'">Admin User?</label>
+      <div class="container px-1">
+        <div class="md-form">
+          <input formControlName="username" type="text" id="form-username" autocomplete="off" autocapitalize="none"
+            class="form-control pl-0 pr-0" [attr.aria-label]="'users.label_username' | translate">
+          <label for="form-username" [ngClass]="{'active': page.title === 'users.title_edit_user'}">
+            <i class="fas fa-fw fa-user-shield"></i> {{ 'users.label_username' | translate }}
+          </label>
+        </div>
+        <div class="md-form">
+          <input formControlName="name" type="text" id="form-name" autocomplete="name" class="form-control pl-0 pr-0"
+            [attr.aria-label]="'users.label_full_name' | translate">
+          <label for="form-name" [ngClass]="{'active': page.title === 'users.title_edit_user'}">
+            <i class="fas fa-fw fa-user"></i> {{ 'users.label_full_name' | translate }}
+          </label>
+        </div>
+        <div class="md-form">
+          <input formControlName="password" type="password" autocomplete="new-password" id="form-pass"
+            class="form-control pl-0 pr-0" [ngClass]="{
+              'is-invalid': form.controls.password.dirty && form.controls.password.errors
+            }" [attr.aria-label]="page.password | translate">
+          <label for="form-pass">
+            <i class="fas fa-fw fa-lock"></i> {{ page.password | translate }}
+          </label>
+        </div>
+        <div class="md-form">
+          <input formControlName="passwordConfirm" type="password" autocomplete="new-password" id="form-pass-confirm"
+            class="form-control pl-0 pr-0" [ngClass]="{
+              'is-invalid': form.controls.passwordConfirm.dirty && form.controls.passwordConfirm.errors
+            }" [attr.aria-label]="'users.label_confirm_password' | translate">
+          <label for="form-pass-confirm">
+            <i class="fas fa-fw fa-lock"></i> {{ 'users.label_confirm_password' | translate }}
+          </label>
+        </div>
+        <div class="form-group row align-items-center">
+          <label class="col-6 col-form-label grey-text">
+            <i class="fas fa-fw fa-user-secret"></i> {{ 'users.label_admin_user' | translate }}
+          </label>
+          <div class="col-6 text-right">
+            <input type="checkbox" class="rendux-input" formControlName="admin" id="isAdmin"
+              [attr.aria-label]="'users.label_admin_user' | translate">
+            <label for="isAdmin" class="rendux-label ml-3" style="min-width: 45px;"></label>
+          </div>
+        </div>
       </div>
     </div>
     <div class="modal-footer justify-content-between">

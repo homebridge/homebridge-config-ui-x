@@ -5,36 +5,40 @@
       (click)="activeModal.dismiss('Dismiss')"></button>
   </div>
   <div class="modal-body">
-    <div>
-      <div class="text-end">
-        <label for="hide-accessory" class="hb-uix-switch d-inline pe-3">
-          <input type="checkbox" [(ngModel)]="service.hidden" id="hide-accessory">
-          <span [translate]="'accessories.label_hide_this_accessory'">Hide this accessory</span>
-          <span class="hb-uix-slider hb-uix-round"></span>
-        </label>
-
-        <label for="show-on-dashboard" class="hb-uix-switch d-inline">
-          <input type="checkbox" [(ngModel)]="service.onDashboard" id="show-on-dashboard">
-          <span [translate]="'accessories.label_show_on_dashboard'">Show in dashboard widget</span>
-          <span class="hb-uix-slider hb-uix-round"></span>
-        </label>
-
-      </div>
-    </div>
     <div class="md-form">
       <input [ngModel]="service.customName || service.serviceName" (ngModelChange)="service.customName = $event"
         type="text" id="form-name" autocomplete="off" class="form-control ps-0 pe-0">
       <label for="form-name" class="active" [translate]="'accessories.label_name'">Name</label>
     </div>
 
+    <!--
     <div class="input-group mb-3 p-2">
       <div class="input-group-prepend">
         <span class="input-group-text" id="inputGroup-sizing-default">Default</span>
       </div>
       <input type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
     </div>
+    -->
 
-    <table class="table table-borderless table-hover" style="table-layout: fixed; width:100%; word-wrap: break-word;">
+    <div class="container px-1">
+      <div class="form-group row align-items-center">
+        <label class="col-6 col-form-label" [translate]="'accessories.label_hide_this_accessory'"></label>
+        <div class="col-6 text-end">
+          <input type="checkbox" class="rendux-input" [(ngModel)]="service.hidden" id="hide-accessory"
+            [attr.aria-label]="'accessories.label_hide_this_accessory' | translate">
+          <label for="hide-accessory" class="rendux-label ms-3" style="min-width: 45px;"></label>
+        </div>
+      </div>
+      <div class="form-group row align-items-center">
+        <label class="col-6 col-form-label" [translate]="'accessories.label_show_on_dashboard'"></label>
+        <div class="col-6 text-end">
+          <input type="checkbox" class="rendux-input" [(ngModel)]="service.onDashboard" id="show-on-dashboard"
+            [attr.aria-label]="'accessories.label_show_on_dashboard' | translate">
+          <label for="show-on-dashboard" class="rendux-label ms-3" style="min-width: 45px;"></label>
+        </div>
+      </div>
+    </div>
+    <table class="table table-borderless table-hover table-striped table-sm" style="table-layout: fixed; width:100%; word-wrap: break-word;">
       <tbody>
         <tr>
           <th>{{ service.humanType }}</th>

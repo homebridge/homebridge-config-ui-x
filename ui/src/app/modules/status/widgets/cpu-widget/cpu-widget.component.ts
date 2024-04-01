@@ -105,21 +105,24 @@ export class CpuWidgetComponent implements OnInit, OnDestroy {
       this.cpuTemperature = data.cpuTemperature;
       this.currentLoad = data.currentLoad;
 
-      if (!this.lineChartData.datasets[0].data.length) {
+      const dataLength = Object.keys(this.lineChartData.datasets[0].data).length;
+      if (!dataLength) {
         this.lineChartData.datasets[0].data = {
           ...data.cpuLoadHistory,
         };
         this.lineChartLabels = data.cpuLoadHistory.map(() => 'point');
       } else {
-        this.lineChartData.datasets[0].data.push(data.currentLoad);
+        this.lineChartData.datasets[0].data[dataLength] = data.currentLoad;
         this.lineChartLabels.push('point');
 
-        if (this.lineChartData.datasets[0].data.length > 60) {
-          this.lineChartData.datasets[0].data.shift();
+        if (dataLength > 60) {
+          delete this.lineChartData.datasets[0].data[0];
+          this.lineChartData.datasets[0].data = { ...this.lineChartData.datasets[0].data };
           this.lineChartLabels.shift();
-          this.chart.update();
         }
       }
+
+      this.chart.update();
     });
   }
 

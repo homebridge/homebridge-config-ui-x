@@ -17,7 +17,7 @@
     </div>
     <div class="text-center"></div>
     <div class="text-end">
-      <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="activeModal.close()">
+      <button type="button" class="btn {{ confirmButtonClass || 'btn-primary' }}" data-bs-dismiss="modal" (click)="activeModal.close()">
         {{ confirmButtonLabel }}
       </button>
     </div>

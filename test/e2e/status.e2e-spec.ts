@@ -193,7 +193,7 @@ describe('StatusController (e2e)', () => {
         'lts': false,
       },
       {
-        'version': 'v20.11.1',
+        'version': 'v20.12.0',
         'lts': 'Iron',
       },
       {
@@ -227,7 +227,7 @@ describe('StatusController (e2e)', () => {
 
     expect(res.statusCode).toBe(200);
     expect(res.json().currentVersion).toEqual(process.version);
-    expect(res.json().latestVersion).toBe('v20.11.1');
+    expect(res.json().latestVersion).toBe('v20.12.0');
   });
 
   afterAll(async () => {

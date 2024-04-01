@@ -16,16 +16,9 @@
     *ngIf="loaded && !dashboardAccessories.length">
     <div class="d-flex flex-column w-100 pb-2">
       <h1><i class="fas fa-fw fa-user-cog"></i></h1>
-      <h3 class="w-100" [translate]="'status.widget.weather.label_config_required'">
-        Configuration Required
-      </h3>
       <p class="grey-text" [translate]="'status.widget.accessories.label_choose_accessories_to_display'">
-        Choose the Accessories to display in this widget from the Accessories tab.
+        Choose the accessories to display in this widget from the Accessories tab.
       </p>
-      <div class="text-center">
-        <a class="btn btn-primary" routerLink="/accessories"
-          [translate]="'accessories.title_accessories'">Accessories</a>
-      </div>
     </div>
   </div>
 </div>
