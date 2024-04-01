@@ -22,6 +22,7 @@ All notable changes to homebridge-config-ui-x will be documented in this file.
 - network interface widget: custom interface
 - fix status widget graphs
 - add 'report an issue' link to plugin menu
+- configurable action button class on confirm component
 
 ### Translation Changes
 

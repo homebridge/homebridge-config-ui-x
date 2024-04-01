@@ -121,6 +121,7 @@ export class PluginCardComponent implements OnInit {
     ref.componentInstance.title = `${this.$translate.instant('plugins.manage.disable')}: ${plugin.name}`;
     ref.componentInstance.message = this.$translate.instant('plugins.manage.message_confirm_disable', { pluginName: plugin.name });
     ref.componentInstance.confirmButtonLabel = this.$translate.instant('plugins.manage.disable');
+    ref.componentInstance.confirmButtonClass = 'btn-danger';
     ref.componentInstance.faIconClass = 'fa-circle-pause primary-text';
 
     ref.result.then(async () => {
