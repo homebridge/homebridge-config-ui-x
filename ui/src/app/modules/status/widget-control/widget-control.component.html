@@ -1,19 +1,17 @@
 <div class="modal-content">
   <div class="modal-header">
     <h5 class="modal-title" [translate]="'status.widget.title_manage_widget'">Manage Widget</h5>
-    <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="activeModal.dismiss('Dismiss')">
-      <span aria-hidden="true">&times;</span>
-    </button>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
+      (click)="activeModal.dismiss('Dismiss')"></button>
   </div>
   <div class="modal-body w-100" [ngSwitch]="widget.component">
     <div class="container px-1">
       <div class="form-group row align-items-center">
         <label class="col-6 col-form-label" [translate]="'status.widget.label_hide_on_mobile'"></label>
-        <div class="col-6 text-right">
+        <div class="col-6 text-end">
           <input type="checkbox" class="rendux-input" id="hideOnMobile" [(ngModel)]="widget.hideOnMobile"
             [attr.aria-label]="'settings.startup.insecure_1' | translate">
-          <label for="hideOnMobile" class="rendux-label ml-3" style="min-width: 45px;"></label>
+          <label for="hideOnMobile" class="rendux-label ms-3" style="min-width: 45px;"></label>
         </div>
       </div>
       <div *ngSwitchCase="'WeatherWidgetComponent'">
@@ -42,10 +40,10 @@
       <div *ngSwitchCase="'HomebridgeStatusWidgetComponent'">
         <div class="form-group row align-items-center">
           <label class="col-6 col-form-label" [translate]="'status.widget.homebridgestatus.label_port'"></label>
-          <div class="col-6 text-right">
+          <div class="col-6 text-end">
             <input type="checkbox" class="rendux-input" id="hidePort" [(ngModel)]="widget.hidePort"
               [attr.aria-label]="'status.widget.homebridgestatus.label_port' | translate">
-            <label for="hideOnMobile" class="rendux-label ml-3" style="min-width: 45px;"></label>
+            <label for="hideOnMobile" class="rendux-label ms-3" style="min-width: 45px;"></label>
           </div>
         </div>
       </div>
@@ -156,19 +154,19 @@
     </div>
   </div>
   <div class="modal-footer justify-content-between">
-    <div class="text-left">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')"
+    <div class="text-start">
+      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="activeModal.dismiss('Dismiss')"
         [attr.aria-label]="'form.button_close' | translate">
         {{ 'form.button_close' | translate }}
       </button>
     </div>
     <div class="text-center">
-      <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="activeModal.close('remove')">
+      <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="activeModal.close('remove')">
         {{ 'form.button_hide' | translate }}
       </button>
     </div>
-    <div class="text-right">
-      <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')"
+    <div class="text-end">
+      <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="activeModal.dismiss('Dismiss')"
         [translate]="'form.button_save'">
         {{ 'form.button_save' | translate }}
       </button>

@@ -1,32 +1,40 @@
 <div class="modal-content hb-accessories-info-modal">
   <div class="modal-header">
     <h5 class="modal-title">{{ service.customName || service.serviceName }}</h5>
-    <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="activeModal.dismiss('Dismiss')">
-      <span aria-hidden="true">&times;</span>
-    </button>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
+      (click)="activeModal.dismiss('Dismiss')"></button>
   </div>
   <div class="modal-body">
     <div class="md-form">
       <input [ngModel]="service.customName || service.serviceName" (ngModelChange)="service.customName = $event"
-        type="text" id="form-name" autocomplete="off" class="form-control pl-0 pr-0">
+        type="text" id="form-name" autocomplete="off" class="form-control ps-0 pe-0">
       <label for="form-name" class="active" [translate]="'accessories.label_name'">Name</label>
     </div>
+
+    <!--
+    <div class="input-group mb-3 p-2">
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="inputGroup-sizing-default">Default</span>
+      </div>
+      <input type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+    </div>
+    -->
+
     <div class="container px-1">
       <div class="form-group row align-items-center">
         <label class="col-6 col-form-label" [translate]="'accessories.label_hide_this_accessory'"></label>
-        <div class="col-6 text-right">
+        <div class="col-6 text-end">
           <input type="checkbox" class="rendux-input" [(ngModel)]="service.hidden" id="hide-accessory"
             [attr.aria-label]="'accessories.label_hide_this_accessory' | translate">
-          <label for="hide-accessory" class="rendux-label ml-3" style="min-width: 45px;"></label>
+          <label for="hide-accessory" class="rendux-label ms-3" style="min-width: 45px;"></label>
         </div>
       </div>
       <div class="form-group row align-items-center">
         <label class="col-6 col-form-label" [translate]="'accessories.label_show_on_dashboard'"></label>
-        <div class="col-6 text-right">
+        <div class="col-6 text-end">
           <input type="checkbox" class="rendux-input" [(ngModel)]="service.onDashboard" id="show-on-dashboard"
-                 [attr.aria-label]="'accessories.label_show_on_dashboard' | translate">
-          <label for="show-on-dashboard" class="rendux-label ml-3" style="min-width: 45px;"></label>
+            [attr.aria-label]="'accessories.label_show_on_dashboard' | translate">
+          <label for="show-on-dashboard" class="rendux-label ms-3" style="min-width: 45px;"></label>
         </div>
       </div>
     </div>
@@ -34,11 +42,11 @@
       <tbody>
         <tr>
           <th>{{ service.humanType }}</th>
-          <td class="text-right"></td>
+          <td class="text-end"></td>
         </tr>
         <tr *ngFor="let characteristic of service.serviceCharacteristics">
           <td>{{ characteristic.description }}</td>
-          <td class="text-right">
+          <td class="text-end">
             <span [ngSwitch]="characteristic.unit">
               <span *ngSwitchCase="'percentage'">{{ characteristic.value }}%</span>
               <span *ngSwitchCase="'celsius'">{{ characteristic.value | convertTemp }}&deg;</span>
@@ -48,39 +56,39 @@
         </tr>
         <tr *ngFor="let information of accessoryInformation">
           <td>{{ information.key }}</td>
-          <td class="text-right text-break">{{ information.value }}</td>
+          <td class="text-end text-break">{{ information.value }}</td>
         </tr>
         <tr>
           <td>Homebridge Instance IP</td>
-          <td class="text-right">{{ service.instance.ipAddress }}</td>
+          <td class="text-end">{{ service.instance.ipAddress }}</td>
         </tr>
         <tr>
           <td>Homebridge Instance Port</td>
-          <td class="text-right">{{ service.instance.port }}</td>
+          <td class="text-end">{{ service.instance.port }}</td>
         </tr>
         <tr>
           <td>Homebridge Instance Username</td>
-          <td class="text-right">{{ service.instance.username }}</td>
+          <td class="text-end">{{ service.instance.username }}</td>
         </tr>
         <tr>
           <td>aid</td>
-          <td class="text-right">{{ service.aid }}</td>
+          <td class="text-end">{{ service.aid }}</td>
         </tr>
         <tr>
           <td>iid</td>
-          <td class="text-right">{{ service.iid }}</td>
+          <td class="text-end">{{ service.iid }}</td>
         </tr>
       </tbody>
     </table>
   </div>
   <div class="modal-footer justify-content-between">
-    <div class="text-left"></div>
+    <div class="text-start"></div>
     <div class="text-center">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')"
+      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="activeModal.dismiss('Dismiss')"
         [attr.aria-label]="'form.button_close' | translate">
         {{ 'form.button_close' | translate }}
       </button>
     </div>
-    <div class="text-right"></div>
+    <div class="text-end"></div>
   </div>
 </div>

@@ -2,7 +2,7 @@
   <div class="col-6">
     <h3 class="primary-text m-0">{{ 'menu.label_status' | translate }}</h3>
   </div>
-  <div class="col-6 text-right d-none d-sm-block">
+  <div class="col-6 text-end d-none d-sm-block">
     <div class="btn-group" role="group" *ngIf="consoleStatus === 'up' && $auth.user.admin">
       <button type="button" class="btn btn-elegant status-button my-0" [disabled]="options.draggable.enabled" (click)="unlockLayout()"
         container="body" [ngbTooltip]="'form.button_unlock' | translate" [attr.aria-label]="'form.button_unlock' | translate">
@@ -13,8 +13,8 @@
         <i class="fas fa-fw fa-lock"></i>
       </button>
     </div>
-    <div class="btn-group" role="group" *ngIf="consoleStatus === 'up' && $auth.user.admin">
-      <button type="button" class="btn btn-elegant status-button my-0 mr-0" [disabled]="!options.draggable.enabled" (click)="addWidget()"
+    <div class="btn-group ms-3" role="group" *ngIf="consoleStatus === 'up' && $auth.user.admin">
+      <button type="button" class="btn btn-elegant status-button my-0 me-0" [disabled]="!options.draggable.enabled" (click)="addWidget()"
         [attr.aria-label]="'status.widget.label_add_widget' | translate">
         <i class="fas fa-fw fa-plus"></i>
       </button>

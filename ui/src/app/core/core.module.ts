@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
-import { Bootstrap4FrameworkModule } from '@oznu/ngx-bs4-jsonform';
+import { Bootstrap5FrameworkModule } from '@zajsf/bootstrap5';
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
 import { InformationComponent } from '@/app/core/components/information/information.component';
 import { QrcodeComponent } from '@/app/core/components/qrcode/qrcode.component';
@@ -35,7 +35,7 @@ import { ReplacePipe } from '@/app/core/pipes/replace.pipe';
   imports: [
     CommonModule,
     TranslateModule,
-    Bootstrap4FrameworkModule,
+    Bootstrap5FrameworkModule,
   ],
   providers: [],
   exports: [

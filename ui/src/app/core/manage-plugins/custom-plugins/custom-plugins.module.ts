@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
-import { Bootstrap4FrameworkModule } from '@oznu/ngx-bs4-jsonform';
+import { Bootstrap5FrameworkModule } from '@zajsf/bootstrap5';
 import { NgxMdModule } from 'ngx-md';
 import { CoreModule } from '@/app/core/core.module';
 import { CustomPluginsComponent } from '@/app/core/manage-plugins/custom-plugins/custom-plugins.component';
@@ -25,7 +25,7 @@ import { HomebridgeHueComponent } from '@/app/core/manage-plugins/custom-plugins
     FormsModule,
     ReactiveFormsModule,
     TranslateModule.forChild(),
-    Bootstrap4FrameworkModule,
+    Bootstrap5FrameworkModule,
     NgxMdModule,
     CoreModule,
   ],

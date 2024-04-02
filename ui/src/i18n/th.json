@@ -151,6 +151,7 @@
   "menu.label_accessories": "อุปกรณ์เสริม",
   "menu.label_config": "การตั้งค่า",
   "menu.label_plugins": "ปลั๊กอิน",
+  "menu.label_settings": "การตั้งค่า",
   "menu.label_settings_hb": "การตั้งค่า Homebridge",
   "menu.label_settings_ui": "การตั้งค่า UI",
   "menu.label_status": "สถานะ",

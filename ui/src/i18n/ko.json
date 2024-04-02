@@ -151,6 +151,7 @@
   "menu.label_accessories": "액세서리",
   "menu.label_config": "구성",
   "menu.label_plugins": "플러그인",
+  "menu.label_settings": "Settings",
   "menu.label_settings_hb": "Homebridge Settings",
   "menu.label_settings_ui": "UI 설정",
   "menu.label_status": "상태",

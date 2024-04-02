@@ -6,6 +6,10 @@
       background-color: $primary-dark !important;
     }
 
+    .main-text {
+      color: #333333;
+    }
+
     .hb-npm-search {
       border: 0 !important;
       background-color: #eeeeee !important;
@@ -18,10 +22,6 @@
     .btn-primary,
     .btn-default {
       @extend .btn-#{$name} !optional;
-    }
-
-    .badge-primary {
-      background-color: $primary-dark !important;
     }
 
     a {
@@ -116,6 +116,11 @@
       background-color: $primary-dark  !important;
     }
 
+    .switch-on, .light-on, .window-on {
+      background-color: #fff;
+      color: #000000;
+    }
+
     @keyframes uix-glow-icon {
       from {
         text-shadow: 0 0 5px #fff, 0 0 10px #fff;
@@ -159,9 +164,6 @@
     background-color: #000099 !important;
   }
 
-  .badge-primary {
-    background-color: #000070 !important;
-  }
   .widget-control-button {
     &.primary-text {
       color: #2196f3;

@@ -1,17 +1,15 @@
 <div class="modal-content hb-backup-modal">
   <div class="modal-header">
     <h5 class="modal-title" translate="backup.title_backup"></h5>
-    <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="activeModal.dismiss('Dismiss')">
-      <span aria-hidden="true">&times;</span>
-    </button>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
+      (click)="activeModal.dismiss('Dismiss')"></button>
   </div>
   <div class="modal-body">
     <p [translate]="'backup.message_backup_help_one'"></p>
     <p [translate]="'backup.message_backup_help_two'"></p>
     <p [translate]="'backup.message_backup_warning'"></p>
     <div class="text-center mb-3">
-      <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="onDownloadBackupClick()" [disabled]="clicked">
+      <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="onDownloadBackupClick()" [disabled]="clicked">
         <i *ngIf="clicked" class="fa fa-fw fa-circle-notch fa-spin"></i>
         <span *ngIf="!clicked" [translate]="'backup.button_download_backup_archive'"></span>
       </button>
@@ -53,13 +51,13 @@
   </div>
 
   <div class="modal-footer justify-content-between">
-    <div class="text-left"></div>
+    <div class="text-start"></div>
     <div class="text-center">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')"
+      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="activeModal.dismiss('Dismiss')"
         [attr.aria-label]="'form.button_close' | translate">
         {{ 'form.button_close' | translate }}
       </button>
     </div>
-    <div class="text-right"></div>
+    <div class="text-end"></div>
   </div>
 </div>

@@ -2,16 +2,16 @@
   <div class="col-6">
     <h3 class="primary-text m-0">{{ 'menu.linux.label_logs' | translate }}</h3>
   </div>
-  <div class="col-6 text-right">
+  <div class="col-6 text-end">
     <button class="btn btn-elegant my-0" (click)="downloadLogFile()" [attr.aria-label]="'logs.label_download' | translate">
       <i class="fas fa-fw fa-download"></i>
     </button>
-    <button class="btn btn-elegant my-0 mr-0" (click)="truncateLogFile()" [attr.aria-label]="'form.button_delete' | translate">
+    <button class="btn btn-elegant my-0 me-0 ms-3" (click)="truncateLogFile()" [attr.aria-label]="'form.button_delete' | translate">
       <i class="fas fa-fw fa-trash-alt"></i>
     </button>
   </div>
 </div>
 
-<div class="flex-column d-flex align-items-stretch" style="height: calc(100% - 52px);">
+<div class="flex-column d-flex align-items-stretch adjust-for-mobile">
   <div #logoutput id="log-output" class="terminal align-self-end w-100 h-100 mb-1"></div>
 </div>

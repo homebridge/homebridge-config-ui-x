@@ -3,7 +3,7 @@
     <div class="col-sm-6">
       <h3 class="primary-text m-0">{{'accessories.title_accessories' | translate}}</h3>
     </div>
-    <div class="col-sm-6 text-right d-none d-sm-block">
+    <div class="col-sm-6 text-end d-none d-sm-block">
       <div class="btn-group" role="group">
         <button type="button" class="btn btn-elegant status-button my-0" [disabled]="!isMobile" (click)="toggleLayoutLock()"
           container="body" [ngbTooltip]="'form.button_unlock' | translate" [attr.aria-label]="'form.button_unlock' | translate">
@@ -14,7 +14,7 @@
           <i class="fas fa-fw fa-lock"></i>
         </button>
       </div>
-      <div class="btn-group" role="group">
+      <div class="btn-group ms-3" role="group">
         <button type="button" class="btn btn-elegant status-button my-0" [disabled]="isMobile || !hideHidden" (click)="hideHidden = !hideHidden"
           container="body" [ngbTooltip]="'accessories.button_hidden_show' | translate" [attr.aria-label]="'accessories.button_hidden_show' | translate">
           <i class="fas fa-fw fa-eye"></i>
@@ -24,7 +24,7 @@
           <i class="fas fa-fw fa-eye-slash"></i>
         </button>
       </div>
-      <div class="btn-group" role="group">
+      <div class="btn-group ms-3" role="group">
         <button type="button" class="btn btn-elegant status-button my-0" [disabled]="isMobile" (click)="addRoom()"
           container="body" [ngbTooltip]="'accessories.button_add_room' | translate" [attr.aria-label]="'accessories.button_add_room' | translate">
           <i class="fas fa-fw fa-folder-plus"></i>
@@ -33,7 +33,7 @@
     </div>
   </div>
 
-  <div [dragula]='"rooms-bag"' [(dragulaModel)]='$accessories.rooms'>
+  <div [dragula]="'rooms-bag'" [(dragulaModel)]="$accessories.rooms">
     <div *ngFor="let room of $accessories.rooms">
       <div class="row" *ngIf="!isMobile || room.services.length">
         <div class="col-md-12">
@@ -44,7 +44,7 @@
       </div>
       <div class="row mb-4">
         <div class="col-md-12 d-flex flex-wrap justify-content-between noselect services-bag" *ngIf="room.services.length"
-          [dragula]='"services-bag"' [(dragulaModel)]='room.services'>
+          [dragula]="'services-bag'" [(dragulaModel)]="room.services">
           <div *ngFor="let service of room.services" [ngSwitch]="service.type" class="accessory-item accessory-tab">
             <ng-container *ngIf="!hideHidden || !service.hidden">
               <app-accessory-tile [service]="service"></app-accessory-tile>

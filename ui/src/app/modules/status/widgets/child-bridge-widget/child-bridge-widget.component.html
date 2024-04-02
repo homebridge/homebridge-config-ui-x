@@ -2,20 +2,20 @@
   <div style="cursor: move;" class="drag-handler p-2">
     {{ 'child_bridge.label_child_bridges' | translate }}
   </div>
-  <div class="d-flex flex-wrap w-100 pl-2 pr-2">
+  <div class="d-flex flex-wrap w-100 ps-2 pe-2">
     <ul class="list-group w-100 gridster-item-content">
-      <li class="list-group-item border-0 pl-2 pr-2 d-flex flex-row justify-content-between" *ngFor="let bridge of childBridges">
+      <li class="list-group-item border-0 ps-2 pe-2 d-flex flex-row justify-content-between" *ngFor="let bridge of childBridges">
         <div class="flex-child">
-          <i class="fas fa-fw mr-1" [ngClass]="{
+          <i class="fas fa-fw me-1" [ngClass]="{
             'fa-bridge-circle-check green-text': bridge.status === 'ok',
             'fa-bridge-circle-exclamation text-warning': bridge.status === 'pending',
             'fa-bridge-circle-xmark red-text': bridge.status === 'down'
           }"></i>
-          {{ bridge.name }}
+          {{ bridge.name | replace:'Homebridge':'' | replace:'homebridge':'' }}
         </div>
-        <div style="min-width: 48px;" class="grey-text text-right">
+        <div style="min-width: 48px;" class="grey-text text-end">
           <!-- <a *ngIf="!bridge.restartInProgress && bridge.paired === false" href="javascript:void(0)"
-            (click)="restartChildBridge(bridge)" class="grey-text mr-1"
+            (click)="restartChildBridge(bridge)" class="grey-text me-1"
             ngbTooltip="{{'child_bridge.label_bridge_connect_to_homekit' | translate}}" container="body" openDelay="150"
             [placement]="['left', 'top', 'bottom']">
             <i class="fa-fw icon-button fas fa-fw fa-qrcode"></i>
