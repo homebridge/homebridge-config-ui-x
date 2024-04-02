@@ -184,11 +184,12 @@ export class StatusService {
   /**
    * Returns the current network usage
    */
-  public async getCurrentNetworkUsage(): Promise<{ net: Systeminformation.NetworkStatsData; point: number }> {
-    // TODO: be able to specify in the UI which interfaces to aggregate
-    const defaultInterfaceName = await networkInterfaceDefault();
+  public async getCurrentNetworkUsage(netInterfaces?: string[]): Promise<{ net: Systeminformation.NetworkStatsData; point: number }> {
+    if (!netInterfaces || !netInterfaces.length) {
+      netInterfaces = [await networkInterfaceDefault()];
+    }
 
-    const net = await networkStats(defaultInterfaceName);
+    const net = await networkStats(netInterfaces.join(','));
 
     // TODO: be able to specify in the ui the unit size (i.e. bytes, megabytes, gigabytes)
     const txRxSec = (net[0].tx_sec + net[0].rx_sec) / 1024 / 1024;

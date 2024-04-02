@@ -77,13 +77,17 @@ export class PluginsService {
   // npm package cache
   private npmPackage: HomebridgePlugin;
 
-  // verified plugins cache
+  // plugin list caches
   private verifiedPlugins: string[] = [];
-  private verifiedPluginsIcons: { [key: string]: string } = {};
-  private verifiedPluginsIconsPrefix = 'https://raw.githubusercontent.com/homebridge/verified/latest/';
+  private verifiedPlusPlugins: string[] = [];
+  private pluginIcons: { [key: string]: string } = {};
+  private pluginListsRepoUrl = 'https://raw.githubusercontent.com/homebridge/verified/latest/';
+  private hiddenPlugins: string[] = [];
 
-  private verifiedPluginsJson = 'https://raw.githubusercontent.com/homebridge/verified/latest/verified-plugins.json';
-  private verifiedPluginsIconsJson = 'https://raw.githubusercontent.com/homebridge/verified/latest/plugin-icons.json';
+  private verifiedPluginsJson = `${this.pluginListsRepoUrl}verified-plugins.json`;
+  private verifiedPlusPluginsJson = `${this.pluginListsRepoUrl}verified-plus-plugins.json`;
+  private pluginIconsJson = `${this.pluginListsRepoUrl}plugin-icons.json`;
+  private hiddenPluginsJson = `${this.pluginListsRepoUrl}hidden-plugins.json`;
 
   // misc schemas
   private miscSchemas = {
@@ -96,18 +100,7 @@ export class PluginsService {
   // create a cache for storing plugin alias
   private pluginAliasCache = new NodeCache({ stdTTL: 86400 });
 
-  private verifiedPluginsRetryTimeout: NodeJS.Timeout;
-
-  // these plugins are legacy Homebridge UI plugins / forks of this UI and will cause conflicts
-  // or have post install scripts that alter the users system without user interaction
-  private searchResultBlacklist = [
-    'homebridge-config-ui',
-    'homebridge-config-ui-rdp',
-    'homebridge-rocket-smart-home-ui',
-    'homebridge-ui',
-    'homebridge-to-hoobs',
-    'homebridge-server',
-  ];
+  private specialPluginsRetryTimeout: NodeJS.Timeout;
 
   /**
    * Define the alias / type some plugins without a schema where the extract method does not work
@@ -144,10 +137,10 @@ export class PluginsService {
     });
 
     // initial verified plugins load
-    this.loadVerifiedPluginsList();
+    this.loadSpecialPluginsLists();
 
     // update the verified plugins list every 12 hours
-    setInterval(this.loadVerifiedPluginsList.bind(this), 60000 * 60 * 12);
+    setInterval(this.loadSpecialPluginsLists.bind(this), 60000 * 60 * 12);
   }
 
   /**
@@ -273,7 +266,7 @@ export class PluginsService {
 
     const result: HomebridgePlugin[] = searchResults.objects
       .filter(x => x.package.name.indexOf('homebridge-') === 0 || this.isScopedPlugin(x.package.name))
-      .filter(x => !this.searchResultBlacklist.includes(x.package.name))
+      .filter(x => !this.hiddenPlugins.includes(x.package.name))
       .map((pkg) => {
         let plugin: HomebridgePlugin = {
           name: pkg.package.name,
@@ -298,8 +291,9 @@ export class PluginsService {
         plugin.links = pkg.package.links;
         plugin.author = (pkg.package.publisher) ? pkg.package.publisher.username : null;
         plugin.verifiedPlugin = this.verifiedPlugins.includes(pkg.package.name);
-        plugin.icon = this.verifiedPluginsIcons[pkg.package.name]
-          ? `${this.verifiedPluginsIconsPrefix}${this.verifiedPluginsIcons[pkg.package.name]}`
+        plugin.verifiedPlusPlugin = this.verifiedPlusPlugins.includes(pkg.package.name);
+        plugin.icon = this.pluginIcons[pkg.package.name]
+          ? `${this.pluginListsRepoUrl}${this.pluginIcons[pkg.package.name]}`
           : null;
         return plugin;
       });
@@ -307,7 +301,7 @@ export class PluginsService {
     if (
       !result.length
       && (query.indexOf('homebridge-') === 0 || this.isScopedPlugin(query))
-      && !this.searchResultBlacklist.includes(query.toLowerCase())
+      && !this.hiddenPlugins.includes(query.toLowerCase())
     ) {
       try {
         return await this.searchNpmRegistrySingle(query.toLowerCase());
@@ -316,7 +310,7 @@ export class PluginsService {
       }
     }
 
-    return orderBy(result, ['verifiedPlugin'], ['desc']);
+    return orderBy(result, ['verifiedPlusPlugin', 'verifiedPlugin'], ['desc', 'desc']);
   }
 
   /**
@@ -357,7 +351,8 @@ export class PluginsService {
         description: (pkg.description) ?
           pkg.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkg.name,
         verifiedPlugin: this.verifiedPlugins.includes(pkg.name),
-        icon: this.verifiedPluginsIcons[pkg.name],
+        verifiedPlusPlugin: this.verifiedPlusPlugins.includes(pkg.name),
+        icon: this.pluginIcons[pkg.name],
       } as HomebridgePlugin;
 
       // it's not installed; finish building the response
@@ -373,8 +368,9 @@ export class PluginsService {
       };
       plugin.author = (pkg.maintainers.length) ? pkg.maintainers[0].name : null;
       plugin.verifiedPlugin = this.verifiedPlugins.includes(pkg.name);
-      plugin.icon = this.verifiedPluginsIcons[pkg.name]
-        ? `${this.verifiedPluginsIconsPrefix}${this.verifiedPluginsIcons[pkg.name]}`
+      plugin.verifiedPlusPlugin = this.verifiedPlusPlugins.includes(pkg.name);
+      plugin.icon = this.pluginIcons[pkg.name]
+        ? `${this.pluginListsRepoUrl}${this.pluginIcons[pkg.name]}`
         : null;
 
       return [plugin];
@@ -894,7 +890,7 @@ export class PluginsService {
     }
 
     // make sure the repo is GitHub
-    const repoMatch = plugin.links.homepage.match(/https:\/\/github.com\/([^\/]+)\/([^\/#]+)/);
+    const repoMatch = plugin.links.homepage?.match(/https:\/\/github.com\/([^\/]+)\/([^\/#]+)/);
     const bugsMatch = plugin.links.bugs?.match(/https:\/\/github.com\/([^\/]+)\/([^\/#]+)/);
     let match: RegExpMatchArray | null = repoMatch;
     if (!repoMatch) {
@@ -1122,6 +1118,17 @@ export class PluginsService {
       });
     }
 
+    // if homebridge not found in default locations, check the folder above
+    if (allModules.findIndex(x => x.name === 'homebridge') === -1) {
+      if (existsSync(join(process.env.UIX_BASE_PATH, '..', 'homebridge'))) {
+        allModules.push({
+          name: 'homebridge',
+          installPath: join(process.env.UIX_BASE_PATH, '..', 'homebridge'),
+          path: dirname(join(process.env.UIX_BASE_PATH, '..', 'homebridge')),
+        });
+      }
+    }
+
     return allModules;
   }
 
@@ -1230,8 +1237,9 @@ export class PluginsService {
       description: (pkgJson.description) ?
         pkgJson.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim() : pkgJson.name,
       verifiedPlugin: this.verifiedPlugins.includes(pkgJson.name),
-      icon: this.verifiedPluginsIcons[pkgJson.name]
-        ? `${this.verifiedPluginsIconsPrefix}${this.verifiedPluginsIcons[pkgJson.name]}`
+      verifiedPlusPlugin: this.verifiedPlusPlugins.includes(pkgJson.name),
+      icon: this.pluginIcons[pkgJson.name]
+        ? `${this.pluginListsRepoUrl}${this.pluginIcons[pkgJson.name]}`
         : null,
       installedVersion: installPath ? (pkgJson.version || '0.0.1') : null,
       globalInstall: (installPath !== this.configService.customPluginPath),
@@ -1240,7 +1248,7 @@ export class PluginsService {
     };
 
     // only verified plugins can show donation links
-    plugin.funding = plugin.verifiedPlugin ? pkgJson.funding : undefined;
+    plugin.funding = (plugin.verifiedPlugin || plugin.verifiedPlusPlugin) ? pkgJson.funding : undefined;
 
     // if the plugin is private, do not attempt to query npm
     if (pkgJson.private) {
@@ -1503,10 +1511,11 @@ export class PluginsService {
   }
 
   /**
-   * Loads the list of verified plugins from GitHub
+   * Loads the list of special plugins from GitHub
+   * This is verified plugins, verified plus plugins, plugin icons and hidden plugins
    */
-  private async loadVerifiedPluginsList() {
-    clearTimeout(this.verifiedPluginsRetryTimeout);
+  private async loadSpecialPluginsLists() {
+    clearTimeout(this.specialPluginsRetryTimeout);
     try {
       this.verifiedPlugins = (
         await this.httpService.get(this.verifiedPluginsJson, {
@@ -1514,16 +1523,28 @@ export class PluginsService {
         }).toPromise()
       ).data;
 
-      this.verifiedPluginsIcons = (
-        await this.httpService.get(this.verifiedPluginsIconsJson, {
+      this.verifiedPlusPlugins = (
+        await this.httpService.get(this.verifiedPlusPluginsJson, {
+          httpsAgent: null,
+        }).toPromise()
+      ).data;
+
+      this.pluginIcons = (
+        await this.httpService.get(this.pluginIconsJson, {
+          httpsAgent: null,
+        }).toPromise()
+      ).data;
+
+      this.hiddenPlugins = (
+        await this.httpService.get(this.hiddenPluginsJson, {
           httpsAgent: null,
         }).toPromise()
       ).data;
     } catch (e) {
-      this.logger.debug('Error when trying to get verified plugin list:', e.message);
+      this.logger.debug('Error when trying to get github plugin lists:', e.message);
       // try again in 60 seconds
-      this.verifiedPluginsRetryTimeout = setTimeout(() => {
-        this.loadVerifiedPluginsList();
+      this.specialPluginsRetryTimeout = setTimeout(() => {
+        this.loadSpecialPluginsLists();
       }, 60000);
     }
   }

@@ -103,21 +103,24 @@ export class MemoryWidgetComponent implements OnInit, OnDestroy {
       this.totalMemory = data.mem.total / 1024 / 1024 / 1024;
       this.freeMemory = data.mem.available / 1024 / 1024 / 1024;
 
-      if (!this.lineChartData.datasets[0].data.length) {
+      const dataLength = Object.keys(this.lineChartData.datasets[0].data).length;
+      if (!dataLength) {
         this.lineChartData.datasets[0].data = {
           ...data.memoryUsageHistory,
         };
         this.lineChartLabels = data.memoryUsageHistory.map(() => 'point');
       } else {
-        this.lineChartData.datasets[0].data.push(data.memoryUsageHistory.slice(-1)[0]);
+        this.lineChartData.datasets[0].data[dataLength] = data.memoryUsageHistory.slice(-1)[0];
         this.lineChartLabels.push('point');
 
-        if (this.lineChartData.datasets[0].data.length > 60) {
-          this.lineChartData.datasets[0].data.shift();
+        if (dataLength > 60) {
+          delete this.lineChartData.datasets[0].data[0];
+          this.lineChartData.datasets[0].data = { ...this.lineChartData.datasets[0].data };
           this.lineChartLabels.shift();
-          this.chart.update();
         }
       }
+
+      this.chart.update();
     });
   }
 

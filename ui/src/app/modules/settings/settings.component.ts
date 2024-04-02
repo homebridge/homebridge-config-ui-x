@@ -4,13 +4,14 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { debounceTime } from 'rxjs/operators';
 import { ApiService } from '@/app/core/api.service';
-import { BackupRestoreComponent } from '@/app/core/backup-restore/backup-restore.component';
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { NotificationService } from '@/app/core/notification.service';
 import { SettingsService } from '@/app/core/settings.service';
+import { BackupComponent } from '@/app/modules/settings/backup/backup.component';
 import { RemoveAllCachedAccessoriesModalComponent } from '@/app/modules/settings/remove-all-cached-accessories-modal/remove-all-cached-accessories-modal.component'; // eslint-disable-line max-len
 import { RemoveSingleCachedAccessoryModalComponent } from '@/app/modules/settings/remove-single-cached-accessory-modal/remove-single-cached-accessory-modal.component'; // eslint-disable-line max-len
 import { ResetHomebridgeModalComponent } from '@/app/modules/settings/reset-homebridge-modal/reset-homebridge-modal.component';
+import { RestoreComponent } from '@/app/modules/settings/restore/restore.component';
 import { SelectNetworkInterfacesComponent } from '@/app/modules/settings/select-network-interfaces/select-network-interfaces.component';
 import { UnpairAccessoryModalComponent } from '@/app/modules/settings/unpair-accessory-modal/unpair-accessory-modal.component';
 
@@ -61,8 +62,15 @@ export class SettingsComponent implements OnInit {
     });
   }
 
-  backupRestoreHomebridge() {
-    this.$modal.open(BackupRestoreComponent, {
+  openRestoreModal() {
+    this.$modal.open(RestoreComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    });
+  }
+
+  openBackupModal() {
+    this.$modal.open(BackupComponent, {
       size: 'lg',
       backdrop: 'static',
     });
@@ -90,24 +98,28 @@ export class SettingsComponent implements OnInit {
   resetHomebridgeState() {
     this.$modal.open(ResetHomebridgeModalComponent, {
       size: 'lg',
+      backdrop: 'static',
     });
   }
 
   unpairAccessory() {
     this.$modal.open(UnpairAccessoryModalComponent, {
       size: 'lg',
+      backdrop: 'static',
     });
   }
 
   removeAllCachedAccessories() {
     this.$modal.open(RemoveAllCachedAccessoriesModalComponent, {
       size: 'lg',
+      backdrop: 'static',
     });
   }
 
   removeSingleCachedAccessories() {
     this.$modal.open(RemoveSingleCachedAccessoryModalComponent, {
       size: 'lg',
+      backdrop: 'static',
     });
   }
 
@@ -192,6 +204,7 @@ export class SettingsComponent implements OnInit {
   selectNetworkInterfaces() {
     const ref = this.$modal.open(SelectNetworkInterfacesComponent, {
       size: 'lg',
+      backdrop: 'static',
     });
 
     ref.componentInstance.availableNetworkAdapters = this.availableNetworkAdapters;

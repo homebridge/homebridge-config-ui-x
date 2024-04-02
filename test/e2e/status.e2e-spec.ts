@@ -189,15 +189,15 @@ describe('StatusController (e2e)', () => {
   it('GET /status/nodejs', async () => {
     const data = [
       {
-        'version': 'v21.4.0',
+        'version': 'v21.6.1',
         'lts': false,
       },
       {
-        'version': 'v20.10.0',
+        'version': 'v20.12.0',
         'lts': 'Iron',
       },
       {
-        'version': 'v18.18.2',
+        'version': 'v18.19.0',
         'lts': 'Hydrogen',
       },
       {
@@ -227,7 +227,7 @@ describe('StatusController (e2e)', () => {
 
     expect(res.statusCode).toBe(200);
     expect(res.json().currentVersion).toEqual(process.version);
-    expect(res.json().latestVersion).toBe('v20.10.0');
+    expect(res.json().latestVersion).toBe('v20.12.0');
   });
 
   afterAll(async () => {

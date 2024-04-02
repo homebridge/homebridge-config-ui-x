@@ -2,8 +2,6 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { Bootstrap4FrameworkModule } from '@oznu/ngx-bs4-jsonform';
-import { BackupRestoreComponent } from '@/app/core/backup-restore/backup-restore.component';
-import { ScheduledBackupsComponent } from '@/app/core/backup-restore/scheduled-backups/scheduled-backups.component';
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
 import { InformationComponent } from '@/app/core/components/information/information.component';
 import { QrcodeComponent } from '@/app/core/components/qrcode/qrcode.component';
@@ -29,8 +27,6 @@ import { ReplacePipe } from '@/app/core/pipes/replace.pipe';
     LongClickDirective,
     RtlDirective,
     JsonSchemaFormPatchDirective,
-    BackupRestoreComponent,
-    ScheduledBackupsComponent,
     ConfirmComponent,
     InformationComponent,
     RestartHomebridgeComponent,

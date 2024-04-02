@@ -11,8 +11,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '@/app/core/api.service';
 import { AuthService } from '@/app/core/auth/auth.service';
-import { BackupRestoreComponent } from '@/app/core/backup-restore/backup-restore.component';
 import { SettingsService } from '@/app/core/settings.service';
+import { RestoreComponent } from '@/app/modules/settings/restore/restore.component';
 import { environment } from '@/environments/environment';
 
 @Component({
@@ -142,7 +142,7 @@ export class SetupWizardComponent implements OnInit, OnDestroy {
   }
 
   openRestoreModal() {
-    const ref = this.$modal.open(BackupRestoreComponent, {
+    const ref = this.$modal.open(RestoreComponent, {
       size: 'lg',
       backdrop: 'static',
     });

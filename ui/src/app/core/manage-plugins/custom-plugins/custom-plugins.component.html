@@ -62,13 +62,7 @@
       <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')"
         [translate]="'form.button_close'" [disabled]="saveInProgress">Close</button>
     </div>
-    <div class="d-none d-lg-block text-center">
-      <a *ngIf="plugin.links.npm" [href]="plugin.links.npm" target="_blank" rel="noopener noreferrer"
-        class="pr-3 manage-plugin-config-external-icons dark-mode-highlight"><i class="fab fa-fw fa-npm"></i></a>
-      <a *ngIf="plugin.links.homepage" [href]="plugin.links.homepage" target="_blank" rel="noopener noreferrer"
-        class="manage-plugin-config-external-icons dark-mode-highlight">
-        <i [ngClass]="plugin.links.homepage | externalLinkIcon"></i></a>
-    </div>
+    <div class="text-center"></div>
     <div class="text-right">
       <button *ngIf="plugin.name !== 'homebridge-config-ui-x'" class="btn btn-danger"
         [ngbTooltip]="'form.button_delete' | translate" container="body" [disabled]="saveInProgress"

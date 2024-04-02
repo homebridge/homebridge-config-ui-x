@@ -11,6 +11,7 @@ import {
   switchMap,
   tap,
 } from 'rxjs/operators';
+import { ApiService } from '@/app/core/api.service';
 import { environment } from '@/environments/environment';
 
 @Component({
@@ -63,8 +64,11 @@ export class WidgetControlComponent implements OnInit {
     { label: 'status.widget.label_temperature_units_fahrenheit', value: 'f' },
   ];
 
+  public networkInterfaces: string[] = [];
+
   constructor(
     public activeModal: NgbActiveModal,
+    private $api: ApiService,
     private $http: HttpClient,
     private $translate: TranslateService,
   ) {}
@@ -95,6 +99,13 @@ export class WidgetControlComponent implements OnInit {
       if (!this.widget.fontSize) {
         this.widget.fontSize = 15;
       }
+    }
+    if (this.widget.component === 'NetworkWidgetComponent') {
+      // Get a list of active network interfaces from the settings
+      this.$api.get('/server/network-interfaces/bridge').toPromise()
+        .then((adapters) => {
+          this.networkInterfaces = adapters;
+        });
     }
   }
 

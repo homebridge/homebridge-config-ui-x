@@ -7,15 +7,15 @@
     [attr.aria-label]="'platform.docker.settings.button_restart_required' | translate">Restart Required</button>
 </div>
 
-<div class="mb-3">
-  <h5 class="primary-text mt-3">General</h5>
+<div class="mb-4">
+  <h5 class="primary-text mt-3" translate="settings.general.title_general"></h5>
   <ul class="list-group mt-2">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
         {{ 'menu.label_settings_ui' | translate }}
       </span>
       <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;" (click)="openUiSettings()">
-        <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
+        <i class="fas fa-fw fa-sliders"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -23,15 +23,23 @@
         {{ 'menu.config_json_editor' | translate }}
       </span>
       <a class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;" routerLink="/config">
-        <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
+        <i class="fas fa-fw fa-chevron-right"></i>
       </a>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
-        {{ 'backup.title_backup_restore' | translate }}
+        {{ 'backup.title_backup' | translate }}
       </span>
-      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;" (click)="backupRestoreHomebridge()">
-        <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
+      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;" (click)="openBackupModal()">
+        <i class="fas fa-fw fa-chevron-right"></i>
+      </button>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span class="pr-2">
+        {{ 'backup.title_restore' | translate }}
+      </span>
+      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;" (click)="openRestoreModal()">
+        <i class="fas fa-fw fa-chevron-right"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -39,48 +47,40 @@
         {{ 'menu.tooltip_user_accounts' | translate }}
       </span>
       <a class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;" routerLink="/users">
-        <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
+        <i class="fas fa-fw fa-chevron-right"></i>
       </a>
     </li>
   </ul>
 </div>
 
 <!-- ALL USERS -->
-<div class="mb-3">
+<div class="mb-4">
   <h5 class="primary-text mt-3" translate="settings.network.title_network"></h5>
-
   <ul class="list-group mt-2">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
-        <div>{{ 'settings.network.title_network_interfaces' | translate }}
-          <a href="javascript:void(0)" ngbTooltip="{{ 'settings.network.message_network_interface_one' | translate }}">
-            <i class="fas fa-fw fa-info-circle primary-text"></i>
-          </a>
+        <div>{{ 'settings.network.title_network_interfaces' | translate }}<br>
+          <small class="grey-text pr-2">{{ 'settings.network.message_network_interface_one' | translate }}</small>
         </div>
-
         <span *ngFor="let adapter of bridgeNetworkAdapters">
-          <span class="badge badge-pill mr-1"
-            [ngbTooltip]="adapter.missing ? 'Not Connected' : adapter.ip4 || adapter.ip6" placement="bottom-left"
-            openDelay="150" [ngClass]="{'badge-danger': adapter.missing, 'badge-info': !adapter.missing}">
+          <span class="badge badge-pill mr-1" [ngClass]="{'badge-danger': adapter.missing, 'badge-info': !adapter.missing}">
             <i class="fas fa-fw fa-exclamation-triangle" *ngIf="adapter.missing"></i>
-            {{ adapter.iface }}
+            {{ adapter.iface }}: <span class="font-weight-normal">{{ adapter.missing ? ('settings.mdns_advertiser_not_connected' | translate) : adapter.ip4 || adapter.ip6 }}</span>
           </span>
         </span>
       </span>
       <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;" [translate]="'reset.title_clear_cached_accessories'"
         (click)="selectNetworkInterfaces()" [disabled]="!availableNetworkAdapters.length"
         [attr.aria-label]="'settings.network.title_network_interfaces' | translate">
-        <i class="fas fa-fw fa-cog" [ngClass]="{ 'fa-pulse': !availableNetworkAdapters.length }"></i>
+        <i class="fas fa-fw fa-chevron-right" [ngClass]="{ 'fa-pulse': !availableNetworkAdapters.length }"></i>
       </button>
     </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
-        {{ 'settings.mdns_advertiser' | translate }}
-        <a href="javascript:void(0)" ngbTooltip="{{ 'settings.mdns_advertiser_help' | translate }}">
-          <i class="fas fa-fw fa-info-circle primary-text"></i>
-        </a>
+        {{ 'settings.mdns_advertiser' | translate }}<br>
+        <small class="grey-text pr-2">{{ 'settings.mdns_advertiser_help' | translate }}</small>
       </span>
-      <div>
+      <div class="my-3 my-md-0 pl-0 pl-md-5 w-100" style="max-width:500px!important;">
         <select class="custom-select" [formControl]="legacyMdnsFormControl"
           [attr.aria-label]="'settings.mdns_advertiser' | translate">
           <option value="bonjour-hap">Bonjour HAP</option>
@@ -95,10 +95,8 @@
 
 <!-- SERVICE MODE USERS ONLY -->
 <form class="mt-3 mb-3" novalidate [formGroup]="serviceForm" *ngIf="$settings.env.serviceMode">
-
   <h5 class="primary-text">{{ 'settings.title_startup_options' | translate }}</h5>
-
-  <ul class="list-group">
+  <ul class="list-group mb-4">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span>{{ 'settings.startup.debug' | translate }} <code>-D</code></span>
       <input type="checkbox" class="rendux-input" id="homebridgeDebugMode" formControlName="HOMEBRIDGE_DEBUG"
@@ -121,72 +119,54 @@
       <label for="homebridgeKeepOrphans" class="rendux-label ml-3" style="min-width: 45px;"></label>
     </li>
   </ul>
-
-  <div class="mt-3" *ngIf="$settings.env.serviceMode">
+  <div class="mb-4" *ngIf="$settings.env.serviceMode">
     <h5 class="primary-text">{{ 'settings.title_environment_variables' | translate }}</h5>
-
     <ul class="list-group mt-2">
-      <li class="list-group-item d-flex justify-content-between align-items-center">
+      <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
         <span>
-          DEBUG
-          <a href="javascript:void(0)"
-            ngbTooltip="{{ 'settings.service.debug_tooltip' | translate }}">
-            <i class="fas fa-fw fa-info-circle primary-text"></i>
-          </a>
+          DEBUG<br>
+          <small class="grey-text pr-2">{{ 'settings.service.debug_tooltip' | translate }}</small>
         </span>
-        <div class="pull-right">
+        <div class="my-3 my-md-0 pl-0 pl-md-5 w-100" style="max-width:500px!important;">
           <input class="form-control form-control-sm" formControlName="ENV_DEBUG" type="text" />
         </div>
       </li>
-      <li class="list-group-item d-flex justify-content-between align-items-center">
+      <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
         <span>
-          NODE_OPTIONS
-          <a href="https://nodejs.org/api/cli.html" target="_blank"
-            ngbTooltip="{{ 'settings.service.node_tooltip' | translate }}">
-            <i class="fas fa-fw fa-info-circle primary-text"></i>
-          </a>
+          NODE_OPTIONS<br>
+          <small class="grey-text pr-2">{{ 'settings.service.node_tooltip' | translate }}</small>
         </span>
-        <div class="pull-right">
+        <div class="my-3 my-md-0 pl-0 pl-md-5 w-100" style="max-width:500px!important;">
           <input class="form-control form-control-sm" formControlName="ENV_NODE_OPTIONS" type="text" />
         </div>
       </li>
     </ul>
   </div>
-
 </form>
 
 <!-- ALL USERS -->
-<div class="mb-3">
+<div class="mb-4">
   <h5 class="primary-text mt-3">{{ 'reset.title_reset' | translate }}</h5>
-
-  <div class="alert alert-info" role="alert">
-    {{ 'settings.reset.help' | translate }}
-  </div>
-
+  <p class="small grey-text mb-2">{{ 'settings.reset.help' | translate }}</p>
   <ul class="list-group mt-2">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
-        {{ 'reset.title_unpair_bridges_cameras_tv_external_accessories' | translate }}
-        <a href="javascript:void(0)"
-          ngbTooltip="{{ 'reset.message_unpair_bridges_cameras_tv_external_accessories' | translate }}">
-          <i class="fas fa-fw fa-info-circle primary-text"></i>
-        </a>
+        {{ 'reset.title_unpair_bridges_cameras_tv_external_accessories' | translate }}<br/>
+        <small class="grey-text pr-2">{{ 'reset.message_unpair_bridges_cameras_tv_external_accessories' | translate }}</small>
       </span>
       <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;" (click)="unpairAccessory()"
         [attr.aria-label]="'reset.title_unpair_bridges_cameras_tv_external_accessories' | translate">
-        <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
+        <i class="fas fa-fw fa-chevron-right"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
-        {{ 'reset.title_reset_homebridge_accessory' | translate | titlecase }}
-        <a href="javascript:void(0)" ngbTooltip="{{ 'reset.message_reset_will_unpair_from_homekit' | translate }}">
-          <i class="fas fa-fw fa-info-circle primary-text"></i>
-        </a>
+        {{ 'reset.title_reset_homebridge_accessory' | translate | titlecase }}<br/>
+        <small class="grey-text pr-2">{{ 'reset.message_reset_will_unpair_from_homekit' | translate }}</small>
       </span>
       <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;" (click)="resetHomebridgeState()"
         [attr.aria-label]="'reset.title_reset_homebridge_accessory' | translate">
-        <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
+        <i class="fas fa-fw fa-chevron-right"></i>
       </button>
     </li>
   </ul>
@@ -194,54 +174,41 @@
 
 <!-- SERVICE MODE USERS ONLY -->
 <div *ngIf="$settings.env.serviceMode" class="pb-3">
-
   <h5 class="primary-text mt-3">{{ 'settings.title_manage_cached_accessories' | translate }}</h5>
-
-  <div class="alert alert-info" role="alert">
-    {{ 'settings.manage_cache.help' | translate }}
-  </div>
-
-  <ul class="list-group mt-2">
+  <p class="small grey-text mb-2">{{ 'settings.manage_cache.help' | translate }}</p>
+  <ul class="list-group mb-4">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
-        {{ 'reset.title_clear_cached_accessories_single' | translate }}
-        <a href="javascript:void(0)" ngbTooltip="{{ 'reset.message_remove_cached_accessories_single' | translate }}">
-          <i class="fas fa-fw fa-info-circle primary-text"></i>
-        </a>
+        {{ 'reset.title_clear_cached_accessories_single' | translate }}<br>
+        <small class="grey-text pr-2">{{ 'reset.message_remove_cached_accessories_single' | translate }}</small>
       </span>
       <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;"
         [translate]="'reset.title_clear_cached_accessories_single'" (click)="removeSingleCachedAccessories()"
         [attr.aria-label]="'reset.title_clear_cached_accessories_single' | translate">
-        <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
+        <i class="fas fa-fw fa-chevron-right"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
-        {{ 'reset.title_clear_cached_accessories' | translate }}
-        <a href="javascript:void(0)" ngbTooltip="{{ 'reset.message_remove_cached_accessories' | translate }}">
-          <i class="fas fa-fw fa-info-circle primary-text"></i>
-        </a>
+        {{ 'reset.title_clear_cached_accessories' | translate }}<br>
+        <small class="grey-text pr-2">{{ 'reset.message_remove_cached_accessories' | translate }}</small>
       </span>
       <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;"
         [translate]="'reset.title_clear_cached_accessories'" (click)="removeAllCachedAccessories()"
         [attr.aria-label]="'reset.title_clear_cached_accessories' | translate">
-        <i class="fas fa-fw fa-flip-horizontal fa-external-link-square-alt"></i>
+        <i class="fas fa-fw fa-chevron-right"></i>
       </button>
     </li>
   </ul>
-
   <h5 class="primary-text mt-3">{{ 'settings.title_actions' | translate }}</h5>
-
   <ul class="list-group mt-2">
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pr-2">
-        {{ 'reset.title_force_restart_hb_service' | translate }}
-        <a href="javascript:void(0)" ngbTooltip="{{ 'reset.message_force_restart_hb_help_text' | translate }}">
-          <i class="fas fa-fw fa-info-circle primary-text"></i>
-        </a>
-      </span>
-      <span class="red-text text-right">
-        Moved to Main Menu &rarr; {{ 'menu.restart.title' | translate }} &rarr; {{ 'menu.hbrestart.confirm_service_button' | translate }}
+      <span class="">
+        {{ 'reset.title_force_restart_hb_service' | translate }}<br>
+        <small class="grey-text pr-2">{{ 'reset.message_force_restart_hb_help_text' | translate }}</small><br>
+        <span class="red-text text-right">
+          Moved to Main Menu &rarr; {{ 'menu.restart.title' | translate }} &rarr; {{ 'menu.hbrestart.confirm_service_button' | translate }}
+        </span>
       </span>
     </li>
   </ul>

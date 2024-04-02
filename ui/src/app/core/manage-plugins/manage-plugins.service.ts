@@ -30,7 +30,6 @@ export class ManagePluginsService {
     const ref = this.modalService.open(ManagePluginsModalComponent, {
       size: 'lg',
       backdrop: 'static',
-      keyboard: false,
     });
     ref.componentInstance.action = 'Install';
     ref.componentInstance.pluginName = pluginName;
@@ -39,8 +38,8 @@ export class ManagePluginsService {
 
   uninstallPlugin(plugin: any) {
     const ref = this.modalService.open(UninstallPluginsModalComponent, {
+      size: 'lg',
       backdrop: 'static',
-      keyboard: false,
     });
     ref.componentInstance.action = 'Uninstall';
     ref.componentInstance.plugin = plugin;
@@ -54,7 +53,6 @@ export class ManagePluginsService {
     const ref = this.modalService.open(ManagePluginsModalComponent, {
       size: 'lg',
       backdrop: 'static',
-      keyboard: false,
     });
     ref.componentInstance.action = 'Update';
     ref.componentInstance.pluginName = plugin.name;
@@ -72,7 +70,6 @@ export class ManagePluginsService {
     const ref = this.modalService.open(ManagePluginsModalComponent, {
       size: 'lg',
       backdrop: 'static',
-      keyboard: false,
     });
     ref.componentInstance.action = 'Update';
     ref.componentInstance.pluginName = homebridgePkg.name;
@@ -88,6 +85,7 @@ export class ManagePluginsService {
    */
   async installPreviousVersion(plugin: any) {
     const ref = this.modalService.open(SelectPreviousVersionComponent, {
+      size: 'lg',
       backdrop: 'static',
     });
 
@@ -204,6 +202,7 @@ export class ManagePluginsService {
       try {
         // open modal warning about Node.js version
         const ref = this.modalService.open(NodeUpdateRequiredModalComponent, {
+          size: 'lg',
           backdrop: 'static',
         });
         ref.componentInstance.plugin = plugin;
