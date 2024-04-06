@@ -18,7 +18,7 @@ import { IoNamespace, WsService } from '@/app/core/ws.service';
   styleUrls: ['./network-widget.component.scss'],
 })
 export class NetworkWidgetComponent implements OnInit, OnDestroy {
-  @Input() widget;
+  @Input() public widget;
 
   @ViewChild(BaseChartDirective, { static: true }) public chart: BaseChartDirective;
   @ViewChild('widgetbackground', { static: true }) private widgetBackground: ElementRef;
@@ -26,6 +26,8 @@ export class NetworkWidgetComponent implements OnInit, OnDestroy {
   public interface: string;
   public receivedPerSec: number;
   public sentPerSec: number;
+  public refreshInterval: number;
+  public historyItems: number;
 
   public lineChartType: ChartConfiguration['type'] = 'line';
 
@@ -92,13 +94,17 @@ export class NetworkWidgetComponent implements OnInit, OnDestroy {
       this.getServerNetworkInfo();
     }
 
+    // Interval and history items should be in [1, 60]
     if (!this.widget.refreshInterval) {
       this.widget.refreshInterval = 10;
     }
+    if (!this.widget.historyItems) {
+      this.widget.historyItems = 60;
+    }
+    this.refreshInterval = Math.min(60, Math.max(1, parseInt(this.widget.refreshInterval, 10)));
+    this.historyItems = Math.min(60, Math.max(1, parseInt(this.widget.historyItems, 10)));
 
-    // Interval should be in [1, 60]
-    const refreshInterval = Math.min(60, Math.max(1, parseInt(this.widget.refreshInterval, 10)));
-    this.intervalSubscription = interval(refreshInterval * 1000).subscribe(() => {
+    this.intervalSubscription = interval(this.refreshInterval * 1000).subscribe(() => {
       if (this.io.socket.connected) {
         this.getServerNetworkInfo();
       }
@@ -117,40 +123,55 @@ export class NetworkWidgetComponent implements OnInit, OnDestroy {
         this.chart.update();
       }
 
-      this.receivedPerSec = (data.net.rx_sec / 1024 / 1024) * 8;
-      this.sentPerSec = (data.net.tx_sec / 1024 / 1024) * 8;
-
-      // the chart looks strange if the data rate is < 1.
-      if (data.point < 1) {
-        data.point = 0;
-      }
-
-      const dataLength = Object.keys(this.lineChartData.datasets[0].data).length;
-      if (!dataLength) {
-        this.lineChartData.datasets[0].data = {
-          ...[data.point],
-        };
-        this.lineChartLabels.push('point');
-      } else {
-        if (dataLength > 60) {
-          const newData = {};
-          Object.keys(this.lineChartData.datasets[0].data).forEach((key, index, array) => {
-            if (index + 1 < array.length) {
-              newData[key] = this.lineChartData.datasets[0].data[array[index + 1]];
-            }
-          });
-
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          this.lineChartData.datasets[0].data = newData;
-          this.lineChartLabels.shift();
-        }
-        this.lineChartData.datasets[0].data[dataLength - 1] = data.point;
-        this.lineChartLabels.push('point');
-      }
-
+      this.updateData(data);
       this.chart.update();
     });
+  }
+
+  updateData(data) {
+    this.receivedPerSec = (data.net.rx_sec / 1024 / 1024) * 8;
+    this.sentPerSec = (data.net.tx_sec / 1024 / 1024) * 8;
+
+    // the chart looks strange if the data rate is < 1.
+    if (data.point < 1) {
+      data.point = 0;
+    }
+
+    const dataLength = Object.keys(this.lineChartData.datasets[0].data).length;
+    if (!dataLength) {
+      this.initializeChartData(data);
+    } else {
+      this.updateChartData(data, dataLength);
+    }
+  }
+
+  initializeChartData(data) {
+    const items = data.point;
+    this.lineChartData.datasets[0].data = { ...items };
+    this.lineChartLabels = items.map(() => 'point');
+  }
+
+  updateChartData(data, dataLength) {
+    this.lineChartData.datasets[0].data[dataLength] = data.point;
+    this.lineChartLabels.push('point');
+
+    if (dataLength >= this.historyItems) {
+      this.shiftChartData();
+    }
+  }
+
+  shiftChartData() {
+    const newItems = {};
+    Object.keys(this.lineChartData.datasets[0].data).forEach((key, index, array) => {
+      if (index + 1 < array.length) {
+        newItems[key] = this.lineChartData.datasets[0].data[array[index + 1]];
+      }
+    });
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    this.lineChartData.datasets[0].data = newItems;
+    this.lineChartLabels = this.lineChartLabels.slice(1);
   }
 
   ngOnDestroy() {

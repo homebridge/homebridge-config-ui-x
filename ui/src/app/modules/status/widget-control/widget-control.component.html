@@ -122,6 +122,66 @@
             </select>
           </div>
         </div>
+        <div class="form-group row align-items-center">
+          <label class="col-6 col-form-label">
+            {{ 'status.widget.label_network_activity.refresh_interval' | translate }}
+          </label>
+          <div class="col-6">
+            <div class="input-group">
+              <input type="number" class="form-control custom-input" [(ngModel)]="widget.refreshInterval" min="1" max="60">
+              <div class="input-group-append">
+                <span class="input-group-text custom-input">{{ 'status.widget.label_network_activity.seconds' | translate }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group row align-items-center">
+          <label class="col-6 col-form-label">
+            {{ 'status.widget.label_network_activity.history_items' | translate }}
+          </label>
+          <div class="col-6">
+            <div class="input-group">
+              <input type="number" class="form-control custom-input" [(ngModel)]="widget.historyItems" min="1" max="60">
+              <div class="input-group-append">
+                <span class="input-group-text custom-input">{{ 'status.widget.label_network_activity.items' | translate }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="muted grey-text font-italic text-center">
+          {{ 'status.widget.label_network_activity.refresh_note' | translate }}
+        </p>
+      </div>
+      <div *ngSwitchCase="'MemoryWidgetComponent'">
+        <div class="form-group row align-items-center">
+          <label class="col-6 col-form-label">
+            {{ 'status.widget.label_network_activity.refresh_interval' | translate }}
+          </label>
+          <div class="col-6">
+            <div class="input-group">
+              <input type="number" class="form-control custom-input" [(ngModel)]="widget.refreshInterval" min="1" max="60">
+              <div class="input-group-append">
+                <span class="input-group-text custom-input">{{ 'status.widget.label_network_activity.seconds' | translate }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group row align-items-center">
+          <label class="col-6 col-form-label">
+            {{ 'status.widget.label_network_activity.history_items' | translate }}
+          </label>
+          <div class="col-6">
+            <div class="input-group">
+              <input type="number" class="form-control custom-input" [(ngModel)]="widget.historyItems" min="1" max="60">
+              <div class="input-group-append">
+                <span class="input-group-text custom-input">{{ 'status.widget.label_network_activity.items' | translate }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="muted grey-text font-italic text-center">
+          {{ 'status.widget.label_network_activity.refresh_note' | translate }}
+        </p>
       </div>
       <div *ngSwitchCase="'NetworkWidgetComponent'">
         <div class="form-group row align-items-center">
@@ -145,6 +205,19 @@
               <input type="number" class="form-control custom-input" [(ngModel)]="widget.refreshInterval" min="1" max="60">
               <div class="input-group-append">
                 <span class="input-group-text custom-input">{{ 'status.widget.label_network_activity.seconds' | translate }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group row align-items-center">
+          <label class="col-6 col-form-label">
+            {{ 'status.widget.label_network_activity.history_items' | translate }}
+          </label>
+          <div class="col-6">
+            <div class="input-group">
+              <input type="number" class="form-control custom-input" [(ngModel)]="widget.historyItems" min="1" max="60">
+              <div class="input-group-append">
+                <span class="input-group-text custom-input">{{ 'status.widget.label_network_activity.items' | translate }}</span>
               </div>
             </div>
           </div>
