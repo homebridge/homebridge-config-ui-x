@@ -110,14 +110,21 @@ export class MemoryWidgetComponent implements OnInit, OnDestroy {
         };
         this.lineChartLabels = data.memoryUsageHistory.map(() => 'point');
       } else {
-        this.lineChartData.datasets[0].data[dataLength] = data.memoryUsageHistory.slice(-1)[0];
-        this.lineChartLabels.push('point');
-
         if (dataLength > 60) {
-          delete this.lineChartData.datasets[0].data[0];
-          this.lineChartData.datasets[0].data = { ...this.lineChartData.datasets[0].data };
+          const newData = {};
+          Object.keys(this.lineChartData.datasets[0].data).forEach((key, index, array) => {
+            if (index + 1 < array.length) {
+              newData[key] = this.lineChartData.datasets[0].data[array[index + 1]];
+            }
+          });
+
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          this.lineChartData.datasets[0].data = newData;
           this.lineChartLabels.shift();
         }
+        this.lineChartData.datasets[0].data[dataLength - 1] = data.memoryUsageHistory.slice(-1)[0];
+        this.lineChartLabels.push('point');
       }
 
       this.chart.update();
