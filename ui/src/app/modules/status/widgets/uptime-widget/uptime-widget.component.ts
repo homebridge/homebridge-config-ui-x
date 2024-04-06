@@ -1,4 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { Subscription, interval } from 'rxjs';
 import { AuthService } from '@/app/core/auth/auth.service';
 import { IoNamespace, WsService } from '@/app/core/ws.service';
@@ -9,6 +14,8 @@ import { IoNamespace, WsService } from '@/app/core/ws.service';
   styleUrls: ['./uptime-widget.component.scss'],
 })
 export class UptimeWidgetComponent implements OnInit, OnDestroy {
+  @Input() public widget;
+
   public serverUptime: string;
   public processUptime: string;
 

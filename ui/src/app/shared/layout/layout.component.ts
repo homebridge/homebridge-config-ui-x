@@ -5,7 +5,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { lt } from 'semver';
 import { AuthService } from '@/app/core/auth/auth.service';
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
-import { NotificationService } from '@/app/core/notification.service';
 import { SettingsService } from '@/app/core/settings.service';
 import { IoNamespace, WsService } from '@/app/core/ws.service';
 import { environment } from '@/environments/environment';
@@ -16,8 +15,6 @@ import { environment } from '@/environments/environment';
   styleUrls: ['./layout.component.scss'],
 })
 export class LayoutComponent implements OnInit {
-  public rPiCurrentlyUnderVoltage = false;
-  public rPiWasUnderVoltage = false;
   public sidebarExpanded = false;
   private io: IoNamespace;
 
@@ -26,7 +23,6 @@ export class LayoutComponent implements OnInit {
     private $ws: WsService,
     public $auth: AuthService,
     public $settings: SettingsService,
-    private $notification: NotificationService,
     private $modal: NgbModal,
     private $router: Router,
   ) {}
@@ -35,15 +31,6 @@ export class LayoutComponent implements OnInit {
     this.io = this.$ws.connectToNamespace('app');
     this.io.socket.on('reconnect', () => {
       this.$auth.checkToken();
-    });
-
-    this.$notification.raspberryPiThrottled.subscribe((throttled) => {
-      if (throttled['Under-voltage detected']) {
-        this.rPiCurrentlyUnderVoltage = true;
-      }
-      if (throttled['Under-voltage has occurred']) {
-        this.rPiWasUnderVoltage = true;
-      }
     });
 
     this.compareServerUiVersion();

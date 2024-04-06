@@ -33,6 +33,10 @@ gridster {
   &:active {
     transform: scale(1.2);
   }
+
+  @media (max-width: 1095px) {
+    display: none;
+  }
 }
 
 .widget-item {

@@ -4,7 +4,7 @@
   left: 0;
   width: 100%;
   background: #111111;
-  height: 65px;
+  height: 72px;
   z-index: 100;
 
   &:hover {
@@ -29,9 +29,11 @@
 
   .header {
     display: flex;
-    justify-content: left;
+    flex-direction: column;
+    justify-content: center;
     padding: 15px 10px 15px 10px;
     background: #111111;
+    font-size: 0.85rem;
 
     &:hover {
       cursor: pointer;
@@ -112,4 +114,8 @@
       }
     }
   }
+}
+
+.hb-logo-icon {
+  margin: -7px 0 0 25px;
 }

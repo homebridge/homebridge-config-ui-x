@@ -1,5 +1,5 @@
 <div class="flex-column d-flex align-items-stretch h-100 w-100 pb-1">
-  <div style="cursor: move;" class="drag-handler p-2">Homebridge</div>
+  <div class="drag-handler p-2" [ngClass]="{ 'widget-cursor': widget.draggable }">Homebridge</div>
   <div class="d-flex flex-wrap w-100 pe-3 ps-2 justify-content-start gridster-item-content overflow-auto no-scrollbars">
     <div class="hb-status-item d-flex flex-row" style="min-width:max(25%, 225px);">
       <div class="d-flex">
