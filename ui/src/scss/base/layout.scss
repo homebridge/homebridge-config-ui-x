@@ -30,3 +30,13 @@ a:hover {
   color: #747373;
   font-weight: 400;
 }
+
+.adjust-for-mobile {
+  height: calc(100% - 30px);
+  width: calc(100% + 20px);
+  overflow: hidden;
+
+  @media (max-width: 767px) {
+    height: calc(100% - 60px);
+  }
+}

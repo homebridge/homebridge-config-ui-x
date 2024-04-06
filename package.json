@@ -24,8 +24,8 @@
   ],
   "main": "./dist/index.js",
   "bin": {
-    "homebridge-config-ui-x": "./dist/bin/standalone.js",
-    "hb-service": "./dist/bin/hb-service.js"
+    "homebridge-config-ui-x": "dist/bin/standalone.js",
+    "hb-service": "dist/bin/hb-service.js"
   },
   "engines": {
     "node": "^18 || ^20",
