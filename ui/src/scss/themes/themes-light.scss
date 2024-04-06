@@ -6,6 +6,46 @@
       background-color: $primary-dark !important;
     }
 
+    .sidebar {
+      background: $primary-dark;
+      color: #eeeeee;
+
+      .header {
+        background: $primary-dark;
+      }
+
+      .content {
+        .link {
+          .content {
+            &:hover {
+              background: $primary;
+
+              .title {
+                color: white;
+              }
+            }
+
+            &.active {
+              i {
+                color: $primary;
+              }
+            }
+
+            &.active:hover {
+              i {
+                color: #ffffff;
+                transition: 0.3s;
+              }
+            }
+
+            .title {
+              color: #ffffff;
+            }
+          }
+        }
+      }
+    }
+
     .hb-npm-search {
       border: 0 !important;
       background-color: #eeeeee !important;
@@ -114,6 +154,11 @@
 
     .login-container {
       background-color: $primary-dark  !important;
+    }
+
+    .switch-on, .light-on, .window-on {
+      background-color: #fff;
+      color: #000000;
     }
 
     @keyframes uix-glow-icon {
