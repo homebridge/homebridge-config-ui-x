@@ -11,7 +11,7 @@
             'fa-bridge-circle-exclamation text-warning': bridge.status === 'pending',
             'fa-bridge-circle-xmark red-text': bridge.status === 'down'
           }"></i>
-          {{ bridge.name | replace:'Homebridge':'' | replace:'homebridge':'' }}
+          {{ bridge.name }}
         </div>
         <div style="min-width: 48px;" class="grey-text text-end">
           <!-- <a *ngIf="!bridge.restartInProgress && bridge.paired === false" href="javascript:void(0)"

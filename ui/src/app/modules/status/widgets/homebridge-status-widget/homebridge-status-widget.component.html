@@ -46,11 +46,11 @@
             class="card-link card-link-title">Homebridge</a>
           <span *ngIf="!homebridgePkg.installedVersion">Homebridge</span>
           <br>
-          <span>
-            <span class="grey-text" *ngIf="!homebridgePkg.installedVersion">
+          <span class="grey-text">
+            <span *ngIf="!homebridgePkg.installedVersion">
               {{ 'status.homebridge.label_checking_for_updates' | translate }}
             </span>
-            <span class="grey-text" *ngIf="homebridgePkg.installedVersion && !homebridgePkg.updateAvailable"
+            <span *ngIf="homebridgePkg.installedVersion && !homebridgePkg.updateAvailable"
               [translate]="'status.homebridge.label_up_to_date'">
               Up To Date
             </span>
@@ -78,11 +78,11 @@
             class="card-link card-link-title">Homebridge UI</a>
           <span *ngIf="!homebridgeUiPkg.installedVersion">Homebridge UI</span>
           <br>
-          <span>
-            <span class="grey-text" *ngIf="!homebridgeUiPkg.installedVersion">
+          <span class="grey-text">
+            <span *ngIf="!homebridgeUiPkg.installedVersion">
               {{ 'status.homebridge.label_checking_for_updates' | translate }}
             </span>
-            <span class="grey-text" *ngIf="homebridgeUiPkg.installedVersion && !homebridgeUiPkg.updateAvailable"
+            <span *ngIf="homebridgeUiPkg.installedVersion && !homebridgeUiPkg.updateAvailable"
               [translate]="'status.homebridge.label_up_to_date'">
               Up To Date
             </span>
