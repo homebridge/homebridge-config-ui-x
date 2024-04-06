@@ -8,6 +8,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - allow extra config options to graph widgets
 - fix readings of graphical widgets
+- updated menu and sidebar
 
 ### Other Changes
 

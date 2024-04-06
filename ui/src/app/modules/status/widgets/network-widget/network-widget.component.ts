@@ -123,20 +123,20 @@ export class NetworkWidgetComponent implements OnInit, OnDestroy {
         this.chart.update();
       }
 
+      this.receivedPerSec = (data.net.rx_sec / 1024 / 1024) * 8;
+      this.sentPerSec = (data.net.tx_sec / 1024 / 1024) * 8;
+
+      // the chart looks strange if the data rate is < 1.
+      if (data.point < 1) {
+        data.point = 0;
+      }
+
       this.updateData(data);
       this.chart.update();
     });
   }
 
   updateData(data) {
-    this.receivedPerSec = (data.net.rx_sec / 1024 / 1024) * 8;
-    this.sentPerSec = (data.net.tx_sec / 1024 / 1024) * 8;
-
-    // the chart looks strange if the data rate is < 1.
-    if (data.point < 1) {
-      data.point = 0;
-    }
-
     const dataLength = Object.keys(this.lineChartData.datasets[0].data).length;
     if (!dataLength) {
       this.initializeChartData(data);
@@ -146,7 +146,7 @@ export class NetworkWidgetComponent implements OnInit, OnDestroy {
   }
 
   initializeChartData(data) {
-    const items = data.point;
+    const items = [data.point];
     this.lineChartData.datasets[0].data = { ...items };
     this.lineChartLabels = items.map(() => 'point');
   }

@@ -56,3 +56,11 @@ gridster-preview {
     max-width: 100%;
   }
 }
+
+.widget-cursor {
+  cursor: move;
+
+  @media (max-width: 1095px) {
+    cursor: auto;
+  }
+}
