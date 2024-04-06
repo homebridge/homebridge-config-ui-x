@@ -3,7 +3,6 @@
   top: 0;
   left: 0;
   width: 100%;
-  background: #111111;
   height: 72px;
   z-index: 100;
 
@@ -22,9 +21,7 @@
   top: 0;
   height: 100vh;
   transition: 0.3s;
-  width: 55px;
-  background: #111111;
-  color: #6d6e7e;
+  width: 60px;
   z-index: 500;
 
   .header {
@@ -32,7 +29,6 @@
     flex-direction: column;
     justify-content: center;
     padding: 15px 10px 15px 10px;
-    background: #111111;
     font-size: 0.85rem;
 
     &:hover {
@@ -51,20 +47,6 @@
         transition: 0.2s;
         font-size: 18px;
 
-        &:hover {
-          background: #000000;
-
-          .title {
-            color: white;
-          }
-        }
-
-        &.active {
-          i {
-            color: #2196f3;
-          }
-        }
-
         .icon {
           flex: 0 0 35px;
           display: flex;
@@ -74,7 +56,6 @@
 
         .title {
           flex: 1;
-          color: #6d6e7e;
           transition: 0.3s;
           max-width: 0;
           overflow: hidden;
