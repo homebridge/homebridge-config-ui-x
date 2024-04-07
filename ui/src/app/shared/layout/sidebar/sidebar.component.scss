@@ -36,9 +36,11 @@
     }
   }
 
-  .content {
+  .link-wrapper {
+    overflow-y: auto;
+    height: calc(100vh - 72px);
     .link {
-      .content {
+      .link-row {
         display: flex;
         align-items: center;
         padding: 15px 10px 15px 10px;
@@ -67,7 +69,7 @@
   @media (max-width: 767px) {
     width: 0;
 
-    .content {
+    .link-wrapper {
       display: none;
     }
   }
@@ -78,14 +80,14 @@
     @media (max-width: 767px) {
       width: 210px;
 
-      .content {
+      .link-wrapper {
         display: block;
       }
     }
 
-    .content {
+    .link-wrapper {
       .link {
-        .content {
+        .link-row {
           .title {
             max-width: 150px;
             padding-left: 10px;
