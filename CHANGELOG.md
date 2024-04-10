@@ -16,6 +16,12 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - improve menu accessibility + power options own page
 - visual issue when updating disabled plugin w. no changelog
 - allow extra configuration on child bridges
+- fix power options white background in dark mode
+- remove more info link from plugin donate modal
+
+### Translation Changes
+
+- updates to `zh-TW.json` language file (#2039) (@tasict)
 
 ### Other Changes
 
