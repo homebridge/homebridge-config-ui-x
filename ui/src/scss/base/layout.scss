@@ -12,10 +12,6 @@ body {
   background-color: #f4f4f4;
 }
 
-.body-top-padding {
-  padding-top: 5.5rem;
-}
-
 a {
   text-decoration: none !important;
 }
@@ -33,4 +29,14 @@ a:hover {
   font-size: 0.9rem;
   color: #747373;
   font-weight: 400;
+}
+
+.adjust-for-mobile {
+  height: calc(100% - 30px);
+  width: calc(100% + 20px);
+  overflow: hidden;
+
+  @media (max-width: 767px) {
+    height: calc(100% - 60px);
+  }
 }

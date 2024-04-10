@@ -7,23 +7,25 @@
   </div>
   <div [hidden]="!onlineUpdateOk || actionComplete || showReleaseNotes" id="plugin-log-output" class="modal-body"></div>
   <div *ngIf="actionComplete" class="modal-body plugin-modal-body">
-    <div *ngIf="justUpdatedPlugin && !isDisabled">
-      <h3 class="text-center primary-text" [translate]="'platform.version.title_service_restart_required'">
+    <div *ngIf="justUpdatedPlugin">
+      <h3 class="text-center primary-text" [translate]="'platform.version.title_service_restart_required'" *ngIf="!isDisabled">
         Restart Required
       </h3>
       <p class="text-center grey-text" translate="plugins.manage.message_thanks_for_updating"
         [translateParams]="{ pluginName: pluginName, targetVersion: targetVersion }"></p>
-      <p *ngIf="['homebridge', 'homebridge-config-ui-x'].includes(pluginName) || childBridges.length === 0" class="text-center grey-text"
-        [translate]="'plugins.manage.message_thanks_for_updating_restart'">
-        Please restart Homebridge for the changes to apply.
-      </p>
-      <p *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(pluginName) && childBridges.length > 0" class="text-center grey-text"
-        [translate]="'plugins.manage.message_thanks_for_updating_restart_child_bridges'">
-        Please restart the plugin's child bridges for the changes to apply.
-      </p>
-    </div>
-    <div class="alert show alert-info pt-3 px-3 pb-0 mb-0" *ngIf="changeLog">
-      <markdown class="plugin-md" [data]="changeLog" style="word-wrap: break-word;"></markdown>
+      <div *ngIf="!isDisabled">
+        <p *ngIf="['homebridge', 'homebridge-config-ui-x'].includes(pluginName) || childBridges.length === 0" class="text-center grey-text"
+          [translate]="'plugins.manage.message_thanks_for_updating_restart'">
+          Please restart Homebridge for the changes to apply.
+        </p>
+        <p *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(pluginName) && childBridges.length > 0" class="text-center grey-text"
+          [translate]="'plugins.manage.message_thanks_for_updating_restart_child_bridges'">
+          Please restart the plugin's child bridges for the changes to apply.
+        </p>
+      </div>
+      <div class="alert show alert-info pt-3 px-3 pb-0 mb-0" *ngIf="changeLog">
+        <markdown class="plugin-md" [data]="changeLog"></markdown>
+      </div>
     </div>
   </div>
   <div *ngIf="!onlineUpdateOk" class="modal-body">
@@ -40,7 +42,7 @@
         following commands:
       </p>
       <pre class="p-2" style="background-color: #efefef;">hb-service stop
-npm install -g {{ pluginName }}@{{targetVersion}}
+npm install -g {{ pluginName }}&#64;{{targetVersion}}
 hb-service start</pre>
     </div>
   </div>

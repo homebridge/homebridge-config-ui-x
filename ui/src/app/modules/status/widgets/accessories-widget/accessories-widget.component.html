@@ -1,5 +1,5 @@
 <div class="flex-column d-flex align-items-stretch h-100 w-100 pb-1 overflow-auto no-scrollbars">
-  <div style="cursor: move;" class="drag-handler p-2" [translate]="'accessories.title_accessories'">
+  <div class="drag-handler p-2" [ngClass]="{ 'widget-cursor': widget.draggable }" [translate]="'accessories.title_accessories'">
     Accessories
   </div>
   <div class="d-flex flex-wrap gridster-item-content" *ngIf="dashboardAccessories.length"

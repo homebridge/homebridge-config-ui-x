@@ -250,6 +250,17 @@ export class ConfigEditorService {
         }
       });
 
+      // try and keep any _bridge object 'clean'
+      pluginConfig.forEach((block) => {
+        if (block._bridge) {
+          Object.keys(block._bridge).forEach((key) => {
+            if (block._bridge[key] === undefined || typeof block._bridge[key] !== 'string' || block._bridge[key].trim() === '') {
+              delete block._bridge[key];
+            }
+          });
+        }
+      });
+
       // replace with the provided config, trying to put it back in the same location
       if (positionIndices !== undefined) {
         config[arrayKey].splice(positionIndices, 0, ...pluginConfig);

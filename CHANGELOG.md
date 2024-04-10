@@ -2,6 +2,31 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## BETA
+
+### UI Changes
+
+- allow extra config options to graph widgets
+- fix readings of graphical widgets
+- updated menu and sidebar
+- updated menu and sidebar fixes
+- dynamic config editor buttons
+- update support links with descriptions
+- updated menu and sidebar fixes 2
+- improve menu accessibility + power options own page
+- visual issue when updating disabled plugin w. no changelog
+- allow extra configuration on child bridges
+
+### Other Changes
+
+- updated dependencies
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v1.10.1`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.11.13`
+- `@homebridge/plugin-ui-utils` @ `v1.0.3`
+
 ## v4.56.1 (2024-04-03)
 
 ### Bug Fixes

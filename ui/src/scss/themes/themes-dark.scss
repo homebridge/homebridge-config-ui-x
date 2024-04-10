@@ -12,6 +12,43 @@
       background-color: #242424 !important;
     }
 
+    .sidebar {
+      background: #111111;
+      color: #6d6e7e;
+
+      .header {
+        background: #111111;
+      }
+
+      .link-wrapper {
+        .link {
+          .link-row {
+            &:hover {
+              background: #000000;
+
+              .title {
+                color: white;
+              }
+            }
+
+            &.active {
+              i {
+                color: $darkModePrimary;
+              }
+            }
+
+            .title {
+              color: #6d6e7e;
+            }
+          }
+        }
+      }
+    }
+
+    .m-header {
+      background: #111111;
+    }
+
     .custom-select {
       background: #333333 url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='white' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") right .75rem center/8px 10px no-repeat !important;
       color: #eeeeee !important;
@@ -106,6 +143,7 @@
     .card {
       color: #ffffff;
       background-color: $secondaryBackground !important;
+      border-radius: 0.5rem;
     }
 
     .card-text-defined {
