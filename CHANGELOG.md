@@ -15,6 +15,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - updated menu and sidebar fixes 2
 - improve menu accessibility + power options own page
 - visual issue when updating disabled plugin w. no changelog
+- allow extra configuration on child bridges
 
 ### Other Changes
 
