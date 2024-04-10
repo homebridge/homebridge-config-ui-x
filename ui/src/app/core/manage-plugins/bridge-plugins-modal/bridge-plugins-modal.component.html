@@ -45,13 +45,13 @@
             </div>
             <div *ngIf="deviceInfo[item._bridge?.username]">
               <div *ngIf="!deviceInfo[item._bridge?.username]._isPaired" class="w-100 d-flex flex-column">
-                <app-qrcode [data]="deviceInfo[item._bridge?.username]._setupCode" class="mr-auto ml-auto mt-2 mb-2"
+                <app-qrcode [data]="deviceInfo[item._bridge?.username]._setupCode" class="me-auto ms-auto mt-2 mb-2"
                   style="width: 180px; height: 180px;">
                 </app-qrcode>
-                <p class="mr-auto ml-auto text-center">
+                <p class="me-auto ms-auto text-center">
                   {{ deviceInfo[item._bridge?.username].pincode }}
                 </p>
-                <p class="grey-text  mr-auto ml-auto text-center" style="max-width: 400px;">
+                <p class="grey-text me-auto ms-auto text-center" style="max-width: 400px;">
                   {{ 'status.message_code_scan_instructions' | translate }}
                 </p>
               </div>
@@ -72,26 +72,26 @@
                 <div *ngIf="showConfigFields[i]">
                   <div class="mb-2 grey-text">{{ 'child_bridge.settings_config.description' | translate }}</div>
                   <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
-                    <span class="pr-0 pr-lg-3" style="flex: 1;">{{ 'child_bridge.settings_config.name' | translate }}</span>
-                    <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1;">
+                    <span class="pe-0 pe-lg-3" style="flex: 1;">{{ 'child_bridge.settings_config.name' | translate }}</span>
+                    <div class="my-lg-0 ps-0 ps-lg-3" style="flex: 1;">
                       <input class="form-control form-control-sm" type="text" [(ngModel)]="item._bridge.name">
                     </div>
                   </div>
                   <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
-                    <span class="pr-0 pr-lg-3" style="flex: 1;">{{ 'child_bridge.settings_config.manufacturer' | translate }}</span>
-                    <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1;">
+                    <span class="pe-0 pe-lg-3" style="flex: 1;">{{ 'child_bridge.settings_config.manufacturer' | translate }}</span>
+                    <div class="my-lg-0 ps-0 ps-lg-3" style="flex: 1;">
                       <input class="form-control form-control-sm" type="text" [(ngModel)]="item._bridge.manufacturer">
                     </div>
                   </div>
                   <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
-                    <span class="pr-0 pr-lg-3" style="flex: 1;">{{ 'child_bridge.settings_config.model' | translate }}</span>
-                    <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1;">
+                    <span class="pe-0 pe-lg-3" style="flex: 1;">{{ 'child_bridge.settings_config.model' | translate }}</span>
+                    <div class="my-lg-0 ps-0 ps-lg-3" style="flex: 1;">
                       <input class="form-control form-control-sm" type="text" [(ngModel)]="item._bridge.model">
                     </div>
                   </div>
                   <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
-                    <span class="pr-0 pr-lg-3" style="flex: 1;">{{ 'child_bridge.settings_config.firmware' | translate }}</span>
-                    <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1;">
+                    <span class="pe-0 pe-lg-3" style="flex: 1;">{{ 'child_bridge.settings_config.firmware' | translate }}</span>
+                    <div class="my-lg-0 ps-0 ps-lg-3" style="flex: 1;">
                       <input class="form-control form-control-sm" type="text" [(ngModel)]="item._bridge.firmwareRevision">
                     </div>
                   </div>

@@ -88,7 +88,7 @@
     "he": "^1.2.0",
     "nouislider": "^15.7.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.4"
+    "typescript": "^5.4.5"
   },
   "overrides": {
     "@angular/animations": "17.3.3",
