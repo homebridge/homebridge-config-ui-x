@@ -17,6 +17,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - visual issue when updating disabled plugin w. no changelog
 - allow extra configuration on child bridges
 - fix power options white background in dark mode
+- remove more info link from plugin donate modal
 
 ### Translation Changes
 
