@@ -98,6 +98,7 @@
   "child_bridge.settings_config.header": "Configuration",
   "child_bridge.settings_config.manufacturer": "Manufacturer",
   "child_bridge.settings_config.model": "Model",
+  "child_bridge.settings_config.name": "Name",
   "child_bridge.toast_restart_requested": "Child bridge restart requested.",
   "config.button_restore": "Възстанови",
   "config.restore.message_copy_to_editor": "Копирай в редактор",

@@ -28,7 +28,7 @@
           <div class="d-flex justify-content-between align-items-center">
             <h5 class="primary-text">
               <strong>
-                {{ item.name || item.accessory || item.platform }}
+                {{ item.name || item.accessory || item.platform }} <span *ngIf="enabledBlocks[i] && item._bridge.name"> - {{ item._bridge.name }}</span>
               </strong>
             </h5>
             <input type="checkbox" class="rendux-input" [id]="'toggleExternalBridgeInput_' + i"
@@ -71,6 +71,12 @@
                 </h5>
                 <div *ngIf="showConfigFields[i]">
                   <div class="mb-2 grey-text">{{ 'child_bridge.settings_config.description' | translate }}</div>
+                  <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
+                    <span class="pr-0 pr-lg-3" style="flex: 1;">{{ 'child_bridge.settings_config.name' | translate }}</span>
+                    <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1;">
+                      <input class="form-control form-control-sm" type="text" [(ngModel)]="item._bridge.name">
+                    </div>
+                  </div>
                   <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
                     <span class="pr-0 pr-lg-3" style="flex: 1;">{{ 'child_bridge.settings_config.manufacturer' | translate }}</span>
                     <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1;">
