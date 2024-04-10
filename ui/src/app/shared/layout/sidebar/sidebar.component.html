@@ -1,14 +1,15 @@
-<div class="m-header" (click)="handleSidebarToggle()"></div>
+<div class="m-header" (click)="handleSidebarToggle()" tabindex="0" role="button" (keydown)="handleKeydown($event)"></div>
 
-<div class="sidebar" [ngClass]="{ 'expanded': isExpanded }">
-  <div class="header" (click)="handleSidebarToggle()">
+<div class="sidebar" [ngClass]="{ 'expanded': isExpanded }" role="navigation">
+  <div class="header" (click)="handleSidebarToggle()" tabindex="0" role="button" (keydown)="handleKeydown($event)">
     <img style="height:35px; width: 35px;" ngSrc="../../../../assets/homebridge-logo.svg" alt="HB Logo" height="16" width="16">
     <i class="fas fa-bars fa-fw white-text hb-logo-icon"></i>
   </div>
   <div class="link-wrapper">
     <div class="link">
       <div class="link-row" [routerLink]="['/']" [routerLinkActive]="'active'"
-        [routerLinkActiveOptions]="{exact: true}" [attr.aria-label]="'menu.label_status' | translate">
+        [routerLinkActiveOptions]="{exact: true}" [attr.aria-label]="'menu.label_status' | translate" role="menuitem"
+        tabindex="0" (keydown)="handleKeydown($event)">
         <div class="icon"><i class="fa fa-fw fa-house"></i></div>
         <div class="title" [translate]="'menu.label_status'">Status</div>
       </div>
@@ -16,63 +17,72 @@
 
     <div class="link" *ngIf="rPiWasUnderVoltage || rPiCurrentlyUnderVoltage">
       <div class="link-row" (click)="openUnderVoltageModal()"
-        [attr.aria-label]="('rpi.throttled.undervoltage_title' | translate) + ' - ' + ('rpi.throttled.undervoltage_description' | translate)">
+        [attr.aria-label]="('rpi.throttled.undervoltage_title' | translate) + ' - ' + ('rpi.throttled.undervoltage_description' | translate)"
+        role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
         <div class="icon"><i class="fas fa-fw fa-bolt fa-beat yellow-text" style="--fa-beat-scale: 1.5;"></i></div>
         <div class="title" [translate]="'rpi.throttled.undervoltage_title' | translate"></div>
       </div>
     </div>
 
     <div class="link" *ngIf="$auth.user.admin">
-      <div class="link-row" [routerLink]="['/plugins']" [routerLinkActive]="'active'" [attr.aria-label]="'menu.label_plugins' | translate">
+      <div class="link-row" [routerLink]="['/plugins']" [routerLinkActive]="'active'" [attr.aria-label]="'menu.label_plugins' | translate"
+      role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
         <div class="icon"><i class="fa fa-fw fa-plug"></i></div>
         <div class="title" [translate]="'menu.label_plugins'">Plugins</div>
       </div>
     </div>
 
     <div class="link">
-      <div class="link-row" [routerLink]="['/accessories']" [routerLinkActive]="'active'" [attr.aria-label]="'menu.label_accessories' | translate">
+      <div class="link-row" [routerLink]="['/accessories']" [routerLinkActive]="'active'" [attr.aria-label]="'menu.label_accessories' | translate"
+      role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
         <div class="icon"><i class="fa fa-fw fa-lightbulb"></i></div>
         <div class="title" [translate]="'menu.label_accessories'">Accessories</div>
       </div>
     </div>
 
     <div class="link" *ngIf="$auth.user.admin">
-      <div class="link-row" [routerLink]="['/logs']" [routerLinkActive]="'active'" [attr.aria-label]="'menu.label_logs' | translate">
+      <div class="link-row" [routerLink]="['/logs']" [routerLinkActive]="'active'" [attr.aria-label]="'menu.label_logs' | translate"
+      role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
         <div class="icon"><i class="fa fa-fw fa-wave-square"></i></div>
         <div class="title" [translate]="'menu.linux.label_logs'">Logs</div>
       </div>
     </div>
 
     <div class="link" *ngIf="$settings.env.enableTerminalAccess && $auth.user.admin">
-      <div class="link-row" [routerLink]="['/platform-tools/terminal']" [routerLinkActive]="'active'" [attr.aria-label]="'menu.linux.label_terminal' | translate">
+      <div class="link-row" [routerLink]="['/platform-tools/terminal']" [routerLinkActive]="'active'"
+      [attr.aria-label]="'menu.linux.label_terminal' | translate" role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
         <div class="icon"><i class="fa fa-fw fa-terminal"></i></div>
         <div class="title" [translate]="'menu.linux.label_terminal'">Terminal</div>
       </div>
     </div>
 
     <div class="link" *ngIf="$auth.user.admin">
-      <div class="link-row" [routerLink]="['/settings']" [routerLinkActive]="'active'" [attr.aria-label]="'menu.label_settings' | translate">
+      <div class="link-row" [routerLink]="['/settings']" [routerLinkActive]="'active'"
+      [attr.aria-label]="'menu.label_settings' | translate" role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
         <div class="icon"><i class="fa fa-fw fa-cog"></i></div>
         <div class="title" [translate]="'menu.label_settings'">Settings</div>
       </div>
     </div>
 
     <div class="link">
-      <div class="link-row" [routerLink]="['/support']" [routerLinkActive]="'active'" [attr.aria-label]="'support.title' | translate">
+      <div class="link-row" [routerLink]="['/support']" [routerLinkActive]="'active'"
+      [attr.aria-label]="'support.title' | translate" role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
         <div class="icon"><i class="fa fa-fw fa-question-circle-o"></i></div>
         <div class="title" [translate]="'support.title'">Support</div>
       </div>
     </div>
 
     <div class="link">
-      <div class="link-row" (click)="openRestartModal()" [attr.aria-label]="'menu.restart.title' | translate">
+      <div class="link-row" [routerLink]="['/power-options']" [routerLinkActive]="'active'"
+      [attr.aria-label]="'menu.restart.title' | translate" role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
         <div class="icon"><i class="fa fa-fw fa-power-off"></i></div>
         <div class="title" [translate]="'menu.restart.title'">Power Options</div>
       </div>
     </div>
 
     <div class="link" *ngIf="$settings.formAuth">
-      <div class="link-row" (click)="$auth.logout()" [attr.aria-label]="'menu.tooltip_logout' | translate">
+      <div class="link-row" (click)="$auth.logout()" [attr.aria-label]="'menu.tooltip_logout' | translate"
+      role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
         <div class="icon"><i class="fa fa-fw fa-right-from-bracket"></i></div>
         <div class="title" [translate]="'menu.tooltip_logout'">Log Out</div>
       </div>

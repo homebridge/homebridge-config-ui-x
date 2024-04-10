@@ -13,6 +13,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - dynamic config editor buttons
 - update support links with descriptions
 - updated menu and sidebar fixes 2
+- improve menu accessibility + power options own page
 
 ### Other Changes
 
