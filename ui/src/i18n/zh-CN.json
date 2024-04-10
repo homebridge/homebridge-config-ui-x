@@ -98,6 +98,7 @@
   "child_bridge.settings_config.header": "Configuration",
   "child_bridge.settings_config.manufacturer": "Manufacturer",
   "child_bridge.settings_config.model": "Model",
+  "child_bridge.settings_config.name": "Name",
   "child_bridge.toast_restart_requested": "子网桥需要重启。",
   "config.button_restore": "恢复备份",
   "config.restore.message_copy_to_editor": "复制到当前编辑",

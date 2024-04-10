@@ -98,6 +98,7 @@
   "child_bridge.settings_config.header": "Configuration",
   "child_bridge.settings_config.manufacturer": "Manufacturer",
   "child_bridge.settings_config.model": "Model",
+  "child_bridge.settings_config.name": "Name",
   "child_bridge.toast_restart_requested": "Zahtevan je ponovni zagon otroškega mostu.",
   "config.button_restore": "Obnovi",
   "config.restore.message_copy_to_editor": "Kopiraj v urejevalnik",
