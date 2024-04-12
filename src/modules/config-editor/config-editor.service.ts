@@ -276,6 +276,21 @@ export class ConfigEditorService {
   }
 
   /**
+   * Set the theme for the UI
+   */
+  public async setThemeForUi(theme: string) {
+    // 1. get the current config for homebridge-config-ui-x
+    const config = await this.getConfigFile();
+
+    // 2. update the theme
+    const pluginConfig = config.platforms.find(x => x.platform === 'config');
+    pluginConfig.theme = theme;
+
+    // 3. save the config file
+    await this.updateConfigFile(config);
+  }
+
+  /**
    * Mark a plugin as disabled
    */
   public async disablePlugin(pluginName: string) {

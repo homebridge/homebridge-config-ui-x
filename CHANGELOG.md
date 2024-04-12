@@ -26,6 +26,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Other Changes
 
 - updated dependencies
+- add api for theme change
 
 ### Homebridge Dependencies
 
