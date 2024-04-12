@@ -328,6 +328,7 @@
   "settings.startup.insecure_1": "Homebridge 'โหมดไม่ปลอดภัย'",
   "settings.startup.insecure_2": "เปิดใช้งานการควบคุมอุปกรณ์เสริม",
   "settings.startup.keep_accessories": "เก็บอุปกรณ์เสริมของปลั๊กอินที่ถอนการติดตั้งไว้",
+  "settings.theme": "Theme",
   "settings.title_actions": "การดำเนินการ",
   "settings.title_environment_variables": "ตัวแปรสภาพแวดล้อม",
   "settings.title_manage_cached_accessories": "จัดการแคชชองอุปกรณ์เสริม",

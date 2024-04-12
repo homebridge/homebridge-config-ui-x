@@ -19,6 +19,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix power options white background in dark mode
 - remove more info link from plugin donate modal
 - updates to restart screen
+- add theme setting to main page
 
 ### Translation Changes
 

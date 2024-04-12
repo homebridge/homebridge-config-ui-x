@@ -328,6 +328,7 @@
   "settings.startup.insecure_1": "Homebridge 'Insecure' Mode",
   "settings.startup.insecure_2": "Enable Accessory Control",
   "settings.startup.keep_accessories": "Keep Accessories Of Uninstalled Plugins",
+  "settings.theme": "Theme",
   "settings.title_actions": "Funktioner",
   "settings.title_environment_variables": "Miljövariabler",
   "settings.title_manage_cached_accessories": "Hantera cachade tillbehör",

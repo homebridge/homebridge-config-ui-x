@@ -328,6 +328,7 @@
   "settings.startup.insecure_1": "Mode 'Insecure' de Homebridge",
   "settings.startup.insecure_2": "Activer le contrôle des accessoires",
   "settings.startup.keep_accessories": "Conserver les accessoires des plugins non installés",
+  "settings.theme": "Theme",
   "settings.title_actions": "Actions",
   "settings.title_environment_variables": "Variables d'environnement",
   "settings.title_manage_cached_accessories": "Gérer les Accessoires en Cache",

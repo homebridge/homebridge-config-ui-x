@@ -328,6 +328,7 @@
   "settings.startup.insecure_1": "Tryb Homebridge 'Insecure'",
   "settings.startup.insecure_2": "Włącz kontrolę akcesoriów",
   "settings.startup.keep_accessories": "Zachowaj akcesoria odinstalowanych wtyczek",
+  "settings.theme": "Theme",
   "settings.title_actions": "Akcje",
   "settings.title_environment_variables": "Zmienne środowiskowe",
   "settings.title_manage_cached_accessories": "Zarządzanie akcesoriami w pamięci podręcznej",

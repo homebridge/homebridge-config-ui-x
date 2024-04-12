@@ -328,6 +328,7 @@
   "settings.startup.insecure_1": "Homebridge 'Insecure' Mode",
   "settings.startup.insecure_2": "Aktiviere Accessory Control",
   "settings.startup.keep_accessories": "Behalte Accessories von nicht installierten Plugins",
+  "settings.theme": "Theme",
   "settings.title_actions": "Aktionen",
   "settings.title_environment_variables": "Umgebungsvariablen",
   "settings.title_manage_cached_accessories": "Verwalten von Geräten im Cache",
