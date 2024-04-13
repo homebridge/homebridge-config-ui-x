@@ -21,7 +21,7 @@
           {{ 'plugins.manage.message_thanks_for_updating_restart_child_bridges' | translate }}
         </p>
       </div>
-      <div class="alert show alert-info pt-3 px-3 pb-0 mb-0" *ngIf="changeLog">
+      <div class="alert pt-3 px-3 pb-0 mb-0" *ngIf="changeLog">
         <markdown class="plugin-md" [data]="changeLog"></markdown>
       </div>
     </div>
@@ -51,8 +51,8 @@ hb-service start</pre>
       </h5>
     </div>
     <h5>{{ 'plugins.manage.label_release_notes' | translate }}</h5>
-    <div class="alert show alert-info pt-3 px-3 pb-0 mb-0" style="word-wrap: break-word;">
-      <markdown class="plugin-md" [data]="release.changelog"></markdown>
+    <div class="alert pt-3 px-3 pb-0 mb-0">
+      <markdown class="plugin-md text-left" [data]="release.changelog"></markdown>
     </div>
   </div>
   <div class="modal-footer justify-content-between" *ngIf="!onlineUpdateOk || actionComplete || showReleaseNotes || actionFailed">

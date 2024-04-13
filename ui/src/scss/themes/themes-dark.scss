@@ -183,9 +183,10 @@
     .alert {
       color: #eeeeee;
       background-color: #2b2b2b;
+      border-color: #cccccc;
 
       a {
-        color: $secondaryBackground;
+        color: $darkModePrimary;
       }
     }
 
