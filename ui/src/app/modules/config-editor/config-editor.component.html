@@ -11,7 +11,9 @@
         *ngIf="originalConfig" container="body" ngbTooltip="{{ 'form.button_cancel' | translate }}"
         [attr.aria-label]="'form.button_cancel' | translate"><i class="fas fa-fw fa-times"></i></button>
       <button class="btn btn-elegant waves-effect my-0" (click)="onRestore()" container="body"
-        *ngIf="!originalConfig" [attr.aria-label]="'config.button_restore' | translate" ngbTooltip="{{ 'config.button_restore' | translate }}"><i class="fas fa-fw fa-history"></i></button>
+        *ngIf="!originalConfig" [attr.aria-label]="'config.button_restore' | translate" ngbTooltip="{{ 'config.button_restore' | translate }}">
+        <i class="fas fa-fw fa-history"></i>
+      </button>
       <button class="btn btn-primary waves-effect my-0 mr-0" (click)="onSave()" [disabled]="saveInProgress" container="body"
         ngbTooltip="{{ 'form.button_save' | translate }}" [attr.aria-label]="'form.button_save' | translate">
         <i *ngIf="!saveInProgress" class="fas fa-fw fa-floppy-disk"></i>

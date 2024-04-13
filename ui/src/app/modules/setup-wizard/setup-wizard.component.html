@@ -68,8 +68,9 @@
       <div class="custom-file">
         <input type="file" class="custom-file-input" id="restoreFileUpload" accept="application/gzip, .gz"
           (change)="handleRestoreFileInput($event.target.files)">
-        <label class="custom-file-label" for="restoreFileUpload">{{ selectedFile?.name ||
-          'backup.label_choose_backup_file_to_restore' | translate }}</label>
+        <label class="custom-file-label" for="restoreFileUpload">
+          {{ selectedFile?.name || 'backup.label_choose_backup_file_to_restore' | translate }}
+        </label>
       </div>
 
       <div class="mt-3 w-100 d-flex justify-content-between">
