@@ -2,9 +2,7 @@
   <div class="modal-header">
     <h5 class="modal-title">{{ 'backup.title_restore' | translate }}</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="activeModal.dismiss('Dismiss')" *ngIf="!restoreInProgress">
-      <span aria-hidden="true">&times;</span>
-    </button>
+      (click)="activeModal.dismiss('Dismiss')" *ngIf="!restoreInProgress"></button>
   </div>
   <div class="modal-body" *ngIf="!restoreStarted && !setupWizardRestore">
     <p>{{ 'backup.message_restore_help_one' | translate }}</p>
