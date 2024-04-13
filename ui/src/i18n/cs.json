@@ -289,6 +289,7 @@
   "rpi.throttled.previously_undervoltage_message": "Toto Raspberry Pi hlásilo podpětí od posledního restartu; zkontrolujte, zda je připojen ke vhodnému zdroji napájení.",
   "rpi.throttled.undervoltage_title": "Podpětí",
   "settings.general.title_general": "General",
+  "settings.language": "Language",
   "settings.manage_cache.help": "Pokud se příslušenství, které již nemáte, stále zobrazuje v HomeKit, bude nutné jej odstranit z cache. Můžete si vybrat, zdali chcete z cache odebrat jediné příslušenství nebo všechny.",
   "settings.mdns_advertiser": "mDNS Inzerent",
   "settings.mdns_advertiser_help": "Pokud máte potíže s připojením k Homebridge, zkuste použít některého z alternativních inzerentů mDNS.",

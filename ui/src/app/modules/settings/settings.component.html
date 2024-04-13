@@ -12,6 +12,41 @@
   <h5 class="primary-text mt-3">{{ 'settings.general.title_general' | translate }}</h5>
   <ul class="list-group mt-2">
     <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>{{ 'settings.language' | translate }}</span>
+      <div class="my-3 my-md-0 pl-0 pl-md-5 w-100" style="max-width:500px!important;">
+        <select class="custom-select" [ngModel]="$settings.env.lang" (ngModelChange)="onLangChange($event)">
+          <option value="auto">Automatic (Use Browser Settings)</option>
+          <option value="bg">Bulgarian (bg)</option>
+          <option value="ca">Catalan (ca)</option>
+          <option value="zh-CN">Chinese - Simplified (zh-CN)</option>
+          <option value="zh-TW">Chinese - Traditional (zh-TW)</option>
+          <option value="cs">Czech (cs)</option>
+          <option value="nl">Dutch (nl)</option>
+          <option value="en">English (en)</option>
+          <option value="fr">French (fr)</option>
+          <option value="de">German (de)</option>
+          <option value="he">Hebrew (he)</option>
+          <option value="hu">Hungarian (hu)</option>
+          <option value="id">Indonesian (id)</option>
+          <option value="it">Italian (it)</option>
+          <option value="ja">Japanese (ja)</option>
+          <option value="ko">Korean (ko)</option>
+          <option value="mk">Macedonian (mk)</option>
+          <option value="no">Norwegian (no)</option>
+          <option value="pl">Polish (pl)</option>
+          <option value="pt-BR">Portuguese (Brazil)</option>
+          <option value="pt">Portuguese (Portugal)</option>
+          <option value="ru">Russian (ru)</option>
+          <option value="sl">Slovenian (sl)</option>
+          <option value="es">Spanish (es)</option>
+          <option value="sv">Swedish (sv)</option>
+          <option value="th">Thai (th)</option>
+          <option value="tr">Turkish (tr)</option>
+          <option value="uk">Ukrainian (uk)</option>
+        </select>
+      </div>
+    </li>
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>{{ 'settings.theme' | translate }}</span>
       <div class="my-3 my-md-0 pl-0 pl-md-5 w-100" style="max-width:500px!important;">
         <select class="custom-select" [ngModel]="$settings.theme" (ngModelChange)="onThemeChange($event)">

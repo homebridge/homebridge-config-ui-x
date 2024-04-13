@@ -289,6 +289,7 @@
   "rpi.throttled.previously_undervoltage_message": "Esta Raspberry Pi ha reportado una baja en el voltaje desde que se reinició por última vez; por favor, compruebe que está conectado a una fuente de alimentación adecuada.",
   "rpi.throttled.undervoltage_title": "Baja de Voltaje",
   "settings.general.title_general": "General",
+  "settings.language": "Language",
   "settings.manage_cache.help": "Si aún se muestra un accesorio que ya no tienes en HomeKit, es posible que tengas que sacarlo de la caché. Puedes optar por eliminar un solo accesorio de la caché o eliminar todos los accesorios almacenados en caché.",
   "settings.mdns_advertiser": "Difusión mDNS",
   "settings.mdns_advertiser_help": "Si experimentas problemas para conectarte a Homebridge, prueba con alguna de las alternativas de difusión mDNS.",

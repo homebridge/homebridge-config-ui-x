@@ -289,6 +289,7 @@
   "rpi.throttled.previously_undervoltage_message": "Questo Raspberry Pi ha segnalato un calo della tensione di alimentazione dall'ultimo riavvio; verificare che sia collegato a un'alimentazione adeguata.",
   "rpi.throttled.undervoltage_title": "Calo di Tensione",
   "settings.general.title_general": "General",
+  "settings.language": "Language",
   "settings.manage_cache.help": "Se un accessorio che non c'è più appare ancora in HomeKit potrebbe essere necessario cancellarlo dalla cache. È possibile scegliere di cancellare un singolo accessorio dalla cache, oppure tutti quelli memorizzati.",
   "settings.mdns_advertiser": "Annunciatore mDNS",
   "settings.mdns_advertiser_help": "Se stai avendo problemi a collegarti a Homebridge, prova a utilizzare un altro annunciatore mDNS.",

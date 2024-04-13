@@ -289,6 +289,7 @@
   "rpi.throttled.previously_undervoltage_message": "Raspberry Pi zgłaszało zbyt niskie napięcie od ostatniego uruchomienia - sprawdź czy jest zasilane z odpowiedniego zasilacza.",
   "rpi.throttled.undervoltage_title": "Niskie Napięcie",
   "settings.general.title_general": "General",
+  "settings.language": "Language",
   "settings.manage_cache.help": "Jeśli jest jakieś akcesorium, którego już nie masz zainstalowanego, a nadal jest wyświetlane w aplikacji HomeKit, prawdopodobnie musisz je usunąć z pamięci podręcznej. Możesz wybrać czy usunąć wszystkie lub jedno z akcesoriów.",
   "settings.mdns_advertiser": "Rozgłaszacz mDNS",
   "settings.mdns_advertiser_help": "Jeśli masz problem z połączeniem się z Homebridge, spróbuj użyć alternatywnego rozgłaszania mDNS.",

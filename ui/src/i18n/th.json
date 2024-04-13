@@ -289,6 +289,7 @@
   "rpi.throttled.previously_undervoltage_message": "Raspberry Pi นี้รายงานเหตุการณ์ที่มีแรงดันไฟฟ้าต่ำตั้งแต่มีการรีบูตครั้งล่าสุด โปรดตรวจสอบว่าได้เชื่อมต่อกับแหล่งจ่ายไฟที่เหมาะสมแล้ว",
   "rpi.throttled.undervoltage_title": "ตรวจพบแรงดันไฟฟ้าต่ำ",
   "settings.general.title_general": "General",
+  "settings.language": "Language",
   "settings.manage_cache.help": "หากอุปกรณ์เสริมที่คุณไม่มีแล้วยังคงแสดงอยู่ใน HomeKit คุณอาจต้องลบออกจากแคช คุณสามารถเลือกที่จะลบอุปกรณ์เสริมชิ้นเดียวออกจากแคชหรือลบอุปกรณ์เสริมที่แคชไว้ทั้งหมด",
   "settings.mdns_advertiser": "mDNS Advertiser",
   "settings.mdns_advertiser_help": "หากคุณประสบปัญหาในการเชื่อมต่อกับ Homebridge ให้ลองใช้ mDNS รายใดรายหนึ่ง",

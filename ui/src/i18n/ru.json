@@ -289,6 +289,7 @@
   "rpi.throttled.previously_undervoltage_message": "This Raspberry Pi has reported an under-voltage event since it was last rebooted; please check it is connected to an appropriate power supply.",
   "rpi.throttled.undervoltage_title": "Низкое Напряжение",
   "settings.general.title_general": "General",
+  "settings.language": "Language",
   "settings.manage_cache.help": "Если аксессуар, которого у Вас больше нет, все еще отображается в HomeKit, возможно, Вам придется удалить его из кэша. Вы можете выбрать удаление одного аксессуара из кэша или удалить все кэшированные аксессуары.",
   "settings.mdns_advertiser": "mDNS Advertiser",
   "settings.mdns_advertiser_help": "If you're having trouble connecting to Homebridge, try using one of the alternate mDNS advertisers.",

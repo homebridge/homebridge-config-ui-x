@@ -289,6 +289,7 @@
   "rpi.throttled.previously_undervoltage_message": "«Цей Raspberry Pi повідомив про подію низької напруги з моменту останнього перезавантаження. Будь ласка, перевірте, чи під’єднано його до відповідного джерела живлення.",
   "rpi.throttled.undervoltage_title": "Низька Напруга",
   "settings.general.title_general": "General",
+  "settings.language": "Language",
   "settings.manage_cache.help": "Якщо аксесуар, якого у Вас більше немає, все ще відображається в HomeKit, можливо, Ви будете змушені видалити його з кешу. Ви можете вибрати видалення одного аксесуару з кешу або видалити всі кешовані аксесуари.",
   "settings.mdns_advertiser": "Рекламіст mDNS",
   "settings.mdns_advertiser_help": "Якщо у вас виникли проблеми з підключенням до Homebridge, спробуйте скористатися одним із альтернативних рекламвстів mDNS.",

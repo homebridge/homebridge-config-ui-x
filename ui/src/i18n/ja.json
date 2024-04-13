@@ -289,6 +289,7 @@
   "rpi.throttled.previously_undervoltage_message": "このRaspberry Piは、最後に再起動してから電圧不足が発生しています。",
   "rpi.throttled.undervoltage_title": "電圧不足を検出",
   "settings.general.title_general": "General",
+  "settings.language": "Language",
   "settings.manage_cache.help": "すでに所持していないアクセサリがまだHomeKit上に表示されている場合は、キャッシュから削除する必要があります。キャッシュから1つのアクセサリを削除するか、キャッシュされている全てのアクセサリを削除するかを選択できます。",
   "settings.mdns_advertiser": "mDNS広告主",
   "settings.mdns_advertiser_help": "Homebridgeへの接続に問題がある場合は、別のmDNS広告主を使用してみてください。",

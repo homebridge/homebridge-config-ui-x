@@ -289,6 +289,7 @@
   "rpi.throttled.previously_undervoltage_message": "Este Raspberry Pi reportou um evento de subtensão desde a ultima inicialização; por favor verifique se está conectado a uma fonte de alimentação apropriada.",
   "rpi.throttled.undervoltage_title": "Subtensão",
   "settings.general.title_general": "General",
+  "settings.language": "Language",
   "settings.manage_cache.help": "Se um acessório que já não possui continuar a ser mostrado no HomeKit, poderá ser necessário remove-lo da cache. Pode escolher remover apenas um acessório, ou remover todos os acessórios em cache.",
   "settings.mdns_advertiser": "Encaminhamento mDNS",
   "settings.mdns_advertiser_help": "Se estiver a ter problemas a conectar ao Homebridge, tente um dos encaminhamentos mDNS alternativos.",

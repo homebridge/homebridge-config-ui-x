@@ -86,10 +86,10 @@ export class ConfigEditorController {
   }
 
   @UseGuards(AdminGuard)
-  @ApiOperation({ summary: 'Change the theme of the Homebridge UI.' })
-  @Put('/theme')
-  setThemeForUi(@Body() body) {
-    return this.configEditorService.setThemeForUi(body.theme);
+  @ApiOperation({ summary: 'Change a config property of the Homebridge UI.' })
+  @Put('/ui')
+  setThemeForUi(@Body() { key, value }) {
+    return this.configEditorService.setPropertyForUi(key, value);
   }
 
   @UseGuards(AdminGuard)

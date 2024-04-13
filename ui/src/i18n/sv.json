@@ -289,6 +289,7 @@
   "rpi.throttled.previously_undervoltage_message": "Denna Raspberry Pi har rapporterat en underspänningshändelse sedan den senast omstartades; kontrollera att den är ansluten till en lämplig strömkälla.",
   "rpi.throttled.undervoltage_title": "Underspänning",
   "settings.general.title_general": "General",
+  "settings.language": "Language",
   "settings.manage_cache.help": "Om ett tillbehör du inte längre har fortfarande visas i HomeKit kan du behöva ta bort det från cachen. Du kan välja att ta bort ett tillbehör från cachen eller ta bort alla cachade tillbehör.",
   "settings.mdns_advertiser": "mDNS-annonsör",
   "settings.mdns_advertiser_help": "Om du har problem med att ansluta till Homebridge, prova att använda någon av de alternativa mDNS-annonsörerna.",
