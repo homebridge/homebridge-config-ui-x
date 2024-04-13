@@ -52,7 +52,7 @@ hb-service start</pre>
     </div>
     <h5>{{ 'plugins.manage.label_release_notes' | translate }}</h5>
     <div class="alert pt-3 px-3 pb-0 mb-0">
-      <markdown class="plugin-md text-left" [data]="release.changelog"></markdown>
+      <markdown class="plugin-md" [data]="release.changelog"></markdown>
     </div>
   </div>
   <div class="modal-footer justify-content-between" *ngIf="!onlineUpdateOk || actionComplete || showReleaseNotes || actionFailed">
