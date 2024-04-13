@@ -11,15 +11,15 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "17.3.3",
-    "@angular/common": "17.3.3",
-    "@angular/compiler": "17.3.3",
-    "@angular/core": "17.3.3",
-    "@angular/forms": "17.3.3",
-    "@angular/localize": "17.3.3",
-    "@angular/platform-browser": "17.3.3",
-    "@angular/platform-browser-dynamic": "17.3.3",
-    "@angular/router": "17.3.3",
+    "@angular/animations": "17.3.4",
+    "@angular/common": "17.3.4",
+    "@angular/compiler": "17.3.4",
+    "@angular/core": "17.3.4",
+    "@angular/forms": "17.3.4",
+    "@angular/localize": "17.3.4",
+    "@angular/platform-browser": "17.3.4",
+    "@angular/platform-browser-dynamic": "17.3.4",
+    "@angular/router": "17.3.4",
     "@auth0/angular-jwt": "5.2.0",
     "@homebridge/hap-client": "1.10.1",
     "@homebridge/plugin-ui-utils": "1.0.3",
@@ -58,15 +58,15 @@
     "zone.js": "0.14.4"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^17.3.3",
+    "@angular-devkit/build-angular": "^17.3.4",
     "@angular-eslint/builder": "^17.3.0",
     "@angular-eslint/eslint-plugin": "^17.3.0",
     "@angular-eslint/eslint-plugin-template": "^17.3.0",
     "@angular-eslint/schematics": "^17.3.0",
     "@angular-eslint/template-parser": "^17.3.0",
-    "@angular/cli": "^17.3.3",
-    "@angular/compiler-cli": "^17.3.3",
-    "@angular/language-service": "^17.3.3",
+    "@angular/cli": "^17.3.4",
+    "@angular/compiler-cli": "^17.3.4",
+    "@angular/language-service": "^17.3.4",
     "@fortawesome/fontawesome-free": "^6.5.2",
     "@types/emoji-js": "^3.5.2",
     "@types/file-saver": "^2.0.7",
@@ -91,8 +91,8 @@
     "typescript": "^5.4.5"
   },
   "overrides": {
-    "@angular/animations": "17.3.3",
-    "@angular/common": "17.3.3",
-    "@angular/core": "17.3.3"
+    "@angular/animations": "17.3.4",
+    "@angular/common": "17.3.4",
+    "@angular/core": "17.3.4"
   }
 }

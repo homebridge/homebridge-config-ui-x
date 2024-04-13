@@ -2,9 +2,7 @@
   <div class="modal-header">
     <h5 class="modal-title">{{ 'reset.title_clear_cached_accessories' | translate }}</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="activeModal.dismiss('Dismiss')">
-      <span aria-hidden="true">&times;</span>
-    </button>
+      (click)="activeModal.dismiss('Dismiss')"></button>
   </div>
   <div class="modal-body">
     <div class="text-center mt-3" *ngIf="cachedAccessories.length === 0">
@@ -16,7 +14,7 @@
       <p>
         {{ 'reset.message_action_is_irreversible' | translate }}
       </p>
-      <ul class="mb-0 text-left">
+      <ul class="mb-0 text-start">
         <li>{{ 'reset.message_remove_cached_accessories' | translate }}</li>
         <li class="mb-0">{{ 'reset.accessories_will_may_need_to_be_reconfigured' | translate }}</li>
       </ul>

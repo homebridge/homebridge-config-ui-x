@@ -4,10 +4,8 @@
       {{ 'child_bridge.label_bridge_settings' | translate }}:
       {{ plugin.displayName || plugin.name }}
     </h5>
-    <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="activeModal.close('Dismiss')">
-      <span aria-hidden="true">&times;</span>
-    </button>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
+      (click)="activeModal.close('Dismiss')"></button>
   </div>
   <div class="modal-body">
     <p>
@@ -43,13 +41,13 @@
             </div>
             <div *ngIf="deviceInfo[item._bridge?.username]">
               <div *ngIf="!deviceInfo[item._bridge?.username]._isPaired" class="w-100 d-flex flex-column">
-                <app-qrcode [data]="deviceInfo[item._bridge?.username]._setupCode" class="me-auto ms-auto mt-2 mb-2"
+                <app-qrcode [data]="deviceInfo[item._bridge?.username]._setupCode" class="mx-auto my-2"
                   style="width: 180px; height: 180px;">
                 </app-qrcode>
-                <p class="me-auto ms-auto text-center">
+                <p class="mx-auto text-center">
                   {{ deviceInfo[item._bridge?.username].pincode }}
                 </p>
-                <p class="grey-text me-auto ms-auto text-center" style="max-width: 400px;">
+                <p class="grey-text mx-auto text-center" style="max-width: 400px;">
                   {{ 'status.message_code_scan_instructions' | translate }}
                 </p>
               </div>
@@ -118,17 +116,17 @@
     </div>
   </div>
   <div class="modal-footer justify-content-between">
-    <div class="text-left">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.close('Dismiss')">
+    <div class="text-start">
+      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="activeModal.close('Dismiss')">
         {{ 'form.button_close' | translate }}
       </button>
     </div>
     <div class="text-center"></div>
-    <div class="text-right">
+    <div class="text-end">
       <button type="button" class="btn btn-primary" (click)="save()" [disabled]="saveInProgress" *ngIf="configBlocks.length">
         {{ 'form.button_save' | translate }} <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
       </button>
-      <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="openPluginConfig()" *ngIf="!configBlocks.length">
+      <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="openPluginConfig()" *ngIf="!configBlocks.length">
         {{ 'plugins.button_settings' | translate }}
       </button>
     </div>

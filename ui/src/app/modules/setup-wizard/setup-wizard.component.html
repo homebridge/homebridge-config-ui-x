@@ -1,7 +1,7 @@
 <div class="setup-container d-flex align-items-center justify-content-center">
   <div class="w-100 setup-card d-flex pb-5 pt-5">
     <div *ngIf="step === 'welcome'" class="w-100 d-flex flex-column align-items-center">
-      <img class="homebridge-logo me-auto ms-auto" src="/assets/homebridge-color-round.svg" alt="hb logo" />
+      <img class="homebridge-logo mx-auto" src="/assets/homebridge-color-round.svg" alt="hb logo" />
       <h3 class="pt-4 pb-3 text-center">{{ 'setup_wizard.message_welcome_to_homebridge' | translate }}</h3>
       <button type="button" class="btn btn-lg btn-primary" (click)="onClickGettingStarted()">
         {{ 'setup_wizard.button_get_started' | translate }}
@@ -12,7 +12,7 @@
     </div>
 
     <div *ngIf="step === 'create-account'" class="w-100 d-flex flex-column align-items-center">
-      <img class="homebridge-logo homebridge-logo-small mr-auto ml-auto" src="/assets/homebridge-color-round.svg" alt="hb logo" />
+      <img class="homebridge-logo homebridge-logo-small mx-auto" src="/assets/homebridge-color-round.svg" alt="hb logo" />
       <h3 class="pt-4 pb-3 text-center">{{ 'setup_wizard.label_create_account' | translate }}</h3>
 
       <div class="w-100">
@@ -21,7 +21,7 @@
           <div class="md-form">
             <i class="fas fa-fw fa-user prefix grey-text"></i>
             <input formControlName="username" type="text" id="form-username" autocomplete="username"
-              autocapitalize="none" tabindex="1" class="form-control ps-0 pe-0" [readonly]="loading" [ngClass]="{
+              autocapitalize="none" tabindex="1" class="form-control px-0" [readonly]="loading" [ngClass]="{
                 'is-valid': (createUserForm.controls.username.dirty) && createUserForm.controls.username.valid,
                 'is-invalid': (createUserForm.controls.username.dirty) && createUserForm.controls.username.invalid
               }">
@@ -31,7 +31,7 @@
           <div class="md-form">
             <i class="fas fa-fw fa-lock prefix grey-text"></i>
             <input formControlName="password" type="password" id="form-pass" autocomplete="new-password" tabindex="2"
-              class="form-control ps-0 pe-0" [readonly]="loading" [ngClass]="{
+              class="form-control px-0" [readonly]="loading" [ngClass]="{
                 'is-valid': (createUserForm.controls.password.dirty) && createUserForm.controls.password.valid,
                 'is-invalid': (createUserForm.controls.password.dirty) && createUserForm.controls.password.errors
               }">
@@ -41,7 +41,7 @@
           <div class="md-form">
             <i class="fas fa-fw fa-lock prefix grey-text"></i>
             <input formControlName="passwordConfirm" type="password" id="form-pass-confirm" autocomplete="new-password"
-              tabindex="2" class="form-control ps-0 pe-0" [readonly]="loading" [ngClass]="{
+              tabindex="2" class="form-control px-0" [readonly]="loading" [ngClass]="{
                 'is-valid': (createUserForm.controls.passwordConfirm.dirty) && createUserForm.controls.passwordConfirm.valid,
                 'is-invalid': (createUserForm.controls.passwordConfirm.dirty) && createUserForm.controls.passwordConfirm.errors
               }">
@@ -61,7 +61,7 @@
     </div>
 
     <div *ngIf="step === 'restore-backup'" class="w-100 d-flex flex-column align-items-center">
-      <img class="homebridge-logo homebridge-logo-small me-auto ms-auto" src="/assets/homebridge-color-round.svg" alt="hb logo" />
+      <img class="homebridge-logo homebridge-logo-small mx-auto" src="/assets/homebridge-color-round.svg" alt="hb logo" />
       <h3 class="pt-4 pb-3 text-center">{{ 'backup.title_restore' | translate }}</h3>
       <p>{{ 'backup.message_restore_help_one' | translate }}</p>
 
@@ -89,7 +89,7 @@
     </div>
 
     <div *ngIf="step === 'restarting'" class="w-100 d-flex flex-column align-items-center">
-      <img class="homebridge-logo homebridge-logo-small me-auto ms-auto" src="/assets/homebridge-color-round.svg" alt="hb logo" />
+      <img class="homebridge-logo homebridge-logo-small mx-auto" src="/assets/homebridge-color-round.svg" alt="hb logo" />
       <h3 class="pt-4 pb-3 text-center">{{ 'restart.title_restart' | translate }}</h3>
       <h1>
         <i class="fas fa-fw fa-spinner fa-pulse"></i>
@@ -97,7 +97,7 @@
     </div>
 
     <div *ngIf="step === 'setup-complete'" class="w-100 d-flex flex-column align-items-center">
-      <img class="homebridge-logo homebridge-logo-small me-auto ms-auto" src="/assets/homebridge-color-round.svg" alt="hb logo" />
+      <img class="homebridge-logo homebridge-logo-small mx-auto" src="/assets/homebridge-color-round.svg" alt="hb logo" />
       <h3 class="pt-4 pb-3">{{ 'setup_wizard_message_complete_title' | translate }}</h3>
       <p class="text-center">{{ 'setup_wizard_message_complete_message' | translate }}</p>
       <a class="btn btn-lg btn-primary mt-3" routerLink="/">{{ 'setup_wizard.label_open_dashboard' | translate }}</a>

@@ -1,6 +1,6 @@
 <div #widgetcontainer class="flex-column d-flex align-items-stretch h-100 w-100" style="background-color:#2b2b2b;">
   <div #terminaltitle style="color:#ffffff; background-color: #2b2b2b;"
-    class="drag-handler ps-2 pt-1 pb-1 pe-2" [ngClass]="{ 'widget-cursor': widget.draggable }">
+    class="drag-handler ps-2 py-1 pe-2" [ngClass]="{ 'widget-cursor': widget.draggable }">
     {{ 'status.widget.label_homebridge_logs' | translate }}
   </div>
   <div [ngStyle]="{'height.px': terminalHeight}" class="p-2">
