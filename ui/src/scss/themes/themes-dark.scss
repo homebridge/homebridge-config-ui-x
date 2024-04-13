@@ -180,20 +180,29 @@
       }
     }
 
-    .alert-warning {
-      color: $secondaryBackground;
-      background-color: #ffd793;
-      border-color: $secondaryBackground;
+    .alert {
+      color: #eeeeee;
+      background-color: #2b2b2b;
 
       a {
         color: $secondaryBackground;
-
-        @media (hover: hover) {
-          &:hover {
-            text-decoration: underline;
-          }
-        }
       }
+    }
+
+    .alert-info {
+      border-color: $darkModePrimary;
+    }
+
+    .alert-success {
+      border-color: #388e3c;
+    }
+
+    .alert-warning {
+      border-color: #ffa000;
+    }
+
+    .alert-error {
+      border-color: #d32f2f;
     }
 
     .qr-code-container {
@@ -405,12 +414,6 @@
     .hb-widget-chart-background {
       background-color: rgba($darkModePrimary, 0.2);
       display: none;
-    }
-
-    .alert-info {
-      background-color: rgba($darkModePrimary, 0.1);
-      border-color: rgba($darkModePrimary, 0.1);
-      color: $darkModePrimary;
     }
 
     .animate_loader {

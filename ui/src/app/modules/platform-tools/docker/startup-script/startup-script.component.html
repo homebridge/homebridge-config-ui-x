@@ -14,9 +14,8 @@
 
   <div class="row mt-3">
     <div class="col-md-12">
-      <div class="alert alert-warning" role="alert" [translate]="'platform.docker.startup_script.message_script_help'">
-        This script will be executed each time the docker container starts.
-        You can use this to install any extra packages your plugins may need such as ffmpeg or libpcap-dev.
+      <div class="alert alert-warning" role="alert">
+        {{ 'platform.docker.startup_script.message_script_help' | translate }}
       </div>
     </div>
   </div>

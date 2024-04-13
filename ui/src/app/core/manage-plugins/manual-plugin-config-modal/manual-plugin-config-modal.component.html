@@ -11,24 +11,16 @@
     <div *ngIf="loading" class="text-center primary-text">
       <i class="fa fa-fw fa-cog fa-spin" style="font-size: 75px;"></i>
     </div>
-
     <div *ngIf="!loading && !canConfigure">
-      <ngb-alert type="info" [dismissible]="false">
+      <div class="alert alert-info">
         {{ 'plugins.settings.message_manual_config_required' | translate }}
         {{ 'plugins.settings.message_consult_documentation' | translate }}
-      </ngb-alert>
-
+      </div>
       <div class="text-center">
         <button class="btn btn-primary" (click)="openFullConfigEditor()">
           {{ 'plugins.settings.label_open_config_editor' | translate }}
         </button>
       </div>
-    </div>
-
-    <div *ngIf="canConfigure">
-      <ngb-alert type="info" [dismissible]="false">
-        {{ 'plugins.settings.message_consult_documentation' | translate }}
-      </ngb-alert>
     </div>
 
     <!-- MULTIPLE CONFIG BLOCKS-->

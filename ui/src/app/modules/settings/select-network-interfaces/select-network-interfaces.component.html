@@ -1,22 +1,19 @@
 <div class="modal-content">
   <div class="modal-header">
-    <h5 class="modal-title" translate="settings.network.title_network_interfaces"></h5>
+    <h5 class="modal-title">{{ 'settings.network.title_network_interfaces' | translate }}</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="activeModal.dismiss('Dismiss')"></button>
+      (click)="activeModal.dismiss('Dismiss')">
+      <span aria-hidden="true">&times;</span>
+    </button>
   </div>
   <div class="modal-body">
-
-    <p translate="settings.network.message_network_interface_one">
-    </p>
-
-    <p translate="settings.network.message_network_interface_two">
-    </p>
-
+    <p>{{ 'settings.network.message_network_interface_one' | translate }}</p>
+    <p>{{ 'settings.network.message_network_interface_two' | translate }}</p>
     <div>
       <ul class="list-group mb-4">
         <li class="mt-2 d-flex flex-row justify-content-between">
-          <span><strong translate="settings.network.label_interface_name"></strong></span>
-          <span><strong translate="settings.network.label_ip_address"></strong></span>
+          <span><strong>{{ 'settings.network.label_interface_name' | translate }}</strong></span>
+          <span><strong>{{ 'settings.network.label_ip_address' | translate }}</strong></span>
         </li>
         <li *ngFor="let adapter of availableNetworkAdapters"
           class="mt-2 d-flex flex-row flex-wrap justify-content-between">

@@ -69,19 +69,18 @@
   </div>
   <div class="modal-body text-center" [hidden]="!justSavedAndExited">
     <i class="fa fa-fw fa-power-off primary-text mb-4" style="font-size: 75px;"></i>
-    <p *ngIf="['homebridge', 'homebridge-config-ui-x'].includes(plugin.name) || childBridges.length === 0" class="text-center grey-text"
-      [translate]="'plugins.manage.message_thanks_for_updating_restart'">
-      Please restart Homebridge for the changes to apply.
+    <p *ngIf="['homebridge', 'homebridge-config-ui-x'].includes(plugin.name) || childBridges.length === 0" class="text-center grey-text">
+      {{ 'plugins.manage.message_thanks_for_updating_restart' | translate }}
     </p>
-    <p *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name) && childBridges.length > 0" class="text-center grey-text"
-      [translate]="'plugins.manage.message_thanks_for_updating_restart_child_bridges'">
-      Please restart the plugin's child bridges for the changes to apply.
+    <p *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name) && childBridges.length > 0" class="text-center grey-text">
+      {{ 'plugins.manage.message_thanks_for_updating_restart_child_bridges' | translate }}
     </p>
   </div>
   <div class="modal-footer justify-content-between" [hidden]="justSavedAndExited">
     <div class="text-start">
-      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="activeModal.close()"
-        [translate]="'form.button_close'">Close</button>
+      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="activeModal.close()">
+        {{ 'form.button_close' | translate }}
+      </button>
     </div>
     <div class="text-center"></div>
     <div class="text-end">

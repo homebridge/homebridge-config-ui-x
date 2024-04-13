@@ -18,6 +18,9 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - allow extra configuration on child bridges
 - fix power options white background in dark mode
 - remove more info link from plugin donate modal
+- updates to restart screen
+- add theme setting to main page
+- ui code refactoring
 
 ### Translation Changes
 
@@ -26,6 +29,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Other Changes
 
 - updated dependencies
+- add api for theme change
 
 ### Homebridge Dependencies
 

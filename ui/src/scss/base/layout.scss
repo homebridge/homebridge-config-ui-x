@@ -106,3 +106,22 @@ th {
     height: calc(100% - 60px);
   }
 }
+
+.alert {
+  border-width: 1px;
+  border-radius: 15px;
+  padding: 20px;
+  text-align: center;
+}
+
+.alert-success {
+  border-color: #388e3c;
+}
+
+.alert-warning {
+  border-color: #ffa000;
+}
+
+.alert-error {
+  border-color: #d32f2f;
+}

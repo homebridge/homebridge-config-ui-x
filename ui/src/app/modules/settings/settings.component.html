@@ -3,13 +3,49 @@
     {{ 'menu.settings.title' | translate }}
   </h3>
   <button class="btn btn-primary waves-effect m-0" *ngIf="saved" routerLink="/restart"
-    [translate]="'platform.docker.settings.button_restart_required'"
-    [attr.aria-label]="'platform.docker.settings.button_restart_required' | translate">Restart Required</button>
+    [attr.aria-label]="'platform.docker.settings.button_restart_required' | translate">
+    {{ 'platform.docker.settings.button_restart_required' | translate }}
+  </button>
 </div>
 
 <div class="mb-4">
-  <h5 class="primary-text mt-3" translate="settings.general.title_general"></h5>
+  <h5 class="primary-text mt-3">{{ 'settings.general.title_general' | translate }}</h5>
   <ul class="list-group mt-2">
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>{{ 'settings.theme' | translate }}</span>
+      <div class="my-3 my-md-0 pl-0 pl-md-5 w-100" style="max-width:500px!important;">
+        <select class="custom-select" [ngModel]="$settings.theme" (ngModelChange)="onThemeChange($event)">
+          <option value="auto">Default (Auto Dark Mode)</option>
+          <option value="red">Red</option>
+          <option value="pink">Pink</option>
+          <option value="purple">Purple</option>
+          <option value="deep-purple">Purple - Deep</option>
+          <option value="indigo">Indigo</option>
+          <option value="blue">Blue</option>
+          <option value="navi-blue">Blue - Navi</option>
+          <option value="blue-grey">Blue Grey</option>
+          <option value="cyan">Cyan</option>
+          <option value="green">Green</option>
+          <option value="teal">Teal</option>
+          <option value="orange">Orange</option>
+          <option value="amber">Amber</option>
+          <option value="grey">Grey</option>
+          <option value="brown">Brown</option>
+          <option value="dark-mode">Dark Mode - HomeKit Orange</option>
+          <option value="dark-mode-red">Dark Mode - Red</option>
+          <option value="dark-mode-pink">Dark Mode - Pink</option>
+          <option value="dark-mode-purple">Dark Mode - Purple</option>
+          <option value="dark-mode-indigo">Dark Mode - Indigo</option>
+          <option value="dark-mode-blue">Dark Mode - Blue</option>
+          <option value="dark-mode-blue-grey">Dark Mode - Blue Grey</option>
+          <option value="dark-mode-green">Dark Mode - Green</option>
+          <option value="dark-mode-grey">Dark Mode - Grey</option>
+          <option value="dark-mode-brown">Dark Mode - Brown</option>
+          <option value="dark-mode-teal">Dark Mode - Teal</option>
+          <option value="dark-mode-cyan">Dark Mode - Cyan</option>
+        </select>
+      </div>
+    </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="w-75 pe-2">
         {{ 'menu.label_settings_ui' | translate }}
@@ -55,7 +91,7 @@
 
 <!-- ALL USERS -->
 <div class="mb-4">
-  <h5 class="primary-text mt-3" translate="settings.network.title_network"></h5>
+  <h5 class="primary-text mt-3">{{ 'settings.network.title_network' | translate }}</h5>
   <ul class="list-group mt-2">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="w-75 pe-2">
@@ -69,9 +105,8 @@
           </span>
         </span>
       </span>
-      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" [translate]="'reset.title_clear_cached_accessories'"
-        (click)="selectNetworkInterfaces()" [disabled]="!availableNetworkAdapters.length"
-        [attr.aria-label]="'settings.network.title_network_interfaces' | translate">
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 45px;" (click)="selectNetworkInterfaces()"
+        [disabled]="!availableNetworkAdapters.length" [attr.aria-label]="'settings.network.title_network_interfaces' | translate">
         <i class="fas fa-fw fa-chevron-right" [ngClass]="{ 'fa-pulse': !availableNetworkAdapters.length }"></i>
       </button>
     </li>
@@ -128,7 +163,7 @@
           <small class="grey-text pe-2">{{ 'settings.service.debug_tooltip' | translate }}</small>
         </span>
         <div class="my-3 my-md-0 ps-0 ps-md-5 w-100" style="max-width:500px!important;">
-          <input class="form-control form-control-sm" formControlName="ENV_DEBUG" type="text" />
+          <input class="form-control custom-input form-control-sm" formControlName="ENV_DEBUG" type="text" />
         </div>
       </li>
       <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
@@ -137,7 +172,7 @@
           <small class="grey-text pe-2">{{ 'settings.service.node_tooltip' | translate }}</small>
         </span>
         <div class="my-3 my-md-0 ps-0 ps-md-5 w-100" style="max-width:500px!important;">
-          <input class="form-control form-control-sm" formControlName="ENV_NODE_OPTIONS" type="text" />
+          <input class="form-control custom-input form-control-sm" formControlName="ENV_NODE_OPTIONS" type="text" />
         </div>
       </li>
     </ul>
@@ -182,8 +217,7 @@
         {{ 'reset.title_clear_cached_accessories_single' | translate }}<br>
         <small class="grey-text pe-2">{{ 'reset.message_remove_cached_accessories_single' | translate }}</small>
       </span>
-      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;"
-        [translate]="'reset.title_clear_cached_accessories_single'" (click)="removeSingleCachedAccessories()"
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 45px;" (click)="removeSingleCachedAccessories()"
         [attr.aria-label]="'reset.title_clear_cached_accessories_single' | translate">
         <i class="fas fa-fw fa-chevron-right"></i>
       </button>
@@ -193,8 +227,7 @@
         {{ 'reset.title_clear_cached_accessories' | translate }}
         <small class="grey-text">{{ 'reset.message_remove_cached_accessories' | translate }}</small>
       </span>
-      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;"
-        [translate]="'reset.title_clear_cached_accessories'" (click)="removeAllCachedAccessories()"
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 45px;" (click)="removeAllCachedAccessories()"
         [attr.aria-label]="'reset.title_clear_cached_accessories' | translate">
         <i class="fas fa-fw fa-chevron-right"></i>
       </button>

@@ -53,6 +53,16 @@ export class SettingsComponent implements OnInit {
     }
   }
 
+  onThemeChange(newTheme: string) {
+    this.$settings.setTheme(newTheme);
+
+    // save the theme to the server
+    this.$api.put('/config-editor/theme', { theme: newTheme }).toPromise()
+      .catch((err) => {
+        this.$toastr.error(err.message, 'Failed to save theme');
+      });
+  }
+
   openUiSettings() {
     this.$plugin.settings({
       name: 'homebridge-config-ui-x',

@@ -15,14 +15,15 @@
             {{ 'menu.label_status' | translate }}
           </a>
           <br>
-          <span class="grey-text" *ngIf="homebridgeStatus.status === 'pending'"
-            [translate]="'status.services.label_starting'">Starting...</span>
-          <span class="grey-text" *ngIf="homebridgeStatus.status === 'up' && !widget.hidePort"
-            [translate]="'status.services.label_running_on_port'"
-            [translateParams]="{port: homebridgeStatus.port}">Running</span>
-          <span class="grey-text" *ngIf="homebridgeStatus.status === 'up' && widget.hidePort"
-            [translate]="'status.services.label_running'"
-            [translateParams]="{port: homebridgeStatus.port}">Listening</span>
+          <span class="grey-text" *ngIf="homebridgeStatus.status === 'pending'">
+            {{ 'status.services.label_starting' | translate }}
+          </span>
+          <span class="grey-text" *ngIf="homebridgeStatus.status === 'up' && !widget.hidePort">
+            {{ 'status.services.label_running_on_port' | translate: { port: homebridgeStatus.port } }}
+          </span>
+          <span class="grey-text" *ngIf="homebridgeStatus.status === 'up' && widget.hidePort">
+            {{ 'status.services.label_running' | translate: { port: homebridgeStatus.port } }}
+          </span>
           <a routerLink="/logs" class="primary-text"
             *ngIf="homebridgeStatus.status !== 'up' && homebridgeStatus.status !== 'pending'">
             {{ 'status.services.label_not_running' | translate}} -
@@ -50,14 +51,12 @@
             <span *ngIf="!homebridgePkg.installedVersion">
               {{ 'status.homebridge.label_checking_for_updates' | translate }}
             </span>
-            <span *ngIf="homebridgePkg.installedVersion && !homebridgePkg.updateAvailable"
-              [translate]="'status.homebridge.label_up_to_date'">
-              Up To Date
+            <span *ngIf="homebridgePkg.installedVersion && !homebridgePkg.updateAvailable">
+              {{ 'status.homebridge.label_up_to_date' | translate }}
             </span>
             <a href="javascript:void(0)" (click)="$plugin.upgradeHomebridge(homebridgePkg, homebridgePkg.updateTag || 'latest')"
-               class="primary-text" *ngIf="homebridgePkg.installedVersion && homebridgePkg.updateAvailable"
-              [translate]="'status.plugin_out_of_date'">
-              Update Available
+               class="primary-text" *ngIf="homebridgePkg.installedVersion && homebridgePkg.updateAvailable">
+              {{ 'status.plugin_out_of_date' | translate }}
             </a>
           </span>
         </div>
@@ -82,14 +81,12 @@
             <span *ngIf="!homebridgeUiPkg.installedVersion">
               {{ 'status.homebridge.label_checking_for_updates' | translate }}
             </span>
-            <span *ngIf="homebridgeUiPkg.installedVersion && !homebridgeUiPkg.updateAvailable"
-              [translate]="'status.homebridge.label_up_to_date'">
-              Up To Date
+            <span *ngIf="homebridgeUiPkg.installedVersion && !homebridgeUiPkg.updateAvailable">
+              {{ 'status.homebridge.label_up_to_date' | translate }}
             </span>
             <a href="javascript:void(0)" (click)="$plugin.upgradeHomebridge(homebridgeUiPkg, homebridgeUiPkg.updateTag || 'latest')"
-               class="primary-text" *ngIf="homebridgeUiPkg.installedVersion && homebridgeUiPkg.updateAvailable"
-               [translate]="'status.plugin_out_of_date'">
-              Update Available
+              class="primary-text" *ngIf="homebridgeUiPkg.installedVersion && homebridgeUiPkg.updateAvailable">
+              {{ 'status.plugin_out_of_date' | translate }}
             </a>
           </span>
         </div>

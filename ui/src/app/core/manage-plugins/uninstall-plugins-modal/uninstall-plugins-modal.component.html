@@ -10,9 +10,7 @@
     </div>
     <div class="w-100" *ngIf="!loading">
       <i class="fas fa-fw fa-trash primary-text mb-4" style="font-size: 75px;"></i>
-      <p [translate]="'plugins.manage.message_uninstall_remove_confirmation'"
-        [translateParams]="{pluginName: plugin.name}">
-      </p>
+      <p>{{ 'plugins.manage.message_uninstall_remove_confirmation' | translate: { pluginName: plugin.name } }}</p>
       <p *ngIf="pluginAlias && pluginType">
         <label class="hb-uix-switch d-inline" for="remove-plugin-config">
           <input id="remove-plugin-config" type="checkbox" [(ngModel)]="removeConfig">
