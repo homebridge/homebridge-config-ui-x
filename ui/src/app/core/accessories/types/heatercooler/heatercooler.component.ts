@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
 import { HeaterCoolerManageComponent } from '@/app/core/accessories/types/heatercooler/heatercooler.manage.component';
@@ -8,15 +8,13 @@ import { HeaterCoolerManageComponent } from '@/app/core/accessories/types/heater
   templateUrl: './heatercooler.component.html',
   styleUrls: ['./heatercooler.component.scss'],
 })
-export class HeaterCoolerComponent implements OnInit {
+export class HeaterCoolerComponent {
   @Input() public service: ServiceTypeX;
   model = 1;
 
   constructor(
     private modalService: NgbModal,
   ) {}
-
-  ngOnInit() {}
 
   onClick() {
     this.service.getCharacteristic('Active').setValue(this.service.values.Active ? 0 : 1);

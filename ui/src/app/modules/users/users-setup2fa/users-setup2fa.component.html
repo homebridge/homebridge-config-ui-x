@@ -11,10 +11,10 @@
 
     <div *ngIf="timeDiffError" class="text-center">
       <h3>{{ 'users.setup_2fa_cannot_setup_2fa' | translate }}</h3>
-      <p [translate]="'users.setup_2fa_server_time_out'" [translateParams]="{'timeDiffError': timeDiffError}"></p>
+      <p>{{ 'users.setup_2fa_server_time_out' | translate: {timeDiffError: timeDiffError} }}</p>
     </div>
 
-    <ngb-alert type="info" [dismissible]="false">
+    <ngb-alert type="warning" [dismissible]="false">
       {{ 'users.setup_2fa_warning' | translate }}
     </ngb-alert>
 
@@ -23,7 +23,7 @@
     </div>
 
     <div class="text-center w-100 d-flex justify-content-center ">
-      <app-qrcode [data]="otpString" class="mr-auto ml-auto mt-2 mb-2" style="width: 180px; height: 180px;">
+      <app-qrcode [data]="otpString" class="mx-auto my-2" style="width: 180px; height: 180px;">
       </app-qrcode>
     </div>
 

@@ -1,6 +1,6 @@
 <div class="modal-content">
   <div class="modal-header">
-    <h5 class="modal-title" [translate]="'status.widget.title_manage_widget'">Manage Widget</h5>
+    <h5 class="modal-title">{{ 'status.widget.title_manage_widget' | translate }}</h5>
     <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
       (click)="activeModal.dismiss('Dismiss')">
       <span aria-hidden="true">&times;</span>
@@ -9,7 +9,7 @@
   <div class="modal-body w-100" [ngSwitch]="widget.component">
     <div class="container px-1">
       <div class="form-group row align-items-center">
-        <label class="col-6 col-form-label" [translate]="'status.widget.label_hide_on_mobile'"></label>
+        <label class="col-6 col-form-label">{{ 'status.widget.label_hide_on_mobile' | translate }}</label>
         <div class="col-6 text-right">
           <input type="checkbox" class="rendux-input" id="hideOnMobile" [(ngModel)]="widget.hideOnMobile"
             [attr.aria-label]="'settings.startup.insecure_1' | translate">
@@ -17,9 +17,7 @@
         </div>
       </div>
       <div *ngSwitchCase="'WeatherWidgetComponent'">
-        <label for="city-search-input" [translate]="'status.widget.weather.label_search_for_your_city'">
-          Search for your city:
-        </label>
+        <label for="city-search-input">{{ 'status.widget.weather.label_search_for_your_city' | translate }}</label>
         <div class="input-group mb-3">
           <div class="input-group-prepend">
             <span class="input-group-text custom-input" id="">
@@ -41,7 +39,7 @@
       </div>
       <div *ngSwitchCase="'HomebridgeStatusWidgetComponent'">
         <div class="form-group row align-items-center">
-          <label class="col-6 col-form-label" [translate]="'status.widget.homebridgestatus.label_port'"></label>
+          <label class="col-6 col-form-label">{{ 'status.widget.homebridgestatus.label_port' | translate }}</label>
           <div class="col-6 text-right">
             <input type="checkbox" class="rendux-input" id="hidePort" [(ngModel)]="widget.hidePort"
               [attr.aria-label]="'status.widget.homebridgestatus.label_port' | translate">
@@ -51,7 +49,7 @@
       </div>
       <div *ngSwitchCase="'HomebridgeLogsWidgetComponent'">
         <div class="form-group row align-items-center">
-          <label class="col-6 col-form-label" [translate]="'status.widget.label_font_size'">Font Size</label>
+          <label class="col-6 col-form-label">{{ 'status.widget.label_font_size' | translate }}</label>
           <div class="col-6">
             <select class="custom-select" [(ngModel)]="widget.fontSize">
               <option *ngFor="let size of fontSizes" [value]="size">{{ size }}</option>
@@ -59,7 +57,7 @@
           </div>
         </div>
         <div class="form-group row align-items-center">
-          <label class="col-6 col-form-label" [translate]="'status.widget.label_font_weight'">Font Weight</label>
+          <label class="col-6 col-form-label">{{ 'status.widget.label_font_weight' | translate }}</label>
           <div class="col-6">
             <select class="custom-select" [(ngModel)]="widget.fontWeight">
               <option *ngFor="let weight of fontWeights" [value]="weight">{{ weight }}</option>
@@ -69,7 +67,7 @@
       </div>
       <div *ngSwitchCase="'TerminalWidgetComponent'">
         <div class="form-group row align-items-center">
-          <label class="col-6 col-form-label" [translate]="'status.widget.label_font_size'">Font Size</label>
+          <label class="col-6 col-form-label">{{ 'status.widget.label_font_size' | translate }}</label>
           <div class="col-6">
             <select class="custom-select" [(ngModel)]="widget.fontSize">
               <option *ngFor="let size of fontSizes" [value]="size">{{ size }}</option>
@@ -77,7 +75,7 @@
           </div>
         </div>
         <div class="form-group row align-items-center">
-          <label class="col-6 col-form-label" [translate]="'status.widget.label_font_weight'">Font Weight</label>
+          <label class="col-6 col-form-label">{{ 'status.widget.label_font_weight' | translate }}</label>
           <div class="col-6">
             <select class="custom-select" [(ngModel)]="widget.fontWeight">
               <option *ngFor="let weight of fontWeights" [value]="weight">{{ weight }}</option>
@@ -87,9 +85,7 @@
       </div>
       <div *ngSwitchCase="'ClockWidgetComponent'">
         <div class="form-group row align-items-center">
-          <label class="col-6 col-form-label" [translate]="'status.widget.label_clock_timeformat'">
-            Time Format
-          </label>
+          <label class="col-6 col-form-label">{{ 'status.widget.label_clock_timeformat' | translate }}</label>
           <div class="col-6">
             <select class="custom-select" [(ngModel)]="widget.timeFormat">
               <option *ngFor="let timeFormat of timeFormats" [value]="timeFormat">{{ currentDate | date:timeFormat }}
@@ -98,9 +94,7 @@
           </div>
         </div>
         <div class="form-group row align-items-center">
-          <label class="col-6 col-form-label" [translate]="'status.widget.label_clock_dateformat'">
-            Date Format
-          </label>
+          <label class="col-6 col-form-label">{{ 'status.widget.label_clock_dateformat' | translate }}</label>
           <div class="col-6">
             <select class="custom-select" [(ngModel)]="widget.dateFormat">
               <option *ngFor="let dateFormat of dateFormats" [value]="dateFormat">{{ currentDate | date:dateFormat }}
@@ -111,9 +105,7 @@
       </div>
       <div *ngSwitchCase="'CpuWidgetComponent'">
         <div class="form-group row align-items-center">
-          <label class="col-6 col-form-label" [translate]="'status.widget.label_temperature_units'">
-            Temperature Units
-          </label>
+          <label class="col-6 col-form-label">{{ 'status.widget.label_temperature_units' | translate }}</label>
           <div class="col-6">
             <select class="custom-select" [(ngModel)]="widget.temperatureUnit">
               <option *ngFor="let unit of temperatureUnits" [value]="unit.value">
@@ -241,8 +233,7 @@
       </button>
     </div>
     <div class="text-right">
-      <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')"
-        [translate]="'form.button_save'">
+      <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')">
         {{ 'form.button_save' | translate }}
       </button>
     </div>
