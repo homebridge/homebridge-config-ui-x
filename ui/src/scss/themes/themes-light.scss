@@ -154,80 +154,30 @@
       background-color: $primary-dark  !important;
     }
 
-    .alert-info {
+    .alert {
       color: #000000;
       background-color: #eeeeee;
-      border-color: $primary;
-      border-width: 1px;
-      border-radius: 15px;
-      padding: 20px;
+      border-color: #cccccc;
 
       a {
         color: $primary;
-
-        @media (hover: hover) {
-          &:hover {
-            text-decoration: underline;
-          }
-        }
       }
+    }
+
+    .alert-info {
+      border-color: $primary;
     }
 
     .alert-success {
-      color: #000000;
-      background-color: #eeeeee;
       border-color: #388e3c;
-      border-width: 1px;
-      border-radius: 15px;
-      padding: 20px;
-
-      a {
-        color: $primary;
-
-        @media (hover: hover) {
-          &:hover {
-            text-decoration: underline;
-          }
-        }
-      }
     }
 
     .alert-warning {
-      color: #000000;
-      background-color: #eeeeee;
       border-color: #ffa000;
-      border-width: 1px;
-      border-radius: 15px;
-      padding: 20px;
-
-      a {
-        color: $primary;
-
-        @media (hover: hover) {
-          &:hover {
-            text-decoration: underline;
-          }
-        }
-      }
     }
 
     .alert-error {
-      color: #000000;
-      background-color: #eeeeee;
       border-color: #d32f2f;
-      border-width: 1px;
-      border-radius: 15px;
-      padding: 20px;
-
-      a {
-        color: $primary;
-
-        @media (hover: hover) {
-          &:hover {
-            text-decoration: underline;
-          }
-        }
-      }
     }
 
     .switch-on, .light-on, .window-on {

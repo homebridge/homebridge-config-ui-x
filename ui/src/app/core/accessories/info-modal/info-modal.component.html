@@ -9,12 +9,12 @@
   <div class="modal-body">
     <div class="md-form">
       <input [ngModel]="service.customName || service.serviceName" (ngModelChange)="service.customName = $event"
-        type="text" id="form-name" autocomplete="off" class="form-control pl-0 pr-0">
-      <label for="form-name" class="active" [translate]="'accessories.label_name'">Name</label>
+        type="text" id="form-name" autocomplete="off" class="form-control px-0">
+      <label for="form-name" class="active">{{ 'accessories.label_name' | translate }}</label>
     </div>
     <div class="container px-1">
       <div class="form-group row align-items-center">
-        <label class="col-6 col-form-label" [translate]="'accessories.label_hide_this_accessory'"></label>
+        <label class="col-6 col-form-label">{{ 'accessories.label_hide_this_accessory' | translate }}</label>
         <div class="col-6 text-right">
           <input type="checkbox" class="rendux-input" [(ngModel)]="service.hidden" id="hide-accessory"
             [attr.aria-label]="'accessories.label_hide_this_accessory' | translate">
@@ -22,7 +22,7 @@
         </div>
       </div>
       <div class="form-group row align-items-center">
-        <label class="col-6 col-form-label" [translate]="'accessories.label_show_on_dashboard'"></label>
+        <label class="col-6 col-form-label">{{ 'accessories.label_show_on_dashboard' | translate }}</label>
         <div class="col-6 text-right">
           <input type="checkbox" class="rendux-input" [(ngModel)]="service.onDashboard" id="show-on-dashboard"
             [attr.aria-label]="'accessories.label_show_on_dashboard' | translate">

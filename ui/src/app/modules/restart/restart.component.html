@@ -7,10 +7,11 @@
     <i class="fas fa-fw fa-power-off" style="font-size: 75px;"></i>
   </div>
   <div class="text-center">
-    <h4 class="primary-text" [translate]="'restart.title_restart'">Restarting Homebridge</h4>
-    <p class="grey-text" *ngIf="!error" [translate]="'restart.message_please_wait_while_server_restarts'">
-      Please wait, this page will automatically redirect when the server is back online.</p>
-    <ngb-alert type="error" [dismissible]="false" *ngIf="error" class="my-4">{{ error }}</ngb-alert>
+    <h4 class="primary-text">{{ 'restart.title_restart' | translate }}</h4>
+    <p class="grey-text" *ngIf="!error">
+      {{ 'restart.message_please_wait_while_server_restarts' | translate}}
+    </p>
+    <div class="alert alert-error my-4" *ngIf="error">{{ error }}</div>
     <div class="justify-content-center my-4" *ngIf="!this.error">
       <div class="restart-progress-box primary-text">
         <span>
@@ -30,19 +31,19 @@
       </div>
     </div>
     <div *ngIf="timeout">
-      <ngb-alert type="warning" [dismissible]="false" class="my-4">
-        <p [translate]="'restart.message_server_is_taking_long_time_to_restart'">
-          Server restart is taking a long time. You may need to bring up the Homebridge service manually.
+      <div class="alert alert-warning my-4">
+        <p>
+          {{ 'restart.message_server_is_taking_long_time_to_restart' | translate }}
         </p>
         <p class="mb-0">
-          <span [translate]="'restart.label_restart_command_executed'">Restart Command Executed</span>: <span class="text-monospace">{{ resp.command || "End Process" }}</span>
+          {{ 'restart.label_restart_command_executed' | translate}}: <span class="text-monospace">{{ resp.command || "End Process" }}</span>
         </p>
         <p *ngIf="uiOnline" class="mt-2 mb-0">
           <button class="btn btn-primary mb-0" (click)="viewLogs()">
             {{ 'menu.tooltip_view_logs' | translate }}
           </button>
         </p>
-      </ngb-alert>
+      </div>
     </div>
   </div>
 </div>

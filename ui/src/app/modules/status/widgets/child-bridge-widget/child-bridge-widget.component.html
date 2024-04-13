@@ -2,9 +2,9 @@
   <div class="drag-handler p-2" [ngClass]="{ 'widget-cursor': widget.draggable }">
     {{ 'child_bridge.label_child_bridges' | translate }}
   </div>
-  <div class="d-flex flex-wrap w-100 pl-2 pr-2">
+  <div class="d-flex flex-wrap w-100 px-2">
     <ul class="list-group w-100 gridster-item-content">
-      <li class="list-group-item border-0 pl-2 pr-2 d-flex flex-row justify-content-between" *ngFor="let bridge of childBridges">
+      <li class="list-group-item border-0 px-2 d-flex flex-row justify-content-between" *ngFor="let bridge of childBridges">
         <div class="flex-child">
           <i class="fas fa-fw mr-1" [ngClass]="{
             'fa-bridge-circle-check green-text': bridge.status === 'ok',

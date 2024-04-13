@@ -19,9 +19,7 @@
       </a>
     </p>
     <div *ngIf="configBlocks.length">
-      <p class="alert alert-info">
-        {{ 'child_bridge.message_child_bridges_must_be_paired_separately' | translate }}
-      </p>
+      <p>{{ 'child_bridge.message_child_bridges_must_be_paired_separately' | translate }}</p>
       <p>{{ 'child_bridge.message_select_platforms_accessories' | translate }}:</p>
       <ul class="list-group mt-2 mb-3" *ngIf="configBlocks.length">
         <li class="list-group-item " *ngFor="let item of configBlocks; let i = index">
@@ -45,13 +43,13 @@
             </div>
             <div *ngIf="deviceInfo[item._bridge?.username]">
               <div *ngIf="!deviceInfo[item._bridge?.username]._isPaired" class="w-100 d-flex flex-column">
-                <app-qrcode [data]="deviceInfo[item._bridge?.username]._setupCode" class="mr-auto ml-auto mt-2 mb-2"
+                <app-qrcode [data]="deviceInfo[item._bridge?.username]._setupCode" class="mx-auto my-2"
                   style="width: 180px; height: 180px;">
                 </app-qrcode>
-                <p class="mr-auto ml-auto text-center">
+                <p class="mx-auto text-center">
                   {{ deviceInfo[item._bridge?.username].pincode }}
                 </p>
-                <p class="grey-text  mr-auto ml-auto text-center" style="max-width: 400px;">
+                <p class="grey-text  mx-auto text-center" style="max-width: 400px;">
                   {{ 'status.message_code_scan_instructions' | translate }}
                 </p>
               </div>

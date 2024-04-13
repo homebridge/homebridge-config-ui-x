@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
 import { LightbulbManageComponent } from '@/app/core/accessories/types//lightbulb/lightbulb.manage.component';
@@ -8,14 +8,12 @@ import { LightbulbManageComponent } from '@/app/core/accessories/types//lightbul
   templateUrl: './lightbulb.component.html',
   styleUrls: ['./lightbulb.component.scss'],
 })
-export class LightbulbComponent implements OnInit {
+export class LightbulbComponent {
   @Input() public service: ServiceTypeX;
 
   constructor(
     private modalService: NgbModal,
   ) {}
-
-  ngOnInit() {}
 
   onClick() {
     this.service.getCharacteristic('On').setValue(!this.service.values.On);
