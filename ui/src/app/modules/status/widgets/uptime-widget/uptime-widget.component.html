@@ -1,15 +1,14 @@
 <div class="flex-column d-flex align-items-stretch h-100 w-100 pb-1">
-  <div class="drag-handler p-2" [ngClass]="{ 'widget-cursor': widget.draggable }" [translate]="'status.uptime.title_uptime'">Uptime
-  </div>
+  <div class="drag-handler p-2" [ngClass]="{ 'widget-cursor': widget.draggable }">{{ 'status.uptime.title_uptime' | translate }}</div>
   <div class="d-flex flex-row flex-grow-1 align-items-center w-100 gridster-item-content text-center">
     <div class="d-flex justify-content-around flex-wrap w-100">
       <div class="text-center widget-value-parent-wrap">
         <div class="widget-value mb-0">{{ serverUptime }}</div>
-        <div class="widget-value-label grey-text" [translate]="'status.widget.uptime.label_server'">Server</div>
+        <div class="widget-value-label grey-text">{{ 'status.widget.uptime.label_server' | translate }}</div>
       </div>
       <div class="text-center widget-value-parent-wrap">
         <div class="widget-value mb-0">{{ processUptime }}</div>
-        <div class="widget-value-label grey-text" [translate]="'status.widget.uptime.label_process'">Process</div>
+        <div class="widget-value-label grey-text">{{ 'status.widget.uptime.label_process' | translate }}</div>
       </div>
     </div>
   </div>

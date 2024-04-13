@@ -8,19 +8,18 @@
   <div [hidden]="!onlineUpdateOk || actionComplete || showReleaseNotes" id="plugin-log-output" class="modal-body"></div>
   <div *ngIf="actionComplete" class="modal-body plugin-modal-body">
     <div *ngIf="justUpdatedPlugin">
-      <h3 class="text-center primary-text" [translate]="'platform.version.title_service_restart_required'" *ngIf="!isDisabled">
-        Restart Required
+      <h3 class="text-center primary-text" *ngIf="!isDisabled">
+        {{ 'platform.version.title_service_restart_required' | translate }}
       </h3>
-      <p class="text-center grey-text" translate="plugins.manage.message_thanks_for_updating"
-        [translateParams]="{ pluginName: pluginName, targetVersion: targetVersion }"></p>
+      <p class="text-center grey-text">
+        {{ 'plugins.manage.message_thanks_for_updating' | translate:{ pluginName: pluginName, targetVersion: targetVersion } }}
+      </p>
       <div *ngIf="!isDisabled">
-        <p *ngIf="['homebridge', 'homebridge-config-ui-x'].includes(pluginName) || childBridges.length === 0" class="text-center grey-text"
-          [translate]="'plugins.manage.message_thanks_for_updating_restart'">
-          Please restart Homebridge for the changes to apply.
+        <p *ngIf="['homebridge', 'homebridge-config-ui-x'].includes(pluginName) || childBridges.length === 0" class="text-center grey-text">
+          {{ 'plugins.manage.message_thanks_for_updating_restart' | translate }}
         </p>
-        <p *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(pluginName) && childBridges.length > 0" class="text-center grey-text"
-          [translate]="'plugins.manage.message_thanks_for_updating_restart_child_bridges'">
-          Please restart the plugin's child bridges for the changes to apply.
+        <p *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(pluginName) && childBridges.length > 0" class="text-center grey-text">
+          {{ 'plugins.manage.message_thanks_for_updating_restart_child_bridges' | translate }}
         </p>
       </div>
       <div class="alert show alert-info pt-3 px-3 pb-0 mb-0" *ngIf="changeLog">
@@ -29,17 +28,15 @@
     </div>
   </div>
   <div *ngIf="!onlineUpdateOk" class="modal-body">
-    <h4 class="primary-text text-center" [translate]="'plugins.manage.label_manual_update_required'">
-      Manual Update Required
+    <h4 class="primary-text text-center">
+      {{ 'plugins.manage.label_manual_update_required' | translate }}
     </h4>
-    <p [translate]="'plugins.manage.label_online_updates_not_supported_on_windows'">
-      Online updates are not supported on Windows. You will need to upgrade Homebridge
-      manually after stopping the Homebridge service.
+    <p>
+      {{ 'plugins.manage.label_online_updates_not_supported_on_windows' | translate }}
     </p>
     <div *ngIf="$settings.env.serviceMode">
       <p>
-        To upgrade the package run open a <strong>Node.js command prompt as an Administrator</strong> and run the
-        following commands:
+        {{ 'plugins.manage.label_manual_update_command' | translate }}
       </p>
       <pre class="p-2" style="background-color: #efefef;">hb-service stop
 npm install -g {{ pluginName }}&#64;{{targetVersion}}

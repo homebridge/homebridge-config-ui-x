@@ -176,70 +176,29 @@
       }
     }
 
-    .alert-info {
+    .alert {
       color: #eeeeee;
       background-color: #2b2b2b;
+
+      a {
+        color: $secondaryBackground;
+      }
+    }
+
+    .alert-info {
       border-color: $darkModePrimary;
-      border-width: 1px;
-      border-radius: 15px;
-      padding: 20px;
     }
 
     .alert-success {
-      color: #eeeeee;
-      background-color: #2b2b2b;
       border-color: #388e3c;
-      border-width: 1px;
-      border-radius: 15px;
-      padding: 20px;
-
-      a {
-        color: $secondaryBackground;
-
-        @media (hover: hover) {
-          &:hover {
-            text-decoration: underline;
-          }
-        }
-      }
     }
 
     .alert-warning {
-      color: #eeeeee;
-      background-color: #2b2b2b;
       border-color: #ffa000;
-      border-width: 1px;
-      border-radius: 15px;
-      padding: 20px;
-
-      a {
-        color: #dddddd;
-
-        @media (hover: hover) {
-          &:hover {
-            text-decoration: underline;
-          }
-        }
-      }
     }
 
     .alert-error {
-      color: #eeeeee;
-      background-color: #2b2b2b;
       border-color: #d32f2f;
-      border-width: 1px;
-      border-radius: 15px;
-      padding: 20px;
-
-      a {
-        color: $secondaryBackground;
-
-        @media (hover: hover) {
-          &:hover {
-            text-decoration: underline;
-          }
-        }
-      }
     }
 
     .qr-code-container {

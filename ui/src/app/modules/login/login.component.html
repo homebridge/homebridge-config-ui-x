@@ -1,30 +1,26 @@
 <div class="login-container d-flex align-items-center justify-content-center"
   [ngStyle]="{'background': backgroundStyle}">
   <div class="card card-body ml-2 mr-2 login-card">
-
     <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
       <p class="h4 text-center mb-4">Homebridge</p>
 
       <div *ngIf="!twoFactorCodeRequired">
-
         <div class="md-form">
           <i class="fas fa-fw fa-user prefix grey-text"></i>
           <input #username formControlName="username" type="text" id="form-username" autofocus autocomplete="username"
             autocapitalize="none" tabindex="1" class="form-control pl-0 pr-0" [ngClass]="{
             'is-invalid': form.controls.username.dirty && form.controls.username.errors
           }">
-          <label for="form-username" [translate]="'login.label_username'">Username</label>
+          <label for="form-username">{{ 'login.label_username' | translate }}</label>
         </div>
-
         <div class="md-form">
           <i class="fas fa-fw fa-lock prefix grey-text"></i>
           <input #password formControlName="password" type="password" id="form-pass" autocomplete="current-password"
             tabindex="2" class="form-control pl-0 pr-0" [ngClass]="{
             'is-invalid': form.controls.password.dirty && form.controls.password.errors
           }">
-          <label for="form-pass" [translate]="'login.label_password'">Password</label>
+          <label for="form-pass">{{ 'login.label_password' | translate }}</label>
         </div>
-
       </div>
 
       <div *ngIf="twoFactorCodeRequired">
@@ -35,19 +31,16 @@
             inputmode="numeric" pattern="[0-9]*" tabindex="1" class="form-control pl-0 pr-0" [ngClass]="{
               'is-invalid': form.controls.otp.dirty && form.controls.otp.errors
             }">
-          <label for="form-ota" [translate]="'login.label_2fa_code'"></label>
+          <label for="form-ota">{{ 'login.label_2fa_code' | translate }}</label>
         </div>
       </div>
 
       <div class="text-center">
-        <p class="red-text" *ngIf="invalidCredentials"><small
-            [translate]="'login.message_invalid_username_or_password'"></small></p>
-        <p class="red-text" *ngIf="invalid2faCode"><small [translate]="'login.message_invalid_2fa_code'"></small></p>
-        <button tabindex="3" class="btn btn-primary" type="submit" [translate]="'login.button_login'"
-          [disabled]="form.invalid">Login</button>
+        <p class="red-text" *ngIf="invalidCredentials"><small>{{ 'login.message_invalid_username_or_password' | translate }}</small></p>
+        <p class="red-text" *ngIf="invalid2faCode"><small>{{ 'login.message_invalid_2fa_code' | translate }}</small></p>
+        <button tabindex="3" class="btn btn-primary" type="submit" [disabled]="form.invalid">{{ 'login.button_login' | translate }}</button>
       </div>
 
     </form>
-
   </div>
 </div>

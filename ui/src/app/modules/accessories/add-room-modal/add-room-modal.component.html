@@ -1,14 +1,15 @@
 <div class="modal-content">
   <form>
     <div class="modal-header">
-      <h5 class="modal-title" [translate]="'accessories.button_add_room'">Add Room</h5>
+      <h5 class="modal-title">{{ 'accessories.button_add_room' | translate }}</h5>
       <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
         (click)="activeModal.dismiss('Dismiss')">
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
     <div class="modal-body">
-      <div class="alert alert-info" role="alert" [translate]="'accessories.message_rooms_not_appear_in_homekit'">
+      <div class="alert alert-info" role="alert">
+        {{ 'accessories.message_rooms_not_appear_in_homekit' | translate }}
       </div>
       <div class="md-form">
         <input type="text" id="form-name" autofocus class="form-control pl-0 pr-0" [(ngModel)]="roomName"

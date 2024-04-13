@@ -1,25 +1,23 @@
 <div class="setup-container d-flex align-items-center justify-content-center">
   <div class="w-100 setup-card d-flex pb-5 pt-5">
     <div *ngIf="step === 'welcome'" class="w-100 d-flex flex-column align-items-center">
-      <img class="homebridge-logo mr-auto ml-auto" src="/assets/homebridge-color-round.svg" />
-      <h3 class="pt-4 pb-3 text-center" translate="setup_wizard.message_welcome_to_homebridge"></h3>
-      <button type="button" class="btn btn-lg btn-primary" (click)="onClickGettingStarted()"
-        translate="setup_wizard.button_get_started">
+      <img class="homebridge-logo mr-auto ml-auto" src="/assets/homebridge-color-round.svg" alt="hb logo" />
+      <h3 class="pt-4 pb-3 text-center">{{ 'setup_wizard.message_welcome_to_homebridge' | translate }}</h3>
+      <button type="button" class="btn btn-lg btn-primary" (click)="onClickGettingStarted()">
+        {{ 'setup_wizard.button_get_started' | translate }}
       </button>
       <small class="mt-3">
-        <a href="javascript:void(0)" class="grey-text" (click)="onClickRestoreBackup()">Restore From Backup</a>
+        <a href="javascript:void(0)" class="grey-text" (click)="onClickRestoreBackup()">{{ 'setup_wizard_message_restore' | translate }}</a>
       </small>
     </div>
 
     <div *ngIf="step === 'create-account'" class="w-100 d-flex flex-column align-items-center">
-      <img class="homebridge-logo homebridge-logo-small mr-auto ml-auto" src="/assets/homebridge-color-round.svg" />
-      <h3 class="pt-4 pb-3 text-center" translate="setup_wizard.label_create_account"></h3>
+      <img class="homebridge-logo homebridge-logo-small mr-auto ml-auto" src="/assets/homebridge-color-round.svg" alt="hb logo" />
+      <h3 class="pt-4 pb-3 text-center">{{ 'setup_wizard.label_create_account' | translate }}</h3>
 
       <div class="w-100">
-        <p translate="setup_wizard.message_create_account_reason"></p>
-
+        <p>{{ 'setup_wizard.message_create_account_reason' | translate }}</p>
         <form novalidate (ngSubmit)="createFirstUser()" [formGroup]="createUserForm">
-
           <div class="md-form">
             <i class="fas fa-fw fa-user prefix grey-text"></i>
             <input formControlName="username" type="text" id="form-username" autocomplete="username"
@@ -27,7 +25,7 @@
                 'is-valid': (createUserForm.controls.username.dirty) && createUserForm.controls.username.valid,
                 'is-invalid': (createUserForm.controls.username.dirty) && createUserForm.controls.username.invalid
               }">
-            <label for="form-username" [translate]="'users.label_username'">Username</label>
+            <label for="form-username">{{ 'users.label_username' | translate }}</label>
           </div>
 
           <div class="md-form">
@@ -37,7 +35,7 @@
                 'is-valid': (createUserForm.controls.password.dirty) && createUserForm.controls.password.valid,
                 'is-invalid': (createUserForm.controls.password.dirty) && createUserForm.controls.password.errors
               }">
-            <label for="form-pass" [translate]="'users.label_password'">Password</label>
+            <label for="form-pass">{{ 'users.label_password' | translate }}</label>
           </div>
 
           <div class="md-form">
@@ -47,7 +45,7 @@
                 'is-valid': (createUserForm.controls.passwordConfirm.dirty) && createUserForm.controls.passwordConfirm.valid,
                 'is-invalid': (createUserForm.controls.passwordConfirm.dirty) && createUserForm.controls.passwordConfirm.errors
               }">
-            <label for="form-pass-confirm" [translate]="'users.label_confirm_password'"></label>
+            <label for="form-pass-confirm">{{ 'users.label_confirm_password' | translate }}</label>
           </div>
 
           <div class="w-100 text-center">
@@ -58,15 +56,14 @@
               <i class="button-loading-overlay fas fa-fw fa-spinner fa-pulse"></i>
             </button>
           </div>
-
         </form>
       </div>
     </div>
 
     <div *ngIf="step === 'restore-backup'" class="w-100 d-flex flex-column align-items-center">
-      <img class="homebridge-logo homebridge-logo-small mr-auto ml-auto" src="/assets/homebridge-color-round.svg" />
-      <h3 class="pt-4 pb-3 text-center" translate="backup.title_restore"></h3>
-      <p [translate]="'backup.message_restore_help_one'"></p>
+      <img class="homebridge-logo homebridge-logo-small mr-auto ml-auto" src="/assets/homebridge-color-round.svg" alt="hb logo" />
+      <h3 class="pt-4 pb-3 text-center">{{ 'backup.title_restore' | translate }}</h3>
+      <p>{{ 'backup.message_restore_help_one' | translate }}</p>
 
       <div class="custom-file">
         <input type="file" class="custom-file-input" id="restoreFileUpload" accept="application/gzip, .gz"
@@ -76,8 +73,8 @@
       </div>
 
       <div class="mt-3 w-100 d-flex justify-content-between">
-        <button type="button" class="btn btn-elegant ml-0" [disabled]="restoreUploadStarted"
-          (click)="onClickCancelRestore()" translate="form.button_cancel">
+        <button type="button" class="btn btn-elegant ml-0" [disabled]="restoreUploadStarted" (click)="onClickCancelRestore()">
+          {{ 'form.button_cancel' | translate }}
         </button>
 
         <button type="button" class="btn btn-primary mr-0" (click)="onRestoreBackupClick()"
@@ -86,25 +83,24 @@
             <i class="fas fa-fw fa-spinner fa-pulse"></i>
             {{ 'backup.label_uploading' | translate }}
           </span>
-          <span *ngIf="!restoreUploading" [translate]="'backup.button_restore_backup'"></span>
+          <span *ngIf="!restoreUploading">{{ 'backup.button_restore_backup' | translate }}</span>
         </button>
       </div>
     </div>
 
     <div *ngIf="step === 'restarting'" class="w-100 d-flex flex-column align-items-center">
-      <img class="homebridge-logo homebridge-logo-small mr-auto ml-auto" src="/assets/homebridge-color-round.svg" />
-      <h3 class="pt-4 pb-3 text-center" translate="restart.title_restart"></h3>
+      <img class="homebridge-logo homebridge-logo-small mr-auto ml-auto" src="/assets/homebridge-color-round.svg" alt="hb logo" />
+      <h3 class="pt-4 pb-3 text-center">{{ 'restart.title_restart' | translate }}</h3>
       <h1>
         <i class="fas fa-fw fa-spinner fa-pulse"></i>
       </h1>
     </div>
 
     <div *ngIf="step === 'setup-complete'" class="w-100 d-flex flex-column align-items-center">
-      <img class="homebridge-logo homebridge-logo-small mr-auto ml-auto" src="/assets/homebridge-color-round.svg" />
-      <h3 class="pt-4 pb-3" translate="setup_wizard_message_complete_title"></h3>
-      <p class="text-center" translate="setup_wizard_message_complete_message"></p>
-      <a class="btn btn-lg btn-primary mt-3" routerLink="/" translate="setup_wizard.label_open_dashboard">
-      </a>
+      <img class="homebridge-logo homebridge-logo-small mr-auto ml-auto" src="/assets/homebridge-color-round.svg" alt="hb logo" />
+      <h3 class="pt-4 pb-3">{{ 'setup_wizard_message_complete_title' | translate }}</h3>
+      <p class="text-center">{{ 'setup_wizard_message_complete_message' | translate }}</p>
+      <a class="btn btn-lg btn-primary mt-3" routerLink="/">{{ 'setup_wizard.label_open_dashboard' | translate }}</a>
     </div>
   </div>
 </div>
