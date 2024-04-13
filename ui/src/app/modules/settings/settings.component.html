@@ -3,12 +3,13 @@
     {{ 'menu.settings.title' | translate }}
   </h3>
   <button class="btn btn-primary waves-effect m-0" *ngIf="saved" routerLink="/restart"
-    [translate]="'platform.docker.settings.button_restart_required'"
-    [attr.aria-label]="'platform.docker.settings.button_restart_required' | translate">Restart Required</button>
+    [attr.aria-label]="'platform.docker.settings.button_restart_required' | translate">
+    {{ 'platform.docker.settings.button_restart_required' | translate }}
+  </button>
 </div>
 
 <div class="mb-4">
-  <h5 class="primary-text mt-3" translate="settings.general.title_general"></h5>
+  <h5 class="primary-text mt-3">{{ 'settings.general.title_general' | translate }}</h5>
   <ul class="list-group mt-2">
     <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>{{ 'settings.theme' | translate }}</span>
@@ -90,7 +91,7 @@
 
 <!-- ALL USERS -->
 <div class="mb-4">
-  <h5 class="primary-text mt-3" translate="settings.network.title_network"></h5>
+  <h5 class="primary-text mt-3">{{ 'settings.network.title_network' | translate }}</h5>
   <ul class="list-group mt-2">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
@@ -104,9 +105,8 @@
           </span>
         </span>
       </span>
-      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;" [translate]="'reset.title_clear_cached_accessories'"
-        (click)="selectNetworkInterfaces()" [disabled]="!availableNetworkAdapters.length"
-        [attr.aria-label]="'settings.network.title_network_interfaces' | translate">
+      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;" (click)="selectNetworkInterfaces()"
+        [disabled]="!availableNetworkAdapters.length" [attr.aria-label]="'settings.network.title_network_interfaces' | translate">
         <i class="fas fa-fw fa-chevron-right" [ngClass]="{ 'fa-pulse': !availableNetworkAdapters.length }"></i>
       </button>
     </li>
@@ -129,7 +129,7 @@
 </div>
 
 <!-- SERVICE MODE USERS ONLY -->
-<form class="mt-3 mb-3" novalidate [formGroup]="serviceForm" *ngIf="$settings.env.serviceMode">
+<form class="my-3" novalidate [formGroup]="serviceForm" *ngIf="$settings.env.serviceMode">
   <h5 class="primary-text">{{ 'settings.title_startup_options' | translate }}</h5>
   <ul class="list-group mb-4">
     <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -217,8 +217,7 @@
         {{ 'reset.title_clear_cached_accessories_single' | translate }}<br>
         <small class="grey-text pr-2">{{ 'reset.message_remove_cached_accessories_single' | translate }}</small>
       </span>
-      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;"
-        [translate]="'reset.title_clear_cached_accessories_single'" (click)="removeSingleCachedAccessories()"
+      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;" (click)="removeSingleCachedAccessories()"
         [attr.aria-label]="'reset.title_clear_cached_accessories_single' | translate">
         <i class="fas fa-fw fa-chevron-right"></i>
       </button>
@@ -228,8 +227,7 @@
         {{ 'reset.title_clear_cached_accessories' | translate }}<br>
         <small class="grey-text pr-2">{{ 'reset.message_remove_cached_accessories' | translate }}</small>
       </span>
-      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;"
-        [translate]="'reset.title_clear_cached_accessories'" (click)="removeAllCachedAccessories()"
+      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 45px;" (click)="removeAllCachedAccessories()"
         [attr.aria-label]="'reset.title_clear_cached_accessories' | translate">
         <i class="fas fa-fw fa-chevron-right"></i>
       </button>

@@ -1,8 +1,6 @@
 <div class="modal-content">
   <div class="modal-header">
-    <h5 class="modal-title" [translate]="'reset.title_clear_cached_accessories_single'">
-      Remove Single Cached Accessory
-    </h5>
+    <h5 class="modal-title">{{ 'reset.title_clear_cached_accessories_single' | translate }}</h5>
     <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
       (click)="activeModal.dismiss('Dismiss')">
       <span aria-hidden="true">&times;</span>
@@ -10,17 +8,14 @@
   </div>
   <div class="modal-body">
     <div class="text-center mt-3" *ngIf="cachedAccessories.length === 0">
-      <i class="fas fa-fw fa-exclamation-circle" style="font-size: 75px;"></i>
-      <p class="mt-3 mb-0" [translate]="'reset.message_remove_cached_accessories_single_empty'"></p>
+      <i class="fas fa-fw fa-circle-check" style="font-size: 75px;"></i>
+      <p class="mt-3 mb-0">{{ 'reset.message_remove_cached_accessories_single_empty' | translate }}</p>
     </div>
     <ngb-alert type="info" [dismissible]="false" style="margin-bottom: 0;" *ngIf="cachedAccessories.length > 0">
       <div class="text-center mt-2 mb-3"><i class="fas fa-fw fa-exclamation-circle" style="font-size: 75px;"></i></div>
       <ul class="mb-0">
         <li>{{ 'reset.message_remove_cached_accessories_single_warning' | translate }}</li>
-        <li class="mb-0" [translate]="'reset.accessories_will_may_need_to_be_reconfigured'">
-          After performing this action some accessories may need to be reconfigured in HomeKit or re-added to your
-          automations.
-        </li>
+        <li class="mb-0">{{ 'reset.accessories_will_may_need_to_be_reconfigured' | translate }}</li>
       </ul>
     </ngb-alert>
     <ul class="list-group mt-2" *ngIf="cachedAccessories.length > 0">

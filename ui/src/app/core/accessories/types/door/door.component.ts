@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
 import { DoorManageComponent } from '@/app/core/accessories/types/door/door.manage.component';
@@ -8,14 +8,12 @@ import { DoorManageComponent } from '@/app/core/accessories/types/door/door.mana
   templateUrl: './door.component.html',
   styleUrls: ['./door.component.scss'],
 })
-export class DoorComponent implements OnInit {
+export class DoorComponent {
   @Input() public service: ServiceTypeX;
 
   constructor(
     private modalService: NgbModal,
   ) {}
-
-  ngOnInit() {}
 
   onClick() {
     if (this.service.values.TargetPosition) {

@@ -5,13 +5,13 @@
       <h3 class="primary-text m-0">{{ 'config.title_config' | translate }}</h3>
     </div>
     <div class="col-6 text-right">
+      <button class="btn btn-elegant waves-effect my-0" (click)="onExportConfig()" container="body" *ngIf="!originalConfig"
+        [attr.aria-label]="'logs.label_download' | translate" ngbTooltip="{{ 'logs.label_download' | translate }}"><i class="fas fa-fw fa-download"></i></button>
       <button class="btn btn-danger waves-effect my-0" (click)="onCancelRestore()" [disabled]="saveInProgress"
         *ngIf="originalConfig" container="body" ngbTooltip="{{ 'form.button_cancel' | translate }}"
         [attr.aria-label]="'form.button_cancel' | translate"><i class="fas fa-fw fa-times"></i></button>
       <button class="btn btn-elegant waves-effect my-0" (click)="onRestore()" container="body"
         *ngIf="!originalConfig" [attr.aria-label]="'config.button_restore' | translate" ngbTooltip="{{ 'config.button_restore' | translate }}"><i class="fas fa-fw fa-history"></i></button>
-      <button class="btn btn-elegant waves-effect my-0" (click)="onExportConfig()" container="body" *ngIf="!originalConfig"
-        [attr.aria-label]="'logs.label_download' | translate" ngbTooltip="{{ 'logs.label_download' | translate }}"><i class="fas fa-fw fa-download"></i></button>
       <button class="btn btn-primary waves-effect my-0 mr-0" (click)="onSave()" [disabled]="saveInProgress" container="body"
         ngbTooltip="{{ 'form.button_save' | translate }}" [attr.aria-label]="'form.button_save' | translate">
         <i *ngIf="!saveInProgress" class="fas fa-fw fa-floppy-disk"></i>
@@ -20,18 +20,18 @@
     </div>
   </div>
 
-  <ngx-monaco-editor *ngIf="!isMobile && !originalConfig" class="flex-grow-1 h-100 w-100 mb-3 mt-3"
+  <ngx-monaco-editor *ngIf="!isMobile && !originalConfig" class="flex-grow-1 h-100 w-100 my-3"
     [options]="editorOptions" [model]="monacoEditorModel" (onInit)="onEditorInit($event)"
     (keydown.control.s)="$event.preventDefault(); onSave()" (keydown.meta.s)="$event.preventDefault(); onSave()">
   </ngx-monaco-editor>
 
-  <ngx-monaco-diff-editor *ngIf="!isMobile && originalConfig" class="flex-grow-1 h-100 w-100 mb-3 mt-3"
+  <ngx-monaco-diff-editor *ngIf="!isMobile && originalConfig" class="flex-grow-1 h-100 w-100 my-3"
     [options]="editorOptions" [originalModel]="monacoEditorModel" [modifiedModel]="monacoEditorModel"
     (onInit)="onInitDiffEditor($event)" (keydown.control.s)="$event.preventDefault(); onSave()"
     (keydown.meta.s)="$event.preventDefault(); onSave()">
   </ngx-monaco-diff-editor>
 
-  <textarea wrap="off" *ngIf="isMobile" class="hb-plain-text-editor align-self-end h-100 w-100 mb-3 mt-3"
+  <textarea wrap="off" *ngIf="isMobile" class="hb-plain-text-editor align-self-end h-100 w-100 my-3"
     autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" [(ngModel)]="homebridgeConfig">
   </textarea>
 </div>
