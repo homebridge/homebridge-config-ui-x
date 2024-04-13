@@ -26,7 +26,7 @@
 
     <div class="link" *ngIf="$auth.user.admin">
       <div class="link-row" [routerLink]="['/plugins']" [routerLinkActive]="'active'" [attr.aria-label]="'menu.label_plugins' | translate"
-      role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
+        role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
         <div class="icon"><i class="fa fa-fw fa-plug"></i></div>
         <div class="title">{{ 'menu.label_plugins' | translate }}</div>
       </div>
@@ -34,7 +34,7 @@
 
     <div class="link">
       <div class="link-row" [routerLink]="['/accessories']" [routerLinkActive]="'active'" [attr.aria-label]="'menu.label_accessories' | translate"
-      role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
+        role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
         <div class="icon"><i class="fa fa-fw fa-lightbulb"></i></div>
         <div class="title">{{ 'menu.label_accessories' | translate }}</div>
       </div>
@@ -42,7 +42,7 @@
 
     <div class="link" *ngIf="$auth.user.admin">
       <div class="link-row" [routerLink]="['/logs']" [routerLinkActive]="'active'" [attr.aria-label]="'menu.label_logs' | translate"
-      role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
+        role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
         <div class="icon"><i class="fa fa-fw fa-wave-square"></i></div>
         <div class="title">{{ 'menu.linux.label_logs' | translate }}</div>
       </div>
@@ -50,7 +50,7 @@
 
     <div class="link" *ngIf="$settings.env.enableTerminalAccess && $auth.user.admin">
       <div class="link-row" [routerLink]="['/platform-tools/terminal']" [routerLinkActive]="'active'"
-      [attr.aria-label]="'menu.linux.label_terminal' | translate" role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
+        [attr.aria-label]="'menu.linux.label_terminal' | translate" role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
         <div class="icon"><i class="fa fa-fw fa-terminal"></i></div>
         <div class="title">{{ 'menu.linux.label_terminal' | translate }}</div>
       </div>
@@ -58,7 +58,7 @@
 
     <div class="link" *ngIf="$auth.user.admin">
       <div class="link-row" [routerLink]="['/settings']" [routerLinkActive]="'active'"
-      [attr.aria-label]="'menu.label_settings' | translate" role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
+        [attr.aria-label]="'menu.label_settings' | translate" role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
         <div class="icon"><i class="fa fa-fw fa-cog"></i></div>
         <div class="title">{{ 'menu.label_settings' | translate }}</div>
       </div>
@@ -66,7 +66,7 @@
 
     <div class="link">
       <div class="link-row" [routerLink]="['/support']" [routerLinkActive]="'active'"
-      [attr.aria-label]="'support.title' | translate" role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
+        [attr.aria-label]="'support.title' | translate" role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
         <div class="icon"><i class="fa fa-fw fa-question-circle-o"></i></div>
         <div class="title">{{ 'support.title' | translate }}</div>
       </div>
@@ -74,7 +74,7 @@
 
     <div class="link">
       <div class="link-row" [routerLink]="['/power-options']" [routerLinkActive]="'active'"
-      [attr.aria-label]="'menu.restart.title' | translate" role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
+        [attr.aria-label]="'menu.restart.title' | translate" role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
         <div class="icon"><i class="fa fa-fw fa-power-off"></i></div>
         <div class="title">{{ 'menu.restart.title' | translate }}</div>
       </div>
@@ -82,7 +82,7 @@
 
     <div class="link" *ngIf="$settings.formAuth">
       <div class="link-row" (click)="$auth.logout()" [attr.aria-label]="'menu.tooltip_logout' | translate"
-      role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
+        role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
         <div class="icon"><i class="fa fa-fw fa-right-from-bracket"></i></div>
         <div class="title">{{ 'menu.tooltip_logout' | translate }}</div>
       </div>

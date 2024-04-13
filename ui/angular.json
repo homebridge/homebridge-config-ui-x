@@ -34,9 +34,7 @@
               "src/scss/styles.scss"
             ],
             "scripts": [],
-            "allowedCommonJsDependencies": [
-
-            ],
+            "allowedCommonJsDependencies": [],
             "aot": false,
             "stylePreprocessorOptions": {
               "includePaths": [

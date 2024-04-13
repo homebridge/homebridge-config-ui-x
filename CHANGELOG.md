@@ -21,6 +21,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - updates to restart screen
 - add theme setting to main page
 - ui code refactoring
+- remove unused lang strings
 
 ### Translation Changes
 
