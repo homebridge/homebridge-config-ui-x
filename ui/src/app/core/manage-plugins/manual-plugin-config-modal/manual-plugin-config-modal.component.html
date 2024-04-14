@@ -12,7 +12,7 @@
       <i class="fa fa-fw fa-cog fa-spin" style="font-size: 75px;"></i>
     </div>
     <div *ngIf="!loading && !canConfigure">
-      <div class="alert alert-info">
+      <div class="alert alert-warning">
         {{ 'plugins.settings.message_manual_config_required' | translate }}
         {{ 'plugins.settings.message_consult_documentation' | translate }}
       </div>

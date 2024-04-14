@@ -41,6 +41,14 @@
     </div>
 
     <div class="link" *ngIf="$auth.user.admin">
+      <div class="link-row" [routerLink]="['/config']" [routerLinkActive]="'active'"
+           [attr.aria-label]="'menu.config_json_editor' | translate" role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
+        <div class="icon"><i class="fa fa-fw fa-code"></i></div>
+        <div class="title">{{ 'menu.config_json_editor' | translate }}</div>
+      </div>
+    </div>
+
+    <div class="link" *ngIf="$auth.user.admin">
       <div class="link-row" [routerLink]="['/logs']" [routerLinkActive]="'active'" [attr.aria-label]="'menu.label_logs' | translate"
         role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
         <div class="icon"><i class="fa fa-fw fa-wave-square"></i></div>

@@ -3,8 +3,12 @@
 </div>
 
 <div class="mb-4">
-  <h5 class="primary-text mt-3">{{ 'support.useful_links.title' | translate }}</h5>
-  <ul class="list-group mt-2">
+  <h5 (click)="toggleSection('general')" class="primary-text mt-3 hover-pointer"
+      tabindex="0" [attr.aria-expanded]="showFields.general ? 'true' : 'false'">
+    <i class="fa fa-fw" [ngClass]="showFields.general ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+    {{ 'support.useful_links.title' | translate }}
+  </h5>
+  <ul class="list-group list-group-box mt-2 mx-2" *ngIf="showFields.general">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2">
         {{ 'support.useful_links.documentation' | translate }}<br>
@@ -52,8 +56,13 @@
   </ul>
 </div>
 <div class="pb-3">
-  <h5 class="primary-text mt-3">{{ 'support.developers.title' | translate }}</h5>
-  <ul class="list-group mt-2">
+  <h5 class="primary-text mt-3"></h5>
+  <h5 (click)="toggleSection('dev')" class="primary-text mt-3 hover-pointer"
+    tabindex="0" [attr.aria-expanded]="showFields.dev ? 'true' : 'false'">
+    <i class="fa fa-fw" [ngClass]="showFields.dev ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+    {{ 'support.developers.title' | translate }}
+  </h5>
+  <ul class="list-group list-group-box mt-2 mx-2" *ngIf="showFields.dev">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2">
         {{ 'support.developers.item_swagger' | translate }}<br>

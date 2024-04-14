@@ -147,7 +147,7 @@
     .card {
       color: #ffffff;
       background-color: $secondaryBackground !important;
-      border-radius: 0.5rem;
+      border-radius: 1rem;
     }
 
     .card-text-defined {
@@ -254,14 +254,9 @@
       color: $darkModePrimary;
     }
 
-    .modal-content {
-      border-radius: 0;
-    }
-
     .modal-header {
       background-color: $modalBackground;
-      border-bottom: none;
-      border-radius: 0 !important;
+      border-bottom: 0;
 
       .close {
         color: $darkModePrimary;
@@ -281,8 +276,7 @@
 
     .modal-footer {
       background-color: $modalBackground;
-      border-top: none;
-      border-radius: 0 !important;
+      border-top: 0;
     }
 
     .modal-backdrop {
@@ -440,7 +434,7 @@
     .plugin-icon-card {
       width: 70px;
       height: 70px;
-      border-radius: 15px;
+      border-radius: 1rem;
       border: 1px solid #222222;
     }
 

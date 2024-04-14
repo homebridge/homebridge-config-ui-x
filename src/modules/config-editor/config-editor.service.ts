@@ -276,15 +276,15 @@ export class ConfigEditorService {
   }
 
   /**
-   * Set the theme for the UI
+   * Set a specific property for the homebridge-config-ui-x plugin
    */
-  public async setThemeForUi(theme: string) {
+  public async setPropertyForUi(property: string, value: string) {
     // 1. get the current config for homebridge-config-ui-x
     const config = await this.getConfigFile();
 
-    // 2. update the theme
+    // 2. update the property
     const pluginConfig = config.platforms.find(x => x.platform === 'config');
-    pluginConfig.theme = theme;
+    pluginConfig[property] = value;
 
     // 3. save the config file
     await this.updateConfigFile(config);

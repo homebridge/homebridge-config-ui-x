@@ -35,13 +35,13 @@
     </ul>
 
     <div *ngIf="!scheduledBackups.length && !errorMessage">
-      <div class="alert alert-info" role="alert">
+      <div class="alert" role="alert">
         {{ 'backup.message_scheduled_backup_none_yet' | translate:{backupTime: backupTime | date:'shortTime'} }}
       </div>
     </div>
 
     <div *ngIf="errorMessage">
-      <div class="alert alert-info" role="alert">
+      <div class="alert alert-error" role="alert">
         <h4 class="alert-heading">{{ 'toast.title_error' | translate }}</h4>
         <p>
           {{ errorMessage }}

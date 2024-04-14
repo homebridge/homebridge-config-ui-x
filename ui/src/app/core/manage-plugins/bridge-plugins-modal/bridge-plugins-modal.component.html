@@ -60,8 +60,8 @@
                 </div>
               </div>
               <div class="mb-4">
-                <h5 (click)="toggleConfigFields(i)" class="primary-text" style="cursor: pointer;"
-                    tabindex="0" [attr.aria-expanded]="showConfigFields[i] ? 'true' : 'false'">
+                <h5 (click)="toggleConfigFields(i)" class="primary-text hover-pointer" tabindex="0"
+                  [attr.aria-expanded]="showConfigFields[i] ? 'true' : 'false'">
                   <i class="fa fa-fw" [ngClass]="showConfigFields[i] ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
                   {{ 'child_bridge.settings_config.header' | translate }}
                 </h5>
