@@ -136,7 +136,7 @@
   "logs.message_truncate_log_warning": "Aquesta acció és irreversible i eliminarà els logs existents de Homebridge. Estàs segur que vols continuar?",
   "logs.title_download_log_file": "Descarregar arxiu de logs",
   "logs.title_truncate_log_file": "Truncar arxiu de logs",
-  "menu.config_json_editor": "Config JSON Editor",
+  "menu.config_json_editor": "JSON Config",
   "menu.docker.label_restart_container": "Reiniciar Contenidor",
   "menu.docker.label_startup_script": "Script d'inici",
   "menu.docker.label_terminal": "Terminal",

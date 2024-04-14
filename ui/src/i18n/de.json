@@ -136,7 +136,7 @@
   "logs.message_truncate_log_warning": "Durch diese Aktion werden deine bestehenden Homebridge-Logdateien unwiderruflich gelöscht. Bist du sicher, dass du fortfahren willst?",
   "logs.title_download_log_file": "Logdatei herunterladen",
   "logs.title_truncate_log_file": "Logdatei abscheiden",
-  "menu.config_json_editor": "Config JSON Editor",
+  "menu.config_json_editor": "JSON Config",
   "menu.docker.label_restart_container": "Container neustarten",
   "menu.docker.label_startup_script": "Start-Skript",
   "menu.docker.label_terminal": "Konsole",

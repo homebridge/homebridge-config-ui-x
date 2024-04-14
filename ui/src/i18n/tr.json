@@ -136,7 +136,7 @@
   "logs.message_truncate_log_warning": "Bu işlem mevcuttaki Homebridge günlüklerini geri alınamaz şekilde silecektir. Devam etmek istediğinizden emin misiniz?",
   "logs.title_download_log_file": "Günlük Dosyasını İndir",
   "logs.title_truncate_log_file": "Günlük Dosyasını Buda",
-  "menu.config_json_editor": "Config JSON Editor",
+  "menu.config_json_editor": "JSON Config",
   "menu.docker.label_restart_container": "Kapsayıcıyı Yeniden Başlat",
   "menu.docker.label_startup_script": "Başlangıç Komutu",
   "menu.docker.label_terminal": "Terminal",

@@ -136,7 +136,7 @@
   "logs.message_truncate_log_warning": "Den här åtgärden tar bort dina befintliga Homebridge-loggar oåterkalleligt. Är du säker på att du vill fortsätta?",
   "logs.title_download_log_file": "Ladda ner loggfil",
   "logs.title_truncate_log_file": "Komprimera loggfil",
-  "menu.config_json_editor": "Config JSON Editor",
+  "menu.config_json_editor": "JSON Config",
   "menu.docker.label_restart_container": "Starta om container",
   "menu.docker.label_startup_script": "Startskript",
   "menu.docker.label_terminal": "Terminal",

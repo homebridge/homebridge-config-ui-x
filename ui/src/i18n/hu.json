@@ -136,7 +136,7 @@
   "logs.message_truncate_log_warning": "This action will irreversibly delete your existing Homebridge logs. Are you sure you want to continue?",
   "logs.title_download_log_file": "Download Log File",
   "logs.title_truncate_log_file": "Delete Logs",
-  "menu.config_json_editor": "Config JSON Editor",
+  "menu.config_json_editor": "JSON Config",
   "menu.docker.label_restart_container": "Konténer újraindítása",
   "menu.docker.label_startup_script": "Startup Script",
   "menu.docker.label_terminal": "Terminál",

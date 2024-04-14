@@ -44,7 +44,7 @@ hb-service start</pre>
     </div>
   </div>
   <div *ngIf="showReleaseNotes && !actionComplete" class="modal-body plugin-modal-body">
-    <div class="alert alert-info text-center" *ngIf="release.name || latestVersion">
+    <div class="alert text-center" *ngIf="release.name || latestVersion">
       <h5 class="mb-0">
         <span *ngIf="installedVersion">v{{ installedVersion }} &rarr; </span>
         <span *ngIf="release.name">{{ release.name }}</span>

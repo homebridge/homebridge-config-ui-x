@@ -36,6 +36,14 @@ export class SettingsComponent implements OnInit {
   public showResolvedMdnsOption = false;
   public availableNetworkAdapters: Record<string, any> = [];
   public bridgeNetworkAdapters: Record<string, any> = [];
+  public showFields = {
+    general: true,
+    network: false,
+    startup: false,
+    env: false,
+    reset: false,
+    cache: false,
+  };
 
   constructor(
     public $settings: SettingsService,
@@ -238,5 +246,9 @@ export class SettingsComponent implements OnInit {
       .catch(() => {
         // do nothing
       });
+  }
+
+  toggleSection(section: string) {
+    this.showFields[section] = !this.showFields[section];
   }
 }

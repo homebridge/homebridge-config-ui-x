@@ -1,7 +1,21 @@
-.modal-backdrop {
-  z-index: 1050 !important;
+.modal-content {
+  border-radius: 1rem !important;
+
+  li {
+    line-height: 1.5rem;
+  }
 }
 
-.modal-content li {
-  line-height: 2rem;
+.modal-header {
+  border-top-left-radius: 0.75rem !important;
+  border-top-right-radius: 0.75rem !important;
+}
+
+.modal-footer {
+  border-bottom-left-radius: 0.75rem !important;
+  border-bottom-right-radius: 0.75rem !important;
+}
+
+.modal-backdrop {
+  z-index: 1050 !important;
 }

@@ -136,7 +136,7 @@
   "logs.message_truncate_log_warning": "S tem boste nepreklicno izbrisali obstoječe dnevnike Homebridgea. Ali ste prepričani, da želite nadaljevati?",
   "logs.title_download_log_file": "Prenesi datoteko dnevnika",
   "logs.title_truncate_log_file": "Skrajšaj datoteko dnevnika",
-  "menu.config_json_editor": "Config JSON Editor",
+  "menu.config_json_editor": "JSON Config",
   "menu.docker.label_restart_container": "Znova zaženi kontejner",
   "menu.docker.label_startup_script": "Začetni skript",
   "menu.docker.label_terminal": "Terminal",

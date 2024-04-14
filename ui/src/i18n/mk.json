@@ -136,7 +136,7 @@
   "logs.message_truncate_log_warning": "Со ова ќе се избришат постоечките логирачки фајлови. Дали сте сигурни дека сакате да продолжите?",
   "logs.title_download_log_file": "Симни го логирачкиот фајл",
   "logs.title_truncate_log_file": "Скрати го логирачкиот фајл",
-  "menu.config_json_editor": "Config JSON Editor",
+  "menu.config_json_editor": "JSON Config",
   "menu.docker.label_restart_container": "Рестартирај го контејнерот",
   "menu.docker.label_startup_script": "Стартап скрипта",
   "menu.docker.label_terminal": "Терминал",
