@@ -5,25 +5,25 @@
       (click)="activeModal.dismiss('Dismiss')"></button>
   </div>
   <div class="modal-body">
-    <div class="text-center mt-3" *ngIf="pairings.length === 0">
-      <i class="fas fa-fw fa-circle-check" style="font-size: 75px;"></i>
-      <p class="mt-3 mb-0">{{ 'reset.title_unpair_bridges_cameras_tv_external_accessories_empty' | translate }}</p>
+    <div *ngIf="pairings.length === 0" class="text-center">
+      <i class="fas fa-fw fa-circle-check mb-4" style="font-size: 75px;"></i>
+      <p class="mb-0">{{ 'reset.title_unpair_bridges_cameras_tv_external_accessories_empty' | translate }}</p>
     </div>
     <div *ngIf="pairings.length > 0">
-      <div class="text-center mt-2 mb-3"><i class="fas fa-fw fa-link-slash" style="font-size: 75px;"></i></div>
-        <div class="alert alert-warning">{{ 'reset.message_need_to_remove_homebridge_accessory_from_home_app' | translate }}</div>
+      <div class="text-center mb-4"><i class="fas fa-fw fa-link-slash" style="font-size: 75px;"></i></div>
+      <div class="alert alert-warning">{{ 'reset.message_need_to_remove_homebridge_accessory_from_home_app' | translate }}</div>
+      <ul class="list-group list-group-box mt-2">
+        <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let item of pairings">
+          <span>
+            {{ item.displayName }} ({{ item._main ? 'Homebridge' : (item._category | titlecase) }})
+            <br>
+            <small class="grey-text">{{ item._username }}</small>
+          </span>
+          <button class="btn btn-danger" (click)="removeAccessory(item._id)" [disabled]="deleting"><i class="fas"
+            [ngClass]="{'fa-trash': item._id !== deleting, 'fa-cog fa-spin': item._id === deleting}"></i></button>
+        </li>
+      </ul>
     </div>
-    <ul class="list-group mt-2" *ngIf="pairings.length > 0">
-      <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let item of pairings">
-        <span>
-          {{ item.displayName }} ({{ item._main ? 'Homebridge' : (item._category | titlecase) }})
-          <br>
-          <small class="grey-text">{{ item._username }}</small>
-        </span>
-        <button class="btn btn-danger" (click)="removeAccessory(item._id)" [disabled]="deleting"><i class="fas"
-          [ngClass]="{'fa-trash': item._id !== deleting, 'fa-cog fa-spin': item._id === deleting}"></i></button>
-      </li>
-    </ul>
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-start"></div>

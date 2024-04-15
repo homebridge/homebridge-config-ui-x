@@ -4,8 +4,8 @@
     <button type="button" class="btn-close" data-bs-dismiss="modal" [attr.aria-label]="'form.button_close' | translate" (click)="activeModal.dismiss('Dismiss')"></button>
   </div>
   <div class="modal-body">
+    <div class="text-center mb-4"><i class="fas fa-fw fa-exclamation-circle" style="font-size: 75px;"></i></div>
     <ngb-alert type="error" [dismissible]="false" style="margin-bottom: 0;">
-      <div class="text-center mt-2 mb-3"><i class="fas fa-fw fa-exclamation-circle" style="font-size: 75px;"></i></div>
       <p>{{ 'reset.message_action_is_irreversible' | translate }}</p>
       <ul class="mb-0 text-start">
         <li>{{ 'reset.message_reset_will_unpair_from_homekit' | translate }}</li>

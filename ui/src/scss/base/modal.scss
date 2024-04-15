@@ -2,8 +2,12 @@
   border-radius: 1rem !important;
   border: none;
 
+  ul:not(.list-group) {
+    padding-left: 20px;
+  }
+
   li {
-    line-height: 1.5rem;
+    line-height: 1.75rem;
   }
 }
 
