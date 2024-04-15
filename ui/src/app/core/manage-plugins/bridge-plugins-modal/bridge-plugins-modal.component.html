@@ -21,7 +21,7 @@
     <div *ngIf="configBlocks.length">
       <p>{{ 'child_bridge.message_child_bridges_must_be_paired_separately' | translate }}</p>
       <p>{{ 'child_bridge.message_select_platforms_accessories' | translate }}:</p>
-      <ul class="list-group mt-2 mb-3" *ngIf="configBlocks.length">
+      <ul class="list-group list-group-box mt-2 mb-3" *ngIf="configBlocks.length">
         <li class="list-group-item " *ngFor="let item of configBlocks; let i = index">
           <div class="d-flex justify-content-between align-items-center">
             <h5 class="primary-text">
@@ -63,11 +63,11 @@
               </div>
               <div class="mb-4">
                 <h5 (click)="toggleConfigFields(i)" class="primary-text hover-pointer" tabindex="0"
-                  [attr.aria-expanded]="showConfigFields[i] ? 'true' : 'false'">
+                  [attr.aria-expanded]="showConfigFields[i] ? 'true' : 'false'" [attr.aria-controls]="'configFields_' + i">
                   <i class="fa fa-fw" [ngClass]="showConfigFields[i] ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
                   {{ 'child_bridge.settings_config.header' | translate }}
                 </h5>
-                <div *ngIf="showConfigFields[i]">
+                <div *ngIf="showConfigFields[i]" [id]="'configFields_' + i">
                   <div class="mb-2 grey-text">{{ 'child_bridge.settings_config.description' | translate }}</div>
                   <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
                     <span class="pr-0 pr-lg-3" style="flex: 1;">{{ 'child_bridge.settings_config.name' | translate }}</span>

@@ -1,6 +1,7 @@
-<div class="m-header" (click)="handleSidebarToggle()" tabindex="0" role="button" (keydown)="handleKeydown($event)"></div>
+<div class="m-header" (click)="handleSidebarToggle()" tabindex="0" role="button" (keydown)="handleKeydown($event)"
+  [attr.aria-expanded]="isExpanded ? 'true' : 'false'" [attr.aria-controls]="'sidebar'"></div>
 
-<div class="sidebar" [ngClass]="{ 'expanded': isExpanded }" role="navigation">
+<div class="sidebar" [ngClass]="{ 'expanded': isExpanded }" role="navigation" id="sidebar">
   <div class="header" (click)="handleSidebarToggle()" tabindex="0" role="button" (keydown)="handleKeydown($event)">
     <img style="height:35px; width: 35px;" ngSrc="../../../../assets/homebridge-logo.svg" alt="HB Logo" height="16" width="16">
     <i class="fas fa-bars fa-fw white-text hb-logo-icon"></i>
@@ -41,15 +42,15 @@
     </div>
 
     <div class="link" *ngIf="$auth.user.admin">
-      <div class="link-row" [routerLink]="['/config']" [routerLinkActive]="'active'"
-           [attr.aria-label]="'menu.config_json_editor' | translate" role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
+      <div class="link-row" [routerLink]="['/config']" [routerLinkActive]="'active'" [attr.aria-label]="'menu.config_json_editor' | translate"
+        role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
         <div class="icon"><i class="fa fa-fw fa-code"></i></div>
         <div class="title">{{ 'menu.config_json_editor' | translate }}</div>
       </div>
     </div>
 
     <div class="link" *ngIf="$auth.user.admin">
-      <div class="link-row" [routerLink]="['/logs']" [routerLinkActive]="'active'" [attr.aria-label]="'menu.label_logs' | translate"
+      <div class="link-row" [routerLink]="['/logs']" [routerLinkActive]="'active'" [attr.aria-label]="'menu.linux.label_logs' | translate"
         role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
         <div class="icon"><i class="fa fa-fw fa-wave-square"></i></div>
         <div class="title">{{ 'menu.linux.label_logs' | translate }}</div>
