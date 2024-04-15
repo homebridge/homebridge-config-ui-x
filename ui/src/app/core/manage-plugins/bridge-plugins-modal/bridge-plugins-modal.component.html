@@ -63,11 +63,11 @@
               </div>
               <div class="mb-4">
                 <h5 (click)="toggleConfigFields(i)" class="primary-text hover-pointer" tabindex="0"
-                  [attr.aria-expanded]="showConfigFields[i] ? 'true' : 'false'">
+                  [attr.aria-expanded]="showConfigFields[i] ? 'true' : 'false'" [attr.aria-controls]="'configFields_' + i">
                   <i class="fa fa-fw" [ngClass]="showConfigFields[i] ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
                   {{ 'child_bridge.settings_config.header' | translate }}
                 </h5>
-                <div *ngIf="showConfigFields[i]">
+                <div *ngIf="showConfigFields[i]" [id]="'configFields_' + i">
                   <div class="mb-2 grey-text">{{ 'child_bridge.settings_config.description' | translate }}</div>
                   <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
                     <span class="pr-0 pr-lg-3" style="flex: 1;">{{ 'child_bridge.settings_config.name' | translate }}</span>
