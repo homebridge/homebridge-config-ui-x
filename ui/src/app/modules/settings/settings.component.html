@@ -10,16 +10,17 @@
 
 <div class="mb-4">
   <h5 (click)="toggleSection('general')" class="primary-text mt-3 hover-pointer"
-    tabindex="0" [attr.aria-expanded]="showFields.general ? 'true' : 'false'">
+    tabindex="0" [attr.aria-expanded]="showFields.general ? 'true' : 'false'" [attr.aria-controls]="'fieldsGeneral'">
     <i class="fa fa-fw" [ngClass]="showFields.general ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
     {{ 'settings.general.title_general' | translate }}
   </h5>
-  <ul class="list-group list-group-box mt-2 mx-2" *ngIf="showFields.general">
+  <ul class="list-group list-group-box mt-2 mx-2" *ngIf="showFields.general" id="fieldsGeneral">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2">
         {{ 'menu.label_settings_ui' | translate }}
       </span>
-      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" (click)="openUiSettings()">
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" (click)="openUiSettings()"
+        [attr.aria-label]="'menu.label_settings_ui' | translate">
         <i class="fas fa-fw fa-sliders"></i>
       </button>
     </li>
@@ -97,7 +98,8 @@
       <span class="pe-2">
         {{ 'backup.title_backup' | translate }}
       </span>
-      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" (click)="openBackupModal()">
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" (click)="openBackupModal()"
+        [attr.aria-label]="'backup.title_backup' | translate">
         <i class="fas fa-fw fa-chevron-right"></i>
       </button>
     </li>
@@ -105,7 +107,8 @@
       <span class="pe-2">
         {{ 'backup.title_restore' | translate }}
       </span>
-      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" (click)="openRestoreModal()">
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" (click)="openRestoreModal()"
+        [attr.aria-label]="'backup.title_restore' | translate">
         <i class="fas fa-fw fa-chevron-right"></i>
       </button>
     </li>
@@ -123,11 +126,11 @@
 <!-- ALL USERS -->
 <div class="mb-4">
   <h5 (click)="toggleSection('network')" class="primary-text mt-3 hover-pointer"
-    tabindex="0" [attr.aria-expanded]="showFields.network ? 'true' : 'false'">
+    tabindex="0" [attr.aria-expanded]="showFields.network ? 'true' : 'false'" [attr.aria-controls]="'fieldsNetwork'">
     <i class="fa fa-fw" [ngClass]="showFields.network ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
     {{ 'settings.network.title_network' | translate }}
   </h5>
-  <ul class="list-group list-group-box mt-2 mx-2" *ngIf="showFields.network">
+  <ul class="list-group list-group-box mt-2 mx-2" *ngIf="showFields.network" id="fieldsNetwork">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="w-75 pe-2">
         <div>{{ 'settings.network.title_network_interfaces' | translate }}
@@ -166,11 +169,11 @@
 <!-- SERVICE MODE USERS ONLY -->
 <form class="my-4" novalidate [formGroup]="serviceForm" *ngIf="$settings.env.serviceMode">
   <h5 (click)="toggleSection('startup')" class="primary-text mt-3 hover-pointer"
-    tabindex="0" [attr.aria-expanded]="showFields.startup ? 'true' : 'false'">
+    tabindex="0" [attr.aria-expanded]="showFields.startup ? 'true' : 'false'" [attr.aria-controls]="'fieldsStartup'">
     <i class="fa fa-fw" [ngClass]="showFields.startup ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
     {{ 'settings.title_startup_options' | translate }}
   </h5>
-  <ul class="list-group list-group-box mb-4 mx-2" *ngIf="showFields.startup">
+  <ul class="list-group list-group-box mb-4 mx-2" *ngIf="showFields.startup" id="fieldsStartup">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="w-75">{{ 'settings.startup.debug' | translate }} <code>-D</code></span>
       <input type="checkbox" class="rendux-input" id="homebridgeDebugMode" formControlName="HOMEBRIDGE_DEBUG"
@@ -195,11 +198,11 @@
   </ul>
   <div class="my-4">
     <h5 (click)="toggleSection('env')" class="primary-text mt-3 hover-pointer"
-      tabindex="0" [attr.aria-expanded]="showFields.env ? 'true' : 'false'">
+      tabindex="0" [attr.aria-expanded]="showFields.env ? 'true' : 'false'" [attr.aria-controls]="'fieldsEnv'">
       <i class="fa fa-fw" [ngClass]="showFields.env ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
       {{ 'settings.title_environment_variables' | translate }}
     </h5>
-    <ul class="list-group list-group-box mt-2 mx-2" *ngIf="showFields.env">
+    <ul class="list-group list-group-box mt-2 mx-2" *ngIf="showFields.env" id="fieldsEnv">
       <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
         <span>
           DEBUG<br>
@@ -225,12 +228,12 @@
 <!-- ALL USERS -->
 <div class="my-4">
   <h5 (click)="toggleSection('reset')" class="primary-text mt-3 hover-pointer"
-    tabindex="0" [attr.aria-expanded]="showFields.reset ? 'true' : 'false'">
+    tabindex="0" [attr.aria-expanded]="showFields.reset ? 'true' : 'false'" [attr.aria-controls]="'fieldsReset'">
     <i class="fa fa-fw" [ngClass]="showFields.reset ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
     {{ 'reset.title_reset' | translate }}
   </h5>
   <p class="small grey-text mb-2 mx-2">{{ 'settings.reset.help' | translate }}</p>
-  <ul class="list-group list-group-box mt-2 mx-2" *ngIf="showFields.reset">
+  <ul class="list-group list-group-box mt-2 mx-2" *ngIf="showFields.reset" id="fieldsReset">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="w-75 pe-2">
         {{ 'reset.title_unpair_bridges_cameras_tv_external_accessories' | translate }}<br/>
@@ -257,12 +260,12 @@
 <!-- SERVICE MODE USERS ONLY -->
 <div *ngIf="$settings.env.serviceMode" class="pb-3">
   <h5 (click)="toggleSection('cache')" class="primary-text mt-3 hover-pointer"
-    tabindex="0" [attr.aria-expanded]="showFields.cache ? 'true' : 'false'">
+    tabindex="0" [attr.aria-expanded]="showFields.cache ? 'true' : 'false'" [attr.aria-controls]="'fieldsCache'">
     <i class="fa fa-fw" [ngClass]="showFields.cache ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
     {{ 'settings.title_manage_cached_accessories' | translate }}
   </h5>
   <p class="small grey-text mb-2 mx-2">{{ 'settings.manage_cache.help' | translate }}</p>
-  <ul class="list-group list-group-box mb-4 mx-2" *ngIf="showFields.cache">
+  <ul class="list-group list-group-box mb-4 mx-2" *ngIf="showFields.cache" id="fieldsCache">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="w-75 pe-2">
         {{ 'reset.title_clear_cached_accessories_single' | translate }}<br>
