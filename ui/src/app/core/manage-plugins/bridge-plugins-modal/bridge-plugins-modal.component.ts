@@ -73,6 +73,10 @@ export class BridgePluginsModalComponent implements OnInit {
     block._bridge = {
       username: bridgeCache ? bridgeCache.username : this.generateUsername(),
       port: await this.getUnusedPort(),
+      name: bridgeCache ? bridgeCache.name : '',
+      model: bridgeCache ? bridgeCache.model : '',
+      manufacturer: bridgeCache ? bridgeCache.manufacturer : '',
+      firmwareRevision: bridgeCache ? bridgeCache.firmwareRevision : '',
     };
 
     this.bridgeCache.set(index, block._bridge);
