@@ -34,11 +34,11 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Other Changes
 
 - updated dependencies
-- add api for theme change
+- update hb/nest dependencies
 
 ### Homebridge Dependencies
 
-- `@homebridge/hap-client` @ `v1.10.1`
+- `@homebridge/hap-client` @ `v1.10.2`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.11.13`
 - `@homebridge/plugin-ui-utils` @ `v1.0.3`
 
