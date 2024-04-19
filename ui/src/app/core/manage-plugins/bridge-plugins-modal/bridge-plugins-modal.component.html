@@ -22,9 +22,9 @@
       <ul class="list-group list-group-box mt-2 mb-3" *ngIf="configBlocks.length">
         <li class="list-group-item " *ngFor="let item of configBlocks; let i = index">
           <div class="d-flex justify-content-between align-items-center">
-            <h5 class="primary-text">
+            <h5 class="primary-text mb-0">
               <strong>
-                {{ item.name || item.accessory || item.platform }} <span *ngIf="enabledBlocks[i] && item._bridge.name"> - {{ item._bridge.name }}</span>
+                {{ item.name || item.accessory || item.platform }} <span *ngIf="enabledBlocks[i] && item._bridge?.name"> - {{ item._bridge.name }}</span>
               </strong>
             </h5>
             <input type="checkbox" class="rendux-input" [id]="'toggleExternalBridgeInput_' + i"
@@ -34,12 +34,11 @@
           <div *ngIf="item._bridge?.username">
             <div *ngIf="deviceInfo[item._bridge?.username] === false">
               <ngb-alert type="info" [dismissible]="false" class="mt-3">
-                <i class="fa fa-fw fa-info-circle"></i>
                 {{ 'child_bridge.message_restart_homebridge' | translate }}
                 <br>{{ 'child_bridge.message_return_to_pair' | translate }}
               </ngb-alert>
             </div>
-            <div *ngIf="deviceInfo[item._bridge?.username]">
+            <div *ngIf="deviceInfo[item._bridge?.username]" class="mt-3">
               <div *ngIf="!deviceInfo[item._bridge?.username]._isPaired" class="w-100 d-flex flex-column">
                 <app-qrcode [data]="deviceInfo[item._bridge?.username]._setupCode" class="mx-auto my-2"
                   style="width: 180px; height: 180px;">
