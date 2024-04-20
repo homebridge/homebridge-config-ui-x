@@ -69,3 +69,5 @@ yarn.lock
 # vscode
 .vscode/arduino.json
 .vscode/c_cpp_properties.json
+
+ui/.nx
