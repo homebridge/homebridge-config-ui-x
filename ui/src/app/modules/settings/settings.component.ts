@@ -38,9 +38,8 @@ export class SettingsComponent implements OnInit {
   public bridgeNetworkAdapters: Record<string, any> = [];
   public showFields = {
     general: true,
-    network: false,
     startup: false,
-    env: false,
+    network: false,
     reset: false,
     cache: false,
   };

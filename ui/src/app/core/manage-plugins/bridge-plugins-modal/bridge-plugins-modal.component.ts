@@ -24,7 +24,6 @@ export class BridgePluginsModalComponent implements OnInit {
   public enabledBlocks: Record<number, boolean> = {};
   public bridgeCache: Map<number, Record<string, any>> = new Map();
   public deviceInfo: Map<string, any> = new Map();
-  public showEnvFields: boolean[] = [];
   public showConfigFields: boolean[] = [];
 
   public saveInProgress = false;
@@ -51,6 +50,7 @@ export class BridgePluginsModalComponent implements OnInit {
         for (const [i, block] of this.configBlocks.entries()) {
           if (block._bridge && block._bridge.username) {
             this.enabledBlocks[i] = true;
+            block._bridge.env = block._bridge.env || {};
             this.bridgeCache.set(i, block._bridge);
             this.getDeviceInfo(block._bridge.username);
           }
@@ -73,10 +73,11 @@ export class BridgePluginsModalComponent implements OnInit {
     block._bridge = {
       username: bridgeCache ? bridgeCache.username : this.generateUsername(),
       port: await this.getUnusedPort(),
-      name: bridgeCache ? bridgeCache.name : '',
-      model: bridgeCache ? bridgeCache.model : '',
-      manufacturer: bridgeCache ? bridgeCache.manufacturer : '',
-      firmwareRevision: bridgeCache ? bridgeCache.firmwareRevision : '',
+      name: bridgeCache?.name,
+      model: bridgeCache?.model,
+      manufacturer: bridgeCache?.manufacturer,
+      firmwareRevision: bridgeCache?.firmwareRevision,
+      env: bridgeCache?.env,
     };
 
     this.bridgeCache.set(index, block._bridge);

@@ -21,9 +21,9 @@
     <div *ngIf="configBlocks.length">
       <p>{{ 'child_bridge.message_child_bridges_must_be_paired_separately' | translate }}</p>
       <p>{{ 'child_bridge.message_select_platforms_accessories' | translate }}:</p>
-      <ul class="list-group list-group-box mt-2 mb-3" *ngIf="configBlocks.length">
+      <ul class="list-group list-group-box my-2" *ngIf="configBlocks.length">
         <li class="list-group-item " *ngFor="let item of configBlocks; let i = index">
-          <div class="d-flex justify-content-between align-items-center">
+          <div class="d-flex justify-content-between align-items-center mt-1">
             <h5 class="primary-text mb-0">
               <strong>
                 {{ item.name || item.accessory || item.platform }} <span *ngIf="enabledBlocks[i] && item._bridge?.name"> - {{ item._bridge.name }}</span>
@@ -60,37 +60,54 @@
                   </p>
                 </div>
               </div>
-              <div class="mb-4">
-                <h5 (click)="toggleConfigFields(i)" class="primary-text hover-pointer" tabindex="0"
-                  [attr.aria-expanded]="showConfigFields[i] ? 'true' : 'false'" [attr.aria-controls]="'configFields_' + i">
-                  <i class="fa fa-fw" [ngClass]="showConfigFields[i] ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
-                  {{ 'child_bridge.settings_config.header' | translate }}
-                </h5>
-                <div *ngIf="showConfigFields[i]" [id]="'configFields_' + i">
-                  <div class="mb-2 grey-text">{{ 'child_bridge.settings_config.description' | translate }}</div>
-                  <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
-                    <span class="pr-0 pr-lg-3" style="flex: 1;">{{ 'child_bridge.settings_config.name' | translate }}</span>
-                    <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1;">
-                      <input class="form-control form-control-sm" type="text" [(ngModel)]="item._bridge.name">
-                    </div>
+              <h5 (click)="toggleConfigFields(i)" class="primary-text hover-pointer" tabindex="0"
+                [attr.aria-expanded]="showConfigFields[i] ? 'true' : 'false'" [attr.aria-controls]="'configFields_' + i" *ngIf="$settings.env.serviceMode">
+                <i class="fa fa-fw" [ngClass]="showConfigFields[i] ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+                {{ 'child_bridge.settings_config.header' | translate }}
+              </h5>
+              <div *ngIf="showConfigFields[i]" [id]="'configFields_' + i">
+                <div class="mb-3 grey-text">{{ 'child_bridge.settings_config.description' | translate }}</div>
+                <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
+                  <span class="pr-0 pr-lg-3" style="flex: 1;">{{ 'child_bridge.settings_config.name' | translate }}</span>
+                  <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1;">
+                    <input class="form-control form-control-sm" type="text" [(ngModel)]="item._bridge.name">
                   </div>
-                  <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
-                    <span class="pr-0 pr-lg-3" style="flex: 1;">{{ 'child_bridge.settings_config.manufacturer' | translate }}</span>
-                    <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1;">
-                      <input class="form-control form-control-sm" type="text" [(ngModel)]="item._bridge.manufacturer">
-                    </div>
+                </div>
+                <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
+                  <span class="pr-0 pr-lg-3" style="flex: 1;">{{ 'child_bridge.settings_config.manufacturer' | translate }}</span>
+                  <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1;">
+                    <input class="form-control form-control-sm" type="text" [(ngModel)]="item._bridge.manufacturer">
                   </div>
-                  <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
-                    <span class="pr-0 pr-lg-3" style="flex: 1;">{{ 'child_bridge.settings_config.model' | translate }}</span>
-                    <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1;">
-                      <input class="form-control form-control-sm" type="text" [(ngModel)]="item._bridge.model">
-                    </div>
+                </div>
+                <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
+                  <span class="pr-0 pr-lg-3" style="flex: 1;">{{ 'child_bridge.settings_config.model' | translate }}</span>
+                  <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1;">
+                    <input class="form-control form-control-sm" type="text" [(ngModel)]="item._bridge.model">
                   </div>
-                  <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
-                    <span class="pr-0 pr-lg-3" style="flex: 1;">{{ 'child_bridge.settings_config.firmware' | translate }}</span>
-                    <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1;">
-                      <input class="form-control form-control-sm" type="text" [(ngModel)]="item._bridge.firmwareRevision">
-                    </div>
+                </div>
+                <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
+                  <span class="pr-0 pr-lg-3" style="flex: 1;">{{ 'child_bridge.settings_config.firmware' | translate }}</span>
+                  <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1;">
+                    <input class="form-control form-control-sm" type="text" [(ngModel)]="item._bridge.firmwareRevision">
+                  </div>
+                </div>
+                <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
+                  <span class="pr-0 pr-lg-3" style="flex: 1;">
+                    <span class="text-monospace">DEBUG</span><br>
+                    <small class="grey-text">{{ 'settings.service.debug_tooltip' | translate }}</small>
+                  </span>
+                  <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1;">
+                    <input class="form-control form-control-sm" type="text" [(ngModel)]="item._bridge.env.DEBUG">
+                  </div>
+                </div>
+                <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
+                  <span class="pr-0 pr-lg-3" style="flex: 1;">
+                    <span class="text-monospace">NODE_OPTIONS</span><br>
+                    <small class="grey-text">{{ 'settings.service.node_tooltip' | translate }}</small>
+                  </span>
+                  <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1;">
+                    <input class="form-control form-control-sm" type="text" [(ngModel)]="item._bridge.env.NODE_OPTIONS"
+                      placeholder="--max-old-space-size=512 --max-http-header-size=8192">
                   </div>
                 </div>
               </div>

@@ -26,7 +26,7 @@
           </div>
           <input id="city-search-input" type="text" class="form-control custom-input" [ngbTypeahead]="searchCountryCodes"
             [resultFormatter]="searchCountryCodeFormatter" [inputFormatter]="searchCountryCodeFormatter"
-            [editable]='false' [(ngModel)]="widget.location" />
+            [editable]='false' [(ngModel)]="widget.location">
         </div>
         <p class="muted grey-text font-italic text-center">
           Weather data is provided by OpenWeather.

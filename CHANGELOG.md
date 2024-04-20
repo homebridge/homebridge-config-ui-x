@@ -26,6 +26,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - ui styling
 - accessibility improvements
 - hide node update available icon for synology users
+- update bridge settings + main settings page
 
 ### Translation Changes
 
