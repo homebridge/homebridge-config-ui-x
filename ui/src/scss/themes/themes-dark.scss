@@ -69,6 +69,11 @@
       color: #eeeeee !important;
     }
 
+    .form-control::placeholder {
+      color: #636363 !important;
+      opacity: 1 !important;
+    }
+
     .hb-plain-text-editor {
       background-color: #333333 !important;
       color: #eeeeee !important;

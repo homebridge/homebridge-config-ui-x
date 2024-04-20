@@ -307,7 +307,6 @@
   "settings.startup.insecure_2": "Aktiviere Accessory Control",
   "settings.startup.keep_accessories": "Behalte Accessories von nicht installierten Plugins",
   "settings.theme": "Theme",
-  "settings.title_environment_variables": "Umgebungsvariablen",
   "settings.title_manage_cached_accessories": "Verwalten von Geräten im Cache",
   "settings.title_startup_options": "Startoptionen",
   "setup_wizard.button_get_started": "Los geht's",
