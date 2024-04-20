@@ -100,7 +100,6 @@
   "config.restore.toast_backups_deleted": "Tüm Yedeklemeler Silindi",
   "config.restore.toast_failed_to_delete_backups": "Yedeklemeler Silinemedi",
   "config.restore.toast_failed_to_load_backups": "Yedeklemeler Yüklenemedi",
-  "config.title_config": "Yapılandırma Düzenleyicisi",
   "config.toast_click_save_to_confirm_backup_restore": "Bu yedeği geri yüklemek istediğinizi onaylamak için Kaydet'e tıklayın.",
   "config.toast_config_accessory_must_be_array": "aksesuarlar bir dizi olmalı []",
   "config.toast_config_bridge_missing": "Köprü ayarları eksik",

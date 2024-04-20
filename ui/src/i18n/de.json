@@ -100,7 +100,6 @@
   "config.restore.toast_backups_deleted": "Alle Backups gelöscht",
   "config.restore.toast_failed_to_delete_backups": "Fehler beim Löschen von Sicherungen",
   "config.restore.toast_failed_to_load_backups": "Fehler beim Laden von Sicherungen",
-  "config.title_config": "Konfigurations-Editor",
   "config.toast_click_save_to_confirm_backup_restore": "Klicke auf Speichern, um zu bestätigen, dass diese Sicherung wiederhergestellt werden soll.",
   "config.toast_config_accessory_must_be_array": "accessories muss ein Array sein []",
   "config.toast_config_bridge_missing": "Bridge-Einstellungen fehlen",

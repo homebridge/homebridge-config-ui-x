@@ -100,7 +100,6 @@
   "config.restore.toast_backups_deleted": "모든 백업을 삭제하였습니다",
   "config.restore.toast_failed_to_delete_backups": "백업 삭제에 실패했습니다",
   "config.restore.toast_failed_to_load_backups": "백업 로드에 실패했습니다",
-  "config.title_config": "Config 에디터",
   "config.toast_click_save_to_confirm_backup_restore": "이 백업을 복원하려면 저장을 클릭하세요.",
   "config.toast_config_accessory_must_be_array": "accessories는 배열 형태로 구성해야 합니다 []",
   "config.toast_config_bridge_missing": "bridge 설정이 누락되었습니다",

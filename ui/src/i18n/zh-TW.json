@@ -100,7 +100,6 @@
   "config.restore.toast_backups_deleted": "已刪除所有備份",
   "config.restore.toast_failed_to_delete_backups": "無法刪除備份",
   "config.restore.toast_failed_to_load_backups": "無法讀取備份",
-  "config.title_config": "設定編輯器",
   "config.toast_click_save_to_confirm_backup_restore": "點擊「儲存」以確認回復此備份。",
   "config.toast_config_accessory_must_be_array": "配件必須是數組 []",
   "config.toast_config_bridge_missing": "遺失橋接器",

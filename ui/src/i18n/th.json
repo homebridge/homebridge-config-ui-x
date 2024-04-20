@@ -100,7 +100,6 @@
   "config.restore.toast_backups_deleted": "ลบข้อมูลสำรองทั้งหมดแล้ว",
   "config.restore.toast_failed_to_delete_backups": "ไม่สามารถลบข้อมูลสำรองได้",
   "config.restore.toast_failed_to_load_backups": "โหลดข้อมูลสำรองไม่สำเร็จ",
-  "config.title_config": "ตัวแก้ไขการกำหนดค่า",
   "config.toast_click_save_to_confirm_backup_restore": "คลิกบันทึกเพื่อยืนยันว่าคุณต้องการกู้คืนข้อมูลสำรองนี้",
   "config.toast_config_accessory_must_be_array": "อุปกรณ์เสริมต้องเป็นอาร์เรย์ []",
   "config.toast_config_bridge_missing": "ไม่มีการตั้งค่าบริดจ์",

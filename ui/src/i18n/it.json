@@ -100,7 +100,6 @@
   "config.restore.toast_backups_deleted": "Backup eliminati",
   "config.restore.toast_failed_to_delete_backups": "Impossibile eliminare i backup",
   "config.restore.toast_failed_to_load_backups": "Impossibile caricare i backup",
-  "config.title_config": "Modifica configurazione",
   "config.toast_click_save_to_confirm_backup_restore": "Clicca Salva per recuperare questo backup",
   "config.toast_config_accessory_must_be_array": "gli accessori devono essere tra []",
   "config.toast_config_bridge_missing": "Impostazioni del bridge mancanti",

@@ -100,7 +100,6 @@
   "config.restore.toast_backups_deleted": "All Backups Deleted",
   "config.restore.toast_failed_to_delete_backups": "Failed to Delete Backups",
   "config.restore.toast_failed_to_load_backups": "Failed to Load Backups",
-  "config.title_config": "Config Editor",
   "config.toast_click_save_to_confirm_backup_restore": "Click Save to confirm you want to restore this backup.",
   "config.toast_config_accessory_must_be_array": "accessories must be an array []",
   "config.toast_config_bridge_missing": "Bridge settings missing",

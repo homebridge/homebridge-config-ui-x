@@ -100,7 +100,6 @@
   "config.restore.toast_backups_deleted": "Minden biztonsági mentés törölve",
   "config.restore.toast_failed_to_delete_backups": "Hiba a biztonsági mentések törlésénél",
   "config.restore.toast_failed_to_load_backups": "Hiba a biztonsági mentések helyreállításánál",
-  "config.title_config": "Konfiguráció szerkesztő",
   "config.toast_click_save_to_confirm_backup_restore": "Kattintson a mentésre, ha vissza szeretné állítani a biztonsági mentést.",
   "config.toast_config_accessory_must_be_array": "a kiegészítőnek szögletes zárójelben kell lennie []",
   "config.toast_config_bridge_missing": "Hiányzik a Bridge konfiguráció",

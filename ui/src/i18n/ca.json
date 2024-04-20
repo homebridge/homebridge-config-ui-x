@@ -100,7 +100,6 @@
   "config.restore.toast_backups_deleted": "Totes les còpies de seguretat eliminades",
   "config.restore.toast_failed_to_delete_backups": "Error a l'eliminar les còpies de seguretat",
   "config.restore.toast_failed_to_load_backups": "Error al llegir les còpies de seguretat",
-  "config.title_config": "Editor de configuració",
   "config.toast_click_save_to_confirm_backup_restore": "Fes clic a Guardar per confirmar la restauració d'aquesta còpia de seguretat.",
   "config.toast_config_accessory_must_be_array": "accessoris han de ser una col·lecció []",
   "config.toast_config_bridge_missing": "Falta configuració del pont",

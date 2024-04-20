@@ -100,7 +100,6 @@
   "config.restore.toast_backups_deleted": "Alle sikkerhetskopier slettet",
   "config.restore.toast_failed_to_delete_backups": "Det gikk ikke å slette sikkerhetskopier",
   "config.restore.toast_failed_to_load_backups": "Det gikk ikke å laste sikkerhetskopier",
-  "config.title_config": "Config redigerer",
   "config.toast_click_save_to_confirm_backup_restore": "Trykk på Lagre for å bekrefte at du vil tilbakestille denne sikkerhetskopien.",
   "config.toast_config_accessory_must_be_array": "Tilbehør må være en matrise []",
   "config.toast_config_bridge_missing": "Bridge-innstillinger savnes",

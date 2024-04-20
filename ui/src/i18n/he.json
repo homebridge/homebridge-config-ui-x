@@ -100,7 +100,6 @@
   "config.restore.toast_backups_deleted": "כל הגיבויים נמחקו",
   "config.restore.toast_failed_to_delete_backups": "כשל במחיקת הגיבויים",
   "config.restore.toast_failed_to_load_backups": "כשל בהעלאת הגיבויים",
-  "config.title_config": "עורך קונפיגורציה",
   "config.toast_click_save_to_confirm_backup_restore": "לחץ שמירה לאשר שאתה רוצה לשחזר מגיבוי זה",
   "config.toast_config_accessory_must_be_array": "אביזרים חייבים להיות מערך []",
   "config.toast_config_bridge_missing": "חסרות הגדרות מגשר",

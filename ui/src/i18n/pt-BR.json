@@ -100,7 +100,6 @@
   "config.restore.toast_backups_deleted": "Todos os backups foram removidos",
   "config.restore.toast_failed_to_delete_backups": "Falha ao Remover os Backups",
   "config.restore.toast_failed_to_load_backups": "Falha ao Carregar os Backups",
-  "config.title_config": "Config",
   "config.toast_click_save_to_confirm_backup_restore": "Clique em Salvar caso queira restaurar este backup.",
   "config.toast_config_accessory_must_be_array": "os acessórios precisam ser um array []",
   "config.toast_config_bridge_missing": "Estão faltando as definições da ponte",

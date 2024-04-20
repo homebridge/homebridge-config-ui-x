@@ -100,7 +100,6 @@
   "config.restore.toast_backups_deleted": "Všechny zálohy byly smazány",
   "config.restore.toast_failed_to_delete_backups": "Nepodařilo se odstranit zálohy",
   "config.restore.toast_failed_to_load_backups": "Nepodařilo se načíst zálohy",
-  "config.title_config": "Konfigurační editor",
   "config.toast_click_save_to_confirm_backup_restore": "Klepnutím na tlačítko Uložit potvrďte, že chcete tuto zálohu obnovit.",
   "config.toast_config_accessory_must_be_array": "příslušenství musí být pole []",
   "config.toast_config_bridge_missing": "Chybí nastavení mostu",
