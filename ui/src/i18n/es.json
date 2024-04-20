@@ -100,7 +100,6 @@
   "config.restore.toast_backups_deleted": "Todas las copias de seguridad eliminadas",
   "config.restore.toast_failed_to_delete_backups": "Error al eliminar las copias de seguridad",
   "config.restore.toast_failed_to_load_backups": "Error al leer las copias de seguridad",
-  "config.title_config": "Editor de configuración",
   "config.toast_click_save_to_confirm_backup_restore": "Pulsa Guardar para confirmar la restauración de esta copia de seguridad.",
   "config.toast_config_accessory_must_be_array": "accesorios deben estar en una colección []",
   "config.toast_config_bridge_missing": "Falta configuración del puente",

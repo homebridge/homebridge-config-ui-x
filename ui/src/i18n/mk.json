@@ -100,7 +100,6 @@
   "config.restore.toast_backups_deleted": "Сите бекапи се избришани",
   "config.restore.toast_failed_to_delete_backups": "Неуспешно бришење на бекапи",
   "config.restore.toast_failed_to_load_backups": "Неуспешно вчитување на бекапи",
-  "config.title_config": "Уредник за конфигурација",
   "config.toast_click_save_to_confirm_backup_restore": "Кликнете Зачувај за да потврдите дека сакате да го повратите овој бекап.",
   "config.toast_config_accessory_must_be_array": "accessories мора да бидат низа []",
   "config.toast_config_bridge_missing": "Поставки за Bridge недостасуваат",

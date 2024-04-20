@@ -100,7 +100,6 @@
   "config.restore.toast_backups_deleted": "Vse varnostne kopije so izbrisane",
   "config.restore.toast_failed_to_delete_backups": "Brisanje varnostnih kopij ni uspelo",
   "config.restore.toast_failed_to_load_backups": "Nalaganje varnostnih kopij ni uspelo",
-  "config.title_config": "Config urejevalec",
   "config.toast_click_save_to_confirm_backup_restore": "Kliknite Shrani, da potrdite, da želite obnoviti to varnostno kopijo.",
   "config.toast_config_accessory_must_be_array": "dodatki morajo biti v nizu []",
   "config.toast_config_bridge_missing": "Manjkajo nastavitve Bridga",

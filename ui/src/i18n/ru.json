@@ -100,7 +100,6 @@
   "config.restore.toast_backups_deleted": "Все резервные копии удалены",
   "config.restore.toast_failed_to_delete_backups": "Не удалось удалить резервные копии",
   "config.restore.toast_failed_to_load_backups": "Не удалось загрузить резервные копии",
-  "config.title_config": "редактор конфигурации",
   "config.toast_click_save_to_confirm_backup_restore": "Нажмите «Сохранить», чтобы подтвердить, что Вы хотите восстановить эту резервную копию.",
   "config.toast_config_accessory_must_be_array": "аксессуары должны быть массивом []",
   "config.toast_config_bridge_missing": "Настройки моста отсутствуют",

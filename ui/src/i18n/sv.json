@@ -100,7 +100,6 @@
   "config.restore.toast_backups_deleted": "Alla säkerhetskopior raderade",
   "config.restore.toast_failed_to_delete_backups": "Det gick inte att ta bort säkerhetskopior",
   "config.restore.toast_failed_to_load_backups": "Det gick inte att ladda säkerhetskopior",
-  "config.title_config": "Konfigurations redigerare",
   "config.toast_click_save_to_confirm_backup_restore": "Klicka på Spara för att bekräfta att du vill återställa den här säkerhetskopian.",
   "config.toast_config_accessory_must_be_array": "Tillbehör måste vara en matris []",
   "config.toast_config_bridge_missing": "Bridge-inställningar saknas",

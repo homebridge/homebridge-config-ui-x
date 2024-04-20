@@ -100,7 +100,6 @@
   "config.restore.toast_backups_deleted": "Всички резервни копия са изтрити",
   "config.restore.toast_failed_to_delete_backups": "Неуспешно изтриване на резервните копия",
   "config.restore.toast_failed_to_load_backups": "Неуспешно зареждане на резервните копия",
-  "config.title_config": "Конфигуратор",
   "config.toast_click_save_to_confirm_backup_restore": "Натиснете запамети за да потвърдите, че искате да възстановите това резервно копие.",
   "config.toast_config_accessory_must_be_array": "аксесоарите трябва да са в скоби []",
   "config.toast_config_bridge_missing": "Липсват настройки за бриджа",

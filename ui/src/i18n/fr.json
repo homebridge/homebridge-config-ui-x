@@ -100,7 +100,6 @@
   "config.restore.toast_backups_deleted": "Toutes les sauvegardes ont été supprimées",
   "config.restore.toast_failed_to_delete_backups": "Erreur de suppression des sauvegardes",
   "config.restore.toast_failed_to_load_backups": "Erreur de chargement des sauvegardes",
-  "config.title_config": "Éditeur de config",
   "config.toast_click_save_to_confirm_backup_restore": "Cliquez sur Enregistrer pour confirmer la restauration de cette sauvegarde.",
   "config.toast_config_accessory_must_be_array": "Accessories doit être un tableau []",
   "config.toast_config_bridge_missing": "Réglages du pont manquant",

@@ -100,7 +100,6 @@
   "config.restore.toast_backups_deleted": "Semua Cadangan Dihapus",
   "config.restore.toast_failed_to_delete_backups": "Gagal Menghapus Cadangan",
   "config.restore.toast_failed_to_load_backups": "Gagal Memuat Cadangan",
-  "config.title_config": "Konfigurasi Editor",
   "config.toast_click_save_to_confirm_backup_restore": "Klik Simpan untuk mengonfirmasi bahwa Anda ingin memulihkan cadangan ini.",
   "config.toast_config_accessory_must_be_array": "Aksesoris harus berupa array []",
   "config.toast_config_bridge_missing": "Pengaturan Bridge yang Hilang",

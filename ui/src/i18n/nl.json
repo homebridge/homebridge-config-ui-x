@@ -100,7 +100,6 @@
   "config.restore.toast_backups_deleted": "Alle backups zijn verwijderd",
   "config.restore.toast_failed_to_delete_backups": "Backups konden niet worden verwijderd",
   "config.restore.toast_failed_to_load_backups": "Kan geen backups laden",
-  "config.title_config": "Config Editor",
   "config.toast_click_save_to_confirm_backup_restore": "Klik op Opslaan om te bevestigen dat u deze backup wilt herstellen.",
   "config.toast_config_accessory_must_be_array": "Accessoires moeten een array [] zijn",
   "config.toast_config_bridge_missing": "Bridge instellingen ontbreken",

@@ -100,7 +100,6 @@
   "config.restore.toast_backups_deleted": "Wszystkie backupy zostały usunięte",
   "config.restore.toast_failed_to_delete_backups": "Błąd usuwania backupów",
   "config.restore.toast_failed_to_load_backups": "Błąd wczytywania backupów",
-  "config.title_config": "Konfiguracja",
   "config.toast_click_save_to_confirm_backup_restore": "Kliknij Zapisz, aby przywrócić backup.",
   "config.toast_config_accessory_must_be_array": "Akcesoria muszą być w tablicy []",
   "config.toast_config_bridge_missing": "Brak ustawień mostka",

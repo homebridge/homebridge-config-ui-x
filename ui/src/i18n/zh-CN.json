@@ -100,7 +100,6 @@
   "config.restore.toast_backups_deleted": "所有备份已删除",
   "config.restore.toast_failed_to_delete_backups": "删除备份失败",
   "config.restore.toast_failed_to_load_backups": "载入备份失败",
-  "config.title_config": "配置编辑",
   "config.toast_click_save_to_confirm_backup_restore": "单击“保存”以确认您要还原此备份。",
   "config.toast_config_accessory_must_be_array": "配件应为数组 []",
   "config.toast_config_bridge_missing": "Bridge 设置丢失",

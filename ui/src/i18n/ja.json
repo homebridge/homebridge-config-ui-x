@@ -100,7 +100,6 @@
   "config.restore.toast_backups_deleted": "バックアップは全て削除されました",
   "config.restore.toast_failed_to_delete_backups": "バックアップの削除に失敗しました",
   "config.restore.toast_failed_to_load_backups": "バックアップの読み込みに失敗しました",
-  "config.title_config": "コンフィグエディタ",
   "config.toast_click_save_to_confirm_backup_restore": "[保存]をクリックしてこのバックアップを復元することを確認してください",
   "config.toast_config_accessory_must_be_array": "accessoriesは配列 [] でなければなりません",
   "config.toast_config_bridge_missing": "ブリッジの設定が不足しています",
