@@ -205,6 +205,14 @@
                     {{ 'child_bridge.label_child_setup' | translate }}
                   </button>
                   <!-- // -->
+                  <!-- child bridge setup, edge case, when not configured, recommended, but update icon blocks setup -->
+                  <div class="dropdown-divider" *ngIf="plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && plugin.recommendChildBridge && plugin.updateAvailable"></div>
+                  <button ngbDropdownItem *ngIf="plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && plugin.recommendChildBridge && plugin.updateAvailable"
+                    (click)="$plugin.bridgeSettings(plugin)">
+                    <i class="icon-button fas fa-fw fa-bridge"></i>
+                    {{ 'child_bridge.label_child_setup' | translate }}
+                  </button>
+                  <!-- // -->
                   <!-- report an issue link -->
                   <div class="dropdown-divider" *ngIf="plugin.links?.bugs"></div>
                   <a ngbDropdownItem *ngIf="plugin.links?.bugs" rel="noopener noreferrer" target="_blank" [href]="plugin.links.bugs">
