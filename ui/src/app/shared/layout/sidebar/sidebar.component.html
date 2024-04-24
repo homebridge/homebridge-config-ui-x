@@ -1,5 +1,6 @@
 <div class="m-header" (click)="handleSidebarToggle()" tabindex="0" role="button" (keydown)="handleKeydown($event)"
-  [attr.aria-expanded]="isExpanded ? 'true' : 'false'" [attr.aria-controls]="'sidebar'"></div>
+  [attr.aria-expanded]="isExpanded ? 'true' : 'false'" [attr.aria-controls]="'sidebar'"
+  [attr.aria-label]="'menu.sidebar.aria_menu' | translate"></div>
 
 <div class="sidebar" [ngClass]="{ 'expanded': isExpanded }" role="navigation" id="sidebar">
   <div class="header" (click)="handleSidebarToggle()" tabindex="0" role="button" (keydown)="handleKeydown($event)">

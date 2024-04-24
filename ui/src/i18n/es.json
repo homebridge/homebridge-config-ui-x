@@ -153,6 +153,7 @@
   "menu.linux.label_terminal": "Terminal",
   "menu.restart.title": "Inicio/Apagado",
   "menu.settings.title": "Configuración",
+  "menu.sidebar.aria_menu": "Navigation Menu",
   "menu.tooltip_logout": "Cerrar Sesión",
   "menu.tooltip_restart": "Reiniciar",
   "menu.tooltip_user_accounts": "Cuentas de Usuario",

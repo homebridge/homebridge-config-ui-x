@@ -93,7 +93,7 @@
     "tail": "2.2.6",
     "tar": "6.2.1",
     "tcp-port-used": "1.0.2",
-    "unzipper": "0.11.3"
+    "unzipper": "0.11.4"
   },
   "devDependencies": {
     "@nestjs/testing": "^10.3.8",
@@ -108,8 +108,8 @@
     "@types/tar": "^6.1.13",
     "@types/tcp-port-used": "^1.0.4",
     "@types/unzipper": "^0.10.9",
-    "@typescript-eslint/eslint-plugin": "^7.7.0",
-    "@typescript-eslint/parser": "^7.7.0",
+    "@typescript-eslint/eslint-plugin": "^7.7.1",
+    "@typescript-eslint/parser": "^7.7.1",
     "babel-jest": "^29.7.0",
     "concurrently": "^8.2.2",
     "eslint": "^8.57.0",
