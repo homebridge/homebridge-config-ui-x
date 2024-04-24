@@ -153,6 +153,7 @@
   "menu.linux.label_terminal": "Термінал",
   "menu.restart.title": "Опції живлення",
   "menu.settings.title": "Налаштування",
+  "menu.sidebar.aria_menu": "Navigation Menu",
   "menu.tooltip_logout": "Вихід",
   "menu.tooltip_restart": "Перезапуск",
   "menu.tooltip_user_accounts": "Користувачі",

@@ -153,6 +153,7 @@
   "menu.linux.label_terminal": "Terminal",
   "menu.restart.title": "Options d'alimentation",
   "menu.settings.title": "Paramètres",
+  "menu.sidebar.aria_menu": "Navigation Menu",
   "menu.tooltip_logout": "Déconnexion",
   "menu.tooltip_restart": "Redémarrer",
   "menu.tooltip_user_accounts": "Comptes utilisateurs",
