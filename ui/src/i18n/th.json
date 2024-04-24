@@ -153,6 +153,7 @@
   "menu.linux.label_terminal": "เทอร์มินอล",
   "menu.restart.title": "ตัวเลือกด้านพลังงาน",
   "menu.settings.title": "การตั้งค่า",
+  "menu.sidebar.aria_menu": "Navigation Menu",
   "menu.tooltip_logout": "ออกจากระบบ",
   "menu.tooltip_restart": "รีสตาร์ท",
   "menu.tooltip_user_accounts": "บัญชีผู้ใช้",
