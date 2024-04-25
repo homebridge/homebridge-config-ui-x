@@ -4,7 +4,7 @@
 
 import { fork } from 'child_process';
 import { resolve } from 'path';
-import { program } from 'commander';
+import { Command } from 'commander';
 import { satisfies } from 'semver';
 
 let homebridge: any;
@@ -19,6 +19,7 @@ class HomebridgeConfigUi {
     process.env.UIX_STORAGE_PATH = homebridge.user.storagePath();
     process.env.UIX_PLUGIN_NAME = config.name || 'homebridge-config-ui-x';
 
+    const program = new Command();
     program
       .allowUnknownOption()
       .option('-P, --plugin-path [path]', '', (p) => process.env.UIX_CUSTOM_PLUGIN_PATH = p)
