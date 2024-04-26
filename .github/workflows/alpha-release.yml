@@ -21,36 +21,24 @@ jobs:
 
   pre-release-alpha:
     if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
-    name: "Create Pre Release Alpha on GitHub"
-    needs: publish
-    runs-on: "ubuntu-latest"
+    runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - name: Get latest alpha tag from npm
         id: get_npm_version
         run: echo "version=$(npm show homebridge-config-ui-x@alpha version)" >> $GITHUB_OUTPUT
-
-      - uses: "marvinpinto/action-automatic-releases@latest"
+      - name: Create nightly release
+        id: create_release
+        uses: viperproject/create-nightly-release@v1
+        env:
+          # This token is provided by Actions, you do not need to create your own token
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          automatic_release_tag: v${{ steps.get_npm_version.outputs.version }}
-          prerelease: true
-
-  delete-alpha-tag:
-    if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
-    name: "Delete Previous Alpha Release on GitHub"
-    needs: [publish, pre-release-alpha]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Get latest alpha tag from npm
-        id: get_alpha_tag
-        uses: younited/get-previous-tag-action@v1.0.0
-        with:
-          match: '*.alpha'
-
-      - name: Delete alpha release ${{ steps.get_alpha_tag.outputs.previous-tag }}
-        uses: liudonghua123/delete-release-action@v1
-        with:
-          release_name: contains(${{ steps.get_alpha_tag.outputs.previous-tag }}, 'alpha')
+          tag_name: v${{ steps.get_npm_version.outputs.version }}
+          release_name: v${{ steps.get_npm_version.outputs.version }}
+          body: "[How To Test Upcoming Changes](https://github.com/homebridge/homebridge-config-ui-x/wiki/How-To-Test-Upcoming-Changes)"
+          keep_num: 0 # remove the just created release as well
+          keep_tags: false
   
   attach-artifact:
     name: Attach Artifact
