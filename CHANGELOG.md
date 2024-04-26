@@ -38,6 +38,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - updated dependencies
 - update hb/nest dependencies
+- fixed shared use of `commander` between homebridge and the UI repo
 
 ### Homebridge Dependencies
 
