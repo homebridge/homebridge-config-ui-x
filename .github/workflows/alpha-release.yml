@@ -8,6 +8,7 @@ on:
 jobs:
   publish:
     if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
+    name: "Publish Pre Release Alpha to NPM"
     uses: homebridge/.github/.github/workflows/npm-publish.yml@latest
     with:
       tag: 'alpha'
@@ -17,3 +18,91 @@ jobs:
       install_cmd: npm ci && cd ui && npm ci
     secrets:
       npm_auth_token: ${{ secrets.npm_token }}
+
+  pre-release-alpha:
+    needs: [publish]
+    name: "Create New Github Alpha Pre Release"
+    if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create nightly release
+        id: create_release
+        uses: viperproject/create-nightly-release@v1
+        env:
+          # This token is provided by Actions, you do not need to create your own token
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ needs.publish.outputs.NPM_VERSION }}
+          release_name: v${{ needs.publish.outputs.NPM_VERSION }}
+          body: |
+            v${{ needs.publish.outputs.NPM_VERSION }}
+            [How To Test Upcoming Changes](https://github.com/homebridge/homebridge-config-ui-x/wiki/How-To-Test-Upcoming-Changes)
+          keep_num: 0 # remove the just created release as well
+          keep_tags: false
+  
+  attach-artifact:
+    name: Attach Artifact
+    needs: [publish, pre-release-alpha]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+
+      - name: Install package v${{ needs.publish.outputs.NPM_VERSION }}
+        run: |
+          export npm_config_prefix=$(pwd)/package
+          npm install -g homebridge-config-ui-x@${{ needs.publish.outputs.NPM_VERSION }}
+
+      - name: Remove invalid node-pty node-gyp run v${{ needs.publish.outputs.NPM_VERSION }}
+        run: |
+          rm -rf $(pwd)/package/lib/node_modules/homebridge-config-ui-x/node_modules/@homebridge/node-pty-prebuilt-multiarch/build
+
+      - name: Create Bundle v${{ needs.publish.outputs.NPM_VERSION }}
+        run: |
+          tar -C $(pwd)/package --owner=0 --group=0 --format=posix -czvf homebridge-config-ui-x-${{ needs.publish.outputs.NPM_VERSION }}.tar.gz .
+          shasum -a 256 homebridge-config-ui-x-${{ needs.publish.outputs.NPM_VERSION }}.tar.gz > SHASUMS256.txt
+
+      - name: Check Bundle v${{ needs.publish.outputs.NPM_VERSION }}
+        run: |
+          if [ $(stat -c%s "homebridge-config-ui-x-${{ needs.publish.outputs.NPM_VERSION }}.tar.gz") -lt 10000000 ]; then
+            echo "Bundle is under 10MB, stopping"
+            exit 1
+          fi
+    
+      - name: Upload tar.gz Bundle to GitHub Artifacts v${{ needs.publish.outputs.NPM_VERSION }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'homebridge-config-ui-x-${{ needs.publish.outputs.NPM_VERSION }}.tar.gz'
+          path: |
+            ./homebridge-config-ui-x-${{ needs.publish.outputs.NPM_VERSION }}.tar.gz
+      
+    
+      - name: Upload SHASUMS256.txt to GitHub Artifacts v${{ needs.publish.outputs.NPM_VERSION }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'SHASUMS256.txt'
+          path: |
+            ./SHASUMS256.txt
+
+      - name: Attach Bundle v${{ needs.publish.outputs.NPM_VERSION }}
+        uses: AButler/upload-release-assets@v3.0
+        with:
+          files: 'homebridge-config-ui-x-${{ needs.publish.outputs.NPM_VERSION }}.tar.gz;SHASUMS256.txt'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          release-tag: v${{ needs.publish.outputs.NPM_VERSION }}
+
+  github-releases-to-discord:
+    name: Discord Webhooks
+    needs: [publish,pre-release-alpha,attach-artifact]
+    uses: homebridge/.github/.github/workflows/discord-webhooks.yml@latest
+    with:
+      title: "Homebridge UI Alpha Release"
+      description: |
+        Version `v${{ needs.publish.outputs.NPM_VERSION }}`
+      url: "https://github.com/homebridge/homebridge-config-ui-x/releases/tag/v${{ needs.publish.outputs.NPM_VERSION }}"
+    secrets:
+      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL_BETA }}

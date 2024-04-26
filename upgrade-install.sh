@@ -28,7 +28,7 @@ fi
 
 echo "Downloading SHASUMS256.txt..."
 curl -fsSL# -o "$tmp_dir/SHASUMS256.txt" \
-  https://github.com/homebridge/homebridge-config-ui-x/releases/download/${TARGET_VERSION}/SHASUMS256.txt
+   https://github.com/homebridge/homebridge-config-ui-x/releases/download/v${TARGET_VERSION}/SHASUMS256.txt || https://github.com/homebridge/homebridge-config-ui-x/releases/download/${TARGET_VERSION}/SHASUMS256.txt
 if [ "$?" != "0" ]; then
   echo "Failed to download SHASUMS256.txt"
   exit 1
@@ -36,7 +36,7 @@ fi
 
 echo "Downloading homebridge-config-ui-x-${TARGET_VERSION}.tar.gz..."
 curl -fL# -o "$tmp_dir/homebridge-config-ui-x-${TARGET_VERSION}.tar.gz" \
-  https://github.com/homebridge/homebridge-config-ui-x/releases/download/${TARGET_VERSION}/homebridge-config-ui-x-${TARGET_VERSION}.tar.gz
+   https://github.com/homebridge/homebridge-config-ui-x/releases/download/v${TARGET_VERSION}/homebridge-config-ui-x-${TARGET_VERSION}.tar.gz || https://github.com/homebridge/homebridge-config-ui-x/releases/download/${TARGET_VERSION}/homebridge-config-ui-x-${TARGET_VERSION}.tar.gz
 if [ "$?" != "0" ]; then
   echo "Failed to download homebridge-config-ui-x-${TARGET_VERSION}.tar.gz"
   exit 1
