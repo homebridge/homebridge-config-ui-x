@@ -686,7 +686,7 @@ export class PluginsService {
       pluginAction.version !== 'latest'
     ) {
       try {
-        await this.httpService.head(`https://github.com/homebridge/homebridge-config-ui-x/releases/download/${pluginAction.version}/homebridge-config-ui-x-${pluginAction.version}.tar.gz`).toPromise();
+        await this.httpService.head(`https://github.com/homebridge/homebridge-config-ui-x/releases/download/v${pluginAction.version}/homebridge-config-ui-x-${pluginAction.version}.tar.gz`).toPromise();
         return true;
       } catch (e) {
         return false;
