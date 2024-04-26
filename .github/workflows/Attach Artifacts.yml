@@ -21,15 +21,6 @@ jobs:
         with:
           node-version: 20.x
 
-      # workflow_dispatch
-      # Sanity check to ensure that release tags don't start with a 'v' version prefix but adhere to the X.Y.Z format
-      - name: Check for Tag name Format ${{ github.event.inputs.tag }}
-        # https://github.com/orgs/community/discussions/25017
-        if: startsWith(github.event.inputs.tag, 'v')
-        run: |
-          echo "Release Tag name must not start with 'v', this was supplied ${{ github.event.inputs.tag }}"
-          exit 1
-
       - name: Install package ${{ github.event.inputs.tag }}
         if: github.event_name == 'workflow_dispatch'
         run: |
@@ -135,3 +126,12 @@ jobs:
           files: 'homebridge-config-ui-x-${{ steps.get_version.outputs.version }}.tar.gz;SHASUMS256.txt'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           release-tag: ${{ steps.get_version.outputs.version }}
+
+  github-releases-to-discord:
+    name: Discord Webhooks
+    needs: build
+    uses: homebridge/.github/.github/workflows/discord-webhooks.yml@latest
+    with:
+      footer_title: "Pre-Release: Homebridge UI"
+    secrets:
+      DISCORD_WEBHOOK_URL_BETA: ${{ secrets.DISCORD_WEBHOOK_URL_BETA }}
