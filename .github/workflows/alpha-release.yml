@@ -6,6 +6,44 @@ on:
   workflow_dispatch:
 
 jobs:
+  pre-release-alpha:
+    if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
+    name: "Pre Release Alpha"
+    needs: delete-alpha-tag
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Get latest alpha tag from npm
+        id: get_npm_version
+        run: echo "::set-output name=version::$(npm show homebridge-config-ui-x@alpha version)"
+
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: v${{ steps.get_npm_version.outputs.version }}
+          prerelease: true
+
+  delete-alpha-tag:
+    if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
+    name: delete-alpha-tag
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get version from ${{ github.event_name }} tag
+        if: github.event_name == 'release'
+        id: get_version
+        uses: jannemattila/get-version-from-tag@v3
+      
+      - name: Calculate previous alpha tag
+        if: github.event_name == 'release'
+        id: calculate_previous_alpha_tag
+        run: echo "::set-output name=previous_alpha_tag::$(echo ${{ steps.get_version.outputs.version }} | sed 's/alpha/alpha-1/')"
+
+      - name: Delete alpha release ${{ steps.get_version.outputs.version }}
+        if: github.event_name == 'release' && contains(github.ref, 'alpha')
+        uses: liudonghua123/delete-release-action@v1
+        with:
+          release_name: contains(${{ steps.calculate_previous_alpha_tag.outputs.previous_alpha_tag }}, 'alpha')
+
   publish:
     if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
     uses: homebridge/.github/.github/workflows/npm-publish.yml@latest
