@@ -8,6 +8,7 @@ on:
 jobs:
   publish:
     if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
+    name: "Publish Pre Release Alpha to NPM"
     uses: homebridge/.github/.github/workflows/npm-publish.yml@latest
     with:
       tag: 'alpha'
@@ -20,7 +21,7 @@ jobs:
 
   pre-release-alpha:
     if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
-    name: "Pre Release Alpha"
+    name: "Create Pre Release Alpha on GitHub"
     needs: publish
     runs-on: "ubuntu-latest"
     steps:
@@ -30,28 +31,26 @@ jobs:
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
           automatic_release_tag: v${{ steps.get_npm_version.outputs.version }}
           prerelease: true
 
   delete-alpha-tag:
     if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
-    name: pre-release-alpha
+    name: "Delete Previous Alpha Release on GitHub"
     needs: [publish, pre-release-alpha]
     runs-on: ubuntu-latest
     steps:
       - name: Get latest alpha tag from npm
-        id: get_npm_version
-        run: echo "version=$(npm show homebridge-config-ui-x@alpha version)" >> $GITHUB_OUTPUT
-      
-      - name: Calculate previous alpha tag
-        id: calculate_previous_alpha_tag
-        run: echo "previous_alpha_tag=$(echo ${{ steps.get_npm_version.outputs.version }} >> $GITHUB_OUTPUT | sed 's/alpha/alpha-1/')"
+        id: get_alpha_tag
+        uses: younited/get-previous-tag-action@v1.0.0
+        with:
+          match: '*.alpha'
 
-      - name: Delete alpha release ${{ steps.calculate_previous_alpha_tag.outputs.previous_alpha_tag }}
+      - name: Delete alpha release ${{ steps.get_alpha_tag.outputs.previous-tag }}
         uses: liudonghua123/delete-release-action@v1
         with:
-          release_name: contains(${{ steps.calculate_previous_alpha_tag.outputs.previous_alpha_tag }}, 'alpha')
+          release_name: contains(${{ steps.get_alpha_tag.outputs.previous-tag }}, 'alpha')
   
   attach-artifact:
     name: Attach Artifact
