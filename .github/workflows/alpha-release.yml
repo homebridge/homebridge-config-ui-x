@@ -71,11 +71,6 @@ jobs:
         id: get_npm_version
         run: echo "version=$(npm show homebridge-config-ui-x@alpha version)" >> $GITHUB_OUTPUT
 
-      # github.ref
-      - name: Get version from ${{ steps.get_npm_version.outputs.version }} tag
-        id: get_version
-        uses: jannemattila/get-version-from-tag@v3
-
       - name: Install package v${{ steps.get_npm_version.outputs.version }}
         run: |
           export npm_config_prefix=$(pwd)/package
