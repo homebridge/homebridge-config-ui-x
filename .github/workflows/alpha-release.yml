@@ -20,6 +20,7 @@ jobs:
       npm_auth_token: ${{ secrets.npm_token }}
 
   pre-release-alpha:
+    needs: [publish]
     if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
     runs-on: ubuntu-latest
     steps:
@@ -105,5 +106,4 @@ jobs:
     with:
       footer_title: "Homebridge UI Alpha Release"
     secrets:
-      DISCORD_WEBHOOK_URL_LATEST: ${{ secrets.DISCORD_WEBHOOK_URL_BETA }}
-      DISCORD_WEBHOOK_URL_BETA: ${{ secrets.DISCORD_WEBHOOK_URL_BETA }}
+      DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL_BETA }}
