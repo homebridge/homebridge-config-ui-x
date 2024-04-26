@@ -21,15 +21,6 @@ jobs:
         with:
           node-version: 20.x
 
-      # workflow_dispatch
-      # Sanity check to ensure that release tags don't start with a 'v' version prefix but adhere to the X.Y.Z format
-      - name: Check for Tag name Format ${{ github.event.inputs.tag }}
-        # https://github.com/orgs/community/discussions/25017
-        if: startsWith(github.event.inputs.tag, 'v')
-        run: |
-          echo "Release Tag name must not start with 'v', this was supplied ${{ github.event.inputs.tag }}"
-          exit 1
-
       - name: Install package ${{ github.event.inputs.tag }}
         if: github.event_name == 'workflow_dispatch'
         run: |
@@ -86,24 +77,24 @@ jobs:
         id: get_version
         uses: jannemattila/get-version-from-tag@v3
 
-      - name: Install package ${{ steps.get_version.outputs.version }}
+      - name: Install package v${{ steps.get_version.outputs.version }}
         if: github.event_name == 'release'
         run: |
           export npm_config_prefix=$(pwd)/package
           npm install -g homebridge-config-ui-x@${{ steps.get_version.outputs.version }}
 
-      - name: Remove invalid node-pty node-gyp run ${{ steps.get_version.outputs.version }}
+      - name: Remove invalid node-pty node-gyp run v${{ steps.get_version.outputs.version }}
         if: github.event_name == 'release'
         run: |
           rm -rf $(pwd)/package/lib/node_modules/homebridge-config-ui-x/node_modules/@homebridge/node-pty-prebuilt-multiarch/build
 
-      - name: Create Bundle ${{ steps.get_version.outputs.version }}
+      - name: Create Bundle v${{ steps.get_version.outputs.version }}
         if: github.event_name == 'release'
         run: |
           tar -C $(pwd)/package --owner=0 --group=0 --format=posix -czvf homebridge-config-ui-x-${{ steps.get_version.outputs.version }}.tar.gz .
           shasum -a 256 homebridge-config-ui-x-${{ steps.get_version.outputs.version }}.tar.gz > SHASUMS256.txt
 
-      - name: Check Bundle ${{ steps.get_version.outputs.version }}
+      - name: Check Bundle v${{ steps.get_version.outputs.version }}
         if: github.event_name == 'release'
         run: |
           if [ $(stat -c%s "homebridge-config-ui-x-${{ steps.get_version.outputs.version }}.tar.gz") -lt 10000000 ]; then
@@ -111,7 +102,7 @@ jobs:
             exit 1
           fi
     
-      - name: Upload tar.gz Bundle to GitHub Artifacts ${{ steps.get_version.outputs.version }}
+      - name: Upload tar.gz Bundle to GitHub Artifacts v${{ steps.get_version.outputs.version }}
         if: github.event_name == 'release'
         uses: actions/upload-artifact@v4
         with:
@@ -120,7 +111,7 @@ jobs:
             ./homebridge-config-ui-x-${{ steps.get_version.outputs.version }}.tar.gz
       
     
-      - name: Upload SHASUMS256.txt to GitHub Artifacts ${{ steps.get_version.outputs.version }}
+      - name: Upload SHASUMS256.txt to GitHub Artifacts v${{ steps.get_version.outputs.version }}
         if: github.event_name == 'release'
         uses: actions/upload-artifact@v4
         with:
@@ -128,10 +119,19 @@ jobs:
           path: |
             ./SHASUMS256.txt
 
-      - name: Attach Bundle ${{ steps.get_version.outputs.version }}
+      - name: Attach Bundle v${{ steps.get_version.outputs.version }}
         if: github.event_name == 'release'
         uses: AButler/upload-release-assets@v3.0
         with:
           files: 'homebridge-config-ui-x-${{ steps.get_version.outputs.version }}.tar.gz;SHASUMS256.txt'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          release-tag: ${{ steps.get_version.outputs.version }}
+          release-tag: v${{ steps.get_version.outputs.version }}
+
+  github-releases-to-discord:
+    name: Discord Webhooks
+    needs: build
+    uses: homebridge/.github/.github/workflows/discord-webhooks.yml@latest
+    with:
+      footer_title: "Pre-Release: Homebridge UI"
+    secrets:
+      DISCORD_WEBHOOK_URL_BETA: ${{ secrets.DISCORD_WEBHOOK_URL_BETA }}

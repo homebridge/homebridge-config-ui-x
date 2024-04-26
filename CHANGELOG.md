@@ -39,6 +39,9 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - updated dependencies
 - update hb/nest dependencies
 - fixed shared use of `commander` between homebridge and the UI repo
+- allow for tags to start with a `v`
+- combined discord release actions with `attach-artifacts` and `release` actions
+  - prevents the discord webhook from triggering before the release is complete and published
 
 ### Homebridge Dependencies
 

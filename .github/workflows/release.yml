@@ -105,3 +105,12 @@ jobs:
           files: 'homebridge-config-ui-x-${{ needs.tag.outputs.version }}.tar.gz;SHASUMS256.txt'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           release-tag: ${{ needs.tag.outputs.version }}
+
+  github-releases-to-discord:
+    name: Discord Webhooks
+    needs: [tag, publish, build]
+    uses: homebridge/.github/.github/workflows/discord-webhooks.yml@latest
+    with:
+      footer_title: "Homebridge UI"
+    secrets:
+      DISCORD_WEBHOOK_URL_LATEST: ${{ secrets.DISCORD_WEBHOOK_URL_LATEST }}
