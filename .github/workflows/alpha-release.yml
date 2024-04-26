@@ -100,4 +100,4 @@ jobs:
     with:
       footer_title: "Homebridge UI Alpha Release"
     secrets:
-      DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL_BETA }}
+      WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL_BETA }}
