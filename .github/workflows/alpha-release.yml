@@ -41,17 +41,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Get version from ${{ github.event_name }} tag
-        if: github.event_name == 'release'
         id: get_version
-        uses: jannemattila/get-version-from-tag@v3
+        uses: rafarlopes/get-latest-pre-release-tag-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # The github repository where your releases are
+          repository: 'homebridge-config-ui-x'
       
       - name: Calculate previous alpha tag
-        if: github.event_name == 'release'
         id: calculate_previous_alpha_tag
-        run: echo "previous_alpha_tag=$(echo ${{ steps.get_version.outputs.version }} >> $GITHUB_OUTPUT | sed 's/alpha/alpha-1/')"
+        run: echo "previous_alpha_tag=$(echo ${{ steps.get_version.outputs.id }} >> $GITHUB_OUTPUT | sed 's/alpha/alpha-1/')"
 
-      - name: Delete alpha release ${{ steps.get_version.outputs.version }}
-        if: github.event_name == 'release' && contains(github.ref, 'alpha')
+      - name: Delete alpha release ${{ steps.calculate_previous_alpha_tag.outputs.previous_alpha_tag }}
         uses: liudonghua123/delete-release-action@v1
         with:
           release_name: contains(${{ steps.calculate_previous_alpha_tag.outputs.previous_alpha_tag }}, 'alpha')
