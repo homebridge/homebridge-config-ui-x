@@ -51,7 +51,7 @@ jobs:
     secrets:
       npm_auth_token: ${{ secrets.npm_token }}
 
-  build:
+  attach-artifact:
     needs: [tag, publish]
     if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
     name: Attach Artifact ${{ needs.tag.outputs.version }}
@@ -108,9 +108,12 @@ jobs:
 
   github-releases-to-discord:
     name: Discord Webhooks
-    needs: [tag, publish, build]
+    needs: [tag,build_and_test,publish,attach-artifact]
     uses: homebridge/.github/.github/workflows/discord-webhooks.yml@latest
     with:
-      footer_title: "Homebridge UI"
+      title: "Homebridge UI Release"
+      description: |
+        Version `v${{ needs.publish.outputs.NPM_VERSION }}`
+      url: "https://github.com/homebridge/homebridge-config-ui-x/releases/tag/v${{ needs.publish.outputs.NPM_VERSION }}"
     secrets:
-      DISCORD_WEBHOOK_URL_LATEST: ${{ secrets.DISCORD_WEBHOOK_URL_LATEST }}
+      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL_LATEST }}

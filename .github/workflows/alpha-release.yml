@@ -6,46 +6,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  pre-release-alpha:
-    if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
-    name: "Pre Release Alpha"
-    needs: delete-alpha-tag
-    runs-on: "ubuntu-latest"
-    steps:
-      - name: Get latest alpha tag from npm
-        id: get_npm_version
-        run: echo "::set-output name=version::$(npm show homebridge-config-ui-x@alpha version)"
-
-      - uses: "marvinpinto/action-automatic-releases@latest"
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: v${{ steps.get_npm_version.outputs.version }}
-          prerelease: true
-
-  delete-alpha-tag:
-    if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
-    name: delete-alpha-tag
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Get version from ${{ github.event_name }} tag
-        if: github.event_name == 'release'
-        id: get_version
-        uses: jannemattila/get-version-from-tag@v3
-      
-      - name: Calculate previous alpha tag
-        if: github.event_name == 'release'
-        id: calculate_previous_alpha_tag
-        run: echo "::set-output name=previous_alpha_tag::$(echo ${{ steps.get_version.outputs.version }} | sed 's/alpha/alpha-1/')"
-
-      - name: Delete alpha release ${{ steps.get_version.outputs.version }}
-        if: github.event_name == 'release' && contains(github.ref, 'alpha')
-        uses: liudonghua123/delete-release-action@v1
-        with:
-          release_name: contains(${{ steps.calculate_previous_alpha_tag.outputs.previous_alpha_tag }}, 'alpha')
-
   publish:
     if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
+    name: "Publish Pre Release Alpha to NPM"
     uses: homebridge/.github/.github/workflows/npm-publish.yml@latest
     with:
       tag: 'alpha'
@@ -57,42 +20,26 @@ jobs:
       npm_auth_token: ${{ secrets.npm_token }}
 
   pre-release-alpha:
+    needs: [publish]
+    name: "Create New Github Alpha Pre Release"
     if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
-    name: "Pre Release Alpha"
-    needs: publish
-    runs-on: "ubuntu-latest"
-    steps:
-      - name: Get latest alpha tag from npm
-        id: get_npm_version
-        run: echo "::set-output name=version::$(npm show homebridge-config-ui-x@alpha version)"
-
-      - uses: "marvinpinto/action-automatic-releases@latest"
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: v${{ steps.get_npm_version.outputs.version }}
-          prerelease: true
-
-  delete-alpha-tag:
-    if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
-    name: pre-release-alpha
-    needs: [publish, pre-release-alpha]
     runs-on: ubuntu-latest
     steps:
-      - name: Get version from ${{ github.event_name }} tag
-        if: github.event_name == 'release'
-        id: get_version
-        uses: jannemattila/get-version-from-tag@v3
-      
-      - name: Calculate previous alpha tag
-        if: github.event_name == 'release'
-        id: calculate_previous_alpha_tag
-        run: echo "::set-output name=previous_alpha_tag::$(echo ${{ steps.get_version.outputs.version }} | sed 's/alpha/alpha-1/')"
-
-      - name: Delete alpha release ${{ steps.get_version.outputs.version }}
-        if: github.event_name == 'release' && contains(github.ref, 'alpha')
-        uses: liudonghua123/delete-release-action@v1
+      - uses: actions/checkout@v4
+      - name: Create nightly release
+        id: create_release
+        uses: viperproject/create-nightly-release@v1
+        env:
+          # This token is provided by Actions, you do not need to create your own token
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          release_name: contains(${{ steps.calculate_previous_alpha_tag.outputs.previous_alpha_tag }}, 'alpha')
+          tag_name: v${{ needs.publish.outputs.NPM_VERSION }}
+          release_name: v${{ needs.publish.outputs.NPM_VERSION }}
+          body: |
+            v${{ needs.publish.outputs.NPM_VERSION }}
+            [How To Test Upcoming Changes](https://github.com/homebridge/homebridge-config-ui-x/wiki/How-To-Test-Upcoming-Changes)
+          keep_num: 0 # remove the just created release as well
+          keep_tags: false
   
   attach-artifact:
     name: Attach Artifact
@@ -105,117 +52,57 @@ jobs:
         with:
           node-version: 20.x
 
-      - name: Install package ${{ github.event.inputs.tag }}
-        if: github.event_name == 'workflow_dispatch'
+      - name: Install package v${{ needs.publish.outputs.NPM_VERSION }}
         run: |
           export npm_config_prefix=$(pwd)/package
-          npm install -g homebridge-config-ui-x@${{ github.event.inputs.tag }}
+          npm install -g homebridge-config-ui-x@${{ needs.publish.outputs.NPM_VERSION }}
 
-      - name: Remove invalid node-pty node-gyp run ${{ github.event.inputs.tag }}
-        if: github.event_name == 'workflow_dispatch'
+      - name: Remove invalid node-pty node-gyp run v${{ needs.publish.outputs.NPM_VERSION }}
         run: |
           rm -rf $(pwd)/package/lib/node_modules/homebridge-config-ui-x/node_modules/@homebridge/node-pty-prebuilt-multiarch/build
 
-      - name: Create Bundle ${{ github.event.inputs.tag }}
-        if: github.event_name == 'workflow_dispatch'
+      - name: Create Bundle v${{ needs.publish.outputs.NPM_VERSION }}
         run: |
-          tar -C $(pwd)/package --owner=0 --group=0 --format=posix -czvf homebridge-config-ui-x-${{ github.event.inputs.tag }}.tar.gz .
-          shasum -a 256 homebridge-config-ui-x-${{ github.event.inputs.tag }}.tar.gz > SHASUMS256.txt
+          tar -C $(pwd)/package --owner=0 --group=0 --format=posix -czvf homebridge-config-ui-x-${{ needs.publish.outputs.NPM_VERSION }}.tar.gz .
+          shasum -a 256 homebridge-config-ui-x-${{ needs.publish.outputs.NPM_VERSION }}.tar.gz > SHASUMS256.txt
 
-      - name: Check Bundle ${{ github.event.inputs.tag }}
-        if: github.event_name == 'workflow_dispatch'
+      - name: Check Bundle v${{ needs.publish.outputs.NPM_VERSION }}
         run: |
-          if [ $(stat -c%s "homebridge-config-ui-x-${{ github.event.inputs.tag }}.tar.gz") -lt 10000000 ]; then
+          if [ $(stat -c%s "homebridge-config-ui-x-${{ needs.publish.outputs.NPM_VERSION }}.tar.gz") -lt 10000000 ]; then
             echo "Bundle is under 10MB, stopping"
             exit 1
           fi
     
-      - name: Upload tar.gz Bundle to GitHub Artifacts ${{ github.event.inputs.tag }}
-        if: github.event_name == 'workflow_dispatch'
+      - name: Upload tar.gz Bundle to GitHub Artifacts v${{ needs.publish.outputs.NPM_VERSION }}
         uses: actions/upload-artifact@v4
         with:
-          name: 'homebridge-config-ui-x-${{ github.event.inputs.tag }}.tar.gz'
+          name: 'homebridge-config-ui-x-${{ needs.publish.outputs.NPM_VERSION }}.tar.gz'
           path: |
-            ./homebridge-config-ui-x-${{ github.event.inputs.tag }}.tar.gz
+            ./homebridge-config-ui-x-${{ needs.publish.outputs.NPM_VERSION }}.tar.gz
       
     
-      - name: Upload SHASUMS256.txt to GitHub Artifacts ${{ github.event.inputs.tag }}
-        if: github.event_name == 'workflow_dispatch'
+      - name: Upload SHASUMS256.txt to GitHub Artifacts v${{ needs.publish.outputs.NPM_VERSION }}
         uses: actions/upload-artifact@v4
         with:
           name: 'SHASUMS256.txt'
           path: |
             ./SHASUMS256.txt
 
-      - name: Attach Bundle ${{ github.event.inputs.tag }}
-        if: github.event_name == 'workflow_dispatch'
+      - name: Attach Bundle v${{ needs.publish.outputs.NPM_VERSION }}
         uses: AButler/upload-release-assets@v3.0
         with:
-          files: 'homebridge-config-ui-x-${{ github.event.inputs.tag }}.tar.gz;SHASUMS256.txt'
+          files: 'homebridge-config-ui-x-${{ needs.publish.outputs.NPM_VERSION }}.tar.gz;SHASUMS256.txt'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          release-tag: ${{ github.event.inputs.tag }}
-
-      # github.ref
-      - name: Get version from ${{ github.event_name }} tag
-        if: github.event_name == 'release'
-        id: get_version
-        uses: jannemattila/get-version-from-tag@v3
-
-      - name: Install package v${{ steps.get_version.outputs.version }}
-        if: github.event_name == 'release'
-        run: |
-          export npm_config_prefix=$(pwd)/package
-          npm install -g homebridge-config-ui-x@${{ steps.get_version.outputs.version }}
-
-      - name: Remove invalid node-pty node-gyp run v${{ steps.get_version.outputs.version }}
-        if: github.event_name == 'release'
-        run: |
-          rm -rf $(pwd)/package/lib/node_modules/homebridge-config-ui-x/node_modules/@homebridge/node-pty-prebuilt-multiarch/build
-
-      - name: Create Bundle v${{ steps.get_version.outputs.version }}
-        if: github.event_name == 'release'
-        run: |
-          tar -C $(pwd)/package --owner=0 --group=0 --format=posix -czvf homebridge-config-ui-x-${{ steps.get_version.outputs.version }}.tar.gz .
-          shasum -a 256 homebridge-config-ui-x-${{ steps.get_version.outputs.version }}.tar.gz > SHASUMS256.txt
-
-      - name: Check Bundle v${{ steps.get_version.outputs.version }}
-        if: github.event_name == 'release'
-        run: |
-          if [ $(stat -c%s "homebridge-config-ui-x-${{ steps.get_version.outputs.version }}.tar.gz") -lt 10000000 ]; then
-            echo "Bundle is under 10MB, stopping"
-            exit 1
-          fi
-    
-      - name: Upload tar.gz Bundle to GitHub Artifacts v${{ steps.get_version.outputs.version }}
-        if: github.event_name == 'release'
-        uses: actions/upload-artifact@v4
-        with:
-          name: 'homebridge-config-ui-x-${{ steps.get_version.outputs.version }}.tar.gz'
-          path: |
-            ./homebridge-config-ui-x-${{ steps.get_version.outputs.version }}.tar.gz
-      
-    
-      - name: Upload SHASUMS256.txt to GitHub Artifacts v${{ steps.get_version.outputs.version }}
-        if: github.event_name == 'release'
-        uses: actions/upload-artifact@v4
-        with:
-          name: 'SHASUMS256.txt'
-          path: |
-            ./SHASUMS256.txt
-
-      - name: Attach Bundle v${{ steps.get_version.outputs.version }}
-        if: github.event_name == 'release'
-        uses: AButler/upload-release-assets@v3.0
-        with:
-          files: 'homebridge-config-ui-x-${{ steps.get_version.outputs.version }}.tar.gz;SHASUMS256.txt'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          release-tag: v${{ steps.get_version.outputs.version }}
+          release-tag: v${{ needs.publish.outputs.NPM_VERSION }}
 
   github-releases-to-discord:
     name: Discord Webhooks
-    needs: attach-artifact
+    needs: [publish,pre-release-alpha,attach-artifact]
     uses: homebridge/.github/.github/workflows/discord-webhooks.yml@latest
     with:
-      footer_title: "Pre-Release: Homebridge UI"
+      title: "Homebridge UI Alpha Release"
+      description: |
+        Version `v${{ needs.publish.outputs.NPM_VERSION }}`
+      url: "https://github.com/homebridge/homebridge-config-ui-x/releases/tag/v${{ needs.publish.outputs.NPM_VERSION }}"
     secrets:
-      DISCORD_WEBHOOK_URL_BETA: ${{ secrets.DISCORD_WEBHOOK_URL_BETA }}
+      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL_BETA }}
