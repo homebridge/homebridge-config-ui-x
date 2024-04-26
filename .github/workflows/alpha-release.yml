@@ -40,18 +40,13 @@ jobs:
     needs: [publish, pre-release-alpha]
     runs-on: ubuntu-latest
     steps:
-      - name: Get version from ${{ github.event_name }} tag
-        id: get_version
-        uses: rafarlopes/get-latest-pre-release-tag-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          # The github repository where your releases are
-          repository: 'homebridge-config-ui-x'
+      - name: Get latest alpha tag from npm
+        id: get_npm_version
+        run: echo "version=$(npm show homebridge-config-ui-x@alpha version)" >> $GITHUB_OUTPUT
       
       - name: Calculate previous alpha tag
         id: calculate_previous_alpha_tag
-        run: echo "previous_alpha_tag=$(echo ${{ steps.get_version.outputs.id }} >> $GITHUB_OUTPUT | sed 's/alpha/alpha-1/')"
+        run: echo "previous_alpha_tag=$(echo ${{ steps.get_npm_version.outputs.version }} >> $GITHUB_OUTPUT | sed 's/alpha/alpha-1/')"
 
       - name: Delete alpha release ${{ steps.calculate_previous_alpha_tag.outputs.previous_alpha_tag }}
         uses: liudonghua123/delete-release-action@v1
@@ -123,4 +118,5 @@ jobs:
     with:
       footer_title: "Homebridge UI Alpha Release"
     secrets:
+      DISCORD_WEBHOOK_URL_LATEST: ${{ secrets.DISCORD_WEBHOOK_URL_BETA }}
       DISCORD_WEBHOOK_URL_BETA: ${{ secrets.DISCORD_WEBHOOK_URL_BETA }}
