@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag - must not start with v'
+        description: 'Tag - please make it start with v'
         required: true
 
 jobs:
@@ -126,12 +126,3 @@ jobs:
           files: 'homebridge-config-ui-x-${{ steps.get_version.outputs.version }}.tar.gz;SHASUMS256.txt'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           release-tag: v${{ steps.get_version.outputs.version }}
-
-  github-releases-to-discord:
-    name: Discord Webhooks
-    needs: build
-    uses: homebridge/.github/.github/workflows/discord-webhooks.yml@latest
-    with:
-      footer_title: "Pre-Release: Homebridge UI"
-    secrets:
-      DISCORD_WEBHOOK_URL_BETA: ${{ secrets.DISCORD_WEBHOOK_URL_BETA }}
