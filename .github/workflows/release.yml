@@ -111,7 +111,7 @@ jobs:
     needs: [tag,build_and_test,publish,attach-artifact]
     uses: homebridge/.github/.github/workflows/discord-webhooks.yml@latest
     with:
-      title: "Homebridge Release"
+      title: "Homebridge UI Release"
       description: |
         Version `v${{ needs.publish.outputs.NPM_VERSION }}`
       url: "https://github.com/homebridge/homebridge-config-ui-x/releases/tag/v${{ needs.publish.outputs.NPM_VERSION }}"
