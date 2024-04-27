@@ -6,7 +6,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ### Other Changes
 
-- Prepare for tags with prefex of `v
+- Prepare for tags with prefex of `v`
 - Update Discord Webhook
 - Update Pre Release Process
 
