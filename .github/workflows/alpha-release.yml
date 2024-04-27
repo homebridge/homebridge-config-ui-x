@@ -100,7 +100,7 @@ jobs:
     needs: [publish,pre-release-alpha,attach-artifact]
     uses: homebridge/.github/.github/workflows/discord-webhooks.yml@latest
     with:
-      footer_title: "Homebridge UI Alpha Release"
+      message_title: "Homebridge UI Alpha Release"
       message_description: "Homebridge UI Alpha Release v${{ needs.publish.outputs.NPM_VERSION }}"
       message_url: "https://github.com/homebridge/homebridge-config-ui-x/releases/tag/v${{ needs.publish.outputs.NPM_VERSION }}"
     secrets:
