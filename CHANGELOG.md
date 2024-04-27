@@ -2,6 +2,14 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## v4.56.2 (2024-04-27)
+
+### Other Changes
+
+- Prepare for tags with prefex of `v
+- Update Discord Webhook
+- Update Pre Release Process
+
 ## v4.56.1 (2024-04-03)
 
 ### Bug Fixes
