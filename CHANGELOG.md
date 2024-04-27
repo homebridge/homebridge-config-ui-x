@@ -2,7 +2,7 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## BETA
+## v4.56.2 (2024-04-27)
 
 ### Fixed
 
@@ -14,6 +14,12 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - Update Discord Webhook
 - Update Pre Release Process
 - calculate GitHub release name, may differ with v or not
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v1.10.0`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.11.12`
+- `@homebridge/plugin-ui-utils` @ `v1.0.2`
 
 ## v4.56.1 (2024-04-03)
 
