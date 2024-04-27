@@ -423,12 +423,15 @@ export class PluginsService {
     }
 
     // homebridge-config-ui-x specific actions
-    if (action === 'install' && pluginAction.name === this.configService.name && await this.isUiUpdateBundleAvailable(pluginAction)) {
-      try {
-        await this.doUiBundleUpdate(pluginAction, client);
-        return true;
-      } catch (e) {
-        client.emit('stdout', yellow('\r\nBundled update failed. Trying regular update using npm.\r\n\r\n'));
+    if (action === 'install' && pluginAction.name === this.configService.name) {
+      const githubReleaseName = await this.isUiUpdateBundleAvailable(pluginAction);
+      if (githubReleaseName) {
+        try {
+          await this.doUiBundleUpdate(pluginAction, client, githubReleaseName);
+          return true;
+        } catch (e) {
+          client.emit('stdout', yellow('\r\nBundled update failed. Trying regular update using npm.\r\n\r\n'));
+        }
       }
 
       // show a warning if updating homebridge-config-ui-x on Raspberry Pi 1 / Zero
@@ -674,7 +677,7 @@ export class PluginsService {
   /**
    * Check if a UI Update bundle is available for the given version
    */
-  public async isUiUpdateBundleAvailable(pluginAction: PluginActionDto): Promise<boolean> {
+  public async isUiUpdateBundleAvailable(pluginAction: PluginActionDto): Promise<string> {
     if (
       [
         '/usr/local/lib/node_modules',
@@ -686,13 +689,21 @@ export class PluginsService {
       pluginAction.version !== 'latest'
     ) {
       try {
-        await this.httpService.head(`https://github.com/homebridge/homebridge-config-ui-x/releases/download/v${pluginAction.version}/homebridge-config-ui-x-${pluginAction.version}.tar.gz` || `https://github.com/homebridge/homebridge-config-ui-x/releases/download/${pluginAction.version}/homebridge-config-ui-x-${pluginAction.version}.tar.gz`).toPromise();
-        return true;
+        try {
+          const withV = `v${pluginAction.version}`;
+          await this.httpService.head(`https://github.com/homebridge/homebridge-config-ui-x/releases/download/${withV}/homebridge-config-ui-x-${pluginAction.version}.tar.gz`).toPromise();
+          return withV;
+        } catch (e2) {
+          const withoutV = pluginAction.version;
+          await this.httpService.head(`https://github.com/homebridge/homebridge-config-ui-x/releases/download/${withoutV}/homebridge-config-ui-x-${pluginAction.version}.tar.gz`).toPromise();
+          return withoutV;
+        }
       } catch (e) {
-        return false;
+        this.logger.error(`Failed to check for bundled update: ${e.message}`);
+        return '';
       }
     } else {
-      return false;
+      return '';
     }
   }
 
@@ -700,12 +711,13 @@ export class PluginsService {
    * Do a UI update from the bundle
    * @param pluginAction
    * @param client
+   * @param githubReleaseName
    */
-  public async doUiBundleUpdate(pluginAction: PluginActionDto, client: EventEmitter) {
+  public async doUiBundleUpdate(pluginAction: PluginActionDto, client: EventEmitter, githubReleaseName: string) {
     const prefix = dirname(dirname(dirname(process.env.UIX_BASE_PATH)));
     const upgradeInstallScriptPath = join(process.env.UIX_BASE_PATH, 'upgrade-install.sh');
     await this.runNpmCommand(
-      this.configService.ui.sudo ? ['npm', 'run', 'upgrade-install', '--', pluginAction.version, prefix] : [upgradeInstallScriptPath, pluginAction.version, prefix],
+      this.configService.ui.sudo ? ['npm', 'run', 'upgrade-install', '--', pluginAction.version, prefix, githubReleaseName] : [upgradeInstallScriptPath, pluginAction.version, prefix, githubReleaseName],
       process.env.UIX_BASE_PATH,
       client,
       pluginAction.termCols,
