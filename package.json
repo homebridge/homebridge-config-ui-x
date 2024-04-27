@@ -1,7 +1,7 @@
 {
   "name": "homebridge-config-ui-x",
   "displayName": "Homebridge UI",
-  "version": "4.56.1",
+  "version": "4.56.2",
   "description": "A web based management, configuration and control platform for Homebridge.",
   "license": "MIT",
   "author": "oznu <dev@oz.nu>",
@@ -116,7 +116,7 @@
     "eslint-config-airbnb-typescript": "^18.0.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-import-newlines": "^1.4.0",
-    "eslint-plugin-jest": "^28.2.0",
+    "eslint-plugin-jest": "^28.3.0",
     "eslint-plugin-sort-exports": "^0.9.1",
     "form-data": "^4.0.0",
     "jest": "^29.7.0",
