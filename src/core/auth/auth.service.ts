@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { pathExists, readJson, writeJson } from 'fs-extra';
-import * as NodeCache from 'node-cache';
+import NodeCache from 'node-cache';
 import { authenticator } from 'otplib';
 import { UserDto } from '../../modules/users/users.dto';
 import { ConfigService } from '../config/config.service';

@@ -1,14 +1,18 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "declaration": true,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "target": "es2020",
-    "sourceMap": true,
-    "outDir": "./dist",
+    "allowSyntheticDefaultImports": true,
     "baseUrl": "./",
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ES2022",
+    "moduleResolution":"node",
+    "outDir": "./dist",
+    "rootDir": "./",
+    "sourceMap": true,
+    "target": "ES2022"
   },
   "exclude": [
     "node_modules",

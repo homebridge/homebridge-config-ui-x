@@ -10,7 +10,7 @@ import { promisify } from 'util';
 import { HttpService } from '@nestjs/axios';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { readFile, readJson, writeJsonSync } from 'fs-extra';
-import * as NodeCache from 'node-cache';
+import NodeCache from 'node-cache';
 import { Subject, Subscription } from 'rxjs';
 import { gt } from 'semver';
 import {

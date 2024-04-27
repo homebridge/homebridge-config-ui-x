@@ -10,7 +10,7 @@ import {
 import { HttpService } from '@nestjs/axios';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { pathExists, readFile } from 'fs-extra';
-import * as NodeCache from 'node-cache';
+import NodeCache from 'node-cache';
 import { ConfigService } from '../../../core/config/config.service';
 import { Logger } from '../../../core/logger/logger.service';
 import { PluginsService } from '../../plugins/plugins.service';

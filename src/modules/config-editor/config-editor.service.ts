@@ -1,6 +1,6 @@
 import { resolve } from 'path';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import {
   ensureDir,
   move,

@@ -44,8 +44,8 @@ import {
   stat,
 } from 'fs-extra';
 import { orderBy, uniq } from 'lodash';
-import * as NodeCache from 'node-cache';
-import * as pLimit from 'p-limit';
+import NodeCache from 'node-cache';
+import pLimit from 'p-limit';
 import {
   gt,
   lt,

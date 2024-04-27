@@ -2,7 +2,7 @@ import { resolve } from 'path';
 import { ValidationPipe } from '@nestjs/common';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import {
   copy,
   emptyDir,

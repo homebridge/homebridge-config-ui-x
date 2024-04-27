@@ -48,7 +48,7 @@ import {
   write,
   writeJson,
 } from 'fs-extra';
-import * as ora from 'ora';
+import ora from 'ora';
 import { gt, gte, parse } from 'semver';
 import { networkInterfaceDefault, networkInterfaces } from 'systeminformation';
 import { Tail } from 'tail';

@@ -1,32 +1,44 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const path = require('path');
-const webpack = require('webpack');
-const packageJson = require('./package.json');
+import path from 'path';
+import webpack from 'webpack';
+import packageJson from './package.json' with { type: 'json' };
+import { fileURLToPath } from 'url';
 
 const externals = {};
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 for (const dep of Object.keys(packageJson.dependencies)) {
+
   externals[dep] = dep;
 }
 
-module.exports = {
+export default {
+
   entry: {
+
     server: './src/main.ts',
   },
+
   output: {
+
     filename: 'main.js',
     path: path.join(__dirname, 'dist'),
     libraryTarget: 'commonjs',
   },
+
   target: 'node',
   mode: 'production',
   externals: externals,
   node: {
+
     global: false,
     __filename: false,
     __dirname: false,
   },
   resolve: {
+
     extensions: ['.tsx', '.ts', '.js'],
   },
   module: {

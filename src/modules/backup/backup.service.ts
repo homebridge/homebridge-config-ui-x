@@ -18,7 +18,7 @@ import {
   red,
   yellow,
 } from 'bash-color';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { FastifyReply } from 'fastify';
 import {
   access,

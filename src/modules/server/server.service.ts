@@ -17,7 +17,7 @@ import {
   unlink,
   writeJson,
 } from 'fs-extra';
-import * as NodeCache from 'node-cache';
+import NodeCache from 'node-cache';
 import { Systeminformation, networkInterfaces } from 'systeminformation';
 import { check as tcpCheck } from 'tcp-port-used';
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';

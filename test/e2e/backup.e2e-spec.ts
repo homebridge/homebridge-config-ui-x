@@ -4,8 +4,8 @@ import fastifyMultipart from '@fastify/multipart';
 import { ValidationPipe } from '@nestjs/common';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as dayjs from 'dayjs';
-import * as FormData from 'form-data';
+import dayjs from 'dayjs';
+import FormData from 'form-data';
 import {
   copy,
   emptyDir,

@@ -7,7 +7,7 @@ import {
   readJson,
   writeJsonSync,
 } from 'fs-extra';
-import * as NodeCache from 'node-cache';
+import NodeCache from 'node-cache';
 import { ConfigService } from '../../core/config/config.service';
 import { Logger } from '../../core/logger/logger.service';
 
