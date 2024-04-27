@@ -36,7 +36,7 @@ jobs:
           tag_name: v${{ needs.publish.outputs.NPM_VERSION }}
           release_name: v${{ needs.publish.outputs.NPM_VERSION }}
           body: |
-            Latest Alpha v${{ needs.publish.outputs.NPM_VERSION }}
+            v${{ needs.publish.outputs.NPM_VERSION }}
             [How To Test Upcoming Changes](https://github.com/homebridge/homebridge-config-ui-x/wiki/How-To-Test-Upcoming-Changes)
           keep_num: 0 # remove the just created release as well
           keep_tags: false
@@ -102,5 +102,6 @@ jobs:
     with:
       footer_title: "Homebridge UI Alpha Release"
       message_description: "Homebridge UI Alpha Release v${{ needs.publish.outputs.NPM_VERSION }}"
+      message_url: "https://github.com/homebridge/homebridge-config-ui-x/releases/tag/v${{ needs.publish.outputs.NPM_VERSION }}"
     secrets:
-      DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL_BETA }}
+      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL_BETA }}
