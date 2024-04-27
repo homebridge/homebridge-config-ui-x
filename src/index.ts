@@ -97,7 +97,7 @@ export default (api): void => {
   homebridge = api;
   homebridge.registerPlatform('homebridge-config-ui-x', 'config', HomebridgeConfigUi);
 
-  if(process.env.UIX_SERVICE_MODE === '1' && process.connected) {
+  if (process.env.UIX_SERVICE_MODE === '1' && process.connected) {
 
     HomebridgeConfigUi.serviceMode();
   }
