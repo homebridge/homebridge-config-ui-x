@@ -37,7 +37,7 @@ jobs:
           body: |
             v${{ needs.publish.outputs.NPM_VERSION }}
             [How To Test Upcoming Changes](https://github.com/homebridge/homebridge-config-ui-x/wiki/How-To-Test-Upcoming-Changes)
-          keep_num: 0 # remove the just created release as well
+          keep_num: 5
           keep_tags: false
       
   attach-artifact:
