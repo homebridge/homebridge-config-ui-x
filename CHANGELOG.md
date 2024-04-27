@@ -4,9 +4,13 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ## v4.56.2 (2024-04-27)
 
+### Fixed
+
+- shared use of `commander` between homebridge and UI
+
 ### Other Changes
 
-- Prepare for tags with prefex of `v`
+- Prepare for tags with prefix of `v`
 - Update Discord Webhook
 - Update Pre Release Process
 
