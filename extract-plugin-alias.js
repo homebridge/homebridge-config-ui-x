@@ -4,8 +4,8 @@
  * This script "mocks" homebridge and is used to extract the plugin alias and type.
  */
 
-const EventEmitter = require('events').EventEmitter;
-const path = require('path');
+import { EventEmitter } from 'node:events';
+import path from 'path';
 
 let pluginAlias;
 let pluginType;
@@ -98,11 +98,11 @@ const HomebridgeApiMock = {
   },
 };
 
-function main() {
+async function main() {
   try {
     let pluginInitializer;
     const pluginPath = process.env.UIX_EXTRACT_PLUGIN_PATH;
-    const pluginModules = require(pluginPath);
+    const pluginModules = await import(pluginPath);
 
     if (typeof pluginModules === 'function') {
       pluginInitializer = pluginModules;
@@ -125,7 +125,7 @@ function main() {
   }
 }
 
-main();
+await main();
 
 setTimeout(() => {
   process.exit(1);
