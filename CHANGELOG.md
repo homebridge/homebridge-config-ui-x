@@ -29,6 +29,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - update bridge settings + main settings page
 - match json config title
 - fix edge case of hiding child bridge setup
+- add box for right text in mobile view
 
 ### Translation Changes
 
