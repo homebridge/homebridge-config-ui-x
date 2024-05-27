@@ -6,6 +6,50 @@
       background-color: $primary-dark !important;
     }
 
+    .sidebar {
+      background: $primary-dark;
+      color: #eeeeee;
+
+      .header {
+        background: $primary-dark;
+      }
+
+      .link-wrapper {
+        .link {
+          .link-row {
+            &:hover {
+              background: $primary;
+
+              .title {
+                color: #ffffff;
+              }
+            }
+
+            &.active {
+              i {
+                color: $primary;
+              }
+            }
+
+            &.active:hover {
+              i {
+                color: #ffffff;
+                transition: 0.3s;
+              }
+            }
+
+            .title {
+              color: #ffffff;
+            }
+          }
+        }
+      }
+    }
+
+    .m-header {
+      background: $primary-dark;
+    }
+
     .hb-npm-search {
       border: 0 !important;
       background-color: #eeeeee !important;
@@ -97,12 +141,6 @@
       display: none;
     }
 
-    .alert-info {
-      background-color: rgba($primary-dark, 0.1);
-      border-color: rgba($primary-dark, 0.1);
-      color: $primary;
-    }
-
     .animate_loader {
       .spinner_outer {
         stroke: $primary-dark;
@@ -116,6 +154,37 @@
       background-color: $primary-dark  !important;
     }
 
+    .alert {
+      color: #000000;
+      background-color: #eeeeee;
+      border-color: #cccccc;
+
+      a {
+        color: $primary;
+      }
+    }
+
+    .alert-info {
+      border-color: $primary;
+    }
+
+    .alert-success {
+      border-color: #388e3c;
+    }
+
+    .alert-warning {
+      border-color: #ffa000;
+    }
+
+    .alert-error {
+      border-color: #d32f2f;
+    }
+
+    .switch-on, .light-on, .window-on {
+      background-color: #fff;
+      color: #000000;
+    }
+
     @keyframes uix-glow-icon {
       from {
         text-shadow: 0 0 5px #fff, 0 0 10px #fff;
@@ -125,7 +194,7 @@
     .plugin-icon-card {
       width: 70px;
       height: 70px;
-      border-radius: 15px;
+      border-radius: 1rem;
       border: 1px solid #dddddd;
     }
 

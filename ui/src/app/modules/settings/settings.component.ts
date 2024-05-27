@@ -36,6 +36,13 @@ export class SettingsComponent implements OnInit {
   public showResolvedMdnsOption = false;
   public availableNetworkAdapters: Record<string, any> = [];
   public bridgeNetworkAdapters: Record<string, any> = [];
+  public showFields = {
+    general: true,
+    startup: false,
+    network: false,
+    reset: false,
+    cache: false,
+  };
 
   constructor(
     public $settings: SettingsService,
@@ -51,6 +58,26 @@ export class SettingsComponent implements OnInit {
     if (this.$settings.env.serviceMode) {
       this.initServiceModeForm();
     }
+  }
+
+  onLangChange(newLang: string) {
+    this.$settings.setLang(newLang);
+
+    // save the theme to the server
+    this.$api.put('/config-editor/ui', { key: 'lang', value: newLang }).toPromise()
+      .catch((err) => {
+        this.$toastr.error(err.message, 'Failed to save language');
+      });
+  }
+
+  onThemeChange(newTheme: string) {
+    this.$settings.setTheme(newTheme);
+
+    // save the theme to the server
+    this.$api.put('/config-editor/ui', { key: 'theme', value: newTheme }).toPromise()
+      .catch((err) => {
+        this.$toastr.error(err.message, 'Failed to save theme');
+      });
   }
 
   openUiSettings() {
@@ -218,5 +245,9 @@ export class SettingsComponent implements OnInit {
       .catch(() => {
         // do nothing
       });
+  }
+
+  toggleSection(section: string) {
+    this.showFields[section] = !this.showFields[section];
   }
 }

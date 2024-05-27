@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
 
 @Component({
@@ -6,12 +6,10 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
   templateUrl: './airqualitysensor.component.html',
   styleUrls: ['./airqualitysensor.component.scss'],
 })
-export class AirqualitysensorComponent implements OnInit {
+export class AirqualitysensorComponent {
   @Input() public service: ServiceTypeX;
 
   public labels = ['Unknown', 'Excellent', 'Good', 'Fair', 'Inferior', 'Poor'];
 
   constructor() {}
-
-  ngOnInit() {}
 }

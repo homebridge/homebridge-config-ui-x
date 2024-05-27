@@ -1,31 +1,19 @@
-<div class="row">
-  <div class="col-md-12 text-center">
-    <h3 class="primary-text" [translate]="'restart.title_restart'">Restarting Homebridge</h3>
-    <p class="grey-text" *ngIf="!timeout && !error" [translate]="'restart.message_please_wait_while_server_restarts'">
-      Please wait, this page will automatically redirect when the server is back online.</p>
-    <p class="grey-text" *ngIf="error">{{ error }}</p>
-    <div *ngIf="timeout">
-      <p class="grey-text" [translate]="'restart.message_server_is_taking_long_time_to_restart'">
-        Server restart is taking a long time. You may need to bring up the Homebridge service manually.
-      </p>
-      <p class="grey-text">
-        <span [translate]="'restart.label_restart_command_executed'">Restart Command Executed</span>:
-        {{ resp.command || "End Process" }}
-      </p>
-      <p *ngIf="uiOnline">
-        <button class="btn btn-primary" (click)="viewLogs()">
-          {{ 'menu.tooltip_view_logs' | translate }}
-        </button>
-      </p>
-    </div>
-  </div>
+<div class="d-flex justify-content-between">
+  <h3 class="primary-text m-0">{{ 'menu.restart.title' | translate }}</h3>
 </div>
 
-<div class="row mt-4" *ngIf="!this.error">
-  <div class="col-md-12 d-flex justify-content-center">
-    <div>
-
-      <div class="restart-progress-box text-center primary-text">
+<div class="my-4 align-items-center" style="max-width: 1000px; margin: auto;">
+  <div class="w-100 text-center primary-text mb-5">
+    <i class="fas fa-fw fa-power-off" style="font-size: 75px;"></i>
+  </div>
+  <div class="text-center">
+    <h4 class="primary-text">{{ 'restart.title_restart' | translate }}</h4>
+    <p class="grey-text" *ngIf="!error">
+      {{ 'restart.message_please_wait_while_server_restarts' | translate}}
+    </p>
+    <div class="alert alert-error my-4" *ngIf="error">{{ error }}</div>
+    <div class="justify-content-center my-4" *ngIf="!this.error">
+      <div class="restart-progress-box primary-text">
         <span>
           <i [ngClass]="{
             'fas fa-fw fa-spinner fa-spin': !uiOnline,
@@ -33,14 +21,28 @@
           }"></i> {{ 'restart.message_homebridge_ui_online' | translate }}
         </span>
       </div>
-
-      <div class="restart-progress-box text-center primary-text">
+      <div class="restart-progress-box primary-text">
         <span [ngClass]="{ 'grey-text': !uiOnline }">
           <i [ngClass]="{
-            'far fa-fw fa-pause-circle': !uiOnline,
+            'far fa-fw fa-circle': !uiOnline,
             'fas fa-fw fa-spinner fa-spin': uiOnline
           }"></i> {{ 'restart.message_homebridge_service_ready' | translate }}
         </span>
+      </div>
+    </div>
+    <div *ngIf="timeout">
+      <div class="alert alert-warning my-4">
+        <p>
+          {{ 'restart.message_server_is_taking_long_time_to_restart' | translate }}
+        </p>
+        <p class="mb-0">
+          {{ 'restart.label_restart_command_executed' | translate}}: <span class="text-monospace">{{ resp.command || "End Process" }}</span>
+        </p>
+        <p *ngIf="uiOnline" class="mt-2 mb-0">
+          <button class="btn btn-primary mb-0" (click)="viewLogs()">
+            {{ 'menu.tooltip_view_logs' | translate }}
+          </button>
+        </p>
       </div>
     </div>
   </div>

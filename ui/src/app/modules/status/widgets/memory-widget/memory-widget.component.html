@@ -1,6 +1,6 @@
 <div class="flex-column d-flex align-items-stretch h-100 w-100 pb-1">
-  <div style="cursor: move;" class="drag-handler p-2" [translate]="'status.memory.title_memory'">
-    Memory
+  <div class="drag-handler p-2" [ngClass]="{ 'widget-cursor': widget.draggable }">
+    {{ 'status.memory.title_memory' | translate }}
   </div>
   <canvas class="widget-chart h-100 w-100" baseChart [data]="lineChartData" [labels]="lineChartLabels"
     [options]="lineChartOptions" [type]="lineChartType"></canvas>
@@ -9,13 +9,11 @@
     <div class="d-flex justify-content-around flex-wrap w-100">
       <div class="text-center widget-value-parent-wrap">
         <div class="widget-value mb-0">{{ totalMemory | number:'1.0-2' }} GB</div>
-        <div class="widget-value-label grey-text" [translate]="'status.memory.label_total'">Total</div>
+        <div class="widget-value-label grey-text">{{ 'status.memory.label_total' | translate }}</div>
       </div>
       <div class="text-center widget-value-parent-wrap">
-        <div class="widget-value mb-0">
-          {{ freeMemory | number:'1.0-2' }} GB
-        </div>
-        <div class="widget-value-label grey-text" [translate]="'status.memory.label_available'">Free</div>
+        <div class="widget-value mb-0">{{ freeMemory | number:'1.0-2' }} GB</div>
+        <div class="widget-value-label grey-text">{{ 'status.memory.label_available' | translate }}</div>
       </div>
     </div>
   </div>

@@ -33,7 +33,7 @@
     </div>
   </div>
 
-  <div [dragula]='"rooms-bag"' [(dragulaModel)]='$accessories.rooms'>
+  <div [dragula]="'rooms-bag'" [(dragulaModel)]="$accessories.rooms">
     <div *ngFor="let room of $accessories.rooms">
       <div class="row" *ngIf="!isMobile || room.services.length">
         <div class="col-md-12">
@@ -44,7 +44,7 @@
       </div>
       <div class="row mb-4">
         <div class="col-md-12 d-flex flex-wrap justify-content-between noselect services-bag" *ngIf="room.services.length"
-          [dragula]='"services-bag"' [(dragulaModel)]='room.services'>
+          [dragula]="'services-bag'" [(dragulaModel)]="room.services">
           <div *ngFor="let service of room.services" [ngSwitch]="service.type" class="accessory-item accessory-tab">
             <ng-container *ngIf="!hideHidden || !service.hidden">
               <app-accessory-tile [service]="service"></app-accessory-tile>
@@ -67,7 +67,7 @@
           <div style="height:0 !important;" class="accessory-box invisible py-0 my-0"></div>
         </div>
         <div class="col-md-12 d-flex flex-wrap noselect" *ngIf="!room.services.length && !isMobile"
-          [dragula]='"services-bag"' [(dragulaModel)]='room.services'>
+          [dragula]="'services-bag'" [(dragulaModel)]="room.services">
           <app-drag-here-placeholder class="no-drag"></app-drag-here-placeholder>
         </div>
       </div>
@@ -81,23 +81,20 @@
       <h3 class="primary-text m-0 mb-3">{{'accessories.title_accessories' | translate}}</h3>
     </div>
     <div class="col-12 text-center">
-      <div class="alert alert-info p-4" role="alert">
-        <h4 class="primary-text mb-3 mt-0" [translate]="'accessories.title_accessory_control_disabled'">Homebridge Accessory Control
-          Disabled</h4>
+      <div class="alert alert-warning p-4" role="alert">
+        <h4 class="primary-text mb-3 mt-0">{{ 'accessories.title_accessory_control_disabled' | translate }}</h4>
         <div>
-          <p [innerHTML]="'accessories.message_must_use_insecure_mode' | translate">To control your accessories you must
-            be running Homebridge in <strong>insecure</strong> mode.</p>
+          <p>{{ 'accessories.message_must_use_insecure_mode' | translate }}</p>
           <p class="mb-0">
-            <span [translate]="'accessories.message_please_see'">Please see</span>
+            <span>{{ 'accessories.message_please_see' | translate }}</span>
             <a target="_blank" rel="noopener noreferrer"
               href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Enabling-Accessory-Control">
               https://github.com/homebridge/homebridge-config-ui-x/wiki/Enabling-Accessory-Control
             </a>
-            <span [translate]="'accessories.message_for_more_information'">for more information.</span>
+            <span>{{ 'accessories.message_for_more_information' | translate }}</span>
           </p>
           <p class="mt-3 mb-0" *ngIf="$auth.user.admin">
-            {{ 'accessories.message_settings_link' | translate }}
-            <a routerLink="/settings"><i class="fas fa-fw fa-cog fa-lg"></i></a>.
+            {{ 'accessories.message_settings_link' | translate }}.
           </p>
         </div>
       </div>

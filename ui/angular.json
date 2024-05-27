@@ -53,7 +53,8 @@
               "qrcode",
               "semver",
               "xterm",
-              "xterm-addon-fit"
+              "xterm-addon-fit",
+              "xterm-addon-web-links"
             ],
             "aot": false,
             "stylePreprocessorOptions": {

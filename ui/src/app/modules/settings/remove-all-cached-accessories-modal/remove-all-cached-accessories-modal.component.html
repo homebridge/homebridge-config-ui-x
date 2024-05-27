@@ -1,31 +1,26 @@
 <div class="modal-content">
   <div class="modal-header">
-    <h5 class="modal-title" [translate]="'reset.title_clear_cached_accessories'">Clear Cached Accessories</h5>
+    <h5 class="modal-title">{{ 'reset.title_clear_cached_accessories' | translate }}</h5>
     <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
       (click)="activeModal.dismiss('Dismiss')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body">
-    <div class="text-center mt-3" *ngIf="cachedAccessories.length === 0">
-      <i class="fas fa-fw fa-exclamation-circle" style="font-size: 75px;"></i>
-      <p class="mt-3 mb-0" [translate]="'reset.message_remove_cached_accessories_single_empty'"></p>
+    <div *ngIf="cachedAccessories.length === 0" class="text-center">
+      <i class="fas fa-fw fa-circle-check mb-4" style="font-size: 75px;"></i>
+      <p class="mb-0">{{ 'reset.message_remove_cached_accessories_single_empty' | translate }}</p>
     </div>
-    <ngb-alert type="info" [dismissible]="false" style="margin-bottom: 0;" *ngIf="cachedAccessories.length > 0">
-      <div class="text-center mt-2 mb-3"><i class="fas fa-fw fa-exclamation-circle" style="font-size: 75px;"></i></div>
-      <ul class="mb-0">
-        <li [translate]="'reset.message_action_is_irreversible'">
-          This action is irreversible. Please read carefully before proceeding.
-        </li>
-        <li [translate]="'reset.message_remove_cached_accessories'">
-          This action will remove all cached accessories from your Homebridge instance.
-        </li>
-        <li class="mb-0" [translate]="'reset.accessories_will_may_need_to_be_reconfigured'">
-          After performing this action some accessories may need to be reconfigured in HomeKit or re-added to your
-          automations.
-        </li>
-      </ul>
-    </ngb-alert>
+    <div *ngIf="cachedAccessories.length > 0">
+      <div class="text-center mb-4"><i class="fas fa-fw fa-exclamation-circle" style="font-size: 75px;"></i></div>
+      <ngb-alert type="error" [dismissible]="false" style="margin-bottom: 0;">
+        <p>{{ 'reset.message_action_is_irreversible' | translate }}</p>
+        <ul class="mb-0 text-left">
+          <li>{{ 'reset.message_remove_cached_accessories' | translate }}</li>
+          <li class="mb-0">{{ 'reset.accessories_will_may_need_to_be_reconfigured' | translate }}</li>
+        </ul>
+      </ngb-alert>
+    </div>
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-left">

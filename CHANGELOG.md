@@ -2,6 +2,51 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## BETA
+
+### UI Changes
+
+- allow extra config options to graph widgets
+- fix readings of graphical widgets
+- updated menu and sidebar
+- updated menu and sidebar fixes
+- dynamic config editor buttons
+- update support links with descriptions
+- updated menu and sidebar fixes 2
+- improve menu accessibility + power options own page
+- visual issue when updating disabled plugin w. no changelog
+- allow extra configuration on child bridges
+- fix power options white background in dark mode
+- remove more info link from plugin donate modal
+- updates to restart screen
+- add theme setting to main page
+- ui code refactoring
+- remove unused lang strings
+- add language setting to main page
+- ui styling
+- accessibility improvements
+- hide node update available icon for synology users
+- update bridge settings + main settings page
+- match json config title
+- fix edge case of hiding child bridge setup
+- add box for right text in mobile view
+
+### Translation Changes
+
+- updates to `zh-TW.json` language file (#2039) (@tasict)
+- updates to `de.json` language file (#2051) (@Staubgeborener)
+
+### Other Changes
+
+- updated dependencies
+- update hb/nest dependencies
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v1.10.3-beta.0`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.11.14-beta.0`
+- `@homebridge/plugin-ui-utils` @ `v1.0.3`
+
 ## v4.56.2 (2024-04-27)
 
 ### Fixed

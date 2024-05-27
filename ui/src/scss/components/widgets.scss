@@ -2,10 +2,10 @@
 gridster-item {
   font-weight: 400;
   border: 0;
-  // box-shadow: 0 2px 5px 0 rgba(0,0,0,.16), 0 2px 10px 0 rgba(0,0,0,.12);
   color: #000000;
   background-color: #fff;
-  border-radius: 0.25rem;
+  border-radius: 1rem;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
 }
 
 gridster-preview {
@@ -50,9 +50,17 @@ gridster-preview {
 
 .qr-code-container {
   svg {
-    position: inline;
+    position: relative;
     height: 100%;
     max-height: 100%;
     max-width: 100%;
+  }
+}
+
+.widget-cursor {
+  cursor: move;
+
+  @media (max-width: 1095px) {
+    cursor: auto;
   }
 }

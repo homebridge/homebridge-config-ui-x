@@ -22,11 +22,11 @@ export class BridgePluginsModalComponent implements OnInit {
   public canConfigure = true;
   public configBlocks: any[] = [];
   public enabledBlocks: Record<number, boolean> = {};
-  public usernameCache: Map<number, string> = new Map();
+  public bridgeCache: Map<number, Record<string, any>> = new Map();
   public deviceInfo: Map<string, any> = new Map();
+  public showConfigFields: boolean[] = [];
 
   public saveInProgress = false;
-  public restartInProgress: Record<string, boolean> = {};
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -50,7 +50,8 @@ export class BridgePluginsModalComponent implements OnInit {
         for (const [i, block] of this.configBlocks.entries()) {
           if (block._bridge && block._bridge.username) {
             this.enabledBlocks[i] = true;
-            this.usernameCache.set(i, block._bridge.username);
+            block._bridge.env = block._bridge.env || {};
+            this.bridgeCache.set(i, block._bridge);
             this.getDeviceInfo(block._bridge.username);
           }
         }
@@ -67,12 +68,19 @@ export class BridgePluginsModalComponent implements OnInit {
       return;
     }
 
+    const bridgeCache = this.bridgeCache.get(index);
+
     block._bridge = {
-      username: this.usernameCache.get(index) || this.generateUsername(),
+      username: bridgeCache ? bridgeCache.username : this.generateUsername(),
       port: await this.getUnusedPort(),
+      name: bridgeCache?.name,
+      model: bridgeCache?.model,
+      manufacturer: bridgeCache?.manufacturer,
+      firmwareRevision: bridgeCache?.firmwareRevision,
+      env: bridgeCache?.env,
     };
 
-    this.usernameCache.set(index, block._bridge.username);
+    this.bridgeCache.set(index, block._bridge);
     await this.getDeviceInfo(block._bridge.username);
   }
 
@@ -128,27 +136,6 @@ export class BridgePluginsModalComponent implements OnInit {
     });
   }
 
-  async restartChildBridge(username: string) {
-    this.restartInProgress[username] = true;
-    try {
-      await this.$api.put(`/server/restart/${username.replace(/:/g, '')}`, {}).toPromise();
-      this.$toastr.success(
-        this.$translate.instant('child_bridge.toast_restart_requested'),
-        this.$translate.instant('toast.title_success'),
-      );
-    } catch (err) {
-      this.$toastr.error(
-        'Failed to restart bridge: ' + err.error?.message,
-        this.$translate.instant('toast.title_error'),
-      );
-      this.restartInProgress[username] = false;
-    } finally {
-      setTimeout(() => {
-        this.restartInProgress[username] = false;
-      }, 12000);
-    }
-  }
-
   /**
    * Generates a new random username
    */
@@ -168,5 +155,9 @@ export class BridgePluginsModalComponent implements OnInit {
   openFullConfigEditor() {
     this.$router.navigate(['/config']);
     this.activeModal.close();
+  }
+
+  toggleConfigFields(index: number) {
+    this.showConfigFields[index] = !this.showConfigFields[index];
   }
 }

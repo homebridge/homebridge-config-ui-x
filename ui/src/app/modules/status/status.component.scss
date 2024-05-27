@@ -11,7 +11,7 @@
 }
 
 .status-container {
-  min-height: calc(100% - 52px)
+  min-height: calc(100% - 30px)
 }
 
 gridster {
@@ -33,6 +33,10 @@ gridster {
   &:active {
     transform: scale(1.2);
   }
+
+  @media (max-width: 1095px) {
+    display: none;
+  }
 }
 
 .widget-item {
@@ -49,7 +53,7 @@ gridster {
 .status-button {
   z-index: 1000;
 
-  @media (max-width: 1023px) {
+  @media (max-width: 1095px) {
     display: none;
   }
 }

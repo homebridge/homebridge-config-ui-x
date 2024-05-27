@@ -10,14 +10,14 @@
       <div class="container px-1">
         <div class="md-form">
           <input formControlName="username" [attr.disabled]="(page.title === 'users.title_edit_user') ? true : null"
-            type="text" id="form-username" autocomplete="username" autocapitalize="none" class="form-control pl-0 pr-0"
+            type="text" id="form-username" autocomplete="username" autocapitalize="none" class="form-control px-0"
             [attr.aria-label]="'users.label_username' | translate">
           <label for="form-username" [ngClass]="{'active': page.title === 'users.title_edit_user'}">
             <i class="fas fa-fw fa-user-shield"></i> {{ 'users.label_username' | translate }}
           </label>
         </div>
         <div class="md-form">
-          <input formControlName="name" type="text" id="form-name" autocomplete="name" class="form-control pl-0 pr-0"
+          <input formControlName="name" type="text" id="form-name" autocomplete="name" class="form-control px-0"
             [attr.aria-label]="'users.label_full_name' | translate">
           <label for="form-name" [ngClass]="{'active': page.title === 'users.title_edit_user'}">
             <i class="fas fa-fw fa-user"></i> {{ 'users.label_full_name' | translate }}
@@ -25,7 +25,7 @@
         </div>
         <div class="md-form">
           <input formControlName="password" type="password" autocomplete="new-password" id="form-pass"
-            class="form-control pl-0 pr-0" [ngClass]="{
+            class="form-control px-0" [ngClass]="{
               'is-invalid': form.controls.password.dirty && form.controls.password.errors
             }" [attr.aria-label]="page.password | translate">
           <label for="form-pass">
@@ -34,7 +34,7 @@
         </div>
         <div class="md-form">
           <input formControlName="passwordConfirm" type="password" autocomplete="new-password" id="form-pass-confirm"
-            class="form-control pl-0 pr-0" [ngClass]="{
+            class="form-control px-0" [ngClass]="{
               'is-invalid': form.controls.passwordConfirm.dirty && form.controls.passwordConfirm.errors
             }" [attr.aria-label]="'users.label_confirm_password' | translate">
           <label for="form-pass-confirm">
@@ -48,7 +48,7 @@
           <div class="col-6 text-right">
             <input type="checkbox" class="rendux-input" formControlName="admin" id="isAdmin"
               [attr.aria-label]="'users.label_admin_user' | translate">
-            <label for="isAdmin" class="rendux-label ml-3" style="min-width: 45px;"></label>
+            <label for="isAdmin" class="rendux-label ml-3" style="min-width: 50px;"></label>
           </div>
         </div>
       </div>

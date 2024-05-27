@@ -1,20 +1,20 @@
 <div class="modal-content">
   <div class="modal-header">
-    <h5 class="modal-title" [translate]="'reset.title_reset_homebridge_accessory'">Reset Homebridge Accessory</h5>
+    <h5 class="modal-title">{{ 'reset.title_reset_homebridge_accessory' | translate }}</h5>
     <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate" (click)="activeModal.dismiss('Dismiss')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body">
-    <ngb-alert type="info" [dismissible]="false" style="margin-bottom: 0;">
-      <div class="text-center mt-2 mb-3"><i class="fas fa-fw fa-exclamation-circle" style="font-size: 75px;"></i></div>
-      <ul class="mb-0">
-        <li [translate]="'reset.message_action_is_irreversible'">This action is irreversible. Please read carefully before proceeding.</li>
-        <li [translate]="'reset.message_reset_will_unpair_from_homekit'">A reset will unpair this Homebridge instance from your Apple HomeKit setup.</li>
-        <li [translate]="'reset.message_need_to_remove_homebridge_accessory_from_home_app'">You will need to remove the existing Homebridge accessory from the Home app manually.</li>
-        <li [translate]="'reset.message_all_automations_will_be_reset'">All automations and will need to be reconfigured after a reset.</li>
-        <li [translate]="'reset.message_your_homebridge_username_will_be_changed'">Your Homebridge username and pin will be changed.</li>
-        <li class="mb-0" [translate]="'reset.message_accessory_config_will_not_be_changed' | translate">The rest of your config will not be changed. If Homebridge is not starting due to a bad config a reset will not fix it.</li>
+    <div class="text-center mb-4"><i class="fas fa-fw fa-exclamation-circle" style="font-size: 75px;"></i></div>
+    <ngb-alert type="error" [dismissible]="false" style="margin-bottom: 0;">
+      <p>{{ 'reset.message_action_is_irreversible' | translate }}</p>
+      <ul class="mb-0 text-left">
+        <li>{{ 'reset.message_reset_will_unpair_from_homekit' | translate }}</li>
+        <li>{{ 'reset.message_need_to_remove_homebridge_accessory_from_home_app' | translate }}</li>
+        <li>{{ 'reset.message_all_automations_will_be_reset' | translate }}</li>
+        <li>{{ 'reset.message_your_homebridge_username_will_be_changed' | translate }}</li>
+        <li class="mb-0">{{ 'reset.message_accessory_config_will_not_be_changed' | translate }}</li>
       </ul>
     </ngb-alert>
   </div>
