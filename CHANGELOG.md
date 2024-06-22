@@ -2,6 +2,12 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## v4.56.3 (2024-06-22)
+
+### Fixed
+
+- Check that pkg.maintainers is defined before checking it's length (#2069) (@PatrickStankard)
+
 ## v4.56.2 (2024-04-27)
 
 ### Fixed
