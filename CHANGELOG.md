@@ -48,6 +48,12 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.11.14-beta.0`
 - `@homebridge/plugin-ui-utils` @ `v1.0.3`
 
+## v4.56.3 (2024-06-22)
+
+### Fixed
+
+- Check that pkg.maintainers is defined before checking it's length (#2069) (@PatrickStankard)
+
 ## v4.56.2 (2024-04-27)
 
 ### Fixed
