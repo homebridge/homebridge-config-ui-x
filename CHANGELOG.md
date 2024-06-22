@@ -50,7 +50,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ## v4.56.3 (2024-06-22)
 
-### Fixed
+### Other Changes
 
 - Check that pkg.maintainers is defined before checking it's length (#2069) (@PatrickStankard)
 
