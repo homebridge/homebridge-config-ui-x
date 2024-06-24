@@ -309,7 +309,7 @@ describe('BackupController (e2e)', () => {
       });
     };
 
-    for (var i = 0; i < 90; i++) {
+    for (var i = 0; i < 500; i++) {
       await createEmptyFileOfSize(largeFilePath + i, 9000000);
     }
 
