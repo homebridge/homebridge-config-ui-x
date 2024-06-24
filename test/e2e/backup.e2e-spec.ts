@@ -226,7 +226,7 @@ describe('BackupController (e2e)', () => {
     expect(res.headers['content-type']).toBe('application/octet-stream');
   });
 
-  it.only('POST /backup/restore small backup', async () => {
+  it('POST /backup/restore small backup', async () => {
     // get a new backup
     const downloadBackup = await app.inject({
       method: 'GET',
@@ -295,7 +295,7 @@ describe('BackupController (e2e)', () => {
 
   // https://github.com/homebridge/homebridge-config-ui-x/issues/1856
 
-  it.only('POST /backup/restore large backup', async () => {
+  it('POST /backup/restore large backup', async () => {
 
     const fs = require("fs");
     emptyDirSync(resolve(process.env.UIX_STORAGE_PATH, "largefile"));
