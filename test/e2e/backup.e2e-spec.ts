@@ -17,6 +17,7 @@ import {
   remove,
   writeFile,
   writeJson,
+  emptyDirSync,
 } from 'fs-extra';
 import { AuthModule } from '../../src/core/auth/auth.module';
 import { ConfigService } from '../../src/core/config/config.service';
@@ -35,6 +36,7 @@ describe('BackupController (e2e)', () => {
   let tempBackupPath: string;
   let instanceBackupPath: string;
   let customInstanceBackupPath: string;
+  let largeFilePath: string;
 
   let configService: ConfigService;
   let backupService: BackupService;
@@ -54,6 +56,7 @@ describe('BackupController (e2e)', () => {
     tempBackupPath = resolve(process.env.UIX_STORAGE_PATH, 'backup.tar.gz');
     instanceBackupPath = resolve(process.env.UIX_STORAGE_PATH, 'backups/instance-backups');
     customInstanceBackupPath = resolve(process.env.UIX_STORAGE_PATH, 'backups/instance-backups-custom');
+    largeFilePath = resolve(process.env.UIX_STORAGE_PATH, "largefile/largefile.txt");
 
     // setup test config
     await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
@@ -61,6 +64,8 @@ describe('BackupController (e2e)', () => {
     // setup test auth file
     await copy(resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
     await copy(resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
+
+    emptyDirSync(resolve(process.env.UIX_STORAGE_PATH, "largefile"));
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [BackupModule, AuthModule],
@@ -221,7 +226,93 @@ describe('BackupController (e2e)', () => {
     expect(res.headers['content-type']).toBe('application/octet-stream');
   });
 
-  it('POST /backup/restore', async () => {
+  it.only('POST /backup/restore small backup', async () => {
+    // get a new backup
+    const downloadBackup = await app.inject({
+      method: 'GET',
+      path: '/backup/download',
+      headers: {
+        authorization,
+      },
+    });
+
+    // save the backup to disk
+    await writeFile(tempBackupPath, downloadBackup.rawPayload);
+
+    // create multipart form
+    const payload = new FormData();
+    payload.append('backup.tar.gz', await readFile(tempBackupPath));
+
+    const headers = payload.getHeaders();
+    headers.authorization = authorization;
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/backup/restore',
+      headers,
+      payload,
+    });
+
+    expect(res.statusCode).toBe(201);
+
+    await new Promise((r) => setTimeout(r, 100));
+
+    // check the backup contains the required files
+    const restoreDirectory = (backupService as any).restoreDirectory;
+    const pluginsJson = join(restoreDirectory, 'plugins.json');
+    const infoJson = join(restoreDirectory, 'info.json');
+
+    expect(await pathExists(pluginsJson)).toBe(true);
+    expect(await pathExists(infoJson)).toBe(true);
+
+    // mark the "homebridge-mock-plugin" dummy plugin as public, so we can test the mock install
+    const installedPlugins = (await readJson(pluginsJson)).map((x) => {
+      x.publicPackage = true;
+      return x;
+    });
+    await writeJson(pluginsJson, installedPlugins);
+
+    // create some mocks
+    const client = new EventEmitter();
+
+    jest.spyOn(client, 'emit');
+
+    jest.spyOn(pluginsService, 'managePlugin')
+      .mockImplementation(async () => {
+        return true;
+      });
+
+    // start restore
+    await backupGateway.doRestore(client);
+
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Restoring backup'));
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Restore Complete'));
+    expect(pluginsService.managePlugin).toHaveBeenCalledWith('install', expect.objectContaining({ name: 'homebridge-mock-plugin', version: expect.anything() }), client);
+
+    // ensure the temp restore directory was removed
+    expect(await pathExists(restoreDirectory)).toBe(false);
+  });
+
+  // https://github.com/homebridge/homebridge-config-ui-x/issues/1856
+
+  it.only('POST /backup/restore large backup', async () => {
+
+    const fs = require("fs");
+    emptyDirSync(resolve(process.env.UIX_STORAGE_PATH, "largefile"));
+
+    const createEmptyFileOfSize = (fileName, size) => {
+      return new Promise((resolve, reject) => {
+        var fh = fs.openSync(fileName, 'w');
+        fs.writeSync(fh, 'ok', Math.max(0, size - 2));
+        fs.closeSync(fh);
+        resolve(true);
+      });
+    };
+
+    for (var i = 0; i < 90; i++) {
+      await createEmptyFileOfSize(largeFilePath + i, 9000000);
+    }
+
     // get a new backup
     const downloadBackup = await app.inject({
       method: 'GET',
