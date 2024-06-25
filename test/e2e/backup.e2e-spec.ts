@@ -1,5 +1,6 @@
 jest.spyOn(global.console, 'error');
 
+import * as crypto from 'crypto';
 import { EventEmitter } from 'events';
 import { join, resolve } from 'path';
 import fastifyMultipart from '@fastify/multipart';
@@ -9,9 +10,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as dayjs from 'dayjs';
 import * as FormData from 'form-data';
 import {
+  closeSync,
   copy,
   emptyDir,
+  emptyDirSync,
   ensureDir,
+  openSync,
   pathExists,
   readFile,
   readJson,
@@ -19,7 +23,7 @@ import {
   remove,
   writeFile,
   writeJson,
-  emptyDirSync,
+  writeSync,
 } from 'fs-extra';
 import { AuthModule } from '../../src/core/auth/auth.module';
 import { ConfigService } from '../../src/core/config/config.service';
@@ -58,7 +62,7 @@ describe('BackupController (e2e)', () => {
     tempBackupPath = resolve(process.env.UIX_STORAGE_PATH, 'backup.tar.gz');
     instanceBackupPath = resolve(process.env.UIX_STORAGE_PATH, 'backups/instance-backups');
     customInstanceBackupPath = resolve(process.env.UIX_STORAGE_PATH, 'backups/instance-backups-custom');
-    largeFilePath = resolve(process.env.UIX_STORAGE_PATH, "largefile/largefile.txt");
+    largeFilePath = resolve(process.env.UIX_STORAGE_PATH, 'largefile/largefile.txt');
 
     // setup test config
     await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
@@ -67,7 +71,7 @@ describe('BackupController (e2e)', () => {
     await copy(resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
     await copy(resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
 
-    emptyDirSync(resolve(process.env.UIX_STORAGE_PATH, "largefile"));
+    emptyDirSync(resolve(process.env.UIX_STORAGE_PATH, 'largefile'));
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [BackupModule, AuthModule],
@@ -302,11 +306,9 @@ describe('BackupController (e2e)', () => {
 
     // Create a large file to be included within the backup
 
-    const fs = require("fs");
-    emptyDirSync(resolve(process.env.UIX_STORAGE_PATH, "largefile"));
+    emptyDirSync(resolve(process.env.UIX_STORAGE_PATH, 'largefile'));
 
     const createEmptyFileOfSize = (fileName, size) => {
-      var crypto = require('crypto');
 
       //function code taken from http://blog.tompawlak.org/how-to-generate-random-values-nodejs-javascript
       function randomValueHex(len) {
@@ -314,16 +316,16 @@ describe('BackupController (e2e)', () => {
           .toString('hex') // convert to hexadecimal format
           .slice(0, len).toUpperCase();   // return required number of characters
       }
-      return new Promise((resolve, reject) => {
-        var fh = fs.openSync(fileName, 'w');
-        for (var i = 0; i < size; i = i + 1024)
-          fs.writeSync(fh, randomValueHex(1024));
-        fs.closeSync(fh);
-        resolve(true);
+      return new Promise((done, reject) => {
+        const fh = openSync(fileName, 'w');
+        for (let i = 0; i < size; i = i + 1024)
+          writeSync(fh, randomValueHex(1024));
+        closeSync(fh);
+        done(true);
       });
     };
 
-    for (var i = 0; i < 10; i++) {
+    for (let i = 0; i < 10; i++) {
       await createEmptyFileOfSize(largeFilePath + i, 9000000);
     }
 
@@ -339,7 +341,7 @@ describe('BackupController (e2e)', () => {
     // save the backup to disk
     await writeFile(tempBackupPath, downloadBackup.rawPayload);
 
-    expect(global.console.error).toHaveBeenCalledWith(expect.stringContaining("Homebridge UI"), expect.stringContaining("Backup file exceededs maximum restore file size 25mb"));
+    expect(global.console.error).toHaveBeenCalledWith(expect.stringContaining('Homebridge UI'), expect.stringContaining('Backup file exceededs maximum restore file size 25mb'));
 
     // create multipart form
     const payload = new FormData();
@@ -355,7 +357,7 @@ describe('BackupController (e2e)', () => {
       payload,
     });
 
-    expect(global.console.error).toHaveBeenCalledWith(expect.stringContaining("Homebridge UI"), expect.stringContaining("Restore backup failed:"), expect.stringContaining("Restore file exceeds maximum size 25MB"));
+    expect(global.console.error).toHaveBeenCalledWith(expect.stringContaining('Homebridge UI'), expect.stringContaining('Restore backup failed:'), expect.stringContaining('Restore file exceeds maximum size 25MB'));
 
     expect(res.statusCode).toBe(500);
 

@@ -33,8 +33,8 @@ import {
   readdir,
   realpath,
   remove,
+  statSync,
   writeJson,
-  statSync
 } from 'fs-extra';
 import { networkInterfaces } from 'systeminformation';
 import { c as compress, x as extract } from 'tar';
@@ -167,7 +167,7 @@ export class BackupService {
         'storage', 'plugins.json', 'info.json',
       ]);
       if (statSync(backupPath).size > 25 * 1024 * 1024) {
-        this.logger.error(`Backup file exceededs maximum restore file size 25mb`);
+        this.logger.error('Backup file exceededs maximum restore file size 25mb');
         // throw new Error('Backup file exceeded maximum size 25mb');
       }
     } catch (e) {
