@@ -2,6 +2,12 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## v4.56.4 (2024-06-25)
+
+### Other Changes
+
+- Temporarily add maintainers to package.json to handle NPM schema change (#2080) (@PatrickStankard)
+
 ## v4.56.3 (2024-06-22)
 
 ### Other Changes
