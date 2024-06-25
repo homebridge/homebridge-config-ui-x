@@ -122,7 +122,10 @@ export class SettingsService {
   setLang(lang: string) {
     if (lang) {
       this.$translate.use(lang);
+    } else {
+      lang = 'auto';
     }
+    this.env.lang = lang;
   }
 
   /**

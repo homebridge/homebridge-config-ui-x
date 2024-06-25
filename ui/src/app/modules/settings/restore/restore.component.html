@@ -1,20 +1,21 @@
 <div class="modal-content hb-backup-modal">
   <div class="modal-header">
-    <h5 class="modal-title" [translate]="'backup.title_restore'"></h5>
+    <h5 class="modal-title">{{ 'backup.title_restore' | translate }}</h5>
     <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
       (click)="activeModal.dismiss('Dismiss')" *ngIf="!restoreInProgress">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body" *ngIf="!restoreStarted && !setupWizardRestore">
-    <p [translate]="'backup.message_restore_help_one'"></p>
-    <p [translate]="'backup.message_restore_help_two'"></p>
-    <p [translate]="'backup.message_restore_warning'"></p>
+    <p>{{ 'backup.message_restore_help_one' | translate }}</p>
+    <p>{{ 'backup.message_restore_help_two' | translate }}</p>
+    <p>{{ 'backup.message_restore_warning' | translate }}</p>
     <div class="custom-file">
       <input type="file" class="custom-file-input" id="restoreFileUpload" accept="application/gzip, .gz, .hbfx"
         (change)="handleRestoreFileInput($event.target.files)">
-      <label class="custom-file-label" for="restoreFileUpload">{{ selectedFile?.name ||
-        'backup.label_choose_backup_file_to_restore' | translate }}</label>
+      <label class="custom-file-label" for="restoreFileUpload">
+        {{ selectedFile?.name || 'backup.label_choose_backup_file_to_restore' | translate }}
+      </label>
     </div>
   </div>
 
@@ -42,7 +43,7 @@
           <span *ngIf="uploadPercent === 100"> Extracting Archive</span>
           <span *ngIf="uploadPercent !== 100"> {{ 'backup.label_uploading' | translate }}</span>
         </span>
-        <span *ngIf="!clicked" [translate]="'backup.button_restore_backup'"></span>
+        <span *ngIf="!clicked">{{ 'backup.button_restore_backup' | translate }}</span>
       </button>
     </div>
   </div>

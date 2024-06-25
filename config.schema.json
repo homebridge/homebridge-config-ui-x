@@ -660,25 +660,9 @@
   },
   "layout": [
     {
-      "type": "flex",
-      "flex-flow": "row wrap",
       "items": [
-        {
-          "type": "flex",
-          "flex-flow": "column",
-          "items": [
-            "theme",
-            "lang"
-          ]
-        },
-        {
-          "type": "flex",
-          "flex-flow": "column",
-          "items": [
-            "port",
-            "tempUnits"
-          ]
-        }
+        "port",
+        "tempUnits"
       ]
     },
     {

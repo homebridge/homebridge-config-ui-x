@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
 
 @Component({
@@ -6,12 +6,10 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
   templateUrl: './lockmechanism.component.html',
   styleUrls: ['./lockmechanism.component.scss'],
 })
-export class LockmechanismComponent implements OnInit {
+export class LockmechanismComponent {
   @Input() public service: ServiceTypeX;
 
   constructor() {}
-
-  ngOnInit() {}
 
   onClick() {
     this.service.getCharacteristic('LockTargetState').setValue(this.service.values.LockTargetState ? 0 : 1);

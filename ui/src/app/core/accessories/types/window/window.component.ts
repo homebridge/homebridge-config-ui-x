@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
 import { WindowManageComponent } from '@/app/core/accessories/types/window/window.manage.component';
@@ -8,14 +8,12 @@ import { WindowManageComponent } from '@/app/core/accessories/types/window/windo
   templateUrl: './window.component.html',
   styleUrls: ['./window.component.scss'],
 })
-export class WindowComponent implements OnInit {
+export class WindowComponent {
   @Input() public service: ServiceTypeX;
 
   constructor(
     private modalService: NgbModal,
   ) {}
-
-  ngOnInit() {}
 
   onClick() {
     if (this.service.values.TargetPosition) {

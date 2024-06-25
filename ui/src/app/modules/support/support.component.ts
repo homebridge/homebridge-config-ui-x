@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
@@ -6,10 +6,17 @@ import { SettingsService } from '@/app/core/settings.service';
   templateUrl: './support.component.html',
   styleUrls: ['./support.component.scss'],
 })
-export class SupportComponent implements OnInit {
+export class SupportComponent {
+  public showFields = {
+    general: true,
+    dev: true,
+  };
+
   constructor(
     public $settings: SettingsService,
   ) {}
 
-  ngOnInit(): void {}
+  toggleSection(section: string) {
+    this.showFields[section] = !this.showFields[section];
+  }
 }

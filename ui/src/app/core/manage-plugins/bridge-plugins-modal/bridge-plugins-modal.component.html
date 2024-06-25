@@ -19,16 +19,14 @@
       </a>
     </p>
     <div *ngIf="configBlocks.length">
-      <p class="alert alert-info">
-        {{ 'child_bridge.message_child_bridges_must_be_paired_separately' | translate }}
-      </p>
+      <p>{{ 'child_bridge.message_child_bridges_must_be_paired_separately' | translate }}</p>
       <p>{{ 'child_bridge.message_select_platforms_accessories' | translate }}:</p>
-      <ul class="list-group mt-2 mb-3" *ngIf="configBlocks.length">
+      <ul class="list-group list-group-box my-2" *ngIf="configBlocks.length">
         <li class="list-group-item " *ngFor="let item of configBlocks; let i = index">
-          <div class="d-flex justify-content-between align-items-center">
-            <h5 class="primary-text">
+          <div class="d-flex justify-content-between align-items-center mt-1">
+            <h5 class="primary-text mb-0">
               <strong>
-                {{ item.name || item.accessory || item.platform }}
+                {{ item.name || item.accessory || item.platform }} <span *ngIf="enabledBlocks[i] && item._bridge?.name"> - {{ item._bridge.name }}</span>
               </strong>
             </h5>
             <input type="checkbox" class="rendux-input" [id]="'toggleExternalBridgeInput_' + i"
@@ -38,24 +36,23 @@
           <div *ngIf="item._bridge?.username">
             <div *ngIf="deviceInfo[item._bridge?.username] === false">
               <ngb-alert type="info" [dismissible]="false" class="mt-3">
-                <i class="fa fa-fw fa-info-circle"></i>
                 {{ 'child_bridge.message_restart_homebridge' | translate }}
                 <br>{{ 'child_bridge.message_return_to_pair' | translate }}
               </ngb-alert>
             </div>
-            <div *ngIf="deviceInfo[item._bridge?.username]">
-              <div *ngIf="deviceInfo[item._bridge?.username]._isPaired === false" class="w-100 d-flex flex-column">
-                <app-qrcode [data]="deviceInfo[item._bridge?.username]._setupCode" class="mr-auto ml-auto mt-2 mb-2"
+            <div *ngIf="deviceInfo[item._bridge?.username]" class="mt-3">
+              <div *ngIf="!deviceInfo[item._bridge?.username]._isPaired" class="w-100 d-flex flex-column">
+                <app-qrcode [data]="deviceInfo[item._bridge?.username]._setupCode" class="mx-auto my-2"
                   style="width: 180px; height: 180px;">
                 </app-qrcode>
-                <p class="mr-auto ml-auto text-center">
+                <p class="mx-auto text-center">
                   {{ deviceInfo[item._bridge?.username].pincode }}
                 </p>
-                <p class="grey-text  mr-auto ml-auto text-center" style="max-width: 400px;">
+                <p class="grey-text mx-auto text-center" style="max-width: 400px;">
                   {{ 'status.message_code_scan_instructions' | translate }}
                 </p>
               </div>
-              <div *ngIf="deviceInfo[item._bridge?.username]._isPaired=== true">
+              <div *ngIf="deviceInfo[item._bridge?.username]._isPaired">
                 <div class="text-center">
                   <i class="fa fa-fw fa-check-circle primary-text mb-4" style="font-size: 75px;"></i>
                   <p>
@@ -63,16 +60,60 @@
                   </p>
                 </div>
               </div>
-              <div class="text-right">
-                <button *ngIf="$settings.env.serviceMode" class="btn btn-primary waves-effect mr-0"
-                  [disabled]="restartInProgress[item._bridge?.username]"
-                  ngbTooltip="{{'menu.tooltip_restart' | translate}}" container="body" openDelay="150"
-                  (click)="restartChildBridge(item._bridge?.username)">
-                  <i class="fas fa-fw nav-menu-icon" [ngClass]="{
-                    'fa-power-off': !restartInProgress[item._bridge?.username],
-                    'fa-spinner fa-pulse': restartInProgress[item._bridge?.username]
-                  }"></i>
-                </button>
+              <div *ngIf="$settings.env.serviceMode">
+                <div role="button" tabindex="0" [attr.aria-expanded]="showConfigFields[i] ? 'true' : 'false'"
+                  [attr.aria-controls]="'configFields_' + i" (click)="toggleConfigFields(i)" class="hover-pointer">
+                  <h5 class="primary-text">
+                    <i class="fa fa-fw" [ngClass]="showConfigFields[i] ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+                    {{ 'child_bridge.settings_config.header' | translate }}
+                  </h5>
+                </div>
+                <div *ngIf="showConfigFields[i]" [id]="'configFields_' + i">
+                  <div class="mb-3 grey-text">{{ 'child_bridge.settings_config.description' | translate }}</div>
+                  <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
+                    <span class="pr-0 pr-lg-3" style="flex: 1;">{{ 'child_bridge.settings_config.name' | translate }}</span>
+                    <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1;">
+                      <input class="form-control form-control-sm" type="text" [(ngModel)]="item._bridge.name">
+                    </div>
+                  </div>
+                  <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
+                    <span class="pr-0 pr-lg-3" style="flex: 1;">{{ 'child_bridge.settings_config.manufacturer' | translate }}</span>
+                    <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1;">
+                      <input class="form-control form-control-sm" type="text" [(ngModel)]="item._bridge.manufacturer">
+                    </div>
+                  </div>
+                  <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
+                    <span class="pr-0 pr-lg-3" style="flex: 1;">{{ 'child_bridge.settings_config.model' | translate }}</span>
+                    <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1;">
+                      <input class="form-control form-control-sm" type="text" [(ngModel)]="item._bridge.model">
+                    </div>
+                  </div>
+                  <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
+                    <span class="pr-0 pr-lg-3" style="flex: 1;">{{ 'child_bridge.settings_config.firmware' | translate }}</span>
+                    <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1;">
+                      <input class="form-control form-control-sm" type="text" [(ngModel)]="item._bridge.firmwareRevision">
+                    </div>
+                  </div>
+                  <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
+                    <span class="pr-0 pr-lg-3" style="flex: 1;">
+                      <span class="text-monospace">DEBUG</span><br>
+                      <small class="grey-text">{{ 'settings.service.debug_tooltip' | translate }}</small>
+                    </span>
+                    <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1;">
+                      <input class="form-control form-control-sm" type="text" [(ngModel)]="item._bridge.env.DEBUG">
+                    </div>
+                  </div>
+                  <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
+                    <span class="pr-0 pr-lg-3" style="flex: 1;">
+                      <span class="text-monospace">NODE_OPTIONS</span><br>
+                      <small class="grey-text">{{ 'settings.service.node_tooltip' | translate }}</small>
+                    </span>
+                    <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1;">
+                      <input class="form-control form-control-sm" type="text" [(ngModel)]="item._bridge.env.NODE_OPTIONS"
+                        placeholder="--max-old-space-size=512 --max-http-header-size=8192">
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

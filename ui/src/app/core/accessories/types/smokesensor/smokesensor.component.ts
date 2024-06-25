@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
 
 @Component({
@@ -6,10 +6,8 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
   templateUrl: './smokesensor.component.html',
   styleUrls: ['./smokesensor.component.scss'],
 })
-export class SmokesensorComponent implements OnInit {
+export class SmokesensorComponent {
   @Input() public service: ServiceTypeX;
 
   constructor() {}
-
-  ngOnInit() {}
 }
