@@ -355,8 +355,7 @@ describe('BackupController (e2e)', () => {
       payload,
     });
 
-
-    expect(global.console.error).toHaveBeenCalledWith(expect.stringContaining("Homebridge UI"), expect.stringContaining("Backup file exceeded maximum size 25mb"));
+    expect(global.console.error).toHaveBeenCalledWith(expect.stringContaining("Homebridge UI"), expect.stringContaining("Restore backup failed:"), expect.stringContaining("Restore file exceeds maximum size 25MB"));
 
     expect(res.statusCode).toBe(500);
 
