@@ -167,7 +167,7 @@ export class BackupService {
         'storage', 'plugins.json', 'info.json',
       ]);
       if (statSync(backupPath).size > 25 * 1024 * 1024) {
-        this.logger.error(`Backup file exceeded maximum size 25mb`);
+        this.logger.error(`Backup file exceededs maximum restore file size 25mb`);
         // throw new Error('Backup file exceeded maximum size 25mb');
       }
     } catch (e) {
