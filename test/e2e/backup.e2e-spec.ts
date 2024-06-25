@@ -339,7 +339,7 @@ describe('BackupController (e2e)', () => {
     // save the backup to disk
     await writeFile(tempBackupPath, downloadBackup.rawPayload);
 
-    expect(global.console.error).toHaveBeenCalledWith(expect.stringContaining("Homebridge UI"), expect.stringContaining("Backup file exceeded maximum size 25mb"));
+    expect(global.console.error).toHaveBeenCalledWith(expect.stringContaining("Homebridge UI"), expect.stringContaining("Backup file exceededs maximum restore file size 25mb"));
 
     // create multipart form
     const payload = new FormData();
