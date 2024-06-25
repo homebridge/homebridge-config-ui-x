@@ -366,7 +366,7 @@ export class PluginsService {
         homepage: pkg.homepage,
         bugs: typeof pkg.bugs === 'object' && pkg.bugs?.url ? pkg.bugs.url : null,
       };
-      plugin.author = (pkg.maintainers.length) ? pkg.maintainers[0].name : null;
+      plugin.author = (pkg.maintainers && pkg.maintainers.length) ? pkg.maintainers[0].name : null;
       plugin.verifiedPlugin = this.verifiedPlugins.includes(pkg.name);
       plugin.verifiedPlusPlugin = this.verifiedPlusPlugins.includes(pkg.name);
       plugin.icon = this.pluginIcons[pkg.name]
@@ -1322,7 +1322,7 @@ export class PluginsService {
         homepage: pkg.homepage,
         bugs: typeof pkg.bugs === 'object' && pkg.bugs?.url ? pkg.bugs.url : null,
       };
-      plugin.author = (pkg.maintainers.length) ? pkg.maintainers[0].name : null;
+      plugin.author = (pkg.maintainers && pkg.maintainers.length) ? pkg.maintainers[0].name : null;
       plugin.engines = pkg.engines;
     } catch (e) {
       if (e.response?.status !== 404) {
