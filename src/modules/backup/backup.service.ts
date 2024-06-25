@@ -34,6 +34,7 @@ import {
   realpath,
   remove,
   writeJson,
+  statSync
 } from 'fs-extra';
 import { networkInterfaces } from 'systeminformation';
 import { c as compress, x as extract } from 'tar';
@@ -165,7 +166,10 @@ export class BackupService {
       }, [
         'storage', 'plugins.json', 'info.json',
       ]);
-
+      if (statSync(backupPath).size > 25 * 1024 * 1024) {
+        this.logger.error(`Backup file exceeded maximum size 25mb`);
+        // throw new Error('Backup file exceeded maximum size 25mb');
+      }
     } catch (e) {
       this.logger.log(`Backup failed, removing ${backupDir}`);
       await remove(resolve(backupDir));

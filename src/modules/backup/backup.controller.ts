@@ -33,7 +33,7 @@ export class BackupController {
   constructor(
     private backupService: BackupService,
     private logger: Logger,
-  ) {}
+  ) { }
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Download a .tar.gz of the Homebridge instance.' })
@@ -91,7 +91,11 @@ export class BackupController {
   async restoreBackup(@Req() req: FastifyRequest) {
     try {
       const data = await req.file();
-      await this.backupService.uploadBackupRestore(data);
+      if (data.file.truncated) {
+        throw new InternalServerErrorException('Restore file exceeds maximum size 25MB');
+      } else {
+        await this.backupService.uploadBackupRestore(data);
+      }
     } catch (err) {
       this.logger.error('Restore backup failed:', err.message);
       throw new InternalServerErrorException(err.message);

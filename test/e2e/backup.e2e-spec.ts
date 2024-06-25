@@ -1,3 +1,5 @@
+jest.spyOn(global.console, 'error');
+
 import { EventEmitter } from 'events';
 import { join, resolve } from 'path';
 import fastifyMultipart from '@fastify/multipart';
@@ -76,6 +78,7 @@ describe('BackupController (e2e)', () => {
     fAdapter.register(fastifyMultipart, {
       limits: {
         files: 1,
+        fileSize: 25 * 1024 * 1024, // 25mb
       },
     });
 
@@ -295,21 +298,32 @@ describe('BackupController (e2e)', () => {
 
   // https://github.com/homebridge/homebridge-config-ui-x/issues/1856
 
-  it('POST /backup/restore large backup', async () => {
+  it('POST /backup/restore of a large .homebridge directory should backup, but restore will not work', async () => {
+
+    // Create a large file to be included within the backup
 
     const fs = require("fs");
     emptyDirSync(resolve(process.env.UIX_STORAGE_PATH, "largefile"));
 
     const createEmptyFileOfSize = (fileName, size) => {
+      var crypto = require('crypto');
+
+      //function code taken from http://blog.tompawlak.org/how-to-generate-random-values-nodejs-javascript
+      function randomValueHex(len) {
+        return crypto.randomBytes(Math.ceil(len / 2))
+          .toString('hex') // convert to hexadecimal format
+          .slice(0, len).toUpperCase();   // return required number of characters
+      }
       return new Promise((resolve, reject) => {
         var fh = fs.openSync(fileName, 'w');
-        fs.writeSync(fh, 'ok', Math.max(0, size - 2));
+        for (var i = 0; i < size; i = i + 1024)
+          fs.writeSync(fh, randomValueHex(1024));
         fs.closeSync(fh);
         resolve(true);
       });
     };
 
-    for (var i = 0; i < 500; i++) {
+    for (var i = 0; i < 10; i++) {
       await createEmptyFileOfSize(largeFilePath + i, 9000000);
     }
 
@@ -325,6 +339,8 @@ describe('BackupController (e2e)', () => {
     // save the backup to disk
     await writeFile(tempBackupPath, downloadBackup.rawPayload);
 
+    expect(global.console.error).toHaveBeenCalledWith(expect.stringContaining("Homebridge UI"), expect.stringContaining("Backup file exceeded maximum size 25mb"));
+
     // create multipart form
     const payload = new FormData();
     payload.append('backup.tar.gz', await readFile(tempBackupPath));
@@ -339,41 +355,15 @@ describe('BackupController (e2e)', () => {
       payload,
     });
 
-    expect(res.statusCode).toBe(201);
+
+    expect(global.console.error).toHaveBeenCalledWith(expect.stringContaining("Homebridge UI"), expect.stringContaining("Backup file exceeded maximum size 25mb"));
+
+    expect(res.statusCode).toBe(500);
 
     await new Promise((r) => setTimeout(r, 100));
 
     // check the backup contains the required files
     const restoreDirectory = (backupService as any).restoreDirectory;
-    const pluginsJson = join(restoreDirectory, 'plugins.json');
-    const infoJson = join(restoreDirectory, 'info.json');
-
-    expect(await pathExists(pluginsJson)).toBe(true);
-    expect(await pathExists(infoJson)).toBe(true);
-
-    // mark the "homebridge-mock-plugin" dummy plugin as public, so we can test the mock install
-    const installedPlugins = (await readJson(pluginsJson)).map((x) => {
-      x.publicPackage = true;
-      return x;
-    });
-    await writeJson(pluginsJson, installedPlugins);
-
-    // create some mocks
-    const client = new EventEmitter();
-
-    jest.spyOn(client, 'emit');
-
-    jest.spyOn(pluginsService, 'managePlugin')
-      .mockImplementation(async () => {
-        return true;
-      });
-
-    // start restore
-    await backupGateway.doRestore(client);
-
-    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Restoring backup'));
-    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Restore Complete'));
-    expect(pluginsService.managePlugin).toHaveBeenCalledWith('install', expect.objectContaining({ name: 'homebridge-mock-plugin', version: expect.anything() }), client);
 
     // ensure the temp restore directory was removed
     expect(await pathExists(restoreDirectory)).toBe(false);
