@@ -12,6 +12,43 @@
       background-color: #242424 !important;
     }
 
+    .sidebar {
+      background: #111111;
+      color: #6d6e7e;
+
+      .header {
+        background: #111111;
+      }
+
+      .link-wrapper {
+        .link {
+          .link-row {
+            &:hover {
+              background: #000000;
+
+              .title {
+                color: white;
+              }
+            }
+
+            &.active {
+              i {
+                color: $darkModePrimary;
+              }
+            }
+
+            .title {
+              color: #6d6e7e;
+            }
+          }
+        }
+      }
+    }
+
+    .m-header {
+      background: #111111;
+    }
+
     .custom-select {
       background: #333333 url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='white' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") right .75rem center/8px 10px no-repeat !important;
       color: #eeeeee !important;
@@ -22,6 +59,11 @@
       background-color: #333333 !important;
       border: none !important;
       color: #eeeeee !important;
+    }
+
+    .form-control::placeholder {
+      color: #636363 !important;
+      opacity: 1 !important;
     }
 
     .hb-plain-text-editor {
@@ -106,6 +148,7 @@
     .card {
       color: #ffffff;
       background-color: $secondaryBackground !important;
+      border-radius: 1rem;
     }
 
     .card-text-defined {
@@ -138,20 +181,30 @@
       }
     }
 
-    .alert-warning {
-      color: $secondaryBackground;
-      background-color: #ffd793;
-      border-color: $secondaryBackground;
+    .alert {
+      color: #eeeeee;
+      background-color: #2b2b2b;
+      border-color: #444444;
 
       a {
-        color: $secondaryBackground;
-
-        @media (hover: hover) {
-          &:hover {
-            text-decoration: underline;
-          }
-        }
+        color: $darkModePrimary;
       }
+    }
+
+    .alert-info {
+      border-color: $darkModePrimary;
+    }
+
+    .alert-success {
+      border-color: #388e3c;
+    }
+
+    .alert-warning {
+      border-color: #ffa000;
+    }
+
+    .alert-error {
+      border-color: #d32f2f;
     }
 
     .qr-code-container {
@@ -202,14 +255,9 @@
       color: $darkModePrimary;
     }
 
-    .modal-content {
-      border-radius: 0;
-    }
-
     .modal-header {
       background-color: $modalBackground;
-      border-bottom: none;
-      border-radius: 0 !important;
+      border-bottom: 0;
 
       .close {
         color: $darkModePrimary;
@@ -229,8 +277,7 @@
 
     .modal-footer {
       background-color: $modalBackground;
-      border-top: none;
-      border-radius: 0 !important;
+      border-top: 0;
     }
 
     .modal-backdrop {
@@ -369,12 +416,6 @@
       display: none;
     }
 
-    .alert-info {
-      background-color: rgba($darkModePrimary, 0.1);
-      border-color: rgba($darkModePrimary, 0.1);
-      color: $darkModePrimary;
-    }
-
     .animate_loader {
       .spinner_outer {
         stroke: $darkModePrimary;
@@ -398,7 +439,7 @@
     .plugin-icon-card {
       width: 70px;
       height: 70px;
-      border-radius: 15px;
+      border-radius: 1rem;
       border: 1px solid #222222;
     }
 

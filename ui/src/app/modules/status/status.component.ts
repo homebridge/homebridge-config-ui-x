@@ -125,6 +125,7 @@ export class StatusComponent implements OnInit, OnDestroy {
       item.$resizeEvent = new Subject();
       item.$configureEvent = new Subject();
       item.$saveWidgetsEvent = this.saveWidgetsEvent;
+      item.draggable = this.options.draggable.enabled;
       return item;
     });
   }
@@ -160,6 +161,7 @@ export class StatusComponent implements OnInit, OnDestroy {
     this.options.draggable.enabled = false;
     this.options.resizable.enabled = false;
     this.options.api.optionsChanged();
+    this.setLayout(this.dashboard);
   }
 
   unlockLayout() {
@@ -167,6 +169,7 @@ export class StatusComponent implements OnInit, OnDestroy {
     this.options.draggable.enabled = true;
     this.options.resizable.enabled = true;
     this.options.api.optionsChanged();
+    this.setLayout(this.dashboard);
   }
 
   gridResizeEvent(_item: any, itemComponent: any) {

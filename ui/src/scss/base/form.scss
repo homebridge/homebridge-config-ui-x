@@ -18,3 +18,13 @@
     }
   }
 }
+
+.resp-select {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  @media (min-width: 768px) {
+    width: 300px;
+  }
+}

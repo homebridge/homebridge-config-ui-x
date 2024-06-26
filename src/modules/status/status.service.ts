@@ -471,6 +471,7 @@ export class StatusService {
       // Get the newest v18 and v20 in the list
       const latest18 = versionList.filter((x: { version: string }) => x.version.startsWith('v18'))[0];
       const latest20 = versionList.filter((x: { version: string }) => x.version.startsWith('v20'))[0];
+      const latest22 = versionList.filter((x: { version: string }) => x.version.startsWith('v22'))[0];
 
       let updateAvailable = false;
       let latestVersion = process.version;
@@ -524,6 +525,15 @@ export class StatusService {
           // Currently using v20
           // Check if there is a new minor/patch version available
           if (gt(latest20.version, process.version)) {
+            updateAvailable = true;
+            latestVersion = latest20.version;
+          }
+          break;
+        }
+        case 'v22': {
+          // Currently using v22
+          // Check if there is a new minor/patch version available
+          if (gt(latest22.version, process.version)) {
             updateAvailable = true;
             latestVersion = latest20.version;
           }

@@ -56,8 +56,8 @@
           <!-- plugin npm name/info modal -->
           <p class="card-text mb-2 text-truncate">
             <a href="javascript:void(0)" (click)="pluginInfoModal(plugin)" class="card-link grey-text">
-              <i class="fas fa-fw fa-info-circle fa-lg"></i>
-              <span class="grey-text"> {{ plugin.name }}</span>
+              <i class="fas fa-fw fa-info-circle fa-lg mr-1"></i>
+              <span class="grey-text">{{ plugin.name }}</span>
             </a>
           </p>
           <!-- // -->
@@ -82,10 +82,10 @@
             <a href="javascript:void(0)" class="card-link pink-text" *ngIf="(plugin.verifiedPlugin || plugin.verifiedPlusPlugin) && plugin.funding"
               (click)="openFundingModal(plugin)">
               <i class="fas fa-fw fa-heart fa-lg mr-1"></i>
-              <span class="grey-text">@{{ plugin.author }}</span>
+              <span class="grey-text">&#64;{{ plugin.author }}</span>
             </a>
             <span class="grey-text" *ngIf="!((plugin.verifiedPlugin || plugin.verifiedPlusPlugin) && plugin.funding)">
-              <i class="fas fa-fw fa-heart fa-lg mr-1" style="opacity: 0.5;"></i>@{{ plugin.author }}
+              <i class="fas fa-fw fa-heart fa-lg mr-1" style="opacity: 0.5;"></i>&#64;{{ plugin.author }}
             </span>
           </p>
           <!-- // -->
@@ -201,6 +201,14 @@
                   <div class="dropdown-divider" *ngIf="plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && !plugin.recommendChildBridge"></div>
                   <!-- child bridge setup, when not recommended -->
                   <button ngbDropdownItem *ngIf="plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && !plugin.recommendChildBridge" (click)="$plugin.bridgeSettings(plugin)">
+                    <i class="icon-button fas fa-fw fa-bridge"></i>
+                    {{ 'child_bridge.label_child_setup' | translate }}
+                  </button>
+                  <!-- // -->
+                  <!-- child bridge setup, edge case, when not configured, recommended, but update icon blocks setup -->
+                  <div class="dropdown-divider" *ngIf="plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && plugin.recommendChildBridge && plugin.updateAvailable"></div>
+                  <button ngbDropdownItem *ngIf="plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && plugin.recommendChildBridge && plugin.updateAvailable"
+                    (click)="$plugin.bridgeSettings(plugin)">
                     <i class="icon-button fas fa-fw fa-bridge"></i>
                     {{ 'child_bridge.label_child_setup' | translate }}
                   </button>
