@@ -1,7 +1,7 @@
 {
   "name": "homebridge-config-ui-x",
   "displayName": "Homebridge UI",
-  "version": "4.56.3",
+  "version": "4.56.4",
   "description": "A web based management, configuration and control platform for Homebridge.",
   "license": "MIT",
   "author": "oznu <dev@oz.nu>",
@@ -158,5 +158,43 @@
     "accessory control",
     "smart home",
     "hb-service"
+  ],
+  "maintainers": [
+    {
+      "email": "bwp91@icloud.com",
+      "name": "bwp91"
+    },
+    {
+      "email": "dev@oz.nu",
+      "name": "oznu"
+    },
+    {
+      "email": "buyminivan-northern@yahoo.ca",
+      "name": "northernman"
+    },
+    {
+      "email": "mail@anderl-bauer.de",
+      "name": "supereg"
+    },
+    {
+      "email": "khaos.tian@gmail.com",
+      "name": "khaost"
+    },
+    {
+      "email": "erik.baauw@xs4all.nl",
+      "name": "ebaauw"
+    },
+    {
+      "email": "donavan.becker@icloud.com",
+      "name": "donavanbecker"
+    },
+    {
+      "email": "dustin.greif@gmail.com",
+      "name": "dustin.greif"
+    },
+    {
+      "email": "nfarina@gmail.com",
+      "name": "nfarina"
+    }
   ]
 }

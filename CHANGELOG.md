@@ -48,6 +48,12 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.11.14`
 - `@homebridge/plugin-ui-utils` @ `v1.0.3`
 
+## v4.56.4 (2024-06-25)
+
+### Other Changes
+
+- Temporarily add maintainers to package.json to handle NPM schema change (#2080) (@PatrickStankard)
+
 ## v4.56.3 (2024-06-22)
 
 ### Other Changes
