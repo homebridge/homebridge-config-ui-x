@@ -30,6 +30,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - match json config title
 - fix edge case of hiding child bridge setup
 - add box for right text in mobile view
+- fix: EventEmitter memory leak warnings when you have a significant number of child bridges. (#2087) (@hjdhjd)
 
 ### Translation Changes
 
