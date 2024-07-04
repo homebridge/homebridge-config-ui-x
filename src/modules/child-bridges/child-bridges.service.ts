@@ -38,15 +38,19 @@ export class ChildBridgesService {
       client.emit('child-bridge-status-update', data);
     };
 
+    this.homebridgeIpcService.setMaxListeners(this.homebridgeIpcService.getMaxListeners() + 1);
     this.homebridgeIpcService.on('childBridgeStatusUpdate', listener);
 
     // cleanup on disconnect
     const onEnd = () => {
       client.removeAllListeners('end');
       client.removeAllListeners('disconnect');
+      client.setMaxListeners(client.getMaxListeners() - 2);
       this.homebridgeIpcService.removeListener('childBridgeStatusUpdate', listener);
+      this.homebridgeIpcService.setMaxListeners(this.homebridgeIpcService.getMaxListeners() - 1);
     };
 
+    client.setMaxListeners(client.getMaxListeners() + 2);
     client.on('end', onEnd.bind(this));
     client.on('disconnect', onEnd.bind(this));
   }

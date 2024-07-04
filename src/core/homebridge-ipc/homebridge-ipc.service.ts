@@ -28,6 +28,8 @@ export class HomebridgeIpcService extends EventEmitter {
   public setHomebridgeProcess(process: ChildProcess) {
     this.homebridge = process;
 
+    this.homebridge.setMaxListeners(this.homebridge.getMaxListeners() + 2);
+
     this.homebridge.on('message', (message: { id: string; data: unknown }) => {
       if (typeof message !== 'object' || !message.id) {
         return;
@@ -57,14 +59,17 @@ export class HomebridgeIpcService extends EventEmitter {
       const actionTimeout = setTimeout(() => {
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
         this.removeListener(responseEvent, listener);
+        this.setMaxListeners(this.getMaxListeners() - 1);
         reject('The Homebridge service did not respond');
       }, 3000);
 
       const listener = (data: any) => {
         clearTimeout(actionTimeout);
+        this.setMaxListeners(this.getMaxListeners() - 1);
         resolve(data);
       };
 
+      this.setMaxListeners(this.getMaxListeners() + 1);
       this.once(responseEvent, listener);
       this.sendMessage(requestEvent);
     });
