@@ -30,12 +30,14 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - match json config title
 - fix edge case of hiding child bridge setup
 - add box for right text in mobile view
+- fix: EventEmitter memory leak warnings when you have a significant number of child bridges. (#2087) (@hjdhjd)
 
 ### Translation Changes
 
 - updates to `zh-TW.json` language file (#2039) (@tasict)
 - updates to `de.json` language file (#2051) (@Staubgeborener)
 - updates to `th.json` language file (#2061) (@tomzt)
+- Updates to `sv.json` language file (#2078) (@emilof)
 
 ### Other Changes
 
@@ -44,8 +46,8 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ### Homebridge Dependencies
 
-- `@homebridge/hap-client` @ `v1.10.3-beta.0`
-- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.11.14-beta.0`
+- `@homebridge/hap-client` @ `v1.10.3-beta.3`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.11.14`
 - `@homebridge/plugin-ui-utils` @ `v1.0.3`
 
 ## v4.56.4 (2024-06-25)
@@ -58,7 +60,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ### Other Changes
 
-- Check that pkg.maintainers is defined before checking it's length (#2069) (@PatrickStankard)
+- Check that `pkg.maintainers` is defined before checking its length (#2069) (@PatrickStankard)
 
 ## v4.56.2 (2024-04-27)
 
