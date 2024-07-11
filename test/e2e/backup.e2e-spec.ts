@@ -32,6 +32,7 @@ import { BackupGateway } from '../../src/modules/backup/backup.gateway';
 import { BackupModule } from '../../src/modules/backup/backup.module';
 import { BackupService } from '../../src/modules/backup/backup.service';
 import { PluginsService } from '../../src/modules/plugins/plugins.service';
+import '../../src/globalDefaults';
 
 describe('BackupController (e2e)', () => {
   let app: NestFastifyApplication;
@@ -82,7 +83,7 @@ describe('BackupController (e2e)', () => {
     fAdapter.register(fastifyMultipart, {
       limits: {
         files: 1,
-        fileSize: 25 * 1024 * 1024, // 25mb
+        fileSize: globalThis.backup.maxBackupSize,
       },
     });
 
@@ -341,7 +342,7 @@ describe('BackupController (e2e)', () => {
     // save the backup to disk
     await writeFile(tempBackupPath, downloadBackup.rawPayload);
 
-    expect(global.console.error).toHaveBeenCalledWith(expect.stringContaining('Homebridge UI'), expect.stringContaining('Backup file exceededs maximum restore file size 25mb'));
+    expect(global.console.error).toHaveBeenCalledWith(expect.stringContaining('Homebridge UI'), expect.stringContaining('Backup file exceeds maximum restore file size'));
 
     // create multipart form
     const payload = new FormData();
@@ -357,7 +358,7 @@ describe('BackupController (e2e)', () => {
       payload,
     });
 
-    expect(global.console.error).toHaveBeenCalledWith(expect.stringContaining('Homebridge UI'), expect.stringContaining('Restore backup failed:'), expect.stringContaining('Restore file exceeds maximum size 25MB'));
+    expect(global.console.error).toHaveBeenCalledWith(expect.stringContaining('Homebridge UI'), expect.stringContaining('Restore backup failed:'), expect.stringContaining('Restore file exceeds maximum size'));
 
     expect(res.statusCode).toBe(500);
 
