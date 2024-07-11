@@ -22,6 +22,7 @@
     <ul class="list-group" *ngIf="scheduledBackups && scheduledBackups.length">
       <li class="mt-2 d-flex flex-row justify-content-between">
         <span><strong>{{ 'backup.label_archive_name' | translate }}</strong></span>
+        <span><strong>{{ 'backup.label_backup_size' | translate }}</strong></span>
         <span><strong>{{ 'backup.label_backup_time' | translate }}</strong></span>
       </li>
       <li *ngFor="let backup of scheduledBackups" class="mt-2 d-flex flex-wrap flex-row justify-content-between">
@@ -29,6 +30,9 @@
           <a href="javascript:void(0);" (click)="download(backup)">
             <i class="fas fa-fw fa-download"></i> {{ backup.fileName}}
           </a>
+        </span>
+        <span>
+          {{ backup.size }}MB
         </span>
         <span>
           {{ backup.timestamp | date:'medium' }}

@@ -157,8 +157,8 @@ export class BackupService {
         file: backupPath,
         cwd: backupDir,
         filter: (filePath, stat) => {
-          if (stat.size > 1e+7) {
-            this.logger.warn(`Backup is skipping "${filePath}" because it is larger than 10MB.`);
+          if (stat.size > globalThis.backup.maxBackupFileSize) {
+            this.logger.warn(`Backup is skipping "${filePath}" because it is larger than ${globalThis.backup.maxBackupFileSizeText}.`);
             return false;
           }
           return true;
@@ -166,9 +166,8 @@ export class BackupService {
       }, [
         'storage', 'plugins.json', 'info.json',
       ]);
-      if (statSync(backupPath).size > 25 * 1024 * 1024) {
-        this.logger.error('Backup file exceededs maximum restore file size 25mb');
-        // throw new Error('Backup file exceeded maximum size 25mb');
+      if (statSync(backupPath).size > globalThis.backup.maxBackupSize) {
+        this.logger.error(`Backup file exceeds maximum restore file size (${globalThis.backup.maxBackupSizeText}) ` + (statSync(backupPath).size / (1024 * 1024)).toFixed(1) + 'MB');
       }
     } catch (e) {
       this.logger.log(`Backup failed, removing ${backupDir}`);
@@ -275,7 +274,6 @@ export class BackupService {
     }
 
     const dirContents = await readdir(this.configService.instanceBackupPath, { withFileTypes: true });
-
     return dirContents
       .filter(x => x.isFile() && x.name.match(/^homebridge-backup-[0-9A-Za-z]{12}.[0-9]{09,15}.tar.gz/))
       .map(x => {
@@ -287,6 +285,7 @@ export class BackupService {
             instanceId: split[0].split('-')[2],
             timestamp: new Date(parseInt(split[1], 10)),
             fileName: x.name,
+            size: (statSync(x.parentPath + '/' + x.name).size / (1024 * 1024)).toFixed(1),
           };
         } else {
           return null;

@@ -13,6 +13,7 @@ import { ConfigService } from './core/config/config.service';
 import { getStartupConfig } from './core/config/config.startup';
 import { Logger } from './core/logger/logger.service';
 import { SpaFilter } from './core/spa/spa.filter';
+import './globalDefaults';
 
 export { HomebridgeIpcService } from './core/homebridge-ipc/homebridge-ipc.service';
 
@@ -29,7 +30,7 @@ async function bootstrap(): Promise<NestFastifyApplication> {
   fAdapter.register(fastifyMultipart, {
     limits: {
       files: 1,
-      fileSize: 25 * 1024 * 1024, // 25mb
+      fileSize: globalThis.backup.maxBackupSize,
     },
   });
 

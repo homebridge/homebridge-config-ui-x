@@ -21,7 +21,7 @@ export class BackupComponent implements OnInit {
     private $toastr: ToastrService,
     private $translate: TranslateService,
     private $api: ApiService,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.getScheduledBackups();
@@ -54,6 +54,11 @@ export class BackupComponent implements OnInit {
     this.$api.get(`/backup/scheduled-backups/${backup.id}`, { observe: 'response', responseType: 'blob' }).subscribe(
       (res) => {
         const archiveName = backup.fileName || 'homebridge-backup.tar.gz';
+        const sizeInBytes = res.body.size;
+        if (sizeInBytes > globalThis.backup.maxBackupSize) {
+          this.$toastr.warning(this.$translate.instant('backup.message_backup_exceeds_max_size') +
+            ` (${globalThis.backup.maxBackupSizeText}) ` + (sizeInBytes / (1024 * 1024)).toFixed(1) + 'MB');
+        }
         saveAs(res.body, archiveName);
       },
       () => {
@@ -67,8 +72,13 @@ export class BackupComponent implements OnInit {
     this.$api.get('/backup/download', { observe: 'response', responseType: 'blob' }).subscribe(
       (res) => {
         const archiveName = res.headers.get('File-Name') || 'homebridge-backup.tar.gz';
-        saveAs(res.body, archiveName);
         this.clicked = false;
+        const sizeInBytes = res.body.size;
+        if (sizeInBytes > globalThis.backup.maxBackupSize) {
+          this.$toastr.warning(this.$translate.instant('backup.message_backup_exceeds_max_size') +
+            ` (${globalThis.backup.maxBackupSizeText}) ` + (sizeInBytes / (1024 * 1024)).toFixed(1) + 'MB');
+        }
+        saveAs(res.body, archiveName);
       },
       () => {
         this.clicked = false;

@@ -92,7 +92,7 @@ export class BackupController {
     try {
       const data = await req.file();
       if (data.file.truncated) {
-        throw new InternalServerErrorException('Restore file exceeds maximum size 25MB');
+        throw new InternalServerErrorException(`Restore file exceeds maximum size ${globalThis.backup.maxBackupSizeText}`);
       } else {
         await this.backupService.uploadBackupRestore(data);
       }
