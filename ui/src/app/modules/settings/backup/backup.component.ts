@@ -21,7 +21,7 @@ export class BackupComponent implements OnInit {
     private $toastr: ToastrService,
     private $translate: TranslateService,
     private $api: ApiService,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.getScheduledBackups();

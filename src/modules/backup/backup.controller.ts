@@ -33,7 +33,7 @@ export class BackupController {
   constructor(
     private backupService: BackupService,
     private logger: Logger,
-  ) { }
+  ) {}
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Download a .tar.gz of the Homebridge instance.' })
