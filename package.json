@@ -51,7 +51,8 @@
     "test": "jest --forceExit --detectOpenHandles --verbose=true --silent --config ./test/jest-e2e.json",
     "test-coverage": "jest --coverage --forceExit --detectOpenHandles --verbose=true --silent --config ./test/jest-e2e.json",
     "prepublishOnly": "npm i --package-lock-only && npm run lint && npm run build",
-    "upgrade-install": "./upgrade-install.sh"
+    "upgrade-install": "./upgrade-install.sh",
+    "lang-sync": "ts-node scripts/lang-sync.ts"
   },
   "dependencies": {
     "@fastify/helmet": "11.1.1",
