@@ -58,7 +58,7 @@
   "backup.label_choose_backup_file_to_restore": "Triar arxiu de còpia de seguretat per restaurar…",
   "backup.label_uploading": "Carregant…",
   "backup.message_backup_download_failed": "Error al descarregar l'arxiu de còpia de seguretat",
-  "backup.message_backup_exceeds_max_size": "Backup exceeds maximum restore file size",
+  "backup.message_backup_exceeds_max_size": "Backup exceeds maximum restore file size of {{ maxBackupSizeText }}",
   "backup.message_backup_help_one": "Descarregar un arxiu de còpia de seguretat de tot l'entorn de Homebridge. Això farà una còpia de seguretat de tot el contingut del seu directori d'emmagatzematge de Homebridge que més tard podrà restaurar en qualsevol plataforma capaç d'executar Homebridge UI",
   "backup.message_backup_help_two": "Els plugins no allotjats en npm, o els plugins instal·lats directament de GitHub no seran recolzats o restaurats.",
   "backup.message_backup_restored": "Arxiu de còpia de seguretat restaurat",

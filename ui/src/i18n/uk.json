@@ -58,7 +58,7 @@
   "backup.label_choose_backup_file_to_restore": "Виберіть файл резервної копії для відновлення…",
   "backup.label_uploading": "Завантаження…",
   "backup.message_backup_download_failed": "Помилка резервного копіювання",
-  "backup.message_backup_exceeds_max_size": "Backup exceeds maximum restore file size",
+  "backup.message_backup_exceeds_max_size": "Backup exceeds maximum restore file size of {{ maxBackupSizeText }}",
   "backup.message_backup_help_one": "Створіть та завантажте резервну копію всього Вашого середовища Homebridge. В процесі резервувания буде створена копія всього вмісту директорії зберігання Homebridge, яку згодом Ви зможете відновити на будь-якій платформі, яка підтримує Інтерфейс Homebridge Config X.",
   "backup.message_backup_help_two": "Плагіни, які не розміщені в npm, або плагіни, встановлені безпосередньо з GitHub, не будуть скопійовані чи відновлені.",
   "backup.message_backup_restored": "Резервна копія відновлена",

@@ -58,7 +58,7 @@
   "backup.label_choose_backup_file_to_restore": "Vyberte záložní soubor pro obnovení…",
   "backup.label_uploading": "Nahrávám…",
   "backup.message_backup_download_failed": "Stažení zálohy se nezdařilo",
-  "backup.message_backup_exceeds_max_size": "Backup exceeds maximum restore file size",
+  "backup.message_backup_exceeds_max_size": "Backup exceeds maximum restore file size of {{ maxBackupSizeText }}",
   "backup.message_backup_help_one": "Stáhněte si záložní archiv celého vašeho prostředí Homebridge. Tím se zálohuje celý obsah vašeho adresáře Homebridge, který můžete později obnovit na jakékoli platformě, která je schopna provozovat Homebridge UI.",
   "backup.message_backup_help_two": "Pluginy, které nejsou hostovány na npm, nebo pluginy nainstalované přímo z GitHubu, nebudou zálohovány ani obnoveny.",
   "backup.message_backup_restored": "Záloha byla obnovena",

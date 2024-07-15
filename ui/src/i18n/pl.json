@@ -58,7 +58,7 @@
   "backup.label_choose_backup_file_to_restore": "Wybierz plik backupu",
   "backup.label_uploading": "Przywracanie…",
   "backup.message_backup_download_failed": "Tworzenie backupu nieudane",
-  "backup.message_backup_exceeds_max_size": "Backup exceeds maximum restore file size",
+  "backup.message_backup_exceeds_max_size": "Backup exceeds maximum restore file size of {{ maxBackupSizeText }}",
   "backup.message_backup_help_one": "Utwórz backup całego środowiska Homebridge, który następnie będziesz mógł przywrócic po ponownej instalacji Homebridge, lub po zresetowaniu systemu.",
   "backup.message_backup_help_two": "Wtyczki niedostępne z poziomu repozytorium npm lub instalowane bezpośrednio z GitHub nie będą dodane do backupu.",
   "backup.message_backup_restored": "Przywracanie backupu zakończone sukcesem",

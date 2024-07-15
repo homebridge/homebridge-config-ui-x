@@ -58,7 +58,7 @@
   "backup.label_choose_backup_file_to_restore": "選擇備份檔案以進行回復…",
   "backup.label_uploading": "上傳中…",
   "backup.message_backup_download_failed": "下載備份失敗",
-  "backup.message_backup_exceeds_max_size": "Backup exceeds maximum restore file size",
+  "backup.message_backup_exceeds_max_size": "Backup exceeds maximum restore file size of {{ maxBackupSizeText }}",
   "backup.message_backup_help_one": "下載 Homebridge 環境完整備份檔案。此動作將會備份完整的 Homebridge 儲存文件夾、可於稍後透過任何執行 Homebridge UI 的平台進行回復。",
   "backup.message_backup_help_two": "Plugins 並未置放於 NPM、或直接由 Github 所安裝的 Plugins 將無法進行備份或回復。",
   "backup.message_backup_restored": "備份檔案已回復",

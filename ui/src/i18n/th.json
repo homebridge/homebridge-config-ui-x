@@ -58,7 +58,7 @@
   "backup.label_choose_backup_file_to_restore": "เลือกไฟล์ข้อมูลสำรองที่จะกู้คืน…",
   "backup.label_uploading": "กำลังอัปโหลด…",
   "backup.message_backup_download_failed": "การดาวน์โหลดข้อมูลสำรองล้มเหลว",
-  "backup.message_backup_exceeds_max_size": "Backup exceeds maximum restore file size",
+  "backup.message_backup_exceeds_max_size": "Backup exceeds maximum restore file size of {{ maxBackupSizeText }}",
   "backup.message_backup_help_one": "ดาวน์โหลดไฟล์เก็บถาวรสำรองของสภาพแวดล้อม Homebridge ทั้งหมดของคุณ การดำเนินการนี้จะสำรองข้อมูลเนื้อหาทั้งหมดของไดเร็กทอรีพื้นที่เก็บข้อมูล Homebridge ของคุณซึ่งคุณสามารถกู้คืนได้ในภายหลังบนแพลตฟอร์มใด ๆ ที่สามารถเรียกใช้ Homebridge UI ได้",
   "backup.message_backup_help_two": "ปลั๊กอินที่ไม่โฮสต์บน npm หรือปลั๊กอินที่ติดตั้งโดยตรงจาก GitHub จะไม่ได้รับการสำรองหรือกู้คืน",
   "backup.message_backup_restored": "กู้คืนที่เก็บข้อมูลสำรองแล้ว",

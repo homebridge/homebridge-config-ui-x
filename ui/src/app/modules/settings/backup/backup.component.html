@@ -19,19 +19,26 @@
     <p *ngIf="backupTime">
       {{ 'backup.message_scheduled_backup_time' | translate:{ backupTime: backupTime | date:'shortTime', dayCount: 7 } }}
     </p>
-    <ul class="list-group" *ngIf="scheduledBackups && scheduledBackups.length">
-      <li class="mt-2 d-flex flex-row justify-content-between">
-        <span><strong>{{ 'backup.label_archive_name' | translate }}</strong></span>
-        <span><strong>{{ 'backup.label_backup_size' | translate }} - {{ 'backup.label_backup_time' | translate }}</strong></span>
-      </li>
-      <li *ngFor="let backup of scheduledBackups" class="mt-2 d-flex flex-wrap flex-row justify-content-between">
+    <ul class="list-group list-group-box mt-2" *ngIf="scheduledBackups && scheduledBackups.length">
+      <li *ngFor="let backup of scheduledBackups" class="list-group-item d-flex justify-content-between align-items-center">
         <span>
-          <a href="javascript:void(0);" (click)="download(backup)">
-            <i class="fas fa-fw fa-download"></i> {{ backup.fileName }}
-          </a>
+          {{ backup.fileName }}
+          <br>
+          <small class="grey-text">
+            {{ backup.timestamp | date:'medium' }} &middot;
+            <span *ngIf="backup.size > backup.maxBackupSize" ngbTooltip="{{ 'backup.message_backup_exceeds_max_size' | translate: { maxBackupSizeText: backup.maxBackupSizeText }  }}" class="red-text">
+              <i class="fas fa-fw fa-exclamation-circle"></i>
+              {{ backup.size }}MB
+            </span>
+            <span *ngIf="backup.size <= backup.maxBackupSize">
+              {{ backup.size }}MB
+            </span>
+          </small>
         </span>
         <span>
-          {{ backup.size }}MB - {{ backup.timestamp | date:'medium' }}
+          <a class="btn btn-primary ml-3" href="javascript:void(0);" (click)="download(backup)">
+            <i class="fas fa-fw fa-download"></i>
+          </a>
         </span>
       </li>
     </ul>
