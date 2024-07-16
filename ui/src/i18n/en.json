@@ -70,6 +70,7 @@
   "backup.message_scheduled_backup_none_yet": "No scheduled backups have been created yet. The next automated backup is scheduled to be taken at {{ backupTime }} server time.",
   "backup.message_scheduled_backup_time": "A full backup of the Homebridge instance is automatically created every day at {{ backupTime }} and kept for {{ dayCount }} days.",
   "backup.title_backup": "Backup",
+  "backup.title_create": "Create",
   "backup.title_restore": "Restore",
   "child_bridge.label_bridge_connect_to_homekit": "Connect to HomeKit",
   "child_bridge.label_bridge_paired": "Bridge Paired",
