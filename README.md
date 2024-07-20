@@ -50,11 +50,24 @@ For detailed instructions on how to set up Node.js and Homebridge with Homebridg
 
 If your platform is not listed above, or you want to use your own service manager, see the [Manual Configuration](https://github.com/homebridge/homebridge-config-ui-x/wiki/Manual-Configuration) wiki article for instructions on setting up the Homebridge UI to run as a Homebridge plugin instead of a service.
 
-By default the UI can be accessed via web browser on port `8581` (e.g. `http://localhost:8581` or `IP:8581`).
+## Usage
+
+By default the UI can be accessed via web browser:
+- http://homebridge.local or
+- `http://<ip address of your server>:PORT` (default port is 8581).
+
+<details>
+    <summary>How to find IP</summary>
+
+Try one of:
+- Login to your router and find the "connected devices" or "dhcp clients" page to find the IP address that was assigned to the Raspberry Pi.
+- Use other device (Mac, iPhone, etc) to access `http://homebridge.local`, once you login using the default username and password (admin/admin) you can find the IP address under System Information.
+- Download the [Fing](https://www.fing.com/) app for [iOS](https://itunes.apple.com/us/app/fing-network-scanner/id430921107?mt=8) or [Android](https://play.google.com/store/apps/details?id=com.overlook.android.fing&hl=en_GB) to scan your network to find the IP address of your Raspberry Pi.
+- As a last resort, if you plug a monitor into your Raspberry Pi, the IP address will be displayed on the attached screen once it has finished booting.
+
+</details>
 
 The default username is `admin` and the default password is `admin`.
-
-## Usage
 
 ### Status Screen
 
