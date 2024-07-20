@@ -31,6 +31,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix edge case of hiding child bridge setup
 - add box for right text in mobile view
 - fix: EventEmitter memory leak warnings when you have a significant number of child bridges. (#2087) (@hjdhjd)
+- added warning messages for backup files too large to be restored.
 
 ### Translation Changes
 
@@ -43,6 +44,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - updated dependencies
 - update hb/nest dependencies
+- created shared global defaults pattern to allow sharing defaults between server and ui
 
 ### Homebridge Dependencies
 
@@ -135,7 +137,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - improve GitHub actions
 - fixed Environment Info selection on bug and support templates
 - add wiki change request issue template
-- removed force of earlier version of `bonjour-service` as a fix has been implemented in latest version 
+- removed force of earlier version of `bonjour-service` as a fix has been implemented in latest version
 - updated release drafter template so releases do not start with a `v`
 - updated special plugin lists
 - check local dir for homebridge when running dev
