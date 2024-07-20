@@ -58,7 +58,7 @@
   "backup.label_choose_backup_file_to_restore": "복원할 백업 파일을 선택해주세요…",
   "backup.label_uploading": "업로드 중…",
   "backup.message_backup_download_failed": "백업 다운로드 실패",
-  "backup.message_backup_exceeds_max_size": "Backup exceeds maximum restore file size",
+  "backup.message_backup_exceeds_max_size": "Backup exceeds maximum restore file size of {{ maxBackupSizeText }}",
   "backup.message_backup_help_one": "전체 Homebridge 환경에 대한 백업 기록파일을 다운로드하세요. Homebridge 저장소 폴더의 모든 내용이 백업되며, 추후 Homebridge UI 호환 플렛폼에서 복원에 사용할 수 있습니다.",
   "backup.message_backup_help_two": "npm에서 호스트되지 않은 플러그인이나 GitHub에서 직접 설치된 플러그인은 백업되거나 복원되지 않습니다.",
   "backup.message_backup_restored": "백업 기록파일 복원됨",

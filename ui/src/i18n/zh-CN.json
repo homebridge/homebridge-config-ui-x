@@ -58,7 +58,7 @@
   "backup.label_choose_backup_file_to_restore": "选择文件以恢复…",
   "backup.label_uploading": "上传中…",
   "backup.message_backup_download_failed": "备份下载失败",
-  "backup.message_backup_exceeds_max_size": "Backup exceeds maximum restore file size",
+  "backup.message_backup_exceeds_max_size": "Backup exceeds maximum restore file size of {{ maxBackupSizeText }}",
   "backup.message_backup_help_one": "下载您整个 Homebridge 环境的完整备份。这将会把整个 Homebridge 存储路径下的文件进行备份以方便您以后通过 Homebridge UI 进行恢复。",
   "backup.message_backup_help_two": "插件未在 npm 商店中, 或者直接从 GitHub 安装的插件将不会加入备份或者被恢复。",
   "backup.message_backup_restored": "已从备份档案中恢复",

@@ -58,7 +58,7 @@
   "backup.label_choose_backup_file_to_restore": "Geri yüklemek için yedekleme dosyasını seçin…",
   "backup.label_uploading": "Yükleniyor…",
   "backup.message_backup_download_failed": "Yedekleme İndirme Başarısız",
-  "backup.message_backup_exceeds_max_size": "Backup exceeds maximum restore file size",
+  "backup.message_backup_exceeds_max_size": "Backup exceeds maximum restore file size of {{ maxBackupSizeText }}",
   "backup.message_backup_help_one": "Homebridge ortamının tamamı için bir yedekleme arşivin indirin. Bu işlem daha sonra Homebridge UI çalıştırabilen herhangi bir platformda geri yükleyebileceğiniz, Homebridge depolama dizininin tüm içeriğini yedekler.",
   "backup.message_backup_help_two": "npm üzerinde barındırılmayan, veya direkt Github üzerinden kurulmuş eklentiler yedeklenmeyecek ve geri yüklenemeyecektir.",
   "backup.message_backup_restored": "Yedekleme Arşivi Geri Yüklendi",

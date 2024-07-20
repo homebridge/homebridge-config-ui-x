@@ -58,7 +58,7 @@
   "backup.label_choose_backup_file_to_restore": "Backup-Datei zur Wiederherstellung auswählen …",
   "backup.label_uploading": "Lädt hoch …",
   "backup.message_backup_download_failed": "Backup-Download fehlgeschlagen",
-  "backup.message_backup_exceeds_max_size": "Backup exceeds maximum restore file size",
+  "backup.message_backup_exceeds_max_size": "Backup exceeds maximum restore file size of {{ maxBackupSizeText }}",
   "backup.message_backup_help_one": "Lade ein Backup-Archiv deiner gesamten Homebridge-Umgebung herunter. Dies wird den gesamten Inhalt deines Homebridge-Speicherverzeichnisses sichern, welches du später auf jeder Plattform, die Homebridge UI laufen lassen kann, wiederherstellen kannst.",
   "backup.message_backup_help_two": "Plugins, welche nicht auf npm gehostet werden oder direkt installierte Plugins von GitHub, werden nicht im Backup enthalten sein bzw. nicht wiederhergestellt werden.",
   "backup.message_backup_restored": "Backup-Archiv wiederhergestellt",
