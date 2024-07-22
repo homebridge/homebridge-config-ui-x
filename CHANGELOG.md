@@ -39,7 +39,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - updates to `de.json` language file (#2051) (@Staubgeborener)
 - updates to `th.json` language file (#2061) (@tomzt)
 - Updates to `sv.json` language file (#2078, #2099) (@emilof)
-- Update to `pl.json` language file (#2103) (@mkz212)
+- Update to `pl.json` language file (#2103, #2106) (@mkz212)
 
 ### Other Changes
 
