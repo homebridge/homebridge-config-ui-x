@@ -282,6 +282,8 @@ export class BackupService {
               timestamp: new Date(parseInt(split[1], 10)),
               fileName: x.name,
               size: (statSync(this.configService.instanceBackupPath + '/' + x.name).size / (1024 * 1024)).toFixed(1),
+              maxBackupSize: globalThis.backup.maxBackupSize / (1024 * 1024),
+              maxBackupSizeText: globalThis.backup.maxBackupSizeText,
             };
           } else {
             return null;
