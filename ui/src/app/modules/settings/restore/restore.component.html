@@ -7,6 +7,7 @@
   <div class="modal-body" *ngIf="!restoreStarted && !setupWizardRestore">
     <p>{{ 'backup.message_restore_help_one' | translate }}</p>
     <p>{{ 'backup.message_restore_help_two' | translate }}</p>
+    <p>{{ 'backup.message_restore_max_size' | translate: { maxBackupSizeText: maxFileSizeText } }}</p>
     <p>{{ 'backup.message_restore_warning' | translate }}</p>
     <div class="custom-file">
       <input type="file" class="custom-file-input" id="restoreFileUpload" accept="application/gzip, .gz, .hbfx"
