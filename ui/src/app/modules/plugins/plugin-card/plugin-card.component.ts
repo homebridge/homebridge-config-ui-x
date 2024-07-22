@@ -11,6 +11,7 @@ import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.s
 import { PluginLogModalComponent } from '@/app/core/manage-plugins/plugin-log-modal/plugin-log-modal.component';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { IoNamespace, WsService } from '@/app/core/ws.service';
+import { DisablePluginComponent } from '@/app/modules/plugins/plugin-card/disable-plugin/disable-plugin.component';
 import { PluginInfoComponent } from '@/app/modules/plugins/plugin-card/plugin-info/plugin-info.component';
 
 @Component({
@@ -113,16 +114,12 @@ export class PluginCardComponent implements OnInit {
   }
 
   disablePlugin(plugin: any) {
-    const ref = this.$modal.open(ConfirmComponent, {
+    const ref = this.$modal.open(DisablePluginComponent, {
       size: 'lg',
       backdrop: 'static',
     });
 
-    ref.componentInstance.title = `${this.$translate.instant('plugins.manage.disable')}: ${plugin.name}`;
-    ref.componentInstance.message = this.$translate.instant('plugins.manage.message_confirm_disable', { pluginName: plugin.name });
-    ref.componentInstance.confirmButtonLabel = this.$translate.instant('plugins.manage.disable');
-    ref.componentInstance.confirmButtonClass = 'btn-danger';
-    ref.componentInstance.faIconClass = 'fa-circle-pause primary-text';
+    ref.componentInstance.pluginName = plugin.name;
 
     ref.result.then(async () => {
       try {
