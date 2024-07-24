@@ -5,7 +5,9 @@
 }
 
 ::ng-deep .plugin-md {
+  text-align: left;
   font-size: 0.95rem;
+  word-wrap: break-word;
 
   img {
     max-width: 100%;

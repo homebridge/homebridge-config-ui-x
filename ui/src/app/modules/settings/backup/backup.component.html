@@ -1,49 +1,56 @@
 <div class="modal-content hb-backup-modal">
   <div class="modal-header">
-    <h5 class="modal-title" translate="backup.title_backup"></h5>
+    <h5 class="modal-title">{{ 'backup.title_backup' | translate }}</h5>
     <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
       (click)="activeModal.dismiss('Dismiss')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body">
-    <p [translate]="'backup.message_backup_help_one'"></p>
-    <p [translate]="'backup.message_backup_help_two'"></p>
-    <p [translate]="'backup.message_backup_warning'"></p>
+    <p>{{ 'backup.message_backup_help_one' | translate }}</p>
+    <p>{{ 'backup.message_backup_help_two' | translate }}</p>
+    <p>{{ 'backup.message_backup_warning' | translate }}</p>
     <div class="text-center mb-3">
       <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="onDownloadBackupClick()" [disabled]="clicked">
         <i *ngIf="clicked" class="fa fa-fw fa-circle-notch fa-spin"></i>
-        <span *ngIf="!clicked" [translate]="'backup.button_download_backup_archive'"></span>
+        <span *ngIf="!clicked">{{ 'backup.button_download_backup_archive' | translate }}</span>
       </button>
     </div>
-    <p translate="backup.message_scheduled_backup_time" *ngIf="backupTime"
-      [translateParams]="{backupTime: backupTime | date:'shortTime', dayCount: 7}">
+    <p *ngIf="backupTime">
+      {{ 'backup.message_scheduled_backup_time' | translate:{ backupTime: backupTime | date:'shortTime', dayCount: 7 } }}
     </p>
-    <ul class="list-group" *ngIf="scheduledBackups && scheduledBackups.length">
-      <li class="mt-2 d-flex flex-row justify-content-between">
-        <span><strong translate="backup.label_archive_name"></strong></span>
-        <span><strong translate="backup.label_backup_time"></strong></span>
-      </li>
-      <li *ngFor="let backup of scheduledBackups" class="mt-2 d-flex flex-wrap flex-row justify-content-between">
+    <ul class="list-group list-group-box mt-2" *ngIf="scheduledBackups && scheduledBackups.length">
+      <li *ngFor="let backup of scheduledBackups" class="list-group-item d-flex justify-content-between align-items-center">
         <span>
-          <a href="javascript:void(0);" (click)="download(backup)">
-            <i class="fas fa-fw fa-download"></i> {{ backup.fileName}}
-          </a>
+          <span style="word-break: break-all;">{{ backup.fileName }}</span>
+          <br>
+          <small class="grey-text">
+            {{ backup.timestamp | date:'medium' }} &middot;
+            <span *ngIf="backup.size > backup.maxBackupSize" ngbTooltip="{{ 'backup.message_backup_exceeds_max_size' | translate: { maxBackupSizeText: backup.maxBackupSizeText }  }}" class="red-text">
+              <i class="fas fa-fw fa-exclamation-circle"></i>
+              {{ backup.size }}MB
+            </span>
+            <span *ngIf="backup.size <= backup.maxBackupSize">
+              {{ backup.size }}MB
+            </span>
+          </small>
         </span>
         <span>
-          {{ backup.timestamp | date:'medium' }}
+          <a class="btn btn-primary ml-3" href="javascript:void(0);" (click)="download(backup)">
+            <i class="fas fa-fw fa-download"></i>
+          </a>
         </span>
       </li>
     </ul>
 
     <div *ngIf="!scheduledBackups.length && !errorMessage">
-      <div class="alert alert-info" role="alert" translate="backup.message_scheduled_backup_none_yet"
-        [translateParams]="{backupTime: backupTime | date:'shortTime'}">
+      <div class="alert" role="alert">
+        {{ 'backup.message_scheduled_backup_none_yet' | translate:{ backupTime: backupTime | date:'shortTime' } }}
       </div>
     </div>
 
     <div *ngIf="errorMessage">
-      <div class="alert alert-info" role="alert">
+      <div class="alert alert-error" role="alert">
         <h4 class="alert-heading">{{ 'toast.title_error' | translate }}</h4>
         <p>
           {{ errorMessage }}

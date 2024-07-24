@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
 import { HumidifierDehumidifierManageComponent } from '@/app/core/accessories/types/humidifierdehumidifier/humidifierdehumidifier.manage.component'; // eslint-disable-line max-len
@@ -8,15 +8,13 @@ import { HumidifierDehumidifierManageComponent } from '@/app/core/accessories/ty
   templateUrl: './humidifierdehumidifier.component.html',
   styleUrls: ['./humidifierdehumidifier.component.scss'],
 })
-export class HumidifierDehumidifierComponent implements OnInit {
+export class HumidifierDehumidifierComponent {
   @Input() public service: ServiceTypeX;
   model = 1;
 
   constructor(
     private modalService: NgbModal,
   ) {}
-
-  ngOnInit() {}
 
   onClick() {
     this.service.getCharacteristic('Active').setValue(this.service.values.Active ? 0 : 1);

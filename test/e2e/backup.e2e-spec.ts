@@ -1,3 +1,6 @@
+jest.spyOn(global.console, 'error');
+
+import * as crypto from 'crypto';
 import { EventEmitter } from 'events';
 import { join, resolve } from 'path';
 import fastifyMultipart from '@fastify/multipart';
@@ -7,9 +10,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as dayjs from 'dayjs';
 import * as FormData from 'form-data';
 import {
+  closeSync,
   copy,
   emptyDir,
+  emptyDirSync,
   ensureDir,
+  openSync,
   pathExists,
   readFile,
   readJson,
@@ -17,6 +23,7 @@ import {
   remove,
   writeFile,
   writeJson,
+  writeSync,
 } from 'fs-extra';
 import { AuthModule } from '../../src/core/auth/auth.module';
 import { ConfigService } from '../../src/core/config/config.service';
@@ -25,6 +32,7 @@ import { BackupGateway } from '../../src/modules/backup/backup.gateway';
 import { BackupModule } from '../../src/modules/backup/backup.module';
 import { BackupService } from '../../src/modules/backup/backup.service';
 import { PluginsService } from '../../src/modules/plugins/plugins.service';
+import '../../src/globalDefaults';
 
 describe('BackupController (e2e)', () => {
   let app: NestFastifyApplication;
@@ -35,6 +43,7 @@ describe('BackupController (e2e)', () => {
   let tempBackupPath: string;
   let instanceBackupPath: string;
   let customInstanceBackupPath: string;
+  let largeFilePath: string;
 
   let configService: ConfigService;
   let backupService: BackupService;
@@ -54,6 +63,7 @@ describe('BackupController (e2e)', () => {
     tempBackupPath = resolve(process.env.UIX_STORAGE_PATH, 'backup.tar.gz');
     instanceBackupPath = resolve(process.env.UIX_STORAGE_PATH, 'backups/instance-backups');
     customInstanceBackupPath = resolve(process.env.UIX_STORAGE_PATH, 'backups/instance-backups-custom');
+    largeFilePath = resolve(process.env.UIX_STORAGE_PATH, 'largefile/largefile.txt');
 
     // setup test config
     await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
@@ -61,6 +71,8 @@ describe('BackupController (e2e)', () => {
     // setup test auth file
     await copy(resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
     await copy(resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
+
+    emptyDirSync(resolve(process.env.UIX_STORAGE_PATH, 'largefile'));
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [BackupModule, AuthModule],
@@ -71,6 +83,7 @@ describe('BackupController (e2e)', () => {
     fAdapter.register(fastifyMultipart, {
       limits: {
         files: 1,
+        fileSize: globalThis.backup.maxBackupSize,
       },
     });
 
@@ -221,7 +234,7 @@ describe('BackupController (e2e)', () => {
     expect(res.headers['content-type']).toBe('application/octet-stream');
   });
 
-  it('POST /backup/restore', async () => {
+  it('POST /backup/restore small backup', async () => {
     // get a new backup
     const downloadBackup = await app.inject({
       method: 'GET',
@@ -283,6 +296,76 @@ describe('BackupController (e2e)', () => {
     expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Restoring backup'));
     expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Restore Complete'));
     expect(pluginsService.managePlugin).toHaveBeenCalledWith('install', expect.objectContaining({ name: 'homebridge-mock-plugin', version: expect.anything() }), client);
+
+    // ensure the temp restore directory was removed
+    expect(await pathExists(restoreDirectory)).toBe(false);
+  });
+
+  // https://github.com/homebridge/homebridge-config-ui-x/issues/1856
+
+  it('POST /backup/restore of a large .homebridge directory should backup, but restore will not work', async () => {
+
+    // Create a large file to be included within the backup
+
+    emptyDirSync(resolve(process.env.UIX_STORAGE_PATH, 'largefile'));
+
+    const createEmptyFileOfSize = (fileName, size) => {
+
+      //function code taken from http://blog.tompawlak.org/how-to-generate-random-values-nodejs-javascript
+      function randomValueHex(len) {
+        return crypto.randomBytes(Math.ceil(len / 2))
+          .toString('hex') // convert to hexadecimal format
+          .slice(0, len).toUpperCase();   // return required number of characters
+      }
+      return new Promise((done, reject) => {
+        const fh = openSync(fileName, 'w');
+        for (let i = 0; i < size; i = i + 1024)
+          writeSync(fh, randomValueHex(1024));
+        closeSync(fh);
+        done(true);
+      });
+    };
+
+    for (let i = 0; i < 10; i++) {
+      await createEmptyFileOfSize(largeFilePath + i, 9000000);
+    }
+
+    // get a new backup
+    const downloadBackup = await app.inject({
+      method: 'GET',
+      path: '/backup/download',
+      headers: {
+        authorization,
+      },
+    });
+
+    // save the backup to disk
+    await writeFile(tempBackupPath, downloadBackup.rawPayload);
+
+    expect(global.console.error).toHaveBeenCalledWith(expect.stringContaining('Homebridge UI'), expect.stringContaining('Backup file exceeds maximum restore file size'));
+
+    // create multipart form
+    const payload = new FormData();
+    payload.append('backup.tar.gz', await readFile(tempBackupPath));
+
+    const headers = payload.getHeaders();
+    headers.authorization = authorization;
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/backup/restore',
+      headers,
+      payload,
+    });
+
+    expect(global.console.error).toHaveBeenCalledWith(expect.stringContaining('Homebridge UI'), expect.stringContaining('Restore backup failed:'), expect.stringContaining('Restore file exceeds maximum size'));
+
+    expect(res.statusCode).toBe(500);
+
+    await new Promise((r) => setTimeout(r, 100));
+
+    // check the backup contains the required files
+    const restoreDirectory = (backupService as any).restoreDirectory;
 
     // ensure the temp restore directory was removed
     expect(await pathExists(restoreDirectory)).toBe(false);

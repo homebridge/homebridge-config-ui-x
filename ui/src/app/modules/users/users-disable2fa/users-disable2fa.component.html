@@ -12,9 +12,9 @@
       <input class="form-control" type="password" autocomplete="current-password" [formControl]="formGroup.controls['password']"
         [placeholder]="'users.label_password' | translate">
     </div>
-    <p class="red-text" *ngIf="invalidCredentials"><small
-        [translate]="'login.message_invalid_username_or_password'">Invalid
-        Username and Password</small></p>
+    <p class="red-text" *ngIf="invalidCredentials">
+      <small>{{ 'login.message_invalid_username_or_password' | translate }}</small>
+    </p>
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-left">

@@ -72,6 +72,10 @@ const routes: Routes = [
         loadChildren: () => import('./modules/support/support.module').then(m => m.SupportModule),
       },
       {
+        path: 'power-options',
+        loadChildren: () => import('./modules/power-options/power-options.module').then(m => m.PowerOptionsModule),
+      },
+      {
         path: 'platform-tools',
         loadChildren: () => import('./modules/platform-tools/platform-tools.module').then(m => m.PlatformToolsModule),
         canActivate: [AdminGuard],

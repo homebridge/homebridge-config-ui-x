@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -20,6 +20,7 @@ import { SetupWizardGuard } from '@/app/modules/setup-wizard/setup-wizard.guard'
     NgbModule,
     CoreModule,
     SetupWizardRoutingModule,
+    NgOptimizedImage,
   ],
   providers: [
     SetupWizardGuard,

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
 import { AirpurifierManageComponent } from '@/app/core/accessories/types/airpurifier/airpurifier.manage.component';
@@ -8,14 +8,12 @@ import { AirpurifierManageComponent } from '@/app/core/accessories/types/airpuri
   templateUrl: './airpurifier.component.html',
   styleUrls: ['./airpurifier.component.scss'],
 })
-export class AirpurifierComponent implements OnInit {
+export class AirpurifierComponent {
   @Input() public service: ServiceTypeX;
 
   constructor(
     private modalService: NgbModal,
   ) {}
-
-  ngOnInit() {}
 
   onClick() {
     this.service.getCharacteristic('Active').setValue(this.service.values.Active ? 0 : 1);

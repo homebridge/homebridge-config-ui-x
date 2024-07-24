@@ -33,6 +33,7 @@ import {
   readdir,
   realpath,
   remove,
+  statSync,
   writeJson,
 } from 'fs-extra';
 import { networkInterfaces } from 'systeminformation';
@@ -156,8 +157,8 @@ export class BackupService {
         file: backupPath,
         cwd: backupDir,
         filter: (filePath, stat) => {
-          if (stat.size > 1e+7) {
-            this.logger.warn(`Backup is skipping "${filePath}" because it is larger than 10MB.`);
+          if (stat.size > globalThis.backup.maxBackupFileSize) {
+            this.logger.warn(`Backup is skipping "${filePath}" because it is larger than ${globalThis.backup.maxBackupFileSizeText}.`);
             return false;
           }
           return true;
@@ -165,7 +166,9 @@ export class BackupService {
       }, [
         'storage', 'plugins.json', 'info.json',
       ]);
-
+      if (statSync(backupPath).size > globalThis.backup.maxBackupSize) {
+        this.logger.error(`Backup file exceeds maximum restore file size (${globalThis.backup.maxBackupSizeText}) ` + (statSync(backupPath).size / (1024 * 1024)).toFixed(1) + 'MB');
+      }
     } catch (e) {
       this.logger.log(`Backup failed, removing ${backupDir}`);
       await remove(resolve(backupDir));
@@ -265,39 +268,41 @@ export class BackupService {
     // ensure backup path exists
     try {
       await this.ensureScheduledBackupPath();
+
+      const dirContents = await readdir(this.configService.instanceBackupPath, { withFileTypes: true });
+      return dirContents
+        .filter(x => x.isFile() && x.name.match(/^homebridge-backup-[0-9A-Za-z]{12}.[0-9]{09,15}.tar.gz/))
+        .map(x => {
+          const split = x.name.split('.');
+          const instanceId = split[0].split('-')[2];
+          if (split.length === 4 && !isNaN(split[1] as any)) {
+            return {
+              id: instanceId + '.' + split[1],
+              instanceId: split[0].split('-')[2],
+              timestamp: new Date(parseInt(split[1], 10)),
+              fileName: x.name,
+              size: (statSync(this.configService.instanceBackupPath + '/' + x.name).size / (1024 * 1024)).toFixed(1),
+              maxBackupSize: globalThis.backup.maxBackupSize / (1024 * 1024),
+              maxBackupSizeText: globalThis.backup.maxBackupSizeText,
+            };
+          } else {
+            return null;
+          }
+        })
+        .filter((x => x !== null))
+        .sort((a, b) => {
+          if (a.id > b.id) {
+            return -1;
+          } else if (a.id < b.id) {
+            return -2;
+          } else {
+            return 0;
+          }
+        });
     } catch (e) {
-      this.logger.warn('Could get scheduled backups:', e.message);
+      this.logger.warn('Could not get scheduled backups:', e.message);
       throw new InternalServerErrorException(e.message);
     }
-
-    const dirContents = await readdir(this.configService.instanceBackupPath, { withFileTypes: true });
-
-    return dirContents
-      .filter(x => x.isFile() && x.name.match(/^homebridge-backup-[0-9A-Za-z]{12}.[0-9]{09,15}.tar.gz/))
-      .map(x => {
-        const split = x.name.split('.');
-        const instanceId = split[0].split('-')[2];
-        if (split.length === 4 && !isNaN(split[1] as any)) {
-          return {
-            id: instanceId + '.' + split[1],
-            instanceId: split[0].split('-')[2],
-            timestamp: new Date(parseInt(split[1], 10)),
-            fileName: x.name,
-          };
-        } else {
-          return null;
-        }
-      })
-      .filter((x => x !== null))
-      .sort((a, b) => {
-        if (a.id > b.id) {
-          return -1;
-        } else if (a.id < b.id) {
-          return -2;
-        } else {
-          return 0;
-        }
-      });
   }
 
   /**

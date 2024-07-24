@@ -14,19 +14,18 @@
 
   <div class="row mt-3">
     <div class="col-md-12">
-      <div class="alert alert-warning" role="alert" [translate]="'platform.docker.startup_script.message_script_help'">
-        This script will be executed each time the docker container starts.
-        You can use this to install any extra packages your plugins may need such as ffmpeg or libpcap-dev.
+      <div class="alert alert-warning" role="alert">
+        {{ 'platform.docker.startup_script.message_script_help' | translate }}
       </div>
     </div>
   </div>
 
-  <ngx-monaco-editor *ngIf="!isMobile" class="flex-grow-1 h-100 w-100 mb-3 mt-3" [options]="editorOptions"
+  <ngx-monaco-editor *ngIf="!isMobile" class="flex-grow-1 h-100 w-100 my-3" [options]="editorOptions"
     [model]="monacoEditorModel" (onInit)="onEditorInit($event)" (keydown.control.s)="$event.preventDefault(); onSave()"
     (keydown.meta.s)="$event.preventDefault(); onSave()">
   </ngx-monaco-editor>
 
-  <textarea wrap="off" *ngIf="isMobile" class="hb-plain-text-editor align-self-end h-100 w-100 mb-3 mt-3"
+  <textarea wrap="off" *ngIf="isMobile" class="hb-plain-text-editor align-self-end h-100 w-100 my-3"
     autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" [(ngModel)]="startupScript">
   </textarea>
 

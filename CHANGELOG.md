@@ -2,6 +2,57 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## BETA
+
+### UI Changes
+
+- allow extra config options to graph widgets
+- fix readings of graphical widgets
+- updated menu and sidebar
+- updated menu and sidebar fixes
+- dynamic config editor buttons
+- update support links with descriptions
+- updated menu and sidebar fixes 2
+- improve menu accessibility + power options own page
+- visual issue when updating disabled plugin w. no changelog
+- allow extra configuration on child bridges
+- fix power options white background in dark mode
+- remove more info link from plugin donate modal
+- updates to restart screen
+- add theme setting to main page
+- ui code refactoring
+- remove unused lang strings
+- add language setting to main page
+- ui styling
+- accessibility improvements
+- hide node update available icon for synology users
+- update bridge settings + main settings page
+- match json config title
+- fix edge case of hiding child bridge setup
+- add box for right text in mobile view
+- fix: EventEmitter memory leak warnings when you have a significant number of child bridges. (#2087) (@hjdhjd)
+- added warning messages for backup files too large to be restored.
+
+### Translation Changes
+
+- updates to `zh-TW.json` language file (#2039) (@tasict)
+- updates to `de.json` language file (#2051) (@Staubgeborener)
+- updates to `th.json` language file (#2061) (@tomzt)
+- Updates to `sv.json` language file (#2078, #2099) (@emilof)
+- Update to `pl.json` language file (#2103, #2106) (@mkz212)
+
+### Other Changes
+
+- updated dependencies
+- update hb/nest dependencies
+- created shared global defaults pattern to allow sharing defaults between server and ui
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v2.0.0`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.11.14`
+- `@homebridge/plugin-ui-utils` @ `v1.0.3`
+
 ## v4.56.4 (2024-06-25)
 
 ### Other Changes
@@ -12,7 +63,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ### Other Changes
 
-- Check that pkg.maintainers is defined before checking it's length (#2069) (@PatrickStankard)
+- Check that `pkg.maintainers` is defined before checking its length (#2069) (@PatrickStankard)
 
 ## v4.56.2 (2024-04-27)
 
@@ -87,7 +138,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - improve GitHub actions
 - fixed Environment Info selection on bug and support templates
 - add wiki change request issue template
-- removed force of earlier version of `bonjour-service` as a fix has been implemented in latest version 
+- removed force of earlier version of `bonjour-service` as a fix has been implemented in latest version
 - updated release drafter template so releases do not start with a `v`
 - updated special plugin lists
 - check local dir for homebridge when running dev

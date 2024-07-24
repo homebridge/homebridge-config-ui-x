@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ServiceTypeX } from '../accessories.interfaces';
 import { AccessoriesService } from '../accessories.service';
 
@@ -7,12 +7,10 @@ import { AccessoriesService } from '../accessories.service';
   templateUrl: './accessory-tile.component.html',
   styleUrls: ['./accessory-tile.component.scss'],
 })
-export class AccessoryTileComponent implements OnInit {
+export class AccessoryTileComponent {
   @Input() public service: ServiceTypeX;
 
   constructor(
     public $accessories: AccessoriesService,
   ) {}
-
-  ngOnInit(): void {}
 }
