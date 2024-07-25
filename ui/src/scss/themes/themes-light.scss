@@ -16,6 +16,7 @@
 
       .link-wrapper {
         .link {
+          color: #aaaaaa;
           .link-row {
             &:hover {
               background: $primary;
@@ -36,10 +37,6 @@
                 color: #ffffff;
                 transition: 0.3s;
               }
-            }
-
-            .title {
-              color: #ffffff;
             }
           }
         }
