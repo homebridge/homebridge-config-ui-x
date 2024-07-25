@@ -2,12 +2,12 @@
   [attr.aria-expanded]="isExpanded ? 'true' : 'false'" [attr.aria-controls]="'sidebar'"
   [attr.aria-label]="'menu.sidebar.aria_menu' | translate">
   <span class="mr-2 d-block d-lg-none" style="font-size: 0.9rem; color: #dddddd"></span>
+  <i class="fas fa-bars fa-fw white-text hb-logo-icon"></i>
 </div>
 
 <div class="sidebar" [ngClass]="{ 'expanded': isExpanded }" role="navigation" id="sidebar">
   <div class="header" (click)="handleSidebarToggle()" tabindex="0" role="button" (keydown)="handleKeydown($event)">
     <img style="height:35px; width: 35px;" ngSrc="../../../../assets/homebridge-logo.svg" alt="HB Logo" height="16" width="16">
-    <i class="fas fa-bars fa-fw white-text hb-logo-icon"></i>
   </div>
   <div class="link-wrapper">
     <div class="link">
