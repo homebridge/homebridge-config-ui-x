@@ -22,6 +22,7 @@
 
       .link-wrapper {
         .link {
+          color: #aaaaaa;
           .link-row {
             &:hover {
               background: #000000;
@@ -35,10 +36,6 @@
               i {
                 color: $darkModePrimary;
               }
-            }
-
-            .title {
-              color: #6d6e7e;
             }
           }
         }
