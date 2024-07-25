@@ -107,3 +107,24 @@
   right: 18px;
   font-size: 24px;
 }
+
+.hb-logo-text {
+position: absolute;
+top: 15px;
+left: 57px;
+font-size: 24px;
+font-weight: 700;
+color: #fff;
+display: none;
+}
+
+.sidebar.expanded .hb-logo-text {
+  display: block;
+}
+
+@media (max-width: 767px) {
+ .hb-logo-text {
+   display: block;
+  }
+}
+
