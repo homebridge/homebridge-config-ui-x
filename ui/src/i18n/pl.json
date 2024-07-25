@@ -55,7 +55,7 @@
   "backup.label_archive_name": "Nazwa backupu",
   "backup.label_backup_size": "Rozmiar backupu",
   "backup.label_backup_time": "Czas utworzenia",
-  "backup.label_choose_backup_file_to_restore": "Wybierz plik nackupu",
+  "backup.label_choose_backup_file_to_restore": "Wybierz plik backupu",
   "backup.label_uploading": "Przywracanie…",
   "backup.message_backup_download_failed": "Tworzenie backupu nieudane",
   "backup.message_backup_exceeds_max_size": "Backup przekracza maksymalny rozmiar pliku przywracania: {{ maxBackupSizeText }}",
