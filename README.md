@@ -19,15 +19,15 @@
 <details>
 <summary>See all the possibilities</summary>
   
-* Install and configure Homebridge plugins.
-* Edit the Homebridge `config.json` with advanced JSON syntax checking and structure validation.
-* Visual configuration for over 450 plugins (no manual config.json editing required).
-* Monitor your Homebridge server via a fully customisable widget-based dashboard.
-* View the Homebridge logs.
-* View and control Homebridge accessories.
-* Restart Homebridge.
-* Backup and restore your Homebridge instance.
-* Set up and manage your Homebridge plugins as [child bridges](https://github.com/homebridge/homebridge/wiki/Child-Bridges).
+* Install and configure plugins using visual configuration (no manual config.json editing required).
+* View and control accessories.
+* Edit configuration file (`config.json`) with advanced JSON syntax checking and structure validation.
+* Display customisable widget-based dashboard.
+* Backup and restore your instance.
+* View and download logs.
+* Run built-in Terminal. 
+* Restart Homebridge or device.
+* Set up and manage your [child bridges](https://github.com/homebridge/homebridge/wiki/Child-Bridges).
 * Homebridge UI also provides a tool called [`hb-service`](https://github.com/homebridge/homebridge-config-ui-x/wiki/Homebridge-Service-Command) which makes it easy to set up Homebridge as a service on Linux/Raspbian, macOS and Windows 10.
 * and more...
 
