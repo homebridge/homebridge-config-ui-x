@@ -59,8 +59,11 @@ If your platform is not listed above, or you want to use your own service manage
 ## Usage
 
 By default the UI can be accessed via web browser:
-- http://homebridge.local or
-- `http://<ip address of your server>:PORT` (default port is 8581).
+- `http://homebridge.local` or
+- `http://localhost:8581` or
+- `http://<ip address of your server>:8581`
+
+(default port is 8581).
 
 <details>
     <summary>How to find IP</summary>
