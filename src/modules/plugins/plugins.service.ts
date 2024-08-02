@@ -264,7 +264,7 @@ export class PluginsService {
       throw new InternalServerErrorException(`Failed to search the npm registry - "${e.message}" - see logs.`);
     }
 
-    const result: HomebridgePlugin[] = searchResults.objects
+    let result: HomebridgePlugin[] = searchResults.objects
       .filter(x => x.package.name.indexOf('homebridge-') === 0 || this.isScopedPlugin(x.package.name))
       .filter(x => !this.hiddenPlugins.includes(x.package.name))
       .map((pkg) => {
