@@ -310,14 +310,17 @@ export class PluginsService {
       }
     }
 
-    // sort by name
-    result.sort((a, b) => a.name.localeCompare(b.name));
-
-    // order: installed, verifiedPlusPlugin or verifiedPlugin, everything else
-    result = [
-      ...result.filter(({isInstalled}) => isInstalled),
-      ...result.filter(({isInstalled, verifiedPlusPlugin, verifiedPlugin}) => !isInstalled && (verifiedPlusPlugin || verifiedPlugin)),
+    // order and sort: 
+    // - installed (sorted by name), 
+    // - verifiedPlusPlugin or verifiedPlugin (sorted by last update), 
+    // - everything else (sorted by last update)
+    result = [ 
+      ...result.filter(({isInstalled}) => isInstalled)
+      .sort((a, b) => a.name.toString().localeCompare(b.name.toString())),
+      ...result.filter(({isInstalled, verifiedPlusPlugin, verifiedPlugin}) => !isInstalled && (verifiedPlusPlugin || verifiedPlugin))
+      .sort((a, b) => b.lastUpdated - a.lastUpdated),
       ...result.filter(({isInstalled, verifiedPlusPlugin, verifiedPlugin}) => !isInstalled && (!verifiedPlusPlugin && !verifiedPlugin))
+      .sort((a, b) => b.lastUpdated - a.lastUpdated),
     ];
 
     return result;
