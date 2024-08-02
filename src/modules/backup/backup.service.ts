@@ -89,8 +89,9 @@ export class BackupService {
     // prepare a temp working directory
     const instanceId = this.configService.homebridgeConfig.bridge.username.replace(/:/g, '');
     const backupDir = await mkdtemp(join(tmpdir(), 'homebridge-backup-'));
-    const backupFileName = 'homebridge-backup' + '-' + instanceId
-      + new Date().toISOString().slice(0,19).replaceAll("-","").replaceAll(":","") + '.tar.gz';
+    const backupFileName = 'homebridge-backup' + '-' + instanceId + '-'
+      + new Date().toISOString().slice(0,19).replaceAll('-', '').replaceAll(':', '').replace('T', '-') 
+      + '.tar.gz';
     const backupPath = resolve(backupDir, backupFileName);
 
     this.logger.log(`Creating temporary backup archive at ${backupPath}`);
@@ -227,8 +228,9 @@ export class BackupService {
       const { backupDir, backupPath, instanceId } = await this.createBackup();
       await copy(backupPath, resolve(
         this.configService.instanceBackupPath,
-        'homebridge-backup-' + instanceId + '.'
-        + new Date().toISOString().slice(0,19).replaceAll("-","").replaceAll(":","") + '.tar.gz',
+        'homebridge-backup' + '-' + instanceId + '-'
+        + new Date().toISOString().slice(0,19).replaceAll('-', '').replaceAll(':', '').replace('T', '-')
+        + '.tar.gz',
       ));
       await remove(resolve(backupDir));
     } catch (e) {
