@@ -36,7 +36,7 @@ export class SelectPreviousVersionComponent implements OnInit {
           tagVersions[result.tags[key]] = key;
         }
 
-        // first versions with tag, then max 20 public versions, finaly max 10 pre-releases (alpha or beta)
+        // first versions with tag, then max 20 public versions, finally max 10 pre-releases (alpha or beta)
         const versions = [
           ...result.versions.filter((x) => tagVersions[x] ).reverse().slice(0, 3),
           ...result.versions.filter((x) => !tagVersions[x] && !x.includes('-')).reverse().slice(0, 20),
