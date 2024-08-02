@@ -310,7 +310,17 @@ export class PluginsService {
       }
     }
 
-    return orderBy(result, ['verifiedPlusPlugin', 'verifiedPlugin'], ['desc', 'desc']);
+    // sort by name
+    result.sort((a, b) => a.name.localeCompare(b.name));
+
+    // order: installed, verifiedPlusPlugin or verifiedPlugin, everything else
+    result = [
+      ...result.filter(({isInstalled}) => isInstalled),
+      ...result.filter(({isInstalled, verifiedPlusPlugin, verifiedPlugin}) => !isInstalled && (verifiedPlusPlugin || verifiedPlugin)),
+      ...result.filter(({isInstalled, verifiedPlusPlugin, verifiedPlugin}) => !isInstalled && (!verifiedPlusPlugin && !verifiedPlugin))
+    ];
+
+    return result;
   }
 
   /**
