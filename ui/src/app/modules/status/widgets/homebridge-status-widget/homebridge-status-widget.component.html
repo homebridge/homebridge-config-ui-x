@@ -96,18 +96,22 @@
     <div class="hb-status-item d-flex flex-row" style="min-width:max(25%, 225px);">
       <div class="d-flex">
         <div class="mb-0 px-3 py-1 hb-status-icon">
-          <i class="fas fa-fw fa-arrow-alt-circle-up primary-text" *ngIf="homebridgePluginStatus.length"></i>
-          <i class="fas fa-fw fa-check-circle primary-text" *ngIf="!homebridgePluginStatus.length"></i>
+          <i class="fas fa-fw fa-cog fa-spin primary-text" *ngIf="!homebridgePluginStatusDone"></i>
+          <i class="fas fa-fw fa-arrow-alt-circle-up primary-text" *ngIf="homebridgePluginStatusDone && homebridgePluginStatus.length"></i>
+          <i class="fas fa-fw fa-check-circle primary-text" *ngIf="homebridgePluginStatusDone && !homebridgePluginStatus.length"></i>
         </div>
         <div class="align-self-center">
           <a href="javascript:void(0)" routerLink="/plugins" class="card-link card-link-title">
             {{ 'menu.label_plugins' | translate }}
           </a>
           <br>
-          <a routerLink="/plugins" class="primary-text" *ngIf="homebridgePluginStatus.length">
+          <span class="grey-text" *ngIf="!homebridgePluginStatusDone">
+            {{ 'status.homebridge.label_checking_for_updates' | translate }}
+          </span>
+          <a routerLink="/plugins" class="primary-text" *ngIf="homebridgePluginStatusDone && homebridgePluginStatus.length">
             {{ homebridgePluginStatus.length }} {{ homebridgePluginStatus.length === 1 ? ('status.plugin_out_of_date' | translate) : ('status.plugins_out_of_date' | translate) }}
           </a>
-          <span class="grey-text" *ngIf="!homebridgePluginStatus.length">
+          <span class="grey-text" *ngIf="homebridgePluginStatusDone && !homebridgePluginStatus.length">
             {{ 'status.homebridge.label_up_to_date' | translate }}
           </span>
         </div>

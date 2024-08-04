@@ -16,6 +16,7 @@ export class HomebridgeStatusWidgetComponent implements OnInit {
   public homebridgeUiPkg = {} as any;
   public homebridgeStatus = {} as any;
   public homebridgePluginStatus = [] as any;
+  public homebridgePluginStatusDone = false as boolean;
 
   private io: IoNamespace;
 
@@ -83,6 +84,7 @@ export class HomebridgeStatusWidgetComponent implements OnInit {
     try {
       const outOfDatePlugins = await this.io.request('get-out-of-date-plugins').toPromise();
       this.homebridgePluginStatus = outOfDatePlugins.filter((x) => x.name !== 'homebridge-config-ui-x');
+      this.homebridgePluginStatusDone = true;
     } catch (err) {
       this.$toastr.error(err.message);
     }
