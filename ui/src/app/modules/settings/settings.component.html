@@ -17,7 +17,7 @@
       {{ 'settings.general.title_general' | translate }}
     </h5>
   </div>
-  <ul class="list-group list-group-box mt-2 mx-2" *ngIf="showFields.general" id="fieldsGeneral">
+  <ul class="list-group list-group-box mt-2 mx-0" *ngIf="showFields.general" id="fieldsGeneral">
      <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
         Homebridge<br>
@@ -156,7 +156,7 @@
       {{ 'settings.title_startup_options' | translate }}
     </h5>
   </div>
-  <ul class="list-group list-group-box mb-4 mx-2" *ngIf="showFields.startup" id="fieldsStartup">
+  <ul class="list-group list-group-box mb-4 mx-0" *ngIf="showFields.startup" id="fieldsStartup">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span>{{ 'settings.startup.debug' | translate }} <code>-D</code></span>
       <input type="checkbox" class="rendux-input" id="homebridgeDebugMode" formControlName="HOMEBRIDGE_DEBUG"
@@ -210,7 +210,7 @@
     </h5>
   </div>
   <p class="small grey-text mb-2 mx-2">{{ 'settings.mdns_advertiser_help' | translate }}</p>
-  <ul class="list-group list-group-box mt-2 mx-2" *ngIf="showFields.network" id="fieldsNetwork">
+  <ul class="list-group list-group-box mt-2 mx-0" *ngIf="showFields.network" id="fieldsNetwork">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
         <div>{{ 'settings.network.title_network_interfaces' | translate }}<br>
@@ -255,7 +255,7 @@
       {{ 'reset.title_reset' | translate }}
     </h5>
   </div>
-  <p class="small grey-text mb-2 mx-2">{{ 'settings.reset.help' | translate }}</p>
+  <p class="small grey-text mb-2 mx-0">{{ 'settings.reset.help' | translate }}</p>
   <ul class="list-group list-group-box mt-2 mx-2" *ngIf="showFields.reset" id="fieldsReset">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
@@ -289,7 +289,7 @@
       {{ 'settings.title_manage_cached_accessories' | translate }}
     </h5>
   </div>
-  <p class="small grey-text mb-2 mx-2">{{ 'settings.manage_cache.help' | translate }}</p>
+  <p class="small grey-text mb-2 mx-0">{{ 'settings.manage_cache.help' | translate }}</p>
   <ul class="list-group list-group-box mb-4 mx-2" *ngIf="showFields.cache" id="fieldsCache">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
