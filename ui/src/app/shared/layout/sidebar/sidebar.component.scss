@@ -66,6 +66,7 @@
           display: flex;
           align-items: center;
           justify-content: center;
+          transition: 0.3s;
         }
 
         .title {
@@ -106,6 +107,9 @@
             max-width: 190px;
             padding-left: 10px;
           }
+          .icon {
+            transition: 0.3s;
+          }
         }
       }
     }
@@ -141,5 +145,8 @@
     opacity: 1;
     left: 55px;
     transition: 0.3s;
+  }
+  .header {
+    width: 250px !important;
   }
 }
