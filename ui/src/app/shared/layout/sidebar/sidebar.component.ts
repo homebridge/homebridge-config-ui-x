@@ -56,6 +56,7 @@ export class SidebarComponent implements OnInit {
 
     // declare element for event listeners
     const sidebar = document.querySelector('.sidebar');
+    const sidebarLink = document.querySelector('.link-wrapper');
     const content = document.querySelector('.content');
 
     // expand sidebar on mouseenter
@@ -74,7 +75,7 @@ export class SidebarComponent implements OnInit {
     const touchEvent = 'ontouchstart' in window ? 'touchstart' : 'click';
 
     document.addEventListener(touchEvent, (e: Event) => {
-      if (!sidebar.contains(e.target as HTMLElement)) {
+      if (!sidebar.contains(e.target as HTMLElement) && !sidebarLink.contains(e.target as HTMLElement)) {
         sidebar.classList.remove('expanded');
         content.classList.remove('sidebarExpanded');
       }
