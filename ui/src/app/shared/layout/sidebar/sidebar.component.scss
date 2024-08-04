@@ -120,15 +120,18 @@
   margin: -7px 0 0 25px;
 }
 
-.hb-logo-text {
+
+
+@media (min-width: 768px) {
+
+  .hb-logo-text {
   color: #ffffff;
   position: absolute;
   top: 17px;
   font-size: 22px;
   padding-left: 3px;
-}
-
-@media (min-width: 768px) {
+  }
+  
   .sidebar.expanded .hb-logo-text {
     opacity: 1;
     left: 55px;
@@ -140,12 +143,22 @@
     left: 40px;
     transition: 0.3s;
   }
+  .hb-logo-text-mobile {
+    display:none !important;
+  }
 }
 
 @media (max-width: 767px) {
   .hb-logo-text {
+    display:none !important;
+  }
+  .hb-logo-text-mobile {
+    color: #ffffff;
+    position: absolute;
+    top: 17px;
+    font-size: 22px;
+    padding-left: 3px;
     opacity: 1;
     left: 55px;
-    transition: 0.3s;
   }
 }
