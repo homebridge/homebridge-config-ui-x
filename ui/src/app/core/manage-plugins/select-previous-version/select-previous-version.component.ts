@@ -16,6 +16,7 @@ export class SelectPreviousVersionComponent implements OnInit {
   public loading = true;
   public versions: Array<{ version: string }> = [];
   public versionsWithTags: Array<{ version: string; tag: string }> = [];
+  public versionSelect: string;
 
   constructor(
     public activeModal: NgbActiveModal,

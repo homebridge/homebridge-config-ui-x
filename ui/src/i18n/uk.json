@@ -212,6 +212,7 @@
   "plugins.manage.label_uninstalled": "Плагін видалено",
   "plugins.manage.label_update": "Оновлення",
   "plugins.manage.label_updated": "Оновлено",
+  "plugins.manage.message_all_versions": "all versions",
   "plugins.manage.message_confirm_disable_1": "Ви впевнені, що бажаєте вимкнути {{ pluginName }}?",
   "plugins.manage.message_confirm_disable_2": "Будь-які аксесуари, доступні за допомогою цього плагіна, буде видалено з екрану аксесуарів Homebridge UI, але вони залишиться в HomeKit із позначкою «Немає відповіді».",
   "plugins.manage.message_confirm_disable_3": "Коли ви знову ввімкнете плагін, аксесуари з’являться в інтерфейсі користувача Homebridge, і ними знову можна буде керувати в HomeKit. Аксесуари не втратять свої дані в HomeKit (наприклад, пов’язані сцени та автоматизація).",
