@@ -20,6 +20,7 @@
 
 .sidebar {
   position: fixed;
+  overflow: hidden;
   left: 0;
   top: 0;
   height: 100vh;
@@ -28,6 +29,11 @@
   z-index: 500;
 
   .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 60px;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -40,8 +46,12 @@
   }
 
   .link-wrapper {
+    position: fixed !important;
+    top: 80px;
     overflow-y: auto;
-    height: calc(100vh - 72px);
+    max-height: calc(100vh - 80px) !important;
+    width: 60px;
+
     .link {
       .link-row {
         display: flex;
@@ -78,10 +88,10 @@
   }
 
   &.expanded {
-    width: 210px;
+    width: 250px !important;
 
     @media (max-width: 767px) {
-      width: 210px;
+      width: 250px;
 
       .link-wrapper {
         display: block;
@@ -89,10 +99,11 @@
     }
 
     .link-wrapper {
+      width: 250px;
       .link {
         .link-row {
           .title {
-            max-width: 150px;
+            max-width: 190px;
             padding-left: 10px;
           }
         }
