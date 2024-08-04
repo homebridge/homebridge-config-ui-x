@@ -10,6 +10,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '@/app/core/auth/auth.service';
 import { InformationComponent } from '@/app/core/components/information/information.component';
+import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { NotificationService } from '@/app/core/notification.service';
 import { SettingsService } from '@/app/core/settings.service';
 
@@ -24,16 +25,20 @@ export class SidebarComponent implements OnInit {
 
   public rPiCurrentlyUnderVoltage = false;
   public rPiWasUnderVoltage = false;
+  public isMobile: any = false;
 
   constructor(
     public router: Router,
     public translate: TranslateService,
     public $auth: AuthService,
+    private $md: MobileDetectService,
     public $settings: SettingsService,
     private $modal: NgbModal,
     private $notification: NotificationService,
     private $translate: TranslateService,
   ) {
+    this.isMobile = this.$md.detect.mobile();
+
     // ensure the menu closes when we navigate
     router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
@@ -56,7 +61,6 @@ export class SidebarComponent implements OnInit {
 
     // declare element for event listeners
     const sidebar = document.querySelector('.sidebar');
-    const sidebarLink = document.querySelector('.sidebar.link');
     const content = document.querySelector('.content');
 
     // expand sidebar on mouseenter
@@ -75,7 +79,7 @@ export class SidebarComponent implements OnInit {
     const touchEvent = 'ontouchstart' in window ? 'touchstart' : 'click';
 
     document.addEventListener(touchEvent, (e: Event) => {
-      if (!sidebar.contains(e.target as HTMLElement) || sidebarLink.contains(e.target as HTMLElement)) {
+      if (this.isMobile) {
         sidebar.classList.remove('expanded');
         content.classList.remove('sidebarExpanded');
       }
