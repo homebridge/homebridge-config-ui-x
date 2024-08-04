@@ -1,6 +1,7 @@
 <div class="m-header text-right" (click)="handleSidebarToggle()" tabindex="0" role="button" (keydown)="handleKeydown($event)"
   [attr.aria-expanded]="isExpanded ? 'true' : 'false'" [attr.aria-controls]="'sidebar'"
   [attr.aria-label]="'menu.sidebar.aria_menu' | translate">
+  <span class="mr-2 d-block d-lg-none" style="font-size: 0.9rem; color: #dddddd"></span>
   <div class="hb-logo-text-mobile" (click)="handleSidebarToggle()">Homebridge</div>
   <i class="fas fa-bars fa-fw white-text hb-logo-icon" (click)="handleSidebarToggle()"></i>
 </div>
