@@ -46,6 +46,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - updated dependencies
 - update hb/nest dependencies
 - created shared global defaults pattern to allow sharing defaults between server and ui
+- retire old use of `pnpm` and code references
 
 ### Homebridge Dependencies
 
