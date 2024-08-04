@@ -18,26 +18,6 @@
     </h5>
   </div>
   <ul class="list-group list-group-box mt-2 mx-0" *ngIf="showFields.general" id="fieldsGeneral">
-     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pr-2">
-        Homebridge<br>
-        <small class="grey-text pr-2">v{{ $settings.env.homebridgeVersion }</small>
-      </span>
-      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 50px;"
-        (click)="$plugin.installPreviousVersion(homebridgePkg)"
-        <i class="fas fa-fw fa-chevron-right"></i>
-      </button>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pr-2">
-        UI<br>
-        <small class="grey-text pr-2">v{{ $settings.env.packageVersion }}</small>
-      </span>
-      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 50px;"
-        (click)="$plugin.installPreviousVersion(homebridgeUiPkg)"
-        <i class="fas fa-fw fa-chevron-right"></i>
-      </button>
-    </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
         {{ 'menu.label_settings_ui' | translate }}
