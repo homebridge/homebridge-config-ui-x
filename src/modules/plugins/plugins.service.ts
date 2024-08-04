@@ -643,7 +643,7 @@ export class PluginsService {
       pluginAction.version !== 'latest'
     ) {
       try {
-        await this.httpService.head(`https://github.com/homebridge/plugin-repo/releases/download/v1/${pluginAction.name.replace('/', '@')}-${pluginAction.version}.sha256`).toPromise();
+        await this.httpService.head(`https://github.com/homebridge/verified/releases/download/v1.0.0/${pluginAction.name.replace('/', '@')}-${pluginAction.version}.sha256`).toPromise();
         return true;
       } catch (e) {
         return false;
