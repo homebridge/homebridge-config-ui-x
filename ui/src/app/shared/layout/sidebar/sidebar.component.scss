@@ -32,6 +32,7 @@
     position: fixed;
     top: 0;
     left: 0;
+    width: 60px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -49,7 +50,7 @@
     top: 80px;
     overflow-y: auto;
     max-height: calc(100vh - 80px) !important;
-    width: 250px;
+    width: 60px;
 
     .link {
       .link-row {
@@ -87,10 +88,10 @@
   }
 
   &.expanded {
-    width: 250px;
+    width: 250px !important;
 
     @media (max-width: 767px) {
-      width: min(250px, 80%);
+      width: 250px;
 
       .link-wrapper {
         display: block;
@@ -98,6 +99,7 @@
     }
 
     .link-wrapper {
+      width: 250px;
       .link {
         .link-row {
           .title {
