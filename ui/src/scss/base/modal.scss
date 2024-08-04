@@ -1,5 +1,5 @@
 .modal-content {
-  border-radius: 1rem !important;
+  border-radius: 0.5rem !important;
 
   ul:not(.list-group) {
     padding-left: 20px;
@@ -11,13 +11,13 @@
 }
 
 .modal-header {
-  border-top-left-radius: 0.75rem !important;
-  border-top-right-radius: 0.75rem !important;
+  border-top-left-radius: 0.5rem !important;
+  border-top-right-radius: 0.5rem !important;
 }
 
 .modal-footer {
-  border-bottom-left-radius: 0.75rem !important;
-  border-bottom-right-radius: 0.75rem !important;
+  border-bottom-left-radius: 0.5rem !important;
+  border-bottom-right-radius: 0.5rem !important;
 }
 
 .modal-backdrop {
