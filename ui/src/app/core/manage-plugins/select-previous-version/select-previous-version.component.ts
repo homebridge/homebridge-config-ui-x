@@ -16,6 +16,7 @@ export class SelectPreviousVersionComponent implements OnInit {
   public loading = true;
   public versions: Array<{ version: string }> = [];
   public versionsWithTags: Array<{ version: string; tag: string }> = [];
+  public versionSelect: string;
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -25,6 +26,7 @@ export class SelectPreviousVersionComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.versionSelect = this.plugin.installedVersion || this.plugin.latestVersion;
     this.lookupVersions();
   }
 
@@ -58,6 +60,10 @@ export class SelectPreviousVersionComponent implements OnInit {
           const bOrder = order.indexOf(b.tag) === -1 ? 999 : order.indexOf(b.tag);
           return aOrder - bOrder;
         });
+
+        if (!this.versions.find((x) => x.version === this.versionSelect) && result.tags.latest) {
+          this.versionSelect = result.tags.latest;
+        }
 
         this.loading = false;
       },
