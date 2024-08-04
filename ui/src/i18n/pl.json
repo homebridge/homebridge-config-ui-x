@@ -64,7 +64,7 @@
   "backup.message_backup_restored": "Przywracanie backupu zakończone sukcesem",
   "backup.message_backup_warning": "Backup zawiera ważne informacje i nie powinien być udostępniany nikomu.",
   "backup.message_restore_failed": "Przywracanie backupu zakończone niepowodzeniem",
-  "backup.message_restore_help_one": "Przywrócenie backupu odtworzy całą konfiguracje utworzoną za pomocą Homebridge UI wraz z accessorimai, plikiem konfiguracyjnym i wszystkimi wtyczkami zainstalowanymi z repozytorium npm.",
+  "backup.message_restore_help_one": "Przywrócenie backupu odtworzy całą konfiguracje utworzoną za pomocą Homebridge UI wraz z accessoriami, plikiem konfiguracyjnym i wszystkimi wtyczkami zainstalowanymi z repozytorium npm.",
   "backup.message_restore_help_two": "Po przywróceniu backupu trzeba ponownie zalogować się do Homebridge UI z danymi użytkownika zawartymi w tej kopii.",
   "backup.message_restore_max_size": "Możesz przywrócić backup do rozmiaru: {{ maxBackupSizeText }}.",
   "backup.message_restore_warning": "Przywrócenie backupu jest nieodwracalne i zastąpi całą obecną konfigurację Homebridge.",
