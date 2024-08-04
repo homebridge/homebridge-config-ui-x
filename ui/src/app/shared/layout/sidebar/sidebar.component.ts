@@ -59,27 +59,26 @@ export class SidebarComponent implements OnInit {
     const content = document.querySelector('.content');
 
     // expand sidebar on mouseenter
-    sidebar.addEventListener('mouseenter', (e) => {
+    sidebar.addEventListener('mouseenter', (e: Event) => {
       sidebar.classList.add('expanded');
       content.classList.add('sidebarExpanded');
     });
 
     // collapse sidebar on mouseleave
-    sidebar.addEventListener('mouseleave', (e) => {
+    sidebar.addEventListener('mouseleave', (e: Event) => {
       sidebar.classList.remove('expanded');
       content.classList.remove('sidebarExpanded');
     });
 
     // collapse sidebar when click outside (mobile)
-    let touchEvent = 'ontouchstart' in window ? 'touchstart' : 'click';
-  
-    document.addEventListener(touchEvent, (e) => {
-      if (!sidebar.contains(event.target)) {
+    const touchEvent = 'ontouchstart' in window ? 'touchstart' : 'click';
+
+    document.addEventListener(touchEvent, (e: Event) => {
+      if (!sidebar.contains(e.target as HTMLElement)) {
         sidebar.classList.remove('expanded');
         content.classList.remove('sidebarExpanded');
       }
     });
-
   }
 
   handleSidebarToggle() {

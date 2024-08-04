@@ -40,12 +40,12 @@ export class SelectPreviousVersionComponent implements OnInit {
         const versions = [
           ...result.versions.filter((x) => tagVersions[x] ).reverse().slice(0, 3),
           ...result.versions.filter((x) => !tagVersions[x] && !x.includes('-')).reverse().slice(0, 20),
-          ...result.versions.filter((x) => !tagVersions[x] && x.includes('-')).reverse().slice(0, 10)
+          ...result.versions.filter((x) => !tagVersions[x] && x.includes('-')).reverse().slice(0, 10),
         ];
 
         for (const version of versions.slice(0, 33)) {
           this.versions.push({
-            name: 'v' + version + (tagVersions[version] ? ' - ' + tagVersions[version] : ''),
+            name: `${version} ${tagVersions[version] ? '[' + tagVersions[version] + ']' : ''}`,
             version,
           });
         }
