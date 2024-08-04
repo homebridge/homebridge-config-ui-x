@@ -66,6 +66,7 @@
           display: flex;
           align-items: center;
           justify-content: center;
+          transition: 0.3s;
         }
 
         .title {
@@ -105,6 +106,9 @@
           .title {
             max-width: 190px;
             padding-left: 10px;
+          }
+          .icon {
+            transition: 0.3s;
           }
         }
       }
