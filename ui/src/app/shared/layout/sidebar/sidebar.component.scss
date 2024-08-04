@@ -59,6 +59,7 @@
         cursor: pointer;
         transition: 0.2s;
         font-size: 18px;
+        width: 60px;
 
         .icon {
           flex: 0 0 38px;
@@ -103,6 +104,7 @@
       width: 250px;
       .link {
         .link-row {
+          width: 250px;
           .title {
             max-width: 190px;
             opacity: 1;
