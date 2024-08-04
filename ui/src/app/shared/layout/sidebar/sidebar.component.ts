@@ -93,7 +93,7 @@ export class SidebarComponent implements OnInit {
       });
 
       document.addEventListener('click', (e: Event) => {
-        if (sidebar.contains(e.target as HTMLElement)) {
+        if (sidebar.contains(e.target as HTMLElement) && e.clientX > 60) {
           sidebar.classList.remove('expanded');
           content.classList.remove('sidebarExpanded');
         }
