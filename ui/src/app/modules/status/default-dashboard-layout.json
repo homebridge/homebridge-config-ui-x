@@ -2,6 +2,15 @@
   {
     "x": 0,
     "y": 0,
+    "component": "HapQrcodeWidgetComponent",
+    "cols": 5,
+    "rows": 7,
+    "mobileOrder": 100,
+    "hideOnMobile": false
+  },
+  {
+    "x": 0,
+    "y": 7,
     "component": "HomebridgeStatusWidgetComponent",
     "cols": 5,
     "rows": 7,
@@ -10,49 +19,13 @@
     "hideOnMobile": false
   },
   {
-    "x": 15,
-    "y": 9,
-    "component": "ChildBridgeWidgetComponent",
-    "cols": 5,
-    "rows": 6,
-    "mobileOrder": 35,
-    "hideOnMobile": false
-  },
-  {
     "x": 5,
-    "y": 9,
-    "component": "CpuWidgetComponent",
-    "cols": 5,
-    "rows": 3,
-    "mobileOrder": 40,
-    "hideOnMobile": false
-  },
-  {
-    "x": 5,
-    "y": 12,
-    "component": "MemoryWidgetComponent",
-    "cols": 5,
-    "rows": 3,
-    "mobileOrder": 50,
-    "hideOnMobile": false
-  },
-  {
-    "x": 10,
-    "y": 12,
-    "component": "NetworkWidgetComponent",
-    "cols": 5,
-    "rows": 3,
-    "mobileOrder": 55,
-    "hideOnMobile": false
-  },
-  {
-    "x": 10,
-    "y": 9,
-    "component": "UptimeWidgetComponent",
-    "cols": 5,
-    "rows": 3,
-    "mobileOrder": 60,
-    "hideOnMobile": false
+    "y": 0,
+    "component": "HomebridgeLogsWidgetComponent",
+    "cols": 10,
+    "rows": 8,
+    "mobileOrder": 1000,
+    "hideOnMobile": true
   },
   {
     "x": 15,
@@ -64,21 +37,48 @@
     "hideOnMobile": false
   },
   {
-    "x": 0,
-    "y": 7,
-    "component": "HapQrcodeWidgetComponent",
+    "x": 15,
+    "y": 9,
+    "component": "ChildBridgeWidgetComponent",
     "cols": 5,
-    "rows": 8,
-    "mobileOrder": 100,
+    "rows": 5,
+    "mobileOrder": 35,
     "hideOnMobile": false
   },
   {
     "x": 5,
-    "y": 0,
-    "component": "HomebridgeLogsWidgetComponent",
-    "cols": 10,
-    "rows": 9,
-    "mobileOrder": 1000,
-    "hideOnMobile": true
+    "y": 8,
+    "component": "CpuWidgetComponent",
+    "cols": 5,
+    "rows": 3,
+    "mobileOrder": 40,
+    "hideOnMobile": false
+  },
+  {
+    "x": 5,
+    "y": 11,
+    "component": "MemoryWidgetComponent",
+    "cols": 5,
+    "rows": 3,
+    "mobileOrder": 50,
+    "hideOnMobile": false
+  },
+  {
+    "x": 10,
+    "y": 11,
+    "component": "NetworkWidgetComponent",
+    "cols": 5,
+    "rows": 3,
+    "mobileOrder": 55,
+    "hideOnMobile": false
+  },
+  {
+    "x": 10,
+    "y": 8,
+    "component": "UptimeWidgetComponent",
+    "cols": 5,
+    "rows": 3,
+    "mobileOrder": 60,
+    "hideOnMobile": false
   }
 ]
