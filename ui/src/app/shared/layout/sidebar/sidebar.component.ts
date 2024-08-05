@@ -1,10 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-} from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
@@ -21,11 +15,11 @@ import { SettingsService } from '@/app/core/settings.service';
 })
 export class SidebarComponent implements OnInit {
   @Input() isExpanded = false;
-  @Output() toggleSidebar: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   public rPiCurrentlyUnderVoltage = false;
   public rPiWasUnderVoltage = false;
   public isMobile: any = false;
+  public freezeMenu = false;
 
   constructor(
     public router: Router,
@@ -42,9 +36,11 @@ export class SidebarComponent implements OnInit {
     // ensure the menu closes when we navigate
     router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
-        if (this.isExpanded) {
-          this.toggleSidebar.emit(false);
-        }
+        this.closeSideBar();
+        this.freezeMenu = true;
+        setTimeout(() => {
+          this.freezeMenu = false;
+        }, 500);
       }
     });
   }
@@ -62,47 +58,40 @@ export class SidebarComponent implements OnInit {
     // declare element for event listeners
     const sidebar = document.querySelector('.sidebar');
     const mobileHeader = document.querySelector('.m-header');
-    const content = document.querySelector('.content');
 
-    if (this.isMobile) {
-      document.addEventListener('touchstart', (e: MouseEvent) => {
-        if (!sidebar.contains(e.target as HTMLElement)) {
-          sidebar.classList.remove('expanded');
-          content.classList.remove('sidebarExpanded');
-        }
-      });
-    } else {
+    if (!this.isMobile) {
       // Expand sidebar on mouseenter
-      sidebar.addEventListener('mouseenter', (e: MouseEvent) => {
-        sidebar.classList.add('expanded');
-        content.classList.add('sidebarExpanded');
-      });
-      mobileHeader.addEventListener('mouseenter', (e: MouseEvent) => {
-        sidebar.classList.add('expanded');
-        content.classList.add('sidebarExpanded');
-      });
+      sidebar.addEventListener('mouseenter', (e: MouseEvent) => this.openSidebar());
+      mobileHeader.addEventListener('mouseenter', (e: MouseEvent) => this.openSidebar());
 
       // Collapse sidebar on mouseleave
-      sidebar.addEventListener('mouseleave', (e: MouseEvent) => {
-        sidebar.classList.remove('expanded');
-        content.classList.remove('sidebarExpanded');
-      });
-      mobileHeader.addEventListener('mouseleave', (e: MouseEvent) => {
-        sidebar.classList.remove('expanded');
-        content.classList.remove('sidebarExpanded');
-      });
+      sidebar.addEventListener('mouseleave', (e: MouseEvent) => this.closeSideBar());
+      mobileHeader.addEventListener('mouseleave', (e: MouseEvent) => this.closeSideBar());
 
       document.addEventListener('click', (e: MouseEvent) => {
         if (sidebar.contains(e.target as HTMLElement) && e.clientX > 60) {
-          sidebar.classList.remove('expanded');
-          content.classList.remove('sidebarExpanded');
+          this.closeSideBar();
         }
       });
     }
   }
 
-  handleSidebarToggle() {
-    this.toggleSidebar.emit(!this.isExpanded);
+  openSidebar() {
+    if (!this.isExpanded && !this.freezeMenu) {
+      this.isExpanded = true;
+    }
+  }
+
+  closeSideBar() {
+    if (this.isExpanded && !this.freezeMenu) {
+      this.isExpanded = false;
+    }
+  }
+
+  toggleSidebar() {
+    if (!this.freezeMenu) {
+      this.isExpanded = !this.isExpanded;
+    }
   }
 
   openUnderVoltageModal() {
