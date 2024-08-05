@@ -1,9 +1,8 @@
 import {
   Component,
-  EventEmitter,
   Input,
   OnInit,
-  Output,
+  Renderer2,
 } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -21,11 +20,11 @@ import { SettingsService } from '@/app/core/settings.service';
 })
 export class SidebarComponent implements OnInit {
   @Input() isExpanded = false;
-  @Output() toggleSidebar: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   public rPiCurrentlyUnderVoltage = false;
   public rPiWasUnderVoltage = false;
   public isMobile: any = false;
+  public freezeMenu = false;
 
   constructor(
     public router: Router,
@@ -36,15 +35,18 @@ export class SidebarComponent implements OnInit {
     private $modal: NgbModal,
     private $notification: NotificationService,
     private $translate: TranslateService,
+    private renderer: Renderer2,
   ) {
     this.isMobile = this.$md.detect.mobile();
 
     // ensure the menu closes when we navigate
     router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
-        if (this.isExpanded) {
-          this.toggleSidebar.emit(false);
-        }
+        this.closeSidebar();
+        this.freezeMenu = true;
+        setTimeout(() => {
+          this.freezeMenu = false;
+        }, 500);
       }
     });
   }
@@ -66,43 +68,59 @@ export class SidebarComponent implements OnInit {
 
     if (this.isMobile) {
       document.addEventListener('touchstart', (e: MouseEvent) => {
-        if (!sidebar.contains(e.target as HTMLElement)) {
-          sidebar.classList.remove('expanded');
-          content.classList.remove('sidebarExpanded');
+        if (content.contains(e.target as HTMLElement) && this.isExpanded) {
+          this.toggleSidebar();
         }
       });
     } else {
       // Expand sidebar on mouseenter
-      sidebar.addEventListener('mouseenter', (e: MouseEvent) => {
-        sidebar.classList.add('expanded');
-        content.classList.add('sidebarExpanded');
-      });
-      mobileHeader.addEventListener('mouseenter', (e: MouseEvent) => {
-        sidebar.classList.add('expanded');
-        content.classList.add('sidebarExpanded');
-      });
+      sidebar.addEventListener('mouseenter', (e: MouseEvent) => this.openSidebar());
+      mobileHeader.addEventListener('mouseenter', (e: MouseEvent) => this.openSidebar());
 
       // Collapse sidebar on mouseleave
-      sidebar.addEventListener('mouseleave', (e: MouseEvent) => {
-        sidebar.classList.remove('expanded');
-        content.classList.remove('sidebarExpanded');
-      });
-      mobileHeader.addEventListener('mouseleave', (e: MouseEvent) => {
-        sidebar.classList.remove('expanded');
-        content.classList.remove('sidebarExpanded');
-      });
+      sidebar.addEventListener('mouseleave', (e: MouseEvent) => this.closeSidebar());
+      mobileHeader.addEventListener('mouseleave', (e: MouseEvent) => this.closeSidebar());
 
       document.addEventListener('click', (e: MouseEvent) => {
         if (sidebar.contains(e.target as HTMLElement) && e.clientX > 60) {
-          sidebar.classList.remove('expanded');
-          content.classList.remove('sidebarExpanded');
+          this.closeSidebar();
         }
       });
     }
+
+    this.updateContentStyles();
   }
 
-  handleSidebarToggle() {
-    this.toggleSidebar.emit(!this.isExpanded);
+  openSidebar() {
+    if (!this.freezeMenu) {
+      this.isExpanded = true;
+      this.updateContentStyles();
+    }
+  }
+
+  closeSidebar() {
+    if (!this.freezeMenu) {
+      this.isExpanded = false;
+      this.updateContentStyles();
+    }
+  }
+
+  toggleSidebar() {
+    if (!this.freezeMenu) {
+      this.isExpanded = !this.isExpanded;
+      this.updateContentStyles();
+    }
+  }
+
+  updateContentStyles() {
+    const content = document.querySelector('.content');
+    if (this.isExpanded) {
+      this.renderer.setStyle(content, 'opacity', '20%');
+      this.renderer.setStyle(content, 'pointer-events', 'none');
+    } else {
+      this.renderer.removeStyle(content, 'opacity');
+      this.renderer.removeStyle(content, 'pointer-events');
+    }
   }
 
   openUnderVoltageModal() {
