@@ -212,7 +212,7 @@
   "plugins.manage.label_uninstalled": "Odinstalowane",
   "plugins.manage.label_update": "Aktualizuj",
   "plugins.manage.label_updated": "Zaktualizowane",
-  "plugins.manage.message_all_versions": "Wszytskie wersje",
+  "plugins.manage.message_all_versions": "Wszystkie wersje",
   "plugins.manage.message_confirm_disable_1": "Czy na pewno chcesz wyłączyć {{ pluginName }}?",
   "plugins.manage.message_confirm_disable_2": "Wszelkie akcesoria udostępnione przez tę wtyczkę zostaną usunięte z ekranu akcesoriów Homebridge UI, ale pozostaną w HomeKit z etykietą „Brak odpowiedzi”.",
   "plugins.manage.message_confirm_disable_3": "Po ponownym włączeniu wtyczki akcesoria pojawią się ponownie w interfejsie użytkownika Homebridge i staną się ponownie kontrolowane w HomeKit. Akcesoria nie stracą swoich danych HomeKit (takich jak powiązane sceny i automatyzacja).",
