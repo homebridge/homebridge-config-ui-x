@@ -312,7 +312,7 @@
   "settings.startup.debug_help": "Enable debug logs for system and plugins.",
   "settings.startup.insecure_1": "Homebridge 'Insecure' Mode",
   "settings.startup.insecure_2": "Enable Accessory Control",
-  "settings.startup.insecure_help": "To enable accessory control directly in Homebridge (Accessory page) Insecure Mode must be enabled. Warning: Anyone with network access to your Homebridge server port (i.e your local network, unless you expose port to the internet) and pin will be able to control your accessories.",
+  "settings.startup.insecure_help": "To enable accessory control from the 'Accessories' page in the Homebridge UI, 'Insecure Mode' must be enabled. Please note: anyone with network access to your Homebridge server and pin will be able to control your accessories.",
   "settings.startup.keep_accessories": "Keep Accessories Of Uninstalled Platform Plugins",
   "settings.startup.keep_accessories_help": "When this option is enabled, after removing the plugin, the accessories will stay in the cache. To delete them you have to do it manually in Homebridge Settings. In many cases, this option also retains accessories in case the plugin does not run properly.",
   "settings.theme": "Theme",
