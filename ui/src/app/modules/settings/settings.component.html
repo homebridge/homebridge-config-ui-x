@@ -18,26 +18,6 @@
     </h5>
   </div>
   <ul class="list-group list-group-box mt-2 mx-0" *ngIf="showFields.general" id="fieldsGeneral">
-     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pr-2">
-        Homebridge<br>
-        <small class="grey-text pr-2">v{{ $settings.env.homebridgeVersion }</small>
-      </span>
-      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 50px;"
-        (click)="$plugin.installPreviousVersion(homebridgePkg)"
-        <i class="fas fa-fw fa-chevron-right"></i>
-      </button>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pr-2">
-        UI<br>
-        <small class="grey-text pr-2">v{{ $settings.env.packageVersion }}</small>
-      </span>
-      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 50px;"
-        (click)="$plugin.installPreviousVersion(homebridgeUiPkg)"
-        <i class="fas fa-fw fa-chevron-right"></i>
-      </button>
-    </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
         {{ 'menu.label_settings_ui' | translate }}
@@ -209,7 +189,7 @@
       {{ 'settings.network.title_network' | translate }}
     </h5>
   </div>
-  <p class="small grey-text mb-2 mx-2">{{ 'settings.mdns_advertiser_help' | translate }}</p>
+  <p class="small grey-text mb-2 mx-0">{{ 'settings.mdns_advertiser_help' | translate }}</p>
   <ul class="list-group list-group-box mt-2 mx-0" *ngIf="showFields.network" id="fieldsNetwork">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
@@ -256,7 +236,7 @@
     </h5>
   </div>
   <p class="small grey-text mb-2 mx-0">{{ 'settings.reset.help' | translate }}</p>
-  <ul class="list-group list-group-box mt-2 mx-2" *ngIf="showFields.reset" id="fieldsReset">
+  <ul class="list-group list-group-box mt-2 mx-0" *ngIf="showFields.reset" id="fieldsReset">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
         {{ 'reset.title_unpair_bridges_cameras_tv_external_accessories' | translate }}<br/>
@@ -290,7 +270,7 @@
     </h5>
   </div>
   <p class="small grey-text mb-2 mx-0">{{ 'settings.manage_cache.help' | translate }}</p>
-  <ul class="list-group list-group-box mb-4 mx-2" *ngIf="showFields.cache" id="fieldsCache">
+  <ul class="list-group list-group-box mb-4 mx-0" *ngIf="showFields.cache" id="fieldsCache">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
         {{ 'reset.title_clear_cached_accessories_single' | translate }}<br>

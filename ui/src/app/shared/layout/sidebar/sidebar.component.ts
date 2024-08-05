@@ -10,6 +10,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '@/app/core/auth/auth.service';
 import { InformationComponent } from '@/app/core/components/information/information.component';
+import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { NotificationService } from '@/app/core/notification.service';
 import { SettingsService } from '@/app/core/settings.service';
 
@@ -24,16 +25,20 @@ export class SidebarComponent implements OnInit {
 
   public rPiCurrentlyUnderVoltage = false;
   public rPiWasUnderVoltage = false;
+  public isMobile: any = false;
 
   constructor(
     public router: Router,
     public translate: TranslateService,
     public $auth: AuthService,
     public $settings: SettingsService,
+    private $md: MobileDetectService,
     private $modal: NgbModal,
     private $notification: NotificationService,
     private $translate: TranslateService,
   ) {
+    this.isMobile = this.$md.detect.mobile();
+
     // ensure the menu closes when we navigate
     router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
@@ -56,30 +61,44 @@ export class SidebarComponent implements OnInit {
 
     // declare element for event listeners
     const sidebar = document.querySelector('.sidebar');
+    const mobileHeader = document.querySelector('.m-header');
     const content = document.querySelector('.content');
 
-    // expand sidebar on mouseenter
-    sidebar.addEventListener('mouseenter', (e) => {
-      sidebar.classList.add('expanded');
-      content.classList.add('sidebarExpanded');
-    });
+    if (this.isMobile) {
+      document.addEventListener('touchstart', (e: MouseEvent) => {
+        if (!sidebar.contains(e.target as HTMLElement)) {
+          sidebar.classList.remove('expanded');
+          content.classList.remove('sidebarExpanded');
+        }
+      });
+    } else {
+      // Expand sidebar on mouseenter
+      sidebar.addEventListener('mouseenter', (e: MouseEvent) => {
+        sidebar.classList.add('expanded');
+        content.classList.add('sidebarExpanded');
+      });
+      mobileHeader.addEventListener('mouseenter', (e: MouseEvent) => {
+        sidebar.classList.add('expanded');
+        content.classList.add('sidebarExpanded');
+      });
 
-    // collapse sidebar on mouseleave
-    sidebar.addEventListener('mouseleave', (e) => {
-      sidebar.classList.remove('expanded');
-      content.classList.remove('sidebarExpanded');
-    });
-
-    // collapse sidebar when click outside (mobile)
-    let touchEvent = 'ontouchstart' in window ? 'touchstart' : 'click';
-  
-    document.addEventListener(touchEvent, (e) => {
-      if (!sidebar.contains(event.target)) {
+      // Collapse sidebar on mouseleave
+      sidebar.addEventListener('mouseleave', (e: MouseEvent) => {
         sidebar.classList.remove('expanded');
         content.classList.remove('sidebarExpanded');
-      }
-    });
+      });
+      mobileHeader.addEventListener('mouseleave', (e: MouseEvent) => {
+        sidebar.classList.remove('expanded');
+        content.classList.remove('sidebarExpanded');
+      });
 
+      document.addEventListener('click', (e: MouseEvent) => {
+        if (sidebar.contains(e.target as HTMLElement) && e.clientX > 60) {
+          sidebar.classList.remove('expanded');
+          content.classList.remove('sidebarExpanded');
+        }
+      });
+    }
   }
 
   handleSidebarToggle() {

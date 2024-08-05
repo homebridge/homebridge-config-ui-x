@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
+import { rcompare } from 'semver';
 import { ApiService } from '@/app/core/api.service';
 
 @Component({
@@ -13,8 +14,9 @@ export class SelectPreviousVersionComponent implements OnInit {
   @Input() plugin: any;
 
   public loading = true;
-  public versions: Array<{ name: string; version: string }> = [];
-  public selectedVersion: string;
+  public versions: Array<{ version: string }> = [];
+  public versionsWithTags: Array<{ version: string; tag: string }> = [];
+  public versionSelect: string;
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -24,7 +26,7 @@ export class SelectPreviousVersionComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.selectedVersion = this.plugin.installedVersion || this.plugin.latestVersion;
+    this.versionSelect = this.plugin.installedVersion || this.plugin.latestVersion;
     this.lookupVersions();
   }
 
@@ -36,17 +38,31 @@ export class SelectPreviousVersionComponent implements OnInit {
           tagVersions[result.tags[key]] = key;
         }
 
-        const versions = result.versions.filter((x: any) => tagVersions[x] || !x.includes('-')).reverse();
+        const versions = result.versions.sort(rcompare);
 
-        for (const version of versions.slice(0, 20)) {
+        for (const version of versions) {
           this.versions.push({
-            name: 'v' + version + (tagVersions[version] ? ' - ' + tagVersions[version] : ''),
             version,
           });
+
+          if (tagVersions[version]) {
+            this.versionsWithTags.push({
+              version,
+              tag: tagVersions[version],
+            });
+          }
         }
 
-        if (!this.versions.find((x) => x.version === this.selectedVersion) && result.tags.latest) {
-          this.selectedVersion = result.tags.latest;
+        // Sort the versionsWithTags by tag, with ordering latest, next, beta, alpha, any other
+        this.versionsWithTags.sort((a, b) => {
+          const order = ['latest', 'next', 'beta', 'alpha'];
+          const aOrder = order.indexOf(a.tag) === -1 ? 999 : order.indexOf(a.tag);
+          const bOrder = order.indexOf(b.tag) === -1 ? 999 : order.indexOf(b.tag);
+          return aOrder - bOrder;
+        });
+
+        if (!this.versions.find((x) => x.version === this.versionSelect) && result.tags.latest) {
+          this.versionSelect = result.tags.latest;
         }
 
         this.loading = false;
@@ -58,7 +74,7 @@ export class SelectPreviousVersionComponent implements OnInit {
     );
   }
 
-  doInstall() {
-    this.activeModal.close(this.selectedVersion);
+  doInstall(selectedVersion: string) {
+    this.activeModal.close(selectedVersion);
   }
 }

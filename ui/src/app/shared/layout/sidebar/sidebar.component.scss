@@ -4,10 +4,9 @@
   left: 0;
   width: 100%;
   height: 72px;
-  z-index: 100;
+  z-index: 510;
   display: flex;
   align-items: center;
-  justify-content: right;
 
   &:hover {
     cursor: pointer;
@@ -20,7 +19,6 @@
 
 .sidebar {
   position: fixed;
-  overflow: hidden;
   left: 0;
   top: 0;
   height: 100vh;
@@ -29,11 +27,6 @@
   z-index: 500;
 
   .header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 60px;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -46,12 +39,8 @@
   }
 
   .link-wrapper {
-    position: fixed !important;
-    top: 80px;
     overflow-y: auto;
     max-height: calc(100vh - 80px) !important;
-    width: 60px;
-
     .link {
       .link-row {
         display: flex;
@@ -59,7 +48,7 @@
         padding: 15px 10px 15px 10px;
         cursor: pointer;
         transition: 0.2s;
-        font-size: 18px;
+        font-size: 17px;
 
         .icon {
           flex: 0 0 38px;
@@ -88,10 +77,10 @@
   }
 
   &.expanded {
-    width: 250px !important;
+    width: 210px;
 
     @media (max-width: 767px) {
-      width: 250px;
+      width: 210px;
 
       .link-wrapper {
         display: block;
@@ -99,11 +88,10 @@
     }
 
     .link-wrapper {
-      width: 250px;
       .link {
         .link-row {
           .title {
-            max-width: 190px;
+            max-width: 150px;
             padding-left: 10px;
           }
         }
@@ -114,4 +102,57 @@
 
 .hb-logo-icon {
   margin: -7px 0 0 25px;
+}
+
+@media (min-width: 768px) {
+  .hb-logo-text {
+    color: #ffffff;
+    position: absolute;
+    top: 17px;
+    font-size: 22px;
+    padding-left: 3px;
+  }
+
+  .sidebar.expanded .hb-logo-text {
+    opacity: 1;
+    left: 55px;
+    transition: 0.3s;
+  }
+
+  .sidebar:not(.expanded) .hb-logo-text {
+    opacity: 0;
+    left: 40px;
+    transition: 0.3s;
+  }
+
+  .hb-logo-text-mobile {
+    display:none !important;
+  }
+
+  .hb-logo-icon {
+    display: none !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .hb-logo-text {
+    display: none !important;
+  }
+
+  .hb-logo-text-mobile {
+    color: #ffffff;
+    position: absolute;
+    top: 17px;
+    font-size: 22px;
+    padding-left: 3px;
+    opacity: 1;
+    left: 55px;
+  }
+
+  .hb-logo-icon {
+    font-size: 24px;
+    position: absolute;
+    right: 10px;
+    top: 30px;
+  }
 }
