@@ -314,7 +314,7 @@
   "settings.startup.insecure_2": "Enable Accessory Control",
   "settings.startup.insecure_help": "To enable accessory control from the 'Accessories' page in the Homebridge UI, 'Insecure Mode' must be enabled. Please note: anyone with network access to your Homebridge server and pin will be able to control your accessories.",
   "settings.startup.keep_accessories": "Keep plugin accessories in cache",
-  "settings.startup.keep_accessories_help": "When this option is enabled, plugin accessories will always stay in cache. To delete them you have to do it manually in Homebridge Settings. When option is disabled accessories of uninstalled plugins will be automatically removed from cache (if plugin have errors system may wrongly think that plugin is uninstalled).",
+  "settings.startup.keep_accessories_help": "When this option is enabled, accessories will always stay in cache (to remove them you have to do it manually in Homebridge Settings). When option is disabled accessories of uninstalled plugins will be automatically removed from cache (note: if plugin have errors and not start properly, it may also be considered as uninstalled).",
   "settings.theme": "Theme",
   "settings.title_manage_cached_accessories": "Manage Cached Accessories",
   "settings.title_startup_options": "Startup & Environment Options",
