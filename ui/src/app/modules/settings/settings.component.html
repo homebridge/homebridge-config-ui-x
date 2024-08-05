@@ -137,14 +137,14 @@
     </h5>
   </div>
   <ul class="list-group list-group-box mb-4 mx-0" *ngIf="showFields.startup" id="fieldsStartup">
-    <li class="list-group-item d-flex justify-content-between align-items-center">
+    <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="$settings.env.serviceMode">
       <span>
-        {{ 'settings.startup.debug' | translate }} <code>-D</code><br>
-        <small class="grey-text pr-2">{{ 'settings.startup.debug_help' | translate }}</small>
+        {{ 'settings.startup.keep_accessories' | translate }} <code>-K</code><br>
+        <small class="grey-text pr-2">{{ 'settings.startup.keep_accessories_help' | translate }}</small>
       </span>
-      <input type="checkbox" class="rendux-input" id="homebridgeDebugMode" formControlName="HOMEBRIDGE_DEBUG"
-        [attr.aria-label]="'settings.startup.debug' | translate">
-      <label for="homebridgeDebugMode" class="rendux-label ml-3" style="min-width: 50px;"></label>
+      <input type="checkbox" class="rendux-input" id="homebridgeKeepOrphans" formControlName="HOMEBRIDGE_KEEP_ORPHANS"
+        [attr.aria-label]="'settings.startup.keep_accessories' | translate">
+      <label for="homebridgeKeepOrphans" class="rendux-label ml-3" style="min-width: 50px;"></label>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span>
@@ -156,14 +156,14 @@
         [attr.aria-label]="'settings.startup.insecure_1' | translate">
       <label for="homebridgeInsecureMode" class="rendux-label ml-3" style="min-width: 50px;"></label>
     </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="$settings.env.serviceMode">
+    <li class="list-group-item d-flex justify-content-between align-items-center">
       <span>
-        {{ 'settings.startup.keep_accessories' | translate }} <code>-K</code><br>
-        <small class="grey-text pr-2">{{ 'settings.startup.keep_accessories_help' | translate }}</small>
+        {{ 'settings.startup.debug' | translate }} <code>-D</code><br>
+        <small class="grey-text pr-2">{{ 'settings.startup.debug_help' | translate }}</small>
       </span>
-      <input type="checkbox" class="rendux-input" id="homebridgeKeepOrphans" formControlName="HOMEBRIDGE_KEEP_ORPHANS"
-        [attr.aria-label]="'settings.startup.keep_accessories' | translate">
-      <label for="homebridgeKeepOrphans" class="rendux-label ml-3" style="min-width: 50px;"></label>
+      <input type="checkbox" class="rendux-input" id="homebridgeDebugMode" formControlName="HOMEBRIDGE_DEBUG"
+        [attr.aria-label]="'settings.startup.debug' | translate">
+      <label for="homebridgeDebugMode" class="rendux-label ml-3" style="min-width: 50px;"></label>
     </li>
     <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
