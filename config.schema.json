@@ -660,9 +660,24 @@
   },
   "layout": [
     {
+      "ref": "general",
+      "type": "fieldset",
+      "expandable": true,
+      "expanded": true,
+      "title": "General",
       "items": [
         "port",
         "tempUnits"
+      ]
+    },
+    {
+      "ref": "scheduledBackup",
+      "type": "fieldset",
+      "expandable": true,
+      "title": "Scheduled Backup Settings",
+      "items": [
+        "scheduledBackupDisable",
+        "scheduledBackupPath"
       ]
     },
     {
@@ -671,9 +686,10 @@
       "expandable": true,
       "title": "Advanced",
       "items": [
+        
         {
           "ref": "login",
-          "type": "fieldset",
+          "type": "section",
           "expandable": true,
           "title": "Login Settings",
           "items": [
@@ -694,7 +710,7 @@
         },
         {
           "ref": "log",
-          "type": "fieldset",
+          "type": "section",
           "expandable": true,
           "title": "Log Settings",
           "items": [
@@ -709,7 +725,7 @@
         },
         {
           "ref": "accessoryControl",
-          "type": "fieldset",
+          "type": "section",
           "expandable": true,
           "title": "Accessory Control",
           "items": [
@@ -728,7 +744,7 @@
         },
         {
           "ref": "hostname",
-          "type": "fieldset",
+          "type": "section",
           "expandable": true,
           "title": "Hostname Settings",
           "items": [
@@ -738,7 +754,7 @@
         },
         {
           "ref": "ssl",
-          "type": "fieldset",
+          "type": "section",
           "expandable": true,
           "title": "SSL Settings",
           "items": [
@@ -750,7 +766,7 @@
         },
         {
           "ref": "homebridge",
-          "type": "fieldset",
+          "type": "section",
           "expandable": true,
           "title": "Homebridge Settings",
           "items": [
@@ -761,14 +777,14 @@
         },
         {
           "ref": "operatingSystem",
-          "type": "fieldset",
+          "type": "section",
           "expandable": true,
           "title": "Operating System Specific Settings",
           "items": [
             "disableServerMetricsMonitoring",
             {
               "ref": "linux",
-              "type": "fieldset",
+              "type": "section",
               "expandable": true,
               "title": "Linux Settings",
               "items": [
@@ -779,7 +795,7 @@
             },
             {
               "ref": "container",
-              "type": "fieldset",
+              "type": "section",
               "expandable": true,
               "title": "Container Settings",
               "items": [
@@ -787,16 +803,6 @@
                 "noFork"
               ]
             }
-          ]
-        },
-        {
-          "ref": "scheduledBackup",
-          "type": "fieldset",
-          "expandable": true,
-          "title": "Scheduled Backup Settings",
-          "items": [
-            "scheduledBackupDisable",
-            "scheduledBackupPath"
           ]
         }
       ]
