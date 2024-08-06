@@ -25,7 +25,7 @@
           <button class="btn btn-primary ml-3" *ngIf="plugin.installedVersion !== version.version" (click)="doInstall(version.version)">
             <i class="fas fa-fw fa-arrow-alt-circle-down"></i>
           </button>
-          <button class="btn btn-success ml-3" *ngIf="plugin.installedVersion === version.version" disabled>
+          <button class="btn btn-primary ml-3" *ngIf="plugin.installedVersion === version.version" disabled>
             <i class="fas fa-fw fa-check-circle"></i>
           </button>
         </li>
@@ -42,7 +42,7 @@
           <button class="btn btn-primary ml-3" [disabled]="!versionSelect" *ngIf="versionSelect !== plugin.installedVersion" (click)="doInstall(versionSelect)">
             <i class="fas fa-fw fa-arrow-alt-circle-down"></i>
           </button>
-          <button class="btn btn-success ml-3" *ngIf="versionSelect && versionSelect === plugin.installedVersion" disabled>
+          <button class="btn btn-primary ml-3" *ngIf="versionSelect && versionSelect === plugin.installedVersion" disabled>
             <i class="fas fa-fw fa-check-circle"></i>
           </button>
         </li>
