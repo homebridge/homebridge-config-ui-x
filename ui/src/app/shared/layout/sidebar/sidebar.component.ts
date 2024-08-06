@@ -63,24 +63,15 @@ export class SidebarComponent implements OnInit {
 
     // declare element for event listeners
     const sidebar = document.querySelector('.sidebar');
-    const mobileHeader = document.querySelector('.m-header');
-    const content = document.querySelector('.content');
 
-    if (this.isMobile) {
-      document.addEventListener('touchstart', (e: MouseEvent) => {
-        if (content.contains(e.target as HTMLElement) && this.isExpanded) {
-          this.toggleSidebar();
-        }
-      });
-    } else {
+    if (!this.isMobile)
       // Expand sidebar on mouseenter
       sidebar.addEventListener('mouseenter', (e: MouseEvent) => this.openSidebar());
-      mobileHeader.addEventListener('mouseenter', (e: MouseEvent) => this.openSidebar());
 
       // Collapse sidebar on mouseleave
       sidebar.addEventListener('mouseleave', (e: MouseEvent) => this.closeSidebar());
-      mobileHeader.addEventListener('mouseleave', (e: MouseEvent) => this.closeSidebar());
 
+      // Collapse after click, but not if click on sidebar icon
       document.addEventListener('click', (e: MouseEvent) => {
         if (sidebar.contains(e.target as HTMLElement) && e.clientX > 60) {
           this.closeSidebar();
@@ -117,9 +108,11 @@ export class SidebarComponent implements OnInit {
     if (this.isExpanded) {
       this.renderer.setStyle(content, 'opacity', '20%');
       this.renderer.setStyle(content, 'pointer-events', 'none');
+      this.renderer.setStyle(content, 'overflow', 'hidden');
     } else {
       this.renderer.removeStyle(content, 'opacity');
       this.renderer.removeStyle(content, 'pointer-events');
+      this.renderer.removeStyle(content, 'overflow');
     }
   }
 
