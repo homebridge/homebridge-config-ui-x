@@ -13,7 +13,7 @@
 </div>
 
 <div class="sidebar" [ngClass]="{ 'expanded': isExpanded }" role="navigation" id="sidebar">
-  <div class="header" (click)="toggleSidebar()" tabindex="0" role="button" (keydown)="handleKeydown($event)">
+  <div class="header" tabindex="0" role="button" (keydown)="handleKeydown($event)">
     <img style="height:35px; width: 35px;" ngSrc="../../../../assets/homebridge-logo.svg" alt="HB Logo" height="16" width="16">
     <div class="hb-logo-text">Homebridge</div>
   </div>
