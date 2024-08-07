@@ -259,7 +259,7 @@
   "reset.accessories_will_may_need_to_be_reconfigured": "After performing this action some accessories may need to be reconfigured in HomeKit or re-added to your automations.",
   "reset.message_accessory_config_will_not_be_changed": "The rest of your config will not be changed. If Homebridge is not starting due to a bad config a reset will not fix it.",
   "reset.message_action_is_irreversible": "This action is irreversible. Please read carefully before proceeding.",
-  "reset.message_all_automations_will_be_reset": "All automations will need to be reconfigured after a reset.",
+  "reset.message_all_automations_will_be_reset": "All accessories and automations will need to be reconfigured.",
   "reset.message_force_restart_hb_help_text": "Use this action to force the hb-service service to do a full restart.",
   "reset.message_need_to_remove_homebridge_accessory_from_home_app": "You will need to manually remove the existing Homebridge accessory from the HomeKit (E.G. Apple Home app).",
   "reset.message_remove_cached_accessories": "This action will remove all cached accessories from your Homebridge instance.",
