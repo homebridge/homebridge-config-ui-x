@@ -261,7 +261,7 @@
   "reset.message_action_is_irreversible": "This action is irreversible. Please read carefully before proceeding.",
   "reset.message_all_automations_will_be_reset": "All automations will need to be reconfigured after a reset.",
   "reset.message_force_restart_hb_help_text": "Use this action to force the hb-service service to do a full restart.",
-  "reset.message_need_to_remove_homebridge_accessory_from_home_app": "You will need to remove the existing Homebridge accessory from the HomeKit (E.G. Apple Home app) manually.",
+  "reset.message_need_to_remove_homebridge_accessory_from_home_app": "You will need to manually remove the existing Homebridge accessory from the HomeKit (E.G. Apple Home app).",
   "reset.message_remove_cached_accessories": "This action will remove all cached accessories from your Homebridge instance.",
   "reset.message_remove_cached_accessories_single": "Delete a single accessory from the accessory cache.",
   "reset.message_remove_cached_accessories_single_empty": "You have no cached accessories to remove.",
