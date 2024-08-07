@@ -261,7 +261,7 @@
   "reset.message_action_is_irreversible": "Ta czynność jest nieodwracalna! Przeczytaj uważnie, zanim przejdziesz dalej.",
   "reset.message_all_automations_will_be_reset": "Wszystkie automatyzacje będą wymagały rekonfiguracji po zresetowaniu.",
   "reset.message_force_restart_hb_help_text": "Użyj tej akcji aby wymusić pełny restart na usłudze hb-service.",
-  "reset.message_need_to_remove_homebridge_accessory_from_home_app": "Będziesz musiał ręcznie usunąć istniejące akcesoria Homebridge z aplikacji domowej.",
+  "reset.message_need_to_remove_homebridge_accessory_from_home_app": "Będziesz musiał ręcznie usunąć istniejące akcesoria Homebridge z HomeKit (np. aplikacja Apple Home).",
   "reset.message_remove_cached_accessories": "Ta czynność całkowicie usunie wszystkie akcesoria z pamięci podręcznej.",
   "reset.message_remove_cached_accessories_single": "Ta czynność usunie jedno z akcesoriów z pamięci podręcznej.",
   "reset.message_remove_cached_accessories_single_empty": "Nie posiadasz w pamięci podręcznej żadnych akcesoriów do usunięcia.",
