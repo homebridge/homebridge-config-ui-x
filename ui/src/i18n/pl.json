@@ -259,7 +259,7 @@
   "reset.accessories_will_may_need_to_be_reconfigured": "Po wykonaniu tej czynności dla niektórych akcesoriów może być wymagana ponowna ich konfiguracja w HomeKit lub ponowne dodanie do automatyzacji.",
   "reset.message_accessory_config_will_not_be_changed": "Reszta twojej konfiguracji nie zostanie zmieniona. Reset nie pomoże, jeżeli powodem, dla którego nie uruchamia się Homebridge jest niepoprawna konfiguracja.",
   "reset.message_action_is_irreversible": "Ta czynność jest nieodwracalna! Przeczytaj uważnie, zanim przejdziesz dalej.",
-  "reset.message_all_automations_will_be_reset": "Wszystkie automatyzacje będą wymagały rekonfiguracji po zresetowaniu.",
+  "reset.message_all_automations_will_be_reset": "Wszystkie akcesoria i automatyzacje będą wymagały rekonfiguracji (w HomeKit).",
   "reset.message_force_restart_hb_help_text": "Użyj tej akcji aby wymusić pełny restart na usłudze hb-service.",
   "reset.message_need_to_remove_homebridge_accessory_from_home_app": "Będziesz musiał ręcznie usunąć istniejące akcesoria Homebridge z HomeKit (np. aplikacja Apple Home).",
   "reset.message_remove_cached_accessories": "Ta czynność całkowicie usunie wszystkie akcesoria z pamięci podręcznej.",
