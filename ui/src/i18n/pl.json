@@ -272,7 +272,7 @@
   "reset.title_clear_cached_accessories": "Wyczyść wszystkie akcesoria z pamięci podręcznej",
   "reset.title_clear_cached_accessories_single": "Wyczyść jedno z akcesoriów z pamięci podręcznej",
   "reset.title_reset": "Reset",
-  "reset.title_reset_homebridge_accessory": "Zresetuj Honebridge",
+  "reset.title_reset_homebridge_accessory": "Zresetuj Homebridge",
   "reset.title_unpair_bridges_cameras_tv_external_accessories": "Rozłącz zewnętrzne akcesorium (mostek/ kamera / TV / zewnętrzne akcesorium)",
   "reset.title_unpair_bridges_cameras_tv_external_accessories_empty": "Nie posiadasz zewnętrznych akcesoriów do rozłączenia.",
   "reset.toast_accessory_reset": "Resetowanie akcesoriów",
