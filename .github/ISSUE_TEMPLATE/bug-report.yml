@@ -1,14 +1,14 @@
 name: Bug Report
 description: Create a report to help us improve
-labels: ["bug"]
+labels: [bug]
 body:
   - type: markdown
     attributes:
       value: |
         Thanks for taking the time to fill out this bug report!
-        
+
         Before we start, be sure you are aware of the following points:
-        
+
         * If your issue is specific to a certain plugin, create the issue on that plugin's GitHub project page instead.
         * Avoid duplicating any existing issues which already track or resolve your problem, search the existing issues first.
         * Aim to find a descriptive and precise title for your bug report.
@@ -18,7 +18,7 @@ body:
       label: Describe The Bug
       description: |
         Pleased provide a clear and concise description of what the bug is. Be sure to include:
-        
+
         * What is happening?
         * What you expect to happen?
         * Clear steps explaining how to reproduce the problem.
@@ -43,8 +43,8 @@ body:
       label: Config
       render: JSON
       description: |
-        If relevant to your bug report, please include your Homebridge config (`config.json`). 
-        
+        If relevant to your bug report, please include your Homebridge config (`config.json`).
+
         * If you're unsure if the config is relevant, please include it.
         * Be sure to **remove any sensitive information (passwords, tokens, etc.).**
     validations:

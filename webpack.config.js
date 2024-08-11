@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const path = require('path');
+const path = require('node:path');
 const webpack = require('webpack');
 const packageJson = require('./package.json');
 
@@ -20,7 +20,7 @@ module.exports = {
   },
   target: 'node',
   mode: 'production',
-  externals: externals,
+  externals,
   node: {
     global: false,
     __filename: false,

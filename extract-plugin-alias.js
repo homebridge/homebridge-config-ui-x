@@ -4,8 +4,8 @@
  * This script "mocks" homebridge and is used to extract the plugin alias and type.
  */
 
-const EventEmitter = require('events').EventEmitter;
-const path = require('path');
+const EventEmitter = require('node:events').EventEmitter;
+const path = require('node:path');
 
 let pluginAlias;
 let pluginType;
@@ -47,7 +47,7 @@ const HomebridgeApiMock = {
           },
         });
       }
-    },
+    }(),
     Service: new class Service extends EventEmitter {
       constructor() {
         super();
@@ -59,7 +59,7 @@ const HomebridgeApiMock = {
           },
         });
       }
-    },
+    }(),
     AccessoryLoader: {},
     Accessory: {},
     Bridge: {},
@@ -115,11 +115,10 @@ function main() {
     pluginInitializer(HomebridgeApiMock);
 
     process.send({
-      pluginAlias: pluginAlias,
-      pluginType: pluginType,
+      pluginAlias,
+      pluginType,
     });
     process.exit();
-
   } catch (e) {
     process.exit(1);
   }
