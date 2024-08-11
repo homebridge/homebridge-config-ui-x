@@ -43,5 +43,4 @@ Show your homebridge config.json here
 * **Operating System**: Raspbian / Ubuntu / Debian / Windows / macOS / Docker
 * **Process Supervisor**: Docker / Systemd / init.d / pm2 / launchctl / hb-service / other / none
 
-
 <!-- Click the "Preview" tab before you submit to ensure the formatting is correct. -->

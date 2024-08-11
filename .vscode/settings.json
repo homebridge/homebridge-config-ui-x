@@ -24,5 +24,5 @@
     "typescriptreact",
     "html"
   ],
-  "angular.enable-strict-mode-prompt": false,
+  "angular.enable-strict-mode-prompt": false
 }

@@ -58,7 +58,7 @@ This will start the Angular development server on port `4200` and a standalone s
 npm run watch
 ```
 
-You should now be able to navigate to `https://localhost:4200` in your browser which will connect to your `homebridge` instance running on port `8581`. The UI  will automatically reload whenever you make changes to the code.
+You should now be able to navigate to `https://localhost:4200` in your browser which will connect to your `homebridge` instance running on port `8581`. The UI will automatically reload whenever you make changes to the code.
 
 ## Running Tests
 
@@ -70,6 +70,6 @@ npm run test
 
 ## Contributing To Translations
 
-Additional language translations, or improvements to existing translations are most welcome.  Translations can be found here: 
+Additional language translations, or improvements to existing translations are most welcome. Translations can be found here:
 
 https://github.com/homebridge/homebridge-config-ui-x/tree/latest/ui/src/i18n
