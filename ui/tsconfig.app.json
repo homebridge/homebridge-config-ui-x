@@ -2,9 +2,9 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "skipLibCheck": true,
-    "outDir": "./out-tsc/app",
     "types": [],
+    "outDir": "./out-tsc/app",
+    "skipLibCheck": true
   },
   "files": [
     "src/main.ts",

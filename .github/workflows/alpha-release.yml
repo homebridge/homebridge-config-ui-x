@@ -8,20 +8,20 @@ on:
 jobs:
   publish:
     if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
-    name: "Publish Pre Release Alpha to NPM"
+    name: Publish Pre Release Alpha to NPM
     uses: homebridge/.github/.github/workflows/npm-publish.yml@latest
     with:
-      tag: 'alpha'
+      tag: alpha
       dynamically_adjust_version: true
-      npm_version_command: 'pre'
-      pre_id: 'alpha'
+      npm_version_command: pre
+      pre_id: alpha
       install_cmd: npm ci && cd ui && npm ci
     secrets:
       npm_auth_token: ${{ secrets.npm_token }}
 
   pre-release-alpha:
     needs: [publish]
-    name: "Create New Github Alpha Pre Release"
+    name: Create New Github Alpha Pre Release
     if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
     runs-on: ubuntu-latest
     steps:
@@ -40,7 +40,7 @@ jobs:
             [How To Test Upcoming Changes](https://github.com/homebridge/homebridge-config-ui-x/wiki/How-To-Test-Upcoming-Changes)
           keep_num: 5
           keep_tags: false
-  
+
   attach-artifact:
     name: Attach Artifact
     needs: [publish, pre-release-alpha]
@@ -72,19 +72,18 @@ jobs:
             echo "Bundle is under 10MB, stopping"
             exit 1
           fi
-    
+
       - name: Upload tar.gz Bundle to GitHub Artifacts v${{ needs.publish.outputs.NPM_VERSION }}
         uses: actions/upload-artifact@v4
         with:
           name: 'homebridge-config-ui-x-${{ needs.publish.outputs.NPM_VERSION }}.tar.gz'
           path: |
             ./homebridge-config-ui-x-${{ needs.publish.outputs.NPM_VERSION }}.tar.gz
-      
-    
+
       - name: Upload SHASUMS256.txt to GitHub Artifacts v${{ needs.publish.outputs.NPM_VERSION }}
         uses: actions/upload-artifact@v4
         with:
-          name: 'SHASUMS256.txt'
+          name: SHASUMS256.txt
           path: |
             ./SHASUMS256.txt
 
@@ -97,12 +96,12 @@ jobs:
 
   github-releases-to-discord:
     name: Discord Webhooks
-    needs: [publish,pre-release-alpha,attach-artifact]
+    needs: [publish, pre-release-alpha, attach-artifact]
     uses: homebridge/.github/.github/workflows/discord-webhooks.yml@latest
     with:
-      title: "Homebridge UI Alpha Release"
+      title: Homebridge UI Alpha Release
       description: |
         Version `v${{ needs.publish.outputs.NPM_VERSION }}`
-      url: "https://github.com/homebridge/homebridge-config-ui-x/releases/tag/v${{ needs.publish.outputs.NPM_VERSION }}"
+      url: 'https://github.com/homebridge/homebridge-config-ui-x/releases/tag/v${{ needs.publish.outputs.NPM_VERSION }}'
     secrets:
       DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL_BETA }}

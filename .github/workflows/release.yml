@@ -3,7 +3,7 @@ run-name: Production Release
 
 on:
   release:
-     types: [released]
+    types: [released]
 
 jobs:
   tag:
@@ -83,19 +83,18 @@ jobs:
             echo "Bundle is under 10MB, stopping"
             exit 1
           fi
-    
+
       - name: Upload tar.gz Bundle to GitHub Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: 'homebridge-config-ui-x-${{ needs.tag.outputs.version }}.tar.gz'
           path: |
             ./homebridge-config-ui-x-${{ needs.tag.outputs.version }}.tar.gz
-      
-    
+
       - name: Upload SHASUMS256.txt to GitHub Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: 'SHASUMS256.txt'
+          name: SHASUMS256.txt
           path: |
             ./SHASUMS256.txt
 
@@ -108,12 +107,12 @@ jobs:
 
   github-releases-to-discord:
     name: Discord Webhooks
-    needs: [tag,build_and_test,publish,attach-artifact]
+    needs: [tag, build_and_test, publish, attach-artifact]
     uses: homebridge/.github/.github/workflows/discord-webhooks.yml@latest
     with:
-      title: "Homebridge UI Release"
+      title: Homebridge UI Release
       description: |
         Version `v${{ needs.publish.outputs.NPM_VERSION }}`
-      url: "https://github.com/homebridge/homebridge-config-ui-x/releases/tag/v${{ needs.publish.outputs.NPM_VERSION }}"
+      url: 'https://github.com/homebridge/homebridge-config-ui-x/releases/tag/v${{ needs.publish.outputs.NPM_VERSION }}'
     secrets:
       DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL_LATEST }}

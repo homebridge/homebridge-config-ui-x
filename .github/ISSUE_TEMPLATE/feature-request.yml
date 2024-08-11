@@ -1,6 +1,6 @@
 name: Feature Request
 description: Suggest an idea for this project
-labels: ["enhancement"]
+labels: [enhancement]
 body:
   - type: markdown
     attributes:
@@ -12,7 +12,7 @@ body:
       label: Feature Description
       description: |
         Please provide an overview of the what feature you'd like to see.
-        
+
         * What is happening?
         * What you expect to happen?
         * What problems would this new feature solve?
@@ -20,4 +20,3 @@ body:
         Tip: You can attach images or files by clicking this area to highlight it and then dragging files in.
     validations:
       required: true
- 

@@ -4,7 +4,7 @@
  * - remove old translation strings from the other language files
  */
 
-import { dirname, resolve } from 'path';
+import { dirname, resolve } from 'node:path';
 import { readJsonSync, readdirSync, writeJSONSync } from 'fs-extra';
 
 const basePath = dirname(__dirname);
