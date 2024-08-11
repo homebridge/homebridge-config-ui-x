@@ -131,6 +131,7 @@ export class StatusComponent implements OnInit, OnDestroy {
   }
 
   resetLayout() {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     this.setLayout(require('./default-dashboard-layout.json'));
     this.gridChangedEvent();
   }

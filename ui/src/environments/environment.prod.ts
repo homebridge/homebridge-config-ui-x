@@ -1,4 +1,5 @@
 export const environment = {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   serverTarget: require('../../../package.json').version,
   production: true,
   socket: '',

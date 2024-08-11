@@ -58,6 +58,7 @@ export class AppComponent {
     const browserLang = languages.find(x => x === translate.getBrowserLang() || x === translate.getBrowserCultureLang());
 
     for (const lang of languages) {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       translate.setTranslation(lang, require('../i18n/' + lang + '.json'));
     }
 

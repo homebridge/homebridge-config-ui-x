@@ -5,6 +5,7 @@
 
 export const environment = {
   production: false,
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   serverTarget: require('../../../package.json').version,
   api: {
     base: 'http://localhost:8581/api',
