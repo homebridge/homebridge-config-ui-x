@@ -1,13 +1,21 @@
-<div class="m-header text-end" (click)="handleSidebarToggle()" tabindex="0" role="button" (keydown)="handleKeydown($event)"
+<div class="m-header text-end" (click)="toggleSidebar()" tabindex="0" role="button" (keydown)="handleKeydown($event)"
   [attr.aria-expanded]="isExpanded ? 'true' : 'false'" [attr.aria-controls]="'sidebar'"
   [attr.aria-label]="'menu.sidebar.aria_menu' | translate">
   <span class="me-2 d-block d-lg-none" style="font-size: 0.9rem; color: #dddddd"></span>
+  <img style="height:35px; width: 35px;" ngSrc="../../../../assets/homebridge-logo.svg" alt="HB Logo" height="16" width="16">
+  <div class="hb-logo-text-mobile">Homebridge</div>
+  <div class="hamburger-icon" [ngClass]="{ 'hamburger-icon-cross': isExpanded }">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
 </div>
 
 <div class="sidebar" [ngClass]="{ 'expanded': isExpanded }" role="navigation" id="sidebar">
-  <div class="header" (click)="handleSidebarToggle()" tabindex="0" role="button" (keydown)="handleKeydown($event)">
+  <div class="header" (click)="toggleSidebar()" tabindex="0" role="button" (keydown)="handleKeydown($event)">
     <img style="height:35px; width: 35px;" ngSrc="../../../../assets/homebridge-logo.svg" alt="HB Logo" height="16" width="16">
-    <i class="fas fa-bars fa-fw white-text hb-logo-icon"></i>
+    <div class="hb-logo-text">Homebridge</div>
   </div>
   <div class="link-wrapper">
     <div class="link">
@@ -45,14 +53,6 @@
     </div>
 
     <div class="link" *ngIf="$auth.user.admin">
-      <div class="link-row" [routerLink]="['/config']" [routerLinkActive]="'active'" [attr.aria-label]="'menu.config_json_editor' | translate"
-        role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
-        <div class="icon"><i class="fa fa-fw fa-code"></i></div>
-        <div class="title">{{ 'menu.config_json_editor' | translate }}</div>
-      </div>
-    </div>
-
-    <div class="link" *ngIf="$auth.user.admin">
       <div class="link-row" [routerLink]="['/logs']" [routerLinkActive]="'active'" [attr.aria-label]="'menu.linux.label_logs' | translate"
         role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
         <div class="icon"><i class="fa fa-fw fa-wave-square"></i></div>
@@ -65,6 +65,14 @@
         [attr.aria-label]="'menu.linux.label_terminal' | translate" role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
         <div class="icon"><i class="fa fa-fw fa-terminal"></i></div>
         <div class="title">{{ 'menu.linux.label_terminal' | translate }}</div>
+      </div>
+    </div>
+
+    <div class="link" *ngIf="$auth.user.admin">
+      <div class="link-row" [routerLink]="['/config']" [routerLinkActive]="'active'" [attr.aria-label]="'menu.config_json_editor' | translate"
+        role="menuitem" tabindex="0" (keydown)="handleKeydown($event)">
+        <div class="icon"><i class="fa fa-fw fa-code"></i></div>
+        <div class="title">{{ 'menu.config_json_editor' | translate }}</div>
       </div>
     </div>
 

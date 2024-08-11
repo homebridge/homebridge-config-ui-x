@@ -1,6 +1,7 @@
 {
   "name": "ui",
   "version": "0.0.0",
+  "private": true,
   "license": "MIT",
   "scripts": {
     "check": "npm install && npm outdated",
@@ -9,7 +10,6 @@
     "build": "ng build --configuration production --output-path=../public --source-map=false --aot=true",
     "lint": "ng lint"
   },
-  "private": true,
   "dependencies": {
     "@angular/animations": "17.3.12",
     "@angular/common": "17.3.12",
@@ -46,7 +46,7 @@
     "ngx-md": "14.0.9",
     "ngx-monaco-editor": "12.0.0",
     "ngx-toastr": "19.0.0",
-    "qrcode": "1.5.3",
+    "qrcode": "1.5.4",
     "rxjs": "7.8.1",
     "semver": "7.6.3",
     "socket.io-client": "4.7.5",
@@ -55,7 +55,7 @@
     "xterm": "4.19.0",
     "xterm-addon-fit": "0.5.0",
     "xterm-addon-web-links": "0.6.0",
-    "zone.js": "0.14.8"
+    "zone.js": "0.14.10"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^17.3.8",
@@ -71,7 +71,7 @@
     "@types/emoji-js": "^3.5.2",
     "@types/file-saver": "^2.0.7",
     "@types/lodash-es": "^4.17.12",
-    "@types/node": "^22.1.0",
+    "@types/node": "^22.2.0",
     "@types/qrcode": "^1.5.5",
     "@types/semver": "^7.5.8",
     "@types/uuid": "^10.0.0",

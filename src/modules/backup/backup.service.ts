@@ -89,7 +89,7 @@ export class BackupService {
     // prepare a temp working directory
     const instanceId = this.configService.homebridgeConfig.bridge.username.replace(/:/g, '');
     const backupDir = await mkdtemp(join(tmpdir(), 'homebridge-backup-'));
-    const backupFileName = 'homebridge-backup' + '-' + instanceId + '.tar.gz';
+    const backupFileName = 'homebridge-backup-' + instanceId + '.' + new Date().getTime().toString() + '.tar.gz';
     const backupPath = resolve(backupDir, backupFileName);
 
     this.logger.log(`Creating temporary backup archive at ${backupPath}`);

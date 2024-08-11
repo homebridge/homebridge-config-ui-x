@@ -17,7 +17,7 @@
       {{ 'settings.general.title_general' | translate }}
     </h5>
   </div>
-  <ul class="list-group list-group-box mt-2 mx-2" *ngIf="showFields.general" id="fieldsGeneral">
+  <ul class="list-group list-group-box mt-2 mx-0" *ngIf="showFields.general" id="fieldsGeneral">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2">
         {{ 'menu.label_settings_ui' | translate }}
@@ -136,7 +136,7 @@
       {{ 'settings.title_startup_options' | translate }}
     </h5>
   </div>
-  <ul class="list-group list-group-box mb-4 mx-2" *ngIf="showFields.startup" id="fieldsStartup">
+  <ul class="list-group list-group-box mb-4 mx-0" *ngIf="showFields.startup" id="fieldsStartup">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span>{{ 'settings.startup.debug' | translate }} <code>-D</code></span>
       <input type="checkbox" class="rendux-input" id="homebridgeDebugMode" formControlName="HOMEBRIDGE_DEBUG"
@@ -189,8 +189,8 @@
       {{ 'settings.network.title_network' | translate }}
     </h5>
   </div>
-  <p class="small grey-text mb-2 mx-2">{{ 'settings.mdns_advertiser_help' | translate }}</p>
-  <ul class="list-group list-group-box mt-2 mx-2" *ngIf="showFields.network" id="fieldsNetwork">
+  <p class="small grey-text mb-2 mx-0">{{ 'settings.mdns_advertiser_help' | translate }}</p>
+  <ul class="list-group list-group-box mt-2 mx-0" *ngIf="showFields.network" id="fieldsNetwork">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2">
         <div>{{ 'settings.network.title_network_interfaces' | translate }}<br>
@@ -235,8 +235,8 @@
       {{ 'reset.title_reset' | translate }}
     </h5>
   </div>
-  <p class="small grey-text mb-2 mx-2">{{ 'settings.reset.help' | translate }}</p>
-  <ul class="list-group list-group-box mt-2 mx-2" *ngIf="showFields.reset" id="fieldsReset">
+  <p class="small grey-text mb-2 mx-0">{{ 'settings.reset.help' | translate }}</p>
+  <ul class="list-group list-group-box mt-2 mx-0" *ngIf="showFields.reset" id="fieldsReset">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2">
         {{ 'reset.title_unpair_bridges_cameras_tv_external_accessories' | translate }}<br/>
@@ -269,8 +269,8 @@
       {{ 'settings.title_manage_cached_accessories' | translate }}
     </h5>
   </div>
-  <p class="small grey-text mb-2 mx-2">{{ 'settings.manage_cache.help' | translate }}</p>
-  <ul class="list-group list-group-box mb-4 mx-2" *ngIf="showFields.cache" id="fieldsCache">
+  <p class="small grey-text mb-2 mx-0">{{ 'settings.manage_cache.help' | translate }}</p>
+  <ul class="list-group list-group-box mb-4 mx-0" *ngIf="showFields.cache" id="fieldsCache">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2">
         {{ 'reset.title_clear_cached_accessories_single' | translate }}<br>
