@@ -43,3 +43,7 @@ button {
 .dropdown-toggle::after {
   display: none;
 }
+
+.btn.disabled, .btn:disabled {
+  filter: grayscale(1);
+}
