@@ -2,6 +2,12 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## v4.57.0 (2024-08-26)
+
+### Other Changes
+
+- run improved linter on non-typescript files
+
 ## v4.56.4 (2024-06-25)
 
 ### Other Changes
