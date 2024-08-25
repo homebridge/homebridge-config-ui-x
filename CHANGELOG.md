@@ -9,7 +9,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - show UI messages when node 22 updates available
   - note that Homebridge, the UI, and plugins do not yet need to support Node.js 22
   - update notifications for Node.js 22 will only be shown if you are **already** running Node.js 22
-- add a Homebridge v2.0 readiness badge to each plugin card with a modal explaining what it means
+- add a Homebridge v2.0 readiness badge to each installed plugin card with a modal explaining what it means
   - a tick will show if you are running Homebridge v1 and the plugin has been marked as supported v2
   - a cross will show if you are running Homebridge v1 and the plugin has not been marked as supported v2
   - no icon will be shown if you are already running a Homebridge v2 beta version
@@ -22,6 +22,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - obtain verified plugin tarballs from `homebridge/verified` repo
 - ignore `.cache` folder when creating backup files
 - add `xterm-addon-web-links` to angular allowed cjs
+- fixes for angular build, fix for readiness icon
 
 ### Homebridge Dependencies
 
