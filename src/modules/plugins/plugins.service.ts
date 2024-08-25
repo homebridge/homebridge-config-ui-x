@@ -100,6 +100,9 @@ export class PluginsService {
   // create a cache for storing plugin alias
   private pluginAliasCache = new NodeCache({ stdTTL: 86400 });
 
+  // create a cache for storing plugin author
+  private pluginAuthorCache = new NodeCache({ stdTTL: 86400 });
+
   private specialPluginsRetryTimeout: NodeJS.Timeout;
 
   /**
@@ -366,7 +369,7 @@ export class PluginsService {
         homepage: pkg.homepage,
         bugs: typeof pkg.bugs === 'object' && pkg.bugs?.url ? pkg.bugs.url : null,
       };
-      plugin.author = (pkg.maintainers && pkg.maintainers.length) ? pkg.maintainers[0].name : null;
+      plugin.author = await this.getPluginAuthorFromMaintainers(plugin);
       plugin.verifiedPlugin = this.verifiedPlugins.includes(pkg.name);
       plugin.verifiedPlusPlugin = this.verifiedPlusPlugins.includes(pkg.name);
       plugin.icon = this.pluginIcons[pkg.name]
@@ -380,6 +383,55 @@ export class PluginsService {
       }
       return [];
     }
+  }
+
+  /**
+   * @param plugin
+   */
+  private async getPluginAuthorFromMaintainers(plugin: HomebridgePlugin): Promise<string> {
+    // first, attempt to get it from the cache
+    let author: string = this.pluginAuthorCache.get(plugin.name);
+    if (author) {
+      return author;
+    }
+
+    // if it's not in cache, attempt to get it from the latest release
+    const pkgFromCache = this.npmPluginCache.get(plugin.name);
+
+    const pkg: IPackageJson = pkgFromCache || (
+      await this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(plugin.name).replace(/%40/g, '@')}/latest`).toPromise()
+    ).data;
+
+    if (!pkgFromCache) {
+      this.npmPluginCache.set(plugin.name, pkg);
+    }
+
+    author = (pkg.maintainers && pkg.maintainers.length) ? pkg.maintainers[0].name : null;
+
+    if (author) {
+      this.pluginAuthorCache.set(plugin.name, author);
+
+      return author;
+    }
+
+    // if it's not available on the latest release, attempt get it from the top-level metadata
+    const lookupFromCache = this.npmPluginCache.get(`lookup-${plugin.name}`);
+
+    const lookup: INpmRegistryModule = lookupFromCache || (await (
+      this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(plugin.name).replace(/%40/g, '@')}`).toPromise()
+    )).data;
+
+    if (!lookupFromCache) {
+      this.npmPluginCache.set(`lookup-${plugin.name}`, lookup, 60);
+    }
+
+    author = (lookup.maintainers && lookup.maintainers.length) ? lookup.maintainers[0].name : null;
+
+    if (author) {
+      this.pluginAuthorCache.set(plugin.name, author);
+    }
+
+    return author;
   }
 
   /**
@@ -1322,7 +1374,7 @@ export class PluginsService {
         homepage: pkg.homepage,
         bugs: typeof pkg.bugs === 'object' && pkg.bugs?.url ? pkg.bugs.url : null,
       };
-      plugin.author = (pkg.maintainers && pkg.maintainers.length) ? pkg.maintainers[0].name : null;
+      plugin.author = await this.getPluginAuthorFromMaintainers(plugin);
       plugin.engines = pkg.engines;
     } catch (e) {
       if (e.response?.status !== 404) {
