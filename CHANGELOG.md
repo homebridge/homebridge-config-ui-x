@@ -7,6 +7,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Other Changes
 
 - run improved linter on non-typescript files
+- remove unused `.prettierrc` file
 
 ## v4.56.4 (2024-06-25)
 
