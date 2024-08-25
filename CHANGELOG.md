@@ -4,6 +4,12 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ## v4.57.0 (2024-08-26)
 
+### UI Changes
+
+- show UI messages when node 22 updates available
+  - note that Homebridge, the UI, and plugins do not yet need to support Node.js 22
+  - update notifications for Node.js 22 will only be shown if you are **already** running Node.js 22
+
 ### Other Changes
 
 - run improved linter on non-typescript files
