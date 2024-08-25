@@ -123,6 +123,7 @@ export class BackupService {
             '#recycle',           // synology dsm recycle bin
             '@eaDir',             // synology dsm metadata
             '.venv',              // python venv
+            '.cache',             // cache
           ].includes(basename(filePath))) {
             return false;
           }

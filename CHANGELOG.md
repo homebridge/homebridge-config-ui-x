@@ -10,6 +10,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - remove unused `.prettierrc` file
 - updated dependencies
 - obtain verified plugin tarballs from `homebridge/verified` repo
+- ignore `.cache` folder when creating backup files
 
 ## v4.56.4 (2024-06-25)
 
