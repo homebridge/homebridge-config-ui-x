@@ -7,6 +7,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### UI Changes
 
 - fix edge case of hiding child bridge setup (when plugin update is available)
+- hide and show config editor action buttons based on current action
 
 ### Other Changes
 
@@ -27,6 +28,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ### Other Changes
 
+- EventEmitter memory leak warnings when you have a significant number of child bridges. (#2087) (@hjdhjd)
 - run improved linter on non-typescript files
 - remove unused `.prettierrc` file
 - updated dependencies
