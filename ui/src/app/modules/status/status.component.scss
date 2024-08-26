@@ -34,7 +34,7 @@ gridster {
     transform: scale(1.2);
   }
 
-  @media (max-width: 1095px) {
+  @media (max-width: 1023px) {
     display: none;
   }
 }
@@ -53,7 +53,7 @@ gridster {
 .status-button {
   z-index: 1000;
 
-  @media (max-width: 1095px) {
+  @media (max-width: 1023px) {
     display: none;
   }
 }

@@ -20,7 +20,7 @@ export class TerminalWidgetComponent implements OnInit, OnDestroy {
   @ViewChild('terminaltitle', { static: true }) titleElement: ElementRef;
   @ViewChild('terminaloutput', { static: true }) termTarget: ElementRef;
 
-  @Input() widget;
+  @Input() widget: any;
   @Input() resizeEvent: Subject<any>;
   @Input() configureEvent: Subject<any>;
 

@@ -2,15 +2,12 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## BETA
+## ALPHA
 
 ### UI Changes
 
-- allow extra config options to graph widgets
-- fix readings of graphical widgets
 - updated menu and sidebar
 - updated menu and sidebar fixes
-- dynamic config editor buttons
 - update support links with descriptions
 - updated menu and sidebar fixes 2
 - improve menu accessibility + power options own page
@@ -21,31 +18,14 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - updates to restart screen
 - add theme setting to main page
 - ui code refactoring
-- remove unused lang strings
 - add language setting to main page
 - ui styling
 - accessibility improvements
-- hide node update available icon for synology users
 - update bridge settings + main settings page
 - match json config title
-- fix edge case of hiding child bridge setup
-- add box for right text in mobile view
-- fix: EventEmitter memory leak warnings when you have a significant number of child bridges. (#2087) (@hjdhjd)
-- added warning messages for backup files too large to be restored.
-
-### Translation Changes
-
-- updates to `zh-TW.json` language file (#2039) (@tasict)
-- updates to `de.json` language file (#2051) (@Staubgeborener)
-- updates to `th.json` language file (#2061) (@tomzt)
-- Updates to `sv.json` language file (#2078, #2099) (@emilof)
-- Update to `pl.json` language file (#2103, #2106) (@mkz212)
 
 ### Other Changes
 
-- updated dependencies
-- update hb/nest dependencies
-- created shared global defaults pattern to allow sharing defaults between server and ui
 - retire old use of `pnpm` and code references
 
 ### Homebridge Dependencies
@@ -53,6 +33,59 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - `@homebridge/hap-client` @ `v2.0.2-beta.0`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.11.14`
 - `@homebridge/plugin-ui-utils` @ `v1.0.3`
+
+### BETA
+
+### UI Changes
+
+- added warning messages for backup files too large to be restored (@NorthernMan54)
+- hide node update available icon for synology users
+- various updates to widgets:
+  - hide the add widget button when the layout is locked
+  - only show the settings cog and draggable cursor on bigger screens and when layout is unlocked
+  - add config options for:
+    - CPU widget: added refresh interval and number of data points to show in the graph
+    - Homebridge widget: don't show plugins as up to date until the check has been completed
+    - Memory widget: added refresh interval and number of data points to show in the graph
+    - Network widget: added refresh interval and number of data points to show in the graph
+- updates to `zh-TW` language file (@tasict)
+- updates to `de` language file (@Staubgeborener)
+- updates to `th` language file (@tomzt)
+- updates to `sv` language file (@emilof)
+- updates to `pl` language file (@mkz212 + @grzegorz914)
+- updates to `uk` language file (@xrust83)
+- add `log.maxSize`/`log.truncateSize` options (#2161) (@tjenkinson)
+- fix missing translation string in setup wizard
+
+### UI Fixes
+
+- fix html parts in `ca`, `fr` + `sl` language files
+
+### Other Changes
+
+- remove unused language strings from i18n files
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v1.10.2`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.11.14`
+- `@homebridge/plugin-ui-utils` @ `v1.0.3`
+
+## v4.57.1 (2024-08-26)
+
+### UI Changes
+
+- hide and show config editor action buttons based on current action
+
+### UI Fixes
+
+- fix edge case of hiding child bridge setup (when plugin update is available)
+- fix pkg engines, take from installed version not npm
+
+### Other Changes
+
+- remove useless angular `OnInit`s
+- created shared global defaults pattern to allow sharing defaults between server and ui (@NorthernMan54)
 
 ## v4.57.0 (2024-08-26)
 
@@ -68,11 +101,12 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ### Other Changes
 
+- EventEmitter memory leak warnings when you have a significant number of child bridges. (#2087) (@hjdhjd)
 - run improved linter on non-typescript files
 - remove unused `.prettierrc` file
 - updated dependencies
 - obtain verified plugin tarballs from `homebridge/verified` repo
-- ignore `.cache` folder when creating backup files
+- ignore `.cache` folder when creating backup files (@paulk4633)
 - add `xterm-addon-web-links` to angular allowed cjs
 - fixes for angular build, fix for readiness icon
 

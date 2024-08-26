@@ -44,7 +44,7 @@
   "accessories.label_room_name": "Ime sobe",
   "accessories.label_show_on_dashboard": "Pokaži na nadzorni plošči",
   "accessories.message_for_more_information": "za več informacij.",
-  "accessories.message_must_use_insecure_mode": "TČe želite nadzirati dodatno opremo, morate v načinu  nezaščiteno  uporabljati Homebridge.",
+  "accessories.message_must_use_insecure_mode": "TČe želite nadzirati dodatno opremo, morate v načinu nezaščiteno uporabljati Homebridge.",
   "accessories.message_please_see": "Prosim poglej",
   "accessories.message_rooms_not_appear_in_homekit": "Prostori, ki jih ustvarite tukaj, se ne bodo prikazali v programu HomeKit, temveč so samo za organizacijo dodatne opreme v programu Homebridge UI.",
   "accessories.message_settings_link": "You can access the Homebridge Settings at any time from the cog icon in the side menu.",

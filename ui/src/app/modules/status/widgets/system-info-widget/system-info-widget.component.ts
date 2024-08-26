@@ -11,7 +11,7 @@ import { IoNamespace, WsService } from '@/app/core/ws.service';
   styleUrls: ['./system-info-widget.component.scss'],
 })
 export class SystemInfoWidgetComponent implements OnInit {
-  @Input() public widget;
+  @Input() widget: any;
 
   public serverInfo: any;
   public nodejsInfo = {} as any;

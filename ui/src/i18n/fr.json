@@ -244,7 +244,7 @@
   "plugins.settings.custom.homebridge-gsh.label_account_linked": "Compte associé",
   "plugins.settings.custom.homebridge-gsh.label_link_account": "Associer le compte",
   "plugins.settings.custom.homebridge-gsh.label_unlink_account": "Dissocier le compte",
-  "plugins.settings.custom.homebridge-gsh.message_about": "Le plugin  Homebridge Google Smart Home vous permet de contrôler vos accessoires Homebridge à partir d'un haut-parleur intelligent compatible avec Google Home ou de l'application mobile Google Home.",
+  "plugins.settings.custom.homebridge-gsh.message_about": "Le plugin Homebridge Google Smart Home vous permet de contrôler vos accessoires Homebridge à partir d'un haut-parleur intelligent compatible avec Google Home ou de l'application mobile Google Home.",
   "plugins.settings.custom.homebridge-gsh.message_account_link_required": "Pour activer cette fonctionnalité, vous devez vous connecter avec votre compte Google ou GitHub. Assurez-vous d'utiliser le même compte lors de l'ajout de l'action Homebridge dans l'application mobile Google Home.",
   "plugins.settings.custom.homebridge-gsh.message_homebridge_restart_required": "Homebridge nécessite un redémarrage pour que les modifications prennent effet.",
   "plugins.settings.label_open_config_editor": "Ouvrir l'éditeur de Config",

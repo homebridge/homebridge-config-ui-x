@@ -44,7 +44,7 @@
   "accessories.label_room_name": "Nom de l'habitació",
   "accessories.label_show_on_dashboard": "Mostra al widget del tauler",
   "accessories.message_for_more_information": "per a més informació.",
-  "accessories.message_must_use_insecure_mode": "Per controlar els teus accessoris has d'executar Homebridge en la manera  insegur",
+  "accessories.message_must_use_insecure_mode": "Per controlar els teus accessoris has d'executar Homebridge en la manera insegur",
   "accessories.message_please_see": "Si us plau, mira",
   "accessories.message_rooms_not_appear_in_homekit": "Les habitacions creades aquí no apareixeran en HomeKit, només són per a organitzar els accessoris en Homebridge UI.",
   "accessories.message_settings_link": "You can access the Homebridge Settings at any time from the cog icon in the side menu.",

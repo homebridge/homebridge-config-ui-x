@@ -14,7 +14,7 @@ import { IoNamespace, WsService } from '@/app/core/ws.service';
   styleUrls: ['./uptime-widget.component.scss'],
 })
 export class UptimeWidgetComponent implements OnInit, OnDestroy {
-  @Input() public widget;
+  @Input() widget: any;
 
   public serverUptime: string;
   public processUptime: string;

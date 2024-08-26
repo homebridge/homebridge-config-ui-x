@@ -320,18 +320,28 @@ export class HomebridgeServiceHelper {
     process.stdout.write = process.stderr.write = this.log.write.bind(this.log);
   }
 
+  private async readConfig() {
+    return readJson(process.env.UIX_CONFIG_PATH);
+  }
+
   /**
    * Truncate the log file to prevent large log files
    */
   private async truncateLog() {
-    if (!await pathExists(this.logPath)) {
+    if (!(await pathExists(this.logPath))) {
       return;
     }
-
-    const maxSize = 1000000; // ~1 MB
-    const truncateSize = 200000; // ~0.2 MB
-
+    
     try {
+      const currentConfig = await this.readConfig();
+      const uiConfigBlock = currentConfig.platforms?.find(
+        (x: any) => x.platform === 'config',
+      );
+      const maxSize = uiConfigBlock?.log?.maxSize ?? 1000000; // ~1 MB
+      const truncateSize = uiConfigBlock?.log?.truncateSize ?? 200000; // ~0.2 MB
+
+      if (maxSize < 0) return;
+
       const logStats = await stat(this.logPath);
 
       if (logStats.size < maxSize) {
@@ -740,7 +750,7 @@ export class HomebridgeServiceHelper {
     }
 
     try {
-      const currentConfig = await readJson(process.env.UIX_CONFIG_PATH);
+      const currentConfig = await this.readConfig();
 
       // extract ui config
       if (!Array.isArray(currentConfig.platforms)) {
@@ -999,7 +1009,7 @@ export class HomebridgeServiceHelper {
     }
     try {
       // load the config to get the homebridge port
-      const currentConfig = await readJson(process.env.UIX_CONFIG_PATH);
+      const currentConfig = await this.readConfig();
       if (!currentConfig.bridge || !currentConfig.bridge.port) {
         return;
       }

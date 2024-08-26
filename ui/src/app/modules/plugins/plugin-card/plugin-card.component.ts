@@ -66,7 +66,7 @@ export class PluginCardComponent implements OnInit {
     this.setChildBridges = childBridges;
 
     const homebridgeVersion = this.$settings.env.homebridgeVersion.split('.')[0];
-    const hbEngines = this.plugin.engines?.homebridge?.split(' ').filter((x: string) => x !== '||') || [];
+    const hbEngines = this.plugin.engines?.homebridge?.split('||').map((x: string) => x.trim()) || [];
     this.hb2Status = homebridgeVersion === '2' ? 'hide' : hbEngines.some((x: string) => x.startsWith('^2')) ? 'supported' : this.hb2Status;
   }
 
@@ -238,11 +238,11 @@ export class PluginCardComponent implements OnInit {
 
     if (this.hb2Status === 'supported') {
       ref.componentInstance.subtitle = `${this.plugin.displayName || this.plugin.name} is ready for Homebridge v2.0`;
-      ref.componentInstance.message = 'The developer has specifically marked this plugin as compatible with Homebridge v2.0.';
+      ref.componentInstance.message = 'The developer has specifically marked your installed version of the plugin as compatible with Homebridge v2.0.'; // eslint-disable-line max-len
       ref.componentInstance.faIconClass = 'fa-check-circle green-text';
     } else {
       ref.componentInstance.subtitle = `${this.plugin.displayName || this.plugin.name} might not be ready for Homebridge v2.0`;
-      ref.componentInstance.message = 'The developer has not specifically marked this plugin as compatible with Homebridge v2.0, but it may still work.'; // eslint-disable-line max-len
+      ref.componentInstance.message = 'The developer has not specifically marked your installed version of the plugin as compatible with Homebridge v2.0, but it may still work.'; // eslint-disable-line max-len
       ref.componentInstance.faIconClass = 'fa-question-circle orange-text';
     }
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info');
