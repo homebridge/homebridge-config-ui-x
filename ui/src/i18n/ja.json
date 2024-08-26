@@ -314,6 +314,7 @@
   "setup_wizard.message_welcome_to_homebridge": "Homebridgeへようこそ！",
   "setup_wizard_message_complete_message": "これでセットアップは完了です。Homebridgeを使用できます！",
   "setup_wizard_message_complete_title": "おめでとう！",
+  "setup_wizard_message_restore": "Restore From Backup",
   "status.cpu.label_load": "負荷",
   "status.cpu.label_temp": "温度",
   "status.cpu.title_cpu": "CPU",

@@ -314,6 +314,7 @@
   "setup_wizard.message_welcome_to_homebridge": "Vítejte v rozhraní Homebridge",
   "setup_wizard_message_complete_message": "Postup nastavení je dokončen. Nyní můžete začít používat Homebridge.",
   "setup_wizard_message_complete_title": "Gratulujeme!",
+  "setup_wizard_message_restore": "Restore From Backup",
   "status.cpu.label_load": "Zatížení",
   "status.cpu.label_temp": "Teplota",
   "status.cpu.title_cpu": "Procesor",

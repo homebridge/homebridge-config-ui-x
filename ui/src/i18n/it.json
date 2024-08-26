@@ -314,6 +314,7 @@
   "setup_wizard.message_welcome_to_homebridge": "Benvenuto in Homebridge",
   "setup_wizard_message_complete_message": "La procedura di configurazione è stata completata ed è ora possibile iniziare a utilizzare Homebridge.",
   "setup_wizard_message_complete_title": "Congratulazioni!",
+  "setup_wizard_message_restore": "Restore From Backup",
   "status.cpu.label_load": "Carico della CPU",
   "status.cpu.label_temp": "Temperatura",
   "status.cpu.title_cpu": "CPU",

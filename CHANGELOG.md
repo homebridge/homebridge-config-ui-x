@@ -16,30 +16,38 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
     - Homebridge widget: don't show plugins as up to date until the check has been completed
     - Memory widget: added refresh interval and number of data points to show in the graph
     - Network widget: added refresh interval and number of data points to show in the graph
-
-## v4.57.1 (2024-08-26)
-
-### UI Changes
-
-- hide and show config editor action buttons based on current action
 - updates to `zh-TW` language file (@tasict)
 - updates to `de` language file (@Staubgeborener)
 - updates to `th` language file (@tomzt)
 - updates to `sv` language file (@emilof)
 - updates to `pl` language file (@mkz212 + @grzegorz914)
 - updates to `uk` language file (@xrust83)
+- add `log.maxSize`/`log.truncateSize` options (#2161) (@tjenkinson)
+- fix missing translation string in setup wizard
+
+### UI Fixes
+
+- fix html parts in `ca`, `fr` + `sl` language files
+
+### Other Changes
+
+- remove unused language strings from i18n files
+
+## v4.57.1 (2024-08-26)
+
+### UI Changes
+
+- hide and show config editor action buttons based on current action
 
 ### UI Fixes
 
 - fix edge case of hiding child bridge setup (when plugin update is available)
 - fix pkg engines, take from installed version not npm
-- fix html parts in `ca`, `fr` + `sl` language files
 
 ### Other Changes
 
 - remove useless angular `OnInit`s
 - created shared global defaults pattern to allow sharing defaults between server and ui (@NorthernMan54)
-- remove unused language strings from i18n files
 
 ## v4.57.0 (2024-08-26)
 

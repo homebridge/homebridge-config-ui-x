@@ -314,6 +314,7 @@
   "setup_wizard.message_welcome_to_homebridge": "Ласкаво просимо до Homebridge",
   "setup_wizard_message_complete_message": "Процедуру встановлення завершено, тепер Ви можете почати використовувати Homebridge.",
   "setup_wizard_message_complete_title": "Вітаємо!",
+  "setup_wizard_message_restore": "Restore From Backup",
   "status.cpu.label_load": "Завантаження",
   "status.cpu.label_temp": "Температура",
   "status.cpu.title_cpu": "Процесор",

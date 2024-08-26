@@ -314,6 +314,7 @@
   "setup_wizard.message_welcome_to_homebridge": "ยินดีต้อนรับสู่ Homebridge",
   "setup_wizard_message_complete_message": "ขั้นตอนการตั้งค่าเสร็จสมบูรณ์ และตอนนี้คุณก็พร้อมที่จะเริ่มใช้ Homebridge แล้ว",
   "setup_wizard_message_complete_title": "ยินดีด้วย!",
+  "setup_wizard_message_restore": "Restore From Backup",
   "status.cpu.label_load": "โหลด",
   "status.cpu.label_temp": "อุณหภูมิ",
   "status.cpu.title_cpu": "CPU",

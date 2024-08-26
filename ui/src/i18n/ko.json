@@ -314,6 +314,7 @@
   "setup_wizard.message_welcome_to_homebridge": "Welcome to Homebridge",
   "setup_wizard_message_complete_message": "설치가 완료되었습니다. 이제 Homebridge를 사용할 준비가 되었습니다.",
   "setup_wizard_message_complete_title": "축하합니다!",
+  "setup_wizard_message_restore": "Restore From Backup",
   "status.cpu.label_load": "로드",
   "status.cpu.label_temp": "온도",
   "status.cpu.title_cpu": "CPU",

@@ -314,6 +314,7 @@
   "setup_wizard.message_welcome_to_homebridge": "Välkommen till Homebridge",
   "setup_wizard_message_complete_message": "Installationsprocessen är klar och du kan nu börja använda Homebridge.",
   "setup_wizard_message_complete_title": "Grattis!",
+  "setup_wizard_message_restore": "Restore From Backup",
   "status.cpu.label_load": "Används",
   "status.cpu.label_temp": "Temp",
   "status.cpu.title_cpu": "CPU",
