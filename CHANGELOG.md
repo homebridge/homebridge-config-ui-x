@@ -25,6 +25,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - updates to `zh-TW` language file (@tasict)
 - updates to `de` language file (@Staubgeborener)
 - updates to `th` language file (@tomzt)
+- updates to `sv` language file (@emilof)
 
 ### UI Fixes
 
@@ -56,7 +57,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - remove unused `.prettierrc` file
 - updated dependencies
 - obtain verified plugin tarballs from `homebridge/verified` repo
-- ignore `.cache` folder when creating backup files
+- ignore `.cache` folder when creating backup files (@paulk4633)
 - add `xterm-addon-web-links` to angular allowed cjs
 - fixes for angular build, fix for readiness icon
 
