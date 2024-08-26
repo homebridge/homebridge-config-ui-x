@@ -57,15 +57,18 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - add `log.maxSize`/`log.truncateSize` options (#2161) (@tjenkinson)
 - fix missing translation string in setup wizard
 - various ui improvements and code consistency
+- offer more info about behaviour when disabling a plugin (on disable plugin modal)
 
 ### UI Fixes
 
 - fix html parts in `ca`, `fr` + `sl` language files
+- update name of `mobile-web-app-capable` meta tag (from `apple-mobile-web-app-capable`)
 
 ### Other Changes
 
 - remove unused language strings from i18n files
 - rename instances of `BatteryService` to `Battery`
+- update `@ngx-translate/core` and `angular-gridster2`
 
 ### Homebridge Dependencies
 
