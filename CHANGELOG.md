@@ -32,6 +32,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - remove useless angular `OnInit`s
 - created shared global defaults pattern to allow sharing defaults between server and ui (@NorthernMan54)
+- remove unused language strings from i18n files
 
 ## v4.57.0 (2024-08-26)
 
