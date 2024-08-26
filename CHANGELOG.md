@@ -27,6 +27,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - updates to `th` language file (@tomzt)
 - updates to `sv` language file (@emilof)
 - updates to `pl` language file (@mkz212 + @grzegorz914)
+- updates to `uk` language file (@xrust83)
 
 ### UI Fixes
 
