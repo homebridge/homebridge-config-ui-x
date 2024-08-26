@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
 
 @Component({
@@ -6,10 +6,8 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
   templateUrl: './statelessprogrammableswitch.component.html',
   styleUrls: ['./statelessprogrammableswitch.component.scss'],
 })
-export class StatelessprogrammableswitchComponent implements OnInit {
+export class StatelessprogrammableswitchComponent {
   @Input() public service: ServiceTypeX;
 
   constructor() {}
-
-  ngOnInit() {}
 }

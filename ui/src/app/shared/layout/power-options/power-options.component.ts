@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
@@ -10,7 +10,7 @@ import { SettingsService } from '@/app/core/settings.service';
   templateUrl: './power-options.component.html',
   styleUrls: ['./power-options.component.scss'],
 })
-export class PowerOptionsComponent implements OnInit {
+export class PowerOptionsComponent {
   constructor(
     public activeModal: NgbActiveModal,
     private $api: ApiService,
@@ -18,8 +18,6 @@ export class PowerOptionsComponent implements OnInit {
     public $settings: SettingsService,
     public $toastr: ToastrService,
   ) { }
-
-  ngOnInit() {}
 
   restartHomebridge() {
     this.$router.navigate(['/restart']);

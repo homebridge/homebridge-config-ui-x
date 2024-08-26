@@ -8,6 +8,10 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - fix edge case of hiding child bridge setup (when plugin update is available)
 
+### Other Changes
+
+- remove useless angular `OnInit`s
+
 ## v4.57.0 (2024-08-26)
 
 ### UI Changes
