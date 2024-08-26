@@ -1,3 +1,4 @@
+import { NgOptimizedImage } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -59,6 +60,7 @@ import { SidebarComponent } from '@/app/shared/layout/sidebar/sidebar.component'
     StatusModule,
     RestartModule,
     AppRoutingModule,
+    NgOptimizedImage,
   ],
   providers: [
     {
