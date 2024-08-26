@@ -32,6 +32,13 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Other Changes
 
 - remove unused language strings from i18n files
+- rename instances of `BatteryService` to `Battery`
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v1.10.2`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.11.14`
+- `@homebridge/plugin-ui-utils` @ `v1.0.3`
 
 ## v4.57.1 (2024-08-26)
 
@@ -163,7 +170,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - improve GitHub actions
 - fixed Environment Info selection on bug and support templates
 - add wiki change request issue template
-- removed force of earlier version of `bonjour-service` as a fix has been implemented in latest version 
+- removed force of earlier version of `bonjour-service` as a fix has been implemented in latest version
 - updated release drafter template so releases do not start with a `v`
 - updated special plugin lists
 - check local dir for homebridge when running dev

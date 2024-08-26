@@ -12,7 +12,7 @@ import { InfoModalComponent } from '@/app/core/accessories/info-modal/info-modal
 import { AirpurifierComponent } from '@/app/core/accessories/types/airpurifier/airpurifier.component';
 import { AirpurifierManageComponent } from '@/app/core/accessories/types/airpurifier/airpurifier.manage.component';
 import { AirqualitysensorComponent } from '@/app/core/accessories/types/airqualitysensor/airqualitysensor.component';
-import { BatteryserviceComponent } from '@/app/core/accessories/types/batteryservice/batteryservice.component';
+import { BatteryComponent } from '@/app/core/accessories/types/battery/battery.component';
 import { ContactsensorComponent } from '@/app/core/accessories/types/contactsensor/contactsensor.component';
 import { DoorComponent } from '@/app/core/accessories/types/door/door.component';
 import { DoorManageComponent } from '@/app/core/accessories/types/door/door.manage.component';
@@ -87,7 +87,7 @@ import { CoreModule } from '@/app/core/core.module';
     DoorManageComponent,
     TelevisionComponent,
     ContactsensorComponent,
-    BatteryserviceComponent,
+    BatteryComponent,
     SpeakerComponent,
     SpeakerManageComponent,
     SecuritysystemComponent,
