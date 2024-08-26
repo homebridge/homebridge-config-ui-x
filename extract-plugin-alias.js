@@ -4,31 +4,31 @@
  * This script "mocks" homebridge and is used to extract the plugin alias and type.
  */
 
-const EventEmitter = require('node:events').EventEmitter;
-const path = require('node:path');
+const EventEmitter = require('node:events').EventEmitter
+const path = require('node:path')
 
-let pluginAlias;
-let pluginType;
+let pluginAlias
+let pluginType
 
 const HomebridgeApiMock = {
   registerPlatform(pluginIdentifier, platformName, constructor) {
-    pluginType = 'platform';
+    pluginType = 'platform'
     if (typeof platformName === 'function') {
-      constructor = platformName;
-      platformName = pluginIdentifier;
-      pluginAlias = platformName;
+      constructor = platformName
+      platformName = pluginIdentifier
+      pluginAlias = platformName
     } else {
-      pluginAlias = platformName;
+      pluginAlias = platformName
     }
   },
   registerAccessory(pluginIdentifier, accessoryName, constructor) {
-    pluginType = 'accessory';
+    pluginType = 'accessory'
     if (typeof accessoryName === 'function') {
-      constructor = accessoryName;
-      accessoryName = pluginIdentifier;
-      pluginAlias = accessoryName;
+      constructor = accessoryName
+      accessoryName = pluginIdentifier
+      pluginAlias = accessoryName
     } else {
-      pluginAlias = accessoryName;
+      pluginAlias = accessoryName
     }
   },
   version: 2.5,
@@ -38,26 +38,26 @@ const HomebridgeApiMock = {
   hap: {
     Characteristic: new class Characteristic extends EventEmitter {
       constructor() {
-        super();
+        super()
         return new Proxy(this, {
           get() {
             return {
               UUID: '0000003E-0000-1000-8000-0026BB765291',
-            };
+            }
           },
-        });
+        })
       }
     }(),
     Service: new class Service extends EventEmitter {
       constructor() {
-        super();
+        super()
         return new Proxy(this, {
           get() {
             return {
               UUID: '0000003E-0000-1000-8000-0026BB765291',
-            };
+            }
           },
-        });
+        })
       }
     }(),
     AccessoryLoader: {},
@@ -76,7 +76,7 @@ const HomebridgeApiMock = {
       removeService() { /** mock */ },
       context() { /** mock */ },
       services() { /** mock */ },
-    };
+    }
   },
   registerPlatformAccessories() { /** mock */ },
   unregisterPlatformAccessories() { /** mock */ },
@@ -84,48 +84,48 @@ const HomebridgeApiMock = {
   updatePlatformAccessories() { /** mock */ },
   user: {
     configPath() {
-      return path.join(process.cwd(), 'config.json');
+      return path.join(process.cwd(), 'config.json')
     },
     storagePath() {
-      return process.cwd();
+      return process.cwd()
     },
     cachedAccessoryPath() {
-      return path.join(process.cwd(), 'accessories');
+      return path.join(process.cwd(), 'accessories')
     },
     persistPath() {
-      return path.join(process.cwd(), 'persist');
+      return path.join(process.cwd(), 'persist')
     },
   },
-};
+}
 
 function main() {
   try {
-    let pluginInitializer;
-    const pluginPath = process.env.UIX_EXTRACT_PLUGIN_PATH;
-    const pluginModules = require(pluginPath);
+    let pluginInitializer
+    const pluginPath = process.env.UIX_EXTRACT_PLUGIN_PATH
+    const pluginModules = require(pluginPath)
 
     if (typeof pluginModules === 'function') {
-      pluginInitializer = pluginModules;
+      pluginInitializer = pluginModules
     } else if (pluginModules && typeof pluginModules.default === 'function') {
-      pluginInitializer = pluginModules.default;
+      pluginInitializer = pluginModules.default
     } else {
-      throw new Error(`Plugin ${pluginPath} does not export a initializer function from main.`);
+      throw new Error(`Plugin ${pluginPath} does not export a initializer function from main.`)
     }
 
-    pluginInitializer(HomebridgeApiMock);
+    pluginInitializer(HomebridgeApiMock)
 
     process.send({
       pluginAlias,
       pluginType,
-    });
-    process.exit();
+    })
+    process.exit()
   } catch (e) {
-    process.exit(1);
+    process.exit(1)
   }
 }
 
-main();
+main()
 
 setTimeout(() => {
-  process.exit(1);
-}, 2500);
+  process.exit(1)
+}, 2500)

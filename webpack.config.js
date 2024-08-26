@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const path = require('node:path');
-const webpack = require('webpack');
-const packageJson = require('./package.json');
+const path = require('node:path')
 
-const externals = {};
+const webpack = require('webpack')
+
+const packageJson = require('./package.json')
+
+const externals = {}
 
 for (const dep of Object.keys(packageJson.dependencies)) {
-  externals[dep] = dep;
+  externals[dep] = dep
 }
 
 module.exports = {
@@ -48,4 +50,4 @@ module.exports = {
     new webpack.IgnorePlugin({ resourceRegExp: /^\.\/locale$/, contextRegExp: /cache-manager/ }),
     new webpack.IgnorePlugin({ resourceRegExp: /^\.\/locale$/, contextRegExp: /osx-temperature-sensor/ }),
   ],
-};
+}
