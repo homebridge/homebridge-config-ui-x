@@ -12,7 +12,7 @@ import { Subscription, interval } from 'rxjs';
   styleUrls: ['./clock-widget.component.scss'],
 })
 export class ClockWidgetComponent implements OnInit, OnDestroy {
-  @Input() widget;
+  @Input() widget: any;
 
   public currentTime: Date = new Date();
 

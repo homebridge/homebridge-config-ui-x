@@ -16,7 +16,7 @@ import { MobileDetectService } from '@/app/core/mobile-detect.service';
   styleUrls: ['./accessories-widget.component.scss'],
 })
 export class AccessoriesWidgetComponent implements OnInit, OnDestroy {
-  @Input() widget;
+  @Input() widget: any;
 
   public isMobile: any = false;
 

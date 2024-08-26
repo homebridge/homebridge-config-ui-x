@@ -28,7 +28,7 @@ import { WeatherWidgetComponent } from '@/app/modules/status/widgets/weather-wid
   template: '',
 })
 export class WidgetsComponent implements OnInit, OnDestroy {
-  @Input() widget;
+  @Input() widget: any;
 
   private availableWidgets = {
     HapQrcodeWidgetComponent,

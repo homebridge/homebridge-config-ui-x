@@ -20,7 +20,7 @@ import { environment } from '@/environments/environment';
   styleUrls: ['./widget-control.component.scss'],
 })
 export class WidgetControlComponent implements OnInit {
-  @Input() widget;
+  @Input() widget: any;
 
   // weather
   public searching: boolean;

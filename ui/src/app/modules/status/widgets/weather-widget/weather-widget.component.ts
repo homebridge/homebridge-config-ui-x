@@ -18,7 +18,7 @@ import { environment } from '@/environments/environment';
   styleUrls: ['./weather-widget.component.scss'],
 })
 export class WeatherWidgetComponent implements OnInit, OnDestroy {
-  @Input() widget;
+  @Input() widget: any;
   @Input() configureEvent: Subject<any>;
 
   public currentWeather;

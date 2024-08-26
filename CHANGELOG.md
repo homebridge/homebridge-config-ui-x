@@ -8,6 +8,14 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - added warning messages for backup files too large to be restored (@NorthernMan54)
 - hide node update available icon for synology users
+- various updates to widgets:
+  - hide the add widget button when the layout is locked
+  - only show the settings cog and draggable cursor on bigger screens and when layout is unlocked
+  - add config options for:
+    - CPU widget: added refresh interval and number of data points to show in the graph
+    - Homebridge widget: don't show plugins as up to date until the check has been completed
+    - Memory widget: added refresh interval and number of data points to show in the graph
+    - Network widget: added refresh interval and number of data points to show in the graph
 
 ## v4.57.1 (2024-08-26)
 
