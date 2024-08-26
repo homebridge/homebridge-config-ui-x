@@ -7,22 +7,11 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### UI Changes
 
 - updated menu and sidebar
-- updated menu and sidebar fixes
-- update support links with descriptions
-- updated menu and sidebar fixes 2
 - improve menu accessibility + power options own page
-- visual issue when updating disabled plugin w. no changelog
 - allow extra configuration on child bridges
-- fix power options white background in dark mode
-- remove more info link from plugin donate modal
-- updates to restart screen
 - add theme setting to main page
-- ui code refactoring
 - add language setting to main page
-- ui styling
-- accessibility improvements
 - update bridge settings + main settings page
-- match json config title
 
 ### Other Changes
 
