@@ -1256,6 +1256,7 @@ export class PluginsService {
       installedVersion: installPath ? (pkgJson.version || '0.0.1') : null,
       globalInstall: (installPath !== this.configService.customPluginPath),
       settingsSchema: await pathExists(resolve(installPath, pkgJson.name, 'config.schema.json')) || this.miscSchemas[pkgJson.name],
+      engines: pkgJson.engines,
       installPath,
     };
 
@@ -1323,7 +1324,6 @@ export class PluginsService {
         bugs: typeof pkg.bugs === 'object' && pkg.bugs?.url ? pkg.bugs.url : null,
       };
       plugin.author = (pkg.maintainers && pkg.maintainers.length) ? pkg.maintainers[0].name : null;
-      plugin.engines = pkg.engines;
     } catch (e) {
       if (e.response?.status !== 404) {
         this.logger.log(`[${plugin.name}] Failed to check registry.npmjs.org for updates: "${e.message}" - see https://homebridge.io/w/JJSz6 for help.`);

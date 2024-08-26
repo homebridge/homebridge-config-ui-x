@@ -6,8 +6,12 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ### UI Changes
 
-- fix edge case of hiding child bridge setup (when plugin update is available)
 - hide and show config editor action buttons based on current action
+
+### UI Fixes
+
+- fix edge case of hiding child bridge setup (when plugin update is available)
+- fix pkg engines, take from installed version not npm
 
 ### Other Changes
 
