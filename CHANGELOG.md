@@ -33,6 +33,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - fix edge case of hiding child bridge setup (when plugin update is available)
 - fix pkg engines, take from installed version not npm
+- fix html parts in `ca`, `fr` + `sl` language files
 
 ### Other Changes
 
