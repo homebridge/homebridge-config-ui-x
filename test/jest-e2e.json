@@ -1,9 +1,5 @@
 {
-  "moduleFileExtensions": [
-    "js",
-    "json",
-    "ts"
-  ],
+  "moduleFileExtensions": ["js", "json", "ts"],
   "rootDir": "../",
   "testEnvironment": "node",
   "testRegex": ".e2e-spec.ts$",
@@ -11,13 +7,6 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
-  "collectCoverageFrom": [
-    "**/*.ts"
-  ],
-  "coveragePathIgnorePatterns": [
-    "/ui/",
-    "/test/",
-    "/dist/",
-    "/scripts/"
-  ]
+  "collectCoverageFrom": ["**/*.ts"],
+  "coveragePathIgnorePatterns": ["/ui/", "/test/", "/dist/", "/scripts/"]
 }
