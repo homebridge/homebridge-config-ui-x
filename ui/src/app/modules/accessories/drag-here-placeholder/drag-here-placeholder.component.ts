@@ -6,6 +6,5 @@ import { Component } from '@angular/core';
   styleUrls: ['./drag-here-placeholder.component.scss'],
 })
 export class DragHerePlaceholderComponent {
-
   constructor() {}
 }

@@ -56,6 +56,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - updates to `uk` language file (@xrust83)
 - add `log.maxSize`/`log.truncateSize` options (#2161) (@tjenkinson)
 - fix missing translation string in setup wizard
+- various ui improvements and code consistency
 
 ### UI Fixes
 
@@ -64,6 +65,13 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Other Changes
 
 - remove unused language strings from i18n files
+- rename instances of `BatteryService` to `Battery`
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v1.10.2`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.11.14`
+- `@homebridge/plugin-ui-utils` @ `v1.0.3`
 
 ### Homebridge Dependencies
 
