@@ -25,6 +25,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - add `log.maxSize`/`log.truncateSize` options (#2161) (@tjenkinson)
 - fix missing translation string in setup wizard
 - various ui improvements and code consistency
+- offer more info about behaviour when disabling a plugin (on disable plugin modal)
 
 ### UI Fixes
 
