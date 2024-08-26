@@ -10,6 +10,7 @@ import { DonateModalComponent } from '@/app/core/manage-plugins/donate-modal/don
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { PluginLogModalComponent } from '@/app/core/manage-plugins/plugin-log-modal/plugin-log-modal.component';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
+import { SettingsService } from '@/app/core/settings.service';
 import { IoNamespace, WsService } from '@/app/core/ws.service';
 import { DisablePluginComponent } from '@/app/modules/plugins/plugin-card/disable-plugin/disable-plugin.component';
 import { PluginInfoComponent } from '@/app/modules/plugins/plugin-card/plugin-info/plugin-info.component';
@@ -31,6 +32,7 @@ export class PluginCardComponent implements OnInit {
   public isMobile: string;
   public setChildBridges = [];
   public prettyDisplayName = '';
+  public hb2Status = 'unknown'; // 'hide' | 'supported' | 'unknown'
 
   private io: IoNamespace;
 
@@ -42,6 +44,7 @@ export class PluginCardComponent implements OnInit {
     private $modal: NgbModal,
     private $toastr: ToastrService,
     private $md: MobileDetectService,
+    public $settings: SettingsService,
   ) {}
 
   @Input() set childBridges(childBridges: any[]) {
@@ -61,6 +64,10 @@ export class PluginCardComponent implements OnInit {
     }
 
     this.setChildBridges = childBridges;
+
+    const homebridgeVersion = this.$settings.env.homebridgeVersion.split('.')[0];
+    const hbEngines = this.plugin.engines?.homebridge?.split(' ').filter((x: string) => x !== '||') || [];
+    this.hb2Status = homebridgeVersion === '2' ? 'hide' : hbEngines.some((x: string) => x.startsWith('^2')) ? 'supported' : this.hb2Status;
   }
 
   ngOnInit(): void {
@@ -220,5 +227,25 @@ export class PluginCardComponent implements OnInit {
       pluginName = pluginName.replace(/\w\S*/g, (txt: string) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
     }
     return pluginName;
+  }
+
+  openHb2InfoModal() {
+    const ref = this.$modal.open(InformationComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    });
+    ref.componentInstance.title = 'Plugin Readiness';
+
+    if (this.hb2Status === 'supported') {
+      ref.componentInstance.subtitle = `${this.plugin.displayName || this.plugin.name} is ready for Homebridge v2.0`;
+      ref.componentInstance.message = 'The developer has specifically marked this plugin as compatible with Homebridge v2.0.';
+      ref.componentInstance.faIconClass = 'fa-check-circle green-text';
+    } else {
+      ref.componentInstance.subtitle = `${this.plugin.displayName || this.plugin.name} might not be ready for Homebridge v2.0`;
+      ref.componentInstance.message = 'The developer has not specifically marked this plugin as compatible with Homebridge v2.0, but it may still work.'; // eslint-disable-line max-len
+      ref.componentInstance.faIconClass = 'fa-question-circle orange-text';
+    }
+    ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info');
+    ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/homebridge/wiki/Updating-To-Homebridge-v2.0';
   }
 }
