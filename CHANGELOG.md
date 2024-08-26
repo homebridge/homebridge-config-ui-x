@@ -24,6 +24,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - hide and show config editor action buttons based on current action
 - updates to `zh-TW` language file (@tasict)
 - updates to `de` language file (@Staubgeborener)
+- updates to `th` language file (@tomzt)
 
 ### UI Fixes
 
