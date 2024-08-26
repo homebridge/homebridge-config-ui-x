@@ -91,7 +91,11 @@ export class BackupController {
   async restoreBackup(@Req() req: FastifyRequest) {
     try {
       const data = await req.file();
-      await this.backupService.uploadBackupRestore(data);
+      if (data.file.truncated) {
+        throw new InternalServerErrorException(`Restore file exceeds maximum size ${globalThis.backup.maxBackupSizeText}`);
+      } else {
+        await this.backupService.uploadBackupRestore(data);
+      }
     } catch (err) {
       this.logger.error('Restore backup failed:', err.message);
       throw new InternalServerErrorException(err.message);

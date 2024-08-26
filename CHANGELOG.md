@@ -2,6 +2,12 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+### BETA
+
+### UI Changes
+
+- added warning messages for backup files too large to be restored (@NorthernMan54)
+
 ## v4.57.1 (2024-08-26)
 
 ### UI Changes

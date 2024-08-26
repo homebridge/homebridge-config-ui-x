@@ -23,6 +23,7 @@ export class RestoreComponent implements OnInit, OnDestroy {
   @Input() setupWizardRestore = false;
 
   public clicked = false;
+  public maxFileSizeText = globalThis.backup.maxBackupSizeText;
   public selectedFile: File;
   public restoreInProgress = false;
   public restoreStarted = false;
