@@ -7,6 +7,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### UI Changes
 
 - added warning messages for backup files too large to be restored (@NorthernMan54)
+- hide node update available icon for synology users
 
 ## v4.57.1 (2024-08-26)
 
