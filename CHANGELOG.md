@@ -34,6 +34,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - remove unused language strings from i18n files
 - rename instances of `BatteryService` to `Battery`
+- update `@ngx-translate/core` and `angular-gridster2`
 
 ### Homebridge Dependencies
 
