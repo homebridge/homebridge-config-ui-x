@@ -535,7 +535,7 @@ export class StatusService {
           // Check if there is a new minor/patch version available
           if (gt(latest22.version, process.version)) {
             updateAvailable = true;
-            latestVersion = latest20.version;
+            latestVersion = latest22.version;
           }
           break;
         }
