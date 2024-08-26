@@ -13,29 +13,50 @@
     <div class="w-100 text-center" *ngIf="!loading">
       <i *ngIf="plugin.installedVersion" class="fas fa-fw fa-history primary-text mb-4" style="font-size: 75px;"></i>
       <i *ngIf="!plugin.installedVersion" class="far fa-fw fa-arrow-alt-circle-down primary-text mb-4" style="font-size: 75px;"></i>
-      <p>
-        {{ 'plugins.manage.message_select_version_to_install' | translate }}:
-      </p>
-      <select class="custom-select" [(ngModel)]="selectedVersion">
-        <option *ngFor="let version of versions" [value]="version.version">
-          {{ version.name }}
-        </option>
-      </select>
-      <p class="small mt-3 mb-0" *ngIf="plugin.installedVersion">{{ 'plugins.status_installed' | translate }}: v{{ plugin.installedVersion }}</p>
+      <p *ngIf="plugin.installedVersion" class="font-weight-bold">{{ 'plugins.status_installed' | translate }}: v{{ plugin.installedVersion }}</p>
+      <p>{{ 'plugins.manage.message_select_version_to_install' | translate }}:</p>
+      <ul class="list-group list-group-box mt-2">
+        <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let version of versionsWithTags">
+          <span class="text-left">
+            {{ version.tag }}
+            <br>
+            <small class="grey-text">v{{ version.version }}</small>
+          </span>
+          <button class="btn btn-primary ml-3" *ngIf="plugin.installedVersion !== version.version" (click)="doInstall(version.version)">
+            <i class="fas fa-fw fa-arrow-alt-circle-down"></i>
+          </button>
+          <button class="btn btn-primary ml-3" *ngIf="plugin.installedVersion === version.version" disabled>
+            <i class="fas fa-fw fa-check-circle"></i>
+          </button>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <span class="text-left">
+            {{ 'plugins.manage.message_all_versions' | translate }}
+            <br>
+            <select class="custom-select" style="font-size: 0.875rem;" [(ngModel)]="versionSelect">
+              <option *ngFor="let version of versions" [value]="version.version">
+                v{{ version.version }}
+              </option>
+            </select>
+          </span>
+          <button class="btn btn-primary ml-3" [disabled]="!versionSelect" *ngIf="versionSelect !== plugin.installedVersion" (click)="doInstall(versionSelect)">
+            <i class="fas fa-fw fa-arrow-alt-circle-down"></i>
+          </button>
+          <button class="btn btn-primary ml-3" *ngIf="versionSelect && versionSelect === plugin.installedVersion" disabled>
+            <i class="fas fa-fw fa-check-circle"></i>
+          </button>
+        </li>
+      </ul>
     </div>
   </div>
   <div class="modal-footer justify-content-between">
-    <div class="text-left">
+    <div class="text-left"></div>
+    <div class="text-center">
       <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')"
         [attr.aria-label]="'form.button_close' | translate">
         {{ 'form.button_close' | translate }}
       </button>
     </div>
-    <div class="text-center"></div>
-    <div class="text-right">
-      <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="doInstall()" [disabled]="!selectedVersion || loading">
-        {{'plugins.button_install' | translate }}
-      </button>
-    </div>
+    <div class="text-right"></div>
   </div>
 </div>

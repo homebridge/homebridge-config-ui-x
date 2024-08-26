@@ -24,6 +24,11 @@
       color: #eeeeee !important;
     }
 
+    .form-control::placeholder {
+      color: #636363 !important;
+      opacity: 1 !important;
+    }
+
     .hb-plain-text-editor {
       background-color: #333333 !important;
       color: #eeeeee !important;
@@ -138,20 +143,30 @@
       }
     }
 
-    .alert-warning {
-      color: $secondaryBackground;
-      background-color: #ffd793;
-      border-color: $secondaryBackground;
+    .alert {
+      color: #eeeeee;
+      background-color: #2b2b2b;
+      border-color: #444444;
 
       a {
-        color: $secondaryBackground;
-
-        @media (hover: hover) {
-          &:hover {
-            text-decoration: underline;
-          }
-        }
+        color: $darkModePrimary;
       }
+    }
+
+    .alert-info {
+      border-color: $darkModePrimary;
+    }
+
+    .alert-success {
+      border-color: #388e3c;
+    }
+
+    .alert-warning {
+      border-color: #ffa000;
+    }
+
+    .alert-error {
+      border-color: #d32f2f;
     }
 
     .qr-code-container {
@@ -202,13 +217,9 @@
       color: $darkModePrimary;
     }
 
-    .modal-content {
-      border-radius: 0;
-    }
-
     .modal-header {
       background-color: $modalBackground;
-      border-bottom: none;
+      border-bottom: 0;
       border-radius: 0 !important;
 
       .close {
@@ -229,7 +240,7 @@
 
     .modal-footer {
       background-color: $modalBackground;
-      border-top: none;
+      border-top: 0;
       border-radius: 0 !important;
     }
 
@@ -367,12 +378,6 @@
     .hb-widget-chart-background {
       background-color: rgba($darkModePrimary, 0.2);
       display: none;
-    }
-
-    .alert-info {
-      background-color: rgba($darkModePrimary, 0.1);
-      border-color: rgba($darkModePrimary, 0.1);
-      color: $darkModePrimary;
     }
 
     .animate_loader {

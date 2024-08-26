@@ -2,6 +2,12 @@
   z-index: 1050 !important;
 }
 
-.modal-content li {
-  line-height: 2rem;
+.modal-content {
+  ul:not(.list-group) {
+    padding-left: 20px;
+  }
+
+  li {
+    line-height: 1.75rem;
+  }
 }

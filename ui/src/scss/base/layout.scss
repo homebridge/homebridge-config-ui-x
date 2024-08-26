@@ -35,6 +35,40 @@ a:hover {
   font-weight: 400;
 }
 
+.alert {
+  border-width: 1px;
+  border-radius: 0.5rem;
+  padding: 20px;
+  text-align: center;
+}
+
+.alert-success {
+  border-color: #388e3c;
+}
+
+.alert-warning {
+  border-color: #ffa000;
+}
+
+.alert-error {
+  border-color: #d32f2f;
+}
+
 .hover-pointer {
   cursor: pointer;
+}
+
+.list-group-box {
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  border-radius: 0.5rem;
+
+  .list-group-item:first-child {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+  }
+
+  .list-group-item:last-child {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+  }
 }

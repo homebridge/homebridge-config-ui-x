@@ -97,12 +97,6 @@
       display: none;
     }
 
-    .alert-info {
-      background-color: rgba($primary-dark, 0.1);
-      border-color: rgba($primary-dark, 0.1);
-      color: $primary;
-    }
-
     .animate_loader {
       .spinner_outer {
         stroke: $primary-dark;
@@ -114,6 +108,37 @@
 
     .login-container {
       background-color: $primary-dark  !important;
+    }
+
+    .alert {
+      color: #000000;
+      background-color: #eeeeee;
+      border-color: #cccccc;
+
+      a {
+        color: $primary;
+      }
+    }
+
+    .alert-info {
+      border-color: $primary;
+    }
+
+    .alert-success {
+      border-color: #388e3c;
+    }
+
+    .alert-warning {
+      border-color: #ffa000;
+    }
+
+    .alert-error {
+      border-color: #d32f2f;
+    }
+
+    .switch-on, .light-on, .window-on {
+      background-color: #fff;
+      color: #000000;
     }
 
     @keyframes uix-glow-icon {

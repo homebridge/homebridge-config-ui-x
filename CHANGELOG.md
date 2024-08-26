@@ -24,6 +24,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - updates to `uk` language file (@xrust83)
 - add `log.maxSize`/`log.truncateSize` options (#2161) (@tjenkinson)
 - fix missing translation string in setup wizard
+- various ui improvements and code consistency
 
 ### UI Fixes
 
