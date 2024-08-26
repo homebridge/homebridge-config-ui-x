@@ -2,6 +2,12 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## BETA
+
+### UI Changes
+
+- fix edge case of hiding child bridge setup (when plugin update is available)
+
 ## v4.57.0 (2024-08-26)
 
 ### UI Changes
