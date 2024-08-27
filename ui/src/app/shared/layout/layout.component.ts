@@ -14,7 +14,6 @@ import { ConfirmComponent } from '@/app/core/components/confirm/confirm.componen
 import { NotificationService } from '@/app/core/notification.service';
 import { SettingsService } from '@/app/core/settings.service';
 import { IoNamespace, WsService } from '@/app/core/ws.service';
-import { PowerOptionsComponent } from '@/app/shared/layout/power-options/power-options.component';
 import { environment } from '@/environments/environment';
 
 @Component({
@@ -72,13 +71,6 @@ export class LayoutComponent implements OnInit {
     });
 
     this.compareServerUiVersion();
-  }
-
-  openRestartModal() {
-    this.$modal.open(PowerOptionsComponent, {
-      size: 'lg',
-      backdrop: 'static',
-    });
   }
 
   async compareServerUiVersion() {

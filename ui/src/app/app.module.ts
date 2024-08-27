@@ -17,13 +17,11 @@ import { LoginModule } from '@/app/modules/login/login.module';
 import { RestartModule } from '@/app/modules/restart/restart.module';
 import { StatusModule } from '@/app/modules/status/status.module';
 import { LayoutComponent } from '@/app/shared/layout/layout.component';
-import { PowerOptionsComponent } from '@/app/shared/layout/power-options/power-options.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LayoutComponent,
-    PowerOptionsComponent,
   ],
   imports: [
     BrowserModule,

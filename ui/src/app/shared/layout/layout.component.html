@@ -71,7 +71,7 @@
               <i class="fa fa-fw fa-question-circle-o pr-2"></i>
               {{ 'support.title' | translate }}
             </a>
-            <a href="javascript:void(0)" class="dropdown-item waves-effect waves-light" (click)="openRestartModal()" *ngIf="$auth.user.admin">
+            <a class="dropdown-item waves-effect waves-light" routerLink="/power-options" *ngIf="$auth.user.admin">
               <i class="fa fa-fw fa-power-off pr-2"></i>
               {{ 'menu.restart.title' | translate }}
             </a>
