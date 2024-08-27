@@ -45,8 +45,11 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - updates to `uk` language file (@xrust83)
 - add `log.maxSize`/`log.truncateSize` options (#2161) (@tjenkinson)
 - fix missing translation string in setup wizard
-- various ui improvements and code consistency
+- various ui improvements and code consistency, including:
+  - new design for the 'manage version' plugin modal
 - offer more info about behaviour when disabling a plugin (on disable plugin modal)
+- change the 'power options' screen from a modal to a page
+- allow child bridge extra configuration in the child bridge modal (requires Homebridge 1.8.0 or above)
 
 ### UI Fixes
 
