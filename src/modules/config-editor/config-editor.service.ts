@@ -13,6 +13,7 @@ import {
   unlink,
   writeJsonSync,
 } from 'fs-extra';
+import { gte } from 'semver';
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service';
 import { Logger } from '../../core/logger/logger.service';
 import { SchedulerService } from '../../core/scheduler/scheduler.service';
@@ -247,6 +248,34 @@ export class ConfigEditorService {
           return false;
         } else {
           return true;
+        }
+      });
+
+      // try and keep any _bridge object 'clean'
+      pluginConfig.forEach((block) => {
+        if (block._bridge) {
+          // the env object is only compatible with homebridge 1.8.0 and above
+          const isEnvObjAllowed = gte(this.configService.homebridgeVersion, '1.8.0');
+
+          Object.keys(block._bridge).forEach((key) => {
+            if (key === 'env' && isEnvObjAllowed) {
+              Object.keys(block._bridge.env).forEach((envKey) => {
+                if (block._bridge.env[envKey] === undefined || typeof block._bridge.env[envKey] !== 'string' || block._bridge.env[envKey].trim() === '') {
+                  delete block._bridge.env[envKey];
+                }
+              });
+
+              // if the result of env is an empty object, remove it
+              if (Object.keys(block._bridge.env).length === 0) {
+                delete block._bridge.env;
+              }
+            } else {
+              if (block._bridge[key] === undefined || typeof block._bridge[key] !== 'string' || block._bridge[key].trim() === '') {
+                delete block._bridge[key];
+              }
+            }
+          });
+
         }
       });
 
