@@ -18,11 +18,13 @@ import { LoginModule } from '@/app/modules/login/login.module';
 import { RestartModule } from '@/app/modules/restart/restart.module';
 import { StatusModule } from '@/app/modules/status/status.module';
 import { LayoutComponent } from '@/app/shared/layout/layout.component';
+import { SidebarComponent } from '@/app/shared/layout/sidebar/sidebar.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LayoutComponent,
+    SidebarComponent,
   ],
   imports: [
     BrowserModule,
