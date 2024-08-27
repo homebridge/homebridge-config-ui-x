@@ -50,6 +50,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - offer more info about behaviour when disabling a plugin (on disable plugin modal)
 - change the 'power options' screen from a modal to a page
 - allow child bridge extra configuration in the child bridge modal (requires Homebridge 1.8.0 or above)
+- minor adjustments to settings page, add expands
 
 ### UI Fixes
 
