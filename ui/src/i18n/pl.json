@@ -313,7 +313,7 @@
   "settings.mdns_advertiser_exp": "eksperymentalny",
   "settings.mdns_advertiser_help": "Jeśli masz problem z połączeniem Homebridge do HomeKit, spróbuj użyć alternatywnego rozgłaszania mDNS.",
   "settings.mdns_advertiser_not_connected": "Rozłączony",
-  "settings.mdns_advertiser_rec": "recommended",
+  "settings.mdns_advertiser_rec": "zalecane",
   "settings.network.label_interface_name": "Nazwa interfejsu",
   "settings.network.label_ip_address": "Adres IP",
   "settings.network.message_network_interface": "Jeśli żaden interfejs nie zostanie wybrany, Homebridge automatycznie wybierze interfejs z którego bedzie korzystać.",
