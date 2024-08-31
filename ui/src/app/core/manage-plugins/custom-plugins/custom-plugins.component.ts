@@ -18,7 +18,6 @@ import { IoNamespace, WsService } from '@/app/core/ws.service';
 import { environment } from '@/environments/environment';
 
 @Component({
-  selector: 'app-custom-plugins',
   templateUrl: './custom-plugins.component.html',
   styleUrls: ['./custom-plugins.component.scss'],
 })

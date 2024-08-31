@@ -9,15 +9,12 @@ import { NotificationService } from '@/app/core/notification.service';
 import { SettingsService } from '@/app/core/settings.service';
 import { IoNamespace, WsService } from '@/app/core/ws.service';
 import { CreditsComponent } from '@/app/modules/status/credits/credits.component';
-import { WidgetAddComponent } from '@/app/modules/status/widget-add/widget-add.component';
-import { WidgetControlComponent } from '@/app/modules/status/widget-control/widget-control.component';
+import { WidgetsAddComponent } from '@/app/modules/status/widgets-add/widgets-add.component';
+import { WidgetsControlComponent } from '@/app/modules/status/widgets-control/widgets-control.component';
 
 @Component({
-  selector: 'app-status',
   templateUrl: './status.component.html',
-  styleUrls: [
-    './status.component.scss',
-  ],
+  styleUrls: ['./status.component.scss'],
 })
 export class StatusComponent implements OnInit, OnDestroy {
   public saveWidgetsEvent = new Subject();
@@ -210,7 +207,7 @@ export class StatusComponent implements OnInit, OnDestroy {
   }
 
   addWidget() {
-    const ref = this.$modal.open(WidgetAddComponent, {
+    const ref = this.$modal.open(WidgetsAddComponent, {
       size: 'lg',
       backdrop: 'static',
     });
@@ -252,7 +249,7 @@ export class StatusComponent implements OnInit, OnDestroy {
   }
 
   manageWidget(item) {
-    const ref = this.$modal.open(WidgetControlComponent, {
+    const ref = this.$modal.open(WidgetsControlComponent, {
       size: 'lg',
       backdrop: 'static',
     });

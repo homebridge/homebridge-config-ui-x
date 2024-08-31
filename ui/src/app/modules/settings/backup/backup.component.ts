@@ -6,9 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '@/app/core/api.service';
 
 @Component({
-  selector: 'app-backup',
   templateUrl: './backup.component.html',
-  styleUrls: ['./backup.component.scss'],
 })
 export class BackupComponent implements OnInit {
   public clicked = false;

@@ -15,9 +15,7 @@ import { ApiService } from '@/app/core/api.service';
 import { IoNamespace, WsService } from '@/app/core/ws.service';
 
 @Component({
-  selector: 'app-restore',
   templateUrl: './restore.component.html',
-  styleUrls: ['./restore.component.scss'],
 })
 export class RestoreComponent implements OnInit, OnDestroy {
   @Input() setupWizardRestore = false;

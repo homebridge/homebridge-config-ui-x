@@ -2,7 +2,6 @@ import { Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-  selector: 'app-plugin-info',
   templateUrl: './plugin-info.component.html',
   styleUrls: ['./plugin-info.component.scss'],
 })

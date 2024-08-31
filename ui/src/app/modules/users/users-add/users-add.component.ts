@@ -7,7 +7,6 @@ import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '@/app/core/api.service';
 
 @Component({
-  selector: 'app-users-add',
   templateUrl: './users-add.component.html',
 })
 export class UsersAddComponent implements OnInit {

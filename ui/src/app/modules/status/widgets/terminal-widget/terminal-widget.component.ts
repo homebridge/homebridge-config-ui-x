@@ -11,9 +11,7 @@ import { ITerminalOptions } from 'xterm';
 import { TerminalService } from '@/app/core/terminal.service';
 
 @Component({
-  selector: 'app-terminal-widget',
   templateUrl: './terminal-widget.component.html',
-  styleUrls: ['./terminal-widget.component.scss'],
 })
 export class TerminalWidgetComponent implements OnInit, OnDestroy {
   @ViewChild('widgetcontainer', { static: true }) widgetContainerElement: ElementRef;

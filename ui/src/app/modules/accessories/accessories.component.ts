@@ -7,7 +7,7 @@ import { AccessoriesService } from '@/app/core/accessories/accessories.service';
 import { AuthService } from '@/app/core/auth/auth.service';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { SettingsService } from '@/app/core/settings.service';
-import { AddRoomModalComponent } from '@/app/modules/accessories/add-room-modal/add-room-modal.component';
+import { AddRoomComponent } from '@/app/modules/accessories/add-room/add-room.component';
 
 @Component({
   selector: 'app-accessories',
@@ -58,7 +58,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   }
 
   addRoom() {
-    this.modalService.open(AddRoomModalComponent, {
+    this.modalService.open(AddRoomComponent, {
       size: 'lg',
       backdrop: 'static',
     }).result.then((roomName) => {

@@ -5,10 +5,10 @@ import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '@/app/core/api.service';
 import { AuthService } from '@/app/core/auth/auth.service';
+import { Users2faDisableComponent } from '@/app/modules/users/users-2fa-disable/users-2fa-disable.component';
+import { Users2faEnableComponent } from '@/app/modules/users/users-2fa-enable/users-2fa-enable.component';
 import { UsersAddComponent } from '@/app/modules/users/users-add/users-add.component';
-import { UsersDisable2faComponent } from '@/app/modules/users/users-disable2fa/users-disable2fa.component';
 import { UsersEditComponent } from '@/app/modules/users/users-edit/users-edit.component';
-import { UsersSetup2faComponent } from '@/app/modules/users/users-setup2fa/users-setup2fa.component';
 
 @Component({
   selector: 'app-users',
@@ -80,7 +80,7 @@ export class UsersComponent implements OnInit {
   }
 
   setup2fa(user) {
-    const ref = this.modalService.open(UsersSetup2faComponent, {
+    const ref = this.modalService.open(Users2faEnableComponent, {
       size: 'lg',
       backdrop: 'static',
     });
@@ -92,7 +92,7 @@ export class UsersComponent implements OnInit {
   }
 
   disable2fa(user) {
-    const ref = this.modalService.open(UsersDisable2faComponent, {
+    const ref = this.modalService.open(Users2faDisableComponent, {
       size: 'lg',
       backdrop: 'static',
     });

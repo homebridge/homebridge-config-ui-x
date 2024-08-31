@@ -8,7 +8,6 @@ import { ApiService } from '@/app/core/api.service';
 import { AuthService } from '@/app/core/auth/auth.service';
 
 @Component({
-  selector: 'app-users-edit',
   templateUrl: './users-edit.component.html',
 })
 export class UsersEditComponent implements OnInit {

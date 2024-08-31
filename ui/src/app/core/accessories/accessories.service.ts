@@ -6,7 +6,7 @@ import { Subject } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { IoNamespace, WsService } from '../ws.service';
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
-import { InfoModalComponent } from '@/app/core/accessories/info-modal/info-modal.component';
+import { AccessoryInfoComponent } from '@/app/core/accessories/accessory-info/accessory-info.component';
 
 @Injectable({
   providedIn: 'root',
@@ -47,7 +47,7 @@ export class AccessoriesService {
    *
    */
   showAccessoryInformation(service) {
-    const ref = this.modalService.open(InfoModalComponent, {
+    const ref = this.modalService.open(AccessoryInfoComponent, {
       size: 'lg',
       backdrop: 'static',
     });

@@ -5,7 +5,7 @@ import { Bootstrap4FrameworkModule } from '@oznu/ngx-bs4-jsonform';
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
 import { InformationComponent } from '@/app/core/components/information/information.component';
 import { QrcodeComponent } from '@/app/core/components/qrcode/qrcode.component';
-import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component';
+import { RestartComponent } from '@/app/core/components/restart/restart.component';
 import { SchemaFormComponent } from '@/app/core/components/schema-form/schema-form.component';
 import { SpinnerComponent } from '@/app/core/components/spinner/spinner.component';
 import { JsonSchemaFormPatchDirective } from '@/app/core/directives/json-schema-form-patch.directive';
@@ -29,7 +29,7 @@ import { ReplacePipe } from '@/app/core/pipes/replace.pipe';
     JsonSchemaFormPatchDirective,
     ConfirmComponent,
     InformationComponent,
-    RestartHomebridgeComponent,
+    RestartComponent,
     QrcodeComponent,
   ],
   imports: [

@@ -7,9 +7,7 @@ import {
 import { Subscription, interval } from 'rxjs';
 
 @Component({
-  selector: 'app-clock-widget',
   templateUrl: './clock-widget.component.html',
-  styleUrls: ['./clock-widget.component.scss'],
 })
 export class ClockWidgetComponent implements OnInit, OnDestroy {
   @Input() widget: any;

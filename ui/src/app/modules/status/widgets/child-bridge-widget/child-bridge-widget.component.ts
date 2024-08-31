@@ -9,7 +9,6 @@ import { ToastrService } from 'ngx-toastr';
 import { IoNamespace, WsService } from '@/app/core/ws.service';
 
 @Component({
-  selector: 'app-child-bridge-widget',
   templateUrl: './child-bridge-widget.component.html',
   styleUrls: ['./child-bridge-widget.component.scss'],
 })

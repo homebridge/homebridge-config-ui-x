@@ -3,14 +3,14 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { gte, minVersion } from 'semver';
 import { ApiService } from '@/app/core/api.service';
-import { BridgePluginsModalComponent } from '@/app/core/manage-plugins/bridge-plugins-modal/bridge-plugins-modal.component';
 import { CustomPluginsService } from '@/app/core/manage-plugins/custom-plugins/custom-plugins.service';
-import { ManagePluginsModalComponent } from '@/app/core/manage-plugins/manage-plugins-modal/manage-plugins-modal.component';
-import { ManualPluginConfigModalComponent } from '@/app/core/manage-plugins/manual-plugin-config-modal/manual-plugin-config-modal.component'; // eslint-disable-line max-len
-import { NodeUpdateRequiredModalComponent } from '@/app/core/manage-plugins/node-update-required-modal/node-update-required-modal.component'; // eslint-disable-line max-len
-import { SelectPreviousVersionComponent } from '@/app/core/manage-plugins/select-previous-version/select-previous-version.component';
-import { SettingsPluginsModalComponent } from '@/app/core/manage-plugins/settings-plugins-modal/settings-plugins-modal.component';
-import { UninstallPluginsModalComponent } from '@/app/core/manage-plugins/uninstall-plugins-modal/uninstall-plugins-modal.component';
+import { ManagePluginComponent } from '@/app/core/manage-plugins/manage-plugin/manage-plugin.component';
+import { ManageVersionComponent } from '@/app/core/manage-plugins/manage-version/manage-version.component';
+import { ManualConfigComponent } from '@/app/core/manage-plugins/manual-config/manual-config.component'; // eslint-disable-line max-len
+import { NodeUpdateRequiredComponent } from '@/app/core/manage-plugins/node-update-required/node-update-required.component'; // eslint-disable-line max-len
+import { PluginBridgeComponent } from '@/app/core/manage-plugins/plugin-bridge/plugin-bridge.component';
+import { PluginConfigComponent } from '@/app/core/manage-plugins/plugin-config/plugin-config.component';
+import { UninstallPluginComponent } from '@/app/core/manage-plugins/uninstall-plugin/uninstall-plugin.component';
 import { SettingsService } from '@/app/core/settings.service';
 
 @Injectable({
@@ -27,7 +27,7 @@ export class ManagePluginsService {
   ) {}
 
   installPlugin(pluginName: string, targetVersion = 'latest') {
-    const ref = this.modalService.open(ManagePluginsModalComponent, {
+    const ref = this.modalService.open(ManagePluginComponent, {
       size: 'lg',
       backdrop: 'static',
     });
@@ -37,7 +37,7 @@ export class ManagePluginsService {
   }
 
   uninstallPlugin(plugin: any) {
-    const ref = this.modalService.open(UninstallPluginsModalComponent, {
+    const ref = this.modalService.open(UninstallPluginComponent, {
       size: 'lg',
       backdrop: 'static',
     });
@@ -50,7 +50,7 @@ export class ManagePluginsService {
       return;
     }
 
-    const ref = this.modalService.open(ManagePluginsModalComponent, {
+    const ref = this.modalService.open(ManagePluginComponent, {
       size: 'lg',
       backdrop: 'static',
     });
@@ -67,7 +67,7 @@ export class ManagePluginsService {
       return;
     }
 
-    const ref = this.modalService.open(ManagePluginsModalComponent, {
+    const ref = this.modalService.open(ManagePluginComponent, {
       size: 'lg',
       backdrop: 'static',
     });
@@ -84,7 +84,7 @@ export class ManagePluginsService {
    * @param plugin
    */
   async installPreviousVersion(plugin: any) {
-    const ref = this.modalService.open(SelectPreviousVersionComponent, {
+    const ref = this.modalService.open(ManageVersionComponent, {
       size: 'lg',
       backdrop: 'static',
     });
@@ -118,7 +118,7 @@ export class ManagePluginsService {
       }
     }
 
-    const ref = this.modalService.open(BridgePluginsModalComponent, {
+    const ref = this.modalService.open(PluginBridgeComponent, {
       size: 'lg',
       backdrop: 'static',
     });
@@ -155,7 +155,7 @@ export class ManagePluginsService {
 
     // open the standard ui
     const ref = this.modalService.open(
-      plugin.settingsSchema ? SettingsPluginsModalComponent : ManualPluginConfigModalComponent,
+      plugin.settingsSchema ? PluginConfigComponent : ManualConfigComponent,
       {
         size: 'lg',
         backdrop: 'static',
@@ -175,7 +175,7 @@ export class ManagePluginsService {
    */
   async jsonEditor(plugin: any) {
     const ref = this.modalService.open(
-      ManualPluginConfigModalComponent,
+      ManualConfigComponent,
       {
         size: 'lg',
         backdrop: 'static',
@@ -201,7 +201,7 @@ export class ManagePluginsService {
 
       try {
         // open modal warning about Node.js version
-        const ref = this.modalService.open(NodeUpdateRequiredModalComponent, {
+        const ref = this.modalService.open(NodeUpdateRequiredComponent, {
           size: 'lg',
           backdrop: 'static',
         });
