@@ -324,7 +324,7 @@
   "settings.startup.insecure_desc": "Aby sterować akcesoriami za pomocą interfejsu użytkownika Homebridge, musisz uruchomić Homebridge w trybie niezabezpieczonym.",
   "settings.startup.keep_accessories": "Zachowaj akcesoria odinstalowanych wtyczek",
   "settings.startup.keep_accessories_desc": "Jeśli włączone, akcesoria wtyczek typu platform pozostaną w pamięci podręcznej nawet po jej odinstalowaniu wtyczki. Może to być przydatne, jeśli planujesz ponownie zainstalować wtyczkę później. Uwaga: czasem wtyczka na skutek błędu może zostać uznana za odinstalowaną - ta opcja pomoże uchronić w tej sytuacji przed usunięciem akcesoriów na skutek błędu.",
-  "settings.title_startup_options": "Opcje startowe",
+  "settings.title_startup_options": "Uruchomienie i środowisko",
   "setup_wizard.button_get_started": "Rozpocznij",
   "setup_wizard.label_create_account": "Utwórz konto",
   "setup_wizard.label_open_dashboard": "Otwórz dashboard",
