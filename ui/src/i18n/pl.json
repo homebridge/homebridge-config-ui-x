@@ -69,7 +69,7 @@
   "backup.message_restore_max_size": "Możesz przywrócić backup do rozmiaru: {{ maxBackupSizeText }}.",
   "backup.message_restore_warning": "Przywrócenie backupu jest nieodwracalne i zastąpi całą obecną konfigurację Homebridge.",
   "backup.message_scheduled_backup_none_yet": "Nie utworzono jeszcze planowych backupów. Następny automatyczny backup zostanie wykonany o godzinie {{ backupTime }}.",
-  "backup.message_scheduled_backup_time": "Pełny backup konfiguracji Homebridge jest tworzona automatycznie każdego dnia o godzinie {{ backupTime }} i trzymany przez {{ dayCount }} dni.",
+  "backup.message_scheduled_backup_time": "Pełny backup konfiguracji Homebridge jest tworzony automatycznie każdego dnia o godzinie {{ backupTime }} i trzymany przez {{ dayCount }} dni.",
   "backup.title_backup": "Backup - utwórz",
   "backup.title_restore": "Backup - przywróć",
   "child_bridge.label_bridge_connect_to_homekit": "Połącz z HomeKit",
