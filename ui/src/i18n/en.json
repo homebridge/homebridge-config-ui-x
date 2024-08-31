@@ -323,7 +323,7 @@
   "settings.startup.insecure": "Homebridge 'Insecure' Mode",
   "settings.startup.insecure_desc": "To control your accessories via the Homebridge UI you must be running Homebridge in insecure mode.",
   "settings.startup.keep_accessories": "Keep Accessories Of Uninstalled Plugins",
-  "settings.startup.keep_accessories_desc": "If enabled, accessories of platform plugins will remain in the cache even after the plugin is uninstalled. This can be useful if you plan to reinstall the plugin later. Note: sometimes the plugin may be considered as uninstalled due to an error - this option will help protect against removing accessories due to error in this situation.",
+  "settings.startup.keep_accessories_desc": "If enabled, accessories of platform plugins will remain in the cache even after the plugin is uninstalled. This can be useful if you plan to reinstall the plugin later.",
   "settings.title_startup_options": "Startup & Environment",
   "setup_wizard.button_get_started": "Get Started",
   "setup_wizard.label_create_account": "Create Account",
