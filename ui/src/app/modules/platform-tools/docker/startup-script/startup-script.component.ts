@@ -8,9 +8,7 @@ import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
-  selector: 'app-startup-script',
   templateUrl: './startup-script.component.html',
-  styleUrls: ['./startup-script.component.scss'],
 })
 export class StartupScriptComponent implements OnInit, OnDestroy {
   public startupScript: string;

@@ -7,7 +7,6 @@ import { ApiService } from '@/app/core/api.service';
 @Component({
   selector: 'app-homebridge-hue',
   templateUrl: './homebridge-hue.component.html',
-  styleUrls: ['./homebridge-hue.component.scss'],
 })
 export class HomebridgeHueComponent {
 

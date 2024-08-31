@@ -10,7 +10,6 @@ import { toString } from 'qrcode';
 @Component({
   selector: 'app-qrcode',
   templateUrl: './qrcode.component.html',
-  styleUrls: ['./qrcode.component.scss'],
 })
 export class QrcodeComponent implements OnChanges {
   @Input() data: string;

@@ -13,7 +13,6 @@ import { AuthService } from '@/app/core/auth/auth.service';
 import { IoNamespace, WsService } from '@/app/core/ws.service';
 
 @Component({
-  selector: 'app-memory-widget',
   templateUrl: './memory-widget.component.html',
   styleUrls: ['./memory-widget.component.scss'],
 })

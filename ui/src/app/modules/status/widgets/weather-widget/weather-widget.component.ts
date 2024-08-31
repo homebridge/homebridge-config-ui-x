@@ -13,9 +13,7 @@ import { IoNamespace, WsService } from '@/app/core/ws.service';
 import { environment } from '@/environments/environment';
 
 @Component({
-  selector: 'app-weather-widget',
   templateUrl: './weather-widget.component.html',
-  styleUrls: ['./weather-widget.component.scss'],
 })
 export class WeatherWidgetComponent implements OnInit, OnDestroy {
   @Input() widget: any;

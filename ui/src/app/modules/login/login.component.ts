@@ -7,7 +7,6 @@ import { SettingsService } from '@/app/core/settings.service';
 import { environment } from '@/environments/environment';
 
 @Component({
-  selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })

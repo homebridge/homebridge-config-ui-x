@@ -10,7 +10,6 @@ import { Subject } from 'rxjs';
 import { TerminalService } from '@/app/core/terminal.service';
 
 @Component({
-  selector: 'app-terminal',
   templateUrl: './terminal.component.html',
 })
 export class TerminalComponent implements OnInit, OnDestroy {

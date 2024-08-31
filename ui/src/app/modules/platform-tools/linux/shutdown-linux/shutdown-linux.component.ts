@@ -7,9 +7,7 @@ import { SettingsService } from '@/app/core/settings.service';
 import { IoNamespace, WsService } from '@/app/core/ws.service';
 
 @Component({
-  selector: 'app-shutdown-linux',
   templateUrl: './shutdown-linux.component.html',
-  styleUrls: ['./shutdown-linux.component.scss'],
 })
 export class ShutdownLinuxComponent implements OnInit, OnDestroy {
   checkTimeout: NodeJS.Timeout;

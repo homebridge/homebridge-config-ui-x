@@ -16,7 +16,6 @@ import { RestoreComponent } from '@/app/modules/settings/restore/restore.compone
 import { environment } from '@/environments/environment';
 
 @Component({
-  selector: 'app-setup-wizard',
   templateUrl: './setup-wizard.component.html',
   styleUrls: ['./setup-wizard.component.scss'],
 })

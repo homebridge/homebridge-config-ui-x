@@ -6,7 +6,6 @@ import { InformationComponent } from '@/app/core/components/information/informat
 import { IoNamespace, WsService } from '@/app/core/ws.service';
 
 @Component({
-  selector: 'app-system-info-widget',
   templateUrl: './system-info-widget.component.html',
   styleUrls: ['./system-info-widget.component.scss'],
 })

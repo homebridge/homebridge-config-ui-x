@@ -18,9 +18,7 @@ import { LogService } from '@/app/core/log.service';
 import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
-  selector: 'app-logs',
   templateUrl: './logs.component.html',
-  styleUrls: ['./logs.component.scss'],
 })
 export class LogsComponent implements OnInit, OnDestroy {
   @ViewChild('logoutput', { static: true }) termTarget: ElementRef;

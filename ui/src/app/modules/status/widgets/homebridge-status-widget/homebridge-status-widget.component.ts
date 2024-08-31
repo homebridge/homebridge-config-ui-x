@@ -5,7 +5,6 @@ import { SettingsService } from '@/app/core/settings.service';
 import { IoNamespace, WsService } from '@/app/core/ws.service';
 
 @Component({
-  selector: 'app-homebridge-status-widget',
   templateUrl: './homebridge-status-widget.component.html',
   styleUrls: ['./homebridge-status-widget.component.scss'],
 })
