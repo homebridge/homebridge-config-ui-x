@@ -161,10 +161,11 @@
       <div class="my-3 my-md-0 pl-0 pl-md-5 w-auto">
         <select class="custom-select resp-select" [formControl]="legacyMdnsFormControl"
           [attr.aria-label]="'settings.mdns_advertiser' | translate">
+          <option value="avahi" *ngIf="showAvahiMdnsOption">Avahi ({{ 'settings.mdns_advertiser_rec' | translate }})</option>
+          <!-- ciao is recommended if avahi is not available -->
+          <option value="ciao">Ciao {{ showAvahiMdnsOption ? '' : '(' + ('settings.mdns_advertiser_rec' | translate) + ')' }}</option>
           <option value="bonjour-hap">Bonjour HAP</option>
-          <option value="avahi" *ngIf="showAvahiMdnsOption">Avahi</option>
-          <option value="resolved" *ngIf="showResolvedMdnsOption">systemd-resolved (experimental)</option>
-          <option value="ciao">Ciao</option>
+          <option value="resolved" *ngIf="showResolvedMdnsOption">systemd-resolved (({{ 'settings.mdns_advertiser_exp' | translate }}))</option>
         </select>
       </div>
     </li>

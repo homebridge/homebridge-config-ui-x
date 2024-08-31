@@ -1,21 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '@/app/core/api.service';
+import { RestartComponent } from '@/app/core/components/restart/restart.component';
 
 @Component({
   templateUrl: './unpair-single-bridge.component.html',
 })
-export class UnpairSingleBridgeComponent implements OnInit {
+export class UnpairSingleBridgeComponent implements OnInit, OnDestroy {
   public pairings: any[];
   public deleting: null | string = null;
+  private unpaired = false;
 
   constructor(
     public activeModal: NgbActiveModal,
     public toastr: ToastrService,
     private translate: TranslateService,
     private $api: ApiService,
+    private $modal: NgbModal,
   ) {}
 
   ngOnInit(): void {
@@ -45,6 +49,7 @@ export class UnpairSingleBridgeComponent implements OnInit {
         }
 
         this.deleting = null;
+        this.unpaired = true;
 
         this.toastr.success(
           this.translate.instant('plugins.settings.toast_restart_required'),
@@ -56,5 +61,14 @@ export class UnpairSingleBridgeComponent implements OnInit {
         this.toastr.error('Failed to un-pair accessory.', this.translate.instant('toast.title_error'));
       },
     );
+  }
+
+  ngOnDestroy() {
+    if (this.unpaired) {
+      this.$modal.open(RestartComponent, {
+        size: 'lg',
+        backdrop: 'static',
+      });
+    }
   }
 }
