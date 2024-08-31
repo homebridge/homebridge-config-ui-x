@@ -418,7 +418,7 @@
   "support.developers.template_sub": "A template Homebridge plugin that can be used as a base to help you get started developing your own plugin.",
   "support.developers.title": "Developers",
   "support.developers.verified": "Verified By Homebridge",
-  "support.developers.verified_sub": "Verified by Homebridge program allows plugin developers to get their plugins reviewed and endorsed by the Homebridge project team.",
+  "support.developers.verified_sub": "The Verified By Homebridge program allows plugin developers to get their plugins reviewed and endorsed by the Homebridge project team.",
   "support.title": "Support",
   "support.useful_links.discord": "Discord Server",
   "support.useful_links.discord_sub": "Join the Homebridge Discord chat server to chat with other users and developers.",
