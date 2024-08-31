@@ -9,9 +9,7 @@ import { AuthService } from '@/app/core/auth/auth.service';
 import { IoNamespace, WsService } from '@/app/core/ws.service';
 
 @Component({
-  selector: 'app-uptime-widget',
   templateUrl: './uptime-widget.component.html',
-  styleUrls: ['./uptime-widget.component.scss'],
 })
 export class UptimeWidgetComponent implements OnInit, OnDestroy {
   @Input() widget: any;

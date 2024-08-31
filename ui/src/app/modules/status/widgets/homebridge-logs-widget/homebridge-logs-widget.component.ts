@@ -11,9 +11,7 @@ import { ITerminalOptions } from 'xterm';
 import { LogService } from '@/app/core/log.service';
 
 @Component({
-  selector: 'app-homebridge-logs-widget',
   templateUrl: './homebridge-logs-widget.component.html',
-  styleUrls: ['./homebridge-logs-widget.component.scss'],
 })
 export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
   @ViewChild('widgetcontainer', { static: true }) widgetContainerElement: ElementRef;

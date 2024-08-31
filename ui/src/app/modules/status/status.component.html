@@ -4,7 +4,7 @@
   </div>
   <div class="col-6 text-right d-none d-sm-block">
     <div class="btn-group" role="group" *ngIf="consoleStatus === 'up' && $auth.user.admin">
-      <button type="button" class="btn btn-elegant status-button my-0 mr-0" [hidden]="!options.draggable.enabled" (click)="addWidget()"
+      <button type="button" class="btn btn-elegant status-button my-0" [hidden]="!options.draggable.enabled" (click)="addWidget()"
         [attr.aria-label]="'status.widget.label_add_widget' | translate">
         <i class="fas fa-fw fa-plus"></i>
       </button>

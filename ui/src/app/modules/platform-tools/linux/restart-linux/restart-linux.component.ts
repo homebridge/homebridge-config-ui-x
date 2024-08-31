@@ -7,9 +7,7 @@ import { SettingsService } from '@/app/core/settings.service';
 import { IoNamespace, WsService } from '@/app/core/ws.service';
 
 @Component({
-  selector: 'app-restart-linux',
   templateUrl: './restart-linux.component.html',
-  styleUrls: ['./restart-linux.component.scss'],
 })
 export class RestartLinuxComponent implements OnInit, OnDestroy {
   checkTimeout: NodeJS.Timeout;

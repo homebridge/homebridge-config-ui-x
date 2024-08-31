@@ -7,7 +7,6 @@ import { SettingsService } from '@/app/core/settings.service';
 import { IoNamespace, WsService } from '@/app/core/ws.service';
 
 @Component({
-  selector: 'app-container-restart',
   templateUrl: './container-restart.component.html',
 })
 export class ContainerRestartComponent implements OnInit, OnDestroy {

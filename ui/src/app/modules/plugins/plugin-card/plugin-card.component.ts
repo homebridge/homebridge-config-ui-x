@@ -5,10 +5,10 @@ import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '@/app/core/api.service';
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component';
 import { InformationComponent } from '@/app/core/components/information/information.component';
-import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component';
-import { DonateModalComponent } from '@/app/core/manage-plugins/donate-modal/donate-modal.component';
+import { RestartComponent } from '@/app/core/components/restart/restart.component';
+import { DonateComponent } from '@/app/core/manage-plugins/donate/donate.component';
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
-import { PluginLogModalComponent } from '@/app/core/manage-plugins/plugin-log-modal/plugin-log-modal.component';
+import { PluginLogsComponent } from '@/app/core/manage-plugins/plugin-logs/plugin-logs.component';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { SettingsService } from '@/app/core/settings.service';
 import { IoNamespace, WsService } from '@/app/core/ws.service';
@@ -18,7 +18,6 @@ import { PluginInfoComponent } from '@/app/modules/plugins/plugin-card/plugin-in
 @Component({
   selector: 'app-plugin-card',
   templateUrl: './plugin-card.component.html',
-  styleUrls: ['./plugin-card.component.scss'],
 })
 export class PluginCardComponent implements OnInit {
   @Input() plugin: any;
@@ -81,7 +80,7 @@ export class PluginCardComponent implements OnInit {
   }
 
   openFundingModal(plugin: any) {
-    const ref = this.$modal.open(DonateModalComponent, {
+    const ref = this.$modal.open(DonateComponent, {
       size: 'lg',
       backdrop: 'static',
     });
@@ -138,7 +137,7 @@ export class PluginCardComponent implements OnInit {
         if (this.hasChildBridges) {
           this.doChildBridgeAction('stop');
         }
-        this.$modal.open(RestartHomebridgeComponent, {
+        this.$modal.open(RestartComponent, {
           size: 'lg',
           backdrop: 'static',
         });
@@ -170,7 +169,7 @@ export class PluginCardComponent implements OnInit {
         if (this.hasChildBridges) {
           await this.doChildBridgeAction('start');
         }
-        this.$modal.open(RestartHomebridgeComponent, {
+        this.$modal.open(RestartComponent, {
           size: 'lg',
           backdrop: 'static',
         });
@@ -183,7 +182,7 @@ export class PluginCardComponent implements OnInit {
   }
 
   viewPluginLog(plugin: any) {
-    const ref = this.$modal.open(PluginLogModalComponent, {
+    const ref = this.$modal.open(PluginLogsComponent, {
       size: 'xl',
       backdrop: 'static',
     });

@@ -7,7 +7,6 @@ import { ApiService } from '@/app/core/api.service';
 @Component({
   selector: 'app-homebridge-deconz',
   templateUrl: './homebridge-deconz.component.html',
-  styleUrls: ['./homebridge-deconz.component.scss'],
 })
 export class HomebridgeDeconzComponent {
 

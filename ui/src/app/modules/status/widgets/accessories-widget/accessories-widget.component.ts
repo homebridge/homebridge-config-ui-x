@@ -11,9 +11,7 @@ import { AccessoriesService } from '@/app/core/accessories/accessories.service';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 
 @Component({
-  selector: 'app-accessories-widget',
   templateUrl: './accessories-widget.component.html',
-  styleUrls: ['./accessories-widget.component.scss'],
 })
 export class AccessoriesWidgetComponent implements OnInit, OnDestroy {
   @Input() widget: any;

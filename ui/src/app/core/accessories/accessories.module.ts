@@ -7,8 +7,8 @@ import { InlineSVGModule } from 'ng-inline-svg-2';
 import { NouisliderModule } from 'ng2-nouislider';
 import { NgxMdModule } from 'ngx-md';
 import { AccessoriesService } from '@/app/core/accessories/accessories.service';
+import { AccessoryInfoComponent } from '@/app/core/accessories/accessory-info/accessory-info.component';
 import { AccessoryTileComponent } from '@/app/core/accessories/accessory-tile/accessory-tile.component';
-import { InfoModalComponent } from '@/app/core/accessories/info-modal/info-modal.component';
 import { AirpurifierComponent } from '@/app/core/accessories/types/airpurifier/airpurifier.component';
 import { AirpurifierManageComponent } from '@/app/core/accessories/types/airpurifier/airpurifier.manage.component';
 import { AirqualitysensorComponent } from '@/app/core/accessories/types/airqualitysensor/airqualitysensor.component';
@@ -58,7 +58,7 @@ import { CoreModule } from '@/app/core/core.module';
 @NgModule({
   declarations: [
     AccessoryTileComponent,
-    InfoModalComponent,
+    AccessoryInfoComponent,
     SwitchComponent,
     StatelessprogrammableswitchComponent,
     ThermostatComponent,

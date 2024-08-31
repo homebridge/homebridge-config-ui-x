@@ -9,9 +9,7 @@ import { Subject } from 'rxjs';
 import { IoNamespace, WsService } from '@/app/core/ws.service';
 
 @Component({
-  selector: 'app-hap-qrcode-widget',
   templateUrl: './hap-qrcode-widget.component.html',
-  styleUrls: ['./hap-qrcode-widget.component.scss'],
 })
 export class HapQrcodeWidgetComponent implements OnInit {
   @ViewChild('pincode', { static: true }) pincodeElement: ElementRef;

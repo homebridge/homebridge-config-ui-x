@@ -12,8 +12,6 @@ import { CoreModule } from '@/app/core/core.module';
 import { ManagePluginsModule } from '@/app/core/manage-plugins/manage-plugins.module';
 import { CreditsComponent } from '@/app/modules/status/credits/credits.component';
 import { StatusComponent } from '@/app/modules/status/status.component';
-import { WidgetAddComponent } from '@/app/modules/status/widget-add/widget-add.component';
-import { WidgetControlComponent } from '@/app/modules/status/widget-control/widget-control.component';
 import { AccessoriesWidgetComponent } from '@/app/modules/status/widgets/accessories-widget/accessories-widget.component';
 import { ChildBridgeWidgetComponent } from '@/app/modules/status/widgets/child-bridge-widget/child-bridge-widget.component';
 import { ClockWidgetComponent } from '@/app/modules/status/widgets/clock-widget/clock-widget.component';
@@ -28,13 +26,15 @@ import { TerminalWidgetComponent } from '@/app/modules/status/widgets/terminal-w
 import { UptimeWidgetComponent } from '@/app/modules/status/widgets/uptime-widget/uptime-widget.component';
 import { WeatherWidgetComponent } from '@/app/modules/status/widgets/weather-widget/weather-widget.component';
 import { WidgetsComponent } from '@/app/modules/status/widgets/widgets.component';
+import { WidgetsAddComponent } from '@/app/modules/status/widgets-add/widgets-add.component';
+import { WidgetsControlComponent } from '@/app/modules/status/widgets-control/widgets-control.component';
 
 @NgModule({
   declarations: [
     StatusComponent,
     WidgetsComponent,
-    WidgetAddComponent,
-    WidgetControlComponent,
+    WidgetsAddComponent,
+    WidgetsControlComponent,
     HapQrcodeWidgetComponent,
     HomebridgeLogsWidgetComponent,
     TerminalWidgetComponent,

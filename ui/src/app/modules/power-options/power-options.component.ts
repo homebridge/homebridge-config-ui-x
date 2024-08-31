@@ -5,9 +5,7 @@ import { ApiService } from '@/app/core/api.service';
 import { SettingsService } from '@/app/core/settings.service';
 
 @Component({
-  selector: 'app-power-options',
   templateUrl: './power-options.component.html',
-  styleUrls: ['./power-options.component.scss'],
 })
 export class PowerOptionsComponent {
   constructor(
@@ -15,7 +13,7 @@ export class PowerOptionsComponent {
     private $router: Router,
     public $settings: SettingsService,
     public $toastr: ToastrService,
-  ) { }
+  ) {}
 
   restartHomebridge() {
     this.$router.navigate(['/restart']);

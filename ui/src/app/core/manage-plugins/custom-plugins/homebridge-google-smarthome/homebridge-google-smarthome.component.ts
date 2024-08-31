@@ -15,7 +15,6 @@ import { SettingsService } from '@/app/core/settings.service';
 @Component({
   selector: 'app-homebridge-google-smarthome',
   templateUrl: './homebridge-google-smarthome.component.html',
-  styleUrls: ['./homebridge-google-smarthome.component.scss'],
 })
 export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
   @Input() public plugin;

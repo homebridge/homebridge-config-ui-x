@@ -6,14 +6,13 @@ import { parse } from 'json5';
 import { NgxEditorModel } from 'ngx-monaco-editor';
 import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '@/app/core/api.service';
-import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component';
+import { RestartComponent } from '@/app/core/components/restart/restart.component';
 import { MobileDetectService } from '@/app/core/mobile-detect.service';
 import { MonacoEditorService } from '@/app/core/monaco-editor.service';
 import { SettingsService } from '@/app/core/settings.service';
-import { ConfigRestoreBackupComponent } from '@/app/modules/config-editor/config-restore-backup/config.restore-backup.component';
+import { ConfigRestoreComponent } from '@/app/modules/config-editor/config-restore/config.restore.component';
 
 @Component({
-  selector: 'app-config',
   templateUrl: './config-editor.component.html',
 })
 export class ConfigEditorComponent implements OnInit, OnDestroy {
@@ -209,7 +208,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       const data = await this.$api.post('/config-editor', config)
         .toPromise();
       this.homebridgeConfig = JSON.stringify(data, null, 4);
-      this.$modal.open(RestartHomebridgeComponent, {
+      this.$modal.open(RestartComponent, {
         size: 'lg',
         backdrop: 'static',
       });
@@ -219,7 +218,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   }
 
   onRestore() {
-    this.modalService.open(ConfigRestoreBackupComponent, {
+    this.modalService.open(ConfigRestoreComponent, {
       size: 'lg',
       backdrop: 'static',
     })
