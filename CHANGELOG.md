@@ -26,6 +26,13 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix missing translation string in setup wizard
 - various ui improvements and code consistency, including:
   - new design for the 'manage version' plugin modal
+  - updated language strings in some of the settings modals
+  - renamed settings sections to be more descriptive (same functionality)
+    - `Remove Single Cached Accessory` → `Remove Single Accessory`
+    - `Remove All Cached Accessories` → `Remove All Accessories`
+    - `Unpair Bridges / Cameras / TVs / External Accessories` → `Unpair Single Bridge`
+    - `Reset Homebridge Accessory` → `Unpair All Bridges`
+  - restart Homebridge modal will now appear when closing the unpair single bridge modal (only if at least one bridge is unpaired)
 - offer more info about behaviour when disabling a plugin (on disable plugin modal)
 - change the 'power options' screen from a modal to a page
 - allow child bridge extra configuration in the child bridge modal (requires Homebridge 1.8.0 or above)
@@ -41,6 +48,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - remove unused language strings from i18n files
 - rename instances of `BatteryService` to `Battery`
 - update `@ngx-translate/core` and `angular-gridster2`
+- make use of `overrides` in the `package.json` files to patch dependency vulnerabilities
 
 ### Homebridge Dependencies
 
