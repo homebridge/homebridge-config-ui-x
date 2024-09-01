@@ -63,6 +63,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - fix html parts in `ca`, `fr` + `sl` language files
 - update name of `mobile-web-app-capable` meta tag (from `apple-mobile-web-app-capable`)
+- support plugins with dots in their @scope (#2171) (@gtalusan)
 
 ### Other Changes
 

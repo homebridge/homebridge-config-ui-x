@@ -1353,7 +1353,7 @@ export class HomebridgeServiceHelper {
       process.exit(1);
     }
 
-    if (!target.name.match(/^((@[\w-]*)\/)?(homebridge-[\w-]*)$/)) {
+    if (!target.name.match(/^(@[\w-]+(\.[\w-]+)*\/)?homebridge-[\w-]+$/)) {
       this.logger('Invalid plugin name.', 'fail');
       process.exit(1);
     }
