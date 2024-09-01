@@ -66,7 +66,7 @@ import { HomebridgePluginUiMetadata, HomebridgePluginVersions, PluginAlias } fro
 
 @Injectable()
 export class PluginsService {
-  private static readonly PLUGIN_IDENTIFIER_PATTERN = /^((@[\w-]*)\/)?(homebridge-[\w-]*)$/;
+  private static readonly PLUGIN_IDENTIFIER_PATTERN = /^(@[\w-]+(\.[\w-]+)*\/)?homebridge-[\w-]+$/;
 
   private npm: Array<string> = this.getNpmPath();
   private paths: Array<string> = this.getBasePaths();

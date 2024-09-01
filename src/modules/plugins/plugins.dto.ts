@@ -25,7 +25,7 @@ export class PluginActionDto {
   @IsDefined()
   @IsNotEmpty()
   @IsString()
-  @Matches(/^((@[\w-]*)\/)?(homebridge-[\w-]*)$/)
+  @Matches(/^(@[\w-]+(\.[\w-]+)*\/)?homebridge-[\w-]+$/)
     name: string;
 
   @IsOptional()
