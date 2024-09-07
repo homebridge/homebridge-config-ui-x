@@ -193,6 +193,7 @@
   "plugins.compatibility.node_too_low": "{{ pluginName }} 플러그인은 Node.js v{{ minVersion }} 이상 버전에서 실행이 권장됩니다. 현재 실행 중인 Node.js 버전은 v{{ installedVersion }} 입니다.",
   "plugins.compatibility.title": "Compatibility Check",
   "plugins.compatibility.update_node_first": "{{ packageName }}를 업데이트하기 전에 Node.js를 업그레이드 해주세요.",
+  "plugins.compatibility.update_node_link": "How To Update Node.js",
   "plugins.donate.button_donate": "기부",
   "plugins.donate.button_not_verified": "Not Verified",
   "plugins.donate.button_verified": "확인됨",

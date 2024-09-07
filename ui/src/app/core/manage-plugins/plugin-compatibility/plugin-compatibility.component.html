@@ -14,7 +14,9 @@
       <ul class="text-left">
         <li *ngIf="!isValidNode">
           {{ 'plugins.compatibility.node_too_low' | translate: { pluginName: plugin.name, minVersion: nodeMinVersion, installedVersion: nodeInstalledVersion } }}
-          <a href="https://homebridge.io/w/JTKEF" target="_blank" rel="noopener noreferrer">How To Update Node.js <i class="fa fa-fw fa-external-link-alt"></i></a>
+          <a href="https://homebridge.io/w/JTKEF" target="_blank" rel="noopener noreferrer">
+            {{ 'plugins.compatibility.update_node_link' | translate }} <i class="fa fa-fw fa-external-link-alt"></i>
+          </a>
         </li>
         <li *ngIf="!isValidHb">
           {{ 'plugins.compatibility.hb_too_low' | translate: { pluginName: plugin.name, minVersion: hbMinVersion, installedVersion: hbInstalledVersion } }}
@@ -29,7 +31,9 @@
       <ul class="text-left">
         <li *ngIf="!isValidNode">
           {{ 'plugins.compatibility.hb_node_too_low' | translate: { minVersion: nodeMinVersion, installedVersion: nodeInstalledVersion, latestVersion: plugin.latestVersion, packageName: 'Homebridge' } }}
-          <a href="https://homebridge.io/w/JTKEF" target="_blank" rel="noopener noreferrer">How To Update Node.js <i class="fa fa-fw fa-external-link-alt"></i></a>
+          <a href="https://homebridge.io/w/JTKEF" target="_blank" rel="noopener noreferrer">
+            {{ 'plugins.compatibility.update_node_link' | translate }} <i class="fa fa-fw fa-external-link-alt"></i>
+          </a>
         </li>
       </ul>
       <p>
@@ -43,7 +47,9 @@
       <ul class="text-left">
         <li *ngIf="!isValidNode">
           {{ 'plugins.compatibility.hb_node_too_low' | translate: { minVersion: nodeMinVersion, installedVersion: nodeInstalledVersion, latestVersion: plugin.latestVersion, packageName: 'Homebridge UI' } }}
-          <a href="https://homebridge.io/w/JTKEF" target="_blank" rel="noopener noreferrer">How To Update Node.js <i class="fa fa-fw fa-external-link-alt"></i></a>
+          <a href="https://homebridge.io/w/JTKEF" target="_blank" rel="noopener noreferrer">
+            {{ 'plugins.compatibility.update_node_link' | translate }} <i class="fa fa-fw fa-external-link-alt"></i>
+          </a>
         </li>
       </ul>
       <p>

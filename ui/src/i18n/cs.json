@@ -193,6 +193,7 @@
   "plugins.compatibility.node_too_low": "Plugin {{ pluginName }} vyžaduje pro běh Homebridge ve verzi v{{ minVersion }} nebo vyšší. Vaše aktuálně běžící verze Homebridge v{{ installedVersion }}.",
   "plugins.compatibility.title": "Compatibility Check",
   "plugins.compatibility.update_node_first": "Před aktualizací {{ packageName }} aktualizujte Node.js.",
+  "plugins.compatibility.update_node_link": "How To Update Node.js",
   "plugins.donate.button_donate": "Podpořit",
   "plugins.donate.button_not_verified": "Not Verified",
   "plugins.donate.button_verified": "Ověřeno",

@@ -193,6 +193,7 @@
   "plugins.compatibility.node_too_low": "{{ pluginName }} ปลั๊กอินแนะนำให้ทำงานบน Node.js รุ่น{{ minVersion }} หรือใหม่กว่า. โดยที่คุณกำลังใช้ Node.js {{ installedVersion }}.",
   "plugins.compatibility.title": "Compatibility Check",
   "plugins.compatibility.update_node_first": "โปรดอัปเกรด Node.js ก่อนอัปเดต {{ packageName }}.",
+  "plugins.compatibility.update_node_link": "How To Update Node.js",
   "plugins.donate.button_donate": "บริจาค",
   "plugins.donate.button_not_verified": "ไม่ได้รับการรับรอง",
   "plugins.donate.button_verified": "ตรวจสอบแล้ว",
