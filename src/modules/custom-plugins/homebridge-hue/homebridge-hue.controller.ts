@@ -15,7 +15,6 @@ import { HomebridgeHueService } from './homebridge-hue.service';
 @UseGuards(AuthGuard())
 @Controller('plugins/custom-plugins/homebridge-hue')
 export class HomebridgeHueController {
-
   constructor(
     private homebridgeHueService: HomebridgeHueService,
   ) {}

@@ -11,6 +11,10 @@ export interface HomebridgePlugin {
   latestVersion?: string;
   lastUpdated?: string;
   updateAvailable?: boolean;
+  updateEngines?: {
+    homebridge?: string;
+    node?: string;
+  };
   updateTag?: string;
   installPath?: string;
   globalInstall?: boolean;
@@ -38,7 +42,9 @@ export type HomebridgePluginUiMetadata = {
 
 export interface HomebridgePluginVersions {
   tags: Record<string, string>;
-  versions: Array<string>;
+  versions: {
+    [key: string]: IPackageJson;
+  }
 }
 
 export interface INpmPerson {

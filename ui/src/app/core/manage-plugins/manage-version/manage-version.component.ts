@@ -5,6 +5,14 @@ import { ToastrService } from 'ngx-toastr';
 import { rcompare } from 'semver';
 import { ApiService } from '@/app/core/api.service';
 
+interface VersionData {
+  version: string;
+  engines?: {
+    homebridge: string;
+    node: string;
+  };
+}
+
 @Component({
   templateUrl: './manage-version.component.html',
 })
@@ -12,7 +20,7 @@ export class ManageVersionComponent implements OnInit {
   @Input() plugin: any;
 
   public loading = true;
-  public versions: Array<{ version: string }> = [];
+  public versions: Array<VersionData> = [];
   public versionsWithTags: Array<{ version: string; tag: string }> = [];
   public versionSelect: string;
 
@@ -30,26 +38,27 @@ export class ManageVersionComponent implements OnInit {
 
   lookupVersions() {
     this.$api.get(`/plugins/lookup/${encodeURIComponent(this.plugin.name)}/versions`).subscribe(
-      (result) => {
-        const tagVersions = {};
-        for (const key of Object.keys(result.tags)) {
-          tagVersions[result.tags[key]] = key;
-        }
+      (result: { versions: { [key: string]: VersionData }; tags: { [key: string]: string } }) => {
+        const tagVersions = new Set<string>();
 
-        const versions = result.versions.sort(rcompare);
-
-        for (const version of versions) {
+        for (const [version, data] of Object.entries(result.versions)) {
           this.versions.push({
             version,
+            engines: data.engines || null,
           });
 
-          if (tagVersions[version]) {
+          const tag = Object.keys(result.tags).find(key => result.tags[key] === version);
+          if (tag) {
             this.versionsWithTags.push({
               version,
-              tag: tagVersions[version],
+              tag,
             });
+            tagVersions.add(version);
           }
         }
+
+        // Sort the versions array
+        this.versions.sort((a, b) => rcompare(a.version, b.version));
 
         // Sort the versionsWithTags by tag, with ordering latest, next, beta, alpha, any other
         this.versionsWithTags.sort((a, b) => {
@@ -73,6 +82,11 @@ export class ManageVersionComponent implements OnInit {
   }
 
   doInstall(selectedVersion: string) {
-    this.activeModal.close(selectedVersion);
+    this.activeModal.close({
+      name: this.plugin.name,
+      version: selectedVersion,
+      engines: this.versions.find((x) => x.version === selectedVersion).engines,
+      action: this.plugin.installedVersion ? 'alternate' : 'install',
+    });
   }
 }

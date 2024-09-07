@@ -304,13 +304,11 @@ describe('BackupController (e2e)', () => {
   // https://github.com/homebridge/homebridge-config-ui-x/issues/1856
 
   it('POST /backup/restore of a large .homebridge directory should backup, but restore will not work', async () => {
-
     // Create a large file to be included within the backup
 
     emptyDirSync(resolve(process.env.UIX_STORAGE_PATH, 'largefile'));
 
     const createEmptyFileOfSize = (fileName, size) => {
-
       //function code taken from http://blog.tompawlak.org/how-to-generate-random-values-nodejs-javascript
       function randomValueHex(len) {
         return crypto.randomBytes(Math.ceil(len / 2))

@@ -13,8 +13,8 @@ import { ManagePluginComponent } from '@/app/core/manage-plugins/manage-plugin/m
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service';
 import { ManageVersionComponent } from '@/app/core/manage-plugins/manage-version/manage-version.component';
 import { ManualConfigComponent } from '@/app/core/manage-plugins/manual-config/manual-config.component'; // eslint-disable-line max-len
-import { NodeUpdateRequiredComponent } from '@/app/core/manage-plugins/node-update-required/node-update-required.component'; // eslint-disable-line max-len
 import { PluginBridgeComponent } from '@/app/core/manage-plugins/plugin-bridge/plugin-bridge.component';
+import { PluginCompatibilityComponent } from '@/app/core/manage-plugins/plugin-compatibility/plugin-compatibility.component'; // eslint-disable-line max-len
 import { PluginConfigComponent } from '@/app/core/manage-plugins/plugin-config/plugin-config.component';
 import { PluginLogsComponent } from '@/app/core/manage-plugins/plugin-logs/plugin-logs.component';
 import { UninstallPluginComponent } from '@/app/core/manage-plugins/uninstall-plugin/uninstall-plugin.component';
@@ -24,7 +24,7 @@ import { UninstallPluginComponent } from '@/app/core/manage-plugins/uninstall-pl
     PluginConfigComponent,
     ManagePluginComponent,
     UninstallPluginComponent,
-    NodeUpdateRequiredComponent,
+    PluginCompatibilityComponent,
     InterpolateMdPipe,
     ManualConfigComponent,
     ManageVersionComponent,

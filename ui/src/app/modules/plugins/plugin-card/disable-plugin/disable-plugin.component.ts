@@ -6,6 +6,8 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 })
 export class DisablePluginComponent {
   @Input() pluginName: string;
+  @Input() isConfigured = false;
+  @Input() isConfiguredDynamicPlatform = false;
 
   constructor(
     public activeModal: NgbActiveModal,

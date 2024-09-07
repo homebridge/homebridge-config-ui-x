@@ -33,7 +33,6 @@ import {
 @UseGuards(AuthGuard())
 @Controller('users')
 export class UsersController {
-
   constructor(
     private authService: AuthService,
   ) {}
