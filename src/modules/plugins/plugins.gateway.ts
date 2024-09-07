@@ -22,7 +22,6 @@ import { PluginsService } from './plugins.service';
   }),
 }))
 export class PluginsGateway {
-
   constructor(
     private pluginsService: PluginsService,
     private logger: Logger,

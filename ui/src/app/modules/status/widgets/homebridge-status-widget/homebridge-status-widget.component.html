@@ -26,7 +26,7 @@
           </span>
           <a routerLink="/logs" class="primary-text"
             *ngIf="homebridgeStatus.status !== 'up' && homebridgeStatus.status !== 'pending'">
-            {{ 'status.services.label_not_running' | translate}} -
+            {{ 'status.services.label_not_running' | translate }} -
             {{ 'menu.tooltip_view_logs' | translate }}
           </a>
         </div>
@@ -43,7 +43,7 @@
             *ngIf="homebridgePkg.installedVersion && homebridgePkg.updateAvailable"></i>
         </div>
         <div class="align-self-center">
-          <a href="javascript:void(0)" (click)="$plugin.installPreviousVersion(homebridgePkg)" *ngIf="homebridgePkg.installedVersion"
+          <a href="javascript:void(0)" (click)="$plugin.installAlternateVersion(homebridgePkg)" *ngIf="homebridgePkg.installedVersion"
             class="card-link card-link-title">Homebridge</a>
           <span *ngIf="!homebridgePkg.installedVersion">Homebridge</span>
           <br>
@@ -73,7 +73,7 @@
              *ngIf="homebridgeUiPkg.installedVersion && homebridgeUiPkg.updateAvailable"></i>
         </div>
         <div class="align-self-center">
-          <a href="javascript:void(0)" (click)="$plugin.installPreviousVersion(homebridgeUiPkg)" *ngIf="homebridgeUiPkg.installedVersion"
+          <a href="javascript:void(0)" (click)="$plugin.installAlternateVersion(homebridgeUiPkg)" *ngIf="homebridgeUiPkg.installedVersion"
             class="card-link card-link-title">Homebridge UI</a>
           <span *ngIf="!homebridgeUiPkg.installedVersion">Homebridge UI</span>
           <br>

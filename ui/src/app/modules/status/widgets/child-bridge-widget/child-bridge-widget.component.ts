@@ -59,7 +59,6 @@ export class ChildBridgeWidgetComponent implements OnInit, OnDestroy {
       );
       bridge.restartInProgress = false;
     } finally {
-
       setTimeout(() => {
         bridge.restartInProgress = false;
       }, 12000);

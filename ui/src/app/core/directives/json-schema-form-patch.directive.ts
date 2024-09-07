@@ -16,11 +16,9 @@ export class JsonSchemaFormPatchDirective {
 
   constructor(
     @Host() @Self() @Optional() public jsonSchemaForm: JsonSchemaFormComponent) {
-
     const buildLayoutOriginal = jsonSchemaForm.jsf.buildLayout.bind(jsonSchemaForm.jsf);
 
     jsonSchemaForm.jsf.buildLayout = (widgetLibrary: any) => {
-
       buildLayoutOriginal(widgetLibrary);
       if (jsonSchemaForm.jsf.formValues && this.jsfPatch) {
         return this.fixNestedArrayLayout(
@@ -56,10 +54,8 @@ export class JsonSchemaFormPatchDirective {
 
   private fixNestedArray(item: any, formData: any, refPointer: string) {
     if (item.items && Array.isArray(item.items)) {
-
       const ref = item.items.find(x => x.type === '$ref');
       if (ref) {
-
         const dataItems = item.items.filter(x => x.type === 'section' || x.type === 'div');
 
         const template = dataItems.length > 0

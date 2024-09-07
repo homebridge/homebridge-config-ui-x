@@ -18,7 +18,6 @@ export class ThermostatManageComponent implements OnInit {
   constructor(
     public activeModal: NgbActiveModal,
   ) {
-
     this.targetTemperatureChanged
       .pipe(
         debounceTime(300),

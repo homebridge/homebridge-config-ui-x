@@ -11,7 +11,6 @@ import { PluginsSettingsUiService } from './plugins-settings-ui.service';
 @ApiTags('Plugins')
 @Controller('plugins/settings-ui')
 export class PluginsSettingsUiController {
-
   constructor(
     private pluginSettingsUiService: PluginsSettingsUiService,
   ) {}

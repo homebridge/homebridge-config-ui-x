@@ -27,7 +27,6 @@ import { ServerService } from './server.service';
 @UseGuards(AuthGuard())
 @Controller('server')
 export class ServerController {
-
   constructor(
     private serverService: ServerService,
     private childBridgesService: ChildBridgesService,

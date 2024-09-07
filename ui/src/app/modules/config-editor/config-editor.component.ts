@@ -114,7 +114,6 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     this.saveInProgress = true;
     // verify homebridgeConfig contains valid json
     try {
-
       // get the value from the editor
       if (!this.isMobile) {
         // format the document
