@@ -193,6 +193,7 @@
   "plugins.compatibility.node_too_low": "Wtyczka {{ pluginName }} powinna być instalowana używając Node.js w wersji v{{ minVersion }} lub nowszej. Aktualnie używasz Node.js w wersji v{{ installedVersion }}.",
   "plugins.compatibility.title": "Compatibility Check",
   "plugins.compatibility.update_node_first": "Zaktualizuj Node.js przed aktualizacją {{ packageName }} i spróbuj ponownie.",
+  "plugins.compatibility.update_node_link": "How To Update Node.js",
   "plugins.donate.button_donate": "Wspomóż",
   "plugins.donate.button_not_verified": "Niezweryfikowana",
   "plugins.donate.button_verified": "Zweryfikowana",

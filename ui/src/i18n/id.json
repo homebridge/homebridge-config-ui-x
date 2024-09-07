@@ -193,6 +193,7 @@
   "plugins.compatibility.node_too_low": "Plugin {{ pluginName }} merekomendasikan Node.js v{{ minVersion }} atau lebih baru. Saat ini anda menjalankan Node.js {{ installedVersion }}.",
   "plugins.compatibility.title": "Compatibility Check",
   "plugins.compatibility.update_node_first": "Harap tingkatkan Node.js sebelum memperbaharui {{ packageName }}.",
+  "plugins.compatibility.update_node_link": "How To Update Node.js",
   "plugins.donate.button_donate": "Donasi",
   "plugins.donate.button_not_verified": "Not Verified",
   "plugins.donate.button_verified": "Diverifikasi",

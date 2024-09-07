@@ -193,6 +193,7 @@
   "plugins.compatibility.node_too_low": "Plugin {{ pluginName }} rekommenderas att köras med Node.js v{{ minVersion }} eller senare. Du kör just nu Node.js {{ installedVersion }}.",
   "plugins.compatibility.title": "Compatibility Check",
   "plugins.compatibility.update_node_first": "Uppgradera Node.js innan du uppdaterar {{ packageName }}.",
+  "plugins.compatibility.update_node_link": "How To Update Node.js",
   "plugins.donate.button_donate": "Donera",
   "plugins.donate.button_not_verified": "Ej verifierad",
   "plugins.donate.button_verified": "Verifierad",

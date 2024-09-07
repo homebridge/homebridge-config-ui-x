@@ -193,6 +193,7 @@
   "plugins.compatibility.node_too_low": "{{ pluginName }} eklentisi Node.js v{{ minVersion }} veya daha üst sürümünü çalıştırmanızı tavsiye ediyor. Mevutta Node.js {{ installedVersion }} çalıştırıyorsunuz.",
   "plugins.compatibility.title": "Compatibility Check",
   "plugins.compatibility.update_node_first": "Lütfen {{ packageName }}'i güncellemeden önce Node.js sürümünü yükseltin.",
+  "plugins.compatibility.update_node_link": "How To Update Node.js",
   "plugins.donate.button_donate": "Bağış Yap",
   "plugins.donate.button_not_verified": "Not Verified",
   "plugins.donate.button_verified": "Doğrulandı",

@@ -193,6 +193,7 @@
   "plugins.compatibility.node_too_low": "Плагін {{ pluginName }} рекомендовано запускати використовуючи Node.js v{{ minVersion }} або новішої. На даний час Ви використовуєте Node.js {{ installedVersion }}.",
   "plugins.compatibility.title": "Compatibility Check",
   "plugins.compatibility.update_node_first": "Будь ласка, оновіть Node.js перед оновленням {{ packageName }}.",
+  "plugins.compatibility.update_node_link": "How To Update Node.js",
   "plugins.donate.button_donate": "Задонатити",
   "plugins.donate.button_not_verified": "Не перевірено",
   "plugins.donate.button_verified": "Перевірено",

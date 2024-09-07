@@ -207,17 +207,13 @@ export class ManagePluginsService {
 
     try {
       // Check Node.js version from the `package.engines` of the plugin being installed/updated
-      if (plugin.updateEngines?.node) {
-        if (lt(this.$settings.env.nodeVersion, minVersion(plugin.updateEngines.node))) {
-          isValidNode = false;
-        }
+      if (plugin.updateEngines?.node && lt(this.$settings.env.nodeVersion, minVersion(plugin.updateEngines.node))) {
+        isValidNode = false;
       }
 
       // Check Homebridge version from the `package.engines` of the plugin being installed/updated
-      if (plugin.updateEngines?.homebridge) {
-        if (lt(this.$settings.env.homebridgeVersion, minVersion(plugin.updateEngines.homebridge))) {
-          isValidHb = false;
-        }
+      if (plugin.updateEngines?.homebridge && lt(this.$settings.env.homebridgeVersion, minVersion(plugin.updateEngines.homebridge))) {
+        isValidHb = false;
       }
     } catch (e) {
       this.$toastr.error(`Failed to check compatibility: ${e.message}`);
