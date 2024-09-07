@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AbstractControl } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -9,7 +9,7 @@ import { ApiService } from '@/app/core/api.service';
 @Component({
   templateUrl: './users-add.component.html',
 })
-export class UsersAddComponent implements OnInit {
+export class UsersAddComponent {
   form = new FormGroup({
     username: new FormControl('', [Validators.required]),
     name: new FormControl('', [Validators.required]),
@@ -30,10 +30,6 @@ export class UsersAddComponent implements OnInit {
     private translate: TranslateService,
     private $api: ApiService,
   ) {}
-
-  ngOnInit(): void {
-
-  }
 
   matchPassword(AC: AbstractControl) {
     const password = AC.get('password').value;

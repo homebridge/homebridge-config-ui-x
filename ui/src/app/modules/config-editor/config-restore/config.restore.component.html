@@ -18,7 +18,7 @@
           <td class="w-100">{{ backup.timestamp | date:'medium' }}</td>
           <td nowrap>
             <a class="card-link" (click)="restore(backup.id)">
-              {{'config.restore.message_copy_to_editor' | translate}} <i class="fas fa-fw fa-arrow-right"></i>
+              {{ 'config.restore.message_copy_to_editor' | translate }} <i class="fas fa-fw fa-arrow-right"></i>
             </a>
           </td>
         </tr>

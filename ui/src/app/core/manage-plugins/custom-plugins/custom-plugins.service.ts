@@ -8,7 +8,6 @@ import { HomebridgeGoogleSmarthomeComponent } from '@/app/core/manage-plugins/cu
   providedIn: 'root',
 })
 export class CustomPluginsService {
-
   public plugins = {
     'homebridge-gsh': HomebridgeGoogleSmarthomeComponent,
   };

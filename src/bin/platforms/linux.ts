@@ -337,7 +337,6 @@ export class LinuxInstaller extends BasePlatform {
    * Update Node.js from the tarball archives
    */
   private async updateNodeFromTarball(job: { target: string; rebuild: boolean }, targetPath: string) {
-
     try {
       if (Boolean(process.env.HOMEBRIDGE_SYNOLOGY_PACKAGE === '1')) {
         // skip glibc version check on Synology DSM
@@ -421,7 +420,6 @@ export class LinuxInstaller extends BasePlatform {
     this.hbService.logger('Updating from NodeSource...');
 
     try {
-
       await this.glibcVersionCheck(job.target);
       const majorVersion = parse(job.target).major;
       // update apt (and accept release info changes)
