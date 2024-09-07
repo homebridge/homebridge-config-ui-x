@@ -118,7 +118,6 @@ export class PluginsService {
     private logger: Logger,
     private configService: ConfigService,
   ) {
-
     /**
      * The "timeout" option on axios is the response timeout
      * If the user has no internet, the dns lookup may take a long time to timeout
@@ -237,7 +236,13 @@ export class PluginsService {
 
       return {
         tags: pkg['dist-tags'],
-        versions: Object.keys(pkg.versions),
+        versions: Object.keys(pkg.versions).reduce((acc, key) => {
+          acc[key] = {
+            version: pkg.versions[key].version,
+            engines: pkg.versions[key].engines || null,
+          };
+          return acc;
+        }, {}),
       };
 
     } catch (e) {
@@ -548,9 +553,10 @@ export class PluginsService {
     if (installedTag && ['alpha', 'beta', 'test'].includes(installedTag) && gt(homebridge.installedVersion, homebridge.latestVersion)) {
       const versions = await this.getAvailablePluginVersions('homebridge');
       if (versions.tags[installedTag] && gt(versions.tags[installedTag], homebridge.installedVersion)) {
-        homebridge.updateAvailable = true;
-        homebridge.updateTag = installedTag;
         homebridge.latestVersion = versions.tags[installedTag];
+        homebridge.updateAvailable = true;
+        homebridge.updateEngines = versions.versions?.[homebridge.latestVersion]?.engines || null;
+        homebridge.updateTag = installedTag;
       }
     }
 
@@ -1293,6 +1299,7 @@ export class PluginsService {
 
       plugin.latestVersion = pkg.version;
       plugin.updateAvailable = gt(pkg.version, plugin.installedVersion);
+      plugin.updateEngines = plugin.updateAvailable ? pkg.engines : null;
 
       // check for beta updates, if no latest version is available
       if (!plugin.updateAvailable) {
@@ -1307,6 +1314,7 @@ export class PluginsService {
           if (versions.tags[installedTag] && gt(versions.tags[installedTag], plugin.installedVersion)) {
             plugin.latestVersion = versions.tags[installedTag];
             plugin.updateAvailable = true;
+            plugin.updateEngines = versions.versions?.[plugin.latestVersion]?.engines || null;
             plugin.updateTag = installedTag;
           }
         }

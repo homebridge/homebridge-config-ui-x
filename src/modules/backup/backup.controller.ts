@@ -29,7 +29,6 @@ import { BackupService } from './backup.service';
 @UseGuards(AuthGuard())
 @Controller('backup')
 export class BackupController {
-
   constructor(
     private backupService: BackupService,
     private logger: Logger,

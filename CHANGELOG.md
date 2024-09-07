@@ -4,6 +4,8 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ### BETA
 
+⚠️ The minimum version of Homebridge needed for this version of UI is `v1.8.0`. If you are running a lower version of Homebridge, you should consider updating before installing this UI update.
+
 ### UI Changes
 
 - added warning messages for backup files too large to be restored (@NorthernMan54)
@@ -37,6 +39,9 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - change the 'power options' screen from a modal to a page
 - allow child bridge extra configuration in the child bridge modal (requires Homebridge 1.8.0 or above)
 - minor adjustments to settings page, add expands
+- improve plugin compatibility checker
+  - this will now compare your Homebridge and node versions against a version of a plugin you are going to install, rather than the version you currently have installed
+  - the check will be run when you are installing a plugin, updating a plugin and installing an alternate version of a plugin
 
 ### UI Fixes
 

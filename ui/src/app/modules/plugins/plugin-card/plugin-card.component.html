@@ -20,10 +20,10 @@
             </h5>
             <div class="ml-auto">
               <!-- update available -->
-              <a href="javascript:void(0)" class="card-link" (click)="$plugin.updatePlugin(plugin, plugin.updateTag || 'latest')"
+              <a href="javascript:void(0)" class="card-link" (click)="$plugin.checkAndUpdatePlugin(plugin, plugin.updateTag || 'latest')"
                 *ngIf="plugin.installedVersion && plugin.updateAvailable && !childBridgeRestartInProgress"
                 [ngbTooltip]="'plugins.button_update' | translate" container="body" [attr.aria-label]="'plugins.button_update' | translate">
-                <i class="fas fa-fw fa-arrow-alt-circle-up primary-text fa-lg fa-fade ml-3" style="--fa-animation-duration: 2s;"></i>
+                <i class="far fa-fw fa-arrow-alt-circle-up primary-text fa-lg fa-fade ml-3" style="--fa-animation-duration: 2s;"></i>
               </a>
               <!-- // -->
               <!-- installed, not configured -->
@@ -129,7 +129,7 @@
               <!-- // -->
               <!-- icon for plugin not installed, to download -->
               <a href="javascript:void(0)" *ngIf="plugin.publicPackage && !plugin.installedVersion"
-                (click)="$plugin.installPreviousVersion(plugin)">
+                (click)="$plugin.installAlternateVersion(plugin)">
                 <i class="far fa-fw fa-arrow-alt-circle-down fa-lg"></i>
               </a>
               <!-- // -->
@@ -153,7 +153,7 @@
                   </button>
                   <!-- // -->
                   <!-- plugin manage version -->
-                  <button ngbDropdownItem *ngIf="plugin.publicPackage" (click)="$plugin.installPreviousVersion(plugin)">
+                  <button ngbDropdownItem *ngIf="plugin.publicPackage" (click)="$plugin.installAlternateVersion(plugin)">
                     <i class="fas fa-fw fa-history"></i>
                     {{ 'plugins.manage.message_install_alternate_version' | translate }}
                   </button>

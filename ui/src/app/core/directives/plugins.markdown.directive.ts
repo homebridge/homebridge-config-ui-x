@@ -5,7 +5,6 @@ import { EmojiConvertor } from 'emoji-js';
   selector: 'markdown',
 })
 export class PluginsMarkdownDirective implements OnInit {
-
   constructor(
     private el: ElementRef,
   ) {}

@@ -78,7 +78,6 @@ export class StatusService {
     private serverService: ServerService,
     private homebridgeIpcService: HomebridgeIpcService,
   ) {
-
     // systeminformation cpu data is not supported in FreeBSD Jail Shells
     if (platform() === 'freebsd') {
       this.getCpuLoadPoint = this.getCpuLoadPointAlt;

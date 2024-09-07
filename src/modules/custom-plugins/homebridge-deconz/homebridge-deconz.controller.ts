@@ -15,7 +15,6 @@ import { HomebridgeDeconzService } from './homebridge-deconz.service';
 @UseGuards(AuthGuard())
 @Controller('plugins/custom-plugins/homebridge-deconz')
 export class HomebridgeDeconzController {
-
   constructor(
     private homebridgeDeconzService: HomebridgeDeconzService,
   ) {}

@@ -9,7 +9,6 @@ import { ApiService } from '@/app/core/api.service';
   templateUrl: './homebridge-hue.component.html',
 })
 export class HomebridgeHueComponent {
-
   constructor(
     private translate: TranslateService,
     public $toastr: ToastrService,
