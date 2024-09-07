@@ -44,11 +44,15 @@ export class ManagePluginsService {
     ref.componentInstance.plugin = plugin;
   }
 
-  async updatePlugin(plugin: any, targetVersion = 'latest') {
+  async checkAndUpdatePlugin(plugin: any, targetVersion = 'latest') {
     if (!await this.checkHbAndNodeVersion(plugin, 'update')) {
       return;
     }
 
+    await this.updatePlugin(plugin, targetVersion);
+  }
+
+  async updatePlugin(plugin: any, targetVersion: string) {
     const ref = this.modalService.open(ManagePluginComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -91,19 +95,19 @@ export class ManagePluginsService {
     ref.componentInstance.plugin = plugin;
 
     try {
-      const { action, selectedVersion, engines } = await ref.result;
+      const { action, version, engines } = await ref.result;
 
       if (!await this.checkHbAndNodeVersion({ ...plugin, updateEngines: engines }, action)) {
         return;
       }
 
       if (plugin.name === 'homebridge') {
-        return await this.upgradeHomebridge(plugin, selectedVersion);
+        return await this.upgradeHomebridge(plugin, version);
       }
 
       return plugin.installedVersion
-        ? await this.updatePlugin(plugin, selectedVersion)
-        : this.installPlugin(plugin.name, selectedVersion);
+        ? await this.updatePlugin(plugin, version)
+        : this.installPlugin(plugin.name, version);
     } catch (e) {
       // do nothing
     }

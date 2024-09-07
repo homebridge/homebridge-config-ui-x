@@ -20,7 +20,7 @@
             </h5>
             <div class="ml-auto">
               <!-- update available -->
-              <a href="javascript:void(0)" class="card-link" (click)="$plugin.updatePlugin(plugin, plugin.updateTag || 'latest')"
+              <a href="javascript:void(0)" class="card-link" (click)="$plugin.checkAndUpdatePlugin(plugin, plugin.updateTag || 'latest')"
                 *ngIf="plugin.installedVersion && plugin.updateAvailable && !childBridgeRestartInProgress"
                 [ngbTooltip]="'plugins.button_update' | translate" container="body" [attr.aria-label]="'plugins.button_update' | translate">
                 <i class="far fa-fw fa-arrow-alt-circle-up primary-text fa-lg fa-fade ml-3" style="--fa-animation-duration: 2s;"></i>
