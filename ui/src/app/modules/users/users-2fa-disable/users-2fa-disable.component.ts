@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
@@ -8,8 +8,7 @@ import { ApiService } from '@/app/core/api.service';
 @Component({
   templateUrl: './users-2fa-disable.component.html',
 })
-export class Users2faDisableComponent implements OnInit {
-
+export class Users2faDisableComponent {
   public formGroup = new FormGroup({
     password: new FormControl('', [Validators.required]),
   });
@@ -22,10 +21,6 @@ export class Users2faDisableComponent implements OnInit {
     private translate: TranslateService,
     private $api: ApiService,
   ) {}
-
-  ngOnInit(): void {
-
-  }
 
   disable2fa() {
     this.invalidCredentials = false;

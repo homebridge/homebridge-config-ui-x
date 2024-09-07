@@ -9,7 +9,7 @@
   <div class="text-center">
     <h4 class="primary-text">{{ 'restart.title_restart' | translate }}</h4>
     <p class="grey-text" *ngIf="!error">
-      {{ 'restart.message_please_wait_while_server_restarts' | translate}}
+      {{ 'restart.message_please_wait_while_server_restarts' | translate }}
     </p>
     <div class="alert alert-error my-4" *ngIf="error">{{ error }}</div>
     <div class="justify-content-center my-4" *ngIf="!this.error">
@@ -36,7 +36,7 @@
           {{ 'restart.message_server_is_taking_long_time_to_restart' | translate }}
         </p>
         <p class="mb-0">
-          {{ 'restart.label_restart_command_executed' | translate}}: <span class="text-monospace">{{ resp.command || "End Process" }}</span>
+          {{ 'restart.label_restart_command_executed' | translate }}: <span class="text-monospace">{{ resp.command || "End Process" }}</span>
         </p>
         <p *ngIf="uiOnline" class="mt-2 mb-0">
           <button class="btn btn-primary mb-0" (click)="viewLogs()">

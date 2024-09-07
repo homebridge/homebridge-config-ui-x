@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
-import { gte, minVersion } from 'semver';
+import { lt, minVersion } from 'semver';
 import { ApiService } from '@/app/core/api.service';
 import { CustomPluginsService } from '@/app/core/manage-plugins/custom-plugins/custom-plugins.service';
 import { ManagePluginComponent } from '@/app/core/manage-plugins/manage-plugin/manage-plugin.component';
 import { ManageVersionComponent } from '@/app/core/manage-plugins/manage-version/manage-version.component';
 import { ManualConfigComponent } from '@/app/core/manage-plugins/manual-config/manual-config.component'; // eslint-disable-line max-len
-import { NodeUpdateRequiredComponent } from '@/app/core/manage-plugins/node-update-required/node-update-required.component'; // eslint-disable-line max-len
 import { PluginBridgeComponent } from '@/app/core/manage-plugins/plugin-bridge/plugin-bridge.component';
+import { PluginCompatibilityComponent } from '@/app/core/manage-plugins/plugin-compatibility/plugin-compatibility.component'; // eslint-disable-line max-len
 import { PluginConfigComponent } from '@/app/core/manage-plugins/plugin-config/plugin-config.component';
 import { UninstallPluginComponent } from '@/app/core/manage-plugins/uninstall-plugin/uninstall-plugin.component';
 import { SettingsService } from '@/app/core/settings.service';
@@ -17,7 +17,6 @@ import { SettingsService } from '@/app/core/settings.service';
   providedIn: 'root',
 })
 export class ManagePluginsService {
-
   constructor(
     private modalService: NgbModal,
     private customPluginsService: CustomPluginsService,
@@ -45,11 +44,15 @@ export class ManagePluginsService {
     ref.componentInstance.plugin = plugin;
   }
 
-  async updatePlugin(plugin: any, targetVersion = 'latest') {
-    if (!await this.checkNodeVersion(plugin)) {
+  async checkAndUpdatePlugin(plugin: any, targetVersion = 'latest') {
+    if (!await this.checkHbAndNodeVersion(plugin, 'update')) {
       return;
     }
 
+    await this.updatePlugin(plugin, targetVersion);
+  }
+
+  async updatePlugin(plugin: any, targetVersion: string) {
     const ref = this.modalService.open(ManagePluginComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -63,7 +66,7 @@ export class ManagePluginsService {
   }
 
   async upgradeHomebridge(homebridgePkg: any, targetVersion = 'latest') {
-    if (!await this.checkNodeVersion(homebridgePkg)) {
+    if (!await this.checkHbAndNodeVersion(homebridgePkg, 'update')) {
       return;
     }
 
@@ -83,7 +86,7 @@ export class ManagePluginsService {
    *
    * @param plugin
    */
-  async installPreviousVersion(plugin: any) {
+  async installAlternateVersion(plugin: any) {
     const ref = this.modalService.open(ManageVersionComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -92,10 +95,19 @@ export class ManagePluginsService {
     ref.componentInstance.plugin = plugin;
 
     try {
-      const targetVersion = await ref.result;
-      return plugin.installedVersion && plugin.name !== 'homebridge' ?
-        await this.updatePlugin(plugin, targetVersion) :
-        this.installPlugin(plugin.name, targetVersion);
+      const { action, version, engines } = await ref.result;
+
+      if (!await this.checkHbAndNodeVersion({ ...plugin, updateEngines: engines }, action)) {
+        return;
+      }
+
+      if (plugin.name === 'homebridge') {
+        return await this.upgradeHomebridge(plugin, version);
+      }
+
+      return plugin.installedVersion
+        ? await this.updatePlugin(plugin, version)
+        : this.installPlugin(plugin.name, version);
     } catch (e) {
       // do nothing
     }
@@ -189,30 +201,52 @@ export class ManagePluginsService {
     });
   }
 
-  private async loadConfigSchema(pluginName: string) {
-    return this.$api.get(`/plugins/config-schema/${encodeURIComponent(pluginName)}`).toPromise();
-  }
+  async checkHbAndNodeVersion(plugin: any, action: string): Promise<boolean> {
+    let isValidNode = true;
+    let isValidHb = true;
 
-  private async checkNodeVersion(plugin: any): Promise<boolean> {
-    if (plugin.engines && plugin.engines.node) {
-      if (gte(this.$settings.env.nodeVersion, minVersion(plugin.engines.node))) {
-        return true;
+    try {
+      // Check Node.js version from the `package.engines` of the plugin being installed/updated
+      if (plugin.updateEngines?.node) {
+        if (lt(this.$settings.env.nodeVersion, minVersion(plugin.updateEngines.node))) {
+          isValidNode = false;
+        }
       }
 
+      // Check Homebridge version from the `package.engines` of the plugin being installed/updated
+      if (plugin.updateEngines?.homebridge) {
+        if (lt(this.$settings.env.homebridgeVersion, minVersion(plugin.updateEngines.homebridge))) {
+          isValidHb = false;
+        }
+      }
+    } catch (e) {
+      this.$toastr.error(`Failed to check compatibility: ${e.message}`);
+      return false;
+    }
+
+    // If either are false, open modal warning about compatibility
+    if (!isValidNode || !isValidHb) {
       try {
-        // open modal warning about Node.js version
-        const ref = this.modalService.open(NodeUpdateRequiredComponent, {
+        const ref = this.modalService.open(PluginCompatibilityComponent, {
           size: 'lg',
           backdrop: 'static',
         });
         ref.componentInstance.plugin = plugin;
+        ref.componentInstance.isValidNode = isValidNode;
+        ref.componentInstance.isValidHb = isValidHb;
+        ref.componentInstance.action = action;
 
         return await ref.result;
       } catch (e) {
         return false;
       }
-    } else {
-      return true;
     }
+
+    return true;
+
+  }
+
+  private async loadConfigSchema(pluginName: string) {
+    return this.$api.get(`/plugins/config-schema/${encodeURIComponent(pluginName)}`).toPromise();
   }
 }

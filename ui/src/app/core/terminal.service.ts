@@ -35,7 +35,6 @@ export class TerminalService {
     targetElement: ElementRef,
     termOpts: ITerminalOptions = {},
     elementResize?: Subject<any>) {
-
     // handle element resize events
     this.elementResize = elementResize;
 

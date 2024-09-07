@@ -718,7 +718,6 @@ export class BackupService {
    * Send SIGKILL to Homebridge to prevent accessory cache being re-generated on shutdown
    */
   postBackupRestoreRestart() {
-
     setTimeout(() => {
       // if running in service mode
       if (this.configService.serviceMode) {

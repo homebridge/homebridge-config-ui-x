@@ -286,7 +286,6 @@ export class AccessoriesService {
     this.accessories.services.forEach((service) => {
       if (!service.getCharacteristic) {
         service.getCharacteristic = (type: string) => {
-
           const characteristic = service.serviceCharacteristics.find(x => x.type === type);
 
           if (!characteristic) {

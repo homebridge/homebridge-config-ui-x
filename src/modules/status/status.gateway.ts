@@ -13,7 +13,6 @@ import { StatusService } from './status.service';
   },
 })
 export class StatusGateway {
-
   constructor(
     private statusService: StatusService,
     private pluginsService: PluginsService,

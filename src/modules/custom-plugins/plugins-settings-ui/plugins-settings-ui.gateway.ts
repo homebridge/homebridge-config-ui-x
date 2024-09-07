@@ -12,7 +12,6 @@ import { PluginsSettingsUiService } from './plugins-settings-ui.service';
   },
 })
 export class PluginsSettingsUiGateway {
-
   constructor(
     private pluginSettingsUiService: PluginsSettingsUiService,
   ) {}
