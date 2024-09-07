@@ -97,7 +97,7 @@
     "@angular/forms": "15.2.10",
     "@angular/localize": "15.2.10",
     "@homebridge/hap-client": {
-      "axios": "1.7.6"
+      "axios": "1.7.7"
     },
     "@angular-devkit/build-angular": {
       "webpack": "^5.94.0"
