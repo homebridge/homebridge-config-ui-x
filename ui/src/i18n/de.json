@@ -193,6 +193,7 @@
   "plugins.compatibility.node_too_low": "Das {{ pluginName }}-Plugin empfiehlt Homebridge v{{ minVersion }} oder neuer. Du nutzt derzeit Homebridge v{{ installedVersion }}.",
   "plugins.compatibility.title": "Compatibility Check",
   "plugins.compatibility.update_node_first": "Bitte update Node.js, bevor du {{ packageName }} updatest.",
+  "plugins.compatibility.update_node_link": "How To Update Node.js",
   "plugins.donate.button_donate": "Spenden",
   "plugins.donate.button_not_verified": "Nicht verifiziert",
   "plugins.donate.button_verified": "Verifiziert",

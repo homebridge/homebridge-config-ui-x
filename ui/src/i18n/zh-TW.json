@@ -193,6 +193,7 @@
   "plugins.compatibility.node_too_low": "{{ pluginName }} Plugin 建議以 Node.js v{{ minVersion }} 或更新版本執行。目前所使用的 Node.js 版本為 v{{ installedVersion }}。",
   "plugins.compatibility.title": "Compatibility Check",
   "plugins.compatibility.update_node_first": "於更新 {{ packageName }} 前、請先更新 Node.js。",
+  "plugins.compatibility.update_node_link": "How To Update Node.js",
   "plugins.donate.button_donate": "贊助",
   "plugins.donate.button_not_verified": "Not Verified",
   "plugins.donate.button_verified": "已验证",

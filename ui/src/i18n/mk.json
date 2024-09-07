@@ -193,6 +193,7 @@
   "plugins.compatibility.node_too_low": "Плагинот {{ pluginName }} препорачува да се извршува на Node.js v{{ minVersion }} или понов. Моментално имате Node.js {{ installedVersion }}.",
   "plugins.compatibility.title": "Compatibility Check",
   "plugins.compatibility.update_node_first": "Ве молиме аурирајте го Node.js пред да го ажурирате {{ packageName }}.",
+  "plugins.compatibility.update_node_link": "How To Update Node.js",
   "plugins.donate.button_donate": "Донирај",
   "plugins.donate.button_not_verified": "Not Verified",
   "plugins.donate.button_verified": "Потврдено",

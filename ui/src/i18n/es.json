@@ -193,6 +193,7 @@
   "plugins.compatibility.node_too_low": "El plugin {{ pluginName }} recomienda ejecutarse en Node.js v{{ minVersion }} o superior. Actualmente estás ejecutando Node.js {{ installedVersion }}.",
   "plugins.compatibility.title": "Compatibility Check",
   "plugins.compatibility.update_node_first": "Por favor actualiza Node.js antes de actualizar {{ packageName }}.",
+  "plugins.compatibility.update_node_link": "How To Update Node.js",
   "plugins.donate.button_donate": "Donar",
   "plugins.donate.button_not_verified": "No verificado",
   "plugins.donate.button_verified": "Verificado",
