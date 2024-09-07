@@ -122,9 +122,9 @@ export class PluginsComponent implements OnInit, OnDestroy {
           // Adds some extra properties to the plugin object for the plugin card
           const configBlocks = await this.$api.get(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`).toPromise();
           plugin.isConfigured = configBlocks.length > 0;
+          plugin.isConfiguredDynamicPlatform = plugin.isConfigured && Object.prototype.hasOwnProperty.call(configBlocks[0], 'platform');
 
-          plugin.recommendChildBridge = plugin.isConfigured
-            && Object.prototype.hasOwnProperty.call(configBlocks[0], 'platform')
+          plugin.recommendChildBridge = plugin.isConfiguredDynamicPlatform
             && this.$settings.env.recommendChildBridges
             && this.$settings.env.serviceMode
             && !['homebridge', 'homebridge-config-ui-x'].includes(plugin.name);
