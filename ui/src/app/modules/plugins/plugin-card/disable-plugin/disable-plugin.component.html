@@ -9,11 +9,15 @@
   <div class="modal-body w-100 text-center">
     <i class="fas fa-fw fa-circle-pause primary-text mb-4" style="font-size: 75px;"></i>
     <ngb-alert type="warning" [dismissible]="false">
-      <p class="w-100 text-center mb-0">{{ 'plugins.manage.message_confirm_disable_1' | translate: { pluginName } }}</p>
+      <p class="w-100 text-center mb-0">{{ 'plugins.manage.message_confirm_disable' | translate: { pluginName } }}</p>
     </ngb-alert>
-    <ul class="mb-0 text-left">
-      <li>{{ 'plugins.manage.message_confirm_disable_2' | translate }}</li>
-      <li class="mb-0">{{ 'plugins.manage.message_confirm_disable_3' | translate }}</li>
+    <ul class="mb-0 text-left" *ngIf="isConfigured && !isConfiguredDynamicPlatform">
+      <li>{{ 'plugins.manage.message_confirm_disable_accessory_1' | translate }}</li>
+      <li class="mb-0">{{ 'plugins.manage.message_confirm_disable_accessory_2' | translate }}</li>
+    </ul>
+    <ul class="mb-0 text-left" *ngIf="isConfigured && isConfiguredDynamicPlatform">
+      <li>{{ 'plugins.manage.message_confirm_disable_platform_1' | translate }}</li>
+      <li class="mb-0">{{ 'plugins.manage.message_confirm_disable_platform_2' | translate }}</li>
     </ul>
   </div>
   <div class="modal-footer justify-content-between">

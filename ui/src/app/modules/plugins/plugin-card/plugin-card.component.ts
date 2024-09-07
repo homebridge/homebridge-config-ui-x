@@ -126,6 +126,8 @@ export class PluginCardComponent implements OnInit {
     });
 
     ref.componentInstance.pluginName = plugin.name;
+    ref.componentInstance.isConfigured = plugin.isConfigured;
+    ref.componentInstance.isConfiguredDynamicPlatform = plugin.isConfiguredDynamicPlatform;
 
     ref.result.then(async () => {
       try {
