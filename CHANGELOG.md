@@ -6,6 +6,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ### UI Changes
 
+- change menu to a sidebar
 - add theme and language to main settings page
 
 ### Other Changes

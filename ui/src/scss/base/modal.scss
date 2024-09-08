@@ -1,8 +1,6 @@
-.modal-backdrop {
-  z-index: 1050 !important;
-}
-
 .modal-content {
+  border-radius: 0.7rem !important;
+
   ul:not(.list-group) {
     padding-left: 20px;
   }
@@ -11,3 +9,18 @@
     line-height: 1.75rem;
   }
 }
+
+.modal-header {
+  border-top-left-radius: 0.5rem !important;
+  border-top-right-radius: 0.5rem !important;
+}
+
+.modal-footer {
+  border-bottom-left-radius: 0.5rem !important;
+  border-bottom-right-radius: 0.5rem !important;
+}
+
+.modal-backdrop {
+  z-index: 1050 !important;
+}
+

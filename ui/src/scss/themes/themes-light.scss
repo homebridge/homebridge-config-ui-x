@@ -6,6 +6,50 @@
       background-color: $primary-dark !important;
     }
 
+    .sidebar {
+      background: $primary-dark;
+      color: #eeeeee;
+
+      .header {
+        background: $primary-dark;
+      }
+
+      .link-wrapper {
+        .link {
+          .link-row {
+            &:hover {
+              background: $primary;
+
+              .title {
+                color: #ffffff;
+              }
+            }
+
+            &.active {
+              i {
+                color: $primary;
+              }
+            }
+
+            &.active:hover {
+              i {
+                color: #ffffff;
+                transition: 0.3s;
+              }
+            }
+
+            .title {
+              color: #ffffff;
+            }
+          }
+        }
+      }
+    }
+
+    .m-header {
+      background: $primary-dark;
+    }
+
     .hb-npm-search {
       border: 0 !important;
       background-color: #eeeeee !important;
@@ -150,7 +194,7 @@
     .plugin-icon-card {
       width: 70px;
       height: 70px;
-      border-radius: 15px;
+      border-radius: 1rem;
       border: 1px solid #dddddd;
     }
 
