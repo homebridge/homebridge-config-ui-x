@@ -7,11 +7,8 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### UI Changes
 
 - updated menu and sidebar
-- improve menu accessibility + power options own page
-- allow extra configuration on child bridges
 - add theme setting to main page
 - add language setting to main page
-- update bridge settings + main settings page
 
 ### Other Changes
 
@@ -23,9 +20,10 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.11.14`
 - `@homebridge/plugin-ui-utils` @ `v1.0.3`
 
-### BETA
+## v4.58.0 (2024-09-08)
 
-⚠️ The minimum version of Homebridge needed for this version of UI is `v1.8.0`. If you are running a lower version of Homebridge, you should consider updating before installing this UI update.
+⚠️ The minimum version of Homebridge needed for the "child bridge extra configuration" functionality is `v1.8.0`.
+The UI will continue to work with Homebridge `v1.6.0` or later, however it is always recommended to run the latest version of Homebridge anyway.
 
 ### UI Changes
 
