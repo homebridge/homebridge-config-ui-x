@@ -28,7 +28,7 @@
     "@oznu/ngx-bs4-jsonform": "7.3.7",
     "@popperjs/core": "2.11.8",
     "angular-gridster2": "17.0.0",
-    "bootstrap": "4.6.2",
+    "bootstrap": "5.0.0",
     "chart.js": "4.4.4",
     "dayjs": "1.11.13",
     "emoji-js": "3.8.0",
