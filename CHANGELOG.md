@@ -4,6 +4,10 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ## ALPHA
 
+### UI Changes
+
+- add theme and language to main settings page
+
 ### Other Changes
 
 - retire old use of `pnpm` and code references

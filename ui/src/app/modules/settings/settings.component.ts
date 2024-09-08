@@ -58,6 +58,26 @@ export class SettingsComponent implements OnInit {
     }
   }
 
+  onLangChange(newLang: string) {
+    this.$settings.setLang(newLang);
+
+    // save the theme to the server
+    this.$api.put('/config-editor/ui', { key: 'lang', value: newLang }).toPromise()
+      .catch((err) => {
+        this.$toastr.error(err.message, 'Failed to save language');
+      });
+  }
+
+  onThemeChange(newTheme: string) {
+    this.$settings.setTheme(newTheme);
+
+    // save the theme to the server
+    this.$api.put('/config-editor/ui', { key: 'theme', value: newTheme }).toPromise()
+      .catch((err) => {
+        this.$toastr.error(err.message, 'Failed to save theme');
+      });
+  }
+
   openUiSettings() {
     this.$plugin.settings({
       name: 'homebridge-config-ui-x',

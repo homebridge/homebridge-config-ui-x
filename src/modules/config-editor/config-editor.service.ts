@@ -294,6 +294,21 @@ export class ConfigEditorService {
   }
 
   /**
+   * Set a specific property for the homebridge-config-ui-x plugin
+   */
+  public async setPropertyForUi(property: string, value: string) {
+    // 1. get the current config for homebridge-config-ui-x
+    const config = await this.getConfigFile();
+
+    // 2. update the property
+    const pluginConfig = config.platforms.find(x => x.platform === 'config');
+    pluginConfig[property] = value;
+
+    // 3. save the config file
+    await this.updateConfigFile(config);
+  }
+
+  /**
    * Mark a plugin as disabled
    */
   public async disablePlugin(pluginName: string) {

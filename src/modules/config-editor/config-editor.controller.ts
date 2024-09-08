@@ -86,6 +86,13 @@ export class ConfigEditorController {
   }
 
   @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Update a config property for the Homebridge UI.' })
+  @Put('/ui')
+  setPropertyForUi(@Body() { key, value }) {
+    return this.configEditorService.setPropertyForUi(key, value);
+  }
+
+  @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'List the available Homebridge config.json backups.' })
   @Get('/backups')
   listConfigBackups() {
