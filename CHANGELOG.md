@@ -2,9 +2,10 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-### BETA
+## v4.58.0 (2024-09-08)
 
-⚠️ The minimum version of Homebridge needed for this version of UI is `v1.8.0`. If you are running a lower version of Homebridge, you should consider updating before installing this UI update.
+⚠️ The minimum version of Homebridge needed for the "child bridge extra configuration" functionality is `v1.8.0`.
+The UI will continue to work with Homebridge `v1.6.0` or later, however it is always recommended to run the latest version of Homebridge anyway.
 
 ### UI Changes
 
