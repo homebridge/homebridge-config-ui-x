@@ -1,13 +1,8 @@
-import { Injectable } from '@angular/core';
-import {
-  ActivatedRouteSnapshot,
-  CanActivate,
-  Router,
-  RouterStateSnapshot,
-} from '@angular/router';
-import { ToastrService } from 'ngx-toastr';
-import { Observable } from 'rxjs';
-import { AuthService } from '@/app/core/auth/auth.service';
+import { AuthService } from '@/app/core/auth/auth.service'
+import { Injectable } from '@angular/core'
+import { CanActivate, Router } from '@angular/router'
+import { ToastrService } from 'ngx-toastr'
+import { Observable } from 'rxjs'
 
 @Injectable({
   providedIn: 'root',
@@ -19,15 +14,13 @@ export class AdminGuard implements CanActivate {
     private $router: Router,
   ) {}
 
-  canActivate(
-    next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+  canActivate(): Observable<boolean> | Promise<boolean> | boolean {
     if (this.$auth.user && this.$auth.user.admin) {
-      return true;
+      return true
     } else {
-      this.$toast.error('Only Administrators may access the requested page.');
-      this.$router.navigate(['/']);
-      return false;
+      this.$toast.error('Only administrators may access the requested page.')
+      this.$router.navigate(['/'])
+      return false
     }
   }
 }

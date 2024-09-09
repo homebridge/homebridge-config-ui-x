@@ -1,24 +1,19 @@
-import {
-  Component,
-  Input,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
-import { Subscription, interval } from 'rxjs';
-import { AuthService } from '@/app/core/auth/auth.service';
-import { IoNamespace, WsService } from '@/app/core/ws.service';
+import { AuthService } from '@/app/core/auth/auth.service'
+import { IoNamespace, WsService } from '@/app/core/ws.service'
+import { Component, Input, OnDestroy, OnInit } from '@angular/core'
+import { interval, Subscription } from 'rxjs'
 
 @Component({
   templateUrl: './uptime-widget.component.html',
 })
 export class UptimeWidgetComponent implements OnInit, OnDestroy {
-  @Input() widget: any;
+  @Input() widget: any
 
-  public serverUptime: string;
-  public processUptime: string;
+  public serverUptime: string
+  public processUptime: string
 
-  private io: IoNamespace;
-  private intervalSubscription: Subscription;
+  private io: IoNamespace
+  private intervalSubscription: Subscription
 
   constructor(
     private $ws: WsService,
@@ -26,43 +21,43 @@ export class UptimeWidgetComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.io = this.$ws.getExistingNamespace('status');
+    this.io = this.$ws.getExistingNamespace('status')
     this.io.connected.subscribe(async () => {
-      this.getServerUptimeInfo();
-    });
+      this.getServerUptimeInfo()
+    })
 
     if (this.io.socket.connected) {
-      this.getServerUptimeInfo();
+      this.getServerUptimeInfo()
     }
 
     this.intervalSubscription = interval(11000).subscribe(() => {
       if (this.io.socket.connected) {
-        this.getServerUptimeInfo();
+        this.getServerUptimeInfo()
       }
-    });
+    })
   }
 
   getServerUptimeInfo() {
     this.io.request('get-server-uptime-info').subscribe((data) => {
-      this.serverUptime = this.humaniseDuration(data.time.uptime);
-      this.processUptime = this.humaniseDuration(data.processUptime);
-    });
+      this.serverUptime = this.humaniseDuration(data.time.uptime)
+      this.processUptime = this.humaniseDuration(data.processUptime)
+    })
   }
 
   humaniseDuration(seconds: number) {
     if (seconds < 50) {
-      return '< 1m';
+      return '< 1m'
     }
     if (seconds < 3600) {
-      return Math.round((seconds / 60)) + 'm';
+      return `${Math.round((seconds / 60))}m`
     }
     if (seconds < 86400) {
-      return Math.round((seconds / 60 / 60)) + 'h';
+      return `${Math.round((seconds / 60 / 60))}h`
     }
-    return Math.floor((seconds / 60 / 60 / 24)) + 'd';
+    return `${Math.floor((seconds / 60 / 60 / 24))}d`
   }
 
   ngOnDestroy() {
-    this.intervalSubscription.unsubscribe();
+    this.intervalSubscription.unsubscribe()
   }
 }

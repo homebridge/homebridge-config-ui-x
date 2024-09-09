@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
-import { Resolve, Router } from '@angular/router';
-import { ToastrService } from 'ngx-toastr';
-import { ApiService } from '@/app/core/api.service';
+import { ApiService } from '@/app/core/api.service'
+import { Injectable } from '@angular/core'
+import { Resolve, Router } from '@angular/router'
+import { ToastrService } from 'ngx-toastr'
 
 @Injectable()
 export class ConfigEditorResolver implements Resolve<any> {
@@ -13,11 +13,11 @@ export class ConfigEditorResolver implements Resolve<any> {
 
   async resolve() {
     try {
-      const json = await this.$api.get('/config-editor').toPromise();
-      return JSON.stringify(json, null, 4);
+      const json = await this.$api.get('/config-editor').toPromise()
+      return JSON.stringify(json, null, 4)
     } catch (err) {
-      this.$toastr.error(err.message, 'Failed to Load Config');
-      this.$router.navigate(['/']);
+      this.$toastr.error(err.message, 'Failed to Load Config')
+      this.$router.navigate(['/'])
     }
   }
 }

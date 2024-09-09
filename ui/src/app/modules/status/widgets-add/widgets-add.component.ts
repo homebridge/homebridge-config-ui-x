@@ -1,22 +1,22 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { TranslateService } from '@ngx-translate/core';
-import { SettingsService } from '@/app/core/settings.service';
+import { SettingsService } from '@/app/core/settings.service'
+import { Component, Input, OnInit } from '@angular/core'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
+import { TranslateService } from '@ngx-translate/core'
 
 @Component({
   templateUrl: './widgets-add.component.html',
   styleUrls: ['./widgets-add.component.scss'],
 })
 export class WidgetsAddComponent implements OnInit {
-  @Input() dashboard;
-  @Input() resetLayout: () => void;
-  @Input() lockLayout: () => void;
-  @Input() unlockLayout: () => void;
-  @Input() public isLayoutUnlocked: boolean;
+  @Input() dashboard
+  @Input() resetLayout: () => void
+  @Input() lockLayout: () => void
+  @Input() unlockLayout: () => void
+  @Input() public isLayoutUnlocked: boolean
 
-  public availableWidgets = [];
+  public availableWidgets = []
 
-  private allWidgets: any[];
+  private allWidgets: any[]
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -118,7 +118,7 @@ export class WidgetsAddComponent implements OnInit {
         hideOnMobile: true,
       },
       {
-        name: 'Homebridge ' + this.translate.instant('menu.docker.label_terminal'),
+        name: `Homebridge ${this.translate.instant('menu.docker.label_terminal')}`,
         component: 'TerminalWidgetComponent',
         hidden: !this.$settings.env.enableTerminalAccess,
         cols: 7,
@@ -134,16 +134,16 @@ export class WidgetsAddComponent implements OnInit {
         mobileOrder: 23,
         hideOnMobile: true,
       },
-    ];
-    this.availableWidgets = this.allWidgets.filter((x) => !this.dashboard.some((i) => i.component === x.component) && !x.hidden);
+    ]
+    this.availableWidgets = this.allWidgets.filter(x => !this.dashboard.some(i => i.component === x.component) && !x.hidden)
   }
 
   selectWidget(widget) {
-    this.activeModal.close(widget);
+    this.activeModal.close(widget)
   }
 
   doResetLayout() {
-    this.resetLayout();
-    this.activeModal.dismiss();
+    this.resetLayout()
+    this.activeModal.dismiss()
   }
 }

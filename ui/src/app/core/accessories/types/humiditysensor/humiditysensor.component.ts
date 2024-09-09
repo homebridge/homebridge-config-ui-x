@@ -1,5 +1,5 @@
-import { Component, Input } from '@angular/core';
-import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
+import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
+import { Component, Input } from '@angular/core'
 
 @Component({
   selector: 'app-humiditysensor',
@@ -7,7 +7,7 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
   styleUrls: ['./humiditysensor.component.scss'],
 })
 export class HumiditysensorComponent {
-  @Input() public service: ServiceTypeX;
+  @Input() public service: ServiceTypeX
 
   constructor() {}
 }

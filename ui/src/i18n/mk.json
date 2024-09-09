@@ -60,7 +60,7 @@
   "backup.message_backup_download_failed": "Грешка при симнување на бекапот",
   "backup.message_backup_exceeds_max_size": "Backup exceeds maximum restore file size of {{ maxBackupSizeText }}",
   "backup.message_backup_help_one": "Симни бекап архива од целата Homebridge околина. Со ова ќе се зачува целата содржина на Вашиот Homebridge директориум за storage, кој што потоа можете да го ставите на било која платформа што може да го изврши Homebridge UI.",
-  "backup.message_backup_help_two": "Плагини кои не се хостирани на npm, или плагини кои се инсталирани директно од GitHub нема да бидат зачувани ниту ќе може да се повратат од бекапот.",
+  "backup.message_backup_help_two": "Плагини кои не се хостирани на npm, или плагини кои се инсталирани директно од GitHub нема да бидат зачувани ниту ќе може да се повратат од бекапот.",
   "backup.message_backup_restored": "Поратена бекап архива",
   "backup.message_backup_warning": "Бекап архивите содржат сензитивни информации и не треба да се споделуваат.",
   "backup.message_restore_failed": "Повратот не беше успешен",

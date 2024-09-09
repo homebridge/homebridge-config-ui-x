@@ -1,7 +1,7 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { ConfigEditorComponent } from '@/app/modules/config-editor/config-editor.component';
-import { ConfigEditorResolver } from '@/app/modules/config-editor/config-editor.resolver';
+import { ConfigEditorComponent } from '@/app/modules/config-editor/config-editor.component'
+import { ConfigEditorResolver } from '@/app/modules/config-editor/config-editor.resolver'
+import { NgModule } from '@angular/core'
+import { RouterModule, Routes } from '@angular/router'
 
 const routes: Routes = [
   {
@@ -11,7 +11,7 @@ const routes: Routes = [
       config: ConfigEditorResolver,
     },
   },
-];
+]
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],

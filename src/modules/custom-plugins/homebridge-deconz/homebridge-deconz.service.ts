@@ -1,7 +1,9 @@
-import { resolve } from 'path';
-import { Injectable, NotFoundException, StreamableFile } from '@nestjs/common';
-import { createReadStream, pathExists } from 'fs-extra';
-import { ConfigService } from '../../../core/config/config.service';
+import { resolve } from 'node:path'
+
+import { Injectable, NotFoundException, StreamableFile } from '@nestjs/common'
+import { createReadStream, pathExists } from 'fs-extra'
+
+import { ConfigService } from '../../../core/config/config.service'
 
 @Injectable()
 export class HomebridgeDeconzService {
@@ -10,14 +12,14 @@ export class HomebridgeDeconzService {
   ) {}
 
   async streamDumpFile(): Promise<StreamableFile> {
-    const dumpPath = resolve(this.configService.storagePath, 'homebridge-deconz.json.gz');
+    const dumpPath = resolve(this.configService.storagePath, 'homebridge-deconz.json.gz')
 
     // check file exists
     if (!await pathExists(dumpPath)) {
-      throw new NotFoundException();
+      throw new NotFoundException()
     }
 
     // stream file to client
-    return new StreamableFile(createReadStream(dumpPath));
+    return new StreamableFile(createReadStream(dumpPath))
   }
 }

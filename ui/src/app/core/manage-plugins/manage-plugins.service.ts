@@ -1,17 +1,17 @@
-import { Injectable } from '@angular/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ToastrService } from 'ngx-toastr';
-import { lt, minVersion } from 'semver';
-import { ApiService } from '@/app/core/api.service';
-import { CustomPluginsService } from '@/app/core/manage-plugins/custom-plugins/custom-plugins.service';
-import { ManagePluginComponent } from '@/app/core/manage-plugins/manage-plugin/manage-plugin.component';
-import { ManageVersionComponent } from '@/app/core/manage-plugins/manage-version/manage-version.component';
-import { ManualConfigComponent } from '@/app/core/manage-plugins/manual-config/manual-config.component'; // eslint-disable-line max-len
-import { PluginBridgeComponent } from '@/app/core/manage-plugins/plugin-bridge/plugin-bridge.component';
-import { PluginCompatibilityComponent } from '@/app/core/manage-plugins/plugin-compatibility/plugin-compatibility.component'; // eslint-disable-line max-len
-import { PluginConfigComponent } from '@/app/core/manage-plugins/plugin-config/plugin-config.component';
-import { UninstallPluginComponent } from '@/app/core/manage-plugins/uninstall-plugin/uninstall-plugin.component';
-import { SettingsService } from '@/app/core/settings.service';
+import { ApiService } from '@/app/core/api.service'
+import { CustomPluginsService } from '@/app/core/manage-plugins/custom-plugins/custom-plugins.service'
+import { ManagePluginComponent } from '@/app/core/manage-plugins/manage-plugin/manage-plugin.component'
+import { ManageVersionComponent } from '@/app/core/manage-plugins/manage-version/manage-version.component'
+import { ManualConfigComponent } from '@/app/core/manage-plugins/manual-config/manual-config.component'
+import { PluginBridgeComponent } from '@/app/core/manage-plugins/plugin-bridge/plugin-bridge.component'
+import { PluginCompatibilityComponent } from '@/app/core/manage-plugins/plugin-compatibility/plugin-compatibility.component'
+import { PluginConfigComponent } from '@/app/core/manage-plugins/plugin-config/plugin-config.component'
+import { UninstallPluginComponent } from '@/app/core/manage-plugins/uninstall-plugin/uninstall-plugin.component'
+import { SettingsService } from '@/app/core/settings.service'
+import { Injectable } from '@angular/core'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { ToastrService } from 'ngx-toastr'
+import { lt, minVersion } from 'semver'
 
 @Injectable({
   providedIn: 'root',
@@ -29,56 +29,56 @@ export class ManagePluginsService {
     const ref = this.modalService.open(ManagePluginComponent, {
       size: 'lg',
       backdrop: 'static',
-    });
-    ref.componentInstance.action = 'Install';
-    ref.componentInstance.pluginName = pluginName;
-    ref.componentInstance.targetVersion = targetVersion;
+    })
+    ref.componentInstance.action = 'Install'
+    ref.componentInstance.pluginName = pluginName
+    ref.componentInstance.targetVersion = targetVersion
   }
 
   uninstallPlugin(plugin: any) {
     const ref = this.modalService.open(UninstallPluginComponent, {
       size: 'lg',
       backdrop: 'static',
-    });
-    ref.componentInstance.action = 'Uninstall';
-    ref.componentInstance.plugin = plugin;
+    })
+    ref.componentInstance.action = 'Uninstall'
+    ref.componentInstance.plugin = plugin
   }
 
   async checkAndUpdatePlugin(plugin: any, targetVersion = 'latest') {
     if (!await this.checkHbAndNodeVersion(plugin, 'update')) {
-      return;
+      return
     }
 
-    await this.updatePlugin(plugin, targetVersion);
+    await this.updatePlugin(plugin, targetVersion)
   }
 
   async updatePlugin(plugin: any, targetVersion: string) {
     const ref = this.modalService.open(ManagePluginComponent, {
       size: 'lg',
       backdrop: 'static',
-    });
-    ref.componentInstance.action = 'Update';
-    ref.componentInstance.pluginName = plugin.name;
-    ref.componentInstance.targetVersion = targetVersion;
-    ref.componentInstance.latestVersion = plugin.latestVersion;
-    ref.componentInstance.installedVersion = plugin.installedVersion;
-    ref.componentInstance.isDisabled = plugin.disabled;
+    })
+    ref.componentInstance.action = 'Update'
+    ref.componentInstance.pluginName = plugin.name
+    ref.componentInstance.targetVersion = targetVersion
+    ref.componentInstance.latestVersion = plugin.latestVersion
+    ref.componentInstance.installedVersion = plugin.installedVersion
+    ref.componentInstance.isDisabled = plugin.disabled
   }
 
   async upgradeHomebridge(homebridgePkg: any, targetVersion = 'latest') {
     if (!await this.checkHbAndNodeVersion(homebridgePkg, 'update')) {
-      return;
+      return
     }
 
     const ref = this.modalService.open(ManagePluginComponent, {
       size: 'lg',
       backdrop: 'static',
-    });
-    ref.componentInstance.action = 'Update';
-    ref.componentInstance.pluginName = homebridgePkg.name;
-    ref.componentInstance.targetVersion = targetVersion;
-    ref.componentInstance.latestVersion = homebridgePkg.latestVersion;
-    ref.componentInstance.installedVersion = homebridgePkg.installedVersion;
+    })
+    ref.componentInstance.action = 'Update'
+    ref.componentInstance.pluginName = homebridgePkg.name
+    ref.componentInstance.targetVersion = targetVersion
+    ref.componentInstance.latestVersion = homebridgePkg.latestVersion
+    ref.componentInstance.installedVersion = homebridgePkg.installedVersion
   }
 
   /**
@@ -90,24 +90,24 @@ export class ManagePluginsService {
     const ref = this.modalService.open(ManageVersionComponent, {
       size: 'lg',
       backdrop: 'static',
-    });
+    })
 
-    ref.componentInstance.plugin = plugin;
+    ref.componentInstance.plugin = plugin
 
     try {
-      const { action, version, engines } = await ref.result;
+      const { action, version, engines } = await ref.result
 
       if (!await this.checkHbAndNodeVersion({ ...plugin, updateEngines: engines }, action)) {
-        return;
+        return
       }
 
       if (plugin.name === 'homebridge') {
-        return await this.upgradeHomebridge(plugin, version);
+        return await this.upgradeHomebridge(plugin, version)
       }
 
       return plugin.installedVersion
         ? await this.updatePlugin(plugin, version)
-        : this.installPlugin(plugin.name, version);
+        : this.installPlugin(plugin.name, version)
     } catch (e) {
       // do nothing
     }
@@ -120,23 +120,23 @@ export class ManagePluginsService {
    */
   async bridgeSettings(plugin: any) {
     // load the plugins schema
-    let schema: any;
+    let schema: any
     if (plugin.settingsSchema) {
       try {
-        schema = await this.loadConfigSchema(plugin.name);
+        schema = await this.loadConfigSchema(plugin.name)
       } catch (e) {
-        this.$toastr.error('Failed to load plugins config schema.');
-        return;
+        this.$toastr.error('Failed to load plugins config schema.')
+        return
       }
     }
 
     const ref = this.modalService.open(PluginBridgeComponent, {
       size: 'lg',
       backdrop: 'static',
-    });
+    })
 
-    ref.componentInstance.schema = schema;
-    ref.componentInstance.plugin = plugin;
+    ref.componentInstance.schema = schema
+    ref.componentInstance.plugin = plugin
   }
 
   /**
@@ -146,23 +146,23 @@ export class ManagePluginsService {
    */
   async settings(plugin: any) {
     // load the plugins schema
-    let schema: any;
+    let schema: any
     if (plugin.settingsSchema) {
       try {
-        schema = await this.loadConfigSchema(plugin.name);
+        schema = await this.loadConfigSchema(plugin.name)
       } catch (e) {
-        this.$toastr.error('Failed to load plugins config schema.');
-        return;
+        this.$toastr.error('Failed to load plugins config schema.')
+        return
       }
     }
 
     // open the custom ui if the plugin has one
     if (schema && schema.customUi) {
-      return this.customPluginsService.openCustomSettingsUi(plugin, schema);
+      return this.customPluginsService.openCustomSettingsUi(plugin, schema)
     }
 
     if (this.customPluginsService.plugins[plugin.name]) {
-      return this.customPluginsService.openSettings(plugin, schema);
+      return this.customPluginsService.openSettings(plugin, schema)
     }
 
     // open the standard ui
@@ -172,14 +172,14 @@ export class ManagePluginsService {
         size: 'lg',
         backdrop: 'static',
       },
-    );
+    )
 
-    ref.componentInstance.schema = schema;
-    ref.componentInstance.plugin = plugin;
+    ref.componentInstance.schema = schema
+    ref.componentInstance.plugin = plugin
 
     return ref.result.catch(() => {
       // do nothing
-    });
+    })
   }
 
   /**
@@ -192,32 +192,32 @@ export class ManagePluginsService {
         size: 'lg',
         backdrop: 'static',
       },
-    );
+    )
 
-    ref.componentInstance.plugin = plugin;
+    ref.componentInstance.plugin = plugin
 
     return ref.result.catch(() => {
       // do nothing
-    });
+    })
   }
 
   async checkHbAndNodeVersion(plugin: any, action: string): Promise<boolean> {
-    let isValidNode = true;
-    let isValidHb = true;
+    let isValidNode = true
+    let isValidHb = true
 
     try {
       // Check Node.js version from the `package.engines` of the plugin being installed/updated
       if (plugin.updateEngines?.node && lt(this.$settings.env.nodeVersion, minVersion(plugin.updateEngines.node))) {
-        isValidNode = false;
+        isValidNode = false
       }
 
       // Check Homebridge version from the `package.engines` of the plugin being installed/updated
       if (plugin.updateEngines?.homebridge && lt(this.$settings.env.homebridgeVersion, minVersion(plugin.updateEngines.homebridge))) {
-        isValidHb = false;
+        isValidHb = false
       }
     } catch (e) {
-      this.$toastr.error(`Failed to check compatibility: ${e.message}`);
-      return false;
+      this.$toastr.error(`Failed to check compatibility: ${e.message}`)
+      return false
     }
 
     // If either are false, open modal warning about compatibility
@@ -226,23 +226,22 @@ export class ManagePluginsService {
         const ref = this.modalService.open(PluginCompatibilityComponent, {
           size: 'lg',
           backdrop: 'static',
-        });
-        ref.componentInstance.plugin = plugin;
-        ref.componentInstance.isValidNode = isValidNode;
-        ref.componentInstance.isValidHb = isValidHb;
-        ref.componentInstance.action = action;
+        })
+        ref.componentInstance.plugin = plugin
+        ref.componentInstance.isValidNode = isValidNode
+        ref.componentInstance.isValidHb = isValidHb
+        ref.componentInstance.action = action
 
-        return await ref.result;
+        return await ref.result
       } catch (e) {
-        return false;
+        return false
       }
     }
 
-    return true;
-
+    return true
   }
 
   private async loadConfigSchema(pluginName: string) {
-    return this.$api.get(`/plugins/config-schema/${encodeURIComponent(pluginName)}`).toPromise();
+    return this.$api.get(`/plugins/config-schema/${encodeURIComponent(pluginName)}`).toPromise()
   }
 }

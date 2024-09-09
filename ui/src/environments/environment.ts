@@ -4,8 +4,9 @@
 // The list of which env maps to which file can be found in `.angular-cli.json`.
 
 export const environment = {
-  production: false,
+  // eslint-disable-next-line ts/no-require-imports
   serverTarget: require('../../../package.json').version,
+  production: false,
   api: {
     base: 'http://localhost:8581/api',
     socket: 'http://localhost:8581',
@@ -22,4 +23,4 @@ export const environment = {
   owm: {
     appid: 'fec67b55f7f74deaa28df89ba6a60821',
   },
-};
+}

@@ -1,6 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
+import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
+import { Component, Input, OnInit } from '@angular/core'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 
 @Component({
   selector: 'app-securitysystem.manage',
@@ -8,18 +8,18 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
   styleUrls: ['./securitysystem.component.scss'],
 })
 export class SecuritysystemManageComponent implements OnInit {
-  @Input() public service: ServiceTypeX;
-  public targetMode: any;
+  @Input() public service: ServiceTypeX
+  public targetMode: any
 
   constructor(
     public activeModal: NgbActiveModal,
   ) {}
 
   ngOnInit() {
-    this.targetMode = this.service.values.SecuritySystemTargetState;
+    this.targetMode = this.service.values.SecuritySystemTargetState
   }
 
   onTargetStateChange() {
-    this.service.getCharacteristic('SecuritySystemTargetState').setValue(this.targetMode);
+    this.service.getCharacteristic('SecuritySystemTargetState').setValue(this.targetMode)
   }
 }
