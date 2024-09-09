@@ -1,14 +1,9 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  UseGuards,
-} from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AuthService } from '../../core/auth/auth.service';
-import { UserDto } from '../users/users.dto';
-import { SetupWizardGuard } from './setup-wizard.guard';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common'
+import { ApiOperation, ApiTags } from '@nestjs/swagger'
+
+import { AuthService } from '../../core/auth/auth.service'
+import { UserDto } from '../users/users.dto'
+import { SetupWizardGuard } from './setup-wizard.guard'
 
 @ApiTags('Setup Wizard')
 @UseGuards(SetupWizardGuard)
@@ -24,11 +19,7 @@ export class SetupWizardController {
     description: 'This endpoint is not available after the Homebridge setup wizard is complete.',
   })
   async setupFirstUser(@Body() body: UserDto) {
-    try {
-      return await this.authService.setupFirstUser(body);
-    } catch (err) {
-      throw err;
-    }
+    return await this.authService.setupFirstUser(body)
   }
 
   @Get('/get-setup-wizard-token')
@@ -37,10 +28,6 @@ export class SetupWizardController {
     description: 'This endpoint is not available after the Homebridge setup wizard is complete.',
   })
   async generateSetupWizardToken() {
-    try {
-      return await this.authService.generateSetupWizardToken();
-    } catch (err) {
-      throw err;
-    }
+    return await this.authService.generateSetupWizardToken()
   }
 }

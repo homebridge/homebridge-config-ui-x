@@ -1,7 +1,7 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { AdminGuard } from '@/app/core/auth/admin.guard';
-import { SettingsComponent } from '@/app/modules/settings/settings.component';
+import { AdminGuard } from '@/app/core/auth/admin.guard'
+import { SettingsComponent } from '@/app/modules/settings/settings.component'
+import { NgModule } from '@angular/core'
+import { RouterModule, Routes } from '@angular/router'
 
 const routes: Routes = [
   {
@@ -9,7 +9,7 @@ const routes: Routes = [
     component: SettingsComponent,
     canActivate: [AdminGuard],
   },
-];
+]
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],

@@ -6,17 +6,13 @@ import {
   Query,
   Req,
   UseGuards,
-} from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiQuery,
-  ApiTags,
-} from '@nestjs/swagger';
-import { AdminGuard } from '../../../core/auth/guards/admin.guard';
-import { HbServiceStartupSettings } from './hb-service.dto';
-import { HbServiceService } from './hb-service.service';
+} from '@nestjs/common'
+import { AuthGuard } from '@nestjs/passport'
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
+
+import { AdminGuard } from '../../../core/auth/guards/admin.guard'
+import { HbServiceStartupSettings } from './hb-service.dto'
+import { HbServiceService } from './hb-service.service'
 
 @ApiTags('Platform - HB Service')
 @ApiBearerAuth()
@@ -31,14 +27,14 @@ export class HbServiceController {
   @ApiOperation({ summary: 'Return the startup flags and env variables for Homebridge.' })
   @Get('homebridge-startup-settings')
   getHomebridgeStartupSettings() {
-    return this.hbServiceService.getHomebridgeStartupSettings();
+    return this.hbServiceService.getHomebridgeStartupSettings()
   }
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Update the startup flags and env variables for Homebridge.' })
   @Put('homebridge-startup-settings')
   setHomebridgeStartupSettings(@Body() body: HbServiceStartupSettings) {
-    return this.hbServiceService.setHomebridgeStartupSettings(body);
+    return this.hbServiceService.setHomebridgeStartupSettings(body)
   }
 
   @UseGuards(AdminGuard)
@@ -48,7 +44,7 @@ export class HbServiceController {
   })
   @Put('set-full-service-restart-flag')
   setFullServiceRestartFlag() {
-    return this.hbServiceService.setFullServiceRestartFlag();
+    return this.hbServiceService.setFullServiceRestartFlag()
   }
 
   @UseGuards(AdminGuard)
@@ -56,13 +52,13 @@ export class HbServiceController {
   @Get('log/download')
   @ApiQuery({ name: 'colour', enum: ['yes', 'no'], required: false })
   downloadLogFile(@Query('colour') colour?: string) {
-    return this.hbServiceService.downloadLogFile((colour === 'yes'));
+    return this.hbServiceService.downloadLogFile((colour === 'yes'))
   }
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Truncate / empty the log file.' })
   @Put('log/truncate')
   truncateLogFile(@Req() req) {
-    return this.hbServiceService.truncateLogFile(req.user.username);
+    return this.hbServiceService.truncateLogFile(req.user.username)
   }
 }

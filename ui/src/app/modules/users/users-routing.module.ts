@@ -1,7 +1,7 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { UsersComponent } from '@/app/modules/users/users.component';
-import { UsersResolver } from '@/app/modules/users/users.resolver';
+import { UsersComponent } from '@/app/modules/users/users.component'
+import { UsersResolver } from '@/app/modules/users/users.resolver'
+import { NgModule } from '@angular/core'
+import { RouterModule, Routes } from '@angular/router'
 
 const routes: Routes = [
   {
@@ -11,7 +11,7 @@ const routes: Routes = [
       homebridgeUsers: UsersResolver,
     },
   },
-];
+]
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],

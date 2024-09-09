@@ -6,16 +6,12 @@ import {
   Put,
   Req,
   UseGuards,
-} from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiParam,
-  ApiTags,
-} from '@nestjs/swagger';
-import { AccessorySetCharacteristicDto } from './accessories.dto';
-import { AccessoriesService } from './accessories.service';
+} from '@nestjs/common'
+import { AuthGuard } from '@nestjs/passport'
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger'
+
+import { AccessorySetCharacteristicDto } from './accessories.dto'
+import { AccessoriesService } from './accessories.service'
 
 @ApiTags('Accessories')
 @ApiBearerAuth()
@@ -32,7 +28,7 @@ export class AccessoriesController {
   })
   @Get('/')
   getAccessories() {
-    return this.accessoriesService.loadAccessories();
+    return this.accessoriesService.loadAccessories()
   }
 
   @ApiOperation({
@@ -40,7 +36,7 @@ export class AccessoriesController {
   })
   @Get('/layout')
   getAccessoryLayout(@Req() req) {
-    return this.accessoriesService.getAccessoryLayout(req.user.username);
+    return this.accessoriesService.getAccessoryLayout(req.user.username)
   }
 
   @ApiOperation({
@@ -49,7 +45,7 @@ export class AccessoriesController {
   })
   @Get('/:uniqueId')
   getAccessory(@Param('uniqueId') uniqueId: string) {
-    return this.accessoriesService.getAccessory(uniqueId);
+    return this.accessoriesService.getAccessory(uniqueId)
   }
 
   @ApiOperation({
@@ -59,6 +55,6 @@ export class AccessoriesController {
   @ApiParam({ name: 'uniqueId' })
   @Put('/:uniqueId')
   setAccessoryCharacteristic(@Param('uniqueId') uniqueId, @Body() body: AccessorySetCharacteristicDto) {
-    return this.accessoriesService.setAccessoryCharacteristic(uniqueId, body.characteristicType, body.value);
+    return this.accessoriesService.setAccessoryCharacteristic(uniqueId, body.characteristicType, body.value)
   }
 }

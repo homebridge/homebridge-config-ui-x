@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger'
 import {
   Equals,
   IsBoolean,
@@ -7,70 +7,70 @@ import {
   IsNumber,
   IsOptional,
   IsString,
-} from 'class-validator';
+} from 'class-validator'
 
 export class UserActivateOtpDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
-    code: string;
+  code: string
 }
 
 export class UserDeactivateOtpDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
-    password: string;
+  password: string
 }
 
 export class UserDto {
   @IsNumber()
   @ApiProperty({ readOnly: true })
-    id?: number;
+  id?: number
 
   @IsString()
   @IsNotEmpty()
   @IsDefined()
   @ApiProperty()
-    name: string;
+  name: string
 
   @IsString()
   @IsNotEmpty()
   @IsDefined()
   @ApiProperty()
-    username: string;
+  username: string
 
   @ApiProperty()
   @IsBoolean()
-    admin: boolean;
+  admin: boolean
 
   @IsString()
   @IsOptional()
   @ApiProperty({ writeOnly: true })
-    password?: string;
+  password?: string
 
   @Equals(undefined)
-    hashedPassword?: string;
+  hashedPassword?: string
 
   @Equals(undefined)
-    salt?: string;
+  salt?: string
 
   @Equals(undefined)
-    otpSecret?: string;
+  otpSecret?: string
 
   @Equals(undefined)
   @ApiProperty({ readOnly: true })
-    otpActive?: boolean;
+  otpActive?: boolean
 }
 
 export class UserUpdatePasswordDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
-    currentPassword: string;
+  currentPassword: string
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
-    newPassword: string;
+  newPassword: string
 }

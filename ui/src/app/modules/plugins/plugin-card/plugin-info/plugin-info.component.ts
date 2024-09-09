@@ -1,14 +1,14 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { Component, Input, OnInit } from '@angular/core'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 
 @Component({
   templateUrl: './plugin-info.component.html',
   styleUrls: ['./plugin-info.component.scss'],
 })
 export class PluginInfoComponent implements OnInit {
-  @Input() plugin: any;
+  @Input() plugin: any
 
-  public defaultIcon = 'assets/hb-icon.png';
+  public defaultIcon = 'assets/hb-icon.png'
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -16,11 +16,11 @@ export class PluginInfoComponent implements OnInit {
 
   ngOnInit() {
     if (!this.plugin.icon) {
-      this.plugin.icon = this.defaultIcon;
+      this.plugin.icon = this.defaultIcon
     }
   }
 
   handleIconError() {
-    this.plugin.icon = this.defaultIcon;
+    this.plugin.icon = this.defaultIcon
   }
 }

@@ -32,7 +32,7 @@ Show the Homebridge / Homebridge UI logs here.
 **Homebridge Config:**
 
 ```json
-Show your homebridge config.json here
+"Show your homebridge config.json here"
 ```
 
 **Screenshots:**

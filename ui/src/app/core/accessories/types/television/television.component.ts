@@ -1,25 +1,24 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
+import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
+import { Component, Input, OnInit } from '@angular/core'
 
 @Component({
   selector: 'app-television',
   templateUrl: './television.component.html',
-  styleUrls: ['./television.component.scss'],
 })
 export class TelevisionComponent implements OnInit {
-  @Input() public service: ServiceTypeX;
-  public channelList = {};
+  @Input() public service: ServiceTypeX
+  public channelList = {}
 
   constructor() {}
 
   ngOnInit() {
     // build inputService list
     for (const [, inputService] of Object.entries(this.service.linkedServices)) {
-      this.channelList[inputService.values.Identifier] = inputService.values.ConfiguredName;
+      this.channelList[inputService.values.Identifier] = inputService.values.ConfiguredName
     }
   }
 
   onClick() {
-    this.service.getCharacteristic('Active').setValue(this.service.values.Active ? 0 : 1);
+    this.service.getCharacteristic('Active').setValue(this.service.values.Active ? 0 : 1)
   }
 }

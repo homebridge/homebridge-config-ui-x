@@ -1,5 +1,5 @@
-import { Component, Input } from '@angular/core';
-import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
+import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
+import { Component, Input } from '@angular/core'
 
 @Component({
   selector: 'app-occupancysensor',
@@ -7,15 +7,17 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
   styleUrls: ['./occupancysensor.component.scss'],
 })
 export class OccupancysensorComponent {
-  @Input() public service: ServiceTypeX;
+  @Input() public service: ServiceTypeX
 
   constructor() {}
 
   onClick() {
-    console.log('short click');
+    // eslint-disable-next-line no-console
+    console.log('short click')
   }
 
   onLongClick() {
-    console.log('long clicked');
+    // eslint-disable-next-line no-console
+    console.log('long clicked')
   }
 }

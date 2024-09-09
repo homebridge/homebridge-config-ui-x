@@ -1,4 +1,5 @@
 export const environment = {
+  // eslint-disable-next-line ts/no-require-imports
   serverTarget: require('../../../package.json').version,
   production: true,
   socket: '',
@@ -16,4 +17,4 @@ export const environment = {
   owm: {
     appid: 'fec67b55f7f74deaa28df89ba6a60821',
   },
-};
+}

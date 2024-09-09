@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { Component } from '@angular/core'
+import { Router } from '@angular/router'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 
 @Component({
   templateUrl: './restart.component.html',
@@ -12,7 +12,7 @@ export class RestartComponent {
   ) {}
 
   public onRestartHomebridgeClick() {
-    this.$router.navigate(['/restart']);
-    this.activeModal.close();
+    this.$router.navigate(['/restart'])
+    this.activeModal.close()
   }
 }

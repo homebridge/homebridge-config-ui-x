@@ -8,7 +8,8 @@
     "declaration": true,
     "outDir": "./dist",
     "removeComments": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "esModuleInterop": true
   },
   "exclude": [
     "node_modules",

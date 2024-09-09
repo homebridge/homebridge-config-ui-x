@@ -1,23 +1,17 @@
-import {
-  Component,
-  Input,
-  OnInit,
-  Output,
-} from '@angular/core';
-import { EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core'
 
 @Component({
   selector: 'app-schema-form',
   templateUrl: './schema-form.component.html',
 })
 export class SchemaFormComponent implements OnInit {
-  @Input() configSchema;
-  @Input() data;
-  @Output() dataChange = new EventEmitter();
-  @Output() dataChanged = new EventEmitter();
-  @Output() isValid = new EventEmitter();
+  @Input() configSchema
+  @Input() data
+  @Output() dataChange = new EventEmitter()
+  @Output() dataChanged = new EventEmitter()
+  @Output() isValid = new EventEmitter()
 
-  public currentData;
+  public currentData
 
   public jsonFormOptions = {
     addSubmit: false,
@@ -25,20 +19,20 @@ export class SchemaFormComponent implements OnInit {
     returnEmptyFields: false,
     setSchemaDefaults: true,
     autocomplete: false,
-  };
+  }
 
   constructor() {}
 
   ngOnInit(): void {
-    this.currentData = this.data;
+    this.currentData = this.data
   }
 
   onChanges(data) {
-    this.dataChange.emit(data);
-    this.dataChanged.emit(data);
+    this.dataChange.emit(data)
+    this.dataChanged.emit(data)
   }
 
   validChange(data) {
-    this.isValid.emit(data);
+    this.isValid.emit(data)
   }
 }

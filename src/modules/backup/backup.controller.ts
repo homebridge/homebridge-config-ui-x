@@ -7,10 +7,10 @@ import {
   Put,
   Req,
   Res,
-  StreamableFile,
   UseGuards,
-} from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+} from '@nestjs/common'
+import { AuthGuard } from '@nestjs/passport'
+
 import {
   ApiBearerAuth,
   ApiBody,
@@ -18,11 +18,13 @@ import {
   ApiOperation,
   ApiParam,
   ApiTags,
-} from '@nestjs/swagger';
-import { FastifyRequest } from 'fastify';
-import { AdminGuard } from '../../core/auth/guards/admin.guard';
-import { Logger } from '../../core/logger/logger.service';
-import { BackupService } from './backup.service';
+} from '@nestjs/swagger'
+import type { StreamableFile } from '@nestjs/common'
+import type { FastifyRequest } from 'fastify'
+
+import { AdminGuard } from '../../core/auth/guards/admin.guard'
+import { Logger } from '../../core/logger/logger.service'
+import { BackupService } from './backup.service'
 
 @ApiTags('Backup & Restore')
 @ApiBearerAuth()
@@ -39,11 +41,11 @@ export class BackupController {
   @Get('/download')
   async downloadBackup(@Res({ passthrough: true }) res): Promise<StreamableFile> {
     try {
-      return await this.backupService.downloadBackup(res);
+      return await this.backupService.downloadBackup(res)
     } catch (e) {
-      console.error(e);
-      this.logger.error('Backup Failed ' + e);
-      throw new InternalServerErrorException(e.message);
+      console.error(e)
+      this.logger.error(`Backup Failed ${e}`)
+      throw new InternalServerErrorException(e.message)
     }
   }
 
@@ -51,14 +53,14 @@ export class BackupController {
   @ApiOperation({ summary: 'Return the date and time of the next scheduled backup.' })
   @Get('/scheduled-backups/next')
   async getNextBackupTime() {
-    return this.backupService.getNextBackupTime();
+    return this.backupService.getNextBackupTime()
   }
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'List available system generated instance backups.' })
   @Get('/scheduled-backups')
   async listScheduledBackups() {
-    return this.backupService.listScheduledBackups();
+    return this.backupService.listScheduledBackups()
   }
 
   @UseGuards(AdminGuard)
@@ -66,7 +68,7 @@ export class BackupController {
   @ApiParam({ name: 'backupId', type: 'string' })
   @Get('/scheduled-backups/:backupId')
   async getScheduledBackup(@Param('backupId') backupId): Promise<StreamableFile> {
-    return this.backupService.getScheduledBackup(backupId);
+    return this.backupService.getScheduledBackup(backupId)
   }
 
   @UseGuards(AdminGuard)
@@ -89,15 +91,15 @@ export class BackupController {
   })
   async restoreBackup(@Req() req: FastifyRequest) {
     try {
-      const data = await req.file();
+      const data = await req.file()
       if (data.file.truncated) {
-        throw new InternalServerErrorException(`Restore file exceeds maximum size ${globalThis.backup.maxBackupSizeText}`);
+        throw new InternalServerErrorException(`Restore file exceeds maximum size ${globalThis.backup.maxBackupSizeText}`)
       } else {
-        await this.backupService.uploadBackupRestore(data);
+        await this.backupService.uploadBackupRestore(data)
       }
     } catch (err) {
-      this.logger.error('Restore backup failed:', err.message);
-      throw new InternalServerErrorException(err.message);
+      this.logger.error('Restore backup failed:', err.message)
+      throw new InternalServerErrorException(err.message)
     }
   }
 
@@ -108,11 +110,7 @@ export class BackupController {
     description: 'Logs to stdout / stderr.',
   })
   async restoreBackupTrigger() {
-    try {
-      return await this.backupService.triggerHeadlessRestore();
-    } catch (err) {
-      throw err;
-    }
+    return await this.backupService.triggerHeadlessRestore()
   }
 
   @UseGuards(AdminGuard)
@@ -135,11 +133,11 @@ export class BackupController {
   @Post('/restore/hbfx')
   async restoreHbfx(@Req() req: FastifyRequest) {
     try {
-      const data = await req.file();
-      await this.backupService.uploadHbfxRestore(data);
+      const data = await req.file()
+      await this.backupService.uploadHbfxRestore(data)
     } catch (err) {
-      this.logger.error('Restore backup failed:', err.message);
-      throw new InternalServerErrorException(err.message);
+      this.logger.error('Restore backup failed:', err.message)
+      throw new InternalServerErrorException(err.message)
     }
   }
 
@@ -147,6 +145,6 @@ export class BackupController {
   @Put('/restart')
   @ApiOperation({ summary: 'Trigger a hard restart of Homebridge (use after restoring backup).' })
   postBackupRestoreRestart() {
-    return this.backupService.postBackupRestoreRestart();
+    return this.backupService.postBackupRestoreRestart()
   }
 }

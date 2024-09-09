@@ -8,17 +8,18 @@ import {
   Post,
   Put,
   UseGuards,
-} from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+} from '@nestjs/common'
+import { AuthGuard } from '@nestjs/passport'
 import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
   ApiParam,
   ApiTags,
-} from '@nestjs/swagger';
-import { AdminGuard } from '../../core/auth/guards/admin.guard';
-import { ConfigEditorService } from './config-editor.service';
+} from '@nestjs/swagger'
+
+import { AdminGuard } from '../../core/auth/guards/admin.guard'
+import { ConfigEditorService } from './config-editor.service'
 
 @ApiTags('Homebridge Config Editor')
 @ApiBearerAuth()
@@ -33,7 +34,7 @@ export class ConfigEditorController {
   @ApiOperation({ summary: 'Return the current Homebridge config.json file.' })
   @Get()
   getConfig() {
-    return this.configEditorService.getConfigFile();
+    return this.configEditorService.getConfigFile()
   }
 
   @UseGuards(AdminGuard)
@@ -41,7 +42,7 @@ export class ConfigEditorController {
   @ApiBody({ description: 'Homebridge config.json', type: 'json', isArray: false })
   @Post()
   updateConfig(@Body() body) {
-    return this.configEditorService.updateConfigFile(body);
+    return this.configEditorService.updateConfigFile(body)
   }
 
   @UseGuards(AdminGuard)
@@ -51,7 +52,7 @@ export class ConfigEditorController {
   })
   @Get('/plugin/:pluginName')
   getConfigForPlugin(@Param('pluginName') pluginName: string) {
-    return this.configEditorService.getConfigForPlugin(pluginName);
+    return this.configEditorService.getConfigForPlugin(pluginName)
   }
 
   @UseGuards(AdminGuard)
@@ -62,7 +63,7 @@ export class ConfigEditorController {
   @Post('/plugin/:pluginName')
   @ApiBody({ description: 'Array of plugin config blocks', type: 'json', isArray: true })
   updateConfigForPlugin(@Param('pluginName') pluginName: string, @Body() body) {
-    return this.configEditorService.updateConfigForPlugin(pluginName, body);
+    return this.configEditorService.updateConfigForPlugin(pluginName, body)
   }
 
   @UseGuards(AdminGuard)
@@ -72,7 +73,7 @@ export class ConfigEditorController {
   @ApiParam({ name: 'pluginName', type: 'string' })
   @Put('plugin/:pluginName/disable')
   disablePlugin(@Param('pluginName') pluginName) {
-    return this.configEditorService.disablePlugin(pluginName);
+    return this.configEditorService.disablePlugin(pluginName)
   }
 
   @UseGuards(AdminGuard)
@@ -82,14 +83,14 @@ export class ConfigEditorController {
   @ApiParam({ name: 'pluginName', type: 'string' })
   @Put('plugin/:pluginName/enable')
   enablePlugin(@Param('pluginName') pluginName) {
-    return this.configEditorService.enablePlugin(pluginName);
+    return this.configEditorService.enablePlugin(pluginName)
   }
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'List the available Homebridge config.json backups.' })
   @Get('/backups')
   listConfigBackups() {
-    return this.configEditorService.listConfigBackups();
+    return this.configEditorService.listConfigBackups()
   }
 
   @UseGuards(AdminGuard)
@@ -97,13 +98,13 @@ export class ConfigEditorController {
   @ApiParam({ name: 'backupId', type: 'number' })
   @Get('/backups/:backupId(\\d+)')
   getBackup(@Param('backupId', ParseIntPipe) backupId) {
-    return this.configEditorService.getConfigBackup(backupId);
+    return this.configEditorService.getConfigBackup(backupId)
   }
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Delete all the Homebridge config.json backups.' })
   @Delete('/backups')
   deleteAllConfigBackups() {
-    return this.configEditorService.deleteAllConfigBackups();
+    return this.configEditorService.deleteAllConfigBackups()
   }
 }

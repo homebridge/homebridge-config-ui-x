@@ -5,20 +5,20 @@ import {
   IsOptional,
   IsString,
   Matches,
-} from 'class-validator';
+} from 'class-validator'
 
 export class HomebridgeUpdateActionDto {
   @IsOptional()
   @IsString()
-    version?: string;
+  version?: string
 
   @IsOptional()
   @IsNumber()
-    termCols?: number;
+  termCols?: number
 
   @IsOptional()
   @IsNotEmpty()
-    termRows?: number;
+  termRows?: number
 }
 
 export class PluginActionDto {
@@ -26,17 +26,17 @@ export class PluginActionDto {
   @IsNotEmpty()
   @IsString()
   @Matches(/^(@[\w-]+(\.[\w-]+)*\/)?homebridge-[\w-]+$/)
-    name: string;
+  name: string
 
   @IsOptional()
   @IsString()
-    version?: string;
+  version?: string
 
   @IsOptional()
   @IsNumber()
-    termCols?: number;
+  termCols?: number
 
   @IsOptional()
   @IsNotEmpty()
-    termRows?: number;
+  termRows?: number
 }

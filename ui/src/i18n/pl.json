@@ -284,7 +284,7 @@
   "reset.clear_cache_single.list_3": "Podczas usuwania akcesorium z pamięci podręcznej wszystkie powiązane z nim dane HomeKit zostaną usunięte. Obejmuje to wszelkie powiązane sceny i automatyzacje, które używają tego akcesorium.",
   "reset.clear_cache_single.list_4": "Akcesoria można usunąć tylko gdy Homebridge nie jest uruchomiony. Homebridge automatycznie uruchomi się ponownie po usunięciu każdego pojedyńczego akcesorium. Jeśli musisz usunąć wiele akcesoriów, bądź cierpliwy i pozwól Homebridge na ponowne uruchomienie między każdym usunięciem.",
   "reset.clear_cache_single.title": "Usuń pojedyncze akcesorium z pamięci podręcznej",
-  "reset.message_accessory_config_will_not_be_changed": "Reszta twojej konfiguracji nie zostanie zmieniona. Reset nie pomoże, jeżeli powodem, dla którego nie uruchamia się Homebridge jest niepoprawna konfiguracja.",
+  "reset.message_accessory_config_will_not_be_changed": "Reszta twojej konfiguracji nie zostanie zmieniona. Reset nie pomoże, jeżeli powodem, dla którego nie uruchamia się Homebridge jest niepoprawna konfiguracja.",
   "reset.message_action_is_irreversible": "Ta czynność jest nieodwracalna! Przeczytaj uważnie, zanim przejdziesz dalej.",
   "reset.message_force_restart_hb_help_text": "Użyj tej akcji aby wymusić pełny restart na usłudze hb-service.",
   "reset.message_remove_cached_accessories_single_empty": "Nie posiadasz w pamięci podręcznej żadnych akcesoriów do usunięcia.",

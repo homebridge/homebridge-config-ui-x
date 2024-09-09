@@ -1,13 +1,15 @@
-process.title = 'homebridge-config-ui-x';
+import process from 'node:process'
+
+process.title = 'homebridge-config-ui-x'
 
 setInterval(() => {
   if (!process.connected) {
-    process.exit(1);
+    process.exit(1)
   }
-}, 10000);
+}, 10000)
 
 process.on('disconnect', () => {
-  process.exit();
-});
+  process.exit()
+})
 
-import('../main');
+import('../main')
