@@ -1183,10 +1183,7 @@ export class PluginsService {
         paths.push(...this.getNpmPrefixToSearchPaths())
       }
     } else {
-      // add the paths used by require()
-      // we need to use 'eval' on require to bypass webpack
-      // eslint-disable-next-line no-eval
-      paths = paths.concat(eval('require').main.paths)
+      paths = paths.concat(require.main?.paths || [])
 
       if (process.env.NODE_PATH) {
         paths = process.env.NODE_PATH.split(delimiter).filter(p => !!p).concat(paths)

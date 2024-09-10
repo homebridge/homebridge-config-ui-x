@@ -1,13 +1,13 @@
 import { resolve } from 'node:path'
 import process from 'node:process'
 
-import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals'
 import { HttpService } from '@nestjs/axios'
-
 import { ValidationPipe } from '@nestjs/common'
+
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import { copy, ensureDir, remove, writeFile } from 'fs-extra'
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { TestingModule } from '@nestjs/testing'
 
@@ -64,7 +64,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
   })
 
   beforeEach(async () => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
   })
 
   it('GET /plugins/settings-ui/:plugin-name/', async () => {

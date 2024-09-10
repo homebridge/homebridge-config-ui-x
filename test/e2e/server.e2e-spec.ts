@@ -1,12 +1,12 @@
 import { resolve } from 'node:path'
 import process from 'node:process'
 
-import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals'
 import { ValidationPipe } from '@nestjs/common'
-
 import { FastifyAdapter } from '@nestjs/platform-fastify'
+
 import { Test } from '@nestjs/testing'
 import { copy, pathExists, readJson, remove, writeJson } from 'fs-extra'
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { TestingModule } from '@nestjs/testing'
 
@@ -86,7 +86,7 @@ describe('ServerController (e2e)', () => {
   })
 
   it('PUT /server/restart', async () => {
-    const mockRestartServer = jest.fn()
+    const mockRestartServer = vi.fn()
     serverService.restartServer = mockRestartServer as any
 
     const res = await app.inject({

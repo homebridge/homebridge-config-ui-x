@@ -2,11 +2,11 @@ import { EventEmitter } from 'node:events'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
-
 import { copy } from 'fs-extra'
+
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { IPty } from '@homebridge/node-pty-prebuilt-multiarch'
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { TestingModule } from '@nestjs/testing'
@@ -20,7 +20,7 @@ import type { WsEventEmitter } from '../../src/modules/platform-tools/terminal/t
 
 // create mock websocket client
 class MockWsEventEmitter extends EventEmitter implements WsEventEmitter {
-  disconnect = jest.fn()
+  disconnect = vi.fn()
 }
 
 describe('PlatformToolsTerminal (e2e)', () => {
@@ -37,11 +37,11 @@ describe('PlatformToolsTerminal (e2e)', () => {
   const size = { cols: 80, rows: 24 }
 
   const mockTerm = {
-    onData: jest.fn() as IPty['onData'],
-    onExit: jest.fn() as IPty['onExit'],
-    kill: jest.fn() as IPty['kill'],
-    write: jest.fn() as IPty['write'],
-    resize: jest.fn() as IPty['resize'],
+    onData: vi.fn() as IPty['onData'],
+    onExit: vi.fn() as IPty['onExit'],
+    kill: vi.fn() as IPty['kill'],
+    write: vi.fn() as IPty['write'],
+    resize: vi.fn() as IPty['resize'],
   } as IPty
 
   beforeAll(async () => {
@@ -74,14 +74,14 @@ describe('PlatformToolsTerminal (e2e)', () => {
   })
 
   beforeEach(async () => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
 
     // create client
     client = new MockWsEventEmitter()
 
-    jest.spyOn(client, 'emit')
-    jest.spyOn(client, 'on')
-    jest.spyOn(nodePtyService, 'spawn')
+    vi.spyOn(client, 'emit')
+    vi.spyOn(client, 'on')
+    vi.spyOn(nodePtyService, 'spawn')
       .mockImplementationOnce(() => {
         return mockTerm
       })

@@ -1,14 +1,14 @@
 import { resolve } from 'node:path'
 import process from 'node:process'
-
-import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals'
 import { ValidationPipe } from '@nestjs/common'
-
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
+
 import { copy } from 'fs-extra'
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { TestingModule } from '@nestjs/testing'
+import type { Mock } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module'
 import { LinuxModule } from '../../src/modules/platform-tools/linux/linux.module'
@@ -20,8 +20,8 @@ describe('PlatformToolsLinux (e2e)', () => {
   let authFilePath: string
   let secretsFilePath: string
   let authorization: string
-  let restartHostFn: jest.Mock
-  let shutdownHostFn: jest.Mock
+  let restartHostFn: Mock
+  let shutdownHostFn: Mock
   let linuxService: LinuxService
 
   beforeAll(async () => {
@@ -58,8 +58,8 @@ describe('PlatformToolsLinux (e2e)', () => {
 
   beforeEach(async () => {
     // setup mock functions
-    restartHostFn = jest.fn()
-    shutdownHostFn = jest.fn()
+    restartHostFn = vi.fn()
+    shutdownHostFn = vi.fn()
     linuxService.restartHost = restartHostFn as any
     linuxService.shutdownHost = shutdownHostFn as any
 

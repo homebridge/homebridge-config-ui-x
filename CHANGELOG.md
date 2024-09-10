@@ -7,6 +7,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Other Changes
 
 - consistent code lint across the server and ui components
+- use `vitest` for testing
 
 ## v4.58.0 (2024-09-08)
 

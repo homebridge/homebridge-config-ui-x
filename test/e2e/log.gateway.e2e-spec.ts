@@ -3,11 +3,11 @@ import { platform } from 'node:os'
 
 import { resolve } from 'node:path'
 import process from 'node:process'
-import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
-
 import { Test } from '@nestjs/testing'
+
 import { copy, writeFile } from 'fs-extra'
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { TestingModule } from '@nestjs/testing'
 
@@ -65,7 +65,7 @@ describe('LogGateway (e2e)', () => {
       client.emit('disconnect')
     }
 
-    jest.resetAllMocks()
+    vi.resetAllMocks()
 
     // create sample data
     const sampleLogData = ['line 1', 'line 2', 'line 3'].join('\n')
@@ -74,8 +74,8 @@ describe('LogGateway (e2e)', () => {
     // create client
     client = new EventEmitter()
 
-    jest.spyOn(client, 'emit')
-    jest.spyOn(client, 'on')
+    vi.spyOn(client, 'emit')
+    vi.spyOn(client, 'on')
 
     // unset log mode between each test
     configService.ui.sudo = false
