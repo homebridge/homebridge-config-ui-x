@@ -90,7 +90,7 @@ export class ConfigEditorController {
   @ApiOperation({ summary: 'Update a config property for the Homebridge UI.' })
   @Put('/ui')
   setPropertyForUi(@Body() { key, value }) {
-    return this.configEditorService.setPropertyForUi(key, value);
+    return this.configEditorService.setPropertyForUi(key, value)
   }
 
   @UseGuards(AdminGuard)
