@@ -8,9 +8,7 @@ import { Logger } from './core/logger/logger.service'
 const logger = new Logger()
 
 function tryRebuildNodePtyModule() {
-  // using eval('require') here so it does not break with webpack
-  // eslint-disable-next-line no-eval
-  const modulePath = dirname(dirname(eval('require').resolve('@homebridge/node-pty-prebuilt-multiarch')))
+  const modulePath = dirname(dirname(require.resolve('@homebridge/node-pty-prebuilt-multiarch')))
 
   logger.warn('[node-pty] Trying to rebuild automatically...')
   logger.warn(`[node-pty] Path: ${modulePath}`)

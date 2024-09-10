@@ -1,17 +1,17 @@
 import { resolve } from 'node:path'
 import process from 'node:process'
-import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals'
-
 import { HttpService } from '@nestjs/axios'
-import { ValidationPipe } from '@nestjs/common'
 
+import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
+
 import { Test } from '@nestjs/testing'
+import { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import { copy } from 'fs-extra'
 import { of, throwError } from 'rxjs'
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { TestingModule } from '@nestjs/testing'
-import {AxiosError, AxiosHeaders, AxiosResponse, InternalAxiosRequestConfig} from 'axios'
 
 import { AuthModule } from '../../src/core/auth/auth.module'
 import { StatusModule } from '../../src/modules/status/status.module'
@@ -58,7 +58,7 @@ describe('StatusController (e2e)', () => {
   })
 
   beforeEach(async () => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
 
     // get auth token before each test
     authorization = `bearer ${(await app.inject({
@@ -137,7 +137,7 @@ describe('StatusController (e2e)', () => {
       statusText: 'Not Found',
     }
 
-    jest.spyOn(httpService, 'get').mockImplementationOnce(() => of(response) as any)
+    vi.spyOn(httpService, 'get').mockImplementationOnce(() => of(response) as any)
 
     const res = await app.inject({
       method: 'GET',
@@ -164,7 +164,7 @@ describe('StatusController (e2e)', () => {
       config: { url: 'http://localhost:51826' } as InternalAxiosRequestConfig,
     }
 
-    jest.spyOn(httpService, 'get')
+    vi.spyOn(httpService, 'get')
       .mockImplementationOnce(() => throwError(response))
 
     const res = await app.inject({
@@ -222,7 +222,7 @@ describe('StatusController (e2e)', () => {
       statusText: 'OK',
     }
 
-    jest.spyOn(httpService, 'get').mockImplementationOnce(() => of(response) as any)
+    vi.spyOn(httpService, 'get').mockImplementationOnce(() => of(response) as any)
 
     const res = await app.inject({
       method: 'GET',
