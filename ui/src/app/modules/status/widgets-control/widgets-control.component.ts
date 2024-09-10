@@ -1,8 +1,10 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Component, Input, OnInit } from '@angular/core';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { TranslateService } from '@ngx-translate/core';
-import { Observable, of } from 'rxjs';
+import { ApiService } from '@/app/core/api.service'
+import { environment } from '@/environments/environment'
+import { HttpClient, HttpParams } from '@angular/common/http'
+import { Component, Input, OnInit } from '@angular/core'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
+import { TranslateService } from '@ngx-translate/core'
+import { Observable, of } from 'rxjs'
 import {
   catchError,
   debounceTime,
@@ -10,32 +12,30 @@ import {
   map,
   switchMap,
   tap,
-} from 'rxjs/operators';
-import { ApiService } from '@/app/core/api.service';
-import { environment } from '@/environments/environment';
+} from 'rxjs/operators'
 
 @Component({
   templateUrl: './widgets-control.component.html',
 })
 export class WidgetsControlComponent implements OnInit {
-  @Input() widget: any;
+  @Input() widget: any
 
   // weather
-  public searching: boolean;
+  public searching: boolean
 
   // terminal
-  public fontSizes = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
-  public fontWeights = ['100', '200', '300', '400', '500', '600', '700', '800', '900', 'bold', 'normal'];
+  public fontSizes = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+  public fontWeights = ['100', '200', '300', '400', '500', '600', '700', '800', '900', 'bold', 'normal']
 
   // clock
-  public currentDate = new Date();
+  public currentDate = new Date()
 
   public timeFormats = [
     'h:mm a',
     'h:mm:ss a',
     'H:mm',
     'H:mm:ss',
-  ];
+  ]
 
   public dateFormats = [
     'yyyy-MM-dd',
@@ -53,16 +53,16 @@ export class WidgetsControlComponent implements OnInit {
     'EEE, MMM d',
     'EEEE',
     'EEEE, MMM d',
-  ];
+  ]
 
   // cpu
   public temperatureUnits = [
     { label: 'status.widget.label_temperature_units_system_default', value: '' },
     { label: 'status.widget.label_temperature_units_celsius', value: 'c' },
     { label: 'status.widget.label_temperature_units_fahrenheit', value: 'f' },
-  ];
+  ]
 
-  public networkInterfaces: string[] = [];
+  public networkInterfaces: string[] = []
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -77,33 +77,34 @@ export class WidgetsControlComponent implements OnInit {
       distinctUntilChanged(),
       tap(() => this.searching = true),
       switchMap(term =>
-        term.length < 3 ? [] :
-          this.findOpenWeatherMapCity(term).pipe(
+        term.length < 3
+          ? []
+          : this.findOpenWeatherMapCity(term).pipe(
             catchError(() => {
-              this.searching = false;
-              return of([]);
-            })),
+              this.searching = false
+              return of([])
+            }),
+          ),
       ),
       tap(() => this.searching = false),
-    );
+    )
 
-  public searchCountryCodeFormatter = (result: any) => result.name + ', ' + result.country;
+  public searchCountryCodeFormatter = (result: any) => `${result.name}, ${result.country}`
 
   ngOnInit() {
     if (this.widget.component === 'HomebridgeLogsWidgetComponent' || this.widget.component === 'TerminalWidgetComponent') {
       if (!this.widget.fontWeight) {
-        this.widget.fontWeight = '400';
+        this.widget.fontWeight = '400'
       }
       if (!this.widget.fontSize) {
-        this.widget.fontSize = 15;
+        this.widget.fontSize = 15
       }
     }
     if (this.widget.component === 'NetworkWidgetComponent') {
       // Get a list of active network interfaces from the settings
-      this.$api.get('/server/network-interfaces/bridge').toPromise()
-        .then((adapters) => {
-          this.networkInterfaces = adapters;
-        });
+      this.$api.get('/server/network-interfaces/bridge').toPromise().then((adapters) => {
+        this.networkInterfaces = adapters
+      })
     }
   }
 
@@ -120,13 +121,14 @@ export class WidgetsControlComponent implements OnInit {
             lang: this.$translate.currentLang,
           },
         }),
-      }).pipe(
-        map((response: any) => response.list.map((item) => ({
+      })
+      .pipe(
+        map((response: any) => response.list.map(item => ({
           id: item.id,
           name: item.name,
           country: item.sys.country,
           coord: item.coord,
         }))),
-      );
+      )
   }
 }

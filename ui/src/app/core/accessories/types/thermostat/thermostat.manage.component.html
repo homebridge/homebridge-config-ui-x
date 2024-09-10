@@ -10,10 +10,10 @@
 
     <div class="temperature-circle mb-3"
       [innerText]="(service.values.CurrentTemperature | convertTemp | number:'1.0-1') + '°'" [ngClass]="{
-          'cooling': service.values.CurrentHeatingCoolingState === 2 && service.values.TargetHeatingCoolingState > 0,
-          'heating': service.values.CurrentHeatingCoolingState === 1 && service.values.TargetHeatingCoolingState > 0,
-          'no-current-state': service.values.TargetHeatingCoolingState > 0 && service.values.CurrentHeatingCoolingState === 0
-        }"></div>
+        'cooling': service.values.CurrentHeatingCoolingState === 2 && service.values.TargetHeatingCoolingState > 0,
+        'heating': service.values.CurrentHeatingCoolingState === 1 && service.values.TargetHeatingCoolingState > 0,
+        'no-current-state': service.values.TargetHeatingCoolingState > 0 && service.values.CurrentHeatingCoolingState === 0
+      }"></div>
 
     <div class="thermostat-mode-control btn-group-vertical btn-group-toggle d-flex justify-content-center mb-4"
       ngbRadioGroup name="radioBasic" [(ngModel)]="targetMode" (change)="onTargetStateChange()">

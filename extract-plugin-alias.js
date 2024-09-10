@@ -1,9 +1,10 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable unused-imports/no-unused-vars */
 
 /**
  * This script "mocks" homebridge and is used to extract the plugin alias and type.
  */
 
+const process = require('node:process')
 const EventEmitter = require('node:events').EventEmitter
 const path = require('node:path')
 

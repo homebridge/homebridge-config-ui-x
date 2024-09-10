@@ -1,13 +1,13 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { AdminGuard } from '@/app/core/auth/admin.guard';
-import { AuthGuard } from '@/app/core/auth/auth.guard';
-import { LoginComponent } from '@/app/modules/login/login.component';
-import { LoginGuard } from '@/app/modules/login/login.guard';
-import { RestartComponent } from '@/app/modules/restart/restart.component';
-import { SetupWizardGuard } from '@/app/modules/setup-wizard/setup-wizard.guard';
-import { StatusComponent } from '@/app/modules/status/status.component';
-import { LayoutComponent } from '@/app/shared/layout/layout.component';
+import { AdminGuard } from '@/app/core/auth/admin.guard'
+import { AuthGuard } from '@/app/core/auth/auth.guard'
+import { LoginComponent } from '@/app/modules/login/login.component'
+import { LoginGuard } from '@/app/modules/login/login.guard'
+import { RestartComponent } from '@/app/modules/restart/restart.component'
+import { SetupWizardGuard } from '@/app/modules/setup-wizard/setup-wizard.guard'
+import { StatusComponent } from '@/app/modules/status/status.component'
+import { LayoutComponent } from '@/app/shared/layout/layout.component'
+import { NgModule } from '@angular/core'
+import { RouterModule, Routes } from '@angular/router'
 
 /*
  * The status and restart modules should not be lazy loaded
@@ -116,9 +116,11 @@ const routes: Routes = [
     ],
   },
   {
-    path: '**', pathMatch: 'full', redirectTo: '/',
+    path: '**',
+    pathMatch: 'full',
+    redirectTo: '/',
   },
-];
+]
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, {

@@ -1,68 +1,75 @@
-import { resolve } from 'path';
-import { HttpService } from '@nestjs/axios';
-import { ValidationPipe } from '@nestjs/common';
-import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
-import { copy } from 'fs-extra';
-import { of, throwError } from 'rxjs';
-import { AuthModule } from '../../src/core/auth/auth.module';
-import { StatusModule } from '../../src/modules/status/status.module';
+import { resolve } from 'node:path'
+import process from 'node:process'
+import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals'
+
+import { HttpService } from '@nestjs/axios'
+import { ValidationPipe } from '@nestjs/common'
+
+import { FastifyAdapter } from '@nestjs/platform-fastify'
+import { Test } from '@nestjs/testing'
+import { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
+import { copy } from 'fs-extra'
+import { of, throwError } from 'rxjs'
+import type { NestFastifyApplication } from '@nestjs/platform-fastify'
+import type { TestingModule } from '@nestjs/testing'
+
+import { AuthModule } from '../../src/core/auth/auth.module'
+import { StatusModule } from '../../src/modules/status/status.module'
 
 describe('StatusController (e2e)', () => {
-  let app: NestFastifyApplication;
-  let httpService: HttpService;
+  let app: NestFastifyApplication
+  let httpService: HttpService
 
-  let authFilePath: string;
-  let secretsFilePath: string;
-  let authorization: string;
+  let authFilePath: string
+  let secretsFilePath: string
+  let authorization: string
 
   beforeAll(async () => {
-    process.env.UIX_BASE_PATH = resolve(__dirname, '../../');
-    process.env.UIX_STORAGE_PATH = resolve(__dirname, '../', '.homebridge');
-    process.env.UIX_CONFIG_PATH = resolve(process.env.UIX_STORAGE_PATH, 'config.json');
+    process.env.UIX_BASE_PATH = resolve(__dirname, '../../')
+    process.env.UIX_STORAGE_PATH = resolve(__dirname, '../', '.homebridge')
+    process.env.UIX_CONFIG_PATH = resolve(process.env.UIX_STORAGE_PATH, 'config.json')
 
-    authFilePath = resolve(process.env.UIX_STORAGE_PATH, 'auth.json');
-    secretsFilePath = resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets');
+    authFilePath = resolve(process.env.UIX_STORAGE_PATH, 'auth.json')
+    secretsFilePath = resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets')
 
     // setup test config
-    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH);
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
 
     // setup test auth file
-    await copy(resolve(__dirname, '../mocks', 'auth.json'), authFilePath);
-    await copy(resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath);
+    await copy(resolve(__dirname, '../mocks', 'auth.json'), authFilePath)
+    await copy(resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath)
 
     // create httpService instance
-    httpService = new HttpService();
+    httpService = new HttpService()
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [StatusModule, AuthModule],
-    }).overrideProvider(HttpService).useValue(httpService).compile();
+    }).overrideProvider(HttpService).useValue(httpService).compile()
 
-    app = moduleFixture.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
+    app = moduleFixture.createNestApplication<NestFastifyApplication>(new FastifyAdapter())
 
     app.useGlobalPipes(new ValidationPipe({
       whitelist: true,
       skipMissingProperties: true,
-    }));
+    }))
 
-    await app.init();
-    await app.getHttpAdapter().getInstance().ready();
-  });
+    await app.init()
+    await app.getHttpAdapter().getInstance().ready()
+  })
 
   beforeEach(async () => {
-    jest.resetAllMocks();
+    jest.resetAllMocks()
 
     // get auth token before each test
-    authorization = 'bearer ' + (await app.inject({
+    authorization = `bearer ${(await app.inject({
       method: 'POST',
       path: '/auth/login',
       payload: {
         username: 'admin',
         password: 'admin',
       },
-    })).json().access_token;
-  });
+    })).json().access_token}`
+  })
 
   it('GET /status/cpu', async () => {
     const res = await app.inject({
@@ -71,13 +78,13 @@ describe('StatusController (e2e)', () => {
       headers: {
         authorization,
       },
-    });
+    })
 
-    expect(res.statusCode).toBe(200);
-    expect(res.json()).toHaveProperty('cpuLoadHistory');
-    expect(res.json()).toHaveProperty('cpuTemperature');
-    expect(res.json()).toHaveProperty('currentLoad');
-  }, 30000);
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toHaveProperty('cpuLoadHistory')
+    expect(res.json()).toHaveProperty('cpuTemperature')
+    expect(res.json()).toHaveProperty('currentLoad')
+  }, 30000)
 
   it('GET /status/ram', async () => {
     const res = await app.inject({
@@ -86,12 +93,12 @@ describe('StatusController (e2e)', () => {
       headers: {
         authorization,
       },
-    });
+    })
 
-    expect(res.statusCode).toBe(200);
-    expect(res.json()).toHaveProperty('mem');
-    expect(res.json()).toHaveProperty('memoryUsageHistory');
-  }, 30000);
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toHaveProperty('mem')
+    expect(res.json()).toHaveProperty('memoryUsageHistory')
+  }, 30000)
 
   it('GET /status/network', async () => {
     const res = await app.inject({
@@ -100,12 +107,12 @@ describe('StatusController (e2e)', () => {
       headers: {
         authorization,
       },
-    });
+    })
 
-    expect(res.statusCode).toBe(200);
-    expect(res.json()).toHaveProperty('net');
-    expect(res.json()).toHaveProperty('point');
-  }, 30000);
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toHaveProperty('net')
+    expect(res.json()).toHaveProperty('point')
+  }, 30000)
 
   it('GET /status/uptime', async () => {
     const res = await app.inject({
@@ -114,12 +121,12 @@ describe('StatusController (e2e)', () => {
       headers: {
         authorization,
       },
-    });
+    })
 
-    expect(res.statusCode).toBe(200);
-    expect(res.json()).toHaveProperty('time');
-    expect(res.json()).toHaveProperty('processUptime');
-  });
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toHaveProperty('time')
+    expect(res.json()).toHaveProperty('processUptime')
+  })
 
   it('GET /status/homebridge (homebridge up)', async () => {
     const response: AxiosResponse<any> = {
@@ -128,10 +135,9 @@ describe('StatusController (e2e)', () => {
       config: { url: 'http://localhost:51826' } as InternalAxiosRequestConfig,
       status: 404,
       statusText: 'Not Found',
-    };
+    }
 
-    jest.spyOn(httpService, 'get')
-      .mockImplementationOnce(() => of(response));
+    jest.spyOn(httpService, 'get').mockImplementationOnce(() => of(response) as any)
 
     const res = await app.inject({
       method: 'GET',
@@ -139,25 +145,27 @@ describe('StatusController (e2e)', () => {
       headers: {
         authorization,
       },
-    });
+    })
 
-    expect(res.statusCode).toBe(200);
-    expect(res.json()).toEqual({ status: 'up' });
-  });
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual({ status: 'up' })
+  })
 
   it('GET /status/homebridge (homebridge down)', async () => {
     const response: AxiosError<any> = {
       name: 'Connection Error',
       message: 'Connection Error',
-      toJSON: () => { return {}; },
+      toJSON: () => {
+        return {}
+      },
       isAxiosError: true,
       code: null,
       response: null,
       config: { url: 'http://localhost:51826' } as InternalAxiosRequestConfig,
-    };
+    }
 
     jest.spyOn(httpService, 'get')
-      .mockImplementationOnce(() => throwError(response));
+      .mockImplementationOnce(() => throwError(response))
 
     const res = await app.inject({
       method: 'GET',
@@ -165,11 +173,11 @@ describe('StatusController (e2e)', () => {
       headers: {
         authorization,
       },
-    });
+    })
 
-    expect(res.statusCode).toBe(200);
-    expect(res.json()).toEqual({ status: 'down' });
-  });
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual({ status: 'down' })
+  })
 
   it('GET /status/server-information', async () => {
     const res = await app.inject({
@@ -178,29 +186,29 @@ describe('StatusController (e2e)', () => {
       headers: {
         authorization,
       },
-    });
+    })
 
-    expect(res.statusCode).toBe(200);
-    expect(res.json()).toHaveProperty('serviceUser');
-    expect(res.json().homebridgeConfigJsonPath).toBe(process.env.UIX_CONFIG_PATH);
-    expect(res.json().homebridgeStoragePath).toBe(process.env.UIX_STORAGE_PATH);
-  }, 30000);
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toHaveProperty('serviceUser')
+    expect(res.json().homebridgeConfigJsonPath).toBe(process.env.UIX_CONFIG_PATH)
+    expect(res.json().homebridgeStoragePath).toBe(process.env.UIX_STORAGE_PATH)
+  }, 30000)
 
   it('GET /status/nodejs', async () => {
     const data = [
       {
-        'version': 'v22.2.0',
-        'lts': false,
+        version: 'v22.2.0',
+        lts: false,
       },
       {
-        'version': 'v20.13.1',
-        'lts': 'Iron',
+        version: 'v20.13.1',
+        lts: 'Iron',
       },
       {
-        'version': 'v18.20.3',
-        'lts': 'Hydrogen',
+        version: 'v18.20.3',
+        lts: 'Hydrogen',
       },
-    ];
+    ]
 
     const response: AxiosResponse<any> = {
       data,
@@ -208,10 +216,9 @@ describe('StatusController (e2e)', () => {
       config: { url: 'https://nodejs.org/dist/index.json' } as InternalAxiosRequestConfig,
       status: 200,
       statusText: 'OK',
-    };
+    }
 
-    jest.spyOn(httpService, 'get')
-      .mockImplementationOnce(() => of(response));
+    jest.spyOn(httpService, 'get').mockImplementationOnce(() => of(response) as any)
 
     const res = await app.inject({
       method: 'GET',
@@ -219,14 +226,14 @@ describe('StatusController (e2e)', () => {
       headers: {
         authorization,
       },
-    });
+    })
 
-    expect(res.statusCode).toBe(200);
-    expect(res.json().currentVersion).toEqual(process.version);
+    expect(res.statusCode).toBe(200)
+    expect(res.json().currentVersion).toEqual(process.version)
     // expect(res.json().latestVersion).toBe('v20.13.1');
-  });
+  })
 
   afterAll(async () => {
-    await app.close();
-  });
-});
+    await app.close()
+  })
+})

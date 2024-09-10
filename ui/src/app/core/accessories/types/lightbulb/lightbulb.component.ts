@@ -1,7 +1,7 @@
-import { Component, Input } from '@angular/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces';
-import { LightbulbManageComponent } from '@/app/core/accessories/types//lightbulb/lightbulb.manage.component';
+import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
+import { LightbulbManageComponent } from '@/app/core/accessories/types//lightbulb/lightbulb.manage.component'
+import { Component, Input } from '@angular/core'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 
 @Component({
   selector: 'app-lightbulb',
@@ -9,18 +9,18 @@ import { LightbulbManageComponent } from '@/app/core/accessories/types//lightbul
   styleUrls: ['./lightbulb.component.scss'],
 })
 export class LightbulbComponent {
-  @Input() public service: ServiceTypeX;
+  @Input() public service: ServiceTypeX
 
   constructor(
     private modalService: NgbModal,
   ) {}
 
   onClick() {
-    this.service.getCharacteristic('On').setValue(!this.service.values.On);
+    this.service.getCharacteristic('On').setValue(!this.service.values.On)
 
     // set the brightness to 100% if on 0% when turned on
     if (!this.service.values.On && 'Brightness' in this.service.values && !this.service.values.Brightness) {
-      this.service.getCharacteristic('Brightness').setValue(100);
+      this.service.getCharacteristic('Brightness').setValue(100)
     }
   }
 
@@ -28,8 +28,8 @@ export class LightbulbComponent {
     if ('Brightness' in this.service.values) {
       const ref = this.modalService.open(LightbulbManageComponent, {
         size: 'md',
-      });
-      ref.componentInstance.service = this.service;
+      })
+      ref.componentInstance.service = this.service
     }
   }
 }

@@ -1,14 +1,11 @@
-import {
-  Controller,
-  Get,
-  Header,
-  StreamableFile,
-  UseGuards,
-} from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AdminGuard } from '../../../core/auth/guards/admin.guard';
-import { HomebridgeDeconzService } from './homebridge-deconz.service';
+import { Controller, Get, Header, UseGuards } from '@nestjs/common'
+
+import { AuthGuard } from '@nestjs/passport'
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
+import type { StreamableFile } from '@nestjs/common'
+
+import { AdminGuard } from '../../../core/auth/guards/admin.guard'
+import { HomebridgeDeconzService } from './homebridge-deconz.service'
 
 @ApiTags('Plugins')
 @ApiBearerAuth()
@@ -24,6 +21,6 @@ export class HomebridgeDeconzController {
   @Header('Content-disposition', 'attachment; filename=homebridge-deconz.json.gz')
   @Header('Content-Type', 'application/json+gzip')
   async exchangeCredentials(): Promise<StreamableFile> {
-    return this.homebridgeDeconzService.streamDumpFile();
+    return this.homebridgeDeconzService.streamDumpFile()
   }
 }

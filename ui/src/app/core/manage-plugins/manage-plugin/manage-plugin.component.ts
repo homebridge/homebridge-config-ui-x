@@ -1,21 +1,16 @@
-import {
-  Component,
-  Input,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
-import { Router } from '@angular/router';
-import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { TranslateService } from '@ngx-translate/core';
-import { saveAs } from 'file-saver';
-import { ToastrService } from 'ngx-toastr';
-import { Terminal } from 'xterm';
-import { FitAddon } from 'xterm-addon-fit';
-import { ApiService } from '@/app/core/api.service';
-import { RestartComponent } from '@/app/core/components/restart/restart.component';
-import { NotificationService } from '@/app/core/notification.service';
-import { SettingsService } from '@/app/core/settings.service';
-import { IoNamespace, WsService } from '@/app/core/ws.service';
+import { ApiService } from '@/app/core/api.service'
+import { RestartComponent } from '@/app/core/components/restart/restart.component'
+import { NotificationService } from '@/app/core/notification.service'
+import { SettingsService } from '@/app/core/settings.service'
+import { IoNamespace, WsService } from '@/app/core/ws.service'
+import { Component, Input, OnDestroy, OnInit } from '@angular/core'
+import { Router } from '@angular/router'
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { TranslateService } from '@ngx-translate/core'
+import { saveAs } from 'file-saver'
+import { ToastrService } from 'ngx-toastr'
+import { Terminal } from 'xterm'
+import { FitAddon } from 'xterm-addon-fit'
 
 @Component({
   templateUrl: './manage-plugin.component.html',
@@ -23,31 +18,31 @@ import { IoNamespace, WsService } from '@/app/core/ws.service';
 })
 
 export class ManagePluginComponent implements OnInit, OnDestroy {
-  @Input() pluginName: string;
-  @Input() targetVersion = 'latest';
-  @Input() latestVersion: string;
-  @Input() installedVersion: string;
-  @Input() isDisabled: boolean;
-  @Input() action: string;
+  @Input() pluginName: string
+  @Input() targetVersion = 'latest'
+  @Input() latestVersion: string
+  @Input() installedVersion: string
+  @Input() isDisabled: boolean
+  @Input() action: string
 
-  public actionComplete = false;
-  public actionFailed = false;
-  public showReleaseNotes = false;
-  public justUpdatedPlugin = false;
-  public updateToBeta = false;
-  public changeLog: string;
-  public childBridges: any[] = [];
-  public release: any;
-  public presentTenseVerb: string;
-  public pastTenseVerb: string;
-  public onlineUpdateOk: boolean;
+  public actionComplete = false
+  public actionFailed = false
+  public showReleaseNotes = false
+  public justUpdatedPlugin = false
+  public updateToBeta = false
+  public changeLog: string
+  public childBridges: any[] = []
+  public release: any
+  public presentTenseVerb: string
+  public pastTenseVerb: string
+  public onlineUpdateOk: boolean
 
-  private io: IoNamespace;
-  private toastSuccess: string;
-  private term = new Terminal();
-  private termTarget: HTMLElement;
-  private fitAddon = new FitAddon();
-  private errorLog = '';
+  private io: IoNamespace
+  private toastSuccess: string
+  private term = new Terminal()
+  private termTarget: HTMLElement
+  private fitAddon = new FitAddon()
+  private errorLog = ''
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -60,69 +55,69 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
     private $notification: NotificationService,
     private $router: Router,
   ) {
-    this.term.loadAddon(this.fitAddon);
+    this.term.loadAddon(this.fitAddon)
   }
 
   ngOnInit() {
-    this.io = this.$ws.connectToNamespace('plugins');
-    this.termTarget = document.getElementById('plugin-log-output');
-    this.term.open(this.termTarget);
-    this.fitAddon.fit();
+    this.io = this.$ws.connectToNamespace('plugins')
+    this.termTarget = document.getElementById('plugin-log-output')
+    this.term.open(this.termTarget)
+    this.fitAddon.fit()
 
     this.io.socket.on('stdout', (data: string | Uint8Array) => {
-      this.term.write(data);
+      this.term.write(data)
       const dataCleaned = data
         .toString()
-        .replace(/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]/g, '')
-        .trimEnd();
+        .replace(/\x1B\[(\d{1,3}(;\d{1,2})?)?[mGK]/g, '') // eslint-disable-line no-control-regex
+        .trimEnd()
       if (dataCleaned) {
-        this.errorLog += dataCleaned + '\r\n';
+        this.errorLog += `${dataCleaned}\r\n`
       }
-    });
+    })
 
-    this.toastSuccess = this.$translate.instant('toast.title_success');
+    this.toastSuccess = this.$translate.instant('toast.title_success')
 
-    this.onlineUpdateOk = !(['homebridge', 'homebridge-config-ui-x'].includes(this.pluginName) && this.$settings.env.platform === 'win32');
+    this.onlineUpdateOk = !(['homebridge', 'homebridge-config-ui-x'].includes(this.pluginName) && this.$settings.env.platform === 'win32')
 
     switch (this.action) {
       case 'Install':
-        this.install();
-        this.presentTenseVerb = this.$translate.instant('plugins.manage.label_install');
-        this.pastTenseVerb = this.$translate.instant('plugins.manage.label_installed');
-        break;
+        this.install()
+        this.presentTenseVerb = this.$translate.instant('plugins.manage.label_install')
+        this.pastTenseVerb = this.$translate.instant('plugins.manage.label_installed')
+        break
       case 'Uninstall':
-        this.uninstall();
-        this.presentTenseVerb = this.$translate.instant('plugins.manage.label_uninstall');
-        this.pastTenseVerb = this.$translate.instant('plugins.manage.label_uninstalled');
-        break;
+        this.uninstall()
+        this.presentTenseVerb = this.$translate.instant('plugins.manage.label_uninstall')
+        this.pastTenseVerb = this.$translate.instant('plugins.manage.label_uninstalled')
+        break
       case 'Update':
         switch (this.targetVersion) {
           case 'latest':
-            this.updateToBeta = false;
-            this.getReleaseNotes();
-            break;
+            this.updateToBeta = false
+            this.getReleaseNotes()
+            break
           case 'alpha':
           case 'beta':
           case 'test':
-            this.updateToBeta = true;
-            this.getReleaseNotes();
-            break;
+            this.updateToBeta = true
+            this.getReleaseNotes()
+            break
           default:
-            this.update();
+            this.update()
         }
-        this.presentTenseVerb = this.$translate.instant('plugins.manage.label_update');
-        this.pastTenseVerb = this.$translate.instant('plugins.manage.label_updated');
-        break;
+        this.presentTenseVerb = this.$translate.instant('plugins.manage.label_update')
+        this.pastTenseVerb = this.$translate.instant('plugins.manage.label_updated')
+        break
     }
   }
 
   install() {
     if (!this.onlineUpdateOk) {
-      return;
+      return
     }
 
     if (this.pluginName === 'homebridge') {
-      return this.upgradeHomebridge();
+      return this.upgradeHomebridge()
     }
 
     this.io.request('install', {
@@ -134,16 +129,16 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       () => {
         this.$router.navigate(['/plugins'], {
           queryParams: { installed: this.pluginName },
-        });
-        this.activeModal.close();
-        this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);
+        })
+        this.activeModal.close()
+        this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess)
       },
       (err) => {
-        this.actionFailed = true;
-        this.$router.navigate(['/plugins']);
-        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'));
+        this.actionFailed = true
+        this.$router.navigate(['/plugins'])
+        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
       },
-    );
+    )
   }
 
   uninstall() {
@@ -153,31 +148,31 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       termRows: this.term.rows,
     }).subscribe(
       () => {
-        this.activeModal.close();
-        this.$router.navigate(['/plugins']);
+        this.activeModal.close()
+        this.$router.navigate(['/plugins'])
         this.$modal.open(RestartComponent, {
           size: 'lg',
           backdrop: 'static',
-        });
+        })
       },
       (err) => {
-        this.actionFailed = true;
-        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'));
+        this.actionFailed = true
+        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
       },
-    );
+    )
   }
 
   update() {
     // hide the release notes
-    this.showReleaseNotes = false;
+    this.showReleaseNotes = false
 
     if (!this.onlineUpdateOk) {
-      return;
+      return
     }
 
     // if this is updating homebridge, use an alternative workflow
     if (this.pluginName === 'homebridge') {
-      return this.upgradeHomebridge();
+      return this.upgradeHomebridge()
     }
 
     this.io.request('update', {
@@ -187,22 +182,22 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       termRows: this.term.rows,
     }).subscribe(
       () => {
-        this.actionComplete = true;
-        this.justUpdatedPlugin = true;
+        this.actionComplete = true
+        this.justUpdatedPlugin = true
         if (this.pluginName === 'homebridge-config-ui-x') {
-          this.$router.navigate(['/']);
+          this.$router.navigate(['/'])
         } else {
-          this.$router.navigate(['/plugins']);
+          this.$router.navigate(['/plugins'])
         }
-        this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess);
-        this.getChangeLog();
-        this.getChildBridges();
+        this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess)
+        this.getChangeLog()
+        this.getChildBridges()
       },
       (err) => {
-        this.actionFailed = true;
-        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'));
+        this.actionFailed = true
+        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
       },
-    );
+    )
   }
 
   upgradeHomebridge() {
@@ -212,28 +207,28 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       termRows: this.term.rows,
     }).subscribe(
       () => {
-        this.activeModal.close();
+        this.activeModal.close()
         this.$modal.open(RestartComponent, {
           size: 'lg',
           backdrop: 'static',
-        });
+        })
       },
       (err) => {
-        this.actionFailed = true;
-        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'));
+        this.actionFailed = true
+        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
       },
-    );
+    )
   }
 
   getChangeLog() {
     this.$api.get(`/plugins/changelog/${encodeURIComponent(this.pluginName)}`).subscribe(
       (data: { changelog: string }) => {
-        this.changeLog = data.changelog;
+        this.changeLog = data.changelog
       },
       () => {
-        this.changeLog = null;
+        this.changeLog = null
       },
-    );
+    )
   }
 
   getChildBridges(): any[] {
@@ -241,62 +236,62 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       this.$api.get('/status/homebridge/child-bridges').subscribe((data: any[]) => {
         data.forEach((bridge) => {
           if (this.pluginName === bridge.plugin) {
-            this.childBridges.push(bridge);
+            this.childBridges.push(bridge)
           }
-        });
-      });
-      return this.childBridges;
+        })
+      })
+      return this.childBridges
     } catch (err) {
-      this.$toastr.error(err.message, this.$translate.instant('toast.title_error'));
-      return [];
+      this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
+      return []
     }
   }
 
   getReleaseNotes() {
     this.$api.get(`/plugins/release/${encodeURIComponent(this.pluginName)}`).subscribe(
       (data) => {
-        this.showReleaseNotes = true;
-        this.release = data;
+        this.showReleaseNotes = true
+        this.release = data
       },
       () => {
         if (this.onlineUpdateOk) {
-          this.update();
+          this.update()
         }
       },
-    );
+    )
   }
 
   public onRestartHomebridgeClick() {
-    this.$router.navigate(['/restart']);
-    this.activeModal.close();
+    this.$router.navigate(['/restart'])
+    this.activeModal.close()
   }
 
   public async onRestartChildBridgeClick() {
     try {
       for (const bridge of this.childBridges) {
-        await this.$api.put(`/server/restart/${bridge.username}`, {}).toPromise();
+        await this.$api.put(`/server/restart/${bridge.username}`, {}).toPromise()
       }
       this.$toastr.success(
         this.$translate.instant('plugins.manage.child_bridge_restart_success'),
         this.$translate.instant('toast.title_success'),
-      );
+      )
     } catch (err) {
-      this.$notification.configUpdated.next(undefined); // highlight the restart icon in the navbar
+      this.$notification.configUpdated.next(undefined) // highlight the restart icon in the navbar
       this.$toastr.error(
         this.$translate.instant('plugins.manage.child_bridge_restart_failed'),
         this.$translate.instant('toast.title_error'),
-      );
+      )
     } finally {
-      this.activeModal.close();
+      this.activeModal.close()
     }
   }
 
   downloadLogFile() {
-    const blob = new Blob([this.errorLog], { type: 'text/plain;charset=utf-8' });
-    saveAs(blob, `${this.pluginName}-error.log`);
+    const blob = new Blob([this.errorLog], { type: 'text/plain;charset=utf-8' })
+    saveAs(blob, `${this.pluginName}-error.log`)
   }
 
   ngOnDestroy() {
-    this.io.end();
+    this.io.end()
   }
 }

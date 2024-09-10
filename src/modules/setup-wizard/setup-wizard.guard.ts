@@ -1,6 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { Observable } from 'rxjs';
-import { ConfigService } from '../../core/config/config.service';
+import { Injectable } from '@nestjs/common'
+import type { CanActivate } from '@nestjs/common'
+
+import type { Observable } from 'rxjs'
+
+import { ConfigService } from '../../core/config/config.service'
 
 @Injectable()
 export class SetupWizardGuard implements CanActivate {
@@ -8,9 +11,7 @@ export class SetupWizardGuard implements CanActivate {
     private configService: ConfigService,
   ) {}
 
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
-    return !this.configService.setupWizardComplete;
+  canActivate(): boolean | Promise<boolean> | Observable<boolean> {
+    return !this.configService.setupWizardComplete
   }
 }

@@ -22,14 +22,14 @@ for (const lang of langFiles) {
   if (lang !== 'en.json') {
     // find any keys in the main file that are not in the translation file, and add
     for (const [key, value] of Object.entries(main)) {
-      if (!translationStrings.hasOwnProperty(key)) {
+      if (!Object.prototype.hasOwnProperty.call(translationStrings, key)) {
         translationStrings[key] = value
       }
     }
 
     // find any keys in the translation file that are not in the main file, and remove
     for (const key of Object.keys(translationStrings)) {
-      if (!main.hasOwnProperty(key)) {
+      if (!Object.prototype.hasOwnProperty.call(main, key)) {
         delete translationStrings[key]
       }
     }
