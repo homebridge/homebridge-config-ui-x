@@ -8,6 +8,8 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - consistent code lint across the server and ui components
 - use `vitest` for testing
+- no longer use `webpack`
+  - the final size of the `npm` package is actually higher with `webpack` than without
 
 ## v4.58.0 (2024-09-08)
 
