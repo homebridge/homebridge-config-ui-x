@@ -1,14 +1,14 @@
+import type { NestFastifyApplication } from '@nestjs/platform-fastify'
+import type { TestingModule } from '@nestjs/testing'
+
+import type { MockInstance } from 'vitest'
 import { resolve } from 'node:path'
 import process from 'node:process'
-
 import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import { copy } from 'fs-extra'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
-import type { NestFastifyApplication } from '@nestjs/platform-fastify'
-import type { TestingModule } from '@nestjs/testing'
-import type { MockInstance } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module'
 import { ConfigService } from '../../src/core/config/config.service'

@@ -1,10 +1,14 @@
+import type { MultipartFile } from '@fastify/multipart'
+import type { FastifyReply } from 'fastify'
+
+import type { HomebridgePlugin } from '../plugins/types'
 import { exec, execSync } from 'node:child_process'
 import { EventEmitter } from 'node:events'
-
 import { platform, tmpdir } from 'node:os'
 import { basename, join, resolve } from 'node:path'
 import process from 'node:process'
 import { pipeline } from 'node:stream'
+
 import { promisify } from 'node:util'
 import {
   BadRequestException,
@@ -14,7 +18,6 @@ import {
   StreamableFile,
 } from '@nestjs/common'
 import { cyan, green, red, yellow } from 'bash-color'
-
 import dayjs from 'dayjs'
 import {
   access,
@@ -34,17 +37,14 @@ import {
 } from 'fs-extra'
 import { networkInterfaces } from 'systeminformation'
 import { c as compress, x as extract } from 'tar'
+
 import { Extract } from 'unzipper'
-import type { MultipartFile } from '@fastify/multipart'
-import type { FastifyReply } from 'fastify'
 
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service'
-
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service'
 import { Logger } from '../../core/logger/logger.service'
 import { SchedulerService } from '../../core/scheduler/scheduler.service'
 import { PluginsService } from '../plugins/plugins.service'
-import type { HomebridgePlugin } from '../plugins/types'
 
 const pump = promisify(pipeline)
 

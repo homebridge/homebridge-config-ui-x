@@ -1,14 +1,14 @@
-import { exec } from 'node:child_process'
+import type { EventEmitter } from 'node:events'
 
+import { exec } from 'node:child_process'
 import { platform } from 'node:os'
 import process from 'node:process'
-import { Injectable } from '@nestjs/common'
 
+import { Injectable } from '@nestjs/common'
 import { cyan, red, yellow } from 'bash-color'
 import { createReadStream, existsSync, stat } from 'fs-extra'
 import { satisfies } from 'semver'
 import { Tail } from 'tail'
-import type { EventEmitter } from 'node:events'
 
 import { ConfigService } from '../../core/config/config.service'
 import { NodePtyService } from '../../core/node-pty/node-pty.service'

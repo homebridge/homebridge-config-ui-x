@@ -1,9 +1,10 @@
-import { exec, spawn } from 'node:child_process'
+import type { Systeminformation } from 'systeminformation'
 
+import { exec, spawn } from 'node:child_process'
 import { join, resolve } from 'node:path'
 import process from 'node:process'
-import { Categories } from '@homebridge/hap-client/dist/hap-types'
 
+import { Categories } from '@homebridge/hap-client/dist/hap-types'
 import {
   BadRequestException,
   Injectable,
@@ -23,7 +24,6 @@ import {
 import NodeCache from 'node-cache'
 import { networkInterfaces } from 'systeminformation'
 import { check as tcpCheck } from 'tcp-port-used'
-import type { Systeminformation } from 'systeminformation'
 
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service'

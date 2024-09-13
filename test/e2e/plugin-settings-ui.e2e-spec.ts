@@ -1,15 +1,15 @@
+import type { NestFastifyApplication } from '@nestjs/platform-fastify'
+import type { TestingModule } from '@nestjs/testing'
+
 import { resolve } from 'node:path'
 import process from 'node:process'
 
 import { HttpService } from '@nestjs/axios'
 import { ValidationPipe } from '@nestjs/common'
-
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import { copy, ensureDir, remove, writeFile } from 'fs-extra'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
-import type { NestFastifyApplication } from '@nestjs/platform-fastify'
-import type { TestingModule } from '@nestjs/testing'
 
 import { AuthModule } from '../../src/core/auth/auth.module'
 import { PluginsSettingsUiModule } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui.module'

@@ -1,8 +1,8 @@
-import { Controller, Get, Header, UseGuards } from '@nestjs/common'
+import type { StreamableFile } from '@nestjs/common'
 
+import { Controller, Get, Header, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
-import type { StreamableFile } from '@nestjs/common'
 
 import { AdminGuard } from '../../../core/auth/guards/admin.guard'
 import { HomebridgeDeconzService } from './homebridge-deconz.service'

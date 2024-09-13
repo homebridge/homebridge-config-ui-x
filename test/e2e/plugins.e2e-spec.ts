@@ -1,20 +1,20 @@
-import { resolve } from 'node:path'
-import process from 'node:process'
-
-import { HttpService } from '@nestjs/axios'
-import { ValidationPipe } from '@nestjs/common'
-
-import { FastifyAdapter } from '@nestjs/platform-fastify'
-import { Test } from '@nestjs/testing'
-import { copy, remove } from 'fs-extra'
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { TestingModule } from '@nestjs/testing'
 
-import { AuthModule } from '../../src/core/auth/auth.module'
-
-import { PluginsModule } from '../../src/modules/plugins/plugins.module'
 import type { HomebridgePlugin } from '../../src/modules/plugins/types'
+import { resolve } from 'node:path'
+
+import process from 'node:process'
+import { HttpService } from '@nestjs/axios'
+import { ValidationPipe } from '@nestjs/common'
+import { FastifyAdapter } from '@nestjs/platform-fastify'
+import { Test } from '@nestjs/testing'
+import { copy, remove } from 'fs-extra'
+
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+
+import { AuthModule } from '../../src/core/auth/auth.module'
+import { PluginsModule } from '../../src/modules/plugins/plugins.module'
 
 describe('PluginController (e2e)', () => {
   let app: NestFastifyApplication

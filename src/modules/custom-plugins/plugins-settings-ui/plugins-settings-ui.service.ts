@@ -1,19 +1,19 @@
-import { fork } from 'node:child_process'
-
-import { basename, dirname, join, normalize, resolve } from 'node:path'
-import process from 'node:process'
-import { HttpService } from '@nestjs/axios'
-
-import { Injectable, NotFoundException } from '@nestjs/common'
-import { pathExists, readFile } from 'fs-extra'
-import NodeCache from 'node-cache'
 import type { EventEmitter } from 'node:events'
 
-import { ConfigService } from '../../../core/config/config.service'
+import type { HomebridgePluginUiMetadata } from '../../plugins/types'
+import { fork } from 'node:child_process'
+import { basename, dirname, join, normalize, resolve } from 'node:path'
 
+import process from 'node:process'
+import { HttpService } from '@nestjs/axios'
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { pathExists, readFile } from 'fs-extra'
+
+import NodeCache from 'node-cache'
+
+import { ConfigService } from '../../../core/config/config.service'
 import { Logger } from '../../../core/logger/logger.service'
 import { PluginsService } from '../../plugins/plugins.service'
-import type { HomebridgePluginUiMetadata } from '../../plugins/types'
 
 @Injectable()
 export class PluginsSettingsUiService {

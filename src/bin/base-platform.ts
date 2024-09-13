@@ -1,6 +1,6 @@
-import process from 'node:process'
-
 import type { HomebridgeServiceHelper } from './hb-service'
+
+import process from 'node:process'
 
 export class BasePlatform {
   constructor(

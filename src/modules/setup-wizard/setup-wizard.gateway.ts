@@ -1,8 +1,8 @@
-import { UseGuards } from '@nestjs/common'
+import type { EventEmitter } from 'node:events'
 
+import { UseGuards } from '@nestjs/common'
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets'
 import { red } from 'bash-color'
-import type { EventEmitter } from 'node:events'
 
 import { WsAdminGuard } from '../../core/auth/guards/ws-admin-guard'
 import { Logger } from '../../core/logger/logger.service'

@@ -1,12 +1,12 @@
-import { execSync } from 'node:child_process'
+import type { PathLike } from 'fs-extra'
 
+import { execSync } from 'node:child_process'
 import { homedir, release, userInfo } from 'node:os'
 import { dirname, resolve } from 'node:path'
 import process from 'node:process'
-import { existsSync, pathExists, remove, unlinkSync, writeFile } from 'fs-extra'
 
+import { existsSync, pathExists, remove, unlinkSync, writeFile } from 'fs-extra'
 import { gte, lt } from 'semver'
-import type { PathLike } from 'fs-extra'
 
 import { BasePlatform } from '../base-platform'
 
