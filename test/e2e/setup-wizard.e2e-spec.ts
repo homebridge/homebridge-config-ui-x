@@ -1,19 +1,19 @@
-import { resolve } from 'node:path'
-import process from 'node:process'
-
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from '@jest/globals'
-import { ValidationPipe } from '@nestjs/common'
-
-import { FastifyAdapter } from '@nestjs/platform-fastify'
-import { Test } from '@nestjs/testing'
-import { copy, readJson, remove } from 'fs-extra'
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { TestingModule } from '@nestjs/testing'
 
-import { ConfigService } from '../../src/core/config/config.service'
-
-import { SetupWizardModule } from '../../src/modules/setup-wizard/setup-wizard.module'
 import type { UserDto } from '../../src/modules/users/users.dto'
+import { resolve } from 'node:path'
+
+import process from 'node:process'
+import { ValidationPipe } from '@nestjs/common'
+import { FastifyAdapter } from '@nestjs/platform-fastify'
+import { Test } from '@nestjs/testing'
+import { copy, readJson, remove } from 'fs-extra'
+
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
+
+import { ConfigService } from '../../src/core/config/config.service'
+import { SetupWizardModule } from '../../src/modules/setup-wizard/setup-wizard.module'
 
 describe('SetupWizard (e2e)', () => {
   let app: NestFastifyApplication

@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common'
 import type { CanActivate } from '@nestjs/common'
-
 import type { Observable } from 'rxjs'
+
+import { Injectable } from '@nestjs/common'
 
 import { ConfigService } from '../../core/config/config.service'
 

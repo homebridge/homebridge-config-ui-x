@@ -1,16 +1,16 @@
+import type { NestFastifyApplication } from '@nestjs/platform-fastify'
+import type { FastifyReply, FastifyRequest } from 'fastify'
+
 import { resolve } from 'node:path'
 import process from 'node:process'
 
 import helmet from '@fastify/helmet'
 import fastifyMultipart from '@fastify/multipart'
-
 import { ValidationPipe } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { readFile } from 'fs-extra'
-import type { NestFastifyApplication } from '@nestjs/platform-fastify'
-import type { FastifyReply, FastifyRequest } from 'fastify'
 
 import { AppModule } from './app.module'
 import { ConfigService } from './core/config/config.service'

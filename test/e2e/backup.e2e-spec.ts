@@ -1,11 +1,12 @@
+import type { NestFastifyApplication } from '@nestjs/platform-fastify'
+import type { TestingModule } from '@nestjs/testing'
+
+import type { Mock } from 'vitest'
 import crypto from 'node:crypto'
 import { EventEmitter } from 'node:events'
-
 import { join, resolve } from 'node:path'
 import process from 'node:process'
 import fastifyMultipart from '@fastify/multipart'
-import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals'
-
 import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
@@ -27,8 +28,7 @@ import {
   writeJson,
   writeSync,
 } from 'fs-extra'
-import type { NestFastifyApplication } from '@nestjs/platform-fastify'
-import type { TestingModule } from '@nestjs/testing'
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module'
 import { ConfigService } from '../../src/core/config/config.service'
@@ -39,10 +39,10 @@ import { BackupService } from '../../src/modules/backup/backup.service'
 import { PluginsService } from '../../src/modules/plugins/plugins.service'
 import '../../src/globalDefaults'
 
-jest.spyOn(globalThis.console, 'error')
+vi.spyOn(globalThis.console, 'error')
 
 // function code taken from http://blog.tompawlak.org/how-to-generate-random-values-nodejs-javascript
-function randomValueHex(len) {
+function randomValueHex(len: number) {
   return crypto.randomBytes(Math.ceil(len / 2))
     .toString('hex') // convert to hexadecimal format
     .slice(0, len)
@@ -65,7 +65,7 @@ describe('BackupController (e2e)', () => {
   let backupGateway: BackupGateway
   let pluginsService: PluginsService
   let schedulerService: SchedulerService
-  let postBackupRestoreRestartFn: jest.Mock
+  let postBackupRestoreRestartFn: Mock
 
   beforeAll(async () => {
     process.env.UIX_BASE_PATH = resolve(__dirname, '../../')
@@ -121,7 +121,7 @@ describe('BackupController (e2e)', () => {
 
   beforeEach(async () => {
     // mock functions
-    postBackupRestoreRestartFn = jest.fn()
+    postBackupRestoreRestartFn = vi.fn()
     backupService.postBackupRestoreRestart = postBackupRestoreRestartFn as any
 
     // restore default settings
@@ -298,9 +298,9 @@ describe('BackupController (e2e)', () => {
     // create some mocks
     const client = new EventEmitter()
 
-    jest.spyOn(client, 'emit')
+    vi.spyOn(client, 'emit')
 
-    jest.spyOn(pluginsService, 'managePlugin')
+    vi.spyOn(pluginsService, 'managePlugin')
       .mockImplementation(async () => {
         return true
       })

@@ -1,10 +1,10 @@
-import { homedir, networkInterfaces } from 'node:os'
+import type { Buffer } from 'node:buffer'
 
+import { homedir, networkInterfaces } from 'node:os'
 import { resolve } from 'node:path'
 import process from 'node:process'
-import { readFile, readJson, stat } from 'fs-extra'
 
-import type { Buffer } from 'node:buffer'
+import { readFile, readJson, stat } from 'fs-extra'
 
 import { Logger } from '../logger/logger.service'
 

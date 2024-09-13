@@ -1,9 +1,9 @@
+import type { EventEmitter } from 'node:events'
+
 import process from 'node:process'
 
 import { Injectable } from '@nestjs/common'
-
 import { pathExists } from 'fs-extra'
-import type { EventEmitter } from 'node:events'
 
 import { ConfigService } from '../../../core/config/config.service'
 import { Logger } from '../../../core/logger/logger.service'

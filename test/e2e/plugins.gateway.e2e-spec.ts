@@ -1,15 +1,15 @@
-import { EventEmitter } from 'node:events'
-import { platform } from 'node:os'
-
-import { resolve } from 'node:path'
-import process from 'node:process'
-import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals'
-import { FastifyAdapter } from '@nestjs/platform-fastify'
-
-import { Test } from '@nestjs/testing'
-import { copy, remove } from 'fs-extra'
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { TestingModule } from '@nestjs/testing'
+
+import { EventEmitter } from 'node:events'
+import { platform } from 'node:os'
+import { resolve } from 'node:path'
+import process from 'node:process'
+
+import { FastifyAdapter } from '@nestjs/platform-fastify'
+import { Test } from '@nestjs/testing'
+import { copy, remove } from 'fs-extra'
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ConfigService } from '../../src/core/config/config.service'
 import { NodePtyService } from '../../src/core/node-pty/node-pty.service'
@@ -32,7 +32,7 @@ describe('PluginsGateway (e2e)', () => {
   let win32NpmPath: string
 
   const nodePtyService = {
-    spawn: jest.fn(),
+    spawn: vi.fn(),
   }
 
   beforeAll(async () => {
@@ -72,13 +72,13 @@ describe('PluginsGateway (e2e)', () => {
   })
 
   beforeEach(async () => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
 
     // create client
     client = new EventEmitter()
 
-    jest.spyOn(client, 'emit')
-    jest.spyOn(client, 'on')
+    vi.spyOn(client, 'emit')
+    vi.spyOn(client, 'on')
 
     // ensure config is correct
     configService.ui.sudo = false
@@ -86,7 +86,7 @@ describe('PluginsGateway (e2e)', () => {
   })
 
   it('ON /plugins/install', async () => {
-    const mockSpawn = jest.spyOn(nodePtyService, 'spawn')
+    const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
       .mockImplementation(() => {
         const term = new EventEmitter()
         setTimeout(() => {
@@ -113,7 +113,7 @@ describe('PluginsGateway (e2e)', () => {
   })
 
   it('ON /plugins/install (custom version)', async () => {
-    const mockSpawn = jest.spyOn(nodePtyService, 'spawn')
+    const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
       .mockImplementation(() => {
         const term = new EventEmitter()
         setTimeout(() => {
@@ -148,7 +148,7 @@ describe('PluginsGateway (e2e)', () => {
     // enable sudo
     configService.ui.sudo = true
 
-    const mockSpawn = jest.spyOn(nodePtyService, 'spawn')
+    const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
       .mockImplementation(() => {
         const term = new EventEmitter()
         setTimeout(() => {
@@ -167,7 +167,7 @@ describe('PluginsGateway (e2e)', () => {
   })
 
   it('ON /plugins/install (fail)', async () => {
-    const mockSpawn = jest.spyOn(nodePtyService, 'spawn')
+    const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
       .mockImplementation(() => {
         const term = new EventEmitter()
         setTimeout(() => {
@@ -192,7 +192,7 @@ describe('PluginsGateway (e2e)', () => {
   })
 
   it('ON /plugins/uninstall', async () => {
-    const mockSpawn = jest.spyOn(nodePtyService, 'spawn')
+    const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
       .mockImplementation(() => {
         const term = new EventEmitter()
         setTimeout(() => {
@@ -217,7 +217,7 @@ describe('PluginsGateway (e2e)', () => {
   })
 
   it('ON /plugins/uninstall (prevent self uninstall)', async () => {
-    const mockSpawn = jest.spyOn(nodePtyService, 'spawn')
+    const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
       .mockImplementation(() => {
         const term = new EventEmitter()
         setTimeout(() => {
@@ -238,7 +238,7 @@ describe('PluginsGateway (e2e)', () => {
   })
 
   it('ON /plugins/update', async () => {
-    const mockSpawn = jest.spyOn(nodePtyService, 'spawn')
+    const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
       .mockImplementation(() => {
         const term = new EventEmitter()
         setTimeout(() => {
@@ -263,7 +263,7 @@ describe('PluginsGateway (e2e)', () => {
   })
 
   it('ON /plugins/update (custom version)', async () => {
-    const mockSpawn = jest.spyOn(nodePtyService, 'spawn')
+    const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
       .mockImplementation(() => {
         const term = new EventEmitter()
         setTimeout(() => {
@@ -298,7 +298,7 @@ describe('PluginsGateway (e2e)', () => {
       }
     }
 
-    const mockSpawn = jest.spyOn(nodePtyService, 'spawn')
+    const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
       .mockImplementation(() => {
         const term = new EventEmitter()
         setTimeout(() => {
@@ -334,7 +334,7 @@ describe('PluginsGateway (e2e)', () => {
       }
     }
 
-    const mockSpawn = jest.spyOn(nodePtyService, 'spawn')
+    const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
       .mockImplementation(() => {
         const term = new EventEmitter()
         setTimeout(() => {

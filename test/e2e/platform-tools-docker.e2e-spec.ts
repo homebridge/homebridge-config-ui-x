@@ -1,14 +1,14 @@
+import type { NestFastifyApplication } from '@nestjs/platform-fastify'
+import type { TestingModule } from '@nestjs/testing'
+import type { Mock } from 'vitest'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
-import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals'
 import { ValidationPipe } from '@nestjs/common'
-
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import { copy, readFile } from 'fs-extra'
-import type { NestFastifyApplication } from '@nestjs/platform-fastify'
-import type { TestingModule } from '@nestjs/testing'
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module'
 import { DockerModule } from '../../src/modules/platform-tools/docker/docker.module'
@@ -21,7 +21,7 @@ describe('PlatformToolsDocker (e2e)', () => {
   let secretsFilePath: string
   let startupFilePath: string
   let authorization: string
-  let restartDockerContainerFn: jest.Mock
+  let restartDockerContainerFn: Mock
   let dockerService: DockerService
 
   beforeAll(async () => {
@@ -59,7 +59,7 @@ describe('PlatformToolsDocker (e2e)', () => {
 
   beforeEach(async () => {
     // setup mock functions
-    restartDockerContainerFn = jest.fn()
+    restartDockerContainerFn = vi.fn()
     dockerService.restartDockerContainer = restartDockerContainerFn as any
 
     // restore startup.sh

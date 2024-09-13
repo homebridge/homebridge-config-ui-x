@@ -1,14 +1,14 @@
+import type { NestFastifyApplication } from '@nestjs/platform-fastify'
+import type { TestingModule } from '@nestjs/testing'
+
+import type { MockInstance } from 'vitest'
 import { resolve } from 'node:path'
 import process from 'node:process'
-
-import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals'
 import { ValidationPipe } from '@nestjs/common'
-
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import { copy } from 'fs-extra'
-import type { NestFastifyApplication } from '@nestjs/platform-fastify'
-import type { TestingModule } from '@nestjs/testing'
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module'
 import { ConfigService } from '../../src/core/config/config.service'
@@ -25,9 +25,9 @@ describe('AccessoriesController (e2e)', () => {
   let secretsFilePath: string
   let authorization: string
 
-  const refreshCharacteristics = jest.fn()
-  const getCharacteristic = jest.fn()
-  const setValue = jest.fn()
+  const refreshCharacteristics = vi.fn()
+  const getCharacteristic = vi.fn()
+  const setValue = vi.fn()
 
   const booleanCharacteristic = {
     setValue,
@@ -70,6 +70,8 @@ describe('AccessoriesController (e2e)', () => {
     },
   ]
 
+  let hapClientMock: MockInstance
+
   beforeAll(async () => {
     process.env.UIX_BASE_PATH = resolve(__dirname, '../../')
     process.env.UIX_STORAGE_PATH = resolve(__dirname, '../', '.homebridge')
@@ -107,13 +109,13 @@ describe('AccessoriesController (e2e)', () => {
   })
 
   beforeEach(async () => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
 
     // enable insecure mode
     configService.homebridgeInsecureMode = true
 
     // setup mocks
-    jest.spyOn(accessoriesService.hapClient, 'getAllServices')
+    hapClientMock = vi.spyOn(accessoriesService.hapClient, 'getAllServices')
       .mockResolvedValue(mockedServices as any)
 
     // get auth token before each test
@@ -136,7 +138,7 @@ describe('AccessoriesController (e2e)', () => {
       },
     })
 
-    expect(jest.spyOn(accessoriesService.hapClient, 'getAllServices')).toHaveBeenCalled()
+    expect(hapClientMock).toHaveBeenCalledTimes(1)
     expect(res.statusCode).toBe(200)
     expect(res.json()).toHaveLength(1)
   })

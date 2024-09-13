@@ -1,15 +1,15 @@
+import type { NestFastifyApplication } from '@nestjs/platform-fastify'
+import type { TestingModule } from '@nestjs/testing'
+
 import { resolve } from 'node:path'
 import process from 'node:process'
 
-import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals'
 import { HttpService } from '@nestjs/axios'
-
 import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import { copy, remove, writeJson } from 'fs-extra'
-import type { NestFastifyApplication } from '@nestjs/platform-fastify'
-import type { TestingModule } from '@nestjs/testing'
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module'
 import { CustomPluginsModule } from '../../src/modules/custom-plugins/custom-plugins.module'
@@ -23,7 +23,7 @@ describe('CustomPluginsController (e2e)', () => {
   let authorization: string
 
   beforeAll(async () => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
 
     process.env.UIX_BASE_PATH = resolve(__dirname, '../../')
     process.env.UIX_STORAGE_PATH = resolve(__dirname, '../', '.homebridge')
@@ -59,7 +59,7 @@ describe('CustomPluginsController (e2e)', () => {
   })
 
   beforeEach(async () => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
 
     // get auth token before each test
     authorization = `bearer ${(await app.inject({
