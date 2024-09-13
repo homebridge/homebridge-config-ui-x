@@ -835,6 +835,20 @@ export class PluginsService {
         model: {
           type: 'string',
         },
+        debugModeEnabled: {
+          type: 'boolean',
+        },
+        env: {
+          type: 'object',
+          properties: {
+            DEBUG: {
+              type: 'string',
+            },
+            NODE_OPTIONS: {
+              type: 'string',
+            },
+          },
+        },
       },
     }
 
