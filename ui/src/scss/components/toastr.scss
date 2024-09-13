@@ -1,9 +1,13 @@
 @import 'ngx-toastr/toastr';
 
-/* TOASTR BUGFIX */
-/* https://github.com/scttcper/ngx-toastr/issues/605 */
-#toast-container > div {
-  opacity: 1;
+@media (max-width: 575px) {
+  #toast-container {
+    margin-left: 12px;
+
+    div {
+      width: 100%;
+    }
+  }
 }
 
 .toast {
