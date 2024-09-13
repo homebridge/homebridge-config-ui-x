@@ -90,6 +90,7 @@
   "child_bridge.message_return_to_pair": "Wróć do tego ekranu po ponownym uruchomieniu Homebridge aby wyświetlić kod QR parowania.",
   "child_bridge.message_select_platforms_accessories": "Wybierz którą platformę lub akcesorium chcesz uruchomić w trybie mostka podrzędnego.",
   "child_bridge.message_wiki_link": "Więcej o mostku podrzędnym dowiesz się tu.",
+  "child_bridge.settings_config.debug": "Debug Mode",
   "child_bridge.settings_config.description": "Te pola nie są wymagane, ale mogą być użyte do nadpisania konfiguracji HomeKit dla tego mostka.",
   "child_bridge.settings_config.firmware": "Wersja oprogramowania",
   "child_bridge.settings_config.header": "Konfiguracja",

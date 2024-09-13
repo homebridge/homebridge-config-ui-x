@@ -272,7 +272,7 @@ export class ConfigEditorService {
                 delete block._bridge.env
               }
             } else {
-              if (block._bridge[key] === undefined || typeof block._bridge[key] !== 'string' || block._bridge[key].trim() === '') {
+              if (block._bridge[key] === undefined || (typeof block._bridge[key] === 'string' && block._bridge[key].trim() === '')) {
                 delete block._bridge[key]
               }
             }

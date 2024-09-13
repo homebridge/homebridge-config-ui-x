@@ -22,8 +22,8 @@ export class PluginBridgeComponent implements OnInit {
   public bridgeCache: Map<number, Record<string, any>> = new Map()
   public deviceInfo: Map<string, any> = new Map()
   public showConfigFields: boolean[] = []
-
   public saveInProgress = false
+  public canShowBridgeDebug = false
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -38,6 +38,7 @@ export class PluginBridgeComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadPluginConfig()
+    this.canShowBridgeDebug = this.$settings.env.homebridgeVersion.startsWith('2')
   }
 
   loadPluginConfig() {
@@ -74,6 +75,7 @@ export class PluginBridgeComponent implements OnInit {
       model: bridgeCache?.model,
       manufacturer: bridgeCache?.manufacturer,
       firmwareRevision: bridgeCache?.firmwareRevision,
+      debugModeEnabled: bridgeCache?.debugModeEnabled,
       env: bridgeCache?.env,
     }
 

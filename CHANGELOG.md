@@ -22,12 +22,20 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ## BETA
 
+### UI Changes
+
+- allow a `Debug Mode` setting per child bridge
+  - this can be configured in the child bridge modal
+  - the general `Homebridge Debug Mode` now only applies to the main Homebridge bridge
+  - this feature requires Homebridge `v2.0.0-beta.21` or later
+
 ### Other Changes
 
 - consistent code lint across the server and ui components
 - use `vitest` for testing
 - no longer use `webpack`
   - the final size of the `npm` package is actually higher with `webpack` than without
+- update dependencies, overrides, updated lint
 
 ### Homebridge Dependencies
 
