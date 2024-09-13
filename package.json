@@ -118,7 +118,6 @@
     "tail": "2.2.6",
     "tar": "6.2.1",
     "tcp-port-used": "1.0.2",
-    "unplugin-swc": "^1.5.1",
     "unzipper": "0.12.3"
   },
   "devDependencies": {
@@ -145,6 +144,7 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.6.2",
+    "unplugin-swc": "^1.5.1",
     "vitest": "^2.1.1"
   },
   "overrides": {
