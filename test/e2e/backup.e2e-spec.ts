@@ -1,6 +1,9 @@
+import type { NestFastifyApplication } from '@nestjs/platform-fastify'
+import type { TestingModule } from '@nestjs/testing'
+
+import type { Mock } from 'vitest'
 import crypto from 'node:crypto'
 import { EventEmitter } from 'node:events'
-
 import { join, resolve } from 'node:path'
 import process from 'node:process'
 import fastifyMultipart from '@fastify/multipart'
@@ -26,9 +29,6 @@ import {
   writeSync,
 } from 'fs-extra'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
-import type { NestFastifyApplication } from '@nestjs/platform-fastify'
-import type { TestingModule } from '@nestjs/testing'
-import type { Mock } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module'
 import { ConfigService } from '../../src/core/config/config.service'

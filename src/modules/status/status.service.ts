@@ -1,13 +1,15 @@
 /* global NodeJS */
+import type { Subscription } from 'rxjs'
+import type { Systeminformation } from 'systeminformation'
+
 import { exec, execSync } from 'node:child_process'
 import { cpus, loadavg, platform, userInfo } from 'node:os'
-
 import { dirname, resolve } from 'node:path'
 import process from 'node:process'
 import { promisify } from 'node:util'
+
 import { HttpService } from '@nestjs/axios'
 import { BadRequestException, Injectable } from '@nestjs/common'
-
 import { readFile, readJson, writeJsonSync } from 'fs-extra'
 import NodeCache from 'node-cache'
 import { Subject } from 'rxjs'
@@ -22,8 +24,6 @@ import {
   osInfo,
   time,
 } from 'systeminformation'
-import type { Subscription } from 'rxjs'
-import type { Systeminformation } from 'systeminformation'
 
 import { ConfigService } from '../../core/config/config.service'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service'

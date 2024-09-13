@@ -1,3 +1,6 @@
+import type { StreamableFile } from '@nestjs/common'
+import type { FastifyRequest } from 'fastify'
+
 import {
   Controller,
   Get,
@@ -10,7 +13,6 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
-
 import {
   ApiBearerAuth,
   ApiBody,
@@ -19,8 +21,6 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger'
-import type { StreamableFile } from '@nestjs/common'
-import type { FastifyRequest } from 'fastify'
 
 import { AdminGuard } from '../../core/auth/guards/admin.guard'
 import { Logger } from '../../core/logger/logger.service'

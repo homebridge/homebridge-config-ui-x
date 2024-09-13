@@ -1,17 +1,17 @@
+import type { NestFastifyApplication } from '@nestjs/platform-fastify'
+import type { TestingModule } from '@nestjs/testing'
 import { resolve } from 'node:path'
+
 import process from 'node:process'
 import { HttpService } from '@nestjs/axios'
 
 import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
-
 import { Test } from '@nestjs/testing'
 import { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import { copy } from 'fs-extra'
 import { of, throwError } from 'rxjs'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
-import type { NestFastifyApplication } from '@nestjs/platform-fastify'
-import type { TestingModule } from '@nestjs/testing'
 
 import { AuthModule } from '../../src/core/auth/auth.module'
 import { StatusModule } from '../../src/modules/status/status.module'

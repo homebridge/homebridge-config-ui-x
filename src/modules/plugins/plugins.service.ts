@@ -1,6 +1,16 @@
 /* global NodeJS */
-import { execSync, fork, spawn } from 'node:child_process'
+import type { EventEmitter } from 'node:events'
 
+import type {
+  HomebridgePlugin,
+  HomebridgePluginUiMetadata,
+  HomebridgePluginVersions,
+  INpmRegistryModule,
+  INpmSearchResults,
+  IPackageJson,
+  PluginAlias,
+} from './types'
+import { execSync, fork, spawn } from 'node:child_process'
 import { arch, cpus, platform, userInfo } from 'node:os'
 import {
   basename,
@@ -10,9 +20,9 @@ import {
   resolve,
   sep,
 } from 'node:path'
+
 import process from 'node:process'
 import { HttpService } from '@nestjs/axios'
-
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
 import axios from 'axios'
 import { cyan, green, red, yellow } from 'bash-color'
@@ -34,23 +44,13 @@ import {
 import { orderBy, uniq } from 'lodash'
 import NodeCache from 'node-cache'
 import pLimit from 'p-limit'
+
 import { gt, lt, parse, satisfies } from 'semver'
-import type { EventEmitter } from 'node:events'
 
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service'
-
 import { Logger } from '../../core/logger/logger.service'
 import { NodePtyService } from '../../core/node-pty/node-pty.service'
 import { HomebridgeUpdateActionDto, PluginActionDto } from './plugins.dto'
-import type {
-  HomebridgePlugin,
-  HomebridgePluginUiMetadata,
-  HomebridgePluginVersions,
-  INpmRegistryModule,
-  INpmSearchResults,
-  IPackageJson,
-  PluginAlias,
-} from './types'
 
 @Injectable()
 export class PluginsService {

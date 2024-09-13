@@ -1,8 +1,8 @@
+import type { ChildProcess } from 'node:child_process'
+
 import { EventEmitter } from 'node:events'
 
 import { Injectable, ServiceUnavailableException } from '@nestjs/common'
-
-import type { ChildProcess } from 'node:child_process'
 
 import { ConfigService } from '../config/config.service'
 import { Logger } from '../logger/logger.service'

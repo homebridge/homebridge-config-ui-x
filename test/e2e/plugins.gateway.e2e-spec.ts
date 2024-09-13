@@ -1,15 +1,15 @@
-import { EventEmitter } from 'node:events'
-import { platform } from 'node:os'
-
-import { resolve } from 'node:path'
-import process from 'node:process'
-import { FastifyAdapter } from '@nestjs/platform-fastify'
-import { Test } from '@nestjs/testing'
-
-import { copy, remove } from 'fs-extra'
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { TestingModule } from '@nestjs/testing'
+
+import { EventEmitter } from 'node:events'
+import { platform } from 'node:os'
+import { resolve } from 'node:path'
+import process from 'node:process'
+
+import { FastifyAdapter } from '@nestjs/platform-fastify'
+import { Test } from '@nestjs/testing'
+import { copy, remove } from 'fs-extra'
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ConfigService } from '../../src/core/config/config.service'
 import { NodePtyService } from '../../src/core/node-pty/node-pty.service'

@@ -1,10 +1,11 @@
-import { createHash, randomBytes } from 'node:crypto'
+import type { ReadStream } from 'fs-extra'
 
+import { createHash, randomBytes } from 'node:crypto'
 import { homedir, platform, totalmem } from 'node:os'
 import { resolve } from 'node:path'
 import process from 'node:process'
-import { Injectable } from '@nestjs/common'
 
+import { Injectable } from '@nestjs/common'
 import {
   createReadStream,
   pathExists,
@@ -17,7 +18,6 @@ import {
 } from 'fs-extra'
 import { isEqual } from 'lodash'
 import { satisfies } from 'semver'
-import type { ReadStream } from 'fs-extra'
 
 @Injectable()
 export class ConfigService {

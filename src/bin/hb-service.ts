@@ -5,6 +5,12 @@
  * The purpose of this file is to run and install homebridge and homebridge-config-ui-x as a service
  */
 
+import type { PathLike, WriteStream } from 'fs-extra'
+import type { ChildProcessWithoutNullStreams, ForkOptions } from 'node:child_process'
+import type { ExtractOptions } from 'tar'
+
+import type { HomebridgeIpcService } from '../core/homebridge-ipc/homebridge-ipc.service'
+import type { BasePlatform } from './base-platform'
 import { Buffer } from 'node:buffer'
 import { execSync, fork } from 'node:child_process'
 import { arch, cpus, homedir, platform, release, tmpdir, type } from 'node:os'
@@ -35,24 +41,18 @@ import {
   write,
   writeJson,
 } from 'fs-extra'
-
 import ora from 'ora'
 import { gt, gte, parse } from 'semver'
 import { networkInterfaceDefault, networkInterfaces } from 'systeminformation'
 import { Tail } from 'tail'
+
 import { x as extract } from 'tar'
 import { check as tcpCheck } from 'tcp-port-used'
-import type { PathLike, WriteStream } from 'fs-extra'
-import type { ChildProcessWithoutNullStreams, ForkOptions } from 'node:child_process'
-import type { ExtractOptions } from 'tar'
 
 import { DarwinInstaller } from './platforms/darwin'
 import { FreeBSDInstaller } from './platforms/freebsd'
-
 import { LinuxInstaller } from './platforms/linux'
 import { Win32Installer } from './platforms/win32'
-import type { HomebridgeIpcService } from '../core/homebridge-ipc/homebridge-ipc.service'
-import type { BasePlatform } from './base-platform'
 
 process.title = 'hb-service'
 
