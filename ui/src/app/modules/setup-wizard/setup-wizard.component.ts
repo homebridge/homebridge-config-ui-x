@@ -78,8 +78,8 @@ export class SetupWizardComponent implements OnInit, OnDestroy {
     const payload = this.createUserForm.getRawValue() as Record<string, string>
     payload.name = payload.username
 
-    this.$api.post('/setup-wizard/create-first-user', payload).subscribe(
-      async () => {
+    this.$api.post('/setup-wizard/create-first-user', payload).subscribe({
+      next: async () => {
         this.$settings.env.setupWizardComplete = true
         await this.$auth.login({
           username: payload.username,
@@ -87,14 +87,14 @@ export class SetupWizardComponent implements OnInit, OnDestroy {
         })
         this.step = 'setup-complete'
       },
-      (err) => {
+      error: (err) => {
         this.loading = false
         this.$toastr.error(
           err.error.message || this.$translate.instant('users.toast_failed_to_add_user'),
           this.$translate.instant('toast.title_error'),
         )
       },
-    )
+    })
   }
 
   handleRestoreFileInput(files: FileList) {

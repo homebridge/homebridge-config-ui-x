@@ -27,30 +27,30 @@ export class BackupComponent implements OnInit {
   }
 
   getScheduledBackups() {
-    this.$api.get('/backup/scheduled-backups').subscribe(
-      (data) => {
+    this.$api.get('/backup/scheduled-backups').subscribe({
+      next: (data) => {
         this.scheduledBackups = data
       },
-      (err) => {
+      error: (err) => {
         this.errorMessage = err.error.message || err.message
       },
-    )
+    })
   }
 
   getNextBackup() {
-    this.$api.get('/backup/scheduled-backups/next').subscribe(
-      (data) => {
+    this.$api.get('/backup/scheduled-backups/next').subscribe({
+      next: (data) => {
         this.backupTime = data.next
       },
-      (err) => {
+      error: (err) => {
         console.error(err)
       },
-    )
+    })
   }
 
-  download(backup) {
-    this.$api.get(`/backup/scheduled-backups/${backup.id}`, { observe: 'response', responseType: 'blob' }).subscribe(
-      (res) => {
+  download(backup: { id: any, fileName: string }) {
+    this.$api.get(`/backup/scheduled-backups/${backup.id}`, { observe: 'response', responseType: 'blob' }).subscribe({
+      next: (res) => {
         const archiveName = backup.fileName || 'homebridge-backup.tar.gz'
         const sizeInBytes = res.body.size
         if (sizeInBytes > globalThis.backup.maxBackupSize) {
@@ -59,16 +59,16 @@ export class BackupComponent implements OnInit {
         }
         saveAs(res.body, archiveName)
       },
-      () => {
+      error: () => {
         this.$toastr.error(this.$translate.instant('backup.message_backup_download_failed'), this.$translate.instant('toast.title_error'))
       },
-    )
+    })
   }
 
   async onDownloadBackupClick() {
     this.clicked = true
-    this.$api.get('/backup/download', { observe: 'response', responseType: 'blob' }).subscribe(
-      (res) => {
+    this.$api.get('/backup/download', { observe: 'response', responseType: 'blob' }).subscribe({
+      next: (res) => {
         const archiveName = res.headers.get('File-Name') || 'homebridge-backup.tar.gz'
         this.clicked = false
         const sizeInBytes = res.body.size
@@ -78,10 +78,10 @@ export class BackupComponent implements OnInit {
         }
         saveAs(res.body, archiveName)
       },
-      () => {
+      error: () => {
         this.clicked = false
         this.$toastr.error(this.$translate.instant('backup.message_backup_download_failed'), this.$translate.instant('toast.title_error'))
       },
-    )
+    })
   }
 }

@@ -67,7 +67,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
 
     try {
       const installedPlugins = await firstValueFrom(this.$api.get('/plugins'))
-      this.installedPlugins = installedPlugins.filter(x => x.name !== 'homebridge-config-ui-x')
+      this.installedPlugins = installedPlugins.filter((x: any) => x.name !== 'homebridge-config-ui-x')
       await this.appendMetaInfo()
 
       // The backend used to sort this only by plugins with updates first
@@ -117,7 +117,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
     // Also get the current configuration for each plugin
     await Promise.all(this.installedPlugins
       .filter(plugin => plugin.installedVersion)
-      .map(async (plugin) => {
+      .map(async (plugin: any) => {
         try {
           // Adds some extra properties to the plugin object for the plugin card
           const configBlocks = await firstValueFrom(this.$api.get(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`))
@@ -146,18 +146,18 @@ export class PluginsComponent implements OnInit, OnDestroy {
     this.installedPlugins = []
     this.loading = true
 
-    this.$api.get(`/plugins/search/${encodeURIComponent(this.form.value.query)}`).subscribe(
-      (data) => {
+    this.$api.get(`/plugins/search/${encodeURIComponent(this.form.value.query)}`).subscribe({
+      next: (data) => {
         this.installedPlugins = data.filter(x => x.name !== 'homebridge-config-ui-x')
         this.appendMetaInfo()
         this.loading = false
       },
-      (err) => {
+      error: (err) => {
         this.loading = false
         this.$toastr.error(`${err.error.message || err.message}`, 'Error')
         this.loadInstalledPlugins()
       },
-    )
+    })
   }
 
   onClearSearch() {
@@ -179,7 +179,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
     })
   }
 
-  getPluginChildBridges(plugin) {
+  getPluginChildBridges(plugin: any) {
     return this.childBridges.filter(x => x.plugin === plugin.name)
   }
 

@@ -126,20 +126,20 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       version: this.targetVersion,
       termCols: this.term.cols,
       termRows: this.term.rows,
-    }).subscribe(
-      () => {
+    }).subscribe({
+      next: () => {
         this.$router.navigate(['/plugins'], {
           queryParams: { installed: this.pluginName },
         })
         this.activeModal.close()
         this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess)
       },
-      (err) => {
+      error: (err) => {
         this.actionFailed = true
         this.$router.navigate(['/plugins'])
         this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
       },
-    )
+    })
   }
 
   uninstall() {
@@ -147,8 +147,8 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       name: this.pluginName,
       termCols: this.term.cols,
       termRows: this.term.rows,
-    }).subscribe(
-      () => {
+    }).subscribe({
+      next: () => {
         this.activeModal.close()
         this.$router.navigate(['/plugins'])
         this.$modal.open(RestartComponent, {
@@ -156,11 +156,11 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
           backdrop: 'static',
         })
       },
-      (err) => {
+      error: (err) => {
         this.actionFailed = true
         this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
       },
-    )
+    })
   }
 
   update() {
@@ -181,8 +181,8 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       version: this.targetVersion,
       termCols: this.term.cols,
       termRows: this.term.rows,
-    }).subscribe(
-      () => {
+    }).subscribe({
+      next: () => {
         this.actionComplete = true
         this.justUpdatedPlugin = true
         if (this.pluginName === 'homebridge-config-ui-x') {
@@ -194,11 +194,11 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         this.getChangeLog()
         this.getChildBridges()
       },
-      (err) => {
+      error: (err) => {
         this.actionFailed = true
         this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
       },
-    )
+    })
   }
 
   upgradeHomebridge() {
@@ -206,30 +206,30 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       version: this.targetVersion,
       termCols: this.term.cols,
       termRows: this.term.rows,
-    }).subscribe(
-      () => {
+    }).subscribe({
+      next: () => {
         this.activeModal.close()
         this.$modal.open(RestartComponent, {
           size: 'lg',
           backdrop: 'static',
         })
       },
-      (err) => {
+      error: (err) => {
         this.actionFailed = true
         this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
       },
-    )
+    })
   }
 
   getChangeLog() {
-    this.$api.get(`/plugins/changelog/${encodeURIComponent(this.pluginName)}`).subscribe(
-      (data: { changelog: string }) => {
+    this.$api.get(`/plugins/changelog/${encodeURIComponent(this.pluginName)}`).subscribe({
+      next: (data: { changelog: string }) => {
         this.changeLog = data.changelog
       },
-      () => {
+      error: () => {
         this.changeLog = null
       },
-    )
+    })
   }
 
   getChildBridges(): any[] {
@@ -249,17 +249,17 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   }
 
   getReleaseNotes() {
-    this.$api.get(`/plugins/release/${encodeURIComponent(this.pluginName)}`).subscribe(
-      (data) => {
+    this.$api.get(`/plugins/release/${encodeURIComponent(this.pluginName)}`).subscribe({
+      next: (data) => {
         this.showReleaseNotes = true
         this.release = data
       },
-      () => {
+      error: () => {
         if (this.onlineUpdateOk) {
           this.update()
         }
       },
-    )
+    })
   }
 
   public onRestartHomebridgeClick() {

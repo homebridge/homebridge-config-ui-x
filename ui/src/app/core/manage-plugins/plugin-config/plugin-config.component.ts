@@ -53,8 +53,8 @@ export class PluginConfigComponent implements OnInit {
   }
 
   loadPluginConfig() {
-    this.$api.get(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`).subscribe(
-      (pluginConfig) => {
+    this.$api.get(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`).subscribe({
+      next: (pluginConfig) => {
         for (const block of pluginConfig) {
           const pluginConfigBlock = {
             __uuid__: uuid(),
@@ -74,10 +74,10 @@ export class PluginConfigComponent implements OnInit {
           this.homebridgeHueFix(this.pluginConfig[0].config)
         }
       },
-      (err) => {
+      error: (err) => {
         this.$toastr.error(`Failed to load config: ${err.error?.message}`, this.translate.instant('toast.title_error'))
       },
-    )
+    })
   }
 
   async save() {
@@ -198,7 +198,7 @@ export class PluginConfigComponent implements OnInit {
           size: 'lg',
           backdrop: 'static',
         })
-        ref.componentInstance.plugin = plugins.find(x => x.name === 'homebridge-config-ui-x')
+        ref.componentInstance.plugin = plugins.find((x: any) => x.name === 'homebridge-config-ui-x')
       })
     } catch (e) {
       // ignore
@@ -213,7 +213,7 @@ export class PluginConfigComponent implements OnInit {
           backdrop: 'static',
         })
 
-        ref.componentInstance.plugin = plugins.find(x => x.name === 'homebridge-config-ui-x')
+        ref.componentInstance.plugin = plugins.find((x: any) => x.name === 'homebridge-config-ui-x')
       })
     } catch (e) {
       // ignore

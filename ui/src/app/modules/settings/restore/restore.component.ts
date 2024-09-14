@@ -69,8 +69,8 @@ export class RestoreComponent implements OnInit, OnDestroy {
     this.clicked = true
     const formData: FormData = new FormData()
     formData.append('restoreArchive', this.selectedFile, this.selectedFile.name)
-    this.$api.post('/backup/restore', formData).subscribe(
-      () => {
+    this.$api.post('/backup/restore', formData).subscribe({
+      next: () => {
         this.restoreStarted = true
         this.restoreInProgress = true
         setTimeout(() => {
@@ -78,30 +78,30 @@ export class RestoreComponent implements OnInit, OnDestroy {
         }, 500)
         this.clicked = false
       },
-      (err) => {
+      error: (err) => {
         this.$toastr.error(
           err?.error?.message || this.translate.instant('backup.message_restore_failed'),
           this.translate.instant('toast.title_error'),
         )
         this.clicked = false
       },
-    )
+    })
   }
 
   async startRestore() {
-    await this.io.request('do-restore').subscribe(
-      () => {
+    this.io.request('do-restore').subscribe({
+      next: () => {
         this.restoreInProgress = false
         this.$toastr.success(this.translate.instant('backup.message_backup_restored'), this.translate.instant('toast.title_success'))
         if (this.setupWizardRestore) {
           this.postBackupRestart()
         }
       },
-      () => {
+      error: () => {
         this.restoreFailed = true
         this.$toastr.error(this.translate.instant('backup.message_restore_failed'), this.translate.instant('toast.title_error'))
       },
-    )
+    })
   }
 
   uploadHbfxArchive() {
@@ -112,8 +112,8 @@ export class RestoreComponent implements OnInit, OnDestroy {
     this.$api.post('/backup/restore/hbfx', formData, {
       reportProgress: true,
       observe: 'events',
-    }).subscribe(
-      (event) => {
+    }).subscribe({
+      next: (event) => {
         if (event.type === HttpEventType.UploadProgress) {
           this.uploadPercent = Math.round(100 * event.loaded / event.total)
         } else if (event instanceof HttpResponse) {
@@ -125,27 +125,27 @@ export class RestoreComponent implements OnInit, OnDestroy {
           this.clicked = false
         }
       },
-      (err) => {
+      error: (err) => {
         this.$toastr.error(
           err?.error?.message || this.translate.instant('backup.message_restore_failed'),
           this.translate.instant('toast.title_error'),
         )
         this.clicked = false
       },
-    )
+    })
   }
 
   async startHbfxRestore() {
-    this.io.request('do-restore-hbfx').subscribe(
-      () => {
+    this.io.request('do-restore-hbfx').subscribe({
+      next: () => {
         this.restoreInProgress = false
         this.$toastr.success(this.translate.instant('backup.message_backup_restored'), this.translate.instant('toast.title_success'))
       },
-      () => {
+      error: () => {
         this.restoreFailed = true
         this.$toastr.error(this.translate.instant('backup.message_restore_failed'), this.translate.instant('toast.title_error'))
       },
-    )
+    })
   }
 
   handleRestoreFileInput(files: FileList) {
@@ -162,13 +162,13 @@ export class RestoreComponent implements OnInit, OnDestroy {
   }
 
   postBackupRestart() {
-    this.$api.put('/backup/restart', {}).subscribe(
-      () => {
+    this.$api.put('/backup/restart', {}).subscribe({
+      next: () => {
         this.activeModal.close(true)
         this.$route.navigate(['/'])
       },
-      () => {},
-    )
+      error: () => {},
+    })
   }
 
   ngOnDestroy() {

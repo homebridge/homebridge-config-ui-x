@@ -8,7 +8,7 @@ import { TranslateService } from '@ngx-translate/core'
   styleUrls: ['./widgets-add.component.scss'],
 })
 export class WidgetsAddComponent implements OnInit {
-  @Input() dashboard
+  @Input() dashboard: any
   @Input() resetLayout: () => void
   @Input() lockLayout: () => void
   @Input() unlockLayout: () => void
@@ -135,10 +135,10 @@ export class WidgetsAddComponent implements OnInit {
         hideOnMobile: true,
       },
     ]
-    this.availableWidgets = this.allWidgets.filter(x => !this.dashboard.some(i => i.component === x.component) && !x.hidden)
+    this.availableWidgets = this.allWidgets.filter(x => !this.dashboard.some((i: any) => i.component === x.component) && !x.hidden)
   }
 
-  selectWidget(widget) {
+  selectWidget(widget: any) {
     this.activeModal.close(widget)
   }
 

@@ -35,17 +35,17 @@ export class ContainerRestartComponent implements OnInit, OnDestroy {
       this.$settings.getAppSettings().catch(/* do nothing */)
     })
 
-    this.$api.put('/platform-tools/docker/restart-container', {}).subscribe(
-      (data) => {
+    this.$api.put('/platform-tools/docker/restart-container', {}).subscribe({
+      next: (data) => {
         this.resp = data
         this.checkIfServerUp()
       },
-      (err) => {
+      error: (err) => {
         const toastRestartError = this.translate.instant('restart.toast_server_restart_error')
         this.error = `${toastRestartError}.`
         this.$toastr.error(`${toastRestartError}: ${err.message}`, this.translate.instant('toast.title_error'))
       },
-    )
+    })
   }
 
   checkIfServerUp() {

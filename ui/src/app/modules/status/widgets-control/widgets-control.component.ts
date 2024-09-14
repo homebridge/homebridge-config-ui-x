@@ -123,7 +123,7 @@ export class WidgetsControlComponent implements OnInit {
         }),
       })
       .pipe(
-        map((response: any) => response.list.map(item => ({
+        map((response: any) => response.list.map((item: any) => ({
           id: item.id,
           name: item.name,
           country: item.sys.country,

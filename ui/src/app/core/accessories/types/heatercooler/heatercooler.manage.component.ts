@@ -1,3 +1,4 @@
+import type { CharacteristicType } from '@homebridge/hap-client'
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { Component, Input, OnInit } from '@angular/core'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
@@ -14,8 +15,8 @@ export class HeaterCoolerManageComponent implements OnInit {
   public targetMode: any
   public targetTemperatureChanged: Subject<any> = new Subject<any>()
 
-  public CoolingThresholdTemperature
-  public HeatingThresholdTemperature
+  public CoolingThresholdTemperature: CharacteristicType
+  public HeatingThresholdTemperature: CharacteristicType
 
   public targetCoolingTemp: number
   public targetHeatingTemp: number

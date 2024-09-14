@@ -17,7 +17,7 @@ import { interval, Subscription } from 'rxjs'
   styleUrls: ['./network-widget.component.scss'],
 })
 export class NetworkWidgetComponent implements OnInit, OnDestroy {
-  @Input() public widget
+  @Input() public widget: any
 
   @ViewChild(BaseChartDirective, { static: true }) public chart: BaseChartDirective
   @ViewChild('widgetbackground', { static: true }) private widgetBackground: ElementRef
@@ -135,7 +135,7 @@ export class NetworkWidgetComponent implements OnInit, OnDestroy {
     })
   }
 
-  updateData(data) {
+  updateData(data: any) {
     const dataLength = Object.keys(this.lineChartData.datasets[0].data).length
     if (!dataLength) {
       this.initializeChartData(data)
@@ -144,13 +144,13 @@ export class NetworkWidgetComponent implements OnInit, OnDestroy {
     }
   }
 
-  initializeChartData(data) {
+  initializeChartData(data: any) {
     const items = [data.point]
     this.lineChartData.datasets[0].data = { ...items }
     this.lineChartLabels = items.map(() => 'point')
   }
 
-  updateChartData(data, dataLength) {
+  updateChartData(data: any, dataLength: number) {
     this.lineChartData.datasets[0].data[dataLength] = data.point
     this.lineChartLabels.push('point')
 

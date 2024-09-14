@@ -1,3 +1,4 @@
+/* global NodeJS */
 import { Directive, EventEmitter, HostListener, Input, OnDestroy, Output } from '@angular/core'
 
 @Directive({
@@ -8,7 +9,7 @@ export class LongClickDirective implements OnDestroy {
   @Output() public longclick: EventEmitter<MouseEvent> = new EventEmitter()
   @Output() public shortclick: EventEmitter<MouseEvent | KeyboardEvent> = new EventEmitter()
 
-  private downTimeout
+  private downTimeout: NodeJS.Timeout
   private done = false
 
   constructor() {}
@@ -41,7 +42,8 @@ export class LongClickDirective implements OnDestroy {
   @HostListener('touchstart', ['$event'])
   @HostListener('mousedown', ['$event'])
   public onMouseDown(event: MouseEvent): void {
-    if (event.which > 1) {
+    // Check for the left mouse button (button 0)
+    if (event.button !== 0) {
       return
     }
     this.done = false

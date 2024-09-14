@@ -70,8 +70,8 @@ export class AccessoriesWidgetComponent implements OnInit, OnDestroy {
 
     if (this.widget.accessoryOrder && this.widget.accessoryOrder.length) {
       dashboardAccessories.sort((a, b) => {
-        const posA = this.widget.accessoryOrder.findIndex(s => s === a.uniqueId)
-        const posB = this.widget.accessoryOrder.findIndex(s => s === b.uniqueId)
+        const posA = this.widget.accessoryOrder.findIndex((s: any) => s === a.uniqueId)
+        const posB = this.widget.accessoryOrder.findIndex((s: any) => s === b.uniqueId)
         if (posA < posB) {
           return -1
         } else if (posA > posB) {

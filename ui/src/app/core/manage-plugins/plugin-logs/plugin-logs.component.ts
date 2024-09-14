@@ -46,16 +46,16 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
 
   getPluginLog() {
     // Get the plugin name as configured in the config file
-    this.$api.get(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`).subscribe(
-      (result) => {
+    this.$api.get(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`).subscribe({
+      next: (result) => {
         this.pluginAlias = this.plugin.name === 'homebridge-config-ui-x' ? 'Homebridge UI' : (result[0]?.name || this.plugin.name)
         this.$log.startTerminal(this.termTarget, {}, this.resizeEvent, this.pluginAlias)
       },
-      (err) => {
+      error: (err) => {
         this.$toastr.error(`${err.error.message || err.message}`, this.$translate.instant('toast.title_error'))
         this.activeModal.dismiss()
       },
-    )
+    })
   }
 
   downloadLogFile() {
@@ -69,8 +69,8 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
     ref.componentInstance.faIconClass = 'fas fa-fw fa-user-secret primary-text'
 
     ref.result.then(() => {
-      this.$api.get('/platform-tools/hb-service/log/download?colour=yes', { observe: 'response', responseType: 'text' }).subscribe(
-        (res: HttpResponse<any>) => {
+      this.$api.get('/platform-tools/hb-service/log/download?colour=yes', { observe: 'response', responseType: 'text' }).subscribe({
+        next: (res: HttpResponse<any>) => {
           if (!res.body) {
             return
           }
@@ -102,7 +102,7 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
 
           saveAs(new Blob([finalOutput], { type: 'text/plain;charset=utf-8' }), `${this.plugin.name}.log.txt`)
         },
-        async (err: HttpErrorResponse) => {
+        error: async (err: HttpErrorResponse) => {
           let message: string
           try {
             message = JSON.parse(await err.error.text()).message
@@ -111,7 +111,7 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
           }
           this.$toastr.error(message || 'Failed to download log file', this.$translate.instant('toast.title_error'))
         },
-      )
+      })
     }).catch(() => {
       // do nothing
     })

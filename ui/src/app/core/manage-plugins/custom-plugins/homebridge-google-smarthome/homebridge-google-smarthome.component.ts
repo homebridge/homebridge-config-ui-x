@@ -1,3 +1,4 @@
+/* global NodeJS */
 import { ApiService } from '@/app/core/api.service'
 import { NotificationService } from '@/app/core/notification.service'
 import { SettingsService } from '@/app/core/settings.service'
@@ -13,8 +14,8 @@ import { firstValueFrom } from 'rxjs'
   templateUrl: './homebridge-google-smarthome.component.html',
 })
 export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
-  @Input() public plugin
-  @Input() public schema
+  @Input() public plugin: any
+  @Input() public schema: any
   @Input() pluginConfig: Record<string, any>[]
 
   public justLinked = false
@@ -23,8 +24,8 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
 
   private linkDomain = 'https://homebridge-gsh.iot.oz.nu'
   private linkUrl = `${this.linkDomain}/link-account`
-  private popup
-  private originCheckInterval
+  private popup: Window
+  private originCheckInterval: NodeJS.Timeout
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -49,7 +50,7 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
     this.parseToken()
   }
 
-  windowMessageListener = (e) => {
+  windowMessageListener = (e: MessageEvent) => {
     if (e.origin !== this.linkDomain) {
       console.error('Refusing to process message from', e.origin)
       console.error(e)
@@ -93,7 +94,7 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
     this.saveConfig()
   }
 
-  processToken(token) {
+  processToken(token: string) {
     clearInterval(this.originCheckInterval)
     if (this.popup) {
       this.popup.close()
