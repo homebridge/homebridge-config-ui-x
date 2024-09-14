@@ -41,20 +41,20 @@ export class RestartComponent implements OnInit, OnDestroy {
       this.$settings.getAppSettings().catch(/* do nothing */)
     })
 
-    this.$api.put('/server/restart', {}).subscribe(
-      (data) => {
+    this.$api.put('/server/restart', {}).subscribe({
+      next: (data) => {
         this.resp = data
         this.checkIfServerUp()
         if (!data.restartingUI) {
           this.uiOnline = true
         }
       },
-      (err) => {
+      error: (err) => {
         const toastRestartError = this.translate.instant('restart.toast_server_restart_error')
         this.error = `${toastRestartError}.`
         this.$toastr.error(`${toastRestartError}: ${err.message}`, this.translate.instant('toast.title_error'))
       },
-    )
+    })
   }
 
   checkIfServerUp() {

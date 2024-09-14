@@ -37,8 +37,8 @@ export class ManageVersionComponent implements OnInit {
   }
 
   lookupVersions() {
-    this.$api.get(`/plugins/lookup/${encodeURIComponent(this.plugin.name)}/versions`).subscribe(
-      (result: { versions: { [key: string]: VersionData }, tags: { [key: string]: string } }) => {
+    this.$api.get(`/plugins/lookup/${encodeURIComponent(this.plugin.name)}/versions`).subscribe({
+      next: (result: { versions: { [key: string]: VersionData }, tags: { [key: string]: string } }) => {
         const tagVersions = new Set<string>()
 
         for (const [version, data] of Object.entries(result.versions)) {
@@ -74,11 +74,11 @@ export class ManageVersionComponent implements OnInit {
 
         this.loading = false
       },
-      (err) => {
+      error: (err) => {
         this.$toastr.error(`${err.error.message || err.message}`, this.$translate.instant('toast.title_error'))
         this.activeModal.dismiss()
       },
-    )
+    })
   }
 
   doInstall(selectedVersion: string) {

@@ -71,8 +71,8 @@ export class ManualConfigComponent implements OnInit {
   }
 
   loadPluginAlias() {
-    this.$api.get(`/plugins/alias/${encodeURIComponent(this.plugin.name)}`).subscribe(
-      (result) => {
+    this.$api.get(`/plugins/alias/${encodeURIComponent(this.plugin.name)}`).subscribe({
+      next: (result) => {
         if (result.pluginAlias && result.pluginType) {
           this.pluginAlias = result.pluginAlias
           this.pluginType = result.pluginType
@@ -81,10 +81,10 @@ export class ManualConfigComponent implements OnInit {
           this.loading = false
         }
       },
-      () => {
+      error: () => {
         this.loading = false
       },
-    )
+    })
   }
 
   loadHomebridgeConfig() {
@@ -127,7 +127,7 @@ export class ManualConfigComponent implements OnInit {
   saveCurrentBlock() {
     if (this.currentBlockIndex !== null && this.monacoEditor) {
       let currentBlockString: string = this.monacoEditor.getModel().getValue().trim()
-      let currentBlockNew
+      let currentBlockNew: any
 
       // fix the object if the user has pasted an example that did not include the opening and closing brackets
       if (currentBlockString.charAt(0) === '"' && currentBlockString.charAt(currentBlockString.length - 1) === ']') {

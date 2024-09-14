@@ -23,29 +23,29 @@ export class ConfigRestoreComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.$api.get('/config-editor/backups').subscribe(
-      (data: any[]) => {
+    this.$api.get('/config-editor/backups').subscribe({
+      next: (data: any[]) => {
         this.loading = false
         this.backupList = data
       },
-      (err) => {
+      error: (err) => {
         this.loading = false
         this.$toastr.error(err.error.message, this.translate.instant('config.restore.toast_failed_to_load_backups'))
       },
-    )
+    })
   }
 
-  restore(backupId) {
+  restore(backupId: any) {
     return this.activeModal.close(backupId)
   }
 
   deleteAllBackups() {
-    return this.$api.delete('/config-editor/backups').subscribe(
-      () => {
+    return this.$api.delete('/config-editor/backups').subscribe({
+      next: () => {
         this.activeModal.dismiss()
         this.$toastr.success(this.translate.instant('config.restore.toast_backups_deleted'), this.translate.instant('toast.title_success'))
       },
-      err => this.$toastr.error(err.error.message, this.translate.instant('config.restore.toast_failed_to_delete_backups')),
-    )
+      error: err => this.$toastr.error(err.error.message, this.translate.instant('config.restore.toast_failed_to_delete_backups')),
+    })
   }
 }

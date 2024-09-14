@@ -16,13 +16,13 @@ export class HomebridgeHueComponent {
   ) {}
 
   downloadDumpFile() {
-    this.$api.get('/plugins/custom-plugins/homebridge-hue/dump-file', { observe: 'response', responseType: 'blob' }).subscribe(
-      (res) => {
+    this.$api.get('/plugins/custom-plugins/homebridge-hue/dump-file', { observe: 'response', responseType: 'blob' }).subscribe({
+      next: (res) => {
         saveAs(res.body, 'homebridge-hue.json.gz')
       },
-      () => {
+      error: () => {
         this.$toastr.error('Homebridge Hue dump file does not exist yet.', this.translate.instant('toast.title_error'))
       },
-    )
+    })
   }
 }

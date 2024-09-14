@@ -1,3 +1,4 @@
+/* global NodeJS */
 import { ApiService } from '@/app/core/api.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { environment } from '@/environments/environment'
@@ -17,7 +18,7 @@ interface UserInterface {
 export class AuthService {
   public token: string
   public user: UserInterface = {}
-  private logoutTimer
+  private logoutTimer: NodeJS.Timeout
 
   constructor(
     private $jwtHelper: JwtHelperService,
@@ -28,24 +29,22 @@ export class AuthService {
     this.loadToken()
   }
 
-  login(form: { username: string, password: string, ota?: string }) {
-    return firstValueFrom(this.$api.post('/auth/login', form)).then((resp) => {
-      if (!this.validateToken(resp.access_token)) {
-        throw new Error('Invalid username or password.')
-      } else {
-        window.localStorage.setItem(environment.jwt.tokenKey, resp.access_token)
-      }
-    })
+  async login(form: { username: string, password: string, ota?: string }) {
+    const resp = await firstValueFrom(this.$api.post('/auth/login', form))
+    if (!this.validateToken(resp.access_token)) {
+      throw new Error('Invalid username or password.')
+    } else {
+      window.localStorage.setItem(environment.jwt.tokenKey, resp.access_token)
+    }
   }
 
-  noauth() {
-    return firstValueFrom(this.$api.post('/auth/noauth', {})).then((resp) => {
-      if (!this.validateToken(resp.access_token)) {
-        throw new Error('Invalid username or password.')
-      } else {
-        window.localStorage.setItem(environment.jwt.tokenKey, resp.access_token)
-      }
-    })
+  async noauth() {
+    const resp = await firstValueFrom(this.$api.post('/auth/noauth', {}))
+    if (!this.validateToken(resp.access_token)) {
+      throw new Error('Invalid username or password.')
+    } else {
+      window.localStorage.setItem(environment.jwt.tokenKey, resp.access_token)
+    }
   }
 
   logout() {
@@ -81,14 +80,16 @@ export class AuthService {
     }
   }
 
-  checkToken() {
-    return firstValueFrom(this.$api.get('/auth/check')).catch((err: any) => {
+  async checkToken() {
+    try {
+      return await firstValueFrom(this.$api.get('/auth/check'))
+    } catch (err) {
       if (err.status === 401) {
         // token is no longer valid, do logout
         console.error('Current token is not valid')
         this.logout()
       }
-    })
+    }
   }
 
   setLogoutTimer() {

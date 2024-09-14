@@ -24,15 +24,15 @@ export class Users2faDisableComponent {
 
   disable2fa() {
     this.invalidCredentials = false
-    this.$api.post('/users/otp/deactivate', this.formGroup.value).subscribe(
-      () => {
+    this.$api.post('/users/otp/deactivate', this.formGroup.value).subscribe({
+      next: () => {
         this.activeModal.close()
         this.toastr.success(this.translate.instant('users.setup_2fa_disable_success'), this.translate.instant('toast.title_success'))
       },
-      () => {
+      error: () => {
         this.formGroup.setValue({ password: '' })
         this.invalidCredentials = true
       },
-    )
+    })
   }
 }

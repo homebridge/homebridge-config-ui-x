@@ -49,7 +49,7 @@ export class AccessoriesService {
   /**
    *
    */
-  showAccessoryInformation(service) {
+  showAccessoryInformation(service: any) {
     const ref = this.modalService.open(AccessoryInfoComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -102,7 +102,7 @@ export class AccessoriesService {
     }
 
     // subscribe to accessory events
-    this.io.socket.on('accessories-data', (data: unknown) => {
+    this.io.socket.on('accessories-data', (data: ServiceType[]) => {
       this.parseServices(data)
       this.generateHelpers()
       this.sortIntoRooms()
@@ -151,10 +151,10 @@ export class AccessoriesService {
     })).filter(room => room.services.length)
 
     // send update request to server
-    this.io.request('save-layout', { user: this.$auth.user.username, layout: this.accessoryLayout }).subscribe(
-      () => this.layoutSaved.next(undefined),
-      err => this.$toastr.error(err.message, 'Failed to save page layout'),
-    )
+    this.io.request('save-layout', { user: this.$auth.user.username, layout: this.accessoryLayout }).subscribe({
+      next: () => this.layoutSaved.next(undefined),
+      error: err => this.$toastr.error(err.message, 'Failed to save page layout'),
+    })
   }
 
   /**
@@ -173,7 +173,7 @@ export class AccessoriesService {
   /**
    * Parse the incoming accessory data and refresh existing accessory statuses
    */
-  private parseServices(services) {
+  private parseServices(services: ServiceType[]) {
     if (!this.accessories.services.length) {
       this.accessories.services = services
       return

@@ -83,7 +83,7 @@ export class HomebridgeStatusWidgetComponent implements OnInit {
   async getOutOfDatePlugins() {
     try {
       const outOfDatePlugins = await firstValueFrom(this.io.request('get-out-of-date-plugins'))
-      this.homebridgePluginStatus = outOfDatePlugins.filter(x => x.name !== 'homebridge-config-ui-x')
+      this.homebridgePluginStatus = outOfDatePlugins.filter((x: any) => x.name !== 'homebridge-config-ui-x')
       this.homebridgePluginStatusDone = true
     } catch (err) {
       this.$toastr.error(err.message)

@@ -48,9 +48,9 @@ export class JsonSchemaFormPatchDirective {
 
   private fixNestedArray(item: any, formData: any, refPointer: string) {
     if (item.items && Array.isArray(item.items)) {
-      const ref = item.items.find(x => x.type === '$ref')
+      const ref = item.items.find((x: any) => x.type === '$ref')
       if (ref) {
-        const dataItems = item.items.filter(x => x.type === 'section' || x.type === 'div')
+        const dataItems = item.items.filter((x: any) => x.type === 'section' || x.type === 'div')
 
         const template = dataItems.length > 0
           ? dataItems.reduce((a, b) => a.id > b.id ? a : b)

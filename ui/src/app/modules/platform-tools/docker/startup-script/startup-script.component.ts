@@ -17,7 +17,7 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
   public isMobile: any = false
   public options: any = { printMargin: false }
 
-  public monacoEditor
+  public monacoEditor: any
   public editorOptions: any
 
   public monacoEditorModel: NgxEditorModel
@@ -66,7 +66,7 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
   /**
    * Called when the monaco editor is ready
    */
-  onEditorInit(editor) {
+  onEditorInit(editor: any) {
     this.monacoEditor = editor
     this.monacoEditor.getModel().setValue(this.startupScript)
   }

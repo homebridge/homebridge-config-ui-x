@@ -14,7 +14,7 @@ export class WeatherWidgetComponent implements OnInit, OnDestroy {
   @Input() widget: any
   @Input() configureEvent: Subject<any>
 
-  public currentWeather
+  public currentWeather: any
 
   private io: IoNamespace
   private intervalSubscription: Subscription

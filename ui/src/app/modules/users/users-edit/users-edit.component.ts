@@ -10,7 +10,7 @@ import { ToastrService } from 'ngx-toastr'
   templateUrl: './users-edit.component.html',
 })
 export class UsersEditComponent implements OnInit {
-  @Input() user
+  @Input() user: any
 
   public form = new FormGroup({
     username: new FormControl('', [Validators.required]),
@@ -52,8 +52,8 @@ export class UsersEditComponent implements OnInit {
   }
 
   onSubmit({ value }) {
-    this.$api.patch(`/users/${this.user.id}`, value).subscribe(
-      () => {
+    this.$api.patch(`/users/${this.user.id}`, value).subscribe({
+      next: () => {
         this.activeModal.close()
         this.toastr.success(this.translate.instant('users.toast_updated_user'), this.translate.instant('toast.title_success'))
 
@@ -61,13 +61,13 @@ export class UsersEditComponent implements OnInit {
           this.$auth.logout()
         }
       },
-      (err) => {
+      error: (err) => {
         this.toastr.error(
           err.error.message
           || this.translate.instant('users.toast_failed_to_add_user'),
           this.translate.instant('toast.title_error'),
         )
       },
-    )
+    })
   }
 }

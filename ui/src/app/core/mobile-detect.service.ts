@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import * as MobileDetect from 'mobile-detect'
 
-function preventDefault(e) {
+function preventDefault(e: Event) {
   e.preventDefault()
 }
 
@@ -26,9 +26,5 @@ export class MobileDetectService {
   public enableTouchMove() {
     document.body.removeEventListener('touchmove', preventDefault)
     this.isTouchMoveLocked = false
-  }
-
-  private preventDefault(e) {
-    e.preventDefault()
   }
 }

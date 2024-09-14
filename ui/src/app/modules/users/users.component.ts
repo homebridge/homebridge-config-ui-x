@@ -51,7 +51,7 @@ export class UsersComponent implements OnInit {
     })
   }
 
-  openEditUser(user) {
+  openEditUser(user: any) {
     const ref = this.modalService.open(UsersEditComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -64,21 +64,21 @@ export class UsersComponent implements OnInit {
   }
 
   deleteUser(id: string) {
-    this.$api.delete(`/users/${id}`).subscribe(
-      () => {
+    this.$api.delete(`/users/${id}`).subscribe({
+      next: () => {
         this.toastr.success(this.translate.instant('users.toast_user_deleted'), this.translate.instant('toast.title_success'))
         this.reloadUsers()
       },
-      (err) => {
+      error: (err) => {
         this.toastr.error(
           err.error.message || this.translate.instant('users.toast_failed_to_delete_user'),
           this.translate.instant('toast.title_error'),
         )
       },
-    )
+    })
   }
 
-  setup2fa(user) {
+  setup2fa(user: any) {
     const ref = this.modalService.open(Users2faEnableComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -90,7 +90,7 @@ export class UsersComponent implements OnInit {
     })
   }
 
-  disable2fa(user) {
+  disable2fa(user: any) {
     const ref = this.modalService.open(Users2faDisableComponent, {
       size: 'lg',
       backdrop: 'static',

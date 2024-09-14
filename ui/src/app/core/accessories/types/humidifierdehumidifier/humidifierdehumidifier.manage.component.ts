@@ -1,3 +1,4 @@
+import type { CharacteristicType } from '@homebridge/hap-client'
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { Component, Input, OnInit } from '@angular/core'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
@@ -14,8 +15,8 @@ export class HumidifierDehumidifierManageComponent implements OnInit {
   public targetMode: any
   public targetHumidityChanged: Subject<any> = new Subject<any>()
 
-  public RelativeHumidityDehumidifierThreshold
-  public RelativeHumidityHumidifierThreshold
+  public RelativeHumidityDehumidifierThreshold: CharacteristicType
+  public RelativeHumidityHumidifierThreshold: CharacteristicType
 
   public targetDehumidifierHumidity: number
   public targetHumidifierHumidity: number

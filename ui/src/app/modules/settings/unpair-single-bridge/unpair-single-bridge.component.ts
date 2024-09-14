@@ -29,7 +29,7 @@ export class UnpairSingleBridgeComponent implements OnInit, OnDestroy {
   async loadPairings() {
     try {
       this.pairings = (await firstValueFrom(this.$api.get('/server/pairings')))
-        .sort((a, b) => b._main ? 1 : -1)
+        .sort((_a, b) => b._main ? 1 : -1)
     } catch (e) {
       this.toastr.error('Paired accessories could not be loaded.', this.translate.instant('toast.title_error'))
       this.activeModal.close()
@@ -39,8 +39,8 @@ export class UnpairSingleBridgeComponent implements OnInit, OnDestroy {
   removeAccessory(id: string) {
     this.deleting = id
 
-    this.$api.delete(`/server/pairings/${id}`).subscribe(
-      async () => {
+    this.$api.delete(`/server/pairings/${id}`).subscribe({
+      next: async () => {
         await this.loadPairings()
 
         if (!this.pairings.length) {
@@ -55,11 +55,11 @@ export class UnpairSingleBridgeComponent implements OnInit, OnDestroy {
           this.translate.instant('toast.title_success'),
         )
       },
-      () => {
+      error: () => {
         this.deleting = null
         this.toastr.error('Failed to un-pair accessory.', this.translate.instant('toast.title_error'))
       },
-    )
+    })
   }
 
   ngOnDestroy() {

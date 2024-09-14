@@ -15,7 +15,7 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   async canActivate(
-    next: ActivatedRouteSnapshot,
+    _next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot,
   ): Promise<boolean> {
     // ensure app settings are loaded

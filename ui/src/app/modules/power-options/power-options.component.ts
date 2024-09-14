@@ -20,14 +20,14 @@ export class PowerOptionsComponent {
   }
 
   restartHomebridgeService() {
-    this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}).subscribe(
-      () => {
+    this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}).subscribe({
+      next: () => {
         this.$router.navigate(['/restart'])
       },
-      (err) => {
+      error: (err) => {
         this.$toastr.error(err.message, 'Failed to set force service restart flag.')
       },
-    )
+    })
   }
 
   restartServer() {

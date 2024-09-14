@@ -58,11 +58,11 @@ export class LogsComponent implements OnInit, OnDestroy {
     ref.componentInstance.faIconClass = 'fas fa-fw fa-user-secret primary-text'
 
     ref.result.then(() => {
-      this.$api.get('/platform-tools/hb-service/log/download', { observe: 'response', responseType: 'blob' }).subscribe(
-        (res: HttpResponse<any>) => {
+      this.$api.get('/platform-tools/hb-service/log/download', { observe: 'response', responseType: 'blob' }).subscribe({
+        next: (res: HttpResponse<any>) => {
           saveAs(res.body, 'homebridge.log.txt')
         },
-        async (err: HttpErrorResponse) => {
+        error: async (err: HttpErrorResponse) => {
           let message: string
           try {
             message = JSON.parse(await err.error.text()).message
@@ -71,7 +71,7 @@ export class LogsComponent implements OnInit, OnDestroy {
           }
           this.$toastr.error(message || 'Failed to download log file', this.$translate.instant('toast.title_error'))
         },
-      )
+      })
     }).catch(() => {
       // do nothing
     })
@@ -89,18 +89,18 @@ export class LogsComponent implements OnInit, OnDestroy {
     ref.componentInstance.faIconClass = 'fas fa-fw fa-circle-exclamation primary-text'
 
     ref.result.then(() => {
-      this.$api.put('/platform-tools/hb-service/log/truncate', {}).subscribe(
-        () => {
+      this.$api.put('/platform-tools/hb-service/log/truncate', {}).subscribe({
+        next: () => {
           this.$toastr.success(
             this.$translate.instant('logs.message_log_file_truncated'),
             this.$translate.instant('toast.title_success'),
           )
           this.$log.term.clear()
         },
-        (err: HttpErrorResponse) => {
+        error: (err: HttpErrorResponse) => {
           this.$toastr.error(err.error.message || 'Failed to truncate log file', this.$translate.instant('toast.title_error'))
         },
-      )
+      })
     }).catch(() => {
       // do nothing
     })

@@ -21,15 +21,15 @@ export class UnpairAllBridgesComponent {
 
   onResetHomebridgeAccessoryClick() {
     this.clicked = true
-    return this.$api.put('/server/reset-homebridge-accessory', {}).subscribe(
-      () => {
+    return this.$api.put('/server/reset-homebridge-accessory', {}).subscribe({
+      next: () => {
         this.toastr.success(this.translate.instant('reset.toast_accessory_reset'), this.translate.instant('toast.title_success'))
         this.activeModal.close()
         this.$route.navigate(['/restart'])
       },
-      async () => {
+      error: async () => {
         this.toastr.error(this.translate.instant('reset.toast_failed_to_reset'), this.translate.instant('toast.title_error'))
       },
-    )
+    })
   }
 }

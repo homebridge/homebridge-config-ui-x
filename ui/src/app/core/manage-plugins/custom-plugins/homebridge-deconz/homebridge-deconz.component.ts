@@ -16,13 +16,13 @@ export class HomebridgeDeconzComponent {
   ) {}
 
   downloadDumpFile() {
-    this.$api.get('/plugins/custom-plugins/homebridge-deconz/dump-file', { observe: 'response', responseType: 'blob' }).subscribe(
-      (res) => {
+    this.$api.get('/plugins/custom-plugins/homebridge-deconz/dump-file', { observe: 'response', responseType: 'blob' }).subscribe({
+      next: (res) => {
         saveAs(res.body, 'homebridge-deconz.json.gz')
       },
-      () => {
+      error: () => {
         this.$toastr.error('Homebridge deCONZ dump file does not exist yet.', this.translate.instant('toast.title_error'))
       },
-    )
+    })
   }
 }

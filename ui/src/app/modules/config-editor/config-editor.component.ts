@@ -21,7 +21,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   public originalConfig: string
   public saveInProgress: boolean
   public isMobile: any = false
-  public monacoEditor
+  public monacoEditor: any
   public editorOptions: any
 
   public monacoEditorModel: NgxEditorModel
@@ -86,14 +86,14 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   /**
    * Called when the monaco editor is ready
    */
-  onEditorInit(editor) {
+  onEditorInit(editor: any) {
     // @ts-expect-error - TS2339: Property editor does not exist on type Window & typeof globalThis
     window.editor = editor
     this.monacoEditor = editor
     this.monacoEditor.getModel().setValue(this.homebridgeConfig)
   }
 
-  onInitDiffEditor(editor) {
+  onInitDiffEditor(editor: any) {
     this.monacoEditor = editor.modifiedEditor
 
     editor.getModel().original.setValue(this.originalConfig)
@@ -226,8 +226,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
         this.originalConfig = this.homebridgeConfig
       }
 
-      this.$api.get(`/config-editor/backups/${backupId}`).subscribe(
-        (json) => {
+      this.$api.get(`/config-editor/backups/${backupId}`).subscribe({
+        next: (json) => {
           this.$toastr.warning(
             this.translate.instant('config.toast_click_save_to_confirm_backup_restore'),
             this.translate.instant('config.toast_title_backup_loaded'),
@@ -264,8 +264,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
             ])
           }
         },
-        err => this.$toastr.error(err.error.message || 'Failed to load config backup', this.translate.instant('toast.title_error')),
-      )
+        error: err => this.$toastr.error(err.error.message || 'Failed to load config backup', this.translate.instant('toast.title_error')),
+      })
     }).catch(() => { /* modal dismissed */ })
   }
 
@@ -358,7 +358,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
    * Set up a json schema object used to check the config against
    */
   setMonacoEditorModel() {
-    if ((window as any).monaco.languages.json.jsonDefaults.diagnosticsOptions.schemas.some(x => x.uri === 'http://homebridge/config.json')) {
+    if ((window as any).monaco.languages.json.jsonDefaults.diagnosticsOptions.schemas.some((x: any) => x.uri === 'http://homebridge/config.json')) {
       return
     }
 

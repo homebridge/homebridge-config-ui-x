@@ -17,7 +17,7 @@ import { interval, Subscription } from 'rxjs'
   styleUrls: ['./memory-widget.component.scss'],
 })
 export class MemoryWidgetComponent implements OnInit, OnDestroy {
-  @Input() public widget
+  @Input() public widget: any
 
   @ViewChild(BaseChartDirective, { static: true }) public chart: BaseChartDirective
   @ViewChild('widgetbackground', { static: true }) private widgetBackground: ElementRef
@@ -119,7 +119,7 @@ export class MemoryWidgetComponent implements OnInit, OnDestroy {
     })
   }
 
-  updateData(data) {
+  updateData(data: any) {
     this.totalMemory = data.mem.total / 1024 / 1024 / 1024
     this.freeMemory = data.mem.available / 1024 / 1024 / 1024
 
@@ -131,13 +131,13 @@ export class MemoryWidgetComponent implements OnInit, OnDestroy {
     }
   }
 
-  initializeChartData(data) {
+  initializeChartData(data: any) {
     const items = data.memoryUsageHistory.slice(-this.historyItems)
     this.lineChartData.datasets[0].data = { ...items }
     this.lineChartLabels = items.map(() => 'point')
   }
 
-  updateChartData(data, dataLength) {
+  updateChartData(data: any, dataLength: number) {
     this.lineChartData.datasets[0].data[dataLength] = data.memoryUsageHistory.slice(-1)[0]
     this.lineChartLabels.push('point')
 

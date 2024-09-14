@@ -16,8 +16,8 @@ import { debounceTime, skip } from 'rxjs/operators'
 })
 export class CustomPluginsComponent implements OnInit, OnDestroy {
   @ViewChild('custompluginui', { static: true }) customPluginUiElementTarget: ElementRef
-  @Input() plugin
-  @Input() schema
+  @Input() plugin: any
+  @Input() schema: any
   @Input() pluginConfig: Record<string, any>[]
 
   public pluginAlias: string
@@ -29,9 +29,9 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   public uiLoaded = false
   public showSchemaForm = false
   public schemaFormUpdatedSubject = new Subject()
-  public formId
-  public formSchema
-  public formData
+  public formId: string
+  public formSchema: any
+  public formData: any
   public formSubmitButtonLabel: string
   public formCancelButtonLabel: string
   public formValid = true
