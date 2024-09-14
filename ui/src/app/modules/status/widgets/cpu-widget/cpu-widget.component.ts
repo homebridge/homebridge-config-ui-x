@@ -17,7 +17,7 @@ import { interval, Subscription } from 'rxjs'
   styleUrls: ['./cpu-widget.component.scss'],
 })
 export class CpuWidgetComponent implements OnInit, OnDestroy {
-  @Input() public widget
+  @Input() public widget: any
 
   @ViewChild(BaseChartDirective, { static: true }) private chart: BaseChartDirective
   @ViewChild('widgetbackground', { static: true }) private widgetBackground: ElementRef
@@ -118,7 +118,7 @@ export class CpuWidgetComponent implements OnInit, OnDestroy {
     })
   }
 
-  updateData(data) {
+  updateData(data: any) {
     this.cpuTemperature = data.cpuTemperature
     this.currentLoad = data.currentLoad
 
@@ -130,13 +130,13 @@ export class CpuWidgetComponent implements OnInit, OnDestroy {
     }
   }
 
-  initializeChartData(data) {
+  initializeChartData(data: any) {
     const items = data.cpuLoadHistory.slice(-this.historyItems)
     this.lineChartData.datasets[0].data = { ...items }
     this.lineChartLabels = items.map(() => 'point')
   }
 
-  updateChartData(data, dataLength) {
+  updateChartData(data: any, dataLength: number) {
     this.lineChartData.datasets[0].data[dataLength] = data.currentLoad
     this.lineChartLabels.push('point')
 

@@ -43,8 +43,8 @@ export class PluginBridgeComponent implements OnInit {
   }
 
   loadPluginConfig() {
-    this.$api.get(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`).subscribe(
-      (configBlocks) => {
+    this.$api.get(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`).subscribe({
+      next: (configBlocks) => {
         this.configBlocks = configBlocks
         for (const [i, block] of this.configBlocks.entries()) {
           if (block._bridge && block._bridge.username) {
@@ -55,10 +55,10 @@ export class PluginBridgeComponent implements OnInit {
           }
         }
       },
-      () => {
+      error: () => {
         this.canConfigure = false
       },
-    )
+    })
   }
 
   async toggleExternalBridge(block: any, enable: boolean, index: number) {

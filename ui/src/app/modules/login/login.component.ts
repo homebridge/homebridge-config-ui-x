@@ -1,7 +1,7 @@
 import { AuthService } from '@/app/core/auth/auth.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { environment } from '@/environments/environment'
-import { Component, OnInit, ViewChild } from '@angular/core'
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { Router } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
@@ -12,9 +12,9 @@ import { debounceTime } from 'rxjs/operators'
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
-  @ViewChild('password') private passwordInput
-  @ViewChild('username') private usernameInput
-  @ViewChild('otp') private otpInput
+  @ViewChild('password') private passwordInput: ElementRef
+  @ViewChild('username') private usernameInput: ElementRef
+  @ViewChild('otp') private otpInput: ElementRef
 
   public form: FormGroup<{
     username: FormControl<string>
@@ -27,7 +27,7 @@ export class LoginComponent implements OnInit {
   public invalid2faCode = false
   public twoFactorCodeRequired = false
   public inProgress = false
-  private targetRoute
+  private targetRoute: string
 
   constructor(
     private $router: Router,

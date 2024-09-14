@@ -19,7 +19,7 @@ export class CustomPluginsService {
     private $api: ApiService,
   ) {}
 
-  async openSettings(plugin, schema) {
+  async openSettings(plugin: any, schema: any) {
     const pluginConfig = await this.loadPluginConfig(plugin.name)
     const ref = this.modalService.open(this.plugins[plugin.name], {
       size: 'lg',
@@ -34,7 +34,7 @@ export class CustomPluginsService {
     })
   }
 
-  async openCustomSettingsUi(plugin, schema) {
+  async openCustomSettingsUi(plugin: any, schema: any) {
     const pluginConfig = await this.loadPluginConfig(plugin.name)
     const ref = this.modalService.open(CustomPluginsComponent, {
       size: 'lg',

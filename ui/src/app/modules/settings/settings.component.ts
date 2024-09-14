@@ -85,15 +85,15 @@ export class SettingsComponent implements OnInit {
   }
 
   initServiceModeForm() {
-    this.$api.get('/platform-tools/hb-service/homebridge-startup-settings').subscribe(
-      (data) => {
+    this.$api.get('/platform-tools/hb-service/homebridge-startup-settings').subscribe({
+      next: (data) => {
         this.serviceForm.patchValue(data)
         this.serviceForm.valueChanges.pipe(debounceTime(500)).subscribe(this.saveServiceModeSettings.bind(this))
       },
-      (err) => {
+      error: (err) => {
         this.$toastr.error(err.message, 'Failed to load startup settings')
       },
-    )
+    })
   }
 
   saveServiceModeSettings(data = this.serviceForm.value) {
@@ -163,27 +163,27 @@ export class SettingsComponent implements OnInit {
   }
 
   async setHomebridgeMdnsSetting(advertiser: string) {
-    this.$api.put('/server/mdns-advertiser', { advertiser }).subscribe(
-      () => {
+    this.$api.put('/server/mdns-advertiser', { advertiser }).subscribe({
+      next: () => {
         this.saved = true
         this.$notification.configUpdated.next(undefined)
       },
-      (err) => {
+      error: (err) => {
         this.$toastr.error(err.message, 'Failed to set mdns advertiser.')
       },
-    )
+    })
   }
 
   async setNetworkInterfaces(adapters: string[]) {
-    this.$api.put('/server/network-interfaces/bridge', { adapters }).subscribe(
-      () => {
+    this.$api.put('/server/network-interfaces/bridge', { adapters }).subscribe({
+      next: () => {
         this.saved = true
         this.$notification.configUpdated.next(undefined)
       },
-      (err) => {
+      error: (err) => {
         this.$toastr.error(err.message, 'Failed to set network adapters.')
       },
-    )
+    })
   }
 
   buildBridgeNetworkAdapterList(adapters: string[]) {
@@ -193,7 +193,7 @@ export class SettingsComponent implements OnInit {
     }
 
     this.bridgeNetworkAdapters = adapters.map((interfaceName) => {
-      const i = this.availableNetworkAdapters.find(x => x.iface === interfaceName)
+      const i = this.availableNetworkAdapters.find((x: any) => x.iface === interfaceName)
       if (i) {
         i.selected = true
         i.missing = false
