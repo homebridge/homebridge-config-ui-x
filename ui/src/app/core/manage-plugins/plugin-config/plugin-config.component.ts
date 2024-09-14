@@ -8,6 +8,7 @@ import { Router } from '@angular/router'
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
+import { firstValueFrom } from 'rxjs'
 import { v4 as uuid } from 'uuid'
 
 export interface PluginConfigBlock {
@@ -84,7 +85,7 @@ export class PluginConfigComponent implements OnInit {
     const configBlocks = this.pluginConfig.map(x => x.config)
 
     try {
-      await this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, configBlocks).toPromise()
+      await firstValueFrom(this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, configBlocks))
 
       // reload app settings if the config was changed for Homebridge UI
       if (this.plugin.name === 'homebridge-config-ui-x') {
@@ -153,7 +154,7 @@ export class PluginConfigComponent implements OnInit {
   public async onRestartChildBridgeClick() {
     try {
       for (const bridge of this.childBridges) {
-        await this.$api.put(`/server/restart/${bridge.username}`, {}).toPromise()
+        await firstValueFrom(this.$api.put(`/server/restart/${bridge.username}`, {}))
       }
       this.$toastr.success(
         this.translate.instant('plugins.manage.child_bridge_restart_success'),

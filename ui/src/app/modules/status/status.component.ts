@@ -9,7 +9,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { GridsterConfig, GridsterItem } from 'angular-gridster2'
 import { ToastrService } from 'ngx-toastr'
-import { Subject } from 'rxjs'
+import { firstValueFrom, Subject } from 'rxjs'
 import { take } from 'rxjs/operators'
 
 @Component({
@@ -202,7 +202,7 @@ export class StatusComponent implements OnInit, OnDestroy {
 
     // save to server
     try {
-      await this.io.request('set-dashboard-layout', layout).toPromise()
+      await firstValueFrom(this.io.request('set-dashboard-layout', layout))
     } catch (e) {
       console.error('Failed to save dashboard layout')
       console.error(e)

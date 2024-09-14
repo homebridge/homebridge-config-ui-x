@@ -2,6 +2,7 @@ import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { Component, Input, OnDestroy, OnInit } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
+import { firstValueFrom } from 'rxjs'
 
 @Component({
   templateUrl: './child-bridge-widget.component.html',
@@ -46,7 +47,7 @@ export class ChildBridgeWidgetComponent implements OnInit, OnDestroy {
   async restartChildBridge(bridge: any) {
     bridge.restartInProgress = true
     try {
-      await this.io.request('restart-child-bridge', bridge.username).toPromise()
+      await firstValueFrom(this.io.request('restart-child-bridge', bridge.username))
     } catch (err) {
       this.$toastr.error(
         `Failed to restart bridge: ${err.error?.message}`,

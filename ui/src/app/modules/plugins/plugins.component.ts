@@ -6,7 +6,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { NavigationEnd, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
-import { Subscription } from 'rxjs'
+import { firstValueFrom, Subscription } from 'rxjs'
 
 @Component({
   templateUrl: './plugins.component.html',
@@ -66,7 +66,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
     this.loading = true
 
     try {
-      const installedPlugins = await this.$api.get('/plugins').toPromise()
+      const installedPlugins = await firstValueFrom(this.$api.get('/plugins'))
       this.installedPlugins = installedPlugins.filter(x => x.name !== 'homebridge-config-ui-x')
       await this.appendMetaInfo()
 
@@ -120,7 +120,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
       .map(async (plugin) => {
         try {
           // Adds some extra properties to the plugin object for the plugin card
-          const configBlocks = await this.$api.get(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`).toPromise()
+          const configBlocks = await firstValueFrom(this.$api.get(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`))
           plugin.isConfigured = configBlocks.length > 0
           plugin.isConfiguredDynamicPlatform = plugin.isConfigured && Object.prototype.hasOwnProperty.call(configBlocks[0], 'platform')
 

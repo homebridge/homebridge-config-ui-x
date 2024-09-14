@@ -11,6 +11,7 @@ import { pathExists, readFile } from 'fs-extra'
 
 import NodeCache from 'node-cache'
 
+import { firstValueFrom } from 'rxjs'
 import { ConfigService } from '../../../core/config/config.service'
 import { Logger } from '../../../core/logger/logger.service'
 import { PluginsService } from '../../plugins/plugins.service'
@@ -101,7 +102,7 @@ export class PluginsSettingsUiService {
    * Serve assets from the custom ui dev server (only for private packages in development)
    */
   async serveAssetsFromDevServer(reply, pluginUi: HomebridgePluginUiMetadata, assetPath: string) {
-    return this.httpService.get(`${pluginUi.devServer}/${assetPath}`, { responseType: 'text' }).toPromise().then((response) => {
+    return firstValueFrom(this.httpService.get(`${pluginUi.devServer}/${assetPath}`, { responseType: 'text' })).then((response) => {
       for (const [key, value] of Object.entries(response.headers)) {
         reply.header(key, value)
       }
@@ -117,7 +118,7 @@ export class PluginsSettingsUiService {
   async getIndexHtmlBody(pluginUi: HomebridgePluginUiMetadata) {
     if (pluginUi.devServer) {
       // dev server is only enabled for private plugins
-      return (await this.httpService.get(pluginUi.devServer, { responseType: 'text' }).toPromise()).data
+      return (await firstValueFrom(this.httpService.get(pluginUi.devServer, { responseType: 'text' }))).data
     } else {
       return await readFile(join(pluginUi.publicPath, 'index.html'), 'utf8')
     }

@@ -11,6 +11,7 @@ import { SettingsService } from '@/app/core/settings.service'
 import { Injectable } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { ToastrService } from 'ngx-toastr'
+import { firstValueFrom } from 'rxjs'
 import { lt, minVersion } from 'semver'
 
 @Injectable({
@@ -242,6 +243,6 @@ export class ManagePluginsService {
   }
 
   private async loadConfigSchema(pluginName: string) {
-    return this.$api.get(`/plugins/config-schema/${encodeURIComponent(pluginName)}`).toPromise()
+    return firstValueFrom(this.$api.get(`/plugins/config-schema/${encodeURIComponent(pluginName)}`))
   }
 }

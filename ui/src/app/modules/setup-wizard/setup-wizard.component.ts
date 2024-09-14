@@ -9,6 +9,7 @@ import { Title } from '@angular/platform-browser'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
+import { firstValueFrom } from 'rxjs'
 
 @Component({
   templateUrl: './setup-wizard.component.html',
@@ -114,14 +115,14 @@ export class SetupWizardComponent implements OnInit, OnDestroy {
   async uploadHomebridgeArchive() {
     try {
       // get and set a temporary access token
-      const authorization = await this.$api.get('/setup-wizard/get-setup-wizard-token').toPromise()
+      const authorization = await firstValueFrom(this.$api.get('/setup-wizard/get-setup-wizard-token'))
       window.localStorage.setItem(environment.jwt.tokenKey, authorization.access_token)
       this.$auth.token = authorization.access_token
 
       // upload archive
       const formData: FormData = new FormData()
       formData.append('restoreArchive', this.selectedFile, this.selectedFile.name)
-      await this.$api.post('/backup/restore', formData).toPromise()
+      await firstValueFrom(this.$api.post('/backup/restore', formData))
 
       // open restore modal
       this.openRestoreModal()
@@ -161,7 +162,7 @@ export class SetupWizardComponent implements OnInit, OnDestroy {
 
     const checkHomebridgeInterval = setInterval(async () => {
       try {
-        await this.$api.get('/auth/settings').toPromise()
+        await firstValueFrom(this.$api.get('/auth/settings'))
         clearInterval(checkHomebridgeInterval)
         location.reload()
       } catch (e) {

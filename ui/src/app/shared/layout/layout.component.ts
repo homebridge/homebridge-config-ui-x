@@ -8,6 +8,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core'
 import { Router } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateService } from '@ngx-translate/core'
+import { firstValueFrom } from 'rxjs'
 import { throttleTime } from 'rxjs/operators'
 import { lt } from 'semver'
 
@@ -70,7 +71,7 @@ export class LayoutComponent implements OnInit {
 
   async compareServerUiVersion() {
     if (!this.$settings.settingsLoaded) {
-      await this.$settings.onSettingsLoaded.toPromise()
+      await firstValueFrom(this.$settings.onSettingsLoaded)
     }
 
     if (lt(this.$settings.uiVersion, environment.serverTarget)) {
