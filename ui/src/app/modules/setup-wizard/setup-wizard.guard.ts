@@ -1,6 +1,7 @@
 import { SettingsService } from '@/app/core/settings.service'
 import { Injectable } from '@angular/core'
 import { CanActivate, Router } from '@angular/router'
+import { firstValueFrom } from 'rxjs'
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +14,7 @@ export class SetupWizardGuard implements CanActivate {
 
   async canActivate(): Promise<boolean> {
     if (!this.$settings.settingsLoaded) {
-      await this.$settings.onSettingsLoaded.toPromise()
+      await firstValueFrom(this.$settings.onSettingsLoaded)
     }
 
     if (this.$settings.env.setupWizardComplete === false) {

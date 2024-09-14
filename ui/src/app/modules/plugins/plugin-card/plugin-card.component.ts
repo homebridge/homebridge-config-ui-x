@@ -14,6 +14,7 @@ import { Component, Input, OnInit } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
+import { firstValueFrom } from 'rxjs'
 
 @Component({
   selector: 'app-plugin-card',
@@ -132,7 +133,7 @@ export class PluginCardComponent implements OnInit {
 
     ref.result.then(async () => {
       try {
-        await this.$api.put(`/config-editor/plugin/${encodeURIComponent(plugin.name)}/disable`, {}).toPromise()
+        await firstValueFrom(this.$api.put(`/config-editor/plugin/${encodeURIComponent(plugin.name)}/disable`, {}))
         // Mark as disabled
         plugin.disabled = true
 
@@ -165,7 +166,7 @@ export class PluginCardComponent implements OnInit {
 
     ref.result.then(async () => {
       try {
-        await this.$api.put(`/config-editor/plugin/${encodeURIComponent(plugin.name)}/enable`, {}).toPromise()
+        await firstValueFrom(this.$api.put(`/config-editor/plugin/${encodeURIComponent(plugin.name)}/enable`, {}))
         // mark as enabled
         plugin.disabled = false
         // start all child bridges
@@ -197,7 +198,7 @@ export class PluginCardComponent implements OnInit {
     this.childBridgeRestartInProgress = true
     try {
       for (const bridge of this.setChildBridges) {
-        await this.io.request(`${action}-child-bridge`, bridge.username).toPromise()
+        await firstValueFrom(this.io.request(`${action}-child-bridge`, bridge.username))
       }
     } catch (err) {
       this.$toastr.error(

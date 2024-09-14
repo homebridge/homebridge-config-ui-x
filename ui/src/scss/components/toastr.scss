@@ -3,6 +3,7 @@
 @media (max-width: 575px) {
   #toast-container {
     margin-left: 12px;
+    width: calc(100% - 24px);
 
     div {
       width: 100%;

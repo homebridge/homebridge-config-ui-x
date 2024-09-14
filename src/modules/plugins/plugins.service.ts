@@ -45,8 +45,9 @@ import { orderBy, uniq } from 'lodash'
 import NodeCache from 'node-cache'
 import pLimit from 'p-limit'
 
-import { gt, lt, parse, satisfies } from 'semver'
+import { firstValueFrom } from 'rxjs'
 
+import { gt, lt, parse, satisfies } from 'semver'
 import { ConfigService, HomebridgeConfig } from '../../core/config/config.service'
 import { Logger } from '../../core/logger/logger.service'
 import { NodePtyService } from '../../core/node-pty/node-pty.service'
@@ -210,12 +211,12 @@ export class PluginsService {
     try {
       const fromCache = this.npmPluginCache.get(`lookup-${pluginName}`)
 
-      const pkg: INpmRegistryModule = fromCache || (await (
+      const pkg: INpmRegistryModule = fromCache || (await firstValueFrom((
         this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(pluginName).replace(/%40/g, '@')}`, {
           headers: {
             accept: 'application/vnd.npm.install-v1+json', // only return minimal information
           },
-        }).toPromise()
+        })),
       )).data
 
       if (!fromCache) {
@@ -250,7 +251,7 @@ export class PluginsService {
     let searchResults: INpmSearchResults
 
     try {
-      searchResults = (await this.httpService.get(`https://registry.npmjs.org/-/v1/search?text=${q}`).toPromise()).data
+      searchResults = (await firstValueFrom(this.httpService.get(`https://registry.npmjs.org/-/v1/search?text=${q}`))).data
     } catch (e) {
       this.logger.error(`Failed to search the npm registry - "${e.message}" - see https://homebridge.io/w/JJSz6 for help.`)
       throw new InternalServerErrorException(`Failed to search the npm registry - "${e.message}" - see logs.`)
@@ -311,8 +312,8 @@ export class PluginsService {
     try {
       const fromCache = this.npmPluginCache.get(`lookup-${query}`)
 
-      const pkg: INpmRegistryModule = fromCache || (await (
-        this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(query).replace(/%40/g, '@')}`).toPromise()
+      const pkg: INpmRegistryModule = fromCache || (await firstValueFrom((
+        this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(query).replace(/%40/g, '@')}`)),
       )).data
 
       if (!fromCache) {
@@ -633,7 +634,7 @@ export class PluginsService {
       && pluginAction.version !== 'latest'
     ) {
       try {
-        await this.httpService.head(`https://github.com/homebridge/verified/releases/download/v1.0.0/${pluginAction.name.replace('/', '@')}-${pluginAction.version}.sha256`).toPromise()
+        await firstValueFrom(this.httpService.head(`https://github.com/homebridge/verified/releases/download/v1.0.0/${pluginAction.name.replace('/', '@')}-${pluginAction.version}.sha256`))
         return true
       } catch (e) {
         return false
@@ -677,11 +678,11 @@ export class PluginsService {
       try {
         try {
           const withV = `v${pluginAction.version}`
-          await this.httpService.head(`https://github.com/homebridge/homebridge-config-ui-x/releases/download/${withV}/homebridge-config-ui-x-${pluginAction.version}.tar.gz`).toPromise()
+          await firstValueFrom(this.httpService.head(`https://github.com/homebridge/homebridge-config-ui-x/releases/download/${withV}/homebridge-config-ui-x-${pluginAction.version}.tar.gz`))
           return withV
         } catch (e2) {
           const withoutV = pluginAction.version
-          await this.httpService.head(`https://github.com/homebridge/homebridge-config-ui-x/releases/download/${withoutV}/homebridge-config-ui-x-${pluginAction.version}.tar.gz`).toPromise()
+          await firstValueFrom(this.httpService.head(`https://github.com/homebridge/homebridge-config-ui-x/releases/download/${withoutV}/homebridge-config-ui-x-${pluginAction.version}.tar.gz`))
           return withoutV
         }
       } catch (e) {
@@ -921,7 +922,7 @@ export class PluginsService {
         // Query the list of branches for the repo, if the request doesn't work it doesn't matter too much
         try {
           // Find the first branch that starts with "beta"
-          branch = (await this.httpService.get(`https://api.github.com/repos/homebridge/${plugin.name}/branches`).toPromise())
+          branch = (await firstValueFrom(this.httpService.get(`https://api.github.com/repos/homebridge/${plugin.name}/branches`)))
             .data
             .find((b: any) => b.name.startsWith(`${tag}-`))
             ?.name
@@ -942,7 +943,7 @@ export class PluginsService {
     }
 
     try {
-      const release = (await this.httpService.get(`https://api.github.com/repos/${match[1]}/${match[2]}/releases/latest`).toPromise()).data
+      const release = (await firstValueFrom(this.httpService.get(`https://api.github.com/repos/${match[1]}/${match[2]}/releases/latest`))).data
       return {
         name: release.name,
         changelog: release.body,
@@ -1286,7 +1287,7 @@ export class PluginsService {
 
       // restore from cache, or load from npm
       const pkg: IPackageJson = fromCache || (
-        await this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(plugin.name).replace(/%40/g, '@')}/latest`).toPromise()
+        await firstValueFrom(this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(plugin.name).replace(/%40/g, '@')}/latest`))
       ).data
 
       plugin.latestVersion = pkg.version
@@ -1343,7 +1344,7 @@ export class PluginsService {
    */
   public async getNpmModuleLatestVersion(npmModuleName: string): Promise<string> {
     try {
-      const response = await this.httpService.get<IPackageJson>(`https://registry.npmjs.org/${npmModuleName}/latest`).toPromise()
+      const response = await firstValueFrom(this.httpService.get<IPackageJson>(`https://registry.npmjs.org/${npmModuleName}/latest`))
       return response.data.version
     } catch (e) {
       return 'latest'
@@ -1524,27 +1525,27 @@ export class PluginsService {
     clearTimeout(this.specialPluginsRetryTimeout)
     try {
       this.verifiedPlugins = (
-        await this.httpService.get(this.verifiedPluginsJson, {
+        await firstValueFrom(this.httpService.get(this.verifiedPluginsJson, {
           httpsAgent: null,
-        }).toPromise()
+        }))
       ).data
 
       this.verifiedPlusPlugins = (
-        await this.httpService.get(this.verifiedPlusPluginsJson, {
+        await firstValueFrom(this.httpService.get(this.verifiedPlusPluginsJson, {
           httpsAgent: null,
-        }).toPromise()
+        }))
       ).data
 
       this.pluginIcons = (
-        await this.httpService.get(this.pluginIconsJson, {
+        await firstValueFrom(this.httpService.get(this.pluginIconsJson, {
           httpsAgent: null,
-        }).toPromise()
+        }))
       ).data
 
       this.hiddenPlugins = (
-        await this.httpService.get(this.hiddenPluginsJson, {
+        await firstValueFrom(this.httpService.get(this.hiddenPluginsJson, {
           httpsAgent: null,
-        }).toPromise()
+        }))
       ).data
     } catch (e) {
       this.logger.debug('Error when trying to get github plugin lists:', e.message)

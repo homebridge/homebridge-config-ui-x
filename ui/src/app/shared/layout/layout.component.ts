@@ -7,6 +7,7 @@ import { Component, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateService } from '@ngx-translate/core'
+import { firstValueFrom } from 'rxjs'
 import { lt } from 'semver'
 
 @Component({
@@ -38,7 +39,7 @@ export class LayoutComponent implements OnInit {
 
   async compareServerUiVersion() {
     if (!this.$settings.settingsLoaded) {
-      await this.$settings.onSettingsLoaded.toPromise()
+      await firstValueFrom(this.$settings.onSettingsLoaded)
     }
 
     if (lt(this.$settings.uiVersion, environment.serverTarget)) {

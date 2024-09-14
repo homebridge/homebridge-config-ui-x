@@ -13,6 +13,7 @@ import { Component, OnInit } from '@angular/core'
 import { FormControl, FormGroup, UntypedFormControl } from '@angular/forms'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { ToastrService } from 'ngx-toastr'
+import { firstValueFrom } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
 
 @Component({
@@ -166,9 +167,9 @@ export class SettingsComponent implements OnInit {
 
   async getNetworkSettings() {
     return Promise.all([
-      this.$api.get('/server/network-interfaces/system').toPromise(),
-      this.$api.get('/server/network-interfaces/bridge').toPromise(),
-      this.$api.get('/server/mdns-advertiser').toPromise(),
+      firstValueFrom(this.$api.get('/server/network-interfaces/system')),
+      firstValueFrom(this.$api.get('/server/network-interfaces/bridge')),
+      firstValueFrom(this.$api.get('/server/mdns-advertiser')),
     ]).then(([system, adapters, mdnsAdvertiser]) => {
       this.availableNetworkAdapters = system
       this.buildBridgeNetworkAdapterList(adapters)

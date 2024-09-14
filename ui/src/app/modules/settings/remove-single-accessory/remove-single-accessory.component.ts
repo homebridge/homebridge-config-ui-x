@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
+import { firstValueFrom } from 'rxjs'
 
 @Component({
   templateUrl: './remove-single-accessory.component.html',
@@ -24,7 +25,7 @@ export class RemoveSingleAccessoryComponent implements OnInit {
 
   async loadCachedAccessories() {
     try {
-      this.cachedAccessories = await this.$api.get('/server/cached-accessories').toPromise()
+      this.cachedAccessories = await firstValueFrom(this.$api.get('/server/cached-accessories'))
     } catch (e) {
       this.toastr.error(
         this.translate.instant('reset.toast_error_message'),

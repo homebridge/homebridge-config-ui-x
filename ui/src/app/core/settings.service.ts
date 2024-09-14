@@ -4,7 +4,7 @@ import { Title } from '@angular/platform-browser'
 import { TranslateService } from '@ngx-translate/core'
 import * as dayjs from 'dayjs'
 import { ToastrService } from 'ngx-toastr'
-import { Subject } from 'rxjs'
+import { firstValueFrom, Subject } from 'rxjs'
 import { first } from 'rxjs/operators'
 
 interface EnvInterface {
@@ -69,7 +69,7 @@ export class SettingsService {
   }
 
   async getAppSettings() {
-    const data = await this.$api.get('/auth/settings').toPromise() as AppSettingsInterface
+    const data = await firstValueFrom(this.$api.get('/auth/settings')) as AppSettingsInterface
     this.formAuth = data.formAuth
     this.env = data.env
     this.setTheme(data.theme || 'auto')

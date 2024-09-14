@@ -37,6 +37,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - no longer use `webpack`
   - the final size of the `npm` package is actually higher with `webpack` than without
 - update dependencies, overrides, updated lint
+- `.toPromise()` is deprecated, change to `firstValueFrom()`
 
 ### Homebridge Dependencies
 

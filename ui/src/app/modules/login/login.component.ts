@@ -4,6 +4,7 @@ import { environment } from '@/environments/environment'
 import { Component, OnInit, ViewChild } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { Router } from '@angular/router'
+import { firstValueFrom } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
 
 @Component({
@@ -53,7 +54,7 @@ export class LoginComponent implements OnInit {
 
   async setBackground() {
     if (!this.$settings.settingsLoaded) {
-      await this.$settings.onSettingsLoaded.toPromise()
+      await firstValueFrom(this.$settings.onSettingsLoaded)
     }
 
     if (this.$settings.env.customWallpaperHash) {

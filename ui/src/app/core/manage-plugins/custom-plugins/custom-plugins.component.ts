@@ -7,7 +7,7 @@ import { Router } from '@angular/router'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
-import { Subject } from 'rxjs'
+import { firstValueFrom, Subject } from 'rxjs'
 import { debounceTime, skip } from 'rxjs/operators'
 
 @Component({
@@ -412,13 +412,13 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
    * Handle the event to get a list of cached accessories
    */
   async handleGetCachedAccessories(event) {
-    const cachedAccessories = await this.$api.get('/server/cached-accessories').toPromise()
+    const cachedAccessories = await firstValueFrom(this.$api.get('/server/cached-accessories'))
     return this.requestResponse(event, cachedAccessories.filter(x => x.plugin === this.plugin.name))
   }
 
   async savePluginConfig(exit = false) {
     this.saveInProgress = true
-    return this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig).toPromise().then(() => {
+    return firstValueFrom(this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig)).then(() => {
       this.saveInProgress = false
 
       if (exit) {
@@ -455,7 +455,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   public async onRestartChildBridgeClick() {
     try {
       for (const bridge of this.childBridges) {
-        await this.$api.put(`/server/restart/${bridge.username}`, {}).toPromise()
+        await firstValueFrom(this.$api.put(`/server/restart/${bridge.username}`, {}))
       }
       this.$toastr.success(
         this.$translate.instant('plugins.manage.child_bridge_restart_success'),

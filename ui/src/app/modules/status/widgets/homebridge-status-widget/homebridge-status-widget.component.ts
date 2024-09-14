@@ -3,6 +3,7 @@ import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { Component, Input, OnInit } from '@angular/core'
 import { ToastrService } from 'ngx-toastr'
+import { firstValueFrom } from 'rxjs'
 
 @Component({
   templateUrl: './homebridge-status-widget.component.html',
@@ -56,12 +57,12 @@ export class HomebridgeStatusWidgetComponent implements OnInit {
   }
 
   async getHomebridgeStatus() {
-    this.homebridgeStatus = await this.io.request('get-homebridge-status').toPromise()
+    this.homebridgeStatus = await firstValueFrom(this.io.request('get-homebridge-status'))
   }
 
   async checkHomebridgeVersion() {
     try {
-      const response = await this.io.request('homebridge-version-check').toPromise()
+      const response = await firstValueFrom(this.io.request('homebridge-version-check'))
       this.homebridgePkg = response
       this.$settings.env.homebridgeVersion = response.installedVersion
     } catch (err) {
@@ -71,7 +72,7 @@ export class HomebridgeStatusWidgetComponent implements OnInit {
 
   async checkHomebridgeUiVersion() {
     try {
-      const response = await this.io.request('homebridge-ui-version-check').toPromise()
+      const response = await firstValueFrom(this.io.request('homebridge-ui-version-check'))
       this.homebridgeUiPkg = response
       this.$settings.env.homebridgeUiVersion = response.installedVersion
     } catch (err) {
@@ -81,7 +82,7 @@ export class HomebridgeStatusWidgetComponent implements OnInit {
 
   async getOutOfDatePlugins() {
     try {
-      const outOfDatePlugins = await this.io.request('get-out-of-date-plugins').toPromise()
+      const outOfDatePlugins = await firstValueFrom(this.io.request('get-out-of-date-plugins'))
       this.homebridgePluginStatus = outOfDatePlugins.filter(x => x.name !== 'homebridge-config-ui-x')
       this.homebridgePluginStatusDone = true
     } catch (err) {
