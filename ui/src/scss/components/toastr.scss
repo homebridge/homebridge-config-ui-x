@@ -1,9 +1,12 @@
 @import 'ngx-toastr/toastr';
 
 @media (max-width: 575px) {
-  #toast-container > div {
-    width: calc(100% - 12px);
-    left: 12px;
+  #toast-container {
+    margin-left: 12px;
+
+    div {
+      width: 100%;
+    }
   }
 }
 

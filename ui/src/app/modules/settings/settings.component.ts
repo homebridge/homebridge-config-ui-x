@@ -34,6 +34,7 @@ export class SettingsComponent implements OnInit {
   public showResolvedMdnsOption = false
   public availableNetworkAdapters: Record<string, any> = []
   public bridgeNetworkAdapters: Record<string, any> = []
+  public isHbV2 = false
   public showFields = {
     general: true,
     startup: true,
@@ -52,6 +53,7 @@ export class SettingsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.isHbV2 = this.$settings.env.homebridgeVersion.startsWith('2')
     this.initNetworkingOptions()
     if (this.$settings.env.serviceMode) {
       this.initServiceModeForm()
