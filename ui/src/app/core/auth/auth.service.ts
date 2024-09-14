@@ -4,6 +4,7 @@ import { environment } from '@/environments/environment'
 import { Injectable } from '@angular/core'
 import { JwtHelperService } from '@auth0/angular-jwt'
 import * as dayjs from 'dayjs'
+import { firstValueFrom } from 'rxjs'
 
 interface UserInterface {
   username?: string
@@ -28,7 +29,7 @@ export class AuthService {
   }
 
   login(form: { username: string, password: string, ota?: string }) {
-    return this.$api.post('/auth/login', form).toPromise().then((resp) => {
+    return firstValueFrom(this.$api.post('/auth/login', form)).then((resp) => {
       if (!this.validateToken(resp.access_token)) {
         throw new Error('Invalid username or password.')
       } else {
@@ -38,7 +39,7 @@ export class AuthService {
   }
 
   noauth() {
-    return this.$api.post('/auth/noauth', {}).toPromise().then((resp) => {
+    return firstValueFrom(this.$api.post('/auth/noauth', {})).then((resp) => {
       if (!this.validateToken(resp.access_token)) {
         throw new Error('Invalid username or password.')
       } else {
@@ -56,7 +57,7 @@ export class AuthService {
 
   async loadToken() {
     if (!this.$settings.settingsLoaded) {
-      await this.$settings.onSettingsLoaded.toPromise()
+      await firstValueFrom(this.$settings.onSettingsLoaded)
     }
     const token = window.localStorage.getItem(environment.jwt.tokenKey)
     if (token) {
@@ -81,7 +82,7 @@ export class AuthService {
   }
 
   checkToken() {
-    return this.$api.get('/auth/check').toPromise().catch((err: any) => {
+    return firstValueFrom(this.$api.get('/auth/check')).catch((err: any) => {
       if (err.status === 401) {
         // token is no longer valid, do logout
         console.error('Current token is not valid')

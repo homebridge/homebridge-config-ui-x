@@ -6,6 +6,7 @@ import { ActivatedRoute } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import { NgxEditorModel } from 'ngx-monaco-editor'
 import { ToastrService } from 'ngx-toastr'
+import { firstValueFrom } from 'rxjs'
 
 @Component({
   templateUrl: './startup-script.component.html',
@@ -99,7 +100,7 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
     }
 
     try {
-      await this.$api.put('/platform-tools/docker/startup-script', { script: this.startupScript }).toPromise()
+      await firstValueFrom(this.$api.put('/platform-tools/docker/startup-script', { script: this.startupScript }))
       this.$toastr.success(
         this.translate.instant('platform.docker.startup_script.toast_restart_required'),
         this.translate.instant('platform.docker.startup_script.toast_title_script_saved'),

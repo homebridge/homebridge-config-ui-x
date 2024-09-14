@@ -8,6 +8,7 @@ import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateService } from '@ngx-translate/core'
 import { parse } from 'json5'
 import { ToastrService } from 'ngx-toastr'
+import { firstValueFrom } from 'rxjs'
 
 @Component({
   templateUrl: './manual-config.component.html',
@@ -214,7 +215,7 @@ export class ManualConfigComponent implements OnInit {
     }
 
     try {
-      await this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig).toPromise()
+      await firstValueFrom(this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig))
       this.activeModal.close()
       this.$modal.open(RestartComponent, {
         size: 'lg',

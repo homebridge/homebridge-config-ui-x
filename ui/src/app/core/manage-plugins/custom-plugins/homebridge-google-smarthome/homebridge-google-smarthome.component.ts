@@ -6,6 +6,7 @@ import { JwtHelperService } from '@auth0/angular-jwt'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
+import { firstValueFrom } from 'rxjs'
 
 @Component({
   selector: 'app-homebridge-google-smarthome',
@@ -122,7 +123,7 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
 
   async saveConfig() {
     try {
-      await this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig).toPromise()
+      await firstValueFrom(this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig))
       this.justLinked = true
       this.$toastr.success(
         this.translate.instant('plugins.settings.toast_restart_required'),

@@ -7,6 +7,7 @@ import { Router } from '@angular/router'
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
+import { firstValueFrom } from 'rxjs'
 
 @Component({
   templateUrl: './plugin-bridge.component.html',
@@ -86,7 +87,7 @@ export class PluginBridgeComponent implements OnInit {
   async getUnusedPort() {
     this.saveInProgress = true
     try {
-      const lookup = await this.$api.get('/server/port/new').toPromise()
+      const lookup = await firstValueFrom(this.$api.get('/server/port/new'))
       return lookup.port
     } catch (e) {
       return Math.floor(Math.random() * (60000 - 30000 + 1) + 30000)
@@ -97,7 +98,7 @@ export class PluginBridgeComponent implements OnInit {
 
   async getDeviceInfo(username: string) {
     try {
-      this.deviceInfo[username] = await this.$api.get(`/server/pairings/${username.replace(/:/g, '')}`).toPromise()
+      this.deviceInfo[username] = await firstValueFrom(this.$api.get(`/server/pairings/${username.replace(/:/g, '')}`))
     } catch (e) {
       this.deviceInfo[username] = false
     }
@@ -107,7 +108,7 @@ export class PluginBridgeComponent implements OnInit {
     this.saveInProgress = true
 
     try {
-      await this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.configBlocks).toPromise()
+      await firstValueFrom(this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.configBlocks))
       this.activeModal.close()
       this.$modal.open(RestartComponent, {
         size: 'lg',

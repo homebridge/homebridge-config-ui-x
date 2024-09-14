@@ -4,7 +4,7 @@ import { HttpClient, HttpParams } from '@angular/common/http'
 import { Component, Input, OnInit } from '@angular/core'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateService } from '@ngx-translate/core'
-import { Observable, of } from 'rxjs'
+import { firstValueFrom, Observable, of } from 'rxjs'
 import {
   catchError,
   debounceTime,
@@ -102,7 +102,7 @@ export class WidgetsControlComponent implements OnInit {
     }
     if (this.widget.component === 'NetworkWidgetComponent') {
       // Get a list of active network interfaces from the settings
-      this.$api.get('/server/network-interfaces/bridge').toPromise().then((adapters) => {
+      firstValueFrom(this.$api.get('/server/network-interfaces/bridge')).then((adapters) => {
         this.networkInterfaces = adapters
       })
     }

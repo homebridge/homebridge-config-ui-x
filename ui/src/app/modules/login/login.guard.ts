@@ -2,6 +2,7 @@ import { AuthService } from '@/app/core/auth/auth.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { Injectable } from '@angular/core'
 import { CanActivate, Router } from '@angular/router'
+import { firstValueFrom } from 'rxjs'
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +17,7 @@ export class LoginGuard implements CanActivate {
   async canActivate(): Promise<boolean> {
     // ensure app settings are loaded
     if (!this.$settings.settingsLoaded) {
-      await this.$settings.onSettingsLoaded.toPromise()
+      await firstValueFrom(this.$settings.onSettingsLoaded)
     }
 
     if (this.$settings.env.setupWizardComplete === false) {

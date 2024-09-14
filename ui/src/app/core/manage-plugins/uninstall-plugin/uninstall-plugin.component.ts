@@ -4,6 +4,7 @@ import { Component, Input, OnInit } from '@angular/core'
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
+import { firstValueFrom } from 'rxjs'
 
 @Component({
   templateUrl: './uninstall-plugin.component.html',
@@ -57,15 +58,15 @@ export class UninstallPluginComponent implements OnInit {
   }
 
   async getAlias() {
-    return this.$api.get(`/plugins/alias/${encodeURIComponent(this.plugin.name)}`).toPromise()
+    return firstValueFrom(this.$api.get(`/plugins/alias/${encodeURIComponent(this.plugin.name)}`))
   }
 
   async removePluginConfig() {
     // Remove the config for this plugin
-    await this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, []).toPromise()
+    await firstValueFrom(this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, []))
 
     // If the plugin is in the disabled list, then remove it
-    await this.$api.put(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}/enable`, {}).toPromise()
+    await firstValueFrom(this.$api.put(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}/enable`, {}))
 
     this.$toastr.success(
       this.translate.instant('plugins.settings.toast_plugin_config_saved'),

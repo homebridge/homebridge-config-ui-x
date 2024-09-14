@@ -12,7 +12,7 @@ import { HttpService } from '@nestjs/axios'
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { readFile, readJson, writeJsonSync } from 'fs-extra'
 import NodeCache from 'node-cache'
-import { Subject } from 'rxjs'
+import { firstValueFrom, Subject } from 'rxjs'
 import { gt } from 'semver'
 import {
   cpuTemperature,
@@ -351,9 +351,9 @@ export class StatusService {
     }
 
     try {
-      await this.httpService.get(`http://localhost:${this.configService.homebridgeConfig.bridge.port}`, {
+      await firstValueFrom(this.httpService.get(`http://localhost:${this.configService.homebridgeConfig.bridge.port}`, {
         validateStatus: () => true,
-      }).toPromise()
+      }))
       this.homebridgeStatus = HomebridgeStatus.UP
     } catch (e) {
       this.homebridgeStatus = HomebridgeStatus.DOWN
@@ -464,7 +464,7 @@ export class StatusService {
     }
 
     try {
-      const versionList = (await this.httpService.get('https://nodejs.org/dist/index.json').toPromise()).data
+      const versionList = (await firstValueFrom(this.httpService.get('https://nodejs.org/dist/index.json'))).data
 
       // Get the newest v18 and v20 in the list
       const latest18 = versionList.filter((x: { version: string }) => x.version.startsWith('v18'))[0]

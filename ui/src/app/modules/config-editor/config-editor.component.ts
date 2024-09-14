@@ -11,6 +11,7 @@ import { TranslateService } from '@ngx-translate/core'
 import { parse } from 'json5'
 import { NgxEditorModel } from 'ngx-monaco-editor'
 import { ToastrService } from 'ngx-toastr'
+import { firstValueFrom } from 'rxjs'
 
 @Component({
   templateUrl: './config-editor.component.html',
@@ -205,7 +206,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
   async saveConfig(config: any) {
     try {
-      const data = await this.$api.post('/config-editor', config).toPromise()
+      const data = await firstValueFrom(this.$api.post('/config-editor', config))
       this.homebridgeConfig = JSON.stringify(data, null, 4)
       this.$modal.open(RestartComponent, {
         size: 'lg',

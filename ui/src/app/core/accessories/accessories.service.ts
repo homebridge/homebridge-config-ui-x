@@ -5,7 +5,7 @@ import { AccessoryInfoComponent } from '@/app/core/accessories/accessory-info/ac
 import { Injectable } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { ToastrService } from 'ngx-toastr'
-import { Subject } from 'rxjs'
+import { firstValueFrom, Subject } from 'rxjs'
 
 import { AuthService } from '../auth/auth.service'
 import { IoNamespace, WsService } from '../ws.service'
@@ -161,7 +161,7 @@ export class AccessoriesService {
    * Load the room layout
    */
   private async loadLayout() {
-    this.accessoryLayout = await this.io.request('get-layout', { user: this.$auth.user.username }).toPromise()
+    this.accessoryLayout = await firstValueFrom(this.io.request('get-layout', { user: this.$auth.user.username }))
 
     // build empty room layout
     this.rooms = this.accessoryLayout.map(room => ({

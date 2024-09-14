@@ -3,6 +3,7 @@ import { HomebridgeGoogleSmarthomeComponent } from '@/app/core/manage-plugins/cu
 import { Injectable } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 
+import { firstValueFrom } from 'rxjs'
 import { ApiService } from '../../api.service'
 
 @Injectable({
@@ -50,6 +51,6 @@ export class CustomPluginsService {
   }
 
   private async loadPluginConfig(pluginName: string) {
-    return this.$api.get(`/config-editor/plugin/${encodeURIComponent(pluginName)}`).toPromise()
+    return firstValueFrom(this.$api.get(`/config-editor/plugin/${encodeURIComponent(pluginName)}`))
   }
 }

@@ -4,6 +4,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core'
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
+import { firstValueFrom } from 'rxjs'
 
 @Component({
   templateUrl: './unpair-single-bridge.component.html',
@@ -27,8 +28,7 @@ export class UnpairSingleBridgeComponent implements OnInit, OnDestroy {
 
   async loadPairings() {
     try {
-      this.pairings = (await this.$api.get('/server/pairings').toPromise())
-
+      this.pairings = (await firstValueFrom(this.$api.get('/server/pairings')))
         .sort((a, b) => b._main ? 1 : -1)
     } catch (e) {
       this.toastr.error('Paired accessories could not be loaded.', this.translate.instant('toast.title_error'))
