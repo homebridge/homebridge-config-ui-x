@@ -20,6 +20,12 @@ a:hover {
   text-decoration: none !important;
 }
 
+h3 {
+  @media (max-width: 575px) {
+    font-size: 1.5rem;
+  }
+}
+
 .help-block {
   color: #9e9e9e !important;
   word-break: break-word;
