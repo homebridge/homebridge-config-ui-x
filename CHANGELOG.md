@@ -29,8 +29,10 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
   - the general `Homebridge Debug Mode` now only applies to the main Homebridge bridge
   - this feature requires Homebridge `v2.0.0-beta.21` or later
 - increase width of notifications to `100%` on mobile devices
-- updates to `pl` language file (#2181) (@mkz212)
 - fix some styles on smaller screeners
+- hide settings section description on collapse
+- updates to `pl` language file (#2181) (@mkz212)
+- updates to `th` language file (#2182) (@tomzt)
 
 ### Other Changes
 
