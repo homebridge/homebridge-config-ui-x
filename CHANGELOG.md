@@ -44,6 +44,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - `.toPromise()` is deprecated, change to `firstValueFrom()`
 - fix deprecated `.subscribe()` signature
 - HB2 plugins: also check for `>=2` from `engines.homebridge`
+- update dependencies - tackle dependabot alerts
 
 ### Homebridge Dependencies
 
