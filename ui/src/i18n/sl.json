@@ -58,7 +58,7 @@
   "backup.label_choose_backup_file_to_restore": "Izberite varnostno datoteko za obnovitev …",
   "backup.label_uploading": "Nalaganje …",
   "backup.message_backup_download_failed": "Prenos varnostne kopije ni uspel",
-  "backup.message_backup_exceeds_max_size": "Backup exceeds maximum restore file size of {{ maxBackupSizeText }}",
+  "backup.message_backup_exceeds_max_size": "Backup ({{ backupSize }}) exceeds maximum restore file size of {{ maxBackupSizeText }}",
   "backup.message_backup_help_one": "Prenesite rezervni arhiv celotnega okolja Homebridge. Tako boste ustvarili varnostno kopijo celotne vsebine vaše mape za shranjevanje Homebridge, ki jo lahko pozneje obnovite na kateri koli platformi, ki lahko poganja Homebridge UI.",
   "backup.message_backup_help_two": "Vtičniki, ki niso gostili npm, ali vtičniki, nameščeni neposredno iz GitHub-a, ne bodo varnostno kopirani ali obnovljeni.",
   "backup.message_backup_restored": "Varnostno kopiranje arhiva obnovljeno",

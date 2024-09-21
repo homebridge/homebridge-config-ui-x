@@ -58,7 +58,7 @@
   "backup.label_choose_backup_file_to_restore": "復元するバックアップファイルを選択してください…",
   "backup.label_uploading": "アップロード中…",
   "backup.message_backup_download_failed": "バックアップのダウンロードに失敗しました",
-  "backup.message_backup_exceeds_max_size": "Backup exceeds maximum restore file size of {{ maxBackupSizeText }}",
+  "backup.message_backup_exceeds_max_size": "Backup ({{ backupSize }}) exceeds maximum restore file size of {{ maxBackupSizeText }}",
   "backup.message_backup_help_one": "あなたのHomebridge環境全体のバックアップアーカイブをダウンロードしてください。これによってHomebridgeディレクトリの全コンテンツがバックアップされ、後でHomebridge UIを実行できる環境を任意のプラットフォームに復元することができるようになります。",
   "backup.message_backup_help_two": "npmでホストされていない、またはGitHubから直接インストールされたプラグインは、バックアップしたり復元したりすることができません。",
   "backup.message_backup_restored": "バックアップアーカイブを復元しました",
