@@ -14,6 +14,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix some styles on smaller screeners
 - hide settings section description on collapse
 - improve visibility of restart button in settings
+- allow translation for incorrect system date/time notification
 - updates to `pl` language file (#2181) (@mkz212)
 - updates to `th` language file (#2182) (@tomzt)
 

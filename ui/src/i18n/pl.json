@@ -313,6 +313,7 @@
   "settings.cache.desc": "Homebridge utrzymuje pamięć podręczną z informacjami o akcesoriach aby nie były one usuwane i ponownie dodawane do HomeKit za każdym razem gdy Homebridge uruchamia się ponownie. Czasami pamięć podręczna może stać się niezsynchronizowana z rzeczywistymi akcesoriami w Homebridge.",
   "settings.cache.title": "Akcesoria",
   "settings.changes.saved": "Your changes have been saved and require a restart to take effect.",
+  "settings.datetime.incorrect": "The date and time on your Homebridge server seem to be incorrect. This may cause unexpected issues. Click here for more information.",
   "settings.general.title_general": "Ogólne",
   "settings.mdns_advertiser": "Rozgłaszacz mDNS",
   "settings.mdns_advertiser_exp": "eksperymentalny",
