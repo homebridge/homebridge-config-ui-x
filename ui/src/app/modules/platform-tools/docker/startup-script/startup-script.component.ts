@@ -88,7 +88,7 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
     if (!['#!/bin/sh', '#!/bin/bash'].includes(this.startupScript.split('\n')[0].trim())) {
       this.$toastr.error(
         this.translate.instant('platform.docker.startup_script.toast_script_must_use_hashbang'),
-        this.translate.instant('platform.docker.startup_script.toast_title_script_error'),
+        this.translate.instant('toast.title_error'),
       )
       this.startupScript = `#!/bin/sh\n\n${this.startupScript}`
 

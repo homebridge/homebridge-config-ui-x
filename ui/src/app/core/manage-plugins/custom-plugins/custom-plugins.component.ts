@@ -1,5 +1,4 @@
 import { ApiService } from '@/app/core/api.service'
-import { NotificationService } from '@/app/core/notification.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { environment } from '@/environments/environment'
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core'
@@ -53,7 +52,6 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     private $api: ApiService,
     private $router: Router,
     private $ws: WsService,
-    private $notification: NotificationService,
   ) {}
 
   ngOnInit(): void {
@@ -225,14 +223,14 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
 
     // ensure the update contains an array
     if (!Array.isArray(pluginConfig)) {
-      this.$toastr.error('Plugin config must be an array.', 'Invalid Config Update')
+      this.$toastr.error('Plugin config must be an array.', this.$translate.instant('toast.title_error'))
       return this.requestResponse(event, { message: 'Plugin config must be an array.' }, false)
     }
 
     // validate each block in the array
     for (const block of pluginConfig) {
       if (typeof block !== 'object' || Array.isArray(block)) {
-        this.$toastr.error('Plugin config must be an array of objects.', 'Invalid Config Update')
+        this.$toastr.error('Plugin config must be an array of objects.', this.$translate.instant('toast.title_error'))
         return this.requestResponse(event, { message: 'Plugin config must be an array of objects.' }, false)
       }
     }
@@ -462,7 +460,6 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
         this.$translate.instant('toast.title_success'),
       )
     } catch (err) {
-      this.$notification.configUpdated.next(undefined) // highlight the restart icon in the navbar
       this.$toastr.error(
         this.$translate.instant('plugins.manage.child_bridge_restart_failed'),
         this.$translate.instant('toast.title_error'),

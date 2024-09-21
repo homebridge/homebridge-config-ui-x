@@ -4,9 +4,10 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoryInfoComponent } from '@/app/core/accessories/accessory-info/accessory-info.component'
 import { Injectable } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
-import { firstValueFrom, Subject } from 'rxjs'
 
+import { firstValueFrom, Subject } from 'rxjs'
 import { AuthService } from '../auth/auth.service'
 import { IoNamespace, WsService } from '../ws.service'
 
@@ -44,6 +45,7 @@ export class AccessoriesService {
     public $toastr: ToastrService,
     private $ws: WsService,
     public $auth: AuthService,
+    public $translate: TranslateService,
   ) {}
 
   /**
@@ -123,7 +125,7 @@ export class AccessoriesService {
     })
 
     this.io.socket.on('accessory-control-failure', (message: string) => {
-      this.$toastr.error(message)
+      this.$toastr.error(message, this.$translate.instant('toast.title_error'))
     })
 
     // when the system is ready for accessory control
@@ -153,7 +155,7 @@ export class AccessoriesService {
     // send update request to server
     this.io.request('save-layout', { user: this.$auth.user.username, layout: this.accessoryLayout }).subscribe({
       next: () => this.layoutSaved.next(undefined),
-      error: err => this.$toastr.error(err.message, 'Failed to save page layout'),
+      error: err => this.$toastr.error(err.message, this.$translate.instant('toast.title_error')),
     })
   }
 

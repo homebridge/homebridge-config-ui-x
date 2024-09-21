@@ -1,6 +1,5 @@
 /* global NodeJS */
 import { ApiService } from '@/app/core/api.service'
-import { NotificationService } from '@/app/core/notification.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { Component, OnDestroy, OnInit } from '@angular/core'
@@ -26,7 +25,6 @@ export class RestartComponent implements OnInit, OnDestroy {
     private $api: ApiService,
     private $ws: WsService,
     private $settings: SettingsService,
-    private $notification: NotificationService,
     public $toastr: ToastrService,
     private translate: TranslateService,
     private $router: Router,
@@ -34,8 +32,6 @@ export class RestartComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.io = this.$ws.connectToNamespace('status')
-    this.$notification.restartTriggered.next(undefined)
-
     this.io.connected.subscribe(() => {
       this.io.socket.emit('monitor-server-status')
       this.$settings.getAppSettings().catch(/* do nothing */)
@@ -70,9 +66,13 @@ export class RestartComponent implements OnInit, OnDestroy {
     }, 7000)
 
     this.checkTimeout = setTimeout(() => {
-      this.$toastr.warning(this.translate.instant('restart.toast_sever_restart_timeout'), this.translate.instant('toast.title_warning'), {
-        timeOut: 10000,
-      })
+      this.$toastr.warning(
+        this.translate.instant('restart.toast_sever_restart_timeout'),
+        this.translate.instant('toast.title_warning'),
+        {
+          timeOut: 10000,
+        },
+      )
       this.timeout = true
     }, 40000)
   }

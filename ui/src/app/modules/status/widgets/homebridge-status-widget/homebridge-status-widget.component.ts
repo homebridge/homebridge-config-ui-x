@@ -2,6 +2,7 @@ import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.s
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { Component, Input, OnInit } from '@angular/core'
+import { TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
@@ -25,6 +26,7 @@ export class HomebridgeStatusWidgetComponent implements OnInit {
     private $settings: SettingsService,
     public $toastr: ToastrService,
     public $plugin: ManagePluginsService,
+    private $translate: TranslateService,
   ) {}
 
   async ngOnInit() {
@@ -66,7 +68,7 @@ export class HomebridgeStatusWidgetComponent implements OnInit {
       this.homebridgePkg = response
       this.$settings.env.homebridgeVersion = response.installedVersion
     } catch (err) {
-      this.$toastr.error(err.message)
+      this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
     }
   }
 
@@ -76,7 +78,7 @@ export class HomebridgeStatusWidgetComponent implements OnInit {
       this.homebridgeUiPkg = response
       this.$settings.env.homebridgeUiVersion = response.installedVersion
     } catch (err) {
-      this.$toastr.error(err.message)
+      this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
     }
   }
 
@@ -86,7 +88,7 @@ export class HomebridgeStatusWidgetComponent implements OnInit {
       this.homebridgePluginStatus = outOfDatePlugins.filter((x: any) => x.name !== 'homebridge-config-ui-x')
       this.homebridgePluginStatusDone = true
     } catch (err) {
-      this.$toastr.error(err.message)
+      this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
     }
   }
 }

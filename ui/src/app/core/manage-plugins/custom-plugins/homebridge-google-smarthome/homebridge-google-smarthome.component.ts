@@ -1,6 +1,5 @@
 /* global NodeJS */
 import { ApiService } from '@/app/core/api.service'
-import { NotificationService } from '@/app/core/notification.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { Component, Input, OnDestroy, OnInit } from '@angular/core'
 import { JwtHelperService } from '@auth0/angular-jwt'
@@ -33,7 +32,6 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
     private $jwtHelper: JwtHelperService,
     private $api: ApiService,
     public $settings: SettingsService,
-    private $notification: NotificationService,
     private $toastr: ToastrService,
   ) {
     // listen for sign in events from the link account popup
@@ -141,7 +139,6 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
 
     await this.saveConfig()
     this.activeModal.close()
-    this.$notification.configUpdated.next(undefined)
   }
 
   close() {

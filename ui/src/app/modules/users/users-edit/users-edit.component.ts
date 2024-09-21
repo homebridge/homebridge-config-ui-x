@@ -63,8 +63,7 @@ export class UsersEditComponent implements OnInit {
       },
       error: (err) => {
         this.toastr.error(
-          err.error.message
-          || this.translate.instant('users.toast_failed_to_add_user'),
+          err.error.message || this.translate.instant('users.toast_failed_to_add_user'),
           this.translate.instant('toast.title_error'),
         )
       },

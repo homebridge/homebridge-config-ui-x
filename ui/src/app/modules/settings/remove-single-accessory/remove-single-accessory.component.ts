@@ -58,9 +58,10 @@ export class RemoveSingleAccessoryComponent implements OnInit {
       },
       error: () => {
         this.deleting = null
-        this.toastr.error(this.translate.instant(
-          'reset.toast_failed_to_delete_cached_accessory',
-        ), this.translate.instant('toast.title_error'))
+        this.toastr.error(
+          this.translate.instant('reset.toast_failed_to_delete_cached_accessory'),
+          this.translate.instant('toast.title_error'),
+        )
       },
     })
   }
