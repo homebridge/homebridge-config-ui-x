@@ -313,6 +313,7 @@
   "settings.cache.desc": "Homebridge maintains accessories in cache so they aren't removed and re-added to HomeKit each time Homebridge restarts. Sometimes this cache can become out of sync with the actual accessories in Homebridge.",
   "settings.cache.title": "Accessories",
   "settings.changes.saved": "Your changes have been saved and require a restart to take effect.",
+  "settings.datetime.incorrect": "The date and time on your Homebridge server seem to be incorrect. This may cause unexpected issues. Click here for more information.",
   "settings.general.title_general": "Allmänt",
   "settings.mdns_advertiser": "mDNS-annonsör",
   "settings.mdns_advertiser_exp": "experimental",
