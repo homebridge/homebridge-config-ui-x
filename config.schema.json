@@ -670,163 +670,133 @@
   },
   "layout": [
     {
-      "type": "flex",
-      "flex-flow": "row wrap",
+      "ref": "login",
+      "type": "fieldset",
+      "expandable": true,
+      "title": "Login Settings",
       "items": [
+        "auth",
         {
-          "type": "flex",
-          "flex-flow": "column",
+          "key": "sessionTimeout",
+          "type": "number"
+        },
+        {
+          "type": "help",
+          "helpvalue": "<label class='control-label'>Custom Login Wallpaper</label><br><p class='help-block'>Custom login wallpaper can be set by adding a 'ui-wallpaper.jpg' file to your Homebridge storage directory, or by providing the full path to the .jpg file below:</p>"
+        },
+        {
+          "key": "loginWallpaper",
+          "notitle": true
+        }
+      ]
+    },
+    {
+      "ref": "log",
+      "type": "fieldset",
+      "expandable": true,
+      "title": "Log Settings",
+      "items": [
+        "debug",
+        "log.method",
+        "log.path",
+        "log.maxSize",
+        "log.truncateSize",
+        "log.service",
+        "log.command",
+        "log.tail",
+        "log.systemd"
+      ]
+    },
+    {
+      "ref": "accessoryControl",
+      "type": "fieldset",
+      "expandable": true,
+      "title": "Accessory Control",
+      "items": [
+        "accessoryControl.debug",
+        {
+          "key": "accessoryControl.instanceBlacklist",
+          "type": "array",
+          "items": {
+            "key": "accessoryControl.instanceBlacklist[]",
+            "type": "string",
+            "pattern": "^([A-Fa-f0-9]{2}:){5}[A-Fa-f0-9]{2}$",
+            "title": "Instance Username"
+          }
+        }
+      ]
+    },
+    {
+      "ref": "hostname",
+      "type": "fieldset",
+      "expandable": true,
+      "title": "Hostname Settings",
+      "items": [
+        "proxyHost",
+        "host"
+      ]
+    },
+    {
+      "ref": "ssl",
+      "type": "fieldset",
+      "expandable": true,
+      "title": "SSL Settings",
+      "items": [
+        "ssl.key",
+        "ssl.cert",
+        "ssl.pfx",
+        "ssl.passphrase"
+      ]
+    },
+    {
+      "ref": "homebridge",
+      "type": "fieldset",
+      "expandable": true,
+      "title": "Homebridge Settings",
+      "items": [
+        "sudo",
+        "restart",
+        "homebridgePackagePath"
+      ]
+    },
+    {
+      "ref": "operatingSystem",
+      "type": "fieldset",
+      "expandable": true,
+      "title": "Operating System Specific Settings",
+      "items": [
+        "disableServerMetricsMonitoring",
+        {
+          "ref": "linux",
+          "type": "fieldset",
+          "expandable": true,
+          "title": "Linux Settings",
           "items": [
-            "theme",
-            "lang"
+            "linux.shutdown",
+            "linux.restart",
+            "temp"
           ]
         },
         {
-          "type": "flex",
-          "flex-flow": "column",
+          "ref": "container",
+          "type": "fieldset",
+          "expandable": true,
+          "title": "Container Settings",
           "items": [
-            "port",
-            "tempUnits"
+            "standalone",
+            "noFork"
           ]
         }
       ]
     },
     {
-      "ref": "advanced",
+      "ref": "scheduledBackup",
       "type": "fieldset",
       "expandable": true,
-      "title": "Advanced",
+      "title": "Scheduled Backup Settings",
       "items": [
-        {
-          "ref": "login",
-          "type": "fieldset",
-          "expandable": true,
-          "title": "Login Settings",
-          "items": [
-            "auth",
-            {
-              "key": "sessionTimeout",
-              "type": "number"
-            },
-            {
-              "type": "help",
-              "helpvalue": "<label class='control-label'>Custom Login Wallpaper</label><br><p class='help-block'>Custom login wallpaper can be set by adding a 'ui-wallpaper.jpg' file to your Homebridge storage directory, or by providing the full path to the .jpg file below:</p>"
-            },
-            {
-              "key": "loginWallpaper",
-              "notitle": true
-            }
-          ]
-        },
-        {
-          "ref": "log",
-          "type": "fieldset",
-          "expandable": true,
-          "title": "Log Settings",
-          "items": [
-            "debug",
-            "log.method",
-            "log.path",
-            "log.maxSize",
-            "log.truncateSize",
-            "log.service",
-            "log.command",
-            "log.tail",
-            "log.systemd"
-          ]
-        },
-        {
-          "ref": "accessoryControl",
-          "type": "fieldset",
-          "expandable": true,
-          "title": "Accessory Control",
-          "items": [
-            "accessoryControl.debug",
-            {
-              "key": "accessoryControl.instanceBlacklist",
-              "type": "array",
-              "items": {
-                "key": "accessoryControl.instanceBlacklist[]",
-                "type": "string",
-                "pattern": "^([A-Fa-f0-9]{2}:){5}[A-Fa-f0-9]{2}$",
-                "title": "Instance Username"
-              }
-            }
-          ]
-        },
-        {
-          "ref": "hostname",
-          "type": "fieldset",
-          "expandable": true,
-          "title": "Hostname Settings",
-          "items": [
-            "proxyHost",
-            "host"
-          ]
-        },
-        {
-          "ref": "ssl",
-          "type": "fieldset",
-          "expandable": true,
-          "title": "SSL Settings",
-          "items": [
-            "ssl.key",
-            "ssl.cert",
-            "ssl.pfx",
-            "ssl.passphrase"
-          ]
-        },
-        {
-          "ref": "homebridge",
-          "type": "fieldset",
-          "expandable": true,
-          "title": "Homebridge Settings",
-          "items": [
-            "sudo",
-            "restart",
-            "homebridgePackagePath"
-          ]
-        },
-        {
-          "ref": "operatingSystem",
-          "type": "fieldset",
-          "expandable": true,
-          "title": "Operating System Specific Settings",
-          "items": [
-            "disableServerMetricsMonitoring",
-            {
-              "ref": "linux",
-              "type": "fieldset",
-              "expandable": true,
-              "title": "Linux Settings",
-              "items": [
-                "linux.shutdown",
-                "linux.restart",
-                "temp"
-              ]
-            },
-            {
-              "ref": "container",
-              "type": "fieldset",
-              "expandable": true,
-              "title": "Container Settings",
-              "items": [
-                "standalone",
-                "noFork"
-              ]
-            }
-          ]
-        },
-        {
-          "ref": "scheduledBackup",
-          "type": "fieldset",
-          "expandable": true,
-          "title": "Scheduled Backup Settings",
-          "items": [
-            "scheduledBackupDisable",
-            "scheduledBackupPath"
-          ]
-        }
+        "scheduledBackupDisable",
+        "scheduledBackupPath"
       ]
     }
   ]

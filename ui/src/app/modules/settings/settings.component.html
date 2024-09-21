@@ -1,4 +1,4 @@
- <h3 class="primary-text m-0">
+<h3 class="primary-text m-0">
   {{ 'menu.settings.title' | translate }}
 </h3>
 
@@ -12,15 +12,6 @@
     </h5>
   </div>
   <ul class="list-group list-group-box mt-2 mx-0" *ngIf="showFields.general" id="fieldsGeneral">
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pr-2">
-        {{ 'menu.label_settings_ui' | translate }}
-      </span>
-      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 50px;" (click)="openUiSettings()"
-        [attr.aria-label]="'menu.label_settings_ui' | translate">
-        <i class="fas fa-fw fa-sliders"></i>
-      </button>
-    </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
         {{ 'menu.config_json_editor' | translate }}
@@ -56,8 +47,110 @@
         <i class="fas fa-fw fa-chevron-right"></i>
       </a>
     </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span class="pr-2">
+        {{ 'menu.label_settings_advanced' | translate }}
+      </span>
+      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 50px;" (click)="openUiSettings()"
+        [attr.aria-label]="'menu.label_settings_advanced' | translate">
+        <i class="fas fa-fw fa-sliders"></i>
+      </button>
+    </li>
   </ul>
 </div>
+
+ <!-- DISPLAY SETTINGS - ALL USERS -->
+ <div class="my-4">
+   <div role="button" tabindex="0" [attr.aria-expanded]="showFields.display ? 'true' : 'false'"
+        [attr.aria-controls]="'fieldsDisplay'" (click)="toggleSection('display')" class="mt-3 hover-pointer">
+     <h5 class="primary-text">
+       <i class="fa fa-fw" [ngClass]="showFields.display ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+       {{ 'settings.general.title_display' | translate }}
+     </h5>
+   </div>
+   <ul class="list-group list-group-box mt-2 mx-0" *ngIf="showFields.display" id="fieldsDisplay">
+     <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+       <span>{{ 'settings.display.lang' | translate }}</span>
+       <div class="my-3 my-md-0 pl-0 pl-md-5 w-auto">
+         <select class="custom-select resp-select" [ngModel]="$settings.env.lang" (ngModelChange)="saveUiSettingChange('lang', $event)">
+           <option value="auto">Automatic (Use Browser Settings)</option>
+           <option value="bg">Bulgarian (bg)</option>
+           <option value="ca">Catalan (ca)</option>
+           <option value="zh-CN">Chinese - Simplified (zh-CN)</option>
+           <option value="zh-TW">Chinese - Traditional (zh-TW)</option>
+           <option value="cs">Czech (cs)</option>
+           <option value="nl">Dutch (nl)</option>
+           <option value="en">English (en)</option>
+           <option value="fr">French (fr)</option>
+           <option value="de">German (de)</option>
+           <option value="he">Hebrew (he)</option>
+           <option value="hu">Hungarian (hu)</option>
+           <option value="id">Indonesian (id)</option>
+           <option value="it">Italian (it)</option>
+           <option value="ja">Japanese (ja)</option>
+           <option value="ko">Korean (ko)</option>
+           <option value="mk">Macedonian (mk)</option>
+           <option value="no">Norwegian (no)</option>
+           <option value="pl">Polish (pl)</option>
+           <option value="pt-BR">Portuguese (Brazil)</option>
+           <option value="pt">Portuguese (Portugal)</option>
+           <option value="ru">Russian (ru)</option>
+           <option value="sl">Slovenian (sl)</option>
+           <option value="es">Spanish (es)</option>
+           <option value="sv">Swedish (sv)</option>
+           <option value="th">Thai (th)</option>
+           <option value="tr">Turkish (tr)</option>
+           <option value="uk">Ukrainian (uk)</option>
+         </select>
+       </div>
+     </li>
+     <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+       <span>{{ 'settings.display.theme' | translate }}</span>
+       <div class="my-3 my-md-0 pl-0 pl-md-5 w-auto">
+         <select class="custom-select resp-select" [ngModel]="$settings.theme" (ngModelChange)="saveUiSettingChange('theme', $event)">
+           <option value="auto">Default (Auto Dark Mode)</option>
+           <option value="red">Red</option>
+           <option value="pink">Pink</option>
+           <option value="purple">Purple</option>
+           <option value="deep-purple">Purple - Deep</option>
+           <option value="indigo">Indigo</option>
+           <option value="blue">Blue</option>
+           <option value="navi-blue">Blue - Navi</option>
+           <option value="blue-grey">Blue Grey</option>
+           <option value="cyan">Cyan</option>
+           <option value="green">Green</option>
+           <option value="teal">Teal</option>
+           <option value="orange">Orange</option>
+           <option value="amber">Amber</option>
+           <option value="grey">Grey</option>
+           <option value="brown">Brown</option>
+           <option value="dark-mode">Dark Mode - HomeKit Orange</option>
+           <option value="dark-mode-red">Dark Mode - Red</option>
+           <option value="dark-mode-pink">Dark Mode - Pink</option>
+           <option value="dark-mode-purple">Dark Mode - Purple</option>
+           <option value="dark-mode-indigo">Dark Mode - Indigo</option>
+           <option value="dark-mode-blue">Dark Mode - Blue</option>
+           <option value="dark-mode-blue-grey">Dark Mode - Blue Grey</option>
+           <option value="dark-mode-green">Dark Mode - Green</option>
+           <option value="dark-mode-grey">Dark Mode - Grey</option>
+           <option value="dark-mode-brown">Dark Mode - Brown</option>
+           <option value="dark-mode-teal">Dark Mode - Teal</option>
+           <option value="dark-mode-cyan">Dark Mode - Cyan</option>
+         </select>
+       </div>
+     </li>
+
+     <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+       <span>{{ 'settings.display.temp_units' | translate }}</span>
+       <div class="my-3 my-md-0 pl-0 pl-md-5 w-auto">
+         <select class="custom-select resp-select" [ngModel]="$settings.env.temperatureUnits" (ngModelChange)="saveUiSettingChange('tempUnits', $event)">
+           <option value="c">{{ 'settings.display.temp_units.c' | translate }}</option>
+           <option value="f">{{ 'settings.display.temp_units.f' | translate }}</option>
+         </select>
+       </div>
+     </li>
+   </ul>
+ </div>
 
 <!-- STARTUP/ENV OPTIONS - SERVICE MODE USERS -->
 <form class="my-4" novalidate [formGroup]="serviceForm" *ngIf="$settings.env.serviceMode">
@@ -103,8 +196,8 @@
         <span class="text-monospace">DEBUG</span><br>
         <small class="grey-text pr-2">{{ 'settings.service.debug_tooltip' | translate }}</small>
       </span>
-      <div class="my-3 my-md-0 pl-0 pl-md-5 w-100" style="max-width:500px!important;">
-        <input class="form-control custom-input form-control-sm" formControlName="ENV_DEBUG" type="text"
+      <div class="my-3 my-md-0 pl-0 pl-md-5 w-auto">
+        <input class="form-control custom-input form-control-sm resp-input" formControlName="ENV_DEBUG" type="text"
           placeholder="HAP-NodeJS:Advertiser,HAP-NodeJS:Service">
       </div>
     </li>
@@ -113,8 +206,8 @@
         <span class="text-monospace">NODE_OPTIONS</span><br>
         <small class="grey-text pr-2">{{ 'settings.service.node_tooltip' | translate }}</small>
       </span>
-      <div class="my-3 my-md-0 pl-0 pl-md-5 w-100" style="max-width:500px!important;">
-        <input class="form-control custom-input form-control-sm" formControlName="ENV_NODE_OPTIONS" type="text"
+      <div class="my-3 my-md-0 pl-0 pl-md-5 w-auto">
+        <input class="form-control custom-input form-control-sm resp-input" formControlName="ENV_NODE_OPTIONS" type="text"
           placeholder="--max-old-space-size=512 --max-http-header-size=8192">
       </div>
     </li>
@@ -129,7 +222,7 @@
 </form>
 
 <!-- NETWORK SETTINGS - ALL USERS -->
-<div class="my-4">
+<form class="my-4" novalidate [formGroup]="uiSettingsForm">
   <div role="button" tabindex="0" [attr.aria-expanded]="showFields.network ? 'true' : 'false'"
     [attr.aria-controls]="'fieldsNetwork'" (click)="toggleSection('network')" class="mt-3 hover-pointer">
     <h5 class="primary-text">
@@ -171,7 +264,30 @@
         </select>
       </div>
     </li>
-    <li class="list-group-item d-flex flex-column align-items-center" *ngIf="hasChangedMdns || hasChangedBridgeNetworkAdapters">
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.network.port_hb' | translate }}<br>
+        <small class="grey-text pr-2">{{ 'settings.network.port_hb_desc' | translate }}</small>
+      </span>
+      <div class="my-3 my-md-0 pl-0 pl-md-5 w-auto">
+        <input class="form-control custom-input form-control-sm resp-input" type="number" min="1025" max="65533"
+          [formControl]="hbPortFormControl" [attr.aria-label]="('settings.network.port_ui' | translate)"
+          [ngClass]="{ 'is-invalid': isInvalidHbPort }">
+      </div>
+    </li>
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.network.port_ui' | translate }}<br>
+        <small class="grey-text pr-2">{{ 'settings.network.port_ui_desc' | translate }}</small>
+      </span>
+      <div class="my-3 my-md-0 pl-0 pl-md-5 w-auto">
+        <input class="form-control custom-input form-control-sm resp-input" type="number" min="1025" max="65533" placeholder="8581"
+          formControlName="port" [attr.aria-label]="('settings.network.port_ui' | translate)"
+          [ngClass]="{ 'is-invalid': isInvalidHbUiPort }">
+      </div>
+    </li>
+    <li class="list-group-item d-flex flex-column align-items-center"
+      *ngIf="hasChangedHbPort || hasChangedUiSettings || hasChangedMdns || hasChangedBridgeNetworkAdapters">
       <small class="grey-text my-2">{{ 'settings.changes.saved' | translate }}</small>
       <button class="btn btn-primary waves-effect my-2" routerLink="/restart"
         [attr.aria-label]="'menu.tooltip_restart' | translate">
@@ -179,7 +295,7 @@
       </button>
     </li>
   </ul>
-</div>
+</form>
 
 <!-- CACHE SETTINGS - SERVICE MODE USERS ONLY -->
 <div *ngIf="$settings.env.serviceMode" class="my-4">
