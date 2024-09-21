@@ -137,10 +137,14 @@ export class SettingsService {
     const diff = serverTime.diff(dayjs(), 'hour')
     this.serverTimeOffset = diff * 60 * 60
     if (diff >= 8 || diff <= -8) {
-      const msg = 'The date and time on your Homebridge server seems to be incorrect. This may cause unexpected issues.'
-      const toastMsg = `${msg} ` + '<br><br><u>Click here for more information.</u>'
-      console.error(msg, 'Server time offset of', this.serverTimeOffset, 'seconds applied.')
-      const toast = this.$toastr.warning(toastMsg, null, { timeOut: 20000, enableHtml: true, tapToDismiss: false })
+      const toast = this.$toastr.warning(
+        this.$translate.instant('settings.datetime.incorrect'),
+        this.$translate.instant('toast.title_warning'),
+        {
+          timeOut: 20000,
+          tapToDismiss: false,
+        },
+      )
       toast.onTap.subscribe(() => {
         window.open('https://homebridge.io/w/JqTFs', '_blank')
       })

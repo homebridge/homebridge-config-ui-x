@@ -10,6 +10,7 @@ import { UninstallPluginComponent } from '@/app/core/manage-plugins/uninstall-pl
 import { SettingsService } from '@/app/core/settings.service'
 import { Injectable } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 import { lt, minVersion } from 'semver'
@@ -24,6 +25,7 @@ export class ManagePluginsService {
     private $settings: SettingsService,
     private $api: ApiService,
     private $toastr: ToastrService,
+    private $translate: TranslateService,
   ) {}
 
   installPlugin(pluginName: string, targetVersion = 'latest') {
@@ -126,7 +128,7 @@ export class ManagePluginsService {
       try {
         schema = await this.loadConfigSchema(plugin.name)
       } catch (e) {
-        this.$toastr.error('Failed to load plugins config schema.')
+        this.$toastr.error('Failed to load plugins config schema.', this.$translate.instant('toast.title_error'))
         return
       }
     }
@@ -152,7 +154,7 @@ export class ManagePluginsService {
       try {
         schema = await this.loadConfigSchema(plugin.name)
       } catch (e) {
-        this.$toastr.error('Failed to load plugins config schema.')
+        this.$toastr.error('Failed to load plugins config schema.', this.$translate.instant('toast.title_error'))
         return
       }
     }
@@ -217,7 +219,7 @@ export class ManagePluginsService {
         isValidHb = false
       }
     } catch (e) {
-      this.$toastr.error(`Failed to check compatibility: ${e.message}`)
+      this.$toastr.error(`Failed to check compatibility: ${e.message}`, this.$translate.instant('toast.title_error'))
       return false
     }
 

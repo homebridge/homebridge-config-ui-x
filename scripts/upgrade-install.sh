@@ -23,31 +23,32 @@ else
 fi
 
 tmp_dir=$(mktemp -d -t homebridge-ui-update.XXXXXXX)
-if [ "$?" != "0" ]; then
+if ! [ "$tmp_dir" ]; then
   echo "Failed to create temporary directory."
   exit 1
 fi
 
 echo "Downloading SHASUMS256.txt..."
-curl -fsSL# -o "$tmp_dir/SHASUMS256.txt" \
-   https://github.com/homebridge/homebridge-config-ui-x/releases/download/"${GITHUB_RELEASE_NAME}"/SHASUMS256.txt
-if [ "$?" != "0" ]; then
+if ! curl -fsSL# -o "$tmp_dir/SHASUMS256.txt" \
+   https://github.com/homebridge/homebridge-config-ui-x/releases/download/"${GITHUB_RELEASE_NAME}"/SHASUMS256.txt; then
   echo "Failed to download SHASUMS256.txt"
   exit 1
 fi
 
 echo "Downloading homebridge-config-ui-x-${TARGET_VERSION}.tar.gz..."
-curl -fL# -o "$tmp_dir/homebridge-config-ui-x-${TARGET_VERSION}.tar.gz" \
-  https://github.com/homebridge/homebridge-config-ui-x/releases/download/"${GITHUB_RELEASE_NAME}"/homebridge-config-ui-x-"${TARGET_VERSION}".tar.gz
-if [ "$?" != "0" ]; then
+if ! curl -fL# -o "$tmp_dir/homebridge-config-ui-x-${TARGET_VERSION}.tar.gz" \
+  https://github.com/homebridge/homebridge-config-ui-x/releases/download/"${GITHUB_RELEASE_NAME}"/homebridge-config-ui-x-"${TARGET_VERSION}".tar.gz; then
   echo "Failed to download homebridge-config-ui-x-${TARGET_VERSION}.tar.gz"
   exit 1
 fi
 
 echo "Verifying download..."
-cd "$tmp_dir"
-$SHASUM_COMMAND -c SHASUMS256.txt
-if [ "$?" != "0" ]; then
+if ! cd "$tmp_dir"; then
+  echo "Failed to change directory to $tmp_dir"
+  exit 1
+fi
+
+if ! $SHASUM_COMMAND -c SHASUMS256.txt; then
   echo "Download failed integrity check."
   rm -rf "$tmp_dir"
   exit 1
@@ -65,8 +66,7 @@ fi
 echo ""
 
 echo "Extracting..."
-tar --no-same-owner -xvmf "$tmp_dir/homebridge-config-ui-x-${TARGET_VERSION}.tar.gz" -C "$TARGET_PATH"
-if [ "$?" != "0" ]; then
+if ! tar --no-same-owner -xvmf "$tmp_dir/homebridge-config-ui-x-${TARGET_VERSION}.tar.gz" -C "$TARGET_PATH"; then
   echo "Failed to extract."
   mv "$TARGET_PATH/lib/node_modules/.homebridge-config-ui-x.bak" "$TARGET_PATH/lib/node_modules/homebridge-config-ui-x"
   rm -rf "$tmp_dir"
@@ -75,9 +75,13 @@ fi
 echo ""
 
 echo "Running post-install scripts..."
-cd "$TARGET_PATH/lib/node_modules/homebridge-config-ui-x"
-npm rebuild --foreground-scripts --unsafe-perm @homebridge/node-pty-prebuilt-multiarch
-if [ "$?" != "0" ]; then
+
+if ! cd "$TARGET_PATH/lib/node_modules/homebridge-config-ui-x"; then
+  echo "Failed to change directory to $TARGET_PATH/lib/node_modules/homebridge-config-ui-x"
+  exit 1
+fi
+
+if ! npm rebuild --foreground-scripts --unsafe-perm @homebridge/node-pty-prebuilt-multiarch; then
   echo "Failed to rebuild."
   mv "$TARGET_PATH/lib/node_modules/.homebridge-config-ui-x.bak" "$TARGET_PATH/lib/node_modules/homebridge-config-ui-x"
   rm -rf "$tmp_dir"

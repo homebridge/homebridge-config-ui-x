@@ -1,6 +1,5 @@
 import { ApiService } from '@/app/core/api.service'
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
-import { NotificationService } from '@/app/core/notification.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { BackupComponent } from '@/app/modules/settings/backup/backup.component'
 import { RemoveAllAccessoriesComponent } from '@/app/modules/settings/remove-all-accessories/remove-all-accessories.component'
@@ -12,6 +11,7 @@ import { UnpairSingleBridgeComponent } from '@/app/modules/settings/unpair-singl
 import { Component, OnInit } from '@angular/core'
 import { FormControl, FormGroup, UntypedFormControl } from '@angular/forms'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
@@ -20,17 +20,30 @@ import { debounceTime } from 'rxjs/operators'
   templateUrl: './settings.component.html',
 })
 export class SettingsComponent implements OnInit {
+  public originalServiceForm = {
+    HOMEBRIDGE_DEBUG: false,
+    HOMEBRIDGE_KEEP_ORPHANS: false,
+    HOMEBRIDGE_INSECURE: true,
+    ENV_DEBUG: '',
+    ENV_NODE_OPTIONS: '',
+  }
+
+  public originalMdnsSetting = ''
+  public originalBridgeNetworkAdapters: string[] = []
+
+  public hasChangedService = false
+  public hasChangedMdns = false
+  public hasChangedBridgeNetworkAdapters = false
+
   public serviceForm = new FormGroup({
     HOMEBRIDGE_DEBUG: new FormControl(false),
     HOMEBRIDGE_KEEP_ORPHANS: new FormControl(false),
     HOMEBRIDGE_INSECURE: new FormControl(true),
-    ENV_DEBUG: new FormControl(null),
-    ENV_NODE_OPTIONS: new FormControl(null),
+    ENV_DEBUG: new FormControl(''),
+    ENV_NODE_OPTIONS: new FormControl(''),
   })
 
   public legacyMdnsFormControl = new UntypedFormControl(false)
-  public saved = false
-
   public showAvahiMdnsOption = false
   public showResolvedMdnsOption = false
   public availableNetworkAdapters: Record<string, any> = []
@@ -47,10 +60,10 @@ export class SettingsComponent implements OnInit {
   constructor(
     public $settings: SettingsService,
     private $api: ApiService,
-    private $notification: NotificationService,
     public $toastr: ToastrService,
     private $modal: NgbModal,
     public $plugin: ManagePluginsService,
+    private $translate: TranslateService,
   ) {}
 
   ngOnInit() {
@@ -105,19 +118,26 @@ export class SettingsComponent implements OnInit {
   initServiceModeForm() {
     this.$api.get('/platform-tools/hb-service/homebridge-startup-settings').subscribe({
       next: (data) => {
+        Object.keys(data).forEach((key) => {
+          this.originalServiceForm[key] = data[key]
+        })
         this.serviceForm.patchValue(data)
         this.serviceForm.valueChanges.pipe(debounceTime(500)).subscribe(this.saveServiceModeSettings.bind(this))
       },
       error: (err) => {
-        this.$toastr.error(err.message, 'Failed to load startup settings')
+        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
       },
     })
   }
 
   saveServiceModeSettings(data = this.serviceForm.value) {
-    this.$api.put('/platform-tools/hb-service/homebridge-startup-settings', data).subscribe(() => {
-      this.saved = true
-      this.$notification.configUpdated.next(undefined)
+    this.$api.put('/platform-tools/hb-service/homebridge-startup-settings', data).subscribe({
+      next: () => {
+        this.hasChangedService = JSON.stringify(data) !== JSON.stringify(this.originalServiceForm)
+      },
+      error: (err) => {
+        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
+      },
     })
   }
 
@@ -174,6 +194,8 @@ export class SettingsComponent implements OnInit {
       this.availableNetworkAdapters = system
       this.buildBridgeNetworkAdapterList(adapters)
       this.legacyMdnsFormControl.patchValue(mdnsAdvertiser.advertiser)
+      this.originalMdnsSetting = mdnsAdvertiser.advertiser
+      this.originalBridgeNetworkAdapters = this.bridgeNetworkAdapters.map((x: any) => x.iface)
       this.legacyMdnsFormControl.valueChanges.subscribe((advertiser: string) => {
         this.setHomebridgeMdnsSetting(advertiser)
       })
@@ -183,11 +205,10 @@ export class SettingsComponent implements OnInit {
   async setHomebridgeMdnsSetting(advertiser: string) {
     this.$api.put('/server/mdns-advertiser', { advertiser }).subscribe({
       next: () => {
-        this.saved = true
-        this.$notification.configUpdated.next(undefined)
+        this.hasChangedMdns = advertiser !== this.originalMdnsSetting
       },
       error: (err) => {
-        this.$toastr.error(err.message, 'Failed to set mdns advertiser.')
+        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
       },
     })
   }
@@ -195,11 +216,10 @@ export class SettingsComponent implements OnInit {
   async setNetworkInterfaces(adapters: string[]) {
     this.$api.put('/server/network-interfaces/bridge', { adapters }).subscribe({
       next: () => {
-        this.saved = true
-        this.$notification.configUpdated.next(undefined)
+        this.hasChangedBridgeNetworkAdapters = this.originalBridgeNetworkAdapters.join(',') !== adapters.join(',')
       },
       error: (err) => {
-        this.$toastr.error(err.message, 'Failed to set network adapters.')
+        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
       },
     })
   }

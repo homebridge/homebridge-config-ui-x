@@ -650,7 +650,7 @@ export class PluginsService {
    * @param client
    */
   public async doPluginBundleUpdate(pluginAction: PluginActionDto, client: EventEmitter) {
-    const pluginUpgradeInstallScriptPath = join(process.env.UIX_BASE_PATH, 'plugin-upgrade-install.sh')
+    const pluginUpgradeInstallScriptPath = join(process.env.UIX_BASE_PATH, 'scripts/upgrade-install-plugin.sh')
     await this.runNpmCommand(
       [pluginUpgradeInstallScriptPath, pluginAction.name, pluginAction.version, this.configService.customPluginPath],
       this.configService.storagePath,
@@ -702,7 +702,7 @@ export class PluginsService {
    */
   public async doUiBundleUpdate(pluginAction: PluginActionDto, client: EventEmitter, githubReleaseName: string) {
     const prefix = dirname(dirname(dirname(process.env.UIX_BASE_PATH)))
-    const upgradeInstallScriptPath = join(process.env.UIX_BASE_PATH, 'upgrade-install.sh')
+    const upgradeInstallScriptPath = join(process.env.UIX_BASE_PATH, 'scripts/upgrade-install.sh')
     await this.runNpmCommand(
       this.configService.ui.sudo ? ['npm', 'run', 'upgrade-install', '--', pluginAction.version, prefix, githubReleaseName] : [upgradeInstallScriptPath, pluginAction.version, prefix, githubReleaseName],
       process.env.UIX_BASE_PATH,
@@ -983,7 +983,7 @@ export class PluginsService {
     } else {
       try {
         await new Promise((res, rej) => {
-          const child = fork(resolve(process.env.UIX_BASE_PATH, 'extract-plugin-alias.js'), {
+          const child = fork(resolve(process.env.UIX_BASE_PATH, 'scripts/extract-plugin-alias.js'), {
             env: {
               UIX_EXTRACT_PLUGIN_PATH: resolve(plugin.installPath, plugin.name),
             },

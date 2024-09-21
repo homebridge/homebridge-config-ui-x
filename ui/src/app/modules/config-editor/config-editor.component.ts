@@ -142,7 +142,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
             this.saveInProgress = false
             this.$toastr.error(
               this.translate.instant('config.toast_config_invalid_json'),
-              this.translate.instant('config.toast_title_config_syntax_error'),
+              this.translate.instant('toast.title_error'),
             )
             return
           }
@@ -162,22 +162,22 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       if (typeof (config.bridge) !== 'object') {
         this.$toastr.error(
           this.translate.instant('config.toast_config_bridge_missing'),
-          this.translate.instant('config.toast_title_config_error'),
+          this.translate.instant('toast.title_error'),
         )
       } else if (!/^(?:[0-9A-F]{2}:){5}[0-9A-F]{2}$/i.test(config.bridge.username)) {
         this.$toastr.error(
           this.translate.instant('config.toast_config_username_format_error'),
-          this.translate.instant('config.toast_title_config_error'),
+          this.translate.instant('toast.title_error'),
         )
       } else if (config.accessories && !Array.isArray(config.accessories)) {
         this.$toastr.error(
           this.translate.instant('config.toast_config_accessory_must_be_array'),
-          this.translate.instant('config.toast_title_config_error'),
+          this.translate.instant('toast.title_error'),
         )
       } else if (config.platforms && !Array.isArray(config.platforms)) {
         this.$toastr.error(
           this.translate.instant('config.toast_config_platform_must_be_array'),
-          this.translate.instant('config.toast_title_config_error'),
+          this.translate.instant('toast.title_error'),
         )
       } else if (config.platforms && Array.isArray(config.platforms) && !this.validateSection(config.platforms, 'platform')) {
         // handled in validator function
@@ -198,7 +198,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     } catch (e) {
       this.$toastr.error(
         this.translate.instant('config.toast_config_invalid_json'),
-        this.translate.instant('config.toast_title_config_syntax_error'),
+        this.translate.instant('toast.title_error'),
       )
     }
     this.saveInProgress = false
@@ -301,21 +301,21 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     for (const section of sections) {
       // check section is an object
       if (typeof section !== 'object' || Array.isArray(section)) {
-        this.$toastr.error(`All ${type} blocks must be objects.`)
+        this.$toastr.error(`All ${type} blocks must be objects.`, this.translate.instant('toast.title_error'))
         this.highlightOffendingArrayItem(section)
         return false
       }
 
       // check section contains platform/accessory key
       if (!section[type]) {
-        this.$toastr.error(`All ${type} blocks must contain the "${type}" attribute.`)
+        this.$toastr.error(`All ${type} blocks must contain the "${type}" attribute.`, this.translate.instant('toast.title_error'))
         this.highlightOffendingArrayItem(section)
         return false
       }
 
       // check section platform/accessory key is a string
       if (typeof section[type] !== 'string') {
-        this.$toastr.error(`The "${type}" attribute must be a string.`)
+        this.$toastr.error(`The "${type}" attribute must be a string.`, this.translate.instant('toast.title_error'))
         this.highlightOffendingArrayItem(section)
         return false
       }
@@ -328,7 +328,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   validatePlugins(plugins: any[], key: string) {
     for (const item of plugins) {
       if (typeof item !== 'string') {
-        this.$toastr.error(`Each item in the ${key} array must be a string.`)
+        this.$toastr.error(`Each item in the ${key} array must be a string.`, this.translate.instant('toast.title_error'))
         return false
       }
     }

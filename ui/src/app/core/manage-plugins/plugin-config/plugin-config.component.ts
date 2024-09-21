@@ -1,7 +1,6 @@
 import { ApiService } from '@/app/core/api.service'
 import { DonateComponent } from '@/app/core/manage-plugins/donate/donate.component'
 import { PluginLogsComponent } from '@/app/core/manage-plugins/plugin-logs/plugin-logs.component'
-import { NotificationService } from '@/app/core/notification.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { Component, Input, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
@@ -40,7 +39,6 @@ export class PluginConfigComponent implements OnInit {
     private $api: ApiService,
     private $modal: NgbModal,
     private $settings: SettingsService,
-    private $notification: NotificationService,
     private $router: Router,
     private $toastr: ToastrService,
     private translate: TranslateService,
@@ -96,7 +94,7 @@ export class PluginConfigComponent implements OnInit {
       this.justSavedAndExited = true
     } catch (err) {
       this.$toastr.error(
-        `${this.translate.instant('config.toast_failed_to_save_config')}: ${err.error?.message}`,
+        this.translate.instant('config.toast_failed_to_save_config'),
         this.translate.instant('toast.title_error'),
       )
     } finally {
@@ -161,7 +159,6 @@ export class PluginConfigComponent implements OnInit {
         this.translate.instant('toast.title_success'),
       )
     } catch (err) {
-      this.$notification.configUpdated.next(undefined) // highlight the restart icon in the navbar
       this.$toastr.error(
         this.translate.instant('plugins.manage.child_bridge_restart_failed'),
         this.translate.instant('toast.title_error'),

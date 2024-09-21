@@ -1,12 +1,6 @@
-<div class="d-flex justify-content-between">
-  <h3 class="primary-text m-0">
-    {{ 'menu.settings.title' | translate }}
-  </h3>
-  <button class="btn btn-primary waves-effect m-0" *ngIf="saved" routerLink="/restart"
-    [attr.aria-label]="'platform.docker.settings.button_restart_required' | translate">
-    {{ 'platform.docker.settings.button_restart_required' | translate }}
-  </button>
-</div>
+ <h3 class="primary-text m-0">
+  {{ 'menu.settings.title' | translate }}
+</h3>
 
 <!-- GENERAL SETTINGS - ALL USERS -->
 <div class="my-4">
@@ -186,6 +180,13 @@
           placeholder="--max-old-space-size=512 --max-http-header-size=8192">
       </div>
     </li>
+    <li class="list-group-item d-flex flex-column align-items-center" *ngIf="hasChangedService">
+      <small class="grey-text my-2">{{ 'settings.changes.saved' | translate }}</small>
+      <button class="btn btn-primary waves-effect my-2" routerLink="/restart"
+        [attr.aria-label]="'menu.tooltip_restart' | translate">
+        {{ 'menu.tooltip_restart' | translate }}
+      </button>
+    </li>
   </ul>
 </form>
 
@@ -231,6 +232,13 @@
           <option value="resolved" *ngIf="showResolvedMdnsOption">systemd-resolved ({{ 'settings.mdns_advertiser_exp' | translate }})</option>
         </select>
       </div>
+    </li>
+    <li class="list-group-item d-flex flex-column align-items-center" *ngIf="hasChangedMdns || hasChangedBridgeNetworkAdapters">
+      <small class="grey-text my-2">{{ 'settings.changes.saved' | translate }}</small>
+      <button class="btn btn-primary waves-effect my-2" routerLink="/restart"
+        [attr.aria-label]="'menu.tooltip_restart' | translate">
+        {{ 'menu.tooltip_restart' | translate }}
+      </button>
     </li>
   </ul>
 </div>

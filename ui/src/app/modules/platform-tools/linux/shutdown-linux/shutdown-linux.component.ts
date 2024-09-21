@@ -64,8 +64,7 @@ export class ShutdownLinuxComponent implements OnInit, OnDestroy {
     this.checkTimeout = setTimeout(() => {
       this.$toastr.warning(
         this.translate.instant('platform.linux.restart.toast_server_taking_long_time_to_come_online'),
-        this.translate.instant('toast.title_warning',
-        ),
+        this.translate.instant('toast.title_warning'),
         {
           timeOut: 10000,
         },

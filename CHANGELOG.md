@@ -31,6 +31,9 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - increase width of notifications to `100%` on mobile devices
 - fix some styles on smaller screeners
 - hide settings section description on collapse
+- improve visibility of restart button in settings
+- allow translation for incorrect system date/time notification
+- consistent modal titles and remove unused lang strings
 - updates to `pl` language file (#2181) (@mkz212)
 - updates to `th` language file (#2182) (@tomzt)
 
@@ -45,6 +48,8 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix deprecated `.subscribe()` signature
 - HB2 plugins: also check for `>=2` from `engines.homebridge`
 - update dependencies - tackle dependabot alerts
+- move script files to own folder, improve error catching in `sh` scripts
+- use params for text replacements of backup size modal
 
 ### Homebridge Dependencies
 

@@ -2,6 +2,7 @@ import { ApiService } from '@/app/core/api.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { Component } from '@angular/core'
 import { Router } from '@angular/router'
+import { TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 
 @Component({
@@ -13,6 +14,7 @@ export class PowerOptionsComponent {
     private $router: Router,
     public $settings: SettingsService,
     public $toastr: ToastrService,
+    private $translate: TranslateService,
   ) {}
 
   restartHomebridge() {
@@ -25,7 +27,7 @@ export class PowerOptionsComponent {
         this.$router.navigate(['/restart'])
       },
       error: (err) => {
-        this.$toastr.error(err.message, 'Failed to set force service restart flag.')
+        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
       },
     })
   }
