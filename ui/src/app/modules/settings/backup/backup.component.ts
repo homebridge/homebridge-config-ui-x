@@ -54,8 +54,11 @@ export class BackupComponent implements OnInit {
         const archiveName = backup.fileName || 'homebridge-backup.tar.gz'
         const sizeInBytes = res.body.size
         if (sizeInBytes > globalThis.backup.maxBackupSize) {
-          this.$toastr.warning(`${this.$translate.instant('backup.message_backup_exceeds_max_size')
-          } (${globalThis.backup.maxBackupSizeText}) ${(sizeInBytes / (1024 * 1024)).toFixed(1)}MB`)
+          const message = this.$translate.instant('backup.message_backup_exceeds_max_size', {
+            maxBackupSizeText: globalThis.backup.maxBackupSizeText,
+            size: `${(sizeInBytes / (1024 * 1024)).toFixed(1)}MB`,
+          })
+          this.$toastr.warning(message, this.$translate.instant('toast.title_warning'))
         }
         saveAs(res.body, archiveName)
       },
@@ -73,8 +76,11 @@ export class BackupComponent implements OnInit {
         this.clicked = false
         const sizeInBytes = res.body.size
         if (sizeInBytes > globalThis.backup.maxBackupSize) {
-          this.$toastr.warning(`${this.$translate.instant('backup.message_backup_exceeds_max_size')
-          } (${globalThis.backup.maxBackupSizeText}) ${(sizeInBytes / (1024 * 1024)).toFixed(1)}MB`)
+          const message = this.$translate.instant('backup.message_backup_exceeds_max_size', {
+            maxBackupSizeText: globalThis.backup.maxBackupSizeText,
+            size: `${(sizeInBytes / (1024 * 1024)).toFixed(1)}MB`,
+          })
+          this.$toastr.warning(message, this.$translate.instant('toast.title_warning'))
         }
         saveAs(res.body, archiveName)
       },

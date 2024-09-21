@@ -30,6 +30,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - HB2 plugins: also check for `>=2` from `engines.homebridge`
 - update dependencies - tackle dependabot alerts
 - move script files to own folder, improve error catching in `sh` scripts
+- use params for text replacements of backup size modal
 
 ## v4.58.0 (2024-09-08)
 
