@@ -28,3 +28,12 @@
     width: 300px;
   }
 }
+
+.resp-input {
+  width: 100%;
+  font-size: 1rem;
+
+  @media (min-width: 768px) {
+    width: 300px;
+  }
+}

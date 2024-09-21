@@ -782,8 +782,7 @@ export class PluginsService {
           return x.ref !== 'log'
         })
 
-        const advanced = configSchema.layout.find((x: any) => x.ref === 'advanced')
-        advanced.items = advanced.items.filter((x: any) => {
+        configSchema.layout = configSchema.layout.filter((x: any) => {
           return !(x === 'sudo' || x.key === 'restart')
         })
       }

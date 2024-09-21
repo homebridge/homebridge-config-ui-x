@@ -28,12 +28,22 @@ export class SettingsComponent implements OnInit {
     ENV_NODE_OPTIONS: '',
   }
 
+  public originalUiSettingsForm = {
+    port: 0,
+  }
+
   public originalMdnsSetting = ''
   public originalBridgeNetworkAdapters: string[] = []
+  public originalHbPort = 0
 
   public hasChangedService = false
+  public hasChangedUiSettings = false
   public hasChangedMdns = false
   public hasChangedBridgeNetworkAdapters = false
+  public hasChangedHbPort = false
+
+  public isInvalidHbPort = false
+  public isInvalidHbUiPort = false
 
   public serviceForm = new FormGroup({
     HOMEBRIDGE_DEBUG: new FormControl(false),
@@ -43,14 +53,20 @@ export class SettingsComponent implements OnInit {
     ENV_NODE_OPTIONS: new FormControl(''),
   })
 
+  public uiSettingsForm = new FormGroup({
+    port: new FormControl(0),
+  })
+
   public legacyMdnsFormControl = new UntypedFormControl(false)
   public showAvahiMdnsOption = false
   public showResolvedMdnsOption = false
   public availableNetworkAdapters: Record<string, any> = []
   public bridgeNetworkAdapters: Record<string, any> = []
+  public hbPortFormControl = new FormControl(0)
   public isHbV2 = false
   public showFields = {
     general: true,
+    display: true,
     startup: true,
     network: true,
     reset: true,
@@ -68,28 +84,72 @@ export class SettingsComponent implements OnInit {
 
   ngOnInit() {
     this.isHbV2 = this.$settings.env.homebridgeVersion.startsWith('2')
+    this.initUiSettingsForm()
     this.initNetworkingOptions()
     if (this.$settings.env.serviceMode) {
       this.initServiceModeForm()
     }
   }
 
-  onLangChange(newLang: string) {
-    this.$settings.setLang(newLang)
-
-    // save the theme to the server
-    this.$api.put('/config-editor/ui', { key: 'lang', value: newLang }).toPromise().catch((err) => {
-      this.$toastr.error(err.message, 'Failed to save language')
+  initUiSettingsForm() {
+    this.originalUiSettingsForm = {
+      port: this.$settings.env.port,
+    }
+    this.uiSettingsForm.patchValue({
+      port: this.$settings.env.port,
+    })
+    this.uiSettingsForm.valueChanges.pipe(debounceTime(500)).subscribe((data) => {
+      let hasChangedUiSettings = false
+      Object.keys(data).forEach((key) => {
+        if (this.originalUiSettingsForm[key] !== data[key]) {
+          this.saveUiSettingChange(key, data[key])
+          hasChangedUiSettings = true
+        }
+      })
+      this.hasChangedUiSettings = hasChangedUiSettings
     })
   }
 
-  onThemeChange(newTheme: string) {
-    this.$settings.setTheme(newTheme)
-
-    // save the theme to the server
-    this.$api.put('/config-editor/ui', { key: 'theme', value: newTheme }).toPromise().catch((err) => {
-      this.$toastr.error(err.message, 'Failed to save theme')
+  initServiceModeForm() {
+    this.$api.get('/platform-tools/hb-service/homebridge-startup-settings').subscribe({
+      next: (data) => {
+        Object.keys(data).forEach((key) => {
+          this.originalServiceForm[key] = data[key]
+        })
+        this.serviceForm.patchValue(data)
+        this.serviceForm.valueChanges.pipe(debounceTime(500)).subscribe(this.saveServiceModeSettings.bind(this))
+      },
+      error: (err) => {
+        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
+      },
     })
+  }
+
+  saveUiSettingChange(key: string, value: any) {
+    // Extra things to do per key
+    switch (key) {
+      case 'lang':
+        this.$settings.setLang(value)
+        break
+      case 'theme':
+        this.$settings.setTheme(value)
+        break
+      case 'tempUnits':
+        this.$settings.setEnvItem('temperatureUnits', value)
+        break
+      case 'port':
+        if (!value || typeof value !== 'number' || value < 1025 || value > 65533 || Number.isInteger(value) === false || value === this.hbPortFormControl.value) {
+          this.isInvalidHbUiPort = true
+          return
+        }
+        this.$settings.setEnvItem('port', value)
+        this.isInvalidHbUiPort = false
+        break
+    }
+
+    // save the new property to the config file
+    firstValueFrom(this.$api.put('/config-editor/ui', { key, value }))
+      .catch(err => this.$toastr.error(err.message, this.$translate.instant('toast.title_error')))
   }
 
   openUiSettings() {
@@ -112,21 +172,6 @@ export class SettingsComponent implements OnInit {
     this.$modal.open(BackupComponent, {
       size: 'lg',
       backdrop: 'static',
-    })
-  }
-
-  initServiceModeForm() {
-    this.$api.get('/platform-tools/hb-service/homebridge-startup-settings').subscribe({
-      next: (data) => {
-        Object.keys(data).forEach((key) => {
-          this.originalServiceForm[key] = data[key]
-        })
-        this.serviceForm.patchValue(data)
-        this.serviceForm.valueChanges.pipe(debounceTime(500)).subscribe(this.saveServiceModeSettings.bind(this))
-      },
-      error: (err) => {
-        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
-      },
     })
   }
 
@@ -190,7 +235,8 @@ export class SettingsComponent implements OnInit {
       firstValueFrom(this.$api.get('/server/network-interfaces/system')),
       firstValueFrom(this.$api.get('/server/network-interfaces/bridge')),
       firstValueFrom(this.$api.get('/server/mdns-advertiser')),
-    ]).then(([system, adapters, mdnsAdvertiser]) => {
+      firstValueFrom(this.$api.get('/server/port')),
+    ]).then(([system, adapters, mdnsAdvertiser, port]) => {
       this.availableNetworkAdapters = system
       this.buildBridgeNetworkAdapterList(adapters)
       this.legacyMdnsFormControl.patchValue(mdnsAdvertiser.advertiser)
@@ -199,6 +245,9 @@ export class SettingsComponent implements OnInit {
       this.legacyMdnsFormControl.valueChanges.subscribe((advertiser: string) => {
         this.setHomebridgeMdnsSetting(advertiser)
       })
+      this.hbPortFormControl.patchValue(port.port)
+      this.hbPortFormControl.valueChanges.subscribe((port: number) => this.setHomebridgePort(port))
+      this.originalHbPort = port.port
     })
   }
 
@@ -220,6 +269,23 @@ export class SettingsComponent implements OnInit {
       },
       error: (err) => {
         this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
+      },
+    })
+  }
+
+  async setHomebridgePort(port: number) {
+    if (port === this.uiSettingsForm.get('port').value) {
+      this.isInvalidHbPort = true
+      return
+    }
+
+    this.$api.put('/server/port', { port }).subscribe({
+      next: () => {
+        this.hasChangedHbPort = this.originalHbPort !== port
+        this.isInvalidHbPort = false
+      },
+      error: () => {
+        this.isInvalidHbPort = true
       },
     })
   }

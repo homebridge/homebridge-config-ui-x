@@ -28,6 +28,7 @@ interface EnvInterface {
   serviceMode: boolean
   lang: string | null
   temperatureUnits: 'c' | 'f'
+  port: number
   instanceId: string
   customWallpaperHash: string
   setupWizardComplete: boolean
@@ -124,6 +125,10 @@ export class SettingsService {
       lang = 'auto'
     }
     this.env.lang = lang
+  }
+
+  setEnvItem(key: string, value: any) {
+    this.env[key] = value
   }
 
   /**

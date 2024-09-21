@@ -34,6 +34,8 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - improve visibility of restart button in settings
 - allow translation for incorrect system date/time notification
 - consistent modal titles and remove unused lang strings
+- move lang, theme, temp units + port to main settings
+  - relabelled the UI settings screen as 'UI Advanced Settings'
 - updates to `pl` language file (#2181) (@mkz212)
 - updates to `th` language file (#2182) (@tomzt)
 

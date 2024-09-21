@@ -297,13 +297,23 @@ export class ConfigEditorService {
   /**
    * Set a specific property for the homebridge-config-ui-x plugin
    */
-  public async setPropertyForUi(property: string, value: string) {
+  public async setPropertyForUi(property: string, value: any) {
+    // Cannot update the platform property
+    if (property === 'platform') {
+      throw new BadRequestException('Cannot update the platform property.')
+    }
+
     // 1. get the current config for homebridge-config-ui-x
     const config = await this.getConfigFile()
 
     // 2. update the property
     const pluginConfig = config.platforms.find(x => x.platform === 'config')
-    pluginConfig[property] = value
+    // if value is empty, null or undefined, delete the property
+    if (value === '' || value === null || value === undefined) {
+      delete pluginConfig[property]
+    } else {
+      pluginConfig[property] = value
+    }
 
     // 3. save the config file
     await this.updateConfigFile(config)
