@@ -207,6 +207,7 @@ export class ConfigService {
         dockerOfflineUpdate: this.dockerOfflineUpdate,
         serviceMode: this.serviceMode,
         temperatureUnits: this.ui.tempUnits || 'c',
+        port: this.ui.port,
         lang: this.ui.lang === 'auto' ? null : this.ui.lang,
         instanceId: this.instanceId,
         customWallpaperHash: this.customWallpaperHash,

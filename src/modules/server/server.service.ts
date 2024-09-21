@@ -455,6 +455,33 @@ export class ServerService {
   }
 
   /**
+   * Get the Homebridge port
+   */
+  public async getHomebridgePort(): Promise<{ port: number }> {
+    const config = await this.configEditorService.getConfigFile()
+
+    return { port: config.bridge.port }
+  }
+
+  /**
+   * Set the Homebridge port
+   */
+  public async setHomebridgePort(port: number): Promise<void> {
+    // Validate port is between 1 and 65535
+    if (!port || typeof port !== 'number' || !Number.isInteger(port) || port < 1025 || port > 65533) {
+      throw new BadRequestException('Invalid port number')
+    }
+
+    const config = await this.configEditorService.getConfigFile()
+
+    config.bridge.port = port
+
+    console.error('port', port)
+
+    await this.configEditorService.updateConfigFile(config)
+  }
+
+  /**
    * Check if the system Node.js version has changed
    */
   private async nodeVersionChanged(): Promise<boolean> {

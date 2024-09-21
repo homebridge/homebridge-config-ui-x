@@ -164,4 +164,18 @@ export class ServerController {
   setHomebridgeMdnsSetting(@Body() body: HomebridgeMdnsSettingDto) {
     return this.serverService.setHomebridgeMdnsSetting(body)
   }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Get the Homebridge port.' })
+  @Get('/port')
+  getHomebridgePort() {
+    return this.serverService.getHomebridgePort()
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Set the Homebridge port.' })
+  @Put('/port')
+  setHomebridgePort(@Body() body: { port: number }) {
+    return this.serverService.setHomebridgePort(body.port)
+  }
 }

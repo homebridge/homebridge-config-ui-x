@@ -16,6 +16,8 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - improve visibility of restart button in settings
 - allow translation for incorrect system date/time notification
 - consistent modal titles and remove unused lang strings
+- move lang, theme, temp units + port to main settings
+  - relabelled the UI settings screen as 'UI Advanced Settings'
 - updates to `pl` language file (#2181) (@mkz212)
 - updates to `th` language file (#2182) (@tomzt)
 
@@ -32,6 +34,12 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - update dependencies - tackle dependabot alerts
 - move script files to own folder, improve error catching in `sh` scripts
 - use params for text replacements of backup size modal
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v1.10.2`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.11.14`
+- `@homebridge/plugin-ui-utils` @ `v1.0.3`
 
 ## v4.58.0 (2024-09-08)
 
