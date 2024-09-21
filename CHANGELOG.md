@@ -13,6 +13,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - increase width of notifications to `100%` on mobile devices
 - fix some styles on smaller screeners
 - hide settings section description on collapse
+- improve visibility of restart button in settings
 - updates to `pl` language file (#2181) (@mkz212)
 - updates to `th` language file (#2182) (@tomzt)
 

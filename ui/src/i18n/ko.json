@@ -312,6 +312,7 @@
   "rpi.throttled.previously_undervoltage_title": "전압이 낮음을 감지 했습니다.(Under-voltage has occurred)",
   "settings.cache.desc": "Homebridge maintains accessories in cache so they aren't removed and re-added to HomeKit each time Homebridge restarts. Sometimes this cache can become out of sync with the actual accessories in Homebridge.",
   "settings.cache.title": "Accessories",
+  "settings.changes.saved": "Your changes have been saved and require a restart to take effect.",
   "settings.general.title_general": "General",
   "settings.mdns_advertiser": "mDNS Advertiser",
   "settings.mdns_advertiser_exp": "experimental",
