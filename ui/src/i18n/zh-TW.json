@@ -306,7 +306,6 @@
   "settings.display.theme": "Theme",
   "settings.general.title_display": "Display",
   "settings.general.title_general": "General",
-  "settings.language": "Language",
   "settings.mdns_advertiser": "mDNS Advertiser",
   "settings.mdns_advertiser_exp": "experimental",
   "settings.mdns_advertiser_help": "假如於連線 Homebridge 時遇到問題，請試著使用替代的 mDNS Advertiser。",

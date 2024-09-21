@@ -306,7 +306,6 @@
   "settings.display.theme": "Motyw",
   "settings.general.title_display": "Display",
   "settings.general.title_general": "Ogólne",
-  "settings.language": "Język",
   "settings.mdns_advertiser": "Rozgłaszacz mDNS",
   "settings.mdns_advertiser_exp": "eksperymentalny",
   "settings.mdns_advertiser_help": "Jeśli masz problem z połączeniem Homebridge do HomeKit, spróbuj użyć alternatywnego rozgłaszania mDNS.",

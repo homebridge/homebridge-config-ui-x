@@ -306,7 +306,6 @@
   "settings.display.theme": "Theme",
   "settings.general.title_display": "Display",
   "settings.general.title_general": "General",
-  "settings.language": "Language",
   "settings.mdns_advertiser": "Pengiklan mDNS",
   "settings.mdns_advertiser_exp": "experimental",
   "settings.mdns_advertiser_help": "Jika Anda mengalami masalah saat menghubungkan ke Homebridge, coba gunakan salah satu pengiklan mDNS alternatif.",

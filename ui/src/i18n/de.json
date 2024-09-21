@@ -306,7 +306,6 @@
   "settings.display.theme": "Theme",
   "settings.general.title_display": "Display",
   "settings.general.title_general": "Allgemein",
-  "settings.language": "Language",
   "settings.mdns_advertiser": "mDNS Advertiser",
   "settings.mdns_advertiser_exp": "experimental",
   "settings.mdns_advertiser_help": "Wenn du Probleme hast, dich mit Homebridge zu verbinden, versuche einen der alternativen mDNS Advertiser zu verwenden.",

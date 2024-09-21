@@ -306,7 +306,6 @@
   "settings.display.theme": "Тема",
   "settings.general.title_display": "Display",
   "settings.general.title_general": "Загальні",
-  "settings.language": "Мова",
   "settings.mdns_advertiser": "Рекламіст mDNS",
   "settings.mdns_advertiser_exp": "experimental",
   "settings.mdns_advertiser_help": "Якщо у Вас виникли проблеми з підключенням до Homebridge, спробуйте скористатися одним із альтернативних рекламвстів mDNS.",

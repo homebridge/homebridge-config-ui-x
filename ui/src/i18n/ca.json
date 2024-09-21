@@ -306,7 +306,6 @@
   "settings.display.theme": "Theme",
   "settings.general.title_display": "Display",
   "settings.general.title_general": "General",
-  "settings.language": "Language",
   "settings.mdns_advertiser": "Mètode de difusió mDNS",
   "settings.mdns_advertiser_exp": "experimental",
   "settings.mdns_advertiser_help": "Si tens problemes per connectar a Homebridge, prova d’utilitzar un mètode de difusió mDNS alternatiu.",

@@ -306,7 +306,6 @@
   "settings.display.theme": "Theme",
   "settings.general.title_display": "Display",
   "settings.general.title_general": "General",
-  "settings.language": "Language",
   "settings.mdns_advertiser": "mDNS Inzerent",
   "settings.mdns_advertiser_exp": "experimental",
   "settings.mdns_advertiser_help": "Pokud máte potíže s připojením k Homebridge, zkuste použít některého z alternativních inzerentů mDNS.",

@@ -306,7 +306,6 @@
   "settings.display.theme": "Theme",
   "settings.general.title_display": "Display",
   "settings.general.title_general": "ทั่วไป",
-  "settings.language": "Language",
   "settings.mdns_advertiser": "mDNS Advertiser",
   "settings.mdns_advertiser_exp": "การทดลอง",
   "settings.mdns_advertiser_help": "หากคุณประสบปัญหาในการเชื่อมต่อกับ Homebridge ให้ลองใช้ mDNS รายใดรายหนึ่ง.",
