@@ -12,7 +12,7 @@ nodemon.json
 nest-cli.json
 .vscode
 .github
-scripts
+scripts/lang-sync.ts
 test
 
 # Logs
