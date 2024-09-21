@@ -63,9 +63,13 @@ export class ContainerRestartComponent implements OnInit, OnDestroy {
     }, 10000)
 
     this.checkTimeout = setTimeout(() => {
-      this.$toastr.warning(this.translate.instant('restart.toast_sever_restart_timeout'), this.translate.instant('toast.title_warning'), {
-        timeOut: 10000,
-      })
+      this.$toastr.warning(
+        this.translate.instant('restart.toast_sever_restart_timeout'),
+        this.translate.instant('toast.title_warning'),
+        {
+          timeOut: 10000,
+        },
+      )
       this.timeout = true
     }, 60000)
   }

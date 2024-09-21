@@ -23,7 +23,7 @@
       <p>{{ 'child_bridge.message_select_platforms_accessories' | translate }}:</p>
       <ul class="list-group list-group-box my-2" *ngIf="configBlocks.length">
         <li class="list-group-item " *ngFor="let item of configBlocks; let i = index">
-          <div class="d-flex justify-content-between align-items-center mt-1">
+          <div class="d-flex justify-content-between align-items-center">
             <h5 class="primary-text mb-0">
               <strong>
                 {{ item.name || item.accessory || item.platform }} <span *ngIf="enabledBlocks[i] && item._bridge?.name"> - {{ item._bridge.name }}</span>

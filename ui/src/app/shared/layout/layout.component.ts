@@ -9,7 +9,6 @@ import { Router } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateService } from '@ngx-translate/core'
 import { firstValueFrom } from 'rxjs'
-import { throttleTime } from 'rxjs/operators'
 import { lt } from 'semver'
 
 @Component({
@@ -38,23 +37,6 @@ export class LayoutComponent implements OnInit {
     this.io = this.$ws.connectToNamespace('app')
     this.io.socket.on('reconnect', () => {
       this.$auth.checkToken()
-    })
-
-    this.$notification.configUpdated.pipe(throttleTime(15000)).subscribe(() => {
-      // highlight the homebridge restart icon
-      const element = this.restartHomebridgeIcon.nativeElement as HTMLElement
-      element.classList.add('fa-beat')
-      setTimeout(() => {
-        element.classList.remove('fa-beat')
-      }, 14900)
-    })
-
-    this.$notification.restartTriggered.subscribe(() => {
-      // ensure restart icon is not highlighted when restart is triggered
-      const element = this.restartHomebridgeIcon?.nativeElement as HTMLElement
-      if (element) {
-        element.classList.remove('fa-beat')
-      }
     })
 
     this.$notification.raspberryPiThrottled.subscribe((throttled) => {

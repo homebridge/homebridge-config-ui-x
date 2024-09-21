@@ -121,7 +121,7 @@
     "unzipper": "0.12.3"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^3.6.2",
+    "@antfu/eslint-config": "^3.7.1",
     "@nestjs/testing": "^10.4.3",
     "@types/fs-extra": "^11.0.4",
     "@types/lodash": "^4.17.7",
@@ -135,10 +135,10 @@
     "@types/unzipper": "^0.10.10",
     "@vitest/coverage-v8": "^2.1.1",
     "concurrently": "^9.0.1",
-    "eslint": "^9.10.0",
+    "eslint": "^9.11.0",
     "eslint-plugin-format": "^0.1.2",
     "form-data": "^4.0.0",
-    "nodemon": "^3.1.5",
+    "nodemon": "^3.1.7",
     "rimraf": "^6.0.1",
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",

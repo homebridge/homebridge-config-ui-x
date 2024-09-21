@@ -1,6 +1,5 @@
 import { ApiService } from '@/app/core/api.service'
 import { RestartComponent } from '@/app/core/components/restart/restart.component'
-import { NotificationService } from '@/app/core/notification.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { Component, Input, OnDestroy, OnInit } from '@angular/core'
@@ -53,7 +52,6 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
     private $api: ApiService,
     private $modal: NgbModal,
     private $ws: WsService,
-    private $notification: NotificationService,
     private $router: Router,
   ) {
     this.term.loadAddon(this.fitAddon)
@@ -277,7 +275,6 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         this.$translate.instant('toast.title_success'),
       )
     } catch (err) {
-      this.$notification.configUpdated.next(undefined) // highlight the restart icon in the navbar
       this.$toastr.error(
         this.$translate.instant('plugins.manage.child_bridge_restart_failed'),
         this.$translate.instant('toast.title_error'),

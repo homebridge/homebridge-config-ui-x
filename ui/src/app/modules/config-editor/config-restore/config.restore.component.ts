@@ -30,7 +30,7 @@ export class ConfigRestoreComponent implements OnInit {
       },
       error: (err) => {
         this.loading = false
-        this.$toastr.error(err.error.message, this.translate.instant('config.restore.toast_failed_to_load_backups'))
+        this.$toastr.error(err.error.message, this.translate.instant('toast.title_error'))
       },
     })
   }
@@ -45,7 +45,7 @@ export class ConfigRestoreComponent implements OnInit {
         this.activeModal.dismiss()
         this.$toastr.success(this.translate.instant('config.restore.toast_backups_deleted'), this.translate.instant('toast.title_success'))
       },
-      error: err => this.$toastr.error(err.error.message, this.translate.instant('config.restore.toast_failed_to_delete_backups')),
+      error: err => this.$toastr.error(err.error.message, this.translate.instant('toast.title_error')),
     })
   }
 }

@@ -154,7 +154,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.loading = false
-        this.$toastr.error(`${err.error.message || err.message}`, 'Error')
+        this.$toastr.error(`${err.error.message || err.message}`, this.$translate.instant('toast.title_error'))
         this.loadInstalledPlugins()
       },
     })
