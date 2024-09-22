@@ -1,5 +1,6 @@
 import { ApiService } from '@/app/core/api.service'
 import { RestartComponent } from '@/app/core/components/restart/restart.component'
+import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
 import { MobileDetectService } from '@/app/core/mobile-detect.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { Component, Input, OnInit } from '@angular/core'
@@ -28,6 +29,7 @@ export class ManualConfigComponent implements OnInit {
   public currentBlock: string
   public currentBlockIndex: number | null = null
   public saveInProgress = false
+  public isFirstSave = false
 
   public monacoEditor: any
   public editorOptions: any
@@ -36,6 +38,7 @@ export class ManualConfigComponent implements OnInit {
     public activeModal: NgbActiveModal,
     private $api: ApiService,
     private $modal: NgbModal,
+    public $plugin: ManagePluginsService,
     private $settings: SettingsService,
     private $toastr: ToastrService,
     private $translate: TranslateService,
@@ -98,6 +101,7 @@ export class ManualConfigComponent implements OnInit {
         if (this.pluginConfig.length) {
           this.editBlock(0)
         } else {
+          this.isFirstSave = true
           this.addBlock()
         }
       },
@@ -215,12 +219,21 @@ export class ManualConfigComponent implements OnInit {
     }
 
     try {
-      await firstValueFrom(this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig))
+      const newConfig = await firstValueFrom(this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig))
       this.activeModal.close()
-      this.$modal.open(RestartComponent, {
-        size: 'lg',
-        backdrop: 'static',
-      })
+
+      // If it is the first time configuring a plugin, then offer to set up a child bridge straight away
+      if (this.isFirstSave) {
+        if (this.$settings.env.recommendChildBridges && this.$settings.env.serviceMode && newConfig[0]?.platform) {
+          // Close the modal and open the child bridge setup modal
+          await this.$plugin.bridgeSettings(this.plugin)
+        }
+      } else {
+        this.$modal.open(RestartComponent, {
+          size: 'lg',
+          backdrop: 'static',
+        })
+      }
     } catch {
       this.$toastr.error(this.$translate.instant('config.toast_failed_to_save_config'), this.$translate.instant('toast.title_error'))
       this.saveInProgress = false

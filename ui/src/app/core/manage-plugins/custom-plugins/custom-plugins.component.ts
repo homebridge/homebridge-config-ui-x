@@ -1,4 +1,6 @@
 import { ApiService } from '@/app/core/api.service'
+import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
+import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { environment } from '@/environments/environment'
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core'
@@ -37,6 +39,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   public formUpdatedSubject = new Subject()
   public formActionSubject = new Subject()
   public childBridges: any[] = []
+  public isFirstSave = false
 
   private io: IoNamespace
   private basePath: string
@@ -47,10 +50,12 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
 
   constructor(
     public activeModal: NgbActiveModal,
-    private $translate: TranslateService,
-    private $toastr: ToastrService,
     private $api: ApiService,
+    public $plugin: ManagePluginsService,
     private $router: Router,
+    private $settings: SettingsService,
+    private $toastr: ToastrService,
+    private $translate: TranslateService,
     private $ws: WsService,
   ) {}
 
@@ -58,6 +63,10 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     this.io = this.$ws.connectToNamespace('plugins/settings-ui')
     this.pluginAlias = this.schema.pluginAlias
     this.pluginType = this.schema.pluginType
+
+    if (this.pluginConfig.length === 0) {
+      this.isFirstSave = true
+    }
 
     // start accessory subscription
     if (this.io.connected) {
@@ -416,17 +425,31 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
 
   async savePluginConfig(exit = false) {
     this.saveInProgress = true
-    return firstValueFrom(this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig)).then(() => {
+
+    try {
+      const newConfig = await firstValueFrom(this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig))
+
       this.saveInProgress = false
 
       if (exit) {
-        this.getChildBridges()
-        this.justSavedAndExited = true
+        if (this.isFirstSave) {
+          if (this.$settings.env.recommendChildBridges && this.$settings.env.serviceMode && newConfig[0]?.platform) {
+            // Close the modal and open the child bridge setup modal
+            this.activeModal.close()
+            await this.$plugin.bridgeSettings(this.plugin)
+          }
+        } else {
+          this.getChildBridges()
+          this.justSavedAndExited = true
+        }
       }
-    }).catch(() => {
+
+      return newConfig
+    } catch (error) {
       this.saveInProgress = false
       this.$toastr.error(this.$translate.instant('config.toast_failed_to_save_config'), this.$translate.instant('toast.title_error'))
-    })
+      console.error(error)
+    }
   }
 
   getChildBridges(): any[] {
