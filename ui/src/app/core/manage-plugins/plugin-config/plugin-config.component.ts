@@ -1,6 +1,5 @@
 import { ApiService } from '@/app/core/api.service'
-import { DonateComponent } from '@/app/core/manage-plugins/donate/donate.component'
-import { PluginLogsComponent } from '@/app/core/manage-plugins/plugin-logs/plugin-logs.component'
+import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { Component, Input, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
@@ -31,6 +30,7 @@ export class PluginConfigComponent implements OnInit {
   public show = ''
   public saveInProgress: boolean
   public justSavedAndExited = false
+  public isFirstSave = false
 
   public childBridges: any[] = []
 
@@ -38,8 +38,9 @@ export class PluginConfigComponent implements OnInit {
     public activeModal: NgbActiveModal,
     private $api: ApiService,
     private $modal: NgbModal,
-    private $settings: SettingsService,
+    public $plugin: ManagePluginsService,
     private $router: Router,
+    private $settings: SettingsService,
     private $toastr: ToastrService,
     private translate: TranslateService,
   ) {}
@@ -63,6 +64,7 @@ export class PluginConfigComponent implements OnInit {
         }
 
         if (!this.pluginConfig.length) {
+          this.isFirstSave = true
           this.addBlock()
         } else {
           this.show = this.pluginConfig[0].__uuid__
@@ -83,14 +85,23 @@ export class PluginConfigComponent implements OnInit {
     const configBlocks = this.pluginConfig.map(x => x.config)
 
     try {
-      await firstValueFrom(this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, configBlocks))
+      const newConfig = await firstValueFrom(this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, configBlocks))
 
       // reload app settings if the config was changed for Homebridge UI
       if (this.plugin.name === 'homebridge-config-ui-x') {
         this.$settings.getAppSettings().catch()
       }
 
-      this.getChildBridges()
+      // If it is the first time configuring a plugin, then offer to set up a child bridge straight away
+      if (this.isFirstSave) {
+        if (this.$settings.env.recommendChildBridges && this.$settings.env.serviceMode && newConfig[0].platform) {
+          // Close the modal and open the child bridge setup modal
+          this.activeModal.close()
+          await this.$plugin.bridgeSettings(this.plugin)
+        }
+      } else {
+        this.getChildBridges()
+      }
       this.justSavedAndExited = true
     } catch (err) {
       this.$toastr.error(
@@ -185,35 +196,6 @@ export class PluginConfigComponent implements OnInit {
       this.schema.schema.properties.users.properties[key] = {
         type: 'string',
       }
-    }
-  }
-
-  openFundingModalForUi() {
-    try {
-      this.$api.get('/plugins').subscribe((plugins) => {
-        const ref = this.$modal.open(DonateComponent, {
-          size: 'lg',
-          backdrop: 'static',
-        })
-        ref.componentInstance.plugin = plugins.find((x: any) => x.name === 'homebridge-config-ui-x')
-      })
-    } catch (e) {
-      // ignore
-    }
-  }
-
-  openPluginLogModalForUi() {
-    try {
-      this.$api.get('/plugins').subscribe((plugins) => {
-        const ref = this.$modal.open(PluginLogsComponent, {
-          size: 'xl',
-          backdrop: 'static',
-        })
-
-        ref.componentInstance.plugin = plugins.find((x: any) => x.name === 'homebridge-config-ui-x')
-      })
-    } catch (e) {
-      // ignore
     }
   }
 }
