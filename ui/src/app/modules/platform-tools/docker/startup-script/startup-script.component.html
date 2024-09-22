@@ -1,18 +1,16 @@
 <div class="flex-column d-flex align-items-stretch h-100">
-
-  <div class="row">
-    <div class="col-sm-8 d-none d-sm-block">
-      <h3 class="primary-text m-0">
-        <span class="d-none d-md-inline">Docker Container</span> startup.sh</h3>
+  <div class="row mb-3">
+    <div class="col-6">
+      <h3 class="primary-text m-0 text-monospace">startup.sh</h3>
     </div>
-    <div class="col-sm-4 text-right">
+    <div class="col-6 text-right">
       <button class="btn btn-primary waves-effect m-0" (click)="onSave()" [disabled]="saveInProgress">
-        {{ 'form.button_save' | translate }} <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
+        <i *ngIf="!saveInProgress" class="fas fa-fw fa-floppy-disk"></i>
+        <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
       </button>
     </div>
   </div>
-
-  <div class="row mt-3">
+  <div class="row">
     <div class="col-md-12">
       <div class="alert alert-warning" role="alert">
         {{ 'platform.docker.script.message_script_help' | translate }}
@@ -20,13 +18,12 @@
     </div>
   </div>
 
-  <ngx-monaco-editor *ngIf="!isMobile" class="flex-grow-1 h-100 w-100 my-3" [options]="editorOptions"
+  <ngx-monaco-editor *ngIf="!isMobile" class="flex-grow-1 h-100 w-100 my-2" [options]="editorOptions"
     [model]="monacoEditorModel" (onInit)="onEditorInit($event)" (keydown.control.s)="$event.preventDefault(); onSave()"
     (keydown.meta.s)="$event.preventDefault(); onSave()">
   </ngx-monaco-editor>
 
-  <textarea wrap="off" *ngIf="isMobile" class="hb-plain-text-editor align-self-end h-100 w-100 my-3"
+  <textarea wrap="off" *ngIf="isMobile" class="hb-plain-text-editor align-self-end h-100 w-100 my-2"
     autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" [(ngModel)]="startupScript">
   </textarea>
-
 </div>
