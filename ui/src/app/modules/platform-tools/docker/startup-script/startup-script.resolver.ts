@@ -16,7 +16,7 @@ export class StartupScriptResolver implements Resolve<any> {
 
   async resolve() {
     try {
-      return await firstValueFrom(this.$api.get('/platform-tools/docker/startup-script'))
+      // return await firstValueFrom(this.$api.get('/platform-tools/docker/startup-script'))
     } catch (err) {
       this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
       this.$router.navigate(['/'])

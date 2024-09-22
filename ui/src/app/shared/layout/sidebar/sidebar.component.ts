@@ -140,8 +140,8 @@ export class SidebarComponent implements OnInit {
 
     ref.componentInstance.title = this.$translate.instant('rpi.throttled.undervoltage_title')
     ref.componentInstance.message = this.$translate.instant(this.rPiCurrentlyUnderVoltage
-      ? 'rpi.throttled.currently_undervoltage_message'
-      : 'rpi.throttled.previously_undervoltage_message',
+      ? 'rpi.throttled.currently_message'
+      : 'rpi.throttled.previously_message',
     )
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info')
     ref.componentInstance.faIconClass = 'fas fa-fw fa-bolt yellow-text'
