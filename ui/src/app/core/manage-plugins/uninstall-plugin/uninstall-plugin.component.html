@@ -20,13 +20,16 @@
           <span class="hb-uix-slider hb-uix-round"></span>
         </label>
       </p>
-      <p *ngIf="hasChildBridges">
-        <label class="hb-uix-switch d-inline" for="remove-plugin-config">
+      <p *ngIf="hasChildBridges" class="mb-4">
+        <label class="hb-uix-switch d-inline" for="remove-plugin-child-bridges">
           <input id="remove-plugin-child-bridges" type="checkbox" [(ngModel)]="removeChildBridges">
           <span>{{ 'plugins.manage.message_uninstall_unpair_child_bridges' | translate }}</span>
           <span class="hb-uix-slider hb-uix-round"></span>
         </label>
       </p>
+      <ngb-alert type="warning" [dismissible]="false" *ngIf="hasChildBridges && removeChildBridges">
+        {{ 'reset.bridges_single.list_2' | translate }}
+      </ngb-alert>
       <ngb-alert *ngIf="!pluginAlias || !pluginType" type="info" [dismissible]="false">
         {{ 'plugins.manage.message_uninstall_remove_config_required' | translate }}
       </ngb-alert>
