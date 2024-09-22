@@ -223,6 +223,7 @@
   "plugins.manage.message_uninstall_remove_config_required": "Om du tar bort detta plugin permanent, se till att du tar bort alla konfigurationer för detta plugin i config.json innan du startar om Homebridge.",
   "plugins.manage.message_uninstall_remove_confirmation": "Är du säker på att du vill avinstallera {{ pluginName }}?",
   "plugins.manage.message_uninstall_remove_plugin_config": "Ta bort plugin-konfigurationen?",
+  "plugins.manage.message_uninstall_unpair_child_bridges": "Unpair Child Bridges?",
   "plugins.manage.modal_unverified_message": "Overifierade Homebridge-plugins betyder att de inte har granskats av Homebridge projektteam. Avsaknad av verifiering betyder inte nödvändigtvis att de är ineffektiva eller har säkerhetsproblem. Utvecklarna kan ha valt att avstå verifieringen av olika anledningar.",
   "plugins.manage.modal_unverified_subtitle": "{{ pluginName }} är inte verifierad",
   "plugins.manage.modal_unverified_title": "Overifierade plugins",

@@ -223,6 +223,7 @@
   "plugins.manage.message_uninstall_remove_config_required": "Po całkowitym usunięciu wtyczki, upewnij się, że usunięto jej konfigurację w pliku config.json przed zrestartowaniem Homebridge.",
   "plugins.manage.message_uninstall_remove_confirmation": "Na pewno odinstalować {{ pluginName }}?",
   "plugins.manage.message_uninstall_remove_plugin_config": "Usunąć również konfigurację tej wtyczki?",
+  "plugins.manage.message_uninstall_unpair_child_bridges": "Unpair Child Bridges?",
   "plugins.manage.modal_unverified_message": "Niezweryfikowane wtyczki Homebridge wskazują, że nie zostały poddane procesowi przeglądu przez zespół projektowy Homebridge. Brak weryfikacji niekoniecznie oznacza nieskuteczność lub obawy dotyczące bezpieczeństwa. Autorzy mogli zdecydować się nie szukać weryfikacji z różnych powodów.",
   "plugins.manage.modal_unverified_subtitle": "{{ pluginName }} jest niezweryfikowana.",
   "plugins.manage.modal_unverified_title": "Niezweryfikowane wtyczki",
