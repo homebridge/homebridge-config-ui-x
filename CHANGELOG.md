@@ -37,6 +37,8 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - move script files to own folder, improve error catching in `sh` scripts
 - use params for text replacements of backup size modal
 - variable naming consistency, reduce language string lengths
+- pack only necessary `monaco-editor` files
+  - this has reduced the unpacked size of the app from `~16.6MB` to `~11.0MB`
 
 ### Homebridge Dependencies
 
