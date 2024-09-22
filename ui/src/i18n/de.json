@@ -223,6 +223,7 @@
   "plugins.manage.message_uninstall_remove_config_required": "Stelle sicher, dass wenn du dieses Plugin dauerhaft entfernst, jede Konfiguration für dieses Plugin in der config.json entfernt hast, bevor du Homebridge neu startest.",
   "plugins.manage.message_uninstall_remove_confirmation": "Bist du sicher, dass du {{ pluginName }} entfernen möchtest?",
   "plugins.manage.message_uninstall_remove_plugin_config": "Plugin Konfiguration entfernen?",
+  "plugins.manage.message_uninstall_unpair_child_bridges": "Unpair Child Bridges?",
   "plugins.manage.modal_unverified_message": "Nicht verifizierte Homebridge-Plugins bedeuten, dass sie nicht vom Homebridge-Projektteam geprüft wurden. Eine fehlende Überprüfung bedeutet nicht zwangsläufig, dass sie ineffizient sind oder Sicherheitsbedenken bestehen. Die Autoren können sich aus verschiedenen Gründen dafür entschieden haben, keine Überprüfung vorzunehmen.",
   "plugins.manage.modal_unverified_subtitle": "{{ pluginName }} ist nicht verifiziert",
   "plugins.manage.modal_unverified_title": "Unverifizierte Plugins",

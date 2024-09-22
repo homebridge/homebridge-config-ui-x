@@ -223,6 +223,7 @@
   "plugins.manage.message_uninstall_remove_config_required": "หากคุณกำลังลบปลั๊กอินนี้อย่างถาวรตรวจสอบให้แน่ใจว่าคุณได้ลบการกำหนดค่าใด ๆ สำหรับปลั๊กอินนี้ใน config.json ก่อนที่จะรีสตาร์ท Homebridge",
   "plugins.manage.message_uninstall_remove_confirmation": "แน่ใจไหมว่าต้องการถอนการติดตั้ง {{ pluginName }}?",
   "plugins.manage.message_uninstall_remove_plugin_config": "ลบ Plugin Config ด้วยหรือไม่",
+  "plugins.manage.message_uninstall_unpair_child_bridges": "Unpair Child Bridges?",
   "plugins.manage.modal_unverified_message": "ปลั๊กอิน Homebridge ที่ไม่ได้รับการยืนยันระบุว่าไม่ได้ผ่านกระบวนการตรวจสอบโดยทีมงานโครงการ Homebridge การขาดการตรวจสอบไม่ได้หมายความถึงความไร้ประสิทธิภาพหรือข้อกังวลด้านความปลอดภัยเสมอไป ผู้เขียนอาจเลือกที่จะไม่ขอการยืนยันด้วยเหตุผลหลายประการ",
   "plugins.manage.modal_unverified_subtitle": "{{ pluginName }} ไม่ได้รับการรับรอง",
   "plugins.manage.modal_unverified_title": "ปลั๊กอินที่ไม่ได้รับการรับรอง",

@@ -223,6 +223,7 @@
   "plugins.manage.message_uninstall_remove_config_required": "Якщо Ви назавжди видаляєте цей плагін, переконайтеся, що Ви видалили всі налаштування для цього плагіну в config.json перед перезавантаженням Homebridge.",
   "plugins.manage.message_uninstall_remove_confirmation": "Ви впевнені, що бажаєте видалити {{ pluginName }}?",
   "plugins.manage.message_uninstall_remove_plugin_config": "Видалити налаштування плагіна?",
+  "plugins.manage.message_uninstall_unpair_child_bridges": "Unpair Child Bridges?",
   "plugins.manage.modal_unverified_message": "Неперевірені плагіни Homebridge свідчать про те, що вони не пройшли перевірку командою проекту Homebridge. Відсутність верифікації не обов’язково означає неефективність або проблеми з безпекою. Автори могли відмовитися від перевірки з різних причин.",
   "plugins.manage.modal_unverified_subtitle": "{{ pluginName }} не перевірено",
   "plugins.manage.modal_unverified_title": "Неперевірені плагіни",

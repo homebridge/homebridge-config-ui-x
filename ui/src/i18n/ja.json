@@ -223,6 +223,7 @@
   "plugins.manage.message_uninstall_remove_config_required": "このプラグインを永久に削除する場合は、Homebridgeを再起動する前にConfig.jsonでこのプラグインの設定を削除してください。",
   "plugins.manage.message_uninstall_remove_confirmation": "本当にプラグイン {{ pluginName }} をアンインストールしますか？",
   "plugins.manage.message_uninstall_remove_plugin_config": "プラグインコンフィグを削除しますか？",
+  "plugins.manage.message_uninstall_unpair_child_bridges": "Unpair Child Bridges?",
   "plugins.manage.modal_unverified_message": "未検証のHomebridgeプラグインは、Homebridgeプロジェクトチームによるレビュープロセスを経ていないことを示します。検証の欠如は、必ずしも非効率性や安全性の懸念を意味するものではありません。作者はさまざまな理由で検証を行わないことを選択したかもしれません。",
   "plugins.manage.modal_unverified_subtitle": "{{ pluginName }} は検証されていません。",
   "plugins.manage.modal_unverified_title": "検証されていないプラグイン",

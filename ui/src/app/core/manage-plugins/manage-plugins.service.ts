@@ -38,13 +38,14 @@ export class ManagePluginsService {
     ref.componentInstance.targetVersion = targetVersion
   }
 
-  uninstallPlugin(plugin: any) {
+  uninstallPlugin(plugin: any, childBridges: any[]) {
     const ref = this.modalService.open(UninstallPluginComponent, {
       size: 'lg',
       backdrop: 'static',
     })
     ref.componentInstance.action = 'Uninstall'
     ref.componentInstance.plugin = plugin
+    ref.componentInstance.childBridges = childBridges
   }
 
   async checkAndUpdatePlugin(plugin: any, targetVersion = 'latest') {
