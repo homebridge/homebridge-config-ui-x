@@ -1,4 +1,3 @@
-import { SettingsService } from '@/app/core/settings.service'
 import { Component } from '@angular/core'
 
 @Component({
@@ -10,9 +9,7 @@ export class SupportComponent {
     dev: true,
   }
 
-  constructor(
-    public $settings: SettingsService,
-  ) {}
+  constructor() {}
 
   toggleSection(section: string) {
     this.showFields[section] = !this.showFields[section]

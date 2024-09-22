@@ -8,7 +8,6 @@ import { WidgetsControlComponent } from '@/app/modules/status/widgets-control/wi
 import { Component, OnDestroy, OnInit } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { GridsterConfig, GridsterItem } from 'angular-gridster2'
-import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom, Subject } from 'rxjs'
 import { take } from 'rxjs/operators'
 
@@ -28,12 +27,11 @@ export class StatusComponent implements OnInit, OnDestroy {
   private io: IoNamespace
 
   constructor(
-    public $toastr: ToastrService,
-    private $modal: NgbModal,
-    private $ws: WsService,
-    private $notification: NotificationService,
     public $auth: AuthService,
+    private $modal: NgbModal,
+    private $notification: NotificationService,
     public $settings: SettingsService,
+    private $ws: WsService,
   ) {}
 
   ngOnInit() {

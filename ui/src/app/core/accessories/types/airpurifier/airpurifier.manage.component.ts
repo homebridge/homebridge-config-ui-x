@@ -16,7 +16,7 @@ export class AirpurifierManageComponent implements OnInit {
   public targetRotationSpeedChanged: Subject<string> = new Subject<string>()
 
   constructor(
-    public activeModal: NgbActiveModal,
+    public $activeModal: NgbActiveModal,
   ) {
     this.targetRotationSpeedChanged
       .pipe(

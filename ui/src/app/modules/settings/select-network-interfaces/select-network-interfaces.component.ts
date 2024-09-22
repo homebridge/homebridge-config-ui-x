@@ -9,11 +9,11 @@ export class SelectNetworkInterfacesComponent {
   @Input() bridgeNetworkAdapters: Record<string, any>
 
   constructor(
-    public activeModal: NgbActiveModal,
+    public $activeModal: NgbActiveModal,
   ) {}
 
   submit() {
-    this.activeModal.close(
+    this.$activeModal.close(
       this.availableNetworkAdapters.filter((x: any) => x.selected).map((x: any) => x.iface),
     )
   }

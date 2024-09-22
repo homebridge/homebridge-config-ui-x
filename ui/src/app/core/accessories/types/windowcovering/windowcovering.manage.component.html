@@ -2,7 +2,7 @@
   <div class="modal-header">
     <h5 class="modal-title" [innerText]="service.customName || service.serviceName"></h5>
     <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="activeModal.dismiss('Dismiss')">
+      (click)="$activeModal.dismiss('Dismiss')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
@@ -11,22 +11,22 @@
     <h5>
       <strong>
         <div *ngIf="service.values.PositionState === 2">
-          <span *ngIf="service.values.CurrentPosition === 0">{{ 'accessories.control.label_closed' | translate }}</span>
+          <span *ngIf="service.values.CurrentPosition === 0">{{ 'accessories.control.closed' | translate }}</span>
           <span *ngIf="service.values.CurrentPosition > 0 && service.values.CurrentPosition < 100">
-            {{ service.values.CurrentPosition }}% {{ 'accessories.control.label_open' | translate }}
+            {{ service.values.CurrentPosition }}% {{ 'accessories.control.open' | translate }}
           </span>
           <span *ngIf="service.values.CurrentPosition === 100">Open</span>
         </div>
         <div class="red-text" *ngIf="service.values.PositionState === 1">
-          {{ 'accessories.control.label_opening' | translate }}...
+          {{ 'accessories.control.opening' | translate }}...
         </div>
         <div class="red-text" *ngIf="service.values.PositionState === 0">
-          {{ 'accessories.control.label_closing' | translate }}...
+          {{ 'accessories.control.closing' | translate }}...
         </div>
       </strong>
     </h5>
 
-    <p>{{ 'accessories.control.label_target' | translate }}: {{ targetPosition.value }}%</p>
+    <p>{{ 'accessories.control.target' | translate }}: {{ targetPosition.value }}%</p>
     <nouislider [min]="targetPosition.min" [max]="targetPosition.max" [step]="targetPosition.step"
       [(ngModel)]="targetPosition.value" (ngModelChange)="onTargetPositionChange()">
     </nouislider>

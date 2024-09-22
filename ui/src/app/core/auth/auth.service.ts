@@ -21,8 +21,8 @@ export class AuthService {
   private logoutTimer: NodeJS.Timeout
 
   constructor(
-    private $jwtHelper: JwtHelperService,
     private $api: ApiService,
+    private $jwtHelper: JwtHelperService,
     private $settings: SettingsService,
   ) {
     // load the token (if present) from local storage on page init

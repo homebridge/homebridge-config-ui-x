@@ -1,6 +1,7 @@
 import { SettingsService } from '@/app/core/settings.service'
 import { Component } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
+import { Router } from '@angular/router'
 
 @Component({
   selector: 'app-root',
@@ -8,8 +9,9 @@ import { TranslateService } from '@ngx-translate/core'
 })
 export class AppComponent {
   constructor(
-    translate: TranslateService,
-    $settings: SettingsService,
+    private $router: Router,
+    private $translate: TranslateService,
+    private $settings: SettingsService,
   ) {
     // this array needs to be updated each time a new translation is added
     const languages = [
@@ -48,21 +50,21 @@ export class AppComponent {
     ]
 
     // watch for lang changes
-    translate.onLangChange.subscribe(() => {
-      $settings.rtl = rtlLanguages.includes(translate.currentLang)
+    $translate.onLangChange.subscribe(() => {
+      $settings.rtl = rtlLanguages.includes($translate.currentLang)
     })
 
-    const browserLang = languages.find(x => x === translate.getBrowserLang() || x === translate.getBrowserCultureLang())
+    const browserLang = languages.find(x => x === $translate.getBrowserLang() || x === $translate.getBrowserCultureLang())
 
     for (const lang of languages) {
       // eslint-disable-next-line ts/no-require-imports
-      translate.setTranslation(lang, require(`../i18n/${lang}.json`))
+      $translate.setTranslation(lang, require(`../i18n/${lang}.json`))
     }
 
     if (browserLang) {
-      translate.use(browserLang)
+      $translate.use(browserLang)
     } else {
-      translate.setDefaultLang('en')
+      $translate.setDefaultLang('en')
     }
   }
 }

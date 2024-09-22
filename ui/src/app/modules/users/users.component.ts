@@ -18,12 +18,12 @@ export class UsersComponent implements OnInit {
   public homebridgeUsers: Array<any>
 
   constructor(
-    public toastr: ToastrService,
-    private translate: TranslateService,
-    private modalService: NgbModal,
     private $api: ApiService,
-    private $route: ActivatedRoute,
     public $auth: AuthService,
+    private $modal: NgbModal,
+    private $route: ActivatedRoute,
+    private $toastr: ToastrService,
+    private $translate: TranslateService,
   ) {}
 
   ngOnInit() {
@@ -41,7 +41,7 @@ export class UsersComponent implements OnInit {
   }
 
   openAddNewUser() {
-    const ref = this.modalService.open(UsersAddComponent, {
+    const ref = this.$modal.open(UsersAddComponent, {
       size: 'lg',
       backdrop: 'static',
     })
@@ -52,7 +52,7 @@ export class UsersComponent implements OnInit {
   }
 
   openEditUser(user: any) {
-    const ref = this.modalService.open(UsersEditComponent, {
+    const ref = this.$modal.open(UsersEditComponent, {
       size: 'lg',
       backdrop: 'static',
     })
@@ -66,20 +66,20 @@ export class UsersComponent implements OnInit {
   deleteUser(id: string) {
     this.$api.delete(`/users/${id}`).subscribe({
       next: () => {
-        this.toastr.success(this.translate.instant('users.toast_user_deleted'), this.translate.instant('toast.title_success'))
+        this.$toastr.success(this.$translate.instant('users.toast_user_deleted'), this.$translate.instant('toast.title_success'))
         this.reloadUsers()
       },
       error: (err) => {
-        this.toastr.error(
-          err.error.message || this.translate.instant('users.toast_failed_to_delete_user'),
-          this.translate.instant('toast.title_error'),
+        this.$toastr.error(
+          err.error.message || this.$translate.instant('users.toast_failed_to_delete_user'),
+          this.$translate.instant('toast.title_error'),
         )
       },
     })
   }
 
   setup2fa(user: any) {
-    const ref = this.modalService.open(Users2faEnableComponent, {
+    const ref = this.$modal.open(Users2faEnableComponent, {
       size: 'lg',
       backdrop: 'static',
     })
@@ -91,7 +91,7 @@ export class UsersComponent implements OnInit {
   }
 
   disable2fa(user: any) {
-    const ref = this.modalService.open(Users2faDisableComponent, {
+    const ref = this.$modal.open(Users2faDisableComponent, {
       size: 'lg',
       backdrop: 'static',
     })

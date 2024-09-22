@@ -15,7 +15,7 @@ export class ValveManageComponent implements OnInit {
   private durationSeconds = [300, 600, 900, 1200, 1500, 1800, 2100, 2400, 2700, 3000, 3300, 3600]
 
   constructor(
-    public activeModal: NgbActiveModal,
+    public $activeModal: NgbActiveModal,
   ) {}
 
   ngOnInit() {

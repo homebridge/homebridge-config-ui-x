@@ -22,10 +22,10 @@ export class Users2faEnableComponent implements OnInit {
   })
 
   constructor(
-    public activeModal: NgbActiveModal,
-    private toastr: ToastrService,
-    private translate: TranslateService,
+    public $activeModal: NgbActiveModal,
     private $api: ApiService,
+    private $toastr: ToastrService,
+    private $translate: TranslateService,
   ) {}
 
   ngOnInit(): void {
@@ -37,10 +37,10 @@ export class Users2faEnableComponent implements OnInit {
         }
       },
       error: (err) => {
-        this.activeModal.dismiss()
-        this.toastr.error(
+        this.$activeModal.dismiss()
+        this.$toastr.error(
           err.error.message || 'An error occurred while attempting to setup 2FA',
-          this.translate.instant('toast.title_error'),
+          this.$translate.instant('toast.title_error'),
         )
       },
     })
@@ -58,11 +58,11 @@ export class Users2faEnableComponent implements OnInit {
   enable2fa() {
     this.$api.post('/users/otp/activate', this.formGroup.value).subscribe({
       next: () => {
-        this.toastr.success(this.translate.instant('users.setup_2fa_enabled_success'), this.translate.instant('toast.title_success'))
-        this.activeModal.close()
+        this.$toastr.success(this.$translate.instant('users.setup_2fa_enabled_success'), this.$translate.instant('toast.title_success'))
+        this.$activeModal.close()
       },
       error: (err) => {
-        this.toastr.error(err.error.message || 'An error occurred', this.translate.instant('toast.title_error'))
+        this.$toastr.error(err.error.message || 'An error occurred', this.$translate.instant('toast.title_error'))
       },
     })
   }

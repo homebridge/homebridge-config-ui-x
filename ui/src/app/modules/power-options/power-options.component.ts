@@ -13,7 +13,7 @@ export class PowerOptionsComponent {
     private $api: ApiService,
     private $router: Router,
     public $settings: SettingsService,
-    public $toastr: ToastrService,
+    private $toastr: ToastrService,
     private $translate: TranslateService,
   ) {}
 

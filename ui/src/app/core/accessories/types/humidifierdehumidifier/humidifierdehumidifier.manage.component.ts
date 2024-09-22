@@ -23,7 +23,7 @@ export class HumidifierDehumidifierManageComponent implements OnInit {
   public autoHumidity: [number, number]
 
   constructor(
-    public activeModal: NgbActiveModal,
+    public $activeModal: NgbActiveModal,
   ) {
     this.targetHumidityChanged
       .pipe(

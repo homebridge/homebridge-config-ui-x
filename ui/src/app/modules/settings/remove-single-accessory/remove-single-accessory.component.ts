@@ -13,10 +13,10 @@ export class RemoveSingleAccessoryComponent implements OnInit {
   public deleting: null | string = null
 
   constructor(
-    public activeModal: NgbActiveModal,
-    public toastr: ToastrService,
-    private translate: TranslateService,
+    public $activeModal: NgbActiveModal,
     private $api: ApiService,
+    private $toastr: ToastrService,
+    private $translate: TranslateService,
   ) {}
 
   ngOnInit(): void {
@@ -27,18 +27,18 @@ export class RemoveSingleAccessoryComponent implements OnInit {
     try {
       this.cachedAccessories = await firstValueFrom(this.$api.get('/server/cached-accessories'))
     } catch (e) {
-      this.toastr.error(
-        this.translate.instant('reset.toast_error_message'),
-        this.translate.instant('toast.title_error'),
+      this.$toastr.error(
+        this.$translate.instant('reset.toast_error_message'),
+        this.$translate.instant('toast.title_error'),
       )
-      this.activeModal.close()
+      this.$activeModal.close()
     }
   }
 
   removeAccessory(item: any) {
     this.deleting = item.UUID
 
-    this.toastr.info(this.translate.instant('reset.toast_removing_cached_accessory_please_wait'))
+    this.$toastr.info(this.$translate.instant('reset.toast_removing_cached_accessory_please_wait'))
 
     this.$api.delete(`/server/cached-accessories/${item.UUID}`, {
       params: {
@@ -51,16 +51,16 @@ export class RemoveSingleAccessoryComponent implements OnInit {
         this.deleting = null
 
         if (!this.cachedAccessories.length) {
-          this.activeModal.close()
+          this.$activeModal.close()
         }
 
-        this.toastr.success(this.translate.instant('reset.toast_cached_accessory_removed'), this.translate.instant('toast.title_success'))
+        this.$toastr.success(this.$translate.instant('reset.toast_cached_accessory_removed'), this.$translate.instant('toast.title_success'))
       },
       error: () => {
         this.deleting = null
-        this.toastr.error(
-          this.translate.instant('reset.toast_failed_to_delete_cached_accessory'),
-          this.translate.instant('toast.title_error'),
+        this.$toastr.error(
+          this.$translate.instant('reset.toast_failed_to_delete_cached_accessory'),
+          this.$translate.instant('toast.title_error'),
         )
       },
     })

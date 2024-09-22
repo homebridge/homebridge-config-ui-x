@@ -35,13 +35,13 @@ export class PluginConfigComponent implements OnInit {
   public childBridges: any[] = []
 
   constructor(
-    public activeModal: NgbActiveModal,
+    public $activeModal: NgbActiveModal,
     private $api: ApiService,
-    public $plugin: ManagePluginsService,
+    private $plugin: ManagePluginsService,
     private $router: Router,
     private $settings: SettingsService,
     private $toastr: ToastrService,
-    private translate: TranslateService,
+    private $translate: TranslateService,
   ) {}
 
   ngOnInit() {
@@ -74,7 +74,7 @@ export class PluginConfigComponent implements OnInit {
         }
       },
       error: (err) => {
-        this.$toastr.error(`Failed to load config: ${err.error?.message}`, this.translate.instant('toast.title_error'))
+        this.$toastr.error(`Failed to load config: ${err.error?.message}`, this.$translate.instant('toast.title_error'))
       },
     })
   }
@@ -86,26 +86,27 @@ export class PluginConfigComponent implements OnInit {
     try {
       const newConfig = await firstValueFrom(this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, configBlocks))
 
-      // reload app settings if the config was changed for Homebridge UI
       if (this.plugin.name === 'homebridge-config-ui-x') {
+        // Reload app settings if the config was changed for Homebridge UI
         this.$settings.getAppSettings().catch()
-      }
-
-      // If it is the first time configuring a plugin, then offer to set up a child bridge straight away
-      if (this.isFirstSave) {
-        if (this.$settings.env.recommendChildBridges && this.$settings.env.serviceMode && newConfig[0]?.platform) {
-          // Close the modal and open the child bridge setup modal
-          this.activeModal.close()
-          await this.$plugin.bridgeSettings(this.plugin)
-        }
       } else {
-        this.getChildBridges()
+        // Possible child bridge setup recommendation if the plugin is not Homebridge UI
+        // If it is the first time configuring the plugin, then offer to set up a child bridge straight away
+        if (this.isFirstSave) {
+          if (this.$settings.env.recommendChildBridges && this.$settings.env.serviceMode && newConfig[0]?.platform) {
+            // Close the modal and open the child bridge setup modal
+            this.$activeModal.close()
+            this.$plugin.bridgeSettings(this.plugin)
+          }
+        } else {
+          this.getChildBridges()
+        }
       }
       this.justSavedAndExited = true
     } catch (err) {
       this.$toastr.error(
-        this.translate.instant('config.toast_failed_to_save_config'),
-        this.translate.instant('toast.title_error'),
+        this.$translate.instant('config.toast_failed_to_save_config'),
+        this.$translate.instant('toast.title_error'),
       )
     } finally {
       this.saveInProgress = false
@@ -149,14 +150,14 @@ export class PluginConfigComponent implements OnInit {
       })
       return this.childBridges
     } catch (err) {
-      this.$toastr.error(err.message, this.translate.instant('toast.title_error'))
+      this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
       return []
     }
   }
 
   public onRestartHomebridgeClick() {
     this.$router.navigate(['/restart'])
-    this.activeModal.close()
+    this.$activeModal.close()
   }
 
   public async onRestartChildBridgeClick() {
@@ -165,16 +166,16 @@ export class PluginConfigComponent implements OnInit {
         await firstValueFrom(this.$api.put(`/server/restart/${bridge.username}`, {}))
       }
       this.$toastr.success(
-        this.translate.instant('plugins.manage.child_bridge_restart_success'),
-        this.translate.instant('toast.title_success'),
+        this.$translate.instant('plugins.manage.child_bridge_restart_success'),
+        this.$translate.instant('toast.title_success'),
       )
     } catch (err) {
       this.$toastr.error(
-        this.translate.instant('plugins.manage.child_bridge_restart_failed'),
-        this.translate.instant('toast.title_error'),
+        this.$translate.instant('plugins.manage.child_bridge_restart_failed'),
+        this.$translate.instant('toast.title_error'),
       )
     } finally {
-      this.activeModal.close()
+      this.$activeModal.close()
     }
   }
 

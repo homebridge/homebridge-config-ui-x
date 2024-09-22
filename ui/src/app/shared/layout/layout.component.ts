@@ -20,12 +20,12 @@ export class LayoutComponent implements OnInit {
   private io: IoNamespace
 
   constructor(
-    public translate: TranslateService,
-    private $ws: WsService,
     public $auth: AuthService,
-    public $settings: SettingsService,
     private $modal: NgbModal,
     private $router: Router,
+    public $settings: SettingsService,
+    private $translate: TranslateService,
+    private $ws: WsService,
   ) {}
 
   ngOnInit() {
@@ -50,12 +50,12 @@ export class LayoutComponent implements OnInit {
         backdrop: 'static',
       })
 
-      ref.componentInstance.title = this.translate.instant('platform.version.title_service_restart_required')
-      ref.componentInstance.message = this.translate.instant('platform.version.message_service_restart_required', {
+      ref.componentInstance.title = this.$translate.instant('platform.version.title_service_restart_required')
+      ref.componentInstance.message = this.$translate.instant('platform.version.message_service_restart_required', {
         serverVersion: this.$settings.uiVersion,
         uiVersion: environment.serverTarget,
       })
-      ref.componentInstance.confirmButtonLabel = this.translate.instant('menu.tooltip_restart')
+      ref.componentInstance.confirmButtonLabel = this.$translate.instant('menu.tooltip_restart')
       ref.componentInstance.faIconClass = 'fas fa-fw-power-off'
 
       ref.result.then(() => {

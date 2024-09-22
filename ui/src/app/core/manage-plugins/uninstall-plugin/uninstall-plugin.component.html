@@ -1,8 +1,8 @@
 <div class="modal-content" style="min-height: 300px;">
   <div class="modal-header">
-    <h5 class="modal-title">{{ 'plugins.manage.label_uninstall' | translate }}: {{ plugin.displayName || plugin.name }}</h5>
+    <h5 class="modal-title">{{ 'plugins.manage.uninstall' | translate }}: {{ plugin.displayName || plugin.name }}</h5>
     <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="activeModal.dismiss('Dismiss')">
+      (click)="$activeModal.dismiss('Dismiss')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
@@ -12,32 +12,35 @@
     </div>
     <div class="w-100" *ngIf="!loading">
       <i class="fas fa-fw fa-trash primary-text mb-4" style="font-size: 75px;"></i>
-      <p>{{ 'plugins.manage.message_uninstall_remove_confirmation' | translate: { pluginName: plugin.name } }}</p>
-      <p *ngIf="pluginAlias && pluginType">
-        <label class="hb-uix-switch d-inline" for="remove-plugin-config">
-          <input id="remove-plugin-config" type="checkbox" [(ngModel)]="removeConfig">
-          <span>{{ 'plugins.manage.message_uninstall_remove_plugin_config' | translate }}</span>
-          <span class="hb-uix-slider hb-uix-round"></span>
-        </label>
-      </p>
-      <p *ngIf="hasChildBridges" class="mb-4">
-        <label class="hb-uix-switch d-inline" for="remove-plugin-child-bridges">
-          <input id="remove-plugin-child-bridges" type="checkbox" [(ngModel)]="removeChildBridges">
-          <span>{{ 'plugins.manage.message_uninstall_unpair_child_bridges' | translate }}</span>
-          <span class="hb-uix-slider hb-uix-round"></span>
-        </label>
-      </p>
+      <p>{{ 'plugins.uninstall_remove_confirmation' | translate: { pluginName: plugin.name } }}</p>
+      <div class="text-center">
+        <p *ngIf="pluginAlias && pluginType" class="d-inline-block text-left">
+          <label class="hb-uix-switch d-block" for="remove-plugin-config">
+            <input id="remove-plugin-config" type="checkbox" [(ngModel)]="removeConfig">
+            <span>{{ 'plugins.uninstall_remove_plugin_config' | translate }}</span>
+            <span class="hb-uix-slider hb-uix-round"></span>
+          </label>
+          <label *ngIf="hasChildBridges" class="hb-uix-switch d-block" for="remove-plugin-child-bridges">
+            <input id="remove-plugin-child-bridges" type="checkbox" [(ngModel)]="removeChildBridges">
+            <span *ngIf="childBridges.length === 1">{{ 'plugins.uninstall_unpair_child_bridge' | translate }}</span>
+            <span *ngIf="childBridges.length > 1">
+              {{ 'plugins.uninstall_unpair_child_bridges' | translate: { count: childBridges.length } }}
+            </span>
+            <span class="hb-uix-slider hb-uix-round"></span>
+          </label>
+        </p>
+      </div>
       <ngb-alert type="warning" [dismissible]="false" *ngIf="hasChildBridges && removeChildBridges">
         {{ 'reset.bridges_single.list_2' | translate }}
       </ngb-alert>
       <ngb-alert *ngIf="!pluginAlias || !pluginType" type="info" [dismissible]="false">
-        {{ 'plugins.manage.message_uninstall_remove_config_required' | translate }}
+        {{ 'plugins.uninstall_remove_config_required' | translate }}
       </ngb-alert>
     </div>
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-left">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')"
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="$activeModal.dismiss('Dismiss')"
         [attr.aria-label]="'form.button_close' | translate">
         {{ 'form.button_close' | translate }}
       </button>
@@ -45,7 +48,7 @@
     <div class="text-center"></div>
     <div class="text-right">
       <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="doUninstall()" [disabled]="loading">
-        {{ 'plugins.manage.label_uninstall' | translate }}
+        {{ 'plugins.manage.uninstall' | translate }}
       </button>
     </div>
   </div>

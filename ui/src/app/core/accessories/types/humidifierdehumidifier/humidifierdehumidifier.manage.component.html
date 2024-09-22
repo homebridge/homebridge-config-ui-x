@@ -2,7 +2,7 @@
   <div class="modal-header">
     <h5 class="modal-title" [innerText]="service.customName || service.serviceName"></h5>
     <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="activeModal.dismiss('Dismiss')">
+      (click)="$activeModal.dismiss('Dismiss')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
@@ -20,21 +20,21 @@
     <div class="humidity-mode-control btn-group-vertical btn-group-toggle d-flex justify-content-center mb-4"
       ngbRadioGroup name="radioBasic" [(ngModel)]="targetMode" (change)="onTargetStateChange()">
       <label ngbButtonLabel class="btn-primary  m-0">
-        <input ngbButton type="radio" [value]="0"> {{ 'accessories.control.label_auto' | translate }}
+        <input ngbButton type="radio" [value]="0"> {{ 'accessories.control.auto' | translate }}
       </label>
       <label ngbButtonLabel class="btn-primary  m-0">
-        <input ngbButton type="radio" [value]="1"> {{ 'accessories.control.label_humidifying' | translate }}
+        <input ngbButton type="radio" [value]="1"> {{ 'accessories.control.humidifying' | translate }}
       </label>
       <label ngbButtonLabel class="btn-primary  m-0">
-        <input ngbButton type="radio" [value]="2"> {{ 'accessories.control.label_dehumidifying' | translate }}
+        <input ngbButton type="radio" [value]="2"> {{ 'accessories.control.dehumidifying' | translate }}
       </label>
       <label ngbButtonLabel class="btn-primary m-0">
-        <input ngbButton type="radio" [value]="'off'"> {{ 'accessories.control.label_off' | translate }}
+        <input ngbButton type="radio" [value]="'off'"> {{ 'accessories.control.off' | translate }}
       </label>
     </div>
 
     <div *ngIf="service.values.Active === 1 && RelativeHumidityHumidifierThreshold && RelativeHumidityDehumidifierThreshold">
-      <h5>{{ 'accessories.control.label_target_humidity' | translate }}</h5>
+      <h5>{{ 'accessories.control.target_humidity' | translate }}</h5>
 
       <div [ngSwitch]="targetMode">
         <div *ngSwitchCase="0">

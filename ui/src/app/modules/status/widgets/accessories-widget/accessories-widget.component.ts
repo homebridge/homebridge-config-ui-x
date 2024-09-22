@@ -20,19 +20,19 @@ export class AccessoriesWidgetComponent implements OnInit, OnDestroy {
   private orderSubscription: Subscription
 
   constructor(
-    private dragulaService: DragulaService,
-    public $accessories: AccessoriesService,
+    private $accessories: AccessoriesService,
+    private $dragula: DragulaService,
     private $md: MobileDetectService,
   ) {
     this.isMobile = this.$md.detect.mobile()
 
     // disable drag and drop for the .no-drag class
-    dragulaService.createGroup('widget-accessories-bag', {
+    $dragula.createGroup('widget-accessories-bag', {
       moves: el => !this.isMobile && !el.classList.contains('no-drag'),
     })
 
     // save the room and service layout
-    this.orderSubscription = dragulaService.drop().subscribe(() => {
+    this.orderSubscription = $dragula.drop().subscribe(() => {
       setTimeout(() => {
         this.widget.accessoryOrder = this.dashboardAccessories.map(x => x.uniqueId)
         this.widget.$saveWidgetsEvent.next(undefined)
@@ -90,6 +90,6 @@ export class AccessoriesWidgetComponent implements OnInit, OnDestroy {
     this.layoutSubscription.unsubscribe()
     this.orderSubscription.unsubscribe()
     this.accessoryDataSubscription.unsubscribe()
-    this.dragulaService.destroy('widget-accessories-bag')
+    this.$dragula.destroy('widget-accessories-bag')
   }
 }

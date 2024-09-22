@@ -12,7 +12,7 @@ export class DoorComponent {
   @Input() public service: ServiceTypeX
 
   constructor(
-    private modalService: NgbModal,
+    private $modal: NgbModal,
   ) {}
 
   onClick() {
@@ -24,7 +24,7 @@ export class DoorComponent {
   }
 
   onLongClick() {
-    const ref = this.modalService.open(DoorManageComponent, {
+    const ref = this.$modal.open(DoorManageComponent, {
       size: 'md',
     })
     ref.componentInstance.service = this.service

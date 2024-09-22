@@ -10,9 +10,9 @@ import { ToastrService } from 'ngx-toastr'
 })
 export class HomebridgeHueComponent {
   constructor(
-    private translate: TranslateService,
-    public $toastr: ToastrService,
     private $api: ApiService,
+    private $translate: TranslateService,
+    private $toastr: ToastrService,
   ) {}
 
   downloadDumpFile() {
@@ -21,7 +21,7 @@ export class HomebridgeHueComponent {
         saveAs(res.body, 'homebridge-hue.json.gz')
       },
       error: () => {
-        this.$toastr.error('Homebridge Hue dump file does not exist yet.', this.translate.instant('toast.title_error'))
+        this.$toastr.error('Homebridge Hue dump file does not exist yet.', this.$translate.instant('toast.title_error'))
       },
     })
   }

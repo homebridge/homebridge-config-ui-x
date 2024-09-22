@@ -74,11 +74,11 @@ export class SettingsComponent implements OnInit {
   }
 
   constructor(
-    public $settings: SettingsService,
     private $api: ApiService,
-    public $toastr: ToastrService,
     private $modal: NgbModal,
-    public $plugin: ManagePluginsService,
+    private $plugin: ManagePluginsService,
+    public $settings: SettingsService,
+    private $toastr: ToastrService,
     private $translate: TranslateService,
   ) {}
 

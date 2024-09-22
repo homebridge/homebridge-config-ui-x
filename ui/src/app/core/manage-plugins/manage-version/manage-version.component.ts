@@ -25,7 +25,7 @@ export class ManageVersionComponent implements OnInit {
   public versionSelect: string
 
   constructor(
-    public activeModal: NgbActiveModal,
+    public $activeModal: NgbActiveModal,
     private $api: ApiService,
     private $toastr: ToastrService,
     private $translate: TranslateService,
@@ -76,13 +76,13 @@ export class ManageVersionComponent implements OnInit {
       },
       error: (err) => {
         this.$toastr.error(`${err.error.message || err.message}`, this.$translate.instant('toast.title_error'))
-        this.activeModal.dismiss()
+        this.$activeModal.dismiss()
       },
     })
   }
 
   doInstall(selectedVersion: string) {
-    this.activeModal.close({
+    this.$activeModal.close({
       name: this.plugin.name,
       version: selectedVersion,
       engines: this.versions.find(x => x.version === selectedVersion).engines,

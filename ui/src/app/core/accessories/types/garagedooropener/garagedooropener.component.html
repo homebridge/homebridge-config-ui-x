@@ -6,18 +6,18 @@
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
 
     <div class="accessory-label" *ngIf="service.values.CurrentDoorState < 2 "
-      [innerText]="(service.values.CurrentDoorState ? 'accessories.control.label_closed' : 'accessories.control.label_open') | translate"
+      [innerText]="(service.values.CurrentDoorState ? 'accessories.control.closed' : 'accessories.control.open') | translate"
       [ngClass]="{'red-text': !service.values.CurrentDoorState, 'grey-text': service.values.CurrentDoorState}">
     </div>
 
     <div class="accessory-label red-text" *ngIf="service.values.CurrentDoorState === 2">
-      {{ 'accessories.control.label_opening' | translate }}...
+      {{ 'accessories.control.opening' | translate }}...
     </div>
     <div class="accessory-label red-text" *ngIf="service.values.CurrentDoorState === 3">
-      {{ 'accessories.control.label_closing' | translate }}...
+      {{ 'accessories.control.closing' | translate }}...
     </div>
     <div class="accessory-label red-text" *ngIf="service.values.CurrentDoorState === 4">
-      {{ 'accessories.control.label_stopped' | translate }}
+      {{ 'accessories.control.stopped' | translate }}
     </div>
   </div>
 </div>

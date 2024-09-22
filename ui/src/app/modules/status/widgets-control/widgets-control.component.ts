@@ -57,15 +57,15 @@ export class WidgetsControlComponent implements OnInit {
 
   // cpu
   public temperatureUnits = [
-    { label: 'status.widget.label_temperature_units_system_default', value: '' },
-    { label: 'status.widget.label_temperature_units_celsius', value: 'c' },
-    { label: 'status.widget.label_temperature_units_fahrenheit', value: 'f' },
+    { label: 'status.widget.temp_units_system_default', value: '' },
+    { label: 'status.widget.temp_units_celsius', value: 'c' },
+    { label: 'status.widget.temp_units_fahrenheit', value: 'f' },
   ]
 
   public networkInterfaces: string[] = []
 
   constructor(
-    public activeModal: NgbActiveModal,
+    public $activeModal: NgbActiveModal,
     private $api: ApiService,
     private $http: HttpClient,
     private $translate: TranslateService,

@@ -10,9 +10,9 @@ import { ToastrService } from 'ngx-toastr'
 })
 export class HomebridgeDeconzComponent {
   constructor(
-    private translate: TranslateService,
-    public $toastr: ToastrService,
     private $api: ApiService,
+    private $toastr: ToastrService,
+    private $translate: TranslateService,
   ) {}
 
   downloadDumpFile() {
@@ -21,7 +21,7 @@ export class HomebridgeDeconzComponent {
         saveAs(res.body, 'homebridge-deconz.json.gz')
       },
       error: () => {
-        this.$toastr.error('Homebridge deCONZ dump file does not exist yet.', this.translate.instant('toast.title_error'))
+        this.$toastr.error('Homebridge deCONZ dump file does not exist yet.', this.$translate.instant('toast.title_error'))
       },
     })
   }

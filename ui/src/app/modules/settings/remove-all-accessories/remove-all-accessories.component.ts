@@ -13,10 +13,10 @@ export class RemoveAllAccessoriesComponent implements OnInit {
   public cachedAccessories: any[]
 
   constructor(
-    public activeModal: NgbActiveModal,
-    public toastr: ToastrService,
-    private translate: TranslateService,
+    public $activeModal: NgbActiveModal,
     private $api: ApiService,
+    private $toastr: ToastrService,
+    private $translate: TranslateService,
   ) {}
 
   ngOnInit(): void {
@@ -27,11 +27,11 @@ export class RemoveAllAccessoriesComponent implements OnInit {
     try {
       this.cachedAccessories = await firstValueFrom(this.$api.get('/server/cached-accessories'))
     } catch (e) {
-      this.toastr.error(
-        this.translate.instant('reset.toast_error_message'),
-        this.translate.instant('toast.title_error'),
+      this.$toastr.error(
+        this.$translate.instant('reset.toast_error_message'),
+        this.$translate.instant('toast.title_error'),
       )
-      this.activeModal.close()
+      this.$activeModal.close()
     }
   }
 
@@ -39,14 +39,14 @@ export class RemoveAllAccessoriesComponent implements OnInit {
     this.clicked = true
     return this.$api.put('/server/reset-cached-accessories', {}).subscribe({
       next: () => {
-        this.toastr.success(
-          this.translate.instant('reset.toast_clear_cached_accessories_success'),
-          this.translate.instant('toast.title_success'),
+        this.$toastr.success(
+          this.$translate.instant('reset.toast_clear_cached_accessories_success'),
+          this.$translate.instant('toast.title_success'),
         )
-        this.activeModal.close()
+        this.$activeModal.close()
       },
       error: () => {
-        this.toastr.error(this.translate.instant('reset.toast_failed_to_reset'), this.translate.instant('toast.title_error'))
+        this.$toastr.error(this.$translate.instant('reset.toast_failed_to_reset'), this.$translate.instant('toast.title_error'))
       },
     })
   }

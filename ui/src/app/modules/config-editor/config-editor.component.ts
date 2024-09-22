@@ -31,16 +31,15 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   private visualViewPortEventCallback: () => void
 
   constructor(
-    private $settings: SettingsService,
     private $api: ApiService,
     private $md: MobileDetectService,
     private $modal: NgbModal,
     private $monacoEditor: MonacoEditorService,
-    public $toastr: ToastrService,
     private $route: ActivatedRoute,
-    private translate: TranslateService,
-    private modalService: NgbModal,
-    private renderer: Renderer2,
+    private $renderer: Renderer2,
+    private $settings: SettingsService,
+    private $toastr: ToastrService,
+    private $translate: TranslateService,
   ) {
     this.isMobile = this.$md.detect.mobile()
   }
@@ -53,7 +52,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     }
 
     const content = document.querySelector('.content')
-    this.renderer.setStyle(content, 'height', '100%')
+    this.$renderer.setStyle(content, 'height', '100%')
 
     // capture viewport events
     this.visualViewPortEventCallback = () => this.visualViewPortChanged()
@@ -141,8 +140,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
           if (issue.message === 'Duplicate object key') {
             this.saveInProgress = false
             this.$toastr.error(
-              this.translate.instant('config.toast_config_invalid_json'),
-              this.translate.instant('toast.title_error'),
+              this.$translate.instant('config.toast_config_invalid_json'),
+              this.$translate.instant('toast.title_error'),
             )
             return
           }
@@ -161,23 +160,23 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       // basic validation of homebridge config spec
       if (typeof (config.bridge) !== 'object') {
         this.$toastr.error(
-          this.translate.instant('config.toast_config_bridge_missing'),
-          this.translate.instant('toast.title_error'),
+          this.$translate.instant('config.toast_config_bridge_missing'),
+          this.$translate.instant('toast.title_error'),
         )
       } else if (!/^(?:[0-9A-F]{2}:){5}[0-9A-F]{2}$/i.test(config.bridge.username)) {
         this.$toastr.error(
-          this.translate.instant('config.toast_config_username_format_error'),
-          this.translate.instant('toast.title_error'),
+          this.$translate.instant('config.toast_config_username_format_error'),
+          this.$translate.instant('toast.title_error'),
         )
       } else if (config.accessories && !Array.isArray(config.accessories)) {
         this.$toastr.error(
-          this.translate.instant('config.toast_config_accessory_must_be_array'),
-          this.translate.instant('toast.title_error'),
+          this.$translate.instant('config.toast_config_accessory_must_be_array'),
+          this.$translate.instant('toast.title_error'),
         )
       } else if (config.platforms && !Array.isArray(config.platforms)) {
         this.$toastr.error(
-          this.translate.instant('config.toast_config_platform_must_be_array'),
-          this.translate.instant('toast.title_error'),
+          this.$translate.instant('config.toast_config_platform_must_be_array'),
+          this.$translate.instant('toast.title_error'),
         )
       } else if (config.platforms && Array.isArray(config.platforms) && !this.validateSection(config.platforms, 'platform')) {
         // handled in validator function
@@ -197,8 +196,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       }
     } catch (e) {
       this.$toastr.error(
-        this.translate.instant('config.toast_config_invalid_json'),
-        this.translate.instant('toast.title_error'),
+        this.$translate.instant('config.toast_config_invalid_json'),
+        this.$translate.instant('toast.title_error'),
       )
     }
     this.saveInProgress = false
@@ -226,12 +225,12 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
         backdrop: 'static',
       })
     } catch {
-      this.$toastr.error(this.translate.instant('config.toast_failed_to_save_config'), this.translate.instant('toast.title_error'))
+      this.$toastr.error(this.$translate.instant('config.toast_failed_to_save_config'), this.$translate.instant('toast.title_error'))
     }
   }
 
   onRestore() {
-    this.modalService.open(ConfigRestoreComponent, {
+    this.$modal.open(ConfigRestoreComponent, {
       size: 'lg',
       backdrop: 'static',
     }).result.then((backupId) => {
@@ -242,8 +241,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       this.$api.get(`/config-editor/backups/${backupId}`).subscribe({
         next: (json) => {
           this.$toastr.warning(
-            this.translate.instant('config.toast_click_save_to_confirm_backup_restore'),
-            this.translate.instant('config.toast_title_backup_loaded'),
+            this.$translate.instant('config.toast_click_save_to_confirm_backup_restore'),
+            this.$translate.instant('config.toast_title_backup_loaded'),
           )
 
           this.homebridgeConfig = JSON.stringify(json, null, 4)
@@ -277,7 +276,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
             ])
           }
         },
-        error: err => this.$toastr.error(err.error.message || 'Failed to load config backup', this.translate.instant('toast.title_error')),
+        error: err => this.$toastr.error(err.error.message || 'Failed to load config backup', this.$translate.instant('toast.title_error')),
       })
     }).catch(() => { /* modal dismissed */ })
   }
@@ -301,21 +300,21 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     for (const section of sections) {
       // check section is an object
       if (typeof section !== 'object' || Array.isArray(section)) {
-        this.$toastr.error(`All ${type} blocks must be objects.`, this.translate.instant('toast.title_error'))
+        this.$toastr.error(`All ${type} blocks must be objects.`, this.$translate.instant('toast.title_error'))
         this.highlightOffendingArrayItem(section)
         return false
       }
 
       // check section contains platform/accessory key
       if (!section[type]) {
-        this.$toastr.error(`All ${type} blocks must contain the "${type}" attribute.`, this.translate.instant('toast.title_error'))
+        this.$toastr.error(`All ${type} blocks must contain the "${type}" attribute.`, this.$translate.instant('toast.title_error'))
         this.highlightOffendingArrayItem(section)
         return false
       }
 
       // check section platform/accessory key is a string
       if (typeof section[type] !== 'string') {
-        this.$toastr.error(`The "${type}" attribute must be a string.`, this.translate.instant('toast.title_error'))
+        this.$toastr.error(`The "${type}" attribute must be a string.`, this.$translate.instant('toast.title_error'))
         this.highlightOffendingArrayItem(section)
         return false
       }
@@ -328,7 +327,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   validatePlugins(plugins: any[], key: string) {
     for (const item of plugins) {
       if (typeof item !== 'string') {
-        this.$toastr.error(`Each item in the ${key} array must be a string.`, this.translate.instant('toast.title_error'))
+        this.$toastr.error(`Each item in the ${key} array must be a string.`, this.$translate.instant('toast.title_error'))
         return false
       }
     }
@@ -590,7 +589,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     const content = document.querySelector('.content')
-    this.renderer.removeStyle(content, 'height')
+    this.$renderer.removeStyle(content, 'height')
 
     if (window.visualViewport) {
       window.visualViewport.removeEventListener('resize', this.visualViewPortEventCallback, true)

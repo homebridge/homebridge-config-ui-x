@@ -6,6 +6,6 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 })
 export class CreditsComponent {
   constructor(
-    public activeModal: NgbActiveModal,
+    public $activeModal: NgbActiveModal,
   ) {}
 }

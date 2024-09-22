@@ -10,6 +10,6 @@ export class DisablePluginComponent {
   @Input() isConfiguredDynamicPlatform = false
 
   constructor(
-    public activeModal: NgbActiveModal,
+    public $activeModal: NgbActiveModal,
   ) {}
 }
