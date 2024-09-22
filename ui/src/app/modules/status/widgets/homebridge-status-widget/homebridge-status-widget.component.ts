@@ -22,11 +22,11 @@ export class HomebridgeStatusWidgetComponent implements OnInit {
   private io: IoNamespace
 
   constructor(
-    private $ws: WsService,
-    private $settings: SettingsService,
-    public $toastr: ToastrService,
     public $plugin: ManagePluginsService,
+    private $settings: SettingsService,
+    private $toastr: ToastrService,
     private $translate: TranslateService,
+    private $ws: WsService,
   ) {}
 
   async ngOnInit() {

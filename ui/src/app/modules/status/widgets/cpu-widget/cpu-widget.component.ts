@@ -73,8 +73,8 @@ export class CpuWidgetComponent implements OnInit, OnDestroy {
   private intervalSubscription: Subscription
 
   constructor(
-    private $ws: WsService,
     public $settings: SettingsService,
+    private $ws: WsService,
   ) {}
 
   ngOnInit() {

@@ -31,13 +31,13 @@ export class SetupWizardComponent implements OnInit, OnDestroy {
   public restoreUploading = false
 
   constructor(
-    private $modal: NgbModal,
-    private $translate: TranslateService,
-    private $toastr: ToastrService,
-    private $title: Title,
     private $api: ApiService,
     private $auth: AuthService,
+    private $modal: NgbModal,
     private $settings: SettingsService,
+    private $title: Title,
+    private $toastr: ToastrService,
+    private $translate: TranslateService,
   ) {}
 
   ngOnInit(): void {

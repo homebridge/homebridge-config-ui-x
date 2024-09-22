@@ -7,17 +7,17 @@
       [attr.aria-label]="'Window Covering'" class="accessory-svg"></div>
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
     <div class="accessory-label grey-text" *ngIf="service.values.PositionState === 2">
-      <span *ngIf="service.values.CurrentPosition === 0">{{ 'accessories.control.label_closed' | translate }}</span>
+      <span *ngIf="service.values.CurrentPosition === 0">{{ 'accessories.control.closed' | translate }}</span>
       <span *ngIf="service.values.CurrentPosition > 0 && service.values.CurrentPosition < 100">
         {{ service.values.CurrentPosition }}%
       </span>
-      <span *ngIf="service.values.CurrentPosition === 100">{{ 'accessories.control.label_open' | translate }}</span>
+      <span *ngIf="service.values.CurrentPosition === 100">{{ 'accessories.control.open' | translate }}</span>
     </div>
     <div class="accessory-label red-text" *ngIf="service.values.PositionState === 1">
-      {{ 'accessories.control.label_opening' | translate }}...
+      {{ 'accessories.control.opening' | translate }}...
     </div>
     <div class="accessory-label red-text" *ngIf="service.values.PositionState === 0">
-      {{ 'accessories.control.label_closing' | translate }}...
+      {{ 'accessories.control.closing' | translate }}...
     </div>
   </div>
 </div>

@@ -1,4 +1,3 @@
-import { AuthService } from '@/app/core/auth/auth.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { Component, Input, OnDestroy, OnInit } from '@angular/core'
 import { interval, Subscription } from 'rxjs'
@@ -17,7 +16,6 @@ export class UptimeWidgetComponent implements OnInit, OnDestroy {
 
   constructor(
     private $ws: WsService,
-    public $auth: AuthService,
   ) {}
 
   ngOnInit() {

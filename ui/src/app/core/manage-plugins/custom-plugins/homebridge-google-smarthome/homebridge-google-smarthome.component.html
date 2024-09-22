@@ -2,7 +2,7 @@
   <div class="modal-header">
     <h5 class="modal-title">Homebridge Google Smart Home</h5>
     <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="activeModal.dismiss('Dismiss')">
+      (click)="$activeModal.dismiss('Dismiss')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
@@ -10,24 +10,24 @@
   <div class="modal-body" *ngIf="!$settings.env.enableAccessories">
     <div *ngIf="!$settings.env.enableAccessories">
       <div class="alert alert-warning" role="alert">
-        <p>{{ 'accessories.message_must_use_insecure_mode' | translate }}</p>
+        <p>{{ 'accessories.must_use_insecure_mode' | translate }}</p>
         <p class="mb-0">
-          <span>{{ 'accessories.message_please_see' | translate }} </span>
+          <span>{{ 'accessories.please_see' | translate }} </span>
           <a target="_blank" rel="noopener noreferrer" href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Enabling-Accessory-Control">
             https://github.com/homebridge/homebridge-config-ui-x/wiki/Enabling-Accessory-Control
           </a>
-          <span> {{ 'accessories.message_for_more_information' | translate }}</span>
+          <span> {{ 'accessories.for_more_information' | translate }}</span>
         </p>
       </div>
     </div>
   </div>
 
   <div class="modal-body" *ngIf="$settings.env.enableAccessories">
-    <p>{{ 'plugins.settings.custom.homebridge-gsh.message_about' | translate }}</p>
-    <p *ngIf="!gshConfig.token">{{ 'plugins.settings.custom.homebridge-gsh.message_account_link_required' | translate }}</p>
+    <p>{{ 'plugins.settings.gsh.about' | translate }}</p>
+    <p *ngIf="!gshConfig.token">{{ 'plugins.settings.gsh.account_link_required' | translate }}</p>
     <div class="text-center" *ngIf="!gshConfig.token">
       <button class="btn btn-primary btn-lg" (click)="linkAccount()">
-        {{ 'plugins.settings.custom.homebridge-gsh.label_link_account' | translate }}
+        {{ 'plugins.settings.gsh.link_account' | translate }}
       </button>
     </div>
 
@@ -35,12 +35,12 @@
       <i class="fas fa-fw fa-check-circle primary-text" style="font-size:50px;"></i>
       <h4 class="mt-2">
         {{ linkType | titlecase }}
-        {{ 'plugins.settings.custom.homebridge-gsh.label_account_linked' | translate }}
+        {{ 'plugins.settings.gsh.account_linked' | translate }}
       </h4>
 
       <div class="mt-3" *ngIf="justLinked">
         <p class="primary-text">
-          <strong>{{ 'plugins.settings.custom.homebridge-gsh.message_homebridge_restart_required' | translate }}</strong>
+          <strong>{{ 'plugins.settings.gsh.homebridge_restart_required' | translate }}</strong>
         </p>
       </div>
     </div>
@@ -57,7 +57,7 @@
 
   <div class="modal-footer">
     <button type="button" class="btn btn-elegant mr-auto" data-dismiss="modal" (click)="unlinkAccount()" *ngIf="gshConfig.token">
-      {{ 'plugins.settings.custom.homebridge-gsh.label_unlink_account' | translate }}
+      {{ 'plugins.settings.gsh.unlink_account' | translate }}
     </button>
     <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="close()">
       {{ 'form.button_close' | translate }}

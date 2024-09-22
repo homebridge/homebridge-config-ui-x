@@ -29,11 +29,11 @@ export class UsersEditComponent implements OnInit {
   public isCurrentUser = false
 
   constructor(
-    public activeModal: NgbActiveModal,
-    public toastr: ToastrService,
-    private translate: TranslateService,
+    public $activeModal: NgbActiveModal,
     private $api: ApiService,
     private $auth: AuthService,
+    private $toastr: ToastrService,
+    private $translate: TranslateService,
   ) {}
 
   ngOnInit() {
@@ -54,17 +54,17 @@ export class UsersEditComponent implements OnInit {
   onSubmit({ value }) {
     this.$api.patch(`/users/${this.user.id}`, value).subscribe({
       next: () => {
-        this.activeModal.close()
-        this.toastr.success(this.translate.instant('users.toast_updated_user'), this.translate.instant('toast.title_success'))
+        this.$activeModal.close()
+        this.$toastr.success(this.$translate.instant('users.toast_updated_user'), this.$translate.instant('toast.title_success'))
 
         if (this.isCurrentUser && value.username !== this.$auth.user.username) {
           this.$auth.logout()
         }
       },
       error: (err) => {
-        this.toastr.error(
-          err.error.message || this.translate.instant('users.toast_failed_to_add_user'),
-          this.translate.instant('toast.title_error'),
+        this.$toastr.error(
+          err.error.message || this.$translate.instant('users.toast_failed_to_add_user'),
+          this.$translate.instant('toast.title_error'),
         )
       },
     })

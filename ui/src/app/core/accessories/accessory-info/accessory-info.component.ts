@@ -10,7 +10,7 @@ export class AccessoryInfoComponent implements OnInit {
   public accessoryInformation: Array<any>
 
   constructor(
-    public activeModal: NgbActiveModal,
+    public $activeModal: NgbActiveModal,
   ) {}
 
   ngOnInit() {

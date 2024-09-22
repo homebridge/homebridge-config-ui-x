@@ -49,9 +49,9 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   private schemaFormRefreshSubject = new Subject()
 
   constructor(
-    public activeModal: NgbActiveModal,
+    public $activeModal: NgbActiveModal,
     private $api: ApiService,
-    public $plugin: ManagePluginsService,
+    private $plugin: ManagePluginsService,
     private $router: Router,
     private $settings: SettingsService,
     private $toastr: ToastrService,
@@ -186,7 +186,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
           break
         }
         case 'close': {
-          this.activeModal.close()
+          this.$activeModal.close()
           break
         }
         case 'toast.success':
@@ -435,8 +435,8 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
         if (this.isFirstSave) {
           if (this.$settings.env.recommendChildBridges && this.$settings.env.serviceMode && newConfig[0]?.platform) {
             // Close the modal and open the child bridge setup modal
-            this.activeModal.close()
-            await this.$plugin.bridgeSettings(this.plugin)
+            this.$activeModal.close()
+            this.$plugin.bridgeSettings(this.plugin)
           }
         } else {
           this.getChildBridges()
@@ -470,7 +470,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
 
   public onRestartHomebridgeClick() {
     this.$router.navigate(['/restart'])
-    this.activeModal.close()
+    this.$activeModal.close()
   }
 
   public async onRestartChildBridgeClick() {
@@ -488,7 +488,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
         this.$translate.instant('toast.title_error'),
       )
     } finally {
-      this.activeModal.close()
+      this.$activeModal.close()
     }
   }
 

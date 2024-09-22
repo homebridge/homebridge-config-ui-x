@@ -12,11 +12,11 @@ export class SecuritysystemComponent {
   @Input() public service: ServiceTypeX
 
   constructor(
-    private modalService: NgbModal,
+    private $modal: NgbModal,
   ) {}
 
   onClick() {
-    const ref = this.modalService.open(SecuritysystemManageComponent, {
+    const ref = this.$modal.open(SecuritysystemManageComponent, {
       size: 'sm',
     })
     ref.componentInstance.service = this.service

@@ -1,4 +1,3 @@
-import { AuthService } from '@/app/core/auth/auth.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import {
   Component,
@@ -73,7 +72,6 @@ export class NetworkWidgetComponent implements OnInit, OnDestroy {
 
   constructor(
     private $ws: WsService,
-    public $auth: AuthService,
   ) {}
 
   ngOnInit() {

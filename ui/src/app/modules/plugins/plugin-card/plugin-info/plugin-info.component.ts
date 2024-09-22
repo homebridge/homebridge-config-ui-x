@@ -11,7 +11,7 @@ export class PluginInfoComponent implements OnInit {
   public defaultIcon = 'assets/hb-icon.png'
 
   constructor(
-    public activeModal: NgbActiveModal,
+    public $activeModal: NgbActiveModal,
   ) {}
 
   ngOnInit() {

@@ -16,7 +16,7 @@ export class SpeakerManageComponent implements OnInit {
   public targetVolumeChanged: Subject<string> = new Subject<string>()
 
   constructor(
-    public activeModal: NgbActiveModal,
+    public $activeModal: NgbActiveModal,
   ) {
     this.targetVolumeChanged
       .pipe(

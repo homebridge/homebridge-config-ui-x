@@ -16,7 +16,7 @@ export class WindowcoveringManageComponent implements OnInit {
   public targetPositionChanged: Subject<string> = new Subject<string>()
 
   constructor(
-    public activeModal: NgbActiveModal,
+    public $activeModal: NgbActiveModal,
   ) {
     this.targetPositionChanged
       .pipe(

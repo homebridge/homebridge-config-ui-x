@@ -30,9 +30,9 @@ export class LoginComponent implements OnInit {
   private targetRoute: string
 
   constructor(
+    private $auth: AuthService,
     private $router: Router,
-    public $auth: AuthService,
-    public $settings: SettingsService,
+    private $settings: SettingsService,
   ) {}
 
   ngOnInit() {

@@ -6,7 +6,6 @@ import { AddRoomComponent } from '@/app/modules/accessories/add-room/add-room.co
 import { Component, OnDestroy, OnInit } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { DragulaService } from 'ng2-dragula'
-import { ToastrService } from 'ngx-toastr'
 import { Subscription } from 'rxjs'
 
 @Component({
@@ -22,8 +21,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   constructor(
     public $auth: AuthService,
     private dragulaService: DragulaService,
-    public $toastr: ToastrService,
-    private modalService: NgbModal,
+    private $modal: NgbModal,
     public $settings: SettingsService,
     private $md: MobileDetectService,
     protected $accessories: AccessoriesService,
@@ -58,7 +56,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   }
 
   addRoom() {
-    this.modalService.open(AddRoomComponent, {
+    this.$modal.open(AddRoomComponent, {
       size: 'lg',
       backdrop: 'static',
     }).result.then((roomName) => {

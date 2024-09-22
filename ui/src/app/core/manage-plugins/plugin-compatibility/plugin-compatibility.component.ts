@@ -18,7 +18,7 @@ export class PluginCompatibilityComponent implements OnInit {
   public hbInstalledVersion: string
 
   constructor(
-    public activeModal: NgbActiveModal,
+    public $activeModal: NgbActiveModal,
     private $settings: SettingsService,
   ) {}
 

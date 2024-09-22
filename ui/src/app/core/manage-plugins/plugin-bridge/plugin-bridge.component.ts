@@ -27,12 +27,12 @@ export class PluginBridgeComponent implements OnInit {
   public canShowBridgeDebug = false
 
   constructor(
-    public activeModal: NgbActiveModal,
-    public $settings: SettingsService,
+    public $activeModal: NgbActiveModal,
     private $api: ApiService,
     private $modal: NgbModal,
     private $plugins: ManagePluginsService,
     private $router: Router,
+    public $settings: SettingsService,
     private $toastr: ToastrService,
     private $translate: TranslateService,
   ) {}
@@ -109,7 +109,7 @@ export class PluginBridgeComponent implements OnInit {
 
     try {
       await firstValueFrom(this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.configBlocks))
-      this.activeModal.close()
+      this.$activeModal.close()
       this.$modal.open(RestartComponent, {
         size: 'lg',
         backdrop: 'static',
@@ -126,7 +126,7 @@ export class PluginBridgeComponent implements OnInit {
 
   openPluginConfig() {
     // Close the existing modal
-    this.activeModal.close()
+    this.$activeModal.close()
 
     // Open the plugin config modal
     this.$plugins.settings({
@@ -154,7 +154,7 @@ export class PluginBridgeComponent implements OnInit {
 
   openFullConfigEditor() {
     this.$router.navigate(['/config'])
-    this.activeModal.close()
+    this.$activeModal.close()
   }
 
   toggleConfigFields(index: number) {

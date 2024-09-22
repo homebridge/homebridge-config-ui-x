@@ -27,12 +27,12 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
   private originCheckInterval: NodeJS.Timeout
 
   constructor(
-    public activeModal: NgbActiveModal,
-    private translate: TranslateService,
-    private $jwtHelper: JwtHelperService,
+    public $activeModal: NgbActiveModal,
     private $api: ApiService,
+    private $jwtHelper: JwtHelperService,
     public $settings: SettingsService,
     private $toastr: ToastrService,
+    private $translate: TranslateService,
   ) {
     // listen for sign in events from the link account popup
     window.addEventListener('message', this.windowMessageListener, false)
@@ -114,7 +114,7 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
         const decoded = this.$jwtHelper.decodeToken(this.gshConfig.token)
         this.linkType = decoded.id.split('|')[0].split('-')[0]
       } catch (e) {
-        this.$toastr.error('Invalid account linking token in config.json', this.translate.instant('toast.title_error'))
+        this.$toastr.error('Invalid account linking token in config.json', this.$translate.instant('toast.title_error'))
         delete this.gshConfig.token
       }
     }
@@ -125,11 +125,11 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
       await firstValueFrom(this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig))
       this.justLinked = true
       this.$toastr.success(
-        this.translate.instant('plugins.settings.toast_restart_required'),
-        this.translate.instant('plugins.settings.toast_plugin_config_saved'),
+        this.$translate.instant('plugins.settings.toast_restart_required'),
+        this.$translate.instant('plugins.settings.toast_plugin_config_saved'),
       )
     } catch {
-      this.$toastr.error(this.translate.instant('config.toast_failed_to_save_config'), this.translate.instant('toast.title_error'))
+      this.$toastr.error(this.$translate.instant('config.toast_failed_to_save_config'), this.$translate.instant('toast.title_error'))
     }
   }
 
@@ -138,11 +138,11 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
     this.pluginConfig[0] = this.gshConfig
 
     await this.saveConfig()
-    this.activeModal.close()
+    this.$activeModal.close()
   }
 
   close() {
-    this.activeModal.close()
+    this.$activeModal.close()
   }
 
   ngOnDestroy() {

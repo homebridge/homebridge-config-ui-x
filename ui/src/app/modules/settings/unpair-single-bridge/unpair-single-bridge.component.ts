@@ -15,11 +15,11 @@ export class UnpairSingleBridgeComponent implements OnInit, OnDestroy {
   private unpaired = false
 
   constructor(
-    public activeModal: NgbActiveModal,
-    public toastr: ToastrService,
-    private translate: TranslateService,
+    public $activeModal: NgbActiveModal,
     private $api: ApiService,
     private $modal: NgbModal,
+    private $toastr: ToastrService,
+    private $translate: TranslateService,
   ) {}
 
   ngOnInit(): void {
@@ -31,8 +31,8 @@ export class UnpairSingleBridgeComponent implements OnInit, OnDestroy {
       this.pairings = (await firstValueFrom(this.$api.get('/server/pairings')))
         .sort((_a, b) => b._main ? 1 : -1)
     } catch (e) {
-      this.toastr.error('Paired accessories could not be loaded.', this.translate.instant('toast.title_error'))
-      this.activeModal.close()
+      this.$toastr.error('Paired accessories could not be loaded.', this.$translate.instant('toast.title_error'))
+      this.$activeModal.close()
     }
   }
 
@@ -44,20 +44,20 @@ export class UnpairSingleBridgeComponent implements OnInit, OnDestroy {
         await this.loadPairings()
 
         if (!this.pairings.length) {
-          this.activeModal.close()
+          this.$activeModal.close()
         }
 
         this.deleting = null
         this.unpaired = true
 
-        this.toastr.success(
-          this.translate.instant('plugins.settings.toast_restart_required'),
-          this.translate.instant('toast.title_success'),
+        this.$toastr.success(
+          this.$translate.instant('plugins.settings.toast_restart_required'),
+          this.$translate.instant('toast.title_success'),
         )
       },
       error: () => {
         this.deleting = null
-        this.toastr.error('Failed to un-pair accessory.', this.translate.instant('toast.title_error'))
+        this.$toastr.error('Failed to un-pair accessory.', this.$translate.instant('toast.title_error'))
       },
     })
   }

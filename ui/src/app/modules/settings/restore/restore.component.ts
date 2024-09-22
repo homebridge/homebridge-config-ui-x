@@ -31,11 +31,11 @@ export class RestoreComponent implements OnInit, OnDestroy {
   private io: IoNamespace
 
   constructor(
-    private $route: Router,
-    public activeModal: NgbActiveModal,
-    private translate: TranslateService,
-    public $toastr: ToastrService,
+    public $activeModal: NgbActiveModal,
     private $api: ApiService,
+    private $route: Router,
+    private $toastr: ToastrService,
+    private $translate: TranslateService,
     private $ws: WsService,
   ) {}
 
@@ -80,8 +80,8 @@ export class RestoreComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.$toastr.error(
-          err?.error?.message || this.translate.instant('backup.message_restore_failed'),
-          this.translate.instant('toast.title_error'),
+          err?.error?.message || this.$translate.instant('backup.restore_failed'),
+          this.$translate.instant('toast.title_error'),
         )
         this.clicked = false
       },
@@ -92,14 +92,14 @@ export class RestoreComponent implements OnInit, OnDestroy {
     this.io.request('do-restore').subscribe({
       next: () => {
         this.restoreInProgress = false
-        this.$toastr.success(this.translate.instant('backup.message_backup_restored'), this.translate.instant('toast.title_success'))
+        this.$toastr.success(this.$translate.instant('backup.backup_restored'), this.$translate.instant('toast.title_success'))
         if (this.setupWizardRestore) {
           this.postBackupRestart()
         }
       },
       error: () => {
         this.restoreFailed = true
-        this.$toastr.error(this.translate.instant('backup.message_restore_failed'), this.translate.instant('toast.title_error'))
+        this.$toastr.error(this.$translate.instant('backup.restore_failed'), this.$translate.instant('toast.title_error'))
       },
     })
   }
@@ -127,8 +127,8 @@ export class RestoreComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.$toastr.error(
-          err?.error?.message || this.translate.instant('backup.message_restore_failed'),
-          this.translate.instant('toast.title_error'),
+          err?.error?.message || this.$translate.instant('backup.restore_failed'),
+          this.$translate.instant('toast.title_error'),
         )
         this.clicked = false
       },
@@ -139,11 +139,11 @@ export class RestoreComponent implements OnInit, OnDestroy {
     this.io.request('do-restore-hbfx').subscribe({
       next: () => {
         this.restoreInProgress = false
-        this.$toastr.success(this.translate.instant('backup.message_backup_restored'), this.translate.instant('toast.title_success'))
+        this.$toastr.success(this.$translate.instant('backup.backup_restored'), this.$translate.instant('toast.title_success'))
       },
       error: () => {
         this.restoreFailed = true
-        this.$toastr.error(this.translate.instant('backup.message_restore_failed'), this.translate.instant('toast.title_error'))
+        this.$toastr.error(this.$translate.instant('backup.restore_failed'), this.$translate.instant('toast.title_error'))
       },
     })
   }
@@ -164,7 +164,7 @@ export class RestoreComponent implements OnInit, OnDestroy {
   postBackupRestart() {
     this.$api.put('/backup/restart', {}).subscribe({
       next: () => {
-        this.activeModal.close(true)
+        this.$activeModal.close(true)
         this.$route.navigate(['/'])
       },
       error: () => {},

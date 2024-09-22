@@ -16,7 +16,7 @@ export class Fanv2ManageComponent implements OnInit {
   public targetRotationSpeedChanged: Subject<string> = new Subject<string>()
 
   constructor(
-    public activeModal: NgbActiveModal,
+    public $activeModal: NgbActiveModal,
   ) {
     this.targetRotationSpeedChanged
       .pipe(

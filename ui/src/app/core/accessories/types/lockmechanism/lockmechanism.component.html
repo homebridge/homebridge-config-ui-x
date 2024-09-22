@@ -14,15 +14,15 @@
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
 
     <div class="accessory-label grey-text" *ngIf="service.values.LockCurrentState < 2"
-      [innerText]="(service.values.LockCurrentState ? 'accessories.control.label_locked' : 'accessories.control.label_unlocked') | translate"
+      [innerText]="(service.values.LockCurrentState ? 'accessories.control.locked' : 'accessories.control.unlocked') | translate"
       [ngClass]="{'red-text': !service.values.LockCurrentState, 'grey-text': service.values.LockCurrentState}">
     </div>
 
     <div class="accessory-label red-text" *ngIf="service.values.LockCurrentState === 2">
-      {{ 'accessories.control.label_jammed' | translate }}
+      {{ 'accessories.control.jammed' | translate }}
     </div>
     <div class="accessory-label red-text" *ngIf="service.values.LockCurrentState === 3">
-      {{ 'accessories.control.label_unknown' | translate }}
+      {{ 'accessories.control.unknown' | translate }}
     </div>
   </div>
 </div>

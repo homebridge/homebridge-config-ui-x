@@ -45,14 +45,14 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   private errorLog = ''
 
   constructor(
-    public activeModal: NgbActiveModal,
-    public $toastr: ToastrService,
-    private $translate: TranslateService,
-    public $settings: SettingsService,
+    public $activeModal: NgbActiveModal,
     private $api: ApiService,
     private $modal: NgbModal,
-    private $ws: WsService,
     private $router: Router,
+    public $settings: SettingsService,
+    private $toastr: ToastrService,
+    private $translate: TranslateService,
+    private $ws: WsService,
   ) {
     this.term.loadAddon(this.fitAddon)
   }
@@ -81,13 +81,13 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
     switch (this.action) {
       case 'Install':
         this.install()
-        this.presentTenseVerb = this.$translate.instant('plugins.manage.label_install')
-        this.pastTenseVerb = this.$translate.instant('plugins.manage.label_installed')
+        this.presentTenseVerb = this.$translate.instant('plugins.manage.install')
+        this.pastTenseVerb = this.$translate.instant('plugins.manage.installed')
         break
       case 'Uninstall':
         this.uninstall()
-        this.presentTenseVerb = this.$translate.instant('plugins.manage.label_uninstall')
-        this.pastTenseVerb = this.$translate.instant('plugins.manage.label_uninstalled')
+        this.presentTenseVerb = this.$translate.instant('plugins.manage.uninstall')
+        this.pastTenseVerb = this.$translate.instant('plugins.manage.uninstalled')
         break
       case 'Update':
         switch (this.targetVersion) {
@@ -104,8 +104,8 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
           default:
             this.update()
         }
-        this.presentTenseVerb = this.$translate.instant('plugins.manage.label_update')
-        this.pastTenseVerb = this.$translate.instant('plugins.manage.label_updated')
+        this.presentTenseVerb = this.$translate.instant('plugins.manage.update')
+        this.pastTenseVerb = this.$translate.instant('plugins.manage.updated')
         break
     }
   }
@@ -129,7 +129,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         this.$router.navigate(['/plugins'], {
           queryParams: { installed: this.pluginName },
         })
-        this.activeModal.close()
+        this.$activeModal.close()
         this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess)
       },
       error: (err) => {
@@ -147,7 +147,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       termRows: this.term.rows,
     }).subscribe({
       next: () => {
-        this.activeModal.close()
+        this.$activeModal.close()
         this.$router.navigate(['/plugins'])
         this.$modal.open(RestartComponent, {
           size: 'lg',
@@ -206,7 +206,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       termRows: this.term.rows,
     }).subscribe({
       next: () => {
-        this.activeModal.close()
+        this.$activeModal.close()
         this.$modal.open(RestartComponent, {
           size: 'lg',
           backdrop: 'static',
@@ -262,7 +262,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
 
   public onRestartHomebridgeClick() {
     this.$router.navigate(['/restart'])
-    this.activeModal.close()
+    this.$activeModal.close()
   }
 
   public async onRestartChildBridgeClick() {
@@ -280,7 +280,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         this.$translate.instant('toast.title_error'),
       )
     } finally {
-      this.activeModal.close()
+      this.$activeModal.close()
     }
   }
 

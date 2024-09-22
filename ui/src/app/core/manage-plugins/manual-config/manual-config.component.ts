@@ -35,15 +35,15 @@ export class ManualConfigComponent implements OnInit {
   public editorOptions: any
 
   constructor(
-    public activeModal: NgbActiveModal,
+    public $activeModal: NgbActiveModal,
     private $api: ApiService,
+    private $md: MobileDetectService,
     private $modal: NgbModal,
-    public $plugin: ManagePluginsService,
+    private $plugin: ManagePluginsService,
+    private $router: Router,
     private $settings: SettingsService,
     private $toastr: ToastrService,
     private $translate: TranslateService,
-    private $router: Router,
-    private $md: MobileDetectService,
   ) {}
 
   get arrayKey() {
@@ -220,13 +220,13 @@ export class ManualConfigComponent implements OnInit {
 
     try {
       const newConfig = await firstValueFrom(this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig))
-      this.activeModal.close()
+      this.$activeModal.close()
 
       // If it is the first time configuring a plugin, then offer to set up a child bridge straight away
       if (this.isFirstSave) {
         if (this.$settings.env.recommendChildBridges && this.$settings.env.serviceMode && newConfig[0]?.platform) {
           // Close the modal and open the child bridge setup modal
-          await this.$plugin.bridgeSettings(this.plugin)
+          this.$plugin.bridgeSettings(this.plugin)
         }
       } else {
         this.$modal.open(RestartComponent, {
@@ -242,6 +242,6 @@ export class ManualConfigComponent implements OnInit {
 
   openFullConfigEditor() {
     this.$router.navigate(['/config'])
-    this.activeModal.close()
+    this.$activeModal.close()
   }
 }

@@ -8,6 +8,6 @@ export class AddRoomComponent {
   @Input() public roomName: string
 
   constructor(
-    public activeModal: NgbActiveModal,
+    public $activeModal: NgbActiveModal,
   ) {}
 }

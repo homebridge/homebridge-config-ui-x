@@ -1,26 +1,26 @@
 <div class="modal-content hb-plugin-settings-modal">
   <div class="modal-header">
     <h5 class="modal-title">
-      {{ 'child_bridge.label_bridge_settings' | translate }}:
+      {{ 'child_bridge.bridge_settings' | translate }}:
       {{ plugin.displayName || plugin.name }}
     </h5>
     <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="activeModal.close('Dismiss')">
+      (click)="$activeModal.close('Dismiss')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body">
     <p>
-      {{ 'child_bridge.message_about' | translate }}
+      {{ 'child_bridge.about' | translate }}
       <a href="https://github.com/homebridge/homebridge/wiki/Child-Bridges" target="_blank" rel="noopener noreferrer"
         class="primary-text">
-        {{ 'child_bridge.message_wiki_link' | translate }}
+        {{ 'child_bridge.wiki_link' | translate }}
         <i class='fas fa-fw fa-external-link-alt'></i>
       </a>
     </p>
     <div *ngIf="configBlocks.length">
-      <p>{{ 'child_bridge.message_child_bridges_must_be_paired_separately' | translate }}</p>
-      <p>{{ 'child_bridge.message_select_platforms_accessories' | translate }}:</p>
+      <p>{{ 'child_bridge.bridges_paired' | translate }}</p>
+      <p>{{ 'child_bridge.select_platforms_accessories' | translate }}:</p>
       <ul class="list-group list-group-box my-2" *ngIf="configBlocks.length">
         <li class="list-group-item " *ngFor="let item of configBlocks; let i = index">
           <div class="d-flex justify-content-between align-items-center">
@@ -36,8 +36,8 @@
           <div *ngIf="item._bridge?.username">
             <div *ngIf="deviceInfo[item._bridge?.username] === false">
               <ngb-alert type="info" [dismissible]="false" class="mt-3">
-                {{ 'child_bridge.message_restart_homebridge' | translate }}
-                <br>{{ 'child_bridge.message_return_to_pair' | translate }}
+                {{ 'child_bridge.restart_homebridge' | translate }}
+                <br>{{ 'child_bridge.return_to_pair' | translate }}
               </ngb-alert>
             </div>
             <div *ngIf="deviceInfo[item._bridge?.username]" class="mt-3">
@@ -56,7 +56,7 @@
                 <div class="text-center">
                   <i class="fa fa-fw fa-check-circle primary-text mb-4" style="font-size: 75px;"></i>
                   <p>
-                    {{ 'child_bridge.label_bridge_paired' | translate }}
+                    {{ 'child_bridge.bridge_paired' | translate }}
                   </p>
                 </div>
               </div>
@@ -65,37 +65,37 @@
                   [attr.aria-controls]="'configFields_' + i" (click)="toggleConfigFields(i)" class="hover-pointer">
                   <h5 class="primary-text">
                     <i class="fa fa-fw" [ngClass]="showConfigFields[i] ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
-                    {{ 'child_bridge.settings_config.header' | translate }}
+                    {{ 'child_bridge.config.header' | translate }}
                   </h5>
                 </div>
                 <div *ngIf="showConfigFields[i]" [id]="'configFields_' + i">
-                  <div class="mb-3 grey-text">{{ 'child_bridge.settings_config.description' | translate }}</div>
+                  <div class="mb-3 grey-text">{{ 'child_bridge.config.description' | translate }}</div>
                   <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
-                    <span class="pr-0 pr-lg-3" style="flex: 1;">{{ 'child_bridge.settings_config.name' | translate }}</span>
+                    <span class="pr-0 pr-lg-3" style="flex: 1;">{{ 'child_bridge.config.name' | translate }}</span>
                     <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1;">
                       <input class="form-control form-control-sm" type="text" [(ngModel)]="item._bridge.name">
                     </div>
                   </div>
                   <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
-                    <span class="pr-0 pr-lg-3" style="flex: 1;">{{ 'child_bridge.settings_config.manufacturer' | translate }}</span>
+                    <span class="pr-0 pr-lg-3" style="flex: 1;">{{ 'child_bridge.config.manufacturer' | translate }}</span>
                     <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1;">
                       <input class="form-control form-control-sm" type="text" [(ngModel)]="item._bridge.manufacturer">
                     </div>
                   </div>
                   <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
-                    <span class="pr-0 pr-lg-3" style="flex: 1;">{{ 'child_bridge.settings_config.model' | translate }}</span>
+                    <span class="pr-0 pr-lg-3" style="flex: 1;">{{ 'child_bridge.config.model' | translate }}</span>
                     <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1;">
                       <input class="form-control form-control-sm" type="text" [(ngModel)]="item._bridge.model">
                     </div>
                   </div>
                   <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
-                    <span class="pr-0 pr-lg-3" style="flex: 1;">{{ 'child_bridge.settings_config.firmware' | translate }}</span>
+                    <span class="pr-0 pr-lg-3" style="flex: 1;">{{ 'child_bridge.config.firmware' | translate }}</span>
                     <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1;">
                       <input class="form-control form-control-sm" type="text" [(ngModel)]="item._bridge.firmwareRevision">
                     </div>
                   </div>
                   <div class="d-block d-lg-flex justify-content-between align-items-center mb-3" *ngIf="canShowBridgeDebug">
-                    <span>{{ 'child_bridge.settings_config.debug' | translate }} <code>-D</code></span>
+                    <span>{{ 'child_bridge.config.debug' | translate }} <code>-D</code></span>
                     <input type="checkbox" class="rendux-input" [id]="'homebridgeDebugMode_' + i" [(ngModel)]="item._bridge.debugModeEnabled"
                       [attr.aria-label]="'settings.startup.debug' | translate">
                     <label [for]="'homebridgeDebugMode_' + i" class="rendux-label ml-3" style="min-width: 50px;"></label>
@@ -128,7 +128,7 @@
       </ul>
     </div>
     <ngb-alert *ngIf="!configBlocks.length && canConfigure" type="info" [dismissible]="false">
-      {{ 'child_bridge.message_must_configure_plugin_first' | translate }}
+      {{ 'child_bridge.must_configure_plugin' | translate }}
     </ngb-alert>
     <div *ngIf="!canConfigure" class="mb-2">
       <ngb-alert type="info" [dismissible]="false">
@@ -144,7 +144,7 @@
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-left">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.close('Dismiss')">
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="$activeModal.close('Dismiss')">
         {{ 'form.button_close' | translate }}
       </button>
     </div>

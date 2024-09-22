@@ -1,8 +1,8 @@
 <div class="modal-content">
   <div class="modal-header">
-    <h5 class="modal-title">{{ 'plugins.manage.label_install' | translate }}: {{ plugin.displayName || plugin.name }}</h5>
+    <h5 class="modal-title">{{ 'plugins.manage.install' | translate }}: {{ plugin.displayName || plugin.name }}</h5>
     <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="activeModal.dismiss('Dismiss')">
+      (click)="$activeModal.dismiss('Dismiss')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
@@ -14,7 +14,7 @@
       <i *ngIf="plugin.installedVersion" class="fas fa-fw fa-history primary-text mb-4" style="font-size: 75px;"></i>
       <i *ngIf="!plugin.installedVersion" class="far fa-fw fa-arrow-alt-circle-down primary-text mb-4" style="font-size: 75px;"></i>
       <p *ngIf="plugin.installedVersion" class="font-weight-bold">{{ 'plugins.status_installed' | translate }}: v{{ plugin.installedVersion }}</p>
-      <p>{{ 'plugins.manage.message_select_version_to_install' | translate }}:</p>
+      <p>{{ 'plugins.manage.select_version_to_install' | translate }}:</p>
       <ul class="list-group list-group-box mt-2">
         <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let version of versionsWithTags">
           <span class="text-left">
@@ -31,7 +31,7 @@
         </li>
         <li class="list-group-item d-flex justify-content-between align-items-center">
           <span class="text-left">
-            {{ 'plugins.manage.message_all_versions' | translate }}
+            {{ 'plugins.manage.all_versions' | translate }}
             <br>
             <select class="custom-select" style="font-size: 0.875rem;" [(ngModel)]="versionSelect">
               <option *ngFor="let version of versions" [value]="version.version">
@@ -52,7 +52,7 @@
   <div class="modal-footer justify-content-between">
     <div class="text-left"></div>
     <div class="text-center">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')"
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="$activeModal.dismiss('Dismiss')"
         [attr.aria-label]="'form.button_close' | translate">
         {{ 'form.button_close' | translate }}
       </button>

@@ -12,7 +12,7 @@ export class LightbulbComponent {
   @Input() public service: ServiceTypeX
 
   constructor(
-    private modalService: NgbModal,
+    private $modal: NgbModal,
   ) {}
 
   onClick() {
@@ -26,7 +26,7 @@ export class LightbulbComponent {
 
   onLongClick() {
     if ('Brightness' in this.service.values) {
-      const ref = this.modalService.open(LightbulbManageComponent, {
+      const ref = this.$modal.open(LightbulbManageComponent, {
         size: 'md',
       })
       ref.componentInstance.service = this.service

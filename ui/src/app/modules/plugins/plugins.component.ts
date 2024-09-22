@@ -25,11 +25,11 @@ export class PluginsComponent implements OnInit, OnDestroy {
 
   constructor(
     private $api: ApiService,
-    private $ws: WsService,
     private $router: Router,
     private $settings: SettingsService,
     private $toastr: ToastrService,
     private $translate: TranslateService,
+    private $ws: WsService,
   ) {}
 
   async ngOnInit() {

@@ -9,8 +9,8 @@ import { firstValueFrom } from 'rxjs'
 })
 export class LoginGuard implements CanActivate {
   constructor(
-    private $router: Router,
     private $auth: AuthService,
+    private $router: Router,
     private $settings: SettingsService,
   ) {}
 

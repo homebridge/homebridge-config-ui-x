@@ -37,14 +37,14 @@ export class PluginCardComponent implements OnInit {
   private io: IoNamespace
 
   constructor(
-    public $plugin: ManagePluginsService,
     private $api: ApiService,
-    private $ws: WsService,
-    private $translate: TranslateService,
-    private $modal: NgbModal,
-    private $toastr: ToastrService,
     private $md: MobileDetectService,
+    private $modal: NgbModal,
+    public $plugin: ManagePluginsService,
     public $settings: SettingsService,
+    private $toastr: ToastrService,
+    private $translate: TranslateService,
+    private $ws: WsService,
   ) {}
 
   // eslint-disable-next-line accessor-pairs
@@ -160,7 +160,7 @@ export class PluginCardComponent implements OnInit {
     })
 
     ref.componentInstance.title = `${this.$translate.instant('plugins.manage.enable')}: ${plugin.name}`
-    ref.componentInstance.message = this.$translate.instant('plugins.manage.message_confirm_enable', { pluginName: plugin.name })
+    ref.componentInstance.message = this.$translate.instant('plugins.manage.confirm_enable', { pluginName: plugin.name })
     ref.componentInstance.confirmButtonLabel = this.$translate.instant('plugins.manage.enable')
     ref.componentInstance.faIconClass = 'fa-circle-play primary-text'
 

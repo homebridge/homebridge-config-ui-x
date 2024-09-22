@@ -12,7 +12,7 @@ export class SecuritysystemManageComponent implements OnInit {
   public targetMode: any
 
   constructor(
-    public activeModal: NgbActiveModal,
+    public $activeModal: NgbActiveModal,
   ) {}
 
   ngOnInit() {
