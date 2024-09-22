@@ -3,7 +3,7 @@ import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.s
 import { SettingsService } from '@/app/core/settings.service'
 import { Component, Input, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
-import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
@@ -37,7 +37,6 @@ export class PluginConfigComponent implements OnInit {
   constructor(
     public activeModal: NgbActiveModal,
     private $api: ApiService,
-    private $modal: NgbModal,
     public $plugin: ManagePluginsService,
     private $router: Router,
     private $settings: SettingsService,
@@ -94,7 +93,7 @@ export class PluginConfigComponent implements OnInit {
 
       // If it is the first time configuring a plugin, then offer to set up a child bridge straight away
       if (this.isFirstSave) {
-        if (this.$settings.env.recommendChildBridges && this.$settings.env.serviceMode && newConfig[0].platform) {
+        if (this.$settings.env.recommendChildBridges && this.$settings.env.serviceMode && newConfig[0]?.platform) {
           // Close the modal and open the child bridge setup modal
           this.activeModal.close()
           await this.$plugin.bridgeSettings(this.plugin)
