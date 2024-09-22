@@ -7,12 +7,12 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 })
 export class RestartComponent {
   constructor(
-    public activeModal: NgbActiveModal,
+    public $activeModal: NgbActiveModal,
     private $router: Router,
   ) {}
 
   public onRestartHomebridgeClick() {
     this.$router.navigate(['/restart'])
-    this.activeModal.close()
+    this.$activeModal.close()
   }
 }

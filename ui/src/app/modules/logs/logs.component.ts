@@ -1,7 +1,6 @@
 import { ApiService } from '@/app/core/api.service'
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
 import { LogService } from '@/app/core/log.service'
-import { SettingsService } from '@/app/core/settings.service'
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http'
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
@@ -18,12 +17,11 @@ export class LogsComponent implements OnInit, OnDestroy {
   private resizeEvent = new Subject()
 
   constructor(
-    public $settings: SettingsService,
     private $api: ApiService,
     private $log: LogService,
+    private $modal: NgbModal,
     private $toastr: ToastrService,
     private $translate: TranslateService,
-    private $modal: NgbModal,
   ) {}
 
   @HostListener('window:resize', ['$event'])

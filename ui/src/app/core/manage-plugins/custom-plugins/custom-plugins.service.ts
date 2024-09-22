@@ -15,13 +15,13 @@ export class CustomPluginsService {
   }
 
   constructor(
-    private modalService: NgbModal,
     private $api: ApiService,
+    private $modal: NgbModal,
   ) {}
 
   async openSettings(plugin: any, schema: any) {
     const pluginConfig = await this.loadPluginConfig(plugin.name)
-    const ref = this.modalService.open(this.plugins[plugin.name], {
+    const ref = this.$modal.open(this.plugins[plugin.name], {
       size: 'lg',
       backdrop: 'static',
     })
@@ -36,7 +36,7 @@ export class CustomPluginsService {
 
   async openCustomSettingsUi(plugin: any, schema: any) {
     const pluginConfig = await this.loadPluginConfig(plugin.name)
-    const ref = this.modalService.open(CustomPluginsComponent, {
+    const ref = this.$modal.open(CustomPluginsComponent, {
       size: 'lg',
       backdrop: 'static',
     })

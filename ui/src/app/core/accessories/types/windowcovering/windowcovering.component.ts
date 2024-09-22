@@ -12,7 +12,7 @@ export class WindowCoveringComponent {
   @Input() public service: ServiceTypeX
 
   constructor(
-    private modalService: NgbModal,
+    private $modal: NgbModal,
   ) {}
 
   onClick() {
@@ -24,7 +24,7 @@ export class WindowCoveringComponent {
   }
 
   onLongClick() {
-    const ref = this.modalService.open(WindowcoveringManageComponent, {
+    const ref = this.$modal.open(WindowcoveringManageComponent, {
       size: 'md',
     })
     ref.componentInstance.service = this.service

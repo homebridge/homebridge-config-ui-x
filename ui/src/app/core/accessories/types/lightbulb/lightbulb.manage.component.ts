@@ -16,7 +16,7 @@ export class LightbulbManageComponent implements OnInit {
   public targetBrightnessChanged: Subject<string> = new Subject<string>()
 
   constructor(
-    public activeModal: NgbActiveModal,
+    public $activeModal: NgbActiveModal,
   ) {
     this.targetBrightnessChanged
       .pipe(

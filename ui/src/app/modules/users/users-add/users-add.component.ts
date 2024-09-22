@@ -24,10 +24,10 @@ export class UsersAddComponent {
   }
 
   constructor(
-    public activeModal: NgbActiveModal,
-    public toastr: ToastrService,
-    private translate: TranslateService,
+    public $activeModal: NgbActiveModal,
     private $api: ApiService,
+    private $toastr: ToastrService,
+    private $translate: TranslateService,
   ) {}
 
   matchPassword(AC: AbstractControl) {
@@ -43,13 +43,13 @@ export class UsersAddComponent {
   onSubmit({ value }) {
     this.$api.post('/users', value).subscribe({
       next: () => {
-        this.activeModal.close()
-        this.toastr.success(this.translate.instant('users.toast_added_new_user'), this.translate.instant('toast.title_success'))
+        this.$activeModal.close()
+        this.$toastr.success(this.$translate.instant('users.toast_added_new_user'), this.$translate.instant('toast.title_success'))
       },
       error: (err) => {
-        this.toastr.error(
-          err.error.message || this.translate.instant('users.toast_failed_to_add_user'),
-          this.translate.instant('toast.title_error'),
+        this.$toastr.error(
+          err.error.message || this.$translate.instant('users.toast_failed_to_add_user'),
+          this.$translate.instant('toast.title_error'),
         )
       },
     })

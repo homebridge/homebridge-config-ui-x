@@ -13,11 +13,11 @@ export class ThermostatComponent {
   model = 1
 
   constructor(
-    private modalService: NgbModal,
+    private $modal: NgbModal,
   ) {}
 
   onClick() {
-    const ref = this.modalService.open(ThermostatManageComponent, {
+    const ref = this.$modal.open(ThermostatManageComponent, {
       size: 'sm',
     })
     ref.componentInstance.service = this.service

@@ -1,4 +1,3 @@
-import { AuthService } from '@/app/core/auth/auth.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { environment } from '@/environments/environment'
 import { HttpClient, HttpParams } from '@angular/common/http'
@@ -20,10 +19,9 @@ export class WeatherWidgetComponent implements OnInit, OnDestroy {
   private intervalSubscription: Subscription
 
   constructor(
-    private $ws: WsService,
-    public $auth: AuthService,
     private $http: HttpClient,
     private $translate: TranslateService,
+    private $ws: WsService,
   ) {}
 
   ngOnInit() {

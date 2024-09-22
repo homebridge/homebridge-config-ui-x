@@ -11,9 +11,9 @@ import { Observable } from 'rxjs'
 export class AdminGuard implements CanActivate {
   constructor(
     private $auth: AuthService,
-    private $toast: ToastrService,
     private $router: Router,
     private $translate: TranslateService,
+    private $toast: ToastrService,
   ) {}
 
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {

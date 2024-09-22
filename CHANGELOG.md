@@ -36,6 +36,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - update dependencies - tackle dependabot alerts
 - move script files to own folder, improve error catching in `sh` scripts
 - use params for text replacements of backup size modal
+- variable naming consistency, reduce language string lengths
 
 ### Homebridge Dependencies
 

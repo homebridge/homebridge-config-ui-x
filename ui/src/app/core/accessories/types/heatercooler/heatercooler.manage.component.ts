@@ -23,7 +23,7 @@ export class HeaterCoolerManageComponent implements OnInit {
   public autoTemp: [number, number]
 
   constructor(
-    public activeModal: NgbActiveModal,
+    public $activeModal: NgbActiveModal,
   ) {
     this.targetTemperatureChanged
       .pipe(

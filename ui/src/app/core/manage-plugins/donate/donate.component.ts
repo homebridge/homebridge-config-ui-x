@@ -11,12 +11,12 @@ export class DonateComponent implements OnInit {
   public fundingOptions: { type: string, url: string }[]
 
   constructor(
-    public activeModal: NgbActiveModal,
+    public $activeModal: NgbActiveModal,
   ) {}
 
   ngOnInit(): void {
     if (!this.plugin.funding) {
-      this.activeModal.close()
+      this.$activeModal.close()
     }
 
     // Override author for homebridge-config-ui-x

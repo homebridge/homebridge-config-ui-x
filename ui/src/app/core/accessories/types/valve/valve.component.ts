@@ -19,7 +19,7 @@ export class ValveComponent implements OnInit, OnDestroy {
   private remainingDurationSubscription: Subscription
 
   constructor(
-    private modalService: NgbModal,
+    private $modal: NgbModal,
   ) {}
 
   ngOnInit() {
@@ -72,7 +72,7 @@ export class ValveComponent implements OnInit, OnDestroy {
       return
     }
 
-    const ref = this.modalService.open(ValveManageComponent, {
+    const ref = this.$modal.open(ValveManageComponent, {
       size: 'sm',
     })
     ref.componentInstance.service = this.service

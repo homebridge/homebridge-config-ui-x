@@ -28,9 +28,9 @@
       <ul class="navbar-nav nav-flex-icons hb-nav-right">
         <li class="nav-item mr-3" *ngIf="rPiWasUnderVoltage || rPiCurrentlyUnderVoltage">
           <a href="javascript:void(0)" class="nav-link dropdown-toggle waves-effect waves-light"
-            [popoverTitle]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_title' : 'rpi.throttled.previously_undervoltage_title') | translate"
-            [ngbPopover]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_message' : 'rpi.throttled.previously_undervoltage_message') | translate"
-            [ngbTooltip]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_undervoltage_title' : 'rpi.throttled.previously_undervoltage_title') | translate"
+            [popoverTitle]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_title' : 'rpi.throttled.previously_title') | translate"
+            [ngbPopover]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_message' : 'rpi.throttled.previously_message') | translate"
+            [ngbTooltip]="(rPiCurrentlyUnderVoltage ? 'rpi.throttled.currently_title' : 'rpi.throttled.previously_title') | translate"
             container="body" [placement]="'bottom auto'">
             <i class="fa-solid fa-bolt yellow-text " style="--fa-beat-scale: 2.0;"
               [ngClass]="{ 'fa-beat': rPiCurrentlyUnderVoltage }"></i>

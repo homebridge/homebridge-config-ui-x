@@ -23,11 +23,11 @@ export class RestartComponent implements OnInit, OnDestroy {
 
   constructor(
     private $api: ApiService,
-    private $ws: WsService,
-    private $settings: SettingsService,
-    public $toastr: ToastrService,
-    private translate: TranslateService,
     private $router: Router,
+    private $settings: SettingsService,
+    private $toastr: ToastrService,
+    private $translate: TranslateService,
+    private $ws: WsService,
   ) {}
 
   ngOnInit() {
@@ -46,9 +46,9 @@ export class RestartComponent implements OnInit, OnDestroy {
         }
       },
       error: (err) => {
-        const toastRestartError = this.translate.instant('restart.toast_server_restart_error')
+        const toastRestartError = this.$translate.instant('restart.toast_server_restart_error')
         this.error = `${toastRestartError}.`
-        this.$toastr.error(`${toastRestartError}: ${err.message}`, this.translate.instant('toast.title_error'))
+        this.$toastr.error(`${toastRestartError}: ${err.message}`, this.$translate.instant('toast.title_error'))
       },
     })
   }
@@ -59,7 +59,7 @@ export class RestartComponent implements OnInit, OnDestroy {
       this.io.socket.on('homebridge-status', (data) => {
         this.uiOnline = true
         if (data.status === 'up' || data.status === 'pending') {
-          this.$toastr.success(this.translate.instant('restart.toast_server_restarted'), this.translate.instant('toast.title_success'))
+          this.$toastr.success(this.$translate.instant('restart.toast_server_restarted'), this.$translate.instant('toast.title_success'))
           this.$router.navigate(['/'])
         }
       })
@@ -67,8 +67,8 @@ export class RestartComponent implements OnInit, OnDestroy {
 
     this.checkTimeout = setTimeout(() => {
       this.$toastr.warning(
-        this.translate.instant('restart.toast_sever_restart_timeout'),
-        this.translate.instant('toast.title_warning'),
+        this.$translate.instant('restart.toast_sever_restart_timeout'),
+        this.$translate.instant('toast.title_warning'),
         {
           timeOut: 10000,
         },

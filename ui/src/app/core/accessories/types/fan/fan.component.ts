@@ -13,7 +13,7 @@ export class FanComponent implements OnInit {
   public rotationSpeedUnit = ''
 
   constructor(
-    private modalService: NgbModal,
+    private $modal: NgbModal,
   ) {}
 
   ngOnInit() {
@@ -35,7 +35,7 @@ export class FanComponent implements OnInit {
   }
 
   onLongClick() {
-    const ref = this.modalService.open(FanManageComponent, {
+    const ref = this.$modal.open(FanManageComponent, {
       size: 'md',
     })
     ref.componentInstance.service = this.service

@@ -13,6 +13,6 @@ export class InformationComponent {
   @Input() faIconClass: string
 
   constructor(
-    public activeModal: NgbActiveModal,
+    public $activeModal: NgbActiveModal,
   ) {}
 }

@@ -2,7 +2,7 @@
   <div class="modal-header">
     <h5 class="modal-title" [innerText]="service.customName || service.serviceName"></h5>
     <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="activeModal.dismiss('Dismiss')">
+      (click)="$activeModal.dismiss('Dismiss')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
@@ -10,23 +10,23 @@
 
     <h5>
       <strong>
-        {{ 'accessories.control.label_fan' | translate }}
-        {{ (service.values.Active ? 'accessories.control.label_on' : 'accessories.control.label_off') | translate }}
+        {{ 'accessories.control.fan' | translate }}
+        {{ (service.values.Active ? 'accessories.control.on' : 'accessories.control.off') | translate }}
       </strong>
     </h5>
 
     <div class="fan-mode-control btn-group btn-group-toggle d-flex justify-content-center my-4" ngbRadioGroup
       name="radioBasic" [(ngModel)]="targetMode" (change)="onTargetStateChange()">
       <label ngbButtonLabel class="btn-primary">
-        <input ngbButton type="radio" [value]="0"> {{ 'accessories.control.label_off' | translate }}
+        <input ngbButton type="radio" [value]="0"> {{ 'accessories.control.off' | translate }}
       </label>
       <label ngbButtonLabel class="btn-primary">
-        <input ngbButton type="radio" [value]="1"> {{ 'accessories.control.label_on' | translate }}
+        <input ngbButton type="radio" [value]="1"> {{ 'accessories.control.on' | translate }}
       </label>
     </div>
 
     <div *ngIf="targetRotationSpeed">
-      <h5 class="mb-0">{{ 'accessories.control.label_rotation_speed' | translate }}</h5>
+      <h5 class="mb-0">{{ 'accessories.control.rotation_speed' | translate }}</h5>
       <p>{{ targetRotationSpeed.value }}<span *ngIf="targetRotationSpeed.unit === 'percentage'">%</span></p>
       <nouislider [min]="targetRotationSpeed.min" [max]="targetRotationSpeed.max" [step]="targetRotationSpeed.step"
         [(ngModel)]="targetRotationSpeed.value" (ngModelChange)="onTargetRotationSpeedChange()">

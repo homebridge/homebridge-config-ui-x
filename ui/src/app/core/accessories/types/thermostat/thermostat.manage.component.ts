@@ -16,7 +16,7 @@ export class ThermostatManageComponent implements OnInit {
   public targetTemperatureChanged: Subject<string> = new Subject<string>()
 
   constructor(
-    public activeModal: NgbActiveModal,
+    public $activeModal: NgbActiveModal,
   ) {
     this.targetTemperatureChanged
       .pipe(

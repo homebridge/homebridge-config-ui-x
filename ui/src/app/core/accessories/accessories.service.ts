@@ -41,18 +41,18 @@ export class AccessoriesService {
   ]
 
   constructor(
-    private modalService: NgbModal,
-    public $toastr: ToastrService,
+    private $auth: AuthService,
+    private $modal: NgbModal,
+    private $toastr: ToastrService,
+    private $translate: TranslateService,
     private $ws: WsService,
-    public $auth: AuthService,
-    public $translate: TranslateService,
   ) {}
 
   /**
    *
    */
   showAccessoryInformation(service: any) {
-    const ref = this.modalService.open(AccessoryInfoComponent, {
+    const ref = this.$modal.open(AccessoryInfoComponent, {
       size: 'lg',
       backdrop: 'static',
     })

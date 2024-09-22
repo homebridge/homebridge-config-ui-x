@@ -12,7 +12,7 @@ export class SpeakerComponent {
   @Input() public service: ServiceTypeX
 
   constructor(
-    private modalService: NgbModal,
+    private $modal: NgbModal,
   ) {}
 
   onClick() {
@@ -21,7 +21,7 @@ export class SpeakerComponent {
 
   onLongClick() {
     if ('Volume' in this.service.values) {
-      const ref = this.modalService.open(SpeakerManageComponent, {
+      const ref = this.$modal.open(SpeakerManageComponent, {
         size: 'sm',
       })
       ref.componentInstance.service = this.service

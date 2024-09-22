@@ -20,16 +20,16 @@ import { lt, minVersion } from 'semver'
 })
 export class ManagePluginsService {
   constructor(
-    private modalService: NgbModal,
-    private customPluginsService: CustomPluginsService,
-    private $settings: SettingsService,
     private $api: ApiService,
+    private $modal: NgbModal,
+    private $customPluginsService: CustomPluginsService,
+    private $settings: SettingsService,
     private $toastr: ToastrService,
     private $translate: TranslateService,
   ) {}
 
   installPlugin(pluginName: string, targetVersion = 'latest') {
-    const ref = this.modalService.open(ManagePluginComponent, {
+    const ref = this.$modal.open(ManagePluginComponent, {
       size: 'lg',
       backdrop: 'static',
     })
@@ -39,7 +39,7 @@ export class ManagePluginsService {
   }
 
   uninstallPlugin(plugin: any, childBridges: any[]) {
-    const ref = this.modalService.open(UninstallPluginComponent, {
+    const ref = this.$modal.open(UninstallPluginComponent, {
       size: 'lg',
       backdrop: 'static',
     })
@@ -57,7 +57,7 @@ export class ManagePluginsService {
   }
 
   async updatePlugin(plugin: any, targetVersion: string) {
-    const ref = this.modalService.open(ManagePluginComponent, {
+    const ref = this.$modal.open(ManagePluginComponent, {
       size: 'lg',
       backdrop: 'static',
     })
@@ -74,7 +74,7 @@ export class ManagePluginsService {
       return
     }
 
-    const ref = this.modalService.open(ManagePluginComponent, {
+    const ref = this.$modal.open(ManagePluginComponent, {
       size: 'lg',
       backdrop: 'static',
     })
@@ -91,7 +91,7 @@ export class ManagePluginsService {
    * @param plugin
    */
   async installAlternateVersion(plugin: any) {
-    const ref = this.modalService.open(ManageVersionComponent, {
+    const ref = this.$modal.open(ManageVersionComponent, {
       size: 'lg',
       backdrop: 'static',
     })
@@ -134,7 +134,7 @@ export class ManagePluginsService {
       }
     }
 
-    const ref = this.modalService.open(PluginBridgeComponent, {
+    const ref = this.$modal.open(PluginBridgeComponent, {
       size: 'lg',
       backdrop: 'static',
     })
@@ -162,15 +162,15 @@ export class ManagePluginsService {
 
     // open the custom ui if the plugin has one
     if (schema && schema.customUi) {
-      return this.customPluginsService.openCustomSettingsUi(plugin, schema)
+      return this.$customPluginsService.openCustomSettingsUi(plugin, schema)
     }
 
-    if (this.customPluginsService.plugins[plugin.name]) {
-      return this.customPluginsService.openSettings(plugin, schema)
+    if (this.$customPluginsService.plugins[plugin.name]) {
+      return this.$customPluginsService.openSettings(plugin, schema)
     }
 
     // open the standard ui
-    const ref = this.modalService.open(
+    const ref = this.$modal.open(
       plugin.settingsSchema ? PluginConfigComponent : ManualConfigComponent,
       {
         size: 'lg',
@@ -190,7 +190,7 @@ export class ManagePluginsService {
    * Open the json config modal
    */
   async jsonEditor(plugin: any) {
-    const ref = this.modalService.open(
+    const ref = this.$modal.open(
       ManualConfigComponent,
       {
         size: 'lg',
@@ -227,7 +227,7 @@ export class ManagePluginsService {
     // If either are false, open modal warning about compatibility
     if (!isValidNode || !isValidHb) {
       try {
-        const ref = this.modalService.open(PluginCompatibilityComponent, {
+        const ref = this.$modal.open(PluginCompatibilityComponent, {
           size: 'lg',
           backdrop: 'static',
         })

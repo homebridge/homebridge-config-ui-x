@@ -12,19 +12,19 @@
 
     <ng-container [ngSwitch]="service.values.SecuritySystemCurrentState">
       <div class="accessory-label grey-text" *ngSwitchCase="0">
-        {{ 'accessories.control.label_home' | translate }}
+        {{ 'accessories.control.home' | translate }}
       </div>
       <div class="accessory-label grey-text" *ngSwitchCase="1">
-        {{ 'accessories.control.label_away' | translate }}
+        {{ 'accessories.control.away' | translate }}
       </div>
       <div class="accessory-label grey-text" *ngSwitchCase="2">
-        {{ 'accessories.control.label_night' | translate }}
+        {{ 'accessories.control.night' | translate }}
       </div>
       <div class="accessory-label red-text" *ngSwitchCase="3">
-        {{ 'accessories.control.label_off' | translate }}
+        {{ 'accessories.control.off' | translate }}
       </div>
       <div class="accessory-label red-text" *ngSwitchCase="4">
-        {{ 'accessories.control.label_triggered' | translate }}
+        {{ 'accessories.control.triggered' | translate }}
       </div>
     </ng-container>
   </div>

@@ -49,10 +49,10 @@ export class WidgetsComponent implements OnInit, OnDestroy {
   private componentRef
 
   constructor(
-    private componentFactoryResolver: ComponentFactoryResolver,
     private appRef: ApplicationRef,
-    private injector: Injector,
+    private componentFactoryResolver: ComponentFactoryResolver,
     private el: ElementRef,
+    private injector: Injector,
   ) {}
 
   ngOnInit() {

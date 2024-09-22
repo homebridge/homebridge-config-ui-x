@@ -9,9 +9,9 @@ import { TranslateService } from '@ngx-translate/core'
 })
 export class AppComponent {
   constructor(
-    router: Router,
-    translate: TranslateService,
-    $settings: SettingsService,
+    private $router: Router,
+    private $translate: TranslateService,
+    private $settings: SettingsService,
   ) {
     // this array needs to be updated each time a new translation is added
     const languages = [
@@ -50,25 +50,25 @@ export class AppComponent {
     ]
 
     // watch for lang changes
-    translate.onLangChange.subscribe(() => {
-      $settings.rtl = rtlLanguages.includes(translate.currentLang)
+    $translate.onLangChange.subscribe(() => {
+      $settings.rtl = rtlLanguages.includes($translate.currentLang)
     })
 
-    const browserLang = languages.find(x => x === translate.getBrowserLang() || x === translate.getBrowserCultureLang())
+    const browserLang = languages.find(x => x === $translate.getBrowserLang() || x === $translate.getBrowserCultureLang())
 
     for (const lang of languages) {
       // eslint-disable-next-line ts/no-require-imports
-      translate.setTranslation(lang, require(`../i18n/${lang}.json`))
+      $translate.setTranslation(lang, require(`../i18n/${lang}.json`))
     }
 
     if (browserLang) {
-      translate.use(browserLang)
+      $translate.use(browserLang)
     } else {
-      translate.setDefaultLang('en')
+      $translate.setDefaultLang('en')
     }
 
     // ensure the menu closes when we navigate
-    router.events.subscribe((event) => {
+    $router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         const dropdownMenu = window.document.querySelector('#navbarSupportedContent')
         if (dropdownMenu) {

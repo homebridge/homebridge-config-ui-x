@@ -16,10 +16,10 @@ export class ConfigRestoreComponent implements OnInit {
   }[] = []
 
   constructor(
-    public activeModal: NgbActiveModal,
-    private translate: TranslateService,
-    public $toastr: ToastrService,
+    public $activeModal: NgbActiveModal,
     private $api: ApiService,
+    private $toastr: ToastrService,
+    private $translate: TranslateService,
   ) {}
 
   ngOnInit() {
@@ -30,22 +30,22 @@ export class ConfigRestoreComponent implements OnInit {
       },
       error: (err) => {
         this.loading = false
-        this.$toastr.error(err.error.message, this.translate.instant('toast.title_error'))
+        this.$toastr.error(err.error.message, this.$translate.instant('toast.title_error'))
       },
     })
   }
 
   restore(backupId: any) {
-    return this.activeModal.close(backupId)
+    return this.$activeModal.close(backupId)
   }
 
   deleteAllBackups() {
     return this.$api.delete('/config-editor/backups').subscribe({
       next: () => {
-        this.activeModal.dismiss()
-        this.$toastr.success(this.translate.instant('config.restore.toast_backups_deleted'), this.translate.instant('toast.title_success'))
+        this.$activeModal.dismiss()
+        this.$toastr.success(this.$translate.instant('config.restore.toast_backups_deleted'), this.$translate.instant('toast.title_success'))
       },
-      error: err => this.$toastr.error(err.error.message, this.translate.instant('toast.title_error')),
+      error: err => this.$toastr.error(err.error.message, this.$translate.instant('toast.title_error')),
     })
   }
 }

@@ -9,8 +9,8 @@ import { firstValueFrom } from 'rxjs'
 export class StartupScriptResolver implements Resolve<any> {
   constructor(
     private $api: ApiService,
-    private $toastr: ToastrService,
     private $router: Router,
+    private $toastr: ToastrService,
     private $translate: TranslateService,
   ) {}
 

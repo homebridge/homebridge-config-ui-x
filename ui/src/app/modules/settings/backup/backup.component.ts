@@ -15,10 +15,10 @@ export class BackupComponent implements OnInit {
   public errorMessage = ''
 
   constructor(
-    public activeModal: NgbActiveModal,
+    public $activeModal: NgbActiveModal,
+    private $api: ApiService,
     private $toastr: ToastrService,
     private $translate: TranslateService,
-    private $api: ApiService,
   ) {}
 
   ngOnInit(): void {
@@ -54,7 +54,7 @@ export class BackupComponent implements OnInit {
         const archiveName = backup.fileName || 'homebridge-backup.tar.gz'
         const sizeInBytes = res.body.size
         if (sizeInBytes > globalThis.backup.maxBackupSize) {
-          const message = this.$translate.instant('backup.message_backup_exceeds_max_size', {
+          const message = this.$translate.instant('backup.backup_exceeds_max_size', {
             maxBackupSizeText: globalThis.backup.maxBackupSizeText,
             size: `${(sizeInBytes / (1024 * 1024)).toFixed(1)}MB`,
           })
@@ -63,7 +63,7 @@ export class BackupComponent implements OnInit {
         saveAs(res.body, archiveName)
       },
       error: () => {
-        this.$toastr.error(this.$translate.instant('backup.message_backup_download_failed'), this.$translate.instant('toast.title_error'))
+        this.$toastr.error(this.$translate.instant('backup.backup_download_failed'), this.$translate.instant('toast.title_error'))
       },
     })
   }
@@ -76,7 +76,7 @@ export class BackupComponent implements OnInit {
         this.clicked = false
         const sizeInBytes = res.body.size
         if (sizeInBytes > globalThis.backup.maxBackupSize) {
-          const message = this.$translate.instant('backup.message_backup_exceeds_max_size', {
+          const message = this.$translate.instant('backup.backup_exceeds_max_size', {
             maxBackupSizeText: globalThis.backup.maxBackupSizeText,
             size: `${(sizeInBytes / (1024 * 1024)).toFixed(1)}MB`,
           })
@@ -86,7 +86,7 @@ export class BackupComponent implements OnInit {
       },
       error: () => {
         this.clicked = false
-        this.$toastr.error(this.$translate.instant('backup.message_backup_download_failed'), this.$translate.instant('toast.title_error'))
+        this.$toastr.error(this.$translate.instant('backup.backup_download_failed'), this.$translate.instant('toast.title_error'))
       },
     })
   }

@@ -12,7 +12,7 @@ export class AirpurifierComponent {
   @Input() public service: ServiceTypeX
 
   constructor(
-    private modalService: NgbModal,
+    private $modal: NgbModal,
   ) {}
 
   onClick() {
@@ -25,7 +25,7 @@ export class AirpurifierComponent {
   }
 
   onLongClick() {
-    const ref = this.modalService.open(AirpurifierManageComponent, {
+    const ref = this.$modal.open(AirpurifierManageComponent, {
       size: 'sm',
     })
     ref.componentInstance.service = this.service

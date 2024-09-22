@@ -27,7 +27,7 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
   private pluginAlias: string
 
   constructor(
-    public activeModal: NgbActiveModal,
+    public $activeModal: NgbActiveModal,
     private $api: ApiService,
     private $log: LogService,
     private $modal: NgbModal,
@@ -53,7 +53,7 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.$toastr.error(`${err.error.message || err.message}`, this.$translate.instant('toast.title_error'))
-        this.activeModal.dismiss()
+        this.$activeModal.dismiss()
       },
     })
   }

@@ -23,11 +23,11 @@ export class UninstallPluginComponent implements OnInit {
   public pluginAlias: string
 
   constructor(
-    private modalService: NgbModal,
-    public activeModal: NgbActiveModal,
-    private translate: TranslateService,
-    private $toastr: ToastrService,
+    public $activeModal: NgbActiveModal,
     private $api: ApiService,
+    private $modal: NgbModal,
+    private $toastr: ToastrService,
+    private $translate: TranslateService,
   ) {}
 
   async ngOnInit() {
@@ -51,7 +51,7 @@ export class UninstallPluginComponent implements OnInit {
         await this.removePluginConfig()
       } catch (e) {
         console.error(e)
-        this.$toastr.error('Failed to remove plugin config.', this.translate.instant('toast.title_error'))
+        this.$toastr.error('Failed to remove plugin config.', this.$translate.instant('toast.title_error'))
       }
     }
 
@@ -61,10 +61,10 @@ export class UninstallPluginComponent implements OnInit {
     }
 
     // Close the modal
-    this.activeModal.dismiss()
+    this.$activeModal.dismiss()
 
     // Open a new modal to finally uninstall the plugin
-    const ref = this.modalService.open(ManagePluginComponent, {
+    const ref = this.$modal.open(ManagePluginComponent, {
       size: 'lg',
       backdrop: 'static',
     })
@@ -84,8 +84,8 @@ export class UninstallPluginComponent implements OnInit {
     await firstValueFrom(this.$api.put(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}/enable`, {}))
 
     this.$toastr.success(
-      this.translate.instant('plugins.settings.toast_plugin_config_saved'),
-      this.translate.instant('toast.title_success'),
+      this.$translate.instant('plugins.settings.toast_plugin_config_saved'),
+      this.$translate.instant('toast.title_success'),
     )
   }
 
@@ -93,7 +93,7 @@ export class UninstallPluginComponent implements OnInit {
     try {
       await firstValueFrom(this.$api.delete(`/server/pairings/${id}`))
     } catch (error) {
-      this.$toastr.error('Failed to remove child bridge.', this.translate.instant('toast.title_error'))
+      this.$toastr.error('Failed to remove child bridge.', this.$translate.instant('toast.title_error'))
       console.error(error)
     }
   }

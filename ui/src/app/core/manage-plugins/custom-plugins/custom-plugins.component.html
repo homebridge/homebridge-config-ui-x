@@ -5,17 +5,17 @@
       {{ plugin.displayName || plugin.name }}
     </h5>
     <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="activeModal.dismiss('Dismiss')">
+      (click)="$activeModal.dismiss('Dismiss')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body text-center" [hidden]="!justSavedAndExited">
     <i class="fa fa-fw fa-power-off primary-text mb-4" style="font-size: 75px;"></i>
     <p *ngIf="['homebridge', 'homebridge-config-ui-x'].includes(plugin.name) || childBridges.length === 0" class="text-center grey-text">
-      {{ 'plugins.manage.message_thanks_for_updating_restart' | translate }}
+      {{ 'plugins.manage.thanks_for_updating_restart' | translate }}
     </p>
     <p *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name) && childBridges.length > 0" class="text-center grey-text">
-      {{ 'plugins.manage.message_thanks_for_updating_restart_child_bridges' | translate }}
+      {{ 'plugins.manage.thanks_for_updating_restart_child_bridges' | translate }}
     </p>
   </div>
   <div class="modal-body" style="min-height: 110px;" [hidden]="justSavedAndExited">
@@ -53,7 +53,7 @@
   </div>
   <div class="modal-footer justify-content-between" [hidden]="justSavedAndExited">
     <div class="text-left">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.dismiss('Dismiss')" [disabled]="saveInProgress">
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="$activeModal.dismiss('Dismiss')" [disabled]="saveInProgress">
         {{ 'form.button_close' | translate }}
       </button>
     </div>
@@ -72,7 +72,7 @@
   </div>
   <div class="modal-footer justify-content-between" [hidden]="!justSavedAndExited">
     <div class="text-left">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="activeModal.close('Dismiss')">
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="$activeModal.close('Dismiss')">
         {{ 'form.button_close' | translate }}
       </button>
     </div>

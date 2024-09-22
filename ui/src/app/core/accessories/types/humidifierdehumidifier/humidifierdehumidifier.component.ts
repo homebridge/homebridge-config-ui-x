@@ -13,7 +13,7 @@ export class HumidifierDehumidifierComponent {
   model = 1
 
   constructor(
-    private modalService: NgbModal,
+    private $modal: NgbModal,
   ) {}
 
   onClick() {
@@ -21,7 +21,7 @@ export class HumidifierDehumidifierComponent {
   }
 
   onLongClick() {
-    const ref = this.modalService.open(HumidifierDehumidifierManageComponent, {
+    const ref = this.$modal.open(HumidifierDehumidifierManageComponent, {
       size: 'sm',
     })
     ref.componentInstance.service = this.service

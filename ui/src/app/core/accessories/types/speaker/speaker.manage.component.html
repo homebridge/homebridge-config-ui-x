@@ -2,7 +2,7 @@
   <div class="modal-header">
     <h5 class="modal-title" [innerText]="service.customName || service.serviceName"></h5>
     <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="activeModal.dismiss('Dismiss')">
+      (click)="$activeModal.dismiss('Dismiss')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
@@ -10,22 +10,22 @@
 
     <h5>
       <strong>
-        {{ (service.values.Mute ? 'accessories.control.label_mute' : 'accessories.control.label_not_mute') | translate }}
+        {{ (service.values.Mute ? 'accessories.control.mute' : 'accessories.control.not_mute') | translate }}
       </strong>
     </h5>
 
     <div class="speaker-mode-control btn-group btn-group-toggle d-flex justify-content-center my-4" ngbRadioGroup
       name="radioBasic" [(ngModel)]="targetMode" (change)="onTargetStateChange()">
       <label ngbButtonLabel class="btn-primary">
-        <input ngbButton type="radio" [value]="false"> {{ 'accessories.control.label_not_mute' | translate }}
+        <input ngbButton type="radio" [value]="false"> {{ 'accessories.control.not_mute' | translate }}
       </label>
       <label ngbButtonLabel class="btn-primary">
-        <input ngbButton type="radio" [value]="true"> {{ 'accessories.control.label_mute' | translate }}
+        <input ngbButton type="radio" [value]="true"> {{ 'accessories.control.mute' | translate }}
       </label>
     </div>
 
     <div *ngIf="targetVolume">
-      <h5 class="mb-0">{{ 'accessories.control.label_speaker_volume' | translate }}</h5>
+      <h5 class="mb-0">{{ 'accessories.control.speaker_volume' | translate }}</h5>
       <p>{{ targetVolume.value }}%</p>
       <nouislider [min]="targetVolume.min" [max]="targetVolume.max" [step]="targetVolume.step"
         [(ngModel)]="targetVolume.value" (ngModelChange)="onVolumeStateChange()">

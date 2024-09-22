@@ -13,7 +13,7 @@ export class HeaterCoolerComponent {
   model = 1
 
   constructor(
-    private modalService: NgbModal,
+    private $modal: NgbModal,
   ) {}
 
   onClick() {
@@ -21,7 +21,7 @@ export class HeaterCoolerComponent {
   }
 
   onLongClick() {
-    const ref = this.modalService.open(HeaterCoolerManageComponent, {
+    const ref = this.$modal.open(HeaterCoolerManageComponent, {
       size: 'sm',
     })
     ref.componentInstance.service = this.service

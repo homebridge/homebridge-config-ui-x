@@ -12,23 +12,23 @@ export class UnpairAllBridgesComponent {
   public clicked: boolean
 
   constructor(
-    public activeModal: NgbActiveModal,
-    public toastr: ToastrService,
-    private translate: TranslateService,
-    private $route: Router,
+    public $activeModal: NgbActiveModal,
     private $api: ApiService,
+    private $route: Router,
+    private $toastr: ToastrService,
+    private $translate: TranslateService,
   ) {}
 
   onResetHomebridgeAccessoryClick() {
     this.clicked = true
     return this.$api.put('/server/reset-homebridge-accessory', {}).subscribe({
       next: () => {
-        this.toastr.success(this.translate.instant('reset.toast_accessory_reset'), this.translate.instant('toast.title_success'))
-        this.activeModal.close()
+        this.$toastr.success(this.$translate.instant('reset.toast_accessory_reset'), this.$translate.instant('toast.title_success'))
+        this.$activeModal.close()
         this.$route.navigate(['/restart'])
       },
       error: async () => {
-        this.toastr.error(this.translate.instant('reset.toast_failed_to_reset'), this.translate.instant('toast.title_error'))
+        this.$toastr.error(this.$translate.instant('reset.toast_failed_to_reset'), this.$translate.instant('toast.title_error'))
       },
     })
   }

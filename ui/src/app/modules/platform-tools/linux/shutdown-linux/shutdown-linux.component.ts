@@ -21,11 +21,11 @@ export class ShutdownLinuxComponent implements OnInit, OnDestroy {
 
   constructor(
     private $api: ApiService,
-    private $ws: WsService,
-    private $settings: SettingsService,
-    public $toastr: ToastrService,
-    private translate: TranslateService,
     private $router: Router,
+    private $settings: SettingsService,
+    private $toastr: ToastrService,
+    private $translate: TranslateService,
+    private $ws: WsService,
   ) {}
 
   ngOnInit() {
@@ -41,8 +41,8 @@ export class ShutdownLinuxComponent implements OnInit, OnDestroy {
         this.checkIfServerUp()
       },
       error: (err) => {
-        this.error = this.translate.instant('platform.linux.restart.toast_server_restart_error')
-        this.$toastr.error(`${this.error}: ${err.message}`, this.translate.instant('toast.title_error'))
+        this.error = this.$translate.instant('platform.linux.restart.toast_server_restart_error')
+        this.$toastr.error(`${this.error}: ${err.message}`, this.$translate.instant('toast.title_error'))
       },
     })
   }
@@ -53,8 +53,8 @@ export class ShutdownLinuxComponent implements OnInit, OnDestroy {
       this.io.socket.on('homebridge-status', (data) => {
         if (data.status === 'up' || data.status === 'pending') {
           this.$toastr.success(
-            this.translate.instant('platform.linux.restart.toast_server_restarted'),
-            this.translate.instant('toast.title_success'),
+            this.$translate.instant('platform.linux.restart.toast_server_restarted'),
+            this.$translate.instant('toast.title_success'),
           )
           this.$router.navigate(['/'])
         }
@@ -63,8 +63,8 @@ export class ShutdownLinuxComponent implements OnInit, OnDestroy {
 
     this.checkTimeout = setTimeout(() => {
       this.$toastr.warning(
-        this.translate.instant('platform.linux.restart.toast_server_taking_long_time_to_come_online'),
-        this.translate.instant('toast.title_warning'),
+        this.$translate.instant('platform.linux.restart.toast_server_taking_long_time'),
+        this.$translate.instant('toast.title_warning'),
         {
           timeOut: 10000,
         },

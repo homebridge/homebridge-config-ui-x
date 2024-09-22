@@ -1,4 +1,3 @@
-import { AuthService } from '@/app/core/auth/auth.service'
 import { InformationComponent } from '@/app/core/components/information/information.component'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { Component, Input, OnInit } from '@angular/core'
@@ -18,10 +17,9 @@ export class SystemInfoWidgetComponent implements OnInit {
   private io: IoNamespace
 
   constructor(
-    private $ws: WsService,
-    public $auth: AuthService,
     private $modal: NgbModal,
     private $translate: TranslateService,
+    private $ws: WsService,
   ) {}
 
   ngOnInit() {
@@ -50,8 +48,8 @@ export class SystemInfoWidgetComponent implements OnInit {
       size: 'lg',
       backdrop: 'static',
     })
-    ref.componentInstance.title = this.$translate.instant('status.widget.systeminfo.modal_glibc_title')
-    ref.componentInstance.message = this.$translate.instant('status.widget.systeminfo.modal_glibc_message')
+    ref.componentInstance.title = this.$translate.instant('status.widget.systeminfo.glibc_title')
+    ref.componentInstance.message = this.$translate.instant('status.widget.systeminfo.glibc_message')
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info')
     ref.componentInstance.faIconClass = 'fab fa-fw fa-node-js primary-text'
 
@@ -63,8 +61,8 @@ export class SystemInfoWidgetComponent implements OnInit {
       size: 'lg',
       backdrop: 'static',
     })
-    ref.componentInstance.title = this.$translate.instant('status.widget.systeminfo.modal_servicemode_title')
-    ref.componentInstance.message = this.$translate.instant('status.widget.systeminfo.modal_servicemode_message')
+    ref.componentInstance.title = this.$translate.instant('status.widget.systeminfo.servicemode_title')
+    ref.componentInstance.message = this.$translate.instant('status.widget.systeminfo.servicemode_message')
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info')
     ref.componentInstance.faIconClass = 'fas fa-fw fa-circle-exclamation primary-text'
 
@@ -77,8 +75,8 @@ export class SystemInfoWidgetComponent implements OnInit {
       backdrop: 'static',
     })
 
-    ref.componentInstance.title = `${this.$translate.instant('status.widget.systeminfo.modal_node_update_title')} - ${this.nodejsInfo.latestVersion}`
-    ref.componentInstance.message = this.$translate.instant('status.widget.systeminfo.modal_node_update_message')
+    ref.componentInstance.title = `${this.$translate.instant('status.widget.systeminfo.node_update_title')} - ${this.nodejsInfo.latestVersion}`
+    ref.componentInstance.message = this.$translate.instant('status.widget.systeminfo.node_update_message')
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info')
     ref.componentInstance.faIconClass = 'fab fa-fw fa-node-js primary-text'
     ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js'
@@ -90,8 +88,8 @@ export class SystemInfoWidgetComponent implements OnInit {
       backdrop: 'static',
     })
 
-    ref.componentInstance.title = this.$translate.instant('status.widget.systeminfo.modal_node_unsupp_title')
-    ref.componentInstance.message = this.$translate.instant('status.widget.systeminfo.modal_node_unsupp_message')
+    ref.componentInstance.title = this.$translate.instant('status.widget.systeminfo.node_unsupp_title')
+    ref.componentInstance.message = this.$translate.instant('status.widget.systeminfo.node_unsupp_message')
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info')
     ref.componentInstance.faIconClass = 'fab fa-fw fa-node-js primary-text'
     ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js'
