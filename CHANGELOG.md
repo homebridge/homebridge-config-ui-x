@@ -36,6 +36,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - consistent modal titles and remove unused lang strings
 - move lang, theme, temp units + port to main settings
   - relabelled the UI settings screen as 'UI Advanced Settings'
+- offer to unpair child bridges when uninstalling plugins
 - updates to `pl` language file (#2181) (@mkz212)
 - updates to `th` language file (#2182) (@tomzt)
 

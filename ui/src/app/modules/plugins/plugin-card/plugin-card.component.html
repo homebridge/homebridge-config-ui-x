@@ -178,7 +178,7 @@
                   <!-- // -->
                   <!-- plugin uninstall -->
                   <button ngbDropdownItem *ngIf="plugin.name !== 'homebridge-config-ui-x'"
-                    (click)="$plugin.uninstallPlugin(plugin)">
+                    (click)="$plugin.uninstallPlugin(plugin, setChildBridges)">
                     <i class="fas fa-fw fa-trash"></i> {{ 'plugins.button_uninstall' | translate }}
                   </button>
                   <!-- // -->

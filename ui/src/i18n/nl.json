@@ -223,6 +223,7 @@
   "plugins.manage.message_uninstall_remove_config_required": "Indien je deze plugin permanent wilt verwijderen dien je alle configuratie voor de plugin te verwijderen uit config.json voordat je Homebridge herstart.",
   "plugins.manage.message_uninstall_remove_confirmation": "Weet je zeker dat je {{ pluginName }} wilt verwijderen?",
   "plugins.manage.message_uninstall_remove_plugin_config": "Verwijder Plugin Config?",
+  "plugins.manage.message_uninstall_unpair_child_bridges": "Unpair Child Bridges?",
   "plugins.manage.modal_unverified_message": "Unverified Homebridge plugins indicate that they haven't undergone the review process by the Homebridge project team. Lack of verification does not necessarily imply inefficacy or safety concerns. Authors might have opted not to seek verification for various reasons.",
   "plugins.manage.modal_unverified_subtitle": "{{ pluginName }} is not verified",
   "plugins.manage.modal_unverified_title": "Unverified Plugins",

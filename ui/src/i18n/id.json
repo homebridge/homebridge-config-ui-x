@@ -223,6 +223,7 @@
   "plugins.manage.message_uninstall_remove_config_required": "Jika anda menghapus plugin ini secara permanen, pastikan anda menghapus konfigurasi untuk plugin ini di config.json sebelum mengulang kembali Homebridge.",
   "plugins.manage.message_uninstall_remove_confirmation": "Anda yakin ingin mencopot pemasangan {{ pluginName }}?",
   "plugins.manage.message_uninstall_remove_plugin_config": "Hapus Konfigurasi Plugin?",
+  "plugins.manage.message_uninstall_unpair_child_bridges": "Unpair Child Bridges?",
   "plugins.manage.modal_unverified_message": "Unverified Homebridge plugins indicate that they haven't undergone the review process by the Homebridge project team. Lack of verification does not necessarily imply inefficacy or safety concerns. Authors might have opted not to seek verification for various reasons.",
   "plugins.manage.modal_unverified_subtitle": "{{ pluginName }} is not verified",
   "plugins.manage.modal_unverified_title": "Unverified Plugins",

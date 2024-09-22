@@ -10,7 +10,7 @@ import { firstValueFrom } from 'rxjs'
   templateUrl: './unpair-single-bridge.component.html',
 })
 export class UnpairSingleBridgeComponent implements OnInit, OnDestroy {
-  public pairings: any[]
+  public pairings: any[] = []
   public deleting: null | string = null
   private unpaired = false
 
