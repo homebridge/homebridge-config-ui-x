@@ -57,6 +57,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - variable naming consistency, reduce language string lengths
 - pack only necessary `monaco-editor` files
   - this has reduced the unpacked size of the unpacked `npm` package from `~16.6MB` to `~11.0MB`
+- fix console errors in some settings modals, update `nestjs` dependencies
 
 ### Homebridge Dependencies
 
