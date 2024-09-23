@@ -45,6 +45,11 @@
                 "output": "./assets/monaco/vs/editor/"
               },
               {
+                "glob": "shell.js",
+                "input": "node_modules/ngx-monaco-editor/assets/monaco/vs/basic-languages/shell",
+                "output": "./assets/monaco/vs/basic-languages/shell/"
+              },
+              {
                 "glob": "jsonMode.js",
                 "input": "node_modules/ngx-monaco-editor/assets/monaco/vs/language/json",
                 "output": "./assets/monaco/vs/language/json/"
