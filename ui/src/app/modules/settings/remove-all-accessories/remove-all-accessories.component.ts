@@ -10,7 +10,7 @@ import { firstValueFrom } from 'rxjs'
 })
 export class RemoveAllAccessoriesComponent implements OnInit {
   public clicked: boolean
-  public cachedAccessories: any[]
+  public cachedAccessories: any[] = []
 
   constructor(
     public $activeModal: NgbActiveModal,
