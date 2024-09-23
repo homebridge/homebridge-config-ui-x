@@ -9,7 +9,7 @@ import { firstValueFrom } from 'rxjs'
   templateUrl: './remove-single-accessory.component.html',
 })
 export class RemoveSingleAccessoryComponent implements OnInit {
-  public cachedAccessories: any[]
+  public cachedAccessories: any[] = []
   public deleting: null | string = null
 
   constructor(
