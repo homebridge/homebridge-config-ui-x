@@ -21,6 +21,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - offer to unpair child bridges when uninstalling plugins
 - offer to set up a child bridge immediately after configuring a new plugin
 - lang: clarify cached is removed when unpairing bridge
+- make input placeholder colour lighter in light mode
 - updates to `pl` language file (#2181, #2189) (@mkz212)
 - updates to `th` language file (#2182) (@tomzt)
 
