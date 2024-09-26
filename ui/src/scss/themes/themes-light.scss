@@ -6,6 +6,11 @@
       background-color: $primary-dark !important;
     }
 
+    .form-control::placeholder {
+      color: #cdcdcd !important;
+      opacity: 1 !important;
+    }
+
     .sidebar {
       background: $primary-dark;
       color: #eeeeee;
