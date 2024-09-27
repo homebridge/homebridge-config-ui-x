@@ -1,7 +1,7 @@
 {
   "name": "homebridge-config-ui-x",
   "displayName": "Homebridge UI",
-  "version": "4.58.0",
+  "version": "4.59.0",
   "description": "A web based management, configuration and control platform for Homebridge.",
   "author": "oznu <dev@oz.nu>",
   "license": "MIT",
@@ -121,11 +121,11 @@
     "unzipper": "0.12.3"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^3.7.2",
+    "@antfu/eslint-config": "^3.7.3",
     "@nestjs/testing": "^10.4.4",
     "@types/fs-extra": "^11.0.4",
     "@types/lodash": "^4.17.9",
-    "@types/node": "^22.7.2",
+    "@types/node": "^22.7.3",
     "@types/node-schedule": "^2.1.7",
     "@types/passport-jwt": "^4.0.1",
     "@types/semver": "^7.5.8",
