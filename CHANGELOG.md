@@ -20,14 +20,14 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.11.14`
 - `@homebridge/plugin-ui-utils` @ `v1.0.3`
 
-## BETA
+## v4.59.0 (2024-09-27)
 
 ### UI Changes
 
-- allow a `Debug Mode` setting per child bridge
-  - this can be configured in the child bridge modal
-  - the general `Homebridge Debug Mode` now only applies to the main Homebridge bridge
-  - this feature requires Homebridge `v2.0.0-beta.21` or later
+- The following change only applies when running Homebridge 2.0-beta
+  - allow a `Debug Mode` setting per child bridge:
+    - this can be configured in the child bridge modal
+    - the general `Homebridge Debug Mode` now only applies to the main Homebridge bridge
 - increase width of notifications to `100%` on mobile devices
 - fix some styles on smaller screeners
 - hide settings section description on collapse
