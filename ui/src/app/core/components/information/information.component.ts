@@ -6,10 +6,10 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 })
 export class InformationComponent {
   @Input() title: string
-  @Input() subtitle: string | null
+  @Input() subtitle?: string
   @Input() message: string
-  @Input() ctaButtonLabel: string
-  @Input() ctaButtonLink: string
+  @Input() ctaButtonLabel?: string
+  @Input() ctaButtonLink?: string
   @Input() faIconClass: string
 
   constructor(

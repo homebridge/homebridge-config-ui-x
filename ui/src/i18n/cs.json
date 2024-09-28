@@ -84,6 +84,8 @@
   "child_bridge.config.model": "Model",
   "child_bridge.config.name": "Name",
   "child_bridge.must_configure_plugin": "Než budete moci spravovat nastavení mostu, musíte tento plugin nakonfigurovat..",
+  "child_bridge.reset_accessories": "Reset Accessories",
+  "child_bridge.reset_accessories_list": "Choose from which child bridges you want to reset the accessories below:",
   "child_bridge.restart": "Restartovat Podřízený Most",
   "child_bridge.restart_homebridge": "Restartujte můstek Homebridge, abyste dokončili nastavení tohoto podřízeného mostu.",
   "child_bridge.restart_plural": "Restart Child Bridges",

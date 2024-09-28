@@ -6,6 +6,7 @@ import { ManualConfigComponent } from '@/app/core/manage-plugins/manual-config/m
 import { PluginBridgeComponent } from '@/app/core/manage-plugins/plugin-bridge/plugin-bridge.component'
 import { PluginCompatibilityComponent } from '@/app/core/manage-plugins/plugin-compatibility/plugin-compatibility.component'
 import { PluginConfigComponent } from '@/app/core/manage-plugins/plugin-config/plugin-config.component'
+import { ResetAccessoriesComponent } from '@/app/core/manage-plugins/reset-accessories/reset-accessories.component'
 import { UninstallPluginComponent } from '@/app/core/manage-plugins/uninstall-plugin/uninstall-plugin.component'
 import { SettingsService } from '@/app/core/settings.service'
 import { Injectable } from '@angular/core'
@@ -119,10 +120,10 @@ export class ManagePluginsService {
 
   /**
    * Open the child bridge modal
-   *
    * @param plugin
+   * @param presetTrue
    */
-  async bridgeSettings(plugin: any) {
+  async bridgeSettings(plugin: any, presetTrue = false) {
     // load the plugins schema
     let schema: any
     if (plugin.settingsSchema) {
@@ -142,6 +143,7 @@ export class ManagePluginsService {
 
     ref.componentInstance.schema = schema
     ref.componentInstance.plugin = plugin
+    ref.componentInstance.presetTrue = presetTrue
   }
 
   /**
@@ -192,19 +194,14 @@ export class ManagePluginsService {
    * Open the json config modal
    */
   async jsonEditor(plugin: any) {
-    const ref = this.$modal.open(
-      ManualConfigComponent,
-      {
-        size: 'lg',
-        backdrop: 'static',
-      },
-    )
+    const ref = this.$modal.open(ManualConfigComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    })
 
     ref.componentInstance.plugin = plugin
 
-    return ref.result.catch(() => {
-      // do nothing
-    })
+    return ref.result.catch(error => console.error(error))
   }
 
   async checkHbAndNodeVersion(plugin: any, action: string): Promise<boolean> {
@@ -250,5 +247,17 @@ export class ManagePluginsService {
 
   private async loadConfigSchema(pluginName: string) {
     return firstValueFrom(this.$api.get(`/plugins/config-schema/${encodeURIComponent(pluginName)}`))
+  }
+
+  /**
+   * Open the reset child bridges modal
+   */
+  async resetChildBridges(childBridges: any[]) {
+    const ref = this.$modal.open(ResetAccessoriesComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    })
+
+    ref.componentInstance.childBridges = childBridges
   }
 }

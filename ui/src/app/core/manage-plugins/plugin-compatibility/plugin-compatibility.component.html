@@ -10,7 +10,7 @@
 
     <!-- plugins -->
     <div class="w-100" *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)">
-      <i class="{{ action === 'install' ? 'far fa-fw fa-arrow-alt-circle-down' : ( action === 'update' ? 'far fa-fw fa-arrow-alt-circle-up' : 'fas fa-fw fa-history') }} primary-text mb-4" style="font-size: 75px;"></i>
+      <i class="{{ action === 'install' ? 'far fa-fw fa-arrow-alt-circle-down' : ( action === 'update' ? 'far fa-fw fa-arrow-alt-circle-up' : 'fas fa-fw fa-code-compare') }} primary-text mb-4" style="font-size: 75px;"></i>
       <ul class="text-left">
         <li *ngIf="!isValidNode">
           {{ 'plugins.compatibility.node_too_low' | translate: { pluginName: plugin.name, minVersion: nodeMinVersion, installedVersion: nodeInstalledVersion } }}

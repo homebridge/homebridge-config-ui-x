@@ -84,6 +84,8 @@
   "child_bridge.config.model": "Model",
   "child_bridge.config.name": "Name",
   "child_bridge.must_configure_plugin": "Vous devez configurer ce plugin avant de pouvoir modifier les réglages de son Pont.",
+  "child_bridge.reset_accessories": "Reset Accessories",
+  "child_bridge.reset_accessories_list": "Choose from which child bridges you want to reset the accessories below:",
   "child_bridge.restart": "Redémarrer le Pont secondaire",
   "child_bridge.restart_homebridge": "Redémarrer Homebridge pour appliquer les modifications de réglage de ce Pont secondaire.",
   "child_bridge.restart_plural": "Redémarrer les Ponts secondaires",

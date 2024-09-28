@@ -84,6 +84,8 @@
   "child_bridge.config.model": "Model",
   "child_bridge.config.name": "Nazwa",
   "child_bridge.must_configure_plugin": "Najpierw musisz skonfigurować wtyczkę zanim będziesz mógł zarzadzać ustawieniami tego mostka.",
+  "child_bridge.reset_accessories": "Reset Accessories",
+  "child_bridge.reset_accessories_list": "Choose from which child bridges you want to reset the accessories below:",
   "child_bridge.restart": "Zrestartuj mostek",
   "child_bridge.restart_homebridge": "Zrestartuj Homebridge aby uruchomić mostek.",
   "child_bridge.restart_plural": "Zrestartuj mostki",

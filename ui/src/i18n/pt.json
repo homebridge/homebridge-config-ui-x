@@ -84,6 +84,8 @@
   "child_bridge.config.model": "Model",
   "child_bridge.config.name": "Name",
   "child_bridge.must_configure_plugin": "É necessário configurar este plugin antes de gerir as definições da ponte.",
+  "child_bridge.reset_accessories": "Reset Accessories",
+  "child_bridge.reset_accessories_list": "Choose from which child bridges you want to reset the accessories below:",
   "child_bridge.restart": "Reiniciar Pontes Secundárias",
   "child_bridge.restart_homebridge": "Reinicie o Homebridge para terminar a configuração da ponte secundária.",
   "child_bridge.restart_plural": "Restart Child Bridges",

@@ -84,6 +84,8 @@
   "child_bridge.config.model": "Model",
   "child_bridge.config.name": "Name",
   "child_bridge.must_configure_plugin": "於管理該 Bridge 設定之前，需要先設定此 Plugin。",
+  "child_bridge.reset_accessories": "Reset Accessories",
+  "child_bridge.reset_accessories_list": "Choose from which child bridges you want to reset the accessories below:",
   "child_bridge.restart": "重啟 子Bridges",
   "child_bridge.restart_homebridge": "重新啟動 Homebridge 以完成此 子Bridge 設定。",
   "child_bridge.restart_plural": "重啟子 Bridges",

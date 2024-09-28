@@ -84,6 +84,8 @@
   "child_bridge.config.model": "Модель",
   "child_bridge.config.name": "Назва",
   "child_bridge.must_configure_plugin": "Вам потрібно налаштувати цей плагін, перш ніж Ви зможете керувати його налаштуваннями мосту.",
+  "child_bridge.reset_accessories": "Reset Accessories",
+  "child_bridge.reset_accessories_list": "Choose from which child bridges you want to reset the accessories below:",
   "child_bridge.restart": "Перезавантажити Дочірній міст",
   "child_bridge.restart_homebridge": "Перезапустіть Homebridge, щоб завершити налаштування цього Дочірнього мосту.",
   "child_bridge.restart_plural": "Перезапустіть Дочірні мости",

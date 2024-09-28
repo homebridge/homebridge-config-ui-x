@@ -84,6 +84,8 @@
   "child_bridge.config.model": "Modell",
   "child_bridge.config.name": "Namn",
   "child_bridge.must_configure_plugin": "Du måste konfigurera detta plugin innan du kan hantera brygginställningarna för det.",
+  "child_bridge.reset_accessories": "Reset Accessories",
+  "child_bridge.reset_accessories_list": "Choose from which child bridges you want to reset the accessories below:",
   "child_bridge.restart": "Starta om underbrygga",
   "child_bridge.restart_homebridge": "Starta om Homebridge för att slutföra konfigureringen av den här underbryggan.",
   "child_bridge.restart_plural": "Starta om underbryggor",
