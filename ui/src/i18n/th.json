@@ -84,6 +84,8 @@
   "child_bridge.config.model": "รุ่น",
   "child_bridge.config.name": "ชื่อ",
   "child_bridge.must_configure_plugin": "คุณต้องกำหนดค่าปลั๊กอินนี้ก่อนจึงจะจัดการการตั้งค่า Bridge ได้",
+  "child_bridge.reset_accessories": "Reset Accessories",
+  "child_bridge.reset_accessories_list": "Choose from which child bridges you want to reset the accessories below:",
   "child_bridge.restart": "รีสตาร์ท Child Bridges",
   "child_bridge.restart_homebridge": "รีสตาร์ท Homebridge เพื่อเสร็จสิ้นการตั้งค่า Child Bridge นี้",
   "child_bridge.restart_plural": "รีสตาร์ท Child Bridges",

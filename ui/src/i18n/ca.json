@@ -84,6 +84,8 @@
   "child_bridge.config.model": "Model",
   "child_bridge.config.name": "Nom",
   "child_bridge.must_configure_plugin": "Cal configurar aquest plugin per poder modificar la configuració de pont.",
+  "child_bridge.reset_accessories": "Reset Accessories",
+  "child_bridge.reset_accessories_list": "Choose from which child bridges you want to reset the accessories below:",
   "child_bridge.restart": "Reiniciar el pont fill",
   "child_bridge.restart_homebridge": "Reinicia Homebridge per acabar de configurar aquest pont fill.",
   "child_bridge.restart_plural": "Reiniciar els ponts fills",

@@ -84,6 +84,8 @@
   "child_bridge.config.model": "Model",
   "child_bridge.config.name": "Name",
   "child_bridge.must_configure_plugin": "Du musst dieses Plugin konfigurieren, bevor du dessen Bridge Einstellungen verwalten kannst.",
+  "child_bridge.reset_accessories": "Reset Accessories",
+  "child_bridge.reset_accessories_list": "Choose from which child bridges you want to reset the accessories below:",
   "child_bridge.restart": "Unter-Bridge neustarten",
   "child_bridge.restart_homebridge": "Homebridge neu starten, um die Einrichtung dieser Unter-Bridge abzuschließen.",
   "child_bridge.restart_plural": "Unter-Bridge neustarten",

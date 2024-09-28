@@ -84,6 +84,8 @@
   "child_bridge.config.model": "Model",
   "child_bridge.config.name": "Name",
   "child_bridge.must_configure_plugin": "You need to configure this plugin before you can manage its bridge settings.",
+  "child_bridge.reset_accessories": "Reset Accessories",
+  "child_bridge.reset_accessories_list": "Choose from which child bridges you want to reset the accessories below:",
   "child_bridge.restart": "Restart Child Bridge",
   "child_bridge.restart_homebridge": "Restart Homebridge to finish setting up this child bridge.",
   "child_bridge.restart_plural": "Restart Child Bridges",
