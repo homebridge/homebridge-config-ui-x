@@ -1,5 +1,4 @@
 import { AuthService } from '@/app/core/auth/auth.service'
-import { InformationComponent } from '@/app/core/components/information/information.component'
 import { NotificationService } from '@/app/core/notification.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
