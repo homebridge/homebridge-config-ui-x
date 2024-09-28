@@ -7,6 +7,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### UI Changes
 
 - added more notification messages to translation files
+- settings option to clear accessory cache for a specific bridge
 
 ### Homebridge Dependencies
 

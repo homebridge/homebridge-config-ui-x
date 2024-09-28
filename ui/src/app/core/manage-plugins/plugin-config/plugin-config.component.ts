@@ -166,7 +166,7 @@ export class PluginConfigComponent implements OnInit {
         await firstValueFrom(this.$api.put(`/server/restart/${bridge.username}`, {}))
       }
       this.$toastr.success(
-        this.$translate.instant('plugins.manage.child_bridge_restart_success'),
+        this.$translate.instant('plugins.manage.child_bridge_restart'),
         this.$translate.instant('toast.title_success'),
       )
     } catch (error) {

@@ -325,6 +325,16 @@
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
+        {{ 'reset.clear_cache_bridge.title' | translate }}<br>
+        <small class="grey-text pr-2">{{ 'reset.clear_cache_bridge.desc' | translate }}</small>
+      </span>
+      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 50px;" (click)="removeBridgeAccessories()"
+        [attr.aria-label]="'reset.clear_cache_all.title' | translate">
+        <i class="fas fa-fw fa-chevron-right"></i>
+      </button>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span class="pr-2">
         {{ 'reset.clear_cache_all.title' | translate }}<br>
         <small class="grey-text pr-2">{{ 'reset.clear_cache_all.desc' | translate }}</small>
       </span>

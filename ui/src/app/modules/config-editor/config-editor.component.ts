@@ -1,5 +1,5 @@
 import { ApiService } from '@/app/core/api.service'
-import { RestartComponent } from '@/app/core/components/restart/restart.component'
+import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { MobileDetectService } from '@/app/core/mobile-detect.service'
 import { MonacoEditorService } from '@/app/core/monaco-editor.service'
 import { SettingsService } from '@/app/core/settings.service'
@@ -190,7 +190,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     try {
       const data = await firstValueFrom(this.$api.post('/config-editor', config))
       this.homebridgeConfig = JSON.stringify(data, null, 4)
-      this.$modal.open(RestartComponent, {
+      this.$modal.open(RestartHomebridgeComponent, {
         size: 'lg',
         backdrop: 'static',
       })

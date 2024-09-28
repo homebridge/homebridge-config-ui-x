@@ -16,10 +16,10 @@
       </p>
       <div *ngIf="!isDisabled">
         <p *ngIf="['homebridge', 'homebridge-config-ui-x'].includes(pluginName) || childBridges.length === 0" class="text-center grey-text">
-          {{ 'plugins.manage.thanks_for_updating_restart' | translate }}
+          {{ 'restart.homebridge' | translate }}
         </p>
         <p *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(pluginName) && childBridges.length > 0" class="text-center grey-text">
-          {{ 'plugins.manage.thanks_for_updating_restart_child_bridges' | translate }}
+          {{ 'restart.child_bridges' | translate }}
         </p>
       </div>
       <div class="alert pt-3 px-3 pb-0 mb-0" *ngIf="changeLog">

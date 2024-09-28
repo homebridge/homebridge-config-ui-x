@@ -1,7 +1,8 @@
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
 import { InformationComponent } from '@/app/core/components/information/information.component'
 import { QrcodeComponent } from '@/app/core/components/qrcode/qrcode.component'
-import { RestartComponent } from '@/app/core/components/restart/restart.component'
+import { RestartChildBridgesComponent } from '@/app/core/components/restart-child-bridges/restart-child-bridges.component'
+import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { SchemaFormComponent } from '@/app/core/components/schema-form/schema-form.component'
 import { SpinnerComponent } from '@/app/core/components/spinner/spinner.component'
 import { JsonSchemaFormPatchDirective } from '@/app/core/directives/json-schema-form-patch.directive'
@@ -13,6 +14,7 @@ import { ExternalLinkIconPipe } from '@/app/core/pipes/external-link-icon.pipe'
 import { ReplacePipe } from '@/app/core/pipes/replace.pipe'
 import { CommonModule } from '@angular/common'
 import { NgModule } from '@angular/core'
+import { ReactiveFormsModule } from '@angular/forms'
 import { TranslateModule } from '@ngx-translate/core'
 import { Bootstrap4FrameworkModule } from '@oznu/ngx-bs4-jsonform'
 
@@ -29,13 +31,15 @@ import { Bootstrap4FrameworkModule } from '@oznu/ngx-bs4-jsonform'
     JsonSchemaFormPatchDirective,
     ConfirmComponent,
     InformationComponent,
-    RestartComponent,
+    RestartHomebridgeComponent,
+    RestartChildBridgesComponent,
     QrcodeComponent,
   ],
   imports: [
     CommonModule,
     TranslateModule,
     Bootstrap4FrameworkModule,
+    ReactiveFormsModule,
   ],
   providers: [],
   exports: [
