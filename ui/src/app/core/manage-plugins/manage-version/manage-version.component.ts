@@ -74,8 +74,9 @@ export class ManageVersionComponent implements OnInit {
 
         this.loading = false
       },
-      error: (err) => {
-        this.$toastr.error(`${err.error.message || err.message}`, this.$translate.instant('toast.title_error'))
+      error: (error) => {
+        console.error(error)
+        this.$toastr.error(error.error.message || error.message, this.$translate.instant('toast.title_error'))
         this.$activeModal.dismiss()
       },
     })

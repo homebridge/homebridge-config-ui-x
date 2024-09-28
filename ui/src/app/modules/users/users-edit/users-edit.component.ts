@@ -61,11 +61,9 @@ export class UsersEditComponent implements OnInit {
           this.$auth.logout()
         }
       },
-      error: (err) => {
-        this.$toastr.error(
-          err.error.message || this.$translate.instant('users.toast_failed_to_add_user'),
-          this.$translate.instant('toast.title_error'),
-        )
+      error: (error) => {
+        console.error(error)
+        this.$toastr.error(error.error.message || this.$translate.instant('users.toast_failed_to_add_user'), this.$translate.instant('toast.title_error'))
       },
     })
   }

@@ -132,10 +132,11 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         this.$activeModal.close()
         this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess)
       },
-      error: (err) => {
+      error: (error) => {
         this.actionFailed = true
+        console.error(error)
         this.$router.navigate(['/plugins'])
-        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
+        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       },
     })
   }
@@ -154,9 +155,10 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
           backdrop: 'static',
         })
       },
-      error: (err) => {
+      error: (error) => {
         this.actionFailed = true
-        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
+        console.error(error)
+        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       },
     })
   }
@@ -192,9 +194,10 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         this.getChangeLog()
         this.getChildBridges()
       },
-      error: (err) => {
+      error: (error) => {
         this.actionFailed = true
-        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
+        console.error(error)
+        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       },
     })
   }
@@ -212,9 +215,10 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
           backdrop: 'static',
         })
       },
-      error: (err) => {
+      error: (error) => {
         this.actionFailed = true
-        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
+        console.error(error)
+        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       },
     })
   }
@@ -240,8 +244,9 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         })
       })
       return this.childBridges
-    } catch (err) {
-      this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       return []
     }
   }
@@ -274,11 +279,9 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         this.$translate.instant('plugins.manage.child_bridge_restart_success'),
         this.$translate.instant('toast.title_success'),
       )
-    } catch (err) {
-      this.$toastr.error(
-        this.$translate.instant('plugins.manage.child_bridge_restart_failed'),
-        this.$translate.instant('toast.title_error'),
-      )
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(this.$translate.instant('plugins.manage.child_bridge_restart_failed'), this.$translate.instant('toast.title_error'))
     } finally {
       this.$activeModal.close()
     }

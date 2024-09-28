@@ -48,11 +48,9 @@ export class ChildBridgeWidgetComponent implements OnInit, OnDestroy {
     bridge.restartInProgress = true
     try {
       await firstValueFrom(this.io.request('restart-child-bridge', bridge.username))
-    } catch (err) {
-      this.$toastr.error(
-        `Failed to restart bridge: ${err.error?.message}`,
-        this.$translate.instant('toast.title_error'),
-      )
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(this.$translate.instant('status.widget.bridge.restart_error'), this.$translate.instant('toast.title_error'))
       bridge.restartInProgress = false
     } finally {
       setTimeout(() => {

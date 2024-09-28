@@ -129,8 +129,9 @@ export class ManagePluginsService {
     if (plugin.settingsSchema) {
       try {
         schema = await this.loadConfigSchema(plugin.name)
-      } catch (e) {
-        this.$toastr.error('Failed to load plugins config schema.', this.$translate.instant('toast.title_error'))
+      } catch (error) {
+        console.error(error)
+        this.$toastr.error(this.$translate.instant('plugins.toast_failed_to_load_plugin_schema'), this.$translate.instant('toast.title_error'))
         return
       }
     }
@@ -156,8 +157,9 @@ export class ManagePluginsService {
     if (plugin.settingsSchema) {
       try {
         schema = await this.loadConfigSchema(plugin.name)
-      } catch (e) {
-        this.$toastr.error('Failed to load plugins config schema.', this.$translate.instant('toast.title_error'))
+      } catch (error) {
+        console.error(error)
+        this.$toastr.error(this.$translate.instant('plugins.toast_failed_to_load_plugin_schema'), this.$translate.instant('toast.title_error'))
         return
       }
     }
@@ -221,8 +223,9 @@ export class ManagePluginsService {
       if (plugin.updateEngines?.homebridge && lt(this.$settings.env.homebridgeVersion, minVersion(plugin.updateEngines.homebridge))) {
         isValidHb = false
       }
-    } catch (e) {
-      this.$toastr.error(`Failed to check compatibility: ${e.message}`, this.$translate.instant('toast.title_error'))
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       return false
     }
 

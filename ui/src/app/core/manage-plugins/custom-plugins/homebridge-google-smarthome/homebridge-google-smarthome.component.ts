@@ -113,8 +113,9 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
       try {
         const decoded = this.$jwtHelper.decodeToken(this.gshConfig.token)
         this.linkType = decoded.id.split('|')[0].split('-')[0]
-      } catch (e) {
-        this.$toastr.error('Invalid account linking token in config.json', this.$translate.instant('toast.title_error'))
+      } catch (error) {
+        console.error(error)
+        this.$toastr.error(this.$translate.instant('plugins.settings.gsh.invalid_token'), this.$translate.instant('toast.title_error'))
         delete this.gshConfig.token
       }
     }
@@ -128,7 +129,8 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
         this.$translate.instant('plugins.settings.toast_restart_required'),
         this.$translate.instant('plugins.settings.toast_plugin_config_saved'),
       )
-    } catch {
+    } catch (error) {
+      console.error(error)
       this.$toastr.error(this.$translate.instant('config.toast_failed_to_save_config'), this.$translate.instant('toast.title_error'))
     }
   }

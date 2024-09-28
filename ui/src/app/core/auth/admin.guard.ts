@@ -13,14 +13,14 @@ export class AdminGuard implements CanActivate {
     private $auth: AuthService,
     private $router: Router,
     private $translate: TranslateService,
-    private $toast: ToastrService,
+    private $toastr: ToastrService,
   ) {}
 
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
     if (this.$auth.user && this.$auth.user.admin) {
       return true
     } else {
-      this.$toast.error('Only administrators may access the requested page.', this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$translate.instant('toast.no_auth'), this.$translate.instant('toast.title_error'))
       this.$router.navigate(['/'])
       return false
     }

@@ -28,9 +28,10 @@ export class ConfigRestoreComponent implements OnInit {
         this.loading = false
         this.backupList = data
       },
-      error: (err) => {
+      error: (error) => {
         this.loading = false
-        this.$toastr.error(err.error.message, this.$translate.instant('toast.title_error'))
+        console.error(error)
+        this.$toastr.error(error.error.message || error.message, this.$translate.instant('toast.title_error'))
       },
     })
   }
@@ -45,7 +46,10 @@ export class ConfigRestoreComponent implements OnInit {
         this.$activeModal.dismiss()
         this.$toastr.success(this.$translate.instant('config.restore.toast_backups_deleted'), this.$translate.instant('toast.title_success'))
       },
-      error: err => this.$toastr.error(err.error.message, this.$translate.instant('toast.title_error')),
+      error: (error) => {
+        console.error(error)
+        this.$toastr.error(error.error.message || error.message, this.$translate.instant('toast.title_error'))
+      },
     })
   }
 }

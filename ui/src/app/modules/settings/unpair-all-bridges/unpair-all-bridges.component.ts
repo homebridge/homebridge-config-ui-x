@@ -27,7 +27,8 @@ export class UnpairAllBridgesComponent {
         this.$activeModal.close()
         this.$route.navigate(['/restart'])
       },
-      error: async () => {
+      error: (error) => {
+        console.error(error)
         this.$toastr.error(this.$translate.instant('reset.toast_failed_to_reset'), this.$translate.instant('toast.title_error'))
       },
     })

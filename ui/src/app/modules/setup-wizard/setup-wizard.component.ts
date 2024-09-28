@@ -89,12 +89,10 @@ export class SetupWizardComponent implements OnInit, OnDestroy {
         })
         this.step = 'setup-complete'
       },
-      error: (err) => {
+      error: (error) => {
         this.loading = false
-        this.$toastr.error(
-          err.error.message || this.$translate.instant('users.toast_failed_to_add_user'),
-          this.$translate.instant('toast.title_error'),
-        )
+        console.error(error)
+        this.$toastr.error(error.error.message || this.$translate.instant('users.toast_failed_to_add_user'), this.$translate.instant('toast.title_error'))
       },
     })
   }
@@ -127,12 +125,10 @@ export class SetupWizardComponent implements OnInit, OnDestroy {
       // open restore modal
       this.openRestoreModal()
       this.restoreUploading = false
-    } catch (err) {
+    } catch (error) {
       this.restoreUploading = false
-      this.$toastr.error(
-        err.error.message || this.$translate.instant('users.toast_failed_to_add_user'),
-        this.$translate.instant('toast.title_error'),
-      )
+      console.error(error)
+      this.$toastr.error(error.error.message || this.$translate.instant('users.toast_failed_to_add_user'), this.$translate.instant('toast.title_error'))
     }
   }
 
