@@ -33,6 +33,7 @@ interface EnvInterface {
   customWallpaperHash: string
   setupWizardComplete: boolean
   recommendChildBridges: boolean
+  usePnpm: boolean
 }
 
 interface AppSettingsInterface {
