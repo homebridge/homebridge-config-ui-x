@@ -278,23 +278,6 @@ export class StatusComponent implements OnInit, OnDestroy {
     })
   }
 
-  openPnpmModal() {
-    const ref = this.$modal.open(InformationComponent, {
-      size: 'lg',
-      backdrop: 'static',
-    })
-    ref.componentInstance.title = 'pnpm'
-    ref.componentInstance.subtitle = 'This warning is visible as you are using the pnpm package manager.'
-    ref.componentInstance.message = 'The next version of Homebridge UI will no longer support pnpm.'
-    + ' You should consider updating your Homebridge instance to use npm instead.'
-    + ' This can be done by following the update instructions in the Homebridge APT package documentation.'
-    + ' See the link below for more information.'
-    ref.componentInstance.faIconClass = 'fab fa-fw fa-npm red-text'
-
-    ref.componentInstance.ctaButtonLabel = 'Update Info'
-    ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/homebridge-apt-pkg/blob/latest/README.md#using-apt'
-  }
-
   ngOnDestroy() {
     this.io.end()
     this.saveWidgetsEvent.complete()
