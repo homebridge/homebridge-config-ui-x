@@ -218,7 +218,7 @@ export class ManualConfigComponent implements OnInit {
       if (this.isFirstSave) {
         if (this.$settings.env.recommendChildBridges && this.$settings.env.serviceMode && newConfig[0]?.platform) {
           // Close the modal and open the child bridge setup modal
-          this.$plugin.bridgeSettings(this.plugin)
+          this.$plugin.bridgeSettings(this.plugin, true)
         }
       } else {
         this.$modal.open(RestartHomebridgeComponent, {

@@ -8,6 +8,11 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - added more notification messages to translation files
 - settings option to clear accessory cache for a specific bridge
+- enable child bridge by default when installing a plugin
+- change icon of plugin manage version feature
+- add a reset accessories feature to the plugin card
+  - only available when running a plugin in a child bridge
+- add warning for older homebridge apt package users still running `pnpm`
 
 ### Homebridge Dependencies
 

@@ -213,6 +213,7 @@ export class ConfigService {
         customWallpaperHash: this.customWallpaperHash,
         setupWizardComplete: this.setupWizardComplete,
         recommendChildBridges: this.recommendChildBridges,
+        usePnpm: this.usePnpm,
       },
       formAuth: Boolean(this.ui.auth !== 'none'),
       theme: this.ui.theme || 'auto',

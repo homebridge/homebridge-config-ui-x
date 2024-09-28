@@ -154,7 +154,7 @@
                   <!-- // -->
                   <!-- plugin manage version -->
                   <button ngbDropdownItem *ngIf="plugin.publicPackage" (click)="$plugin.installAlternateVersion(plugin)">
-                    <i class="fas fa-fw fa-history"></i>
+                    <i class="fas fa-fw fa-code-compare"></i>
                     {{ 'plugins.manage.install_alternate_version' | translate }}
                   </button>
                   <!-- // -->
@@ -202,6 +202,11 @@
                     <!-- child bridge start -->
                     <button ngbDropdownItem *ngIf="allChildBridgesStopped" (click)="doChildBridgeAction('start')">
                       <i class="fas fa-fw fa-play"></i> {{ setChildBridges.length > 1 ? 'child_bridge.start_plural' : 'child_bridge.start' | translate }}
+                    </button>
+                    <!-- // -->
+                    <!-- child bridge reset -->
+                    <button ngbDropdownItem (click)="$plugin.resetChildBridges(setChildBridges)">
+                      <i class="fas fa-fw fa-broom"></i> {{ 'child_bridge.reset_accessories' | translate }}
                     </button>
                     <!-- // -->
                   </ng-container>

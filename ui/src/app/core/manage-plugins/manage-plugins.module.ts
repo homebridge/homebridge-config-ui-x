@@ -10,6 +10,7 @@ import { PluginBridgeComponent } from '@/app/core/manage-plugins/plugin-bridge/p
 import { PluginCompatibilityComponent } from '@/app/core/manage-plugins/plugin-compatibility/plugin-compatibility.component'
 import { PluginConfigComponent } from '@/app/core/manage-plugins/plugin-config/plugin-config.component'
 import { PluginLogsComponent } from '@/app/core/manage-plugins/plugin-logs/plugin-logs.component'
+import { ResetAccessoriesComponent } from '@/app/core/manage-plugins/reset-accessories/reset-accessories.component'
 import { UninstallPluginComponent } from '@/app/core/manage-plugins/uninstall-plugin/uninstall-plugin.component'
 import { CommonModule } from '@angular/common'
 import { NgModule } from '@angular/core'
@@ -31,6 +32,7 @@ import { MonacoEditorModule } from 'ngx-monaco-editor'
     PluginBridgeComponent,
     PluginLogsComponent,
     DonateComponent,
+    ResetAccessoriesComponent,
   ],
   imports: [
     CommonModule,
