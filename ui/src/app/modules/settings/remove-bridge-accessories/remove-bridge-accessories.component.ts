@@ -29,7 +29,7 @@ export class RemoveBridgeAccessoriesComponent implements OnInit, OnDestroy {
   async loadPairings() {
     try {
       this.pairings = (await firstValueFrom(this.$api.get('/server/pairings')))
-        .filter((pairing: any) => !pairing._main)
+        .filter((pairing: any) => pairing._category === 'bridge' && !pairing._main)
         .sort((_a, b) => b._main ? 1 : -1)
     } catch (error) {
       console.error(error)
