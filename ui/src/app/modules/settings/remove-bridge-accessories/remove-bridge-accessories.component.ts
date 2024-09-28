@@ -1,5 +1,5 @@
 import { ApiService } from '@/app/core/api.service'
-import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
+import { RestartChildBridgesComponent } from '@/app/core/components/restart-child-bridges/restart-child-bridges.component'
 import { Component, OnDestroy, OnInit } from '@angular/core'
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateService } from '@ngx-translate/core'
@@ -7,12 +7,12 @@ import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
 @Component({
-  templateUrl: './unpair-single-bridge.component.html',
+  templateUrl: './remove-bridge-accessories.component.html',
 })
-export class UnpairSingleBridgeComponent implements OnInit, OnDestroy {
+export class RemoveBridgeAccessoriesComponent implements OnInit, OnDestroy {
   public pairings: any[] = []
   public deleting: null | string = null
-  private unpaired = false
+  public deleted: string[] = []
 
   constructor(
     public $activeModal: NgbActiveModal,
@@ -29,6 +29,7 @@ export class UnpairSingleBridgeComponent implements OnInit, OnDestroy {
   async loadPairings() {
     try {
       this.pairings = (await firstValueFrom(this.$api.get('/server/pairings')))
+        .filter((pairing: any) => !pairing._main)
         .sort((_a, b) => b._main ? 1 : -1)
     } catch (error) {
       console.error(error)
@@ -37,24 +38,17 @@ export class UnpairSingleBridgeComponent implements OnInit, OnDestroy {
     }
   }
 
-  removeAccessory(id: string) {
+  removeAccessories(id: string) {
     this.deleting = id
 
-    this.$api.delete(`/server/pairings/${id}`).subscribe({
+    this.$api.delete(`/server/pairings/${id}/accessories`).subscribe({
       next: async () => {
         await this.loadPairings()
 
-        if (!this.pairings.length) {
-          this.$activeModal.close()
-        }
-
         this.deleting = null
-        this.unpaired = true
+        this.deleted.push(id)
 
-        this.$toastr.success(
-          this.$translate.instant('plugins.settings.toast_restart_required'),
-          this.$translate.instant('toast.title_success'),
-        )
+        this.$toastr.success('', this.$translate.instant('toast.title_success'))
       },
       error: (error) => {
         this.deleting = null
@@ -65,10 +59,15 @@ export class UnpairSingleBridgeComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.unpaired) {
-      this.$modal.open(RestartHomebridgeComponent, {
+    if (this.deleted.length) {
+      const ref = this.$modal.open(RestartChildBridgesComponent, {
         size: 'lg',
         backdrop: 'static',
+      })
+
+      ref.componentInstance.bridges = this.deleted.map((id) => {
+        const { _username: username, displayName } = this.pairings.find(pairing => pairing._id === id)
+        return { displayName, username }
       })
     }
   }

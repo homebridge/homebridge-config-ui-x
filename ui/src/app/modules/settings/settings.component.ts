@@ -3,6 +3,7 @@ import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.s
 import { SettingsService } from '@/app/core/settings.service'
 import { BackupComponent } from '@/app/modules/settings/backup/backup.component'
 import { RemoveAllAccessoriesComponent } from '@/app/modules/settings/remove-all-accessories/remove-all-accessories.component'
+import { RemoveBridgeAccessoriesComponent } from '@/app/modules/settings/remove-bridge-accessories/remove-bridge-accessories.component'
 import { RemoveSingleAccessoryComponent } from '@/app/modules/settings/remove-single-accessory/remove-single-accessory.component'
 import { RestoreComponent } from '@/app/modules/settings/restore/restore.component'
 import { SelectNetworkInterfacesComponent } from '@/app/modules/settings/select-network-interfaces/select-network-interfaces.component'
@@ -214,6 +215,13 @@ export class SettingsComponent implements OnInit {
 
   removeSingleCachedAccessories() {
     this.$modal.open(RemoveSingleAccessoryComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    })
+  }
+
+  removeBridgeAccessories() {
+    this.$modal.open(RemoveBridgeAccessoriesComponent, {
       size: 'lg',
       backdrop: 'static',
     })
