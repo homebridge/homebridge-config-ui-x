@@ -1,7 +1,7 @@
 import { ApiService } from '@/app/core/api.service'
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
 import { InformationComponent } from '@/app/core/components/information/information.component'
-import { RestartComponent } from '@/app/core/components/restart/restart.component'
+import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { DonateComponent } from '@/app/core/manage-plugins/donate/donate.component'
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
 import { PluginLogsComponent } from '@/app/core/manage-plugins/plugin-logs/plugin-logs.component'
@@ -141,15 +141,14 @@ export class PluginCardComponent implements OnInit {
         if (this.hasChildBridges) {
           this.doChildBridgeAction('stop')
         }
-        this.$modal.open(RestartComponent, {
+        this.$modal.open(RestartHomebridgeComponent, {
           size: 'lg',
           backdrop: 'static',
         })
-      } catch (err) {
-        this.$toastr.error(`Failed to disable plugin: ${err.message}`, this.$translate.instant('toast.title_error'))
+      } catch (error) {
+        console.error(error)
+        this.$toastr.error(this.$translate.instant('plugins.disable.error'), this.$translate.instant('toast.title_error'))
       }
-    }).finally(() => {
-      //
     })
   }
 
@@ -173,15 +172,14 @@ export class PluginCardComponent implements OnInit {
         if (this.hasChildBridges) {
           await this.doChildBridgeAction('start')
         }
-        this.$modal.open(RestartComponent, {
+        this.$modal.open(RestartHomebridgeComponent, {
           size: 'lg',
           backdrop: 'static',
         })
-      } catch (err) {
-        this.$toastr.error(`Failed to enable plugin: ${err.message}`, this.$translate.instant('toast.title_error'))
+      } catch (error) {
+        console.error(error)
+        this.$toastr.error(this.$translate.instant('plugins.enable.error'), this.$translate.instant('toast.title_error'))
       }
-    }).finally(() => {
-      //
     })
   }
 
@@ -200,11 +198,9 @@ export class PluginCardComponent implements OnInit {
       for (const bridge of this.setChildBridges) {
         await firstValueFrom(this.io.request(`${action}-child-bridge`, bridge.username))
       }
-    } catch (err) {
-      this.$toastr.error(
-        `Failed to ${action} bridges: ${err?.message}`,
-        this.$translate.instant('toast.title_error'),
-      )
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(this.$translate.instant('plugins.bridge.action_error', { action }), this.$translate.instant('toast.title_error'))
       this.childBridgeRestartInProgress = false
     } finally {
       setTimeout(() => {

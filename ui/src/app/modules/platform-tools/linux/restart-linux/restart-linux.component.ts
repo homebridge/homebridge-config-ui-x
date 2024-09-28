@@ -40,9 +40,10 @@ export class RestartLinuxComponent implements OnInit, OnDestroy {
         this.resp = data
         this.checkIfServerUp()
       },
-      error: (err) => {
+      error: (error) => {
+        console.error(error)
         this.error = this.$translate.instant('platform.linux.restart.toast_server_restart_error')
-        this.$toastr.error(`${this.error}: ${err.message}`, this.$translate.instant('toast.title_error'))
+        this.$toastr.error(this.$translate.instant('platform.linux.restart.toast_server_restart_error'), this.$translate.instant('toast.title_error'))
       },
     })
   }

@@ -18,8 +18,9 @@ export class ConfigEditorResolver implements Resolve<any> {
     try {
       const json = await firstValueFrom(this.$api.get('/config-editor'))
       return JSON.stringify(json, null, 4)
-    } catch (err) {
-      this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.$router.navigate(['/'])
     }
   }

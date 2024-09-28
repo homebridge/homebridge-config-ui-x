@@ -1,5 +1,5 @@
 import { ApiService } from '@/app/core/api.service'
-import { RestartComponent } from '@/app/core/components/restart/restart.component'
+import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { MobileDetectService } from '@/app/core/mobile-detect.service'
 import { MonacoEditorService } from '@/app/core/monaco-editor.service'
 import { SettingsService } from '@/app/core/settings.service'
@@ -139,10 +139,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
         for (const issue of issues) {
           if (issue.message === 'Duplicate object key') {
             this.saveInProgress = false
-            this.$toastr.error(
-              this.$translate.instant('config.toast_config_invalid_json'),
-              this.$translate.instant('toast.title_error'),
-            )
+            this.$toastr.error(this.$translate.instant('config.toast_config_invalid_json'), this.$translate.instant('toast.title_error'))
             return
           }
         }
@@ -159,25 +156,13 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
       // basic validation of homebridge config spec
       if (typeof (config.bridge) !== 'object') {
-        this.$toastr.error(
-          this.$translate.instant('config.toast_config_bridge_missing'),
-          this.$translate.instant('toast.title_error'),
-        )
+        this.$toastr.error(this.$translate.instant('config.toast_config_bridge_missing'), this.$translate.instant('toast.title_error'))
       } else if (!/^(?:[0-9A-F]{2}:){5}[0-9A-F]{2}$/i.test(config.bridge.username)) {
-        this.$toastr.error(
-          this.$translate.instant('config.toast_config_username_format_error'),
-          this.$translate.instant('toast.title_error'),
-        )
+        this.$toastr.error(this.$translate.instant('config.toast_config_username_format_error'), this.$translate.instant('toast.title_error'))
       } else if (config.accessories && !Array.isArray(config.accessories)) {
-        this.$toastr.error(
-          this.$translate.instant('config.toast_config_accessory_must_be_array'),
-          this.$translate.instant('toast.title_error'),
-        )
+        this.$toastr.error(this.$translate.instant('config.toast_config_accessory_must_be_array'), this.$translate.instant('toast.title_error'))
       } else if (config.platforms && !Array.isArray(config.platforms)) {
-        this.$toastr.error(
-          this.$translate.instant('config.toast_config_platform_must_be_array'),
-          this.$translate.instant('toast.title_error'),
-        )
+        this.$toastr.error(this.$translate.instant('config.toast_config_platform_must_be_array'), this.$translate.instant('toast.title_error'))
       } else if (config.platforms && Array.isArray(config.platforms) && !this.validateSection(config.platforms, 'platform')) {
         // handled in validator function
       } else if (config.accessories && Array.isArray(config.accessories) && !this.validateSection(config.accessories, 'accessory')) {
@@ -194,11 +179,9 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
         await this.saveConfig(config)
         this.originalConfig = ''
       }
-    } catch (e) {
-      this.$toastr.error(
-        this.$translate.instant('config.toast_config_invalid_json'),
-        this.$translate.instant('toast.title_error'),
-      )
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(this.$translate.instant('config.toast_config_invalid_json'), this.$translate.instant('toast.title_error'))
     }
     this.saveInProgress = false
   }
@@ -220,65 +203,73 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     try {
       const data = await firstValueFrom(this.$api.post('/config-editor', config))
       this.homebridgeConfig = JSON.stringify(data, null, 4)
-      this.$modal.open(RestartComponent, {
+      this.$modal.open(RestartHomebridgeComponent, {
         size: 'lg',
         backdrop: 'static',
       })
-    } catch {
+    } catch (error) {
+      console.error(error)
       this.$toastr.error(this.$translate.instant('config.toast_failed_to_save_config'), this.$translate.instant('toast.title_error'))
     }
   }
 
   onRestore() {
-    this.$modal.open(ConfigRestoreComponent, {
-      size: 'lg',
-      backdrop: 'static',
-    }).result.then((backupId) => {
-      if (!this.originalConfig) {
-        this.originalConfig = this.homebridgeConfig
-      }
-
-      this.$api.get(`/config-editor/backups/${backupId}`).subscribe({
-        next: (json) => {
-          this.$toastr.warning(
-            this.$translate.instant('config.toast_click_save_to_confirm_backup_restore'),
-            this.$translate.instant('config.toast_title_backup_loaded'),
-          )
-
-          this.homebridgeConfig = JSON.stringify(json, null, 4)
-
-          // update the editor
-          // @ts-expect-error - TS2339: Property editor does not exist on type Window & typeof globalThis
-          if (this.monacoEditor && window.editor.modifiedEditor) {
-            // remove all decorations
-            this.editorDecorations = this.monacoEditor.deltaDecorations(this.editorDecorations, [])
-
-            // remove existing config
-            this.monacoEditor.executeEdits('beautifier', [
-              {
-                identifier: 'delete' as any,
-                // eslint-disable-next-line no-undef
-                range: new monaco.Range(1, 1, this.monacoEditor.getModel().getLineCount() + 10, 1),
-                text: '',
-                forceMoveMarkers: true,
-              },
-            ])
-
-            // inject the restored content
-            this.monacoEditor.executeEdits('beautifier', [
-              {
-                identifier: 'insert' as any,
-                // eslint-disable-next-line no-undef
-                range: new monaco.Range(1, 1, 1, 1),
-                text: this.homebridgeConfig,
-                forceMoveMarkers: true,
-              },
-            ])
-          }
-        },
-        error: err => this.$toastr.error(err.error.message || 'Failed to load config backup', this.$translate.instant('toast.title_error')),
+    this.$modal
+      .open(ConfigRestoreComponent, {
+        size: 'lg',
+        backdrop: 'static',
       })
-    }).catch(() => { /* modal dismissed */ })
+      .result
+      .then((backupId) => {
+        if (!this.originalConfig) {
+          this.originalConfig = this.homebridgeConfig
+        }
+
+        this.$api.get(`/config-editor/backups/${backupId}`).subscribe({
+          next: (json) => {
+            this.$toastr.info(
+              this.$translate.instant('config.toast_click_save_to_confirm_backup_restore'),
+              this.$translate.instant('config.toast_title_backup_loaded'),
+            )
+
+            this.homebridgeConfig = JSON.stringify(json, null, 4)
+
+            // update the editor
+            // @ts-expect-error - TS2339: Property editor does not exist on type Window & typeof globalThis
+            if (this.monacoEditor && window.editor.modifiedEditor) {
+            // remove all decorations
+              this.editorDecorations = this.monacoEditor.deltaDecorations(this.editorDecorations, [])
+
+              // remove existing config
+              this.monacoEditor.executeEdits('beautifier', [
+                {
+                  identifier: 'delete' as any,
+                  // eslint-disable-next-line no-undef
+                  range: new monaco.Range(1, 1, this.monacoEditor.getModel().getLineCount() + 10, 1),
+                  text: '',
+                  forceMoveMarkers: true,
+                },
+              ])
+
+              // inject the restored content
+              this.monacoEditor.executeEdits('beautifier', [
+                {
+                  identifier: 'insert' as any,
+                  // eslint-disable-next-line no-undef
+                  range: new monaco.Range(1, 1, 1, 1),
+                  text: this.homebridgeConfig,
+                  forceMoveMarkers: true,
+                },
+              ])
+            }
+          },
+          error: (error) => {
+            console.error(error)
+            this.$toastr.error(error.error.message || this.$translate.instant('backup.load_error'), this.$translate.instant('toast.title_error'))
+          },
+        })
+      })
+      .catch(() => { /* modal dismissed */ })
   }
 
   onExportConfig() {
@@ -300,21 +291,21 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     for (const section of sections) {
       // check section is an object
       if (typeof section !== 'object' || Array.isArray(section)) {
-        this.$toastr.error(`All ${type} blocks must be objects.`, this.$translate.instant('toast.title_error'))
+        this.$toastr.error(this.$translate.instant('config.error_blocks_objects', { type }), this.$translate.instant('toast.title_error'))
         this.highlightOffendingArrayItem(section)
         return false
       }
 
       // check section contains platform/accessory key
       if (!section[type]) {
-        this.$toastr.error(`All ${type} blocks must contain the "${type}" attribute.`, this.$translate.instant('toast.title_error'))
+        this.$toastr.error(this.$translate.instant('config.error_blocks_type', { type }), this.$translate.instant('toast.title_error'))
         this.highlightOffendingArrayItem(section)
         return false
       }
 
       // check section platform/accessory key is a string
       if (typeof section[type] !== 'string') {
-        this.$toastr.error(`The "${type}" attribute must be a string.`, this.$translate.instant('toast.title_error'))
+        this.$toastr.error(this.$translate.instant('config.error_string_type', { type }), this.$translate.instant('toast.title_error'))
         this.highlightOffendingArrayItem(section)
         return false
       }
@@ -327,7 +318,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   validatePlugins(plugins: any[], key: string) {
     for (const item of plugins) {
       if (typeof item !== 'string') {
-        this.$toastr.error(`Each item in the ${key} array must be a string.`, this.$translate.instant('toast.title_error'))
+        this.$toastr.error(this.$translate.instant('config.error_string_array', { key }), this.$translate.instant('toast.title_error'))
         return false
       }
     }

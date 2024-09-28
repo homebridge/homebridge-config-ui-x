@@ -124,6 +124,15 @@ export class ServerController {
   }
 
   @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Remove a single bridge\'s accessory.' })
+  @ApiParam({ name: 'deviceId' })
+  @Delete('/pairings/:deviceId/accessories')
+  @HttpCode(204)
+  deleteDeviceAccessories(@Param('deviceId') deviceId: string) {
+    return this.serverService.deleteDeviceAccessories(deviceId)
+  }
+
+  @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Return a random, unused port.' })
   @Get('/port/new')
   lookupUnusedPort() {

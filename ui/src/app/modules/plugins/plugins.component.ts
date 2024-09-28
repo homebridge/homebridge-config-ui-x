@@ -105,11 +105,9 @@ export class PluginsComponent implements OnInit, OnDestroy {
 
       this.loading = false
       return sortedList
-    } catch (err) {
-      this.$toastr.error(
-        `${this.$translate.instant('plugins.toast_failed_to_load_plugins')}: ${err.message}`,
-        this.$translate.instant('toast.title_error'),
-      )
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(this.$translate.instant('plugins.toast_failed_to_load_plugins'), this.$translate.instant('toast.title_error'))
     }
   }
 
@@ -152,9 +150,10 @@ export class PluginsComponent implements OnInit, OnDestroy {
         this.appendMetaInfo()
         this.loading = false
       },
-      error: (err) => {
+      error: (error) => {
         this.loading = false
-        this.$toastr.error(`${err.error.message || err.message}`, this.$translate.instant('toast.title_error'))
+        console.error(error)
+        this.$toastr.error(error.error.message || error.message, this.$translate.instant('toast.title_error'))
         this.loadInstalledPlugins()
       },
     })

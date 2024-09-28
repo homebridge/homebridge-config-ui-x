@@ -168,12 +168,9 @@ export class ServerService {
    */
   public async deleteDevicePairing(id: string) {
     const persistPath = join(this.configService.storagePath, 'persist')
-    const cachedAccessoriesDir = join(this.configService.storagePath, 'accessories')
 
     const accessoryInfo = join(persistPath, `AccessoryInfo.${id}.json`)
     const identifierCache = join(persistPath, `IdentifierCache.${id}.json`)
-    const cachedAccessories = join(cachedAccessoriesDir, `cachedAccessories.${id}`)
-    const cachedAccessoriesBackup = join(cachedAccessoriesDir, `.cachedAccessories.${id}.bak`)
 
     if (await pathExists(accessoryInfo)) {
       await unlink(accessoryInfo)
@@ -184,6 +181,18 @@ export class ServerService {
       await unlink(identifierCache)
       this.logger.warn(`Removed ${identifierCache}`)
     }
+
+    await this.deleteDeviceAccessories(id)
+  }
+
+  /**
+   * Remove a device's accessories
+   */
+  public async deleteDeviceAccessories(id: string) {
+    const cachedAccessoriesDir = join(this.configService.storagePath, 'accessories')
+
+    const cachedAccessories = join(cachedAccessoriesDir, `cachedAccessories.${id}`)
+    const cachedAccessoriesBackup = join(cachedAccessoriesDir, `.cachedAccessories.${id}.bak`)
 
     if (await pathExists(cachedAccessories)) {
       await unlink(cachedAccessories)

@@ -7,7 +7,6 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### UI Changes
 
 - change menu to a sidebar
-- add theme and language to main settings page
 
 ### Other Changes
 
@@ -17,6 +16,19 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Homebridge Dependencies
 
 - `@homebridge/hap-client` @ `v2.0.2`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.11.14`
+- `@homebridge/plugin-ui-utils` @ `v1.0.3`
+
+## BETA
+
+### UI Changes
+
+- added more notification messages to translation files
+- settings option to clear accessory cache for a specific bridge
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v1.10.2`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.11.14`
 - `@homebridge/plugin-ui-utils` @ `v1.0.3`
 

@@ -125,6 +125,7 @@ export class AccessoriesService {
     })
 
     this.io.socket.on('accessory-control-failure', (message: string) => {
+      console.error(message)
       this.$toastr.error(message, this.$translate.instant('toast.title_error'))
     })
 
@@ -155,7 +156,10 @@ export class AccessoriesService {
     // send update request to server
     this.io.request('save-layout', { user: this.$auth.user.username, layout: this.accessoryLayout }).subscribe({
       next: () => this.layoutSaved.next(undefined),
-      error: err => this.$toastr.error(err.message, this.$translate.instant('toast.title_error')),
+      error: (error) => {
+        console.error(error)
+        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      },
     })
   }
 

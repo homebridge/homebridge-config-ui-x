@@ -1,5 +1,5 @@
 import { ApiService } from '@/app/core/api.service'
-import { RestartComponent } from '@/app/core/components/restart/restart.component'
+import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
 import { MobileDetectService } from '@/app/core/mobile-detect.service'
 import { SettingsService } from '@/app/core/settings.service'
@@ -116,7 +116,7 @@ export class ManualConfigComponent implements OnInit {
 
   addBlock() {
     if (!this.saveCurrentBlock()) {
-      this.$toastr.error('Please fix validation errors before adding a new block.', this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$translate.instant('plugins.config.please_fix'), this.$translate.instant('toast.title_error'))
       return
     }
 
@@ -140,19 +140,14 @@ export class ManualConfigComponent implements OnInit {
 
       try {
         currentBlockNew = parse(currentBlockString)
-      } catch (e) {
-        this.$toastr.error(
-          this.$translate.instant('config.toast_config_invalid_json'),
-          this.$translate.instant('toast.title_error'),
-        )
+      } catch (error) {
+        console.error(error)
+        this.$toastr.error(this.$translate.instant('config.toast_config_invalid_json'), this.$translate.instant('toast.title_error'))
         return false
       }
 
       if (Array.isArray(currentBlockNew) || typeof currentBlockNew !== 'object') {
-        this.$toastr.error(
-          this.$translate.instant('Config block must be an object {}'),
-          this.$translate.instant('toast.title_error'),
-        )
+        this.$toastr.error(this.$translate.instant('plugins.config.must_be_object'), this.$translate.instant('toast.title_error'))
         return false
       }
 
@@ -168,10 +163,7 @@ export class ManualConfigComponent implements OnInit {
 
       // accessory types need a valid name
       if (this.pluginType === 'accessory' && (!currentBlockNew.name || typeof currentBlockNew.name !== 'string')) {
-        this.$toastr.error(
-          'Accessory must have a valid "name" attribute',
-          this.$translate.instant('toast.title_error'),
-        )
+        this.$toastr.error(this.$translate.instant('plugins.config.name_property'), this.$translate.instant('toast.title_error'))
         currentBlockNew.name = ''
         this.monacoEditor.getModel().setValue(JSON.stringify(currentBlockNew, null, 4))
         return false
@@ -229,12 +221,13 @@ export class ManualConfigComponent implements OnInit {
           this.$plugin.bridgeSettings(this.plugin)
         }
       } else {
-        this.$modal.open(RestartComponent, {
+        this.$modal.open(RestartHomebridgeComponent, {
           size: 'lg',
           backdrop: 'static',
         })
       }
-    } catch {
+    } catch (error) {
+      console.error(error)
       this.$toastr.error(this.$translate.instant('config.toast_failed_to_save_config'), this.$translate.instant('toast.title_error'))
       this.saveInProgress = false
     }

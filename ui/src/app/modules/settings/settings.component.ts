@@ -3,6 +3,7 @@ import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.s
 import { SettingsService } from '@/app/core/settings.service'
 import { BackupComponent } from '@/app/modules/settings/backup/backup.component'
 import { RemoveAllAccessoriesComponent } from '@/app/modules/settings/remove-all-accessories/remove-all-accessories.component'
+import { RemoveBridgeAccessoriesComponent } from '@/app/modules/settings/remove-bridge-accessories/remove-bridge-accessories.component'
 import { RemoveSingleAccessoryComponent } from '@/app/modules/settings/remove-single-accessory/remove-single-accessory.component'
 import { RestoreComponent } from '@/app/modules/settings/restore/restore.component'
 import { SelectNetworkInterfacesComponent } from '@/app/modules/settings/select-network-interfaces/select-network-interfaces.component'
@@ -119,8 +120,9 @@ export class SettingsComponent implements OnInit {
         this.serviceForm.patchValue(data)
         this.serviceForm.valueChanges.pipe(debounceTime(500)).subscribe(this.saveServiceModeSettings.bind(this))
       },
-      error: (err) => {
-        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
+      error: (error) => {
+        console.error(error)
+        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       },
     })
   }
@@ -149,7 +151,10 @@ export class SettingsComponent implements OnInit {
 
     // save the new property to the config file
     firstValueFrom(this.$api.put('/config-editor/ui', { key, value }))
-      .catch(err => this.$toastr.error(err.message, this.$translate.instant('toast.title_error')))
+      .catch((error) => {
+        console.error(error)
+        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      })
   }
 
   openUiSettings() {
@@ -180,8 +185,9 @@ export class SettingsComponent implements OnInit {
       next: () => {
         this.hasChangedService = JSON.stringify(data) !== JSON.stringify(this.originalServiceForm)
       },
-      error: (err) => {
-        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
+      error: (error) => {
+        console.error(error)
+        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       },
     })
   }
@@ -209,6 +215,13 @@ export class SettingsComponent implements OnInit {
 
   removeSingleCachedAccessories() {
     this.$modal.open(RemoveSingleAccessoryComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    })
+  }
+
+  removeBridgeAccessories() {
+    this.$modal.open(RemoveBridgeAccessoriesComponent, {
       size: 'lg',
       backdrop: 'static',
     })
@@ -256,8 +269,9 @@ export class SettingsComponent implements OnInit {
       next: () => {
         this.hasChangedMdns = advertiser !== this.originalMdnsSetting
       },
-      error: (err) => {
-        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
+      error: (error) => {
+        console.error(error)
+        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       },
     })
   }
@@ -267,8 +281,9 @@ export class SettingsComponent implements OnInit {
       next: () => {
         this.hasChangedBridgeNetworkAdapters = this.originalBridgeNetworkAdapters.join(',') !== adapters.join(',')
       },
-      error: (err) => {
-        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
+      error: (error) => {
+        console.error(error)
+        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       },
     })
   }

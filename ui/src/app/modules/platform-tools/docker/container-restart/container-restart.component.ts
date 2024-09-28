@@ -40,10 +40,10 @@ export class ContainerRestartComponent implements OnInit, OnDestroy {
         this.resp = data
         this.checkIfServerUp()
       },
-      error: (err) => {
-        const toastRestartError = this.$translate.instant('restart.toast_server_restart_error')
-        this.error = `${toastRestartError}.`
-        this.$toastr.error(`${toastRestartError}: ${err.message}`, this.$translate.instant('toast.title_error'))
+      error: (error) => {
+        this.error = this.$translate.instant('restart.toast_server_restart_error')
+        console.error(error)
+        this.$toastr.error(this.$translate.instant('restart.toast_server_restart_error'), this.$translate.instant('toast.title_error'))
       },
     })
   }
@@ -64,7 +64,7 @@ export class ContainerRestartComponent implements OnInit, OnDestroy {
 
     this.checkTimeout = setTimeout(() => {
       this.$toastr.warning(
-        this.$translate.instant('restart.toast_sever_restart_timeout'),
+        this.$translate.instant('restart.toast_server_restart_timeout'),
         this.$translate.instant('toast.title_warning'),
         {
           timeOut: 10000,

@@ -232,15 +232,15 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
 
     // ensure the update contains an array
     if (!Array.isArray(pluginConfig)) {
-      this.$toastr.error('Plugin config must be an array.', this.$translate.instant('toast.title_error'))
-      return this.requestResponse(event, { message: 'Plugin config must be an array.' }, false)
+      this.$toastr.error(this.$translate.instant('plugins.config.must_be_array'), this.$translate.instant('toast.title_error'))
+      return this.requestResponse(event, { message: this.$translate.instant('plugins.config.must_be_array') }, false)
     }
 
     // validate each block in the array
     for (const block of pluginConfig) {
       if (typeof block !== 'object' || Array.isArray(block)) {
-        this.$toastr.error('Plugin config must be an array of objects.', this.$translate.instant('toast.title_error'))
-        return this.requestResponse(event, { message: 'Plugin config must be an array of objects.' }, false)
+        this.$toastr.error(this.$translate.instant('plugins.config.must_be_array_objects'), this.$translate.instant('toast.title_error'))
+        return this.requestResponse(event, { message: this.$translate.instant('plugins.config.must_be_array_objects') }, false)
       }
     }
 
@@ -447,8 +447,8 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
       return newConfig
     } catch (error) {
       this.saveInProgress = false
-      this.$toastr.error(this.$translate.instant('config.toast_failed_to_save_config'), this.$translate.instant('toast.title_error'))
       console.error(error)
+      this.$toastr.error(this.$translate.instant('config.toast_failed_to_save_config'), this.$translate.instant('toast.title_error'))
     }
   }
 
@@ -462,8 +462,9 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
         })
       })
       return this.childBridges
-    } catch (err) {
-      this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       return []
     }
   }
@@ -479,14 +480,12 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
         await firstValueFrom(this.$api.put(`/server/restart/${bridge.username}`, {}))
       }
       this.$toastr.success(
-        this.$translate.instant('plugins.manage.child_bridge_restart_success'),
+        this.$translate.instant('plugins.manage.child_bridge_restart'),
         this.$translate.instant('toast.title_success'),
       )
-    } catch (err) {
-      this.$toastr.error(
-        this.$translate.instant('plugins.manage.child_bridge_restart_failed'),
-        this.$translate.instant('toast.title_error'),
-      )
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(this.$translate.instant('plugins.manage.child_bridge_restart_failed'), this.$translate.instant('toast.title_error'))
     } finally {
       this.$activeModal.close()
     }

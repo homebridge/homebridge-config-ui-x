@@ -3,9 +3,9 @@ import { Router } from '@angular/router'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 
 @Component({
-  templateUrl: './restart.component.html',
+  templateUrl: './restart-homebridge.component.html',
 })
-export class RestartComponent {
+export class RestartHomebridgeComponent {
   constructor(
     public $activeModal: NgbActiveModal,
     private $router: Router,

@@ -1,5 +1,5 @@
 import { ApiService } from '@/app/core/api.service'
-import { RestartComponent } from '@/app/core/components/restart/restart.component'
+import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { Component, Input, OnDestroy, OnInit } from '@angular/core'
@@ -132,10 +132,11 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         this.$activeModal.close()
         this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess)
       },
-      error: (err) => {
+      error: (error) => {
         this.actionFailed = true
+        console.error(error)
         this.$router.navigate(['/plugins'])
-        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
+        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       },
     })
   }
@@ -149,14 +150,15 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       next: () => {
         this.$activeModal.close()
         this.$router.navigate(['/plugins'])
-        this.$modal.open(RestartComponent, {
+        this.$modal.open(RestartHomebridgeComponent, {
           size: 'lg',
           backdrop: 'static',
         })
       },
-      error: (err) => {
+      error: (error) => {
         this.actionFailed = true
-        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
+        console.error(error)
+        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       },
     })
   }
@@ -192,9 +194,10 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         this.getChangeLog()
         this.getChildBridges()
       },
-      error: (err) => {
+      error: (error) => {
         this.actionFailed = true
-        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
+        console.error(error)
+        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       },
     })
   }
@@ -207,14 +210,15 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
     }).subscribe({
       next: () => {
         this.$activeModal.close()
-        this.$modal.open(RestartComponent, {
+        this.$modal.open(RestartHomebridgeComponent, {
           size: 'lg',
           backdrop: 'static',
         })
       },
-      error: (err) => {
+      error: (error) => {
         this.actionFailed = true
-        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
+        console.error(error)
+        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       },
     })
   }
@@ -240,8 +244,9 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         })
       })
       return this.childBridges
-    } catch (err) {
-      this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       return []
     }
   }
@@ -271,14 +276,12 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         await firstValueFrom(this.$api.put(`/server/restart/${bridge.username}`, {}))
       }
       this.$toastr.success(
-        this.$translate.instant('plugins.manage.child_bridge_restart_success'),
+        this.$translate.instant('plugins.manage.child_bridge_restart'),
         this.$translate.instant('toast.title_success'),
       )
-    } catch (err) {
-      this.$toastr.error(
-        this.$translate.instant('plugins.manage.child_bridge_restart_failed'),
-        this.$translate.instant('toast.title_error'),
-      )
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(this.$translate.instant('plugins.manage.child_bridge_restart_failed'), this.$translate.instant('toast.title_error'))
     } finally {
       this.$activeModal.close()
     }

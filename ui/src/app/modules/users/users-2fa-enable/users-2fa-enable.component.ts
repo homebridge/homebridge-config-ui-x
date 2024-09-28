@@ -36,12 +36,10 @@ export class Users2faEnableComponent implements OnInit {
           this.otpString = data.otpauth
         }
       },
-      error: (err) => {
+      error: (error) => {
         this.$activeModal.dismiss()
-        this.$toastr.error(
-          err.error.message || 'An error occurred while attempting to setup 2FA',
-          this.$translate.instant('toast.title_error'),
-        )
+        console.error(error)
+        this.$toastr.error(this.$translate.instant('users.setup_2fa_enable_error'), this.$translate.instant('toast.title_error'))
       },
     })
   }
@@ -61,8 +59,9 @@ export class Users2faEnableComponent implements OnInit {
         this.$toastr.success(this.$translate.instant('users.setup_2fa_enabled_success'), this.$translate.instant('toast.title_success'))
         this.$activeModal.close()
       },
-      error: (err) => {
-        this.$toastr.error(err.error.message || 'An error occurred', this.$translate.instant('toast.title_error'))
+      error: (error) => {
+        console.error(error)
+        this.$toastr.error(this.$translate.instant('users.setup_2fa_activate_error'), this.$translate.instant('toast.title_error'))
       },
     })
   }

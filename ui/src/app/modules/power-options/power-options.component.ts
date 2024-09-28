@@ -26,8 +26,9 @@ export class PowerOptionsComponent {
       next: () => {
         this.$router.navigate(['/restart'])
       },
-      error: (err) => {
-        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
+      error: (error) => {
+        console.error(error)
+        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       },
     })
   }
