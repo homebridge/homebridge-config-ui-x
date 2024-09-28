@@ -57,10 +57,10 @@
   <div class="modal-body text-center" [hidden]="!justSavedAndExited">
     <i class="fa fa-fw fa-power-off primary-text mb-4" style="font-size: 75px;"></i>
     <p *ngIf="['homebridge', 'homebridge-config-ui-x'].includes(plugin.name) || childBridges.length === 0" class="text-center grey-text">
-      {{ 'plugins.manage.thanks_for_updating_restart' | translate }}
+      {{ 'restart.homebridge' | translate }}
     </p>
     <p *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name) && childBridges.length > 0" class="text-center grey-text">
-      {{ 'plugins.manage.thanks_for_updating_restart_child_bridges' | translate }}
+      {{ 'restart.child_bridges' | translate }}
     </p>
   </div>
   <div class="modal-footer justify-content-between" [hidden]="justSavedAndExited">

@@ -1,5 +1,6 @@
 import { BackupComponent } from '@/app/modules/settings/backup/backup.component'
 import { RemoveAllAccessoriesComponent } from '@/app/modules/settings/remove-all-accessories/remove-all-accessories.component'
+import { RemoveBridgeAccessoriesComponent } from '@/app/modules/settings/remove-bridge-accessories/remove-bridge-accessories.component'
 import { RemoveSingleAccessoryComponent } from '@/app/modules/settings/remove-single-accessory/remove-single-accessory.component'
 import { RestoreComponent } from '@/app/modules/settings/restore/restore.component'
 import { SelectNetworkInterfacesComponent } from '@/app/modules/settings/select-network-interfaces/select-network-interfaces.component'
@@ -20,6 +21,7 @@ import { TranslateModule } from '@ngx-translate/core'
     UnpairSingleBridgeComponent,
     RemoveAllAccessoriesComponent,
     RemoveSingleAccessoryComponent,
+    RemoveBridgeAccessoriesComponent,
     SelectNetworkInterfacesComponent,
     RestoreComponent,
     BackupComponent,

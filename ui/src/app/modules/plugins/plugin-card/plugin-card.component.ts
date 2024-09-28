@@ -1,7 +1,7 @@
 import { ApiService } from '@/app/core/api.service'
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
 import { InformationComponent } from '@/app/core/components/information/information.component'
-import { RestartComponent } from '@/app/core/components/restart/restart.component'
+import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { DonateComponent } from '@/app/core/manage-plugins/donate/donate.component'
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
 import { PluginLogsComponent } from '@/app/core/manage-plugins/plugin-logs/plugin-logs.component'
@@ -141,7 +141,7 @@ export class PluginCardComponent implements OnInit {
         if (this.hasChildBridges) {
           this.doChildBridgeAction('stop')
         }
-        this.$modal.open(RestartComponent, {
+        this.$modal.open(RestartHomebridgeComponent, {
           size: 'lg',
           backdrop: 'static',
         })
@@ -172,7 +172,7 @@ export class PluginCardComponent implements OnInit {
         if (this.hasChildBridges) {
           await this.doChildBridgeAction('start')
         }
-        this.$modal.open(RestartComponent, {
+        this.$modal.open(RestartHomebridgeComponent, {
           size: 'lg',
           backdrop: 'static',
         })

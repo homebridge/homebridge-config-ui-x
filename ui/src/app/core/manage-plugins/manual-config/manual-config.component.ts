@@ -1,5 +1,5 @@
 import { ApiService } from '@/app/core/api.service'
-import { RestartComponent } from '@/app/core/components/restart/restart.component'
+import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
 import { MobileDetectService } from '@/app/core/mobile-detect.service'
 import { SettingsService } from '@/app/core/settings.service'
@@ -220,7 +220,7 @@ export class ManualConfigComponent implements OnInit {
         // Close the modal and open the child bridge setup modal
         this.$plugin.bridgeSettings(this.plugin, true)
       } else {
-        this.$modal.open(RestartComponent, {
+        this.$modal.open(RestartHomebridgeComponent, {
           size: 'lg',
           backdrop: 'static',
         })
