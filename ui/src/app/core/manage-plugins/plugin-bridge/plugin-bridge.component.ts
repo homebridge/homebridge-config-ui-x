@@ -16,6 +16,7 @@ import { firstValueFrom } from 'rxjs'
 export class PluginBridgeComponent implements OnInit {
   @Input() plugin: any
   @Input() schema: any
+  @Input() presetTrue: boolean
 
   public canConfigure = true
   public configBlocks: any[] = []
@@ -54,9 +55,15 @@ export class PluginBridgeComponent implements OnInit {
             this.getDeviceInfo(block._bridge.username)
           }
         }
+
+        if (this.presetTrue && this.bridgeCache.size === 0) {
+          this.enabledBlocks[0] = true
+          this.toggleExternalBridge(this.configBlocks[0], true, 0)
+        }
       },
-      error: () => {
+      error: (error) => {
         this.canConfigure = false
+        console.error(error)
       },
     })
   }
@@ -99,7 +106,8 @@ export class PluginBridgeComponent implements OnInit {
   async getDeviceInfo(username: string) {
     try {
       this.deviceInfo[username] = await firstValueFrom(this.$api.get(`/server/pairings/${username.replace(/:/g, '')}`))
-    } catch (e) {
+    } catch (error) {
+      console.error(error)
       this.deviceInfo[username] = false
     }
   }

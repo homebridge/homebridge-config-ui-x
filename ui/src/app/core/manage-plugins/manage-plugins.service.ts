@@ -119,10 +119,10 @@ export class ManagePluginsService {
 
   /**
    * Open the child bridge modal
-   *
    * @param plugin
+   * @param presetTrue
    */
-  async bridgeSettings(plugin: any) {
+  async bridgeSettings(plugin: any, presetTrue = false) {
     // load the plugins schema
     let schema: any
     if (plugin.settingsSchema) {
@@ -142,6 +142,7 @@ export class ManagePluginsService {
 
     ref.componentInstance.schema = schema
     ref.componentInstance.plugin = plugin
+    ref.componentInstance.presetTrue = presetTrue
   }
 
   /**
