@@ -84,6 +84,8 @@
   "child_bridge.config.model": "Model",
   "child_bridge.config.name": "Name",
   "child_bridge.must_configure_plugin": "在进行子网桥配置前，您需要先完成插件的配置。",
+  "child_bridge.reset_accessories": "Reset Accessories",
+  "child_bridge.reset_accessories_list": "Choose from which child bridges you want to reset the accessories below:",
   "child_bridge.restart": "Restart Child Bridges",
   "child_bridge.restart_homebridge": "重启 Homebridge 以完成子网桥设置。",
   "child_bridge.restart_plural": "Restart Child Bridges",

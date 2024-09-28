@@ -205,6 +205,11 @@
                       <i class="fas fa-fw fa-play"></i> {{ setChildBridges.length > 1 ? 'child_bridge.start_plural' : 'child_bridge.start' | translate }}
                     </button>
                     <!-- // -->
+                    <!-- child bridge reset -->
+                    <button ngbDropdownItem (click)="$plugin.resetChildBridges(setChildBridges)">
+                      <i class="fas fa-fw fa-broom"></i> {{ 'child_bridge.reset_accessories' | translate }}
+                    </button>
+                    <!-- // -->
                   </ng-container>
                   <div class="dropdown-divider" *ngIf="plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && !plugin.recommendChildBridge"></div>
                   <!-- child bridge setup, when not recommended -->

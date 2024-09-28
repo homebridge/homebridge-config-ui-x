@@ -84,6 +84,8 @@
   "child_bridge.config.model": "Model",
   "child_bridge.config.name": "Name",
   "child_bridge.must_configure_plugin": "Ta vtičnik morate konfigurirati, preden lahko upravljate njegove nastavitve mostu.",
+  "child_bridge.reset_accessories": "Reset Accessories",
+  "child_bridge.reset_accessories_list": "Choose from which child bridges you want to reset the accessories below:",
   "child_bridge.restart": "Restart Child Bridges",
   "child_bridge.restart_homebridge": "Znova zaženite Homebridge, da dokončate nastavitev tega otroškega mostu.",
   "child_bridge.restart_plural": "Restart Child Bridges",
