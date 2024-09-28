@@ -125,7 +125,7 @@
     "@nestjs/testing": "^10.4.4",
     "@types/fs-extra": "^11.0.4",
     "@types/lodash": "^4.17.9",
-    "@types/node": "^22.7.3",
+    "@types/node": "^22.7.4",
     "@types/node-schedule": "^2.1.7",
     "@types/passport-jwt": "^4.0.1",
     "@types/semver": "^7.5.8",

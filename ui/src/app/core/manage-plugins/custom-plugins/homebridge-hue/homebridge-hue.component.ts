@@ -20,8 +20,9 @@ export class HomebridgeHueComponent {
       next: (res) => {
         saveAs(res.body, 'homebridge-hue.json.gz')
       },
-      error: () => {
-        this.$toastr.error('Homebridge Hue dump file does not exist yet.', this.$translate.instant('toast.title_error'))
+      error: (error) => {
+        console.error(error)
+        this.$toastr.error(this.$translate.instant('plugins.settings.hue.dump_no_exist'), this.$translate.instant('toast.title_error'))
       },
     })
   }

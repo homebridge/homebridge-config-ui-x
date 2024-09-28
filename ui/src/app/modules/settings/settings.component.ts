@@ -119,8 +119,9 @@ export class SettingsComponent implements OnInit {
         this.serviceForm.patchValue(data)
         this.serviceForm.valueChanges.pipe(debounceTime(500)).subscribe(this.saveServiceModeSettings.bind(this))
       },
-      error: (err) => {
-        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
+      error: (error) => {
+        console.error(error)
+        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       },
     })
   }
@@ -149,7 +150,10 @@ export class SettingsComponent implements OnInit {
 
     // save the new property to the config file
     firstValueFrom(this.$api.put('/config-editor/ui', { key, value }))
-      .catch(err => this.$toastr.error(err.message, this.$translate.instant('toast.title_error')))
+      .catch((error) => {
+        console.error(error)
+        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      })
   }
 
   openUiSettings() {
@@ -180,8 +184,9 @@ export class SettingsComponent implements OnInit {
       next: () => {
         this.hasChangedService = JSON.stringify(data) !== JSON.stringify(this.originalServiceForm)
       },
-      error: (err) => {
-        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
+      error: (error) => {
+        console.error(error)
+        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       },
     })
   }
@@ -256,8 +261,9 @@ export class SettingsComponent implements OnInit {
       next: () => {
         this.hasChangedMdns = advertiser !== this.originalMdnsSetting
       },
-      error: (err) => {
-        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
+      error: (error) => {
+        console.error(error)
+        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       },
     })
   }
@@ -267,8 +273,9 @@ export class SettingsComponent implements OnInit {
       next: () => {
         this.hasChangedBridgeNetworkAdapters = this.originalBridgeNetworkAdapters.join(',') !== adapters.join(',')
       },
-      error: (err) => {
-        this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
+      error: (error) => {
+        console.error(error)
+        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       },
     })
   }

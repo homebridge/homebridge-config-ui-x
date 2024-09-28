@@ -62,7 +62,8 @@ export class BackupComponent implements OnInit {
         }
         saveAs(res.body, archiveName)
       },
-      error: () => {
+      error: (error) => {
+        console.error(error)
         this.$toastr.error(this.$translate.instant('backup.backup_download_failed'), this.$translate.instant('toast.title_error'))
       },
     })
@@ -84,8 +85,9 @@ export class BackupComponent implements OnInit {
         }
         saveAs(res.body, archiveName)
       },
-      error: () => {
+      error: (error) => {
         this.clicked = false
+        console.error(error)
         this.$toastr.error(this.$translate.instant('backup.backup_download_failed'), this.$translate.instant('toast.title_error'))
       },
     })

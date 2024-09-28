@@ -51,8 +51,9 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
         this.pluginAlias = this.plugin.name === 'homebridge-config-ui-x' ? 'Homebridge UI' : (result[0]?.name || this.plugin.name)
         this.$log.startTerminal(this.termTarget, {}, this.resizeEvent, this.pluginAlias)
       },
-      error: (err) => {
-        this.$toastr.error(`${err.error.message || err.message}`, this.$translate.instant('toast.title_error'))
+      error: (error) => {
+        console.error(error)
+        this.$toastr.error(error.error.message || error.message, this.$translate.instant('toast.title_error'))
         this.$activeModal.dismiss()
       },
     })
@@ -106,10 +107,10 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
           let message: string
           try {
             message = JSON.parse(await err.error.text()).message
-          } catch (e) {
-            // do nothing
+          } catch (error) {
+            console.error(error)
           }
-          this.$toastr.error(message || 'Failed to download log file', this.$translate.instant('toast.title_error'))
+          this.$toastr.error(message || this.$translate.instant('logs.download.error'), this.$translate.instant('toast.title_error'))
         },
       })
     }).catch(() => {

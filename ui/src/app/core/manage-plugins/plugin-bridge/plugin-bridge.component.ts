@@ -114,11 +114,9 @@ export class PluginBridgeComponent implements OnInit {
         size: 'lg',
         backdrop: 'static',
       })
-    } catch (err) {
-      this.$toastr.error(
-        this.$translate.instant('config.toast_failed_to_save_config'),
-        this.$translate.instant('toast.title_error'),
-      )
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(this.$translate.instant('config.toast_failed_to_save_config'), this.$translate.instant('toast.title_error'))
     } finally {
       this.saveInProgress = false
     }

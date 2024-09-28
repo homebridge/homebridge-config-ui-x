@@ -67,8 +67,9 @@ export class HomebridgeStatusWidgetComponent implements OnInit {
       const response = await firstValueFrom(this.io.request('homebridge-version-check'))
       this.homebridgePkg = response
       this.$settings.env.homebridgeVersion = response.installedVersion
-    } catch (err) {
-      this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
     }
   }
 
@@ -77,8 +78,9 @@ export class HomebridgeStatusWidgetComponent implements OnInit {
       const response = await firstValueFrom(this.io.request('homebridge-ui-version-check'))
       this.homebridgeUiPkg = response
       this.$settings.env.homebridgeUiVersion = response.installedVersion
-    } catch (err) {
-      this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
     }
   }
 
@@ -87,8 +89,9 @@ export class HomebridgeStatusWidgetComponent implements OnInit {
       const outOfDatePlugins = await firstValueFrom(this.io.request('get-out-of-date-plugins'))
       this.homebridgePluginStatus = outOfDatePlugins.filter((x: any) => x.name !== 'homebridge-config-ui-x')
       this.homebridgePluginStatusDone = true
-    } catch (err) {
-      this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
     }
   }
 }

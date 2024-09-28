@@ -78,11 +78,9 @@ export class RestoreComponent implements OnInit, OnDestroy {
         }, 500)
         this.clicked = false
       },
-      error: (err) => {
-        this.$toastr.error(
-          err?.error?.message || this.$translate.instant('backup.restore_failed'),
-          this.$translate.instant('toast.title_error'),
-        )
+      error: (error) => {
+        console.error(error)
+        this.$toastr.error(error.error?.message || this.$translate.instant('backup.restore_failed'), this.$translate.instant('toast.title_error'))
         this.clicked = false
       },
     })
@@ -97,8 +95,9 @@ export class RestoreComponent implements OnInit, OnDestroy {
           this.postBackupRestart()
         }
       },
-      error: () => {
+      error: (error) => {
         this.restoreFailed = true
+        console.error(error)
         this.$toastr.error(this.$translate.instant('backup.restore_failed'), this.$translate.instant('toast.title_error'))
       },
     })
@@ -125,12 +124,10 @@ export class RestoreComponent implements OnInit, OnDestroy {
           this.clicked = false
         }
       },
-      error: (err) => {
-        this.$toastr.error(
-          err?.error?.message || this.$translate.instant('backup.restore_failed'),
-          this.$translate.instant('toast.title_error'),
-        )
+      error: (error) => {
         this.clicked = false
+        console.error(error)
+        this.$toastr.error(error.error?.message || this.$translate.instant('backup.restore_failed'), this.$translate.instant('toast.title_error'))
       },
     })
   }
@@ -141,8 +138,9 @@ export class RestoreComponent implements OnInit, OnDestroy {
         this.restoreInProgress = false
         this.$toastr.success(this.$translate.instant('backup.backup_restored'), this.$translate.instant('toast.title_success'))
       },
-      error: () => {
+      error: (error) => {
         this.restoreFailed = true
+        console.error(error)
         this.$toastr.error(this.$translate.instant('backup.restore_failed'), this.$translate.instant('toast.title_error'))
       },
     })

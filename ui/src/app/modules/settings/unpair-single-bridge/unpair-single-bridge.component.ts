@@ -30,8 +30,9 @@ export class UnpairSingleBridgeComponent implements OnInit, OnDestroy {
     try {
       this.pairings = (await firstValueFrom(this.$api.get('/server/pairings')))
         .sort((_a, b) => b._main ? 1 : -1)
-    } catch (e) {
-      this.$toastr.error('Paired accessories could not be loaded.', this.$translate.instant('toast.title_error'))
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(this.$translate.instant('settings.unpair_bridge.load_error'), this.$translate.instant('toast.title_error'))
       this.$activeModal.close()
     }
   }
@@ -55,9 +56,10 @@ export class UnpairSingleBridgeComponent implements OnInit, OnDestroy {
           this.$translate.instant('toast.title_success'),
         )
       },
-      error: () => {
+      error: (error) => {
         this.deleting = null
-        this.$toastr.error('Failed to un-pair accessory.', this.$translate.instant('toast.title_error'))
+        console.error(error)
+        this.$toastr.error(this.$translate.instant('settings.unpair_bridge.unpair_error'), this.$translate.instant('toast.title_error'))
       },
     })
   }

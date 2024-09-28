@@ -64,10 +64,10 @@ export class LogsComponent implements OnInit, OnDestroy {
           let message: string
           try {
             message = JSON.parse(await err.error.text()).message
-          } catch (e) {
-            // do nothing
+          } catch (error) {
+            console.error(error)
           }
-          this.$toastr.error(message || 'Failed to download log file', this.$translate.instant('toast.title_error'))
+          this.$toastr.error(message || this.$translate.instant('logs.download.error'), this.$translate.instant('toast.title_error'))
         },
       })
     }).catch(() => {
@@ -86,21 +86,24 @@ export class LogsComponent implements OnInit, OnDestroy {
     ref.componentInstance.confirmButtonClass = 'btn-danger'
     ref.componentInstance.faIconClass = 'fas fa-fw fa-circle-exclamation primary-text'
 
-    ref.result.then(() => {
-      this.$api.put('/platform-tools/hb-service/log/truncate', {}).subscribe({
-        next: () => {
-          this.$toastr.success(
-            this.$translate.instant('logs.message_log_file_truncated'),
-            this.$translate.instant('toast.title_success'),
-          )
-          this.$log.term.clear()
-        },
-        error: (err: HttpErrorResponse) => {
-          this.$toastr.error(err.error.message || 'Failed to truncate log file', this.$translate.instant('toast.title_error'))
-        },
+    ref.result
+      .then(() => {
+        this.$api.put('/platform-tools/hb-service/log/truncate', {}).subscribe({
+          next: () => {
+            this.$toastr.success(
+              this.$translate.instant('logs.message_log_file_truncated'),
+              this.$translate.instant('toast.title_success'),
+            )
+            this.$log.term.clear()
+          },
+          error: (error: HttpErrorResponse) => {
+            console.error(error)
+            this.$toastr.error(error.error.message || this.$translate.instant('logs.truncate.error'), this.$translate.instant('toast.title_error'))
+          },
+        })
       })
-    }).catch(() => {
-      // do nothing
-    })
+      .catch(() => {
+        // do nothing
+      })
   }
 }

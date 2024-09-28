@@ -17,8 +17,9 @@ export class UsersResolver implements Resolve<any> {
   async resolve() {
     try {
       return await firstValueFrom(this.$api.get('/users'))
-    } catch (err) {
-      this.$toastr.error(err.message, this.$translate.instant('toast.title_error'))
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.$router.navigate(['/'])
     }
   }

@@ -49,9 +49,9 @@ export class UninstallPluginComponent implements OnInit {
     if (this.removeConfig && this.pluginType && this.pluginAlias) {
       try {
         await this.removePluginConfig()
-      } catch (e) {
-        console.error(e)
-        this.$toastr.error('Failed to remove plugin config.', this.$translate.instant('toast.title_error'))
+      } catch (error) {
+        console.error(error)
+        this.$toastr.error(this.$translate.instant('plugins.config.remove_error'), this.$translate.instant('toast.title_error'))
       }
     }
 
@@ -93,8 +93,8 @@ export class UninstallPluginComponent implements OnInit {
     try {
       await firstValueFrom(this.$api.delete(`/server/pairings/${id}`))
     } catch (error) {
-      this.$toastr.error('Failed to remove child bridge.', this.$translate.instant('toast.title_error'))
       console.error(error)
+      this.$toastr.error(this.$translate.instant('plugins.uninstall_bridge_error'), this.$translate.instant('toast.title_error'))
     }
   }
 }
