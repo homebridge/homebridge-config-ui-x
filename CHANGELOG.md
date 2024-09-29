@@ -16,6 +16,10 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - Add ability to change or modify UI log settings in service mode (#2196) (@NorthernMan54)
 - split light/dark mode from themes, auto-change with browser changes
 
+## Other Changes
+
+- upgrade `angular` from `v15` to `v16`
+
 ### Homebridge Dependencies
 
 - `@homebridge/hap-client` @ `v1.10.2`
