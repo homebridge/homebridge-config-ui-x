@@ -39,7 +39,7 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.editorOptions = {
       language: 'shell',
-      theme: this.$settings.theme.startsWith('dark-mode') ? 'vs-dark' : 'vs-light',
+      theme: this.$settings.actualLightingMode === 'dark' ? 'vs-dark' : 'vs-light',
       automaticLayout: true,
     }
 
