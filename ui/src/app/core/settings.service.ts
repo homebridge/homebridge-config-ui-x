@@ -40,6 +40,7 @@ interface AppSettingsInterface {
   env: EnvInterface
   formAuth: boolean
   theme: string
+  lightingMode: 'auto' | 'light' | 'dark'
   serverTimestamp: string
 }
 
@@ -51,7 +52,25 @@ export class SettingsService {
   public formAuth = true
   public uiVersion: string
   public theme: string
+  public lightingMode: 'auto' | 'light' | 'dark'
+  public currentLightingMode: 'auto' | 'light' | 'dark'
+  public actualLightingMode: 'light' | 'dark'
+  public browserLightingMode: 'light' | 'dark'
   public serverTimeOffset = 0
+  public themeList = [
+    'orange',
+    'red',
+    'pink',
+    'purple',
+    'indigo',
+    'blue',
+    'blue-grey',
+    'cyan',
+    'green',
+    'teal',
+    'grey',
+    'brown',
+  ]
 
   // set true if current translation is RLT
   public rtl = false
@@ -74,7 +93,9 @@ export class SettingsService {
     const data = await firstValueFrom(this.$api.get('/auth/settings')) as AppSettingsInterface
     this.formAuth = data.formAuth
     this.env = data.env
-    this.setTheme(data.theme || 'auto')
+    this.lightingMode = data.lightingMode
+    this.setLightingMode(this.lightingMode, 'user')
+    this.setTheme(data.theme)
     this.setTitle(this.env.homebridgeInstanceName)
     this.checkServerTime(data.serverTimestamp)
     this.setUiVersion(data.env.packageVersion)
@@ -83,29 +104,49 @@ export class SettingsService {
     this.settingsLoadedSubject.next(undefined)
   }
 
+  setBrowserLightingMode(lighting: 'light' | 'dark') {
+    this.browserLightingMode = lighting
+    if (this.lightingMode === 'auto') {
+      this.setLightingMode(lighting, 'browser')
+    }
+  }
+
+  setLightingMode(lightingMode: 'auto' | 'light' | 'dark', source: 'user' | 'browser') {
+    if (source === 'user') {
+      this.lightingMode = lightingMode
+    }
+    this.currentLightingMode = lightingMode
+    this.actualLightingMode = this.currentLightingMode === 'auto' ? this.browserLightingMode : this.currentLightingMode
+    if (this.theme) {
+      this.setTheme(this.theme)
+    }
+  }
+
   setTheme(theme: string) {
-    if (theme === 'auto') {
-      // select theme based on os dark mode preferences
-      try {
-        if (matchMedia('(prefers-color-scheme: dark)').matches) {
-          theme = 'dark-mode'
-        } else {
-          theme = 'purple'
-        }
-      } catch (e) {
-        theme = 'purple'
-      }
+    // Default theme is orange
+    if (!theme || !this.themeList.includes(theme)) {
+      theme = 'orange'
     }
 
+    // Grab the body element
     const bodySelector = window.document.querySelector('body')
-    if (this.theme) {
-      bodySelector.classList.remove(`config-ui-x-${this.theme}`)
-      bodySelector.classList.remove('dark-mode')
-    }
+
+    // Remove all existing theme classes
+    bodySelector.classList.remove(`config-ui-x-${this.theme}`)
+    bodySelector.classList.remove(`config-ui-x-dark-mode-${this.theme}`)
+
+    // Set the new theme
     this.theme = theme
-    bodySelector.classList.add(`config-ui-x-${this.theme}`)
-    if (this.theme.startsWith('dark-mode')) {
-      bodySelector.classList.add('dark-mode')
+    if (this.actualLightingMode === 'dark') {
+      bodySelector.classList.add(`config-ui-x-dark-mode-${this.theme}`)
+      if (!bodySelector.classList.contains('dark-mode')) {
+        bodySelector.classList.add('dark-mode')
+      }
+    } else {
+      bodySelector.classList.add(`config-ui-x-${this.theme}`)
+      if (bodySelector.classList.contains('dark-mode')) {
+        bodySelector.classList.remove('dark-mode')
+      }
     }
   }
 
