@@ -133,6 +133,9 @@ export class SettingsComponent implements OnInit {
       case 'lang':
         this.$settings.setLang(value)
         break
+      case 'lightingMode':
+        this.$settings.setLightingMode(value, 'user')
+        break
       case 'theme':
         this.$settings.setTheme(value)
         break
