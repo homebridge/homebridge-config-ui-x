@@ -82,6 +82,7 @@ export class ConfigService {
     host?: '::' | '0.0.0.0' | string
     auth: 'form' | 'none'
     theme: string
+    lightingMode: 'auto' | 'light' | 'dark'
     sudo?: boolean
     restart?: string
     lang?: string
@@ -216,7 +217,8 @@ export class ConfigService {
         usePnpm: this.usePnpm,
       },
       formAuth: Boolean(this.ui.auth !== 'none'),
-      theme: this.ui.theme || 'auto',
+      theme: this.ui.theme || 'orange',
+      lightingMode: this.ui.lightingMode || 'auto',
       serverTimestamp: new Date().toISOString(),
     }
   }
