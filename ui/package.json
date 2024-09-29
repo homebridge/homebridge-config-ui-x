@@ -7,7 +7,8 @@
     "check": "npm install && npm outdated",
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --configuration production --output-path=../public --source-map=false --aot=true"
+    "build": "ng build --configuration production --output-path=../public --source-map=false --aot=true",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@angular/animations": "16.2.12",
@@ -24,8 +25,9 @@
     "@homebridge/plugin-ui-utils": "1.0.3",
     "@ng-bootstrap/ng-bootstrap": "11.0.1",
     "@ngx-translate/core": "15.0.0",
-    "@oznu/ngx-bs4-jsonform": "7.3.7",
     "@popperjs/core": "2.11.8",
+    "@zajsf/bootstrap4": "^16.2.4",
+    "@zajsf/core": "^16.2.4",
     "angular-gridster2": "17.0.0",
     "bootstrap": "4.6.2",
     "chart.js": "4.4.4",
@@ -73,6 +75,7 @@
     "dragula": "^3.7.3",
     "he": "^1.2.0",
     "nouislider": "^15.8.1",
+    "patch-package": "^8.0.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.1.6"
   },

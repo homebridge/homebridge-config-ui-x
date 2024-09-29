@@ -16,7 +16,7 @@ import { CommonModule } from '@angular/common'
 import { NgModule } from '@angular/core'
 import { ReactiveFormsModule } from '@angular/forms'
 import { TranslateModule } from '@ngx-translate/core'
-import { Bootstrap4FrameworkModule } from '@oznu/ngx-bs4-jsonform'
+import { Bootstrap4FrameworkModule } from '@zajsf/bootstrap4'
 
 @NgModule({
   declarations: [
