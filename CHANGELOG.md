@@ -30,6 +30,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - add a reset accessories feature to the plugin card
   - only available when running a plugin in a child bridge
 - add warning for older homebridge apt package users still running `pnpm`
+- split light/dark mode from themes, auto-change with browser changes
 
 ### Homebridge Dependencies
 

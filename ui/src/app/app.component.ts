@@ -13,6 +13,14 @@ export class AppComponent {
     private $translate: TranslateService,
     private $settings: SettingsService,
   ) {
+    // Detect if the user has a dark mode preference
+    const colorSchemeQueryList = window.matchMedia('(prefers-color-scheme: dark)')
+    const setLightingMode = (event: MediaQueryList | MediaQueryListEvent) => {
+      $settings.setBrowserLightingMode(event.matches ? 'dark' : 'light')
+    }
+    setLightingMode(colorSchemeQueryList)
+    colorSchemeQueryList.addEventListener('change', setLightingMode)
+
     // this array needs to be updated each time a new translation is added
     const languages = [
       'en',
