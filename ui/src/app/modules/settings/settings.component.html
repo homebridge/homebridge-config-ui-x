@@ -73,7 +73,7 @@
        <span>{{ 'settings.display.lang' | translate }}</span>
        <div class="my-3 my-md-0 pl-0 pl-md-5 w-auto">
          <select class="custom-select resp-select" [ngModel]="$settings.env.lang" (ngModelChange)="saveUiSettingChange('lang', $event)">
-           <option value="auto">Automatic (Use Browser Settings)</option>
+           <option value="auto">{{ 'form.select.auto' | translate }}</option>
            <option value="bg">Bulgarian (bg)</option>
            <option value="ca">Catalan (ca)</option>
            <option value="zh-CN">Chinese - Simplified (zh-CN)</option>
@@ -108,38 +108,31 @@
        <span>{{ 'settings.display.theme' | translate }}</span>
        <div class="my-3 my-md-0 pl-0 pl-md-5 w-auto">
          <select class="custom-select resp-select" [ngModel]="$settings.theme" (ngModelChange)="saveUiSettingChange('theme', $event)">
-           <option value="auto">Default (Auto Dark Mode)</option>
-           <option value="red">Red</option>
-           <option value="pink">Pink</option>
-           <option value="purple">Purple</option>
-           <option value="deep-purple">Purple - Deep</option>
-           <option value="indigo">Indigo</option>
-           <option value="blue">Blue</option>
-           <option value="navi-blue">Blue - Navi</option>
-           <option value="blue-grey">Blue Grey</option>
-           <option value="cyan">Cyan</option>
-           <option value="green">Green</option>
-           <option value="teal">Teal</option>
-           <option value="orange">Orange</option>
-           <option value="amber">Amber</option>
-           <option value="grey">Grey</option>
-           <option value="brown">Brown</option>
-           <option value="dark-mode">Dark Mode - HomeKit Orange</option>
-           <option value="dark-mode-red">Dark Mode - Red</option>
-           <option value="dark-mode-pink">Dark Mode - Pink</option>
-           <option value="dark-mode-purple">Dark Mode - Purple</option>
-           <option value="dark-mode-indigo">Dark Mode - Indigo</option>
-           <option value="dark-mode-blue">Dark Mode - Blue</option>
-           <option value="dark-mode-blue-grey">Dark Mode - Blue Grey</option>
-           <option value="dark-mode-green">Dark Mode - Green</option>
-           <option value="dark-mode-grey">Dark Mode - Grey</option>
-           <option value="dark-mode-brown">Dark Mode - Brown</option>
-           <option value="dark-mode-teal">Dark Mode - Teal</option>
-           <option value="dark-mode-cyan">Dark Mode - Cyan</option>
+           <option value="orange">{{ 'settings.display.orange' | translate }}</option>
+           <option value="red">{{ 'settings.display.red' | translate }}</option>
+           <option value="pink">{{ 'settings.display.pink' | translate }}</option>
+           <option value="purple">{{ 'settings.display.purple' | translate }}</option>
+           <option value="indigo">{{ 'settings.display.indigo' | translate }}</option>
+           <option value="blue">{{ 'settings.display.blue' | translate }}</option>
+           <option value="blue-grey">{{ 'settings.display.bluegrey' | translate }}</option>
+           <option value="cyan">{{ 'settings.display.cyan' | translate }}</option>
+           <option value="green">{{ 'settings.display.green' | translate }}</option>
+           <option value="teal">{{ 'settings.display.teal' | translate }}</option>
+           <option value="grey">{{ 'settings.display.grey' | translate }}</option>
+           <option value="brown">{{ 'settings.display.brown' | translate }}</option>
          </select>
        </div>
      </li>
-
+     <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+       <span>{{ 'settings.display.lighting_mode' | translate }}</span>
+       <div class="my-3 my-md-0 pl-0 pl-md-5 w-auto">
+         <select class="custom-select resp-select" [ngModel]="$settings.lightingMode" (ngModelChange)="saveUiSettingChange('lightingMode', $event)">
+           <option value="auto">{{ 'form.select.auto' | translate }}</option>
+           <option value="light">{{ 'settings.display.light' | translate }}</option>
+           <option value="dark">{{ 'settings.display.dark' | translate }}</option>
+         </select>
+       </div>
+     </li>
      <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
        <span>{{ 'settings.display.temp_units' | translate }}</span>
        <div class="my-3 my-md-0 pl-0 pl-md-5 w-auto">
