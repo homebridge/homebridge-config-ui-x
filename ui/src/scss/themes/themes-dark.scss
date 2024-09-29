@@ -415,8 +415,7 @@
   }
 }
 
-@include make-dark-theme("dark-mode", #ffa000, "amber");
-@include make-dark-theme("dark-mode-v1", #ffa000, "amber");
+@include make-dark-theme("dark-mode-orange", #ffa000, "orange");
 @include make-dark-theme("dark-mode-red", #d32f2f, "red");
 @include make-dark-theme("dark-mode-pink", #c2185b, "pink");
 @include make-dark-theme("dark-mode-purple", #9c27b0, "purple");
