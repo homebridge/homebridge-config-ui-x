@@ -231,6 +231,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
               this.monacoEditor.executeEdits('beautifier', [
                 {
                   identifier: 'delete' as any,
+                  // @ts-expect-error - monaco is defined in the browser
                   // eslint-disable-next-line no-undef
                   range: new monaco.Range(1, 1, this.monacoEditor.getModel().getLineCount() + 10, 1),
                   text: '',
@@ -242,6 +243,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
               this.monacoEditor.executeEdits('beautifier', [
                 {
                   identifier: 'insert' as any,
+                  // @ts-expect-error - monaco is defined in the browser
                   // eslint-disable-next-line no-undef
                   range: new monaco.Range(1, 1, 1, 1),
                   text: this.homebridgeConfig,
@@ -329,6 +331,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       if (matches.length) {
         const matchRange = matches[0].range
 
+        // @ts-expect-error - monaco is defined in the browser
         // eslint-disable-next-line no-undef
         const range = new monaco.Range(
           matchRange.startLineNumber,
@@ -352,6 +355,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       return
     }
 
+    // @ts-expect-error - monaco is defined in the browser
     // eslint-disable-next-line no-undef
     const uri = monaco.Uri.parse('a://homebridge/config.json');
 
@@ -545,6 +549,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       ],
     })
 
+    // @ts-expect-error - monaco is defined in the browser
     // eslint-disable-next-line no-undef
     this.monacoEditorModel.uri = monaco.Uri.parse('a://homebridge/config.json')
   }
