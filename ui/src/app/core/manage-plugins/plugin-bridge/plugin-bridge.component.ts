@@ -16,6 +16,7 @@ import { firstValueFrom } from 'rxjs'
 export class PluginBridgeComponent implements OnInit {
   @Input() plugin: any
   @Input() schema: any
+  @Input() justInstalled = false
 
   public canConfigure = true
   public configBlocks: any[] = []

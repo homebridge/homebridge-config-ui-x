@@ -92,12 +92,10 @@ export class PluginConfigComponent implements OnInit {
       } else {
         // Possible child bridge setup recommendation if the plugin is not Homebridge UI
         // If it is the first time configuring the plugin, then offer to set up a child bridge straight away
-        if (this.isFirstSave) {
-          if (this.$settings.env.recommendChildBridges && this.$settings.env.serviceMode && newConfig[0]?.platform) {
-            // Close the modal and open the child bridge setup modal
-            this.$activeModal.close()
-            this.$plugin.bridgeSettings(this.plugin)
-          }
+        if (this.isFirstSave && this.$settings.env.recommendChildBridges && this.$settings.env.serviceMode && newConfig[0]?.platform) {
+          // Close the modal and open the child bridge setup modal
+          this.$activeModal.close()
+          this.$plugin.bridgeSettings(this.plugin, true)
         } else {
           this.getChildBridges()
         }

@@ -7,6 +7,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### UI Changes
 
 - fix some log settings are not visible in service mode (#2196) (@NorthernMan54)
+- fix restart not appearing on first plugin save
 
 ### Homebridge Dependencies
 
