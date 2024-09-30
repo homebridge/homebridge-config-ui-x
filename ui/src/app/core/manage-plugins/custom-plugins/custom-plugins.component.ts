@@ -432,12 +432,10 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
       this.saveInProgress = false
 
       if (exit) {
-        if (this.isFirstSave) {
-          if (this.$settings.env.recommendChildBridges && this.$settings.env.serviceMode && newConfig[0]?.platform) {
-            // Close the modal and open the child bridge setup modal
-            this.$activeModal.close()
-            this.$plugin.bridgeSettings(this.plugin, true)
-          }
+        if (this.isFirstSave && this.$settings.env.recommendChildBridges && this.$settings.env.serviceMode && newConfig[0]?.platform) {
+          // Close the modal and open the child bridge setup modal
+          this.$activeModal.close()
+          this.$plugin.bridgeSettings(this.plugin, true)
         } else {
           this.getChildBridges()
           this.justSavedAndExited = true

@@ -215,11 +215,9 @@ export class ManualConfigComponent implements OnInit {
       this.$activeModal.close()
 
       // If it is the first time configuring a plugin, then offer to set up a child bridge straight away
-      if (this.isFirstSave) {
-        if (this.$settings.env.recommendChildBridges && this.$settings.env.serviceMode && newConfig[0]?.platform) {
-          // Close the modal and open the child bridge setup modal
-          this.$plugin.bridgeSettings(this.plugin, true)
-        }
+      if (this.isFirstSave && this.$settings.env.recommendChildBridges && this.$settings.env.serviceMode && newConfig[0]?.platform) {
+        // Close the modal and open the child bridge setup modal
+        this.$plugin.bridgeSettings(this.plugin, true)
       } else {
         this.$modal.open(RestartHomebridgeComponent, {
           size: 'lg',

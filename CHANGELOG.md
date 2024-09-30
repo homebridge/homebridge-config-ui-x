@@ -15,6 +15,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - add warning for older homebridge apt package users still running `pnpm`
 - Add ability to change or modify UI log settings in service mode (#2196) (@NorthernMan54)
 - split light/dark mode from themes, auto-change with browser changes
+- fix restart not appearing on first plugin save
 
 ## Other Changes
 
