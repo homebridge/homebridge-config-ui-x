@@ -16,7 +16,7 @@ import { CommonModule } from '@angular/common'
 import { NgModule } from '@angular/core'
 import { ReactiveFormsModule } from '@angular/forms'
 import { TranslateModule } from '@ngx-translate/core'
-import { Bootstrap4FrameworkModule } from '@zajsf/bootstrap4'
+import { Bootstrap5FrameworkModule } from '@zajsf/bootstrap5'
 
 @NgModule({
   declarations: [
@@ -38,7 +38,7 @@ import { Bootstrap4FrameworkModule } from '@zajsf/bootstrap4'
   imports: [
     CommonModule,
     TranslateModule,
-    Bootstrap4FrameworkModule,
+    Bootstrap5FrameworkModule,
     ReactiveFormsModule,
   ],
   providers: [],

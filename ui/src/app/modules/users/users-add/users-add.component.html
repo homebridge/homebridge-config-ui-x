@@ -2,9 +2,8 @@
   <form novalidate (ngSubmit)="onSubmit(form)" [formGroup]="form">
     <div class="modal-header">
       <h5 class="modal-title">{{ 'users.title_add_user' | translate }}</h5>
-      <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate" (click)="$activeModal.dismiss('Dismiss')">
-        <span aria-hidden="true">&times;</span>
-      </button>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
+      (click)="$activeModal.dismiss('Dismiss')"></button>
     </div>
     <div class="modal-body">
       <div class="container px-1">
@@ -45,22 +44,22 @@
           <label class="col-6 col-form-label grey-text">
             <i class="fas fa-fw fa-user-secret"></i> {{ 'users.label_admin_user' | translate }}
           </label>
-          <div class="col-6 text-right">
+          <div class="col-6 text-end">
             <input type="checkbox" class="rendux-input" formControlName="admin" id="isAdmin"
               [attr.aria-label]="'users.label_admin_user' | translate">
-            <label for="isAdmin" class="rendux-label ml-3" style="min-width: 50px;"></label>
+            <label for="isAdmin" class="rendux-label ms-3" style="min-width: 50px;"></label>
           </div>
         </div>
       </div>
     </div>
     <div class="modal-footer justify-content-between">
-      <div class="text-left">
-        <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="$activeModal.dismiss('Dismiss')">
+      <div class="text-start">
+        <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="$activeModal.dismiss('Dismiss')">
           {{ 'form.button_close' | translate }}
         </button>
       </div>
       <div class="text-center"></div>
-      <div class="text-right">
+      <div class="text-end">
         <button class="btn btn-primary" type="submit" [disabled]="!form.valid">
           {{ 'form.button_save' | translate }}
         </button>

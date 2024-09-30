@@ -13,37 +13,37 @@
   </div>
   <ul class="list-group list-group-box mt-2 mx-0" *ngIf="showFields.general" id="fieldsGeneral">
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pr-2">
+      <span class="pe-2">
         {{ 'backup.title_backup' | translate }}
       </span>
-      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 50px;" (click)="openBackupModal()"
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" (click)="openBackupModal()"
         [attr.aria-label]="'backup.title_backup' | translate">
         <i class="fas fa-fw fa-chevron-right"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pr-2">
+      <span class="pe-2">
         {{ 'backup.title_restore' | translate }}
       </span>
-      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 50px;" (click)="openRestoreModal()"
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" (click)="openRestoreModal()"
         [attr.aria-label]="'backup.title_restore' | translate">
         <i class="fas fa-fw fa-chevron-right"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pr-2">
+      <span class="pe-2">
         {{ 'menu.tooltip_user_accounts' | translate }}
       </span>
-      <a class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 50px;" routerLink="/users"
+      <a class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" routerLink="/users"
         [attr.aria-label]="'menu.tooltip_user_accounts' | translate">
         <i class="fas fa-fw fa-chevron-right"></i>
       </a>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pr-2">
+      <span class="pe-2">
         {{ 'menu.label_settings_advanced' | translate }}
       </span>
-      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 50px;" (click)="openUiSettings()"
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" (click)="openUiSettings()"
         [attr.aria-label]="'menu.label_settings_advanced' | translate">
         <i class="fas fa-fw fa-sliders"></i>
       </button>
@@ -63,8 +63,8 @@
    <ul class="list-group list-group-box mt-2 mx-0" *ngIf="showFields.display" id="fieldsDisplay">
      <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
        <span>{{ 'settings.display.lang' | translate }}</span>
-       <div class="my-3 my-md-0 pl-0 pl-md-5 w-auto">
-         <select class="custom-select resp-select" [ngModel]="$settings.env.lang" (ngModelChange)="saveUiSettingChange('lang', $event)">
+       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
+         <select class="form-select resp-select" [ngModel]="$settings.env.lang" (ngModelChange)="saveUiSettingChange('lang', $event)">
            <option value="auto">{{ 'form.select.auto' | translate }}</option>
            <option value="bg">Bulgarian (bg)</option>
            <option value="ca">Catalan (ca)</option>
@@ -98,8 +98,8 @@
      </li>
      <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
        <span>{{ 'settings.display.theme' | translate }}</span>
-       <div class="my-3 my-md-0 pl-0 pl-md-5 w-auto">
-         <select class="custom-select resp-select" [ngModel]="$settings.theme" (ngModelChange)="saveUiSettingChange('theme', $event)">
+       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
+         <select class="form-select resp-select" [ngModel]="$settings.theme" (ngModelChange)="saveUiSettingChange('theme', $event)">
            <option value="orange">{{ 'settings.display.orange' | translate }}</option>
            <option value="red">{{ 'settings.display.red' | translate }}</option>
            <option value="pink">{{ 'settings.display.pink' | translate }}</option>
@@ -117,8 +117,8 @@
      </li>
      <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
        <span>{{ 'settings.display.lighting_mode' | translate }}</span>
-       <div class="my-3 my-md-0 pl-0 pl-md-5 w-auto">
-         <select class="custom-select resp-select" [ngModel]="$settings.lightingMode" (ngModelChange)="saveUiSettingChange('lightingMode', $event)">
+       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
+         <select class="form-select resp-select" [ngModel]="$settings.lightingMode" (ngModelChange)="saveUiSettingChange('lightingMode', $event)">
            <option value="auto">{{ 'form.select.auto' | translate }}</option>
            <option value="light">{{ 'settings.display.light' | translate }}</option>
            <option value="dark">{{ 'settings.display.dark' | translate }}</option>
@@ -127,8 +127,8 @@
      </li>
      <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
        <span>{{ 'settings.display.temp_units' | translate }}</span>
-       <div class="my-3 my-md-0 pl-0 pl-md-5 w-auto">
-         <select class="custom-select resp-select" [ngModel]="$settings.env.temperatureUnits" (ngModelChange)="saveUiSettingChange('tempUnits', $event)">
+       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
+         <select class="form-select resp-select" [ngModel]="$settings.env.temperatureUnits" (ngModelChange)="saveUiSettingChange('tempUnits', $event)">
            <option value="c">{{ 'settings.display.temp_units.c' | translate }}</option>
            <option value="f">{{ 'settings.display.temp_units.f' | translate }}</option>
          </select>
@@ -150,53 +150,53 @@
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.startup.debug' | translate }} <code>-D</code><br>
-        <small class="grey-text pr-2">
+        <small class="grey-text pe-2">
           {{ (isHbV2 ? 'settings.startup.debug_desc_v2' : 'settings.startup.debug_desc_v1') | translate }}
         </small>
       </span>
       <input type="checkbox" class="rendux-input" id="homebridgeDebugMode" formControlName="HOMEBRIDGE_DEBUG"
         [attr.aria-label]="'settings.startup.debug' | translate">
-      <label for="homebridgeDebugMode" class="rendux-label ml-3" style="min-width: 50px;"></label>
+      <label for="homebridgeDebugMode" class="rendux-label ms-3" style="min-width: 50px;"></label>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.startup.insecure' | translate }} <code>-I</code><br>
-        <small class="grey-text pr-2">{{ 'settings.startup.insecure_desc' | translate }}</small>
+        <small class="grey-text pe-2">{{ 'settings.startup.insecure_desc' | translate }}</small>
       </span>
       <input type="checkbox" class="rendux-input" id="homebridgeInsecureMode" formControlName="HOMEBRIDGE_INSECURE"
         [attr.aria-label]="'settings.startup.insecure' | translate">
-      <label for="homebridgeInsecureMode" class="rendux-label ml-3" style="min-width: 50px;"></label>
+      <label for="homebridgeInsecureMode" class="rendux-label ms-3" style="min-width: 50px;"></label>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="$settings.env.serviceMode">
       <span>
         {{ 'settings.startup.keep_accessories' | translate }} <code>-K</code><br>
-        <small class="grey-text pr-2">{{ 'settings.startup.keep_accessories_desc' | translate }}</small>
+        <small class="grey-text pe-2">{{ 'settings.startup.keep_accessories_desc' | translate }}</small>
       </span>
       <input type="checkbox" class="rendux-input" id="homebridgeKeepOrphans" formControlName="HOMEBRIDGE_KEEP_ORPHANS"
         [attr.aria-label]="'settings.startup.keep_accessories' | translate">
-      <label for="homebridgeKeepOrphans" class="rendux-label ml-3" style="min-width: 50px;"></label>
+      <label for="homebridgeKeepOrphans" class="rendux-label ms-3" style="min-width: 50px;"></label>
     </li>
     <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
-        <span class="text-monospace">DEBUG</span><br>
-        <small class="grey-text pr-2">
+        <span class="font-monospace">DEBUG</span><br>
+        <small class="grey-text pe-2">
           {{ 'settings.service.debug_tooltip' | translate }}
           <a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Debug-Common-Values" target="_blank">
             {{ 'form.button_more_info' | translate }} <i class="fa fa/fw fas fa-fw fa-external-link-alt"></i>
           </a>
         </small>
       </span>
-      <div class="my-3 my-md-0 pl-0 pl-md-5 w-auto">
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
         <input class="form-control custom-input form-control-sm resp-input" formControlName="ENV_DEBUG" type="text"
           placeholder="HAP-NodeJS:Advertiser,HAP-NodeJS:Service">
       </div>
     </li>
     <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
-        <span class="text-monospace">NODE_OPTIONS</span><br>
-        <small class="grey-text pr-2">{{ 'settings.service.node_tooltip' | translate }}</small>
+        <span class="font-monospace">NODE_OPTIONS</span><br>
+        <small class="grey-text pe-2">{{ 'settings.service.node_tooltip' | translate }}</small>
       </span>
-      <div class="my-3 my-md-0 pl-0 pl-md-5 w-auto">
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
         <input class="form-control custom-input form-control-sm resp-input" formControlName="ENV_NODE_OPTIONS" type="text"
           placeholder="--max-old-space-size=512 --max-http-header-size=8192">
       </div>
@@ -222,18 +222,18 @@
   </div>
   <ul class="list-group list-group-box mt-2 mx-0" *ngIf="showFields.network" id="fieldsNetwork">
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pr-2">
+      <span class="pe-2">
         <div>{{ 'settings.network.title_network_interfaces' | translate }}<br>
-          <small class="grey-text pr-2">{{ 'settings.network.message_network_interface' | translate }}</small>
+          <small class="grey-text pe-2">{{ 'settings.network.message_network_interface' | translate }}</small>
         </div>
         <span *ngFor="let adapter of bridgeNetworkAdapters">
-          <span class="badge badge-pill mr-1" [ngClass]="{'badge-danger': adapter.missing, 'badge-info': !adapter.missing}">
+          <span class="badge badge-pill me-1" [ngClass]="{'badge-danger': adapter.missing, 'badge-info': !adapter.missing}">
             <i class="fas fa-fw fa-exclamation-triangle" *ngIf="adapter.missing"></i>
-            {{ adapter.iface }}: <span class="font-weight-normal">{{ adapter.missing ? ('settings.mdns_advertiser_not_connected' | translate) : adapter.ip4 || adapter.ip6 }}</span>
+            {{ adapter.iface }}: <span class="fw-normal">{{ adapter.missing ? ('settings.mdns_advertiser_not_connected' | translate) : adapter.ip4 || adapter.ip6 }}</span>
           </span>
         </span>
       </span>
-      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 50px;" (click)="selectNetworkInterfaces()"
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" (click)="selectNetworkInterfaces()"
         [disabled]="!availableNetworkAdapters.length" [attr.aria-label]="'settings.network.title_network_interfaces' | translate">
         <i class="fas fa-fw fa-chevron-right" [ngClass]="{ 'fa-pulse': !availableNetworkAdapters.length }"></i>
       </button>
@@ -241,10 +241,10 @@
     <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.mdns_advertiser' | translate }}<br>
-        <small class="grey-text pr-2">{{ 'settings.mdns_advertiser_help' | translate }}</small>
+        <small class="grey-text pe-2">{{ 'settings.mdns_advertiser_help' | translate }}</small>
       </span>
-      <div class="my-3 my-md-0 pl-0 pl-md-5 w-auto">
-        <select class="custom-select resp-select" [formControl]="legacyMdnsFormControl"
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
+        <select class="form-select resp-select" [formControl]="legacyMdnsFormControl"
           [attr.aria-label]="'settings.mdns_advertiser' | translate">
           <option value="avahi" *ngIf="showAvahiMdnsOption">Avahi ({{ 'settings.mdns_advertiser_rec' | translate }})</option>
           <!-- ciao is recommended if avahi is not available -->
@@ -257,9 +257,9 @@
     <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.network.port_hb' | translate }}<br>
-        <small class="grey-text pr-2">{{ 'settings.network.port_hb_desc' | translate }}</small>
+        <small class="grey-text pe-2">{{ 'settings.network.port_hb_desc' | translate }}</small>
       </span>
-      <div class="my-3 my-md-0 pl-0 pl-md-5 w-auto">
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
         <input class="form-control custom-input form-control-sm resp-input" type="number" min="1025" max="65533"
           [formControl]="hbPortFormControl" [attr.aria-label]="('settings.network.port_ui' | translate)"
           [ngClass]="{ 'is-invalid': isInvalidHbPort }">
@@ -268,9 +268,9 @@
     <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.network.port_ui' | translate }}<br>
-        <small class="grey-text pr-2">{{ 'settings.network.port_ui_desc' | translate }}</small>
+        <small class="grey-text pe-2">{{ 'settings.network.port_ui_desc' | translate }}</small>
       </span>
-      <div class="my-3 my-md-0 pl-0 pl-md-5 w-auto">
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
         <input class="form-control custom-input form-control-sm resp-input" type="number" min="1025" max="65533" placeholder="8581"
           formControlName="port" [attr.aria-label]="('settings.network.port_ui' | translate)"
           [ngClass]="{ 'is-invalid': isInvalidHbUiPort }">
@@ -299,31 +299,31 @@
   <p class="small grey-text mb-2 mx-0" *ngIf="showFields.cache">{{ 'settings.cache.desc' | translate }}</p>
   <ul class="list-group list-group-box mb-4 mx-0" *ngIf="showFields.cache" id="fieldsCache">
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pr-2">
+      <span class="pe-2">
         {{ 'reset.clear_cache_single.title' | translate }}<br>
-        <small class="grey-text pr-2">{{ 'reset.clear_cache_single.desc' | translate }}</small>
+        <small class="grey-text pe-2">{{ 'reset.clear_cache_single.desc' | translate }}</small>
       </span>
-      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 50px;" (click)="removeSingleCachedAccessories()"
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" (click)="removeSingleCachedAccessories()"
         [attr.aria-label]="'reset.clear_cache_single.title' | translate">
         <i class="fas fa-fw fa-chevron-right"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pr-2">
+      <span class="pe-2">
         {{ 'reset.clear_cache_bridge.title' | translate }}<br>
-        <small class="grey-text pr-2">{{ 'reset.clear_cache_bridge.desc' | translate }}</small>
+        <small class="grey-text pe-2">{{ 'reset.clear_cache_bridge.desc' | translate }}</small>
       </span>
-      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 50px;" (click)="removeBridgeAccessories()"
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" (click)="removeBridgeAccessories()"
         [attr.aria-label]="'reset.clear_cache_all.title' | translate">
         <i class="fas fa-fw fa-chevron-right"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pr-2">
+      <span class="pe-2">
         {{ 'reset.clear_cache_all.title' | translate }}<br>
-        <small class="grey-text pr-2">{{ 'reset.clear_cache_all.desc' | translate }}</small>
+        <small class="grey-text pe-2">{{ 'reset.clear_cache_all.desc' | translate }}</small>
       </span>
-      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 50px;" (click)="removeAllCachedAccessories()"
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" (click)="removeAllCachedAccessories()"
         [attr.aria-label]="'reset.clear_cache_all.title' | translate">
         <i class="fas fa-fw fa-chevron-right"></i>
       </button>
@@ -343,21 +343,21 @@
   <p class="small grey-text mb-2 mx-0" *ngIf="showFields.reset">{{ 'reset.bridges.desc' | translate }}</p>
   <ul class="list-group list-group-box mt-2 mx-0" *ngIf="showFields.reset" id="fieldsReset">
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pr-2">
+      <span class="pe-2">
         {{ 'reset.bridges_single.title' | translate }}<br/>
-        <small class="grey-text pr-2">{{ 'reset.bridges_single.desc' | translate }}</small>
+        <small class="grey-text pe-2">{{ 'reset.bridges_single.desc' | translate }}</small>
       </span>
-      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 50px;" (click)="unpairAccessory()"
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" (click)="unpairAccessory()"
         [attr.aria-label]="'reset.bridges_single.title' | translate">
         <i class="fas fa-fw fa-chevron-right"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pr-2">
+      <span class="pe-2">
         {{ 'reset.bridges_all.title' | translate | titlecase }}<br/>
-        <small class="grey-text pr-2">{{ 'reset.bridges_all.desc' | translate }}</small>
+        <small class="grey-text pe-2">{{ 'reset.bridges_all.desc' | translate }}</small>
       </span>
-      <button class="btn btn-primary waves-effect m-0 ml-3" style="min-width: 50px;" (click)="resetHomebridgeState()"
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px;" (click)="resetHomebridgeState()"
         [attr.aria-label]="'reset.bridges_all.title' | translate">
         <i class="fas fa-fw fa-chevron-right"></i>
       </button>

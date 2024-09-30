@@ -1,7 +1,7 @@
-<div class="m-header text-right" (click)="toggleSidebar()" tabindex="0" role="button" (keydown)="handleKeydown($event)"
+<div class="m-header text-end" (click)="toggleSidebar()" tabindex="0" role="button" (keydown)="handleKeydown($event)"
   [attr.aria-expanded]="isExpanded ? 'true' : 'false'" [attr.aria-controls]="'sidebar'"
   [attr.aria-label]="'menu.sidebar.aria_menu' | translate">
-  <span class="mr-2 d-block d-lg-none" style="font-size: 0.9rem; color: #dddddd"></span>
+  <span class="me-2 d-block d-lg-none" style="font-size: 0.9rem; color: #dddddd"></span>
   <img style="height:35px; width: 35px;" ngSrc="../../../../assets/homebridge-logo.svg" alt="HB Logo" height="35" width="35">
   <div class="hb-logo-text-mobile">Homebridge</div>
   <div class="hamburger-icon" [ngClass]="{ 'hamburger-icon-cross': isExpanded }">

@@ -14,14 +14,14 @@
   border-radius: 1rem;
   background-color: #FFFFFF;
   padding-right: 25px;
-  padding-left: 25px;
+  padding-start: 25px;
 
   .form-control:focus {
     background-color: inherit !important;
   }
 
   @media screen and (max-width: 600px) {
-    margin-left: 1em;
+    margin-start: 1em;
     margin-right: 1em;
   }
 }
