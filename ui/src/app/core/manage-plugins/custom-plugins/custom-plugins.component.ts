@@ -432,6 +432,8 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
       this.saveInProgress = false
 
       if (exit) {
+        // Possible child bridge setup recommendation if the plugin is not Homebridge UI
+        // If it is the first time configuring the plugin, then offer to set up a child bridge straight away
         if (this.isFirstSave && this.$settings.env.recommendChildBridges && this.$settings.env.serviceMode && newConfig[0]?.platform) {
           // Close the modal and open the child bridge setup modal
           this.$activeModal.close()

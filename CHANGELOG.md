@@ -6,6 +6,9 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ### UI Changes
 
+- fix some log settings are not visible in service mode (#2196) (@NorthernMan54)
+- fix restart not appearing on first plugin save
+- fix tooltips appearing over modals
 - added more notification messages to translation files
 - settings option to clear accessory cache for a specific bridge
 - enable child bridge by default when installing a plugin
@@ -13,9 +16,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - add a reset accessories feature to the plugin card
   - only available when running a plugin in a child bridge
 - add warning for older homebridge apt package users still running `pnpm`
-- Add ability to change or modify UI log settings in service mode (#2196) (@NorthernMan54)
 - split light/dark mode from themes, auto-change with browser changes
-- fix restart not appearing on first plugin save
 
 ## Other Changes
 
