@@ -60,7 +60,7 @@
     <div class="text-center"></div>
     <div class="text-right">
       <button *ngIf="plugin.name !== 'homebridge-config-ui-x'" class="btn btn-danger"
-        [ngbTooltip]="'form.button_delete' | translate" container="body" [disabled]="saveInProgress"
+        [ngbTooltip]="'form.button_delete' | translate" container="body" openDelay="150" triggers="hover" [disabled]="saveInProgress"
         (click)="deletePluginConfig()">
         <i class="fa fa-fw fa-trash"></i>
       </button>

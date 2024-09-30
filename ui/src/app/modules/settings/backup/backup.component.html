@@ -27,7 +27,8 @@
           <br>
           <small class="grey-text">
             {{ backup.timestamp | date:'medium' }} &middot;
-            <span *ngIf="backup.size > backup.maxBackupSize" ngbTooltip="{{ 'backup.backup_exceeds_max_size' | translate: { maxBackupSizeText: backup.maxBackupSizeText }  }}" class="red-text">
+            <span *ngIf="backup.size > backup.maxBackupSize" ngbTooltip="{{ 'backup.backup_exceeds_max_size' | translate: { maxBackupSizeText: backup.maxBackupSizeText }  }}"
+              container="body" openDelay="150" triggers="hover" class="red-text">
               <i class="fas fa-fw fa-exclamation-circle"></i>
               {{ backup.size }}MB
             </span>
