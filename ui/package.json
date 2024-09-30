@@ -11,15 +11,15 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
-    "@angular/animations": "16.2.12",
-    "@angular/common": "16.2.12",
-    "@angular/compiler": "16.2.12",
-    "@angular/core": "16.2.12",
-    "@angular/forms": "16.2.12",
-    "@angular/localize": "16.2.12",
-    "@angular/platform-browser": "16.2.12",
-    "@angular/platform-browser-dynamic": "16.2.12",
-    "@angular/router": "16.2.12",
+    "@angular/animations": "17.3.12",
+    "@angular/common": "17.3.12",
+    "@angular/compiler": "17.3.12",
+    "@angular/core": "17.3.12",
+    "@angular/forms": "17.3.12",
+    "@angular/localize": "17.3.12",
+    "@angular/platform-browser": "17.3.12",
+    "@angular/platform-browser-dynamic": "17.3.12",
+    "@angular/router": "17.3.12",
     "@auth0/angular-jwt": "5.2.0",
     "@homebridge/hap-client": "1.10.2",
     "@homebridge/plugin-ui-utils": "1.0.3",
@@ -28,7 +28,7 @@
     "@popperjs/core": "2.11.8",
     "@zajsf/bootstrap4": "^16.2.4",
     "@zajsf/core": "^16.2.4",
-    "angular-gridster2": "17.0.0",
+    "angular-gridster2": "^18.0.1",
     "bootstrap": "4.6.2",
     "chart.js": "4.4.4",
     "dayjs": "1.11.13",
@@ -45,7 +45,7 @@
     "ng2-nouislider": "2.0.0",
     "ngx-md": "14.0.9",
     "ngx-monaco-editor": "12.0.0",
-    "ngx-toastr": "17.0.2",
+    "ngx-toastr": "^19.0.0",
     "popper.js": "1.16.1",
     "qrcode": "1.5.4",
     "rxjs": "7.8.1",
@@ -56,13 +56,13 @@
     "xterm": "4.19.0",
     "xterm-addon-fit": "0.5.0",
     "xterm-addon-web-links": "0.6.0",
-    "zone.js": "0.13.3"
+    "zone.js": "0.14.10"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^16.2.16",
-    "@angular/cli": "^16.2.16",
-    "@angular/compiler-cli": "^16.2.12",
-    "@angular/language-service": "^16.2.12",
+    "@angular-devkit/build-angular": "^17.3.10",
+    "@angular/cli": "^17.3.10",
+    "@angular/compiler-cli": "^17.3.12",
+    "@angular/language-service": "^17.3.12",
     "@fortawesome/fontawesome-free": "^6.6.0",
     "@types/emoji-js": "^3.5.2",
     "@types/file-saver": "^2.0.7",
@@ -77,14 +77,14 @@
     "nouislider": "^15.8.1",
     "patch-package": "^8.0.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.1.6"
+    "typescript": "~5.4.5"
   },
   "overrides": {
-    "@angular/animations": "16.2.12",
-    "@angular/common": "16.2.12",
-    "@angular/core": "16.2.12",
-    "@angular/forms": "16.2.12",
-    "@angular/localize": "16.2.12",
+    "@angular/animations": "17.3.12",
+    "@angular/common": "17.3.12",
+    "@angular/core": "17.3.12",
+    "@angular/forms": "17.3.12",
+    "@angular/localize": "17.3.12",
     "@homebridge/hap-client": {
       "axios": "1.7.7"
     }
