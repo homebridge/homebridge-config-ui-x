@@ -24,9 +24,6 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ### UI Changes
 
-- fix some log settings are not visible in service mode (#2196) (@NorthernMan54)
-- fix restart not appearing on first plugin save
-- fix tooltips appearing over modals
 - added more notification messages to translation files
 - settings option to clear accessory cache for a specific bridge
 - enable child bridge by default when installing a plugin
@@ -42,6 +39,20 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - upgrade `angular` from `v16` to `v17`
 - upgrade `angular` from `v17` to `v18`
 - upgrade and re-patch `@zajsf/` dependencies
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v1.10.2`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.11.14`
+- `@homebridge/plugin-ui-utils` @ `v1.0.3`
+
+## v4.59.1 (2024-09-30)
+
+### UI Changes
+
+- fix some log settings are not visible in service mode (#2196) (@NorthernMan54)
+- fix restart not appearing on first plugin save
+- fix tooltips appearing over modals
 
 ### Homebridge Dependencies
 
