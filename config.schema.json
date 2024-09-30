@@ -481,12 +481,21 @@
         "title": "Log Settings",
         "description": "The log settings for the Homebridge UI.",
         "properties": {
+          "maxSize": {
+            "type": "integer",
+            "description": "The max log size (bytes). Set to -1 to disable log truncation.",
+            "minimum": -1
+          },
+          "truncateSize": {
+            "type": "integer",
+            "description": "The size (bytes) to truncate the log to once it goes over the max size specified above`.",
+            "minimum": 0
+          },
           "method": {
-            "title": "Log Method",
+            "title": "Log Method ( Advanced )",
             "type": "string",
             "default": "",
             "description": "The method used to read the Homebridge log file.",
-            "required": true,
             "oneOf": [
               {
                 "title": "Default",
@@ -523,16 +532,6 @@
             "condition": {
               "functionBody": "return (model.log && model.log.method==='file')"
             }
-          },
-          "maxSize": {
-            "type": "integer",
-            "description": "The max log size (bytes). Set to -1 to disable log truncation.",
-            "minimum": -1
-          },
-          "truncateSize": {
-            "type": "integer",
-            "description": "The size (bytes) to truncate the log to once it goes over the max size specified above`.",
-            "minimum": 0
           },
           "service": {
             "title": "Systemd Service",
@@ -697,10 +696,10 @@
       "title": "Log Settings",
       "items": [
         "debug",
-        "log.method",
-        "log.path",
         "log.maxSize",
         "log.truncateSize",
+        "log.method",
+        "log.path",
         "log.service",
         "log.command",
         "log.tail",

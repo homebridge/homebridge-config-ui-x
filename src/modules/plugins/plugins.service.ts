@@ -781,12 +781,6 @@ export class PluginsService {
       configSchema.schema.properties.port.default = this.configService.ui.port
 
       // filter some options from the UI config when using service mode
-      if (!this.configService.serviceMode) {
-        configSchema.layout = configSchema.layout.filter((x: any) => {
-          return x.ref !== 'log'
-        })
-      }
-
       if (this.configService.serviceMode) {
         configSchema.layout = configSchema.layout.filter((x: any) => {
           return !(x === 'sudo' || x.key === 'restart')
