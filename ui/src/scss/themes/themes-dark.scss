@@ -220,7 +220,6 @@
     .modal-header {
       background-color: $modalBackground;
       border-bottom: 0;
-      border-radius: 0 !important;
 
       .close {
         color: $darkModePrimary;
@@ -241,7 +240,6 @@
     .modal-footer {
       background-color: $modalBackground;
       border-top: 0;
-      border-radius: 0 !important;
     }
 
     .modal-backdrop {
