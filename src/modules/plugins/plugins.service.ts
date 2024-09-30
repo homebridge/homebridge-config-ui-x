@@ -728,7 +728,7 @@ export class PluginsService {
     await new Promise(res => setTimeout(res, 800))
 
     client.emit('stdout', yellow('If you have not started the Docker container with ')
-    + red('--restart=always') + yellow(' you may\n\rneed to manually start the container again.\n\r\n\r'))
+      + red('--restart=always') + yellow(' you may\n\rneed to manually start the container again.\n\r\n\r'))
     await new Promise(res => setTimeout(res, 800))
 
     client.emit('stdout', yellow('This process may take several minutes. Please be patient.\n\r'))
@@ -781,11 +781,13 @@ export class PluginsService {
       configSchema.schema.properties.port.default = this.configService.ui.port
 
       // filter some options from the UI config when using service mode
-      if (this.configService.serviceMode) {
+      if (!this.configService.serviceMode) {
         configSchema.layout = configSchema.layout.filter((x: any) => {
           return x.ref !== 'log'
         })
+      }
 
+      if (this.configService.serviceMode) {
         configSchema.layout = configSchema.layout.filter((x: any) => {
           return !(x === 'sudo' || x.key === 'restart')
         })
@@ -940,8 +942,7 @@ export class PluginsService {
           + 'You can use the Homebridge UI at any time to revert back to the stable version.\n\n'
           + `Please remember this **${tag}** version is a pre-release, and report any issues to the GitHub repository page:
 `
-          + `- https://github.com/${repoMatch[1]}/${repoMatch[2]}/issues${
-            branch ? `\n\nSee the commit history for recent changes:\n- https://github.com/${repoMatch[1]}/${repoMatch[2]}/commits/${branch}` : ''}`,
+          + `- https://github.com/${repoMatch[1]}/${repoMatch[2]}/issues${branch ? `\n\nSee the commit history for recent changes:\n- https://github.com/${repoMatch[1]}/${repoMatch[2]}/commits/${branch}` : ''}`,
       }
     }
 
