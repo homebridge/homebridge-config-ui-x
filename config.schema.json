@@ -481,21 +481,12 @@
         "title": "Log Settings",
         "description": "The log settings for the Homebridge UI.",
         "properties": {
-          "maxSize": {
-            "type": "integer",
-            "description": "The max log size (bytes). Set to -1 to disable log truncation.",
-            "minimum": -1
-          },
-          "truncateSize": {
-            "type": "integer",
-            "description": "The size (bytes) to truncate the log to once it goes over the max size specified above`.",
-            "minimum": 0
-          },
           "method": {
-            "title": "Log Method ( Advanced )",
+            "title": "Log Method",
             "type": "string",
             "default": "",
             "description": "The method used to read the Homebridge log file.",
+            "required": true,
             "oneOf": [
               {
                 "title": "Default",
@@ -565,6 +556,19 @@
             "description": "Depreciated",
             "condition": {
               "functionBody": "return (model.log && (model.log.method==='custom' || model.log.method==='systemd' || model.log.method==='file'))"
+            }
+          },
+          "maxSize": {
+            "type": "integer",
+            "description": "The max log size (bytes). Set to -1 to disable log truncation.",
+            "minimum": -1
+          },
+          "truncateSize": {
+            "type": "integer",
+            "description": "The size (bytes) to truncate the log to once it goes over the max size specified above.",
+            "minimum": 0,
+            "condition": {
+              "functionBody": "return (model.log && model.log.maxSize > 0)"
             }
           }
         }
@@ -695,8 +699,6 @@
       "expandable": true,
       "title": "Log Settings",
       "items": [
-        "log.maxSize",
-        "log.truncateSize",
         "debug",
         "log.method",
         "log.path",
@@ -704,6 +706,16 @@
         "log.command",
         "log.tail",
         "log.systemd"
+      ]
+    },
+    {
+      "ref": "logRetention",
+      "type": "fieldset",
+      "expandable": true,
+      "title": "Log Retention Settings",
+      "items": [
+        "log.maxSize",
+        "log.truncateSize"
       ]
     },
     {
