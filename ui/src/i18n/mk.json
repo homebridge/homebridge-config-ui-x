@@ -58,7 +58,6 @@
   "backup.backup_warning": "Бекап архивите содржат сензитивни информации и не треба да се споделуваат.",
   "backup.button_download_backup_archive": "Симни бекап архива",
   "backup.button_restore_backup": "Поврати бекап",
-  "backup.label_choose_backup_file_to_restore": "Одбери која бекап датотека да се поврати…",
   "backup.label_uploading": "Се прикачува…",
   "backup.load_error": "Failed to load config backup.",
   "backup.restore_failed": "Повратот не беше успешен",

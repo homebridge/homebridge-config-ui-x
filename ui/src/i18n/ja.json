@@ -58,7 +58,6 @@
   "backup.backup_warning": "バックアップアーカイブには機密情報が含まれているため、第三者と共有することは推奨しません。",
   "backup.button_download_backup_archive": "バックアップアーカイブをダウンロード",
   "backup.button_restore_backup": "バックアップを復元",
-  "backup.label_choose_backup_file_to_restore": "復元するバックアップファイルを選択してください…",
   "backup.label_uploading": "アップロード中…",
   "backup.load_error": "Failed to load config backup.",
   "backup.restore_failed": "復元に失敗しました",

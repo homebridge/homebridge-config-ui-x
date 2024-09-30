@@ -58,7 +58,6 @@
   "backup.backup_warning": "백업 기록파일에는 민감한 정보가 포함되어 있기 때문에 다른사람과 공유해서는 안됩니다.",
   "backup.button_download_backup_archive": "백업 기록파일 다운로드",
   "backup.button_restore_backup": "백업 복원",
-  "backup.label_choose_backup_file_to_restore": "복원할 백업 파일을 선택해주세요…",
   "backup.label_uploading": "업로드 중…",
   "backup.load_error": "Failed to load config backup.",
   "backup.restore_failed": "복원 실패",

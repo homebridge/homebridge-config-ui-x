@@ -58,7 +58,6 @@
   "backup.backup_warning": "Els arxius de còpia de seguretat contenen informació confidencial i no s'han de compartir amb els altres.",
   "backup.button_download_backup_archive": "Descarregar arxiu de còpia de seguretat",
   "backup.button_restore_backup": "Restaurar còpia de seguretat",
-  "backup.label_choose_backup_file_to_restore": "Triar arxiu de còpia de seguretat per restaurar…",
   "backup.label_uploading": "Carregant…",
   "backup.load_error": "Failed to load config backup.",
   "backup.restore_failed": "Error al restaurar",

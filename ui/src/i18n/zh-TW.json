@@ -58,7 +58,6 @@
   "backup.backup_warning": "備份檔案包含敏感資訊、請不要隨意與其他人共享。",
   "backup.button_download_backup_archive": "下載備份檔案",
   "backup.button_restore_backup": "回復備份",
-  "backup.label_choose_backup_file_to_restore": "選擇備份檔案以進行回復…",
   "backup.label_uploading": "上傳中…",
   "backup.load_error": "Failed to load config backup.",
   "backup.restore_failed": "回復失敗",

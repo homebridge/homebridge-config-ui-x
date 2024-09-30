@@ -58,7 +58,6 @@
   "backup.backup_warning": "Les archives de sauvegarde contiennent des informations sensibles et ne doivent pas être partagées à des tiers.",
   "backup.button_download_backup_archive": "Télécharger une Archive de Sauvegarde",
   "backup.button_restore_backup": "Restaurer une Sauvegarde",
-  "backup.label_choose_backup_file_to_restore": "Choisissez un fichier de sauvegarde à restaurer…",
   "backup.label_uploading": "Envoi en cours…",
   "backup.load_error": "Failed to load config backup.",
   "backup.restore_failed": "Echec de la Restauration",
