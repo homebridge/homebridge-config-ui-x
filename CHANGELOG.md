@@ -19,6 +19,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - upgrade `angular` from `v15` to `v16`
 - upgrade `angular` from `v16` to `v17`
+- upgrade `angular` from `v17` to `v18`
 
 ### Homebridge Dependencies
 
