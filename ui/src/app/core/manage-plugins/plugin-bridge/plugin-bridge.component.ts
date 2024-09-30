@@ -16,7 +16,7 @@ import { firstValueFrom } from 'rxjs'
 export class PluginBridgeComponent implements OnInit {
   @Input() plugin: any
   @Input() schema: any
-  @Input() presetTrue: boolean
+  @Input() justInstalled = false
 
   public canConfigure = true
   public configBlocks: any[] = []
@@ -56,7 +56,7 @@ export class PluginBridgeComponent implements OnInit {
           }
         }
 
-        if (this.presetTrue && this.bridgeCache.size === 0) {
+        if (this.justInstalled && this.bridgeCache.size === 0) {
           this.enabledBlocks[0] = true
           this.toggleExternalBridge(this.configBlocks[0], true, 0)
         }

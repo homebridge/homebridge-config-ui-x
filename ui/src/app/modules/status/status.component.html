@@ -11,11 +11,11 @@
     </div>
     <div class="btn-group ms-2" role="group" *ngIf="consoleStatus === 'up' && $auth.user.admin">
       <button type="button" class="btn btn-elegant status-button my-0" [disabled]="options.draggable.enabled" (click)="unlockLayout()"
-        container="body" [ngbTooltip]="'form.button_unlock' | translate" [attr.aria-label]="'form.button_unlock' | translate">
+        container="body" openDelay="150" triggers="hover" [ngbTooltip]="'form.button_unlock' | translate" [attr.aria-label]="'form.button_unlock' | translate">
         <i class="fas fa-fw fa-unlock"></i>
       </button>
       <button type="button" class="btn btn-elegant status-button my-0" [disabled]="!options.draggable.enabled" (click)="lockLayout()"
-        container="body" [ngbTooltip]="'form.button_lock' | translate" [attr.aria-label]="'form.button_lock' | translate">
+        container="body" openDelay="150" triggers="hover" [ngbTooltip]="'form.button_lock' | translate" [attr.aria-label]="'form.button_lock' | translate">
         <i class="fas fa-fw fa-lock"></i>
       </button>
     </div>

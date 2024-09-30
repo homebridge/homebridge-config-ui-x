@@ -24,6 +24,9 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ### UI Changes
 
+- fix some log settings are not visible in service mode (#2196) (@NorthernMan54)
+- fix restart not appearing on first plugin save
+- fix tooltips appearing over modals
 - added more notification messages to translation files
 - settings option to clear accessory cache for a specific bridge
 - enable child bridge by default when installing a plugin

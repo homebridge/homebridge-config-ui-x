@@ -454,16 +454,6 @@
               "functionBody": "return (model.log && model.log.method==='file')"
             }
           },
-          "maxSize": {
-            "type": "integer",
-            "description": "The max log size (bytes). Set to -1 to disable log truncation.",
-            "minimum": -1
-          },
-          "truncateSize": {
-            "type": "integer",
-            "description": "The size (bytes) to truncate the log to once it goes over the max size specified above`.",
-            "minimum": 0
-          },
           "service": {
             "title": "Systemd Service",
             "type": "string",
@@ -496,6 +486,19 @@
             "description": "Depreciated",
             "condition": {
               "functionBody": "return (model.log && (model.log.method==='custom' || model.log.method==='systemd' || model.log.method==='file'))"
+            }
+          },
+          "maxSize": {
+            "type": "integer",
+            "description": "The max log size (bytes). Set to -1 to disable log truncation.",
+            "minimum": -1
+          },
+          "truncateSize": {
+            "type": "integer",
+            "description": "The size (bytes) to truncate the log to once it goes over the max size specified above.",
+            "minimum": 0,
+            "condition": {
+              "functionBody": "return (model.log && model.log.maxSize > 0)"
             }
           }
         }
@@ -629,12 +632,20 @@
         "debug",
         "log.method",
         "log.path",
-        "log.maxSize",
-        "log.truncateSize",
         "log.service",
         "log.command",
         "log.tail",
         "log.systemd"
+      ]
+    },
+    {
+      "ref": "logRetention",
+      "type": "fieldset",
+      "expandable": true,
+      "title": "Log Retention Settings",
+      "items": [
+        "log.maxSize",
+        "log.truncateSize"
       ]
     },
     {

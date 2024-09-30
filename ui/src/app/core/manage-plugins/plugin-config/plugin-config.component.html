@@ -22,11 +22,11 @@
             <div>
               <button *ngIf="plugin.name !== 'homebridge-config-ui-x' && opened" class="btn btn-danger ms-2"
                 (click)="removeBlock(block.__uuid__)" [ngbTooltip]="'form.button_delete' | translate" container="body"
-                openDelay="150">
+                openDelay="150" triggers="hover">
                 <i class="fa fa-fw fa-trash"></i>
               </button>
               <button class="btn btn-primary ms-2" ngbPanelToggle [ngbTooltip]="'form.button_edit' | translate"
-                container="body" openDelay="150">
+                container="body" openDelay="150" triggers="hover">
                 <i class="fa fa-fw fa-edit"></i>
               </button>
             </div>
@@ -74,7 +74,7 @@
       </button>
       <button *ngIf="plugin.name !== 'homebridge-config-ui-x' && schema.singular && pluginConfig.length > 0"
         class="btn btn-danger ms-2" (click)="removeBlock(pluginConfig[0].__uuid__)"
-        [ngbTooltip]="'form.button_delete' | translate" container="body" openDelay="150">
+        [ngbTooltip]="'form.button_delete' | translate" container="body" openDelay="150" triggers="hover">
         <i class="fa fa-fw fa-trash"></i>
       </button>
       <button type="button" class="btn btn-primary ms-2" data-bs-dismiss="modal" (click)="save()" [disabled]="saveInProgress">

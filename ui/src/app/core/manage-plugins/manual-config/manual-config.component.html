@@ -33,11 +33,11 @@
             <h5 class="m-0">{{ block.name || pluginAlias }}</h5>
             <div>
               <button class="btn btn-danger ms-2" *ngIf="show === 'configBlock.' + $index" (click)="removeBlock($index)"
-                [ngbTooltip]="'form.button_delete' | translate" container="body" openDelay="150">
+                [ngbTooltip]="'form.button_delete' | translate" container="body" openDelay="150" triggers="hover">
                 <i class="fa fa-fw fa-trash"></i>
               </button>
               <button class="btn btn-primary ms-2" (click)="editBlock($index)"
-                [ngbTooltip]="'form.button_edit' | translate" container="body" openDelay="150">
+                [ngbTooltip]="'form.button_edit' | translate" container="body" openDelay="150" triggers="hover">
                 <i class="fa fa-fw fa-edit"></i>
               </button>
             </div>

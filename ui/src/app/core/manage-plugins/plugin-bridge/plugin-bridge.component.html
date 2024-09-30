@@ -5,7 +5,7 @@
       {{ plugin.displayName || plugin.name }}
     </h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="$activeModal.dismiss('Dismiss')"></button>
+      (click)="$activeModal.dismiss('Dismiss')" *ngIf="!justInstalled"></button>
   </div>
   <div class="modal-body">
     <p>
@@ -142,18 +142,26 @@
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-start">
-      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="$activeModal.close('Dismiss')">
+      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="$activeModal.close('Dismiss')" *ngIf="!justInstalled">
         {{ 'form.button_close' | translate }}
       </button>
     </div>
-    <div class="text-center"></div>
+    <div class="text-center">
+      <div *ngIf="justInstalled">
+        <button type="button" class="btn btn-primary" (click)="save()" [disabled]="saveInProgress">
+          {{ 'form.button_save' | translate }} <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
+        </button>
+      </div>
+    </div>
     <div class="text-end">
-      <button type="button" class="btn btn-primary" (click)="save()" [disabled]="saveInProgress" *ngIf="configBlocks.length">
-        {{ 'form.button_save' | translate }} <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
-      </button>
-      <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="openPluginConfig()" *ngIf="!configBlocks.length">
-        {{ 'plugins.button_settings' | translate }}
-      </button>
+      <div *ngIf="!justInstalled">
+        <button type="button" class="btn btn-primary" (click)="save()" [disabled]="saveInProgress" *ngIf="configBlocks.length">
+          {{ 'form.button_save' | translate }} <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
+        </button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="openPluginConfig()" *ngIf="!configBlocks.length">
+          {{ 'plugins.button_settings' | translate }}
+        </button>
+      </div>
     </div>
   </div>
 </div>

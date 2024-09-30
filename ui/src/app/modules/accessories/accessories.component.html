@@ -6,24 +6,25 @@
     <div class="col-sm-6 text-end d-none d-sm-block">
       <div class="btn-group" role="group">
         <button type="button" class="btn btn-elegant status-button my-0" [hidden]="isMobile" (click)="addRoom()"
-          container="body" [ngbTooltip]="'accessories.button_add_room' | translate" [attr.aria-label]="'accessories.button_add_room' | translate">
+          container="body" openDelay="150" triggers="hover" [ngbTooltip]="'accessories.button_add_room' | translate"
+          [attr.aria-label]="'accessories.button_add_room' | translate">
           <i class="fas fa-fw fa-folder-plus"></i>
         </button>
       </div>
       <div class="btn-group ms-2" role="group">
         <button type="button" class="btn btn-elegant status-button my-0" [hidden]="isMobile" (click)="hideHidden = !hideHidden"
-          container="body" [ngbTooltip]="hideHidden ? ('accessories.button_hidden_show' | translate) : ('accessories.button_hidden_hide' | translate)"
+          container="body" openDelay="150" triggers="hover" [ngbTooltip]="hideHidden ? ('accessories.button_hidden_show' | translate) : ('accessories.button_hidden_hide' | translate)"
           [attr.aria-label]="hideHidden ? ('accessories.button_hidden_show' | translate) : ('accessories.button_hidden_hide' | translate)">
           <i class="fas fa-fw" [ngClass]="hideHidden ? 'fa-eye-slash' : 'fa-eye'"></i>
         </button>
       </div>
       <div class="btn-group ms-2" role="group">
         <button type="button" class="btn btn-elegant status-button my-0" [disabled]="!isMobile" (click)="toggleLayoutLock()"
-          container="body" [ngbTooltip]="'form.button_unlock' | translate" [attr.aria-label]="'form.button_unlock' | translate">
+          container="body" openDelay="150" triggers="hover" [ngbTooltip]="'form.button_unlock' | translate" [attr.aria-label]="'form.button_unlock' | translate">
           <i class="fas fa-fw fa-unlock"></i>
         </button>
         <button type="button" class="btn btn-elegant status-button my-0" [disabled]="isMobile" (click)="toggleLayoutLock()"
-          container="body" [ngbTooltip]="'form.button_lock' | translate" [attr.aria-label]="'form.button_lock' | translate">
+          container="body" openDelay="150" triggers="hover" [ngbTooltip]="'form.button_lock' | translate" [attr.aria-label]="'form.button_lock' | translate">
           <i class="fas fa-fw fa-lock"></i>
         </button>
       </div>
