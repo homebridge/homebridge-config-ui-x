@@ -695,9 +695,9 @@
       "expandable": true,
       "title": "Log Settings",
       "items": [
-        "debug",
         "log.maxSize",
         "log.truncateSize",
+        "debug",
         "log.method",
         "log.path",
         "log.service",
