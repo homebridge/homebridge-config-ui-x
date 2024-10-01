@@ -31,6 +31,7 @@ Plugin developers:
 - use native language for validation messages where available
   - currently available for `de` `en` `es` `fr` `it` `pt` `zh`
 - add plugin config validation functionality
+- switch from a top menu to a sidebar menu
 
 ### Other Changes
 

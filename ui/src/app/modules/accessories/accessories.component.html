@@ -53,7 +53,7 @@
         </button>
         <button
           type="button"
-          class="btn btn-elegant status-button my-0"
+          class="btn btn-elegant status-button my-0 mr-0"
           [disabled]="isMobile"
           (click)="toggleLayoutLock()"
           container="body"
@@ -73,7 +73,7 @@
     <div *ngFor="let room of $accessories.rooms">
       <div class="row" *ngIf="!isMobile || room.services.length">
         <div class="col-md-12">
-          <h5 class="primary-text drag-handle room-title" [ngClass]="{'cursor-move': !isMobile}">
+          <h5 class="primary-text drag-handle room-title m-0" [ngClass]="{'cursor-move': !isMobile}">
             {{ room.name === 'Default Room' ? ('accessories.control.default_room' | translate) : room.name }}
           </h5>
         </div>
@@ -140,7 +140,7 @@
             </a>
             <span>{{ 'accessories.message_for_more_information' | translate }}</span>
           </p>
-          <p class="mt-3 mb-0" *ngIf="$auth.user.admin">{{ 'accessories.settings_link' | translate }}.</p>
+          <p class="mt-3 mb-0" *ngIf="$auth.user.admin">{{ 'accessories.settings_link' | translate }}</p>
         </div>
       </div>
     </div>

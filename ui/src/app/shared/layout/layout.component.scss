@@ -1,37 +1,15 @@
-.menu-logo {
-  margin-right: 10px;
-  height: 37px;
+.content {
+  margin-left: 60px;
+  transition: 0.3s;
+  height: 100%;
 
-  @media screen and (max-width: 600px) {
-    height: 27px;
+  @media (max-width: 767px) {
+    margin-left: 0;
+    padding-top: 85px !important;
   }
-  @media screen and (max-width: 991px) {
-    height: 32px;
-  }
-}
 
-.hb-nav-right {
-  @media screen and (max-width: 991px) {
-    float: right;
-    li {
-      margin-left: 20px;
-    }
-  }
-}
-
-.nav-menu-icon {
-  font-size: 20px;
-}
-
-.navbar .dropdown-menu {
-  margin-top: 15px !important;
-}
-
-.dropdown-menu {
-  @media screen and (max-width: 600px) {
-    position: fixed !important;
-    top: 50px;
-    max-width: 70%;
+  @media (min-width: 768px) {
+    height: 100%;
   }
 }
 

@@ -6,14 +6,14 @@
     <i class="fas fa-fw fa-power-off" style="font-size: 75px"></i>
   </div>
   <p class="w-100 text-center my-5">
-    <button type="button" class="btn btn-danger p-3 my-0" style="width: 85%" (click)="restartHomebridge()">
+    <button type="button" class="btn btn-primary p-3 my-0" style="width: 85%" (click)="restartHomebridge()">
       {{ 'menu.hbrestart.confirm_hb' | translate }}
     </button>
   </p>
   <p class="w-100 text-center my-5">
     <button
       type="button"
-      class="btn btn-danger p-3 my-0"
+      class="btn btn-primary p-3 my-0"
       style="width: 85%"
       (click)="restartHomebridgeService()"
       container="body"
@@ -25,17 +25,17 @@
     </button>
   </p>
   <p class="w-100 text-center my-5" *ngIf="$settings.env.canShutdownRestartHost">
-    <button type="button" class="btn btn-danger p-3 my-0" style="width: 85%" (click)="restartServer()">
+    <button type="button" class="btn btn-primary p-3 my-0" style="width: 85%" (click)="restartServer()">
       {{ 'menu.linux.label_restart_server' | translate }}
     </button>
   </p>
   <p class="w-100 text-center my-5" *ngIf="$settings.env.canShutdownRestartHost">
-    <button type="button" class="btn btn-danger p-3 my-0" style="width: 85%" (click)="shutdownServer()">
+    <button type="button" class="btn btn-primary p-3 my-0" style="width: 85%" (click)="shutdownServer()">
       {{ 'menu.linux.label_shutdown_server' | translate }}
     </button>
   </p>
   <p class="w-100 text-center my-5" *ngIf="$settings.env.runningInDocker">
-    <button type="button" class="btn btn-danger p-3 my-0" style="width: 85%" (click)="dockerRestartContainer()">
+    <button type="button" class="btn btn-primary p-3 my-0" style="width: 85%" (click)="dockerRestartContainer()">
       {{ 'menu.docker.restart_container' | translate }}
     </button>
   </p>

@@ -45,7 +45,7 @@
         <i class="fas fa-fw fa-history"></i>
       </button>
       <button
-        class="btn btn-primary waves-effect my-0 mr-0"
+        class="btn btn-elegant waves-effect my-0 mr-0"
         (click)="onSave()"
         [disabled]="saveInProgress"
         container="body"
@@ -63,7 +63,7 @@
 
   <ngx-monaco-editor
     *ngIf="!isMobile && !originalConfig"
-    class="flex-grow-1 h-100 w-100 mt-3 mb-2"
+    class="flex-grow-1 h-100 w-100 mt-3 mb-0"
     [options]="editorOptions"
     [model]="monacoEditorModel"
     (onInit)="onEditorInit($event)"
@@ -74,7 +74,7 @@
 
   <ngx-monaco-diff-editor
     *ngIf="!isMobile && originalConfig"
-    class="flex-grow-1 h-100 w-100 mt-3 mb-2"
+    class="flex-grow-1 h-100 w-100 mt-3 mb-0"
     [options]="editorOptions"
     [originalModel]="monacoEditorModel"
     [modifiedModel]="monacoEditorModel"
