@@ -7,6 +7,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Other Changes
 
 - update `@homebridge/hap-client` to `v2`
+- retire use of `pnpm` and code references
 
 ### Homebridge Dependencies
 
