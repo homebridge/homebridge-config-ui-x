@@ -8,6 +8,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - added more notification messages to translation files
 - settings option to clear accessory cache for a specific bridge
+- enable child bridge by default when installing a plugin
 
 ### Homebridge Dependencies
 
