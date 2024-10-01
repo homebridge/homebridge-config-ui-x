@@ -4,6 +4,10 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ## ALPHA
 
+### UI Changes
+
+- switch from a top menu to a sidebar menu
+
 ### Other Changes
 
 - update `@homebridge/hap-client` to `v2`

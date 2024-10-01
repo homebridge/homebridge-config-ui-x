@@ -1,0 +1,204 @@
+<div
+  class="m-header text-right"
+  (click)="toggleSidebar()"
+  tabindex="0"
+  role="button"
+  (keydown)="handleKeydown($event)"
+  [attr.aria-expanded]="isExpanded ? 'true' : 'false'"
+  [attr.aria-controls]="'sidebar'"
+  [attr.aria-label]="'menu.sidebar.aria_menu' | translate"
+>
+  <span class="mr-2 d-block d-lg-none" style="font-size: 0.9rem; color: #dddddd"></span>
+  <img
+    style="height: 35px; width: 35px"
+    ngSrc="../../../../assets/homebridge-logo.svg"
+    alt="HB Logo"
+    height="35"
+    width="35"
+  />
+  <div class="hb-logo-text-mobile">Homebridge</div>
+  <div class="hamburger-icon" [ngClass]="{ 'hamburger-icon-cross': isExpanded }">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<div class="sidebar" [ngClass]="{ 'expanded': isExpanded }" role="navigation" id="sidebar">
+  <div class="header" (click)="toggleSidebar()" tabindex="0" role="button" (keydown)="handleKeydown($event)">
+    <img
+      style="height: 35px; width: 35px"
+      ngSrc="../../../../assets/homebridge-logo.svg"
+      alt="HB Logo"
+      height="35"
+      width="35"
+    />
+    <div class="hb-logo-text">Homebridge</div>
+  </div>
+  <div class="link-wrapper">
+    <div class="link">
+      <div
+        class="link-row"
+        [routerLink]="['/']"
+        [routerLinkActive]="'active'"
+        [routerLinkActiveOptions]="{exact: true}"
+        [attr.aria-label]="'menu.label_status' | translate"
+        role="menuitem"
+        tabindex="0"
+        (keydown)="handleKeydown($event)"
+      >
+        <div class="icon"><i class="fa fa-fw fa-house"></i></div>
+        <div class="title">{{ 'menu.label_status' | translate }}</div>
+      </div>
+    </div>
+
+    <div class="link" *ngIf="rPiWasUnderVoltage || rPiCurrentlyUnderVoltage">
+      <div
+        class="link-row"
+        (click)="openUnderVoltageModal()"
+        [attr.aria-label]="('rpi.throttled.undervoltage_title' | translate) + ' - ' + ('rpi.throttled.undervoltage_description' | translate)"
+        role="menuitem"
+        tabindex="0"
+        (keydown)="handleKeydown($event)"
+      >
+        <div class="icon"><i class="fas fa-fw fa-bolt fa-beat yellow-text" style="--fa-beat-scale: 1.5"></i></div>
+        <div class="title">{{ 'rpi.throttled.undervoltage_title' | translate }}</div>
+      </div>
+    </div>
+
+    <div class="link" *ngIf="$auth.user.admin">
+      <div
+        class="link-row"
+        [routerLink]="['/plugins']"
+        [routerLinkActive]="'active'"
+        [attr.aria-label]="'menu.label_plugins' | translate"
+        role="menuitem"
+        tabindex="0"
+        (keydown)="handleKeydown($event)"
+      >
+        <div class="icon"><i class="fa fa-fw fa-plug"></i></div>
+        <div class="title">{{ 'menu.label_plugins' | translate }}</div>
+      </div>
+    </div>
+
+    <div class="link">
+      <div
+        class="link-row"
+        [routerLink]="['/accessories']"
+        [routerLinkActive]="'active'"
+        [attr.aria-label]="'menu.label_accessories' | translate"
+        role="menuitem"
+        tabindex="0"
+        (keydown)="handleKeydown($event)"
+      >
+        <div class="icon"><i class="fa fa-fw fa-lightbulb"></i></div>
+        <div class="title">{{ 'menu.label_accessories' | translate }}</div>
+      </div>
+    </div>
+
+    <div class="link" *ngIf="$auth.user.admin">
+      <div
+        class="link-row"
+        [routerLink]="['/logs']"
+        [routerLinkActive]="'active'"
+        [attr.aria-label]="'menu.linux.label_logs' | translate"
+        role="menuitem"
+        tabindex="0"
+        (keydown)="handleKeydown($event)"
+      >
+        <div class="icon"><i class="fa fa-fw fa-wave-square"></i></div>
+        <div class="title">{{ 'menu.linux.label_logs' | translate }}</div>
+      </div>
+    </div>
+
+    <div class="link" *ngIf="$settings.env.enableTerminalAccess && $auth.user.admin">
+      <div
+        class="link-row"
+        [routerLink]="['/platform-tools/terminal']"
+        [routerLinkActive]="'active'"
+        [attr.aria-label]="'menu.linux.label_terminal' | translate"
+        role="menuitem"
+        tabindex="0"
+        (keydown)="handleKeydown($event)"
+      >
+        <div class="icon"><i class="fa fa-fw fa-terminal"></i></div>
+        <div class="title">{{ 'menu.linux.label_terminal' | translate }}</div>
+      </div>
+    </div>
+
+    <div class="link" *ngIf="$auth.user.admin">
+      <div
+        class="link-row"
+        [routerLink]="['/config']"
+        [routerLinkActive]="'active'"
+        [attr.aria-label]="'menu.config_json_editor' | translate"
+        role="menuitem"
+        tabindex="0"
+        (keydown)="handleKeydown($event)"
+      >
+        <div class="icon"><i class="fa fa-fw fa-code"></i></div>
+        <div class="title">{{ 'menu.config_json_editor' | translate }}</div>
+      </div>
+    </div>
+
+    <div class="link" *ngIf="$auth.user.admin">
+      <div
+        class="link-row"
+        [routerLink]="['/settings']"
+        [routerLinkActive]="'active'"
+        [attr.aria-label]="'menu.label_settings' | translate"
+        role="menuitem"
+        tabindex="0"
+        (keydown)="handleKeydown($event)"
+      >
+        <div class="icon"><i class="fa fa-fw fa-cog"></i></div>
+        <div class="title">{{ 'menu.label_settings' | translate }}</div>
+      </div>
+    </div>
+
+    <div class="link">
+      <div
+        class="link-row"
+        [routerLink]="['/support']"
+        [routerLinkActive]="'active'"
+        [attr.aria-label]="'support.title' | translate"
+        role="menuitem"
+        tabindex="0"
+        (keydown)="handleKeydown($event)"
+      >
+        <div class="icon"><i class="fa fa-fw fa-question-circle-o"></i></div>
+        <div class="title">{{ 'support.title' | translate }}</div>
+      </div>
+    </div>
+
+    <div class="link">
+      <div
+        class="link-row"
+        [routerLink]="['/power-options']"
+        [routerLinkActive]="'active'"
+        [attr.aria-label]="'menu.restart.title' | translate"
+        role="menuitem"
+        tabindex="0"
+        (keydown)="handleKeydown($event)"
+      >
+        <div class="icon"><i class="fa fa-fw fa-power-off"></i></div>
+        <div class="title">{{ 'menu.restart.title' | translate }}</div>
+      </div>
+    </div>
+
+    <div class="link" *ngIf="$settings.formAuth">
+      <div
+        class="link-row"
+        (click)="$auth.logout()"
+        [attr.aria-label]="'menu.tooltip_logout' | translate"
+        role="menuitem"
+        tabindex="0"
+        (keydown)="handleKeydown($event)"
+      >
+        <div class="icon"><i class="fa fa-fw fa-right-from-bracket"></i></div>
+        <div class="title">{{ 'menu.tooltip_logout' | translate }}</div>
+      </div>
+    </div>
+  </div>
+</div>

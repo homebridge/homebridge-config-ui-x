@@ -4,7 +4,7 @@ import { MobileDetectService } from '@/app/core/mobile-detect.service'
 import { MonacoEditorService } from '@/app/core/monaco-editor.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { ConfigRestoreComponent } from '@/app/modules/config-editor/config-restore/config.restore.component'
-import { Component, OnDestroy, OnInit } from '@angular/core'
+import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateService } from '@ngx-translate/core'
@@ -36,6 +36,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     private $modal: NgbModal,
     private $monacoEditor: MonacoEditorService,
     private $route: ActivatedRoute,
+    private $renderer: Renderer2,
     private $settings: SettingsService,
     private $toastr: ToastrService,
     private $translate: TranslateService,
@@ -48,6 +49,18 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       language: 'json',
       theme: this.$settings.actualLightingMode === 'dark' ? 'vs-dark' : 'vs-light',
       automaticLayout: true,
+    }
+
+    const content = document.querySelector('.content')
+    this.$renderer.setStyle(content, 'height', '100%')
+
+    // capture viewport events
+    this.visualViewPortEventCallback = () => this.visualViewPortChanged()
+    this.lastHeight = window.innerHeight
+
+    if (window.visualViewport && !this.isMobile) {
+      window.visualViewport.addEventListener('resize', this.visualViewPortEventCallback, true)
+      this.$md.disableTouchMove()
     }
 
     // capture viewport events
@@ -571,6 +584,9 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    const content = document.querySelector('.content')
+    this.$renderer.removeStyle(content, 'height')
+
     if (window.visualViewport) {
       window.visualViewport.removeEventListener('resize', this.visualViewPortEventCallback, true)
       this.$md.enableTouchMove()
