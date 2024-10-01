@@ -1,6 +1,6 @@
 import { SettingsService } from '@/app/core/settings.service'
 import { Component } from '@angular/core'
-import { NavigationEnd, Router } from '@angular/router'
+import { Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 
 @Component({
@@ -75,15 +75,5 @@ export class AppComponent {
     } else {
       $translate.setDefaultLang('en')
     }
-
-    // ensure the menu closes when we navigate
-    $router.events.subscribe((event) => {
-      if (event instanceof NavigationEnd) {
-        const dropdownMenu = window.document.querySelector('#navbarSupportedContent')
-        if (dropdownMenu) {
-          dropdownMenu.classList.remove('show')
-        }
-      }
-    })
   }
 }
