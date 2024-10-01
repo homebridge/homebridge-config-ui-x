@@ -1,10 +1,8 @@
 <div class="modal-content" style="min-height: 300px;">
   <div class="modal-header">
     <h5 class="modal-title">{{ 'plugins.manage.uninstall' | translate }}: {{ plugin.displayName || plugin.name }}</h5>
-    <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="$activeModal.dismiss('Dismiss')">
-      <span aria-hidden="true">&times;</span>
-    </button>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
+      (click)="$activeModal.dismiss('Dismiss')"></button>
   </div>
   <div class="modal-body d-flex flex-row flex-grow-1 align-items-center w-100 text-center">
     <div *ngIf="loading" class="w-100 text-center primary-text">
@@ -14,7 +12,7 @@
       <i class="fas fa-fw fa-trash primary-text mb-4" style="font-size: 75px;"></i>
       <p>{{ 'plugins.uninstall_remove_confirmation' | translate: { pluginName: plugin.name } }}</p>
       <div class="text-center">
-        <p *ngIf="pluginAlias && pluginType" class="d-inline-block text-left">
+        <p *ngIf="pluginAlias && pluginType" class="d-inline-block text-start">
           <label class="hb-uix-switch d-block" for="remove-plugin-config">
             <input id="remove-plugin-config" type="checkbox" [(ngModel)]="removeConfig">
             <span>{{ 'plugins.uninstall_remove_plugin_config' | translate }}</span>
@@ -40,15 +38,15 @@
     </div>
   </div>
   <div class="modal-footer justify-content-between">
-    <div class="text-left">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="$activeModal.dismiss('Dismiss')"
+    <div class="text-start">
+      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="$activeModal.dismiss('Dismiss')"
         [attr.aria-label]="'form.button_close' | translate">
         {{ 'form.button_close' | translate }}
       </button>
     </div>
     <div class="text-center"></div>
-    <div class="text-right">
-      <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="doUninstall()" [disabled]="loading">
+    <div class="text-end">
+      <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="doUninstall()" [disabled]="loading">
         {{ 'plugins.manage.uninstall' | translate }}
       </button>
     </div>

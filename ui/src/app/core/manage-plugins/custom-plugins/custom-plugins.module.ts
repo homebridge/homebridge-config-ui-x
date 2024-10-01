@@ -9,7 +9,7 @@ import { NgModule } from '@angular/core'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateModule } from '@ngx-translate/core'
-import { Bootstrap4FrameworkModule } from '@oznu/ngx-bs4-jsonform'
+import { Bootstrap5FrameworkModule } from '@zajsf/bootstrap5'
 import { NgxMdModule } from 'ngx-md'
 
 @NgModule({
@@ -25,7 +25,7 @@ import { NgxMdModule } from 'ngx-md'
     FormsModule,
     ReactiveFormsModule,
     TranslateModule.forChild(),
-    Bootstrap4FrameworkModule,
+    Bootstrap5FrameworkModule,
     NgxMdModule,
     CoreModule,
   ],

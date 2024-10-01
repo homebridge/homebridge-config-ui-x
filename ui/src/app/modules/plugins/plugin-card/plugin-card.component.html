@@ -1,9 +1,9 @@
 <div class="card card-body mb-3">
   <div class="d-flex flex-row justify-content-between">
-    <div class="d-flex flex-column mr-3 align-items-center justify-content-between">
+    <div class="d-flex flex-column me-3 align-items-center justify-content-between">
       <img [src]="plugin.icon" (error)="handleIconError()" alt="Plugin Icon" class="plugin-icon-card mb-3">
       <a href="javascript:void(0)" *ngIf="plugin.installedVersion && hb2Status !== 'hide'" (click)="openHb2InfoModal()"
-         [ngbTooltip]="'Homebridge v2.0 Readiness'" container="body" [placement]="'right'" aria-label="Homebridge v2.0 Readiness">
+        [ngbTooltip]="'Homebridge v2.0 Readiness'" container="body" openDelay="150" triggers="hover" [placement]="'right'" aria-label="Homebridge v2.0 Readiness">
         <i *ngIf="hb2Status === 'supported'" class="fas fa-check-circle green-text fa-xl"
           aria-label="The developer has specifically marked this plugin as compatible with Homebridge v2.0"></i>
         <i *ngIf="hb2Status === 'unknown'" class="fas fa-question-circle orange-text fa-xl"
@@ -18,39 +18,39 @@
             <h5 class="card-title mb-2 text-truncate">
               {{ prettyDisplayName }}
             </h5>
-            <div class="ml-auto">
+            <div class="ms-auto">
               <!-- update available -->
               <a href="javascript:void(0)" class="card-link" (click)="$plugin.checkAndUpdatePlugin(plugin, plugin.updateTag || 'latest')"
-                *ngIf="plugin.installedVersion && plugin.updateAvailable && !childBridgeRestartInProgress"
-                [ngbTooltip]="'plugins.button_update' | translate" container="body" [attr.aria-label]="'plugins.button_update' | translate">
-                <i class="far fa-fw fa-arrow-alt-circle-up primary-text fa-lg fa-fade ml-3" style="--fa-animation-duration: 2s;"></i>
+                *ngIf="plugin.installedVersion && plugin.updateAvailable && !childBridgeRestartInProgress" container="body" openDelay="150" triggers="hover"
+                [ngbTooltip]="'plugins.button_update' | translate" [attr.aria-label]="'plugins.button_update' | translate">
+                <i class="far fa-fw fa-arrow-alt-circle-up primary-text fa-lg fa-fade ms-3" style="--fa-animation-duration: 2s;"></i>
               </a>
               <!-- // -->
               <!-- installed, not configured -->
               <a href="javascript:void(0)" class="card-link" *ngIf="plugin.installedVersion && !plugin.updateAvailable && !plugin.isConfigured && !childBridgeRestartInProgress"
-                (click)="$plugin.settings(plugin)" [ngbTooltip]="'plugins.button_set_up' | translate" container="body" [attr.aria-label]="'plugins.button_set_up' | translate">
-                <i class="fas fa-fw fa-sliders primary-text fa-lg fa-fade ml-3" style="--fa-animation-duration: 2s;"></i>
+                (click)="$plugin.settings(plugin)" [ngbTooltip]="'plugins.button_set_up' | translate" container="body" openDelay="150" triggers="hover" [attr.aria-label]="'plugins.button_set_up' | translate">
+                <i class="fas fa-fw fa-sliders primary-text fa-lg fa-fade ms-3" style="--fa-animation-duration: 2s;"></i>
               </a>
               <!-- // -->
               <!-- installed, configured, not setup as child bridge although recommended -->
-              <a href="javascript:void(0)" class="card-link" (click)="$plugin.bridgeSettings(plugin)" [ngbTooltip]="'child_bridge.setup' | translate" container="body"
+              <a href="javascript:void(0)" class="card-link" (click)="$plugin.bridgeSettings(plugin)" [ngbTooltip]="'child_bridge.setup' | translate" container="body" openDelay="150" triggers="hover"
                 *ngIf="plugin.installedVersion && !plugin.updateAvailable && plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && plugin.recommendChildBridge && !childBridgeRestartInProgress"
                 [attr.aria-label]="'child_bridge.setup' | translate">
-                <i class="icon-button fas fa-fw fa-bridge primary-text fa-lg fa-fade ml-3" style="--fa-animation-duration: 2s;"></i>
+                <i class="icon-button fas fa-fw fa-bridge primary-text fa-lg fa-fade ms-3" style="--fa-animation-duration: 2s;"></i>
               </a>
               <!-- // -->
               <!-- installed, configured, setup as child bridge, not paired with homekit -->
-              <a href="javascript:void(0)" class="card-link" (click)="$plugin.bridgeSettings(plugin)" [ngbTooltip]="'child_bridge.bridge_connect_to_homekit' | translate" container="body"
+              <a href="javascript:void(0)" class="card-link" (click)="$plugin.bridgeSettings(plugin)" [ngbTooltip]="'child_bridge.bridge_connect_to_homekit' | translate" container="body" openDelay="150" triggers="hover"
                 *ngIf="plugin.installedVersion && !plugin.updateAvailable && plugin.isConfigured && plugin.hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled"
                 [attr.aria-label]="'child_bridge.bridge_connect_to_homekit' | translate">
-                <i class="icon-button fas fa-fw fa-qrcode primary-text fa-lg fa-fade ml-3" style="--fa-animation-duration: 2s;"></i>
+                <i class="icon-button fas fa-fw fa-qrcode primary-text fa-lg fa-fade ms-3" style="--fa-animation-duration: 2s;"></i>
               </a>
               <!-- // -->
               <!-- restart in progress spinner -->
-              <i [hidden]="!childBridgeRestartInProgress" class="fas fa-fw fa-spinner fa-pulse fa-lg grey-text ml-3"></i>
+              <i [hidden]="!childBridgeRestartInProgress" class="fas fa-fw fa-spinner fa-pulse fa-lg grey-text ms-3"></i>
               <!-- // -->
               <!-- child bridge status (good status is not shown) -->
-              <i class="fas fa-fw fa-lg ml-3"
+              <i class="fas fa-fw fa-lg ms-3"
                 *ngIf="plugin.installedVersion && !plugin.updateAvailable && plugin.isConfigured && plugin.hasChildBridges && !childBridgeRestartInProgress && !hasUnpairedChildBridges && childBridgeStatus !== 'ok' && !plugin.disabled"
                 [ngClass]="{
                   'fa-bridge-circle-exclamation orange-text': childBridgeStatus === 'pending',
@@ -63,7 +63,7 @@
           <!-- plugin npm name/info modal -->
           <p class="card-text mb-2 text-truncate">
             <a href="javascript:void(0)" (click)="pluginInfoModal(plugin)" class="card-link grey-text">
-              <i class="fas fa-fw fa-info-circle fa-lg mr-1"></i>
+              <i class="fas fa-fw fa-info-circle fa-lg me-1"></i>
               <span class="grey-text">{{ plugin.name }}</span>
             </a>
           </p>
@@ -71,7 +71,7 @@
           <!-- plugin verified -->
           <p class="card-text mb-2" *ngIf="plugin.verifiedPlugin || plugin.verifiedPlusPlugin">
             <a href="javascript:void(0)" class="card-link green-text" (click)="openVerifiedModal()">
-              <i class="fas fa-fw fa-shield-alt fa-lg mr-1"></i>
+              <i class="fas fa-fw fa-shield-alt fa-lg me-1"></i>
               <span class="grey-text">{{ 'plugins.donate.button_verified' | translate }}</span>
             </a>
           </p>
@@ -79,7 +79,7 @@
           <!-- plugin not verified -->
           <p class="card-text mb-2" *ngIf="!plugin.verifiedPlugin && !plugin.verifiedPlusPlugin">
             <a href="javascript:void(0)" class="card-link" (click)="openVerifiedModal()">
-              <i class="fas fa-fw fa-shield-alt fa-lg mr-1" style="opacity: 0.25;"></i>
+              <i class="fas fa-fw fa-shield-alt fa-lg me-1" style="opacity: 0.25;"></i>
               <span class="grey-text">{{ 'plugins.donate.button_not_verified' | translate }}</span>
             </a>
           </p>
@@ -88,11 +88,11 @@
           <p class="card-text mb-2">
             <a href="javascript:void(0)" class="card-link pink-text" *ngIf="(plugin.verifiedPlugin || plugin.verifiedPlusPlugin) && plugin.funding"
               (click)="openFundingModal(plugin)">
-              <i class="fas fa-fw fa-heart fa-lg mr-1"></i>
+              <i class="fas fa-fw fa-heart fa-lg me-1"></i>
               <span class="grey-text">&#64;{{ plugin.author }}</span>
             </a>
             <span class="grey-text" *ngIf="!((plugin.verifiedPlugin || plugin.verifiedPlusPlugin) && plugin.funding)">
-              <i class="fas fa-fw fa-heart fa-lg mr-1" style="opacity: 0.5;"></i>&#64;{{ plugin.author }}
+              <i class="fas fa-fw fa-heart fa-lg me-1" style="opacity: 0.5;"></i>&#64;{{ plugin.author }}
             </span>
           </p>
           <!-- // -->
@@ -101,7 +101,7 @@
             <p class="card-text mb-0 grey-text">
               <!-- not installed -->
               <span *ngIf="plugin.publicPackage && !plugin.installedVersion">
-                <i class="far fa-fw fa-circle-dot fa-lg mr-1"></i>
+                <i class="far fa-fw fa-circle-dot fa-lg me-1"></i>
                 <span class="grey-text">v{{ plugin.latestVersion }}
                   <span *ngIf="plugin.lastUpdated">({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
                 </span>
@@ -109,22 +109,23 @@
               <!-- // -->
               <!-- installed -->
               <span *ngIf="plugin.installedVersion">
-                <i class="far fa-fw fa-circle-check fa-lg mr-1"></i>v{{ plugin.installedVersion }}
+                <i class="far fa-fw fa-circle-check fa-lg me-1"></i>v{{ plugin.installedVersion }}
               </span>
               <!-- // -->
             </p>
-            <div class="ml-auto">
+            <div class="ms-auto">
               <!-- icon for child bridge restart -->
-              <a href="javascript:void(0)" (click)="doChildBridgeAction('restart')" class="card-link"
+              <a href="javascript:void(0)" (click)="doChildBridgeAction('restart')" class="card-link" container="body" openDelay="150" triggers="hover"
                 [ngbTooltip]="setChildBridges.length > 1 ? 'child_bridge.restart_plural' : 'child_bridge.restart' | translate"
                 *ngIf="!plugin.disabled && plugin.hasChildBridges && childBridgeStatus === 'ok'">
-                <i class="fas fa-fw fa-lg fa-power-off ml-3"></i>
+                <i class="fas fa-fw fa-lg fa-power-off ms-3"></i>
               </a>
               <!-- // -->
               <!-- icon for plugin disabled -->
               <a href="javascript:void(0)" (click)="enablePlugin(plugin)" *ngIf="plugin.installedVersion && plugin.disabled"
                 class="card-link red-text">
-                <i class="far fa-fw fa-pause-circle fa-lg" [ngbTooltip]="'plugins.status_disabled' | translate" container="body"></i>
+                <i class="far fa-fw fa-pause-circle fa-lg" [ngbTooltip]="'plugins.status_disabled' | translate" container="body"
+                  openDelay="150" triggers="hover"></i>
               </a>
               <!-- // -->
               <!-- icon for plugin not installed, to download -->
@@ -133,7 +134,7 @@
                 <i class="far fa-fw fa-arrow-alt-circle-down fa-lg"></i>
               </a>
               <!-- // -->
-              <span *ngIf="plugin.installedVersion" ngbDropdown placement="left" class="d-inline-block ml-3 mt-auto">
+              <span *ngIf="plugin.installedVersion" ngbDropdown placement="left" class="d-inline-block ms-3 mt-auto">
                 <!-- icon to expand dropdown -->
                 <a class="card-link text-decoration-none mt-auto" href="javascript:void(0)" style="outline:none;"
                   [attr.aria-label]="'Plugin Actions Dropdown'" ngbDropdownToggle>
@@ -154,7 +155,7 @@
                   <!-- // -->
                   <!-- plugin manage version -->
                   <button ngbDropdownItem *ngIf="plugin.publicPackage" (click)="$plugin.installAlternateVersion(plugin)">
-                    <i class="fas fa-fw fa-history"></i>
+                    <i class="fas fa-fw fa-code-compare"></i>
                     {{ 'plugins.manage.install_alternate_version' | translate }}
                   </button>
                   <!-- // -->
@@ -202,6 +203,11 @@
                     <!-- child bridge start -->
                     <button ngbDropdownItem *ngIf="allChildBridgesStopped" (click)="doChildBridgeAction('start')">
                       <i class="fas fa-fw fa-play"></i> {{ setChildBridges.length > 1 ? 'child_bridge.start_plural' : 'child_bridge.start' | translate }}
+                    </button>
+                    <!-- // -->
+                    <!-- child bridge reset -->
+                    <button ngbDropdownItem (click)="$plugin.resetChildBridges(setChildBridges)">
+                      <i class="fas fa-fw fa-broom"></i> {{ 'child_bridge.reset_accessories' | translate }}
                     </button>
                     <!-- // -->
                   </ng-container>

@@ -49,7 +49,7 @@
         "default": "auto",
         "oneOf": [
           {
-            "title": "Default (Auto Dark Mode)",
+            "title": "Orange",
             "enum": [
               "auto"
             ]
@@ -73,12 +73,6 @@
             ]
           },
           {
-            "title": "Purple - Deep",
-            "enum": [
-              "deep-purple"
-            ]
-          },
-          {
             "title": "Indigo",
             "enum": [
               "indigo"
@@ -88,12 +82,6 @@
             "title": "Blue",
             "enum": [
               "blue"
-            ]
-          },
-          {
-            "title": "Blue - Navi",
-            "enum": [
-              "navi-blue"
             ]
           },
           {
@@ -121,18 +109,6 @@
             ]
           },
           {
-            "title": "Orange",
-            "enum": [
-              "orange"
-            ]
-          },
-          {
-            "title": "Amber",
-            "enum": [
-              "amber"
-            ]
-          },
-          {
             "title": "Grey",
             "enum": [
               "grey"
@@ -143,81 +119,35 @@
             "enum": [
               "brown"
             ]
-          },
-          {
-            "title": "Dark Mode - HomeKit Orange",
-            "enum": [
-              "dark-mode"
-            ]
-          },
-          {
-            "title": "Dark Mode - Red",
-            "enum": [
-              "dark-mode-red"
-            ]
-          },
-          {
-            "title": "Dark Mode - Pink",
-            "enum": [
-              "dark-mode-pink"
-            ]
-          },
-          {
-            "title": "Dark Mode - Purple",
-            "enum": [
-              "dark-mode-purple"
-            ]
-          },
-          {
-            "title": "Dark Mode - Indigo",
-            "enum": [
-              "dark-mode-indigo"
-            ]
-          },
-          {
-            "title": "Dark Mode - Blue",
-            "enum": [
-              "dark-mode-blue"
-            ]
-          },
-          {
-            "title": "Dark Mode - Blue Grey",
-            "enum": [
-              "dark-mode-blue-grey"
-            ]
-          },
-          {
-            "title": "Dark Mode - Green",
-            "enum": [
-              "dark-mode-green"
-            ]
-          },
-          {
-            "title": "Dark Mode - Grey",
-            "enum": [
-              "dark-mode-grey"
-            ]
-          },
-          {
-            "title": "Dark Mode - Brown",
-            "enum": [
-              "dark-mode-brown"
-            ]
-          },
-          {
-            "title": "Dark Mode - Teal",
-            "enum": [
-              "dark-mode-teal"
-            ]
-          },
-          {
-            "title": "Dark Mode - Cyan",
-            "enum": [
-              "dark-mode-cyan"
-            ]
           }
         ],
         "required": true
+      },
+      "lightingMode": {
+        "title": "UI Lighting Mode",
+        "description": "The lighting mode used for the UI.",
+        "type": "string",
+        "default": "auto",
+        "oneOf": [
+          {
+            "title": "Auto",
+            "enum": [
+              "auto"
+            ]
+          },
+          {
+            "title": "Light",
+            "enum": [
+              "light"
+            ]
+          },
+          {
+            "title": "Dark",
+            "enum": [
+              "dark"
+            ]
+          }
+        ]
       },
       "restart": {
         "title": "Custom Restart Command",
@@ -524,16 +454,6 @@
               "functionBody": "return (model.log && model.log.method==='file')"
             }
           },
-          "maxSize": {
-            "type": "integer",
-            "description": "The max log size (bytes). Set to -1 to disable log truncation.",
-            "minimum": -1
-          },
-          "truncateSize": {
-            "type": "integer",
-            "description": "The size (bytes) to truncate the log to once it goes over the max size specified above`.",
-            "minimum": 0
-          },
           "service": {
             "title": "Systemd Service",
             "type": "string",
@@ -566,6 +486,19 @@
             "description": "Depreciated",
             "condition": {
               "functionBody": "return (model.log && (model.log.method==='custom' || model.log.method==='systemd' || model.log.method==='file'))"
+            }
+          },
+          "maxSize": {
+            "type": "integer",
+            "description": "The max log size (bytes). Set to -1 to disable log truncation.",
+            "minimum": -1
+          },
+          "truncateSize": {
+            "type": "integer",
+            "description": "The size (bytes) to truncate the log to once it goes over the max size specified above.",
+            "minimum": 0,
+            "condition": {
+              "functionBody": "return (model.log && model.log.maxSize > 0)"
             }
           }
         }
@@ -699,12 +632,20 @@
         "debug",
         "log.method",
         "log.path",
-        "log.maxSize",
-        "log.truncateSize",
         "log.service",
         "log.command",
         "log.tail",
         "log.systemd"
+      ]
+    },
+    {
+      "ref": "logRetention",
+      "type": "fieldset",
+      "expandable": true,
+      "title": "Log Retention Settings",
+      "items": [
+        "log.maxSize",
+        "log.truncateSize"
       ]
     },
     {

@@ -1,17 +1,15 @@
 <div class="modal-content" style="min-height: 300px;">
   <div class="modal-header">
     <h5 class="modal-title">{{ 'plugins.compatibility.title' | translate }}</h5>
-    <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="$activeModal.dismiss('Dismiss')">
-      <span aria-hidden="true">&times;</span>
-    </button>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
+      (click)="$activeModal.dismiss('Dismiss')"></button>
   </div>
   <div class="modal-body d-flex flex-row flex-grow-1 align-items-center w-100 text-center">
 
     <!-- plugins -->
     <div class="w-100" *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)">
-      <i class="{{ action === 'install' ? 'far fa-fw fa-arrow-alt-circle-down' : ( action === 'update' ? 'far fa-fw fa-arrow-alt-circle-up' : 'fas fa-fw fa-history') }} primary-text mb-4" style="font-size: 75px;"></i>
-      <ul class="text-left">
+      <i class="{{ action === 'install' ? 'far fa-fw fa-arrow-alt-circle-down' : ( action === 'update' ? 'far fa-fw fa-arrow-alt-circle-up' : 'fas fa-fw fa-code-compare') }} primary-text mb-4" style="font-size: 75px;"></i>
+      <ul class="text-start">
         <li *ngIf="!isValidNode">
           {{ 'plugins.compatibility.node_too_low' | translate: { pluginName: plugin.name, minVersion: nodeMinVersion, installedVersion: nodeInstalledVersion } }}
           <a href="https://homebridge.io/w/JTKEF" target="_blank" rel="noopener noreferrer">
@@ -28,7 +26,7 @@
     <!-- homebridge -->
     <div class="w-100" *ngIf="plugin.name === 'homebridge'">
       <i class="fab fa-fw fa-node-js primary-text mb-4" style="font-size: 75px;"></i>
-      <ul class="text-left">
+      <ul class="text-start">
         <li *ngIf="!isValidNode">
           {{ 'plugins.compatibility.hb_node_too_low' | translate: { minVersion: nodeMinVersion, installedVersion: nodeInstalledVersion, latestVersion: plugin.latestVersion, packageName: 'Homebridge' } }}
           <a href="https://homebridge.io/w/JTKEF" target="_blank" rel="noopener noreferrer">
@@ -44,7 +42,7 @@
     <!-- homebridge ui -->
     <div class="w-100" *ngIf="plugin.name === 'homebridge-config-ui-x'">
       <i class="fas fa-fw fa-list-check primary-text mb-4" style="font-size: 75px;"></i>
-      <ul class="text-left">
+      <ul class="text-start">
         <li *ngIf="!isValidNode">
           {{ 'plugins.compatibility.hb_node_too_low' | translate: { minVersion: nodeMinVersion, installedVersion: nodeInstalledVersion, latestVersion: plugin.latestVersion, packageName: 'Homebridge UI' } }}
           <a href="https://homebridge.io/w/JTKEF" target="_blank" rel="noopener noreferrer">
@@ -59,20 +57,20 @@
 
   </div>
   <div class="modal-footer justify-content-between">
-    <div class="text-left">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="$activeModal.dismiss('Dismiss')"
+    <div class="text-start">
+      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="$activeModal.dismiss('Dismiss')"
         *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)">
         {{ 'form.button_close' | translate }}
       </button>
     </div>
     <div class="text-center">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="$activeModal.dismiss('Dismiss')"
+      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="$activeModal.dismiss('Dismiss')"
         *ngIf="['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)">
         {{ 'form.button_close' | translate }}
       </button>
     </div>
-    <div class="text-right">
-      <button *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)" type="button" class="btn btn-danger" data-dismiss="modal"
+    <div class="text-end">
+      <button *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)" type="button" class="btn btn-danger" data-bs-dismiss="modal"
         (click)="$activeModal.close(true);">
         {{ 'plugins.node_update.continue' | translate }}
       </button>

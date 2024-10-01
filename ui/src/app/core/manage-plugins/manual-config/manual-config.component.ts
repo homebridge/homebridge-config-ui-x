@@ -53,7 +53,7 @@ export class ManualConfigComponent implements OnInit {
   ngOnInit(): void {
     this.editorOptions = {
       language: 'json',
-      theme: this.$settings.theme.startsWith('dark-mode') ? 'vs-dark' : 'vs-light',
+      theme: this.$settings.actualLightingMode === 'dark' ? 'vs-dark' : 'vs-light',
       automaticLayout: true,
     }
 
@@ -214,12 +214,11 @@ export class ManualConfigComponent implements OnInit {
       const newConfig = await firstValueFrom(this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig))
       this.$activeModal.close()
 
-      // If it is the first time configuring a plugin, then offer to set up a child bridge straight away
-      if (this.isFirstSave) {
-        if (this.$settings.env.recommendChildBridges && this.$settings.env.serviceMode && newConfig[0]?.platform) {
-          // Close the modal and open the child bridge setup modal
-          this.$plugin.bridgeSettings(this.plugin)
-        }
+      // Possible child bridge setup recommendation if the plugin is not Homebridge UI
+      // If it is the first time configuring the plugin, then offer to set up a child bridge straight away
+      if (this.isFirstSave && this.$settings.env.recommendChildBridges && this.$settings.env.serviceMode && newConfig[0]?.platform) {
+        // Close the modal and open the child bridge setup modal
+        this.$plugin.bridgeSettings(this.plugin, true)
       } else {
         this.$modal.open(RestartHomebridgeComponent, {
           size: 'lg',
