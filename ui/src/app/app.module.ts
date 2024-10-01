@@ -8,6 +8,8 @@ import { LoginModule } from '@/app/modules/login/login.module'
 import { RestartModule } from '@/app/modules/restart/restart.module'
 import { StatusModule } from '@/app/modules/status/status.module'
 import { LayoutComponent } from '@/app/shared/layout/layout.component'
+import { SidebarComponent } from '@/app/shared/layout/sidebar/sidebar.component'
+import { NgOptimizedImage } from '@angular/common'
 import { HttpClientModule } from '@angular/common/http'
 import { LOCALE_ID, NgModule } from '@angular/core'
 import { BrowserModule } from '@angular/platform-browser'
@@ -22,6 +24,7 @@ import { ToastrModule } from 'ngx-toastr'
   declarations: [
     AppComponent,
     LayoutComponent,
+    SidebarComponent,
   ],
   imports: [
     BrowserModule,
@@ -57,6 +60,7 @@ import { ToastrModule } from 'ngx-toastr'
     StatusModule,
     RestartModule,
     AppRoutingModule,
+    NgOptimizedImage,
   ],
   providers: [
     {
