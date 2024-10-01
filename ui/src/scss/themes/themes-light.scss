@@ -11,6 +11,50 @@
       opacity: 1 !important;
     }
 
+    .sidebar {
+      background: $primary-dark;
+      color: #eeeeee;
+
+      .header {
+        background: $primary-dark;
+      }
+
+      .link-wrapper {
+        .link {
+          .link-row {
+            &:hover {
+              background: $primary;
+
+              .title {
+                color: #ffffff;
+              }
+            }
+
+            &.active {
+              i {
+                color: $primary;
+              }
+            }
+
+            &.active:hover {
+              i {
+                color: #ffffff;
+                transition: 0.3s;
+              }
+            }
+
+            .title {
+              color: #ffffff;
+            }
+          }
+        }
+      }
+    }
+
+    .m-header {
+      background: $primary-dark;
+    }
+
     .hb-npm-search {
       border: 0 !important;
       background-color: #eeeeee !important;
