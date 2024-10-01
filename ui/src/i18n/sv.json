@@ -58,7 +58,6 @@
   "backup.backup_warning": "Säkerhetskopian innehåller känslig information och bör inte delas med andra.",
   "backup.button_download_backup_archive": "Ladda ner säkerhetskopia",
   "backup.button_restore_backup": "Återställ säkerhetskopia",
-  "backup.label_choose_backup_file_to_restore": "Välj säkerhetskopia för att återställa…",
   "backup.label_uploading": "Laddar upp…",
   "backup.load_error": "Failed to load config backup.",
   "backup.restore_failed": "Återställningen misslyckades",

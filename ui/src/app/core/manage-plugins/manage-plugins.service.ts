@@ -120,7 +120,6 @@ export class ManagePluginsService {
 
   /**
    * Open the child bridge modal
-   *
    * @param plugin
    * @param justInstalled
    */

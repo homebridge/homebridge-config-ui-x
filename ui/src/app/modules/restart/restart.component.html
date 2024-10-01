@@ -36,7 +36,7 @@
           {{ 'restart.message_server_is_taking_long_time_to_restart' | translate }}
         </p>
         <p class="mb-0">
-          {{ 'restart.label_restart_command_executed' | translate }}: <span class="text-monospace">{{ resp.command || "End Process" }}</span>
+          {{ 'restart.label_restart_command_executed' | translate }}: <span class="font-monospace">{{ resp.command || "End Process" }}</span>
         </p>
         <p *ngIf="uiOnline" class="mt-2 mb-0">
           <button class="btn btn-primary mb-0" (click)="viewLogs()">

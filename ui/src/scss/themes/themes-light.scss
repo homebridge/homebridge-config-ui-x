@@ -64,13 +64,30 @@
       color: $primary;
     }
 
-    .btn-primary,
-    .btn-default {
+    .btn-primary {
       @extend .btn-#{$name} !optional;
+      background-color: $primary-dark !important;
+      border-color: $primary-dark !important;
+      color: #ffffff !important;
+
+      &:hover, &:focus, &:active {
+        background-color: $primary !important;
+        border-color: $primary !important;
+      }
     }
 
-    .badge-primary {
-      background-color: $primary-dark !important;
+    .btn-elegant {
+      &:hover, &:focus, &:active {
+        background-color: #666666 !important;
+        border-color: #666666 !important;
+        color: #ffffff !important;
+      }
+    }
+
+    .dropdown-item {
+      &:hover, &:focus, &:active {
+        background-color: #eeeeee !important;
+      }
     }
 
     a {
@@ -199,7 +216,7 @@
     .plugin-icon-card {
       width: 70px;
       height: 70px;
-      border-radius: 15px;
+      border-radius: 1rem;
       border: 1px solid #dddddd;
     }
 
@@ -230,9 +247,6 @@
     background-color: #000099 !important;
   }
 
-  .badge-primary {
-    background-color: #000070 !important;
-  }
   .widget-control-button {
     &.primary-text {
       color: #2196f3;

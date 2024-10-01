@@ -58,7 +58,6 @@
   "backup.backup_warning": "Backup-Archive enhalten sensitive Informationen und sollten nicht mit anderen geteilt werden.",
   "backup.button_download_backup_archive": "Backup-Archiv herunterladen",
   "backup.button_restore_backup": "Backup wiederherstellen",
-  "backup.label_choose_backup_file_to_restore": "Backup-Datei zur Wiederherstellung auswählen …",
   "backup.label_uploading": "Lädt hoch …",
   "backup.load_error": "Failed to load config backup.",
   "backup.restore_failed": "Wiederherstellung fehlgeschlagen",
