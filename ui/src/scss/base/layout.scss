@@ -81,6 +81,16 @@ h3 {
   }
 }
 
+.adjust-for-mobile {
+  height: calc(100% - 30px);
+  width: calc(100% + 17px);
+  overflow: hidden;
+
+  @media (max-width: 767px) {
+    height: calc(100% - 60px);
+  }
+}
+
 // Prevent tooltips appearing in front of opened modal on mobile
 .tooltip {
   z-index: 1020 !important;
