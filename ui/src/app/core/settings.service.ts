@@ -124,7 +124,7 @@ export class SettingsService {
   setTheme(theme: string) {
     // Default theme is orange
     if (!theme || !this.themeList.includes(theme)) {
-      theme = 'orange'
+      theme = 'purple'
     }
 
     // Grab the body element

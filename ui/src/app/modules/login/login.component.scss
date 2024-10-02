@@ -4,6 +4,11 @@
  * https://www.pexels.com/photo/architecture-bridge-building-city-220769/
  */
 
+.homebridge-logo {
+  height: 125px;
+  padding-bottom: 10px;
+}
+
 .login-container {
   background-color: #f4f4f4;
   background-size: cover;
@@ -15,8 +20,9 @@
 }
 
 .login-card {
-  max-width: 500px;
+  max-width: 550px;
   background-color: rgba(255, 255, 255, 0.90);
+  border-radius: 1rem;
 
   .form-control:focus {
     background-color: inherit !important;
@@ -45,4 +51,9 @@
   @media screen and (max-height: 450px){
     display: none;
   }
+}
+
+.btn-primary {
+  background-color: #4a266c !important;
+  border-color: #4a266c !important;
 }

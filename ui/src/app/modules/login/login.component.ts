@@ -88,11 +88,12 @@ export class LoginComponent implements OnInit {
       }
     }
 
-    await this.$auth.login(this.form.getRawValue()).then(() => {
+    try {
+      await this.$auth.login(this.form.getRawValue())
       this.$router.navigateByUrl(this.targetRoute)
       window.sessionStorage.removeItem('target_route')
-    }).catch((err) => {
-      if (err.status === 412) {
+    } catch (error) {
+      if (error.status === 412) {
         if (!this.form.controls.otp) {
           this.form.addControl('otp', new FormControl('', [
             Validators.required,
@@ -110,8 +111,7 @@ export class LoginComponent implements OnInit {
       } else {
         this.invalidCredentials = true
       }
-    })
-
+    }
     this.inProgress = false
   }
 }

@@ -215,7 +215,7 @@ export class ConfigService {
         recommendChildBridges: this.recommendChildBridges,
       },
       formAuth: Boolean(this.ui.auth !== 'none'),
-      theme: this.ui.theme || 'orange',
+      theme: this.ui.theme || 'purple',
       lightingMode: this.ui.lightingMode || 'auto',
       serverTimestamp: new Date().toISOString(),
     }

@@ -10,6 +10,8 @@ body {
 
 body {
   background-color: #f4f4f4;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.95rem;
 }
 
 a, a:hover, a:focus {
@@ -22,7 +24,7 @@ a, a:hover, a:focus {
 }
 
 .pink-text, .pink-text a {
-  color: #ff20db !important;
+  color: #e91e63 !important;
 }
 
 .green-text, .green-text a {
@@ -77,7 +79,6 @@ h3 {
 }
 
 td {
-  font-size: 0.9rem;
   font-weight: 300;
   color: #999999 !important;
 }
@@ -141,4 +142,12 @@ th {
 
 .tooltip {
   z-index: 1045 !important;
+}
+
+.alert {
+  border: 0;
+}
+
+.alert-error {
+  box-shadow: 0 0 5px rgba(211, 47, 47, 1);
 }

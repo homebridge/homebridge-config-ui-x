@@ -1,46 +1,44 @@
 <div class="login-container d-flex align-items-center justify-content-center"
   [ngStyle]="{'background': backgroundStyle}">
   <div class="card card-body mx-2 login-card">
+    <img class="homebridge-logo mx-auto my-3" src="/assets/homebridge-color-round.svg" alt="Homebridge Logo">
     <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
-      <p class="h4 text-center mb-4">Homebridge</p>
-
+      <h3 class="mb-4 text-center">{{ 'setup_wizard.welcome_to_homebridge' | translate }}</h3>
       <div *ngIf="!twoFactorCodeRequired">
-        <div class="md-form">
-          <i class="fas fa-fw fa-user prefix grey-text"></i>
+        <div class="input-group mb-4">
+          <span class="input-group-text custom-input"><i class="fas fa-fw fa-user primary-text fa-lg"></i></span>
           <input #username formControlName="username" type="text" id="form-username" autofocus autocomplete="username"
-            autocapitalize="none" tabindex="1" class="form-control px-0" [ngClass]="{
+            autocapitalize="none" tabindex="1" class="form-control custom-input" [ngClass]="{
             'is-invalid': form.controls.username.dirty && form.controls.username.errors
-          }">
-          <label for="form-username">{{ 'login.label_username' | translate }}</label>
+          }" placeholder="{{ 'login.label_username' | translate }}" required>
         </div>
-        <div class="md-form">
-          <i class="fas fa-fw fa-lock prefix grey-text"></i>
+        <div class="input-group mb-4">
+          <span class="input-group-text custom-input"><i class="fas fa-fw fa-lock primary-text fa-lg"></i></span>
           <input #password formControlName="password" type="password" id="form-pass" autocomplete="current-password"
-            tabindex="2" class="form-control px-0" [ngClass]="{
+            tabindex="2" class="form-control custom-input" [ngClass]="{
             'is-invalid': form.controls.password.dirty && form.controls.password.errors
-          }">
-          <label for="form-pass">{{ 'login.label_password' | translate }}</label>
+          }" placeholder="{{ 'login.label_password' | translate }}" required>
         </div>
       </div>
-
       <div *ngIf="twoFactorCodeRequired">
-        <p class="text-center">{{ 'users.setup_2fa_enter_code' | translate }}</p>
-        <div class="md-form">
-          <i class="fas fa-fw fa-key prefix grey-text"></i>
-          <input #otp formControlName="otp" type="text" id="form-ota" autocomplete="one-time-code" autocapitalize="none"
-            inputmode="numeric" pattern="[0-9]*" tabindex="1" class="form-control px-0" [ngClass]="{
-              'is-invalid': form.controls.otp.dirty && form.controls.otp.errors
-            }">
-          <label for="form-ota">{{ 'login.label_2fa_code' | translate }}</label>
+        <div class="input-group mb-4">
+          <span class="input-group-text custom-input"><i class="fas fa-fw fa-key primary-text fa-lg"></i></span>
+          <input #otp formControlName="otp" type="text" id="form-ota" autofocus autocomplete="one-time-code"
+            autocapitalize="none" inputmode="numeric" pattern="[0-9]*" tabindex="1" class="form-control custom-input"
+            placeholder="{{ 'login.label_2fa_code' | translate }}">
         </div>
       </div>
-
-      <div class="text-center">
-        <p class="red-text" *ngIf="invalidCredentials"><small>{{ 'login.message_invalid_username_or_password' | translate }}</small></p>
-        <p class="red-text" *ngIf="invalid2faCode"><small>{{ 'login.message_invalid_2fa_code' | translate }}</small></p>
-        <button tabindex="3" class="btn btn-primary" type="submit" [disabled]="form.invalid">{{ 'login.button_login' | translate }}</button>
+      <div class="alert alert-error p-2 mb-4" role="alert" *ngIf="invalidCredentials">
+        <small>{{ 'login.message_invalid_username_or_password' | translate }}</small>
       </div>
-
+      <div class="alert alert-error p-2 mb-4" role="alert" *ngIf="invalid2faCode">
+        <small>{{ 'login.message_invalid_2fa_code' | translate }}</small>
+      </div>
+      <div class="text-center">
+        <button tabindex="3" class="btn btn-primary mb-4" type="submit" [disabled]="form.invalid">
+          {{ 'login.button_login' | translate }}
+        </button>
+      </div>
     </form>
   </div>
 </div>
