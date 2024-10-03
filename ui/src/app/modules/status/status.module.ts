@@ -26,7 +26,7 @@ import { RouterModule } from '@angular/router'
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateModule } from '@ngx-translate/core'
 import { GridsterModule } from 'angular-gridster2'
-import { NgChartsModule } from 'ng2-charts'
+import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2-charts'
 import { DragulaModule } from 'ng2-dragula'
 
 @NgModule({
@@ -59,10 +59,13 @@ import { DragulaModule } from 'ng2-dragula'
     NgbModule,
     GridsterModule,
     DragulaModule,
-    NgChartsModule,
+    BaseChartDirective,
     CoreModule,
     AccessoriesCoreModule,
     ManagePluginsModule,
+  ],
+  providers: [
+    provideCharts(withDefaultRegisterables()),
   ],
 })
 export class StatusModule {}
