@@ -23,6 +23,9 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - upgrade `angular` from `v16` to `v17`
 - upgrade `angular` from `v17` to `v18`
 - upgrade and re-patch `@zajsf/` dependencies
+- upgrade some ui dependencies
+  - upgraded `ng2-charts` and `ngx-md` to most recent major versions
+  - move from `ngx-monaco-editor` to `ngx-monaco-editor-v2`
 
 ### Homebridge Dependencies
 

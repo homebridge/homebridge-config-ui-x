@@ -4,7 +4,7 @@ import { SettingsService } from '@/app/core/settings.service'
 import { Component, OnDestroy, OnInit } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
-import { NgxEditorModel } from 'ngx-monaco-editor'
+import { NgxEditorModel } from 'ngx-monaco-editor-v2'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
