@@ -1,7 +1,7 @@
 const { antfu } = require('@antfu/eslint-config')
 
 module.exports = antfu({
-  ignores: ['dist', 'ui/.angular', 'ui/src/assets/monaco-editor'],
+  ignores: ['dist', 'ui/.angular', 'ui/src/assets/monaco'],
   rules: {
     'curly': ['error'],
     'import/extensions': 'off',
