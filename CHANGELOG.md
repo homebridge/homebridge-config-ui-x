@@ -15,6 +15,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - add warning for older homebridge apt package users still running `pnpm`
 - split light/dark mode from themes, auto-change with browser changes
 - updates to `pl` language file (#2194) (@mkz212)
+- move login wallpaper from advanced settings to main settings
 
 ## Other Changes
 

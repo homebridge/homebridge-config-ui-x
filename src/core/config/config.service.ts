@@ -186,40 +186,53 @@ export class ConfigService {
 
   /**
    * Settings that are sent to the UI
+   * @param {boolean} authorized - return more settings if the user is authorized
    */
-  public uiSettings() {
-    return {
+  public uiSettings(authorized: boolean = false) {
+    const toReturn = {
       env: {
-        enableAccessories: this.homebridgeInsecureMode,
-        enableTerminalAccess: this.enableTerminalAccess,
+        canShutdownRestartHost: this.canShutdownRestartHost,
+        customWallpaperHash: this.customWallpaperHash,
+        dockerOfflineUpdate: this.dockerOfflineUpdate,
         homebridgeVersion: this.homebridgeVersion || null,
         homebridgeInstanceName: this.homebridgeConfig.bridge.name,
-        nodeVersion: process.version,
+        instanceId: this.instanceId,
+        lang: this.ui.lang === 'auto' ? null : this.ui.lang,
         packageName: this.package.name,
         packageVersion: this.package.version,
         platform: platform(),
+        port: this.ui.port,
+        serviceMode: this.serviceMode,
+        setupWizardComplete: this.setupWizardComplete,
+      },
+      formAuth: Boolean(this.ui.auth !== 'none'),
+      lightingMode: this.ui.lightingMode || 'auto',
+      serverTimestamp: new Date().toISOString(),
+      theme: this.ui.theme || 'orange',
+    }
+
+    if (!authorized) {
+      return toReturn
+    }
+
+    return {
+      ...toReturn,
+      env: {
+        ...toReturn.env,
+        enableAccessories: this.homebridgeInsecureMode,
+        enableTerminalAccess: this.enableTerminalAccess,
+        nodeVersion: process.version,
+        recommendChildBridges: this.recommendChildBridges,
         runningInDocker: this.runningInDocker,
         runningInSynologyPackage: this.runningInSynologyPackage,
         runningInPackageMode: this.runningInPackageMode,
         runningInLinux: this.runningInLinux,
         runningInFreeBSD: this.runningInFreeBSD,
         runningOnRaspberryPi: this.runningOnRaspberryPi,
-        canShutdownRestartHost: this.canShutdownRestartHost,
-        dockerOfflineUpdate: this.dockerOfflineUpdate,
-        serviceMode: this.serviceMode,
         temperatureUnits: this.ui.tempUnits || 'c',
-        port: this.ui.port,
-        lang: this.ui.lang === 'auto' ? null : this.ui.lang,
-        instanceId: this.instanceId,
-        customWallpaperHash: this.customWallpaperHash,
-        setupWizardComplete: this.setupWizardComplete,
-        recommendChildBridges: this.recommendChildBridges,
         usePnpm: this.usePnpm,
       },
-      formAuth: Boolean(this.ui.auth !== 'none'),
-      theme: this.ui.theme || 'orange',
-      lightingMode: this.ui.lightingMode || 'auto',
-      serverTimestamp: new Date().toISOString(),
+      loginWallpaper: this.ui.loginWallpaper,
     }
   }
 
