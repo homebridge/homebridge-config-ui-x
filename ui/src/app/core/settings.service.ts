@@ -41,6 +41,7 @@ interface AppSettingsInterface {
   formAuth: boolean
   theme: string
   lightingMode: 'auto' | 'light' | 'dark'
+  loginWallpaper: string
   serverTimestamp: string
 }
 
@@ -56,6 +57,7 @@ export class SettingsService {
   public currentLightingMode: 'auto' | 'light' | 'dark'
   public actualLightingMode: 'light' | 'dark'
   public browserLightingMode: 'light' | 'dark'
+  public loginWallpaper: string
   public serverTimeOffset = 0
   public themeList = [
     'orange',
@@ -94,6 +96,7 @@ export class SettingsService {
     this.formAuth = data.formAuth
     this.env = data.env
     this.lightingMode = data.lightingMode
+    this.loginWallpaper = data.loginWallpaper
     this.setLightingMode(this.lightingMode, 'user')
     this.setTheme(data.theme)
     this.setTitle(this.env.homebridgeInstanceName)

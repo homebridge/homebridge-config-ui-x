@@ -344,6 +344,8 @@
   "settings.display.lang": "Мова",
   "settings.display.light": "Light",
   "settings.display.lighting_mode": "Lighting Mode",
+  "settings.display.login_wallpaper": "Login Wallpaper",
+  "settings.display.login_wallpaper_desc": "A custom login wallpaper can be set by adding a <code>ui-wallpaper.jpg</code> file to your Homebridge storage directory, or by providing a full path to a local image file here.",
   "settings.display.orange": "Orange",
   "settings.display.pink": "Pink",
   "settings.display.purple": "Purple",

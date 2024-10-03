@@ -33,9 +33,9 @@ export class AuthService {
     const resp = await firstValueFrom(this.$api.post('/auth/login', form))
     if (!this.validateToken(resp.access_token)) {
       throw new Error('Invalid username or password.')
-    } else {
-      window.localStorage.setItem(environment.jwt.tokenKey, resp.access_token)
     }
+    window.localStorage.setItem(environment.jwt.tokenKey, resp.access_token)
+    await this.$settings.getAppSettings() // update settings to get full settings object
   }
 
   async noauth() {

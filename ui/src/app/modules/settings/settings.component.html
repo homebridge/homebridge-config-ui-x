@@ -134,6 +134,16 @@
        </div>
      </li>
      <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+       <span>
+         {{ 'settings.display.login_wallpaper' | translate }}<br>
+         <small class="grey-text pr-2" [innerHTML]="'settings.display.login_wallpaper_desc' | translate"></small>
+       </span>
+       <div class="my-3 my-md-0 pl-0 pl-md-5 w-auto">
+         <input class="form-control custom-input form-control-sm resp-input"  type="text" [ngModel]="$settings.loginWallpaper"
+           (ngModelChange)="saveUiSettingChange('loginWallpaper', $event)" placeholder="">
+       </div>
+     </li>
+     <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
        <span>{{ 'settings.display.temp_units' | translate }}</span>
        <div class="my-3 my-md-0 pl-0 pl-md-5 w-auto">
          <select class="custom-select resp-select" [ngModel]="$settings.env.temperatureUnits" (ngModelChange)="saveUiSettingChange('tempUnits', $event)">
@@ -141,6 +151,13 @@
            <option value="f">{{ 'settings.display.temp_units.f' | translate }}</option>
          </select>
        </div>
+     </li>
+     <li class="list-group-item d-flex flex-column align-items-center" *ngIf="hasChangedLoginWallpaper">
+       <small class="grey-text my-2">{{ 'settings.changes.saved' | translate }}</small>
+       <button class="btn btn-primary waves-effect my-2" routerLink="/restart"
+         [attr.aria-label]="'menu.tooltip_restart' | translate">
+         {{ 'menu.tooltip_restart' | translate }}
+       </button>
      </li>
    </ul>
  </div>
