@@ -33,6 +33,7 @@ export class SettingsComponent implements OnInit {
     port: 0,
   }
 
+  public originalLoginWallpaper = ''
   public originalMdnsSetting = ''
   public originalBridgeNetworkAdapters: string[] = []
   public originalHbPort = 0
@@ -42,6 +43,7 @@ export class SettingsComponent implements OnInit {
   public hasChangedMdns = false
   public hasChangedBridgeNetworkAdapters = false
   public hasChangedHbPort = false
+  public hasChangedLoginWallpaper = false
 
   public isInvalidHbPort = false
   public isInvalidHbUiPort = false
@@ -58,6 +60,7 @@ export class SettingsComponent implements OnInit {
     port: new FormControl(0),
   })
 
+  public loginWallpaper = ''
   public legacyMdnsFormControl = new UntypedFormControl(false)
   public showAvahiMdnsOption = false
   public showResolvedMdnsOption = false
@@ -86,6 +89,7 @@ export class SettingsComponent implements OnInit {
   ngOnInit() {
     this.isHbV2 = this.$settings.env.homebridgeVersion.startsWith('2')
     this.initUiSettingsForm()
+    this.initDisplaySettingsForm()
     this.initNetworkingOptions()
     if (this.$settings.env.serviceMode) {
       this.initServiceModeForm()
@@ -127,6 +131,11 @@ export class SettingsComponent implements OnInit {
     })
   }
 
+  initDisplaySettingsForm() {
+    this.originalLoginWallpaper = this.$settings.loginWallpaper
+    this.loginWallpaper = this.$settings.loginWallpaper
+  }
+
   saveUiSettingChange(key: string, value: any) {
     // Extra things to do per key
     switch (key) {
@@ -141,6 +150,10 @@ export class SettingsComponent implements OnInit {
         break
       case 'tempUnits':
         this.$settings.setEnvItem('temperatureUnits', value)
+        break
+      case 'loginWallpaper':
+        this.$settings.setEnvItem('loginWallpaper', value)
+        this.hasChangedLoginWallpaper = value !== this.originalLoginWallpaper
         break
       case 'port':
         if (!value || typeof value !== 'number' || value < 1025 || value > 65533 || Number.isInteger(value) === false || value === this.hbPortFormControl.value) {

@@ -4,14 +4,15 @@ import {
   Get,
   Header,
   Post,
+  Request,
   UseGuards,
 } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiExcludeEndpoint, ApiOperation, ApiTags } from '@nestjs/swagger'
-
 import { ConfigService } from '../config/config.service'
 import { AuthDto } from './auth.dto'
 import { AuthService } from './auth.service'
+import { CustomGuard } from './guards/custom.guard'
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -29,8 +30,9 @@ export class AuthController {
 
   @Get('/settings')
   @ApiOperation({ summary: 'Return settings required to load the UI before authentication.' })
-  getSettings() {
-    return this.configService.uiSettings()
+  @UseGuards(CustomGuard)
+  getSettings(@Request() req: any) {
+    return this.configService.uiSettings(req.user)
   }
 
   @ApiExcludeEndpoint()
