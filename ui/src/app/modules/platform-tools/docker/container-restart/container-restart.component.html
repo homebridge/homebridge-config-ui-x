@@ -4,17 +4,11 @@
   <div class="col-md-12 text-center">
     <h1 class="primary-text"><i class="fab fa-fw fa-docker"></i></h1>
     <h3 class="primary-text">{{ 'platform.docker.title_restarting' | translate }}</h3>
-    <p class="grey-text" *ngIf="!timeout && !error">
-      {{ 'restart.please_wait_while_server_restarts' | translate }}
-    </p>
+    <p class="grey-text" *ngIf="!timeout && !error">{{ 'restart.please_wait_while_server_restarts' | translate }}</p>
     <p class="grey-text" *ngIf="error">{{ error }}</p>
     <div *ngIf="timeout">
-      <p class="grey-text">
-        {{ 'platform.docker.server_long_time' | translate }}
-      </p>
-      <p class="primary-text">
-        {{ 'platform.docker.run_with_restart' | translate }}
-      </p>
+      <p class="grey-text">{{ 'platform.docker.server_long_time' | translate }}</p>
+      <p class="primary-text">{{ 'platform.docker.run_with_restart' | translate }}</p>
     </div>
   </div>
 </div>

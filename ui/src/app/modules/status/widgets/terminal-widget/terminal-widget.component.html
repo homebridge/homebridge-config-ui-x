@@ -1,9 +1,13 @@
-<div #widgetcontainer class="flex-column d-flex align-items-stretch h-100 w-100" style="background-color:#2b2b2b;">
-  <div #terminaltitle style="color:#ffffff; background-color: #2b2b2b;"
-    class="drag-handler px-2 py-1" [ngClass]="{ 'widget-cursor': widget.draggable }">
+<div #widgetcontainer class="flex-column d-flex align-items-stretch h-100 w-100" style="background-color: #2b2b2b">
+  <div
+    #terminaltitle
+    style="color: #ffffff; background-color: #2b2b2b"
+    class="drag-handler px-2 py-1"
+    [ngClass]="{ 'widget-cursor': widget.draggable }"
+  >
     Homebridge {{ 'menu.docker.terminal' | translate }}
   </div>
   <div [ngStyle]="{'height.px': terminalHeight}" class="p-2">
-    <div #terminaloutput class="terminal gridster-item-content w-100 h-100" style="max-height: 100%;"></div>
+    <div #terminaloutput class="terminal gridster-item-content w-100 h-100" style="max-height: 100%"></div>
   </div>
 </div>

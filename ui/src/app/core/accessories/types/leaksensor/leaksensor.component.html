@@ -1,7 +1,10 @@
-<div class="accessory-box" [ngClass]="{
+<div
+  class="accessory-box"
+  [ngClass]="{
   'switch-on': service.values.LeakDetected,
   'switch-off': !service.values.LeakDetected
-}">
+}"
+>
   <div class="d-flex flex-column h-100">
     <div [inlineSVG]="'/assets/hap-icons/leaksensor.svg'" [attr.aria-label]="'Leak Sensor'" class="accessory-svg"></div>
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>

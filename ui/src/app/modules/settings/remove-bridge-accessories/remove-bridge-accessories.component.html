@@ -1,18 +1,26 @@
 <div class="modal-content">
   <div class="modal-header">
     <h5 class="modal-title">{{ 'reset.clear_cache_bridge.title' | translate }}</h5>
-    <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="$activeModal.dismiss('Dismiss')" [disabled]="deleting">
+    <button
+      type="button"
+      class="close"
+      data-dismiss="modal"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="$activeModal.dismiss('Dismiss')"
+      [disabled]="deleting"
+    >
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body">
     <div *ngIf="pairings.length === 0" class="text-center">
-      <i class="fas fa-fw fa-circle-check mb-4 primary-text" style="font-size: 75px;"></i>
+      <i class="fas fa-fw fa-circle-check mb-4 primary-text" style="font-size: 75px"></i>
       <p class="mb-0">{{ 'reset.clear_cache_bridge.empty' | translate }}</p>
     </div>
     <div *ngIf="pairings.length > 0">
-      <div class="text-center mb-4"><i class="fas fa-fw fa-network-wired primary-text" style="font-size: 75px;"></i></div>
+      <div class="text-center mb-4">
+        <i class="fas fa-fw fa-network-wired primary-text" style="font-size: 75px"></i>
+      </div>
       <ngb-alert type="warning" [dismissible]="false">
         <ul class="mb-0 text-left">
           <li>{{ 'reset.clear_cache_bridge.list_1' | translate }}</li>
@@ -24,10 +32,14 @@
         <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let item of pairings">
           <span>
             {{ item.displayName }} ({{ item._main ? 'Homebridge' : (item._category | titlecase) }})
-            <br>
+            <br />
             <small class="grey-text">{{ item._username }}</small>
           </span>
-          <button class="btn btn-danger" (click)="removeAccessories(item._id)" [disabled]="deleting || deleted.includes(item._id)">
+          <button
+            class="btn btn-danger"
+            (click)="removeAccessories(item._id)"
+            [disabled]="deleting || deleted.includes(item._id)"
+          >
             <i class="fas" [ngClass]="{'fa-trash': item._id !== deleting, 'fa-cog fa-spin': item._id === deleting}"></i>
           </button>
         </li>
@@ -37,8 +49,14 @@
   <div class="modal-footer justify-content-between">
     <div class="text-left"></div>
     <div class="text-center">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="$activeModal.dismiss('Dismiss')"
-        [attr.aria-label]="'form.button_close' | translate" [disabled]="deleting">
+      <button
+        type="button"
+        class="btn btn-elegant"
+        data-dismiss="modal"
+        (click)="$activeModal.dismiss('Dismiss')"
+        [attr.aria-label]="'form.button_close' | translate"
+        [disabled]="deleting"
+      >
         {{ 'form.button_close' | translate }}
       </button>
     </div>

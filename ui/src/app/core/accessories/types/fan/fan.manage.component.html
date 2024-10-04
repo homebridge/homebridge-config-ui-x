@@ -1,37 +1,50 @@
 <div class="modal-content">
   <div class="modal-header">
     <h5 class="modal-title" [innerText]="service.customName || service.serviceName"></h5>
-    <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="$activeModal.dismiss('Dismiss')">
+    <button
+      type="button"
+      class="close"
+      data-dismiss="modal"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="$activeModal.dismiss('Dismiss')"
+    >
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body text-center px-5">
-
     <h5>
       <strong>
-        {{ 'accessories.control.fan' | translate }}
-        {{ (service.values.On ? 'accessories.control.on' : 'accessories.control.off') | translate }}
+        {{ 'accessories.control.fan' | translate }} {{ (service.values.On ? 'accessories.control.on' :
+        'accessories.control.off') | translate }}
       </strong>
     </h5>
 
-    <div class="fan-mode-control btn-group btn-group-toggle d-flex justify-content-center my-4" ngbRadioGroup
-      name="radioBasic" [(ngModel)]="targetMode" (change)="onTargetStateChange()">
+    <div
+      class="fan-mode-control btn-group btn-group-toggle d-flex justify-content-center my-4"
+      ngbRadioGroup
+      name="radioBasic"
+      [(ngModel)]="targetMode"
+      (change)="onTargetStateChange()"
+    >
       <label ngbButtonLabel class="btn-primary">
-        <input ngbButton type="radio" [value]="false"> {{ 'accessories.control.off' | translate }}
+        <input ngbButton type="radio" [value]="false" /> {{ 'accessories.control.off' | translate }}
       </label>
       <label ngbButtonLabel class="btn-primary">
-        <input ngbButton type="radio" [value]="true"> {{ 'accessories.control.on' | translate }}
+        <input ngbButton type="radio" [value]="true" /> {{ 'accessories.control.on' | translate }}
       </label>
     </div>
 
     <div *ngIf="targetRotationSpeed">
       <h5 class="mb-0">{{ 'accessories.control.rotation_speed' | translate }}</h5>
       <p>{{ targetRotationSpeed.value }}<span *ngIf="targetRotationSpeed.unit === 'percentage'">%</span></p>
-      <nouislider [min]="targetRotationSpeed.min" [max]="targetRotationSpeed.max" [step]="targetRotationSpeed.step"
-        [(ngModel)]="targetRotationSpeed.value" (ngModelChange)="onTargetRotationSpeedChange()">
+      <nouislider
+        [min]="targetRotationSpeed.min"
+        [max]="targetRotationSpeed.max"
+        [step]="targetRotationSpeed.step"
+        [(ngModel)]="targetRotationSpeed.value"
+        (ngModelChange)="onTargetRotationSpeedChange()"
+      >
       </nouislider>
     </div>
-
   </div>
 </div>

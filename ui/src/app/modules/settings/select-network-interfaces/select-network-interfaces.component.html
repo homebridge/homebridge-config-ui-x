@@ -1,39 +1,49 @@
 <div class="modal-content">
   <div class="modal-header">
     <h5 class="modal-title">{{ 'settings.network.title_network_interfaces' | translate }}</h5>
-    <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="$activeModal.dismiss('Dismiss')">
+    <button
+      type="button"
+      class="close"
+      data-dismiss="modal"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="$activeModal.dismiss('Dismiss')"
+    >
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body">
-    <div class="text-center mb-4"><i class="fas fa-fw fa-ethernet mb-4 primary-text" style="font-size: 75px;"></i></div>
+    <div class="text-center mb-4"><i class="fas fa-fw fa-ethernet mb-4 primary-text" style="font-size: 75px"></i></div>
     <div class="alert">{{ 'settings.network.message_network_interface' | translate }}</div>
-      <ul class="list-group list-group-box">
-        <li class="list-group-item d-flex flex-row justify-content-between">
-          <span><strong>{{ 'settings.network.label_interface_name' | translate }}</strong></span>
-          <span><strong>{{ 'settings.network.label_ip_address' | translate }}</strong></span>
-        </li>
-        <li *ngFor="let adapter of availableNetworkAdapters"
-          class="list-group-item d-flex flex-row flex-wrap justify-content-between">
-          <span>
-            <label class="hb-uix-switch d-inline pr-3" [for]="'adapter' + adapter.iface">
-              <input [id]="'adapter' + adapter.iface" type="checkbox" [(ngModel)]="adapter.selected">
-              <span>{{ adapter.iface }}</span>
-              <span class="hb-uix-slider hb-uix-round"></span>
-            </label>
-          </span>
-          <span>
-            {{ adapter.ip4 || adapter.ip6 }}
-          </span>
-        </li>
-      </ul>
+    <ul class="list-group list-group-box">
+      <li class="list-group-item d-flex flex-row justify-content-between">
+        <span><strong>{{ 'settings.network.label_interface_name' | translate }}</strong></span>
+        <span><strong>{{ 'settings.network.label_ip_address' | translate }}</strong></span>
+      </li>
+      <li
+        *ngFor="let adapter of availableNetworkAdapters"
+        class="list-group-item d-flex flex-row flex-wrap justify-content-between"
+      >
+        <span>
+          <label class="hb-uix-switch d-inline pr-3" [for]="'adapter' + adapter.iface">
+            <input [id]="'adapter' + adapter.iface" type="checkbox" [(ngModel)]="adapter.selected" />
+            <span>{{ adapter.iface }}</span>
+            <span class="hb-uix-slider hb-uix-round"></span>
+          </label>
+        </span>
+        <span> {{ adapter.ip4 || adapter.ip6 }} </span>
+      </li>
+    </ul>
   </div>
 
   <div class="modal-footer justify-content-between">
     <div class="text-left">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="$activeModal.dismiss('Dismiss')"
-        [attr.aria-label]="'form.button_close' | translate">
+      <button
+        type="button"
+        class="btn btn-elegant"
+        data-dismiss="modal"
+        (click)="$activeModal.dismiss('Dismiss')"
+        [attr.aria-label]="'form.button_close' | translate"
+      >
         {{ 'form.button_close' | translate }}
       </button>
     </div>

@@ -3,20 +3,22 @@
     <h5 class="modal-title">
       {{ 'plugins.donate.tile_donate_to' | translate: { author: plugin.author ? '@' + plugin.author : plugin.name } }}
     </h5>
-    <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate" (click)="$activeModal.dismiss('Dismiss')">
+    <button
+      type="button"
+      class="close"
+      data-dismiss="modal"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="$activeModal.dismiss('Dismiss')"
+    >
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body">
     <div class="w-100 text-center pink-text mb-4">
-      <i class="fas fa-fw fa-heart" style="font-size: 75px;"></i>
+      <i class="fas fa-fw fa-heart" style="font-size: 75px"></i>
     </div>
-    <p class="w-100 text-center">
-      {{ 'plugins.donate.message_1' | translate }}
-    </p>
-    <p class="w-100 text-center">
-      {{ 'plugins.donate.message_2' | translate }}
-    </p>
+    <p class="w-100 text-center">{{ 'plugins.donate.message_1' | translate }}</p>
+    <p class="w-100 text-center">{{ 'plugins.donate.message_2' | translate }}</p>
     <ul class="list-group">
       <li class="list-group-item" *ngFor="let option of fundingOptions">
         <i [ngClass]="getIconClass(option.type)" class="mr-2 primary-text fa-fw"></i>
@@ -27,8 +29,13 @@
   <div class="modal-footer justify-content-between">
     <div class="text-left"></div>
     <div class="text-center">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="$activeModal.dismiss('Dismiss')"
-        [attr.aria-label]="'form.button_close' | translate">
+      <button
+        type="button"
+        class="btn btn-elegant"
+        data-dismiss="modal"
+        (click)="$activeModal.dismiss('Dismiss')"
+        [attr.aria-label]="'form.button_close' | translate"
+      >
         {{ 'form.button_close' | translate }}
       </button>
     </div>

@@ -1,42 +1,58 @@
 <div class="modal-content">
   <div class="modal-header">
     <h5 class="modal-title" [innerText]="service.customName || service.serviceName"></h5>
-    <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="$activeModal.dismiss('Dismiss')">
+    <button
+      type="button"
+      class="close"
+      data-dismiss="modal"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="$activeModal.dismiss('Dismiss')"
+    >
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body text-center">
-
-    <div class="temperature-circle mb-3"
-      [innerText]="(service.values.CurrentTemperature | convertTemp | number:'1.0-1') + '°'" [ngClass]="{
+    <div
+      class="temperature-circle mb-3"
+      [innerText]="(service.values.CurrentTemperature | convertTemp | number:'1.0-1') + '°'"
+      [ngClass]="{
         'cooling': service.values.CurrentHeatingCoolingState === 2 && service.values.TargetHeatingCoolingState > 0,
         'heating': service.values.CurrentHeatingCoolingState === 1 && service.values.TargetHeatingCoolingState > 0,
         'no-current-state': service.values.TargetHeatingCoolingState > 0 && service.values.CurrentHeatingCoolingState === 0
-      }"></div>
+      }"
+    ></div>
 
-    <div class="thermostat-mode-control btn-group-vertical btn-group-toggle d-flex justify-content-center mb-4"
-      ngbRadioGroup name="radioBasic" [(ngModel)]="targetMode" (change)="onTargetStateChange()">
+    <div
+      class="thermostat-mode-control btn-group-vertical btn-group-toggle d-flex justify-content-center mb-4"
+      ngbRadioGroup
+      name="radioBasic"
+      [(ngModel)]="targetMode"
+      (change)="onTargetStateChange()"
+    >
       <label ngbButtonLabel class="btn-primary m-0">
-        <input ngbButton type="radio" [value]="0"> {{ 'accessories.control.off' | translate }}
+        <input ngbButton type="radio" [value]="0" /> {{ 'accessories.control.off' | translate }}
       </label>
-      <label ngbButtonLabel class="btn-primary  m-0">
-        <input ngbButton type="radio" [value]="1"> {{ 'accessories.control.heat' | translate }}
+      <label ngbButtonLabel class="btn-primary m-0">
+        <input ngbButton type="radio" [value]="1" /> {{ 'accessories.control.heat' | translate }}
       </label>
-      <label ngbButtonLabel class="btn-primary  m-0">
-        <input ngbButton type="radio" [value]="2"> {{ 'accessories.control.cool' | translate }}
+      <label ngbButtonLabel class="btn-primary m-0">
+        <input ngbButton type="radio" [value]="2" /> {{ 'accessories.control.cool' | translate }}
       </label>
-      <label ngbButtonLabel class="btn-primary  m-0">
-        <input ngbButton type="radio" [value]="3"> {{ 'accessories.control.auto' | translate }}
+      <label ngbButtonLabel class="btn-primary m-0">
+        <input ngbButton type="radio" [value]="3" /> {{ 'accessories.control.auto' | translate }}
       </label>
     </div>
 
     <h5>{{ 'accessories.control.target_temperature' | translate }}</h5>
     <p>{{ targetTemperature.value | convertTemp | number:'1.0-1' }}&deg;</p>
 
-    <nouislider [min]="targetTemperature.min" [max]="targetTemperature.max" [step]="targetTemperature.step"
-      [(ngModel)]="targetTemperature.value" (ngModelChange)="onTemperatureStateChange()">
+    <nouislider
+      [min]="targetTemperature.min"
+      [max]="targetTemperature.max"
+      [step]="targetTemperature.step"
+      [(ngModel)]="targetTemperature.value"
+      (ngModelChange)="onTemperatureStateChange()"
+    >
     </nouislider>
-
   </div>
 </div>
