@@ -21,6 +21,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - open plugin config screen automatically after install plugin
 - open plugin logs screen automatically after update plugin
 - ui small tweaks to when buttons are loading/disabled
+- another attempt to fix tooltips appearing in front of modals
 
 ## Other Changes
 
