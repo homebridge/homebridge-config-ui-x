@@ -126,12 +126,12 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
       await firstValueFrom(this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig))
       this.justLinked = true
       this.$toastr.success(
-        this.$translate.instant('plugins.settings.toast_restart_required'),
-        this.$translate.instant('plugins.settings.toast_plugin_config_saved'),
+        this.$translate.instant('plugins.settings.restart_required'),
+        this.$translate.instant('plugins.settings.plugin_config_saved'),
       )
     } catch (error) {
       console.error(error)
-      this.$toastr.error(this.$translate.instant('config.toast_failed_to_save_config'), this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$translate.instant('config.failed_to_save_config'), this.$translate.instant('toast.title_error'))
     }
   }
 

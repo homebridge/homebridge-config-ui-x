@@ -64,8 +64,8 @@ export class LayoutComponent implements OnInit {
         backdrop: 'static',
       })
 
-      ref.componentInstance.title = this.$translate.instant('platform.version.title_service_restart_required')
-      ref.componentInstance.message = this.$translate.instant('platform.version.message_service_restart_required', {
+      ref.componentInstance.title = this.$translate.instant('platform.version.service_restart_required')
+      ref.componentInstance.message = this.$translate.instant('platform.version.restart_required', {
         serverVersion: this.$settings.uiVersion,
         uiVersion: environment.serverTarget,
       })

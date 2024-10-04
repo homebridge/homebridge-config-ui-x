@@ -39,10 +39,10 @@
       </div>
       <div *ngSwitchCase="'HomebridgeStatusWidgetComponent'">
         <div class="form-group row align-items-center">
-          <label class="col-6 col-form-label">{{ 'status.widget.homebridgestatus.label_port' | translate }}</label>
+          <label class="col-6 col-form-label">{{ 'status.widget.homebridge_port' | translate }}</label>
           <div class="col-6 text-right">
             <input type="checkbox" class="rendux-input" id="hidePort" [(ngModel)]="widget.hidePort"
-              [attr.aria-label]="'status.widget.homebridgestatus.label_port' | translate">
+              [attr.aria-label]="'status.widget.homebridge_port' | translate">
             <label for="hidePort" class="rendux-label ml-3" style="min-width: 50px;"></label>
           </div>
         </div>

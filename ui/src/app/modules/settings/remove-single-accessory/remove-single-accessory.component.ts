@@ -28,7 +28,7 @@ export class RemoveSingleAccessoryComponent implements OnInit {
       this.cachedAccessories = await firstValueFrom(this.$api.get('/server/cached-accessories'))
     } catch (error) {
       console.error(error)
-      this.$toastr.error(this.$translate.instant('reset.toast_error_message'), this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$translate.instant('reset.error_message'), this.$translate.instant('toast.title_error'))
       this.$activeModal.close()
     }
   }
@@ -36,7 +36,7 @@ export class RemoveSingleAccessoryComponent implements OnInit {
   removeAccessory(item: any) {
     this.deleting = item.UUID
 
-    this.$toastr.info(this.$translate.instant('reset.toast_removing_cached_accessory_please_wait'))
+    this.$toastr.info(this.$translate.instant('reset.removing_cached_accessory_please_wait'))
 
     this.$api.delete(`/server/cached-accessories/${item.UUID}`, {
       params: {
@@ -52,12 +52,12 @@ export class RemoveSingleAccessoryComponent implements OnInit {
           this.$activeModal.close()
         }
 
-        this.$toastr.success(this.$translate.instant('reset.toast_cached_accessory_removed'), this.$translate.instant('toast.title_success'))
+        this.$toastr.success(this.$translate.instant('reset.cached_accessory_removed'), this.$translate.instant('toast.title_success'))
       },
       error: (error) => {
         this.deleting = null
         console.error(error)
-        this.$toastr.error(this.$translate.instant('reset.toast_failed_to_delete_cached_accessory'), this.$translate.instant('toast.title_error'))
+        this.$toastr.error(this.$translate.instant('reset.delete_failed'), this.$translate.instant('toast.title_error'))
       },
     })
   }

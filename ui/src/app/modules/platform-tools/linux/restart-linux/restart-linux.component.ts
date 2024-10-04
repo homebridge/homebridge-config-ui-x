@@ -42,8 +42,8 @@ export class RestartLinuxComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error(error)
-        this.error = this.$translate.instant('platform.linux.restart.toast_server_restart_error')
-        this.$toastr.error(this.$translate.instant('platform.linux.restart.toast_server_restart_error'), this.$translate.instant('toast.title_error'))
+        this.error = this.$translate.instant('platform.linux.server_restart_error')
+        this.$toastr.error(this.$translate.instant('platform.linux.server_restart_error'), this.$translate.instant('toast.title_error'))
       },
     })
   }
@@ -54,7 +54,7 @@ export class RestartLinuxComponent implements OnInit, OnDestroy {
       this.io.socket.on('homebridge-status', (data) => {
         if (data.status === 'up' || data.status === 'pending') {
           this.$toastr.success(
-            this.$translate.instant('platform.linux.restart.toast_server_restarted'),
+            this.$translate.instant('platform.linux.server_restarted'),
             this.$translate.instant('toast.title_success'),
           )
           this.$router.navigate(['/'])
@@ -64,7 +64,7 @@ export class RestartLinuxComponent implements OnInit, OnDestroy {
 
     this.checkTimeout = setTimeout(() => {
       this.$toastr.warning(
-        this.$translate.instant('platform.linux.restart.toast_server_taking_long_time'),
+        this.$translate.instant('platform.linux.server_taking_long_time'),
         this.$translate.instant('toast.title_warning'),
         {
           timeOut: 10000,

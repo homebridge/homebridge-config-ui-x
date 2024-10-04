@@ -1,5 +1,6 @@
 import { ApiService } from '@/app/core/api.service'
 import { ManagePluginComponent } from '@/app/core/manage-plugins/manage-plugin/manage-plugin.component'
+import { SettingsService } from '@/app/core/settings.service'
 import { Component, Input, OnInit } from '@angular/core'
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateService } from '@ngx-translate/core'
@@ -15,6 +16,7 @@ export class UninstallPluginComponent implements OnInit {
   @Input() action: string
 
   public loading = true
+  public uninstalling = false
   public removeConfig = true
   public removeChildBridges = true
   public hasChildBridges = false
@@ -26,6 +28,7 @@ export class UninstallPluginComponent implements OnInit {
     public $activeModal: NgbActiveModal,
     private $api: ApiService,
     private $modal: NgbModal,
+    public $settings: SettingsService,
     private $toastr: ToastrService,
     private $translate: TranslateService,
   ) {}
@@ -45,6 +48,8 @@ export class UninstallPluginComponent implements OnInit {
   }
 
   async doUninstall() {
+    this.uninstalling = true
+
     // Remove the plugin config if exists and specified by the user
     if (this.removeConfig && this.pluginType && this.pluginAlias) {
       try {
@@ -56,8 +61,12 @@ export class UninstallPluginComponent implements OnInit {
     }
 
     // Remove the child bridges if exists and specified by the user
-    if (this.hasChildBridges && this.removeChildBridges) {
-      await Promise.all(this.childBridges.map(childBridge => this.unpairChildBridge(childBridge.username.replace(/:/g, ''))))
+    if (this.hasChildBridges && this.removeChildBridges && this.$settings.env.serviceMode) {
+      try {
+        await Promise.all(this.childBridges.map(childBridge => this.unpairChildBridge(childBridge.username.replace(/:/g, ''))))
+      } catch (error) {
+        console.error(error)
+      }
     }
 
     // Close the modal
@@ -84,7 +93,7 @@ export class UninstallPluginComponent implements OnInit {
     await firstValueFrom(this.$api.put(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}/enable`, {}))
 
     this.$toastr.success(
-      this.$translate.instant('plugins.settings.toast_plugin_config_saved'),
+      this.$translate.instant('plugins.settings.plugin_config_saved'),
       this.$translate.instant('toast.title_success'),
     )
   }

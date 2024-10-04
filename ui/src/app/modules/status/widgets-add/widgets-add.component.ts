@@ -93,7 +93,7 @@ export class WidgetsAddComponent implements OnInit {
         mobileOrder: 60,
       },
       {
-        name: this.$translate.instant('status.widget.systeminfo'),
+        name: this.$translate.instant('status.widget.info'),
         component: 'SystemInfoWidgetComponent',
         hidden: false,
         cols: 5,
@@ -118,7 +118,7 @@ export class WidgetsAddComponent implements OnInit {
         hideOnMobile: true,
       },
       {
-        name: `Homebridge ${this.$translate.instant('menu.docker.label_terminal')}`,
+        name: `Homebridge ${this.$translate.instant('menu.docker.terminal')}`,
         component: 'TerminalWidgetComponent',
         hidden: !this.$settings.env.enableTerminalAccess,
         cols: 7,

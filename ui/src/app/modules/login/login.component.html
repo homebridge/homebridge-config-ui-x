@@ -36,7 +36,7 @@
       </div>
 
       <div class="text-center">
-        <p class="red-text" *ngIf="invalidCredentials"><small>{{ 'login.message_invalid_username_or_password' | translate }}</small></p>
+        <p class="red-text" *ngIf="invalidCredentials"><small>{{ 'login.invalid_credentials' | translate }}</small></p>
         <p class="red-text" *ngIf="invalid2faCode"><small>{{ 'login.message_invalid_2fa_code' | translate }}</small></p>
         <button tabindex="3" class="btn btn-primary" type="submit" [disabled]="form.invalid">{{ 'login.button_login' | translate }}</button>
       </div>

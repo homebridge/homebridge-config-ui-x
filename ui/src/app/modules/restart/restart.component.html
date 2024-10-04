@@ -9,7 +9,7 @@
   <div class="text-center">
     <h4 class="primary-text">{{ 'restart.title_restart' | translate }}</h4>
     <p class="grey-text" *ngIf="!error">
-      {{ 'restart.message_please_wait_while_server_restarts' | translate }}
+      {{ 'restart.please_wait_while_server_restarts' | translate }}
     </p>
     <div class="alert alert-error my-4" *ngIf="error">{{ error }}</div>
     <div class="justify-content-center my-4" *ngIf="!this.error">
@@ -18,7 +18,7 @@
           <i [ngClass]="{
             'fas fa-fw fa-spinner fa-spin': !uiOnline,
             'far fa-fw fa-check-circle': uiOnline
-          }"></i> {{ 'restart.message_homebridge_ui_online' | translate }}
+          }"></i> {{ 'restart.ui_online' | translate }}
         </span>
       </div>
       <div class="restart-progress-box primary-text">
@@ -26,14 +26,14 @@
           <i [ngClass]="{
             'far fa-fw fa-circle': !uiOnline,
             'fas fa-fw fa-spinner fa-spin': uiOnline
-          }"></i> {{ 'restart.message_homebridge_service_ready' | translate }}
+          }"></i> {{ 'restart.service_ready' | translate }}
         </span>
       </div>
     </div>
     <div *ngIf="timeout">
       <div class="alert alert-warning my-4">
         <p>
-          {{ 'restart.message_server_is_taking_long_time_to_restart' | translate }}
+          {{ 'restart.server_is_taking_long_time_to_restart' | translate }}
         </p>
         <p class="mb-0">
           {{ 'restart.label_restart_command_executed' | translate }}: <span class="text-monospace">{{ resp.command || "End Process" }}</span>

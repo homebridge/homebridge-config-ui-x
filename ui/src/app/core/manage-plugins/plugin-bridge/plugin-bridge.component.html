@@ -5,7 +5,7 @@
       {{ plugin.displayName || plugin.name }}
     </h5>
     <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="$activeModal.close('Dismiss')" *ngIf="!justInstalled">
+      (click)="$activeModal.close('Dismiss')" *ngIf="!justInstalled" [disabled]="saveInProgress">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
@@ -20,7 +20,7 @@
     </p>
     <div *ngIf="configBlocks.length">
       <p>{{ 'child_bridge.bridges_paired' | translate }}</p>
-      <p>{{ 'child_bridge.select_platforms_accessories' | translate }}:</p>
+      <p>{{ 'child_bridge.select_type' | translate }}:</p>
       <ul class="list-group list-group-box my-2" *ngIf="configBlocks.length">
         <li class="list-group-item " *ngFor="let item of configBlocks; let i = index">
           <div class="d-flex justify-content-between align-items-center">
@@ -49,7 +49,7 @@
                   {{ deviceInfo[item._bridge?.username].pincode }}
                 </p>
                 <p class="grey-text mx-auto text-center" style="max-width: 400px;">
-                  {{ 'status.message_code_scan_instructions' | translate }}
+                  {{ 'status.code_scan' | translate }}
                 </p>
               </div>
               <div *ngIf="deviceInfo[item._bridge?.username]._isPaired">
@@ -144,7 +144,8 @@
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-left">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="$activeModal.close('Dismiss')" *ngIf="!justInstalled">
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="$activeModal.close('Dismiss')"
+        *ngIf="!justInstalled" [disabled]="saveInProgress">
         {{ 'form.button_close' | translate }}
       </button>
     </div>
@@ -158,7 +159,8 @@
     <div class="text-right">
       <div *ngIf="!justInstalled">
         <button type="button" class="btn btn-primary" (click)="save()" [disabled]="saveInProgress" *ngIf="configBlocks.length">
-          {{ 'form.button_save' | translate }} <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
+          <span *ngIf="!saveInProgress">{{ 'form.button_save' | translate }}</span>
+          <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
         </button>
         <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="openPluginConfig()" *ngIf="!configBlocks.length">
           {{ 'plugins.button_settings' | translate }}

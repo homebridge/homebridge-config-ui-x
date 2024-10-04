@@ -56,9 +56,12 @@ export class PluginBridgeComponent implements OnInit {
           }
         }
 
+        // If the plugin has just been installed, and there are no existing bridges, enable all blocks
         if (this.justInstalled && this.bridgeCache.size === 0) {
-          this.enabledBlocks[0] = true
-          this.toggleExternalBridge(this.configBlocks[0], true, 0)
+          this.configBlocks.forEach((block, index) => {
+            this.enabledBlocks[index] = true
+            this.toggleExternalBridge(block, true, index)
+          })
         }
       },
       error: (error) => {
@@ -124,7 +127,7 @@ export class PluginBridgeComponent implements OnInit {
       })
     } catch (error) {
       console.error(error)
-      this.$toastr.error(this.$translate.instant('config.toast_failed_to_save_config'), this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$translate.instant('config.failed_to_save_config'), this.$translate.instant('toast.title_error'))
     } finally {
       this.saveInProgress = false
     }
