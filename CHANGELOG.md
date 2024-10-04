@@ -18,6 +18,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - updates to `pl` language file (#2194, #2197) (@mkz212)
 - use new child bridge restart modal for after plugin config changes
 - open plugin config screen automatically after install plugin
+- open plugin logs screen automatically after update plugin
 
 ## Other Changes
 
