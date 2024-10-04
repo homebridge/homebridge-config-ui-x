@@ -23,19 +23,27 @@
 .rendux-input:hover + label::after,
 .rendux-input:focus + label::after,
 .rendux-input:active + label::after {
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 4px 0 rgba(0, 0, 0, 0.08), inset 0 0 0 1.5px #9c9c9c;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.1),
+    0 4px 0 rgba(0, 0, 0, 0.08),
+    inset 0 0 0 1.5px #9c9c9c;
 }
 .rendux-label::after {
   left: 0;
   position: relative;
   display: block;
-  content: "";
+  content: '';
   width: 50%;
   height: 100%;
   border-radius: 2em;
   background: #fbfbfb;
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), padding 0.3s ease, margin 0.3s ease;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 4px 0 rgba(0, 0, 0, 0.08);
+  transition:
+    all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    padding 0.3s ease,
+    margin 0.3s ease;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.1),
+    0 4px 0 rgba(0, 0, 0, 0.08);
 }
 .rendux-input:checked + label::after {
   left: 50%;

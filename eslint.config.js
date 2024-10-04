@@ -24,6 +24,7 @@ module.exports = antfu({
   },
   typescript: true,
   formatters: {
+    css: true,
     markdown: true,
   },
 })

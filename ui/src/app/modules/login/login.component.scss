@@ -16,13 +16,13 @@
 
 .login-card {
   max-width: 500px;
-  background-color: rgba(255, 255, 255, 0.90);
+  background-color: rgba(255, 255, 255, 0.9);
 
   .form-control:focus {
     background-color: inherit !important;
   }
 
-  @media screen and (min-height: 800px){
+  @media screen and (min-height: 800px) {
     margin-bottom: 12em;
   }
 }
@@ -33,16 +33,16 @@
   z-index: 2000;
   max-width: 450px;
 
-  @media screen and (max-width: 450px){
+  @media screen and (max-width: 450px) {
     max-width: 320px;
     top: -25%;
   }
 
-  @media screen and (max-width: 320px){
+  @media screen and (max-width: 320px) {
     max-width: 280px;
   }
 
-  @media screen and (max-height: 450px){
+  @media screen and (max-height: 450px) {
     display: none;
   }
 }
