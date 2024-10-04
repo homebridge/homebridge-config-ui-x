@@ -1,22 +1,27 @@
 <div class="modal-content hb-plugin-settings-modal">
   <div class="modal-header">
     <h5 class="modal-title">
-      {{ 'plugins.settings.title_settings' | translate }}:
-      {{ plugin.displayName || plugin.name }}
+      {{ 'plugins.settings.title_settings' | translate }}: {{ plugin.displayName || plugin.name }}
     </h5>
-    <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="$activeModal.close()" [disabled]="saveInProgress">
+    <button
+      type="button"
+      class="close"
+      data-dismiss="modal"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="$activeModal.close()"
+      [disabled]="saveInProgress"
+    >
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body">
     <div *ngIf="loading" class="text-center primary-text">
-      <i class="fa fa-fw fa-cog fa-spin" style="font-size: 75px;"></i>
+      <i class="fa fa-fw fa-cog fa-spin" style="font-size: 75px"></i>
     </div>
     <div *ngIf="!loading && !canConfigure">
       <div class="alert alert-warning">
-        {{ 'plugins.settings.message_manual_config_required' | translate }}
-        {{ 'plugins.settings.message_consult_documentation' | translate }}
+        {{ 'plugins.settings.message_manual_config_required' | translate }} {{
+        'plugins.settings.message_consult_documentation' | translate }}
       </div>
       <div class="text-center">
         <button class="btn btn-primary" (click)="openFullConfigEditor()">
@@ -26,29 +31,54 @@
     </div>
 
     <!-- MULTIPLE CONFIG BLOCKS-->
-    <ngb-accordion [closeOthers]="true" *ngIf="!loading && canConfigure" [activeIds]="show"
-      (panelChange)="blockChanged()">
-      <ngb-panel *ngFor="let block of pluginConfig; let $index = index" opened="true" [id]="'configBlock.' + $index"
-        cardClass="no-padding-card-body">
+    <ngb-accordion
+      [closeOthers]="true"
+      *ngIf="!loading && canConfigure"
+      [activeIds]="show"
+      (panelChange)="blockChanged()"
+    >
+      <ngb-panel
+        *ngFor="let block of pluginConfig; let $index = index"
+        opened="true"
+        [id]="'configBlock.' + $index"
+        cardClass="no-padding-card-body"
+      >
         <ng-template ngbPanelHeader>
           <div class="d-flex align-items-center justify-content-between">
             <h5 class="m-0">{{ block.name || pluginAlias }}</h5>
             <div>
-              <button class="btn btn-danger ml-2" *ngIf="show === 'configBlock.' + $index" (click)="removeBlock($index)"
-                [ngbTooltip]="'form.button_delete' | translate" container="body" openDelay="150" triggers="hover">
+              <button
+                class="btn btn-danger ml-2"
+                *ngIf="show === 'configBlock.' + $index"
+                (click)="removeBlock($index)"
+                [ngbTooltip]="'form.button_delete' | translate"
+                container="body"
+                openDelay="150"
+                triggers="hover"
+              >
                 <i class="fa fa-fw fa-trash"></i>
               </button>
-              <button class="btn btn-primary ml-2" (click)="editBlock($index)"
-                [ngbTooltip]="'form.button_edit' | translate" container="body" openDelay="150" triggers="hover">
+              <button
+                class="btn btn-primary ml-2"
+                (click)="editBlock($index)"
+                [ngbTooltip]="'form.button_edit' | translate"
+                container="body"
+                openDelay="150"
+                triggers="hover"
+              >
                 <i class="fa fa-fw fa-edit"></i>
               </button>
             </div>
           </div>
         </ng-template>
         <ng-template ngbPanelContent *ngIf="show === 'configBlock.' + $index">
-          <div class="flex-column d-flex" style="height: 400px;">
-            <ngx-monaco-editor class="flex-grow-1 h-100 w-100 mt-3" [options]="editorOptions" [(ngModel)]="currentBlock"
-              (onInit)="onEditorInit($event)">
+          <div class="flex-column d-flex" style="height: 400px">
+            <ngx-monaco-editor
+              class="flex-grow-1 h-100 w-100 mt-3"
+              [options]="editorOptions"
+              [(ngModel)]="currentBlock"
+              (onInit)="onEditorInit($event)"
+            >
             </ngx-monaco-editor>
           </div>
         </ng-template>
@@ -57,16 +87,35 @@
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-left">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="$activeModal.close()" [disabled]="saveInProgress">
+      <button
+        type="button"
+        class="btn btn-elegant"
+        data-dismiss="modal"
+        (click)="$activeModal.close()"
+        [disabled]="saveInProgress"
+      >
         {{ 'form.button_close' | translate }}
       </button>
     </div>
     <div class="text-center"></div>
     <div class="text-right">
-      <button type="button" class="btn btn-elegant mr-auto" data-dismiss="modal" (click)="addBlock()" *ngIf="canConfigure">
+      <button
+        type="button"
+        class="btn btn-elegant mr-auto"
+        data-dismiss="modal"
+        (click)="addBlock()"
+        *ngIf="canConfigure"
+      >
         <i class="fa fa-fw fa-plus"></i>
       </button>
-      <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="save()" [disabled]="saveInProgress" *ngIf="canConfigure">
+      <button
+        type="button"
+        class="btn btn-primary"
+        data-dismiss="modal"
+        (click)="save()"
+        [disabled]="saveInProgress"
+        *ngIf="canConfigure"
+      >
         <span *ngIf="!saveInProgress">{{ 'form.button_save' | translate }}</span>
         <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
       </button>

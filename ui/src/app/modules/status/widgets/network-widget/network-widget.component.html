@@ -2,8 +2,14 @@
   <div class="drag-handler p-2" [ngClass]="{ 'widget-cursor': widget.draggable }">
     {{ 'status.network.title_network' | translate }} ({{ this.widget.networkInterface }})
   </div>
-  <canvas class="widget-chart h-100 w-100" baseChart [data]="lineChartData" [labels]="lineChartLabels"
-    [options]="lineChartOptions" [type]="lineChartType"></canvas>
+  <canvas
+    class="widget-chart h-100 w-100"
+    baseChart
+    [data]="lineChartData"
+    [labels]="lineChartLabels"
+    [options]="lineChartOptions"
+    [type]="lineChartType"
+  ></canvas>
   <div #widgetbackground class="hb-widget-chart-background"></div>
   <div class="d-flex flex-row flex-grow-1 align-items-center w-100 gridster-item-content text-center">
     <div class="d-flex justify-content-around flex-wrap w-100">

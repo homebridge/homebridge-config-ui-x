@@ -33,6 +33,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
   - upgraded `ng2-charts` and `ngx-md` to most recent major versions
   - move from `ngx-monaco-editor` to `ngx-monaco-editor-v2`
 - add `css` linting to ui, fixed existing issues
+- add `html` linting to ui, fixed existing issues
 
 ### Homebridge Dependencies
 

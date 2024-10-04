@@ -1,8 +1,13 @@
 <div class="modal-content hb-plugin-settings-modal">
   <div class="modal-header">
     <h5 class="modal-title">Homebridge Google Smart Home</h5>
-    <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="$activeModal.dismiss('Dismiss')">
+    <button
+      type="button"
+      class="close"
+      data-dismiss="modal"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="$activeModal.dismiss('Dismiss')"
+    >
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
@@ -13,7 +18,11 @@
         <p>{{ 'accessories.must_use_insecure_mode' | translate }}</p>
         <p class="mb-0">
           <span>{{ 'accessories.please_see' | translate }} </span>
-          <a target="_blank" rel="noopener noreferrer" href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Enabling-Accessory-Control">
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Enabling-Accessory-Control"
+          >
             https://github.com/homebridge/homebridge-config-ui-x/wiki/Enabling-Accessory-Control
           </a>
           <span> {{ 'accessories.for_more_information' | translate }}</span>
@@ -32,11 +41,8 @@
     </div>
 
     <div class="text-center mt-1" *ngIf="gshConfig.token">
-      <i class="fas fa-fw fa-check-circle primary-text" style="font-size:50px;"></i>
-      <h4 class="mt-2">
-        {{ linkType | titlecase }}
-        {{ 'plugins.settings.gsh.account_linked' | translate }}
-      </h4>
+      <i class="fas fa-fw fa-check-circle primary-text" style="font-size: 50px"></i>
+      <h4 class="mt-2">{{ linkType | titlecase }} {{ 'plugins.settings.gsh.account_linked' | translate }}</h4>
 
       <div class="mt-3" *ngIf="justLinked">
         <p class="primary-text">
@@ -46,8 +52,7 @@
     </div>
 
     <div class="mt-3" *ngIf="gshConfig && gshConfig.token">
-      <markdown class="plugin-md" [data]="schema.footerDisplay" *ngIf="schema.footerDisplay">
-      </markdown>
+      <markdown class="plugin-md" [data]="schema.footerDisplay" *ngIf="schema.footerDisplay"> </markdown>
     </div>
 
     <div *ngIf="gshConfig && gshConfig.token" class="card p-2 pt-3 mt-4">
@@ -56,7 +61,13 @@
   </div>
 
   <div class="modal-footer">
-    <button type="button" class="btn btn-elegant mr-auto" data-dismiss="modal" (click)="unlinkAccount()" *ngIf="gshConfig.token">
+    <button
+      type="button"
+      class="btn btn-elegant mr-auto"
+      data-dismiss="modal"
+      (click)="unlinkAccount()"
+      *ngIf="gshConfig.token"
+    >
       {{ 'plugins.settings.gsh.unlink_account' | translate }}
     </button>
     <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="close()">

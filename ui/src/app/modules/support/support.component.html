@@ -3,8 +3,14 @@
 </div>
 
 <div class="mb-4">
-  <div role="button" tabindex="0" [attr.aria-expanded]="showFields.general ? 'true' : 'false'"
-    [attr.aria-controls]="'fieldsGeneral'" (click)="toggleSection('general')" class="mt-3 hover-pointer">
+  <div
+    role="button"
+    tabindex="0"
+    [attr.aria-expanded]="showFields.general ? 'true' : 'false'"
+    [attr.aria-controls]="'fieldsGeneral'"
+    (click)="toggleSection('general')"
+    class="mt-3 hover-pointer"
+  >
     <h5 class="primary-text">
       <i class="fa fa-fw" [ngClass]="showFields.general ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
       {{ 'support.links.title' | translate }}
@@ -13,49 +19,79 @@
   <ul class="list-group list-group-box mt-2 mx-0" *ngIf="showFields.general" id="fieldsGeneral">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
-        {{ 'support.links.documentation' | translate }}<br>
+        {{ 'support.links.documentation' | translate }}<br />
         <small class="grey-text pr-2">{{ 'support.links.documentation_sub' | translate }}</small>
       </span>
-      <a class="btn btn-primary waves-effect m-0" href="https://github.com/homebridge/homebridge/wiki" target="_blank"
-        rel="noopener noreferrer" style="min-width: 50px;" [attr.aria-label]="'support.links.documentation' | translate">
+      <a
+        class="btn btn-primary waves-effect m-0"
+        href="https://github.com/homebridge/homebridge/wiki"
+        target="_blank"
+        rel="noopener noreferrer"
+        style="min-width: 50px"
+        [attr.aria-label]="'support.links.documentation' | translate"
+      >
         <i class="fas fa-fw fa-external-link-alt"></i>
       </a>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
-        {{ 'support.links.issue' | translate }}<br>
+        {{ 'support.links.issue' | translate }}<br />
         <small class="grey-text pr-2">{{ 'support.links.issue_sub' | translate }}</small>
       </span>
-      <a class="btn btn-primary waves-effect m-0" href="https://github.com/homebridge/homebridge-config-ui-x/issues/new/choose" target="_blank"
-         rel="noopener noreferrer" style="min-width: 50px;" [attr.aria-label]="'support.links.issue' | translate">
+      <a
+        class="btn btn-primary waves-effect m-0"
+        href="https://github.com/homebridge/homebridge-config-ui-x/issues/new/choose"
+        target="_blank"
+        rel="noopener noreferrer"
+        style="min-width: 50px"
+        [attr.aria-label]="'support.links.issue' | translate"
+      >
         <i class="fas fa-fw fa-external-link-alt"></i>
       </a>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
-        {{ 'support.links.discord' | translate }}<br>
+        {{ 'support.links.discord' | translate }}<br />
         <small class="grey-text pr-2">{{ 'support.links.discord_sub' | translate }}</small>
       </span>
-      <a class="btn btn-primary waves-effect m-0" href="https://discord.gg/C87Pvq3" target="_blank"
-         rel="noopener noreferrer" style="min-width: 50px;" [attr.aria-label]="'support.links.discord' | translate">
+      <a
+        class="btn btn-primary waves-effect m-0"
+        href="https://discord.gg/C87Pvq3"
+        target="_blank"
+        rel="noopener noreferrer"
+        style="min-width: 50px"
+        [attr.aria-label]="'support.links.discord' | translate"
+      >
         <i class="fas fa-fw fa-external-link-alt"></i>
       </a>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
-        {{ 'support.links.reddit' | translate }}<br>
+        {{ 'support.links.reddit' | translate }}<br />
         <small class="grey-text pr-2">{{ 'support.links.reddit_sub' | translate }}</small>
       </span>
-      <a class="btn btn-primary waves-effect m-0" href="https://www.reddit.com/r/homebridge/" target="_blank"
-         rel="noopener noreferrer" style="min-width: 50px;" [attr.aria-label]="'support.links.reddit' | translate">
+      <a
+        class="btn btn-primary waves-effect m-0"
+        href="https://www.reddit.com/r/homebridge/"
+        target="_blank"
+        rel="noopener noreferrer"
+        style="min-width: 50px"
+        [attr.aria-label]="'support.links.reddit' | translate"
+      >
         <i class="fas fa-fw fa-external-link-alt"></i>
       </a>
     </li>
   </ul>
 </div>
 <div class="pb-3">
-  <div role="button" tabindex="0" [attr.aria-expanded]="showFields.dev ? 'true' : 'false'"
-    [attr.aria-controls]="'fieldsDev'" (click)="toggleSection('dev')" class="mt-3 hover-pointer">
+  <div
+    role="button"
+    tabindex="0"
+    [attr.aria-expanded]="showFields.dev ? 'true' : 'false'"
+    [attr.aria-controls]="'fieldsDev'"
+    (click)="toggleSection('dev')"
+    class="mt-3 hover-pointer"
+  >
     <h5 class="primary-text">
       <i class="fa fa-fw" [ngClass]="showFields.dev ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
       {{ 'support.dev.title' | translate }}
@@ -64,55 +100,81 @@
   <ul class="list-group list-group-box mt-2 mx-0" *ngIf="showFields.dev" id="fieldsDev">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
-        {{ 'support.dev.item_swagger' | translate }}<br>
-        <small class="grey-text pr-2">
-          {{ 'support.dev.item_swagger_sub' | translate }}
-        </small>
+        {{ 'support.dev.item_swagger' | translate }}<br />
+        <small class="grey-text pr-2"> {{ 'support.dev.item_swagger_sub' | translate }} </small>
       </span>
-      <a class="btn btn-primary waves-effect m-0" href="/swagger" target="_blank"
-         rel="noopener noreferrer" style="min-width: 50px;" [attr.aria-label]="'support.dev.item_swagger' | translate">
+      <a
+        class="btn btn-primary waves-effect m-0"
+        href="/swagger"
+        target="_blank"
+        rel="noopener noreferrer"
+        style="min-width: 50px"
+        [attr.aria-label]="'support.dev.item_swagger' | translate"
+      >
         <i class="fas fa-fw fa-external-link-alt"></i>
       </a>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
-        {{ 'support.dev.api' | translate }}<br>
+        {{ 'support.dev.api' | translate }}<br />
         <small class="grey-text pr-2">{{ 'support.dev.api_sub' | translate }}</small>
       </span>
-      <a class="btn btn-primary waves-effect m-0" href="https://developers.homebridge.io/#/" target="_blank"
-         rel="noopener noreferrer" style="min-width: 50px;" [attr.aria-label]="'support.dev.api' | translate">
+      <a
+        class="btn btn-primary waves-effect m-0"
+        href="https://developers.homebridge.io/#/"
+        target="_blank"
+        rel="noopener noreferrer"
+        style="min-width: 50px"
+        [attr.aria-label]="'support.dev.api' | translate"
+      >
         <i class="fas fa-fw fa-external-link-alt"></i>
       </a>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
-        {{ 'support.dev.api_hap' | translate }}<br>
+        {{ 'support.dev.api_hap' | translate }}<br />
         <small class="grey-text pr-2">{{ 'support.dev.api_hap_sub' | translate }}</small>
       </span>
-      <a class="btn btn-primary waves-effect m-0" href="https://developers.homebridge.io/HAP-NodeJS/" target="_blank"
-         rel="noopener noreferrer" style="min-width: 50px;" [attr.aria-label]="'support.dev.api_hap' | translate">
+      <a
+        class="btn btn-primary waves-effect m-0"
+        href="https://developers.homebridge.io/HAP-NodeJS/"
+        target="_blank"
+        rel="noopener noreferrer"
+        style="min-width: 50px"
+        [attr.aria-label]="'support.dev.api_hap' | translate"
+      >
         <i class="fas fa-fw fa-external-link-alt"></i>
       </a>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
-        {{ 'support.dev.template' | translate }}<br>
-        <small class="grey-text pr-2">
-          {{ 'support.dev.template_sub' | translate }}
-        </small>
+        {{ 'support.dev.template' | translate }}<br />
+        <small class="grey-text pr-2"> {{ 'support.dev.template_sub' | translate }} </small>
       </span>
-      <a class="btn btn-primary waves-effect m-0" href="https://github.com/homebridge/homebridge-plugin-template" target="_blank"
-         rel="noopener noreferrer" style="min-width: 50px;" [attr.aria-label]="'support.dev.template' | translate">
+      <a
+        class="btn btn-primary waves-effect m-0"
+        href="https://github.com/homebridge/homebridge-plugin-template"
+        target="_blank"
+        rel="noopener noreferrer"
+        style="min-width: 50px"
+        [attr.aria-label]="'support.dev.template' | translate"
+      >
         <i class="fas fa-fw fa-external-link-alt"></i>
       </a>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
-        {{ 'support.dev.verified' | translate }}<br>
+        {{ 'support.dev.verified' | translate }}<br />
         <small class="grey-text pr-2">{{ 'support.dev.verified_sub' | translate }}</small>
       </span>
-      <a class="btn btn-primary waves-effect m-0" href="https://github.com/homebridge/homebridge-plugin-template" target="_blank"
-         rel="noopener noreferrer" style="min-width: 50px;" [attr.aria-label]="'support.dev.verified' | translate">
+      <a
+        class="btn btn-primary waves-effect m-0"
+        href="https://github.com/homebridge/homebridge-plugin-template"
+        target="_blank"
+        rel="noopener noreferrer"
+        style="min-width: 50px"
+        [attr.aria-label]="'support.dev.verified' | translate"
+      >
         <i class="fas fa-fw fa-external-link-alt"></i>
       </a>
     </li>

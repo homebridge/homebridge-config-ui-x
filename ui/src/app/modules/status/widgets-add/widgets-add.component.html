@@ -1,8 +1,13 @@
-<div class="modal-content" style="min-height: 400px;">
+<div class="modal-content" style="min-height: 400px">
   <div class="modal-header">
     <h5 class="modal-title">{{ 'status.widget.add_widget' | translate }}</h5>
-    <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="$activeModal.dismiss('Dismiss')">
+    <button
+      type="button"
+      class="close"
+      data-dismiss="modal"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="$activeModal.dismiss('Dismiss')"
+    >
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
@@ -16,12 +21,16 @@
     <div *ngIf="!availableWidgets.length" class="text-center">
       <h4>{{ 'status.widget.no_additional_widgets' | translate }}</h4>
     </div>
-
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-left">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="$activeModal.dismiss('Dismiss')"
-        [attr.aria-label]="'form.button_close' | translate">
+      <button
+        type="button"
+        class="btn btn-elegant"
+        data-dismiss="modal"
+        (click)="$activeModal.dismiss('Dismiss')"
+        [attr.aria-label]="'form.button_close' | translate"
+      >
         {{ 'form.button_close' | translate }}
       </button>
     </div>
