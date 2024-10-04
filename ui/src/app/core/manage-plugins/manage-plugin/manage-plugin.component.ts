@@ -126,11 +126,9 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       termRows: this.term.rows,
     }).subscribe({
       next: () => {
-        this.$router.navigate(['/plugins'], {
-          queryParams: { installed: this.pluginName },
-        })
         this.$activeModal.close()
         this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess)
+        window.location.href = `/plugins?installed=${this.pluginName}`
       },
       error: (error) => {
         this.actionFailed = true

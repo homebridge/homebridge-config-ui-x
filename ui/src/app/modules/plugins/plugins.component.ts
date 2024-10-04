@@ -1,4 +1,5 @@
 import { ApiService } from '@/app/core/api.service'
+import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { Component, OnDestroy, OnInit } from '@angular/core'
@@ -25,6 +26,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
 
   constructor(
     private $api: ApiService,
+    private $plugin: ManagePluginsService,
     private $router: Router,
     private $settings: SettingsService,
     private $toastr: ToastrService,
@@ -40,6 +42,16 @@ export class PluginsComponent implements OnInit, OnDestroy {
 
       // load list of installed plugins
       await this.loadInstalledPlugins()
+
+      // get query parameters
+      const justInstalled = this.$router.parseUrl(this.$router.url).queryParams.installed
+      if (justInstalled) {
+        const plugin = this.installedPlugins.find(x => x.name === justInstalled)
+        if (plugin && !plugin.isConfigured) {
+          this.$plugin.settings(plugin)
+        }
+        this.$router.navigate(['/plugins'])
+      }
     })
 
     this.io.socket.on('child-bridge-status-update', (data) => {
