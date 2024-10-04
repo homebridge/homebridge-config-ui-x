@@ -1,36 +1,60 @@
 <div class="modal-content hb-accessories-info-modal">
   <div class="modal-header">
     <h5 class="modal-title">{{ service.customName || service.serviceName }}</h5>
-    <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="$activeModal.dismiss('Dismiss')">
+    <button
+      type="button"
+      class="close"
+      data-dismiss="modal"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="$activeModal.dismiss('Dismiss')"
+    >
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body">
     <div class="md-form">
-      <input [ngModel]="service.customName || service.serviceName" (ngModelChange)="service.customName = $event"
-        type="text" id="form-name" autocomplete="off" class="form-control px-0">
+      <input
+        [ngModel]="service.customName || service.serviceName"
+        (ngModelChange)="service.customName = $event"
+        type="text"
+        id="form-name"
+        autocomplete="off"
+        class="form-control px-0"
+      />
       <label for="form-name" class="active">{{ 'accessories.name' | translate }}</label>
     </div>
     <div class="container px-1">
       <div class="form-group row align-items-center">
         <label class="col-6 col-form-label">{{ 'accessories.hide_this_accessory' | translate }}</label>
         <div class="col-6 text-right">
-          <input type="checkbox" class="rendux-input" [(ngModel)]="service.hidden" id="hide-accessory"
-            [attr.aria-label]="'accessories.hide_this_accessory' | translate">
-          <label for="hide-accessory" class="rendux-label ml-3" style="min-width: 50px;"></label>
+          <input
+            type="checkbox"
+            class="rendux-input"
+            [(ngModel)]="service.hidden"
+            id="hide-accessory"
+            [attr.aria-label]="'accessories.hide_this_accessory' | translate"
+          />
+          <label for="hide-accessory" class="rendux-label ml-3" style="min-width: 50px"></label>
         </div>
       </div>
       <div class="form-group row align-items-center">
         <label class="col-6 col-form-label">{{ 'accessories.show_on_dashboard' | translate }}</label>
         <div class="col-6 text-right">
-          <input type="checkbox" class="rendux-input" [(ngModel)]="service.onDashboard" id="show-on-dashboard"
-            [attr.aria-label]="'accessories.show_on_dashboard' | translate">
-          <label for="show-on-dashboard" class="rendux-label ml-3" style="min-width: 50px;"></label>
+          <input
+            type="checkbox"
+            class="rendux-input"
+            [(ngModel)]="service.onDashboard"
+            id="show-on-dashboard"
+            [attr.aria-label]="'accessories.show_on_dashboard' | translate"
+          />
+          <label for="show-on-dashboard" class="rendux-label ml-3" style="min-width: 50px"></label>
         </div>
       </div>
     </div>
-    <table class="table table-borderless table-hover table-striped table-sm" style="table-layout: fixed; width:100%; word-wrap: break-word;">
+    <table
+      class="table table-borderless table-hover table-striped table-sm"
+      style="table-layout: fixed; width: 100%; word-wrap: break-word"
+    >
       <tbody>
         <tr>
           <th>{{ service.humanType }}</th>
@@ -76,8 +100,13 @@
   <div class="modal-footer justify-content-between">
     <div class="text-left"></div>
     <div class="text-center">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="$activeModal.dismiss('Dismiss')"
-        [attr.aria-label]="'form.button_close' | translate">
+      <button
+        type="button"
+        class="btn btn-elegant"
+        data-dismiss="modal"
+        (click)="$activeModal.dismiss('Dismiss')"
+        [attr.aria-label]="'form.button_close' | translate"
+      >
         {{ 'form.button_close' | translate }}
       </button>
     </div>

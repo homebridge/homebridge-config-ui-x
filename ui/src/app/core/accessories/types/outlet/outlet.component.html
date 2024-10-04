@@ -1,10 +1,16 @@
-<div class="accessory-box" [ngClass]="{'switch-on': service.values.On}" appLongclick (shortclick)="onClick()"
-  tabindex="0">
+<div
+  class="accessory-box"
+  [ngClass]="{'switch-on': service.values.On}"
+  appLongclick
+  (shortclick)="onClick()"
+  tabindex="0"
+>
   <div class="d-flex flex-column h-100">
     <div [inlineSVG]="'/assets/hap-icons/outlet.svg'" [attr.aria-label]="'Outlet'" class="accessory-svg"></div>
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
-    <div class="accessory-label grey-text"
-      [innerText]="(service.values.On ? 'accessories.control.on' : 'accessories.control.off') | translate">
-    </div>
+    <div
+      class="accessory-label grey-text"
+      [innerText]="(service.values.On ? 'accessories.control.on' : 'accessories.control.off') | translate"
+    ></div>
   </div>
 </div>

@@ -1,18 +1,31 @@
 <div class="modal-content hb-backup-modal">
   <div class="modal-header">
     <h5 class="modal-title">{{ 'backup.title_backup' | translate }}</h5>
-    <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="$activeModal.dismiss('Dismiss')">
+    <button
+      type="button"
+      class="close"
+      data-dismiss="modal"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="$activeModal.dismiss('Dismiss')"
+    >
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body">
-    <div class="text-center mt-2 mb-3"><i class="fas fa-fw fa-hard-drive primary-text" style="font-size: 75px;"></i></div>
+    <div class="text-center mt-2 mb-3">
+      <i class="fas fa-fw fa-hard-drive primary-text" style="font-size: 75px"></i>
+    </div>
     <p>{{ 'backup.backup_help_one' | translate }}</p>
     <p>{{ 'backup.backup_help_two' | translate }}</p>
     <p>{{ 'backup.backup_warning' | translate }}</p>
     <div class="text-center mb-3">
-      <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="onDownloadBackupClick()" [disabled]="clicked">
+      <button
+        type="button"
+        class="btn btn-primary"
+        data-dismiss="modal"
+        (click)="onDownloadBackupClick()"
+        [disabled]="clicked"
+      >
         <i *ngIf="clicked" class="fa fa-fw fa-circle-notch fa-spin"></i>
         <span *ngIf="!clicked">{{ 'backup.archive.download' | translate }}</span>
       </button>
@@ -21,20 +34,27 @@
       {{ 'backup.scheduled_backup_time' | translate:{ backupTime: backupTime | date:'shortTime', dayCount: 7 } }}
     </p>
     <ul class="list-group list-group-box mt-2" *ngIf="scheduledBackups && scheduledBackups.length">
-      <li *ngFor="let backup of scheduledBackups" class="list-group-item d-flex justify-content-between align-items-center">
+      <li
+        *ngFor="let backup of scheduledBackups"
+        class="list-group-item d-flex justify-content-between align-items-center"
+      >
         <span>
-          <span style="word-break: break-all;">{{ backup.fileName }}</span>
-          <br>
+          <span style="word-break: break-all">{{ backup.fileName }}</span>
+          <br />
           <small class="grey-text">
             {{ backup.timestamp | date:'medium' }} &middot;
-            <span *ngIf="backup.size > backup.maxBackupSize" ngbTooltip="{{ 'backup.backup_exceeds_max_size' | translate: { maxBackupSizeText: backup.maxBackupSizeText }  }}"
-              container="body" openDelay="150" triggers="hover" class="red-text">
+            <span
+              *ngIf="backup.size > backup.maxBackupSize"
+              ngbTooltip="{{ 'backup.backup_exceeds_max_size' | translate: { maxBackupSizeText: backup.maxBackupSizeText }  }}"
+              container="body"
+              openDelay="150"
+              triggers="hover"
+              class="red-text"
+            >
               <i class="fas fa-fw fa-exclamation-circle"></i>
               {{ backup.size }}MB
             </span>
-            <span *ngIf="backup.size <= backup.maxBackupSize">
-              {{ backup.size }}MB
-            </span>
+            <span *ngIf="backup.size <= backup.maxBackupSize"> {{ backup.size }}MB </span>
           </small>
         </span>
         <span>
@@ -54,9 +74,7 @@
     <div *ngIf="errorMessage">
       <div class="alert alert-error" role="alert">
         <h4 class="alert-heading">{{ 'toast.title_error' | translate }}</h4>
-        <p>
-          {{ errorMessage }}
-        </p>
+        <p>{{ errorMessage }}</p>
       </div>
     </div>
   </div>
@@ -64,8 +82,13 @@
   <div class="modal-footer justify-content-between">
     <div class="text-left"></div>
     <div class="text-center">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="$activeModal.dismiss('Dismiss')"
-        [attr.aria-label]="'form.button_close' | translate">
+      <button
+        type="button"
+        class="btn btn-elegant"
+        data-dismiss="modal"
+        (click)="$activeModal.dismiss('Dismiss')"
+        [attr.aria-label]="'form.button_close' | translate"
+      >
         {{ 'form.button_close' | translate }}
       </button>
     </div>

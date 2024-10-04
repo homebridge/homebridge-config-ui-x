@@ -1,8 +1,13 @@
 <div class="modal-content">
   <div class="modal-header">
     <h5 class="modal-title">{{ 'status.widget.title_manage_widget' | translate }}</h5>
-    <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
-      (click)="$activeModal.dismiss('Dismiss')">
+    <button
+      type="button"
+      class="close"
+      data-dismiss="modal"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="$activeModal.dismiss('Dismiss')"
+    >
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
@@ -11,9 +16,14 @@
       <div class="form-group row align-items-center">
         <label class="col-6 col-form-label">{{ 'status.widget.hide_on_mobile' | translate }}</label>
         <div class="col-6 text-right">
-          <input type="checkbox" class="rendux-input" id="hideOnMobile" [(ngModel)]="widget.hideOnMobile"
-            [attr.aria-label]="'settings.startup.insecure' | translate">
-          <label for="hideOnMobile" class="rendux-label ml-3" style="min-width: 50px;"></label>
+          <input
+            type="checkbox"
+            class="rendux-input"
+            id="hideOnMobile"
+            [(ngModel)]="widget.hideOnMobile"
+            [attr.aria-label]="'settings.startup.insecure' | translate"
+          />
+          <label for="hideOnMobile" class="rendux-label ml-3" style="min-width: 50px"></label>
         </div>
       </div>
       <div *ngSwitchCase="'WeatherWidgetComponent'">
@@ -24,13 +34,18 @@
               <i class="fas" [ngClass]="{'fa-sync fa-spin': searching, 'fa-city': !searching}"></i>
             </span>
           </div>
-          <input id="city-search-input" type="text" class="form-control custom-input" [ngbTypeahead]="searchCountryCodes"
-            [resultFormatter]="searchCountryCodeFormatter" [inputFormatter]="searchCountryCodeFormatter"
-            [editable]='false' [(ngModel)]="widget.location">
+          <input
+            id="city-search-input"
+            type="text"
+            class="form-control custom-input"
+            [ngbTypeahead]="searchCountryCodes"
+            [resultFormatter]="searchCountryCodeFormatter"
+            [inputFormatter]="searchCountryCodeFormatter"
+            [editable]="false"
+            [(ngModel)]="widget.location"
+          />
         </div>
-        <p class="muted grey-text font-italic text-center">
-          Weather data is provided by OpenWeather.
-        </p>
+        <p class="muted grey-text font-italic text-center">Weather data is provided by OpenWeather.</p>
       </div>
       <div *ngSwitchCase="'AccessoriesWidgetComponent'">
         <p class="muted grey-text font-italic text-center">
@@ -41,9 +56,14 @@
         <div class="form-group row align-items-center">
           <label class="col-6 col-form-label">{{ 'status.widget.homebridge_port' | translate }}</label>
           <div class="col-6 text-right">
-            <input type="checkbox" class="rendux-input" id="hidePort" [(ngModel)]="widget.hidePort"
-              [attr.aria-label]="'status.widget.homebridge_port' | translate">
-            <label for="hidePort" class="rendux-label ml-3" style="min-width: 50px;"></label>
+            <input
+              type="checkbox"
+              class="rendux-input"
+              id="hidePort"
+              [(ngModel)]="widget.hidePort"
+              [attr.aria-label]="'status.widget.homebridge_port' | translate"
+            />
+            <label for="hidePort" class="rendux-label ml-3" style="min-width: 50px"></label>
           </div>
         </div>
       </div>
@@ -88,7 +108,8 @@
           <label class="col-6 col-form-label">{{ 'status.widget.clock_timeformat' | translate }}</label>
           <div class="col-6">
             <select class="custom-select" [(ngModel)]="widget.timeFormat">
-              <option *ngFor="let timeFormat of timeFormats" [value]="timeFormat">{{ currentDate | date:timeFormat }}
+              <option *ngFor="let timeFormat of timeFormats" [value]="timeFormat">
+                {{ currentDate | date:timeFormat }}
               </option>
             </select>
           </div>
@@ -97,7 +118,8 @@
           <label class="col-6 col-form-label">{{ 'status.widget.clock_dateformat' | translate }}</label>
           <div class="col-6">
             <select class="custom-select" [(ngModel)]="widget.dateFormat">
-              <option *ngFor="let dateFormat of dateFormats" [value]="dateFormat">{{ currentDate | date:dateFormat }}
+              <option *ngFor="let dateFormat of dateFormats" [value]="dateFormat">
+                {{ currentDate | date:dateFormat }}
               </option>
             </select>
           </div>
@@ -108,19 +130,21 @@
           <label class="col-6 col-form-label">{{ 'status.widget.temp_units' | translate }}</label>
           <div class="col-6">
             <select class="custom-select" [(ngModel)]="widget.temperatureUnit">
-              <option *ngFor="let unit of temperatureUnits" [value]="unit.value">
-                {{ unit.label | translate }}
-              </option>
+              <option *ngFor="let unit of temperatureUnits" [value]="unit.value">{{ unit.label | translate }}</option>
             </select>
           </div>
         </div>
         <div class="form-group row align-items-center">
-          <label class="col-6 col-form-label">
-            {{ 'status.widget.network.refresh_interval' | translate }}
-          </label>
+          <label class="col-6 col-form-label"> {{ 'status.widget.network.refresh_interval' | translate }} </label>
           <div class="col-6">
             <div class="input-group">
-              <input type="number" class="form-control custom-input" [(ngModel)]="widget.refreshInterval" min="1" max="60">
+              <input
+                type="number"
+                class="form-control custom-input"
+                [(ngModel)]="widget.refreshInterval"
+                min="1"
+                max="60"
+              />
               <div class="input-group-append">
                 <span class="input-group-text custom-input">{{ 'status.widget.network.seconds' | translate }}</span>
               </div>
@@ -128,30 +152,36 @@
           </div>
         </div>
         <div class="form-group row align-items-center">
-          <label class="col-6 col-form-label">
-            {{ 'status.widget.network.history_items' | translate }}
-          </label>
+          <label class="col-6 col-form-label"> {{ 'status.widget.network.history_items' | translate }} </label>
           <div class="col-6">
             <div class="input-group">
-              <input type="number" class="form-control custom-input" [(ngModel)]="widget.historyItems" min="1" max="60">
+              <input
+                type="number"
+                class="form-control custom-input"
+                [(ngModel)]="widget.historyItems"
+                min="1"
+                max="60"
+              />
               <div class="input-group-append">
                 <span class="input-group-text custom-input">{{ 'status.widget.network.items' | translate }}</span>
               </div>
             </div>
           </div>
         </div>
-        <p class="muted grey-text font-italic text-center">
-          {{ 'status.widget.network.refresh_note' | translate }}
-        </p>
+        <p class="muted grey-text font-italic text-center">{{ 'status.widget.network.refresh_note' | translate }}</p>
       </div>
       <div *ngSwitchCase="'MemoryWidgetComponent'">
         <div class="form-group row align-items-center">
-          <label class="col-6 col-form-label">
-            {{ 'status.widget.network.refresh_interval' | translate }}
-          </label>
+          <label class="col-6 col-form-label"> {{ 'status.widget.network.refresh_interval' | translate }} </label>
           <div class="col-6">
             <div class="input-group">
-              <input type="number" class="form-control custom-input" [(ngModel)]="widget.refreshInterval" min="1" max="60">
+              <input
+                type="number"
+                class="form-control custom-input"
+                [(ngModel)]="widget.refreshInterval"
+                min="1"
+                max="60"
+              />
               <div class="input-group-append">
                 <span class="input-group-text custom-input">{{ 'status.widget.network.seconds' | translate }}</span>
               </div>
@@ -159,27 +189,27 @@
           </div>
         </div>
         <div class="form-group row align-items-center">
-          <label class="col-6 col-form-label">
-            {{ 'status.widget.network.history_items' | translate }}
-          </label>
+          <label class="col-6 col-form-label"> {{ 'status.widget.network.history_items' | translate }} </label>
           <div class="col-6">
             <div class="input-group">
-              <input type="number" class="form-control custom-input" [(ngModel)]="widget.historyItems" min="1" max="60">
+              <input
+                type="number"
+                class="form-control custom-input"
+                [(ngModel)]="widget.historyItems"
+                min="1"
+                max="60"
+              />
               <div class="input-group-append">
                 <span class="input-group-text custom-input">{{ 'status.widget.network.items' | translate }}</span>
               </div>
             </div>
           </div>
         </div>
-        <p class="muted grey-text font-italic text-center">
-          {{ 'status.widget.network.refresh_note' | translate }}
-        </p>
+        <p class="muted grey-text font-italic text-center">{{ 'status.widget.network.refresh_note' | translate }}</p>
       </div>
       <div *ngSwitchCase="'NetworkWidgetComponent'">
         <div class="form-group row align-items-center">
-          <label class="col-6 col-form-label">
-            {{ 'status.widget.network.network_interface' | translate }}
-          </label>
+          <label class="col-6 col-form-label"> {{ 'status.widget.network.network_interface' | translate }} </label>
           <div class="col-6">
             <select class="custom-select" [(ngModel)]="widget.networkInterface">
               <option *ngFor="let networkInterface of networkInterfaces" [value]="networkInterface">
@@ -189,12 +219,16 @@
           </div>
         </div>
         <div class="form-group row align-items-center">
-          <label class="col-6 col-form-label">
-            {{ 'status.widget.network.refresh_interval' | translate }}
-          </label>
+          <label class="col-6 col-form-label"> {{ 'status.widget.network.refresh_interval' | translate }} </label>
           <div class="col-6">
             <div class="input-group">
-              <input type="number" class="form-control custom-input" [(ngModel)]="widget.refreshInterval" min="1" max="60">
+              <input
+                type="number"
+                class="form-control custom-input"
+                [(ngModel)]="widget.refreshInterval"
+                min="1"
+                max="60"
+              />
               <div class="input-group-append">
                 <span class="input-group-text custom-input">{{ 'status.widget.network.seconds' | translate }}</span>
               </div>
@@ -202,28 +236,35 @@
           </div>
         </div>
         <div class="form-group row align-items-center">
-          <label class="col-6 col-form-label">
-            {{ 'status.widget.network.history_items' | translate }}
-          </label>
+          <label class="col-6 col-form-label"> {{ 'status.widget.network.history_items' | translate }} </label>
           <div class="col-6">
             <div class="input-group">
-              <input type="number" class="form-control custom-input" [(ngModel)]="widget.historyItems" min="1" max="60">
+              <input
+                type="number"
+                class="form-control custom-input"
+                [(ngModel)]="widget.historyItems"
+                min="1"
+                max="60"
+              />
               <div class="input-group-append">
                 <span class="input-group-text custom-input">{{ 'status.widget.network.items' | translate }}</span>
               </div>
             </div>
           </div>
         </div>
-        <p class="muted grey-text font-italic text-center">
-          {{ 'status.widget.network.refresh_note' | translate }}
-        </p>
+        <p class="muted grey-text font-italic text-center">{{ 'status.widget.network.refresh_note' | translate }}</p>
       </div>
     </div>
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-left">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="$activeModal.dismiss('Dismiss')"
-        [attr.aria-label]="'form.button_close' | translate">
+      <button
+        type="button"
+        class="btn btn-elegant"
+        data-dismiss="modal"
+        (click)="$activeModal.dismiss('Dismiss')"
+        [attr.aria-label]="'form.button_close' | translate"
+      >
         {{ 'form.button_close' | translate }}
       </button>
     </div>

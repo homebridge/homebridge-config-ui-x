@@ -1,7 +1,13 @@
 <div class="modal-content">
   <div class="modal-header">
     <h5 class="modal-title">{{ presentTenseVerb }}: {{ pluginName }}</h5>
-    <button type="button" class="close" data-dismiss="modal" [attr.aria-label]="'form.button_close' | translate" (click)="$activeModal.dismiss('Dismiss')">
+    <button
+      type="button"
+      class="close"
+      data-dismiss="modal"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="$activeModal.dismiss('Dismiss')"
+    >
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
@@ -15,10 +21,16 @@
         {{ 'plugins.manage.thanks_for_updating' | translate:{ pluginName: pluginName, targetVersion: targetVersion } }}
       </p>
       <div *ngIf="!isDisabled">
-        <p *ngIf="['homebridge', 'homebridge-config-ui-x'].includes(pluginName) || childBridges.length === 0" class="text-center grey-text">
+        <p
+          *ngIf="['homebridge', 'homebridge-config-ui-x'].includes(pluginName) || childBridges.length === 0"
+          class="text-center grey-text"
+        >
           {{ 'restart.homebridge' | translate }}
         </p>
-        <p *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(pluginName) && childBridges.length > 0" class="text-center grey-text">
+        <p
+          *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(pluginName) && childBridges.length > 0"
+          class="text-center grey-text"
+        >
           {{ 'restart.child_bridges' | translate }}
         </p>
       </div>
@@ -28,19 +40,15 @@
     </div>
   </div>
   <div *ngIf="!onlineUpdateOk" class="modal-body">
-    <h4 class="primary-text text-center">
-      {{ 'plugins.manage.manual_update_required' | translate }}
-    </h4>
-    <p>
-      {{ 'plugins.manage.online_updates' | translate }}
-    </p>
+    <h4 class="primary-text text-center">{{ 'plugins.manage.manual_update_required' | translate }}</h4>
+    <p>{{ 'plugins.manage.online_updates' | translate }}</p>
     <div *ngIf="$settings.env.serviceMode">
-      <p>
-        {{ 'plugins.manage.manual_update_command' | translate }}
-      </p>
-      <pre class="p-2" style="background-color: #efefef;">hb-service stop
+      <p>{{ 'plugins.manage.manual_update_command' | translate }}</p>
+      <pre class="p-2" style="background-color: #efefef">
+hb-service stop
 npm install -g {{ pluginName }}&#64;{{targetVersion}}
-hb-service start</pre>
+hb-service start
+      </pre>
     </div>
   </div>
   <div *ngIf="showReleaseNotes && !actionComplete" class="modal-body plugin-modal-body">
@@ -56,16 +64,31 @@ hb-service start</pre>
       <markdown class="plugin-md" [data]="release.changelog"></markdown>
     </div>
   </div>
-  <div class="modal-footer justify-content-between" *ngIf="!onlineUpdateOk || actionComplete || showReleaseNotes || actionFailed">
+  <div
+    class="modal-footer justify-content-between"
+    *ngIf="!onlineUpdateOk || actionComplete || showReleaseNotes || actionFailed"
+  >
     <div class="text-left">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="$activeModal.dismiss('Dismiss')"
-        [attr.aria-label]="'form.button_close' | translate" *ngIf="!justUpdatedPlugin || (justUpdatedPlugin && (!isDisabled || actionFailed))">
+      <button
+        type="button"
+        class="btn btn-elegant"
+        data-dismiss="modal"
+        (click)="$activeModal.dismiss('Dismiss')"
+        [attr.aria-label]="'form.button_close' | translate"
+        *ngIf="!justUpdatedPlugin || (justUpdatedPlugin && (!isDisabled || actionFailed))"
+      >
         {{ 'form.button_close' | translate }}
       </button>
     </div>
     <div class="text-center">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="$activeModal.dismiss('Dismiss')"
-        [attr.aria-label]="'form.button_close' | translate" *ngIf="justUpdatedPlugin && isDisabled && !actionFailed">
+      <button
+        type="button"
+        class="btn btn-elegant"
+        data-dismiss="modal"
+        (click)="$activeModal.dismiss('Dismiss')"
+        [attr.aria-label]="'form.button_close' | translate"
+        *ngIf="justUpdatedPlugin && isDisabled && !actionFailed"
+      >
         {{ 'form.button_close' | translate }}
       </button>
     </div>
@@ -73,8 +96,12 @@ hb-service start</pre>
       <button *ngIf="onlineUpdateOk && showReleaseNotes" type="button" class="btn btn-primary" (click)="update()">
         {{ 'plugins.button_update' | translate }}
       </button>
-      <button type="button" class="btn btn-primary" *ngIf="justUpdatedPlugin && !isDisabled"
-        (click)="!['homebridge', 'homebridge-config-ui-x'].includes(pluginName) && childBridges.length > 0 ? onRestartChildBridgeClick() : onRestartHomebridgeClick()">
+      <button
+        type="button"
+        class="btn btn-primary"
+        *ngIf="justUpdatedPlugin && !isDisabled"
+        (click)="!['homebridge', 'homebridge-config-ui-x'].includes(pluginName) && childBridges.length > 0 ? onRestartChildBridgeClick() : onRestartHomebridgeClick()"
+      >
         {{ 'menu.tooltip_restart' | translate }}
       </button>
       <button *ngIf="actionFailed" class="btn btn-primary" (click)="downloadLogFile()">
