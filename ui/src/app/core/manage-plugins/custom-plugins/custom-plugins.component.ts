@@ -1,11 +1,12 @@
 import { ApiService } from '@/app/core/api.service'
+import { RestartChildBridgesComponent } from '@/app/core/components/restart-child-bridges/restart-child-bridges.component'
+import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { environment } from '@/environments/environment'
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core'
-import { Router } from '@angular/router'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom, Subject } from 'rxjs'
@@ -25,7 +26,6 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   public pluginType: 'platform' | 'accessory'
   public loading = true
   public saveInProgress = false
-  public justSavedAndExited = false
   public pluginSpinner = false
   public uiLoaded = false
   public showSchemaForm = false
@@ -51,8 +51,8 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   constructor(
     public $activeModal: NgbActiveModal,
     private $api: ApiService,
+    private $modal: NgbModal,
     private $plugin: ManagePluginsService,
-    private $router: Router,
     private $settings: SettingsService,
     private $toastr: ToastrService,
     private $translate: TranslateService,
@@ -208,8 +208,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
           this.pluginSpinner = false
           break
         default:
-          // eslint-disable-next-line no-console
-          console.log(e)
+          console.log(e) // eslint-disable-line no-console
       }
     }
   }
@@ -423,14 +422,11 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     return this.requestResponse(event, cachedAccessories.filter(x => x.plugin === this.plugin.name))
   }
 
-  async savePluginConfig(exit = false) {
+  async savePluginConfig(exit = false): Promise<void> {
     this.saveInProgress = true
-
     try {
       const newConfig = await firstValueFrom(this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig))
-
       this.saveInProgress = false
-
       if (exit) {
         // Possible child bridge setup recommendation if the plugin is not Homebridge UI
         // If it is the first time configuring the plugin, then offer to set up a child bridge straight away
@@ -438,13 +434,31 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
           // Close the modal and open the child bridge setup modal
           this.$activeModal.close()
           this.$plugin.bridgeSettings(this.plugin, true)
-        } else {
-          this.getChildBridges()
-          this.justSavedAndExited = true
+          return
         }
-      }
 
-      return newConfig
+        if (!['homebridge', 'homebridge-config-ui-x'].includes(this.plugin.name)) {
+          await this.getChildBridges()
+          if (this.childBridges.length > 0) {
+            this.$activeModal.close()
+            const ref = this.$modal.open(RestartChildBridgesComponent, {
+              size: 'lg',
+              backdrop: 'static',
+            })
+            ref.componentInstance.bridges = this.childBridges.map(childBridge => ({
+              displayName: childBridge.name,
+              username: childBridge.username.replace(/:/g, ''),
+            }))
+            return
+          }
+        }
+
+        this.$activeModal.close()
+        this.$modal.open(RestartHomebridgeComponent, {
+          size: 'lg',
+          backdrop: 'static',
+        })
+      }
     } catch (error) {
       this.saveInProgress = false
       console.error(error)
@@ -452,42 +466,18 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     }
   }
 
-  getChildBridges(): any[] {
+  async getChildBridges(): Promise<void> {
     try {
-      this.$api.get('/status/homebridge/child-bridges').subscribe((data: any[]) => {
-        data.forEach((bridge) => {
-          if (this.plugin.name === bridge.plugin) {
-            this.childBridges.push(bridge)
-          }
-        })
+      const data: any[] = await firstValueFrom(this.$api.get('/status/homebridge/child-bridges'))
+      data.forEach((bridge) => {
+        if (this.plugin.name === bridge.plugin) {
+          this.childBridges.push(bridge)
+        }
       })
-      return this.childBridges
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      return []
-    }
-  }
-
-  public onRestartHomebridgeClick() {
-    this.$router.navigate(['/restart'])
-    this.$activeModal.close()
-  }
-
-  public async onRestartChildBridgeClick() {
-    try {
-      for (const bridge of this.childBridges) {
-        await firstValueFrom(this.$api.put(`/server/restart/${bridge.username}`, {}))
-      }
-      this.$toastr.success(
-        this.$translate.instant('plugins.manage.child_bridge_restart'),
-        this.$translate.instant('toast.title_success'),
-      )
-    } catch (error) {
-      console.error(error)
-      this.$toastr.error(this.$translate.instant('plugins.manage.child_bridge_restart_failed'), this.$translate.instant('toast.title_error'))
-    } finally {
-      this.$activeModal.close()
+      this.childBridges = []
     }
   }
 

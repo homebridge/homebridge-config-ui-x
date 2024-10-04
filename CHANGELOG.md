@@ -16,6 +16,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - split light/dark mode from themes, auto-change with browser changes
 - move login wallpaper from advanced settings to main settings
 - updates to `pl` language file (#2194, #2197) (@mkz212)
+- use new child bridge restart modal for after plugin config changes
 
 ## Other Changes
 
