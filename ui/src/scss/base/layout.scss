@@ -78,3 +78,8 @@ h3 {
     border-bottom-right-radius: 8px;
   }
 }
+
+// Prevent tooltips appearing in front of opened modal on mobile
+.tooltip {
+  z-index: 1045 !important;
+}
