@@ -14,7 +14,7 @@
     <div class="text-center mb-3">
       <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="onDownloadBackupClick()" [disabled]="clicked">
         <i *ngIf="clicked" class="fa fa-fw fa-circle-notch fa-spin"></i>
-        <span *ngIf="!clicked">{{ 'backup.button_download_backup_archive' | translate }}</span>
+        <span *ngIf="!clicked">{{ 'backup.archive.download' | translate }}</span>
       </button>
     </div>
     <p *ngIf="backupTime">
@@ -47,7 +47,7 @@
 
     <div *ngIf="!scheduledBackups.length && !errorMessage">
       <div class="alert" role="alert">
-        {{ 'backup.scheduled_backup_none_yet' | translate:{ backupTime: backupTime | date:'shortTime' } }}
+        {{ 'backup.scheduled_backup_none' | translate:{ backupTime: backupTime | date:'shortTime' } }}
       </div>
     </div>
 

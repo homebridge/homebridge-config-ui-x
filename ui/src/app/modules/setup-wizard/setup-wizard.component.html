@@ -2,9 +2,9 @@
   <div class="w-100 setup-card d-flex py-5">
     <div *ngIf="step === 'welcome'" class="w-100 d-flex flex-column align-items-center">
       <img class="homebridge-logo mx-auto" src="/assets/homebridge-color-round.svg" alt="hb logo">
-      <h3 class="pt-4 pb-3 text-center">{{ 'setup_wizard.welcome_to_homebridge' | translate }}</h3>
+      <h3 class="pt-4 pb-3 text-center">{{ 'setup.welcome_to_homebridge' | translate }}</h3>
       <button type="button" class="btn btn-lg btn-primary" (click)="onClickGettingStarted()">
-        {{ 'setup_wizard.button_get_started' | translate }}
+        {{ 'setup.button_get_started' | translate }}
       </button>
       <small class="mt-3">
         <a href="javascript:void(0)" class="grey-text" (click)="onClickRestoreBackup()">{{ 'setup_wizard_message_restore' | translate }}</a>
@@ -13,10 +13,10 @@
 
     <div *ngIf="step === 'create-account'" class="w-100 d-flex flex-column align-items-center">
       <img class="homebridge-logo homebridge-logo-small mx-auto" src="/assets/homebridge-color-round.svg" alt="hb logo">
-      <h3 class="pt-4 pb-3 text-center">{{ 'setup_wizard.create_account' | translate }}</h3>
+      <h3 class="pt-4 pb-3 text-center">{{ 'setup.create_account' | translate }}</h3>
 
       <div class="w-100">
-        <p>{{ 'setup_wizard.create_account_reason' | translate }}</p>
+        <p>{{ 'setup.create_account_reason' | translate }}</p>
         <form novalidate (ngSubmit)="createFirstUser()" [formGroup]="createUserForm">
           <div class="md-form">
             <i class="fas fa-fw fa-user prefix grey-text"></i>
@@ -52,7 +52,7 @@
             <button type="submit" class="btn btn-primary" [disabled]="createUserForm.invalid || loading" [ngClass]="{
               'button-loading': loading
             }">
-              {{ 'setup_wizard.create_account' | translate }}
+              {{ 'setup.create_account' | translate }}
               <i class="button-loading-overlay fas fa-fw fa-spinner fa-pulse"></i>
             </button>
           </div>
@@ -101,7 +101,7 @@
       <img class="homebridge-logo homebridge-logo-small mx-auto" src="/assets/homebridge-color-round.svg" alt="hb logo">
       <h3 class="pt-4 pb-3">{{ 'setup_wizard_message_complete_title' | translate }}</h3>
       <p class="text-center">{{ 'setup_wizard_message_complete_message' | translate }}</p>
-      <a class="btn btn-lg btn-primary mt-3" routerLink="/">{{ 'setup_wizard.open_dashboard' | translate }}</a>
+      <a class="btn btn-lg btn-primary mt-3" routerLink="/">{{ 'setup.open_dashboard' | translate }}</a>
     </div>
   </div>
 </div>

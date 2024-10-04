@@ -9,7 +9,7 @@
   <div *ngIf="actionComplete" class="modal-body plugin-modal-body">
     <div *ngIf="justUpdatedPlugin">
       <h3 class="text-center primary-text" *ngIf="!isDisabled">
-        {{ 'platform.version.title_service_restart_required' | translate }}
+        {{ 'platform.version.service_restart_required' | translate }}
       </h3>
       <p class="text-center grey-text">
         {{ 'plugins.manage.thanks_for_updating' | translate:{ pluginName: pluginName, targetVersion: targetVersion } }}

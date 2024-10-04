@@ -6,14 +6,14 @@
     </button>
   </div>
   <div class="modal-body">
-    <p>{{ 'users.setup_2fa_disable_enter_current_password' | translate }}</p>
+    <p>{{ 'users.setup_2fa_disable_current_password' | translate }}</p>
 
     <div class="form-group">
       <input class="form-control" type="password" autocomplete="current-password" [formControl]="formGroup.controls['password']"
         [placeholder]="'users.label_password' | translate">
     </div>
     <p class="red-text" *ngIf="invalidCredentials">
-      <small>{{ 'login.message_invalid_username_or_password' | translate }}</small>
+      <small>{{ 'login.invalid_credentials' | translate }}</small>
     </p>
   </div>
   <div class="modal-footer justify-content-between">

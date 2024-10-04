@@ -9,14 +9,14 @@
     <div class="d-flex justify-content-around flex-wrap w-100">
       <div class="text-center widget-value-parent-wrap">
         <div class="widget-value mb-0">{{ currentLoad | number:'1.0-0' }}%</div>
-        <div class="widget-value-label grey-text">{{ 'status.cpu.label_load' | translate }}</div>
+        <div class="widget-value-label grey-text">{{ 'status.cpu.load' | translate }}</div>
       </div>
       <div class="text-center widget-value-parent-wrap" *ngIf="cpuTemperature.main > 0">
         <div class="widget-value mb-0">
           {{ cpuTemperature.main | convertTemp:(widget.temperatureUnit || $settings.env.temperatureUnits) |
           number:'1.0-0' }}&deg;{{ (widget.temperatureUnit || $settings.env.temperatureUnits || 'C') | uppercase }}
         </div>
-        <div class="widget-value-label grey-text">{{ 'status.cpu.label_temp' | translate }}</div>
+        <div class="widget-value-label grey-text">{{ 'status.cpu.temp' | translate }}</div>
       </div>
     </div>
   </div>

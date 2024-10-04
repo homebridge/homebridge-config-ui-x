@@ -54,7 +54,7 @@ export class ContainerRestartComponent implements OnInit, OnDestroy {
       this.io.socket.on('homebridge-status', (data) => {
         if (data.status === 'up' || data.status === 'pending') {
           this.$toastr.success(
-            this.$translate.instant('platform.docker.restart.toast_container_restarted'),
+            this.$translate.instant('platform.docker.container_restarted'),
             this.$translate.instant('toast.title_success'),
           )
           this.$router.navigate(['/'])

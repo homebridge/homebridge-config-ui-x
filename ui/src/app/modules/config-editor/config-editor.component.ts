@@ -126,7 +126,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
         for (const issue of issues) {
           if (issue.message === 'Duplicate object key') {
             this.saveInProgress = false
-            this.$toastr.error(this.$translate.instant('config.toast_config_invalid_json'), this.$translate.instant('toast.title_error'))
+            this.$toastr.error(this.$translate.instant('config.config_invalid_json'), this.$translate.instant('toast.title_error'))
             return
           }
         }
@@ -143,13 +143,13 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
       // basic validation of homebridge config spec
       if (typeof (config.bridge) !== 'object') {
-        this.$toastr.error(this.$translate.instant('config.toast_config_bridge_missing'), this.$translate.instant('toast.title_error'))
+        this.$toastr.error(this.$translate.instant('config.config_bridge_missing'), this.$translate.instant('toast.title_error'))
       } else if (!/^(?:[0-9A-F]{2}:){5}[0-9A-F]{2}$/i.test(config.bridge.username)) {
-        this.$toastr.error(this.$translate.instant('config.toast_config_username_format_error'), this.$translate.instant('toast.title_error'))
+        this.$toastr.error(this.$translate.instant('config.config_username_error'), this.$translate.instant('toast.title_error'))
       } else if (config.accessories && !Array.isArray(config.accessories)) {
-        this.$toastr.error(this.$translate.instant('config.toast_config_accessory_must_be_array'), this.$translate.instant('toast.title_error'))
+        this.$toastr.error(this.$translate.instant('config.config_accessory_must_be_array'), this.$translate.instant('toast.title_error'))
       } else if (config.platforms && !Array.isArray(config.platforms)) {
-        this.$toastr.error(this.$translate.instant('config.toast_config_platform_must_be_array'), this.$translate.instant('toast.title_error'))
+        this.$toastr.error(this.$translate.instant('config.config_platform_must_be_array'), this.$translate.instant('toast.title_error'))
       } else if (config.platforms && Array.isArray(config.platforms) && !this.validateSection(config.platforms, 'platform')) {
         // handled in validator function
       } else if (config.accessories && Array.isArray(config.accessories) && !this.validateSection(config.accessories, 'accessory')) {
@@ -168,7 +168,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       }
     } catch (error) {
       console.error(error)
-      this.$toastr.error(this.$translate.instant('config.toast_config_invalid_json'), this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$translate.instant('config.config_invalid_json'), this.$translate.instant('toast.title_error'))
     }
     this.saveInProgress = false
   }
@@ -196,7 +196,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       })
     } catch (error) {
       console.error(error)
-      this.$toastr.error(this.$translate.instant('config.toast_failed_to_save_config'), this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$translate.instant('config.failed_to_save_config'), this.$translate.instant('toast.title_error'))
     }
   }
 
@@ -215,8 +215,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
         this.$api.get(`/config-editor/backups/${backupId}`).subscribe({
           next: (json) => {
             this.$toastr.info(
-              this.$translate.instant('config.toast_click_save_to_confirm_backup_restore'),
-              this.$translate.instant('config.toast_title_backup_loaded'),
+              this.$translate.instant('config.restore.confirm'),
+              this.$translate.instant('config.title_backup_loaded'),
             )
 
             this.homebridgeConfig = JSON.stringify(json, null, 4)

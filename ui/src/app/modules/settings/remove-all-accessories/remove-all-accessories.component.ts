@@ -28,7 +28,7 @@ export class RemoveAllAccessoriesComponent implements OnInit {
       this.cachedAccessories = await firstValueFrom(this.$api.get('/server/cached-accessories'))
     } catch (error) {
       console.error(error)
-      this.$toastr.error(this.$translate.instant('reset.toast_error_message'), this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$translate.instant('reset.error_message'), this.$translate.instant('toast.title_error'))
       this.$activeModal.close()
     }
   }
@@ -38,14 +38,15 @@ export class RemoveAllAccessoriesComponent implements OnInit {
     return this.$api.put('/server/reset-cached-accessories', {}).subscribe({
       next: () => {
         this.$toastr.success(
-          this.$translate.instant('reset.toast_clear_cached_accessories_success'),
+          this.$translate.instant('reset.delete_success'),
           this.$translate.instant('toast.title_success'),
         )
         this.$activeModal.close()
       },
       error: (error) => {
+        this.clicked = false
         console.error(error)
-        this.$toastr.error(this.$translate.instant('reset.toast_failed_to_reset'), this.$translate.instant('toast.title_error'))
+        this.$toastr.error(this.$translate.instant('reset.failed_to_reset'), this.$translate.instant('toast.title_error'))
       },
     })
   }

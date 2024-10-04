@@ -2,14 +2,14 @@
 
 <div class="row">
   <div class="col-md-12 text-center">
-    <h3 class="primary-text">{{ 'platform.linux.restart.title_restarting_server' | translate }}</h3>
+    <h3 class="primary-text">{{ 'platform.linux.restarting_server' | translate }}</h3>
     <p class="grey-text" *ngIf="!timeout && !error">
-      {{ 'platform.linux.restart.message_restart' | translate }}
+      {{ 'platform.linux.restart' | translate }}
     </p>
     <p class="grey-text" *ngIf="error">{{ error }}</p>
     <div *ngIf="timeout">
       <p class="grey-text">
-        {{ 'platform.linux.restart.message_long_time' | translate }}
+        {{ 'platform.linux.long_time' | translate }}
       </p>
     </div>
   </div>

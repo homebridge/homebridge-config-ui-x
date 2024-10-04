@@ -86,7 +86,7 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
 
     // check startup script is using the correct hashbang
     if (!['#!/bin/sh', '#!/bin/bash'].includes(this.startupScript.split('\n')[0].trim())) {
-      this.$toastr.error(this.$translate.instant('platform.docker.script.toast_script_must_use_hashbang'), this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$translate.instant('platform.docker.must_use_hashbang'), this.$translate.instant('toast.title_error'))
       this.startupScript = `#!/bin/sh\n\n${this.startupScript}`
 
       if (!this.isMobile) {
@@ -99,8 +99,8 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
     try {
       await firstValueFrom(this.$api.put('/platform-tools/docker/startup-script', { script: this.startupScript }))
       this.$toastr.success(
-        this.$translate.instant('platform.docker.script.toast_restart_required'),
-        this.$translate.instant('platform.docker.script.toast_title_script_saved'),
+        this.$translate.instant('platform.docker.restart_required'),
+        this.$translate.instant('platform.docker.script_saved'),
       )
     } catch (error) {
       console.error(error)

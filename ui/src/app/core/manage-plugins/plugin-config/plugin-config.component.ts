@@ -124,7 +124,7 @@ export class PluginConfigComponent implements OnInit {
     } catch (error) {
       this.saveInProgress = false
       console.error(error)
-      this.$toastr.error(this.$translate.instant('config.toast_failed_to_save_config'), this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$translate.instant('config.failed_to_save_config'), this.$translate.instant('toast.title_error'))
     }
   }
 

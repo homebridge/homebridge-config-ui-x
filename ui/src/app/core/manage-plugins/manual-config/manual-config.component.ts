@@ -144,7 +144,7 @@ export class ManualConfigComponent implements OnInit {
         currentBlockNew = parse(currentBlockString)
       } catch (error) {
         console.error(error)
-        this.$toastr.error(this.$translate.instant('config.toast_config_invalid_json'), this.$translate.instant('toast.title_error'))
+        this.$toastr.error(this.$translate.instant('config.config_invalid_json'), this.$translate.instant('toast.title_error'))
         return false
       }
 
@@ -248,7 +248,7 @@ export class ManualConfigComponent implements OnInit {
       })
     } catch (error) {
       console.error(error)
-      this.$toastr.error(this.$translate.instant('config.toast_failed_to_save_config'), this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$translate.instant('config.failed_to_save_config'), this.$translate.instant('toast.title_error'))
       this.saveInProgress = false
     }
   }

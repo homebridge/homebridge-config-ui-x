@@ -18,14 +18,14 @@
           <td class="w-100">{{ backup.timestamp | date:'medium' }}</td>
           <td nowrap>
             <a class="card-link" (click)="restore(backup.id)">
-              {{ 'config.restore.message_copy_to_editor' | translate }} <i class="fas fa-fw fa-arrow-right"></i>
+              {{ 'config.restore.copy_to_editor' | translate }} <i class="fas fa-fw fa-arrow-right"></i>
             </a>
           </td>
         </tr>
       </tbody>
     </table>
     <div *ngIf="!loading && (!backupList || !backupList.length)">
-      <h3 class="text-center">{{ 'config.restore.message_no_backups' | translate }}</h3>
+      <h3 class="text-center">{{ 'config.restore.no_backups' | translate }}</h3>
     </div>
   </div>
   <div class="modal-footer justify-content-between">

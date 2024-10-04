@@ -52,7 +52,7 @@ export class UnpairSingleBridgeComponent implements OnInit, OnDestroy {
         this.unpaired = true
 
         this.$toastr.success(
-          this.$translate.instant('plugins.settings.toast_restart_required'),
+          this.$translate.instant('plugins.settings.restart_required'),
           this.$translate.instant('toast.title_success'),
         )
       },

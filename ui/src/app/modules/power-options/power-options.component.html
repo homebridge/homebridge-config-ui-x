@@ -7,13 +7,13 @@
   </div>
   <p class="w-100 text-center my-5">
     <button type="button" class="btn btn-danger p-3 my-0" style="width:85%" (click)="restartHomebridge()">
-      {{ 'menu.hbrestart.confirm_button' | translate }}
+      {{ 'menu.hbrestart.confirm_hb' | translate }}
     </button>
   </p>
   <p class="w-100 text-center my-5">
     <button type="button" class="btn btn-danger p-3 my-0" style="width:85%" (click)="restartHomebridgeService()"
-      container="body" openDelay="150" triggers="hover" ngbTooltip="{{ 'reset.message_force_restart_hb_help_text' | translate }}">
-      {{ 'menu.hbrestart.confirm_service_button' | translate }}
+      container="body" openDelay="150" triggers="hover" ngbTooltip="{{ 'reset.force_restart_hb_help_text' | translate }}">
+      {{ 'menu.hbrestart.confirm_ui' | translate }}
     </button>
   </p>
   <p class="w-100 text-center my-5" *ngIf="$settings.env.canShutdownRestartHost">
@@ -28,12 +28,12 @@
   </p>
   <p class="w-100 text-center my-5" *ngIf="$settings.env.runningInDocker">
     <button type="button" class="btn btn-danger p-3 my-0" style="width:85%" (click)="dockerStartupScript()">
-      {{ 'menu.docker.label_startup_script' | translate }}
+      {{ 'menu.docker.startup_script' | translate }}
     </button>
   </p>
   <p class="w-100 text-center my-5" *ngIf="$settings.env.runningInDocker">
     <button type="button" class="btn btn-danger p-3 my-0" style="width:85%" (click)="dockerRestartContainer()">
-      {{ 'menu.docker.label_restart_container' | translate }}
+      {{ 'menu.docker.restart_container' | translate }}
     </button>
   </p>
 </div>

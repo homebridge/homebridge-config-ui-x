@@ -29,6 +29,7 @@ import { ConfigService, HomebridgeConfig } from '../../core/config/config.servic
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service'
 import { Logger } from '../../core/logger/logger.service'
 import { AccessoriesService } from '../accessories/accessories.service'
+import { ChildBridgesService } from '../child-bridges/child-bridges.service'
 import { ConfigEditorService } from '../config-editor/config-editor.service'
 import { HomebridgeMdnsSettingDto } from './server.dto'
 
@@ -45,6 +46,7 @@ export class ServerService {
     private readonly configService: ConfigService,
     private readonly configEditorService: ConfigEditorService,
     private readonly accessoriesService: AccessoriesService,
+    private readonly childBridgesService: ChildBridgesService,
     private readonly homebridgeIpcService: HomebridgeIpcService,
     private readonly logger: Logger,
   ) {
@@ -167,8 +169,14 @@ export class ServerService {
    * Remove a device pairing
    */
   public async deleteDevicePairing(id: string) {
-    const persistPath = join(this.configService.storagePath, 'persist')
+    if (this.configService.serviceMode) {
+      // Stop the child bridge and wait a few seconds for it to prevent a race condition of
+      // deleting the files here and the child bridge stopping and dumping/recreating the accessory cache files
+      this.childBridgesService.stopStartRestartChildBridge('stopChildBridge', id)
+      await new Promise(res => setTimeout(res, 3000))
+    }
 
+    const persistPath = join(this.configService.storagePath, 'persist')
     const accessoryInfo = join(persistPath, `AccessoryInfo.${id}.json`)
     const identifierCache = join(persistPath, `IdentifierCache.${id}.json`)
 

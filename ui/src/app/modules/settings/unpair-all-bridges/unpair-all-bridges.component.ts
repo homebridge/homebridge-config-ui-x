@@ -23,13 +23,13 @@ export class UnpairAllBridgesComponent {
     this.clicked = true
     return this.$api.put('/server/reset-homebridge-accessory', {}).subscribe({
       next: () => {
-        this.$toastr.success(this.$translate.instant('reset.toast_accessory_reset'), this.$translate.instant('toast.title_success'))
+        this.$toastr.success(this.$translate.instant('reset.accessory_reset'), this.$translate.instant('toast.title_success'))
         this.$activeModal.close()
         this.$route.navigate(['/restart'])
       },
       error: (error) => {
         console.error(error)
-        this.$toastr.error(this.$translate.instant('reset.toast_failed_to_reset'), this.$translate.instant('toast.title_error'))
+        this.$toastr.error(this.$translate.instant('reset.failed_to_reset'), this.$translate.instant('toast.title_error'))
       },
     })
   }
