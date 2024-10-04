@@ -8,10 +8,11 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - added more notification messages to translation files
 - settings option to clear accessory cache for a specific bridge
+  - only available when running in service mode
 - enable child bridge by default when installing a plugin
 - change icon of plugin manage version feature
 - add a reset accessories feature to the plugin card
-  - only available when running a plugin in a child bridge
+  - only available when running a plugin in a child bridge and in service mode
 - add warning for older homebridge apt package users still running `pnpm`
 - split light/dark mode from themes, auto-change with browser changes
 - move login wallpaper from advanced settings to main settings
@@ -19,6 +20,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - use new child bridge restart modal for after plugin config changes
 - open plugin config screen automatically after install plugin
 - open plugin logs screen automatically after update plugin
+- ui small tweaks to when buttons are loading/disabled
 
 ## Other Changes
 

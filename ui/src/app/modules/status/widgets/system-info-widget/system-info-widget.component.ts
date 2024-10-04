@@ -48,8 +48,8 @@ export class SystemInfoWidgetComponent implements OnInit {
       size: 'lg',
       backdrop: 'static',
     })
-    ref.componentInstance.title = this.$translate.instant('status.widget.systeminfo.glibc_title')
-    ref.componentInstance.message = this.$translate.instant('status.widget.systeminfo.glibc_message')
+    ref.componentInstance.title = this.$translate.instant('status.widget.info.glibc_title')
+    ref.componentInstance.message = this.$translate.instant('status.widget.info.glibc_message')
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info')
     ref.componentInstance.faIconClass = 'fab fa-fw fa-node-js primary-text'
 
@@ -61,8 +61,8 @@ export class SystemInfoWidgetComponent implements OnInit {
       size: 'lg',
       backdrop: 'static',
     })
-    ref.componentInstance.title = this.$translate.instant('status.widget.systeminfo.servicemode_title')
-    ref.componentInstance.message = this.$translate.instant('status.widget.systeminfo.servicemode_message')
+    ref.componentInstance.title = this.$translate.instant('status.widget.info.servicemode_title')
+    ref.componentInstance.message = this.$translate.instant('status.widget.info.servicemode_message')
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info')
     ref.componentInstance.faIconClass = 'fas fa-fw fa-circle-exclamation primary-text'
 
@@ -75,8 +75,8 @@ export class SystemInfoWidgetComponent implements OnInit {
       backdrop: 'static',
     })
 
-    ref.componentInstance.title = `${this.$translate.instant('status.widget.systeminfo.node_update_title')} - ${this.nodejsInfo.latestVersion}`
-    ref.componentInstance.message = this.$translate.instant('status.widget.systeminfo.node_update_message')
+    ref.componentInstance.title = `${this.$translate.instant('status.widget.info.node_update_title')} - ${this.nodejsInfo.latestVersion}`
+    ref.componentInstance.message = this.$translate.instant('status.widget.info.node_update_message')
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info')
     ref.componentInstance.faIconClass = 'fab fa-fw fa-node-js primary-text'
     ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js'
@@ -88,8 +88,8 @@ export class SystemInfoWidgetComponent implements OnInit {
       backdrop: 'static',
     })
 
-    ref.componentInstance.title = this.$translate.instant('status.widget.systeminfo.node_unsupp_title')
-    ref.componentInstance.message = this.$translate.instant('status.widget.systeminfo.node_unsupp_message')
+    ref.componentInstance.title = this.$translate.instant('status.widget.info.node_unsupp_title')
+    ref.componentInstance.message = this.$translate.instant('status.widget.info.node_unsupp_message')
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info')
     ref.componentInstance.faIconClass = 'fab fa-fw fa-node-js primary-text'
     ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js'
