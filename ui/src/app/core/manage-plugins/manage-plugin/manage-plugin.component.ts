@@ -1,5 +1,6 @@
 import { ApiService } from '@/app/core/api.service'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
+import { PluginLogsComponent } from '@/app/core/manage-plugins/plugin-logs/plugin-logs.component'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { Component, Input, OnDestroy, OnInit } from '@angular/core'
@@ -180,17 +181,15 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       termCols: this.term.cols,
       termRows: this.term.rows,
     }).subscribe({
-      next: () => {
+      next: async () => {
+        try {
+          await Promise.all([this.getChangeLog(), this.getChildBridges()])
+        } catch (error) {
+          console.error(error)
+        }
         this.actionComplete = true
         this.justUpdatedPlugin = true
-        if (this.pluginName === 'homebridge-config-ui-x') {
-          this.$router.navigate(['/'])
-        } else {
-          this.$router.navigate(['/plugins'])
-        }
-        this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess)
-        this.getChangeLog()
-        this.getChildBridges()
+        this.$router.navigate([this.pluginName === 'homebridge-config-ui-x' ? '/' : '/plugins'])
       },
       error: (error) => {
         this.actionFailed = true
@@ -221,32 +220,18 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
     })
   }
 
-  getChangeLog() {
-    this.$api.get(`/plugins/changelog/${encodeURIComponent(this.pluginName)}`).subscribe({
-      next: (data: { changelog: string }) => {
-        this.changeLog = data.changelog
-      },
-      error: () => {
-        this.changeLog = null
-      },
-    })
+  async getChangeLog(): Promise<void> {
+    const data: { changelog: string } = await firstValueFrom(this.$api.get(`/plugins/changelog/${encodeURIComponent(this.pluginName)}`))
+    this.changeLog = data.changelog
   }
 
-  getChildBridges(): any[] {
-    try {
-      this.$api.get('/status/homebridge/child-bridges').subscribe((data: any[]) => {
-        data.forEach((bridge) => {
-          if (this.pluginName === bridge.plugin) {
-            this.childBridges.push(bridge)
-          }
-        })
-      })
-      return this.childBridges
-    } catch (error) {
-      console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      return []
-    }
+  async getChildBridges(): Promise<void> {
+    const data: any[] = await firstValueFrom(this.$api.get('/status/homebridge/child-bridges'))
+    data.forEach((bridge) => {
+      if (this.pluginName === bridge.plugin) {
+        this.childBridges.push(bridge)
+      }
+    })
   }
 
   getReleaseNotes() {
@@ -277,6 +262,12 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         this.$translate.instant('plugins.manage.child_bridge_restart'),
         this.$translate.instant('toast.title_success'),
       )
+
+      const ref = this.$modal.open(PluginLogsComponent, {
+        size: 'xl',
+        backdrop: 'static',
+      })
+      ref.componentInstance.plugin = { name: this.pluginName }
     } catch (error) {
       console.error(error)
       this.$toastr.error(this.$translate.instant('plugins.manage.child_bridge_restart_failed'), this.$translate.instant('toast.title_error'))
