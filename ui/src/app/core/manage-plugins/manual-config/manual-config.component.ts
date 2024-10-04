@@ -1,4 +1,5 @@
 import { ApiService } from '@/app/core/api.service'
+import { RestartChildBridgesComponent } from '@/app/core/components/restart-child-bridges/restart-child-bridges.component'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
 import { MobileDetectService } from '@/app/core/mobile-detect.service'
@@ -29,6 +30,7 @@ export class ManualConfigComponent implements OnInit {
   public currentBlock: string
   public currentBlockIndex: number | null = null
   public saveInProgress = false
+  public childBridges: any[] = []
   public isFirstSave = false
 
   public monacoEditor: any
@@ -218,13 +220,32 @@ export class ManualConfigComponent implements OnInit {
       // If it is the first time configuring the plugin, then offer to set up a child bridge straight away
       if (this.isFirstSave && this.$settings.env.recommendChildBridges && this.$settings.env.serviceMode && newConfig[0]?.platform) {
         // Close the modal and open the child bridge setup modal
+        this.$activeModal.close()
         this.$plugin.bridgeSettings(this.plugin, true)
-      } else {
-        this.$modal.open(RestartHomebridgeComponent, {
-          size: 'lg',
-          backdrop: 'static',
-        })
+        return
       }
+
+      if (!['homebridge', 'homebridge-config-ui-x'].includes(this.plugin.name)) {
+        await this.getChildBridges()
+        if (this.childBridges.length > 0) {
+          this.$activeModal.close()
+          const ref = this.$modal.open(RestartChildBridgesComponent, {
+            size: 'lg',
+            backdrop: 'static',
+          })
+          ref.componentInstance.bridges = this.childBridges.map(childBridge => ({
+            displayName: childBridge.name,
+            username: childBridge.username.replace(/:/g, ''),
+          }))
+          return
+        }
+      }
+
+      this.$activeModal.close()
+      this.$modal.open(RestartHomebridgeComponent, {
+        size: 'lg',
+        backdrop: 'static',
+      })
     } catch (error) {
       console.error(error)
       this.$toastr.error(this.$translate.instant('config.toast_failed_to_save_config'), this.$translate.instant('toast.title_error'))
@@ -235,5 +256,20 @@ export class ManualConfigComponent implements OnInit {
   openFullConfigEditor() {
     this.$router.navigate(['/config'])
     this.$activeModal.close()
+  }
+
+  async getChildBridges(): Promise<void> {
+    try {
+      const data: any[] = await firstValueFrom(this.$api.get('/status/homebridge/child-bridges'))
+      data.forEach((bridge) => {
+        if (this.plugin.name === bridge.plugin) {
+          this.childBridges.push(bridge)
+        }
+      })
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.childBridges = []
+    }
   }
 }
