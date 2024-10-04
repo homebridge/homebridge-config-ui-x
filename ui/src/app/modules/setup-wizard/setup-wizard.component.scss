@@ -12,7 +12,7 @@
 .setup-card {
   max-width: 600px;
   border-radius: 15px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   padding-right: 25px;
   padding-left: 25px;
 
@@ -29,7 +29,7 @@
 ::ng-deep body.dark-mode {
   .setup-card {
     background-color: #2b2b2b;
-    color: #FFF;
+    color: #fff;
   }
 }
 
@@ -52,11 +52,11 @@
 
 .button-loading {
   position: relative;
-  color: rgba(0,0,0,0);
+  color: rgba(0, 0, 0, 0);
 
   .button-loading-overlay {
     display: block;
-    color: #FFF;
+    color: #fff;
   }
 }
 
