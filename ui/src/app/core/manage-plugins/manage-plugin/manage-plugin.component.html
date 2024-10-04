@@ -73,13 +73,9 @@ hb-service start</pre>
       <button *ngIf="onlineUpdateOk && showReleaseNotes" type="button" class="btn btn-primary" (click)="update()">
         {{ 'plugins.button_update' | translate }}
       </button>
-      <button type="button" class="btn btn-primary" *ngIf="justUpdatedPlugin && !isDisabled && !['homebridge', 'homebridge-config-ui-x'].includes(pluginName) && childBridges.length > 0"
-        (click)="onRestartChildBridgeClick()">
-        {{ (childBridges.length === 1 ? 'plugins.manage.child_bridge_button_restart_now_one' : 'plugins.manage.child_bridge_button_restart_now') | translate }}
-      </button>
-      <button type="button" class="btn btn-primary" *ngIf="justUpdatedPlugin && !isDisabled && (['homebridge', 'homebridge-config-ui-x'].includes(pluginName) || childBridges.length === 0)"
-        (click)="onRestartHomebridgeClick()">
-        {{ 'plugins.manage.button_restart_now' | translate }}
+      <button type="button" class="btn btn-primary" *ngIf="justUpdatedPlugin && !isDisabled"
+        (click)="!['homebridge', 'homebridge-config-ui-x'].includes(pluginName) && childBridges.length > 0 ? onRestartChildBridgeClick() : onRestartHomebridgeClick()">
+        {{ 'menu.tooltip_restart' | translate }}
       </button>
       <button *ngIf="actionFailed" class="btn btn-primary" (click)="downloadLogFile()">
         {{ 'logs.label_download' | translate }}

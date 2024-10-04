@@ -9,16 +9,7 @@
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
-  <div class="modal-body text-center" [hidden]="!justSavedAndExited">
-    <i class="fa fa-fw fa-power-off primary-text mb-4" style="font-size: 75px;"></i>
-    <p *ngIf="['homebridge', 'homebridge-config-ui-x'].includes(plugin.name) || childBridges.length === 0" class="text-center grey-text">
-      {{ 'restart.homebridge' | translate }}
-    </p>
-    <p *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name) && childBridges.length > 0" class="text-center grey-text">
-      {{ 'restart.child_bridges' | translate }}
-    </p>
-  </div>
-  <div class="modal-body" style="min-height: 110px;" [hidden]="justSavedAndExited">
+  <div class="modal-body" style="min-height: 110px;">
     <div *ngIf="loading" class="text-center primary-text">
       <i class="fa fa-fw fa-cog fa-spin" style="font-size: 75px;"></i>
     </div>
@@ -51,7 +42,7 @@
       <i class="fa fa-fw fa-cog fa-spin" style="font-size: 75px;"></i>
     </div>
   </div>
-  <div class="modal-footer justify-content-between" [hidden]="justSavedAndExited">
+  <div class="modal-footer justify-content-between">
     <div class="text-left">
       <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="$activeModal.dismiss('Dismiss')" [disabled]="saveInProgress">
         {{ 'form.button_close' | translate }}
@@ -67,24 +58,6 @@
       <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="savePluginConfig(true)"
         [disabled]="saveInProgress">
         {{ 'form.button_save' | translate }} <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
-      </button>
-    </div>
-  </div>
-  <div class="modal-footer justify-content-between" [hidden]="!justSavedAndExited">
-    <div class="text-left">
-      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="$activeModal.close('Dismiss')">
-        {{ 'form.button_close' | translate }}
-      </button>
-    </div>
-    <div class="text-center"></div>
-    <div class="text-right">
-      <button type="button" class="btn btn-primary" *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name) && childBridges.length > 0"
-        (click)="onRestartChildBridgeClick()">
-        {{ (childBridges.length === 1 ? 'plugins.manage.child_bridge_button_restart_now_one' : 'plugins.manage.child_bridge_button_restart_now') | translate }}
-      </button>
-      <button type="button" class="btn btn-primary"
-        *ngIf="['homebridge', 'homebridge-config-ui-x'].includes(plugin.name) || childBridges.length === 0" (click)="onRestartHomebridgeClick()">
-        {{ 'plugins.manage.button_restart_now' | translate }}
       </button>
     </div>
   </div>
