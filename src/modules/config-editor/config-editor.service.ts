@@ -383,7 +383,7 @@ export class ConfigEditorService {
           return null
         }
       })
-      .filter((x => x && !Number.isNaN(x.timestamp.getTime())))
+      .filter(x => x && !Number.isNaN(x.timestamp.getTime()))
   }
 
   /**
