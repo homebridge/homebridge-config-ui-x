@@ -22,6 +22,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - open plugin logs screen automatically after update plugin
 - ui small tweaks to when buttons are loading/disabled
 - another attempt to fix tooltips appearing in front of modals
+- re-add 'lost' deep purple theme colour
 
 ## Other Changes
 

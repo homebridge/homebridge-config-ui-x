@@ -64,6 +64,7 @@ export class SettingsService {
     'red',
     'pink',
     'purple',
+    'deep-purple',
     'indigo',
     'blue',
     'blue-grey',

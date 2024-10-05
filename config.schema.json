@@ -73,6 +73,12 @@
             ]
           },
           {
+            "title": "Deep Purple",
+            "enum": [
+              "deep-purple"
+            ]
+          },
+          {
             "title": "Indigo",
             "enum": [
               "indigo"
