@@ -34,6 +34,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
   - move from `ngx-monaco-editor` to `ngx-monaco-editor-v2`
 - add `css` linting to ui, fixed existing issues
 - add `html` linting to ui, fixed existing issues
+- upgrade `@ng-bootstrap/ng-bootstrap` and fix accordions
 
 ### Homebridge Dependencies
 

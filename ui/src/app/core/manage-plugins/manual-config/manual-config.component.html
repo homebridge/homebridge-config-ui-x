@@ -23,33 +23,30 @@
         {{ 'plugins.settings.message_manual_config_required' | translate }} {{
         'plugins.settings.message_consult_documentation' | translate }}
       </div>
-      <div class="text-center">
-        <button class="btn btn-primary" (click)="openFullConfigEditor()">
-          {{ 'plugins.settings.label_open_config_editor' | translate }}
-        </button>
-      </div>
     </div>
 
     <!-- MULTIPLE CONFIG BLOCKS-->
-    <ngb-accordion
+    <div
+      ngbAccordion
       [closeOthers]="true"
       *ngIf="!loading && canConfigure"
-      [activeIds]="show"
-      (panelChange)="blockChanged()"
+      (show)="blockShown($event)"
+      (hide)="blockHidden($event)"
     >
-      <ngb-panel
-        *ngFor="let block of pluginConfig; let $index = index"
-        opened="true"
+      <div
+        [ngbAccordionItem]="'configBlock.' + $index"
+        class="card"
+        [collapsed]="show !== 'configBlock.' + $index"
         [id]="'configBlock.' + $index"
-        cardClass="no-padding-card-body"
+        *ngFor="let block of pluginConfig; let $index = index"
       >
-        <ng-template ngbPanelHeader>
+        <div ngbAccordionHeader class="card-header">
           <div class="d-flex align-items-center justify-content-between">
             <h5 class="m-0">{{ block.name || pluginAlias }}</h5>
             <div>
               <button
-                class="btn btn-danger ml-2"
                 *ngIf="show === 'configBlock.' + $index"
+                class="btn btn-danger ml-2"
                 (click)="removeBlock($index)"
                 [ngbTooltip]="'form.button_delete' | translate"
                 container="body"
@@ -60,7 +57,7 @@
               </button>
               <button
                 class="btn btn-primary ml-2"
-                (click)="editBlock($index)"
+                ngbAccordionButton
                 [ngbTooltip]="'form.button_edit' | translate"
                 container="body"
                 openDelay="150"
@@ -70,20 +67,20 @@
               </button>
             </div>
           </div>
-        </ng-template>
-        <ng-template ngbPanelContent *ngIf="show === 'configBlock.' + $index">
-          <div class="flex-column d-flex" style="height: 400px">
+        </div>
+        <div ngbAccordionCollapse>
+          <div ngbAccordionBody class="card-body p-0" style="height: 400px">
             <ngx-monaco-editor
-              class="flex-grow-1 h-100 w-100 mt-3"
+              class="flex-grow-1 h-100 w-100 mb-0 pb-0"
               [options]="editorOptions"
               [(ngModel)]="currentBlock"
               (onInit)="onEditorInit($event)"
             >
             </ngx-monaco-editor>
           </div>
-        </ng-template>
-      </ngb-panel>
-    </ngb-accordion>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-left">
@@ -118,6 +115,9 @@
       >
         <span *ngIf="!saveInProgress">{{ 'form.button_save' | translate }}</span>
         <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
+      </button>
+      <button class="btn btn-primary" (click)="openFullConfigEditor()" *ngIf="!canConfigure">
+        {{ 'plugins.settings.label_open_config_editor' | translate }}
       </button>
     </div>
   </div>

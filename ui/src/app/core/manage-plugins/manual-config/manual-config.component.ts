@@ -110,9 +110,16 @@ export class ManualConfigComponent implements OnInit {
     )
   }
 
-  blockChanged() {
+  blockShown(event: string) {
+    this.show = `configBlock.${event.split('.')[1]}`
     for (const block of this.pluginConfig) {
-      block.name = block.config.name || block.name
+      block.name = block.config?.name || block.name
+    }
+  }
+
+  blockHidden(event: string) {
+    if (this.show === event) {
+      this.show = ''
     }
   }
 
