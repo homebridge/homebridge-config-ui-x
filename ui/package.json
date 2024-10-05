@@ -21,7 +21,7 @@
     "@angular/platform-browser-dynamic": "18.2.7",
     "@angular/router": "18.2.7",
     "@auth0/angular-jwt": "5.2.0",
-    "@homebridge/hap-client": "1.10.2",
+    "@homebridge/hap-client": "2.0.2",
     "@homebridge/plugin-ui-utils": "1.0.3",
     "@ng-bootstrap/ng-bootstrap": "17.0.1",
     "@ngx-translate/core": "15.0.0",
@@ -84,9 +84,6 @@
     "@angular/common": "18.2.7",
     "@angular/core": "18.2.7",
     "@angular/forms": "18.2.7",
-    "@angular/localize": "18.2.7",
-    "@homebridge/hap-client": {
-      "axios": "1.7.7"
-    }
+    "@angular/localize": "18.2.7"
   }
 }

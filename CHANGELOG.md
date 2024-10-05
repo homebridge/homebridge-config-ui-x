@@ -2,6 +2,17 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## ALPHA
+
+### Other Changes
+
+- update `@homebridge/hap-client` to `v2`
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v2.0.2`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.11.14`
+- `@homebridge/plugin-ui-utils` @ `v1.0.3`
+
 ## v4.60.0 (2024-10-05)
 
 - ⚠️ After updating to this release, you may find that your UI theme resets to the default. This reset will only occur once. You can visit the settings section to change it back to your preferred theme.
