@@ -128,7 +128,8 @@ export class PluginConfigComponent implements OnInit {
     }
   }
 
-  blockChanged() {
+  blockChanged(event: string) {
+    this.show = event
     for (const block of this.pluginConfig) {
       block.name = block.config.name || block.name
     }
@@ -145,8 +146,7 @@ export class PluginConfigComponent implements OnInit {
       },
     })
 
-    this.show = __uuid__
-    this.blockChanged()
+    this.blockChanged(__uuid__)
   }
 
   removeBlock(__uuid__: string) {
