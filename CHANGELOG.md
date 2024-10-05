@@ -2,7 +2,11 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## BETA
+## v4.60.0 (2024-10-05)
+
+- ⚠️ After updating to this release, you may find that your UI theme resets to the default. This reset will only occur once. You can visit the settings section to change it back to your preferred theme.
+- ⚠️ If you use the `/api/auth/settings` endpoint (e.g. in a custom application), please note that this endpoint now returns less information for an unauthenticated user.
+It will return a full payload when a valid access token is provided.
 
 ### UI Changes
 
@@ -20,6 +24,8 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - use new child bridge restart modal for after plugin config changes
 - open plugin config screen automatically after install plugin
 - open plugin logs screen automatically after update plugin
+  - this will only pop up when the plugin is running in a child bridge, and Homebridge does not need to be restarted
+  - if this turns out to be an unpopular addition then it can be reverted in a future release!
 - ui small tweaks to when buttons are loading/disabled
 - another attempt to fix tooltips appearing in front of modals
 
@@ -105,8 +111,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ## v4.58.0 (2024-09-08)
 
-⚠️ The minimum version of Homebridge needed for the "child bridge extra configuration" functionality is `v1.8.0`.
-The UI will continue to work with Homebridge `v1.6.0` or later, however it is always recommended to run the latest version of Homebridge anyway.
+- ⚠️ The minimum version of Homebridge needed for the "child bridge extra configuration" functionality is `v1.8.0`. The UI will continue to work with Homebridge `v1.6.0` or later, however it is always recommended to run the latest version of Homebridge anyway.
 
 ### UI Changes
 
@@ -437,7 +442,7 @@ _Also thanks to @mkz212 and @Staubgeborener for their contributions to the trans
 
 Happy Thanksgiving to our American friends! :turkey:
 
-⚠️ The minimum version of Homebridge needed for this version of UI is `v1.6.0`. If you are running a lower version of Homebridge, you should consider updating before installing this UI update.
+- ⚠️ The minimum version of Homebridge needed for this version of UI is `v1.6.0`. If you are running a lower version of Homebridge, you should consider updating before installing this UI update.
 
 ### UI Changes
 
