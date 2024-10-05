@@ -35,6 +35,7 @@ Plugin developers:
 ### Other Changes
 
 - migrate `@zajsf/*` to `@ng-formworks/*` for plugin schema forms
+- retire use of `pnpm` and code references
 
 ### Homebridge Dependencies
 
