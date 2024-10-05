@@ -288,7 +288,7 @@ export class BackupService {
             return null
           }
         })
-        .filter((x => x !== null))
+        .filter(x => x !== null)
         .sort((a, b) => {
           if (a.id > b.id) {
             return -1
