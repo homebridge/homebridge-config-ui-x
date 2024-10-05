@@ -23,7 +23,7 @@
     "@auth0/angular-jwt": "5.2.0",
     "@homebridge/hap-client": "1.10.2",
     "@homebridge/plugin-ui-utils": "1.0.3",
-    "@ng-bootstrap/ng-bootstrap": "11.0.1",
+    "@ng-bootstrap/ng-bootstrap": "17.0.1",
     "@ngx-translate/core": "15.0.0",
     "@popperjs/core": "2.11.8",
     "@zajsf/bootstrap4": "17.2.4",
