@@ -48,7 +48,6 @@ export class ConfigService {
   public enableTerminalAccess = this.runningInDocker || this.runningInSynologyPackage || this.runningInPackageMode || Boolean(process.env.HOMEBRIDGE_CONFIG_UI_TERMINAL === '1')
 
   // plugin management
-  public usePnpm = (process.env.UIX_USE_PNPM === '1')
   public usePluginBundles = (process.env.UIX_USE_PLUGIN_BUNDLES === '1')
 
   // recommend child bridges on platforms with > 2GB ram
@@ -230,7 +229,6 @@ export class ConfigService {
         runningInFreeBSD: this.runningInFreeBSD,
         runningOnRaspberryPi: this.runningOnRaspberryPi,
         temperatureUnits: this.ui.tempUnits || 'c',
-        usePnpm: this.usePnpm,
       },
       loginWallpaper: this.ui.loginWallpaper,
     }
