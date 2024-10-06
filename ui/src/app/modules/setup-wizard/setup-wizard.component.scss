@@ -1,77 +1,56 @@
-.setup-container {
-  background-size: cover;
-  z-index: -1;
-  padding-top: 1em;
-  padding-bottom: 1em;
+::ng-deep body {
+  background-color: #4a266c !important;
+}
 
-  @media screen and (min-height: 500px) and (min-width: 600px) {
-    padding-top: 4em;
+::ng-deep body.dark-mode {
+  background-color: #000000 !important;
+
+  .setup-card {
+    background-color: #2b2b2b;
+    color: #ffffff;
   }
 }
 
+.setup-container {
+  background-size: cover;
+  z-index: -1;
+  padding-top: 3em;
+  padding-bottom: 3em;
+}
+
 .setup-card {
-  max-width: 600px;
+  max-width: 550px;
   border-radius: 1rem;
-  background-color: #ffffff;
   padding-right: 25px;
   padding-left: 25px;
+  background-color: rgba(255, 255, 255, 0.93);
 
   .form-control:focus {
     background-color: inherit !important;
   }
 
-  @media screen and (max-width: 600px) {
+  @media screen and (max-width: 575px) {
     margin-left: 1em;
     margin-right: 1em;
   }
 }
 
-::ng-deep body.dark-mode {
-  .setup-card {
-    background-color: #2b2b2b;
-    color: #fff;
-  }
-}
-
 .homebridge-logo {
-  margin-right: 10px;
+  height: 125px;
+  padding-bottom: 10px;
+}
+
+.btn-primary {
+  background-color: #4a266c !important;
+  border-color: #4a266c !important;
+}
+
+.progress {
+  background-color: #dddddd;
+}
+
+#output {
   height: 200px;
-
-  @media screen and (max-height: 500px) {
-    height: 100px;
-  }
-
-  @media screen and (max-width: 600px) {
-    height: 100px;
-  }
-}
-
-.homebridge-logo-small {
-  height: 50px;
-}
-
-.button-loading {
-  position: relative;
-  color: rgba(0, 0, 0, 0);
-
-  .button-loading-overlay {
-    display: block;
-    color: #fff;
-  }
-}
-
-.button-loading-overlay {
-  display: none;
-  position: absolute;
-  top: 9px;
-  left: 0;
-  right: 0;
-}
-
-small {
-  a {
-    &:hover {
-      text-decoration: underline;
-    }
-  }
+  overflow-y: scroll;
+  white-space: pre-wrap;
 }

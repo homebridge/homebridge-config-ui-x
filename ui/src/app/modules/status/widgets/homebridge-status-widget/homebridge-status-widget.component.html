@@ -62,9 +62,7 @@
           <span *ngIf="!homebridgePkg.installedVersion">Homebridge</span>
           <br />
           <span class="grey-text">
-            <span *ngIf="!homebridgePkg.installedVersion">
-              {{ 'status.homebridge.checking' | translate }}
-            </span>
+            <span *ngIf="!homebridgePkg.installedVersion"> {{ 'status.homebridge.checking' | translate }} </span>
             <span *ngIf="homebridgePkg.installedVersion && !homebridgePkg.updateAvailable">
               {{ 'status.homebridge.up_to_date' | translate }}
             </span>
@@ -105,9 +103,7 @@
           <span *ngIf="!homebridgeUiPkg.installedVersion">Homebridge UI</span>
           <br />
           <span class="grey-text">
-            <span *ngIf="!homebridgeUiPkg.installedVersion">
-              {{ 'status.homebridge.checking' | translate }}
-            </span>
+            <span *ngIf="!homebridgeUiPkg.installedVersion"> {{ 'status.homebridge.checking' | translate }} </span>
             <span *ngIf="homebridgeUiPkg.installedVersion && !homebridgeUiPkg.updateAvailable">
               {{ 'status.homebridge.up_to_date' | translate }}
             </span>

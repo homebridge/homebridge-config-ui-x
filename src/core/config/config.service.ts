@@ -207,7 +207,7 @@ export class ConfigService {
       formAuth: Boolean(this.ui.auth !== 'none'),
       lightingMode: this.ui.lightingMode || 'auto',
       serverTimestamp: new Date().toISOString(),
-      theme: this.ui.theme || 'orange',
+      theme: this.ui.theme || 'purple',
     }
 
     if (!authorized) {
