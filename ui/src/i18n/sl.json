@@ -58,7 +58,6 @@
   "backup.backup_restored": "Varnostno kopiranje arhiva obnovljeno",
   "backup.backup_warning": "Rezervni arhivi vsebujejo občutljive podatke in jih ne smete deliti z drugimi.",
   "backup.button_restore_backup": "Obnovi varnostno kopijo",
-  "backup.label_choose_backup_file_to_restore": "Izberite varnostno datoteko za obnovitev …",
   "backup.label_uploading": "Nalaganje …",
   "backup.load_error": "Failed to load config backup.",
   "backup.restore_failed": "Obnovitev ni uspela",

@@ -3,20 +3,18 @@
     <h5 class="modal-title">{{ 'reset.bridges_all.title' | translate }}</h5>
     <button
       type="button"
-      class="close"
-      data-dismiss="modal"
+      class="btn-close"
+      data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
       (click)="$activeModal.dismiss('Dismiss')"
       [disabled]="clicked"
-    >
-      <span aria-hidden="true">&times;</span>
-    </button>
+    ></button>
   </div>
   <div class="modal-body">
     <div class="text-center mb-4"><i class="fas fa-fw fa-bridge primary-text" style="font-size: 75px"></i></div>
     <ngb-alert type="error" [dismissible]="false" style="margin-bottom: 0">
-      <p class="font-weight-bold">{{ 'reset.action_is_irreversible' | translate }}</p>
-      <ul class="mb-0 text-left">
+      <p class="fw-bold">{{ 'reset.action_is_irreversible' | translate }}</p>
+      <ul class="mb-0 text-start">
         <li>{{ 'reset.bridges_all.list_1' | translate }}</li>
         <li>{{ 'reset.bridges_all.list_2' | translate }}</li>
         <li>{{ 'reset.bridges_all.list_3' | translate }}</li>
@@ -25,11 +23,11 @@
     </ngb-alert>
   </div>
   <div class="modal-footer justify-content-between">
-    <div class="text-left">
+    <div class="text-start">
       <button
         type="button"
         class="btn btn-elegant"
-        data-dismiss="modal"
+        data-bs-dismiss="modal"
         (click)="$activeModal.dismiss('Dismiss')"
         [attr.aria-label]="'form.button_close' | translate"
         [disabled]="clicked"
@@ -38,11 +36,11 @@
       </button>
     </div>
     <div class="text-center"></div>
-    <div class="text-right">
+    <div class="text-end">
       <button
         type="button"
         class="btn btn-danger"
-        data-dismiss="modal"
+        data-bs-dismiss="modal"
         (click)="onResetHomebridgeAccessoryClick()"
         [disabled]="clicked"
       >

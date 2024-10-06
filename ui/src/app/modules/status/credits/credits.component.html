@@ -3,13 +3,11 @@
     <h5 class="modal-title">{{ 'status.credits.title' | translate }}</h5>
     <button
       type="button"
-      class="close"
-      data-dismiss="modal"
+      class="btn-close"
+      data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
       (click)="$activeModal.dismiss('Dismiss')"
-    >
-      <span aria-hidden="true">&times;</span>
-    </button>
+    ></button>
   </div>
   <div class="modal-body align-items-center w-100 pb-0">
     <div class="w-100 text-center primary-text mb-4">
@@ -32,7 +30,7 @@
         <a href="https://github.com/Supereg" target="_blank" rel="noopener noreferrer">Supereg</a>.
       </li>
       <li>
-        The <span class="text-monospace">hb-service</span> utility was created by
+        The <span class="font-monospace">hb-service</span> utility was created by
         <a href="https://github.com/oznu" target="_blank" rel="noopener noreferrer">oznu</a>.
       </li>
     </ul>
@@ -56,18 +54,18 @@
     </ul>
   </div>
   <div class="modal-footer justify-content-between mt-0 pt-0">
-    <div class="text-left"></div>
+    <div class="text-start"></div>
     <div class="text-center">
       <button
         type="button"
         class="btn btn-elegant"
-        data-dismiss="modal"
+        data-bs-dismiss="modal"
         (click)="$activeModal.dismiss('Dismiss')"
         [attr.aria-label]="'form.button_close' | translate"
       >
         {{ 'form.button_close' | translate }}
       </button>
     </div>
-    <div class="text-right"></div>
+    <div class="text-end"></div>
   </div>
 </div>

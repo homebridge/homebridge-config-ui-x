@@ -3,13 +3,11 @@
     <h5 class="modal-title">{{ 'config.restore.title_restore_homebridge_backup' | translate }}</h5>
     <button
       type="button"
-      class="close"
-      data-dismiss="modal"
+      class="btn-close"
+      data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
       (click)="$activeModal.dismiss('Dismiss')"
-    >
-      <span aria-hidden="true">&times;</span>
-    </button>
+    ></button>
   </div>
   <div class="modal-body">
     <div *ngIf="loading" class="text-center primary-text">
@@ -32,11 +30,11 @@
     </div>
   </div>
   <div class="modal-footer justify-content-between">
-    <div class="text-left">
+    <div class="text-start">
       <button
         type="button"
         class="btn btn-elegant"
-        data-dismiss="modal"
+        data-bs-dismiss="modal"
         (click)="$activeModal.dismiss('Dismiss')"
         [attr.aria-label]="'form.button_close' | translate"
       >
@@ -44,11 +42,11 @@
       </button>
     </div>
     <div class="text-center"></div>
-    <div class="text-right">
+    <div class="text-end">
       <button
         *ngIf="!loading && backupList.length"
         type="button"
-        class="btn btn-danger mr-auto"
+        class="btn btn-danger me-auto"
         (click)="deleteAllBackups()"
         [attr.aria-label]="'form.button_remove' | translate"
       >

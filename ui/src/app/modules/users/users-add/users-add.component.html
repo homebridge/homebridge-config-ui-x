@@ -4,13 +4,11 @@
       <h5 class="modal-title">{{ 'users.title_add_user' | translate }}</h5>
       <button
         type="button"
-        class="close"
-        data-dismiss="modal"
+        class="btn-close"
+        data-bs-dismiss="modal"
         [attr.aria-label]="'form.button_close' | translate"
         (click)="$activeModal.dismiss('Dismiss')"
-      >
-        <span aria-hidden="true">&times;</span>
-      </button>
+      ></button>
     </div>
     <div class="modal-body">
       <div class="container px-1">
@@ -22,7 +20,7 @@
             id="form-username"
             autocomplete="username"
             autocapitalize="none"
-            class="form-control px-0"
+            class="form-control custom-input px-0"
             [attr.aria-label]="'users.label_username' | translate"
           />
           <label for="form-username" [ngClass]="{'active': page.title === 'users.title_edit_user'}">
@@ -35,7 +33,7 @@
             type="text"
             id="form-name"
             autocomplete="name"
-            class="form-control px-0"
+            class="form-control custom-input px-0"
             [attr.aria-label]="'users.label_full_name' | translate"
           />
           <label for="form-name" [ngClass]="{'active': page.title === 'users.title_edit_user'}">
@@ -48,7 +46,7 @@
             type="password"
             autocomplete="new-password"
             id="form-pass"
-            class="form-control px-0"
+            class="form-control custom-input px-0"
             [ngClass]="{
               'is-invalid': form.controls.password.dirty && form.controls.password.errors
             }"
@@ -62,7 +60,7 @@
             type="password"
             autocomplete="new-password"
             id="form-pass-confirm"
-            class="form-control px-0"
+            class="form-control custom-input px-0"
             [ngClass]="{
               'is-invalid': form.controls.passwordConfirm.dirty && form.controls.passwordConfirm.errors
             }"
@@ -76,7 +74,7 @@
           <label class="col-6 col-form-label grey-text">
             <i class="fas fa-fw fa-user-secret"></i> {{ 'users.label_admin_user' | translate }}
           </label>
-          <div class="col-6 text-right">
+          <div class="col-6 text-end">
             <input
               type="checkbox"
               class="rendux-input"
@@ -84,19 +82,19 @@
               id="isAdmin"
               [attr.aria-label]="'users.label_admin_user' | translate"
             />
-            <label for="isAdmin" class="rendux-label ml-3" style="min-width: 50px"></label>
+            <label for="isAdmin" class="rendux-label ms-3" style="min-width: 50px"></label>
           </div>
         </div>
       </div>
     </div>
     <div class="modal-footer justify-content-between">
-      <div class="text-left">
-        <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="$activeModal.dismiss('Dismiss')">
+      <div class="text-start">
+        <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="$activeModal.dismiss('Dismiss')">
           {{ 'form.button_close' | translate }}
         </button>
       </div>
       <div class="text-center"></div>
-      <div class="text-right">
+      <div class="text-end">
         <button class="btn btn-primary" type="submit" [disabled]="!form.valid">
           {{ 'form.button_save' | translate }}
         </button>
