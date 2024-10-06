@@ -3,13 +3,11 @@
     <h5 class="modal-title">{{ 'status.widget.add_widget' | translate }}</h5>
     <button
       type="button"
-      class="close"
-      data-dismiss="modal"
+      class="btn-close"
+      data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
       (click)="$activeModal.dismiss('Dismiss')"
-    >
-      <span aria-hidden="true">&times;</span>
-    </button>
+    ></button>
   </div>
   <div class="modal-body">
     <div class="d-flex flex-wrap">
@@ -23,11 +21,11 @@
     </div>
   </div>
   <div class="modal-footer justify-content-between">
-    <div class="text-left">
+    <div class="text-start">
       <button
         type="button"
         class="btn btn-elegant"
-        data-dismiss="modal"
+        data-bs-dismiss="modal"
         (click)="$activeModal.dismiss('Dismiss')"
         [attr.aria-label]="'form.button_close' | translate"
       >
@@ -35,8 +33,8 @@
       </button>
     </div>
     <div class="text-center"></div>
-    <div class="text-right">
-      <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="doResetLayout()">
+    <div class="text-end">
+      <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="doResetLayout()">
         {{ 'form.button_reset' | translate }}
       </button>
     </div>

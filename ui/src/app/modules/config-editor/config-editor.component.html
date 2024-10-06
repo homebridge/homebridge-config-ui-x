@@ -3,7 +3,7 @@
     <div class="col-6">
       <h3 class="primary-text m-0">{{ 'menu.config_json_editor' | translate }}</h3>
     </div>
-    <div class="col-6 text-right">
+    <div class="col-6 text-end">
       <button
         class="btn btn-elegant waves-effect my-0"
         (click)="onExportConfig()"
@@ -17,7 +17,7 @@
         <i class="fas fa-fw fa-download"></i>
       </button>
       <button
-        class="btn btn-danger waves-effect my-0"
+        class="btn btn-danger waves-effect my-0 ms-2"
         (click)="onCancelRestore()"
         [disabled]="saveInProgress"
         *ngIf="originalConfig"
@@ -30,7 +30,7 @@
         <i class="fas fa-fw fa-times"></i>
       </button>
       <button
-        class="btn btn-elegant waves-effect my-0"
+        class="btn btn-elegant waves-effect my-0 ms-2"
         (click)="onRestore()"
         container="body"
         openDelay="150"
@@ -42,7 +42,7 @@
         <i class="fas fa-fw fa-history"></i>
       </button>
       <button
-        class="btn btn-primary waves-effect my-0 mr-0"
+        class="btn btn-primary waves-effect my-0 me-0 ms-2"
         (click)="onSave()"
         [disabled]="saveInProgress"
         container="body"
@@ -59,7 +59,7 @@
 
   <ngx-monaco-editor
     *ngIf="!isMobile && !originalConfig"
-    class="flex-grow-1 h-100 w-100 mt-3 mb-2"
+    class="flex-grow-1 h-100 w-100 mt-3"
     [options]="editorOptions"
     [model]="monacoEditorModel"
     (onInit)="onEditorInit($event)"
@@ -70,7 +70,7 @@
 
   <ngx-monaco-diff-editor
     *ngIf="!isMobile && originalConfig"
-    class="flex-grow-1 h-100 w-100 mt-3 mb-2"
+    class="flex-grow-1 h-100 w-100 mt-3"
     [options]="editorOptions"
     [originalModel]="monacoEditorModel"
     [modifiedModel]="monacoEditorModel"
@@ -83,7 +83,7 @@
   <textarea
     wrap="off"
     *ngIf="isMobile"
-    class="hb-plain-text-editor align-self-end h-100 w-100 my-3"
+    class="hb-plain-text-editor align-self-end h-100 w-100 mt-3"
     autocomplete="off"
     autocorrect="off"
     autocapitalize="off"

@@ -1,9 +1,9 @@
 <div class="flex-column d-flex align-items-stretch h-100">
   <div class="row mb-3">
     <div class="col-6">
-      <h3 class="primary-text m-0 text-monospace">startup.sh</h3>
+      <h3 class="primary-text m-0 font-monospace">startup.sh</h3>
     </div>
-    <div class="col-6 text-right">
+    <div class="col-6 text-end">
       <button class="btn btn-primary waves-effect m-0" (click)="onSave()" [disabled]="saveInProgress">
         <i *ngIf="!saveInProgress" class="fas fa-fw fa-floppy-disk"></i>
         <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
@@ -18,7 +18,7 @@
 
   <ngx-monaco-editor
     *ngIf="!isMobile"
-    class="flex-grow-1 h-100 w-100 my-2"
+    class="flex-grow-1 h-100 w-100 mt-2"
     [options]="editorOptions"
     [model]="monacoEditorModel"
     (onInit)="onEditorInit($event)"

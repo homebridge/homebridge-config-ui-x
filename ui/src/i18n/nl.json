@@ -58,7 +58,6 @@
   "backup.backup_restored": "Backup Archief Teruggeplaatst",
   "backup.backup_warning": "Backup archieven bevatten gevoelige informatie en moeten niet met anderen worden gedeelt.",
   "backup.button_restore_backup": "Backup Terugplaatsen",
-  "backup.label_choose_backup_file_to_restore": "Kies backup bestand om terug te plaatsen…",
   "backup.label_uploading": "Aan het uploaden…",
   "backup.load_error": "Failed to load config backup.",
   "backup.restore_failed": "Backup Terugzetten Mislukt",

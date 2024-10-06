@@ -58,7 +58,6 @@
   "backup.backup_restored": "Резервная копия восстановлена",
   "backup.backup_warning": "Архивы резервных копий содержат конфиденциальную информацию и не должны передаваться другим лицам.",
   "backup.button_restore_backup": "Восстановить",
-  "backup.label_choose_backup_file_to_restore": "Выберите файл резервной копии для восстановления…",
   "backup.label_uploading": "Загрузка…",
   "backup.load_error": "Failed to load config backup.",
   "backup.restore_failed": "Ошибка восстановления из резервной копии",
