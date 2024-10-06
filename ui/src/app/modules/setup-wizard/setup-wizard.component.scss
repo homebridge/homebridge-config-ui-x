@@ -1,77 +1,70 @@
-.setup-container {
-  background-size: cover;
-  z-index: -1;
-  padding-top: 1em;
-  padding-bottom: 1em;
-
-  @media screen and (min-height: 500px) and (min-width: 600px) {
-    padding-top: 4em;
-  }
-}
-
-.setup-card {
-  max-width: 600px;
-  border-radius: 1rem;
-  background-color: #ffffff;
-  padding-right: 25px;
-  padding-left: 25px;
-
-  .form-control:focus {
-    background-color: inherit !important;
-  }
-
-  @media screen and (max-width: 600px) {
-    margin-left: 1em;
-    margin-right: 1em;
-  }
+::ng-deep body {
+  overflow: scroll !important;
 }
 
 ::ng-deep body.dark-mode {
   .setup-card {
     background-color: #2b2b2b;
-    color: #fff;
+    color: #ffffff;
+  }
+}
+
+.setup-container {
+  background-size: cover;
+  z-index: -1;
+  padding-top: 3em;
+  padding-bottom: 3em;
+  min-height: 100%;
+  background: linear-gradient(-45deg, #ffa000, #4a266c, #2196f3, #c2185b);
+  background-size: 400% 400%;
+  animation: gradient 30s ease infinite;
+
+  @keyframes gradient {
+    0% {
+      background-position: 0 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0 50%;
+    }
+  }
+}
+
+.setup-card {
+  max-width: 550px;
+  border-radius: 1rem;
+  padding-right: 25px;
+  padding-left: 25px;
+  background-color: rgba(255, 255, 255, 0.93);
+
+  .form-control:focus {
+    background-color: inherit !important;
+  }
+
+  @media screen and (max-width: 575px) {
+    margin-left: 1em;
+    margin-right: 1em;
   }
 }
 
 .homebridge-logo {
-  margin-right: 10px;
+  height: 125px;
+  padding-bottom: 10px;
+}
+
+.btn-primary {
+  background-color: #4a266c !important;
+  border-color: #4a266c !important;
+}
+
+.progress {
+  background-color: #dddddd;
+}
+
+#output {
   height: 200px;
-
-  @media screen and (max-height: 500px) {
-    height: 100px;
-  }
-
-  @media screen and (max-width: 600px) {
-    height: 100px;
-  }
-}
-
-.homebridge-logo-small {
-  height: 50px;
-}
-
-.button-loading {
-  position: relative;
-  color: rgba(0, 0, 0, 0);
-
-  .button-loading-overlay {
-    display: block;
-    color: #fff;
-  }
-}
-
-.button-loading-overlay {
-  display: none;
-  position: absolute;
-  top: 9px;
-  left: 0;
-  right: 0;
-}
-
-small {
-  a {
-    &:hover {
-      text-decoration: underline;
-    }
-  }
+  overflow-y: scroll;
+  white-space: pre-wrap;
 }

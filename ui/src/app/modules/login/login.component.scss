@@ -1,16 +1,34 @@
+::ng-deep body {
+  overflow: scroll !important;
+}
+
 .login-container {
-  background-color: #f4f4f4;
   background-size: cover;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
+  z-index: -1;
+  padding-top: 3em;
+  padding-bottom: 3em;
+  min-height: 100%;
+  background: linear-gradient(-45deg, #ffa000, #4a266c, #2196f3, #c2185b);
+  background-size: 400% 400%;
+  animation: gradient 30s ease infinite;
+
+  @keyframes gradient {
+    0% {
+      background-position: 0 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0 50%;
+    }
+  }
 }
 
 .login-card {
-  max-width: 500px;
-  background-color: rgba(255, 255, 255, 0.9);
+  max-width: 550px;
+  background-color: rgba(255, 255, 255, 0.93);
+  border-radius: 1rem;
 
   .form-control:focus {
     background-color: inherit !important;
@@ -21,22 +39,11 @@
   }
 }
 
-.login-logo {
-  position: absolute;
-  top: -35%;
-  z-index: 2000;
-  max-width: 450px;
+.homebridge-logo {
+  padding-bottom: 10px;
+}
 
-  @media screen and (max-width: 450px) {
-    max-width: 320px;
-    top: -25%;
-  }
-
-  @media screen and (max-width: 320px) {
-    max-width: 280px;
-  }
-
-  @media screen and (max-height: 450px) {
-    display: none;
-  }
+.btn-primary {
+  background-color: #4a266c !important;
+  border-color: #4a266c !important;
 }
