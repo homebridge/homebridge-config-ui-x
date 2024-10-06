@@ -1,537 +1,538 @@
-<h3 class="primary-text m-0">{{ 'menu.settings.title' | translate }}</h3>
+<div class="p-3 px-md-4 pt-0 pt-md-4">
+  <h3 class="primary-text m-0">{{ 'menu.settings.title' | translate }}</h3>
 
-<!-- GENERAL SETTINGS - ALL USERS -->
-<div class="my-4">
-  <div
-    role="button"
-    tabindex="0"
-    [attr.aria-expanded]="showFields.general ? 'true' : 'false'"
-    [attr.aria-controls]="'fieldsGeneral'"
-    (click)="toggleSection('general')"
-    class="mt-3 hover-pointer"
-  >
-    <h5 class="primary-text">
-      <i class="fa fa-fw" [ngClass]="showFields.general ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
-      {{ 'settings.general.title_general' | translate }}
-    </h5>
+  <!-- GENERAL SETTINGS - ALL USERS -->
+  <div class="my-4">
+    <div
+      role="button"
+      tabindex="0"
+      [attr.aria-expanded]="showFields.general ? 'true' : 'false'"
+      [attr.aria-controls]="'fieldsGeneral'"
+      (click)="toggleSection('general')"
+      class="mt-3 hover-pointer"
+    >
+      <h5 class="primary-text">
+        <i class="fa fa-fw" [ngClass]="showFields.general ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+        {{ 'settings.general.title_general' | translate }}
+      </h5>
+    </div>
+    <ul class="list-group list-group-box mt-2 mx-0" *ngIf="showFields.general" id="fieldsGeneral">
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span class="pe-2"> {{ 'backup.title_backup' | translate }} </span>
+        <button
+          class="btn btn-primary waves-effect m-0 ms-3"
+          style="min-width: 50px"
+          (click)="openBackupModal()"
+          [attr.aria-label]="'backup.title_backup' | translate"
+        >
+          <i class="fas fa-fw fa-chevron-right"></i>
+        </button>
+      </li>
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span class="pe-2"> {{ 'backup.title_restore' | translate }} </span>
+        <button
+          class="btn btn-primary waves-effect m-0 ms-3"
+          style="min-width: 50px"
+          (click)="openRestoreModal()"
+          [attr.aria-label]="'backup.title_restore' | translate"
+        >
+          <i class="fas fa-fw fa-chevron-right"></i>
+        </button>
+      </li>
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span class="pe-2"> {{ 'menu.tooltip_user_accounts' | translate }} </span>
+        <a
+          class="btn btn-primary waves-effect m-0 ms-3"
+          style="min-width: 50px"
+          routerLink="/users"
+          [attr.aria-label]="'menu.tooltip_user_accounts' | translate"
+        >
+          <i class="fas fa-fw fa-chevron-right"></i>
+        </a>
+      </li>
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span class="pe-2"> {{ 'menu.label_settings_advanced' | translate }} </span>
+        <button
+          class="btn btn-primary waves-effect m-0 ms-3"
+          style="min-width: 50px"
+          (click)="openUiSettings()"
+          [attr.aria-label]="'menu.label_settings_advanced' | translate"
+        >
+          <i class="fas fa-fw fa-sliders"></i>
+        </button>
+      </li>
+    </ul>
   </div>
-  <ul class="list-group list-group-box mt-2 mx-0" *ngIf="showFields.general" id="fieldsGeneral">
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pe-2"> {{ 'backup.title_backup' | translate }} </span>
-      <button
-        class="btn btn-primary waves-effect m-0 ms-3"
-        style="min-width: 50px"
-        (click)="openBackupModal()"
-        [attr.aria-label]="'backup.title_backup' | translate"
-      >
-        <i class="fas fa-fw fa-chevron-right"></i>
-      </button>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pe-2"> {{ 'backup.title_restore' | translate }} </span>
-      <button
-        class="btn btn-primary waves-effect m-0 ms-3"
-        style="min-width: 50px"
-        (click)="openRestoreModal()"
-        [attr.aria-label]="'backup.title_restore' | translate"
-      >
-        <i class="fas fa-fw fa-chevron-right"></i>
-      </button>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pe-2"> {{ 'menu.tooltip_user_accounts' | translate }} </span>
-      <a
-        class="btn btn-primary waves-effect m-0 ms-3"
-        style="min-width: 50px"
-        routerLink="/users"
-        [attr.aria-label]="'menu.tooltip_user_accounts' | translate"
-      >
-        <i class="fas fa-fw fa-chevron-right"></i>
-      </a>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pe-2"> {{ 'menu.label_settings_advanced' | translate }} </span>
-      <button
-        class="btn btn-primary waves-effect m-0 ms-3"
-        style="min-width: 50px"
-        (click)="openUiSettings()"
-        [attr.aria-label]="'menu.label_settings_advanced' | translate"
-      >
-        <i class="fas fa-fw fa-sliders"></i>
-      </button>
-    </li>
-  </ul>
-</div>
 
-<!-- DISPLAY SETTINGS - ALL USERS -->
-<div class="my-4">
-  <div
-    role="button"
-    tabindex="0"
-    [attr.aria-expanded]="showFields.display ? 'true' : 'false'"
-    [attr.aria-controls]="'fieldsDisplay'"
-    (click)="toggleSection('display')"
-    class="mt-3 hover-pointer"
-  >
-    <h5 class="primary-text">
-      <i class="fa fa-fw" [ngClass]="showFields.display ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
-      {{ 'settings.general.title_display' | translate }}
-    </h5>
-  </div>
-  <ul class="list-group list-group-box mt-2 mx-0" *ngIf="showFields.display" id="fieldsDisplay">
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-      <span>{{ 'settings.display.lang' | translate }}</span>
-      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
-        <select
-          class="form-select resp-select"
-          [ngModel]="$settings.env.lang"
-          (ngModelChange)="saveUiSettingChange('lang', $event)"
-        >
-          <option value="auto">{{ 'form.select.auto' | translate }}</option>
-          <option value="bg">Bulgarian (bg)</option>
-          <option value="ca">Catalan (ca)</option>
-          <option value="zh-CN">Chinese - Simplified (zh-CN)</option>
-          <option value="zh-TW">Chinese - Traditional (zh-TW)</option>
-          <option value="cs">Czech (cs)</option>
-          <option value="nl">Dutch (nl)</option>
-          <option value="en">English (en)</option>
-          <option value="fr">French (fr)</option>
-          <option value="de">German (de)</option>
-          <option value="he">Hebrew (he)</option>
-          <option value="hu">Hungarian (hu)</option>
-          <option value="id">Indonesian (id)</option>
-          <option value="it">Italian (it)</option>
-          <option value="ja">Japanese (ja)</option>
-          <option value="ko">Korean (ko)</option>
-          <option value="mk">Macedonian (mk)</option>
-          <option value="no">Norwegian (no)</option>
-          <option value="pl">Polish (pl)</option>
-          <option value="pt-BR">Portuguese (Brazil)</option>
-          <option value="pt">Portuguese (Portugal)</option>
-          <option value="ru">Russian (ru)</option>
-          <option value="sl">Slovenian (sl)</option>
-          <option value="es">Spanish (es)</option>
-          <option value="sv">Swedish (sv)</option>
-          <option value="th">Thai (th)</option>
-          <option value="tr">Turkish (tr)</option>
-          <option value="uk">Ukrainian (uk)</option>
-        </select>
-      </div>
-    </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-      <span>{{ 'settings.display.theme' | translate }}</span>
-      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
-        <select
-          class="form-select resp-select"
-          [ngModel]="$settings.theme"
-          (ngModelChange)="saveUiSettingChange('theme', $event)"
-        >
-          <option value="orange">{{ 'settings.display.orange' | translate }}</option>
-          <option value="red">{{ 'settings.display.red' | translate }}</option>
-          <option value="pink">{{ 'settings.display.pink' | translate }}</option>
-          <option value="purple">{{ 'settings.display.purple' | translate }}</option>
-          <option value="deep-purple">{{ 'settings.display.deep_purple' | translate }}</option>
-          <option value="indigo">{{ 'settings.display.indigo' | translate }}</option>
-          <option value="blue">{{ 'settings.display.blue' | translate }}</option>
-          <option value="blue-grey">{{ 'settings.display.bluegrey' | translate }}</option>
-          <option value="cyan">{{ 'settings.display.cyan' | translate }}</option>
-          <option value="green">{{ 'settings.display.green' | translate }}</option>
-          <option value="teal">{{ 'settings.display.teal' | translate }}</option>
-          <option value="grey">{{ 'settings.display.grey' | translate }}</option>
-          <option value="brown">{{ 'settings.display.brown' | translate }}</option>
-        </select>
-      </div>
-    </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-      <span>{{ 'settings.display.lighting_mode' | translate }}</span>
-      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
-        <select
-          class="form-select resp-select"
-          [ngModel]="$settings.lightingMode"
-          (ngModelChange)="saveUiSettingChange('lightingMode', $event)"
-        >
-          <option value="auto">{{ 'form.select.auto' | translate }}</option>
-          <option value="light">{{ 'settings.display.light' | translate }}</option>
-          <option value="dark">{{ 'settings.display.dark' | translate }}</option>
-        </select>
-      </div>
-    </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-      <span>
-        {{ 'settings.display.login_wallpaper' | translate }}<br />
-        <small class="grey-text pe-2" [innerHTML]="'settings.display.login_wallpaper_desc' | translate"></small>
-      </span>
-      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
-        <input
-          class="form-control custom-input form-control-sm resp-input"
-          type="text"
-          [ngModel]="$settings.loginWallpaper"
-          (ngModelChange)="saveUiSettingChange('loginWallpaper', $event)"
-          placeholder=""
-        />
-      </div>
-    </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-      <span>{{ 'settings.display.temp_units' | translate }}</span>
-      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
-        <select
-          class="form-select resp-select"
-          [ngModel]="$settings.env.temperatureUnits"
-          (ngModelChange)="saveUiSettingChange('tempUnits', $event)"
-        >
-          <option value="c">{{ 'settings.display.temp_units.c' | translate }}</option>
-          <option value="f">{{ 'settings.display.temp_units.f' | translate }}</option>
-        </select>
-      </div>
-    </li>
-    <li class="list-group-item d-flex flex-column align-items-center" *ngIf="hasChangedLoginWallpaper">
-      <small class="grey-text my-2">{{ 'settings.changes.saved' | translate }}</small>
-      <button
-        class="btn btn-primary waves-effect my-2"
-        routerLink="/restart"
-        [attr.aria-label]="'menu.tooltip_restart' | translate"
-      >
-        {{ 'menu.tooltip_restart' | translate }}
-      </button>
-    </li>
-  </ul>
-</div>
-
-<!-- STARTUP/ENV OPTIONS - SERVICE MODE USERS -->
-<form class="my-4" novalidate [formGroup]="serviceForm" *ngIf="$settings.env.serviceMode">
-  <div
-    role="button"
-    tabindex="0"
-    [attr.aria-expanded]="showFields.startup ? 'true' : 'false'"
-    [attr.aria-controls]="'fieldsStartup'"
-    (click)="toggleSection('startup')"
-    class="mt-3 hover-pointer"
-  >
-    <h5 class="primary-text">
-      <i class="fa fa-fw" [ngClass]="showFields.startup ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
-      {{ 'settings.title_startup_options' | translate }}
-    </h5>
-  </div>
-  <ul class="list-group list-group-box mb-4 mx-0" *ngIf="showFields.startup" id="fieldsStartup">
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span>
-        {{ 'settings.startup.debug' | translate }} <code>-D</code><br />
-        <small class="grey-text pe-2">
-          {{ (isHbV2 ? 'settings.startup.debug_desc_v2' : 'settings.startup.debug_desc_v1') | translate }}
-        </small>
-      </span>
-      <input
-        type="checkbox"
-        class="rendux-input"
-        id="homebridgeDebugMode"
-        formControlName="HOMEBRIDGE_DEBUG"
-        [attr.aria-label]="'settings.startup.debug' | translate"
-      />
-      <label for="homebridgeDebugMode" class="rendux-label ms-3" style="min-width: 50px"></label>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span>
-        {{ 'settings.startup.insecure' | translate }} <code>-I</code><br />
-        <small class="grey-text pe-2">{{ 'settings.startup.insecure_desc' | translate }}</small>
-      </span>
-      <input
-        type="checkbox"
-        class="rendux-input"
-        id="homebridgeInsecureMode"
-        formControlName="HOMEBRIDGE_INSECURE"
-        [attr.aria-label]="'settings.startup.insecure' | translate"
-      />
-      <label for="homebridgeInsecureMode" class="rendux-label ms-3" style="min-width: 50px"></label>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="$settings.env.serviceMode">
-      <span>
-        {{ 'settings.startup.keep_accessories' | translate }} <code>-K</code><br />
-        <small class="grey-text pe-2">{{ 'settings.startup.keep_accessories_desc' | translate }}</small>
-      </span>
-      <input
-        type="checkbox"
-        class="rendux-input"
-        id="homebridgeKeepOrphans"
-        formControlName="HOMEBRIDGE_KEEP_ORPHANS"
-        [attr.aria-label]="'settings.startup.keep_accessories' | translate"
-      />
-      <label for="homebridgeKeepOrphans" class="rendux-label ms-3" style="min-width: 50px"></label>
-    </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-      <span>
-        <span class="font-monospace">DEBUG</span><br />
-        <small class="grey-text pe-2">
-          {{ 'settings.service.debug_tooltip' | translate }}
-          <a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Debug-Common-Values" target="_blank">
-            {{ 'form.button_more_info' | translate }} <i class="fa fa/fw fas fa-fw fa-external-link-alt"></i>
-          </a>
-        </small>
-      </span>
-      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
-        <input
-          class="form-control custom-input form-control-sm resp-input"
-          formControlName="ENV_DEBUG"
-          type="text"
-          placeholder="HAP-NodeJS:Advertiser,HAP-NodeJS:Service"
-        />
-      </div>
-    </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-      <span>
-        <span class="font-monospace">NODE_OPTIONS</span><br />
-        <small class="grey-text pe-2">{{ 'settings.service.node_tooltip' | translate }}</small>
-      </span>
-      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
-        <input
-          class="form-control custom-input form-control-sm resp-input"
-          formControlName="ENV_NODE_OPTIONS"
-          type="text"
-          placeholder="--max-old-space-size=512 --max-http-header-size=8192"
-        />
-      </div>
-    </li>
-    <li class="list-group-item d-flex flex-column align-items-center" *ngIf="hasChangedService">
-      <small class="grey-text my-2">{{ 'settings.changes.saved' | translate }}</small>
-      <button
-        class="btn btn-primary waves-effect my-2"
-        routerLink="/restart"
-        [attr.aria-label]="'menu.tooltip_restart' | translate"
-      >
-        {{ 'menu.tooltip_restart' | translate }}
-      </button>
-    </li>
-  </ul>
-</form>
-
-<!-- NETWORK SETTINGS - ALL USERS -->
-<form class="my-4" novalidate [formGroup]="uiSettingsForm">
-  <div
-    role="button"
-    tabindex="0"
-    [attr.aria-expanded]="showFields.network ? 'true' : 'false'"
-    [attr.aria-controls]="'fieldsNetwork'"
-    (click)="toggleSection('network')"
-    class="mt-3 hover-pointer"
-  >
-    <h5 class="primary-text">
-      <i class="fa fa-fw" [ngClass]="showFields.network ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
-      {{ 'settings.network.title_network' | translate }}
-    </h5>
-  </div>
-  <ul class="list-group list-group-box mt-2 mx-0" *ngIf="showFields.network" id="fieldsNetwork">
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pe-2">
-        <div>
-          {{ 'settings.network.title_network_interfaces' | translate }}<br />
-          <small class="grey-text pe-2">{{ 'settings.network.message_network_interface' | translate }}</small>
-        </div>
-        <span *ngFor="let adapter of bridgeNetworkAdapters">
-          <span
-            class="badge rounded-pill me-1"
-            [ngClass]="{'badge-danger': adapter.missing, 'badge-info': !adapter.missing}"
+  <!-- DISPLAY SETTINGS - ALL USERS -->
+  <div class="my-4">
+    <div
+      role="button"
+      tabindex="0"
+      [attr.aria-expanded]="showFields.display ? 'true' : 'false'"
+      [attr.aria-controls]="'fieldsDisplay'"
+      (click)="toggleSection('display')"
+      class="mt-3 hover-pointer"
+    >
+      <h5 class="primary-text">
+        <i class="fa fa-fw" [ngClass]="showFields.display ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+        {{ 'settings.general.title_display' | translate }}
+      </h5>
+    </div>
+    <ul class="list-group list-group-box mt-2 mx-0" *ngIf="showFields.display" id="fieldsDisplay">
+      <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+        <span>{{ 'settings.display.lang' | translate }}</span>
+        <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
+          <select
+            class="form-select resp-select"
+            [ngModel]="$settings.env.lang"
+            (ngModelChange)="saveUiSettingChange('lang', $event)"
           >
-            <i class="fas fa-fw fa-exclamation-triangle" *ngIf="adapter.missing"></i>
-            {{ adapter.iface }}:
-            <span class="fw-normal"
-              >{{ adapter.missing ? ('settings.mdns_advertiser_not_connected' | translate) : adapter.ip4 || adapter.ip6
-              }}</span
+            <option value="auto">{{ 'form.select.auto' | translate }}</option>
+            <option value="bg">Bulgarian (bg)</option>
+            <option value="ca">Catalan (ca)</option>
+            <option value="zh-CN">Chinese - Simplified (zh-CN)</option>
+            <option value="zh-TW">Chinese - Traditional (zh-TW)</option>
+            <option value="cs">Czech (cs)</option>
+            <option value="nl">Dutch (nl)</option>
+            <option value="en">English (en)</option>
+            <option value="fr">French (fr)</option>
+            <option value="de">German (de)</option>
+            <option value="he">Hebrew (he)</option>
+            <option value="hu">Hungarian (hu)</option>
+            <option value="id">Indonesian (id)</option>
+            <option value="it">Italian (it)</option>
+            <option value="ja">Japanese (ja)</option>
+            <option value="ko">Korean (ko)</option>
+            <option value="mk">Macedonian (mk)</option>
+            <option value="no">Norwegian (no)</option>
+            <option value="pl">Polish (pl)</option>
+            <option value="pt-BR">Portuguese (Brazil)</option>
+            <option value="pt">Portuguese (Portugal)</option>
+            <option value="ru">Russian (ru)</option>
+            <option value="sl">Slovenian (sl)</option>
+            <option value="es">Spanish (es)</option>
+            <option value="sv">Swedish (sv)</option>
+            <option value="th">Thai (th)</option>
+            <option value="tr">Turkish (tr)</option>
+            <option value="uk">Ukrainian (uk)</option>
+          </select>
+        </div>
+      </li>
+      <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+        <span>{{ 'settings.display.theme' | translate }}</span>
+        <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
+          <select
+            class="form-select resp-select"
+            [ngModel]="$settings.theme"
+            (ngModelChange)="saveUiSettingChange('theme', $event)"
+          >
+            <option value="orange">{{ 'settings.display.orange' | translate }}</option>
+            <option value="red">{{ 'settings.display.red' | translate }}</option>
+            <option value="pink">{{ 'settings.display.pink' | translate }}</option>
+            <option value="purple">{{ 'settings.display.purple' | translate }}</option>
+            <option value="deep-purple">{{ 'settings.display.deep_purple' | translate }}</option>
+            <option value="indigo">{{ 'settings.display.indigo' | translate }}</option>
+            <option value="blue">{{ 'settings.display.blue' | translate }}</option>
+            <option value="blue-grey">{{ 'settings.display.bluegrey' | translate }}</option>
+            <option value="cyan">{{ 'settings.display.cyan' | translate }}</option>
+            <option value="green">{{ 'settings.display.green' | translate }}</option>
+            <option value="teal">{{ 'settings.display.teal' | translate }}</option>
+            <option value="grey">{{ 'settings.display.grey' | translate }}</option>
+            <option value="brown">{{ 'settings.display.brown' | translate }}</option>
+          </select>
+        </div>
+      </li>
+      <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+        <span>{{ 'settings.display.lighting_mode' | translate }}</span>
+        <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
+          <select
+            class="form-select resp-select"
+            [ngModel]="$settings.lightingMode"
+            (ngModelChange)="saveUiSettingChange('lightingMode', $event)"
+          >
+            <option value="auto">{{ 'form.select.auto' | translate }}</option>
+            <option value="light">{{ 'settings.display.light' | translate }}</option>
+            <option value="dark">{{ 'settings.display.dark' | translate }}</option>
+          </select>
+        </div>
+      </li>
+      <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+        <span>
+          {{ 'settings.display.login_wallpaper' | translate }}<br />
+          <small class="grey-text pe-2" [innerHTML]="'settings.display.login_wallpaper_desc' | translate"></small>
+        </span>
+        <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
+          <input
+            class="form-control custom-input form-control-sm resp-input"
+            type="text"
+            [ngModel]="$settings.loginWallpaper"
+            (ngModelChange)="saveUiSettingChange('loginWallpaper', $event)"
+            placeholder=""
+          />
+        </div>
+      </li>
+      <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+        <span>{{ 'settings.display.temp_units' | translate }}</span>
+        <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
+          <select
+            class="form-select resp-select"
+            [ngModel]="$settings.env.temperatureUnits"
+            (ngModelChange)="saveUiSettingChange('tempUnits', $event)"
+          >
+            <option value="c">{{ 'settings.display.temp_units.c' | translate }}</option>
+            <option value="f">{{ 'settings.display.temp_units.f' | translate }}</option>
+          </select>
+        </div>
+      </li>
+      <li class="list-group-item d-flex flex-column align-items-center" *ngIf="hasChangedLoginWallpaper">
+        <small class="grey-text my-2">{{ 'settings.changes.saved' | translate }}</small>
+        <button
+          class="btn btn-primary waves-effect my-2"
+          routerLink="/restart"
+          [attr.aria-label]="'menu.tooltip_restart' | translate"
+        >
+          {{ 'menu.tooltip_restart' | translate }}
+        </button>
+      </li>
+    </ul>
+  </div>
+
+  <!-- STARTUP/ENV OPTIONS - SERVICE MODE USERS -->
+  <form class="my-4" novalidate [formGroup]="serviceForm" *ngIf="$settings.env.serviceMode">
+    <div
+      role="button"
+      tabindex="0"
+      [attr.aria-expanded]="showFields.startup ? 'true' : 'false'"
+      [attr.aria-controls]="'fieldsStartup'"
+      (click)="toggleSection('startup')"
+      class="mt-3 hover-pointer"
+    >
+      <h5 class="primary-text">
+        <i class="fa fa-fw" [ngClass]="showFields.startup ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+        {{ 'settings.title_startup_options' | translate }}
+      </h5>
+    </div>
+    <ul class="list-group list-group-box mb-4 mx-0" *ngIf="showFields.startup" id="fieldsStartup">
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span>
+          {{ 'settings.startup.debug' | translate }} <code>-D</code><br />
+          <small class="grey-text pe-2">
+            {{ (isHbV2 ? 'settings.startup.debug_desc_v2' : 'settings.startup.debug_desc_v1') | translate }}
+          </small>
+        </span>
+        <input
+          type="checkbox"
+          class="rendux-input"
+          id="homebridgeDebugMode"
+          formControlName="HOMEBRIDGE_DEBUG"
+          [attr.aria-label]="'settings.startup.debug' | translate"
+        />
+        <label for="homebridgeDebugMode" class="rendux-label ms-3" style="min-width: 50px"></label>
+      </li>
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span>
+          {{ 'settings.startup.insecure' | translate }} <code>-I</code><br />
+          <small class="grey-text pe-2">{{ 'settings.startup.insecure_desc' | translate }}</small>
+        </span>
+        <input
+          type="checkbox"
+          class="rendux-input"
+          id="homebridgeInsecureMode"
+          formControlName="HOMEBRIDGE_INSECURE"
+          [attr.aria-label]="'settings.startup.insecure' | translate"
+        />
+        <label for="homebridgeInsecureMode" class="rendux-label ms-3" style="min-width: 50px"></label>
+      </li>
+      <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="$settings.env.serviceMode">
+        <span>
+          {{ 'settings.startup.keep_accessories' | translate }} <code>-K</code><br />
+          <small class="grey-text pe-2">{{ 'settings.startup.keep_accessories_desc' | translate }}</small>
+        </span>
+        <input
+          type="checkbox"
+          class="rendux-input"
+          id="homebridgeKeepOrphans"
+          formControlName="HOMEBRIDGE_KEEP_ORPHANS"
+          [attr.aria-label]="'settings.startup.keep_accessories' | translate"
+        />
+        <label for="homebridgeKeepOrphans" class="rendux-label ms-3" style="min-width: 50px"></label>
+      </li>
+      <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+        <span>
+          <span class="font-monospace">DEBUG</span><br />
+          <small class="grey-text pe-2">
+            {{ 'settings.service.debug_tooltip' | translate }}
+            <a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Debug-Common-Values" target="_blank">
+              {{ 'form.button_more_info' | translate }} <i class="fa fa/fw fas fa-fw fa-external-link-alt"></i>
+            </a>
+          </small>
+        </span>
+        <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
+          <input
+            class="form-control custom-input form-control-sm resp-input"
+            formControlName="ENV_DEBUG"
+            type="text"
+            placeholder="HAP-NodeJS:Advertiser,HAP-NodeJS:Service"
+          />
+        </div>
+      </li>
+      <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+        <span>
+          <span class="font-monospace">NODE_OPTIONS</span><br />
+          <small class="grey-text pe-2">{{ 'settings.service.node_tooltip' | translate }}</small>
+        </span>
+        <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
+          <input
+            class="form-control custom-input form-control-sm resp-input"
+            formControlName="ENV_NODE_OPTIONS"
+            type="text"
+            placeholder="--max-old-space-size=512 --max-http-header-size=8192"
+          />
+        </div>
+      </li>
+      <li class="list-group-item d-flex flex-column align-items-center" *ngIf="hasChangedService">
+        <small class="grey-text my-2">{{ 'settings.changes.saved' | translate }}</small>
+        <button
+          class="btn btn-primary waves-effect my-2"
+          routerLink="/restart"
+          [attr.aria-label]="'menu.tooltip_restart' | translate"
+        >
+          {{ 'menu.tooltip_restart' | translate }}
+        </button>
+      </li>
+    </ul>
+  </form>
+
+  <!-- NETWORK SETTINGS - ALL USERS -->
+  <form class="my-4" novalidate [formGroup]="uiSettingsForm">
+    <div
+      role="button"
+      tabindex="0"
+      [attr.aria-expanded]="showFields.network ? 'true' : 'false'"
+      [attr.aria-controls]="'fieldsNetwork'"
+      (click)="toggleSection('network')"
+      class="mt-3 hover-pointer"
+    >
+      <h5 class="primary-text">
+        <i class="fa fa-fw" [ngClass]="showFields.network ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+        {{ 'settings.network.title_network' | translate }}
+      </h5>
+    </div>
+    <ul class="list-group list-group-box mt-2 mx-0" *ngIf="showFields.network" id="fieldsNetwork">
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span class="pe-2">
+          <div>
+            {{ 'settings.network.title_network_interfaces' | translate }}<br />
+            <small class="grey-text pe-2">{{ 'settings.network.message_network_interface' | translate }}</small>
+          </div>
+          <span *ngFor="let adapter of bridgeNetworkAdapters">
+            <span
+              class="badge rounded-pill me-1"
+              [ngClass]="{'badge-danger': adapter.missing, 'badge-info': !adapter.missing}"
             >
+              <i class="fas fa-fw fa-exclamation-triangle" *ngIf="adapter.missing"></i>
+              {{ adapter.iface }}:
+              <span class="fw-normal"
+                >{{ adapter.missing ? ('settings.mdns_advertiser_not_connected' | translate) : adapter.ip4 ||
+                adapter.ip6 }}</span
+              >
+            </span>
           </span>
         </span>
-      </span>
-      <button
-        class="btn btn-primary waves-effect m-0 ms-3"
-        style="min-width: 50px"
-        (click)="selectNetworkInterfaces()"
-        [disabled]="!availableNetworkAdapters.length"
-        [attr.aria-label]="'settings.network.title_network_interfaces' | translate"
-      >
-        <i class="fas fa-fw fa-chevron-right" [ngClass]="{ 'fa-pulse': !availableNetworkAdapters.length }"></i>
-      </button>
-    </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-      <span>
-        {{ 'settings.mdns_advertiser' | translate }}<br />
-        <small class="grey-text pe-2">{{ 'settings.mdns_advertiser_help' | translate }}</small>
-      </span>
-      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
-        <select
-          class="form-select resp-select"
-          [formControl]="legacyMdnsFormControl"
-          [attr.aria-label]="'settings.mdns_advertiser' | translate"
+        <button
+          class="btn btn-primary waves-effect m-0 ms-3"
+          style="min-width: 50px"
+          (click)="selectNetworkInterfaces()"
+          [disabled]="!availableNetworkAdapters.length"
+          [attr.aria-label]="'settings.network.title_network_interfaces' | translate"
         >
-          <option value="avahi" *ngIf="showAvahiMdnsOption">
-            Avahi ({{ 'settings.mdns_advertiser_rec' | translate }})
-          </option>
-          <!-- ciao is recommended if avahi is not available -->
-          <option value="ciao">
-            Ciao {{ showAvahiMdnsOption ? '' : '(' + ('settings.mdns_advertiser_rec' | translate) + ')' }}
-          </option>
-          <option value="bonjour-hap">Bonjour HAP</option>
-          <option value="resolved" *ngIf="showResolvedMdnsOption">
-            systemd-resolved ({{ 'settings.mdns_advertiser_exp' | translate }})
-          </option>
-        </select>
-      </div>
-    </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-      <span>
-        {{ 'settings.network.port_hb' | translate }}<br />
-        <small class="grey-text pe-2">{{ 'settings.network.port_hb_desc' | translate }}</small>
-      </span>
-      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
-        <input
-          class="form-control custom-input form-control-sm resp-input"
-          type="number"
-          min="1025"
-          max="65533"
-          [formControl]="hbPortFormControl"
-          [attr.aria-label]="('settings.network.port_ui' | translate)"
-          [ngClass]="{ 'is-invalid': isInvalidHbPort }"
-        />
-      </div>
-    </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-      <span>
-        {{ 'settings.network.port_ui' | translate }}<br />
-        <small class="grey-text pe-2">{{ 'settings.network.port_ui_desc' | translate }}</small>
-      </span>
-      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
-        <input
-          class="form-control custom-input form-control-sm resp-input"
-          type="number"
-          min="1025"
-          max="65533"
-          placeholder="8581"
-          formControlName="port"
-          [attr.aria-label]="('settings.network.port_ui' | translate)"
-          [ngClass]="{ 'is-invalid': isInvalidHbUiPort }"
-        />
-      </div>
-    </li>
-    <li
-      class="list-group-item d-flex flex-column align-items-center"
-      *ngIf="hasChangedHbPort || hasChangedUiSettings || hasChangedMdns || hasChangedBridgeNetworkAdapters"
+          <i class="fas fa-fw fa-chevron-right" [ngClass]="{ 'fa-pulse': !availableNetworkAdapters.length }"></i>
+        </button>
+      </li>
+      <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+        <span>
+          {{ 'settings.mdns_advertiser' | translate }}<br />
+          <small class="grey-text pe-2">{{ 'settings.mdns_advertiser_help' | translate }}</small>
+        </span>
+        <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
+          <select
+            class="form-select resp-select"
+            [formControl]="legacyMdnsFormControl"
+            [attr.aria-label]="'settings.mdns_advertiser' | translate"
+          >
+            <option value="avahi" *ngIf="showAvahiMdnsOption">
+              Avahi ({{ 'settings.mdns_advertiser_rec' | translate }})
+            </option>
+            <!-- ciao is recommended if avahi is not available -->
+            <option value="ciao">
+              Ciao {{ showAvahiMdnsOption ? '' : '(' + ('settings.mdns_advertiser_rec' | translate) + ')' }}
+            </option>
+            <option value="bonjour-hap">Bonjour HAP</option>
+            <option value="resolved" *ngIf="showResolvedMdnsOption">
+              systemd-resolved ({{ 'settings.mdns_advertiser_exp' | translate }})
+            </option>
+          </select>
+        </div>
+      </li>
+      <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+        <span>
+          {{ 'settings.network.port_hb' | translate }}<br />
+          <small class="grey-text pe-2">{{ 'settings.network.port_hb_desc' | translate }}</small>
+        </span>
+        <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
+          <input
+            class="form-control custom-input form-control-sm resp-input"
+            type="number"
+            min="1025"
+            max="65533"
+            [formControl]="hbPortFormControl"
+            [attr.aria-label]="('settings.network.port_ui' | translate)"
+            [ngClass]="{ 'is-invalid': isInvalidHbPort }"
+          />
+        </div>
+      </li>
+      <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+        <span>
+          {{ 'settings.network.port_ui' | translate }}<br />
+          <small class="grey-text pe-2">{{ 'settings.network.port_ui_desc' | translate }}</small>
+        </span>
+        <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
+          <input
+            class="form-control custom-input form-control-sm resp-input"
+            type="number"
+            min="1025"
+            max="65533"
+            placeholder="8581"
+            formControlName="port"
+            [attr.aria-label]="('settings.network.port_ui' | translate)"
+            [ngClass]="{ 'is-invalid': isInvalidHbUiPort }"
+          />
+        </div>
+      </li>
+      <li
+        class="list-group-item d-flex flex-column align-items-center"
+        *ngIf="hasChangedHbPort || hasChangedUiSettings || hasChangedMdns || hasChangedBridgeNetworkAdapters"
+      >
+        <small class="grey-text my-2">{{ 'settings.changes.saved' | translate }}</small>
+        <button
+          class="btn btn-primary waves-effect my-2"
+          routerLink="/restart"
+          [attr.aria-label]="'menu.tooltip_restart' | translate"
+        >
+          {{ 'menu.tooltip_restart' | translate }}
+        </button>
+      </li>
+    </ul>
+  </form>
+
+  <!-- CACHE SETTINGS - SERVICE MODE USERS ONLY -->
+  <div *ngIf="$settings.env.serviceMode" class="my-4">
+    <div
+      role="button"
+      tabindex="0"
+      [attr.aria-expanded]="showFields.cache ? 'true' : 'false'"
+      [attr.aria-controls]="'fieldsCache'"
+      (click)="toggleSection('cache')"
+      class="mt-3 hover-pointer"
     >
-      <small class="grey-text my-2">{{ 'settings.changes.saved' | translate }}</small>
-      <button
-        class="btn btn-primary waves-effect my-2"
-        routerLink="/restart"
-        [attr.aria-label]="'menu.tooltip_restart' | translate"
-      >
-        {{ 'menu.tooltip_restart' | translate }}
-      </button>
-    </li>
-  </ul>
-</form>
-
-<!-- CACHE SETTINGS - SERVICE MODE USERS ONLY -->
-<div *ngIf="$settings.env.serviceMode" class="my-4">
-  <div
-    role="button"
-    tabindex="0"
-    [attr.aria-expanded]="showFields.cache ? 'true' : 'false'"
-    [attr.aria-controls]="'fieldsCache'"
-    (click)="toggleSection('cache')"
-    class="mt-3 hover-pointer"
-  >
-    <h5 class="primary-text">
-      <i class="fa fa-fw" [ngClass]="showFields.cache ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
-      {{ 'settings.cache.title' | translate }}
-    </h5>
+      <h5 class="primary-text">
+        <i class="fa fa-fw" [ngClass]="showFields.cache ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+        {{ 'settings.cache.title' | translate }}
+      </h5>
+    </div>
+    <p class="small grey-text mb-2 mx-0" *ngIf="showFields.cache">{{ 'settings.cache.desc' | translate }}</p>
+    <ul class="list-group list-group-box mb-4 mx-0" *ngIf="showFields.cache" id="fieldsCache">
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span class="pe-2">
+          {{ 'reset.clear_cache_single.title' | translate }}<br />
+          <small class="grey-text pe-2">{{ 'reset.clear_cache_single.desc' | translate }}</small>
+        </span>
+        <button
+          class="btn btn-primary waves-effect m-0 ms-3"
+          style="min-width: 50px"
+          (click)="removeSingleCachedAccessories()"
+          [attr.aria-label]="'reset.clear_cache_single.title' | translate"
+        >
+          <i class="fas fa-fw fa-chevron-right"></i>
+        </button>
+      </li>
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span class="pe-2">
+          {{ 'reset.clear_cache_bridge.title' | translate }}<br />
+          <small class="grey-text pe-2">{{ 'reset.clear_cache_bridge.desc' | translate }}</small>
+        </span>
+        <button
+          class="btn btn-primary waves-effect m-0 ms-3"
+          style="min-width: 50px"
+          (click)="removeBridgeAccessories()"
+          [attr.aria-label]="'reset.clear_cache_all.title' | translate"
+        >
+          <i class="fas fa-fw fa-chevron-right"></i>
+        </button>
+      </li>
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span class="pe-2">
+          {{ 'reset.clear_cache_all.title' | translate }}<br />
+          <small class="grey-text pe-2">{{ 'reset.clear_cache_all.desc' | translate }}</small>
+        </span>
+        <button
+          class="btn btn-primary waves-effect m-0 ms-3"
+          style="min-width: 50px"
+          (click)="removeAllCachedAccessories()"
+          [attr.aria-label]="'reset.clear_cache_all.title' | translate"
+        >
+          <i class="fas fa-fw fa-chevron-right"></i>
+        </button>
+      </li>
+    </ul>
   </div>
-  <p class="small grey-text mb-2 mx-0" *ngIf="showFields.cache">{{ 'settings.cache.desc' | translate }}</p>
-  <ul class="list-group list-group-box mb-4 mx-0" *ngIf="showFields.cache" id="fieldsCache">
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pe-2">
-        {{ 'reset.clear_cache_single.title' | translate }}<br />
-        <small class="grey-text pe-2">{{ 'reset.clear_cache_single.desc' | translate }}</small>
-      </span>
-      <button
-        class="btn btn-primary waves-effect m-0 ms-3"
-        style="min-width: 50px"
-        (click)="removeSingleCachedAccessories()"
-        [attr.aria-label]="'reset.clear_cache_single.title' | translate"
-      >
-        <i class="fas fa-fw fa-chevron-right"></i>
-      </button>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pe-2">
-        {{ 'reset.clear_cache_bridge.title' | translate }}<br />
-        <small class="grey-text pe-2">{{ 'reset.clear_cache_bridge.desc' | translate }}</small>
-      </span>
-      <button
-        class="btn btn-primary waves-effect m-0 ms-3"
-        style="min-width: 50px"
-        (click)="removeBridgeAccessories()"
-        [attr.aria-label]="'reset.clear_cache_all.title' | translate"
-      >
-        <i class="fas fa-fw fa-chevron-right"></i>
-      </button>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pe-2">
-        {{ 'reset.clear_cache_all.title' | translate }}<br />
-        <small class="grey-text pe-2">{{ 'reset.clear_cache_all.desc' | translate }}</small>
-      </span>
-      <button
-        class="btn btn-primary waves-effect m-0 ms-3"
-        style="min-width: 50px"
-        (click)="removeAllCachedAccessories()"
-        [attr.aria-label]="'reset.clear_cache_all.title' | translate"
-      >
-        <i class="fas fa-fw fa-chevron-right"></i>
-      </button>
-    </li>
-  </ul>
-</div>
 
-<!-- RESET SETTINGS - ALL USERS -->
-<div class="my-4">
-  <div
-    role="button"
-    tabindex="0"
-    [attr.aria-expanded]="showFields.reset ? 'true' : 'false'"
-    [attr.aria-controls]="'fieldsReset'"
-    (click)="toggleSection('reset')"
-    class="mt-3 hover-pointer"
-  >
-    <h5 class="primary-text">
-      <i class="fa fa-fw" [ngClass]="showFields.reset ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
-      {{ 'reset.bridges.title' | translate }}
-    </h5>
+  <!-- RESET SETTINGS - ALL USERS -->
+  <div class="my-4">
+    <div
+      role="button"
+      tabindex="0"
+      [attr.aria-expanded]="showFields.reset ? 'true' : 'false'"
+      [attr.aria-controls]="'fieldsReset'"
+      (click)="toggleSection('reset')"
+      class="mt-3 hover-pointer"
+    >
+      <h5 class="primary-text">
+        <i class="fa fa-fw" [ngClass]="showFields.reset ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+        {{ 'reset.bridges.title' | translate }}
+      </h5>
+    </div>
+    <p class="small grey-text mb-2 mx-0" *ngIf="showFields.reset">{{ 'reset.bridges.desc' | translate }}</p>
+    <ul class="list-group list-group-box mt-2 mx-0" *ngIf="showFields.reset" id="fieldsReset">
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span class="pe-2">
+          {{ 'reset.bridges_single.title' | translate }}<br />
+          <small class="grey-text pe-2">{{ 'reset.bridges_single.desc' | translate }}</small>
+        </span>
+        <button
+          class="btn btn-primary waves-effect m-0 ms-3"
+          style="min-width: 50px"
+          (click)="unpairAccessory()"
+          [attr.aria-label]="'reset.bridges_single.title' | translate"
+        >
+          <i class="fas fa-fw fa-chevron-right"></i>
+        </button>
+      </li>
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span class="pe-2">
+          {{ 'reset.bridges_all.title' | translate | titlecase }}<br />
+          <small class="grey-text pe-2">{{ 'reset.bridges_all.desc' | translate }}</small>
+        </span>
+        <button
+          class="btn btn-primary waves-effect m-0 ms-3"
+          style="min-width: 50px"
+          (click)="resetHomebridgeState()"
+          [attr.aria-label]="'reset.bridges_all.title' | translate"
+        >
+          <i class="fas fa-fw fa-chevron-right"></i>
+        </button>
+      </li>
+    </ul>
   </div>
-  <p class="small grey-text mb-2 mx-0" *ngIf="showFields.reset">{{ 'reset.bridges.desc' | translate }}</p>
-  <ul class="list-group list-group-box mt-2 mx-0" *ngIf="showFields.reset" id="fieldsReset">
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pe-2">
-        {{ 'reset.bridges_single.title' | translate }}<br />
-        <small class="grey-text pe-2">{{ 'reset.bridges_single.desc' | translate }}</small>
-      </span>
-      <button
-        class="btn btn-primary waves-effect m-0 ms-3"
-        style="min-width: 50px"
-        (click)="unpairAccessory()"
-        [attr.aria-label]="'reset.bridges_single.title' | translate"
-      >
-        <i class="fas fa-fw fa-chevron-right"></i>
-      </button>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pe-2">
-        {{ 'reset.bridges_all.title' | translate | titlecase }}<br />
-        <small class="grey-text pe-2">{{ 'reset.bridges_all.desc' | translate }}</small>
-      </span>
-      <button
-        class="btn btn-primary waves-effect m-0 ms-3"
-        style="min-width: 50px"
-        (click)="resetHomebridgeState()"
-        [attr.aria-label]="'reset.bridges_all.title' | translate"
-      >
-        <i class="fas fa-fw fa-chevron-right"></i>
-      </button>
-    </li>
-  </ul>
 </div>
-<div class="pb-3"></div>

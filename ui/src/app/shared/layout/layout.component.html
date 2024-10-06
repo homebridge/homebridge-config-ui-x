@@ -1,4 +1,4 @@
 <app-sidebar [isExpanded]="sidebarExpanded"></app-sidebar>
-<div class="content px-3 p-md-4" [ngClass]="{ 'sidebarExpanded': sidebarExpanded }">
+<div class="content" [ngClass]="{ 'sidebarExpanded': sidebarExpanded }" [ngStyle]="{ 'background': backgroundStyle }">
   <router-outlet></router-outlet>
 </div>

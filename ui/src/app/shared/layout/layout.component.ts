@@ -16,8 +16,10 @@ import { lt } from 'semver'
   styleUrls: ['./layout.component.scss'],
 })
 export class LayoutComponent implements OnInit {
-  public sidebarExpanded = false
   private io: IoNamespace
+
+  public sidebarExpanded = false
+  public backgroundStyle: string
 
   constructor(
     public $auth: AuthService,
@@ -35,6 +37,20 @@ export class LayoutComponent implements OnInit {
     })
 
     this.compareServerUiVersion()
+    this.setBackground()
+  }
+
+  async setBackground() {
+    if (!this.$settings.settingsLoaded) {
+      await firstValueFrom(this.$settings.onSettingsLoaded)
+    }
+
+    if (this.$settings.env.customWallpaperHash) {
+      if (this.$settings.env.customWallpaperHash) {
+        const backgroundImageUrl = `${environment.api.base}/auth/wallpaper/${this.$settings.env.customWallpaperHash}`
+        this.backgroundStyle = `url('${backgroundImageUrl}') center/cover`
+      }
+    }
   }
 
   async compareServerUiVersion() {
