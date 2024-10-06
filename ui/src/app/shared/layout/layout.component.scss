@@ -2,6 +2,7 @@
   margin-left: 60px;
   transition: 0.3s;
   height: 100%;
+  overflow: scroll;
 
   @media (max-width: 767px) {
     margin-left: 0;

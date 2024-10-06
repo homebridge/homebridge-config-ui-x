@@ -1,7 +1,7 @@
 import { ApiService } from '@/app/core/api.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { HttpEventType, HttpResponse } from '@angular/common/http'
-import { Component, Input, OnDestroy, OnInit } from '@angular/core'
+import { Component, OnDestroy, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateService } from '@ngx-translate/core'
@@ -13,8 +13,6 @@ import { FitAddon } from 'xterm-addon-fit'
   templateUrl: './restore.component.html',
 })
 export class RestoreComponent implements OnInit, OnDestroy {
-  @Input() setupWizardRestore = false
-
   public clicked = false
   public maxFileSizeText = globalThis.backup.maxBackupSizeText
   public selectedFile: File
@@ -48,12 +46,6 @@ export class RestoreComponent implements OnInit, OnDestroy {
     this.io.socket.on('stdout', (data) => {
       this.term.write(data)
     })
-
-    if (this.setupWizardRestore) {
-      this.restoreStarted = true
-      this.restoreInProgress = true
-      this.startRestore()
-    }
   }
 
   onRestoreBackupClick() {
@@ -91,9 +83,6 @@ export class RestoreComponent implements OnInit, OnDestroy {
       next: () => {
         this.restoreInProgress = false
         this.$toastr.success(this.$translate.instant('backup.backup_restored'), this.$translate.instant('toast.title_success'))
-        if (this.setupWizardRestore) {
-          this.postBackupRestart()
-        }
       },
       error: (error) => {
         this.restoreFailed = true

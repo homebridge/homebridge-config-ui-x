@@ -53,7 +53,7 @@
               class="system-info-link"
               (click)="nodeUpdateModal()"
             >
-              <i class="primary-text fas fa-fw fa-circle-up"></i> {{ serverInfo.nodeVersion }}
+              <i class="primary-text fas fa-fw fa-circle-up"></i>
             </a>
             <a
               *ngIf="nodejsInfo.showNodeUnsupportedWarning && !nodejsInfo.updateAvailable"
@@ -61,11 +61,9 @@
               class="system-info-link"
               (click)="nodeUnsupportedModal()"
             >
-              <i class="primary-text fas fa-fw fa-exclamation-circle"></i> {{ serverInfo.nodeVersion }}
+              <i class="primary-text fas fa-fw fa-exclamation-circle"></i>
             </a>
-            <span *ngIf="!nodejsInfo.showNodeUnsupportedWarning && !nodejsInfo.updateAvailable">
-              {{ serverInfo.nodeVersion }}
-            </span>
+            {{ serverInfo.nodeVersion }}
           </td>
         </tr>
         <tr>

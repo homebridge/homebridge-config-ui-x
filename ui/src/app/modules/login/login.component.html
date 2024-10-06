@@ -1,14 +1,30 @@
 <div
-  class="login-container d-flex align-items-center justify-content-center"
-  [ngStyle]="{'background': backgroundStyle}"
+  class="login-container d-flex align-items-start justify-content-center"
+  [ngStyle]="{ 'background': backgroundStyle }"
 >
-  <div class="card card-body mx-2 login-card">
+  <div class="w-100 login-card d-flex py-4 flex-column">
+    <img
+      class="homebridge-logo mx-auto my-3"
+      ngSrc="/assets/homebridge-color-round.svg"
+      alt="Homebridge Logo"
+      height="100"
+      width="100"
+      priority="true"
+    />
     <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
-      <p class="h4 text-center mb-4">Homebridge</p>
-
+      <h4 class="mb-4 text-center">{{ 'setup.welcome_to_homebridge' | translate }}</h4>
       <div *ngIf="!twoFactorCodeRequired">
-        <div class="md-form">
-          <i class="fas fa-fw fa-user prefix grey-text"></i>
+        <div class="input-group mb-4 no-border" *ngIf="!isMobile">
+          <div class="input-group-text custom-input">
+            <i class="fas fa-fw fa-lightbulb yellow-text fa-lg"></i>
+          </div>
+          <div class="form-control custom-input">
+            <div class="small grey-text fw-semibold">{{ 'login.tips' | translate }}</div>
+            <div class="small grey-text" [innerHTML]="'login.tips_' + randomTip | translate"></div>
+          </div>
+        </div>
+        <div class="input-group mb-4">
+          <span class="input-group-text custom-input"><i class="fas fa-fw fa-user primary-text fa-lg"></i></span>
           <input
             #username
             formControlName="username"
@@ -18,15 +34,16 @@
             autocomplete="username"
             autocapitalize="none"
             tabindex="1"
-            class="form-control px-0"
+            class="form-control custom-input"
             [ngClass]="{
             'is-invalid': form.controls.username.dirty && form.controls.username.errors
           }"
+            placeholder="{{ 'login.label_username' | translate }}"
+            required
           />
-          <label for="form-username">{{ 'login.label_username' | translate }}</label>
         </div>
-        <div class="md-form">
-          <i class="fas fa-fw fa-lock prefix grey-text"></i>
+        <div class="input-group mb-4">
+          <span class="input-group-text custom-input"><i class="fas fa-fw fa-lock primary-text fa-lg"></i></span>
           <input
             #password
             formControlName="password"
@@ -34,43 +51,55 @@
             id="form-pass"
             autocomplete="current-password"
             tabindex="2"
-            class="form-control px-0"
+            class="form-control custom-input"
             [ngClass]="{
             'is-invalid': form.controls.password.dirty && form.controls.password.errors
           }"
+            placeholder="{{ 'login.label_password' | translate }}"
+            required
           />
-          <label for="form-pass">{{ 'login.label_password' | translate }}</label>
         </div>
       </div>
-
       <div *ngIf="twoFactorCodeRequired">
-        <p class="text-center">{{ 'users.setup_2fa_enter_code' | translate }}</p>
-        <div class="md-form">
-          <i class="fas fa-fw fa-key prefix grey-text"></i>
+        <div class="input-group mb-4">
+          <span class="input-group-text custom-input"><i class="fas fa-fw fa-key primary-text fa-lg"></i></span>
           <input
             #otp
             formControlName="otp"
             type="text"
             id="form-ota"
+            autofocus
             autocomplete="one-time-code"
             autocapitalize="none"
             inputmode="numeric"
             pattern="[0-9]*"
             tabindex="1"
-            class="form-control px-0"
-            [ngClass]="{
-              'is-invalid': form.controls.otp.dirty && form.controls.otp.errors
-            }"
+            class="form-control custom-input"
+            placeholder="{{ 'login.label_2fa_code' | translate }}"
           />
-          <label for="form-ota">{{ 'login.label_2fa_code' | translate }}</label>
         </div>
       </div>
-
+      <div class="input-group no-border mb-4" *ngIf="invalidCredentials">
+        <div class="input-group-text custom-input">
+          <i class="fas fa-fw fa-exclamation-triangle pink-text fa-lg"></i>
+        </div>
+        <div class="form-control custom-input">
+          <div class="small grey-text fw-semibold">{{ 'login.invalid_credentials' | translate }}</div>
+          <div class="small grey-text" [innerHTML]="'login.invalid_credentials_2' | translate"></div>
+        </div>
+      </div>
+      <div class="input-group no-border mb-4" *ngIf="invalid2faCode">
+        <div class="input-group-text custom-input">
+          <i class="fas fa-fw fa-exclamation-triangle pink-text fa-lg"></i>
+        </div>
+        <div class="form-control custom-input">
+          <div class="small grey-text fw-semibold">{{ 'login.invalid_code' | translate }}</div>
+          <div class="small grey-text" [innerHTML]="'login.invalid_credentials_2' | translate"></div>
+        </div>
+      </div>
       <div class="text-center">
-        <p class="red-text" *ngIf="invalidCredentials"><small>{{ 'login.invalid_credentials' | translate }}</small></p>
-        <p class="red-text" *ngIf="invalid2faCode"><small>{{ 'login.message_invalid_2fa_code' | translate }}</small></p>
-        <button tabindex="3" class="btn btn-primary" type="submit" [disabled]="form.invalid">
-          {{ 'login.button_login' | translate }}
+        <button tabindex="3" id="submit-button" class="btn btn-primary mb-4" type="submit" [disabled]="form.invalid">
+          {{ 'form.button_continue' | translate }}
         </button>
       </div>
     </form>
