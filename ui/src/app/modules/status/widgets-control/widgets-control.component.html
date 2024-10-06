@@ -45,12 +45,10 @@
             [(ngModel)]="widget.location"
           />
         </div>
-        <p class="muted grey-text font-italic text-center">Weather data is provided by OpenWeather.</p>
+        <p class="muted grey-text text-center">Weather data is provided by OpenWeather.</p>
       </div>
       <div *ngSwitchCase="'AccessoriesWidgetComponent'">
-        <p class="muted grey-text font-italic text-center">
-          {{ 'status.widget.accessories.choose_accessories' | translate }}
-        </p>
+        <p class="muted grey-text text-center">{{ 'status.widget.accessories.choose_accessories' | translate }}</p>
       </div>
       <div *ngSwitchCase="'HomebridgeStatusWidgetComponent'">
         <div class="form-group row align-items-center">
@@ -168,7 +166,7 @@
             </div>
           </div>
         </div>
-        <p class="muted grey-text font-italic text-center">{{ 'status.widget.network.refresh_note' | translate }}</p>
+        <p class="muted grey-text text-center">{{ 'status.widget.network.refresh_note' | translate }}</p>
       </div>
       <div *ngSwitchCase="'MemoryWidgetComponent'">
         <div class="form-group row align-items-center">
@@ -205,17 +203,18 @@
             </div>
           </div>
         </div>
-        <p class="muted grey-text font-italic text-center">{{ 'status.widget.network.refresh_note' | translate }}</p>
+        <p class="muted grey-text text-center">{{ 'status.widget.network.refresh_note' | translate }}</p>
       </div>
       <div *ngSwitchCase="'NetworkWidgetComponent'">
         <div class="form-group row align-items-center">
           <label class="col-6 col-form-label"> {{ 'status.widget.network.network_interface' | translate }} </label>
           <div class="col-6">
-            <select class="custom-select" [(ngModel)]="widget.networkInterface">
+            <select *ngIf="networkInterfaces.length" class="custom-select" [(ngModel)]="widget.networkInterface">
               <option *ngFor="let networkInterface of networkInterfaces" [value]="networkInterface">
                 {{ networkInterface }}
               </option>
             </select>
+            <span *ngIf="!networkInterfaces.length">{{ 'status.widget.network.none_selected' | translate }}</span>
           </div>
         </div>
         <div class="form-group row align-items-center">
@@ -252,7 +251,7 @@
             </div>
           </div>
         </div>
-        <p class="muted grey-text font-italic text-center">{{ 'status.widget.network.refresh_note' | translate }}</p>
+        <p class="muted grey-text text-center">{{ 'status.widget.network.refresh_note' | translate }}</p>
       </div>
     </div>
   </div>

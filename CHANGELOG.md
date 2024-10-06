@@ -7,6 +7,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### UI Changes
 
 - fix gsh plugin custom ui
+- network widget - explain why ni list is empty
 
 ### Homebridge Dependencies
 
