@@ -115,7 +115,7 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
         this.linkType = decoded.id.split('|')[0].split('-')[0]
       } catch (error) {
         console.error(error)
-        this.$toastr.error(this.$translate.instant('plugins.settings.gsh.invalid_token'), this.$translate.instant('toast.title_error'))
+        this.$toastr.error(this.$translate.instant('plugins.settings.custom.homebridge-gsh.message_invalid_token'), this.$translate.instant('toast.title_error'))
         delete this.gshConfig.token
       }
     }

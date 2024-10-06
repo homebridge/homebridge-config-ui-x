@@ -140,7 +140,7 @@ export class PluginsSettingsUiService {
           <script>
           window._homebridge = {
             plugin: ${JSON.stringify(pluginUi.plugin)},
-            serverEnv: ${JSON.stringify(this.configService.uiSettings())},
+            serverEnv: ${JSON.stringify(this.configService.uiSettings(true))},
           };
           </script>
           <script src="${origin || 'http://localhost:4200'}/assets/plugin-ui-utils/ui.js?v=${this.configService.package.version}"></script>
