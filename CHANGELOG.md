@@ -9,6 +9,10 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix gsh plugin custom ui
 - network widget - explain why ni list is empty
 
+### Other Changes
+
+- update some repo screenshots
+
 ### Homebridge Dependencies
 
 - `@homebridge/hap-client` @ `v1.10.2`
