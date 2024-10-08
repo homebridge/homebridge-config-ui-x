@@ -50,6 +50,9 @@ async function main() {
   // Check each key
   const unusedKeys = []
   for (const key of keys) {
+    if (key.startsWith('login.tips_')) {
+      continue
+    }
     const isUsed = await Promise.all(allFiles.map(file => isKeyUsedInFile(key, file)))
       .then(results => results.some(result => result))
     if (!isUsed) {

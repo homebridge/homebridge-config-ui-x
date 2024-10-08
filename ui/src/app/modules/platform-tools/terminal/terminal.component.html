@@ -1,8 +1,10 @@
-<div class="row mb-3">
-  <div class="col-12">
-    <h3 class="primary-text m-0">{{ 'menu.linux.label_terminal' | translate }}</h3>
+<div class="p-3 px-md-4 pt-0 pt-md-4 adjust-for-mobile-2">
+  <div class="row mb-3">
+    <div class="col-12">
+      <h3 class="primary-text m-0">{{ 'menu.linux.label_terminal' | translate }}</h3>
+    </div>
   </div>
-</div>
-<div class="flex-column d-flex align-items-stretch adjust-for-mobile">
-  <div #terminaloutput id="docker-terminal" class="terminal align-self-end w-100 h-100 mb-1"></div>
+  <div class="flex-column d-flex align-items-stretch">
+    <div #terminaloutput class="terminal align-self-end w-100 h-100"></div>
+  </div>
 </div>

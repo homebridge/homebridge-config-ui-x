@@ -1,31 +1,49 @@
-<div class="setup-container d-flex align-items-center justify-content-center">
-  <div class="w-100 setup-card d-flex py-5">
+<div class="setup-container gradient d-flex align-items-start justify-content-center">
+  <div class="w-100 setup-card d-flex py-4 flex-column">
+    <img
+      class="homebridge-logo mx-auto"
+      ngSrc="/assets/homebridge-color-round.svg"
+      alt="Homebridge Logo"
+      height="100"
+      width="100"
+      priority="true"
+    />
+    <div class="progress w-100 my-4">
+      <div
+        class="progress-bar progress-bar-striped bg-success"
+        role="progressbar"
+        [style.width]="progress + '%'"
+        [attr.aria-valuenow]="progress"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        [ngClass]="{
+          'progress-bar-animated': loading || restoreUploading
+        }"
+      ></div>
+    </div>
     <div *ngIf="step === 'welcome'" class="w-100 d-flex flex-column align-items-center">
-      <img class="homebridge-logo mx-auto" src="/assets/homebridge-color-round.svg" alt="hb logo" />
-      <h3 class="pt-4 pb-3 text-center">{{ 'setup.welcome_to_homebridge' | translate }}</h3>
-      <button type="button" class="btn btn-lg btn-primary" (click)="onClickGettingStarted()">
+      <h4 class="mb-4 text-center">{{ 'setup.welcome_to_homebridge' | translate }}</h4>
+      <button type="button" class="btn btn-lg btn-primary mb-3" (click)="onClickGettingStarted()">
         {{ 'setup.button_get_started' | translate }}
       </button>
-      <small class="mt-3">
-        <a href="javascript:void(0)" class="grey-text" (click)="onClickRestoreBackup()"
-          >{{ 'setup_wizard_message_restore' | translate }}</a
-        >
-      </small>
+      <a href="javascript:void(0)" class="grey-text" (click)="onClickRestoreBackup()"
+        >{{ 'setup_wizard_message_restore' | translate }}</a
+      >
     </div>
-
     <div *ngIf="step === 'create-account'" class="w-100 d-flex flex-column align-items-center">
-      <img
-        class="homebridge-logo homebridge-logo-small mx-auto"
-        src="/assets/homebridge-color-round.svg"
-        alt="hb logo"
-      />
-      <h3 class="pt-4 pb-3 text-center">{{ 'setup.create_account' | translate }}</h3>
-
+      <h3 class="mb-3 text-center">{{ 'setup.create_account' | translate }}</h3>
       <div class="w-100">
-        <p>{{ 'setup.create_account_reason' | translate }}</p>
+        <div class="input-group mb-4 no-border">
+          <div class="input-group-text custom-input">
+            <i class="fas fa-fw fa-lightbulb yellow-text fa-lg"></i>
+          </div>
+          <div class="form-control custom-input">
+            <div class="small grey-text">{{ 'setup.create_account_reason' | translate }}</div>
+          </div>
+        </div>
         <form novalidate (ngSubmit)="createFirstUser()" [formGroup]="createUserForm">
-          <div class="md-form">
-            <i class="fas fa-fw fa-user prefix grey-text"></i>
+          <div class="input-group mb-4">
+            <span class="input-group-text custom-input"><i class="fas fa-fw fa-user primary-text fa-lg"></i></span>
             <input
               formControlName="username"
               type="text"
@@ -33,96 +51,94 @@
               autocomplete="username"
               autocapitalize="none"
               tabindex="1"
-              class="form-control px-0"
+              class="form-control custom-input"
               [readonly]="loading"
               [ngClass]="{
                 'is-valid': (createUserForm.controls.username.dirty) && createUserForm.controls.username.valid,
                 'is-invalid': (createUserForm.controls.username.dirty) && createUserForm.controls.username.invalid
               }"
+              placeholder="{{ 'login.label_username' | translate }}"
+              required
             />
-            <label for="form-username">{{ 'users.label_username' | translate }}</label>
           </div>
-
-          <div class="md-form">
-            <i class="fas fa-fw fa-lock prefix grey-text"></i>
+          <div class="input-group mb-4">
+            <span class="input-group-text custom-input"><i class="fas fa-fw fa-lock fa-lg"></i></span>
             <input
               formControlName="password"
               type="password"
               id="form-pass"
               autocomplete="new-password"
               tabindex="2"
-              class="form-control px-0"
+              class="form-control custom-input"
               [readonly]="loading"
               [ngClass]="{
                 'is-valid': (createUserForm.controls.password.dirty) && createUserForm.controls.password.valid,
                 'is-invalid': (createUserForm.controls.password.dirty) && createUserForm.controls.password.errors
               }"
+              placeholder="{{ 'login.label_password' | translate }}"
+              required
             />
-            <label for="form-pass">{{ 'users.label_password' | translate }}</label>
           </div>
-
-          <div class="md-form">
-            <i class="fas fa-fw fa-lock prefix grey-text"></i>
+          <div class="input-group mb-4">
+            <span class="input-group-text custom-input"><i class="fas fa-fw fa-lock fa-lg"></i></span>
             <input
               formControlName="passwordConfirm"
               type="password"
               id="form-pass-confirm"
               autocomplete="new-password"
               tabindex="2"
-              class="form-control px-0"
+              class="form-control custom-input"
               [readonly]="loading"
               [ngClass]="{
                 'is-valid': (createUserForm.controls.passwordConfirm.dirty) && createUserForm.controls.passwordConfirm.valid,
                 'is-invalid': (createUserForm.controls.passwordConfirm.dirty) && createUserForm.controls.passwordConfirm.errors
               }"
+              placeholder="{{ 'users.label_confirm_password' | translate }}"
+              required
             />
-            <label for="form-pass-confirm">{{ 'users.label_confirm_password' | translate }}</label>
           </div>
-
-          <div class="w-100 text-center">
+          <div class="mt-3 w-100 d-flex justify-content-between">
             <button
-              type="submit"
-              class="btn btn-primary"
-              [disabled]="createUserForm.invalid || loading"
-              [ngClass]="{
-              'button-loading': loading
-            }"
+              type="button"
+              class="btn btn-elegant ms-0"
+              [disabled]="restoreUploading"
+              (click)="onClickCancelRestore()"
             >
-              {{ 'setup.create_account' | translate }}
-              <i class="button-loading-overlay fas fa-fw fa-spinner fa-pulse"></i>
+              {{ 'form.button_back' | translate }}
+            </button>
+            <button type="submit" class="btn btn-primary" [disabled]="createUserForm.invalid || loading">
+              {{ 'form.button_continue' | translate }}
             </button>
           </div>
         </form>
       </div>
     </div>
-
     <div *ngIf="step === 'restore-backup'" class="w-100 d-flex flex-column align-items-center">
-      <img
-        class="homebridge-logo homebridge-logo-small mx-auto"
-        src="/assets/homebridge-color-round.svg"
-        alt="hb logo"
-      />
-      <h3 class="pt-4 pb-3 text-center">{{ 'backup.title_restore' | translate }}</h3>
-      <p>{{ 'backup.restore_help_one' | translate }}</p>
-
+      <h3 class="mb-3 text-center">{{ 'setup_wizard_message_restore' | translate }}</h3>
+      <div class="input-group mb-4 no-border">
+        <div class="input-group-text custom-input">
+          <i class="fas fa-fw fa-hard-drive fa-lg"></i>
+        </div>
+        <div class="form-control custom-input">
+          <div class="small grey-text">{{ 'backup.restore_help_one' | translate }}</div>
+        </div>
+      </div>
       <input
         type="file"
-        class="form-control"
+        class="form-control custom-input-solo mb-3"
         id="restoreFileUpload"
         accept="application/gzip, .gz"
         (change)="handleRestoreFileInput($event.target.files)"
       />
-
       <div class="mt-3 w-100 d-flex justify-content-between">
         <button
           type="button"
           class="btn btn-elegant ms-0"
-          [disabled]="restoreUploadStarted"
+          [disabled]="restoreUploading"
           (click)="onClickCancelRestore()"
         >
-          {{ 'form.button_cancel' | translate }}
+          {{ 'form.button_back' | translate }}
         </button>
-
         <button
           type="button"
           class="btn btn-primary me-0"
@@ -133,32 +149,28 @@
             <i class="fas fa-fw fa-spinner fa-pulse"></i>
             {{ 'backup.label_uploading' | translate }}
           </span>
-          <span *ngIf="!restoreUploading">{{ 'backup.button_restore_backup' | translate }}</span>
+          <span *ngIf="!restoreUploading">{{ 'form.button_continue' | translate }}</span>
         </button>
       </div>
     </div>
-
-    <div *ngIf="step === 'restarting'" class="w-100 d-flex flex-column align-items-center">
-      <img
-        class="homebridge-logo homebridge-logo-small mx-auto"
-        src="/assets/homebridge-color-round.svg"
-        alt="hb logo"
-      />
-      <h3 class="pt-4 pb-3 text-center">{{ 'restart.title_restart' | translate }}</h3>
-      <h1>
-        <i class="fas fa-fw fa-spinner fa-pulse"></i>
-      </h1>
+    <div
+      *ngIf="['restoring', 'restarting', 'restore-complete'].includes(step)"
+      class="w-100 d-flex flex-column align-items-center"
+    >
+      <h3 class="mb-3 text-center" *ngIf="step === 'restoring'">{{ 'setup_wizard_message_restoring' | translate }}</h3>
+      <h3 class="mb-3 text-center" *ngIf="step === 'restarting'">{{ 'restart.title_restart' | translate }}</h3>
+      <h3 class="mb-3 text-center" *ngIf="step === 'restore-complete'">
+        {{ 'setup_wizard_message_restore_complete' | translate }}
+      </h3>
+      <div id="output" class="font-monospace small alert alert-info w-100 text-start"></div>
+      <a class="btn btn-lg btn-primary mt-3" *ngIf="step === 'restore-complete'" href="/login">
+        {{ 'form.button_continue' | translate }}
+      </a>
     </div>
-
     <div *ngIf="step === 'setup-complete'" class="w-100 d-flex flex-column align-items-center">
-      <img
-        class="homebridge-logo homebridge-logo-small mx-auto"
-        src="/assets/homebridge-color-round.svg"
-        alt="hb logo"
-      />
-      <h3 class="pt-4 pb-3">{{ 'setup_wizard_message_complete_title' | translate }}</h3>
+      <h3 class="mb-3">{{ 'setup_wizard_message_complete_title' | translate }}</h3>
       <p class="text-center">{{ 'setup_wizard_message_complete_message' | translate }}</p>
-      <a class="btn btn-lg btn-primary mt-3" routerLink="/">{{ 'setup.open_dashboard' | translate }}</a>
+      <a class="btn btn-lg btn-primary mt-3" routerLink="/"> {{ 'form.button_continue' | translate }} </a>
     </div>
   </div>
 </div>

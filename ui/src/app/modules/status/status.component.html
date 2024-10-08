@@ -1,100 +1,102 @@
-<div class="row mb-3">
-  <div class="col-6">
-    <h3 class="primary-text m-0">{{ 'menu.label_status' | translate }}</h3>
-  </div>
-  <div class="col-6 text-end d-none d-sm-block">
-    <div class="btn-group" role="group" *ngIf="consoleStatus === 'up' && $auth.user.admin">
-      <button
-        type="button"
-        class="btn btn-elegant status-button my-0"
-        [hidden]="!options.draggable.enabled"
-        (click)="addWidget()"
-        [attr.aria-label]="'status.widget.add_widget' | translate"
-      >
-        <i class="fas fa-fw fa-plus"></i>
-      </button>
+<div class="p-3 px-md-4 pt-0 pt-md-4 h-100">
+  <div class="row mb-3">
+    <div class="col-6">
+      <h3 class="primary-text m-0">{{ 'menu.label_status' | translate }}</h3>
     </div>
-    <div class="btn-group ms-2" role="group" *ngIf="consoleStatus === 'up' && $auth.user.admin">
-      <button
-        type="button"
-        class="btn btn-elegant status-button my-0"
-        [disabled]="options.draggable.enabled"
-        (click)="unlockLayout()"
-        container="body"
-        openDelay="150"
-        triggers="hover"
-        [ngbTooltip]="'form.button_unlock' | translate"
-        [attr.aria-label]="'form.button_unlock' | translate"
-      >
-        <i class="fas fa-fw fa-unlock"></i>
-      </button>
-      <button
-        type="button"
-        class="btn btn-elegant status-button my-0"
-        [disabled]="!options.draggable.enabled"
-        (click)="lockLayout()"
-        container="body"
-        openDelay="150"
-        triggers="hover"
-        [ngbTooltip]="'form.button_lock' | translate"
-        [attr.aria-label]="'form.button_lock' | translate"
-      >
-        <i class="fas fa-fw fa-lock"></i>
-      </button>
+    <div class="col-6 text-end d-none d-sm-block">
+      <div class="btn-group" role="group" *ngIf="consoleStatus === 'up' && $auth.user.admin">
+        <button
+          type="button"
+          class="btn btn-elegant status-button my-0"
+          [hidden]="!options.draggable.enabled"
+          (click)="addWidget()"
+          [attr.aria-label]="'status.widget.add_widget' | translate"
+        >
+          <i class="fas fa-fw fa-plus"></i>
+        </button>
+      </div>
+      <div class="btn-group ms-2" role="group" *ngIf="consoleStatus === 'up' && $auth.user.admin">
+        <button
+          type="button"
+          class="btn btn-elegant status-button my-0"
+          [disabled]="options.draggable.enabled"
+          (click)="unlockLayout()"
+          container="body"
+          openDelay="150"
+          triggers="hover"
+          [ngbTooltip]="'form.button_unlock' | translate"
+          [attr.aria-label]="'form.button_unlock' | translate"
+        >
+          <i class="fas fa-fw fa-unlock"></i>
+        </button>
+        <button
+          type="button"
+          class="btn btn-elegant status-button my-0"
+          [disabled]="!options.draggable.enabled"
+          (click)="lockLayout()"
+          container="body"
+          openDelay="150"
+          triggers="hover"
+          [ngbTooltip]="'form.button_lock' | translate"
+          [attr.aria-label]="'form.button_lock' | translate"
+        >
+          <i class="fas fa-fw fa-lock"></i>
+        </button>
+      </div>
     </div>
   </div>
-</div>
-<div class="status-container d-flex flex-column mt-0">
-  <app-spinner *ngIf="consoleStatus === 'down'"></app-spinner>
-  <div class="row flex-column flex-grow-1">
-    <gridster
-      [options]="options"
-      class="flex-grow-1 no-scrollbars py-0"
-      [hidden]="consoleStatus === 'down'"
-      *ngIf="dashboard.length"
-    >
-      <ng-container *ngFor="let item of dashboard">
-        <gridster-item
-          *ngIf="!(item.hideOnMobile && page.mobile)"
-          class="widget-item"
-          [item]="item"
-          [id]="item.component"
-        >
-          <div class="gridster-item-content">
-            <i
-              *ngIf="options.draggable.enabled"
-              class="fas fa-fw fa-cog widget-control-button primary-text"
-              (click)="manageWidget(item)"
-            ></i>
-          </div>
-          <app-widgets [widget]="item" class="d-flex h-100 w-100"></app-widgets>
-        </gridster-item>
-      </ng-container>
-    </gridster>
-  </div>
-  <div class="row mb-auto">
-    <div class="col-md-12 text-center px-4 pt-1 pt-lg-2 pb-3 pb-lg-2 grey-text">
-      <!-- The below copyright notice shall be included and displayed on all copies or substantial portions of this software. -->
-      <small>
-        &copy; 2024 &middot;
-        <a class="grey-text" target="_blank" rel="noopener noreferrer" href="https://github.com/homebridge">
-          Homebridge v{{ $settings.env.homebridgeVersion }}</a
-        >
-        &middot;
-        <a
-          class="grey-text"
-          target="_blank"
-          rel="noopener noreferrer"
-          href="https://github.com/homebridge/homebridge-config-ui-x"
-        >
-          UI v{{ $settings.env.packageVersion }}</a
-        >
-        &middot;
-        <a class="primary-text" href="javascript: void(0);" (click)="openCreditsModal()">
-          <i class="fas fa-fw fa-heart"></i
-        ></a>
-      </small>
-      <!-- The above copyright notice shall be included and displayed on all copies or substantial portions of this software. -->
+  <div class="status-container d-flex flex-column mt-0">
+    <app-spinner *ngIf="consoleStatus === 'down'"></app-spinner>
+    <div class="row flex-column flex-grow-1">
+      <gridster
+        [options]="options"
+        class="flex-grow-1 no-scrollbars py-0"
+        [hidden]="consoleStatus === 'down'"
+        *ngIf="dashboard.length"
+      >
+        <ng-container *ngFor="let item of dashboard">
+          <gridster-item
+            *ngIf="!(item.hideOnMobile && page.mobile)"
+            class="widget-item"
+            [item]="item"
+            [id]="item.component"
+          >
+            <div class="gridster-item-content">
+              <i
+                *ngIf="options.draggable.enabled"
+                class="fas fa-fw fa-cog widget-control-button primary-text"
+                (click)="manageWidget(item)"
+              ></i>
+            </div>
+            <app-widgets [widget]="item" class="d-flex h-100 w-100"></app-widgets>
+          </gridster-item>
+        </ng-container>
+      </gridster>
+    </div>
+    <div class="row mb-auto">
+      <div class="col-md-12 text-center pt-1 pt-md-2 pb-3 pb-md-0 grey-text">
+        <!-- The below copyright notice shall be included and displayed on all copies or substantial portions of this software. -->
+        <small>
+          &copy; 2024 &middot;
+          <a class="grey-text" target="_blank" rel="noopener noreferrer" href="https://github.com/homebridge">
+            Homebridge v{{ $settings.env.homebridgeVersion }}</a
+          >
+          &middot;
+          <a
+            class="grey-text"
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://github.com/homebridge/homebridge-config-ui-x"
+          >
+            UI v{{ $settings.env.packageVersion }}</a
+          >
+          &middot;
+          <a class="primary-text" href="javascript: void(0);" (click)="openCreditsModal()">
+            <i class="fas fa-fw fa-heart"></i>
+          </a>
+        </small>
+        <!-- The above copyright notice shall be included and displayed on all copies or substantial portions of this software. -->
+      </div>
     </div>
   </div>
 </div>
