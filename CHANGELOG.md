@@ -7,6 +7,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### UI Changes
 
 - switch from a top menu to a sidebar menu
+- enhancements to `login` and `setup-wizard` modules
 
 ### Other Changes
 

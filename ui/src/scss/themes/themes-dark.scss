@@ -8,6 +8,29 @@
 
     background-color: $backgroundColor;
 
+    .terminal-container {
+      background-color: rgba($secondaryBackground, 0.97) !important;
+      padding: 0 20px;
+    }
+
+    .monaco-editor {
+      background-color: rgba($secondaryBackground, 0.97) !important;
+
+      .margin,
+      .monaco-editor-background {
+        background-color: inherit;
+      }
+    }
+
+    .grey-text,
+    .grey-text a {
+      color: #bcbcbc !important;
+    }
+
+    .custom-input i {
+      color: #dddddd;
+    }
+
     .btn-primary {
       @extend .btn-#{$name} !optional;
       background-color: $darkModePrimary !important;
@@ -42,6 +65,10 @@
 
     .bg-primary {
       background-color: #242424 !important;
+    }
+
+    .main-text {
+      color: #ffffff !important;
     }
 
     .btn-close {
@@ -93,12 +120,33 @@
       border: 0 !important;
     }
 
-    .container-fluid .form-control,
-    .setup2fa .form-control,
-    .custom-input {
-      background-color: #333333 !important;
+    .custom-input-solo {
+      background: inherit;
+      border: 0.5px solid #212121;
+      border-radius: 0.375rem;
+      color: #bcbcbc;
+    }
+
+    .input-group {
+      background: none;
+      border: 0.5px solid #212121;
+      border-radius: 0.375rem;
+
+      > * {
+        border: none;
+        background: inherit;
+        margin-left: 0;
+      }
+
+      input {
+        color: #bcbcbc;
+      }
+    }
+
+    .resp-input {
+      background-color: #333333;
       border: none !important;
-      color: #eeeeee !important;
+      color: #dddddd !important;
     }
 
     .form-control::placeholder {
@@ -168,8 +216,24 @@
       border-color: $darkModePrimary !important;
     }
 
+    .btn i {
+      transition: color 0.2s;
+    }
+
+    .btn:hover i {
+      color: $darkModePrimary !important;
+    }
+
     .btn-primary {
       @extend .btn-#{$baseBtn} !optional;
+    }
+
+    .btn:disabled {
+      opacity: 1;
+
+      i {
+        color: #666666;
+      }
     }
 
     .bg-yellow {
@@ -182,16 +246,12 @@
 
     .card {
       color: #ffffff;
-      background-color: $secondaryBackground !important;
-      border-radius: 0.5rem;
+      background-color: rgba($secondaryBackground, 0.97) !important;
+      border-radius: 0.375rem;
     }
 
     .card-text-defined {
       color: #ffffff;
-    }
-
-    .login-card {
-      background-color: rgba($secondaryBackground, 0.97) !important;
     }
 
     .nav-tabs {
@@ -216,10 +276,11 @@
       }
     }
 
-    .alert {
-      color: #eeeeee;
-      background-color: #2b2b2b;
-      border-color: #444444;
+    .alert,
+    #footer {
+      background-color: rgba($secondaryBackground, 0.97) !important;
+      border: 0;
+      color: #dddddd;
 
       a {
         color: $darkModePrimary;
@@ -227,19 +288,7 @@
     }
 
     .alert-info {
-      border-color: $darkModePrimary;
-    }
-
-    .alert-success {
-      border-color: #388e3c;
-    }
-
-    .alert-warning {
-      border-color: #ffa000;
-    }
-
-    .alert-error {
-      border-color: #d32f2f;
+      box-shadow: 0 0 5px $darkModePrimary;
     }
 
     .qr-code-container {
@@ -427,7 +476,7 @@
     /** Gridster **/
     gridster-item {
       color: #ffffff;
-      background-color: #2b2b2b;
+      background-color: rgba($secondaryBackground, 0.97) !important;
     }
 
     gridster-preview {
@@ -457,10 +506,6 @@
       }
     }
 
-    .login-container {
-      background-color: #000000 !important;
-    }
-
     @keyframes uix-glow-icon-dark-mode {
       from {
         text-shadow:
@@ -482,6 +527,10 @@
         width: 60px;
         height: 60px;
       }
+    }
+
+    .gradient {
+      background: linear-gradient(130deg, $darkModePrimary, #4a266c, #2b2b2b);
     }
   }
 }

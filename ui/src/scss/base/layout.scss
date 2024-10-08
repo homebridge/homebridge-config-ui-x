@@ -10,6 +10,9 @@ body {
 
 body {
   background-color: #f4f4f4;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.95rem;
+  overflow: hidden;
 }
 
 a,
@@ -19,14 +22,9 @@ a:focus {
   --bs-link-decoration: none !important;
 }
 
-.grey-text,
-.grey-text a {
-  color: #999999 !important;
-}
-
 .pink-text,
 .pink-text a {
-  color: #ff20db !important;
+  color: #e91e63 !important;
 }
 
 .green-text,
@@ -37,6 +35,16 @@ a:focus {
 .red-text,
 .red-text a {
   color: #ff0000 !important;
+}
+
+.yellow-text,
+.yellow-text a {
+  color: #ffa000 !important;
+}
+
+.cyan-text,
+.cyan-text a {
+  color: #00bcd4 !important;
 }
 
 .navbar-brand {
@@ -83,7 +91,6 @@ h3 {
 }
 
 td {
-  font-size: 0.9rem;
   font-weight: 300;
   color: #999999 !important;
 }
@@ -94,32 +101,40 @@ th {
 }
 
 .adjust-for-mobile {
-  height: calc(100% - 30px);
-  width: calc(100% + 20px);
+  height: calc(100% - 40px);
   overflow: hidden;
 
   @media (max-width: 767px) {
-    height: calc(100% - 60px);
+    height: calc(100% - 16px);
+  }
+}
+
+.adjust-for-mobile-2 {
+  height: 100%;
+  overflow: hidden;
+
+  @media (max-width: 767px) {
+    height: calc(100% - 16px);
   }
 }
 
 .alert {
   border-width: 1px;
-  border-radius: 0.5rem;
+  border-radius: 0.375rem;
   padding: 20px;
   text-align: center;
 }
 
 .alert-success {
-  border-color: #388e3c;
+  box-shadow: 0 0 5px rgba(56, 142, 60, 1);
 }
 
 .alert-warning {
-  border-color: #ffa000;
+  box-shadow: 0 0 5px rgba(255, 160, 0, 1);
 }
 
 .alert-error {
-  border-color: #d32f2f;
+  box-shadow: 0 0 5px rgba(211, 47, 47, 1);
 }
 
 .hover-pointer {
@@ -127,27 +142,24 @@ th {
 }
 
 .list-group-box {
-  box-shadow:
-    0 2px 5px 0 rgba(0, 0, 0, 0.16),
-    0 2px 10px 0 rgba(0, 0, 0, 0.12);
-  border-radius: 0.5rem;
+  border-radius: 0.375rem;
 
   .list-group-item:first-child {
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
+    border-top-left-radius: 0.375rem;
+    border-top-right-radius: 0.375rem;
   }
 
   .list-group-item:last-child {
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 0.375rem;
+    border-bottom-right-radius: 0.375rem;
   }
 }
 
 .card {
-  border-radius: 0.5rem;
+  border-radius: 0.375rem;
+  background-color: rgba(255, 255, 255, 0.92) !important;
 }
 
-// Prevent tooltips appearing in front of opened modal on mobile
 .tooltip {
   z-index: 1020 !important;
 }
@@ -158,15 +170,34 @@ th {
   }
 }
 
-.accordion {
-  border-width: 0 !important;
-  --bs-accordion-border-width: 0 !important;
-  box-shadow:
-    0 2px 5px #00000029,
-    0 2px 10px #0000001f;
+.alert {
+  border: 0;
+}
 
-  button {
-    display: inline-block !important;
-    width: auto;
+.alert-error {
+  box-shadow: 0 0 5px rgba(211, 47, 47, 1);
+}
+
+.p-head {
+  padding: 19px;
+}
+
+.m-body {
+  margin: 19px;
+}
+
+.no-border-radius {
+  .input-group,
+  .btn,
+  .form-control {
+    border-radius: 0;
   }
+}
+
+.editor-container {
+  height: 100% !important;
+}
+
+.no-border {
+  border: none !important;
 }

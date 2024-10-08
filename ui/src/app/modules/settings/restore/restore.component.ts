@@ -13,7 +13,6 @@ import { FitAddon } from 'xterm-addon-fit'
   templateUrl: './restore.component.html',
 })
 export class RestoreComponent implements OnInit, OnDestroy {
-  @Input() setupWizardRestore = false
   @Input() selectedBackup: { id: any, fileName: string } = null
 
   public clicked = false
@@ -49,12 +48,6 @@ export class RestoreComponent implements OnInit, OnDestroy {
     this.io.socket.on('stdout', (data) => {
       this.term.write(data)
     })
-
-    if (this.setupWizardRestore) {
-      this.restoreStarted = true
-      this.restoreInProgress = true
-      this.startRestore()
-    }
   }
 
   onRestoreBackupClick() {
@@ -118,9 +111,6 @@ export class RestoreComponent implements OnInit, OnDestroy {
       next: () => {
         this.restoreInProgress = false
         this.$toastr.success(this.$translate.instant('backup.backup_restored'), this.$translate.instant('toast.title_success'))
-        if (this.setupWizardRestore) {
-          this.postBackupRestart()
-        }
       },
       error: (error) => {
         this.restoreFailed = true
