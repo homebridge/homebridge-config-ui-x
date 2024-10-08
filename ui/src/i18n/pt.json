@@ -58,7 +58,6 @@
   "backup.backup_restored": "Ficheiro de Backup Restaurado",
   "backup.backup_warning": "Os ficheiro de backup contem informação privada e não devem de ser partilhados com outros.",
   "backup.button_restore_backup": "Restaurar Backup",
-  "backup.label_choose_backup_file_to_restore": "Escolha o ficheiro de backup para restaurar…",
   "backup.label_uploading": "A Enviar…",
   "backup.load_error": "Failed to load config backup.",
   "backup.now": "Now",

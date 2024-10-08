@@ -58,7 +58,6 @@
   "backup.backup_restored": "已从备份档案中恢复",
   "backup.backup_warning": "备份文档包含了敏感信息，请勿与他人共享。",
   "backup.button_restore_backup": "恢复备份",
-  "backup.label_choose_backup_file_to_restore": "选择文件以恢复…",
   "backup.label_uploading": "上传中…",
   "backup.load_error": "Failed to load config backup.",
   "backup.now": "Now",

@@ -5,15 +5,13 @@
     </h5>
     <button
       type="button"
-      class="close"
-      data-dismiss="modal"
+      class="btn-close"
+      data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
       (click)="$activeModal.close('Dismiss')"
       *ngIf="!justInstalled"
       [disabled]="saveInProgress"
-    >
-      <span aria-hidden="true">&times;</span>
-    </button>
+    ></button>
   </div>
   <div class="modal-body">
     <p>
@@ -92,28 +90,28 @@
                 <div *ngIf="showConfigFields[i]" [id]="'configFields_' + i">
                   <div class="mb-3 grey-text">{{ 'child_bridge.config.description' | translate }}</div>
                   <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
-                    <span class="pr-0 pr-lg-3" style="flex: 1">{{ 'child_bridge.config.name' | translate }}</span>
-                    <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1">
+                    <span class="pe-0 pe-lg-3" style="flex: 1">{{ 'child_bridge.config.name' | translate }}</span>
+                    <div class="my-lg-0 ps-0 ps-lg-3" style="flex: 1">
                       <input class="form-control form-control-sm" type="text" [(ngModel)]="item._bridge.name" />
                     </div>
                   </div>
                   <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
-                    <span class="pr-0 pr-lg-3" style="flex: 1"
+                    <span class="pe-0 pe-lg-3" style="flex: 1"
                       >{{ 'child_bridge.config.manufacturer' | translate }}</span
                     >
-                    <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1">
+                    <div class="my-lg-0 ps-0 ps-lg-3" style="flex: 1">
                       <input class="form-control form-control-sm" type="text" [(ngModel)]="item._bridge.manufacturer" />
                     </div>
                   </div>
                   <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
-                    <span class="pr-0 pr-lg-3" style="flex: 1">{{ 'child_bridge.config.model' | translate }}</span>
-                    <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1">
+                    <span class="pe-0 pe-lg-3" style="flex: 1">{{ 'child_bridge.config.model' | translate }}</span>
+                    <div class="my-lg-0 ps-0 ps-lg-3" style="flex: 1">
                       <input class="form-control form-control-sm" type="text" [(ngModel)]="item._bridge.model" />
                     </div>
                   </div>
                   <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
-                    <span class="pr-0 pr-lg-3" style="flex: 1">{{ 'child_bridge.config.firmware' | translate }}</span>
-                    <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1">
+                    <span class="pe-0 pe-lg-3" style="flex: 1">{{ 'child_bridge.config.firmware' | translate }}</span>
+                    <div class="my-lg-0 ps-0 ps-lg-3" style="flex: 1">
                       <input
                         class="form-control form-control-sm"
                         type="text"
@@ -133,14 +131,14 @@
                       [(ngModel)]="item._bridge.debugModeEnabled"
                       [attr.aria-label]="'settings.startup.debug' | translate"
                     />
-                    <label [for]="'homebridgeDebugMode_' + i" class="rendux-label ml-3" style="min-width: 50px"></label>
+                    <label [for]="'homebridgeDebugMode_' + i" class="rendux-label ms-3" style="min-width: 50px"></label>
                   </div>
                   <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
-                    <span class="pr-0 pr-lg-3" style="flex: 1">
-                      <span class="text-monospace">DEBUG</span><br />
+                    <span class="pe-0 pe-lg-3" style="flex: 1">
+                      <span class="font-monospace">DEBUG</span><br />
                       <small class="grey-text">{{ 'settings.service.debug_tooltip' | translate }}</small>
                     </span>
-                    <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1">
+                    <div class="my-lg-0 ps-0 ps-lg-3" style="flex: 1">
                       <input
                         class="form-control form-control-sm"
                         type="text"
@@ -150,11 +148,11 @@
                     </div>
                   </div>
                   <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
-                    <span class="pr-0 pr-lg-3" style="flex: 1">
-                      <span class="text-monospace">NODE_OPTIONS</span><br />
+                    <span class="pe-0 pe-lg-3" style="flex: 1">
+                      <span class="font-monospace">NODE_OPTIONS</span><br />
                       <small class="grey-text">{{ 'settings.service.node_tooltip' | translate }}</small>
                     </span>
-                    <div class="my-lg-0 pl-0 pl-lg-3" style="flex: 1">
+                    <div class="my-lg-0 ps-0 ps-lg-3" style="flex: 1">
                       <input
                         class="form-control form-control-sm"
                         type="text"
@@ -186,11 +184,11 @@
     </div>
   </div>
   <div class="modal-footer justify-content-between">
-    <div class="text-left">
+    <div class="text-start">
       <button
         type="button"
         class="btn btn-elegant"
-        data-dismiss="modal"
+        data-bs-dismiss="modal"
         (click)="$activeModal.close('Dismiss')"
         *ngIf="!justInstalled"
         [disabled]="saveInProgress"
@@ -205,7 +203,7 @@
         </button>
       </div>
     </div>
-    <div class="text-right">
+    <div class="text-end">
       <div *ngIf="!justInstalled">
         <button
           type="button"
@@ -220,7 +218,7 @@
         <button
           type="button"
           class="btn btn-primary"
-          data-dismiss="modal"
+          data-bs-dismiss="modal"
           (click)="openPluginConfig()"
           *ngIf="!configBlocks.length"
         >

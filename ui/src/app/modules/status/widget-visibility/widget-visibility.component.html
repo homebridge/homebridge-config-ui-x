@@ -3,13 +3,11 @@
     <h5 class="modal-title">{{ 'status.widget.show_hide' | translate }}</h5>
     <button
       type="button"
-      class="close"
-      data-dismiss="modal"
+      class="btn-close"
+      data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
       (click)="$activeModal.dismiss('Dismiss')"
-    >
-      <span aria-hidden="true">&times;</span>
-    </button>
+    ></button>
   </div>
   <div class="modal-body">
     <ul class="list-group list-group-box mt-2" *ngIf="availableWidgets.length">
@@ -20,7 +18,7 @@
         <span style="word-break: break-all">{{ widget.name }}</span>
         <span>
           <button
-            class="btn btn-primary ml-3"
+            class="btn btn-primary ms-3"
             (click)="selectWidget(widget)"
             [disabled]="!widget.shown"
             [attr.aria-label]="('form.button_show' | translate) + ' ' + widget.name"
@@ -28,7 +26,7 @@
             <i class="fas fa-fw fa-eye"></i>
           </button>
           <button
-            class="btn btn-primary ml-2"
+            class="btn btn-primary ms-2"
             (click)="selectWidget(widget)"
             [disabled]="widget.shown"
             [attr.aria-label]="('form.button_hide' | translate) + ' ' + widget.name"
@@ -40,11 +38,11 @@
     </ul>
   </div>
   <div class="modal-footer justify-content-between">
-    <div class="text-left">
+    <div class="text-start">
       <button
         type="button"
         class="btn btn-elegant"
-        data-dismiss="modal"
+        data-bs-dismiss="modal"
         (click)="$activeModal.dismiss('Dismiss')"
         [attr.aria-label]="'form.button_close' | translate"
       >
@@ -52,8 +50,8 @@
       </button>
     </div>
     <div class="text-center"></div>
-    <div class="text-right">
-      <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="doResetLayout()">
+    <div class="text-end">
+      <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="doResetLayout()">
         {{ 'form.button_reset' | translate }}
       </button>
     </div>

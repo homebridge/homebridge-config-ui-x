@@ -58,7 +58,6 @@
   "backup.backup_restored": "Yedekleme Arşivi Geri Yüklendi",
   "backup.backup_warning": "Yedekleme arşivleri hassas bilgiler barındırırlar ve başka kişilerle paylaşılmamalıdırlar.",
   "backup.button_restore_backup": "Yedeği Geri Yükle",
-  "backup.label_choose_backup_file_to_restore": "Geri yüklemek için yedekleme dosyasını seçin…",
   "backup.label_uploading": "Yükleniyor…",
   "backup.load_error": "Failed to load config backup.",
   "backup.now": "Now",

@@ -58,7 +58,6 @@
   "backup.backup_restored": "גיבוי שחזור",
   "backup.backup_warning": "גיבוי מכיל מידע רגיש ולא אמור להיות משותף עם אנשים אחרים",
   "backup.button_restore_backup": "שחזר מגיבוי",
-  "backup.label_choose_backup_file_to_restore": "בחר קובץ גיבוי על מנת לשחזר..",
   "backup.label_uploading": "מעלה…",
   "backup.load_error": "Failed to load config backup.",
   "backup.now": "Now",

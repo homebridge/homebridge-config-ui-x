@@ -58,7 +58,6 @@
   "backup.backup_restored": "Copia de seguridad restaurada",
   "backup.backup_warning": "Los archivos de copias de seguridad contienen información sensible que no deberías compartir con los demás.",
   "backup.button_restore_backup": "Restaurar un respaldo",
-  "backup.label_choose_backup_file_to_restore": "Elige el archivo de copia de seguridad para restaurar…",
   "backup.label_uploading": "Subiendo…",
   "backup.load_error": "Failed to load config backup.",
   "backup.now": "Now",

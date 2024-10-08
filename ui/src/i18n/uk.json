@@ -58,7 +58,6 @@
   "backup.backup_restored": "Резервна копія відновлена",
   "backup.backup_warning": "Архіви резервних копій містять конфіденціїну інформацію і не повинні передаватись іншим особам.",
   "backup.button_restore_backup": "Відновити",
-  "backup.label_choose_backup_file_to_restore": "Виберіть файл резервної копії для відновлення…",
   "backup.label_uploading": "Завантаження…",
   "backup.load_error": "Failed to load config backup.",
   "backup.now": "Now",

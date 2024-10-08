@@ -14,6 +14,7 @@
         class="hb-npm-search"
         [placeholder]="'plugins.placeholder_search_plugin' | translate"
         formControlName="query"
+        style="border-radius: 0.5rem"
       />
       <a class="hb-npm-search-clear" href="javascript:void(0)" (click)="onClearSearch()">
         <i class="far fa-fw fa-times-circle" *ngIf="form.controls['query'].value"></i>

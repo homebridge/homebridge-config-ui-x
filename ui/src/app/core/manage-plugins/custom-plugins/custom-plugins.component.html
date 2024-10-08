@@ -5,14 +5,12 @@
     </h5>
     <button
       type="button"
-      class="close"
-      data-dismiss="modal"
+      class="btn-close"
+      data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
       (click)="$activeModal.dismiss('Dismiss')"
       [disabled]="saveInProgress"
-    >
-      <span aria-hidden="true">&times;</span>
-    </button>
+    ></button>
   </div>
   <div class="modal-body" style="min-height: 110px">
     <div *ngIf="loading" class="text-center primary-text">
@@ -45,7 +43,7 @@
         (isValid)="formValidEvent($event)"
       >
       </app-schema-form>
-      <div class="text-right custom-form-action-buttons">
+      <div class="text-end custom-form-action-buttons">
         <button class="btn btn-elegant" *ngIf="formCancelButtonLabel" (click)="formActionSubject.next('cancel')">
           {{ formCancelButtonLabel }}
         </button>
@@ -67,11 +65,11 @@
     </div>
   </div>
   <div class="modal-footer justify-content-between">
-    <div class="text-left">
+    <div class="text-start">
       <button
         type="button"
         class="btn btn-elegant"
-        data-dismiss="modal"
+        data-bs-dismiss="modal"
         (click)="$activeModal.dismiss('Dismiss')"
         [disabled]="saveInProgress"
       >
@@ -79,7 +77,7 @@
       </button>
     </div>
     <div class="text-center"></div>
-    <div class="text-right">
+    <div class="text-end">
       <button
         *ngIf="plugin.name !== 'homebridge-config-ui-x'"
         class="btn btn-danger"
@@ -94,8 +92,8 @@
       </button>
       <button
         type="button"
-        class="btn btn-primary"
-        data-dismiss="modal"
+        class="btn btn-primary ms-2"
+        data-bs-dismiss="modal"
         (click)="savePluginConfig(true)"
         [disabled]="saveInProgress"
       >

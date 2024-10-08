@@ -58,7 +58,6 @@
   "backup.backup_restored": "กู้คืนที่เก็บข้อมูลสำรองแล้ว",
   "backup.backup_warning": "คลังข้อมูลสำรองมีข้อมูลที่ละเอียดอ่อนและไม่ควรแชร์กับผู้อื่น",
   "backup.button_restore_backup": "คืนค่าการสำรองข้อมูล",
-  "backup.label_choose_backup_file_to_restore": "เลือกไฟล์ข้อมูลสำรองที่จะกู้คืน…",
   "backup.label_uploading": "กำลังอัปโหลด…",
   "backup.load_error": "Failed to load config backup.",
   "backup.now": "Now",

@@ -58,7 +58,6 @@
   "backup.backup_restored": "Archivio di backup ripristinato",
   "backup.backup_warning": "Gli archivi di backup contengono informazioni sensibili e non dovrebbero essere condivisi con altre persone.",
   "backup.button_restore_backup": "Ripristina Backup",
-  "backup.label_choose_backup_file_to_restore": "Scegli un file di backup da ripristinare…",
   "backup.label_uploading": "Caricamento in corso…",
   "backup.load_error": "Failed to load config backup.",
   "backup.now": "Now",

@@ -58,7 +58,6 @@
   "backup.backup_restored": "Záloha byla obnovena",
   "backup.backup_warning": "Zálohy obsahují citlivé informace a neměly by být sdíleny s ostatními.",
   "backup.button_restore_backup": "Obnovit zálohu",
-  "backup.label_choose_backup_file_to_restore": "Vyberte záložní soubor pro obnovení…",
   "backup.label_uploading": "Nahrávám…",
   "backup.load_error": "Failed to load config backup.",
   "backup.now": "Now",

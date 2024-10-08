@@ -58,7 +58,6 @@
   "backup.backup_restored": "Arsip Cadangan Dipulihkan",
   "backup.backup_warning": "Arsip cadangan berisikan informasi sensitif dan sebaiknya tidak dibagikan kepada orang lain.",
   "backup.button_restore_backup": "Pulihkan Cadangan",
-  "backup.label_choose_backup_file_to_restore": "Pilih berkas cadangan untuk dipulihkan…",
   "backup.label_uploading": "Mengunggah…",
   "backup.load_error": "Failed to load config backup.",
   "backup.now": "Now",
