@@ -206,8 +206,13 @@
   </ul>
 </div>
 
-<!-- STARTUP/ENV OPTIONS - SERVICE MODE USERS -->
-<form class="my-4" novalidate [formGroup]="serviceForm" *ngIf="$settings.env.serviceMode">
+<!-- STARTUP/ENV OPTIONS - SERVICE MODE/DOCKER USERS -->
+<form
+  class="my-4"
+  novalidate
+  [formGroup]="serviceForm"
+  *ngIf="$settings.env.serviceMode || $settings.env.runningInDocker"
+>
   <div
     role="button"
     tabindex="0"
@@ -222,7 +227,7 @@
     </h5>
   </div>
   <ul class="list-group list-group-box mb-4 mx-0" *ngIf="showFields.startup" id="fieldsStartup">
-    <li class="list-group-item d-flex justify-content-between align-items-center">
+    <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="$settings.env.serviceMode">
       <span>
         {{ 'settings.startup.debug' | translate }} <code>-D</code><br />
         <small class="grey-text pr-2">
@@ -238,7 +243,7 @@
       />
       <label for="homebridgeDebugMode" class="rendux-label ml-3" style="min-width: 50px"></label>
     </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
+    <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="$settings.env.serviceMode">
       <span>
         {{ 'settings.startup.insecure' | translate }} <code>-I</code><br />
         <small class="grey-text pr-2">{{ 'settings.startup.insecure_desc' | translate }}</small>
@@ -266,7 +271,10 @@
       />
       <label for="homebridgeKeepOrphans" class="rendux-label ml-3" style="min-width: 50px"></label>
     </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+    <li
+      class="list-group-item d-block d-md-flex justify-content-between align-items-center"
+      *ngIf="$settings.env.serviceMode"
+    >
       <span>
         <span class="text-monospace">DEBUG</span><br />
         <small class="grey-text pr-2">
@@ -285,7 +293,10 @@
         />
       </div>
     </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+    <li
+      class="list-group-item d-block d-md-flex justify-content-between align-items-center"
+      *ngIf="$settings.env.serviceMode"
+    >
       <span>
         <span class="text-monospace">NODE_OPTIONS</span><br />
         <small class="grey-text pr-2">{{ 'settings.service.node_tooltip' | translate }}</small>
@@ -298,6 +309,23 @@
           placeholder="--max-old-space-size=512 --max-http-header-size=8192"
         />
       </div>
+    </li>
+    <li
+      class="list-group-item d-flex justify-content-between align-items-center"
+      *ngIf="$settings.env.runningInDocker"
+    >
+      <span>
+        {{ 'menu.docker.startup_script' | translate }}<br />
+        <small class="grey-text pr-2">{{ 'platform.docker.script_help' | translate }}</small>
+      </span>
+      <a
+        class="btn btn-primary waves-effect m-0 ml-3"
+        style="min-width: 50px"
+        routerLink="/platform-tools/docker/startup-script"
+        [attr.aria-label]="'menu.docker.startup_script' | translate"
+      >
+        <i class="fas fa-fw fa-chevron-right"></i>
+      </a>
     </li>
     <li class="list-group-item d-flex flex-column align-items-center" *ngIf="hasChangedService">
       <small class="grey-text my-2">{{ 'settings.changes.saved' | translate }}</small>

@@ -41,10 +41,6 @@ export class PowerOptionsComponent {
     this.$router.navigate(['/platform-tools/linux/shutdown-server'])
   }
 
-  dockerStartupScript() {
-    this.$router.navigate(['/platform-tools/docker/startup-script'])
-  }
-
   dockerRestartContainer() {
     this.$router.navigate(['/platform-tools/docker/restart-container'])
   }
