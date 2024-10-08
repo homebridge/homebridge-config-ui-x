@@ -167,7 +167,7 @@
   "platform.docker.container_restarted": "Docker контејнерот е успешно рестартиран",
   "platform.docker.must_use_hashbang": "Скриптата мора да користи #!/bin/sh hashbang.",
   "platform.docker.restart_required": "Ќе мора да го рестартирате docker контејнерот за промените да бидат рефлектирани.",
-  "platform.docker.run_with_restart": "Осигурајте се дека го извршувате Docker контејнерот со --restart=always",
+  "platform.docker.run_with_restart": "Осигурајте се дека го извршувате Docker контејнерот со <code>--restart=always</code>",
   "platform.docker.script_help": "Оваа скрипта ќе се изврши секогаш кога docker контејнерот ќе се стартува. Можете да ја искористите за да инсталирате било какви дополнителни пакети кои се потребни за вашите плагини како на пример ffmpeg или libpcap-dev.",
   "platform.docker.script_saved": "Стартап скриптата е зачувана",
   "platform.docker.server_long_time": "Рестартирањето на серверот трае подолго од вообичаено. Можно е да треба рачно да го стартувате Docker контејнерот.",

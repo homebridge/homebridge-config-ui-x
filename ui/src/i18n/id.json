@@ -167,7 +167,7 @@
   "platform.docker.container_restarted": "Kontainer Docker Dimuat Ulang",
   "platform.docker.must_use_hashbang": "Skrip harus menggunakan #!/bin/sh hashbang.",
   "platform.docker.restart_required": "Anda harus mengulang kembali Kontainer Docker ini agar perubahan diterapkan.",
-  "platform.docker.run_with_restart": "Pastikan Anda menjalankan Kontainer Docker dengan parameter --restart=always",
+  "platform.docker.run_with_restart": "Pastikan Anda menjalankan Kontainer Docker dengan parameter <code>--restart=always</code>",
   "platform.docker.script_help": "Skrip ini akan dieksekusi setiap saat docker container mulai. Anda dapat menggunakan proses ini untuk menginstal paket tambahan yang dibutuhkan plugin anda seperti ffmpeg atau libpcap-dev.",
   "platform.docker.script_saved": "Skrip Mengulang Tersimpan",
   "platform.docker.server_long_time": "Mengulang kembali server membutuhkan waktu lebih lama. Anda mungkin perlu menjalankan Kontainer Docker secara manual.",

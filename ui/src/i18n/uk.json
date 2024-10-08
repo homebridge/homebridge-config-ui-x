@@ -167,7 +167,7 @@
   "platform.docker.container_restarted": "Контейнер Docker перезапущений",
   "platform.docker.must_use_hashbang": "Код скрипту повинен починатись з #!/bin/sh",
   "platform.docker.restart_required": "Вам необхідно перезапустити цей контейнер, щоб зміни почали діяти.",
-  "platform.docker.run_with_restart": "Переконайтесь, що Ви запускаєте контейнер Docker з параметрами --restart=always",
+  "platform.docker.run_with_restart": "Переконайтесь, що Ви запускаєте контейнер Docker з параметрами <code>--restart=always</code>",
   "platform.docker.script_help": "Цей скрипт буде виконуватись кожного разу при запуску контейнера Docker. Ви можете використовувати це для встановлення будь-яких додаткових пакетів, котрі можуть знадобитися Вашим плагінам, наприклад, ffmpeg або libpcap-dev.",
   "platform.docker.script_saved": "Скрипт автозавантаження збережений",
   "platform.docker.server_long_time": "Перезапуск контейнера займає багато часу. Можливо Вам доведеться вручную відкрити контейнер Docker.",

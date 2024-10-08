@@ -167,7 +167,7 @@
   "platform.docker.container_restarted": "Contenidor Docker reiniciat",
   "platform.docker.must_use_hashbang": "L'script necessita la capçalera #!/bin/sh",
   "platform.docker.restart_required": "Necessitaràs reiniciar el contenidor Docker perquè els canvis tinguin efecte.",
-  "platform.docker.run_with_restart": "Assegura't que estiguis executant el contenidor Docker amb --restart=always",
+  "platform.docker.run_with_restart": "Assegura't que estiguis executant el contenidor Docker amb <code>--restart=always</code>",
   "platform.docker.script_help": "Aquest script s'executa cada vegada que el contenidor de Docker es torni a arrencar. Pots utilitzar-lo per instal·lar paquets extra que els teus plugins necessitin com ffmpeg o libpcap-dev.",
   "platform.docker.script_saved": "Script d'inici guardat",
   "platform.docker.server_long_time": "Reiniciar el servidor està trigant molt. Potser hagis de iniciar el contenidor de Docker de forma manual.",
