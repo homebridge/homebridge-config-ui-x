@@ -2,6 +2,13 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## BETA
+
+### UI Changes
+
+- fix login wallpaper setting field should in safari
+  - it should not be offering to populate with a username/password from credentials manager
+
 ## v4.60.1 (2024-10-06)
 
 ### UI Changes

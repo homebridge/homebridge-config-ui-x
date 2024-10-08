@@ -168,12 +168,15 @@
         <small class="grey-text pr-2" [innerHTML]="'settings.display.login_wallpaper_desc' | translate"></small>
       </span>
       <div class="my-3 my-md-0 pl-0 pl-md-5 w-auto">
+        <!-- 'search' in the name prevents safari showing the credentials prompt -->
         <input
+          name="search_wallpaper"
+          autocomplete="off"
           class="form-control custom-input form-control-sm resp-input"
           type="text"
           [ngModel]="$settings.loginWallpaper"
           (ngModelChange)="saveUiSettingChange('loginWallpaper', $event)"
-          placeholder=""
+          placeholder="/path-to/image.png"
         />
       </div>
     </li>
