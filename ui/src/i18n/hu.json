@@ -167,7 +167,7 @@
   "platform.docker.container_restarted": "Docker Container Restarted",
   "platform.docker.must_use_hashbang": "Script must use #!/bin/sh hashbang.",
   "platform.docker.restart_required": "You will need to restart this docker container for the changes to take effect.",
-  "platform.docker.run_with_restart": "Make sure you're running the Docker container with --restart=always",
+  "platform.docker.run_with_restart": "Make sure you're running the Docker container with <code>--restart=always</code>",
   "platform.docker.script_help": "This script will be executed each time the docker container starts. You can use this to install any extra packages your plugins may need such as ffmpeg or libpcap-dev.",
   "platform.docker.script_saved": "Startup Script elmentve",
   "platform.docker.server_long_time": "Server restart is taking a long time. You may need to bring up the Docker container manually.",

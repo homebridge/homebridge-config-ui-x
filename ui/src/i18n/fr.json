@@ -167,7 +167,7 @@
   "platform.docker.container_restarted": "Container Docker redémarré",
   "platform.docker.must_use_hashbang": "Les scripts doivent utiliser le hashbang #!/bin/sh",
   "platform.docker.restart_required": "Vous aurez besoin de redémarrer ce container docker pour que les changement prennent effet.",
-  "platform.docker.run_with_restart": "Vérifiez d'avoir lancé le container Docker avec --restart=always",
+  "platform.docker.run_with_restart": "Vérifiez d'avoir lancé le container Docker avec <code>--restart=always</code>",
   "platform.docker.script_help": "Ce script sera exécuté à chaque démarrage du container docker. Vous pouvez l'utiliser pour installer n'importe quel paquet dont votre plugin aurait besoin, comme ffmpeg ou libcap-dev.",
   "platform.docker.script_saved": "Script de démarrage enregistré",
   "platform.docker.server_long_time": "Le redémarrage du serveur met beaucoup de temps. Vous aurez peut-être besoin de démarrer le container Docker manuellement.",

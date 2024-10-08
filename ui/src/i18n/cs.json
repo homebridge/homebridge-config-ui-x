@@ -167,7 +167,7 @@
   "platform.docker.container_restarted": "Kontejner Docker restartován",
   "platform.docker.must_use_hashbang": "Skript musí používat #!/bin/sh hashbang.",
   "platform.docker.restart_required": "Pro projevení změn budete muset restartovat tento kontejner docker.",
-  "platform.docker.run_with_restart": "Ujistěte se, že používáte kontejner Docker s --restart = always",
+  "platform.docker.run_with_restart": "Ujistěte se, že používáte kontejner Docker s <code>--restart=always</code>",
   "platform.docker.script_help": "Tento skript bude proveden při každém spuštění kontejneru docker. Můžete jej použít k instalaci dalších balíčků, které vaše pluginy mohou potřebovat, například ffmpeg nebo libpcap-dev.",
   "platform.docker.script_saved": "Spouštěcí skript byl uložen",
   "platform.docker.server_long_time": "Restartování serveru trvá dlouhou dobu. Pravděpodobně budete muset kontejner Docker spustit ručně.",

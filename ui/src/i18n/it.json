@@ -167,7 +167,7 @@
   "platform.docker.container_restarted": "Container Docker riavviato",
   "platform.docker.must_use_hashbang": "Lo script deve usare l'hashbang #!/bin/sh.",
   "platform.docker.restart_required": "È necessario riavviare docker affinché le modifiche abbiano effetto.",
-  "platform.docker.run_with_restart": "Accertati di aver avviato il container Docker in modalità --restart=always",
+  "platform.docker.run_with_restart": "Accertati di aver avviato il container Docker in modalità <code>--restart=always</code>",
   "platform.docker.script_help": "Questo script verrà eseguito ogni volta che docker viene avviato. Puoi usarlo per installare eventuali pacchetti aggiuntivi necessari ai tuoi plugin come ffmpeg o libpcap-dev.",
   "platform.docker.script_saved": "Script di avvio salvato",
   "platform.docker.server_long_time": "Il riavvio richiede troppo tempo. Prova a riavviare Docker manualmente.",

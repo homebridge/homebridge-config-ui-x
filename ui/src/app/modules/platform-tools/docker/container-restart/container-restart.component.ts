@@ -9,6 +9,7 @@ import { ToastrService } from 'ngx-toastr'
 
 @Component({
   templateUrl: './container-restart.component.html',
+  styleUrls: ['./container-restart.component.scss'],
 })
 export class ContainerRestartComponent implements OnInit, OnDestroy {
   checkTimeout: NodeJS.Timeout

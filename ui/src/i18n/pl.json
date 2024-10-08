@@ -167,7 +167,7 @@
   "platform.docker.container_restarted": "Kontener Docker został ponownie uruchomiony",
   "platform.docker.must_use_hashbang": "Skrypt musi używać '#!/bin/sh'.",
   "platform.docker.restart_required": "Konieczne będzie ponowne uruchomienie tego kontenera dokowanego, aby zmiany zaczęły obowiązywać.",
-  "platform.docker.run_with_restart": "Upewnij się, że uruchamiasz kontener Docker z parametrem --restart=always",
+  "platform.docker.run_with_restart": "Upewnij się, że uruchamiasz kontener Docker z parametrem <code>--restart=always</code>",
   "platform.docker.script_help": "Ten skrypt zostanie wykonany za każdym razem, przy uruchamianiu kontenera Dockera. Możesz tego użyć do zainstalowania dodatkowych pakietów, których mogą potrzebować wtyczki, takich jak ffmpeg lub libpcap-dev.",
   "platform.docker.script_saved": "Skrypt startowy został zapisany",
   "platform.docker.server_long_time": "Ponowne uruchomienie serwera zajmuje dużo czasu. Może być konieczne ręczne zresetowanie kontenera Docker.",

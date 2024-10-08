@@ -167,7 +167,7 @@
   "platform.docker.container_restarted": "Docker Container รีสตาร์ทแล้ว",
   "platform.docker.must_use_hashbang": "ต้องใช้สคริปต์ #!/bin/sh hashbang.",
   "platform.docker.restart_required": "คุณจะต้องรีสตาร์ท docker container นี้เพื่อให้การเปลี่ยนแปลงมีผล",
-  "platform.docker.run_with_restart": "ตรวจสอบให้แน่ใจว่าคุณใช้งาน Docker Container ด้วย--restart=always",
+  "platform.docker.run_with_restart": "ตรวจสอบให้แน่ใจว่าคุณใช้งาน Docker Container ด้วย<code>--restart=always</code>",
   "platform.docker.script_help": "สคริปต์นี้จะดำเนินการทุกครั้งที่ Docker container เริ่มทำงาน คุณสามารถใช้สิ่งนี้เพื่อติดตั้งแพ็คเกจเสริมใด ๆ ที่ปลั๊กอินของคุณอาจต้องการเช่น ffmpeg หรือ libpcap-dev",
   "platform.docker.script_saved": "บันทึกสคริปต์เริ่มต้นแล้ว",
   "platform.docker.server_long_time": "การรีสตาร์ทเซิร์ฟเวอร์ใช้เวลานาน คุณอาจต้องเปิด Container Docker ด้วยตนเอง",

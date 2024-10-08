@@ -9,6 +9,7 @@ import { ToastrService } from 'ngx-toastr'
 
 @Component({
   templateUrl: './restart-linux.component.html',
+  styleUrls: ['./restart-linux.component.scss'],
 })
 export class RestartLinuxComponent implements OnInit, OnDestroy {
   checkTimeout: NodeJS.Timeout

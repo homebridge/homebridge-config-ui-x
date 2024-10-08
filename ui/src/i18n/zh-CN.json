@@ -167,7 +167,7 @@
   "platform.docker.container_restarted": "Docker 容器已重启",
   "platform.docker.must_use_hashbang": "脚本必须使用 #!/bin/sh",
   "platform.docker.restart_required": "您需要重新启动此 Docker 容器才能使更改生效。",
-  "platform.docker.run_with_restart": "确保使用 --restart=always 启动 Docker 容器",
+  "platform.docker.run_with_restart": "确保使用 <code>--restart=always</code> 启动 Docker 容器",
   "platform.docker.script_help": "每次启动 Docker 容器时都会执行此脚本。您可以使用它来安装插件可能需要的任何额外软件包，例如 ffmpeg 或 libpcap-dev。",
   "platform.docker.script_saved": "启动脚本已保存",
   "platform.docker.server_long_time": "服务器重启超时。您可能需要手动启动 Docker 容器。",

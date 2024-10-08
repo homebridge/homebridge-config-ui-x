@@ -167,7 +167,7 @@
   "platform.docker.container_restarted": "Docker kapsayıcısı yeniden başlatıldı",
   "platform.docker.must_use_hashbang": "Komut dosyası #!/bin/sh hashbang kullanmalıdır.",
   "platform.docker.restart_required": "Değişikliklerin etkili olması için Docker kapsayıcısını yeniden başlatmanız gerekli.",
-  "platform.docker.run_with_restart": "Docker kapsayıcısını --restart=always ile çalıştırdığınızdan emin olun",
+  "platform.docker.run_with_restart": "Docker kapsayıcısını <code>--restart=always</code> ile çalıştırdığınızdan emin olun",
   "platform.docker.script_help": "Bu komut dosyası Docker kapsayıcısının başlatılışında çalıştırılacaktır. Bunu, eklentilerinizin ihtiyaç duyabileceği paketleri (ffmpeg ya da libpcap-dev gibi) yüklemek için kullanabilirsiniz.",
   "platform.docker.script_saved": "Başlangıç Komut Dosyası Kaydedildi",
   "platform.docker.server_long_time": "Sunucunun yeniden başlatılması uzun zaman alıyor. Docker kapsayıcısını el ile ayağa kaldırmanız gerekebilir.",

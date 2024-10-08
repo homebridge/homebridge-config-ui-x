@@ -167,7 +167,7 @@
   "platform.docker.container_restarted": "Container do Docker Reiniciado",
   "platform.docker.must_use_hashbang": "É necessário usar a hashbang #!/bin/sh no script.",
   "platform.docker.restart_required": "Vai ser necessário reiniciar este container do docker para que as mudanças surtam efeito.",
-  "platform.docker.run_with_restart": "Verifique se está a executar o container do Docker com --restart=always",
+  "platform.docker.run_with_restart": "Verifique se está a executar o container do Docker com <code>--restart=always</code>",
   "platform.docker.script_help": "Este script vai ser executado todas as vezes que o container do docker iniciar. Isto poderá ser utilizado para instalar qualquer pacote extra que os plugins possam requerer como por exemplo o ffmpeg ou o libpcap-dev.",
   "platform.docker.script_saved": "Script de Inicialização Gravado",
   "platform.docker.server_long_time": "A inicialização do servidor está a demorar muito tempo. Poderá ser necessário intervir manualmente no container do Docker para voltar a estar online.",

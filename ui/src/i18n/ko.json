@@ -167,7 +167,7 @@
   "platform.docker.container_restarted": "Docker 컨테이너 재시작됨",
   "platform.docker.must_use_hashbang": "스크립트는 반드시 #!/bin/sh 해시뱅을 사용해야합니다.",
   "platform.docker.restart_required": "변경사항을 반영하려면 Docker 컨테이너를 재시작해야합니다.",
-  "platform.docker.run_with_restart": "--restart=always를 사용하여 Docker 컨테이너를 실행하고 있는지 확인하세요 ",
+  "platform.docker.run_with_restart": "<code>--restart=always</code>를 사용하여 Docker 컨테이너를 실행하고 있는지 확인하세요 ",
   "platform.docker.script_help": "이 스크립트는 Docker 컨테이너가 시작될 때마다 실행됩니다. 사용하는 플러그인에 필요한 ffmpeg 또는 libpcap-dev 등의 추가 패키지 설치를 위해 이 스크립트를 사용할 수 있습니다.",
   "platform.docker.script_saved": "시작 스크립트가 저장되었습니다",
   "platform.docker.server_long_time": "서버 재시작에 많은 시간이 소요되고 있습니다. Docker 컨테이너를 수동으로 불러와야 할 수도 있습니다.",

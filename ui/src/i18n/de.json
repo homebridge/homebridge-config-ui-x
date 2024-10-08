@@ -167,7 +167,7 @@
   "platform.docker.container_restarted": "Docker-Container wurde neu gestartet",
   "platform.docker.must_use_hashbang": "Skript muss #!/bin/sh hashbang verwenden.",
   "platform.docker.restart_required": "Du musst diesen Docker-Container neu starten, damit die Änderungen wirksam werden.",
-  "platform.docker.run_with_restart": "Stelle sicher, dass du den Docker-Container mit --restart=always ausführst",
+  "platform.docker.run_with_restart": "Stelle sicher, dass du den Docker-Container mit <code>--restart=always</code> ausführst",
   "platform.docker.script_help": "Dieses Skript wird jedes Mal ausgeführt, wenn der Docker-Container gestartet wird. Du kannst damit zusätzliche Pakete installieren, die deine Plugins benötigen, wie zB ffmpeg oder libpcap-dev.",
   "platform.docker.script_saved": "Startskript gespeichert",
   "platform.docker.server_long_time": "Der Neustart des Servers dauert sehr lange. Möglicherweise musst du den Docker-Container manuell aufrufen.",

@@ -167,7 +167,7 @@
   "platform.docker.container_restarted": "Contenedor Docker reiniciado",
   "platform.docker.must_use_hashbang": "El script necesita la cabecera #!/bin/sh",
   "platform.docker.restart_required": "Necesitarás reiniciar el contenedor Docker para que los cambios surgan efecto.",
-  "platform.docker.run_with_restart": "Asegúrate de que estés ejecutando el contenedor Docker con --restart=always",
+  "platform.docker.run_with_restart": "Asegúrate de que estés ejecutando el contenedor Docker con <code>--restart=always</code>",
   "platform.docker.script_help": "Este script se ejecutará cada vez que el contenedor de Docker se reinicie. Puedes utilizarlo para instalar paquetes extra que tus plugins necesiten como ffmpeg o libpcap-dev.",
   "platform.docker.script_saved": "Script de inicio guardado",
   "platform.docker.server_long_time": "El reinicio del servidor está tardando mucho. Quizá debas iniciar el contenedor de Docker de forma manual.",

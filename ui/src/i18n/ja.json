@@ -167,7 +167,7 @@
   "platform.docker.container_restarted": "Dockerコンテナを再起動しました",
   "platform.docker.must_use_hashbang": "スクリプトにハッシュタグ[#!/bin/sh]を使用しなければなりません",
   "platform.docker.restart_required": "変更を有効にするには、このDockerコンテナを再起動する必要があります。",
-  "platform.docker.run_with_restart": "Dockerコンテナを --restart=alwaysで起動していることを確認してください",
+  "platform.docker.run_with_restart": "Dockerコンテナを <code>--restart=always</code>で起動していることを確認してください",
   "platform.docker.script_help": "このスクリプトはDockerコンテナが起動するたびに実行されます。これを使用して、ffmpegやlibpcap-devなど、プラグインが必要とする可能性がある追加のパッケージをインストールできます。",
   "platform.docker.script_saved": "起動スクリプトを保存しました",
   "platform.docker.server_long_time": "サーバーの再起動に時間がかかっています。手動でDockerコンテナを再起動する必要がある可能性があります。",
