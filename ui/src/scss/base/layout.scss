@@ -12,8 +12,49 @@ body {
   background-color: #f4f4f4;
 }
 
-.body-top-padding {
-  padding-top: 5.5rem;
+a,
+a:hover,
+a:focus {
+  text-decoration: none !important;
+  --bs-link-decoration: none !important;
+}
+
+.grey-text,
+.grey-text a {
+  color: #999999 !important;
+}
+
+.pink-text,
+.pink-text a {
+  color: #ff20db !important;
+}
+
+.green-text,
+.green-text a {
+  color: #00c128 !important;
+}
+
+.red-text,
+.red-text a {
+  color: #ff0000 !important;
+}
+
+.navbar-brand {
+  color: #ffffff !important;
+}
+
+.btn-elegant {
+  color: #ffffff;
+  background-color: #333333;
+}
+
+.table {
+  --bs-table-color: initial;
+  --bs-table-bg: initial;
+}
+
+.list-group {
+  --bs-list-group-border-width: 0 !important;
 }
 
 a {
@@ -39,6 +80,27 @@ h3 {
   font-size: 0.9rem;
   color: #747373;
   font-weight: 400;
+}
+
+td {
+  font-size: 0.9rem;
+  font-weight: 300;
+  color: #999999 !important;
+}
+
+th {
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.adjust-for-mobile {
+  height: calc(100% - 30px);
+  width: calc(100% + 20px);
+  overflow: hidden;
+
+  @media (max-width: 767px) {
+    height: calc(100% - 60px);
+  }
 }
 
 .alert {
@@ -81,17 +143,24 @@ h3 {
   }
 }
 
-.adjust-for-mobile {
-  height: calc(100% - 30px);
-  width: calc(100% + 20px);
-  overflow: hidden;
-
-  @media (max-width: 767px) {
-    height: calc(100% - 60px);
-  }
+.card {
+  border-radius: 0.5rem;
 }
 
 // Prevent tooltips appearing in front of opened modal on mobile
 .tooltip {
   z-index: 1020 !important;
+}
+
+.accordion {
+  border-width: 0 !important;
+  --bs-accordion-border-width: 0 !important;
+  box-shadow:
+    0 2px 5px #00000029,
+    0 2px 10px #0000001f;
+
+  button {
+    display: inline-block !important;
+    width: auto;
+  }
 }

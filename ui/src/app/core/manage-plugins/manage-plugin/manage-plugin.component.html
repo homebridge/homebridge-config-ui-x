@@ -3,13 +3,11 @@
     <h5 class="modal-title">{{ presentTenseVerb }}: {{ pluginName }}</h5>
     <button
       type="button"
-      class="close"
-      data-dismiss="modal"
+      class="btn-close"
+      data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
       (click)="$activeModal.dismiss('Dismiss')"
-    >
-      <span aria-hidden="true">&times;</span>
-    </button>
+    ></button>
   </div>
   <div [hidden]="!onlineUpdateOk || actionComplete || showReleaseNotes" id="plugin-log-output" class="modal-body"></div>
   <div *ngIf="actionComplete" class="modal-body plugin-modal-body">
@@ -68,11 +66,11 @@ hb-service start
     class="modal-footer justify-content-between"
     *ngIf="!onlineUpdateOk || actionComplete || showReleaseNotes || actionFailed"
   >
-    <div class="text-left">
+    <div class="text-start">
       <button
         type="button"
         class="btn btn-elegant"
-        data-dismiss="modal"
+        data-bs-dismiss="modal"
         (click)="$activeModal.dismiss('Dismiss')"
         [attr.aria-label]="'form.button_close' | translate"
         *ngIf="!justUpdatedPlugin || (justUpdatedPlugin && (!isDisabled || actionFailed))"
@@ -84,7 +82,7 @@ hb-service start
       <button
         type="button"
         class="btn btn-elegant"
-        data-dismiss="modal"
+        data-bs-dismiss="modal"
         (click)="$activeModal.dismiss('Dismiss')"
         [attr.aria-label]="'form.button_close' | translate"
         *ngIf="justUpdatedPlugin && isDisabled && !actionFailed"
@@ -92,7 +90,7 @@ hb-service start
         {{ 'form.button_close' | translate }}
       </button>
     </div>
-    <div class="text-right">
+    <div class="text-end">
       <button *ngIf="onlineUpdateOk && showReleaseNotes" type="button" class="btn btn-primary" (click)="update()">
         {{ 'plugins.button_update' | translate }}
       </button>

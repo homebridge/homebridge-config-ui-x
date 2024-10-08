@@ -4,6 +4,7 @@
   font-size: 1rem;
   line-height: 1.5;
   border-radius: 0.25rem;
+  text-transform: uppercase;
 
   @media (max-width: 575px) {
     font-size: 0.8rem;
@@ -44,12 +45,9 @@
 }
 
 /* Prevent outlines around the close button when a modal opens */
-button {
-  &.close {
-    &:focus {
-      outline: none;
-    }
-  }
+.btn-close:focus {
+  outline: none;
+  box-shadow: none !important;
 }
 
 .dropdown-toggle::after {
@@ -58,5 +56,12 @@ button {
 
 .btn.disabled,
 .btn:disabled {
-  filter: grayscale(1);
+  background-color: #111111;
+  color: #999999;
+  border-color: #111111;
+}
+
+.btn-danger {
+  background-color: #d32f2f;
+  border-color: #d32f2f;
 }

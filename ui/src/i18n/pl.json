@@ -58,7 +58,6 @@
   "backup.backup_restored": "Przywracanie backupu zakończone sukcesem",
   "backup.backup_warning": "Backup zawiera ważne informacje i nie powinien być udostępniany nikomu.",
   "backup.button_restore_backup": "Przywróć z backupu",
-  "backup.label_choose_backup_file_to_restore": "Wybierz plik backupu",
   "backup.label_uploading": "Przywracanie…",
   "backup.load_error": "Nie udało się załadować backupu.",
   "backup.restore_failed": "Przywracanie backupu zakończone niepowodzeniem",
