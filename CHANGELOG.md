@@ -8,6 +8,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - fix login wallpaper setting field should in safari
   - it should not be offering to populate with a username/password from credentials manager
+- move docker startup script to settings
 
 ## v4.60.1 (2024-10-06)
 
