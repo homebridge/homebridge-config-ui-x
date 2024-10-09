@@ -11,6 +11,13 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - move docker startup script to settings
 - consistent designs for power options modules
   - in particular, the `restart`, `docker-restart`, `linux-restart` and `linux-shutdown` modules
+- fix checkboxes widget in plugin config screens (fixes [#2200](https://github.com/homebridge/homebridge-config-ui-x/issues/2200))
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v1.10.2`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.11.14`
+- `@homebridge/plugin-ui-utils` @ `v1.0.3`
 
 ## v4.60.1 (2024-10-06)
 
