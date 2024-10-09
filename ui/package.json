@@ -1,5 +1,6 @@
 {
   "name": "ui",
+  "type": "module",
   "version": "0.0.0",
   "private": true,
   "license": "MIT",
@@ -7,7 +8,7 @@
     "check": "npm install && npm outdated",
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --configuration production --output-path=../public --source-map=false --aot=true",
+    "build": "ng build --configuration production",
     "postinstall": "patch-package"
   },
   "dependencies": {
@@ -59,8 +60,8 @@
     "zone.js": "0.14.10"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^18.2.7",
-    "@angular/cli": "^18.2.7",
+    "@angular/build": "^18.2.8",
+    "@angular/cli": "^18.2.8",
     "@angular/compiler-cli": "^18.2.7",
     "@angular/language-service": "^18.2.7",
     "@fortawesome/fontawesome-free": "^6.6.0",
@@ -77,7 +78,7 @@
     "nouislider": "^15.8.1",
     "patch-package": "^8.0.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.5.4"
+    "typescript": "^5.6.3"
   },
   "overrides": {
     "@angular/animations": "18.2.7",
@@ -87,6 +88,7 @@
     "@angular/localize": "18.2.7",
     "@homebridge/hap-client": {
       "axios": "1.7.7"
-    }
+    },
+    "typescript": "^5.6.3"
   }
 }

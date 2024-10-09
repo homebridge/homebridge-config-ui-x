@@ -8,7 +8,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateService } from '@ngx-translate/core'
-import { parse } from 'json5'
+import json5 from 'json5'
 import { NgxEditorModel } from 'ngx-monaco-editor-v2'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
@@ -177,7 +177,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     try {
       return JSON.parse(this.homebridgeConfig)
     } catch (e) {
-      const config = parse(this.homebridgeConfig)
+      const config = json5.parse(this.homebridgeConfig)
       this.homebridgeConfig = JSON.stringify(config, null, 4)
       if (this.monacoEditor) {
         this.monacoEditor.getModel().setValue(this.homebridgeConfig)

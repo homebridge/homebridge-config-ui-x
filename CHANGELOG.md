@@ -13,6 +13,10 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
   - in particular, the `restart`, `docker-restart`, `linux-restart` and `linux-shutdown` modules
 - fix checkboxes widget in plugin config screens (fixes [#2200](https://github.com/homebridge/homebridge-config-ui-x/issues/2200))
 
+### Other Changes
+
+- update angular build tool to `application`
+
 ### Homebridge Dependencies
 
 - `@homebridge/hap-client` @ `v1.10.2`

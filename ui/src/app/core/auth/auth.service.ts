@@ -4,7 +4,7 @@ import { SettingsService } from '@/app/core/settings.service'
 import { environment } from '@/environments/environment'
 import { Injectable } from '@angular/core'
 import { JwtHelperService } from '@auth0/angular-jwt'
-import * as dayjs from 'dayjs'
+import dayjs from 'dayjs'
 import { firstValueFrom } from 'rxjs'
 
 interface UserInterface {

@@ -8,7 +8,7 @@ import { Component, Input, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateService } from '@ngx-translate/core'
-import { parse } from 'json5'
+import json5 from 'json5'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
@@ -148,7 +148,7 @@ export class ManualConfigComponent implements OnInit {
       }
 
       try {
-        currentBlockNew = parse(currentBlockString)
+        currentBlockNew = json5.parse(currentBlockString)
       } catch (error) {
         console.error(error)
         this.$toastr.error(this.$translate.instant('config.config_invalid_json'), this.$translate.instant('toast.title_error'))

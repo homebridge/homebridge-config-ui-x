@@ -4,12 +4,12 @@
   "compilerOptions": {
     "target": "es2022",
     "lib": [
-      "es2018",
+      "es2022",
       "dom"
     ],
     "experimentalDecorators": true,
     "baseUrl": "./",
-    "module": "es2020",
+    "module": "es2022",
     "moduleResolution": "node",
     "paths": {
       "@/*": [
@@ -20,9 +20,11 @@
     "downlevelIteration": true,
     "importHelpers": true,
     "outDir": "./dist/out-tsc",
-    "sourceMap": true
+    "sourceMap": true,
+    "esModuleInterop": true
   },
   "angularCompilerOptions": {
+    "disableTypeScriptVersionCheck": true,
     "enableI18nLegacyMessageIdFormat": false
   }
 }
