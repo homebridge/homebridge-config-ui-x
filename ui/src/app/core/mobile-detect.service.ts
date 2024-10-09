@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import * as MobileDetect from 'mobile-detect'
+import MobileDetect from 'mobile-detect'
 
 function preventDefault(e: Event) {
   e.preventDefault()

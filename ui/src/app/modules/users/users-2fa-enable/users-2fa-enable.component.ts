@@ -3,7 +3,7 @@ import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateService } from '@ngx-translate/core'
-import * as dayjs from 'dayjs'
+import dayjs from 'dayjs'
 import { ToastrService } from 'ngx-toastr'
 
 @Component({

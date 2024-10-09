@@ -3,7 +3,7 @@ import { environment } from '@/environments/environment'
 import { HttpClient, HttpParams } from '@angular/common/http'
 import { Component, Input, OnDestroy, OnInit } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
-import * as dayjs from 'dayjs'
+import dayjs from 'dayjs'
 import { interval, Subject, Subscription } from 'rxjs'
 
 @Component({
