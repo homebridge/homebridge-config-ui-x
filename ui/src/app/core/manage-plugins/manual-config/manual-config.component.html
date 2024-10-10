@@ -58,6 +58,7 @@
               <button
                 class="btn btn-primary ml-2"
                 ngbAccordionButton
+                (click)="editBlock($index)"
                 [ngbTooltip]="'form.button_edit' | translate"
                 container="body"
                 openDelay="150"
