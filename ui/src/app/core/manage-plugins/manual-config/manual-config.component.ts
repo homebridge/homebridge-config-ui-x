@@ -110,19 +110,6 @@ export class ManualConfigComponent implements OnInit {
     )
   }
 
-  blockShown(event: string) {
-    this.show = `configBlock.${event.split('.')[1]}`
-    for (const block of this.pluginConfig) {
-      block.name = block.config?.name || block.name
-    }
-  }
-
-  blockHidden(event: string) {
-    if (this.show === event) {
-      this.show = ''
-    }
-  }
-
   addBlock() {
     if (!this.saveCurrentBlock()) {
       this.$toastr.error(this.$translate.instant('plugins.config.please_fix'), this.$translate.instant('toast.title_error'))
