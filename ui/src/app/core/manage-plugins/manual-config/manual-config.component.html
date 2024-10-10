@@ -26,13 +26,7 @@
     </div>
 
     <!-- MULTIPLE CONFIG BLOCKS-->
-    <div
-      ngbAccordion
-      [closeOthers]="true"
-      *ngIf="!loading && canConfigure"
-      (show)="blockShown($event)"
-      (hide)="blockHidden($event)"
-    >
+    <div ngbAccordion [closeOthers]="true" *ngIf="!loading && canConfigure">
       <div
         [ngbAccordionItem]="'configBlock.' + $index"
         class="card"
@@ -58,6 +52,7 @@
               <button
                 class="btn btn-primary ml-2"
                 ngbAccordionButton
+                (click)="editBlock($index)"
                 [ngbTooltip]="'form.button_edit' | translate"
                 container="body"
                 openDelay="150"
