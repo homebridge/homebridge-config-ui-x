@@ -12,6 +12,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - consistent designs for power options modules
   - in particular, the `restart`, `docker-restart`, `linux-restart` and `linux-shutdown` modules
 - fix checkboxes widget in plugin config screens (fixes [#2200](https://github.com/homebridge/homebridge-config-ui-x/issues/2200))
+- fix json block switching in manual plugin config
 
 ### Other Changes
 
