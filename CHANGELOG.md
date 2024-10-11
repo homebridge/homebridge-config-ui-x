@@ -2,13 +2,14 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## BETA
+## v4.61.0 (2024-10-11)
 
 ### UI Changes
 
 - fix login wallpaper setting field should in safari
   - it should not be offering to populate with a username/password from credentials manager
 - move docker startup script to settings
+  - this was in the power options module, and is now at the bottom of the 'startup & environment' section in the settings module
 - consistent designs for power options modules
   - in particular, the `restart`, `docker-restart`, `linux-restart` and `linux-shutdown` modules
 - fix checkboxes widget in plugin config screens (fixes [#2200](https://github.com/homebridge/homebridge-config-ui-x/issues/2200))
