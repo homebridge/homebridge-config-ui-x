@@ -1,5 +1,6 @@
 import { ApiService } from '@/app/core/api.service'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
+import { HbUpdateConfirmComponent } from '@/app/core/manage-plugins/hb-update-confirm/hb-update-confirm.component'
 import { PluginLogsComponent } from '@/app/core/manage-plugins/plugin-logs/plugin-logs.component'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
@@ -199,25 +200,47 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
     })
   }
 
-  upgradeHomebridge() {
-    this.io.request('homebridge-update', {
-      version: this.targetVersion,
-      termCols: this.term.cols,
-      termRows: this.term.rows,
-    }).subscribe({
-      next: () => {
-        this.$activeModal.close()
-        this.$modal.open(RestartHomebridgeComponent, {
-          size: 'lg',
-          backdrop: 'static',
-        })
-      },
-      error: (error) => {
-        this.actionFailed = true
-        console.error(error)
-        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      },
-    })
+  async upgradeHomebridge() {
+    let res = 'update'
+
+    // Only want to show this modal updating from existing version <2 to 2
+    // This is just some temporary not-so-great logic to determine if the user is updating from <2 to 2
+    if (
+      Number(this.installedVersion.split('.')[0]) < 2
+      && ['2', 'alpha', 'beta'].includes(this.targetVersion.split('.')[0])
+    ) {
+      const ref = this.$modal.open(HbUpdateConfirmComponent, {
+        size: 'lg',
+        backdrop: 'static',
+      })
+      res = await ref.result
+    }
+
+    if (res === 'update') {
+      // Continue selected, so update homebridge
+      this.io.request('homebridge-update', {
+        version: this.targetVersion,
+        termCols: this.term.cols,
+        termRows: this.term.rows,
+      }).subscribe({
+        next: () => {
+          this.$activeModal.close()
+          this.$modal.open(RestartHomebridgeComponent, {
+            size: 'lg',
+            backdrop: 'static',
+          })
+        },
+        error: (error) => {
+          this.actionFailed = true
+          console.error(error)
+          this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+          this.$activeModal.close()
+        },
+      })
+    } else {
+      // Modal dismissed, also close the update modal
+      this.$activeModal.close()
+    }
   }
 
   async getChangeLog(): Promise<void> {
