@@ -1,7 +1,7 @@
 import { UseGuards } from '@nestjs/common'
 import { WebSocketGateway } from '@nestjs/websockets'
 
-import { WsGuard } from './core/auth/guards/ws.guard'
+import { WsGuard } from './core/auth/guards/ws.guard.js'
 
 @UseGuards(WsGuard)
 @WebSocketGateway({

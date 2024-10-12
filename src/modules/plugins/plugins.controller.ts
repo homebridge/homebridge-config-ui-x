@@ -2,8 +2,8 @@ import { Controller, Get, Param, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger'
 
-import { AdminGuard } from '../../core/auth/guards/admin.guard'
-import { PluginsService } from './plugins.service'
+import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
+import { PluginsService } from './plugins.service.js'
 
 @ApiTags('Plugins')
 @ApiBearerAuth()

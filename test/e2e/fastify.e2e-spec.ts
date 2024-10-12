@@ -12,7 +12,7 @@ import { fastify } from 'fastify'
 import { copy } from 'fs-extra'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-import { AppModule } from '../../src/app.module'
+import { AppModule } from '../../src/app.module.js'
 
 describe('FastifyOptions (e2e)', () => {
   let app: NestFastifyApplication

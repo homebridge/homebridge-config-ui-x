@@ -26,7 +26,21 @@ import { HttpService } from '@nestjs/axios'
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
 import axios from 'axios'
 import { cyan, green, red, yellow } from 'bash-color'
-import {
+import fsExtra from 'fs-extra'
+import lodash from 'lodash'
+import NodeCache from 'node-cache'
+import pLimit from 'p-limit'
+
+import { firstValueFrom } from 'rxjs'
+
+import { gt, lt, parse, satisfies } from 'semver'
+import { ConfigService, HomebridgeConfig } from '../../core/config/config.service.js'
+import { Logger } from '../../core/logger/logger.service.js'
+import { NodePtyService } from '../../core/node-pty/node-pty.service.js'
+import { HomebridgeUpdateActionDto, PluginActionDto } from './plugins.dto.js'
+
+const { orderBy, uniq } = lodash
+const {
   access,
   constants,
   createFile,
@@ -40,18 +54,7 @@ import {
   realpath,
   remove,
   stat,
-} from 'fs-extra'
-import { orderBy, uniq } from 'lodash'
-import NodeCache from 'node-cache'
-import pLimit from 'p-limit'
-
-import { firstValueFrom } from 'rxjs'
-
-import { gt, lt, parse, satisfies } from 'semver'
-import { ConfigService, HomebridgeConfig } from '../../core/config/config.service'
-import { Logger } from '../../core/logger/logger.service'
-import { NodePtyService } from '../../core/node-pty/node-pty.service'
-import { HomebridgeUpdateActionDto, PluginActionDto } from './plugins.dto'
+} = fsExtra
 
 @Injectable()
 export class PluginsService {

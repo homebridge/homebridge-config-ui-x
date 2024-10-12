@@ -4,9 +4,11 @@ import { resolve } from 'node:path'
 import process from 'node:process'
 
 import axios from 'axios'
-import { createWriteStream, pathExists, remove } from 'fs-extra'
+import fsExtra from 'fs-extra'
 
-import { BasePlatform } from '../base-platform'
+import { BasePlatform } from '../base-platform.js'
+
+const { createWriteStream, pathExists, remove } = fsExtra
 
 export class Win32Installer extends BasePlatform {
   /**

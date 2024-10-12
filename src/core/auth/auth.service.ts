@@ -11,14 +11,15 @@ import {
   UnauthorizedException,
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
-import { pathExists, readJson, writeJson } from 'fs-extra'
+import fsExtra from 'fs-extra'
 import NodeCache from 'node-cache'
 import { authenticator } from 'otplib'
 
-import { UserDto } from '../../modules/users/users.dto'
-import { ConfigService } from '../config/config.service'
-import { Logger } from '../logger/logger.service'
+import { UserDto } from '../../modules/users/users.dto.js'
+import { ConfigService } from '../config/config.service.js'
+import { Logger } from '../logger/logger.service.js'
 
+const { pathExists, readJson, writeJson } = fsExtra
 @Injectable()
 export class AuthService {
   private otpUsageCache = new NodeCache({ stdTTL: 90 })

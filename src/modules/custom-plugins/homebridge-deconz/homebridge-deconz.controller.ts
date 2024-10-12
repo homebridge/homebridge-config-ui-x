@@ -4,8 +4,8 @@ import { Controller, Get, Header, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 
-import { AdminGuard } from '../../../core/auth/guards/admin.guard'
-import { HomebridgeDeconzService } from './homebridge-deconz.service'
+import { AdminGuard } from '../../../core/auth/guards/admin.guard.js'
+import { HomebridgeDeconzService } from './homebridge-deconz.service.js'
 
 @ApiTags('Plugins')
 @ApiBearerAuth()

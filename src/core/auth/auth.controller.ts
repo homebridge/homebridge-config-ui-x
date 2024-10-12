@@ -9,10 +9,10 @@ import {
 } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiExcludeEndpoint, ApiOperation, ApiTags } from '@nestjs/swagger'
-import { ConfigService } from '../config/config.service'
-import { AuthDto } from './auth.dto'
-import { AuthService } from './auth.service'
-import { CustomGuard } from './guards/custom.guard'
+import { ConfigService } from '../config/config.service.js'
+import { AuthDto } from './auth.dto.js'
+import { AuthService } from './auth.service.js'
+import { CustomGuard } from './guards/custom.guard.js'
 
 @ApiTags('Authentication')
 @Controller('auth')

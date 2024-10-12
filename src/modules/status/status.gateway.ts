@@ -1,10 +1,10 @@
 import { UseGuards } from '@nestjs/common'
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets'
 
-import { WsGuard } from '../../core/auth/guards/ws.guard'
-import { ChildBridgesService } from '../child-bridges/child-bridges.service'
-import { PluginsService } from '../plugins/plugins.service'
-import { StatusService } from './status.service'
+import { WsGuard } from '../../core/auth/guards/ws.guard.js'
+import { ChildBridgesService } from '../child-bridges/child-bridges.service.js'
+import { PluginsService } from '../plugins/plugins.service.js'
+import { StatusService } from './status.service.js'
 
 @UseGuards(WsGuard)
 @WebSocketGateway({

@@ -20,9 +20,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger'
 
-import { AuthService } from '../../core/auth/auth.service'
-import { AdminGuard } from '../../core/auth/guards/admin.guard'
-import { UserActivateOtpDto, UserDeactivateOtpDto, UserDto, UserUpdatePasswordDto } from './users.dto'
+import { AuthService } from '../../core/auth/auth.service.js'
+import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
+import { UserActivateOtpDto, UserDeactivateOtpDto, UserDto, UserUpdatePasswordDto } from './users.dto.js'
 
 @ApiTags('User Management')
 @ApiBearerAuth()

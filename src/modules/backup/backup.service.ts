@@ -19,7 +19,19 @@ import {
 } from '@nestjs/common'
 import { cyan, green, red, yellow } from 'bash-color'
 import dayjs from 'dayjs'
-import {
+import fsExtra from 'fs-extra'
+import { networkInterfaces } from 'systeminformation'
+import { c as compress, x as extract } from 'tar'
+
+import { Extract } from 'unzipper'
+
+import { ConfigService, HomebridgeConfig } from '../../core/config/config.service.js'
+import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
+import { Logger } from '../../core/logger/logger.service.js'
+import { SchedulerService } from '../../core/scheduler/scheduler.service.js'
+import { PluginsService } from '../plugins/plugins.service.js'
+
+const {
   access,
   constants,
   copy,
@@ -34,17 +46,7 @@ import {
   remove,
   statSync,
   writeJson,
-} from 'fs-extra'
-import { networkInterfaces } from 'systeminformation'
-import { c as compress, x as extract } from 'tar'
-
-import { Extract } from 'unzipper'
-
-import { ConfigService, HomebridgeConfig } from '../../core/config/config.service'
-import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service'
-import { Logger } from '../../core/logger/logger.service'
-import { SchedulerService } from '../../core/scheduler/scheduler.service'
-import { PluginsService } from '../plugins/plugins.service'
+} = fsExtra
 
 const pump = promisify(pipeline)
 

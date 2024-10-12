@@ -1,7 +1,7 @@
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { TestingModule } from '@nestjs/testing'
 
-import type { HomebridgeConfig } from '../../src/core/config/config.service'
+import type { HomebridgeConfig } from '../../src/core/config/config.service.js'
 import { resolve } from 'node:path'
 
 import process from 'node:process'
@@ -12,10 +12,10 @@ import { copy, pathExists, readJson, remove, writeJson } from 'fs-extra'
 
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { AuthModule } from '../../src/core/auth/auth.module'
-import { ConfigService } from '../../src/core/config/config.service'
-import { ServerModule } from '../../src/modules/server/server.module'
-import { ServerService } from '../../src/modules/server/server.service'
+import { AuthModule } from '../../src/core/auth/auth.module.js'
+import { ConfigService } from '../../src/core/config/config.service.js'
+import { ServerModule } from '../../src/modules/server/server.module.js'
+import { ServerService } from '../../src/modules/server/server.service.js'
 
 describe('ServerController (e2e)', () => {
   let app: NestFastifyApplication

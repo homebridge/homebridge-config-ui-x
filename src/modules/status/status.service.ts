@@ -10,7 +10,7 @@ import { promisify } from 'node:util'
 
 import { HttpService } from '@nestjs/axios'
 import { BadRequestException, Injectable } from '@nestjs/common'
-import { readFile, readJson, writeJsonSync } from 'fs-extra'
+import fsExtra from 'fs-extra'
 import NodeCache from 'node-cache'
 import { firstValueFrom, Subject } from 'rxjs'
 import { gt } from 'semver'
@@ -25,11 +25,13 @@ import {
   time,
 } from 'systeminformation'
 
-import { ConfigService } from '../../core/config/config.service'
-import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service'
-import { Logger } from '../../core/logger/logger.service'
-import { PluginsService } from '../plugins/plugins.service'
-import { ServerService } from '../server/server.service'
+import { ConfigService } from '../../core/config/config.service.js'
+import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
+import { Logger } from '../../core/logger/logger.service.js'
+import { PluginsService } from '../plugins/plugins.service.js'
+import { ServerService } from '../server/server.service.js'
+
+const { readFile, readJson, writeJsonSync } = fsExtra
 
 export enum HomebridgeStatus {
   OK = 'ok',

@@ -2,8 +2,8 @@ import { Controller, Get, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 
-import { ChildBridgesService } from '../child-bridges/child-bridges.service'
-import { StatusService } from './status.service'
+import { ChildBridgesService } from '../child-bridges/child-bridges.service.js'
+import { StatusService } from './status.service.js'
 
 @ApiTags('Server Status')
 @ApiBearerAuth()

@@ -18,8 +18,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger'
 
-import { AdminGuard } from '../../core/auth/guards/admin.guard'
-import { ConfigEditorService } from './config-editor.service'
+import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
+import { ConfigEditorService } from './config-editor.service.js'
 
 @ApiTags('Homebridge Config Editor')
 @ApiBearerAuth()

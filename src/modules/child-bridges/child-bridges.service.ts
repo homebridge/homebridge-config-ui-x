@@ -1,9 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 
-import { ConfigService } from '../../core/config/config.service'
-import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service'
-import { Logger } from '../../core/logger/logger.service'
-import { AccessoriesService } from '../accessories/accessories.service'
+import { ConfigService } from '../../core/config/config.service.js'
+import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
+import { Logger } from '../../core/logger/logger.service.js'
+import { AccessoriesService } from '../accessories/accessories.service.js'
 
 @Injectable()
 export class ChildBridgesService {

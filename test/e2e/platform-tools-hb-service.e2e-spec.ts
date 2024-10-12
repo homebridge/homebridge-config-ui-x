@@ -10,9 +10,9 @@ import { Test } from '@nestjs/testing'
 import { copy, readFile, readJson, remove, writeFile } from 'fs-extra'
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
-import { AuthModule } from '../../src/core/auth/auth.module'
-import { ConfigService } from '../../src/core/config/config.service'
-import { HbServiceModule } from '../../src/modules/platform-tools/hb-service/hb-service.module'
+import { AuthModule } from '../../src/core/auth/auth.module.js'
+import { ConfigService } from '../../src/core/config/config.service.js'
+import { HbServiceModule } from '../../src/modules/platform-tools/hb-service/hb-service.module.js'
 
 describe('PlatformToolsHbService (e2e)', () => {
   let app: NestFastifyApplication

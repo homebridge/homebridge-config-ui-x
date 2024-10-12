@@ -13,8 +13,8 @@ import { copy, remove } from 'fs-extra'
 
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { AuthModule } from '../../src/core/auth/auth.module'
-import { PluginsModule } from '../../src/modules/plugins/plugins.module'
+import { AuthModule } from '../../src/core/auth/auth.module.js'
+import { PluginsModule } from '../../src/modules/plugins/plugins.module.js'
 
 describe('PluginController (e2e)', () => {
   let app: NestFastifyApplication

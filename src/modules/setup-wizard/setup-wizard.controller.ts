@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 
-import { AuthService } from '../../core/auth/auth.service'
-import { UserDto } from '../users/users.dto'
-import { SetupWizardGuard } from './setup-wizard.guard'
+import { AuthService } from '../../core/auth/auth.service.js'
+import { UserDto } from '../users/users.dto.js'
+import { SetupWizardGuard } from './setup-wizard.guard.js'
 
 @ApiTags('Setup Wizard')
 @UseGuards(SetupWizardGuard)

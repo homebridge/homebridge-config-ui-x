@@ -3,7 +3,7 @@ import type { Observable } from 'rxjs'
 
 import { Injectable } from '@nestjs/common'
 
-import { ConfigService } from '../../core/config/config.service'
+import { ConfigService } from '../../core/config/config.service.js'
 
 @Injectable()
 export class SetupWizardGuard implements CanActivate {

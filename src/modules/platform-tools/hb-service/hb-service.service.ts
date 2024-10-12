@@ -2,7 +2,13 @@ import { resolve } from 'node:path'
 import { Transform } from 'node:stream'
 
 import { BadRequestException, Injectable } from '@nestjs/common'
-import {
+import fsExtra from 'fs-extra'
+
+import { ConfigService } from '../../../core/config/config.service.js'
+import { Logger } from '../../../core/logger/logger.service.js'
+import { HbServiceStartupSettings } from './hb-service.dto.js'
+
+const {
   access,
   constants,
   createReadStream,
@@ -10,11 +16,7 @@ import {
   readJson,
   truncate,
   writeJsonSync,
-} from 'fs-extra'
-
-import { ConfigService } from '../../../core/config/config.service'
-import { Logger } from '../../../core/logger/logger.service'
-import { HbServiceStartupSettings } from './hb-service.dto'
+} = fsExtra
 
 @Injectable()
 export class HbServiceService {

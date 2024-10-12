@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common'
 import { PassportModule } from '@nestjs/passport'
 
-import { ConfigModule } from '../../../core/config/config.module'
-import { LoggerModule } from '../../../core/logger/logger.module'
-import { DockerController } from './docker.controller'
-import { DockerService } from './docker.service'
+import { ConfigModule } from '../../../core/config/config.module.js'
+import { LoggerModule } from '../../../core/logger/logger.module.js'
+import { DockerController } from './docker.controller.js'
+import { DockerService } from './docker.service.js'
 
 @Module({
   imports: [

@@ -1,8 +1,9 @@
-const { antfu } = require('@antfu/eslint-config')
+import antfu from '@antfu/eslint-config'
 
-module.exports = antfu({
+export default antfu({
   ignores: ['dist', 'ui/.angular', 'ui/src/assets/monaco'],
   rules: {
+    'antfu/no-top-level-await': 'off',
     'curly': ['error'],
     'import/extensions': 'off',
     'import/order': 'off',

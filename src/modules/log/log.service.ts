@@ -6,12 +6,14 @@ import process from 'node:process'
 
 import { Injectable } from '@nestjs/common'
 import { cyan, red, yellow } from 'bash-color'
-import { createReadStream, existsSync, stat } from 'fs-extra'
+import fsExtra from 'fs-extra'
 import { satisfies } from 'semver'
 import { Tail } from 'tail'
 
-import { ConfigService } from '../../core/config/config.service'
-import { NodePtyService } from '../../core/node-pty/node-pty.service'
+import { ConfigService } from '../../core/config/config.service.js'
+import { NodePtyService } from '../../core/node-pty/node-pty.service.js'
+
+const { createReadStream, existsSync, stat } = fsExtra
 
 @Injectable()
 export class LogService {

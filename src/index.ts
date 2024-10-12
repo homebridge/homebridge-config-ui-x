@@ -73,7 +73,7 @@ class HomebridgeConfigUi {
    * Run plugin in the main homebridge process
    */
   async noFork() {
-    await import('./main')
+    await import('./main.js')
   }
 
   /**
@@ -93,8 +93,7 @@ class HomebridgeConfigUi {
   }
 }
 
-// eslint-disable-next-line no-restricted-syntax
-export = (api) => {
+export default (api) => {
   homebridge = api
   homebridge.registerPlatform('homebridge-config-ui-x', 'config', HomebridgeConfigUi)
 

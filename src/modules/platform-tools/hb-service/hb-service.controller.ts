@@ -10,9 +10,9 @@ import {
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
 
-import { AdminGuard } from '../../../core/auth/guards/admin.guard'
-import { HbServiceStartupSettings } from './hb-service.dto'
-import { HbServiceService } from './hb-service.service'
+import { AdminGuard } from '../../../core/auth/guards/admin.guard.js'
+import { HbServiceStartupSettings } from './hb-service.dto.js'
+import { HbServiceService } from './hb-service.service.js'
 
 @ApiTags('Platform - HB Service')
 @ApiBearerAuth()

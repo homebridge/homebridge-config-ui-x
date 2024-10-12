@@ -9,8 +9,8 @@ import type { PathLike, WriteStream } from 'fs-extra'
 import type { ChildProcessWithoutNullStreams, ForkOptions } from 'node:child_process'
 import type { ExtractOptions } from 'tar'
 
-import type { HomebridgeIpcService } from '../core/homebridge-ipc/homebridge-ipc.service'
-import type { BasePlatform } from './base-platform'
+import type { HomebridgeIpcService } from '../core/homebridge-ipc/homebridge-ipc.service.js'
+import type { BasePlatform } from './base-platform.js'
 import { Buffer } from 'node:buffer'
 import { execSync, fork } from 'node:child_process'
 import { arch, cpus, homedir, platform, release, tmpdir, type } from 'node:os'
@@ -19,7 +19,24 @@ import { dirname, join, resolve } from 'node:path'
 import process from 'node:process'
 import axios from 'axios'
 import { program } from 'commander'
-import {
+import fsExtra from 'fs-extra'
+import ora from 'ora'
+import { gt, gte, parse } from 'semver'
+import { networkInterfaceDefault, networkInterfaces } from 'systeminformation'
+import { Tail } from 'tail'
+
+import { x as extract } from 'tar'
+import { check as tcpCheck } from 'tcp-port-used'
+
+import { DarwinInstaller } from './platforms/darwin.js'
+import { FreeBSDInstaller } from './platforms/freebsd.js'
+import { LinuxInstaller } from './platforms/linux.js'
+import { Win32Installer } from './platforms/win32.js'
+
+const __dirname = dirname(new URL(import.meta.url).pathname)
+const __filename = resolve(__dirname, 'hb-service.js')
+
+const {
   chownSync,
   close,
   createReadStream,
@@ -40,19 +57,7 @@ import {
   stat,
   write,
   writeJson,
-} from 'fs-extra'
-import ora from 'ora'
-import { gt, gte, parse } from 'semver'
-import { networkInterfaceDefault, networkInterfaces } from 'systeminformation'
-import { Tail } from 'tail'
-
-import { x as extract } from 'tar'
-import { check as tcpCheck } from 'tcp-port-used'
-
-import { DarwinInstaller } from './platforms/darwin'
-import { FreeBSDInstaller } from './platforms/freebsd'
-import { LinuxInstaller } from './platforms/linux'
-import { Win32Installer } from './platforms/win32'
+} = fsExtra
 
 process.title = 'hb-service'
 
@@ -561,7 +566,7 @@ export class HomebridgeServiceHelper {
   private async runUi() {
     try {
       // import main module
-      const main = await import('../main')
+      const main = await import('../main.js')
 
       // load the nest js instance
       const ui = await main.app
@@ -975,10 +980,10 @@ export class HomebridgeServiceHelper {
       return false
     }
     try {
-      if (await pathExists('/usr/lib/systemd/system/avahi.service')) {
+      if (await pathExists('/usr/lib/systemd/system/avahi.service.js')) {
         execSync('systemctl is-active --quiet avahi 2> /dev/null')
         return true
-      } else if (await pathExists('/lib/systemd/system/avahi-daemon.service')) {
+      } else if (await pathExists('/lib/systemd/system/avahi-daemon.service.js')) {
         execSync('systemctl is-active --quiet avahi-daemon 2> /dev/null')
         return true
       } else {

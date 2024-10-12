@@ -6,7 +6,9 @@
  */
 
 import { dirname, resolve } from 'node:path'
-import { readdir, readFile, readJson, stat, writeJson } from 'fs-extra'
+import fsExtra from 'fs-extra'
+
+const { readdir, readFile, readJson, stat, writeJson } = fsExtra
 
 // Path to the project directory
 const projectDir = resolve(dirname(__dirname), 'ui/src')

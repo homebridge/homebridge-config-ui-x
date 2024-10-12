@@ -2,7 +2,15 @@ import { resolve } from 'node:path'
 
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import dayjs from 'dayjs'
-import {
+import fsExtra from 'fs-extra'
+import { gte } from 'semver'
+
+import { ConfigService, HomebridgeConfig } from '../../core/config/config.service.js'
+import { Logger } from '../../core/logger/logger.service.js'
+import { SchedulerService } from '../../core/scheduler/scheduler.service.js'
+import { PluginsService } from '../plugins/plugins.service.js'
+
+const {
   ensureDir,
   move,
   pathExists,
@@ -13,13 +21,7 @@ import {
   rename,
   unlink,
   writeJsonSync,
-} from 'fs-extra'
-import { gte } from 'semver'
-
-import { ConfigService, HomebridgeConfig } from '../../core/config/config.service'
-import { Logger } from '../../core/logger/logger.service'
-import { SchedulerService } from '../../core/scheduler/scheduler.service'
-import { PluginsService } from '../plugins/plugins.service'
+} = fsExtra
 
 @Injectable()
 export class ConfigEditorService {

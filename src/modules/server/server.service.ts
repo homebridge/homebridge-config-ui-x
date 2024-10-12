@@ -4,7 +4,7 @@ import { exec, spawn } from 'node:child_process'
 import { join, resolve } from 'node:path'
 import process from 'node:process'
 
-import { Categories } from '@homebridge/hap-client/dist/hap-types'
+import { Categories } from '@homebridge/hap-client/dist/hap-types.js'
 import {
   BadRequestException,
   Injectable,
@@ -13,25 +13,27 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common'
 import { alloc } from 'buffer-shims'
-import {
+import fsExtra from 'fs-extra'
+import NodeCache from 'node-cache'
+import { networkInterfaces } from 'systeminformation'
+import { check as tcpCheck } from 'tcp-port-used'
+
+import { ConfigService, HomebridgeConfig } from '../../core/config/config.service.js'
+import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
+import { Logger } from '../../core/logger/logger.service.js'
+import { AccessoriesService } from '../accessories/accessories.service.js'
+import { ChildBridgesService } from '../child-bridges/child-bridges.service.js'
+import { ConfigEditorService } from '../config-editor/config-editor.service.js'
+import { HomebridgeMdnsSettingDto } from './server.dto.js'
+
+const {
   pathExists,
   readdir,
   readJson,
   remove,
   unlink,
   writeJson,
-} from 'fs-extra'
-import NodeCache from 'node-cache'
-import { networkInterfaces } from 'systeminformation'
-import { check as tcpCheck } from 'tcp-port-used'
-
-import { ConfigService, HomebridgeConfig } from '../../core/config/config.service'
-import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service'
-import { Logger } from '../../core/logger/logger.service'
-import { AccessoriesService } from '../accessories/accessories.service'
-import { ChildBridgesService } from '../child-bridges/child-bridges.service'
-import { ConfigEditorService } from '../config-editor/config-editor.service'
-import { HomebridgeMdnsSettingDto } from './server.dto'
+} = fsExtra
 
 @Injectable()
 export class ServerService {

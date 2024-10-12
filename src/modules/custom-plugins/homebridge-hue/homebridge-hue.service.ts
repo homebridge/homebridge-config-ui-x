@@ -1,9 +1,11 @@
 import { resolve } from 'node:path'
 
 import { Injectable, NotFoundException, StreamableFile } from '@nestjs/common'
-import { createReadStream, pathExists } from 'fs-extra'
+import fsExtra from 'fs-extra'
 
-import { ConfigService } from '../../../core/config/config.service'
+import { ConfigService } from '../../../core/config/config.service.js'
+
+const { createReadStream, pathExists } = fsExtra
 
 @Injectable()
 export class HomebridgeHueService {

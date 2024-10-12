@@ -4,9 +4,11 @@ import { homedir, networkInterfaces } from 'node:os'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
-import { readFile, readJson, stat } from 'fs-extra'
+import fsExtra from 'fs-extra'
 
-import { Logger } from '../logger/logger.service'
+import { Logger } from '../logger/logger.service.js'
+
+const { readFile, readJson, stat } = fsExtra
 
 /**
  * Return config required to start the console server

@@ -5,9 +5,9 @@ import process from 'node:process'
 import { Injectable } from '@nestjs/common'
 import { pathExists } from 'fs-extra'
 
-import { ConfigService } from '../../../core/config/config.service'
-import { Logger } from '../../../core/logger/logger.service'
-import { NodePtyService } from '../../../core/node-pty/node-pty.service'
+import { ConfigService } from '../../../core/config/config.service.js'
+import { Logger } from '../../../core/logger/logger.service.js'
+import { NodePtyService } from '../../../core/node-pty/node-pty.service.js'
 
 export interface TermSize {
   cols: number

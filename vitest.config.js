@@ -5,13 +5,6 @@ export default defineConfig({
   test: {
     coverage: {
       include: ['src/**/*.ts'],
-      // exclude: [
-      //   'dist/**',
-      //   'public/**',
-      //   'scripts/**',
-      //   'ui/**',
-      //   ...coverageConfigDefaults.exclude,
-      // ],
     },
     fileParallelism: false,
     include: ['test/**/*.e2e-spec.ts'],

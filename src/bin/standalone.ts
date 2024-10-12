@@ -21,4 +21,4 @@ if (!process.env.UIX_STORAGE_PATH) {
 
 process.env.UIX_CONFIG_PATH = resolve(process.env.UIX_STORAGE_PATH, 'config.json')
 
-import('../main')
+await import('../main.js')

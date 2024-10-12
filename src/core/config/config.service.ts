@@ -6,7 +6,12 @@ import { resolve } from 'node:path'
 import process from 'node:process'
 
 import { Injectable } from '@nestjs/common'
-import {
+import fsExtra from 'fs-extra'
+import lodash from 'lodash'
+import { satisfies } from 'semver'
+
+const { isEqual } = lodash
+const {
   createReadStream,
   pathExists,
   pathExistsSync,
@@ -15,9 +20,7 @@ import {
   readJsonSync,
   stat,
   writeJsonSync,
-} from 'fs-extra'
-import { isEqual } from 'lodash'
-import { satisfies } from 'semver'
+} = fsExtra
 
 @Injectable()
 export class ConfigService {

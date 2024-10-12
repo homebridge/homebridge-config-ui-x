@@ -4,7 +4,9 @@ import { resolve } from 'node:path'
 import process from 'node:process'
 
 import { Catch, NotFoundException } from '@nestjs/common'
-import { readFileSync } from 'fs-extra'
+import fsExtra from 'fs-extra'
+
+const { readFileSync } = fsExtra
 
 @Catch(NotFoundException)
 export class SpaFilter implements ExceptionFilter {

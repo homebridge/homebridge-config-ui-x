@@ -4,9 +4,9 @@ import { UseGuards } from '@nestjs/common'
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets'
 import { red } from 'bash-color'
 
-import { WsAdminGuard } from '../../core/auth/guards/ws-admin-guard'
-import { Logger } from '../../core/logger/logger.service'
-import { BackupService } from '../backup/backup.service'
+import { WsAdminGuard } from '../../core/auth/guards/ws-admin-guard.js'
+import { Logger } from '../../core/logger/logger.service.js'
+import { BackupService } from '../backup/backup.service.js'
 
 @UseGuards(WsAdminGuard)
 @WebSocketGateway({

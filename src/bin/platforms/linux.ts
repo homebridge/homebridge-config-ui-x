@@ -3,7 +3,13 @@ import { userInfo } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import process from 'node:process'
 
-import {
+import fsExtra from 'fs-extra'
+import { gte, parse } from 'semver'
+import { osInfo } from 'systeminformation'
+
+import { BasePlatform } from '../base-platform.js'
+
+const {
   chmod,
   existsSync,
   mkdirp,
@@ -15,11 +21,7 @@ import {
   rm,
   unlinkSync,
   writeFile,
-} from 'fs-extra'
-import { gte, parse } from 'semver'
-import { osInfo } from 'systeminformation'
-
-import { BasePlatform } from '../base-platform'
+} = fsExtra
 
 export class LinuxInstaller extends BasePlatform {
   private get systemdServiceName() {

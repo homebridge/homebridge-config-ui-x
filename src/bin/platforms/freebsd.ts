@@ -3,9 +3,11 @@ import { userInfo } from 'node:os'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
-import { chmod, existsSync, outputFile, readFileSync, unlinkSync } from 'fs-extra'
+import fsExtra from 'fs-extra'
 
-import { BasePlatform } from '../base-platform'
+import { BasePlatform } from '../base-platform.js'
+
+const { chmod, existsSync, outputFile, readFileSync, unlinkSync } = fsExtra
 
 export class FreeBSDInstaller extends BasePlatform {
   private get rcServiceName() {

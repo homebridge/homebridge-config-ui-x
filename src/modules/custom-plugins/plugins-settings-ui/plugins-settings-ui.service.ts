@@ -7,14 +7,16 @@ import { basename, dirname, join, normalize, resolve } from 'node:path'
 import process from 'node:process'
 import { HttpService } from '@nestjs/axios'
 import { Injectable, NotFoundException } from '@nestjs/common'
-import { pathExists, readFile } from 'fs-extra'
+import fsExtra from 'fs-extra'
 
 import NodeCache from 'node-cache'
 
 import { firstValueFrom } from 'rxjs'
-import { ConfigService } from '../../../core/config/config.service'
-import { Logger } from '../../../core/logger/logger.service'
-import { PluginsService } from '../../plugins/plugins.service'
+import { ConfigService } from '../../../core/config/config.service.js'
+import { Logger } from '../../../core/logger/logger.service.js'
+import { PluginsService } from '../../plugins/plugins.service.js'
+
+const { pathExists, readFile } = fsExtra
 
 @Injectable()
 export class PluginsSettingsUiService {

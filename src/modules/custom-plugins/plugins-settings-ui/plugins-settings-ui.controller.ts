@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Query, Res } from '@nestjs/common'
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger'
 
-import { PluginsSettingsUiService } from './plugins-settings-ui.service'
+import { PluginsSettingsUiService } from './plugins-settings-ui.service.js'
 
 @ApiTags('Plugins')
 @Controller('plugins/settings-ui')

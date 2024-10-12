@@ -1,4 +1,4 @@
-import type { HomebridgeServiceHelper } from './hb-service'
+import type { HomebridgeServiceHelper } from './hb-service.js'
 
 import process from 'node:process'
 

@@ -1,7 +1,7 @@
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { FastifyReply, FastifyRequest } from 'fastify'
 
-import { resolve } from 'node:path'
+import { dirname, resolve } from 'node:path'
 import process from 'node:process'
 
 import helmet from '@fastify/helmet'
@@ -10,17 +10,20 @@ import { ValidationPipe } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
-import { readFile } from 'fs-extra'
 
-import { AppModule } from './app.module'
-import { ConfigService } from './core/config/config.service'
-import { getStartupConfig } from './core/config/config.startup'
-import { Logger } from './core/logger/logger.service'
-import { SpaFilter } from './core/spa/spa.filter'
-import './self-check'
-import './globalDefaults'
+import fsExtra from 'fs-extra'
+import { AppModule } from './app.module.js'
+import { ConfigService } from './core/config/config.service.js'
+import { getStartupConfig } from './core/config/config.startup.js'
+import { Logger } from './core/logger/logger.service.js'
+import { SpaFilter } from './core/spa/spa.filter.js'
+import './self-check.js'
+import './globalDefaults.js'
 
-export { HomebridgeIpcService } from './core/homebridge-ipc/homebridge-ipc.service'
+const __dirname = dirname(new URL(import.meta.url).pathname)
+const { readFile } = fsExtra
+
+export { HomebridgeIpcService } from './core/homebridge-ipc/homebridge-ipc.service.js'
 
 process.env.UIX_BASE_PATH = process.env.UIX_BASE_PATH_OVERRIDE || resolve(__dirname, '../')
 

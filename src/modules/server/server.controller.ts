@@ -12,10 +12,10 @@ import {
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger'
 
-import { AdminGuard } from '../../core/auth/guards/admin.guard'
-import { ChildBridgesService } from '../child-bridges/child-bridges.service'
-import { HomebridgeMdnsSettingDto, HomebridgeNetworkInterfacesDto } from './server.dto'
-import { ServerService } from './server.service'
+import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
+import { ChildBridgesService } from '../child-bridges/child-bridges.service.js'
+import { HomebridgeMdnsSettingDto, HomebridgeNetworkInterfacesDto } from './server.dto.js'
+import { ServerService } from './server.service.js'
 
 @ApiTags('Homebridge')
 @ApiBearerAuth()

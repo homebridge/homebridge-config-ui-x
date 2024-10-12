@@ -4,11 +4,13 @@ import { join } from 'node:path'
 
 import { HapClient } from '@homebridge/hap-client'
 import { BadRequestException, Injectable } from '@nestjs/common'
-import { mkdirp, pathExists, readJson, writeJsonSync } from 'fs-extra'
+import fsExtra from 'fs-extra'
 import NodeCache from 'node-cache'
 
-import { ConfigService } from '../../core/config/config.service'
-import { Logger } from '../../core/logger/logger.service'
+import { ConfigService } from '../../core/config/config.service.js'
+import { Logger } from '../../core/logger/logger.service.js'
+
+const { mkdirp, pathExists, readJson, writeJsonSync } = fsExtra
 
 @Injectable()
 export class AccessoriesService {

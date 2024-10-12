@@ -1,8 +1,10 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common'
-import { verify } from 'jsonwebtoken'
+import jwt from 'jsonwebtoken'
 
-import { UserDto } from '../../../modules/users/users.dto'
-import { ConfigService } from '../../config/config.service'
+import { UserDto } from '../../../modules/users/users.dto.js'
+import { ConfigService } from '../../config/config.service.js'
+
+const { verify } = jwt
 
 @Injectable()
 export class WsAdminGuard implements CanActivate {

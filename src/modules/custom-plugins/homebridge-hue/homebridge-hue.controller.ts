@@ -4,8 +4,8 @@ import { Controller, Get, Header, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 
-import { AdminGuard } from '../../../core/auth/guards/admin.guard'
-import { HomebridgeHueService } from './homebridge-hue.service'
+import { AdminGuard } from '../../../core/auth/guards/admin.guard.js'
+import { HomebridgeHueService } from './homebridge-hue.service.js'
 
 @ApiTags('Plugins')
 @ApiBearerAuth()
