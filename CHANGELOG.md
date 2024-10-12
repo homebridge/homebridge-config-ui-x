@@ -10,6 +10,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
   - The Homebridge UI is now available in 28 different languages!
 - updates to `fi.json` language file (#2206) (@l1500s)
 - updates to `ru.json` language file (#2207) (@SeregaTarasov)
+- add plugin list modal for updating to hb v2.0
 
 ### Other Changes
 
