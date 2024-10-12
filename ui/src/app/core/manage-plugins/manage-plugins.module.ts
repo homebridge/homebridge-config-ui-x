@@ -2,6 +2,7 @@ import { CoreModule } from '@/app/core/core.module'
 import { CustomPluginsModule } from '@/app/core/manage-plugins/custom-plugins/custom-plugins.module'
 import { DisablePluginComponent } from '@/app/core/manage-plugins/disable-plugin/disable-plugin.component'
 import { DonateComponent } from '@/app/core/manage-plugins/donate/donate.component'
+import { HbUpdateConfirmComponent } from '@/app/core/manage-plugins/hb-update-confirm/hb-update-confirm.component'
 import { InterpolateMdPipe } from '@/app/core/manage-plugins/interpolate-md.pipe'
 import { ManagePluginComponent } from '@/app/core/manage-plugins/manage-plugin/manage-plugin.component'
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
@@ -35,6 +36,7 @@ import { MonacoEditorModule } from 'ngx-monaco-editor-v2'
     DonateComponent,
     ResetAccessoriesComponent,
     DisablePluginComponent,
+    HbUpdateConfirmComponent,
   ],
   imports: [
     CommonModule,

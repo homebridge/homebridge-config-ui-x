@@ -1,0 +1,86 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title">Homebridge v2 Update</h5>
+    <button
+      type="button"
+      class="close"
+      data-dismiss="modal"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="$activeModal.close('Dismiss')"
+    >
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body w-100 text-center">
+    <div *ngIf="loading" class="w-100 text-center primary-text">
+      <i class="fa fa-fw fa-cog fa-spin" style="font-size: 75px"></i>
+    </div>
+    <div *ngIf="!loading">
+      <div *ngIf="allPluginsSupported">
+        <i class="fas fa-fw fa-check-circle primary-text mb-4" style="font-size: 75px"></i>
+        <p>All your plugins are marked as compatible with the new version of Homebridge.</p>
+        <p>You are all set to continue below.</p>
+      </div>
+      <div *ngIf="!allPluginsSupported">
+        <i class="fas fa-fw fa-info-circle primary-text mb-4" style="font-size: 75px"></i>
+        <p>Some of your plugins are not explicitly marked as compatible with the new version of Homebridge.</p>
+        <p>
+          This does <span class="font-weight-bold">not</span> necessarily mean that they won't work. We just can't
+          guarantee that they will.
+        </p>
+        <p>
+          For more information about this update, please see the
+          <a href="https://github.com/homebridge/homebridge/wiki/Updating-To-Homebridge-v2.0" target="_blank"
+            >wiki page</a
+          >.
+        </p>
+        <p>To ignore this warning and continue with the update, click continue below.</p>
+      </div>
+      <ul class="list-group list-group-box mt-4">
+        <li
+          *ngFor="let plugin of installedPlugins"
+          class="list-group-item d-flex flex-row flex-wrap justify-content-between"
+        >
+          <span class="text-monospace">{{ plugin.name }}</span>
+          <span *ngIf="plugin.hb2Ready === 'supported'">
+            <i
+              class="fas fa-check-circle green-text fa-xl ml-2"
+              aria-label="The developer has specifically marked this plugin as compatible with Homebridge v2.0"
+            ></i>
+          </span>
+          <span *ngIf="plugin.hb2Ready === 'unknown'">
+            <i
+              class="fas fa-question-circle orange-text fa-xl ml-2"
+              aria-label="The developer has not specifically marked this plugin as compatible with Homebridge v2.0, but it may still work."
+            ></i>
+          </span>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="modal-footer justify-content-between">
+    <div class="text-left">
+      <button
+        type="button"
+        class="btn btn-elegant"
+        data-dismiss="modal"
+        (click)="$activeModal.close('Dismiss')"
+        [attr.aria-label]="'form.button_close' | translate"
+      >
+        {{ 'form.button_close' | translate }}
+      </button>
+    </div>
+    <div class="text-center"></div>
+    <div class="text-right">
+      <button
+        [disabled]="loading"
+        type="button"
+        class="btn btn-primary"
+        data-dismiss="modal"
+        (click)="$activeModal.close('update')"
+      >
+        {{ 'plugins.node_update.continue' | translate }}
+      </button>
+    </div>
+  </div>
+</div>
