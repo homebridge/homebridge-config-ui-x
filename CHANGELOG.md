@@ -23,6 +23,10 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ## BETA
 
+### UI Changes
+
+- add plugin list modal for updating to hb v2.0
+
 ### Other Changes
 
 - relocate `disable-plugin` component to `core/plugins` module
