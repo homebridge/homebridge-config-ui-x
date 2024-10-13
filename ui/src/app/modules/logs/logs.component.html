@@ -6,6 +6,11 @@
     <button
       class="btn btn-elegant my-0"
       (click)="downloadLogFile()"
+      container="body"
+      placement="bottom"
+      openDelay="150"
+      triggers="hover"
+      [ngbTooltip]="'logs.label_download' | translate"
       [attr.aria-label]="'logs.label_download' | translate"
     >
       <i class="fas fa-fw fa-download"></i>
@@ -13,6 +18,11 @@
     <button
       class="btn btn-elegant my-0 mr-0"
       (click)="truncateLogFile()"
+      container="body"
+      placement="bottom"
+      openDelay="150"
+      triggers="hover"
+      [ngbTooltip]="'form.button_delete' | translate"
       [attr.aria-label]="'form.button_delete' | translate"
     >
       <i class="fas fa-fw fa-trash-alt"></i>
