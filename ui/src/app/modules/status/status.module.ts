@@ -3,6 +3,8 @@ import { CoreModule } from '@/app/core/core.module'
 import { ManagePluginsModule } from '@/app/core/manage-plugins/manage-plugins.module'
 import { CreditsComponent } from '@/app/modules/status/credits/credits.component'
 import { StatusComponent } from '@/app/modules/status/status.component'
+import { WidgetControlComponent } from '@/app/modules/status/widget-control/widget-control.component'
+import { WidgetVisibilityComponent } from '@/app/modules/status/widget-visibility/widget-visibility.component'
 import { AccessoriesWidgetComponent } from '@/app/modules/status/widgets/accessories-widget/accessories-widget.component'
 import { ChildBridgeWidgetComponent } from '@/app/modules/status/widgets/child-bridge-widget/child-bridge-widget.component'
 import { ClockWidgetComponent } from '@/app/modules/status/widgets/clock-widget/clock-widget.component'
@@ -17,8 +19,6 @@ import { TerminalWidgetComponent } from '@/app/modules/status/widgets/terminal-w
 import { UptimeWidgetComponent } from '@/app/modules/status/widgets/uptime-widget/uptime-widget.component'
 import { WeatherWidgetComponent } from '@/app/modules/status/widgets/weather-widget/weather-widget.component'
 import { WidgetsComponent } from '@/app/modules/status/widgets/widgets.component'
-import { WidgetsAddComponent } from '@/app/modules/status/widgets-add/widgets-add.component'
-import { WidgetsControlComponent } from '@/app/modules/status/widgets-control/widgets-control.component'
 import { CommonModule } from '@angular/common'
 import { NgModule } from '@angular/core'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
@@ -33,8 +33,8 @@ import { DragulaModule } from 'ng2-dragula'
   declarations: [
     StatusComponent,
     WidgetsComponent,
-    WidgetsAddComponent,
-    WidgetsControlComponent,
+    WidgetVisibilityComponent,
+    WidgetControlComponent,
     HapQrcodeWidgetComponent,
     HomebridgeLogsWidgetComponent,
     TerminalWidgetComponent,

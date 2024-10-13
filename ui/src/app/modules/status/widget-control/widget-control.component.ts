@@ -15,9 +15,9 @@ import {
 } from 'rxjs/operators'
 
 @Component({
-  templateUrl: './widgets-control.component.html',
+  templateUrl: './widget-control.component.html',
 })
-export class WidgetsControlComponent implements OnInit {
+export class WidgetControlComponent implements OnInit {
   @Input() widget: any
 
   // weather
@@ -53,13 +53,6 @@ export class WidgetsControlComponent implements OnInit {
     'EEE, MMM d',
     'EEEE',
     'EEEE, MMM d',
-  ]
-
-  // cpu
-  public temperatureUnits = [
-    { label: 'status.widget.temp_units_system_default', value: '' },
-    { label: 'status.widget.temp_units_celsius', value: 'c' },
-    { label: 'status.widget.temp_units_fahrenheit', value: 'f' },
   ]
 
   public networkInterfaces: string[] = []

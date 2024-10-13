@@ -4,10 +4,10 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateService } from '@ngx-translate/core'
 
 @Component({
-  templateUrl: './widgets-add.component.html',
-  styleUrls: ['./widgets-add.component.scss'],
+  templateUrl: './widget-visibility.component.html',
+  styleUrls: ['./widget-visibility.component.scss'],
 })
-export class WidgetsAddComponent implements OnInit {
+export class WidgetVisibilityComponent implements OnInit {
   @Input() dashboard: any
   @Input() resetLayout: () => void
   @Input() lockLayout: () => void
@@ -16,8 +16,6 @@ export class WidgetsAddComponent implements OnInit {
 
   public availableWidgets = []
 
-  private allWidgets: any[]
-
   constructor(
     public $activeModal: NgbActiveModal,
     private $settings: SettingsService,
@@ -25,7 +23,7 @@ export class WidgetsAddComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.allWidgets = [
+    const allWidgets = [
       {
         name: this.$translate.instant('status.widget.add.label_homebridge_status'),
         component: 'HomebridgeStatusWidgetComponent',
@@ -135,7 +133,13 @@ export class WidgetsAddComponent implements OnInit {
         hideOnMobile: true,
       },
     ]
-    this.availableWidgets = this.allWidgets.filter(x => !this.dashboard.some((i: any) => i.component === x.component) && !x.hidden)
+    this.availableWidgets = allWidgets
+      .filter(x => !x.hidden)
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map(x => ({
+        ...x,
+        shown: !this.dashboard.some((i: any) => i.component === x.component),
+      }))
   }
 
   selectWidget(widget: any) {
