@@ -4,8 +4,8 @@ import { NotificationService } from '@/app/core/notification.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { CreditsComponent } from '@/app/modules/status/credits/credits.component'
-import { WidgetsAddComponent } from '@/app/modules/status/widgets-add/widgets-add.component'
-import { WidgetsControlComponent } from '@/app/modules/status/widgets-control/widgets-control.component'
+import { WidgetControlComponent } from '@/app/modules/status/widget-control/widget-control.component'
+import { WidgetVisibilityComponent } from '@/app/modules/status/widget-visibility/widget-visibility.component'
 import { Component, OnDestroy, OnInit } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { GridsterConfig, GridsterItem } from 'angular-gridster2'
@@ -209,7 +209,7 @@ export class StatusComponent implements OnInit, OnDestroy {
   }
 
   addWidget() {
-    const ref = this.$modal.open(WidgetsAddComponent, {
+    const ref = this.$modal.open(WidgetVisibilityComponent, {
       size: 'lg',
       backdrop: 'static',
     })
@@ -221,6 +221,15 @@ export class StatusComponent implements OnInit, OnDestroy {
 
     ref.result
       .then((widget) => {
+        const index = this.dashboard.findIndex(x => x.component === widget.component)
+        if (index > -1) {
+          // Widget already exists, remove it
+          this.dashboard.splice(index, 1)
+          this.gridChangedEvent()
+          return
+        }
+
+        // Add the widget
         const item = {
           x: undefined,
           y: undefined,
@@ -251,24 +260,11 @@ export class StatusComponent implements OnInit, OnDestroy {
   }
 
   manageWidget(item) {
-    const ref = this.$modal.open(WidgetsControlComponent, {
+    const ref = this.$modal.open(WidgetControlComponent, {
       size: 'lg',
       backdrop: 'static',
     })
     ref.componentInstance.widget = item
-
-    ref.result
-      .then((action) => {
-        if (action === 'remove') {
-          const index = this.dashboard.findIndex(x => x === item)
-          this.dashboard.splice(index, 1)
-          this.gridChangedEvent()
-        }
-      })
-      .catch(() => {
-        this.gridChangedEvent()
-        item.$configureEvent.next(undefined)
-      })
   }
 
   openCreditsModal() {

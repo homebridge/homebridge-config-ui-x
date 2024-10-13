@@ -40,7 +40,10 @@
             (click)="removeAccessories(item._id)"
             [disabled]="deleting || deleted.includes(item._id)"
           >
-            <i class="fas" [ngClass]="{'fa-trash': item._id !== deleting, 'fa-cog fa-spin': item._id === deleting}"></i>
+            <i
+              class="fas fa-fw"
+              [ngClass]="{'fa-trash': item._id !== deleting, 'fa-cog fa-spin': item._id === deleting}"
+            ></i>
           </button>
         </li>
       </ul>
