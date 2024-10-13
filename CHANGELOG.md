@@ -7,6 +7,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### UI Changes
 
 - add plugin list modal for updating to hb v2.0
+- change placement of page header tooltips to bottom
 
 ### Other Changes
 
