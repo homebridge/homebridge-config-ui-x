@@ -81,6 +81,17 @@ export class BackupController {
   }
 
   @UseGuards(AdminGuard)
+  @ApiOperation({
+    summary: 'Extract a system generated instance backup into the restore directory.',
+    description: 'NOTE: This endpoint does not trigger the restore process.',
+  })
+  @ApiParam({ name: 'backupId', type: 'string' })
+  @Post('/scheduled-backups/:backupId/restore')
+  async restoreScheduledBackup(@Param('backupId') backupId): Promise<void> {
+    return this.backupService.restoreScheduledBackup(backupId)
+  }
+
+  @UseGuards(AdminGuard)
   @Post('/restore')
   @ApiOperation({
     summary: 'Upload a .tar.gz of the Homebridge instance.',
