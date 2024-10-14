@@ -319,6 +319,26 @@ export class BackupService {
   }
 
   /**
+   * Removes a scheduled backup .tar.gz
+   */
+  async deleteScheduledBackup(backupId: string): Promise<void> {
+    const backupPath = resolve(this.configService.instanceBackupPath, `homebridge-backup-${backupId}.tar.gz`)
+
+    // check the file exists
+    if (!await pathExists(backupPath)) {
+      throw new NotFoundException()
+    }
+
+    try {
+      await remove(backupPath)
+      this.logger.warn(`Scheduled backup ${backupId} deleted by request`)
+    } catch (e) {
+      this.logger.warn('Failed to delete scheduled backup by request:', e.message)
+      throw new InternalServerErrorException(e.message)
+    }
+  }
+
+  /**
    * Create and download backup archive of the current homebridge instance
    */
   async downloadBackup(reply: FastifyReply): Promise<StreamableFile> {

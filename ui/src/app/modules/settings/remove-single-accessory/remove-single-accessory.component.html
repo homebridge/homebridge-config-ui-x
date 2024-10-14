@@ -39,7 +39,12 @@
             <br />
             <small class="grey-text">{{ item.UUID }}</small>
           </span>
-          <button class="btn btn-danger ml-3" (click)="removeAccessory(item)" [disabled]="deleting">
+          <button
+            class="btn btn-danger ml-3"
+            (click)="removeAccessory(item)"
+            [disabled]="deleting"
+            [attr.aria-label]="'form.button_delete' | translate"
+          >
             <i
               class="fas fa-fw"
               [ngClass]="{'fa-trash': item.UUID !== deleting, 'fa-cog fa-spin': item.UUID === deleting}"
@@ -57,7 +62,6 @@
         class="btn btn-elegant"
         data-dismiss="modal"
         (click)="$activeModal.dismiss('Dismiss')"
-        [attr.aria-label]="'form.button_close' | translate"
         [disabled]="deleting"
       >
         {{ 'form.button_close' | translate }}
