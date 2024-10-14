@@ -10,6 +10,8 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - change placement of page header tooltips to bottom
 - single modal for showing/hiding widgets
 - option to delete a scheduled backup file
+- option to restore a scheduled backup file
+  - without the need to download and upload it
 
 ### Other Changes
 

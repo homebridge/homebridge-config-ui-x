@@ -1,6 +1,6 @@
 <div class="modal-content hb-backup-modal">
   <div class="modal-header">
-    <h5 class="modal-title">{{ 'backup.title_restore' | translate }}</h5>
+    <h5 class="modal-title">{{ 'form.button_restore' | translate }}</h5>
     <button
       type="button"
       class="close"
@@ -22,7 +22,10 @@
       <li>{{ 'backup.restore_max_size' | translate: { maxBackupSizeText: maxFileSizeText } }}</li>
       <li>{{ 'backup.restore_warning' | translate }}</li>
     </ul>
-    <div class="custom-file">
+    <div *ngIf="selectedBackup">
+      <input class="form-control custom-input" type="text" [value]="selectedBackup.fileName" disabled />
+    </div>
+    <div class="custom-file" *ngIf="!selectedBackup">
       <input
         type="file"
         class="custom-file-input"
@@ -42,35 +45,23 @@
     <div class="text-left">
       <button
         type="button"
-        *ngIf="selectedFile"
         class="btn btn-elegant"
         data-dismiss="modal"
         (click)="$activeModal.dismiss('Dismiss')"
         [attr.aria-label]="'form.button_close' | translate"
+        [disabled]="clicked"
       >
         {{ 'form.button_close' | translate }}
       </button>
     </div>
-    <div class="text-center">
-      <button
-        type="button"
-        *ngIf="!selectedFile"
-        class="btn btn-elegant"
-        data-dismiss="modal"
-        (click)="$activeModal.dismiss('Dismiss')"
-        [attr.aria-label]="'form.button_close' | translate"
-      >
-        {{ 'form.button_close' | translate }}
-      </button>
-    </div>
+    <div class="text-center"></div>
     <div class="text-right">
       <button
         type="button"
-        *ngIf="selectedFile"
         class="btn btn-primary"
         data-dismiss="modal"
         (click)="onRestoreBackupClick()"
-        [disabled]="clicked"
+        [disabled]="(!selectedBackup && !selectedFile) || clicked"
       >
         <span *ngIf="clicked">
           <i *ngIf="!uploadPercent || uploadPercent === 100" class="fa fa-fw fa-circle-notch fa-spin"></i>
@@ -78,7 +69,7 @@
           <span *ngIf="uploadPercent === 100"> Extracting Archive</span>
           <span *ngIf="uploadPercent !== 100"> {{ 'backup.label_uploading' | translate }}</span>
         </span>
-        <span *ngIf="!clicked">{{ 'backup.button_restore_backup' | translate }}</span>
+        <span *ngIf="!clicked">{{ 'form.button_restore' | translate }}</span>
       </button>
     </div>
   </div>
