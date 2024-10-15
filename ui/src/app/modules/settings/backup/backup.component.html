@@ -7,7 +7,7 @@
       data-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
       (click)="$activeModal.dismiss('Dismiss')"
-      [disabled]="deleting"
+      [disabled]="clicked || deleting"
     >
       <span aria-hidden="true">&times;</span>
     </button>
@@ -16,25 +16,43 @@
     <div class="text-center mt-2 mb-3">
       <i class="fas fa-fw fa-hard-drive primary-text" style="font-size: 75px"></i>
     </div>
-    <p>{{ 'backup.backup_help_one' | translate }}</p>
-    <p>{{ 'backup.backup_help_two' | translate }}</p>
-    <p>{{ 'backup.backup_warning' | translate }}</p>
-    <div class="text-center mb-3">
-      <button
-        type="button"
-        class="btn btn-primary"
-        data-dismiss="modal"
-        (click)="onDownloadBackupClick()"
-        [disabled]="clicked"
-      >
-        <i *ngIf="clicked" class="fa fa-fw fa-circle-notch fa-spin"></i>
-        <span *ngIf="!clicked">{{ 'backup.archive.download' | translate }}</span>
-      </button>
-    </div>
-    <p *ngIf="backupTime">
-      {{ 'backup.scheduled_backup_time' | translate:{ backupTime: backupTime | date:'shortTime', dayCount: 7 } }}
-    </p>
-    <ul class="list-group list-group-box mt-2" *ngIf="scheduledBackups && scheduledBackups.length">
+    <ul>
+      <li>{{ 'backup.backup_help_one' | translate }}</li>
+      <li>{{ 'backup.backup_help_two' | translate }}</li>
+      <li>{{ 'backup.backup_warning' | translate }}</li>
+      <li *ngIf="backupTime">
+        {{ 'backup.scheduled_backup_time' | translate:{ backupTime: backupTime | date:'shortTime', dayCount: 7 } }}
+      </li>
+    </ul>
+    <ul class="list-group list-group-box mt-2">
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span>
+          <span> {{ Date.now() | date:'mediumDate' }} </span>
+          <br />
+          <small class="grey-text">{{ Date.now() | date:'shortTime' }} &middot; {{ 'backup.now' | translate }}</small>
+        </span>
+        <span style="display: flex; flex-wrap: nowrap">
+          <button class="btn btn-primary ml-3" disabled [attr.aria-label]="'form.button_restore' | translate">
+            <i class="fas fa-fw fa-history"></i>
+          </button>
+          <button
+            class="btn btn-primary ml-1"
+            (click)="onDownloadBackupClick()"
+            [disabled]="clicked"
+            [ngbTooltip]="'form.button_download' | translate"
+            placement="bottom"
+            container="modal"
+            openDelay="150"
+            triggers="hover"
+            [attr.aria-label]="'form.button_download' | translate"
+          >
+            <i class="fas fa-fw" [ngClass]="{'fa-download': !clicked, 'fa-cog fa-spin': clicked}"></i>
+          </button>
+          <button class="btn btn-danger ml-1" disabled [attr.aria-label]="'form.button_delete' | translate">
+            <i class="fas fa-fw fa-trash"></i>
+          </button>
+        </span>
+      </li>
       <li
         *ngFor="let backup of scheduledBackups"
         class="list-group-item d-flex justify-content-between align-items-center"
@@ -48,7 +66,7 @@
             {{ backup.timestamp | date:'shortTime' }} &middot;
             <span
               *ngIf="backup.size > backup.maxBackupSize"
-              ngbTooltip="{{ 'backup.backup_exceeds_max_size' | translate: { backupSize: backup.size + 'MB', maxBackupSizeText: backup.maxBackupSizeText } }}"
+              [ngbTooltip]="'backup.backup_exceeds_max_size' | translate: { backupSize: backup.size + 'MB', maxBackupSizeText: backup.maxBackupSizeText }"
               container="modal"
               openDelay="150"
               triggers="hover"
@@ -64,8 +82,8 @@
           <button
             class="btn btn-primary ml-3"
             (click)="restore(backup)"
-            [disabled]="deleting || backup.size > backup.maxBackupSize"
-            ngbTooltip="{{ 'form.button_restore' | translate }}"
+            [disabled]="clicked || deleting || backup.size > backup.maxBackupSize"
+            [ngbTooltip]="'form.button_restore' | translate"
             placement="bottom"
             container="modal"
             openDelay="150"
@@ -77,8 +95,8 @@
           <button
             class="btn btn-primary ml-1"
             (click)="download(backup)"
-            [disabled]="deleting"
-            ngbTooltip="{{ 'form.button_download' | translate }}"
+            [disabled]="clicked || deleting"
+            [ngbTooltip]="'form.button_download' | translate"
             placement="bottom"
             container="modal"
             openDelay="150"
@@ -90,8 +108,8 @@
           <button
             class="btn btn-danger ml-1"
             (click)="delete(backup)"
-            [disabled]="deleting"
-            ngbTooltip="{{ 'form.button_delete' | translate }}"
+            [disabled]="clicked || deleting"
+            [ngbTooltip]="'form.button_delete' | translate"
             placement="bottom"
             container="modal"
             openDelay="150"
@@ -106,12 +124,6 @@
         </span>
       </li>
     </ul>
-
-    <div *ngIf="!scheduledBackups.length && !errorMessage">
-      <div class="alert" role="alert">
-        {{ 'backup.scheduled_backup_none' | translate:{ backupTime: backupTime | date:'shortTime' } }}
-      </div>
-    </div>
 
     <div *ngIf="errorMessage">
       <div class="alert alert-error" role="alert">
@@ -129,7 +141,7 @@
         class="btn btn-elegant"
         data-dismiss="modal"
         (click)="$activeModal.dismiss('Dismiss')"
-        [disabled]="deleting"
+        [disabled]="clicked || deleting"
       >
         {{ 'form.button_close' | translate }}
       </button>

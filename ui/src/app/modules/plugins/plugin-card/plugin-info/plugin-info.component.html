@@ -46,7 +46,7 @@
         *ngIf="plugin.links.homepage || plugin.links.npm"
         class="btn btn-primary text-decoration-none"
         target="_blank"
-        href="{{ plugin.links.homepage || plugin.links.npm }}"
+        [href]="plugin.links.homepage || plugin.links.npm"
         rel="noopener noreferrer"
       >
         {{ 'plugins.button_homepage' | translate }} <i class="fas fa-fw fa-external-link-alt"></i>
