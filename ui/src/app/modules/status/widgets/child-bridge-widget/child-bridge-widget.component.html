@@ -22,7 +22,7 @@
         <div style="min-width: 48px" class="grey-text text-right">
           <!-- <a *ngIf="!bridge.restartInProgress && bridge.paired === false" href="javascript:void(0)"
             (click)="restartChildBridge(bridge)" class="grey-text mr-1"
-            ngbTooltip="{{ 'child_bridge.bridge_connect' | translate }}" container="body" openDelay="150" triggers="hover"
+            [ngbTooltip]="'child_bridge.bridge_connect' | translate" container="body" openDelay="150" triggers="hover"
             [placement]="['left', 'top', 'bottom']">
             <i class="fa-fw icon-button fas fa-fw fa-qrcode"></i>
           </a> -->
@@ -31,7 +31,7 @@
             href="javascript:void(0)"
             (click)="restartChildBridge(bridge)"
             class="grey-text"
-            ngbTooltip="{{ 'menu.tooltip_restart' | translate }}"
+            [ngbTooltip]="'menu.tooltip_restart' | translate"
             container="body"
             openDelay="150"
             triggers="hover"
