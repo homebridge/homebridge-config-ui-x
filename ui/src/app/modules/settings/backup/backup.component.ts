@@ -1,6 +1,7 @@
 import { ApiService } from '@/app/core/api.service'
+import { RestoreComponent } from '@/app/modules/settings/restore/restore.component'
 import { Component, OnInit } from '@angular/core'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateService } from '@ngx-translate/core'
 import { saveAs } from 'file-saver'
 import { ToastrService } from 'ngx-toastr'
@@ -18,6 +19,7 @@ export class BackupComponent implements OnInit {
   constructor(
     public $activeModal: NgbActiveModal,
     private $api: ApiService,
+    private $modal: NgbModal,
     private $toastr: ToastrService,
     private $translate: TranslateService,
   ) {}
@@ -68,6 +70,17 @@ export class BackupComponent implements OnInit {
         this.$toastr.error(this.$translate.instant('backup.backup_download_failed'), this.$translate.instant('toast.title_error'))
       },
     })
+  }
+
+  restore(backup: { id: any, fileName: string }) {
+    // Close the backup modal and open the restore modal
+    this.$activeModal.close()
+    const ref = this.$modal.open(RestoreComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    })
+
+    ref.componentInstance.selectedBackup = backup
   }
 
   delete(backup: { id: any, fileName: string }) {

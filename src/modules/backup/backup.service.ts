@@ -339,6 +339,31 @@ export class BackupService {
   }
 
   /**
+   * Restore a scheduled backup .tar.gz
+   */
+  async restoreScheduledBackup(backupId: string): Promise<void> {
+    const backupPath = resolve(this.configService.instanceBackupPath, `homebridge-backup-${backupId}.tar.gz`)
+
+    // check the file exists
+    if (!await pathExists(backupPath)) {
+      throw new NotFoundException()
+    }
+
+    // clear restore directory
+    this.restoreDirectory = undefined
+
+    // prepare a temp working directory
+    const restoreDir = await mkdtemp(join(tmpdir(), 'homebridge-backup-'))
+
+    // pipe the data to the temp directory
+    await pump(createReadStream(backupPath), extract({
+      cwd: restoreDir,
+    }))
+
+    this.restoreDirectory = restoreDir
+  }
+
+  /**
    * Create and download backup archive of the current homebridge instance
    */
   async downloadBackup(reply: FastifyReply): Promise<StreamableFile> {

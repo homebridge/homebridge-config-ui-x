@@ -40,14 +40,16 @@
         class="list-group-item d-flex justify-content-between align-items-center"
       >
         <span>
-          <span style="word-break: break-all">{{ backup.fileName }}</span>
+          <span [ngbTooltip]="backup.fileName" container="modal" openDelay="150" triggers="hover">
+            {{ backup.timestamp | date:'mediumDate' }}
+          </span>
           <br />
           <small class="grey-text">
-            {{ backup.timestamp | date:'medium' }} &middot;
+            {{ backup.timestamp | date:'shortTime' }} &middot;
             <span
               *ngIf="backup.size > backup.maxBackupSize"
-              ngbTooltip="{{ 'backup.backup_exceeds_max_size' | translate: { maxBackupSizeText: backup.maxBackupSizeText }  }}"
-              container="body"
+              ngbTooltip="{{ 'backup.backup_exceeds_max_size' | translate: { backupSize: backup.size + 'MB', maxBackupSizeText: backup.maxBackupSizeText } }}"
+              container="modal"
               openDelay="150"
               triggers="hover"
               class="red-text"
@@ -58,19 +60,42 @@
             <span *ngIf="backup.size <= backup.maxBackupSize"> {{ backup.size }}MB </span>
           </small>
         </span>
-        <span>
+        <span style="display: flex; flex-wrap: nowrap">
           <button
             class="btn btn-primary ml-3"
+            (click)="restore(backup)"
+            [disabled]="deleting || backup.size > backup.maxBackupSize"
+            ngbTooltip="{{ 'form.button_restore' | translate }}"
+            placement="bottom"
+            container="modal"
+            openDelay="150"
+            triggers="hover"
+            [attr.aria-label]="'form.button_restore' | translate"
+          >
+            <i class="fas fa-fw fa-history"></i>
+          </button>
+          <button
+            class="btn btn-primary ml-1"
             (click)="download(backup)"
             [disabled]="deleting"
+            ngbTooltip="{{ 'form.button_download' | translate }}"
+            placement="bottom"
+            container="modal"
+            openDelay="150"
+            triggers="hover"
             [attr.aria-label]="'form.button_download' | translate"
           >
             <i class="fas fa-fw fa-download"></i>
           </button>
           <button
-            class="btn btn-danger ml-2"
+            class="btn btn-danger ml-1"
             (click)="delete(backup)"
             [disabled]="deleting"
+            ngbTooltip="{{ 'form.button_delete' | translate }}"
+            placement="bottom"
+            container="modal"
+            openDelay="150"
+            triggers="hover"
             [attr.aria-label]="'form.button_delete' | translate"
           >
             <i
