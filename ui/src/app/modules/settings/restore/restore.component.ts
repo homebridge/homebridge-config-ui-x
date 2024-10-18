@@ -14,6 +14,7 @@ import { FitAddon } from 'xterm-addon-fit'
 })
 export class RestoreComponent implements OnInit, OnDestroy {
   @Input() setupWizardRestore = false
+  @Input() selectedBackup: { id: any, fileName: string } = null
 
   public clicked = false
   public maxFileSizeText = globalThis.backup.maxBackupSizeText
@@ -57,10 +58,16 @@ export class RestoreComponent implements OnInit, OnDestroy {
   }
 
   onRestoreBackupClick() {
-    if (this.restoreArchiveType === 'homebridge') {
-      this.uploadHomebridgeArchive()
-    } else if (this.restoreArchiveType === 'hbfx') {
-      this.uploadHbfxArchive()
+    if (this.selectedBackup) {
+      // Prepopulated with a backup from the backup modal
+      this.restoreScheduledBackup()
+    } else {
+      // Restore from uploaded file
+      if (this.restoreArchiveType === 'homebridge') {
+        this.uploadHomebridgeArchive()
+      } else if (this.restoreArchiveType === 'hbfx') {
+        this.uploadHbfxArchive()
+      }
     }
   }
 
@@ -70,6 +77,26 @@ export class RestoreComponent implements OnInit, OnDestroy {
     const formData: FormData = new FormData()
     formData.append('restoreArchive', this.selectedFile, this.selectedFile.name)
     this.$api.post('/backup/restore', formData).subscribe({
+      next: () => {
+        this.restoreStarted = true
+        this.restoreInProgress = true
+        setTimeout(() => {
+          this.startRestore()
+        }, 500)
+        this.clicked = false
+      },
+      error: (error) => {
+        console.error(error)
+        this.$toastr.error(error.error?.message || this.$translate.instant('backup.restore_failed'), this.$translate.instant('toast.title_error'))
+        this.clicked = false
+      },
+    })
+  }
+
+  async restoreScheduledBackup() {
+    this.term.reset()
+    this.clicked = true
+    this.$api.post(`/backup/scheduled-backups/${this.selectedBackup.id}/restore`, {}).subscribe({
       next: () => {
         this.restoreStarted = true
         this.restoreInProgress = true

@@ -85,3 +85,9 @@ h3 {
 .tooltip {
   z-index: 1020 !important;
 }
+
+.modal {
+  .tooltip {
+    z-index: 1070 !important;
+  }
+}
