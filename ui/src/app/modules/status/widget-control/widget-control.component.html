@@ -13,7 +13,7 @@
   </div>
   <div class="modal-body w-100" [ngSwitch]="widget.component">
     <div class="container px-1">
-      <div class="form-group row align-items-center">
+      <div class="form-group my-2 row align-items-center">
         <label class="col-6 col-form-label">{{ 'status.widget.hide_on_mobile' | translate }}</label>
         <div class="col-6 text-right">
           <input
@@ -31,7 +31,7 @@
         <div class="input-group mb-3">
           <div class="input-group-prepend">
             <span class="input-group-text custom-input" id="">
-              <i class="fas" [ngClass]="{'fa-sync fa-spin': searching, 'fa-city': !searching}"></i>
+              <i class="fas fa-fw" [ngClass]="{'fa-sync fa-spin': searching, 'fa-city': !searching}"></i>
             </span>
           </div>
           <input
@@ -45,13 +45,15 @@
             [(ngModel)]="widget.location"
           />
         </div>
-        <p class="muted grey-text text-center">Weather data is provided by OpenWeather.</p>
+        <p class="muted grey-text text-center mt-3 mb-2">Weather data is provided by OpenWeather.</p>
       </div>
       <div *ngSwitchCase="'AccessoriesWidgetComponent'">
-        <p class="muted grey-text text-center">{{ 'status.widget.accessories.choose_accessories' | translate }}</p>
+        <p class="muted grey-text text-center mt-3 mb-2">
+          {{ 'status.widget.accessories.choose_accessories' | translate }}
+        </p>
       </div>
       <div *ngSwitchCase="'HomebridgeStatusWidgetComponent'">
-        <div class="form-group row align-items-center">
+        <div class="form-group my-2 row align-items-center">
           <label class="col-6 col-form-label">{{ 'status.widget.homebridge_port' | translate }}</label>
           <div class="col-6 text-right">
             <input
@@ -66,7 +68,7 @@
         </div>
       </div>
       <div *ngSwitchCase="'HomebridgeLogsWidgetComponent'">
-        <div class="form-group row align-items-center">
+        <div class="form-group my-2 row align-items-center">
           <label class="col-6 col-form-label">{{ 'status.widget.font_size' | translate }}</label>
           <div class="col-6">
             <select class="custom-select" [(ngModel)]="widget.fontSize">
@@ -74,7 +76,7 @@
             </select>
           </div>
         </div>
-        <div class="form-group row align-items-center">
+        <div class="form-group my-2 row align-items-center">
           <label class="col-6 col-form-label">{{ 'status.widget.font_weight' | translate }}</label>
           <div class="col-6">
             <select class="custom-select" [(ngModel)]="widget.fontWeight">
@@ -84,7 +86,7 @@
         </div>
       </div>
       <div *ngSwitchCase="'TerminalWidgetComponent'">
-        <div class="form-group row align-items-center">
+        <div class="form-group my-2 row align-items-center">
           <label class="col-6 col-form-label">{{ 'status.widget.font_size' | translate }}</label>
           <div class="col-6">
             <select class="custom-select" [(ngModel)]="widget.fontSize">
@@ -92,7 +94,7 @@
             </select>
           </div>
         </div>
-        <div class="form-group row align-items-center">
+        <div class="form-group my-2 row align-items-center">
           <label class="col-6 col-form-label">{{ 'status.widget.font_weight' | translate }}</label>
           <div class="col-6">
             <select class="custom-select" [(ngModel)]="widget.fontWeight">
@@ -102,7 +104,7 @@
         </div>
       </div>
       <div *ngSwitchCase="'ClockWidgetComponent'">
-        <div class="form-group row align-items-center">
+        <div class="form-group my-2 row align-items-center">
           <label class="col-6 col-form-label">{{ 'status.widget.clock_timeformat' | translate }}</label>
           <div class="col-6">
             <select class="custom-select" [(ngModel)]="widget.timeFormat">
@@ -112,7 +114,7 @@
             </select>
           </div>
         </div>
-        <div class="form-group row align-items-center">
+        <div class="form-group my-2 row align-items-center">
           <label class="col-6 col-form-label">{{ 'status.widget.clock_dateformat' | translate }}</label>
           <div class="col-6">
             <select class="custom-select" [(ngModel)]="widget.dateFormat">
@@ -124,15 +126,7 @@
         </div>
       </div>
       <div *ngSwitchCase="'CpuWidgetComponent'">
-        <div class="form-group row align-items-center">
-          <label class="col-6 col-form-label">{{ 'status.widget.temp_units' | translate }}</label>
-          <div class="col-6">
-            <select class="custom-select" [(ngModel)]="widget.temperatureUnit">
-              <option *ngFor="let unit of temperatureUnits" [value]="unit.value">{{ unit.label | translate }}</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-group row align-items-center">
+        <div class="form-group my-2 row align-items-center">
           <label class="col-6 col-form-label"> {{ 'status.widget.network.refresh_interval' | translate }} </label>
           <div class="col-6">
             <div class="input-group">
@@ -149,7 +143,7 @@
             </div>
           </div>
         </div>
-        <div class="form-group row align-items-center">
+        <div class="form-group my-2 row align-items-center">
           <label class="col-6 col-form-label"> {{ 'status.widget.network.history_items' | translate }} </label>
           <div class="col-6">
             <div class="input-group">
@@ -166,10 +160,10 @@
             </div>
           </div>
         </div>
-        <p class="muted grey-text text-center">{{ 'status.widget.network.refresh_note' | translate }}</p>
+        <p class="muted grey-text text-center mt-3 mb-2">{{ 'status.widget.network.refresh_note' | translate }}</p>
       </div>
       <div *ngSwitchCase="'MemoryWidgetComponent'">
-        <div class="form-group row align-items-center">
+        <div class="form-group my-2 row align-items-center">
           <label class="col-6 col-form-label"> {{ 'status.widget.network.refresh_interval' | translate }} </label>
           <div class="col-6">
             <div class="input-group">
@@ -186,7 +180,7 @@
             </div>
           </div>
         </div>
-        <div class="form-group row align-items-center">
+        <div class="form-group my-2 row align-items-center">
           <label class="col-6 col-form-label"> {{ 'status.widget.network.history_items' | translate }} </label>
           <div class="col-6">
             <div class="input-group">
@@ -203,10 +197,10 @@
             </div>
           </div>
         </div>
-        <p class="muted grey-text text-center">{{ 'status.widget.network.refresh_note' | translate }}</p>
+        <p class="muted grey-text text-center mt-3 mb-2">{{ 'status.widget.network.refresh_note' | translate }}</p>
       </div>
       <div *ngSwitchCase="'NetworkWidgetComponent'">
-        <div class="form-group row align-items-center">
+        <div class="form-group my-2 row align-items-center">
           <label class="col-6 col-form-label"> {{ 'status.widget.network.network_interface' | translate }} </label>
           <div class="col-6">
             <select *ngIf="networkInterfaces.length" class="custom-select" [(ngModel)]="widget.networkInterface">
@@ -217,7 +211,7 @@
             <span *ngIf="!networkInterfaces.length">{{ 'status.widget.network.none_selected' | translate }}</span>
           </div>
         </div>
-        <div class="form-group row align-items-center">
+        <div class="form-group my-2 row align-items-center">
           <label class="col-6 col-form-label"> {{ 'status.widget.network.refresh_interval' | translate }} </label>
           <div class="col-6">
             <div class="input-group">
@@ -234,7 +228,7 @@
             </div>
           </div>
         </div>
-        <div class="form-group row align-items-center">
+        <div class="form-group my-2 row align-items-center">
           <label class="col-6 col-form-label"> {{ 'status.widget.network.history_items' | translate }} </label>
           <div class="col-6">
             <div class="input-group">
@@ -251,7 +245,7 @@
             </div>
           </div>
         </div>
-        <p class="muted grey-text text-center">{{ 'status.widget.network.refresh_note' | translate }}</p>
+        <p class="muted grey-text text-center mt-3 mb-2">{{ 'status.widget.network.refresh_note' | translate }}</p>
       </div>
     </div>
   </div>
@@ -267,11 +261,7 @@
         {{ 'form.button_close' | translate }}
       </button>
     </div>
-    <div class="text-center">
-      <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="$activeModal.close('remove')">
-        {{ 'form.button_hide' | translate }}
-      </button>
-    </div>
+    <div class="text-center"></div>
     <div class="text-right">
       <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="$activeModal.dismiss('Dismiss')">
         {{ 'form.button_save' | translate }}

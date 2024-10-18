@@ -52,13 +52,13 @@
           </button>
         </li>
         <li class="list-group-item d-flex justify-content-between align-items-center">
-          <span class="text-left">
+          <div class="text-left" style="min-width: 50%">
             {{ 'plugins.manage.all_versions' | translate }}
             <br />
-            <select class="custom-select" style="font-size: 0.875rem" [(ngModel)]="versionSelect">
+            <select class="custom-select w-100" style="font-size: 0.875rem" [(ngModel)]="versionSelect">
               <option *ngFor="let version of versions" [value]="version.version">v{{ version.version }}</option>
             </select>
-          </span>
+          </div>
           <button
             class="btn btn-primary ml-3"
             [disabled]="!versionSelect"

@@ -12,6 +12,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - updates to `ru.json` language file (#2207) (@SeregaTarasov)
 - add plugin list modal for updating to hb v2.0
 - change placement of page header tooltips to bottom
+- single modal for showing/hiding widgets
 
 ### Other Changes
 
