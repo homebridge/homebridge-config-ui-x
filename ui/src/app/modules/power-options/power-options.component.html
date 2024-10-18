@@ -19,7 +19,7 @@
       container="body"
       openDelay="150"
       triggers="hover"
-      ngbTooltip="{{ 'reset.force_restart_hb_help_text' | translate }}"
+      [ngbTooltip]="'reset.force_restart_hb_help_text' | translate"
     >
       {{ 'menu.hbrestart.confirm_ui' | translate }}
     </button>
