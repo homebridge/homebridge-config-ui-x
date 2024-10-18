@@ -13,7 +13,7 @@
         triggers="hover"
         *ngIf="!originalConfig"
         [attr.aria-label]="'form.button_download' | translate"
-        ngbTooltip="{{ 'form.button_download' | translate }}"
+        [ngbTooltip]="'form.button_download' | translate"
       >
         <i class="fas fa-fw fa-download"></i>
       </button>
@@ -26,7 +26,7 @@
         placement="bottom"
         openDelay="150"
         triggers="hover"
-        ngbTooltip="{{ 'form.button_cancel' | translate }}"
+        [ngbTooltip]="'form.button_cancel' | translate"
         [attr.aria-label]="'form.button_cancel' | translate"
       >
         <i class="fas fa-fw fa-times"></i>
@@ -40,7 +40,7 @@
         triggers="hover"
         *ngIf="!originalConfig"
         [attr.aria-label]="'form.button_restore' | translate"
-        ngbTooltip="{{ 'form.button_restore' | translate }}"
+        [ngbTooltip]="'form.button_restore' | translate"
       >
         <i class="fas fa-fw fa-history"></i>
       </button>
@@ -52,7 +52,7 @@
         placement="bottom"
         openDelay="150"
         triggers="hover"
-        ngbTooltip="{{ 'form.button_save' | translate }}"
+        [ngbTooltip]="'form.button_save' | translate"
         [attr.aria-label]="'form.button_save' | translate"
       >
         <i *ngIf="!saveInProgress" class="fas fa-fw fa-floppy-disk"></i>

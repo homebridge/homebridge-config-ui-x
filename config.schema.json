@@ -410,7 +410,10 @@
         "placeholder": 28800,
         "minimum": 600,
         "maximum": 86400000,
-        "description": "The number of seconds before a user session will timeout. Defaults to 8 hours."
+        "description": "The number of seconds before a user session will timeout. Defaults to 8 hours.",
+        "condition": {
+          "functionBody": "return model.auth === 'form'"
+        }
       },
       "log": {
         "type": "object",
@@ -593,7 +596,10 @@
         "title": "Scheduled backup destination path",
         "description": "The full path to where the service should save daily scheduled backups archives",
         "type": "string",
-        "placeholder": "eg. /home/pi/homebridge-backups"
+        "placeholder": "eg. /home/pi/homebridge-backups",
+        "condition": {
+          "functionBody": "return !model.scheduledBackupDisable"
+        }
       },
       "scheduledBackupDisable": {
         "title": "Disable Scheduled Backups",
