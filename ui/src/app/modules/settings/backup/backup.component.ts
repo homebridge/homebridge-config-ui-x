@@ -121,4 +121,6 @@ export class BackupComponent implements OnInit {
       },
     })
   }
+
+  protected readonly Date = Date
 }

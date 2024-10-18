@@ -16,6 +16,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - option to delete a scheduled backup file
 - option to restore a scheduled backup file
   - without the need to download and upload it
+- backup modal - move generate now button to list
 
 ### Other Changes
 
