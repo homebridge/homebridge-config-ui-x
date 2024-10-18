@@ -1,6 +1,5 @@
 import { CoreModule } from '@/app/core/core.module'
 import { ManagePluginsModule } from '@/app/core/manage-plugins/manage-plugins.module'
-import { DisablePluginComponent } from '@/app/modules/plugins/plugin-card/disable-plugin/disable-plugin.component'
 import { PluginCardComponent } from '@/app/modules/plugins/plugin-card/plugin-card.component'
 import { PluginInfoComponent } from '@/app/modules/plugins/plugin-card/plugin-info/plugin-info.component'
 import { PluginsComponent } from '@/app/modules/plugins/plugins.component'
@@ -13,7 +12,6 @@ import { TranslateModule } from '@ngx-translate/core'
 
 @NgModule({
   declarations: [
-    DisablePluginComponent,
     PluginsComponent,
     PluginCardComponent,
     PluginInfoComponent,
