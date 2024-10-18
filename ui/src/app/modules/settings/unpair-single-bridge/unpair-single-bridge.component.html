@@ -33,7 +33,12 @@
             <br />
             <small class="grey-text">{{ item._username }}</small>
           </span>
-          <button class="btn btn-danger" (click)="removeAccessory(item._id)" [disabled]="deleting">
+          <button
+            class="btn btn-danger"
+            (click)="removeAccessory(item._id)"
+            [disabled]="deleting"
+            [attr.aria-label]="'form.button_unpair' | translate"
+          >
             <i
               class="fas fa-fw"
               [ngClass]="{'fa-link-slash': item._id !== deleting, 'fa-cog fa-spin': item._id === deleting}"
@@ -51,7 +56,6 @@
         class="btn btn-elegant"
         data-dismiss="modal"
         (click)="$activeModal.dismiss('Dismiss')"
-        [attr.aria-label]="'form.button_close' | translate"
         [disabled]="deleting"
       >
         {{ 'form.button_close' | translate }}

@@ -13,6 +13,7 @@ export class BackupComponent implements OnInit {
   public scheduledBackups = []
   public backupTime: string
   public errorMessage = ''
+  public deleting = null
 
   constructor(
     public $activeModal: NgbActiveModal,
@@ -65,6 +66,21 @@ export class BackupComponent implements OnInit {
       error: (error) => {
         console.error(error)
         this.$toastr.error(this.$translate.instant('backup.backup_download_failed'), this.$translate.instant('toast.title_error'))
+      },
+    })
+  }
+
+  delete(backup: { id: any, fileName: string }) {
+    this.deleting = backup.id
+    this.$api.delete(`/backup/scheduled-backups/${backup.id}`).subscribe({
+      next: () => {
+        this.getScheduledBackups()
+        this.deleting = null
+      },
+      error: (error) => {
+        this.deleting = null
+        console.error(error)
+        this.$toastr.error(this.$translate.instant('backup.backup_delete_failed'), this.$translate.instant('toast.title_error'))
       },
     })
   }
