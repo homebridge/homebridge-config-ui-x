@@ -244,6 +244,12 @@
             ]
           },
           {
+            "title": "Finnish (fi)",
+            "enum": [
+              "fi"
+            ]
+          },
+          {
             "title": "French (fr)",
             "enum": [
               "fr"

@@ -25,6 +25,7 @@ export class AppComponent {
     const languages = [
       'en',
       'de',
+      'fi',
       'fr',
       'pl',
       'cs',
