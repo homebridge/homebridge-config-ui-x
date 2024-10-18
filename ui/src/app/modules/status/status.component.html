@@ -9,9 +9,14 @@
         class="btn btn-elegant status-button my-0"
         [hidden]="!options.draggable.enabled"
         (click)="addWidget()"
-        [attr.aria-label]="'status.widget.add_widget' | translate"
+        container="body"
+        placement="bottom"
+        openDelay="150"
+        triggers="hover"
+        [ngbTooltip]="'status.widget.show_hide' | translate"
+        [attr.aria-label]="'status.widget.show_hide' | translate"
       >
-        <i class="fas fa-fw fa-plus"></i>
+        <i class="fas fa-fw fa-eye-low-vision"></i>
       </button>
     </div>
     <div class="btn-group" role="group" *ngIf="consoleStatus === 'up' && $auth.user.admin">
