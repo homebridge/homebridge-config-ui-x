@@ -56,6 +56,7 @@ registerLocaleData(localeHE)
 export const supportedLocales = {
   'en': 'en',
   'de': 'de',
+  'fi': 'fi',
   'fr': 'fr',
   'pl': 'pl',
   'cs': 'cs',
