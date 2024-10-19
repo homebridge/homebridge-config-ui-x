@@ -39,6 +39,7 @@
             class="btn btn-danger"
             (click)="removeAccessories(item._id)"
             [disabled]="deleting || deleted.includes(item._id)"
+            [attr.aria-label]="'form.button_delete' | translate"
           >
             <i
               class="fas fa-fw"
@@ -57,7 +58,6 @@
         class="btn btn-elegant"
         data-dismiss="modal"
         (click)="$activeModal.dismiss('Dismiss')"
-        [attr.aria-label]="'form.button_close' | translate"
         [disabled]="deleting"
       >
         {{ 'form.button_close' | translate }}

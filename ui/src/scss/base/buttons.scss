@@ -58,5 +58,5 @@ button {
 
 .btn.disabled,
 .btn:disabled {
-  filter: grayscale(1);
+  background: #333333 !important;
 }

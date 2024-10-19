@@ -3,6 +3,7 @@ import type { FastifyRequest } from 'fastify'
 
 import {
   Controller,
+  Delete,
   Get,
   InternalServerErrorException,
   Param,
@@ -69,6 +70,14 @@ export class BackupController {
   @Get('/scheduled-backups/:backupId')
   async getScheduledBackup(@Param('backupId') backupId): Promise<StreamableFile> {
     return this.backupService.getScheduledBackup(backupId)
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Delete a system generated instance backup.' })
+  @ApiParam({ name: 'backupId', type: 'string' })
+  @Delete('/scheduled-backups/:backupId')
+  async deleteScheduledBackup(@Param('backupId') backupId): Promise<void> {
+    await this.backupService.deleteScheduledBackup(backupId)
   }
 
   @UseGuards(AdminGuard)
