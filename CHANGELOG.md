@@ -2,6 +2,25 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## BETA
+
+### UI Changes
+
+- Create fi.json (#2205) (@l1500s)
+  - The Homebridge UI is now available in 28 different languages!
+- updates to `fi.json` language file (#2206) (@l1500s)
+- updates to `ru.json` language file (#2207) (@SeregaTarasov)
+
+### Other Changes
+
+- relocate `disable-plugin` component to `core/plugins` module
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v1.10.2`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.11.14`
+- `@homebridge/plugin-ui-utils` @ `v1.0.3`
+
 ## v4.61.0 (2024-10-11)
 
 ### UI Changes
