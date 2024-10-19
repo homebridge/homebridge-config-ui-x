@@ -7,6 +7,7 @@
       data-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
       (click)="$activeModal.dismiss('Dismiss')"
+      [disabled]="deleting"
     >
       <span aria-hidden="true">&times;</span>
     </button>
@@ -58,9 +59,25 @@
           </small>
         </span>
         <span>
-          <a class="btn btn-primary ml-3" href="javascript:void(0);" (click)="download(backup)">
+          <button
+            class="btn btn-primary ml-3"
+            (click)="download(backup)"
+            [disabled]="deleting"
+            [attr.aria-label]="'form.button_download' | translate"
+          >
             <i class="fas fa-fw fa-download"></i>
-          </a>
+          </button>
+          <button
+            class="btn btn-danger ml-2"
+            (click)="delete(backup)"
+            [disabled]="deleting"
+            [attr.aria-label]="'form.button_delete' | translate"
+          >
+            <i
+              class="fas fa-fw"
+              [ngClass]="{'fa-trash': backup.id !== deleting, 'fa-cog fa-spin': backup.id === deleting}"
+            ></i>
+          </button>
         </span>
       </li>
     </ul>
@@ -87,7 +104,7 @@
         class="btn btn-elegant"
         data-dismiss="modal"
         (click)="$activeModal.dismiss('Dismiss')"
-        [attr.aria-label]="'form.button_close' | translate"
+        [disabled]="deleting"
       >
         {{ 'form.button_close' | translate }}
       </button>
