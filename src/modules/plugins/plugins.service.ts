@@ -9,6 +9,9 @@ import type {
   INpmSearchResults,
   IPackageJson,
   PluginAlias,
+  PluginListData,
+  PluginListItem,
+  PluginListNewScopeItem,
 } from './types'
 import { execSync, fork, spawn } from 'node:child_process'
 import { arch, cpus, platform, userInfo } from 'node:os'
@@ -66,30 +69,24 @@ export class PluginsService {
   // npm package cache
   private npmPackage: HomebridgePlugin
 
-  // plugin list caches
+  // plugin list cache
+  private pluginListUrl = 'https://raw.githubusercontent.com/homebridge/plugins/latest/'
+  private pluginListFile = `${this.pluginListUrl}assets/plugins.min.json`
+  private pluginListRetryTimeout: NodeJS.Timeout
+
+  private hiddenPlugins: string[] = []
+  private maintainedPlugins: string[] = []
+  private pluginIcons: { [key: string]: string } = {}
+  private scopedPlugins: { [key: string]: string } = {}
+  private newScopePlugins: { [key: string]: PluginListNewScopeItem } = {}
   private verifiedPlugins: string[] = []
   private verifiedPlusPlugins: string[] = []
-  private pluginIcons: { [key: string]: string } = {}
-  private pluginListsRepoUrl = 'https://raw.githubusercontent.com/homebridge/verified/latest/'
-  private hiddenPlugins: string[] = []
-
-  private verifiedPluginsJson = `${this.pluginListsRepoUrl}verified-plugins.json`
-  private verifiedPlusPluginsJson = `${this.pluginListsRepoUrl}verified-plus-plugins.json`
-  private pluginIconsJson = `${this.pluginListsRepoUrl}plugin-icons.json`
-  private hiddenPluginsJson = `${this.pluginListsRepoUrl}hidden-plugins.json`
-
-  // misc schemas
-  private miscSchemas = {
-    // 'homebridge-abcd': path.join(process.env.UIX_BASE_PATH, 'misc-schemas', 'abcd'),
-  }
 
   // create a cache for storing plugin package.json from npm
   private npmPluginCache = new NodeCache({ stdTTL: 300 })
 
   // create a cache for storing plugin alias
   private pluginAliasCache = new NodeCache({ stdTTL: 86400 })
-
-  private specialPluginsRetryTimeout: NodeJS.Timeout
 
   /**
    * Define the alias / type some plugins without a schema where the extract method does not work
@@ -125,10 +122,10 @@ export class PluginsService {
     })
 
     // initial verified plugins load
-    this.loadSpecialPluginsLists()
+    this.loadPluginList()
 
     // update the verified plugins list every 12 hours
-    setInterval(this.loadSpecialPluginsLists.bind(this), 60000 * 60 * 12)
+    setInterval(this.loadPluginList.bind(this), 60000 * 60 * 12)
   }
 
   /**
@@ -283,12 +280,15 @@ export class PluginsService {
           ? pkg.package.description.replace(/\(?(?:https?|ftp):\/\/[\n\S]+/g, '').trim()
           : pkg.package.name
         plugin.links = pkg.package.links
-        plugin.author = (pkg.package.publisher) ? pkg.package.publisher.username : null
+        plugin.author = this.scopedPlugins[pkg.package.name] || ((pkg.package.publisher) ? pkg.package.publisher.username : null)
         plugin.verifiedPlugin = this.verifiedPlugins.includes(pkg.package.name)
         plugin.verifiedPlusPlugin = this.verifiedPlusPlugins.includes(pkg.package.name)
         plugin.icon = this.pluginIcons[pkg.package.name]
-          ? `${this.pluginListsRepoUrl}${this.pluginIcons[pkg.package.name]}`
+          ? `${this.pluginListUrl}${this.pluginIcons[pkg.package.name]}`
           : null
+        plugin.isHbScoped = !!this.scopedPlugins[pkg.package.name]
+        plugin.newHbScope = this.newScopePlugins[pkg.package.name]
+        plugin.isHbMaintained = this.maintainedPlugins.includes(pkg.package.name)
         return plugin
       })
 
@@ -346,6 +346,9 @@ export class PluginsService {
         verifiedPlugin: this.verifiedPlugins.includes(pkg.name),
         verifiedPlusPlugin: this.verifiedPlusPlugins.includes(pkg.name),
         icon: this.pluginIcons[pkg.name],
+        isHbScoped: !!this.scopedPlugins[pkg.name],
+        newHbScope: this.newScopePlugins[pkg.name],
+        isHbMaintained: this.maintainedPlugins.includes(pkg.name),
       } as HomebridgePlugin
 
       // it's not installed; finish building the response
@@ -359,12 +362,16 @@ export class PluginsService {
         homepage: pkg.homepage,
         bugs: typeof pkg.bugs === 'object' && pkg.bugs?.url ? pkg.bugs.url : null,
       }
-      plugin.author = (pkg.maintainers && pkg.maintainers.length) ? pkg.maintainers[0].name : null
+      plugin.author = this.scopedPlugins[pkg.name]
+      || ((pkg.maintainers && pkg.maintainers.length) ? pkg.maintainers[0].name : null)
       plugin.verifiedPlugin = this.verifiedPlugins.includes(pkg.name)
       plugin.verifiedPlusPlugin = this.verifiedPlusPlugins.includes(pkg.name)
       plugin.icon = this.pluginIcons[pkg.name]
-        ? `${this.pluginListsRepoUrl}${this.pluginIcons[pkg.name]}`
+        ? `${this.pluginListUrl}${this.pluginIcons[pkg.name]}`
         : null
+      plugin.isHbScoped = !!this.scopedPlugins[pkg.name]
+      plugin.newHbScope = this.newScopePlugins[pkg.name]
+      plugin.isHbMaintained = this.maintainedPlugins.includes(pkg.name)
 
       return [plugin]
     } catch (e) {
@@ -755,10 +762,6 @@ export class PluginsService {
     }
 
     const schemaPath = resolve(plugin.installPath, pluginName, 'config.schema.json')
-
-    if (this.miscSchemas[pluginName] && !await pathExists(schemaPath)) {
-      return await readJson(this.miscSchemas[pluginName])
-    }
 
     let configSchema = await readJson(schemaPath)
 
@@ -1251,11 +1254,14 @@ export class PluginsService {
       verifiedPlugin: this.verifiedPlugins.includes(pkgJson.name),
       verifiedPlusPlugin: this.verifiedPlusPlugins.includes(pkgJson.name),
       icon: this.pluginIcons[pkgJson.name]
-        ? `${this.pluginListsRepoUrl}${this.pluginIcons[pkgJson.name]}`
+        ? `${this.pluginListUrl}${this.pluginIcons[pkgJson.name]}`
         : null,
+      isHbScoped: !!this.scopedPlugins[pkgJson.name],
+      newHbScope: this.newScopePlugins[pkgJson.name],
+      isHbMaintained: this.maintainedPlugins.includes(pkgJson.name),
       installedVersion: installPath ? (pkgJson.version || '0.0.1') : null,
       globalInstall: (installPath !== this.configService.customPluginPath),
-      settingsSchema: await pathExists(resolve(installPath, pkgJson.name, 'config.schema.json')) || this.miscSchemas[pkgJson.name],
+      settingsSchema: await pathExists(resolve(installPath, pkgJson.name, 'config.schema.json')),
       engines: pkgJson.engines,
       installPath,
     }
@@ -1325,7 +1331,8 @@ export class PluginsService {
         homepage: pkg.homepage,
         bugs: typeof pkg.bugs === 'object' && pkg.bugs?.url ? pkg.bugs.url : null,
       }
-      plugin.author = (pkg.maintainers && pkg.maintainers.length) ? pkg.maintainers[0].name : null
+      plugin.author = this.scopedPlugins[pkg.name]
+      || ((pkg.maintainers && pkg.maintainers.length) ? pkg.maintainers[0].name : null)
     } catch (e) {
       if (e.response?.status !== 404) {
         this.logger.log(`[${plugin.name}] Failed to check registry.npmjs.org for updates: "${e.message}" - see https://homebridge.io/w/JJSz6 for help.`)
@@ -1364,7 +1371,7 @@ export class PluginsService {
     // remove synology @eaDir folders from the node_modules
     await this.removeSynologyMetadata()
 
-    let timeoutTimer
+    let timeoutTimer: NodeJS.Timeout
     command = command.filter(x => x.length)
 
     // sudo mode is requested in plugin config
@@ -1524,41 +1531,55 @@ export class PluginsService {
   }
 
   /**
-   * Loads the list of special plugins from GitHub
+   * Loads the list of plugins from GitHub
    * This is verified plugins, verified plus plugins, plugin icons and hidden plugins
    */
-  private async loadSpecialPluginsLists() {
-    clearTimeout(this.specialPluginsRetryTimeout)
+  private async loadPluginList() {
+    clearTimeout(this.pluginListRetryTimeout)
     try {
-      this.verifiedPlugins = (
-        await firstValueFrom(this.httpService.get(this.verifiedPluginsJson, {
+      const pluginList: PluginListData = (
+        await firstValueFrom(this.httpService.get(this.pluginListFile, {
           httpsAgent: null,
         }))
-      ).data
+      )
+      const pluginListData = pluginList.data
 
-      this.verifiedPlusPlugins = (
-        await firstValueFrom(this.httpService.get(this.verifiedPlusPluginsJson, {
-          httpsAgent: null,
-        }))
-      ).data
+      this.verifiedPlugins = []
+      this.verifiedPlusPlugins = []
+      this.pluginIcons = {}
+      this.hiddenPlugins = []
+      this.maintainedPlugins = []
+      this.scopedPlugins = {}
+      this.newScopePlugins = {}
 
-      this.pluginIcons = (
-        await firstValueFrom(this.httpService.get(this.pluginIconsJson, {
-          httpsAgent: null,
-        }))
-      ).data
-
-      this.hiddenPlugins = (
-        await firstValueFrom(this.httpService.get(this.hiddenPluginsJson, {
-          httpsAgent: null,
-        }))
-      ).data
+      Object.keys(pluginListData).forEach((key) => {
+        const plugin: PluginListItem = pluginListData[key]
+        if (plugin.icon) {
+          this.pluginIcons[key] = `icons/${plugin.icon}.png`
+        }
+        if (plugin.hidden) {
+          this.hiddenPlugins.push(key)
+        }
+        if (plugin.maintained) {
+          this.maintainedPlugins.push(key)
+        }
+        if (plugin.scoped) {
+          this.scopedPlugins[key] = plugin.scoped
+        }
+        if (plugin.newScope) {
+          this.newScopePlugins[key] = plugin.newScope
+        }
+        if (plugin.verified) {
+          this.verifiedPlugins.push(key)
+        }
+        if (plugin.verifiedPlus) {
+          this.verifiedPlusPlugins.push(key)
+        }
+      })
     } catch (e) {
-      this.logger.debug('Error when trying to get github plugin lists:', e.message)
-      // try again in 60 seconds
-      this.specialPluginsRetryTimeout = setTimeout(() => {
-        this.loadSpecialPluginsLists()
-      }, 60000)
+      // Try again in 60 seconds
+      this.pluginListRetryTimeout = setTimeout(() => this.loadPluginList(), 60000)
+      this.logger.debug('Error when trying to get github plugin list:', e.message)
     }
   }
 }
