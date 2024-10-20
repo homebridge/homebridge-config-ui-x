@@ -158,7 +158,34 @@ export class PluginsComponent implements OnInit, OnDestroy {
 
     this.$api.get(`/plugins/search/${encodeURIComponent(this.form.value.query)}`).subscribe({
       next: (data) => {
-        this.installedPlugins = data.filter(x => x.name !== 'homebridge-config-ui-x')
+        const hiddenPlugins = new Set<string>()
+        this.installedPlugins = data
+          .sort((a: any, b: any) => {
+            if (a.newHbScope && !b.newHbScope) {
+              return -1
+            }
+            if (!a.newHbScope && b.newHbScope) {
+              return 1
+            }
+            return 0
+          })
+          .reduce((acc: any, x: any) => {
+            if (x.name === 'homebridge-config-ui-x' || hiddenPlugins.has(x.name)) {
+              return acc
+            }
+            if (x.newHbScope) {
+              const y = x.newHbScope.to
+              const yExists = data.some((plugin: any) => plugin.name === y)
+              if (x.installedVersion || !yExists) {
+                hiddenPlugins.add(y)
+                acc.push(x)
+              }
+            } else {
+              acc.push(x)
+            }
+            return acc
+          }, [])
+
         this.appendMetaInfo()
         this.loading = false
       },
