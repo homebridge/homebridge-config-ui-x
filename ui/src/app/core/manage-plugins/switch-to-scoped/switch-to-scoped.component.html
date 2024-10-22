@@ -1,0 +1,118 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title">{{ 'plugins.manage.scoped.switch' | translate }}</h5>
+    <button
+      type="button"
+      class="close"
+      data-dismiss="modal"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="$activeModal.dismiss('Dismiss')"
+      [disabled]="installing || uninstalling || restarting"
+    >
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="w-100 text-center">
+      <i class="fas fa-fw fa-arrow-right-arrow-left primary-text mb-4" style="font-size: 75px"></i>
+      <p [innerHTML]="'plugins.manage.scoped.info' | translate: { link: moreInfo }"></p>
+      <div *ngIf="!onlineUpdateOk">
+        <p>{{ 'plugins.manage.scoped.windows' | translate }}</p>
+        <p [innerHTML]="'plugins.manage.scoped.windows_service' | translate"></p>
+        <div *ngIf="$settings.env.serviceMode">
+          <p>{{ 'plugins.manage.manual_update_command' | translate }}</p>
+          <pre>
+hb-service stop
+npm install -g {{ plugin.newHbScope.to }}&#64;{{ plugin.newHbScope.switch }}
+npm uninstall -g {{ plugin.newHbScope.from }}
+hb-service start</pre
+          >
+        </div>
+        <div *ngIf="!$settings.env.serviceMode">
+          <ul class="d-inline-block text-left">
+            <li>{{ 'plugins.manage.install' | translate }} <code>{{ plugin.newHbScope.to }}</code></li>
+            <li>{{ 'plugins.manage.uninstall' | translate }} <code>{{ plugin.newHbScope.from }}</code></li>
+            <li>{{ 'menu.hbrestart.title' | translate }}</li>
+          </ul>
+        </div>
+      </div>
+      <div class="text-center" *ngIf="onlineUpdateOk">
+        <p>{{ 'plugins.manage.scoped.process' | translate }}</p>
+        <ul class="d-inline-block text-left" style="list-style-type: none">
+          <li>
+            <i
+              class="fa fa-fw"
+              [ngClass]="{
+              'fa-circle-o': !installing && !installed && !failure,
+              'fa-spinner fa-pulse': installing,
+              'fa-check-circle green-text': installed && !failure,
+              'fa-times-circle red-text': !installed && failure,
+            }"
+            ></i>
+            {{ 'plugins.manage.install' | translate }} <code>{{ plugin.newHbScope.to }}</code>
+          </li>
+          <li>
+            <i
+              class="fa fa-fw"
+              [ngClass]="{
+              'fa-circle-o': !uninstalling && !uninstalled && !failure,
+              'fa-spinner fa-pulse': uninstalling,
+              'fa-check-circle green-text': uninstalled && !failure,
+              'fa-times-circle red-text': !uninstalled && failure,
+            }"
+            ></i>
+            {{ 'plugins.manage.uninstall' | translate }} <code>{{ plugin.newHbScope.from }}</code>
+          </li>
+          <li>
+            <i
+              class="fa fa-fw"
+              [ngClass]="{
+              'fa-circle-o': !restarting && !failure,
+              'fa-spinner fa-pulse': restarting,
+              'fa-times-circle red-text': failure,
+            }"
+            ></i>
+            {{ 'menu.hbrestart.title' | translate }}
+          </li>
+        </ul>
+      </div>
+      <div *ngIf="failure" class="alert alert-error">
+        <p>{{ 'plugins.manage.scoped.error' | translate }}</p>
+        <p class="text-monospace">{{ failure }}</p>
+        <button class="btn btn-primary mb-0" (click)="downloadLogFile()">
+          {{ 'form.button_download' | translate }}
+        </button>
+      </div>
+    </div>
+    <div [hidden]="!onlineUpdateOk || failure" id="plugin-output"></div>
+  </div>
+  <div class="modal-footer justify-content-between">
+    <div class="text-left">
+      <button
+        type="button"
+        class="btn btn-elegant"
+        data-dismiss="modal"
+        (click)="$activeModal.dismiss('Dismiss')"
+        [attr.aria-label]="'form.button_close' | translate"
+        [disabled]="installing || uninstalling || restarting"
+      >
+        {{ 'form.button_close' | translate }}
+      </button>
+    </div>
+    <div class="text-center"></div>
+    <div class="text-right">
+      <button
+        type="button"
+        class="btn btn-primary"
+        data-dismiss="modal"
+        (click)="doSwitch()"
+        [disabled]="installing || uninstalling || restarting || !onlineUpdateOk || failure"
+      >
+        <span *ngIf="!installing && !uninstalling && !restarting">
+          {{ 'plugins.node_update.continue' | translate }}
+        </span>
+        <i *ngIf="(installing || uninstalling || restarting) && !failure" class="fas fa-fw fa-spinner fa-pulse"></i>
+      </button>
+    </div>
+  </div>
+</div>

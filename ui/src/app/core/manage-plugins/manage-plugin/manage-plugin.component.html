@@ -44,11 +44,11 @@
     <p>{{ 'plugins.manage.online_updates' | translate }}</p>
     <div *ngIf="$settings.env.serviceMode">
       <p>{{ 'plugins.manage.manual_update_command' | translate }}</p>
-      <pre class="p-2" style="background-color: #efefef">
+      <pre>
 hb-service stop
 npm install -g {{ pluginName }}&#64;{{targetVersion}}
-hb-service start
-      </pre>
+hb-service start</pre
+      >
     </div>
   </div>
   <div *ngIf="showReleaseNotes && !actionComplete" class="modal-body plugin-modal-body">
