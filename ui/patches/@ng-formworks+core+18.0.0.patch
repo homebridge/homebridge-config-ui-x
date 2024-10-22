@@ -1,8 +1,8 @@
-diff --git a/node_modules/@zajsf/core/fesm2022/zajsf-core.mjs b/node_modules/@zajsf/core/fesm2022/zajsf-core.mjs
-index 8ad2211..308bd9b 100644
---- a/node_modules/@zajsf/core/fesm2022/zajsf-core.mjs
-+++ b/node_modules/@zajsf/core/fesm2022/zajsf-core.mjs
-@@ -6684,6 +6684,9 @@ class JsonSchemaFormService {
+diff --git a/node_modules/@ng-formworks/core/fesm2022/ng-formworks-core.mjs b/node_modules/@ng-formworks/core/fesm2022/ng-formworks-core.mjs
+index 9a35a91..adce815 100644
+--- a/node_modules/@ng-formworks/core/fesm2022/ng-formworks-core.mjs
++++ b/node_modules/@ng-formworks/core/fesm2022/ng-formworks-core.mjs
+@@ -6688,6 +6688,9 @@ class JsonSchemaFormService {
      }
      setArrayItemTitle(parentCtx = {}, childNode = null, index = null) {
          const parentNode = parentCtx.layoutNode;
@@ -12,8 +12,8 @@ index 8ad2211..308bd9b 100644
          const parentValues = this.getFormControlValue(parentCtx);
          const isArrayItem = (parentNode.type || '').slice(-5) === 'array' && isArray(parentValues);
          const text = JsonPointer.getFirst(isArrayItem && childNode.type !== '$ref'
-@@ -7170,7 +7173,7 @@ class CheckboxComponent {
-     static { this.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "17.2.3", type: CheckboxComponent, selector: "checkbox-widget", inputs: { layoutNode: "layoutNode", layoutIndex: "layoutIndex", dataIndex: "dataIndex" }, ngImport: i0, template: `
+@@ -7174,7 +7177,7 @@ class CheckboxComponent {
+     static { this.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "18.2.7", type: CheckboxComponent, selector: "checkbox-widget", inputs: { layoutNode: "layoutNode", layoutIndex: "layoutIndex", dataIndex: "dataIndex" }, ngImport: i0, template: `
      <label
        [attr.for]="'control' + layoutNode?._id"
 -      [class]="options?.itemLabelHtmlClass || ''">
@@ -21,15 +21,15 @@ index 8ad2211..308bd9b 100644
        <input *ngIf="boundControl"
          [formControl]="formControl"
          [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-@@ -7197,6 +7200,7 @@ class CheckboxComponent {
+@@ -7201,6 +7204,7 @@ class CheckboxComponent {
        <span *ngIf="options?.title"
          [style.display]="options?.notitle ? 'none' : ''"
          [innerHTML]="options?.title"></span>
 +      <span class="hb-uix-slider hb-uix-round"></span>
      </label>`, isInline: true, dependencies: [{ kind: "directive", type: i2.NgIf, selector: "[ngIf]", inputs: ["ngIf", "ngIfThen", "ngIfElse"] }, { kind: "directive", type: i3.CheckboxControlValueAccessor, selector: "input[type=checkbox][formControlName],input[type=checkbox][formControl],input[type=checkbox][ngModel]" }, { kind: "directive", type: i3.NgControlStatus, selector: "[formControlName],[ngModel],[formControl]" }, { kind: "directive", type: i3.FormControlDirective, selector: "[formControl]", inputs: ["formControl", "disabled", "ngModel"], outputs: ["ngModelChange"], exportAs: ["ngForm"] }] }); }
  }
- i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "17.2.3", ngImport: i0, type: CheckboxComponent, decorators: [{
-@@ -7207,7 +7211,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "17.2.3", ngImpor
+ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "18.2.7", ngImport: i0, type: CheckboxComponent, decorators: [{
+@@ -7211,7 +7215,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "18.2.7", ngImpor
                      template: `
      <label
        [attr.for]="'control' + layoutNode?._id"
@@ -38,7 +38,7 @@ index 8ad2211..308bd9b 100644
        <input *ngIf="boundControl"
          [formControl]="formControl"
          [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
-@@ -7234,6 +7238,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "17.2.3", ngImpor
+@@ -7238,6 +7242,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "18.2.7", ngImpor
        <span *ngIf="options?.title"
          [style.display]="options?.notitle ? 'none' : ''"
          [innerHTML]="options?.title"></span>
@@ -46,7 +46,7 @@ index 8ad2211..308bd9b 100644
      </label>`,
                  }]
          }], ctorParameters: () => [{ type: JsonSchemaFormService }], propDecorators: { layoutNode: [{
-@@ -7283,7 +7288,7 @@ class CheckboxesComponent {
+@@ -7287,7 +7292,7 @@ class CheckboxesComponent {
      <div *ngIf="layoutOrientation === 'horizontal'" [class]="options?.htmlClass || ''">
        <label *ngFor="let checkboxItem of checkboxList"
          [attr.for]="'control' + layoutNode?._id + '/' + checkboxItem.value"
@@ -55,7 +55,7 @@ index 8ad2211..308bd9b 100644
            (' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')) :
            (' ' + (options?.style?.unselected || '')))">
          <input type="checkbox"
-@@ -7297,6 +7302,7 @@ class CheckboxesComponent {
+@@ -7301,6 +7306,7 @@ class CheckboxesComponent {
            [value]="checkboxItem.value"
            (change)="updateValue($event)">
          <span [innerHTML]="checkboxItem.name"></span>
@@ -63,7 +63,7 @@ index 8ad2211..308bd9b 100644
        </label>
      </div>
  
-@@ -7305,7 +7311,7 @@ class CheckboxesComponent {
+@@ -7309,7 +7315,7 @@ class CheckboxesComponent {
        <div *ngFor="let checkboxItem of checkboxList" [class]="options?.htmlClass || ''">
          <label
            [attr.for]="'control' + layoutNode?._id + '/' + checkboxItem.value"
@@ -72,7 +72,7 @@ index 8ad2211..308bd9b 100644
              (' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')) :
              (' ' + (options?.style?.unselected || '')))">
            <input type="checkbox"
-@@ -7313,12 +7319,13 @@ class CheckboxesComponent {
+@@ -7317,12 +7323,13 @@ class CheckboxesComponent {
              [checked]="checkboxItem.checked"
              [class]="options?.fieldHtmlClass || ''"
              [disabled]="controlDisabled"
@@ -87,16 +87,19 @@ index 8ad2211..308bd9b 100644
          </label>
        </div>
      </div>`, isInline: true, dependencies: [{ kind: "directive", type: i2.NgForOf, selector: "[ngFor][ngForOf]", inputs: ["ngForOf", "ngForTrackBy", "ngForTemplate"] }, { kind: "directive", type: i2.NgIf, selector: "[ngIf]", inputs: ["ngIf", "ngIfThen", "ngIfElse"] }] }); }
-@@ -7340,7 +7347,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "17.2.3", ngImpor
+@@ -7342,9 +7349,9 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "18.2.7", ngImpor
+     <div *ngIf="layoutOrientation === 'horizontal'" [class]="options?.htmlClass || ''">
+       <label *ngFor="let checkboxItem of checkboxList"
          [attr.for]="'control' + layoutNode?._id + '/' + checkboxItem.value"
-         [class]="(options?.itemLabelHtmlClass || '') + (checkboxItem.checked ?
+-        [class]="(options?.itemLabelHtmlClass || '') + (checkboxItem.checked ?
++        [class]="(options?.itemLabelHtmlClass || 'hb-uix-switch ') + (checkboxItem.checked ?
            (' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')) :
 -          (' ' + (options?.style?.unselected || '')))">
 +          (' ' + (options?.style?.unselected || ' hb-uix-switch')))">
          <input type="checkbox"
            [attr.required]="options?.required"
            [checked]="checkboxItem.checked"
-@@ -7352,6 +7359,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "17.2.3", ngImpor
+@@ -7356,6 +7363,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "18.2.7", ngImpor
            [value]="checkboxItem.value"
            (change)="updateValue($event)">
          <span [innerHTML]="checkboxItem.name"></span>
@@ -104,9 +107,12 @@ index 8ad2211..308bd9b 100644
        </label>
      </div>
  
-@@ -7362,18 +7370,19 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "17.2.3", ngImpor
+@@ -7364,20 +7372,21 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "18.2.7", ngImpor
+       <div *ngFor="let checkboxItem of checkboxList" [class]="options?.htmlClass || ''">
+         <label
            [attr.for]="'control' + layoutNode?._id + '/' + checkboxItem.value"
-           [class]="(options?.itemLabelHtmlClass || '') + (checkboxItem.checked ?
+-          [class]="(options?.itemLabelHtmlClass || '') + (checkboxItem.checked ?
++          [class]="(options?.itemLabelHtmlClass || 'hb-uix-switch ') + (checkboxItem.checked ?
              (' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')) :
 -            (' ' + (options?.style?.unselected || '')))">
 +            (' ' + (options?.style?.unselected || ' hb-uix-switch')))">
@@ -126,7 +132,7 @@ index 8ad2211..308bd9b 100644
          </label>
        </div>
      </div>`,
-@@ -7771,7 +7780,7 @@ class RadiosComponent {
+@@ -7775,7 +7784,7 @@ class RadiosComponent {
          [class]="(options?.itemLabelHtmlClass || '') +
            ((controlValue + '' === radioItem?.value + '') ?
            (' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')) :
@@ -135,7 +141,7 @@ index 8ad2211..308bd9b 100644
          <input type="radio"
            [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
            [attr.readonly]="options?.readonly ? 'readonly' : null"
-@@ -7796,7 +7805,7 @@ class RadiosComponent {
+@@ -7800,7 +7809,7 @@ class RadiosComponent {
            [class]="(options?.itemLabelHtmlClass || '') +
              ((controlValue + '' === radioItem?.value + '') ?
              (' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')) :
@@ -144,7 +150,7 @@ index 8ad2211..308bd9b 100644
            <input type="radio"
              [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
              [attr.readonly]="options?.readonly ? 'readonly' : null"
-@@ -7833,7 +7842,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "17.2.3", ngImpor
+@@ -7837,7 +7846,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "18.2.7", ngImpor
          [class]="(options?.itemLabelHtmlClass || '') +
            ((controlValue + '' === radioItem?.value + '') ?
            (' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')) :
@@ -153,7 +159,7 @@ index 8ad2211..308bd9b 100644
          <input type="radio"
            [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
            [attr.readonly]="options?.readonly ? 'readonly' : null"
-@@ -7858,7 +7867,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "17.2.3", ngImpor
+@@ -7862,7 +7871,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "18.2.7", ngImpor
            [class]="(options?.itemLabelHtmlClass || '') +
              ((controlValue + '' === radioItem?.value + '') ?
              (' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')) :
@@ -162,27 +168,25 @@ index 8ad2211..308bd9b 100644
            <input type="radio"
              [attr.aria-describedby]="'control' + layoutNode?._id + 'Status'"
              [attr.readonly]="options?.readonly ? 'readonly' : null"
-@@ -8244,7 +8253,7 @@ class SectionComponent {
+@@ -8248,7 +8257,7 @@ class SectionComponent {
          [class]="options?.labelHelpBlockClass || ''"
          [innerHTML]="options?.description"></p>
        </div>
 -    </fieldset>`, isInline: true, styles: [".legend{font-weight:700}.expandable>legend:before,.expandable>label:before{content:\"\\25b6\";padding-right:.3em}.expanded>legend:before,.expanded>label:before{content:\"\\25bc\";padding-right:.2em}\n"], dependencies: [{ kind: "directive", type: i2.NgIf, selector: "[ngIf]", inputs: ["ngIf", "ngIfThen", "ngIfElse"] }, { kind: "component", type: RootComponent, selector: "root-widget", inputs: ["dataIndex", "layoutIndex", "layout", "isOrderable", "isFlexItem"] }] }); }
 +    </fieldset>`, isInline: true, styles: [".legend{font-weight:700}.expandable > legend, .expandable > label, .expanded > legend, .expanded > label  {cursor: pointer;}.expandable > legend:before, .expandable > label:before  {font-weight: 900;font-family: 'Font Awesome 5 Free';content: '\\f054';padding-right: .3em;}.expanded > legend:before, .expanded > label:before  {font-weight: 900;font-family: 'Font Awesome 5 Free';content: '\\f078';padding-right: .2em;}\n"], dependencies: [{ kind: "directive", type: i2.NgIf, selector: "[ngIf]", inputs: ["ngIf", "ngIfThen", "ngIfElse"] }, { kind: "component", type: RootComponent, selector: "root-widget", inputs: ["dataIndex", "layoutIndex", "layout", "isOrderable", "isFlexItem"] }] }); }
  }
- i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "17.2.3", ngImport: i0, type: SectionComponent, decorators: [{
+ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "18.2.7", ngImport: i0, type: SectionComponent, decorators: [{
              type: Component,
-@@ -8309,8 +8318,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "17.2.3", ngImpor
+@@ -8313,7 +8322,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "18.2.7", ngImpor
          [class]="options?.labelHelpBlockClass || ''"
          [innerHTML]="options?.description"></p>
        </div>
 -    </fieldset>`, styles: [".legend{font-weight:700}.expandable>legend:before,.expandable>label:before{content:\"\\25b6\";padding-right:.3em}.expanded>legend:before,.expanded>label:before{content:\"\\25bc\";padding-right:.2em}\n"] }]
--        }], ctorParameters: () => [{ type: JsonSchemaFormService }], propDecorators: { layoutNode: [{
-+     </fieldset>`, styles: [".legend{font-weight:700}.expandable > legend, .expandable > label, .expanded > legend, .expanded > label  {cursor: pointer;}.expandable > legend:before, .expandable > label:before  {font-weight: 900;font-family: 'Font Awesome 5 Free';content: '\\f054';padding-right: .3em;}.expanded > legend:before, .expanded > label:before  {font-weight: 900;font-family: 'Font Awesome 5 Free';content: '\\f078';padding-right: .2em;}\n"] }]
-+         }], ctorParameters: () => [{ type: JsonSchemaFormService }], propDecorators: { layoutNode: [{
++    </fieldset>`, styles: [".legend{font-weight:700}.expandable > legend, .expandable > label, .expanded > legend, .expanded > label  {cursor: pointer;}.expandable > legend:before, .expandable > label:before  {font-weight: 900;font-family: 'Font Awesome 5 Free';content: '\\f054';padding-right: .3em;}.expanded > legend:before, .expanded > label:before  {font-weight: 900;font-family: 'Font Awesome 5 Free';content: '\\f078';padding-right: .2em;}\n"] }]
+         }], ctorParameters: () => [{ type: JsonSchemaFormService }], propDecorators: { layoutNode: [{
                  type: Input
              }], layoutIndex: [{
-                 type: Input
-@@ -8330,6 +8339,16 @@ class SelectComponent {
+@@ -8334,6 +8343,16 @@ class SelectComponent {
          this.options = this.layoutNode.options || {};
          this.selectList = buildTitleMap(this.options.titleMap || this.options.enumNames, this.options.enum, !!this.options.required, !!this.options.flatList);
          this.jsf.initializeControl(this);
@@ -193,9 +197,9 @@ index 8ad2211..308bd9b 100644
 +        });
 +    }
 +    ngOnDestroy() {
-+        if (this.valueChanges) {
-+            this.valueChanges.unsubscribe();
-+        }
++      if (this.valueChanges) {
++          this.valueChanges.unsubscribe();
++      }
      }
      updateValue(event) {
          this.jsf.updateValue(this, event.target.value);

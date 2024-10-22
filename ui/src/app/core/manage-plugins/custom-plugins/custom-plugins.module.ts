@@ -8,8 +8,8 @@ import { CommonModule } from '@angular/common'
 import { NgModule } from '@angular/core'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap'
+import { Bootstrap4FrameworkModule } from '@ng-formworks/bootstrap4'
 import { TranslateModule } from '@ngx-translate/core'
-import { Bootstrap4FrameworkModule } from '@zajsf/bootstrap4'
 import { NgxMdModule } from 'ngx-md'
 
 @NgModule({
