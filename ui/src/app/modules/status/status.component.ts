@@ -265,6 +265,14 @@ export class StatusComponent implements OnInit, OnDestroy {
       backdrop: 'static',
     })
     ref.componentInstance.widget = item
+    ref.result
+      .then(() => {
+        this.gridChangedEvent()
+        item.$configureEvent.next(undefined)
+      })
+      .catch(() => {
+        // modal closed
+      })
   }
 
   openCreditsModal() {
