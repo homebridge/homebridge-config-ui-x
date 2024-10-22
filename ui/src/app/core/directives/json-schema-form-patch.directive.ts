@@ -1,5 +1,5 @@
 import { Directive, Host, Input, Optional, Self } from '@angular/core'
-import { JsonSchemaFormComponent } from '@zajsf/core'
+import { JsonSchemaFormComponent } from '@ng-formworks/core'
 import { cloneDeep, merge, uniqueId } from 'lodash-es'
 
 @Directive({
