@@ -5,7 +5,6 @@ import { TranslateService } from '@ngx-translate/core'
 
 @Component({
   templateUrl: './widget-visibility.component.html',
-  styleUrls: ['./widget-visibility.component.scss'],
 })
 export class WidgetVisibilityComponent implements OnInit {
   @Input() dashboard: any
