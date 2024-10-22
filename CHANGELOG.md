@@ -2,6 +2,18 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## BETA
+
+### UI Changes
+
+- implement and allow switching to scoped plugins
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v1.10.2`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.11.14`
+- `@homebridge/plugin-ui-utils` @ `v1.0.3`
+
 ## v4.62.0 (2024-10-19)
 
 ### UI Changes
