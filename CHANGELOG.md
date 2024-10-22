@@ -7,6 +7,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### UI Changes
 
 - implement and allow switching to scoped plugins
+- fix widget config saving on dashboard
 
 ### Other Changes
 
