@@ -8,6 +8,14 @@
 
     background-color: $backgroundColor;
 
+    pre {
+      background-color: #2b2b2b;
+      color: #cdcdcd;
+      text-align: left;
+      padding: 15px !important;
+      border-radius: 10px;
+    }
+
     .terminal-container {
       background-color: rgba($secondaryBackground, 0.97) !important;
       padding: 0 20px;
@@ -481,10 +489,6 @@
 
     gridster-preview {
       background: rgba(224, 224, 224, 0.5);
-    }
-
-    .available-widget {
-      background-color: #000000;
     }
 
     #AccessoriesWidgetComponent {

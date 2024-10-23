@@ -15,8 +15,8 @@ import { ReplacePipe } from '@/app/core/pipes/replace.pipe'
 import { CommonModule } from '@angular/common'
 import { NgModule } from '@angular/core'
 import { ReactiveFormsModule } from '@angular/forms'
+import { Bootstrap5FrameworkModule } from '@ng-formworks/bootstrap5'
 import { TranslateModule } from '@ngx-translate/core'
-import { Bootstrap5FrameworkModule } from '@zajsf/bootstrap5'
 
 @NgModule({
   declarations: [
