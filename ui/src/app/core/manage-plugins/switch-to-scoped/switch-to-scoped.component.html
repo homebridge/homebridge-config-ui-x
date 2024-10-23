@@ -3,14 +3,12 @@
     <h5 class="modal-title">{{ 'plugins.manage.scoped.switch' | translate }}</h5>
     <button
       type="button"
-      class="close"
-      data-dismiss="modal"
+      class="btn-close"
+      data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
       (click)="$activeModal.dismiss('Dismiss')"
       [disabled]="installing || uninstalling || restarting"
-    >
-      <span aria-hidden="true">&times;</span>
-    </button>
+    ></button>
   </div>
   <div class="modal-body">
     <div class="w-100 text-center">
@@ -29,7 +27,7 @@ hb-service start</pre
           >
         </div>
         <div *ngIf="!$settings.env.serviceMode">
-          <ul class="d-inline-block text-left">
+          <ul class="d-inline-block text-start">
             <li>{{ 'plugins.manage.install' | translate }} <code>{{ plugin.newHbScope.to }}</code></li>
             <li>{{ 'plugins.manage.uninstall' | translate }} <code>{{ plugin.newHbScope.from }}</code></li>
             <li>{{ 'menu.hbrestart.title' | translate }}</li>
@@ -38,7 +36,7 @@ hb-service start</pre
       </div>
       <div class="text-center" *ngIf="onlineUpdateOk">
         <p>{{ 'plugins.manage.scoped.process' | translate }}</p>
-        <ul class="d-inline-block text-left" style="list-style-type: none">
+        <ul class="d-inline-block text-start" style="list-style-type: none">
           <li>
             <i
               class="fa fa-fw"
@@ -78,7 +76,7 @@ hb-service start</pre
       </div>
       <div *ngIf="failure" class="alert alert-error">
         <p>{{ 'plugins.manage.scoped.error' | translate }}</p>
-        <p class="text-monospace">{{ failure }}</p>
+        <p class="font-monospace">{{ failure }}</p>
         <button class="btn btn-primary mb-0" (click)="downloadLogFile()">
           {{ 'form.button_download' | translate }}
         </button>
@@ -87,11 +85,11 @@ hb-service start</pre
     <div [hidden]="!onlineUpdateOk || failure" id="plugin-output"></div>
   </div>
   <div class="modal-footer justify-content-between">
-    <div class="text-left">
+    <div class="text-start">
       <button
         type="button"
         class="btn btn-elegant"
-        data-dismiss="modal"
+        data-bs-dismiss="modal"
         (click)="$activeModal.dismiss('Dismiss')"
         [attr.aria-label]="'form.button_close' | translate"
         [disabled]="installing || uninstalling || restarting"
@@ -100,11 +98,11 @@ hb-service start</pre
       </button>
     </div>
     <div class="text-center"></div>
-    <div class="text-right">
+    <div class="text-end">
       <button
         type="button"
         class="btn btn-primary"
-        data-dismiss="modal"
+        data-bs-dismiss="modal"
         (click)="doSwitch()"
         [disabled]="installing || uninstalling || restarting || !onlineUpdateOk || failure"
       >

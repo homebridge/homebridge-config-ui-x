@@ -244,7 +244,7 @@
   "plugins.manage.scoped.process": "This process will not affect your Homebridge/HomeKit accessories. You will not be able to cancel the process once it has started. It will:",
   "plugins.manage.scoped.switch": "Switch To Scoped Plugin",
   "plugins.manage.scoped.windows": "Online updates are not supported on Windows. You will need to install the new plugin and uninstall the old plugin manually.",
-  "plugins.manage.scoped.windows_service": "You should <span class=\"font-weight-bold\">not</span> restart Homebridge until both steps are complete.",
+  "plugins.manage.scoped.windows_service": "You should <span class=\"fw-bold\">not</span> restart Homebridge until both steps are complete.",
   "plugins.manage.select_version": "בחר גרסה להתקנה",
   "plugins.manage.thanks_for_updating": "Thanks for installing the {{ targetVersion }} version of {{ pluginName }}.",
   "plugins.manage.uninstall": "הסר",

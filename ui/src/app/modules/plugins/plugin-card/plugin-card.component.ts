@@ -242,7 +242,7 @@ export class PluginCardComponent implements OnInit {
     } else {
       ref.componentInstance.subtitle = `${this.plugin.displayName || this.plugin.name} might not be ready for Homebridge v2.0`
       ref.componentInstance.message = 'The developer has not specifically marked your installed version of the plugin as compatible with Homebridge v2.0, but it may still work.'
-      ref.componentInstance.faIconClass = 'fa-question-circle orange-text'
+      ref.componentInstance.faIconClass = 'fa-question-circle yellow-text'
     }
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info')
     ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/homebridge/wiki/Updating-To-Homebridge-v2.0'
