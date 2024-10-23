@@ -129,6 +129,8 @@
   "form.button_show": "Show",
   "form.button_unlock": "ロック解除",
   "form.button_unpair": "Unpair",
+  "form.label_invalid": "Validation Failed",
+  "form.label_valid": "Validation Passed",
   "form.select.auto": "Automatic (Use Browser Settings)",
   "login.button_login": "ログイン",
   "login.invalid_credentials": "ユーザー名・パスワードが間違っています",

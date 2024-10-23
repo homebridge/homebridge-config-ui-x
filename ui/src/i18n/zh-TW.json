@@ -129,6 +129,8 @@
   "form.button_show": "Show",
   "form.button_unlock": "解鎖",
   "form.button_unpair": "Unpair",
+  "form.label_invalid": "Validation Failed",
+  "form.label_valid": "Validation Passed",
   "form.select.auto": "Automatic (Use Browser Settings)",
   "login.button_login": "登錄",
   "login.invalid_credentials": "無效的使用者名稱和密碼",

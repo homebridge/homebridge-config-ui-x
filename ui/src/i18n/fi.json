@@ -129,6 +129,8 @@
   "form.button_show": "Show",
   "form.button_unlock": "Poista lukitus",
   "form.button_unpair": "Unpair",
+  "form.label_invalid": "Validation Failed",
+  "form.label_valid": "Validation Passed",
   "form.select.auto": "Automattinen (Käytä selaimen asetuksia)",
   "login.button_login": "Kirjaudu",
   "login.invalid_credentials": "Väärä käyttäjätunnus tai salasana",

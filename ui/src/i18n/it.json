@@ -129,6 +129,8 @@
   "form.button_show": "Show",
   "form.button_unlock": "Unlock",
   "form.button_unpair": "Unpair",
+  "form.label_invalid": "Validation Failed",
+  "form.label_valid": "Validation Passed",
   "form.select.auto": "Automatic (Use Browser Settings)",
   "login.button_login": "Accedi",
   "login.invalid_credentials": "Utente o password non validi",

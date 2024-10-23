@@ -32,6 +32,8 @@ export class PluginConfigComponent implements OnInit {
   public saveInProgress: boolean
   public childBridges: any[] = []
   public isFirstSave = false
+  public formBlocksValid: { [key: number]: boolean } = {}
+  public formIsValid = true
 
   constructor(
     public $activeModal: NgbActiveModal,
@@ -152,12 +154,18 @@ export class PluginConfigComponent implements OnInit {
       },
     })
 
+    this.formBlocksValid[this.pluginConfig.length - 1] = false
     this.blockShown(__uuid__)
   }
 
   removeBlock(__uuid__: string) {
     const pluginConfigIndex = this.pluginConfig.findIndex(x => x.__uuid__ === __uuid__)
     this.pluginConfig.splice(pluginConfigIndex, 1)
+
+    delete this.formBlocksValid[pluginConfigIndex]
+    if (!Object.keys(this.formBlocksValid).length) {
+      this.formIsValid = true
+    }
   }
 
   async getChildBridges(): Promise<void> {
@@ -193,5 +201,10 @@ export class PluginConfigComponent implements OnInit {
         type: 'string',
       }
     }
+  }
+
+  onIsValid($event: boolean, index: number) {
+    this.formBlocksValid[index] = $event
+    this.formIsValid = Object.values(this.formBlocksValid).every(x => x)
   }
 }
