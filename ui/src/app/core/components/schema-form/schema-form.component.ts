@@ -1,3 +1,4 @@
+import { SettingsService } from '@/app/core/settings.service'
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core'
 
 @Component({
@@ -5,13 +6,15 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core'
   templateUrl: './schema-form.component.html',
 })
 export class SchemaFormComponent implements OnInit {
-  @Input() configSchema
-  @Input() data
+  @Input() configSchema: any
+  @Input() data: any
   @Output() dataChange = new EventEmitter()
   @Output() dataChanged = new EventEmitter()
   @Output() isValid = new EventEmitter()
 
-  public currentData
+  public currentData: any
+  public language: string = 'en'
+  private availableLanguages = ['de', 'en', 'es', 'fr', 'it', 'pt', 'zh']
 
   public jsonFormOptions = {
     addSubmit: false,
@@ -21,18 +24,25 @@ export class SchemaFormComponent implements OnInit {
     autocomplete: false,
   }
 
-  constructor() {}
+  constructor(
+    private $settings: SettingsService,
+  ) {}
 
   ngOnInit(): void {
+    // Use 'en' by default, unless the user's language is available
+    const userLanguage = this.$settings.env.lang.split('-')[0]
+    if (this.availableLanguages.includes(userLanguage)) {
+      this.language = userLanguage
+    }
     this.currentData = this.data
   }
 
-  onChanges(data) {
+  onChanges(data: any) {
     this.dataChange.emit(data)
     this.dataChanged.emit(data)
   }
 
-  validChange(data) {
+  validChange(data: any) {
     this.isValid.emit(data)
   }
 }

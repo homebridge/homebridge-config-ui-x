@@ -4,7 +4,7 @@ import { Pipe, PipeTransform } from '@angular/core'
   name: 'interpolateMd',
 })
 export class InterpolateMdPipe implements PipeTransform {
-  transform(value: string): unknown {
+  transform(value: string): string {
     return value.replace(/\$\{\{HOSTNAME\}\}/g, location.hostname)
   }
 }
