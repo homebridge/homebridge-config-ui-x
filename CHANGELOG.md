@@ -28,6 +28,8 @@ Plugin developers:
 - implement and allow switching to scoped plugins
 - fix widget config saving on dashboard
 - add plugin config validation functionality
+- use native language for validation messages where available
+  - currently available for `de` `en` `es` `fr` `it` `pt` `zh`
 
 ### Other Changes
 

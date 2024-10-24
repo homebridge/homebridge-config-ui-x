@@ -1,6 +1,7 @@
 import { ApiService } from '@/app/core/api.service'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
+import { PluginSchema } from '@/app/core/manage-plugins/plugin-config/plugin-config.component'
 import { SettingsService } from '@/app/core/settings.service'
 import { Component, Input, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
@@ -15,7 +16,7 @@ import { firstValueFrom } from 'rxjs'
 })
 export class PluginBridgeComponent implements OnInit {
   @Input() plugin: any
-  @Input() schema: any
+  @Input() schema: PluginSchema
   @Input() justInstalled = false
 
   public canConfigure = true

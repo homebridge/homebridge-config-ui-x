@@ -2,6 +2,7 @@ import { ApiService } from '@/app/core/api.service'
 import { RestartChildBridgesComponent } from '@/app/core/components/restart-child-bridges/restart-child-bridges.component'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
+import { PluginSchema } from '@/app/core/manage-plugins/plugin-config/plugin-config.component'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { environment } from '@/environments/environment'
@@ -19,7 +20,7 @@ import { debounceTime, skip } from 'rxjs/operators'
 export class CustomPluginsComponent implements OnInit, OnDestroy {
   @ViewChild('custompluginui', { static: true }) customPluginUiElementTarget: ElementRef
   @Input() plugin: any
-  @Input() schema: any
+  @Input() schema: PluginSchema
   @Input() pluginConfig: Record<string, any>[]
 
   public pluginAlias: string

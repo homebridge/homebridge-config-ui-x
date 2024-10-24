@@ -16,13 +16,25 @@ export interface PluginConfigBlock {
   __uuid__: string
 }
 
+export interface PluginSchema {
+  pluginAlias: string
+  pluginType: 'platform' | 'accessory'
+  strictValidation?: boolean
+  singular?: boolean
+  headerDisplay?: string
+  footerDisplay?: string
+  schema: any
+  form?: any
+  display?: any
+}
+
 @Component({
   templateUrl: './plugin-config.component.html',
   styleUrls: ['./plugin-config.component.scss'],
 })
 export class PluginConfigComponent implements OnInit {
   @Input() plugin: any
-  @Input() schema: any
+  @Input() schema: PluginSchema
 
   public pluginAlias: string
   public pluginType: 'platform' | 'accessory'
