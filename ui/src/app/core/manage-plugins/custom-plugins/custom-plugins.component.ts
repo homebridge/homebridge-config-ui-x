@@ -41,6 +41,8 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   public formActionSubject = new Subject()
   public childBridges: any[] = []
   public isFirstSave = false
+  public formIsValid = true
+  public strictValidation = false
 
   private io: IoNamespace
   private basePath: string
@@ -64,6 +66,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     this.io = this.$ws.connectToNamespace('plugins/settings-ui')
     this.pluginAlias = this.schema.pluginAlias
     this.pluginType = this.schema.pluginType
+    this.strictValidation = this.schema.strictValidation
 
     if (this.pluginConfig.length === 0) {
       this.isFirstSave = true
@@ -482,9 +485,8 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     }
   }
 
-  deletePluginConfig() {
-    this.updateConfigBlocks([])
-    this.savePluginConfig(true)
+  onIsValid($event: boolean) {
+    this.formIsValid = $event
   }
 
   ngOnDestroy() {

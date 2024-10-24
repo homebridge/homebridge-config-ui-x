@@ -4,6 +4,24 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ## BETA
 
+### Plugin Config Validation
+
+This version of Homebridge UI adds validation to plugin config screens. This does not apply to manual plugin configuration (with raw `JSON`).
+
+- If your entered configuration is valid, then you will see a green tick by the save button.
+- If your configuration is not valid, then you will see an orange warning triangle by the save button. You will still be allowed to save the configuration.
+- A plugin can enforce strict validation:
+  - For plugin developers: if you want to enforce a valid configuration, you can add `"strictValidation": true` as a root property to your `config.schema.json` file.
+  - For users: if the plugin developer has enabled this setting and your configuration is invalid, then you will see a red warning triangle by the save button. You will not be allowed to save the configuration until it is valid.
+
+If you have a plugin which can be configured multiple times, then an icon will be shown on each configuration block.
+
+Plugin developers:
+- Please do not rely on this validation and assume that a user's configuration will be valid
+- All plugins should still validate a configuration when the plugin is started
+- Remember that some users do not use the UI at all, and other users may prefer to configure using raw `JSON` rather than config screens
+- Please report any cases where the validation is not working as expected, or where the 'Save' button is incorrectly disabled when using custom UIs
+
 ### UI Changes
 
 - updates to the `th.json` language file (#2211) (@tomzt)
@@ -12,6 +30,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix widget config saving on dashboard
 - use native language for validation messages where available
   - currently available for `de` `en` `es` `fr` `it` `pt` `zh`
+- add plugin config validation functionality
 
 ### Other Changes
 
