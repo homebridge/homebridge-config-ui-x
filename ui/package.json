@@ -12,15 +12,15 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
-    "@angular/animations": "18.2.8",
-    "@angular/common": "18.2.8",
-    "@angular/compiler": "18.2.8",
-    "@angular/core": "18.2.8",
-    "@angular/forms": "18.2.8",
-    "@angular/localize": "18.2.8",
-    "@angular/platform-browser": "18.2.8",
-    "@angular/platform-browser-dynamic": "18.2.8",
-    "@angular/router": "18.2.8",
+    "@angular/animations": "18.2.9",
+    "@angular/common": "18.2.9",
+    "@angular/compiler": "18.2.9",
+    "@angular/core": "18.2.9",
+    "@angular/forms": "18.2.9",
+    "@angular/localize": "18.2.9",
+    "@angular/platform-browser": "18.2.9",
+    "@angular/platform-browser-dynamic": "18.2.9",
+    "@angular/router": "18.2.9",
     "@auth0/angular-jwt": "5.2.0",
     "@homebridge/hap-client": "1.10.2",
     "@homebridge/plugin-ui-utils": "1.0.3",
@@ -60,10 +60,10 @@
     "zone.js": "0.14.10"
   },
   "devDependencies": {
-    "@angular/build": "^18.2.9",
-    "@angular/cli": "^18.2.9",
-    "@angular/compiler-cli": "^18.2.8",
-    "@angular/language-service": "^18.2.8",
+    "@angular/build": "^18.2.10",
+    "@angular/cli": "^18.2.10",
+    "@angular/compiler-cli": "^18.2.9",
+    "@angular/language-service": "^18.2.9",
     "@fortawesome/fontawesome-free": "^6.6.0",
     "@types/emoji-js": "^3.5.2",
     "@types/file-saver": "^2.0.7",
@@ -81,11 +81,11 @@
     "typescript": "^5.6.3"
   },
   "overrides": {
-    "@angular/animations": "18.2.8",
-    "@angular/common": "18.2.8",
-    "@angular/core": "18.2.8",
-    "@angular/forms": "18.2.8",
-    "@angular/localize": "18.2.8",
+    "@angular/animations": "18.2.9",
+    "@angular/common": "18.2.9",
+    "@angular/core": "18.2.9",
+    "@angular/forms": "18.2.9",
+    "@angular/localize": "18.2.9",
     "@homebridge/hap-client": {
       "axios": "1.7.7"
     },

@@ -33,6 +33,7 @@
         [configSchema]="schema"
         [(data)]="pluginConfig[0]"
         (dataChanged)="schemaFormUpdatedSubject.next($event)"
+        (isValid)="onIsValid($event)"
       >
       </app-schema-form>
     </div>
@@ -79,25 +80,23 @@
       </button>
     </div>
     <div class="text-center"></div>
-    <div class="text-right">
-      <button
-        *ngIf="plugin.name !== 'homebridge-config-ui-x'"
-        class="btn btn-danger"
-        [ngbTooltip]="'form.button_delete' | translate"
+    <div class="text-right d-flex align-items-center justify-content-end">
+      <i
+        *ngIf="showSchemaForm"
+        class="fa fa-fw fa-xl"
+        [ngClass]="formIsValid ? 'fa-circle-check green-text' : (strictValidation ? 'fa-circle-exclamation red-text' : 'fa-circle-exclamation orange-text')"
+        [ngbTooltip]="(formIsValid ? 'form.label_valid' : (strictValidation ? 'form.label_invalid_strict' : 'form.label_invalid')) | translate"
         container="modal"
+        placement="top"
         openDelay="150"
         triggers="hover"
-        [disabled]="saveInProgress"
-        (click)="deletePluginConfig()"
-      >
-        <i class="fa fa-fw fa-trash"></i>
-      </button>
+      ></i>
       <button
         type="button"
         class="btn btn-primary"
         data-dismiss="modal"
         (click)="savePluginConfig(true)"
-        [disabled]="saveInProgress"
+        [disabled]="saveInProgress || !showSchemaForm || (showSchemaForm && strictValidation && !formIsValid)"
       >
         <span *ngIf="!saveInProgress">{{ 'form.button_save' | translate }}</span>
         <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
