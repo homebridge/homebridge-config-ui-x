@@ -28,6 +28,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   public loading = true
   public saveInProgress = false
   public pluginSpinner = false
+  public saveButtonDisabled = false
   public uiLoaded = false
   public showSchemaForm = false
   public schemaFormUpdatedSubject = new Subject()
@@ -41,6 +42,8 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   public formActionSubject = new Subject()
   public childBridges: any[] = []
   public isFirstSave = false
+  public formIsValid = true
+  public strictValidation = false
 
   private io: IoNamespace
   private basePath: string
@@ -64,6 +67,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     this.io = this.$ws.connectToNamespace('plugins/settings-ui')
     this.pluginAlias = this.schema.pluginAlias
     this.pluginType = this.schema.pluginType
+    this.strictValidation = this.schema.strictValidation
 
     if (this.pluginConfig.length === 0) {
       this.isFirstSave = true
@@ -207,6 +211,12 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
           break
         case 'spinner.hide':
           this.pluginSpinner = false
+          break
+        case 'button.save.disabled':
+          this.saveButtonDisabled = true
+          break
+        case 'button.save.enabled':
+          this.saveButtonDisabled = false
           break
         default:
           console.log(e) // eslint-disable-line no-console
@@ -482,9 +492,8 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     }
   }
 
-  deletePluginConfig() {
-    this.updateConfigBlocks([])
-    this.savePluginConfig(true)
+  onIsValid($event: boolean) {
+    this.formIsValid = $event
   }
 
   ngOnDestroy() {

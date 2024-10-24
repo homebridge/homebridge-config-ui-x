@@ -4,15 +4,43 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ## BETA
 
+### Plugin Config Validation
+
+This version of Homebridge UI adds validation to plugin config screens. This does not apply to manual plugin configuration (with raw `JSON`).
+
+- If your entered configuration is valid, then you will see a green tick by the save button.
+- If your configuration is not valid, then you will see an orange warning triangle by the save button. You will still be allowed to save the configuration.
+- A plugin can enforce strict validation:
+  - For plugin developers: if you want to enforce a valid configuration, you can add `"strictValidation": true` as a root property to your `config.schema.json` file.
+  - For users: if the plugin developer has enabled this setting and your configuration is invalid, then you will see a red warning triangle by the save button. You will not be allowed to save the configuration until it is valid.
+
+If you have a plugin which can be configured multiple times, then an icon will be shown on each configuration block.
+
+For custom UIs developed using the `@homebridge/plugin-ui-utils` package, the `Save` button will be enabled at all times by default.
+In `@homebridge/plugin-ui-utils@v2.0.0`, two new methods have been added which allow you to disable and enable the `Save` button:
+- `homebridge.disableSaveButton()`
+- `homebridge.enableSaveButton()`
+
+When the button is enabled, the validation icon will be visible showing the status of the configuration. When the button is disabled, the validation icon will be hidden.
+If your plugin implements these methods, but the user is on an older version of the Homebridge UI, then the methods will have no effect, but not throw an error. The `Save` button will always be enabled.
+
+Plugin developers:
+
+- Please do not rely on this validation and assume that a user's configuration will be valid
+- All plugins should still validate a configuration when the plugin is started
+- Remember that some users do not use the UI at all, and other users may prefer to configure using raw `JSON` rather than config screens
+- Please report any cases where the validation is not working as expected
+
 ### UI Changes
 
 - implement and allow switching to scoped plugins
+- add plugin config validation functionality
 
 ### Homebridge Dependencies
 
-- `@homebridge/hap-client` @ `v1.10.2`
+- `@homebridge/hap-client` @ `v2.0.4`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.11.14`
-- `@homebridge/plugin-ui-utils` @ `v1.0.3`
+- `@homebridge/plugin-ui-utils` @ `v1.0.4-beta`
 
 ## v4.64.0 (2024-11-30)
 
@@ -143,7 +171,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - ⚠️ After updating to this release, you may find that your UI theme resets to the default. This reset will only occur once. You can visit the settings section to change it back to your preferred theme.
 - ⚠️ If you use the `/api/auth/settings` endpoint (e.g. in a custom application), please note that this endpoint now returns less information for an unauthenticated user.
-It will return a full payload when a valid access token is provided.
+  It will return a full payload when a valid access token is provided.
 
 ### UI Changes
 
