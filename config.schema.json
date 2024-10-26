@@ -2,6 +2,7 @@
   "pluginAlias": "config",
   "pluginType": "platform",
   "singular": true,
+  "strictValidation": true,
   "schema": {
     "type": "object",
     "properties": {

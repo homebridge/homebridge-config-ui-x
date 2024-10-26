@@ -39,6 +39,7 @@ Plugin developers:
 ### Other Changes
 
 - retire use of `pnpm` and code references
+- enable strict config validation for the UI
 
 ### Homebridge Dependencies
 
