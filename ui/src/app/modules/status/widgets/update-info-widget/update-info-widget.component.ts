@@ -72,7 +72,8 @@ export class UpdateInfoWidgetComponent implements OnInit {
       ])
     }
 
-    this.isHbV2Ready = this.homebridgeUiPkg.readyForV5.node
+    // The user on UI v5 will already have a compatible Node.js version
+    this.isHbV2Ready = true
 
     if (!this.isRunningHbV2) {
       const installedPlugins = await firstValueFrom(this.$api.get('/plugins'))
@@ -170,5 +171,6 @@ export class UpdateInfoWidgetComponent implements OnInit {
       backdrop: 'static',
     })
     ref.componentInstance.isUpdating = false
+    ref.componentInstance.skipIfCompatible = false
   }
 }
