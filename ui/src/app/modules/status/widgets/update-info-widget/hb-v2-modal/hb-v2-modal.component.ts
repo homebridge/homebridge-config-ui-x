@@ -27,6 +27,7 @@ export class HbV2ModalComponent implements OnInit {
   private $ws = inject(WsService)
 
   @Input() isUpdating: boolean = false
+  @Input() skipIfCompatible: boolean = true
 
   public loading = true
   public installedPlugins: any = []
@@ -79,7 +80,7 @@ export class HbV2ModalComponent implements OnInit {
         .sort((a, b) => a.name.localeCompare(b.name))
 
       // Skip if there are no plugins installed
-      if (this.installedPlugins.length === 0) {
+      if (this.skipIfCompatible && this.installedPlugins.length === 0) {
         this.$activeModal.close('update')
       }
     } catch (error) {

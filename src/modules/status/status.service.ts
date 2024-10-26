@@ -471,7 +471,6 @@ export class StatusService {
 
       // Get the newest v18 and v20 in the list
       const latest18 = versionList.filter((x: { version: string }) => x.version.startsWith('v18'))[0]
-      const latest20 = versionList.filter((x: { version: string }) => x.version.startsWith('v20'))[0]
       const latest22 = versionList.filter((x: { version: string }) => x.version.startsWith('v22'))[0]
 
       let updateAvailable = false
@@ -484,25 +483,26 @@ export class StatusService {
        *
        *      18            2.28
        *      20            2.31
+       *      22            2.31 (assumption - the code below assumes this)
        */
 
       // Behaviour depends on the installed version of node
       switch (process.version.split('.')[0]) {
         case 'v18': {
-          // Currently using v18, but v20 is available
+          // Currently using v18, but v22 is available
           // If the user is running linux, then check their glibc version
-          //   If they are running glibc 2.31 or higher, then show the option to update to v20
+          //   If they are running glibc 2.31 or higher, then show the option to update to v22
           //   Otherwise we would still want to see if there is a minor/patch update available for v18
-          // Otherwise, already show the option for updating to node 20
+          // Otherwise, already show the option for updating to node 22
           if (platform() === 'linux') {
             const glibcVersion = this.getGlibcVersion()
             if (glibcVersion) {
               if (Number.parseFloat(glibcVersion) >= 2.31) {
-                // Glibc version is high enough to support v20
+                // Glibc version is high enough to support v22
                 updateAvailable = true
-                latestVersion = latest20.version
+                latestVersion = latest22.version
               } else {
-                // Glibc version is too low to support v20
+                // Glibc version is too low to support v22
                 // Check if there is a new minor/patch version available
                 if (gt(latest18.version, process.version)) {
                   updateAvailable = true
@@ -516,19 +516,17 @@ export class StatusService {
               }
             }
           } else {
-            // Not running linux, so show the option for updating to node 20
+            // Not running linux, so show the option for updating to node 22
             updateAvailable = true
-            latestVersion = latest20.version
+            latestVersion = latest22.version
           }
           break
         }
         case 'v20': {
           // Currently using v20
-          // Check if there is a new minor/patch version available
-          if (gt(latest20.version, process.version)) {
-            updateAvailable = true
-            latestVersion = latest20.version
-          }
+          // Show the option for updating to node 22
+          updateAvailable = true
+          latestVersion = latest22.version
           break
         }
         case 'v22': {
