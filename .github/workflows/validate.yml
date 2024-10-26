@@ -39,7 +39,7 @@ jobs:
       matrix:
         os:
           [ubuntu-latest, ubuntu-24.04, ubuntu-22.04, macos-latest, macos-15, macos-14, macos-13, windows-latest, windows-2022, windows-2019]
-        node-version: [18.x, 20.x, 22.x]
+        node-version: [20.x, 22.x]
 
     runs-on: ${{ matrix.os }}
 
