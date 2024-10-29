@@ -12,6 +12,10 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
   - Drops support for Raspberry Pi devices running on the `armv6` architecture (like the Pi 1 and Pi Zero) - please update your hardware
   - Drops support for instances using `pnpm` as the package manager - consider updating your Homebridge instance to use npm instead - [more info on updating](https://github.com/homebridge/homebridge-apt-pkg/blob/latest/README.md#using-apt)
 
+### UI Changes
+
+- update default dashboard layout
+
 ### Other Changes
 
 - retire use of `pnpm` and code references

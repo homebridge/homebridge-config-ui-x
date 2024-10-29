@@ -2,82 +2,99 @@
   {
     "component": "UpdateInfoWidgetComponent",
     "x": 0,
-    "y": 0,
-    "cols": 5,
-    "rows": 7,
+    "y": 6,
+    "cols": 4,
+    "rows": 6,
     "mobileOrder": 10,
-    "hideOnMobile": false
+    "hidePort": true,
+    "hideOnMobile": false,
+    "draggable": true
   },
   {
     "component": "BridgesWidgetComponent",
-    "x": 0,
-    "y": 7,
+    "x": 15,
+    "y": 0,
     "cols": 5,
-    "rows": 7,
+    "rows": 12,
     "mobileOrder": 35,
-    "hideOnMobile": false
-  },
-  {
-    "component": "HomebridgeLogsWidgetComponent",
-    "x": 5,
-    "y": 0,
-    "cols": 10,
-    "rows": 8,
-    "mobileOrder": 1000,
-    "hideOnMobile": true
-  },
-  {
-    "component": "SystemInfoWidgetComponent",
-    "x": 15,
-    "y": 0,
-    "cols": 5,
-    "rows": 9,
-    "mobileOrder": 70,
-    "hideOnMobile": false
-  },
-  {
-    "component": "HapQrcodeWidgetComponent",
-    "x": 15,
-    "y": 9,
-    "cols": 5,
-    "rows": 5,
-    "mobileOrder": 100,
-    "hideOnMobile": false
+    "hideOnMobile": false,
+    "draggable": true
   },
   {
     "component": "CpuWidgetComponent",
-    "x": 5,
-    "y": 8,
+    "x": 4,
+    "y": 0,
     "cols": 5,
     "rows": 3,
     "mobileOrder": 40,
-    "hideOnMobile": false
+    "hideOnMobile": false,
+    "draggable": true,
+    "refreshInterval": 10,
+    "historyItems": 60
   },
   {
     "component": "MemoryWidgetComponent",
-    "x": 5,
-    "y": 11,
+    "x": 4,
+    "y": 3,
     "cols": 5,
     "rows": 3,
     "mobileOrder": 50,
-    "hideOnMobile": false
+    "hideOnMobile": false,
+    "draggable": true,
+    "refreshInterval": 10,
+    "historyItems": 60
   },
   {
     "component": "NetworkWidgetComponent",
-    "x": 10,
-    "y": 11,
+    "x": 4,
+    "y": 6,
     "cols": 5,
     "rows": 3,
     "mobileOrder": 55,
-    "hideOnMobile": false
+    "hideOnMobile": false,
+    "draggable": true,
+    "refreshInterval": 10,
+    "historyItems": 60,
+    "networkInterface": "en0"
   },
   {
     "component": "UptimeWidgetComponent",
-    "x": 10,
-    "y": 8,
+    "x": 4,
+    "y": 9,
     "cols": 5,
     "rows": 3,
     "mobileOrder": 60,
-    "hideOnMobile": false
+    "hideOnMobile": false,
+    "draggable": true
+  },
+  {
+    "component": "SystemInfoWidgetComponent",
+    "x": 9,
+    "y": 0,
+    "cols": 6,
+    "rows": 12,
+    "mobileOrder": 70,
+    "hideOnMobile": false,
+    "draggable": true
+  },
+  {
+    "component": "HapQrcodeWidgetComponent",
+    "x": 0,
+    "y": 0,
+    "cols": 4,
+    "rows": 6,
+    "mobileOrder": 100,
+    "hideOnMobile": false,
+    "draggable": true
+  },
+  {
+    "component": "HomebridgeLogsWidgetComponent",
+    "x": 0,
+    "y": 12,
+    "cols": 20,
+    "rows": 7,
+    "mobileOrder": 1000,
+    "hideOnMobile": true,
+    "draggable": true
   }
 ]
