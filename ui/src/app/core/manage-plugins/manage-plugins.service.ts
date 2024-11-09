@@ -7,6 +7,7 @@ import { PluginBridgeComponent } from '@/app/core/manage-plugins/plugin-bridge/p
 import { PluginCompatibilityComponent } from '@/app/core/manage-plugins/plugin-compatibility/plugin-compatibility.component'
 import { PluginConfigComponent } from '@/app/core/manage-plugins/plugin-config/plugin-config.component'
 import { ResetAccessoriesComponent } from '@/app/core/manage-plugins/reset-accessories/reset-accessories.component'
+import { SwitchToScopedComponent } from '@/app/core/manage-plugins/switch-to-scoped/switch-to-scoped.component'
 import { UninstallPluginComponent } from '@/app/core/manage-plugins/uninstall-plugin/uninstall-plugin.component'
 import { SettingsService } from '@/app/core/settings.service'
 import { Injectable } from '@angular/core'
@@ -260,5 +261,14 @@ export class ManagePluginsService {
     })
 
     ref.componentInstance.childBridges = childBridges
+  }
+
+  async switchToScoped(plugin: any) {
+    const ref = this.$modal.open(SwitchToScopedComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    })
+
+    ref.componentInstance.plugin = plugin
   }
 }

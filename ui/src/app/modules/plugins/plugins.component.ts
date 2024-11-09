@@ -91,22 +91,27 @@ export class PluginsComponent implements OnInit, OnDestroy {
           return a.updateAvailable ? -1 : 1
         }
 
-        // Priority 2: disabled (false first, sorted alphabetically by 'name')
+        // Priority 2: newHbScope (true first, sorted alphabetically by 'name')
+        if (a.newHbScope && !b.newHbScope) {
+          return -1
+        }
+
+        // Priority 3: disabled (false first, sorted alphabetically by 'name')
         if (a.disabled !== b.disabled) {
           return a.disabled ? 1 : -1
         }
 
-        // Priority 3: isConfigured (false first, sorted alphabetically by 'name')
+        // Priority 4: isConfigured (false first, sorted alphabetically by 'name')
         if (a.isConfigured !== b.isConfigured) {
           return a.isConfigured ? 1 : -1
         }
 
-        // Priority 4: hasChildBridgesUnpaired (true first, sorted alphabetically by 'name')
+        // Priority 5: hasChildBridgesUnpaired (true first, sorted alphabetically by 'name')
         if (a.hasChildBridgesUnpaired !== b.hasChildBridgesUnpaired) {
           return a.hasChildBridgesUnpaired ? -1 : 1
         }
 
-        // Priority 5: hasChildBridges (false first, sorted alphabetically by 'name', only when recommendChildBridges is true)
+        // Priority 6: hasChildBridges (false first, sorted alphabetically by 'name', only when recommendChildBridges is true)
         if (a.hasChildBridges !== b.hasChildBridges && this.$settings.env.recommendChildBridges) {
           return a.hasChildBridges ? 1 : -1
         }
@@ -158,7 +163,40 @@ export class PluginsComponent implements OnInit, OnDestroy {
 
     this.$api.get(`/plugins/search/${encodeURIComponent(this.form.value.query)}`).subscribe({
       next: (data) => {
-        this.installedPlugins = data.filter(x => x.name !== 'homebridge-config-ui-x')
+        const hiddenPlugins = new Set<string>()
+        this.installedPlugins = data
+          .sort((a: any, b: any) => {
+            if (a.newHbScope && !b.newHbScope) {
+              return -1
+            }
+            if (!a.newHbScope && b.newHbScope) {
+              return 1
+            }
+            return 0
+          })
+          .reduce((acc: any, x: any) => {
+            if (x.name === 'homebridge-config-ui-x' || hiddenPlugins.has(x.name)) {
+              return acc
+            }
+            if (x.newHbScope) {
+              const y = x.newHbScope.to
+              const yExists = data.some((plugin: any) => plugin.name === y)
+              if (x.installedVersion || !yExists) {
+                hiddenPlugins.add(y)
+                acc.push(x)
+              }
+            } else {
+              acc.push(x)
+            }
+            return acc
+          }, [])
+          .sort((a, b) => {
+            if (a.installedVersion !== b.installedVersion) {
+              return a.installedVersion ? -1 : 1
+            }
+            return 0
+          })
+
         this.appendMetaInfo()
         this.loading = false
       },

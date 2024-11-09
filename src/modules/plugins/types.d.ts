@@ -31,6 +31,13 @@ export interface HomebridgePlugin {
     node?: string
   }
   funding?: NpmFunding
+  isHbScoped?: boolean
+  isHbMaintained?: boolean
+  newHbScope?: {
+    from: string
+    to: string
+    switch: string
+  }
 }
 
 export interface HomebridgePluginUiMetadata {
@@ -155,4 +162,24 @@ export type NpmFunding = { type: string, url: string } | string | Array<{ type: 
 export interface PluginAlias {
   pluginAlias: null | string
   pluginType: null | 'platform' | 'accessory'
+}
+
+export interface PluginListNewScopeItem {
+  from: string
+  to: string
+  switch: string
+}
+
+export interface PluginListItem {
+  hidden?: 1
+  icon?: string
+  maintained?: 1
+  scoped?: string
+  newScope?: PluginListNewScopeItem
+  verified?: 1
+  verifiedPlus?: 1
+}
+
+export interface PluginListData {
+  data: Record<string, PluginListItem>
 }

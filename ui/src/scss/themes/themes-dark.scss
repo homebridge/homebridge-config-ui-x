@@ -8,6 +8,14 @@
 
     background-color: $backgroundColor;
 
+    pre {
+      background-color: #2b2b2b;
+      color: #cdcdcd;
+      text-align: left;
+      padding: 15px !important;
+      border-radius: 10px;
+    }
+
     .bg-primary {
       background-color: #242424 !important;
     }

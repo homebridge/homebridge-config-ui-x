@@ -2,6 +2,14 @@
 
 @mixin make-theme($name, $primary, $primary-dark) {
   .config-ui-x-#{$name} {
+    pre {
+      background-color: #eaeaea;
+      color: #333333;
+      text-align: left;
+      padding: 15px !important;
+      border-radius: 10px;
+    }
+
     .bg-primary {
       background-color: $primary-dark !important;
     }

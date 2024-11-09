@@ -50,11 +50,29 @@
                 ></i>
               </a>
               <!-- // -->
+              <!-- switch to scoped available -->
+              <a
+                href="javascript:void(0)"
+                class="card-link"
+                (click)="$plugin.switchToScoped(plugin)"
+                *ngIf="plugin.installedVersion && plugin.newHbScope?.switch === plugin.installedVersion && !childBridgeRestartInProgress"
+                container="body"
+                openDelay="150"
+                triggers="hover"
+                [ngbTooltip]="'plugins.manage.scoped.switch' | translate"
+                [attr.aria-label]="'plugins.manage.scoped.switch' | translate"
+              >
+                <i
+                  class="fas fa-fw fa-arrow-right-arrow-left primary-text fa-lg fa-fade ml-3"
+                  style="--fa-animation-duration: 2s"
+                ></i>
+              </a>
+              <!-- // -->
               <!-- installed, not configured -->
               <a
                 href="javascript:void(0)"
                 class="card-link"
-                *ngIf="plugin.installedVersion && !plugin.updateAvailable && !plugin.isConfigured && !childBridgeRestartInProgress"
+                *ngIf="plugin.installedVersion && (!plugin.newHbScope || plugin.newHbScope.switch !== plugin.installedVersion) && !plugin.updateAvailable && !plugin.isConfigured && !childBridgeRestartInProgress"
                 (click)="$plugin.settings(plugin)"
                 [ngbTooltip]="'plugins.button_set_up' | translate"
                 container="body"
@@ -74,7 +92,7 @@
                 container="body"
                 openDelay="150"
                 triggers="hover"
-                *ngIf="plugin.installedVersion && !plugin.updateAvailable && plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && plugin.recommendChildBridge && !childBridgeRestartInProgress"
+                *ngIf="plugin.installedVersion && (!plugin.newHbScope || plugin.newHbScope.switch !== plugin.installedVersion) && !plugin.updateAvailable && plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && plugin.recommendChildBridge && !childBridgeRestartInProgress"
                 [attr.aria-label]="'child_bridge.setup' | translate"
               >
                 <i
@@ -92,7 +110,7 @@
                 container="body"
                 openDelay="150"
                 triggers="hover"
-                *ngIf="plugin.installedVersion && !plugin.updateAvailable && plugin.isConfigured && plugin.hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled"
+                *ngIf="plugin.installedVersion && (!plugin.newHbScope || plugin.newHbScope.switch !== plugin.installedVersion) && !plugin.updateAvailable && plugin.isConfigured && plugin.hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled"
                 [attr.aria-label]="'child_bridge.bridge_connect' | translate"
               >
                 <i
@@ -110,7 +128,7 @@
               <!-- child bridge status (good status is not shown) -->
               <i
                 class="fas fa-fw fa-lg ml-3"
-                *ngIf="plugin.installedVersion && !plugin.updateAvailable && plugin.isConfigured && plugin.hasChildBridges && !childBridgeRestartInProgress && !hasUnpairedChildBridges && childBridgeStatus !== 'ok' && !plugin.disabled"
+                *ngIf="plugin.installedVersion && (!plugin.newHbScope || plugin.newHbScope.switch !== plugin.installedVersion) && !plugin.updateAvailable && plugin.isConfigured && plugin.hasChildBridges && !childBridgeRestartInProgress && !hasUnpairedChildBridges && childBridgeStatus !== 'ok' && !plugin.disabled"
                 [ngClass]="{
                   'fa-bridge-circle-exclamation orange-text': childBridgeStatus === 'pending',
                   'fa-bridge-circle-xmark red-text': childBridgeStatus === 'down'
