@@ -2,7 +2,6 @@ import { UseGuards } from '@nestjs/common'
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets'
 
 import { WsGuard } from '../../core/auth/guards/ws.guard'
-import { ChildBridgesService } from '../child-bridges/child-bridges.service'
 import { PluginsService } from '../plugins/plugins.service'
 import { StatusService } from './status.service'
 
@@ -19,7 +18,6 @@ export class StatusGateway {
   constructor(
     private statusService: StatusService,
     private pluginsService: PluginsService,
-    private childBridgesService: ChildBridgesService,
   ) {}
 
   @SubscribeMessage('get-dashboard-layout')
@@ -151,26 +149,6 @@ export class StatusGateway {
   @SubscribeMessage('monitor-server-status')
   async serverStatus(client) {
     this.statusService.watchStats(client)
-  }
-
-  /**
-   * @deprecated
-   */
-  @SubscribeMessage('get-homebridge-child-bridge-status')
-  async getChildBridges() {
-    try {
-      return await this.childBridgesService.getChildBridges()
-    } catch (e) {
-      return new WsException(e.message)
-    }
-  }
-
-  /**
-   * @deprecated
-   */
-  @SubscribeMessage('monitor-child-bridge-status')
-  async watchChildBridgeStatus(client) {
-    this.childBridgesService.watchChildBridgeStatus(client)
   }
 
   @SubscribeMessage('get-raspberry-pi-throttled-status')

@@ -60,10 +60,10 @@ gridster {
 
 gridster {
   &.mobile {
-    #HomebridgeStatusWidgetComponent,
+    #UpdateCentreWidgetComponent,
     #SystemInfoWidgetComponent,
     #WeatherWidgetComponent,
-    #ChildBridgeWidgetComponent,
+    #HomekitBridgesWidgetComponent,
     #ClockWidgetComponent {
       height: unset !important;
     }

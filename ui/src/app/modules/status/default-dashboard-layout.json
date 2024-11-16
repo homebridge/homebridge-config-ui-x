@@ -1,6 +1,6 @@
 [
   {
-    "component": "HomebridgeStatusWidgetComponent",
+    "component": "UpdateCentresWidgetComponent",
     "x": 0,
     "y": 0,
     "cols": 5,
@@ -9,7 +9,7 @@
     "hideOnMobile": false
   },
   {
-    "component": "ChildBridgeWidgetComponent",
+    "component": "HomekitBridgesWidgetComponent",
     "x": 0,
     "y": 7,
     "cols": 5,

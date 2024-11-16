@@ -1,46 +1,11 @@
-<div class="flex-column d-flex align-items-stretch h-100 w-100 pb-1">
-  <div class="drag-handler p-2" [ngClass]="{ 'widget-cursor': widget.draggable }">Homebridge</div>
-  <div class="d-flex flex-wrap w-100 pr-3 pl-2 justify-content-start gridster-item-content overflow-auto no-scrollbars">
-    <div class="hb-status-item d-flex flex-row" style="min-width: max(25%, 225px)">
+<div class="flex-column d-flex align-items-stretch h-100 w-100 pb-3">
+  <div class="drag-handler p-2" [ngClass]="{ 'widget-cursor': widget.draggable }">
+    {{ 'status.services.updates' | translate }}
+  </div>
+  <div class="d-flex flex-wrap w-100 mb-2 justify-content-start gridster-item-content overflow-auto no-scrollbars">
+    <div class="hb-status-item d-flex flex-row mt-2" style="min-width: max(25%, 175px)">
       <div class="d-flex">
-        <div class="mb-0 px-3 py-1 hb-status-icon">
-          <i
-            class="fas fa-fw primary-text"
-            [ngClass]="{
-            'fa-exclamation-circle red-text': homebridgeStatus.status === 'down',
-            'fa-cog fa-spin': homebridgeStatus.status === 'pending',
-            'fa-check-circle': homebridgeStatus.status === 'up'
-          }"
-          ></i>
-        </div>
-        <div class="align-self-center">
-          <a href="javascript:void(0)" routerLink="/logs" class="card-link card-link-title">
-            {{ 'menu.label_status' | translate }}
-          </a>
-          <br />
-          <span class="grey-text" *ngIf="homebridgeStatus.status === 'pending'">
-            {{ 'status.services.label_starting' | translate }}
-          </span>
-          <span class="grey-text" *ngIf="homebridgeStatus.status === 'up' && !widget.hidePort">
-            {{ 'status.services.label_running_on_port' | translate: { port: homebridgeStatus.port } }}
-          </span>
-          <span class="grey-text" *ngIf="homebridgeStatus.status === 'up' && widget.hidePort">
-            {{ 'status.services.label_running' | translate: { port: homebridgeStatus.port } }}
-          </span>
-          <a
-            routerLink="/logs"
-            class="primary-text"
-            *ngIf="homebridgeStatus.status !== 'up' && homebridgeStatus.status !== 'pending'"
-          >
-            {{ 'status.services.label_not_running' | translate }} - {{ 'menu.tooltip_view_logs' | translate }}
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="hb-status-item d-flex flex-row" style="min-width: max(25%, 225px)">
-      <div class="d-flex">
-        <div class="mb-0 px-3 py-1 hb-status-icon">
+        <div class="mb-0 px-3 hb-status-icon d-flex align-items-center">
           <i class="fas fa-fw fa-cog fa-spin primary-text" *ngIf="!homebridgePkg.installedVersion"></i>
           <i
             class="fas fa-fw fa-check-circle primary-text"
@@ -57,11 +22,12 @@
             (click)="$plugin.installAlternateVersion(homebridgePkg)"
             *ngIf="homebridgePkg.installedVersion"
             class="card-link card-link-title"
-            >Homebridge</a
           >
+            Homebridge
+          </a>
           <span *ngIf="!homebridgePkg.installedVersion">Homebridge</span>
           <br />
-          <span class="grey-text">
+          <span class="grey-text small">
             <span *ngIf="!homebridgePkg.installedVersion"> {{ 'status.homebridge.checking' | translate }} </span>
             <span *ngIf="homebridgePkg.installedVersion && !homebridgePkg.updateAvailable">
               {{ 'status.homebridge.up_to_date' | translate }}
@@ -78,10 +44,9 @@
         </div>
       </div>
     </div>
-
-    <div class="hb-status-item d-flex flex-row" style="min-width: max(25%, 225px)">
+    <div class="hb-status-item d-flex flex-row mt-2" style="min-width: max(25%, 175px)">
       <div class="d-flex">
-        <div class="mb-0 px-3 py-1 hb-status-icon">
+        <div class="mb-0 px-3 hb-status-icon d-flex align-items-center">
           <i class="fas fa-fw fa-cog fa-spin primary-text" *ngIf="!homebridgeUiPkg.installedVersion"></i>
           <i
             class="fas fa-fw fa-check-circle primary-text"
@@ -102,7 +67,7 @@
           >
           <span *ngIf="!homebridgeUiPkg.installedVersion">Homebridge UI</span>
           <br />
-          <span class="grey-text">
+          <span class="grey-text small">
             <span *ngIf="!homebridgeUiPkg.installedVersion"> {{ 'status.homebridge.checking' | translate }} </span>
             <span *ngIf="homebridgeUiPkg.installedVersion && !homebridgeUiPkg.updateAvailable">
               {{ 'status.homebridge.up_to_date' | translate }}
@@ -119,10 +84,9 @@
         </div>
       </div>
     </div>
-
-    <div class="hb-status-item d-flex flex-row" style="min-width: max(25%, 225px)">
+    <div class="hb-status-item d-flex flex-row mt-2" style="min-width: max(25%, 175px)">
       <div class="d-flex">
-        <div class="mb-0 px-3 py-1 hb-status-icon">
+        <div class="mb-0 px-3 hb-status-icon d-flex align-items-center">
           <i class="fas fa-fw fa-cog fa-spin primary-text" *ngIf="!homebridgePluginStatusDone"></i>
           <i
             class="fas fa-fw fa-arrow-alt-circle-up primary-text"
@@ -138,18 +102,66 @@
             {{ 'menu.label_plugins' | translate }}
           </a>
           <br />
-          <span class="grey-text" *ngIf="!homebridgePluginStatusDone">
+          <span class="grey-text small" *ngIf="!homebridgePluginStatusDone">
             {{ 'status.homebridge.checking' | translate }}
           </span>
           <a
             routerLink="/plugins"
-            class="primary-text"
+            class="primary-text small"
             *ngIf="homebridgePluginStatusDone && homebridgePluginStatus.length"
           >
             {{ homebridgePluginStatus.length }} {{ homebridgePluginStatus.length === 1 ? ('status.plugin_out_of_date' |
             translate) : ('status.plugins_out_of_date' | translate) }}
           </a>
-          <span class="grey-text" *ngIf="homebridgePluginStatusDone && !homebridgePluginStatus.length">
+          <span class="grey-text small" *ngIf="homebridgePluginStatusDone && !homebridgePluginStatus.length">
+            {{ 'status.homebridge.up_to_date' | translate }}
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="hb-status-item d-flex flex-row mt-2" style="min-width: max(25%, 175px)">
+      <div class="d-flex">
+        <div class="mb-0 px-3 hb-status-icon d-flex align-items-center">
+          <i class="fas fa-fw fa-cog fa-spin primary-text" *ngIf="!nodejsStatusDone"></i>
+          <i
+            class="fas fa-fw fa-arrow-alt-circle-up primary-text"
+            *ngIf="nodejsStatusDone && nodejsInfo.updateAvailable && !nodejsInfo.showNodeUnsupportedWarning && !serverInfo.homebridgeRunningInSynologyPackage"
+          ></i>
+          <i
+            class="fas fa-fw fa-exclamation-circle primary-text"
+            *ngIf="nodejsStatusDone && nodejsInfo.showNodeUnsupportedWarning && !nodejsInfo.updateAvailable"
+          ></i>
+          <i
+            class="fas fa-fw fa-check-circle primary-text"
+            *ngIf="nodejsStatusDone && !nodejsInfo.updateAvailable && !nodejsInfo.showNodeUnsupportedWarning"
+          ></i>
+        </div>
+        <div class="align-self-center">
+          Node.js
+          <br />
+          <span class="grey-text small" *ngIf="!nodejsStatusDone">
+            {{ 'status.homebridge.checking' | translate }}
+          </span>
+          <a
+            href="javascript:void(0)"
+            (click)="nodeUpdateModal()"
+            class="primary-text small"
+            *ngIf="nodejsStatusDone && nodejsInfo.updateAvailable && !nodejsInfo.showNodeUnsupportedWarning && !serverInfo.homebridgeRunningInSynologyPackage"
+          >
+            {{'status.plugin_out_of_date' | translate }}
+          </a>
+          <a
+            href="javascript:void(0)"
+            (click)="nodeUnsupportedModal()"
+            class="primary-text small"
+            *ngIf="nodejsStatusDone && nodejsInfo.showNodeUnsupportedWarning && !nodejsInfo.updateAvailable"
+          >
+            {{ 'status.widget.info.node_unsupp' | translate }}
+          </a>
+          <span
+            class="grey-text small"
+            *ngIf="nodejsStatusDone && !nodejsInfo.updateAvailable && !nodejsInfo.showNodeUnsupportedWarning"
+          >
             {{ 'status.homebridge.up_to_date' | translate }}
           </span>
         </div>

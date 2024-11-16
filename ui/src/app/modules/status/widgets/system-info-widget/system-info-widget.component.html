@@ -46,27 +46,7 @@
         </tr>
         <tr>
           <th scope="row" class="text-nowrap">{{ 'status.widget.info.nodejs_version' | translate }}</th>
-          <td>
-            <a
-              *ngIf="nodejsInfo.updateAvailable && !nodejsInfo.showNodeUnsupportedWarning && !serverInfo.homebridgeRunningInSynologyPackage"
-              href="javascript:void(0)"
-              class="system-info-link"
-              (click)="nodeUpdateModal()"
-            >
-              <i class="primary-text fas fa-fw fa-circle-up"></i> {{ serverInfo.nodeVersion }}
-            </a>
-            <a
-              *ngIf="nodejsInfo.showNodeUnsupportedWarning && !nodejsInfo.updateAvailable"
-              href="javascript:void(0)"
-              class="system-info-link"
-              (click)="nodeUnsupportedModal()"
-            >
-              <i class="primary-text fas fa-fw fa-exclamation-circle"></i> {{ serverInfo.nodeVersion }}
-            </a>
-            <span *ngIf="!nodejsInfo.showNodeUnsupportedWarning && !nodejsInfo.updateAvailable">
-              {{ serverInfo.nodeVersion }}
-            </span>
-          </td>
+          <td>{{ serverInfo.nodeVersion }}</td>
         </tr>
         <tr>
           <th scope="row" class="text-nowrap">{{ 'status.widget.info.nodejs_path' | translate }}</th>

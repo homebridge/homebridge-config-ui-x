@@ -52,21 +52,6 @@
           {{ 'status.widget.accessories.choose_accessories' | translate }}
         </p>
       </div>
-      <div *ngSwitchCase="'HomebridgeStatusWidgetComponent'">
-        <div class="form-group my-2 row align-items-center">
-          <label class="col-6 col-form-label">{{ 'status.widget.homebridge_port' | translate }}</label>
-          <div class="col-6 text-right">
-            <input
-              type="checkbox"
-              class="rendux-input"
-              id="hidePort"
-              [(ngModel)]="widget.hidePort"
-              [attr.aria-label]="'status.widget.homebridge_port' | translate"
-            />
-            <label for="hidePort" class="rendux-label ml-3" style="min-width: 50px"></label>
-          </div>
-        </div>
-      </div>
       <div *ngSwitchCase="'HomebridgeLogsWidgetComponent'">
         <div class="form-group my-2 row align-items-center">
           <label class="col-6 col-form-label">{{ 'status.widget.font_size' | translate }}</label>

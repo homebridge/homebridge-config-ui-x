@@ -1,0 +1,103 @@
+<div class="flex-column d-flex align-items-stretch h-100 w-100 pb-3 overflow-auto no-scrollbars">
+  <div class="drag-handler p-2" [ngClass]="{ 'widget-cursor': widget.draggable }">
+    {{ 'child_bridge.bridges' | translate }}
+  </div>
+  <div class="hb-status-item d-flex flex-row w-100 px-3 mt-2" style="min-width: max(25%, 225px)">
+    <div class="hb-status-icon d-flex align-items-center">
+      <i
+        class="fas fa-fw"
+        [ngClass]="{
+          'fa-bridge-circle-check green-text': homebridgeStatus.status === 'up',
+          'fa-bridge-circle-exclamation text-warning': homebridgeStatus.status === 'pending',
+          'fa-bridge-circle-xmark red-text': homebridgeStatus.status === 'down'
+        }"
+        container="body"
+        placement="right"
+        openDelay="150"
+        triggers="hover"
+        [ngbTooltip]="(homebridgeStatus.status === 'up' ? 'status.services.label_running' : (homebridgeStatus.status ===
+          'pending' ? 'status.services.label_running' : 'status.services.label_not_running')) | translate"
+        [attr.aria-label]="(homebridgeStatus.status === 'up' ? 'status.services.label_running' : (homebridgeStatus.status ===
+          'pending' ? 'status.services.label_running' : 'status.services.label_not_running')) | translate"
+      ></i>
+    </div>
+    <div class="align-self-center flex-child px-3">Homebridge</div>
+    <div class="grey-text ml-auto d-flex align-items-center">
+      <i
+        class="icon-button fas fa-fw fa-power-off"
+        *ngIf="homebridgeStatus.status === 'up'"
+        href="javascript:void(0)"
+        (click)="restartHomebridge()"
+        [ngbTooltip]="'menu.tooltip_restart' | translate"
+        container="body"
+        openDelay="150"
+        triggers="hover"
+        placement="left"
+      ></i>
+      <i *ngIf="homebridgeStatus.status !== 'up'" class="fas icon-button fa-fw fa-spinner fa-pulse"></i>
+      <i
+        class="fas fa-fw fa-link ml-2"
+        [ngbTooltip]="(homebridgeStatus.paired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate"
+        container="body"
+        openDelay="150"
+        triggers="hover"
+        placement="left"
+        [ngClass]="{
+          'green-text': homebridgeStatus.paired,
+          'red-text': !homebridgeStatus.paired
+        }"
+      ></i>
+    </div>
+  </div>
+  <div
+    class="hb-status-item d-flex flex-row w-100 px-3 mt-3"
+    style="min-width: max(25%, 225px)"
+    *ngFor="let bridge of childBridges"
+  >
+    <div class="hb-status-icon d-flex align-items-center">
+      <i
+        class="fas fa-fw"
+        [ngClass]="{
+            'fa-bridge-circle-check green-text': bridge.status === 'ok',
+            'fa-bridge-circle-exclamation text-warning': bridge.status === 'pending',
+            'fa-bridge-circle-xmark red-text': bridge.status === 'down'
+          }"
+        container="body"
+        placement="right"
+        openDelay="150"
+        triggers="hover"
+        [ngbTooltip]="(bridge.status === 'ok' ? 'status.services.label_running' : (bridge.status ===
+          'pending' ? 'status.services.label_running' : 'status.services.label_not_running')) | translate"
+        [attr.aria-label]="(bridge.status === 'ok' ? 'status.services.label_running' : (bridge.status ===
+          'pending' ? 'status.services.label_running' : 'status.services.label_not_running')) | translate"
+      ></i>
+    </div>
+    <div class="align-self-center flex-child px-3">{{ bridge.name }}</div>
+    <div class="grey-text ml-auto d-flex align-items-center">
+      <i
+        class="icon-button fas fa-fw fa-power-off"
+        *ngIf="bridge.status === 'ok'"
+        href="javascript:void(0)"
+        (click)="restartChildBridge(bridge)"
+        [ngbTooltip]="'menu.tooltip_restart' | translate"
+        container="body"
+        openDelay="150"
+        triggers="hover"
+        placement="left"
+      ></i>
+      <i *ngIf="bridge.status !== 'ok'" class="fas icon-button fa-fw fa-spinner fa-pulse"></i>
+      <i
+        class="fas fa-fw fa-link ml-2"
+        [ngbTooltip]="(bridge.paired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate"
+        container="body"
+        openDelay="150"
+        triggers="hover"
+        placement="left"
+        [ngClass]="{
+          'green-text': bridge.paired,
+          'red-text': !bridge.paired
+        }"
+      ></i>
+    </div>
+  </div>
+</div>

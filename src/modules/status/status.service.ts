@@ -287,6 +287,7 @@ export class StatusService {
       pin: this.configService.homebridgeConfig.bridge.pin,
       setupUri: this.serverService.setupCode,
       packageVersion: this.configService.package.version,
+      paired: this.serverService.paired,
     }
   }
 

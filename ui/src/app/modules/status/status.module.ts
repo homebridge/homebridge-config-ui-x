@@ -6,16 +6,16 @@ import { StatusComponent } from '@/app/modules/status/status.component'
 import { WidgetControlComponent } from '@/app/modules/status/widget-control/widget-control.component'
 import { WidgetVisibilityComponent } from '@/app/modules/status/widget-visibility/widget-visibility.component'
 import { AccessoriesWidgetComponent } from '@/app/modules/status/widgets/accessories-widget/accessories-widget.component'
-import { ChildBridgeWidgetComponent } from '@/app/modules/status/widgets/child-bridge-widget/child-bridge-widget.component'
 import { ClockWidgetComponent } from '@/app/modules/status/widgets/clock-widget/clock-widget.component'
 import { CpuWidgetComponent } from '@/app/modules/status/widgets/cpu-widget/cpu-widget.component'
 import { HapQrcodeWidgetComponent } from '@/app/modules/status/widgets/hap-qrcode-widget/hap-qrcode-widget.component'
 import { HomebridgeLogsWidgetComponent } from '@/app/modules/status/widgets/homebridge-logs-widget/homebridge-logs-widget.component'
-import { HomebridgeStatusWidgetComponent } from '@/app/modules/status/widgets/homebridge-status-widget/homebridge-status-widget.component'
+import { HomekitBridgesWidgetComponent } from '@/app/modules/status/widgets/homekit-bridges-widget/homekit-bridges-widget.component'
 import { MemoryWidgetComponent } from '@/app/modules/status/widgets/memory-widget/memory-widget.component'
 import { NetworkWidgetComponent } from '@/app/modules/status/widgets/network-widget/network-widget.component'
 import { SystemInfoWidgetComponent } from '@/app/modules/status/widgets/system-info-widget/system-info-widget.component'
 import { TerminalWidgetComponent } from '@/app/modules/status/widgets/terminal-widget/terminal-widget.component'
+import { UpdateCentreWidgetComponent } from '@/app/modules/status/widgets/update-centre-widget/update-centre-widget.component'
 import { UptimeWidgetComponent } from '@/app/modules/status/widgets/uptime-widget/uptime-widget.component'
 import { WeatherWidgetComponent } from '@/app/modules/status/widgets/weather-widget/weather-widget.component'
 import { WidgetsComponent } from '@/app/modules/status/widgets/widgets.component'
@@ -42,12 +42,12 @@ import { DragulaModule } from 'ng2-dragula'
     MemoryWidgetComponent,
     NetworkWidgetComponent,
     UptimeWidgetComponent,
-    HomebridgeStatusWidgetComponent,
+    UpdateCentreWidgetComponent,
     SystemInfoWidgetComponent,
     WeatherWidgetComponent,
     AccessoriesWidgetComponent,
     ClockWidgetComponent,
-    ChildBridgeWidgetComponent,
+    HomekitBridgesWidgetComponent,
     CreditsComponent,
   ],
   imports: [
