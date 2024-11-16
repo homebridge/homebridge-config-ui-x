@@ -4,7 +4,14 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ## BETA
 
-### Plugin Config Validation
+### ⚠️ Breaking Changes
+
+- This version of the Homebridge UI will drop support for:
+  - Node.js `v16` and earlier, so please update to `v18` or `v20` or `v22` - [more info on updating](https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js)
+  - Raspberry Pi devices running on the `armv6` architecture (like the Pi 1 and Pi Zero) - please update your hardware
+  - Instances using `pnpm` as the package manager - consider updating your Homebridge instance to use npm instead - [more info on updating](https://github.com/homebridge/homebridge-apt-pkg/blob/latest/README.md#using-apt)
+
+### ⚠️ Plugin Config Validation
 
 This version of Homebridge UI adds validation to plugin config screens. This does not apply to manual plugin configuration (with raw `JSON`).
 
@@ -44,22 +51,15 @@ Plugin developers:
 - enable strict config validation for the UI
 - bump the default node version from 20 to 22
 - make terminal enabled by default on new macOS hb-service installs
+- update node pty beta `v0.12.0-beta`
 
 ### Homebridge Dependencies
 
 - `@homebridge/hap-client` @ `v2.0.4`
-- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.11.14`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.12.0-beta`
 - `@homebridge/plugin-ui-utils` @ `v1.0.4-beta`
 
 ## v4.64.0 (2024-11-30)
-
-### ⚠️ Upcoming Deprecations:
-
-- The **next major version** `v5` of the Homebridge UI will drop support for:
-  - Node.js `v16` and earlier, so please update to `v18` or `v20` or `v22` - [more info on updating](https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js)
-  - Raspberry Pi devices running on the `armv6` architecture (like the Pi 1 and Pi Zero) - please update your hardware
-  - Instances using `pnpm` as the package manager - consider updating your Homebridge instance to use npm instead - [more info on updating](https://github.com/homebridge/homebridge-apt-pkg/blob/latest/README.md#using-apt)
-- Note that these are not requirements for UI `v4.64.0`
 
 ### UI Changes
 

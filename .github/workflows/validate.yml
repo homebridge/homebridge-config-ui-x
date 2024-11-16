@@ -1,4 +1,4 @@
-name: Node Build
+name: Platform Run Validation
 
 on:
   push:
@@ -10,6 +10,7 @@ on:
 
 jobs:
   build_and_test:
+    name: Build and run npm test
     strategy:
       fail-fast: false
       matrix:
@@ -25,20 +26,15 @@ jobs:
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
 
-  test_hb_service:
+  # Validate that the UI can be installed and ran across all platforms
+  validate_service_starts:
     needs: build_and_test
+    name: Validate
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
-        node-version: [18.x]
-        include:
-          - os: macos-latest
-            node-version: 18.x
-          - os: windows-2019
-            node-version: 18.x
-          - os: windows-latest
-            node-version: 18.x
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node-version: [18.x, 20.x, 22.x]
 
     runs-on: ${{ matrix.os }}
 
