@@ -12,7 +12,8 @@
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
-  <div class="modal-body" *ngIf="!restoreStarted && !setupWizardRestore">
+  @if (!restoreStarted && !setupWizardRestore) {
+  <div class="modal-body">
     <div class="text-center mt-2 mb-3">
       <i class="fas fa-fw fa-hard-drive primary-text" style="font-size: 75px"></i>
     </div>
@@ -22,10 +23,12 @@
       <li>{{ 'backup.restore_max_size' | translate: { maxBackupSizeText: maxFileSizeText } }}</li>
       <li>{{ 'backup.restore_warning' | translate }}</li>
     </ul>
-    <div *ngIf="selectedBackup">
+    @if (selectedBackup) {
+    <div>
       <input class="form-control custom-input" type="text" [value]="selectedBackup.fileName" disabled />
     </div>
-    <div class="custom-file" *ngIf="!selectedBackup">
+    } @if (!selectedBackup) {
+    <div class="custom-file">
       <input
         type="file"
         class="custom-file-input"
@@ -37,11 +40,14 @@
         {{ selectedFile?.name || 'backup.label_choose_backup_file_to_restore' | translate }}
       </label>
     </div>
+    }
   </div>
+  }
 
   <div [hidden]="!restoreStarted" id="plugin-log-output" class="modal-body"></div>
 
-  <div class="modal-footer justify-content-between" *ngIf="!restoreStarted || restoreFailed === true">
+  @if (!restoreStarted || restoreFailed === true) {
+  <div class="modal-footer justify-content-between">
     <div class="text-left">
       <button
         type="button"
@@ -63,18 +69,26 @@
         (click)="onRestoreBackupClick()"
         [disabled]="(!selectedBackup && !selectedFile) || clicked"
       >
-        <span *ngIf="clicked">
-          <i *ngIf="!uploadPercent || uploadPercent === 100" class="fa fa-fw fa-circle-notch fa-spin"></i>
-          <span *ngIf="uploadPercent && uploadPercent !== 100">{{ uploadPercent }}% - </span>
-          <span *ngIf="uploadPercent === 100"> Extracting Archive</span>
-          <span *ngIf="uploadPercent !== 100"> {{ 'backup.label_uploading' | translate }}</span>
+        @if (clicked) {
+        <span>
+          @if (!uploadPercent || uploadPercent === 100) {
+          <i class="fa fa-fw fa-circle-notch fa-spin"></i>
+          } @if (uploadPercent && uploadPercent !== 100) {
+          <span>{{ uploadPercent }}% - </span>
+          } @if (uploadPercent === 100) {
+          <span> Extracting Archive</span>
+          } @if (uploadPercent !== 100) {
+          <span> {{ 'backup.label_uploading' | translate }}</span>
+          }
         </span>
-        <span *ngIf="!clicked">{{ 'form.button_restore' | translate }}</span>
+        } @if (!clicked) {
+        <span>{{ 'form.button_restore' | translate }}</span>
+        }
       </button>
     </div>
   </div>
-
-  <div class="modal-footer justify-content-between" *ngIf="!restoreInProgress && restoreStarted">
+  } @if (!restoreInProgress && restoreStarted) {
+  <div class="modal-footer justify-content-between">
     <div class="text-left"></div>
     <div class="text-center">
       <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="postBackupRestart()">
@@ -83,4 +97,5 @@
     </div>
     <div class="text-right"></div>
   </div>
+  }
 </div>

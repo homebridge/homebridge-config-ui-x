@@ -1,5 +1,5 @@
 import { IoNamespace, WsService } from '@/app/core/ws.service'
-import { ElementRef, Injectable } from '@angular/core'
+import { ElementRef, inject, Injectable } from '@angular/core'
 import { Subject } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
 import { ITerminalOptions, Terminal } from 'xterm'
@@ -10,6 +10,8 @@ import { WebLinksAddon } from 'xterm-addon-web-links'
   providedIn: 'root',
 })
 export class LogService {
+  private $ws = inject(WsService)
+
   public term: Terminal
 
   private io: IoNamespace
@@ -18,10 +20,6 @@ export class LogService {
   private resize: Subject<any>
   private elementResize: Subject<any> | undefined
   private pluginName: string
-
-  constructor(
-    private $ws: WsService,
-  ) {}
 
   startTerminal(
     targetElement: ElementRef,

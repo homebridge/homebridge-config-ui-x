@@ -15,7 +15,8 @@
       {{ 'settings.general.title_general' | translate }}
     </h5>
   </div>
-  <ul class="list-group list-group-box mt-2 mx-0" *ngIf="showFields.general" id="fieldsGeneral">
+  @if (showFields.general) {
+  <ul class="list-group list-group-box mt-2 mx-0" id="fieldsGeneral">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2"> {{ 'backup.title_backup' | translate }} </span>
       <button
@@ -61,6 +62,7 @@
       </button>
     </li>
   </ul>
+  }
 </div>
 
 <!-- DISPLAY SETTINGS - ALL USERS -->
@@ -78,7 +80,8 @@
       {{ 'settings.general.title_display' | translate }}
     </h5>
   </div>
-  <ul class="list-group list-group-box mt-2 mx-0" *ngIf="showFields.display" id="fieldsDisplay">
+  @if (showFields.display) {
+  <ul class="list-group list-group-box mt-2 mx-0" id="fieldsDisplay">
     <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>{{ 'settings.display.lang' | translate }}</span>
       <div class="my-3 my-md-0 pl-0 pl-md-5 w-auto">
@@ -188,7 +191,8 @@
         </select>
       </div>
     </li>
-    <li class="list-group-item d-flex flex-column align-items-center" *ngIf="hasChangedLoginWallpaper">
+    @if (hasChangedLoginWallpaper) {
+    <li class="list-group-item d-flex flex-column align-items-center">
       <small class="grey-text my-2">{{ 'settings.changes.saved' | translate }}</small>
       <button
         class="btn btn-primary waves-effect my-2"
@@ -198,16 +202,14 @@
         {{ 'menu.tooltip_restart' | translate }}
       </button>
     </li>
+    }
   </ul>
+  }
 </div>
 
 <!-- STARTUP/ENV OPTIONS - SERVICE MODE/DOCKER USERS -->
-<form
-  class="my-4"
-  novalidate
-  [formGroup]="serviceForm"
-  *ngIf="$settings.env.serviceMode || $settings.env.runningInDocker"
->
+@if ($settings.env.serviceMode || $settings.env.runningInDocker) {
+<form class="my-4" novalidate [formGroup]="serviceForm">
   <div
     role="button"
     tabindex="0"
@@ -221,8 +223,10 @@
       {{ 'settings.title_startup_options' | translate }}
     </h5>
   </div>
-  <ul class="list-group list-group-box mb-4 mx-0" *ngIf="showFields.startup" id="fieldsStartup">
-    <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="$settings.env.serviceMode">
+  @if (showFields.startup) {
+  <ul class="list-group list-group-box mb-4 mx-0" id="fieldsStartup">
+    @if ($settings.env.serviceMode) {
+    <li class="list-group-item d-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.startup.debug' | translate }} <code>-D</code><br />
         <small class="grey-text pr-2">
@@ -238,7 +242,8 @@
       />
       <label for="homebridgeDebugMode" class="rendux-label ml-3" style="min-width: 50px"></label>
     </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="$settings.env.serviceMode">
+    } @if ($settings.env.serviceMode) {
+    <li class="list-group-item d-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.startup.insecure' | translate }} <code>-I</code><br />
         <small class="grey-text pr-2">{{ 'settings.startup.insecure_desc' | translate }}</small>
@@ -252,7 +257,8 @@
       />
       <label for="homebridgeInsecureMode" class="rendux-label ml-3" style="min-width: 50px"></label>
     </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="$settings.env.serviceMode">
+    } @if ($settings.env.serviceMode) {
+    <li class="list-group-item d-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.startup.keep_accessories' | translate }} <code>-K</code><br />
         <small class="grey-text pr-2">{{ 'settings.startup.keep_accessories_desc' | translate }}</small>
@@ -266,10 +272,8 @@
       />
       <label for="homebridgeKeepOrphans" class="rendux-label ml-3" style="min-width: 50px"></label>
     </li>
-    <li
-      class="list-group-item d-block d-md-flex justify-content-between align-items-center"
-      *ngIf="$settings.env.serviceMode"
-    >
+    } @if ($settings.env.serviceMode) {
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         <span class="text-monospace">DEBUG</span><br />
         <small class="grey-text pr-2">
@@ -288,10 +292,8 @@
         />
       </div>
     </li>
-    <li
-      class="list-group-item d-block d-md-flex justify-content-between align-items-center"
-      *ngIf="$settings.env.serviceMode"
-    >
+    } @if ($settings.env.serviceMode) {
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         <span class="text-monospace">NODE_OPTIONS</span><br />
         <small class="grey-text pr-2">{{ 'settings.service.node_tooltip' | translate }}</small>
@@ -305,7 +307,8 @@
         />
       </div>
     </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="$settings.env.runningInDocker">
+    } @if ($settings.env.runningInDocker) {
+    <li class="list-group-item d-flex justify-content-between align-items-center">
       <span>
         {{ 'menu.docker.startup_script' | translate }}<br />
         <small class="grey-text pr-2">{{ 'platform.docker.script_help' | translate }}</small>
@@ -319,7 +322,8 @@
         <i class="fas fa-fw fa-chevron-right"></i>
       </a>
     </li>
-    <li class="list-group-item d-flex flex-column align-items-center" *ngIf="hasChangedService">
+    } @if (hasChangedService) {
+    <li class="list-group-item d-flex flex-column align-items-center">
       <small class="grey-text my-2">{{ 'settings.changes.saved' | translate }}</small>
       <button
         class="btn btn-primary waves-effect my-2"
@@ -329,8 +333,11 @@
         {{ 'menu.tooltip_restart' | translate }}
       </button>
     </li>
+    }
   </ul>
+  }
 </form>
+}
 
 <!-- NETWORK SETTINGS - ALL USERS -->
 <form class="my-4" novalidate [formGroup]="uiSettingsForm">
@@ -347,26 +354,30 @@
       {{ 'settings.network.title_network' | translate }}
     </h5>
   </div>
-  <ul class="list-group list-group-box mt-2 mx-0" *ngIf="showFields.network" id="fieldsNetwork">
+  @if (showFields.network) {
+  <ul class="list-group list-group-box mt-2 mx-0" id="fieldsNetwork">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
         <div>
           {{ 'settings.network.title_network_interfaces' | translate }}<br />
           <small class="grey-text pr-2">{{ 'settings.network.message_network_interface' | translate }}</small>
         </div>
-        <span *ngFor="let adapter of bridgeNetworkAdapters">
+        @for (adapter of bridgeNetworkAdapters; track adapter) {
+        <span>
           <span
             class="badge badge-pill mr-1"
             [ngClass]="{'badge-danger': adapter.missing, 'badge-info': !adapter.missing}"
           >
-            <i class="fas fa-fw fa-exclamation-triangle" *ngIf="adapter.missing"></i>
-            {{ adapter.iface }}:
+            @if (adapter.missing) {
+            <i class="fas fa-fw fa-exclamation-triangle"></i>
+            } {{ adapter.iface }}:
             <span class="font-weight-normal"
               >{{ adapter.missing ? ('settings.mdns_advertiser_not_connected' | translate) : adapter.ip4 || adapter.ip6
               }}</span
             >
           </span>
         </span>
+        }
       </span>
       <button
         class="btn btn-primary waves-effect m-0 ml-3"
@@ -389,17 +400,17 @@
           [formControl]="legacyMdnsFormControl"
           [attr.aria-label]="'settings.mdns_advertiser' | translate"
         >
-          <option value="avahi" *ngIf="showAvahiMdnsOption">
-            Avahi ({{ 'settings.mdns_advertiser_rec' | translate }})
-          </option>
+          @if (showAvahiMdnsOption) {
+          <option value="avahi">Avahi ({{ 'settings.mdns_advertiser_rec' | translate }})</option>
+          }
           <!-- ciao is recommended if avahi is not available -->
           <option value="ciao">
             Ciao {{ showAvahiMdnsOption ? '' : '(' + ('settings.mdns_advertiser_rec' | translate) + ')' }}
           </option>
           <option value="bonjour-hap">Bonjour HAP</option>
-          <option value="resolved" *ngIf="showResolvedMdnsOption">
-            systemd-resolved ({{ 'settings.mdns_advertiser_exp' | translate }})
-          </option>
+          @if (showResolvedMdnsOption) {
+          <option value="resolved">systemd-resolved ({{ 'settings.mdns_advertiser_exp' | translate }})</option>
+          }
         </select>
       </div>
     </li>
@@ -438,10 +449,8 @@
         />
       </div>
     </li>
-    <li
-      class="list-group-item d-flex flex-column align-items-center"
-      *ngIf="hasChangedHbPort || hasChangedUiSettings || hasChangedMdns || hasChangedBridgeNetworkAdapters"
-    >
+    @if (hasChangedHbPort || hasChangedUiSettings || hasChangedMdns || hasChangedBridgeNetworkAdapters) {
+    <li class="list-group-item d-flex flex-column align-items-center">
       <small class="grey-text my-2">{{ 'settings.changes.saved' | translate }}</small>
       <button
         class="btn btn-primary waves-effect my-2"
@@ -451,11 +460,14 @@
         {{ 'menu.tooltip_restart' | translate }}
       </button>
     </li>
+    }
   </ul>
+  }
 </form>
 
 <!-- CACHE SETTINGS - SERVICE MODE USERS ONLY -->
-<div *ngIf="$settings.env.serviceMode" class="my-4">
+@if ($settings.env.serviceMode) {
+<div class="my-4">
   <div
     role="button"
     tabindex="0"
@@ -469,8 +481,10 @@
       {{ 'settings.cache.title' | translate }}
     </h5>
   </div>
-  <p class="small grey-text mb-2 mx-0" *ngIf="showFields.cache">{{ 'settings.cache.desc' | translate }}</p>
-  <ul class="list-group list-group-box mb-4 mx-0" *ngIf="showFields.cache" id="fieldsCache">
+  @if (showFields.cache) {
+  <p class="small grey-text mb-2 mx-0">{{ 'settings.cache.desc' | translate }}</p>
+  } @if (showFields.cache) {
+  <ul class="list-group list-group-box mb-4 mx-0" id="fieldsCache">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
         {{ 'reset.clear_cache_single.title' | translate }}<br />
@@ -514,7 +528,9 @@
       </button>
     </li>
   </ul>
+  }
 </div>
+}
 
 <!-- RESET SETTINGS - ALL USERS -->
 <div class="my-4">
@@ -531,8 +547,10 @@
       {{ 'reset.bridges.title' | translate }}
     </h5>
   </div>
-  <p class="small grey-text mb-2 mx-0" *ngIf="showFields.reset">{{ 'reset.bridges.desc' | translate }}</p>
-  <ul class="list-group list-group-box mt-2 mx-0" *ngIf="showFields.reset" id="fieldsReset">
+  @if (showFields.reset) {
+  <p class="small grey-text mb-2 mx-0">{{ 'reset.bridges.desc' | translate }}</p>
+  } @if (showFields.reset) {
+  <ul class="list-group list-group-box mt-2 mx-0" id="fieldsReset">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
         {{ 'reset.bridges_single.title' | translate }}<br />
@@ -562,5 +580,6 @@
       </button>
     </li>
   </ul>
+  }
 </div>
 <div class="pb-3"></div>

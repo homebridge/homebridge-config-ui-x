@@ -12,7 +12,9 @@
     </button>
   </div>
   <div class="modal-body w-100 text-center">
-    <i *ngIf="faIconClass" class="fas fa-fw {{ faIconClass }} mb-4" style="font-size: 75px"></i>
+    @if (faIconClass) {
+    <i class="fas fa-fw {{ faIconClass }} mb-4" style="font-size: 75px"></i>
+    }
     <p class="w-100 text-center">{{ message }}</p>
   </div>
   <div class="modal-footer justify-content-between">

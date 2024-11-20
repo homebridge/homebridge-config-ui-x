@@ -7,16 +7,19 @@
   tabindex="0"
 >
   <div class="d-flex flex-column h-100">
-    <img src="/assets/hap-icons/fan-off.svg" alt="Fan" class="accessory-img" *ngIf="!service.values.On" />
-    <img src="/assets/hap-icons/fan-on.svg" alt="Fan" class="accessory-img spin" *ngIf="service.values.On" />
+    @if (!service.values.On) {
+    <img src="/assets/hap-icons/fan-off.svg" alt="Fan" class="accessory-img" />
+    } @if (service.values.On) {
+    <img src="/assets/hap-icons/fan-on.svg" alt="Fan" class="accessory-img spin" />
+    }
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
+    @if (!service.values.RotationSpeed || !service.values.On) {
     <div
       class="accessory-label grey-text"
-      *ngIf="!service.values.RotationSpeed || !service.values.On"
       [innerText]="(service.values.On ? 'accessories.control.on' : 'accessories.control.off') | translate"
     ></div>
-    <div class="accessory-label grey-text" *ngIf="service.values.RotationSpeed && service.values.On">
-      {{ service.values.RotationSpeed }}{{ rotationSpeedUnit }}
-    </div>
+    } @if (service.values.RotationSpeed && service.values.On) {
+    <div class="accessory-label grey-text">{{ service.values.RotationSpeed }}{{ rotationSpeedUnit }}</div>
+    }
   </div>
 </div>

@@ -1,4 +1,3 @@
-import { CoreModule } from '@/app/core/core.module'
 import { CustomPluginsModule } from '@/app/core/manage-plugins/custom-plugins/custom-plugins.module'
 import { DisablePluginComponent } from '@/app/core/manage-plugins/disable-plugin/disable-plugin.component'
 import { DonateComponent } from '@/app/core/manage-plugins/donate/donate.component'
@@ -24,7 +23,16 @@ import { NgxMdModule } from 'ngx-md'
 import { MonacoEditorModule } from 'ngx-monaco-editor-v2'
 
 @NgModule({
-  declarations: [
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    TranslateModule.forChild(),
+    NgbModule,
+    NgxMdModule,
+    MonacoEditorModule,
+    NgbModule,
+    CustomPluginsModule,
     PluginConfigComponent,
     ManagePluginComponent,
     UninstallPluginComponent,
@@ -39,18 +47,6 @@ import { MonacoEditorModule } from 'ngx-monaco-editor-v2'
     DisablePluginComponent,
     HbUpdateConfirmComponent,
     SwitchToScopedComponent,
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    TranslateModule.forChild(),
-    NgbModule,
-    NgxMdModule,
-    MonacoEditorModule,
-    NgbModule,
-    CoreModule,
-    CustomPluginsModule,
   ],
   providers: [
     ManagePluginsService,

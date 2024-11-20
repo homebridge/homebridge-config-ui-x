@@ -12,71 +12,62 @@
     </button>
   </div>
   <div class="modal-body d-flex flex-row flex-grow-1 w-100">
-    <div *ngIf="loading" class="w-100 text-center primary-text">
+    @if (loading) {
+    <div class="w-100 text-center primary-text">
       <i class="fa fa-fw fa-cog fa-spin" style="font-size: 75px"></i>
     </div>
-    <div class="w-100 text-center" *ngIf="!loading">
-      <i
-        *ngIf="plugin.installedVersion"
-        class="fas fa-fw fa-code-compare primary-text mb-4"
-        style="font-size: 75px"
-      ></i>
-      <i
-        *ngIf="!plugin.installedVersion"
-        class="far fa-fw fa-arrow-alt-circle-down primary-text mb-4"
-        style="font-size: 75px"
-      ></i>
-      <p *ngIf="plugin.installedVersion" class="font-weight-bold">
-        {{ 'plugins.status_installed' | translate }}: v{{ plugin.installedVersion }}
-      </p>
+    } @if (!loading) {
+    <div class="w-100 text-center">
+      @if (plugin.installedVersion) {
+      <i class="fas fa-fw fa-code-compare primary-text mb-4" style="font-size: 75px"></i>
+      } @if (!plugin.installedVersion) {
+      <i class="far fa-fw fa-arrow-alt-circle-down primary-text mb-4" style="font-size: 75px"></i>
+      } @if (plugin.installedVersion) {
+      <p class="font-weight-bold">{{ 'plugins.status_installed' | translate }}: v{{ plugin.installedVersion }}</p>
+      }
       <p>{{ 'plugins.manage.select_version' | translate }}:</p>
       <ul class="list-group list-group-box mt-2">
-        <li
-          class="list-group-item d-flex justify-content-between align-items-center"
-          *ngFor="let version of versionsWithTags"
-        >
+        @for (version of versionsWithTags; track version) {
+        <li class="list-group-item d-flex justify-content-between align-items-center">
           <span class="text-left">
             {{ version.tag }}
             <br />
             <small class="grey-text">v{{ version.version }}</small>
           </span>
-          <button
-            class="btn btn-primary ml-3"
-            *ngIf="plugin.installedVersion !== version.version"
-            (click)="doInstall(version.version)"
-          >
+          @if (plugin.installedVersion !== version.version) {
+          <button class="btn btn-primary ml-3" (click)="doInstall(version.version)">
             <i class="fas fa-fw fa-arrow-alt-circle-down"></i>
           </button>
-          <button class="btn btn-primary ml-3" *ngIf="plugin.installedVersion === version.version" disabled>
+          } @if (plugin.installedVersion === version.version) {
+          <button class="btn btn-primary ml-3" disabled>
             <i class="fas fa-fw fa-check-circle"></i>
           </button>
+          }
         </li>
+        }
         <li class="list-group-item d-flex justify-content-between align-items-center">
           <div class="text-left" style="min-width: 50%">
             {{ 'plugins.manage.all_versions' | translate }}
             <br />
             <select class="custom-select w-100" style="font-size: 0.875rem" [(ngModel)]="versionSelect">
-              <option *ngFor="let version of versions" [value]="version.version">v{{ version.version }}</option>
+              @for (version of versions; track version) {
+              <option [value]="version.version">v{{ version.version }}</option>
+              }
             </select>
           </div>
-          <button
-            class="btn btn-primary ml-3"
-            [disabled]="!versionSelect"
-            *ngIf="versionSelect !== plugin.installedVersion"
-            (click)="doInstall(versionSelect)"
-          >
+          @if (versionSelect !== plugin.installedVersion) {
+          <button class="btn btn-primary ml-3" [disabled]="!versionSelect" (click)="doInstall(versionSelect)">
             <i class="fas fa-fw fa-arrow-alt-circle-down"></i>
           </button>
-          <button
-            class="btn btn-primary ml-3"
-            *ngIf="versionSelect && versionSelect === plugin.installedVersion"
-            disabled
-          >
+          } @if (versionSelect && versionSelect === plugin.installedVersion) {
+          <button class="btn btn-primary ml-3" disabled>
             <i class="fas fa-fw fa-check-circle"></i>
           </button>
+          }
         </li>
       </ul>
     </div>
+    }
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-left"></div>

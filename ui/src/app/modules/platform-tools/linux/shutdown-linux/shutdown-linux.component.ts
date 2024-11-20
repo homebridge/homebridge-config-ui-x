@@ -1,19 +1,18 @@
 import { ApiService } from '@/app/core/api.service'
-import { Component, OnInit } from '@angular/core'
-import { TranslateService } from '@ngx-translate/core'
+import { Component, inject, OnInit } from '@angular/core'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 
 @Component({
   templateUrl: './shutdown-linux.component.html',
+  imports: [TranslatePipe],
 })
 export class ShutdownLinuxComponent implements OnInit {
-  error: any = false
+  private $api = inject(ApiService)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
 
-  constructor(
-    private $api: ApiService,
-    private $toastr: ToastrService,
-    private $translate: TranslateService,
-  ) {}
+  error: any = false
 
   ngOnInit() {
     this.$api.put('/platform-tools/linux/shutdown-host', {}).subscribe({

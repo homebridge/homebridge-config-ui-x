@@ -8,7 +8,10 @@
   </div>
   <div class="text-center">
     <h4 class="primary-text mb-4">{{ 'platform.linux.shutting_down_server' | translate }}</h4>
-    <p class="grey-text" *ngIf="!error">{{ 'platform.linux.server_will_power_down' | translate }}</p>
-    <div class="alert alert-error my-4" *ngIf="error">{{ error }}</div>
+    @if (!error) {
+    <p class="grey-text">{{ 'platform.linux.server_will_power_down' | translate }}</p>
+    } @if (error) {
+    <div class="alert alert-error my-4">{{ error }}</div>
+    }
   </div>
 </div>

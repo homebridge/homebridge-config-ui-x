@@ -4,27 +4,28 @@ import { Users2faDisableComponent } from '@/app/modules/users/users-2fa-disable/
 import { Users2faEnableComponent } from '@/app/modules/users/users-2fa-enable/users-2fa-enable.component'
 import { UsersAddComponent } from '@/app/modules/users/users-add/users-add.component'
 import { UsersEditComponent } from '@/app/modules/users/users-edit/users-edit.component'
-import { Component, OnInit } from '@angular/core'
+import { Component, inject, OnInit } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
-import { TranslateService } from '@ngx-translate/core'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
+  imports: [
+    TranslatePipe,
+  ],
 })
 export class UsersComponent implements OnInit {
-  public homebridgeUsers: Array<any>
+  private $api = inject(ApiService)
+  $auth = inject(AuthService)
+  private $modal = inject(NgbModal)
+  private $route = inject(ActivatedRoute)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
 
-  constructor(
-    private $api: ApiService,
-    public $auth: AuthService,
-    private $modal: NgbModal,
-    private $route: ActivatedRoute,
-    private $toastr: ToastrService,
-    private $translate: TranslateService,
-  ) {}
+  public homebridgeUsers: Array<any>
 
   ngOnInit() {
     this.$route.data.subscribe((data: { homebridgeUsers: Array<any> }) => {

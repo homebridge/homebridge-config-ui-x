@@ -16,27 +16,32 @@
     <div class="w-100 text-center">
       <i class="fas fa-fw fa-arrow-right-arrow-left primary-text mb-4" style="font-size: 75px"></i>
       <p [innerHTML]="'plugins.manage.scoped.info' | translate: { link: moreInfo }"></p>
-      <div *ngIf="!onlineUpdateOk">
+      @if (!onlineUpdateOk) {
+      <div>
         <p>{{ 'plugins.manage.scoped.windows' | translate }}</p>
         <p [innerHTML]="'plugins.manage.scoped.windows_service' | translate"></p>
-        <div *ngIf="$settings.env.serviceMode">
+        @if ($settings.env.serviceMode) {
+        <div>
           <p>{{ 'plugins.manage.manual_update_command' | translate }}</p>
           <pre>
-hb-service stop
-npm install -g {{ plugin.newHbScope.to }}&#64;{{ plugin.newHbScope.switch }}
-npm uninstall -g {{ plugin.newHbScope.from }}
-hb-service start</pre
+                hb-service stop
+                npm install -g {{ plugin.newHbScope.to }}&#64;{{ plugin.newHbScope.switch }}
+                npm uninstall -g {{ plugin.newHbScope.from }}
+                hb-service start</pre
           >
         </div>
-        <div *ngIf="!$settings.env.serviceMode">
+        } @if (!$settings.env.serviceMode) {
+        <div>
           <ul class="d-inline-block text-left">
             <li>{{ 'plugins.manage.install' | translate }} <code>{{ plugin.newHbScope.to }}</code></li>
             <li>{{ 'plugins.manage.uninstall' | translate }} <code>{{ plugin.newHbScope.from }}</code></li>
             <li>{{ 'menu.hbrestart.title' | translate }}</li>
           </ul>
         </div>
+        }
       </div>
-      <div class="text-center" *ngIf="onlineUpdateOk">
+      } @if (onlineUpdateOk) {
+      <div class="text-center">
         <p>{{ 'plugins.manage.scoped.process' | translate }}</p>
         <ul class="d-inline-block text-left" style="list-style-type: none">
           <li>
@@ -76,13 +81,15 @@ hb-service start</pre
           </li>
         </ul>
       </div>
-      <div *ngIf="failure" class="alert alert-error">
+      } @if (failure) {
+      <div class="alert alert-error">
         <p>{{ 'plugins.manage.scoped.error' | translate }}</p>
         <p class="text-monospace">{{ failure }}</p>
         <button class="btn btn-primary mb-0" (click)="downloadLogFile()">
           {{ 'form.button_download' | translate }}
         </button>
       </div>
+      }
     </div>
     <div [hidden]="!onlineUpdateOk || failure" id="plugin-output"></div>
   </div>
@@ -108,10 +115,11 @@ hb-service start</pre
         (click)="doSwitch()"
         [disabled]="installing || uninstalling || restarting || !onlineUpdateOk || failure"
       >
-        <span *ngIf="!installing && !uninstalling && !restarting">
-          {{ 'plugins.node_update.continue' | translate }}
-        </span>
-        <i *ngIf="(installing || uninstalling || restarting) && !failure" class="fas fa-fw fa-spinner fa-pulse"></i>
+        @if (!installing && !uninstalling && !restarting) {
+        <span> {{ 'plugins.node_update.continue' | translate }} </span>
+        } @if ((installing || uninstalling || restarting) && !failure) {
+        <i class="fas fa-fw fa-spinner fa-pulse"></i>
+        }
       </button>
     </div>
   </div>

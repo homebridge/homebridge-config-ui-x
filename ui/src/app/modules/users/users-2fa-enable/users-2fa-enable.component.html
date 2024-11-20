@@ -13,24 +13,28 @@
   </div>
 
   <div class="modal-body">
-    <div *ngIf="timeDiffError" class="text-center">
+    @if (timeDiffError) {
+    <div class="text-center">
       <h3>{{ 'users.setup_2fa_cannot_setup_2fa' | translate }}</h3>
       <p>{{ 'users.setup_2fa_server_time_out' | translate: {timeDiffError: timeDiffError} }}</p>
     </div>
+    }
 
     <ngb-alert type="warning" [dismissible]="false"> {{ 'users.setup_2fa_warning' | translate }} </ngb-alert>
 
-    <div *ngIf="!timeDiffError">
+    @if (!timeDiffError) {
+    <div>
       <p>{{ 'users.setup_2fa_scan_qr_code' | translate }}</p>
     </div>
+    }
 
     <div class="text-center w-100 d-flex justify-content-center">
       <app-qrcode [data]="otpString" class="mx-auto my-2" style="width: 180px; height: 180px"></app-qrcode>
     </div>
 
-    <div *ngIf="!timeDiffError" class="mt-4">
+    @if (!timeDiffError) {
+    <div class="mt-4">
       <p>{{ 'users.setup_2fa_enter_code' | translate }}</p>
-
       <div class="form-group">
         <input
           class="form-control"
@@ -44,6 +48,7 @@
         />
       </div>
     </div>
+    }
   </div>
 
   <div class="modal-footer justify-content-between">
@@ -60,16 +65,17 @@
     </div>
     <div class="text-center"></div>
     <div class="text-right">
+      @if (!timeDiffError) {
       <button
         type="button"
         class="btn btn-primary"
         data-dismiss="modal"
         (click)="enable2fa()"
-        *ngIf="!timeDiffError"
         [disabled]="formGroup.invalid"
       >
         {{ 'form.button_enable' | translate }}
       </button>
+      }
     </div>
   </div>
 </div>

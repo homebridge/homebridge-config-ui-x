@@ -1,6 +1,11 @@
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
-import { Component, Input, OnInit } from '@angular/core'
+import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
+import { DecimalPipe, NgClass } from '@angular/common'
+import { Component, inject, Input, OnInit } from '@angular/core'
+import { FormsModule } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
+import { TranslatePipe } from '@ngx-translate/core'
+import { NouisliderComponent } from 'ng2-nouislider'
 import { Subject } from 'rxjs'
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 
@@ -8,16 +13,24 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
   selector: 'app-thermostat-manage',
   templateUrl: './thermostat.manage.component.html',
   styleUrls: ['./thermostat.component.scss'],
+  imports: [
+    NgClass,
+    FormsModule,
+    NouisliderComponent,
+    DecimalPipe,
+    TranslatePipe,
+    ConvertTempPipe,
+  ],
 })
 export class ThermostatManageComponent implements OnInit {
+  $activeModal = inject(NgbActiveModal)
+
   @Input() public service: ServiceTypeX
   public targetMode: any
   public targetTemperature: any
   public targetTemperatureChanged: Subject<string> = new Subject<string>()
 
-  constructor(
-    public $activeModal: NgbActiveModal,
-  ) {
+  constructor() {
     this.targetTemperatureChanged
       .pipe(
         debounceTime(300),

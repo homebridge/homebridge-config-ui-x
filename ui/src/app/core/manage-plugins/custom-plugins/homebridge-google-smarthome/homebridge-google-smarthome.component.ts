@@ -1,18 +1,36 @@
 /* global NodeJS */
 import { ApiService } from '@/app/core/api.service'
 import { SettingsService } from '@/app/core/settings.service'
-import { Component, Input, OnDestroy, OnInit } from '@angular/core'
+import { TitleCasePipe } from '@angular/common'
+import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
 import { JwtHelperService } from '@auth0/angular-jwt'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
-import { TranslateService } from '@ngx-translate/core'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
+import { NgxMdModule } from 'ngx-md'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
+import { SchemaFormComponent } from '../../../components/schema-form/schema-form.component'
+import { PluginsMarkdownDirective } from '../../../directives/plugins.markdown.directive'
 
 @Component({
   selector: 'app-homebridge-google-smarthome',
   templateUrl: './homebridge-google-smarthome.component.html',
+  imports: [
+    NgxMdModule,
+    PluginsMarkdownDirective,
+    SchemaFormComponent,
+    TitleCasePipe,
+    TranslatePipe,
+  ],
 })
 export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
+  $activeModal = inject(NgbActiveModal)
+  private $api = inject(ApiService)
+  private $jwtHelper = inject(JwtHelperService)
+  $settings = inject(SettingsService)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
+
   @Input() public plugin: any
   @Input() public schema: any
   @Input() pluginConfig: Record<string, any>[]
@@ -26,14 +44,7 @@ export class HomebridgeGoogleSmarthomeComponent implements OnInit, OnDestroy {
   private popup: Window
   private originCheckInterval: NodeJS.Timeout
 
-  constructor(
-    public $activeModal: NgbActiveModal,
-    private $api: ApiService,
-    private $jwtHelper: JwtHelperService,
-    public $settings: SettingsService,
-    private $toastr: ToastrService,
-    private $translate: TranslateService,
-  ) {
+  constructor() {
     // listen for sign in events from the link account popup
     window.addEventListener('message', this.windowMessageListener, false)
   }

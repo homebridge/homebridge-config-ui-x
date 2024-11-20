@@ -1,26 +1,31 @@
 import { ApiService } from '@/app/core/api.service'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
-import { Component, OnDestroy, OnInit } from '@angular/core'
-import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap'
-import { TranslateService } from '@ngx-translate/core'
+import { NgClass, TitleCasePipe } from '@angular/common'
+import { Component, inject, OnDestroy, OnInit } from '@angular/core'
+import { NgbActiveModal, NgbAlert, NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
 @Component({
   templateUrl: './unpair-single-bridge.component.html',
+  imports: [
+    NgbAlert,
+    NgClass,
+    TitleCasePipe,
+    TranslatePipe,
+  ],
 })
 export class UnpairSingleBridgeComponent implements OnInit, OnDestroy {
+  $activeModal = inject(NgbActiveModal)
+  private $api = inject(ApiService)
+  private $modal = inject(NgbModal)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
+
   public pairings: any[] = []
   public deleting: null | string = null
   private unpaired = false
-
-  constructor(
-    public $activeModal: NgbActiveModal,
-    private $api: ApiService,
-    private $modal: NgbModal,
-    private $toastr: ToastrService,
-    private $translate: TranslateService,
-  ) {}
 
   ngOnInit(): void {
     this.loadPairings()

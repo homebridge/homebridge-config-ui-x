@@ -3,6 +3,7 @@ import { Directive, EventEmitter, HostListener, Input, OnDestroy, Output } from 
 
 @Directive({
   selector: '[appLongclick]',
+  standalone: true,
 })
 export class LongClickDirective implements OnDestroy {
   @Input() public duration = 350

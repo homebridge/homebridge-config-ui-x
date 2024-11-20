@@ -2,9 +2,9 @@
   <div class="d-flex flex-row justify-content-between">
     <div class="d-flex flex-column mr-3 align-items-center justify-content-between">
       <img [src]="plugin.icon" (error)="handleIconError()" alt="Plugin Icon" class="plugin-icon-card mb-3" />
+      @if (plugin.installedVersion && hb2Status !== 'hide') {
       <a
         href="javascript:void(0)"
-        *ngIf="plugin.installedVersion && hb2Status !== 'hide'"
         (click)="openHb2InfoModal()"
         [ngbTooltip]="'Homebridge v2.0 Readiness'"
         container="body"
@@ -13,17 +13,19 @@
         [placement]="'right'"
         aria-label="Homebridge v2.0 Readiness"
       >
+        @if (hb2Status === 'supported') {
         <i
-          *ngIf="hb2Status === 'supported'"
           class="fas fa-check-circle green-text fa-xl"
           aria-label="The developer has specifically marked this plugin as compatible with Homebridge v2.0"
         ></i>
+        } @if (hb2Status === 'unknown') {
         <i
-          *ngIf="hb2Status === 'unknown'"
           class="fas fa-question-circle orange-text fa-xl"
           aria-label="The developer has not specifically marked this plugin as compatible with Homebridge v2.0, but it may still work."
         ></i>
+        }
       </a>
+      }
     </div>
     <div class="d-flex flex-column justify-content-between" style="min-width: calc(100% - 80px)">
       <div class="d-flex flex-row align-items-end">
@@ -33,11 +35,11 @@
             <h5 class="card-title mb-2 text-truncate">{{ prettyDisplayName }}</h5>
             <div class="ml-auto">
               <!-- update available -->
+              @if (plugin.installedVersion && plugin.updateAvailable && !childBridgeRestartInProgress) {
               <a
                 href="javascript:void(0)"
                 class="card-link"
                 (click)="$plugin.checkAndUpdatePlugin(plugin, plugin.updateTag || 'latest')"
-                *ngIf="plugin.installedVersion && plugin.updateAvailable && !childBridgeRestartInProgress"
                 container="body"
                 openDelay="150"
                 triggers="hover"
@@ -49,13 +51,15 @@
                   style="--fa-animation-duration: 2s"
                 ></i>
               </a>
+              }
               <!-- // -->
               <!-- switch to scoped available -->
+              @if (plugin.installedVersion && plugin.newHbScope?.switch === plugin.installedVersion &&
+              !childBridgeRestartInProgress) {
               <a
                 href="javascript:void(0)"
                 class="card-link"
                 (click)="$plugin.switchToScoped(plugin)"
-                *ngIf="plugin.installedVersion && plugin.newHbScope?.switch === plugin.installedVersion && !childBridgeRestartInProgress"
                 container="body"
                 openDelay="150"
                 triggers="hover"
@@ -67,12 +71,15 @@
                   style="--fa-animation-duration: 2s"
                 ></i>
               </a>
+              }
               <!-- // -->
               <!-- installed, not configured -->
+              @if (plugin.installedVersion && (!plugin.newHbScope || plugin.newHbScope.switch !==
+              plugin.installedVersion) && !plugin.updateAvailable && !plugin.isConfigured &&
+              !childBridgeRestartInProgress) {
               <a
                 href="javascript:void(0)"
                 class="card-link"
-                *ngIf="plugin.installedVersion && (!plugin.newHbScope || plugin.newHbScope.switch !== plugin.installedVersion) && !plugin.updateAvailable && !plugin.isConfigured && !childBridgeRestartInProgress"
                 (click)="$plugin.settings(plugin)"
                 [ngbTooltip]="'plugins.button_set_up' | translate"
                 container="body"
@@ -82,8 +89,12 @@
               >
                 <i class="fas fa-fw fa-sliders primary-text fa-lg fa-fade ml-3" style="--fa-animation-duration: 2s"></i>
               </a>
+              }
               <!-- // -->
               <!-- installed, configured, not setup as child bridge although recommended -->
+              @if (plugin.installedVersion && (!plugin.newHbScope || plugin.newHbScope.switch !==
+              plugin.installedVersion) && !plugin.updateAvailable && plugin.isConfigured && !plugin.hasChildBridges &&
+              !plugin.disabled && plugin.recommendChildBridge && !childBridgeRestartInProgress) {
               <a
                 href="javascript:void(0)"
                 class="card-link"
@@ -92,7 +103,6 @@
                 container="body"
                 openDelay="150"
                 triggers="hover"
-                *ngIf="plugin.installedVersion && (!plugin.newHbScope || plugin.newHbScope.switch !== plugin.installedVersion) && !plugin.updateAvailable && plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && plugin.recommendChildBridge && !childBridgeRestartInProgress"
                 [attr.aria-label]="'child_bridge.setup' | translate"
               >
                 <i
@@ -100,8 +110,13 @@
                   style="--fa-animation-duration: 2s"
                 ></i>
               </a>
+              }
               <!-- // -->
               <!-- installed, configured, setup as child bridge, not paired with homekit -->
+              @if (plugin.installedVersion && (!plugin.newHbScope || plugin.newHbScope.switch !==
+              plugin.installedVersion) && !plugin.updateAvailable && plugin.isConfigured && plugin.hasChildBridges &&
+              !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' &&
+              !plugin.disabled) {
               <a
                 href="javascript:void(0)"
                 class="card-link"
@@ -110,7 +125,6 @@
                 container="body"
                 openDelay="150"
                 triggers="hover"
-                *ngIf="plugin.installedVersion && (!plugin.newHbScope || plugin.newHbScope.switch !== plugin.installedVersion) && !plugin.updateAvailable && plugin.isConfigured && plugin.hasChildBridges && !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' && !plugin.disabled"
                 [attr.aria-label]="'child_bridge.bridge_connect' | translate"
               >
                 <i
@@ -118,6 +132,7 @@
                   style="--fa-animation-duration: 2s"
                 ></i>
               </a>
+              }
               <!-- // -->
               <!-- restart in progress spinner -->
               <i
@@ -126,14 +141,18 @@
               ></i>
               <!-- // -->
               <!-- child bridge status (good status is not shown) -->
+              @if (plugin.installedVersion && (!plugin.newHbScope || plugin.newHbScope.switch !==
+              plugin.installedVersion) && !plugin.updateAvailable && plugin.isConfigured && plugin.hasChildBridges &&
+              !childBridgeRestartInProgress && !hasUnpairedChildBridges && childBridgeStatus !== 'ok' &&
+              !plugin.disabled) {
               <i
                 class="fas fa-fw fa-lg ml-3"
-                *ngIf="plugin.installedVersion && (!plugin.newHbScope || plugin.newHbScope.switch !== plugin.installedVersion) && !plugin.updateAvailable && plugin.isConfigured && plugin.hasChildBridges && !childBridgeRestartInProgress && !hasUnpairedChildBridges && childBridgeStatus !== 'ok' && !plugin.disabled"
                 [ngClass]="{
                   'fa-bridge-circle-exclamation orange-text': childBridgeStatus === 'pending',
                   'fa-bridge-circle-xmark red-text': childBridgeStatus === 'down'
                 }"
               ></i>
+              }
               <!-- // -->
             </div>
           </div>
@@ -147,57 +166,63 @@
           </p>
           <!-- // -->
           <!-- plugin verified -->
-          <p class="card-text mb-2" *ngIf="plugin.verifiedPlugin || plugin.verifiedPlusPlugin">
+          @if (plugin.verifiedPlugin || plugin.verifiedPlusPlugin) {
+          <p class="card-text mb-2">
             <a href="javascript:void(0)" class="card-link green-text" (click)="openVerifiedModal()">
               <i class="fas fa-fw fa-shield-alt fa-lg mr-1"></i>
               <span class="grey-text">{{ 'plugins.donate.button_verified' | translate }}</span>
             </a>
           </p>
+          }
           <!-- // -->
           <!-- plugin not verified -->
-          <p class="card-text mb-2" *ngIf="!plugin.verifiedPlugin && !plugin.verifiedPlusPlugin">
+          @if (!plugin.verifiedPlugin && !plugin.verifiedPlusPlugin) {
+          <p class="card-text mb-2">
             <a href="javascript:void(0)" class="card-link" (click)="openVerifiedModal()">
               <i class="fas fa-fw fa-shield-alt fa-lg mr-1" style="opacity: 0.25"></i>
               <span class="grey-text">{{ 'plugins.donate.button_not_verified' | translate }}</span>
             </a>
           </p>
+          }
           <!-- // -->
           <!-- plugin author and donate modal -->
           <p class="card-text mb-2">
-            <a
-              href="javascript:void(0)"
-              class="card-link pink-text"
-              *ngIf="(plugin.verifiedPlugin || plugin.verifiedPlusPlugin) && plugin.funding"
-              (click)="openFundingModal(plugin)"
-            >
+            @if ((plugin.verifiedPlugin || plugin.verifiedPlusPlugin) && plugin.funding) {
+            <a href="javascript:void(0)" class="card-link pink-text" (click)="openFundingModal(plugin)">
               <i class="fas fa-fw fa-heart fa-lg mr-1"></i>
               <span class="grey-text">&#64;{{ plugin.author }}</span>
             </a>
-            <span class="grey-text" *ngIf="!((plugin.verifiedPlugin || plugin.verifiedPlusPlugin) && plugin.funding)">
+            } @if (!((plugin.verifiedPlugin || plugin.verifiedPlusPlugin) && plugin.funding)) {
+            <span class="grey-text">
               <i class="fas fa-fw fa-heart fa-lg mr-1" style="opacity: 0.5"></i>&#64;{{ plugin.author }}
             </span>
+            }
           </p>
           <!-- // -->
           <!-- plugin versioning and actions dropdown -->
           <div class="d-flex flex-row">
             <p class="card-text mb-0 grey-text">
               <!-- not installed -->
-              <span *ngIf="plugin.publicPackage && !plugin.installedVersion">
+              @if (plugin.publicPackage && !plugin.installedVersion) {
+              <span>
                 <i class="far fa-fw fa-circle-dot fa-lg mr-1"></i>
                 <span class="grey-text"
-                  >v{{ plugin.latestVersion }}
-                  <span *ngIf="plugin.lastUpdated">({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
+                  >v{{ plugin.latestVersion }} @if (plugin.lastUpdated) {
+                  <span>({{ plugin.lastUpdated | date:'yyyy-MM-dd' }})</span>
+                  }
                 </span>
               </span>
+              }
               <!-- // -->
               <!-- installed -->
-              <span *ngIf="plugin.installedVersion">
-                <i class="far fa-fw fa-circle-check fa-lg mr-1"></i>v{{ plugin.installedVersion }}
-              </span>
+              @if (plugin.installedVersion) {
+              <span> <i class="far fa-fw fa-circle-check fa-lg mr-1"></i>v{{ plugin.installedVersion }} </span>
+              }
               <!-- // -->
             </p>
             <div class="ml-auto">
               <!-- icon for child bridge restart -->
+              @if (!plugin.disabled && plugin.hasChildBridges && childBridgeStatus === 'ok') {
               <a
                 href="javascript:void(0)"
                 (click)="doChildBridgeAction('restart')"
@@ -206,18 +231,14 @@
                 openDelay="150"
                 triggers="hover"
                 [ngbTooltip]="(setChildBridges.length > 1 ? 'child_bridge.restart_plural' : 'child_bridge.restart') | translate"
-                *ngIf="!plugin.disabled && plugin.hasChildBridges && childBridgeStatus === 'ok'"
               >
                 <i class="fas fa-fw fa-lg fa-power-off ml-3"></i>
               </a>
+              }
               <!-- // -->
               <!-- icon for plugin disabled -->
-              <a
-                href="javascript:void(0)"
-                (click)="enablePlugin(plugin)"
-                *ngIf="plugin.installedVersion && plugin.disabled"
-                class="card-link red-text"
-              >
+              @if (plugin.installedVersion && plugin.disabled) {
+              <a href="javascript:void(0)" (click)="enablePlugin(plugin)" class="card-link red-text">
                 <i
                   class="far fa-fw fa-pause-circle fa-lg"
                   [ngbTooltip]="'plugins.status_disabled' | translate"
@@ -226,17 +247,17 @@
                   triggers="hover"
                 ></i>
               </a>
+              }
               <!-- // -->
               <!-- icon for plugin not installed, to download -->
-              <a
-                href="javascript:void(0)"
-                *ngIf="plugin.publicPackage && !plugin.installedVersion"
-                (click)="$plugin.installAlternateVersion(plugin)"
-              >
+              @if (plugin.publicPackage && !plugin.installedVersion) {
+              <a href="javascript:void(0)" (click)="$plugin.installAlternateVersion(plugin)">
                 <i class="far fa-fw fa-arrow-alt-circle-down fa-lg"></i>
               </a>
+              }
               <!-- // -->
-              <span *ngIf="plugin.installedVersion" ngbDropdown placement="left" class="d-inline-block ml-3 mt-auto">
+              @if (plugin.installedVersion) {
+              <span ngbDropdown placement="left" class="d-inline-block ml-3 mt-auto">
                 <!-- icon to expand dropdown -->
                 <a
                   class="card-link text-decoration-none mt-auto"
@@ -256,145 +277,126 @@
                   </button>
                   <!-- // -->
                   <!-- plugin logs -->
-                  <button
-                    ngbDropdownItem
-                    (click)="viewPluginLog(plugin)"
-                    *ngIf="plugin.isConfigured && !plugin.disabled"
-                  >
+                  @if (plugin.isConfigured && !plugin.disabled) {
+                  <button ngbDropdownItem (click)="viewPluginLog(plugin)">
                     <i class="fas fa-fw fa-wave-square"></i> {{ 'plugins.manage.plugin_logs' | translate }}
                   </button>
+                  }
                   <!-- // -->
                   <!-- plugin manage version -->
-                  <button
-                    ngbDropdownItem
-                    *ngIf="plugin.publicPackage"
-                    (click)="$plugin.installAlternateVersion(plugin)"
-                  >
+                  @if (plugin.publicPackage) {
+                  <button ngbDropdownItem (click)="$plugin.installAlternateVersion(plugin)">
                     <i class="fas fa-fw fa-code-compare"></i>
                     {{ 'plugins.manage.manage_version' | translate }}
                   </button>
+                  }
                   <!-- // -->
                   <!-- plugin manage config json -->
-                  <button
-                    ngbDropdownItem
-                    (click)="$plugin.jsonEditor(plugin)"
-                    *ngIf="!isMobile && plugin.name !== 'homebridge-config-ui-x'"
-                  >
+                  @if (!isMobile && plugin.name !== 'homebridge-config-ui-x') {
+                  <button ngbDropdownItem (click)="$plugin.jsonEditor(plugin)">
                     <i class="fas fa-fw fa-code"></i> {{ 'plugins.manage.json_config' | translate }}
                   </button>
+                  }
                   <!-- // -->
                   <!-- plugin disable, when enabled -->
-                  <button
-                    ngbDropdownItem
-                    (click)="disablePlugin(plugin)"
-                    *ngIf="plugin.name !== 'homebridge-config-ui-x' && !plugin.disabled"
-                  >
+                  @if (plugin.name !== 'homebridge-config-ui-x' && !plugin.disabled) {
+                  <button ngbDropdownItem (click)="disablePlugin(plugin)">
                     <i class="far fa-fw fa-circle-pause"></i> {{ 'plugins.manage.disable' | translate }}
                   </button>
+                  }
                   <!-- // -->
                   <!-- plugin enable, when disabled -->
-                  <button
-                    ngbDropdownItem
-                    (click)="enablePlugin(plugin)"
-                    *ngIf="plugin.name !== 'homebridge-config-ui-x' && plugin.disabled"
-                  >
+                  @if (plugin.name !== 'homebridge-config-ui-x' && plugin.disabled) {
+                  <button ngbDropdownItem (click)="enablePlugin(plugin)">
                     <i class="far fa-fw fa-circle-play"></i> {{ 'plugins.manage.enable' | translate }}
                   </button>
+                  }
                   <!-- // -->
                   <!-- plugin uninstall -->
-                  <button
-                    ngbDropdownItem
-                    *ngIf="plugin.name !== 'homebridge-config-ui-x'"
-                    (click)="$plugin.uninstallPlugin(plugin, setChildBridges)"
-                  >
+                  @if (plugin.name !== 'homebridge-config-ui-x') {
+                  <button ngbDropdownItem (click)="$plugin.uninstallPlugin(plugin, setChildBridges)">
                     <i class="fas fa-fw fa-trash"></i> {{ 'plugins.button_uninstall' | translate }}
                   </button>
+                  }
                   <!-- // -->
-                  <div
-                    class="dropdown-divider"
-                    *ngIf="!plugin.disabled && plugin.isConfigured && plugin.hasChildBridges && plugin.installedVersion && plugin.name !== 'homebridge-config-ui-x'"
-                  ></div>
-                  <ng-container *ngIf="plugin.hasChildBridges && !plugin.disabled">
-                    <!-- child bridge settings -->
-                    <button ngbDropdownItem (click)="$plugin.bridgeSettings(plugin)">
-                      <i class="fas fa-fw fa-bridge"></i> {{ 'child_bridge.bridge_settings' | translate }}
-                    </button>
-                    <!-- // -->
-                    <!-- child bridge restart -->
-                    <button
-                      ngbDropdownItem
-                      *ngIf="!childBridgeRestartInProgress"
-                      (click)="doChildBridgeAction('restart')"
-                    >
-                      <i class="fa-fw icon-button fas fa-fw fa-power-off"></i> {{ (setChildBridges.length > 1 ?
-                      'child_bridge.restart_plural' : 'child_bridge.restart') | translate }}
-                    </button>
-                    <!-- // -->
-                    <!-- child bridge stop -->
-                    <button ngbDropdownItem *ngIf="!allChildBridgesStopped" (click)="doChildBridgeAction('stop')">
-                      <i class="fas fa-fw fa-stop"></i> {{ (setChildBridges.length > 1 ? 'child_bridge.stop_plural' :
-                      'child_bridge.stop') | translate }}
-                    </button>
-                    <!-- // -->
-                    <!-- child bridge start -->
-                    <button ngbDropdownItem *ngIf="allChildBridgesStopped" (click)="doChildBridgeAction('start')">
-                      <i class="fas fa-fw fa-play"></i> {{ (setChildBridges.length > 1 ? 'child_bridge.start_plural' :
-                      'child_bridge.start') | translate }}
-                    </button>
-                    <!-- // -->
-                    <!-- child bridge reset -->
-                    <button
-                      ngbDropdownItem
-                      *ngIf="$settings.env.serviceMode"
-                      (click)="$plugin.resetChildBridges(setChildBridges)"
-                    >
-                      <i class="fas fa-fw fa-broom"></i> {{ 'child_bridge.reset_accessories' | translate }}
-                    </button>
-                    <!-- // -->
-                  </ng-container>
-                  <div
-                    class="dropdown-divider"
-                    *ngIf="plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && !plugin.recommendChildBridge"
-                  ></div>
+                  @if (!plugin.disabled && plugin.isConfigured && plugin.hasChildBridges && plugin.installedVersion &&
+                  plugin.name !== 'homebridge-config-ui-x') {
+                  <div class="dropdown-divider"></div>
+                  } @if (plugin.hasChildBridges && !plugin.disabled) {
+                  <!-- child bridge settings -->
+                  <button ngbDropdownItem (click)="$plugin.bridgeSettings(plugin)">
+                    <i class="fas fa-fw fa-bridge"></i> {{ 'child_bridge.bridge_settings' | translate }}
+                  </button>
+                  <!-- // -->
+                  <!-- child bridge restart -->
+                  @if (!childBridgeRestartInProgress) {
+                  <button ngbDropdownItem (click)="doChildBridgeAction('restart')">
+                    <i class="fa-fw icon-button fas fa-fw fa-power-off"></i> {{ (setChildBridges.length > 1 ?
+                    'child_bridge.restart_plural' : 'child_bridge.restart') | translate }}
+                  </button>
+                  }
+                  <!-- // -->
+                  <!-- child bridge stop -->
+                  @if (!allChildBridgesStopped) {
+                  <button ngbDropdownItem (click)="doChildBridgeAction('stop')">
+                    <i class="fas fa-fw fa-stop"></i> {{ (setChildBridges.length > 1 ? 'child_bridge.stop_plural' :
+                    'child_bridge.stop') | translate }}
+                  </button>
+                  }
+                  <!-- // -->
+                  <!-- child bridge start -->
+                  @if (allChildBridgesStopped) {
+                  <button ngbDropdownItem (click)="doChildBridgeAction('start')">
+                    <i class="fas fa-fw fa-play"></i> {{ (setChildBridges.length > 1 ? 'child_bridge.start_plural' :
+                    'child_bridge.start') | translate }}
+                  </button>
+                  }
+                  <!-- // -->
+                  <!-- child bridge reset -->
+                  @if ($settings.env.serviceMode) {
+                  <button ngbDropdownItem (click)="$plugin.resetChildBridges(setChildBridges)">
+                    <i class="fas fa-fw fa-broom"></i> {{ 'child_bridge.reset_accessories' | translate }}
+                  </button>
+                  }
+                  <!-- // -->
+                  } @if (plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled &&
+                  !plugin.recommendChildBridge) {
+                  <div class="dropdown-divider"></div>
+                  }
                   <!-- child bridge setup, when not recommended -->
-                  <button
-                    ngbDropdownItem
-                    *ngIf="plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && !plugin.recommendChildBridge"
-                    (click)="$plugin.bridgeSettings(plugin)"
-                  >
+                  @if (plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled &&
+                  !plugin.recommendChildBridge) {
+                  <button ngbDropdownItem (click)="$plugin.bridgeSettings(plugin)">
                     <i class="icon-button fas fa-fw fa-bridge"></i>
                     {{ 'child_bridge.setup' | translate }}
                   </button>
+                  }
                   <!-- // -->
                   <!-- child bridge setup, edge case, when not configured, recommended, but update icon blocks setup -->
-                  <div
-                    class="dropdown-divider"
-                    *ngIf="plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && plugin.recommendChildBridge && plugin.updateAvailable"
-                  ></div>
-                  <button
-                    ngbDropdownItem
-                    *ngIf="plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && plugin.recommendChildBridge && plugin.updateAvailable"
-                    (click)="$plugin.bridgeSettings(plugin)"
-                  >
+                  @if (plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled && plugin.recommendChildBridge
+                  && plugin.updateAvailable) {
+                  <div class="dropdown-divider"></div>
+                  } @if (plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled &&
+                  plugin.recommendChildBridge && plugin.updateAvailable) {
+                  <button ngbDropdownItem (click)="$plugin.bridgeSettings(plugin)">
                     <i class="icon-button fas fa-fw fa-bridge"></i>
                     {{ 'child_bridge.setup' | translate }}
                   </button>
+                  }
                   <!-- // -->
                   <!-- report an issue link -->
-                  <div class="dropdown-divider" *ngIf="plugin.links?.bugs"></div>
-                  <a
-                    ngbDropdownItem
-                    *ngIf="plugin.links?.bugs"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                    [href]="plugin.links.bugs"
-                  >
+                  @if (plugin.links?.bugs) {
+                  <div class="dropdown-divider"></div>
+                  } @if (plugin.links?.bugs) {
+                  <a ngbDropdownItem rel="noopener noreferrer" target="_blank" [href]="plugin.links.bugs">
                     <i class="icon-button fa fa-fw fa-question-circle-o"></i>
                     {{ 'support.links.issue' | translate }}
                   </a>
+                  }
                   <!-- // -->
                 </div>
               </span>
+              }
             </div>
           </div>
         </div>

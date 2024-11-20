@@ -33,7 +33,8 @@
       </label>
     </div>
 
-    <div *ngIf="targetVolume">
+    @if (targetVolume) {
+    <div>
       <h5 class="mb-0">{{ 'accessories.control.speaker_volume' | translate }}</h5>
       <p>{{ targetVolume.value }}%</p>
       <nouislider
@@ -45,5 +46,6 @@
       >
       </nouislider>
     </div>
+    }
   </div>
 </div>

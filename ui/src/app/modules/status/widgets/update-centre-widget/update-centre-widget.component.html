@@ -6,40 +6,41 @@
     <div class="hb-status-item d-flex flex-row mt-2" style="min-width: max(25%, 175px)">
       <div class="d-flex">
         <div class="mb-0 px-3 hb-status-icon d-flex align-items-center">
-          <i class="fas fa-fw fa-cog fa-spin primary-text" *ngIf="!homebridgePkg.installedVersion"></i>
-          <i
-            class="fas fa-fw fa-check-circle primary-text"
-            *ngIf="homebridgePkg.installedVersion && !homebridgePkg.updateAvailable"
-          ></i>
-          <i
-            class="fas fa-fw fa-arrow-alt-circle-up primary-text"
-            *ngIf="homebridgePkg.installedVersion && homebridgePkg.updateAvailable"
-          ></i>
+          @if (!homebridgePkg.installedVersion) {
+          <i class="fas fa-fw fa-cog fa-spin primary-text"></i>
+          } @if (homebridgePkg.installedVersion && !homebridgePkg.updateAvailable) {
+          <i class="fas fa-fw fa-check-circle primary-text"></i>
+          } @if (homebridgePkg.installedVersion && homebridgePkg.updateAvailable) {
+          <i class="fas fa-fw fa-arrow-alt-circle-up primary-text"></i>
+          }
         </div>
         <div class="align-self-center">
+          @if (homebridgePkg.installedVersion) {
           <a
             href="javascript:void(0)"
             (click)="$plugin.installAlternateVersion(homebridgePkg)"
-            *ngIf="homebridgePkg.installedVersion"
             class="card-link card-link-title"
           >
             Homebridge
           </a>
-          <span *ngIf="!homebridgePkg.installedVersion">Homebridge</span>
+          } @if (!homebridgePkg.installedVersion) {
+          <span>Homebridge</span>
+          }
           <br />
           <span class="grey-text small">
-            <span *ngIf="!homebridgePkg.installedVersion"> {{ 'status.homebridge.checking' | translate }} </span>
-            <span *ngIf="homebridgePkg.installedVersion && !homebridgePkg.updateAvailable">
-              {{ 'status.homebridge.up_to_date' | translate }}
-            </span>
+            @if (!homebridgePkg.installedVersion) {
+            <span> {{ 'status.homebridge.checking' | translate }} </span>
+            } @if (homebridgePkg.installedVersion && !homebridgePkg.updateAvailable) {
+            <span> {{ 'status.homebridge.up_to_date' | translate }} </span>
+            } @if (homebridgePkg.installedVersion && homebridgePkg.updateAvailable) {
             <a
               href="javascript:void(0)"
               (click)="$plugin.upgradeHomebridge(homebridgePkg, homebridgePkg.updateTag || 'latest')"
               class="primary-text"
-              *ngIf="homebridgePkg.installedVersion && homebridgePkg.updateAvailable"
             >
               {{ 'status.plugin_out_of_date' | translate }}
             </a>
+            }
           </span>
         </div>
       </div>
@@ -47,39 +48,40 @@
     <div class="hb-status-item d-flex flex-row mt-2" style="min-width: max(25%, 175px)">
       <div class="d-flex">
         <div class="mb-0 px-3 hb-status-icon d-flex align-items-center">
-          <i class="fas fa-fw fa-cog fa-spin primary-text" *ngIf="!homebridgeUiPkg.installedVersion"></i>
-          <i
-            class="fas fa-fw fa-check-circle primary-text"
-            *ngIf="homebridgeUiPkg.installedVersion && !homebridgeUiPkg.updateAvailable"
-          ></i>
-          <i
-            class="fas fa-fw fa-arrow-alt-circle-up primary-text"
-            *ngIf="homebridgeUiPkg.installedVersion && homebridgeUiPkg.updateAvailable"
-          ></i>
+          @if (!homebridgeUiPkg.installedVersion) {
+          <i class="fas fa-fw fa-cog fa-spin primary-text"></i>
+          } @if (homebridgeUiPkg.installedVersion && !homebridgeUiPkg.updateAvailable) {
+          <i class="fas fa-fw fa-check-circle primary-text"></i>
+          } @if (homebridgeUiPkg.installedVersion && homebridgeUiPkg.updateAvailable) {
+          <i class="fas fa-fw fa-arrow-alt-circle-up primary-text"></i>
+          }
         </div>
         <div class="align-self-center">
+          @if (homebridgeUiPkg.installedVersion) {
           <a
             href="javascript:void(0)"
             (click)="$plugin.installAlternateVersion(homebridgeUiPkg)"
-            *ngIf="homebridgeUiPkg.installedVersion"
             class="card-link card-link-title"
             >Homebridge UI</a
           >
-          <span *ngIf="!homebridgeUiPkg.installedVersion">Homebridge UI</span>
+          } @if (!homebridgeUiPkg.installedVersion) {
+          <span>Homebridge UI</span>
+          }
           <br />
           <span class="grey-text small">
-            <span *ngIf="!homebridgeUiPkg.installedVersion"> {{ 'status.homebridge.checking' | translate }} </span>
-            <span *ngIf="homebridgeUiPkg.installedVersion && !homebridgeUiPkg.updateAvailable">
-              {{ 'status.homebridge.up_to_date' | translate }}
-            </span>
+            @if (!homebridgeUiPkg.installedVersion) {
+            <span> {{ 'status.homebridge.checking' | translate }} </span>
+            } @if (homebridgeUiPkg.installedVersion && !homebridgeUiPkg.updateAvailable) {
+            <span> {{ 'status.homebridge.up_to_date' | translate }} </span>
+            } @if (homebridgeUiPkg.installedVersion && homebridgeUiPkg.updateAvailable) {
             <a
               href="javascript:void(0)"
               (click)="$plugin.upgradeHomebridge(homebridgeUiPkg, homebridgeUiPkg.updateTag || 'latest')"
               class="primary-text"
-              *ngIf="homebridgeUiPkg.installedVersion && homebridgeUiPkg.updateAvailable"
             >
               {{ 'status.plugin_out_of_date' | translate }}
             </a>
+            }
           </span>
         </div>
       </div>
@@ -87,83 +89,63 @@
     <div class="hb-status-item d-flex flex-row mt-2" style="min-width: max(25%, 175px)">
       <div class="d-flex">
         <div class="mb-0 px-3 hb-status-icon d-flex align-items-center">
-          <i class="fas fa-fw fa-cog fa-spin primary-text" *ngIf="!homebridgePluginStatusDone"></i>
-          <i
-            class="fas fa-fw fa-arrow-alt-circle-up primary-text"
-            *ngIf="homebridgePluginStatusDone && homebridgePluginStatus.length"
-          ></i>
-          <i
-            class="fas fa-fw fa-check-circle primary-text"
-            *ngIf="homebridgePluginStatusDone && !homebridgePluginStatus.length"
-          ></i>
+          @if (!homebridgePluginStatusDone) {
+          <i class="fas fa-fw fa-cog fa-spin primary-text"></i>
+          } @if (homebridgePluginStatusDone && homebridgePluginStatus.length) {
+          <i class="fas fa-fw fa-arrow-alt-circle-up primary-text"></i>
+          } @if (homebridgePluginStatusDone && !homebridgePluginStatus.length) {
+          <i class="fas fa-fw fa-check-circle primary-text"></i>
+          }
         </div>
         <div class="align-self-center">
           <a href="javascript:void(0)" routerLink="/plugins" class="card-link card-link-title">
             {{ 'menu.label_plugins' | translate }}
           </a>
           <br />
-          <span class="grey-text small" *ngIf="!homebridgePluginStatusDone">
-            {{ 'status.homebridge.checking' | translate }}
-          </span>
-          <a
-            routerLink="/plugins"
-            class="primary-text small"
-            *ngIf="homebridgePluginStatusDone && homebridgePluginStatus.length"
-          >
+          @if (!homebridgePluginStatusDone) {
+          <span class="grey-text small"> {{ 'status.homebridge.checking' | translate }} </span>
+          } @if (homebridgePluginStatusDone && homebridgePluginStatus.length) {
+          <a routerLink="/plugins" class="primary-text small">
             {{ homebridgePluginStatus.length }} {{ homebridgePluginStatus.length === 1 ? ('status.plugin_out_of_date' |
             translate) : ('status.plugins_out_of_date' | translate) }}
           </a>
-          <span class="grey-text small" *ngIf="homebridgePluginStatusDone && !homebridgePluginStatus.length">
-            {{ 'status.homebridge.up_to_date' | translate }}
-          </span>
+          } @if (homebridgePluginStatusDone && !homebridgePluginStatus.length) {
+          <span class="grey-text small"> {{ 'status.homebridge.up_to_date' | translate }} </span>
+          }
         </div>
       </div>
     </div>
     <div class="hb-status-item d-flex flex-row mt-2" style="min-width: max(25%, 175px)">
       <div class="d-flex">
         <div class="mb-0 px-3 hb-status-icon d-flex align-items-center">
-          <i class="fas fa-fw fa-cog fa-spin primary-text" *ngIf="!nodejsStatusDone"></i>
-          <i
-            class="fas fa-fw fa-arrow-alt-circle-up primary-text"
-            *ngIf="nodejsStatusDone && nodejsInfo.updateAvailable && !nodejsInfo.showNodeUnsupportedWarning && !serverInfo.homebridgeRunningInSynologyPackage"
-          ></i>
-          <i
-            class="fas fa-fw fa-exclamation-circle primary-text"
-            *ngIf="nodejsStatusDone && nodejsInfo.showNodeUnsupportedWarning && !nodejsInfo.updateAvailable"
-          ></i>
-          <i
-            class="fas fa-fw fa-check-circle primary-text"
-            *ngIf="nodejsStatusDone && !nodejsInfo.updateAvailable && !nodejsInfo.showNodeUnsupportedWarning"
-          ></i>
+          @if (!nodejsStatusDone) {
+          <i class="fas fa-fw fa-cog fa-spin primary-text"></i>
+          } @if (nodejsStatusDone && nodejsInfo.updateAvailable && !nodejsInfo.showNodeUnsupportedWarning &&
+          !serverInfo.homebridgeRunningInSynologyPackage) {
+          <i class="fas fa-fw fa-arrow-alt-circle-up primary-text"></i>
+          } @if (nodejsStatusDone && nodejsInfo.showNodeUnsupportedWarning && !nodejsInfo.updateAvailable) {
+          <i class="fas fa-fw fa-exclamation-circle primary-text"></i>
+          } @if (nodejsStatusDone && !nodejsInfo.updateAvailable && !nodejsInfo.showNodeUnsupportedWarning) {
+          <i class="fas fa-fw fa-check-circle primary-text"></i>
+          }
         </div>
         <div class="align-self-center">
           Node.js
           <br />
-          <span class="grey-text small" *ngIf="!nodejsStatusDone">
-            {{ 'status.homebridge.checking' | translate }}
-          </span>
-          <a
-            href="javascript:void(0)"
-            (click)="nodeUpdateModal()"
-            class="primary-text small"
-            *ngIf="nodejsStatusDone && nodejsInfo.updateAvailable && !nodejsInfo.showNodeUnsupportedWarning && !serverInfo.homebridgeRunningInSynologyPackage"
-          >
+          @if (!nodejsStatusDone) {
+          <span class="grey-text small"> {{ 'status.homebridge.checking' | translate }} </span>
+          } @if (nodejsStatusDone && nodejsInfo.updateAvailable && !nodejsInfo.showNodeUnsupportedWarning &&
+          !serverInfo.homebridgeRunningInSynologyPackage) {
+          <a href="javascript:void(0)" (click)="nodeUpdateModal()" class="primary-text small">
             {{'status.plugin_out_of_date' | translate }}
           </a>
-          <a
-            href="javascript:void(0)"
-            (click)="nodeUnsupportedModal()"
-            class="primary-text small"
-            *ngIf="nodejsStatusDone && nodejsInfo.showNodeUnsupportedWarning && !nodejsInfo.updateAvailable"
-          >
+          } @if (nodejsStatusDone && nodejsInfo.showNodeUnsupportedWarning && !nodejsInfo.updateAvailable) {
+          <a href="javascript:void(0)" (click)="nodeUnsupportedModal()" class="primary-text small">
             {{ 'status.widget.info.node_unsupp' | translate }}
           </a>
-          <span
-            class="grey-text small"
-            *ngIf="nodejsStatusDone && !nodejsInfo.updateAvailable && !nodejsInfo.showNodeUnsupportedWarning"
-          >
-            {{ 'status.homebridge.up_to_date' | translate }}
-          </span>
+          } @if (nodejsStatusDone && !nodejsInfo.updateAvailable && !nodejsInfo.showNodeUnsupportedWarning) {
+          <span class="grey-text small"> {{ 'status.homebridge.up_to_date' | translate }} </span>
+          }
         </div>
       </div>
     </div>

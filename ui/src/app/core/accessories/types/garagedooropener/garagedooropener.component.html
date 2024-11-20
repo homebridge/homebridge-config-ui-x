@@ -9,21 +9,18 @@
     <div [inlineSVG]="'/assets/hap-icons/garagedoor.svg'" [attr.aria-label]="'Garage Door'" class="accessory-svg"></div>
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
 
+    @if (service.values.CurrentDoorState < 2 ) {
     <div
       class="accessory-label"
-      *ngIf="service.values.CurrentDoorState < 2 "
       [innerText]="(service.values.CurrentDoorState ? 'accessories.control.closed' : 'accessories.control.open') | translate"
       [ngClass]="{'red-text': !service.values.CurrentDoorState, 'grey-text': service.values.CurrentDoorState}"
     ></div>
-
-    <div class="accessory-label red-text" *ngIf="service.values.CurrentDoorState === 2">
-      {{ 'accessories.control.opening' | translate }}...
-    </div>
-    <div class="accessory-label red-text" *ngIf="service.values.CurrentDoorState === 3">
-      {{ 'accessories.control.closing' | translate }}...
-    </div>
-    <div class="accessory-label red-text" *ngIf="service.values.CurrentDoorState === 4">
-      {{ 'accessories.control.stopped' | translate }}
-    </div>
+    } @if (service.values.CurrentDoorState === 2) {
+    <div class="accessory-label red-text">{{ 'accessories.control.opening' | translate }}...</div>
+    } @if (service.values.CurrentDoorState === 3) {
+    <div class="accessory-label red-text">{{ 'accessories.control.closing' | translate }}...</div>
+    } @if (service.values.CurrentDoorState === 4) {
+    <div class="accessory-label red-text">{{ 'accessories.control.stopped' | translate }}</div>
+    }
   </div>
 </div>

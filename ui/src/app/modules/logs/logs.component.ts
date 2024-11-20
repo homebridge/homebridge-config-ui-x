@@ -2,27 +2,26 @@ import { ApiService } from '@/app/core/api.service'
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
 import { LogService } from '@/app/core/log.service'
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http'
-import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core'
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
-import { TranslateService } from '@ngx-translate/core'
+import { Component, ElementRef, HostListener, inject, OnDestroy, OnInit, viewChild } from '@angular/core'
+import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { saveAs } from 'file-saver'
 import { ToastrService } from 'ngx-toastr'
 import { Subject } from 'rxjs'
 
 @Component({
   templateUrl: './logs.component.html',
+  imports: [NgbTooltip, TranslatePipe],
 })
 export class LogsComponent implements OnInit, OnDestroy {
-  @ViewChild('logoutput', { static: true }) termTarget: ElementRef
-  private resizeEvent = new Subject()
+  private $api = inject(ApiService)
+  private $log = inject(LogService)
+  private $modal = inject(NgbModal)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
 
-  constructor(
-    private $api: ApiService,
-    private $log: LogService,
-    private $modal: NgbModal,
-    private $toastr: ToastrService,
-    private $translate: TranslateService,
-  ) {}
+  readonly termTarget = viewChild<ElementRef>('logoutput')
+  private resizeEvent = new Subject()
 
   @HostListener('window:resize', ['$event'])
   onWindowResize() {
@@ -34,7 +33,7 @@ export class LogsComponent implements OnInit, OnDestroy {
     window.document.querySelector('body').classList.add('bg-black')
 
     // start the terminal
-    this.$log.startTerminal(this.termTarget, {}, this.resizeEvent)
+    this.$log.startTerminal(this.termTarget(), {}, this.resizeEvent)
   }
 
   ngOnDestroy() {

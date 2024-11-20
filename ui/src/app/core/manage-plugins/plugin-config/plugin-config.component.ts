@@ -1,14 +1,21 @@
 import { ApiService } from '@/app/core/api.service'
 import { RestartChildBridgesComponent } from '@/app/core/components/restart-child-bridges/restart-child-bridges.component'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
+import { InterpolateMdPipe } from '@/app/core/manage-plugins/interpolate-md.pipe'
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
 import { SettingsService } from '@/app/core/settings.service'
-import { Component, Input, OnInit } from '@angular/core'
-import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap'
-import { TranslateService } from '@ngx-translate/core'
+import { NgClass } from '@angular/common'
+import { Component, inject, Input, OnInit } from '@angular/core'
+import { NgbAccordionBody, NgbAccordionButton, NgbAccordionCollapse, NgbAccordionDirective, NgbAccordionHeader, NgbAccordionItem, NgbAccordionToggle, NgbActiveModal, NgbCollapse, NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
+import { NgxMdModule } from 'ngx-md'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 import { v4 as uuid } from 'uuid'
+import { SchemaFormComponent } from '../../components/schema-form/schema-form.component'
+import { PluginsMarkdownDirective } from '../../directives/plugins.markdown.directive'
+import { HomebridgeDeconzComponent } from '../custom-plugins/homebridge-deconz/homebridge-deconz.component'
+import { HomebridgeHueComponent } from '../custom-plugins/homebridge-hue/homebridge-hue.component'
 
 export interface PluginConfigBlock {
   config: Record<string, any>
@@ -31,8 +38,35 @@ export interface PluginSchema {
 @Component({
   templateUrl: './plugin-config.component.html',
   styleUrls: ['./plugin-config.component.scss'],
+  imports: [
+    NgxMdModule,
+    PluginsMarkdownDirective,
+    NgbAccordionDirective,
+    NgbAccordionItem,
+    NgbAccordionHeader,
+    NgClass,
+    NgbTooltip,
+    NgbAccordionToggle,
+    NgbAccordionButton,
+    NgbCollapse,
+    NgbAccordionCollapse,
+    NgbAccordionBody,
+    SchemaFormComponent,
+    HomebridgeDeconzComponent,
+    HomebridgeHueComponent,
+    TranslatePipe,
+    InterpolateMdPipe,
+  ],
 })
 export class PluginConfigComponent implements OnInit {
+  $activeModal = inject(NgbActiveModal)
+  private $api = inject(ApiService)
+  private $plugin = inject(ManagePluginsService)
+  private $modal = inject(NgbModal)
+  private $settings = inject(SettingsService)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
+
   @Input() plugin: any
   @Input() schema: PluginSchema
 
@@ -47,16 +81,6 @@ export class PluginConfigComponent implements OnInit {
   public formBlocksValid: { [key: number]: boolean } = {}
   public formIsValid = true
   public strictValidation = false
-
-  constructor(
-    public $activeModal: NgbActiveModal,
-    private $api: ApiService,
-    private $plugin: ManagePluginsService,
-    private $modal: NgbModal,
-    private $settings: SettingsService,
-    private $toastr: ToastrService,
-    private $translate: TranslateService,
-  ) {}
 
   ngOnInit() {
     this.pluginAlias = this.schema.pluginAlias

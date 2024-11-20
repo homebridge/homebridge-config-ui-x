@@ -15,31 +15,35 @@
     </button>
   </div>
   <div class="modal-body">
-    <div *ngIf="loading" class="text-center primary-text">
+    @if (loading) {
+    <div class="text-center primary-text">
       <i class="fa fa-fw fa-cog fa-spin" style="font-size: 75px"></i>
     </div>
-    <div *ngIf="!loading && !canConfigure">
+    } @if (!loading && !canConfigure) {
+    <div>
       <div class="alert alert-warning">
         {{ 'plugins.settings.message_manual_config_required' | translate }} {{
         'plugins.settings.message_consult_documentation' | translate }}
       </div>
     </div>
+    }
 
     <!-- MULTIPLE CONFIG BLOCKS-->
-    <div ngbAccordion [closeOthers]="true" *ngIf="!loading && canConfigure">
+    @if (!loading && canConfigure) {
+    <div ngbAccordion [closeOthers]="true">
+      @for (block of pluginConfig; track block) {
       <div
         [ngbAccordionItem]="'configBlock.' + $index"
         class="card"
         [collapsed]="show !== 'configBlock.' + $index"
         [id]="'configBlock.' + $index"
-        *ngFor="let block of pluginConfig; let $index = index"
       >
         <div ngbAccordionHeader class="card-header">
           <div class="d-flex align-items-center justify-content-between">
             <h5 class="m-0">{{ block.name || pluginAlias }}</h5>
             <div>
+              @if (show === 'configBlock.' + $index) {
               <button
-                *ngIf="show === 'configBlock.' + $index"
                 class="btn btn-danger ml-2"
                 (click)="removeBlock($index)"
                 [ngbTooltip]="'form.button_delete' | translate"
@@ -49,6 +53,7 @@
               >
                 <i class="fa fa-fw fa-trash"></i>
               </button>
+              }
               <button
                 class="btn btn-primary ml-2"
                 ngbAccordionButton
@@ -75,7 +80,9 @@
           </div>
         </div>
       </div>
+      }
     </div>
+    }
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-left">
@@ -91,29 +98,23 @@
     </div>
     <div class="text-center"></div>
     <div class="text-right">
-      <button
-        type="button"
-        class="btn btn-elegant mr-auto"
-        data-dismiss="modal"
-        (click)="addBlock()"
-        *ngIf="canConfigure"
-      >
+      @if (canConfigure) {
+      <button type="button" class="btn btn-elegant mr-auto" data-dismiss="modal" (click)="addBlock()">
         <i class="fa fa-fw fa-plus"></i>
       </button>
-      <button
-        type="button"
-        class="btn btn-primary"
-        data-dismiss="modal"
-        (click)="save()"
-        [disabled]="saveInProgress"
-        *ngIf="canConfigure"
-      >
-        <span *ngIf="!saveInProgress">{{ 'form.button_save' | translate }}</span>
-        <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
+      } @if (canConfigure) {
+      <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="save()" [disabled]="saveInProgress">
+        @if (!saveInProgress) {
+        <span>{{ 'form.button_save' | translate }}</span>
+        } @if (saveInProgress) {
+        <i class="fas fa-fw fa-spinner fa-pulse"></i>
+        }
       </button>
-      <button class="btn btn-primary" (click)="openFullConfigEditor()" *ngIf="!canConfigure">
+      } @if (!canConfigure) {
+      <button class="btn btn-primary" (click)="openFullConfigEditor()">
         {{ 'plugins.settings.label_open_config_editor' | translate }}
       </button>
+      }
     </div>
   </div>
 </div>

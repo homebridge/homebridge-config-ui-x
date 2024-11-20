@@ -60,20 +60,27 @@
           <th>{{ service.humanType }}</th>
           <td class="text-right"></td>
         </tr>
-        <tr *ngFor="let characteristic of service.serviceCharacteristics">
+        @for (characteristic of service.serviceCharacteristics; track characteristic) {
+        <tr>
           <td>{{ characteristic.description }}</td>
           <td class="text-right">
-            <span [ngSwitch]="characteristic.unit">
-              <span *ngSwitchCase="'percentage'">{{ characteristic.value }}%</span>
-              <span *ngSwitchCase="'celsius'">{{ characteristic.value | convertTemp }}&deg;</span>
-              <span *ngSwitchDefault>{{ characteristic.value }}</span>
+            <span>
+              @switch (characteristic.unit) { @case ('percentage') {
+              <span>{{ characteristic.value }}%</span>
+              } @case ('celsius') {
+              <span>{{ characteristic.value | convertTemp }}&deg;</span>
+              } @default {
+              <span>{{ characteristic.value }}</span>
+              } }
             </span>
           </td>
         </tr>
-        <tr *ngFor="let information of accessoryInformation">
+        } @for (information of accessoryInformation; track information) {
+        <tr>
           <td>{{ information.key }}</td>
           <td class="text-right text-break">{{ information.value }}</td>
         </tr>
+        }
         <tr>
           <td>Homebridge Instance IP</td>
           <td class="text-right">{{ service.instance.ipAddress }}</td>

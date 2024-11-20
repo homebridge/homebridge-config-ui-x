@@ -1,11 +1,10 @@
-import { PowerOptionsComponent } from '@/app/modules/power-options/power-options.component'
 import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
 
 const routes: Routes = [
   {
     path: '',
-    component: PowerOptionsComponent,
+    loadComponent: () => import('@/app/modules/power-options/power-options.component').then(m => m.PowerOptionsComponent),
   },
 ]
 

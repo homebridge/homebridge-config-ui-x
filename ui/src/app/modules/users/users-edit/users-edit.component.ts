@@ -1,15 +1,28 @@
 import { ApiService } from '@/app/core/api.service'
 import { AuthService } from '@/app/core/auth/auth.service'
-import { Component, Input, OnInit } from '@angular/core'
-import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms'
+import { NgClass } from '@angular/common'
+import { Component, inject, Input, OnInit } from '@angular/core'
+import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
-import { TranslateService } from '@ngx-translate/core'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 
 @Component({
   templateUrl: './users-edit.component.html',
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    NgClass,
+    TranslatePipe,
+  ],
 })
 export class UsersEditComponent implements OnInit {
+  $activeModal = inject(NgbActiveModal)
+  private $api = inject(ApiService)
+  private $auth = inject(AuthService)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
+
   @Input() user: any
 
   public form = new FormGroup({
@@ -27,14 +40,6 @@ export class UsersEditComponent implements OnInit {
   }
 
   public isCurrentUser = false
-
-  constructor(
-    public $activeModal: NgbActiveModal,
-    private $api: ApiService,
-    private $auth: AuthService,
-    private $toastr: ToastrService,
-    private $translate: TranslateService,
-  ) {}
 
   ngOnInit() {
     this.isCurrentUser = this.$auth.user.username === this.user.username

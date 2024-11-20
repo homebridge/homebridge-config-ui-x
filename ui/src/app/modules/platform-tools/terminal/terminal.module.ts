@@ -5,13 +5,11 @@ import { NgModule } from '@angular/core'
 import { TranslateModule } from '@ngx-translate/core'
 
 @NgModule({
-  declarations: [
-    TerminalComponent,
-  ],
   imports: [
     CommonModule,
     TerminalRoutingModule,
     TranslateModule.forChild(),
+    TerminalComponent,
   ],
 })
 export class TerminalModule {}

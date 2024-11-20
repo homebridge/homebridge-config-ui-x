@@ -17,13 +17,15 @@
         <div class="widget-value mb-0">{{ currentLoad | number:'1.0-0' }}%</div>
         <div class="widget-value-label grey-text">{{ 'status.cpu.load' | translate }}</div>
       </div>
-      <div class="text-center widget-value-parent-wrap" *ngIf="cpuTemperature.main > 0">
+      @if (cpuTemperature.main > 0) {
+      <div class="text-center widget-value-parent-wrap">
         <div class="widget-value mb-0">
           {{ cpuTemperature.main | convertTemp: $settings.env.temperatureUnits | number:'1.0-0' }}&deg;{{
           $settings.env.temperatureUnits | uppercase }}
         </div>
         <div class="widget-value-label grey-text">{{ 'status.cpu.temp' | translate }}</div>
       </div>
+      }
     </div>
   </div>
 </div>

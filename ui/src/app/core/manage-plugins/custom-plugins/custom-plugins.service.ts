@@ -1,6 +1,6 @@
 import { CustomPluginsComponent } from '@/app/core/manage-plugins/custom-plugins/custom-plugins.component'
 import { HomebridgeGoogleSmarthomeComponent } from '@/app/core/manage-plugins/custom-plugins/homebridge-google-smarthome/homebridge-google-smarthome.component'
-import { Injectable } from '@angular/core'
+import { inject, Injectable } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 
 import { firstValueFrom } from 'rxjs'
@@ -10,14 +10,12 @@ import { ApiService } from '../../api.service'
   providedIn: 'root',
 })
 export class CustomPluginsService {
+  private $api = inject(ApiService)
+  private $modal = inject(NgbModal)
+
   public plugins = {
     'homebridge-gsh': HomebridgeGoogleSmarthomeComponent,
   }
-
-  constructor(
-    private $api: ApiService,
-    private $modal: NgbModal,
-  ) {}
 
   async openSettings(plugin: any, schema: any) {
     const pluginConfig = await this.loadPluginConfig(plugin.name)

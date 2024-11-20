@@ -1,4 +1,3 @@
-import { CoreModule } from '@/app/core/core.module'
 import { CustomPluginsComponent } from '@/app/core/manage-plugins/custom-plugins/custom-plugins.component'
 import { CustomPluginsService } from '@/app/core/manage-plugins/custom-plugins/custom-plugins.service'
 import { HomebridgeDeconzComponent } from '@/app/core/manage-plugins/custom-plugins/homebridge-deconz/homebridge-deconz.component'
@@ -13,12 +12,6 @@ import { TranslateModule } from '@ngx-translate/core'
 import { NgxMdModule } from 'ngx-md'
 
 @NgModule({
-  declarations: [
-    CustomPluginsComponent,
-    HomebridgeDeconzComponent,
-    HomebridgeGoogleSmarthomeComponent,
-    HomebridgeHueComponent,
-  ],
   imports: [
     CommonModule,
     NgbModule,
@@ -27,7 +20,10 @@ import { NgxMdModule } from 'ngx-md'
     TranslateModule.forChild(),
     Bootstrap4FrameworkModule,
     NgxMdModule,
-    CoreModule,
+    CustomPluginsComponent,
+    HomebridgeDeconzComponent,
+    HomebridgeGoogleSmarthomeComponent,
+    HomebridgeHueComponent,
   ],
   providers: [
     CustomPluginsService,

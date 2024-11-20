@@ -1,7 +1,12 @@
 import type { CharacteristicType } from '@homebridge/hap-client'
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
-import { Component, Input, OnInit } from '@angular/core'
+import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
+import { DecimalPipe, NgClass } from '@angular/common'
+import { Component, inject, Input, OnInit } from '@angular/core'
+import { FormsModule } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
+import { TranslatePipe } from '@ngx-translate/core'
+import { NouisliderComponent } from 'ng2-nouislider'
 import { Subject } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
 
@@ -9,8 +14,18 @@ import { debounceTime } from 'rxjs/operators'
   selector: 'app-heatercooler-manage',
   templateUrl: './heatercooler.manage.component.html',
   styleUrls: ['./heatercooler.component.scss'],
+  imports: [
+    NgClass,
+    FormsModule,
+    NouisliderComponent,
+    DecimalPipe,
+    TranslatePipe,
+    ConvertTempPipe,
+  ],
 })
 export class HeaterCoolerManageComponent implements OnInit {
+  $activeModal = inject(NgbActiveModal)
+
   @Input() public service: ServiceTypeX
   public targetMode: any
   public targetTemperatureChanged: Subject<any> = new Subject<any>()
@@ -22,9 +37,7 @@ export class HeaterCoolerManageComponent implements OnInit {
   public targetHeatingTemp: number
   public autoTemp: [number, number]
 
-  constructor(
-    public $activeModal: NgbActiveModal,
-  ) {
+  constructor() {
     this.targetTemperatureChanged
       .pipe(
         debounceTime(300),

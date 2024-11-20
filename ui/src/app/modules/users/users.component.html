@@ -13,7 +13,8 @@
   </div>
 </div>
 <div class="row">
-  <div class="col-md-6 mb-4" *ngFor="let user of homebridgeUsers">
+  @for (user of homebridgeUsers; track user) {
+  <div class="col-md-6 mb-4">
     <div class="card card-body">
       <div class="d-flex flex-column">
         <div class="d-flex flex-row mb-3">
@@ -23,30 +24,21 @@
           </span>
         </div>
         <div class="d-flex flex-row justify-content-between" style="gap: 10px">
-          <button
-            class="btn btn-elegant btn-sml m-0"
-            (click)="deleteUser(user.id)"
-            *ngIf="$auth.user.username !== user.username"
-          >
+          @if ($auth.user.username !== user.username) {
+          <button class="btn btn-elegant btn-sml m-0" (click)="deleteUser(user.id)">
             {{ 'form.button_delete' | translate }}
           </button>
-          <button
-            class="btn btn-primary mt-0 m-0"
-            (click)="setup2fa(user)"
-            *ngIf="$auth.user.username === user.username && !user.otpActive"
-          >
-            {{ 'users.setup_2fa' | translate }}
-          </button>
-          <button
-            class="btn btn-primary m-0"
-            (click)="disable2fa(user)"
-            *ngIf="$auth.user.username === user.username && user.otpActive"
-          >
+          } @if ($auth.user.username === user.username && !user.otpActive) {
+          <button class="btn btn-primary mt-0 m-0" (click)="setup2fa(user)">{{ 'users.setup_2fa' | translate }}</button>
+          } @if ($auth.user.username === user.username && user.otpActive) {
+          <button class="btn btn-primary m-0" (click)="disable2fa(user)">
             {{ 'users.setup_2fa_disable' | translate }}
           </button>
+          }
           <button class="btn btn-primary m-0" (click)="openEditUser(user)">{{ 'form.button_edit' | translate }}</button>
         </div>
       </div>
     </div>
   </div>
+  }
 </div>

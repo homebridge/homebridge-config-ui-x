@@ -13,90 +13,91 @@
   </div>
   <div class="modal-body d-flex flex-row flex-grow-1 align-items-center w-100 text-center">
     <!-- plugins -->
-    <div class="w-100" *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)">
+    @if (!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)) {
+    <div class="w-100">
       <i
         class="{{ action === 'install' ? 'far fa-fw fa-arrow-alt-circle-down' : ( action === 'update' ? 'far fa-fw fa-arrow-alt-circle-up' : 'fas fa-fw fa-code-compare') }} primary-text mb-4"
         style="font-size: 75px"
       ></i>
       <ul class="text-left">
-        <li *ngIf="!isValidNode">
+        @if (!isValidNode) {
+        <li>
           {{ 'plugins.compat.node_too_low' | translate: { pluginName: plugin.name, minVersion: nodeMinVersion,
           installedVersion: nodeInstalledVersion } }}
           <a href="https://homebridge.io/w/JTKEF" target="_blank" rel="noopener noreferrer">
             {{ 'plugins.compat.node_link' | translate }} <i class="fa fa-fw fa-external-link-alt"></i>
           </a>
         </li>
-        <li *ngIf="!isValidHb">
+        } @if (!isValidHb) {
+        <li>
           {{ 'plugins.compat.hb_too_low' | translate: { pluginName: plugin.name, minVersion: hbMinVersion,
           installedVersion: hbInstalledVersion } }}
         </li>
+        }
       </ul>
       <p>{{ 'plugins.compat.are_you_sure' | translate }}</p>
     </div>
+    }
 
     <!-- homebridge -->
-    <div class="w-100" *ngIf="plugin.name === 'homebridge'">
+    @if (plugin.name === 'homebridge') {
+    <div class="w-100">
       <i class="fab fa-fw fa-node-js primary-text mb-4" style="font-size: 75px"></i>
       <ul class="text-left">
-        <li *ngIf="!isValidNode">
+        @if (!isValidNode) {
+        <li>
           {{ 'plugins.compat.hb_node_too_low' | translate: { minVersion: nodeMinVersion, installedVersion:
           nodeInstalledVersion, latestVersion: plugin.latestVersion, packageName: 'Homebridge' } }}
           <a href="https://homebridge.io/w/JTKEF" target="_blank" rel="noopener noreferrer">
             {{ 'plugins.compat.node_link' | translate }} <i class="fa fa-fw fa-external-link-alt"></i>
           </a>
         </li>
+        }
       </ul>
       <p>{{ 'plugins.compat.node_first' | translate: { packageName: 'Homebridge' } }}</p>
     </div>
+    }
 
     <!-- homebridge ui -->
-    <div class="w-100" *ngIf="plugin.name === 'homebridge-config-ui-x'">
+    @if (plugin.name === 'homebridge-config-ui-x') {
+    <div class="w-100">
       <i class="fas fa-fw fa-list-check primary-text mb-4" style="font-size: 75px"></i>
       <ul class="text-left">
-        <li *ngIf="!isValidNode">
+        @if (!isValidNode) {
+        <li>
           {{ 'plugins.compat.hb_node_too_low' | translate: { minVersion: nodeMinVersion, installedVersion:
           nodeInstalledVersion, latestVersion: plugin.latestVersion, packageName: 'Homebridge UI' } }}
           <a href="https://homebridge.io/w/JTKEF" target="_blank" rel="noopener noreferrer">
             {{ 'plugins.compat.node_link' | translate }} <i class="fa fa-fw fa-external-link-alt"></i>
           </a>
         </li>
+        }
       </ul>
       <p>{{ 'plugins.compat.node_first' | translate: { packageName: 'Homebridge UI' } }}</p>
     </div>
+    }
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-left">
-      <button
-        type="button"
-        class="btn btn-elegant"
-        data-dismiss="modal"
-        (click)="$activeModal.dismiss('Dismiss')"
-        *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)"
-      >
+      @if (!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)) {
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="$activeModal.dismiss('Dismiss')">
         {{ 'form.button_close' | translate }}
       </button>
+      }
     </div>
     <div class="text-center">
-      <button
-        type="button"
-        class="btn btn-elegant"
-        data-dismiss="modal"
-        (click)="$activeModal.dismiss('Dismiss')"
-        *ngIf="['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)"
-      >
+      @if (['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)) {
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="$activeModal.dismiss('Dismiss')">
         {{ 'form.button_close' | translate }}
       </button>
+      }
     </div>
     <div class="text-right">
-      <button
-        *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)"
-        type="button"
-        class="btn btn-danger"
-        data-dismiss="modal"
-        (click)="$activeModal.close(true);"
-      >
+      @if (!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)) {
+      <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="$activeModal.close(true);">
         {{ 'plugins.node_update.continue' | translate }}
       </button>
+      }
     </div>
   </div>
 </div>

@@ -16,7 +16,9 @@
     <p class="w-100">{{ 'restart.child_bridge_list' | translate }}</p>
     <div class="text-center">
       <ul class="d-inline-block text-left font-weight-bold">
-        <li *ngFor="let bridge of bridges">{{ bridge.displayName }}</li>
+        @for (bridge of bridges; track bridge) {
+        <li>{{ bridge.displayName }}</li>
+        }
       </ul>
     </div>
   </div>

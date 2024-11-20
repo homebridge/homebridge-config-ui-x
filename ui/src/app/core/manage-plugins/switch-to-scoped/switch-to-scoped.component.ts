@@ -1,10 +1,11 @@
 import { ApiService } from '@/app/core/api.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
-import { Component, Input, OnDestroy, OnInit } from '@angular/core'
+import { NgClass } from '@angular/common'
+import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
-import { TranslateService } from '@ngx-translate/core'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { saveAs } from 'file-saver'
 import { ToastrService } from 'ngx-toastr'
 import { Terminal } from 'xterm'
@@ -13,8 +14,20 @@ import { FitAddon } from 'xterm-addon-fit'
 @Component({
   templateUrl: './switch-to-scoped.component.html',
   styleUrls: ['./switch-to-scoped.component.scss'],
+  imports: [
+    NgClass,
+    TranslatePipe,
+  ],
 })
 export class SwitchToScopedComponent implements OnInit, OnDestroy {
+  $activeModal = inject(NgbActiveModal)
+  private $api = inject(ApiService)
+  private $router = inject(Router)
+  $settings = inject(SettingsService)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
+  private $ws = inject(WsService)
+
   @Input() plugin: any
 
   public installing = false
@@ -32,15 +45,7 @@ export class SwitchToScopedComponent implements OnInit, OnDestroy {
   private fitAddon = new FitAddon()
   private errorLog = ''
 
-  constructor(
-    public $activeModal: NgbActiveModal,
-    private $api: ApiService,
-    private $router: Router,
-    public $settings: SettingsService,
-    private $toastr: ToastrService,
-    private $translate: TranslateService,
-    private $ws: WsService,
-  ) {
+  constructor() {
     this.term = new Terminal({
       theme: {
         background: '#00000000',

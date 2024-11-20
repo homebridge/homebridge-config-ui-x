@@ -1,5 +1,5 @@
 import { ApiService } from '@/app/core/api.service'
-import { Injectable } from '@angular/core'
+import { inject, Injectable } from '@angular/core'
 import { Title } from '@angular/platform-browser'
 import { TranslateService } from '@ngx-translate/core'
 import dayjs from 'dayjs'
@@ -48,6 +48,11 @@ interface AppSettingsInterface {
   providedIn: 'root',
 })
 export class SettingsService {
+  private $api = inject(ApiService)
+  private $title = inject(Title)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
+
   public env: EnvInterface = {} as EnvInterface
   public formAuth = true
   public uiVersion: string
@@ -82,12 +87,7 @@ export class SettingsService {
   public onSettingsLoaded = this.settingsLoadedSubject.pipe(first())
   public settingsLoaded = false
 
-  constructor(
-    private $api: ApiService,
-    private $title: Title,
-    private $toastr: ToastrService,
-    private $translate: TranslateService,
-  ) {
+  constructor() {
     this.getAppSettings()
   }
 

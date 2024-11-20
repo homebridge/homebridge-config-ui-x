@@ -1,4 +1,3 @@
-import { CoreModule } from '@/app/core/core.module'
 import { Users2faDisableComponent } from '@/app/modules/users/users-2fa-disable/users-2fa-disable.component'
 import { Users2faEnableComponent } from '@/app/modules/users/users-2fa-enable/users-2fa-enable.component'
 import { UsersAddComponent } from '@/app/modules/users/users-add/users-add.component'
@@ -13,21 +12,18 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateModule } from '@ngx-translate/core'
 
 @NgModule({
-  declarations: [
-    UsersComponent,
-    UsersAddComponent,
-    UsersEditComponent,
-    Users2faEnableComponent,
-    Users2faDisableComponent,
-  ],
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     TranslateModule.forChild(),
     NgbModule,
-    CoreModule,
     UsersRoutingModule,
+    UsersComponent,
+    UsersAddComponent,
+    UsersEditComponent,
+    Users2faEnableComponent,
+    Users2faDisableComponent,
   ],
   providers: [
     UsersResolver,

@@ -12,101 +12,112 @@
     </button>
   </div>
   <div [hidden]="!onlineUpdateOk || actionComplete || showReleaseNotes" id="plugin-log-output" class="modal-body"></div>
-  <div *ngIf="actionComplete" class="modal-body plugin-modal-body">
-    <div *ngIf="justUpdatedPlugin">
-      <h3 class="text-center primary-text" *ngIf="!isDisabled">
-        {{ 'platform.version.service_restart_required' | translate }}
-      </h3>
+  @if (actionComplete) {
+  <div class="modal-body plugin-modal-body">
+    @if (justUpdatedPlugin) {
+    <div>
+      @if (!isDisabled) {
+      <h3 class="text-center primary-text">{{ 'platform.version.service_restart_required' | translate }}</h3>
+      }
       <p class="text-center grey-text">
         {{ 'plugins.manage.thanks_for_updating' | translate:{ pluginName: pluginName, targetVersion: targetVersion } }}
       </p>
-      <div *ngIf="!isDisabled">
-        <p
-          *ngIf="['homebridge', 'homebridge-config-ui-x'].includes(pluginName) || childBridges.length === 0"
-          class="text-center grey-text"
-        >
-          {{ 'restart.homebridge' | translate }}
-        </p>
-        <p
-          *ngIf="!['homebridge', 'homebridge-config-ui-x'].includes(pluginName) && childBridges.length > 0"
-          class="text-center grey-text"
-        >
-          {{ 'restart.child_bridges' | translate }}
-        </p>
+      @if (!isDisabled) {
+      <div>
+        @if (['homebridge', 'homebridge-config-ui-x'].includes(pluginName) || childBridges.length === 0) {
+        <p class="text-center grey-text">{{ 'restart.homebridge' | translate }}</p>
+        } @if (!['homebridge', 'homebridge-config-ui-x'].includes(pluginName) && childBridges.length > 0) {
+        <p class="text-center grey-text">{{ 'restart.child_bridges' | translate }}</p>
+        }
       </div>
-      <div class="alert pt-3 px-3 pb-0 mb-0" *ngIf="changeLog">
+      } @if (changeLog) {
+      <div class="alert pt-3 px-3 pb-0 mb-0">
         <markdown class="plugin-md" [data]="changeLog"></markdown>
       </div>
+      }
     </div>
+    }
   </div>
-  <div *ngIf="!onlineUpdateOk" class="modal-body">
+  } @if (!onlineUpdateOk) {
+  <div class="modal-body">
     <h4 class="primary-text text-center">{{ 'plugins.manage.manual_update_required' | translate }}</h4>
     <p>{{ 'plugins.manage.online_updates' | translate }}</p>
-    <div *ngIf="$settings.env.serviceMode">
+    @if ($settings.env.serviceMode) {
+    <div>
       <p>{{ 'plugins.manage.manual_update_command' | translate }}</p>
       <pre>
-hb-service stop
-npm install -g {{ pluginName }}&#64;{{targetVersion}}
-hb-service start</pre
+            hb-service stop
+            npm install -g {{ pluginName }}&#64;{{targetVersion}}
+            hb-service start</pre
       >
     </div>
+    }
   </div>
-  <div *ngIf="showReleaseNotes && !actionComplete" class="modal-body plugin-modal-body">
-    <div class="alert text-center" *ngIf="release.name || latestVersion">
+  } @if (showReleaseNotes && !actionComplete) {
+  <div class="modal-body plugin-modal-body">
+    @if (release.name || latestVersion) {
+    <div class="alert text-center">
       <h5 class="mb-0">
-        <span *ngIf="installedVersion">v{{ installedVersion }} &rarr; </span>
-        <span *ngIf="release.name">{{ release.name }}</span>
-        <span *ngIf="!release.name">v{{ latestVersion }}</span>
+        @if (installedVersion) {
+        <span>v{{ installedVersion }} &rarr; </span>
+        } @if (release.name) {
+        <span>{{ release.name }}</span>
+        } @if (!release.name) {
+        <span>v{{ latestVersion }}</span>
+        }
       </h5>
     </div>
+    }
     <h5>{{ 'plugins.manage.release_notes' | translate }}</h5>
     <div class="alert pt-3 px-3 pb-0 mb-0">
       <markdown class="plugin-md" [data]="release.changelog"></markdown>
     </div>
   </div>
-  <div
-    class="modal-footer justify-content-between"
-    *ngIf="!onlineUpdateOk || actionComplete || showReleaseNotes || actionFailed"
-  >
+  } @if (!onlineUpdateOk || actionComplete || showReleaseNotes || actionFailed) {
+  <div class="modal-footer justify-content-between">
     <div class="text-left">
+      @if (!justUpdatedPlugin || (justUpdatedPlugin && (!isDisabled || actionFailed))) {
       <button
         type="button"
         class="btn btn-elegant"
         data-dismiss="modal"
         (click)="$activeModal.dismiss('Dismiss')"
         [attr.aria-label]="'form.button_close' | translate"
-        *ngIf="!justUpdatedPlugin || (justUpdatedPlugin && (!isDisabled || actionFailed))"
       >
         {{ 'form.button_close' | translate }}
       </button>
+      }
     </div>
     <div class="text-center">
+      @if (justUpdatedPlugin && isDisabled && !actionFailed) {
       <button
         type="button"
         class="btn btn-elegant"
         data-dismiss="modal"
         (click)="$activeModal.dismiss('Dismiss')"
         [attr.aria-label]="'form.button_close' | translate"
-        *ngIf="justUpdatedPlugin && isDisabled && !actionFailed"
       >
         {{ 'form.button_close' | translate }}
       </button>
+      }
     </div>
     <div class="text-right">
-      <button *ngIf="onlineUpdateOk && showReleaseNotes" type="button" class="btn btn-primary" (click)="update()">
+      @if (onlineUpdateOk && showReleaseNotes) {
+      <button type="button" class="btn btn-primary" (click)="update()">
         {{ 'plugins.button_update' | translate }}
       </button>
+      } @if (justUpdatedPlugin && !isDisabled) {
       <button
         type="button"
         class="btn btn-primary"
-        *ngIf="justUpdatedPlugin && !isDisabled"
         (click)="!['homebridge', 'homebridge-config-ui-x'].includes(pluginName) && childBridges.length > 0 ? onRestartChildBridgeClick() : onRestartHomebridgeClick()"
       >
         {{ 'menu.tooltip_restart' | translate }}
       </button>
-      <button *ngIf="actionFailed" class="btn btn-primary" (click)="downloadLogFile()">
-        {{ 'form.button_download' | translate }}
-      </button>
+      } @if (actionFailed) {
+      <button class="btn btn-primary" (click)="downloadLogFile()">{{ 'form.button_download' | translate }}</button>
+      }
     </div>
   </div>
+  }
 </div>

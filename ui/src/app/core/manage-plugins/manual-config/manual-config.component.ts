@@ -4,19 +4,46 @@ import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebr
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
 import { MobileDetectService } from '@/app/core/mobile-detect.service'
 import { SettingsService } from '@/app/core/settings.service'
-import { Component, Input, OnInit } from '@angular/core'
+import { Component, inject, Input, OnInit } from '@angular/core'
+import { FormsModule } from '@angular/forms'
 import { Router } from '@angular/router'
-import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap'
-import { TranslateService } from '@ngx-translate/core'
+import { NgbAccordionBody, NgbAccordionButton, NgbAccordionCollapse, NgbAccordionDirective, NgbAccordionHeader, NgbAccordionItem, NgbAccordionToggle, NgbActiveModal, NgbCollapse, NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import json5 from 'json5'
+import { EditorComponent } from 'ngx-monaco-editor-v2'
+
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
 @Component({
   templateUrl: './manual-config.component.html',
   styleUrls: ['./manual-config.component.scss'],
+  imports: [
+    NgbAccordionDirective,
+    NgbAccordionItem,
+    NgbAccordionHeader,
+    NgbTooltip,
+    NgbAccordionToggle,
+    NgbAccordionButton,
+    NgbCollapse,
+    NgbAccordionCollapse,
+    NgbAccordionBody,
+    EditorComponent,
+    FormsModule,
+    TranslatePipe,
+  ],
 })
 export class ManualConfigComponent implements OnInit {
+  $activeModal = inject(NgbActiveModal)
+  private $api = inject(ApiService)
+  private $md = inject(MobileDetectService)
+  private $modal = inject(NgbModal)
+  private $plugin = inject(ManagePluginsService)
+  private $router = inject(Router)
+  private $settings = inject(SettingsService)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
+
   @Input() plugin: any
 
   public pluginAlias: string
@@ -35,18 +62,6 @@ export class ManualConfigComponent implements OnInit {
 
   public monacoEditor: any
   public editorOptions: any
-
-  constructor(
-    public $activeModal: NgbActiveModal,
-    private $api: ApiService,
-    private $md: MobileDetectService,
-    private $modal: NgbModal,
-    private $plugin: ManagePluginsService,
-    private $router: Router,
-    private $settings: SettingsService,
-    private $toastr: ToastrService,
-    private $translate: TranslateService,
-  ) {}
 
   get arrayKey() {
     return this.pluginType === 'accessory' ? 'accessories' : 'platforms'

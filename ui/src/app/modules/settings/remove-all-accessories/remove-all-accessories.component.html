@@ -13,11 +13,13 @@
     </button>
   </div>
   <div class="modal-body">
-    <div *ngIf="cachedAccessories.length === 0" class="text-center">
+    @if (cachedAccessories.length === 0) {
+    <div class="text-center">
       <i class="fas fa-fw fa-circle-check mb-4 primary-text" style="font-size: 75px"></i>
       <p class="mb-0">{{ 'reset.remove_cached_accessories_single_empty' | translate }}</p>
     </div>
-    <div *ngIf="cachedAccessories.length > 0">
+    } @if (cachedAccessories.length > 0) {
+    <div>
       <div class="text-center mb-4">
         <i class="fas fa-fw fa-network-wired mb-4 primary-text" style="font-size: 75px"></i>
       </div>
@@ -30,45 +32,52 @@
         </ul>
       </ngb-alert>
     </div>
+    }
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-left">
+      @if (cachedAccessories.length > 0) {
       <button
         type="button"
         class="btn btn-elegant"
         data-dismiss="modal"
         (click)="$activeModal.dismiss('Dismiss')"
         [attr.aria-label]="'form.button_close' | translate"
-        *ngIf="cachedAccessories.length > 0"
         [disabled]="clicked"
       >
         {{ 'form.button_close' | translate }}
       </button>
+      }
     </div>
     <div class="text-center">
+      @if (cachedAccessories.length === 0) {
       <button
         type="button"
         class="btn btn-elegant"
         data-dismiss="modal"
         (click)="$activeModal.dismiss('Dismiss')"
         [attr.aria-label]="'form.button_close' | translate"
-        *ngIf="cachedAccessories.length === 0"
       >
         {{ 'form.button_close' | translate }}
       </button>
+      }
     </div>
     <div class="text-right">
+      @if (cachedAccessories.length > 0) {
       <button
         type="button"
         class="btn btn-danger"
         data-dismiss="modal"
         (click)="onResetCachedAccessoriesClick()"
         [disabled]="clicked"
-        *ngIf="cachedAccessories.length > 0"
       >
-        <span *ngIf="!clicked">{{ 'form.button_remove' | translate }}</span>
-        <i *ngIf="clicked" class="fas fa-fw fa-spinner fa-pulse"></i>
+        @if (!clicked) {
+        <span>{{ 'form.button_remove' | translate }}</span>
+        } @if (clicked) {
+        <i class="fas fa-fw fa-spinner fa-pulse"></i>
+        }
       </button>
+      }
     </div>
   </div>
 </div>

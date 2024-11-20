@@ -20,9 +20,11 @@
       <li>{{ 'backup.backup_help_one' | translate }}</li>
       <li>{{ 'backup.backup_help_two' | translate }}</li>
       <li>{{ 'backup.backup_warning' | translate }}</li>
-      <li *ngIf="backupTime">
+      @if (backupTime) {
+      <li>
         {{ 'backup.scheduled_backup_time' | translate:{ backupTime: backupTime | date:'shortTime', dayCount: 7 } }}
       </li>
+      }
     </ul>
     <ul class="list-group list-group-box mt-2">
       <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -53,19 +55,16 @@
           </button>
         </span>
       </li>
-      <li
-        *ngFor="let backup of scheduledBackups"
-        class="list-group-item d-flex justify-content-between align-items-center"
-      >
+      @for (backup of scheduledBackups; track backup) {
+      <li class="list-group-item d-flex justify-content-between align-items-center">
         <span>
           <span [ngbTooltip]="backup.fileName" container="modal" openDelay="150" triggers="hover">
             {{ backup.timestamp | date:'mediumDate' }}
           </span>
           <br />
           <small class="grey-text">
-            {{ backup.timestamp | date:'shortTime' }} &middot;
+            {{ backup.timestamp | date:'shortTime' }} &middot; @if (backup.size > backup.maxBackupSize) {
             <span
-              *ngIf="backup.size > backup.maxBackupSize"
               [ngbTooltip]="'backup.backup_exceeds_max_size' | translate: { backupSize: backup.size + 'MB', maxBackupSizeText: backup.maxBackupSizeText }"
               container="modal"
               openDelay="150"
@@ -75,7 +74,9 @@
               <i class="fas fa-fw fa-exclamation-circle"></i>
               {{ backup.size }}MB
             </span>
-            <span *ngIf="backup.size <= backup.maxBackupSize"> {{ backup.size }}MB </span>
+            } @if (backup.size <= backup.maxBackupSize) {
+            <span> {{ backup.size }}MB </span>
+            }
           </small>
         </span>
         <span style="display: flex; flex-wrap: nowrap">
@@ -123,14 +124,17 @@
           </button>
         </span>
       </li>
+      }
     </ul>
 
-    <div *ngIf="errorMessage">
+    @if (errorMessage) {
+    <div>
       <div class="alert alert-error" role="alert">
         <h4 class="alert-heading">{{ 'toast.title_error' | translate }}</h4>
         <p>{{ errorMessage }}</p>
       </div>
     </div>
+    }
   </div>
 
   <div class="modal-footer justify-content-between">

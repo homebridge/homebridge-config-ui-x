@@ -1,26 +1,29 @@
 import { ApiService } from '@/app/core/api.service'
-import { Component } from '@angular/core'
-import { FormControl, FormGroup, Validators } from '@angular/forms'
+import { Component, inject } from '@angular/core'
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
-import { TranslateService } from '@ngx-translate/core'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 
 @Component({
   templateUrl: './users-2fa-disable.component.html',
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    TranslatePipe,
+  ],
 })
 export class Users2faDisableComponent {
+  $activeModal = inject(NgbActiveModal)
+  private $api = inject(ApiService)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
+
   public formGroup = new FormGroup({
     password: new FormControl('', [Validators.required]),
   })
 
   public invalidCredentials = false
-
-  constructor(
-    public $activeModal: NgbActiveModal,
-    private $api: ApiService,
-    private $toastr: ToastrService,
-    private $translate: TranslateService,
-  ) {}
 
   disable2fa() {
     this.invalidCredentials = false

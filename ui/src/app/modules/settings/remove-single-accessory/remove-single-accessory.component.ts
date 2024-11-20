@@ -1,23 +1,27 @@
 import { ApiService } from '@/app/core/api.service'
-import { Component, OnInit } from '@angular/core'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
-import { TranslateService } from '@ngx-translate/core'
+import { NgClass } from '@angular/common'
+import { Component, inject, OnInit } from '@angular/core'
+import { NgbActiveModal, NgbAlert } from '@ng-bootstrap/ng-bootstrap'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
 @Component({
   templateUrl: './remove-single-accessory.component.html',
+  imports: [
+    NgbAlert,
+    NgClass,
+    TranslatePipe,
+  ],
 })
 export class RemoveSingleAccessoryComponent implements OnInit {
+  $activeModal = inject(NgbActiveModal)
+  private $api = inject(ApiService)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
+
   public cachedAccessories: any[] = []
   public deleting: null | string = null
-
-  constructor(
-    public $activeModal: NgbActiveModal,
-    private $api: ApiService,
-    private $toastr: ToastrService,
-    private $translate: TranslateService,
-  ) {}
 
   ngOnInit(): void {
     this.loadCachedAccessories()

@@ -1,19 +1,27 @@
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { WindowcoveringManageComponent } from '@/app/core/accessories/types/windowcovering/windowcovering.manage.component'
-import { Component, Input } from '@angular/core'
+import { NgClass } from '@angular/common'
+import { Component, inject, Input } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { TranslatePipe } from '@ngx-translate/core'
+import { InlineSVGModule } from 'ng-inline-svg-2'
+import { LongClickDirective } from '../../../directives/longclick.directive'
 
 @Component({
   selector: 'app-windowcovering',
   templateUrl: './windowcovering.component.html',
   styleUrls: ['./windowcovering.component.scss'],
+  imports: [
+    LongClickDirective,
+    NgClass,
+    InlineSVGModule,
+    TranslatePipe,
+  ],
 })
 export class WindowCoveringComponent {
-  @Input() public service: ServiceTypeX
+  private $modal = inject(NgbModal)
 
-  constructor(
-    private $modal: NgbModal,
-  ) {}
+  @Input() public service: ServiceTypeX
 
   onClick() {
     if (this.service.values.TargetPosition) {

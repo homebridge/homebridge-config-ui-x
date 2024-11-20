@@ -14,19 +14,21 @@
   <div class="modal-body text-center px-5">
     <h5>
       <strong>
-        <div *ngIf="service.values.PositionState === 2">
-          <span *ngIf="service.values.CurrentPosition === 0">{{ 'accessories.control.closed' | translate }}</span>
-          <span *ngIf="service.values.CurrentPosition > 0 && service.values.CurrentPosition < 100">
-            {{ service.values.CurrentPosition }}% {{ 'accessories.control.open' | translate }}
-          </span>
-          <span *ngIf="service.values.CurrentPosition === 100">Open</span>
+        @if (service.values.PositionState === 2) {
+        <div>
+          @if (service.values.CurrentPosition === 0) {
+          <span>{{ 'accessories.control.closed' | translate }}</span>
+          } @if (service.values.CurrentPosition > 0 && service.values.CurrentPosition < 100) {
+          <span> {{ service.values.CurrentPosition }}% {{ 'accessories.control.open' | translate }} </span>
+          } @if (service.values.CurrentPosition === 100) {
+          <span>Open</span>
+          }
         </div>
-        <div class="red-text" *ngIf="service.values.PositionState === 1">
-          {{ 'accessories.control.opening' | translate }}...
-        </div>
-        <div class="red-text" *ngIf="service.values.PositionState === 0">
-          {{ 'accessories.control.closing' | translate }}...
-        </div>
+        } @if (service.values.PositionState === 1) {
+        <div class="red-text">{{ 'accessories.control.opening' | translate }}...</div>
+        } @if (service.values.PositionState === 0) {
+        <div class="red-text">{{ 'accessories.control.closing' | translate }}...</div>
+        }
       </strong>
     </h5>
 

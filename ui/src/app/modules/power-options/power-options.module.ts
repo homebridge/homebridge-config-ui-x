@@ -7,15 +7,13 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateModule } from '@ngx-translate/core'
 
 @NgModule({
-  declarations: [
-    PowerOptionsComponent,
-  ],
   imports: [
     CommonModule,
     PowerOptionsRoutingModule,
     NgbModule,
     ReactiveFormsModule,
     TranslateModule,
+    PowerOptionsComponent,
   ],
 })
 export class PowerOptionsModule {}

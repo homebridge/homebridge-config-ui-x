@@ -1,16 +1,21 @@
-import { Component, Input } from '@angular/core'
+import { Component, inject, Input } from '@angular/core'
+import { FormsModule } from '@angular/forms'
+
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
+import { TranslatePipe } from '@ngx-translate/core'
 
 @Component({
   templateUrl: './select-network-interfaces.component.html',
+  imports: [
+    FormsModule,
+    TranslatePipe,
+  ],
 })
 export class SelectNetworkInterfacesComponent {
-  @Input() availableNetworkAdapters: Record<string, any>
-  @Input() bridgeNetworkAdapters: Record<string, any>
+  $activeModal = inject(NgbActiveModal)
 
-  constructor(
-    public $activeModal: NgbActiveModal,
-  ) {}
+  @Input() availableNetworkAdapters: any[] = []
+  @Input() bridgeNetworkAdapters: string[] = []
 
   submit() {
     this.$activeModal.close(

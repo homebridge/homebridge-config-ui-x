@@ -6,14 +6,12 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateModule } from '@ngx-translate/core'
 
 @NgModule({
-  declarations: [
-    LogsComponent,
-  ],
   imports: [
     CommonModule,
     LogsRoutingModule,
     NgbModule,
     TranslateModule.forChild(),
+    LogsComponent,
   ],
 })
 export class LogsModule {}

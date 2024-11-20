@@ -1,12 +1,19 @@
 import { SettingsService } from '@/app/core/settings.service'
-import { Component, Input, OnInit } from '@angular/core'
+import { Component, inject, Input, OnInit } from '@angular/core'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
-import { TranslateService } from '@ngx-translate/core'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 
 @Component({
   templateUrl: './widget-visibility.component.html',
+  imports: [
+    TranslatePipe,
+  ],
 })
 export class WidgetVisibilityComponent implements OnInit {
+  $activeModal = inject(NgbActiveModal)
+  private $settings = inject(SettingsService)
+  private $translate = inject(TranslateService)
+
   @Input() dashboard: any
   @Input() resetLayout: () => void
   @Input() lockLayout: () => void
@@ -14,12 +21,6 @@ export class WidgetVisibilityComponent implements OnInit {
   @Input() public isLayoutUnlocked: boolean
 
   public availableWidgets = []
-
-  constructor(
-    public $activeModal: NgbActiveModal,
-    private $settings: SettingsService,
-    private $translate: TranslateService,
-  ) {}
 
   ngOnInit() {
     const allWidgets = [

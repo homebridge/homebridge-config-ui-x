@@ -3,19 +3,36 @@ import { AuthService } from '@/app/core/auth/auth.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { RestoreComponent } from '@/app/modules/settings/restore/restore.component'
 import { environment } from '@/environments/environment'
-import { Component, OnDestroy, OnInit } from '@angular/core'
-import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms'
+import { NgClass } from '@angular/common'
+import { Component, inject, OnDestroy, OnInit } from '@angular/core'
+import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Title } from '@angular/platform-browser'
+import { RouterLink } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
-import { TranslateService } from '@ngx-translate/core'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
 @Component({
   templateUrl: './setup-wizard.component.html',
   styleUrls: ['./setup-wizard.component.scss'],
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    NgClass,
+    RouterLink,
+    TranslatePipe,
+  ],
 })
 export class SetupWizardComponent implements OnInit, OnDestroy {
+  private $api = inject(ApiService)
+  private $auth = inject(AuthService)
+  private $modal = inject(NgbModal)
+  private $settings = inject(SettingsService)
+  private $title = inject(Title)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
+
   public previousTitle: string
   public step: 'welcome' | 'create-account' | 'setup-complete' | 'restore-backup' | 'restarting' = 'welcome'
 
@@ -29,16 +46,6 @@ export class SetupWizardComponent implements OnInit, OnDestroy {
 
   public selectedFile: File
   public restoreUploading = false
-
-  constructor(
-    private $api: ApiService,
-    private $auth: AuthService,
-    private $modal: NgbModal,
-    private $settings: SettingsService,
-    private $title: Title,
-    private $toastr: ToastrService,
-    private $translate: TranslateService,
-  ) {}
 
   ngOnInit(): void {
     this.previousTitle = this.$title.getTitle()

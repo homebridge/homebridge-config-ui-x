@@ -1,13 +1,12 @@
-import { Directive, ElementRef, OnInit } from '@angular/core'
+import { Directive, ElementRef, inject, OnInit } from '@angular/core'
 import { EmojiConvertor } from 'emoji-js'
 
 @Directive({
   selector: 'markdown',
+  standalone: true,
 })
 export class PluginsMarkdownDirective implements OnInit {
-  constructor(
-    private el: ElementRef,
-  ) {}
+  private el = inject(ElementRef)
 
   ngOnInit() {
     // ensure third party links open in a new window without a referrer

@@ -1,6 +1,7 @@
 <div class="setup-container d-flex align-items-center justify-content-center">
   <div class="w-100 setup-card d-flex py-5">
-    <div *ngIf="step === 'welcome'" class="w-100 d-flex flex-column align-items-center">
+    @if (step === 'welcome') {
+    <div class="w-100 d-flex flex-column align-items-center">
       <img class="homebridge-logo mx-auto" src="/assets/homebridge-color-round.svg" alt="hb logo" />
       <h3 class="pt-4 pb-3 text-center">{{ 'setup.welcome_to_homebridge' | translate }}</h3>
       <button type="button" class="btn btn-lg btn-primary" (click)="onClickGettingStarted()">
@@ -12,15 +13,14 @@
         >
       </small>
     </div>
-
-    <div *ngIf="step === 'create-account'" class="w-100 d-flex flex-column align-items-center">
+    } @if (step === 'create-account') {
+    <div class="w-100 d-flex flex-column align-items-center">
       <img
         class="homebridge-logo homebridge-logo-small mx-auto"
         src="/assets/homebridge-color-round.svg"
         alt="hb logo"
       />
       <h3 class="pt-4 pb-3 text-center">{{ 'setup.create_account' | translate }}</h3>
-
       <div class="w-100">
         <p>{{ 'setup.create_account_reason' | translate }}</p>
         <form novalidate (ngSubmit)="createFirstUser()" [formGroup]="createUserForm">
@@ -42,7 +42,6 @@
             />
             <label for="form-username">{{ 'users.label_username' | translate }}</label>
           </div>
-
           <div class="md-form">
             <i class="fas fa-fw fa-lock prefix grey-text"></i>
             <input
@@ -60,7 +59,6 @@
             />
             <label for="form-pass">{{ 'users.label_password' | translate }}</label>
           </div>
-
           <div class="md-form">
             <i class="fas fa-fw fa-lock prefix grey-text"></i>
             <input
@@ -78,7 +76,6 @@
             />
             <label for="form-pass-confirm">{{ 'users.label_confirm_password' | translate }}</label>
           </div>
-
           <div class="w-100 text-center">
             <button
               type="submit"
@@ -95,8 +92,8 @@
         </form>
       </div>
     </div>
-
-    <div *ngIf="step === 'restore-backup'" class="w-100 d-flex flex-column align-items-center">
+    } @if (step === 'restore-backup') {
+    <div class="w-100 d-flex flex-column align-items-center">
       <img
         class="homebridge-logo homebridge-logo-small mx-auto"
         src="/assets/homebridge-color-round.svg"
@@ -104,7 +101,6 @@
       />
       <h3 class="pt-4 pb-3 text-center">{{ 'form.button_restore' | translate }}</h3>
       <p>{{ 'backup.restore_help_one' | translate }}</p>
-
       <div class="custom-file">
         <input
           type="file"
@@ -117,7 +113,6 @@
           {{ selectedFile?.name || 'backup.label_choose_backup_file_to_restore' | translate }}
         </label>
       </div>
-
       <div class="mt-3 w-100 d-flex justify-content-between">
         <button
           type="button"
@@ -127,23 +122,25 @@
         >
           {{ 'form.button_cancel' | translate }}
         </button>
-
         <button
           type="button"
           class="btn btn-primary mr-0"
           (click)="onRestoreBackupClick()"
           [disabled]="restoreUploading || !selectedFile"
         >
-          <span *ngIf="restoreUploading">
+          @if (restoreUploading) {
+          <span>
             <i class="fas fa-fw fa-spinner fa-pulse"></i>
             {{ 'backup.label_uploading' | translate }}
           </span>
-          <span *ngIf="!restoreUploading">{{ 'backup.button_restore_backup' | translate }}</span>
+          } @if (!restoreUploading) {
+          <span>{{ 'backup.button_restore_backup' | translate }}</span>
+          }
         </button>
       </div>
     </div>
-
-    <div *ngIf="step === 'restarting'" class="w-100 d-flex flex-column align-items-center">
+    } @if (step === 'restarting') {
+    <div class="w-100 d-flex flex-column align-items-center">
       <img
         class="homebridge-logo homebridge-logo-small mx-auto"
         src="/assets/homebridge-color-round.svg"
@@ -154,8 +151,8 @@
         <i class="fas fa-fw fa-spinner fa-pulse"></i>
       </h1>
     </div>
-
-    <div *ngIf="step === 'setup-complete'" class="w-100 d-flex flex-column align-items-center">
+    } @if (step === 'setup-complete') {
+    <div class="w-100 d-flex flex-column align-items-center">
       <img
         class="homebridge-logo homebridge-logo-small mx-auto"
         src="/assets/homebridge-color-round.svg"
@@ -165,5 +162,6 @@
       <p class="text-center">{{ 'setup_wizard_message_complete_message' | translate }}</p>
       <a class="btn btn-lg btn-primary mt-3" routerLink="/">{{ 'setup.open_dashboard' | translate }}</a>
     </div>
+    }
   </div>
 </div>

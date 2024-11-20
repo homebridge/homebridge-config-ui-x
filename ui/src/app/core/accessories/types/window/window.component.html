@@ -7,31 +7,26 @@
   tabindex="0"
 >
   <div class="d-flex flex-column h-100">
-    <div
-      *ngIf="!service.values.TargetPosition"
-      [inlineSVG]="'/assets/hap-icons/window-closed.svg'"
-      [attr.aria-label]="'Window'"
-      class="accessory-svg"
-    ></div>
-    <div
-      *ngIf="service.values.TargetPosition"
-      [inlineSVG]="'/assets/hap-icons/window-open.svg'"
-      [attr.aria-label]="'Window'"
-      class="accessory-svg"
-    ></div>
+    @if (!service.values.TargetPosition) {
+    <div [inlineSVG]="'/assets/hap-icons/window-closed.svg'" [attr.aria-label]="'Window'" class="accessory-svg"></div>
+    } @if (service.values.TargetPosition) {
+    <div [inlineSVG]="'/assets/hap-icons/window-open.svg'" [attr.aria-label]="'Window'" class="accessory-svg"></div>
+    }
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
-    <div class="accessory-label grey-text" *ngIf="service.values.PositionState === 2">
-      <span *ngIf="service.values.CurrentPosition === 0">{{ 'accessories.control.closed' | translate }}</span>
-      <span *ngIf="service.values.CurrentPosition > 0 && service.values.CurrentPosition < 100">
-        {{ service.values.CurrentPosition }}%
-      </span>
-      <span *ngIf="service.values.CurrentPosition === 100">{{ 'accessories.control.open' | translate }}</span>
+    @if (service.values.PositionState === 2) {
+    <div class="accessory-label grey-text">
+      @if (service.values.CurrentPosition === 0) {
+      <span>{{ 'accessories.control.closed' | translate }}</span>
+      } @if (service.values.CurrentPosition > 0 && service.values.CurrentPosition < 100) {
+      <span> {{ service.values.CurrentPosition }}% </span>
+      } @if (service.values.CurrentPosition === 100) {
+      <span>{{ 'accessories.control.open' | translate }}</span>
+      }
     </div>
-    <div class="accessory-label red-text" *ngIf="service.values.PositionState === 1">
-      {{ 'accessories.control.opening' | translate }}...
-    </div>
-    <div class="accessory-label red-text" *ngIf="service.values.PositionState === 0">
-      {{ 'accessories.control.closing' | translate }}...
-    </div>
+    } @if (service.values.PositionState === 1) {
+    <div class="accessory-label red-text">{{ 'accessories.control.opening' | translate }}...</div>
+    } @if (service.values.PositionState === 0) {
+    <div class="accessory-label red-text">{{ 'accessories.control.closing' | translate }}...</div>
+    }
   </div>
 </div>

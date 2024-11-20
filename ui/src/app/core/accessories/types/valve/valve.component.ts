@@ -1,26 +1,34 @@
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { ValveManageComponent } from '@/app/core/accessories/types/valve/valve.manage.component'
-import { Component, Input, OnDestroy, OnInit } from '@angular/core'
+import { NgClass } from '@angular/common'
+import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { TranslatePipe } from '@ngx-translate/core'
+import { InlineSVGModule } from 'ng-inline-svg-2'
 import { interval, Subscription } from 'rxjs'
 import { filter } from 'rxjs/operators'
+import { LongClickDirective } from '../../../directives/longclick.directive'
 
 @Component({
   selector: 'app-valve',
   templateUrl: './valve.component.html',
   styleUrls: ['./valve.component.scss'],
+  imports: [
+    LongClickDirective,
+    NgClass,
+    InlineSVGModule,
+    TranslatePipe,
+  ],
 })
 export class ValveComponent implements OnInit, OnDestroy {
+  private $modal = inject(NgbModal)
+
   @Input() public service: ServiceTypeX
 
   public secondsActive = 0
   public remainingDuration: string
   private remainingDurationInterval = interval(1000).pipe(filter(() => this.isActive()))
   private remainingDurationSubscription: Subscription
-
-  constructor(
-    private $modal: NgbModal,
-  ) {}
 
   ngOnInit() {
     // set up the RemainingDuration countdown handlers, if the valve has the RemainingDuration Characteristic

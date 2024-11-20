@@ -20,30 +20,22 @@
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-left">
-      <button
-        *ngIf="plugin.links.homepage || plugin.links.npm"
-        type="button"
-        class="btn btn-elegant"
-        data-dismiss="modal"
-        (click)="$activeModal.dismiss('Dismiss')"
-      >
+      @if (plugin.links.homepage || plugin.links.npm) {
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="$activeModal.dismiss('Dismiss')">
         {{ 'form.button_close' | translate }}
       </button>
+      }
     </div>
     <div class="text-center">
-      <button
-        *ngIf="!plugin.links.homepage && !plugin.links.npm"
-        type="button"
-        class="btn btn-elegant"
-        data-dismiss="modal"
-        (click)="$activeModal.dismiss('Dismiss')"
-      >
+      @if (!plugin.links.homepage && !plugin.links.npm) {
+      <button type="button" class="btn btn-elegant" data-dismiss="modal" (click)="$activeModal.dismiss('Dismiss')">
         {{ 'form.button_close' | translate }}
       </button>
+      }
     </div>
     <div class="text-right">
+      @if (plugin.links.homepage || plugin.links.npm) {
       <a
-        *ngIf="plugin.links.homepage || plugin.links.npm"
         class="btn btn-primary text-decoration-none"
         target="_blank"
         [href]="plugin.links.homepage || plugin.links.npm"
@@ -51,6 +43,7 @@
       >
         {{ 'plugins.button_homepage' | translate }} <i class="fas fa-fw fa-external-link-alt"></i>
       </a>
+      }
     </div>
   </div>
 </div>

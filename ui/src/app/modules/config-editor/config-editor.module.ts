@@ -10,10 +10,6 @@ import { TranslateModule } from '@ngx-translate/core'
 import { MonacoEditorModule } from 'ngx-monaco-editor-v2'
 
 @NgModule({
-  declarations: [
-    ConfigEditorComponent,
-    ConfigRestoreComponent,
-  ],
   imports: [
     CommonModule,
     FormsModule,
@@ -22,6 +18,8 @@ import { MonacoEditorModule } from 'ngx-monaco-editor-v2'
     NgbModule,
     TranslateModule.forChild(),
     ConfigEditorRoutingModule,
+    ConfigEditorComponent,
+    ConfigRestoreComponent,
   ],
   providers: [
     ConfigEditorResolver,

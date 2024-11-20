@@ -1,6 +1,6 @@
 import { AuthService } from '@/app/core/auth/auth.service'
 import { environment } from '@/environments/environment'
-import { Injectable } from '@angular/core'
+import { inject, Injectable } from '@angular/core'
 import { Observable, Subject } from 'rxjs'
 import { io as ioFn, Socket } from 'socket.io-client'
 
@@ -15,11 +15,9 @@ export interface IoNamespace {
   providedIn: 'root',
 })
 export class WsService {
-  private namespaceConnectionCache = {}
+  private $auth = inject(AuthService)
 
-  constructor(
-    private $auth: AuthService,
-  ) {}
+  private namespaceConnectionCache = {}
 
   /**
    * Wrapper function to reuse the same connecting

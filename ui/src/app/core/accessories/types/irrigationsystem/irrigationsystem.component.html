@@ -12,11 +12,10 @@
     <div class="accessory-label mt-auto">
       {{ service.customName || service.values.ConfiguredName || service.serviceName }}
     </div>
-    <div class="accessory-label grey-text" *ngIf="service.values.InUse">
-      {{ 'accessories.control.running' | translate }}
-    </div>
-    <div class="accessory-label grey-text" *ngIf="!service.values.InUse">
-      {{ 'accessories.control.off' | translate }}
-    </div>
+    @if (service.values.InUse) {
+    <div class="accessory-label grey-text">{{ 'accessories.control.running' | translate }}</div>
+    } @if (!service.values.InUse) {
+    <div class="accessory-label grey-text">{{ 'accessories.control.off' | translate }}</div>
+    }
   </div>
 </div>

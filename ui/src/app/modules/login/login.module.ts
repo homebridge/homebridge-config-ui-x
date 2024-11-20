@@ -6,14 +6,12 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { TranslateModule } from '@ngx-translate/core'
 
 @NgModule({
-  declarations: [
-    LoginComponent,
-  ],
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     TranslateModule,
+    LoginComponent,
   ],
   providers: [
     LoginGuard,

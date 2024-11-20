@@ -23,9 +23,9 @@
     </div>
     <div class="align-self-center flex-child px-3">Homebridge</div>
     <div class="grey-text ml-auto d-flex align-items-center">
+      @if (homebridgeStatus.status === 'up') {
       <i
         class="icon-button fas fa-fw fa-power-off"
-        *ngIf="homebridgeStatus.status === 'up'"
         href="javascript:void(0)"
         (click)="restartHomebridge()"
         [ngbTooltip]="'menu.tooltip_restart' | translate"
@@ -34,7 +34,9 @@
         triggers="hover"
         placement="left"
       ></i>
-      <i *ngIf="homebridgeStatus.status !== 'up'" class="fas icon-button fa-fw fa-spinner fa-pulse"></i>
+      } @if (homebridgeStatus.status !== 'up') {
+      <i class="fas icon-button fa-fw fa-spinner fa-pulse"></i>
+      }
       <i
         class="fas fa-fw fa-link ml-2"
         [ngbTooltip]="(homebridgeStatus.paired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate"
@@ -49,11 +51,8 @@
       ></i>
     </div>
   </div>
-  <div
-    class="hb-status-item d-flex flex-row w-100 px-3 mt-3"
-    style="min-width: max(25%, 225px)"
-    *ngFor="let bridge of childBridges"
-  >
+  @for (bridge of childBridges; track bridge) {
+  <div class="hb-status-item d-flex flex-row w-100 px-3 mt-3" style="min-width: max(25%, 225px)">
     <div class="hb-status-icon d-flex align-items-center">
       <i
         class="fas fa-fw"
@@ -74,9 +73,9 @@
     </div>
     <div class="align-self-center flex-child px-3">{{ bridge.name }}</div>
     <div class="grey-text ml-auto d-flex align-items-center">
+      @if (bridge.status === 'ok') {
       <i
         class="icon-button fas fa-fw fa-power-off"
-        *ngIf="bridge.status === 'ok'"
         href="javascript:void(0)"
         (click)="restartChildBridge(bridge)"
         [ngbTooltip]="'menu.tooltip_restart' | translate"
@@ -85,7 +84,9 @@
         triggers="hover"
         placement="left"
       ></i>
-      <i *ngIf="bridge.status !== 'ok'" class="fas icon-button fa-fw fa-spinner fa-pulse"></i>
+      } @if (bridge.status !== 'ok') {
+      <i class="fas icon-button fa-fw fa-spinner fa-pulse"></i>
+      }
       <i
         class="fas fa-fw fa-link ml-2"
         [ngbTooltip]="(bridge.paired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate"
@@ -100,4 +101,5 @@
       ></i>
     </div>
   </div>
+  }
 </div>

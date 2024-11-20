@@ -1,24 +1,17 @@
 import { TerminalService } from '@/app/core/terminal.service'
-import {
-  Component,
-  ElementRef,
-  HostListener,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core'
+import { Component, ElementRef, HostListener, inject, OnDestroy, OnInit, viewChild } from '@angular/core'
+import { TranslatePipe } from '@ngx-translate/core'
 import { Subject } from 'rxjs'
 
 @Component({
   templateUrl: './terminal.component.html',
+  imports: [TranslatePipe],
 })
 export class TerminalComponent implements OnInit, OnDestroy {
-  @ViewChild('terminaloutput', { static: true }) termTarget: ElementRef
-  private resizeEvent = new Subject()
+  private $terminal = inject(TerminalService)
 
-  constructor(
-    private $terminal: TerminalService,
-  ) {}
+  readonly termTarget = viewChild<ElementRef>('terminaloutput')
+  private resizeEvent = new Subject()
 
   @HostListener('window:resize', ['$event'])
   onWindowResize() {
@@ -30,7 +23,7 @@ export class TerminalComponent implements OnInit, OnDestroy {
     window.document.querySelector('body').classList.add('bg-black')
 
     // start the terminal
-    this.$terminal.startTerminal(this.termTarget, {}, this.resizeEvent)
+    this.$terminal.startTerminal(this.termTarget(), {}, this.resizeEvent)
 
     // set focus to the terminal
     this.$terminal.term.focus()

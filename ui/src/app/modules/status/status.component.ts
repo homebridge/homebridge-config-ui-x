@@ -5,17 +5,35 @@ import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { CreditsComponent } from '@/app/modules/status/credits/credits.component'
 import { WidgetControlComponent } from '@/app/modules/status/widget-control/widget-control.component'
 import { WidgetVisibilityComponent } from '@/app/modules/status/widget-visibility/widget-visibility.component'
-import { Component, OnDestroy, OnInit } from '@angular/core'
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
-import { GridsterConfig, GridsterItem } from 'angular-gridster2'
+import { Component, inject, OnDestroy, OnInit } from '@angular/core'
+import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
+import { TranslatePipe } from '@ngx-translate/core'
+import { GridsterComponent, GridsterConfig, GridsterItem, GridsterItemComponent } from 'angular-gridster2'
 import { firstValueFrom, Subject } from 'rxjs'
+
 import { take } from 'rxjs/operators'
+import { SpinnerComponent } from '../../core/components/spinner/spinner.component'
+import { WidgetsComponent } from './widgets/widgets.component'
 
 @Component({
   templateUrl: './status.component.html',
   styleUrls: ['./status.component.scss'],
+  imports: [
+    NgbTooltip,
+    SpinnerComponent,
+    GridsterComponent,
+    GridsterItemComponent,
+    WidgetsComponent,
+    TranslatePipe,
+  ],
 })
 export class StatusComponent implements OnInit, OnDestroy {
+  $auth = inject(AuthService)
+  private $modal = inject(NgbModal)
+  private $notification = inject(NotificationService)
+  $settings = inject(SettingsService)
+  private $ws = inject(WsService)
+
   public saveWidgetsEvent = new Subject()
   public options: GridsterConfig
   public dashboard: Array<GridsterItem> = []
@@ -25,14 +43,6 @@ export class StatusComponent implements OnInit, OnDestroy {
   }
 
   private io: IoNamespace
-
-  constructor(
-    public $auth: AuthService,
-    private $modal: NgbModal,
-    private $notification: NotificationService,
-    public $settings: SettingsService,
-    private $ws: WsService,
-  ) {}
 
   ngOnInit() {
     this.io = this.$ws.connectToNamespace('status')

@@ -16,24 +16,16 @@
   </div>
   <div class="modal-body">
     <div>
-      <markdown class="plugin-md" [data]="schema.headerDisplay | interpolateMd" *ngIf="schema.headerDisplay"></markdown>
+      @if (schema.headerDisplay) {
+      <markdown class="plugin-md" [data]="schema.headerDisplay | interpolateMd"></markdown>
+      }
     </div>
 
     <!-- MULTIPLE CONFIG BLOCKS-->
-    <div
-      ngbAccordion
-      [closeOthers]="true"
-      (show)="blockShown($event)"
-      (hide)="blockHidden($event)"
-      *ngIf="pluginConfig.length && !schema.singular"
-    >
-      <div
-        [ngbAccordionItem]="block.__uuid__"
-        class="card"
-        [collapsed]="show !== block.__uuid__"
-        [id]="block.__uuid__"
-        *ngFor="let block of pluginConfig; let i = index"
-      >
+    @if (pluginConfig.length && !schema.singular) {
+    <div ngbAccordion [closeOthers]="true" (show)="blockShown($event)" (hide)="blockHidden($event)">
+      @for (block of pluginConfig; track block; let i = $index) {
+      <div [ngbAccordionItem]="block.__uuid__" class="card" [collapsed]="show !== block.__uuid__" [id]="block.__uuid__">
         <div ngbAccordionHeader class="card-header">
           <div class="d-flex align-items-center justify-content-between">
             <h5 class="m-0">
@@ -49,8 +41,8 @@
               {{ block.name }}
             </h5>
             <div>
+              @if (plugin.name !== 'homebridge-config-ui-x' && show === block.__uuid__) {
               <button
-                *ngIf="plugin.name !== 'homebridge-config-ui-x' && show === block.__uuid__"
                 class="btn btn-danger ml-2"
                 (click)="removeBlock(block.__uuid__)"
                 [ngbTooltip]="'form.button_delete' | translate"
@@ -61,6 +53,7 @@
               >
                 <i class="fa fa-fw fa-trash"></i>
               </button>
+              }
               <button
                 class="btn btn-primary ml-2 mr-0"
                 ngbAccordionButton
@@ -85,21 +78,30 @@
           </div>
         </div>
       </div>
+      }
     </div>
+    }
 
     <!-- SINGLE CONFIG BLOCK ONLY -->
-    <div *ngIf="pluginConfig.length && schema.singular" class="card card-body">
+    @if (pluginConfig.length && schema.singular) {
+    <div class="card card-body">
       <app-schema-form
         [configSchema]="schema"
         [(data)]="pluginConfig[0].config"
         (isValid)="onIsValid($event, 0)"
       ></app-schema-form>
-      <app-homebridge-deconz *ngIf="plugin.name==='homebridge-deconz'"></app-homebridge-deconz>
-      <app-homebridge-hue *ngIf="plugin.name==='homebridge-hue'"></app-homebridge-hue>
+      @if (plugin.name==='homebridge-deconz') {
+      <app-homebridge-deconz></app-homebridge-deconz>
+      } @if (plugin.name==='homebridge-hue') {
+      <app-homebridge-hue></app-homebridge-hue>
+      }
     </div>
+    }
 
     <div class="mt-3">
-      <markdown class="plugin-md" [data]="schema.footerDisplay | interpolateMd" *ngIf="schema.footerDisplay"></markdown>
+      @if (schema.footerDisplay) {
+      <markdown class="plugin-md" [data]="schema.footerDisplay | interpolateMd"></markdown>
+      }
     </div>
   </div>
   <div class="modal-footer justify-content-between">
@@ -116,8 +118,8 @@
     </div>
     <div class="text-center"></div>
     <div class="text-right d-flex align-items-center justify-content-end">
+      @if (schema.singular) {
       <i
-        *ngIf="schema.singular"
         class="fa fa-fw fa-xl"
         [ngClass]="formIsValid ? 'fa-circle-check green-text' : (strictValidation ? 'fa-circle-exclamation red-text' : 'fa-circle-exclamation orange-text')"
         [ngbTooltip]="(formIsValid ? 'form.label_valid' : (strictValidation ? 'form.label_invalid_strict' : 'form.label_invalid')) | translate"
@@ -126,6 +128,7 @@
         openDelay="150"
         triggers="hover"
       ></i>
+      }
       <button
         type="button"
         class="btn btn-primary"
@@ -133,8 +136,11 @@
         (click)="save()"
         [disabled]="saveInProgress || (!formIsValid && strictValidation)"
       >
-        <span *ngIf="!saveInProgress">{{ 'form.button_save' | translate }}</span>
-        <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
+        @if (!saveInProgress) {
+        <span>{{ 'form.button_save' | translate }}</span>
+        } @if (saveInProgress) {
+        <i class="fas fa-fw fa-spinner fa-pulse"></i>
+        }
       </button>
     </div>
   </div>

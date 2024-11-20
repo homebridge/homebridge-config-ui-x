@@ -16,14 +16,17 @@
     <ngb-alert type="warning" [dismissible]="false">
       <p class="w-100 text-center mb-0">{{ 'plugins.manage.confirm_disable' | translate: { pluginName } }}</p>
     </ngb-alert>
-    <ul class="mb-0 text-left" *ngIf="isConfigured && !isConfiguredDynamicPlatform">
+    @if (isConfigured && !isConfiguredDynamicPlatform) {
+    <ul class="mb-0 text-left">
       <li>{{ 'plugins.manage.confirm_disable_accessory_1' | translate }}</li>
       <li class="mb-0">{{ 'plugins.manage.confirm_disable_accessory_2' | translate }}</li>
     </ul>
-    <ul class="mb-0 text-left" *ngIf="isConfigured && isConfiguredDynamicPlatform">
+    } @if (isConfigured && isConfiguredDynamicPlatform) {
+    <ul class="mb-0 text-left">
       <li>{{ 'plugins.manage.confirm_disable_platform_1' | translate }}</li>
       <li class="mb-0">{{ 'plugins.manage.confirm_disable_platform_2' | translate }}</li>
     </ul>
+    }
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-left">

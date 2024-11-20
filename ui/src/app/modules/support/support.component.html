@@ -16,7 +16,8 @@
       {{ 'support.links.title' | translate }}
     </h5>
   </div>
-  <ul class="list-group list-group-box mt-2 mx-0" *ngIf="showFields.general" id="fieldsGeneral">
+  @if (showFields.general) {
+  <ul class="list-group list-group-box mt-2 mx-0" id="fieldsGeneral">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
         {{ 'support.links.documentation' | translate }}<br />
@@ -82,6 +83,7 @@
       </a>
     </li>
   </ul>
+  }
 </div>
 <div class="pb-3">
   <div
@@ -97,7 +99,8 @@
       {{ 'support.dev.title' | translate }}
     </h5>
   </div>
-  <ul class="list-group list-group-box mt-2 mx-0" *ngIf="showFields.dev" id="fieldsDev">
+  @if (showFields.dev) {
+  <ul class="list-group list-group-box mt-2 mx-0" id="fieldsDev">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pr-2">
         {{ 'support.dev.item_swagger' | translate }}<br />
@@ -179,4 +182,5 @@
       </a>
     </li>
   </ul>
+  }
 </div>

@@ -1,18 +1,32 @@
 import { ApiService } from '@/app/core/api.service'
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core'
-import { FormControl, FormGroup, Validators } from '@angular/forms'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
-import { TranslateService } from '@ngx-translate/core'
+import { Component, ElementRef, inject, Input, OnInit, viewChild } from '@angular/core'
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
+import { NgbActiveModal, NgbAlert } from '@ng-bootstrap/ng-bootstrap'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import dayjs from 'dayjs'
 import { ToastrService } from 'ngx-toastr'
 
+import { QrcodeComponent } from '../../../core/components/qrcode/qrcode.component'
+
 @Component({
   templateUrl: './users-2fa-enable.component.html',
+  imports: [
+    NgbAlert,
+    QrcodeComponent,
+    FormsModule,
+    ReactiveFormsModule,
+    TranslatePipe,
+  ],
 })
 export class Users2faEnableComponent implements OnInit {
+  $activeModal = inject(NgbActiveModal)
+  private $api = inject(ApiService)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
+
   @Input() public user: any
 
-  @ViewChild('qrcode', { static: true }) qrcodeElement: ElementRef
+  readonly qrcodeElement = viewChild<ElementRef>('qrcode')
 
   public timeDiffError: number | null = null
   public otpString: string
@@ -20,13 +34,6 @@ export class Users2faEnableComponent implements OnInit {
   public formGroup = new FormGroup({
     code: new FormControl('', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]),
   })
-
-  constructor(
-    public $activeModal: NgbActiveModal,
-    private $api: ApiService,
-    private $toastr: ToastrService,
-    private $translate: TranslateService,
-  ) {}
 
   ngOnInit(): void {
     this.$api.post('/users/otp/setup', {}).subscribe({

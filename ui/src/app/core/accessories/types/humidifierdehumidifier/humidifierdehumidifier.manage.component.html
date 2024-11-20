@@ -44,13 +44,12 @@
       </label>
     </div>
 
-    <div
-      *ngIf="service.values.Active === 1 && RelativeHumidityHumidifierThreshold && RelativeHumidityDehumidifierThreshold"
-    >
+    @if (service.values.Active === 1 && RelativeHumidityHumidifierThreshold && RelativeHumidityDehumidifierThreshold) {
+    <div>
       <h5>{{ 'accessories.control.target_humidity' | translate }}</h5>
-
-      <div [ngSwitch]="targetMode">
-        <div *ngSwitchCase="0">
+      <div>
+        @switch (targetMode) { @case (0) {
+        <div>
           <p>{{ autoHumidity[0] }}% - {{ autoHumidity[1] }}%</p>
           <nouislider
             [min]="RelativeHumidityHumidifierThreshold.minValue"
@@ -61,7 +60,8 @@
           >
           </nouislider>
         </div>
-        <div *ngSwitchCase="1">
+        } @case (1) {
+        <div>
           <p>{{ targetHumidifierHumidity }}%</p>
           <nouislider
             [min]="RelativeHumidityHumidifierThreshold.minValue"
@@ -72,7 +72,8 @@
           >
           </nouislider>
         </div>
-        <div *ngSwitchCase="2">
+        } @case (2) {
+        <div>
           <p>{{ targetDehumidifierHumidity }}%</p>
           <nouislider
             [min]="RelativeHumidityDehumidifierThreshold.minValue"
@@ -83,7 +84,9 @@
           >
           </nouislider>
         </div>
+        } }
       </div>
     </div>
+    }
   </div>
 </div>

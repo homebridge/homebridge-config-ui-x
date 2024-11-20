@@ -1,13 +1,9 @@
+import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
-import {
-  Component,
-  ElementRef,
-  Input,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core'
+import { DecimalPipe, NgClass, UpperCasePipe } from '@angular/common'
+import { Component, ElementRef, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
+import { TranslatePipe } from '@ngx-translate/core'
 import { ChartConfiguration } from 'chart.js'
 import { BaseChartDirective } from 'ng2-charts'
 import { interval, Subscription } from 'rxjs'
@@ -15,12 +11,23 @@ import { interval, Subscription } from 'rxjs'
 @Component({
   templateUrl: './cpu-widget.component.html',
   styleUrls: ['./cpu-widget.component.scss'],
+  imports: [
+    NgClass,
+    BaseChartDirective,
+    UpperCasePipe,
+    DecimalPipe,
+    TranslatePipe,
+    ConvertTempPipe,
+  ],
 })
 export class CpuWidgetComponent implements OnInit, OnDestroy {
+  $settings = inject(SettingsService)
+  private $ws = inject(WsService)
+
   @Input() public widget: any
 
-  @ViewChild(BaseChartDirective, { static: true }) private chart: BaseChartDirective
-  @ViewChild('widgetbackground', { static: true }) private widgetBackground: ElementRef
+  readonly chart = viewChild(BaseChartDirective)
+  readonly widgetBackground = viewChild<ElementRef>('widgetbackground')
 
   public cpu = {} as any
   public cpuTemperature = {} as any
@@ -72,15 +79,10 @@ export class CpuWidgetComponent implements OnInit, OnDestroy {
   private io: IoNamespace
   private intervalSubscription: Subscription
 
-  constructor(
-    public $settings: SettingsService,
-    private $ws: WsService,
-  ) {}
-
   ngOnInit() {
     this.io = this.$ws.getExistingNamespace('status')
     // lookup the chart color based on the current theme
-    const userColor = getComputedStyle(this.widgetBackground.nativeElement).backgroundColor
+    const userColor = getComputedStyle(this.widgetBackground().nativeElement).backgroundColor
     if (userColor) {
       this.lineChartOptions.elements.line.backgroundColor = userColor
       this.lineChartOptions.elements.line.borderColor = userColor
@@ -114,7 +116,7 @@ export class CpuWidgetComponent implements OnInit, OnDestroy {
   getServerCpuInfo() {
     this.io.request('get-server-cpu-info').subscribe((data) => {
       this.updateData(data)
-      this.chart.update()
+      this.chart().update()
     })
   }
 

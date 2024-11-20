@@ -15,7 +15,13 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateModule } from '@ngx-translate/core'
 
 @NgModule({
-  declarations: [
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    TranslateModule,
+    NgbModule,
+    SettingsRoutingModule,
     SettingsComponent,
     UnpairAllBridgesComponent,
     UnpairSingleBridgeComponent,
@@ -25,14 +31,6 @@ import { TranslateModule } from '@ngx-translate/core'
     SelectNetworkInterfacesComponent,
     RestoreComponent,
     BackupComponent,
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    TranslateModule,
-    NgbModule,
-    SettingsRoutingModule,
   ],
 })
 export class SettingsModule {}

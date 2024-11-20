@@ -12,16 +12,20 @@
     </button>
   </div>
   <div class="modal-body w-100 text-center">
-    <div *ngIf="loading" class="w-100 text-center primary-text">
+    @if (loading) {
+    <div class="w-100 text-center primary-text">
       <i class="fa fa-fw fa-cog fa-spin" style="font-size: 75px"></i>
     </div>
-    <div *ngIf="!loading">
-      <div *ngIf="allPluginsSupported">
+    } @if (!loading) {
+    <div>
+      @if (allPluginsSupported) {
+      <div>
         <i class="fas fa-fw fa-check-circle primary-text mb-4" style="font-size: 75px"></i>
         <p>All your plugins are marked as compatible with the new version of Homebridge.</p>
         <p>You are all set to continue below.</p>
       </div>
-      <div *ngIf="!allPluginsSupported">
+      } @if (!allPluginsSupported) {
+      <div>
         <i class="fas fa-fw fa-info-circle primary-text mb-4" style="font-size: 75px"></i>
         <p>Some of your plugins are not explicitly marked as compatible with the new version of Homebridge.</p>
         <p>
@@ -36,27 +40,31 @@
         </p>
         <p>To ignore this warning and continue with the update, click continue below.</p>
       </div>
+      }
       <ul class="list-group list-group-box mt-4">
-        <li
-          *ngFor="let plugin of installedPlugins"
-          class="list-group-item d-flex flex-row flex-wrap justify-content-between"
-        >
+        @for (plugin of installedPlugins; track plugin) {
+        <li class="list-group-item d-flex flex-row flex-wrap justify-content-between">
           <span class="text-monospace">{{ plugin.name }}</span>
-          <span *ngIf="plugin.hb2Ready === 'supported'">
+          @if (plugin.hb2Ready === 'supported') {
+          <span>
             <i
               class="fas fa-check-circle green-text fa-xl ml-2"
               aria-label="The developer has specifically marked this plugin as compatible with Homebridge v2.0"
             ></i>
           </span>
-          <span *ngIf="plugin.hb2Ready === 'unknown'">
+          } @if (plugin.hb2Ready === 'unknown') {
+          <span>
             <i
               class="fas fa-question-circle orange-text fa-xl ml-2"
               aria-label="The developer has not specifically marked this plugin as compatible with Homebridge v2.0, but it may still work."
             ></i>
           </span>
+          }
         </li>
+        }
       </ul>
     </div>
+    }
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-left">

@@ -1,22 +1,24 @@
 import { LogService } from '@/app/core/log.service'
-import {
-  Component,
-  ElementRef,
-  Input,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core'
+import { NgClass, NgStyle } from '@angular/common'
+import { Component, ElementRef, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
+import { TranslatePipe } from '@ngx-translate/core'
 import { Subject } from 'rxjs'
 import { ITerminalOptions } from 'xterm'
 
 @Component({
   templateUrl: './homebridge-logs-widget.component.html',
+  imports: [
+    NgClass,
+    NgStyle,
+    TranslatePipe,
+  ],
 })
 export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
-  @ViewChild('widgetcontainer', { static: true }) widgetContainerElement: ElementRef
-  @ViewChild('terminaltitle', { static: true }) titleElement: ElementRef
-  @ViewChild('logoutput', { static: true }) termTarget: ElementRef
+  private $log = inject(LogService)
+
+  readonly widgetContainerElement = viewChild<ElementRef>('widgetcontainer')
+  readonly titleElement = viewChild<ElementRef>('terminaltitle')
+  readonly termTarget = viewChild<ElementRef>('logoutput')
 
   @Input() widget: any
   @Input() resizeEvent: Subject<any>
@@ -27,16 +29,12 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
   private fontSize = 15
   private fontWeight: ITerminalOptions['fontWeight'] = '400'
 
-  constructor(
-    private $log: LogService,
-  ) {}
-
   ngOnInit() {
     this.fontSize = this.widget.fontSize || 15
     this.fontWeight = this.widget.fontWeight || 400
 
     setTimeout(() => {
-      this.$log.startTerminal(this.termTarget, {
+      this.$log.startTerminal(this.termTarget(), {
         cursorBlink: false,
         theme: {
           background: '#2b2b2b',
@@ -69,8 +67,8 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
   }
 
   getTerminalHeight(): number {
-    const widgetContainerHeight = (this.widgetContainerElement.nativeElement as HTMLElement).offsetHeight
-    const titleHeight = (this.titleElement.nativeElement as HTMLElement).offsetHeight
+    const widgetContainerHeight = (this.widgetContainerElement().nativeElement as HTMLElement).offsetHeight
+    const titleHeight = (this.titleElement().nativeElement as HTMLElement).offsetHeight
     return widgetContainerHeight - titleHeight
   }
 

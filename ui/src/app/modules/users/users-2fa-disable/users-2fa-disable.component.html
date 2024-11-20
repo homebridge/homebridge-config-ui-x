@@ -23,9 +23,11 @@
         [placeholder]="'users.label_password' | translate"
       />
     </div>
-    <p class="red-text" *ngIf="invalidCredentials">
+    @if (invalidCredentials) {
+    <p class="red-text">
       <small>{{ 'login.invalid_credentials' | translate }}</small>
     </p>
+    }
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-left">

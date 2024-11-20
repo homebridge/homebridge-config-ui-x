@@ -1,16 +1,19 @@
-import { Directive, Host, Input, Optional, Self } from '@angular/core'
+import { Directive, inject, Input } from '@angular/core'
 import { JsonSchemaFormComponent } from '@ng-formworks/core'
 import { cloneDeep, merge, uniqueId } from 'lodash-es'
 
 @Directive({
   selector: '[jsfPatch]',
+  standalone: true,
 })
 export class JsonSchemaFormPatchDirective {
+  jsonSchemaForm = inject(JsonSchemaFormComponent, { host: true, self: true, optional: true })
+
   @Input() jsfPatch = false
 
-  constructor(
-    @Host() @Self() @Optional() public jsonSchemaForm: JsonSchemaFormComponent,
-  ) {
+  constructor() {
+    const jsonSchemaForm = this.jsonSchemaForm
+
     const buildLayoutOriginal = jsonSchemaForm.jsf.buildLayout.bind(jsonSchemaForm.jsf)
 
     jsonSchemaForm.jsf.buildLayout = (widgetLibrary: any) => {

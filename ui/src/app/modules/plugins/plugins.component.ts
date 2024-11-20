@@ -2,18 +2,36 @@ import { ApiService } from '@/app/core/api.service'
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
-import { Component, OnDestroy, OnInit } from '@angular/core'
-import { FormControl, FormGroup, Validators } from '@angular/forms'
+import { Component, inject, OnDestroy, OnInit } from '@angular/core'
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { NavigationEnd, Router } from '@angular/router'
-import { TranslateService } from '@ngx-translate/core'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom, Subscription } from 'rxjs'
+
+import { SpinnerComponent } from '../../core/components/spinner/spinner.component'
+import { PluginCardComponent } from './plugin-card/plugin-card.component'
 
 @Component({
   templateUrl: './plugins.component.html',
   styleUrls: ['./plugins.component.scss'],
+  imports: [
+    SpinnerComponent,
+    FormsModule,
+    ReactiveFormsModule,
+    PluginCardComponent,
+    TranslatePipe,
+  ],
 })
 export class PluginsComponent implements OnInit, OnDestroy {
+  private $api = inject(ApiService)
+  private $plugin = inject(ManagePluginsService)
+  private $router = inject(Router)
+  private $settings = inject(SettingsService)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
+  private $ws = inject(WsService)
+
   public loading = true
   public installedPlugins: any = []
   public childBridges = []
@@ -23,16 +41,6 @@ export class PluginsComponent implements OnInit, OnDestroy {
 
   private io: IoNamespace
   private navigationSubscription: Subscription
-
-  constructor(
-    private $api: ApiService,
-    private $plugin: ManagePluginsService,
-    private $router: Router,
-    private $settings: SettingsService,
-    private $toastr: ToastrService,
-    private $translate: TranslateService,
-    private $ws: WsService,
-  ) {}
 
   async ngOnInit() {
     this.io = this.$ws.connectToNamespace('child-bridges')

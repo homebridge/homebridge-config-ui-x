@@ -1,11 +1,10 @@
 import { AdminGuard } from '@/app/core/auth/admin.guard'
 import { AuthGuard } from '@/app/core/auth/auth.guard'
-import { LoginComponent } from '@/app/modules/login/login.component'
+
 import { LoginGuard } from '@/app/modules/login/login.guard'
-import { RestartComponent } from '@/app/modules/restart/restart.component'
+
 import { SetupWizardGuard } from '@/app/modules/setup-wizard/setup-wizard.guard'
-import { StatusComponent } from '@/app/modules/status/status.component'
-import { LayoutComponent } from '@/app/shared/layout/layout.component'
+
 import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
 
@@ -17,7 +16,7 @@ import { RouterModule, Routes } from '@angular/router'
 const routes: Routes = [
   {
     path: 'login',
-    component: LoginComponent,
+    loadComponent: () => import('@/app/modules/login/login.component').then(m => m.LoginComponent),
     canActivate: [LoginGuard],
   },
   {
@@ -27,16 +26,16 @@ const routes: Routes = [
   },
   {
     path: '',
-    component: LayoutComponent,
+    loadComponent: () => import('@/app/shared/layout/layout.component').then(m => m.LayoutComponent),
     canActivate: [AuthGuard],
     children: [
       {
         path: '',
-        component: StatusComponent,
+        loadComponent: () => import('@/app/modules/status/status.component').then(m => m.StatusComponent),
       },
       {
         path: 'restart',
-        component: RestartComponent,
+        loadComponent: () => import('@/app/modules/restart/restart.component').then(m => m.RestartComponent),
         canActivate: [AdminGuard],
       },
       {

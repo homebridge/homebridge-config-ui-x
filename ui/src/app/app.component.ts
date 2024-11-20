@@ -1,18 +1,22 @@
 import { SettingsService } from '@/app/core/settings.service'
-import { Component } from '@angular/core'
-import { Router } from '@angular/router'
+import { Component, inject } from '@angular/core'
+import { Router, RouterOutlet } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
+  imports: [RouterOutlet],
 })
 export class AppComponent {
-  constructor(
-    private $router: Router,
-    private $translate: TranslateService,
-    private $settings: SettingsService,
-  ) {
+  private $router = inject(Router)
+  private $translate = inject(TranslateService)
+  private $settings = inject(SettingsService)
+
+  constructor() {
+    const $translate = this.$translate
+    const $settings = this.$settings
+
     // Detect if the user has a dark mode preference
     const colorSchemeQueryList = window.matchMedia('(prefers-color-scheme: dark)')
     const setLightingMode = (event: MediaQueryList | MediaQueryListEvent) => {

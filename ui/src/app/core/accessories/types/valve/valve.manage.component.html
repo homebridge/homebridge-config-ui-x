@@ -18,7 +18,9 @@
     <div class="form-group">
       <label>{{ 'accessories.control.default_running_time' | translate }}</label>
       <select class="custom-select" [(ngModel)]="targetSetDuration" (change)="onSetDurationChange()">
-        <option *ngFor="let duration of availableSetDurations" [value]="duration.seconds">{{ duration.label }}</option>
+        @for (duration of availableSetDurations; track duration) {
+        <option [value]="duration.seconds">{{ duration.label }}</option>
+        }
       </select>
     </div>
   </div>

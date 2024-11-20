@@ -2,7 +2,7 @@
 import { ApiService } from '@/app/core/api.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { environment } from '@/environments/environment'
-import { Injectable } from '@angular/core'
+import { inject, Injectable } from '@angular/core'
 import { JwtHelperService } from '@auth0/angular-jwt'
 import dayjs from 'dayjs'
 import { firstValueFrom } from 'rxjs'
@@ -16,15 +16,15 @@ interface UserInterface {
 
 @Injectable()
 export class AuthService {
+  private $api = inject(ApiService)
+  private $jwtHelper = inject(JwtHelperService)
+  private $settings = inject(SettingsService)
+
   public token: string
   public user: UserInterface = {}
   private logoutTimer: NodeJS.Timeout
 
-  constructor(
-    private $api: ApiService,
-    private $jwtHelper: JwtHelperService,
-    private $settings: SettingsService,
-  ) {
+  constructor() {
     // load the token (if present) from local storage on page init
     this.loadToken()
   }

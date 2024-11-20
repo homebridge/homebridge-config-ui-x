@@ -1,5 +1,5 @@
 import { AccessoriesCoreModule } from '@/app/core/accessories/accessories.module'
-import { CoreModule } from '@/app/core/core.module'
+
 import { ManagePluginsModule } from '@/app/core/manage-plugins/manage-plugins.module'
 import { CreditsComponent } from '@/app/modules/status/credits/credits.component'
 import { StatusComponent } from '@/app/modules/status/status.component'
@@ -30,7 +30,18 @@ import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2
 import { DragulaModule } from 'ng2-dragula'
 
 @NgModule({
-  declarations: [
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    ReactiveFormsModule,
+    TranslateModule.forChild(),
+    NgbModule,
+    GridsterModule,
+    DragulaModule,
+    BaseChartDirective,
+    AccessoriesCoreModule,
+    ManagePluginsModule,
     StatusComponent,
     WidgetsComponent,
     WidgetVisibilityComponent,
@@ -49,20 +60,6 @@ import { DragulaModule } from 'ng2-dragula'
     ClockWidgetComponent,
     HomekitBridgesWidgetComponent,
     CreditsComponent,
-  ],
-  imports: [
-    CommonModule,
-    RouterModule,
-    FormsModule,
-    ReactiveFormsModule,
-    TranslateModule.forChild(),
-    NgbModule,
-    GridsterModule,
-    DragulaModule,
-    BaseChartDirective,
-    CoreModule,
-    AccessoriesCoreModule,
-    ManagePluginsModule,
   ],
   providers: [
     provideCharts(withDefaultRegisterables()),

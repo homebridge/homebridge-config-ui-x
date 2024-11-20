@@ -3,30 +3,35 @@ import { ConfirmComponent } from '@/app/core/components/confirm/confirm.componen
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { environment } from '@/environments/environment'
-import { Component, OnInit } from '@angular/core'
-import { Router } from '@angular/router'
+import { NgClass } from '@angular/common'
+import { Component, inject, OnInit } from '@angular/core'
+import { Router, RouterOutlet } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateService } from '@ngx-translate/core'
 import { firstValueFrom } from 'rxjs'
 import { lt } from 'semver'
+import { SidebarComponent } from './sidebar/sidebar.component'
 
 @Component({
   selector: 'app-layout',
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.scss'],
+  imports: [
+    SidebarComponent,
+    NgClass,
+    RouterOutlet,
+  ],
 })
 export class LayoutComponent implements OnInit {
+  $auth = inject(AuthService)
+  private $modal = inject(NgbModal)
+  private $router = inject(Router)
+  $settings = inject(SettingsService)
+  private $translate = inject(TranslateService)
+  private $ws = inject(WsService)
+
   public sidebarExpanded = false
   private io: IoNamespace
-
-  constructor(
-    public $auth: AuthService,
-    private $modal: NgbModal,
-    private $router: Router,
-    public $settings: SettingsService,
-    private $translate: TranslateService,
-    private $ws: WsService,
-  ) {}
 
   ngOnInit() {
     this.io = this.$ws.connectToNamespace('app')

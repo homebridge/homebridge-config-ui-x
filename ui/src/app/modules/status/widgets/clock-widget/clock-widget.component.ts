@@ -1,8 +1,10 @@
+import { DatePipe } from '@angular/common'
 import { Component, Input, OnDestroy, OnInit } from '@angular/core'
 import { interval, Subscription } from 'rxjs'
 
 @Component({
   templateUrl: './clock-widget.component.html',
+  imports: [DatePipe],
 })
 export class ClockWidgetComponent implements OnInit, OnDestroy {
   @Input() widget: any

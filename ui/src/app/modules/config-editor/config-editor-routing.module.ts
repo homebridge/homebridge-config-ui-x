@@ -1,4 +1,3 @@
-import { ConfigEditorComponent } from '@/app/modules/config-editor/config-editor.component'
 import { ConfigEditorResolver } from '@/app/modules/config-editor/config-editor.resolver'
 import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
@@ -6,7 +5,7 @@ import { RouterModule, Routes } from '@angular/router'
 const routes: Routes = [
   {
     path: '',
-    component: ConfigEditorComponent,
+    loadComponent: () => import('@/app/modules/config-editor/config-editor.component').then(m => m.ConfigEditorComponent),
     resolve: {
       config: ConfigEditorResolver,
     },

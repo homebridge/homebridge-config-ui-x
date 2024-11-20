@@ -15,9 +15,11 @@
     </button>
   </div>
   <div class="modal-body" style="min-height: 110px">
-    <div *ngIf="loading" class="text-center primary-text">
+    @if (loading) {
+    <div class="text-center primary-text">
       <i class="fa fa-fw fa-cog fa-spin" style="font-size: 75px"></i>
     </div>
+    }
 
     <iframe
       width="100%"
@@ -28,7 +30,8 @@
     >
     </iframe>
 
-    <div *ngIf="uiLoaded && pluginConfig.length && schema.singular && showSchemaForm" class="card card-body">
+    @if (uiLoaded && pluginConfig.length && schema.singular && showSchemaForm) {
+    <div class="card card-body">
       <app-schema-form
         [configSchema]="schema"
         [(data)]="pluginConfig[0]"
@@ -37,8 +40,8 @@
       >
       </app-schema-form>
     </div>
-
-    <div *ngIf="formId" class="card card-body">
+    } @if (formId) {
+    <div class="card card-body">
       <app-schema-form
         [configSchema]="formSchema"
         [(data)]="formData"
@@ -47,25 +50,20 @@
       >
       </app-schema-form>
       <div class="text-right custom-form-action-buttons">
-        <button class="btn btn-elegant" *ngIf="formCancelButtonLabel" (click)="formActionSubject.next('cancel')">
-          {{ formCancelButtonLabel }}
-        </button>
-        <button
-          class="btn btn-primary"
-          *ngIf="formSubmitButtonLabel"
-          (click)="formActionSubject.next('submit')"
-          [disabled]="!formValid"
-        >
+        @if (formCancelButtonLabel) {
+        <button class="btn btn-elegant" (click)="formActionSubject.next('cancel')">{{ formCancelButtonLabel }}</button>
+        } @if (formSubmitButtonLabel) {
+        <button class="btn btn-primary" (click)="formActionSubject.next('submit')" [disabled]="!formValid">
           {{ formSubmitButtonLabel }}
         </button>
+        }
       </div>
     </div>
-    <div
-      *ngIf="pluginSpinner"
-      class="loading-overlay text-center primary-text d-flex align-items-center justify-content-center"
-    >
+    } @if (pluginSpinner) {
+    <div class="loading-overlay text-center primary-text d-flex align-items-center justify-content-center">
       <i class="fa fa-fw fa-cog fa-spin" style="font-size: 75px"></i>
     </div>
+    }
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-left">
@@ -81,8 +79,8 @@
     </div>
     <div class="text-center"></div>
     <div class="text-right d-flex align-items-center justify-content-end">
+      @if (!saveButtonDisabled) {
       <i
-        *ngIf="!saveButtonDisabled"
         class="fa fa-fw fa-xl"
         [ngClass]="formIsValid ? 'fa-circle-check green-text' : (strictValidation ? 'fa-circle-exclamation red-text' : 'fa-circle-exclamation orange-text')"
         [ngbTooltip]="(formIsValid ? 'form.label_valid' : (strictValidation ? 'form.label_invalid_strict' : 'form.label_invalid')) | translate"
@@ -91,6 +89,7 @@
         openDelay="150"
         triggers="hover"
       ></i>
+      }
       <button
         type="button"
         class="btn btn-primary"
@@ -98,8 +97,11 @@
         (click)="savePluginConfig(true)"
         [disabled]="saveInProgress || saveButtonDisabled"
       >
-        <span *ngIf="!saveInProgress">{{ 'form.button_save' | translate }}</span>
-        <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
+        @if (!saveInProgress) {
+        <span>{{ 'form.button_save' | translate }}</span>
+        } @if (saveInProgress) {
+        <i class="fas fa-fw fa-spinner fa-pulse"></i>
+        }
       </button>
     </div>
   </div>

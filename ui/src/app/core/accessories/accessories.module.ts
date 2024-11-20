@@ -47,18 +47,24 @@ import { WindowComponent } from '@/app/core/accessories/types/window/window.comp
 import { WindowManageComponent } from '@/app/core/accessories/types/window/window.manage.component'
 import { WindowCoveringComponent } from '@/app/core/accessories/types/windowcovering/windowcovering.component'
 import { WindowcoveringManageComponent } from '@/app/core/accessories/types/windowcovering/windowcovering.manage.component'
-import { CoreModule } from '@/app/core/core.module'
+
 import { CommonModule } from '@angular/common'
 import { NgModule } from '@angular/core'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateModule } from '@ngx-translate/core'
 import { NouisliderModule } from 'ng2-nouislider'
-import { InlineSVGModule } from 'ng-inline-svg-2'
 import { NgxMdModule } from 'ngx-md'
 
 @NgModule({
-  declarations: [
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    TranslateModule.forChild(),
+    NouisliderModule,
+    NgbModule,
+    NgxMdModule,
     AccessoryTileComponent,
     AccessoryInfoComponent,
     SwitchComponent,
@@ -107,17 +113,6 @@ import { NgxMdModule } from 'ngx-md'
     HumidifierDehumidifierManageComponent,
     CarbonmonoxidesensorComponent,
     CarbondioxidesensorComponent,
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    InlineSVGModule.forRoot(),
-    TranslateModule.forChild(),
-    NouisliderModule,
-    NgbModule,
-    NgxMdModule,
-    CoreModule,
   ],
   exports: [
     AccessoryTileComponent,

@@ -1,11 +1,10 @@
-import { SetupWizardComponent } from '@/app/modules/setup-wizard/setup-wizard.component'
 import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
 
 const routes: Routes = [
   {
     path: '',
-    component: SetupWizardComponent,
+    loadComponent: () => import('@/app/modules/setup-wizard/setup-wizard.component').then(m => m.SetupWizardComponent),
   },
 ]
 

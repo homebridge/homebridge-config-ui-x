@@ -12,11 +12,10 @@
     </button>
   </div>
   <div class="modal-body">
-    <ul class="list-group list-group-box mt-2" *ngIf="availableWidgets.length">
-      <li
-        *ngFor="let widget of availableWidgets"
-        class="list-group-item d-flex justify-content-between align-items-center"
-      >
+    @if (availableWidgets.length) {
+    <ul class="list-group list-group-box mt-2">
+      @for (widget of availableWidgets; track widget) {
+      <li class="list-group-item d-flex justify-content-between align-items-center">
         <span style="word-break: break-all">{{ widget.name }}</span>
         <span>
           <button
@@ -37,7 +36,9 @@
           </button>
         </span>
       </li>
+      }
     </ul>
+    }
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-left">

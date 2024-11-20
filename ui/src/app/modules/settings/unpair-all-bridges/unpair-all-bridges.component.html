@@ -46,8 +46,11 @@
         (click)="onResetHomebridgeAccessoryClick()"
         [disabled]="clicked"
       >
-        <span *ngIf="!clicked">{{ 'form.button_reset' | translate }}</span>
-        <i *ngIf="clicked" class="fas fa-fw fa-spinner fa-pulse"></i>
+        @if (!clicked) {
+        <span>{{ 'form.button_reset' | translate }}</span>
+        } @if (clicked) {
+        <i class="fas fa-fw fa-spinner fa-pulse"></i>
+        }
       </button>
     </div>
   </div>

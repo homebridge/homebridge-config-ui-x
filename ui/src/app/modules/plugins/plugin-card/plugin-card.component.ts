@@ -10,17 +10,38 @@ import { MobileDetectService } from '@/app/core/mobile-detect.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { PluginInfoComponent } from '@/app/modules/plugins/plugin-card/plugin-info/plugin-info.component'
-import { Component, Input, OnInit } from '@angular/core'
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
-import { TranslateService } from '@ngx-translate/core'
+import { DatePipe, NgClass } from '@angular/common'
+import { Component, inject, Input, OnInit } from '@angular/core'
+import { NgbDropdown, NgbDropdownButtonItem, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle, NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
 @Component({
   selector: 'app-plugin-card',
   templateUrl: './plugin-card.component.html',
+  imports: [
+    NgbTooltip,
+    NgClass,
+    NgbDropdown,
+    NgbDropdownToggle,
+    NgbDropdownMenu,
+    NgbDropdownButtonItem,
+    NgbDropdownItem,
+    DatePipe,
+    TranslatePipe,
+  ],
 })
 export class PluginCardComponent implements OnInit {
+  private $api = inject(ApiService)
+  private $md = inject(MobileDetectService)
+  private $modal = inject(NgbModal)
+  $plugin = inject(ManagePluginsService)
+  $settings = inject(SettingsService)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
+  private $ws = inject(WsService)
+
   @Input() plugin: any
 
   public hasChildBridges = false
@@ -35,17 +56,6 @@ export class PluginCardComponent implements OnInit {
   public hb2Status = 'unknown' // 'hide' | 'supported' | 'unknown'
 
   private io: IoNamespace
-
-  constructor(
-    private $api: ApiService,
-    private $md: MobileDetectService,
-    private $modal: NgbModal,
-    public $plugin: ManagePluginsService,
-    public $settings: SettingsService,
-    private $toastr: ToastrService,
-    private $translate: TranslateService,
-    private $ws: WsService,
-  ) {}
 
   // eslint-disable-next-line accessor-pairs
   @Input() set childBridges(childBridges: any[]) {

@@ -4,22 +4,39 @@ import { HbUpdateConfirmComponent } from '@/app/core/manage-plugins/hb-update-co
 import { PluginLogsComponent } from '@/app/core/manage-plugins/plugin-logs/plugin-logs.component'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
-import { Component, Input, OnDestroy, OnInit } from '@angular/core'
+import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap'
-import { TranslateService } from '@ngx-translate/core'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { saveAs } from 'file-saver'
+import { NgxMdModule } from 'ngx-md'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 import { Terminal } from 'xterm'
+
 import { FitAddon } from 'xterm-addon-fit'
+import { PluginsMarkdownDirective } from '../../directives/plugins.markdown.directive'
 
 @Component({
   templateUrl: './manage-plugin.component.html',
   styleUrls: ['./manage-plugin.component.scss'],
+  imports: [
+    NgxMdModule,
+    PluginsMarkdownDirective,
+    TranslatePipe,
+  ],
 })
 
 export class ManagePluginComponent implements OnInit, OnDestroy {
+  $activeModal = inject(NgbActiveModal)
+  private $api = inject(ApiService)
+  private $modal = inject(NgbModal)
+  private $router = inject(Router)
+  $settings = inject(SettingsService)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
+  private $ws = inject(WsService)
+
   @Input() pluginName: string
   @Input() targetVersion = 'latest'
   @Input() latestVersion: string
@@ -46,16 +63,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   private fitAddon = new FitAddon()
   private errorLog = ''
 
-  constructor(
-    public $activeModal: NgbActiveModal,
-    private $api: ApiService,
-    private $modal: NgbModal,
-    private $router: Router,
-    public $settings: SettingsService,
-    private $toastr: ToastrService,
-    private $translate: TranslateService,
-    private $ws: WsService,
-  ) {
+  constructor() {
     this.term.loadAddon(this.fitAddon)
   }
 

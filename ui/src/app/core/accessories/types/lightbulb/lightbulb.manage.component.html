@@ -34,7 +34,8 @@
       </label>
     </div>
 
-    <div *ngIf="targetBrightness">
+    @if (targetBrightness) {
+    <div>
       <h5 class="mb-0">{{ 'accessories.control.brightness' | translate }}</h5>
       <p>{{ targetBrightness.value }}%</p>
       <nouislider
@@ -46,5 +47,6 @@
       >
       </nouislider>
     </div>
+    }
   </div>
 </div>

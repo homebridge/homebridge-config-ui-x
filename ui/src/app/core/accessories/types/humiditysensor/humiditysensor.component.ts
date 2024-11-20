@@ -5,6 +5,7 @@ import { Component, Input } from '@angular/core'
   selector: 'app-humiditysensor',
   templateUrl: './humiditysensor.component.html',
   styleUrls: ['./humiditysensor.component.scss'],
+  standalone: true,
 })
 export class HumiditysensorComponent {
   @Input() public service: ServiceTypeX

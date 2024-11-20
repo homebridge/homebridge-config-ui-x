@@ -1,20 +1,33 @@
 import { AuthService } from '@/app/core/auth/auth.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { environment } from '@/environments/environment'
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core'
-import { FormControl, FormGroup, Validators } from '@angular/forms'
+import { NgClass, NgStyle } from '@angular/common'
+import { Component, ElementRef, inject, OnInit, viewChild } from '@angular/core'
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router } from '@angular/router'
+import { TranslatePipe } from '@ngx-translate/core'
 import { firstValueFrom } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
 
 @Component({
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
+  imports: [
+    NgStyle,
+    FormsModule,
+    ReactiveFormsModule,
+    NgClass,
+    TranslatePipe,
+  ],
 })
 export class LoginComponent implements OnInit {
-  @ViewChild('password') private passwordInput: ElementRef
-  @ViewChild('username') private usernameInput: ElementRef
-  @ViewChild('otp') private otpInput: ElementRef
+  private $auth = inject(AuthService)
+  private $router = inject(Router)
+  private $settings = inject(SettingsService)
+
+  readonly passwordInput = viewChild<ElementRef>('password')
+  readonly usernameInput = viewChild<ElementRef>('username')
+  readonly otpInput = viewChild<ElementRef>('otp')
 
   public form: FormGroup<{
     username: FormControl<string>
@@ -29,12 +42,6 @@ export class LoginComponent implements OnInit {
   public inProgress = false
   private targetRoute: string
 
-  constructor(
-    private $auth: AuthService,
-    private $router: Router,
-    private $settings: SettingsService,
-  ) {}
-
   ngOnInit() {
     this.form = new FormGroup({
       username: new FormControl(''),
@@ -42,7 +49,7 @@ export class LoginComponent implements OnInit {
     })
 
     this.form.valueChanges.pipe(debounceTime(500)).subscribe((changes) => {
-      const passwordInputValue = this.passwordInput?.nativeElement.value
+      const passwordInputValue = this.passwordInput()?.nativeElement.value
       if (passwordInputValue && passwordInputValue !== changes.password) {
         this.form.controls.password.setValue(passwordInputValue)
       }
@@ -71,18 +78,18 @@ export class LoginComponent implements OnInit {
     this.inProgress = true
 
     // grab the values from the native element as they may be "populated" via autofill.
-    const passwordInputValue = this.passwordInput?.nativeElement.value
+    const passwordInputValue = this.passwordInput()?.nativeElement.value
     if (passwordInputValue && passwordInputValue !== this.form.get('password').value) {
       this.form.controls.password.setValue(passwordInputValue)
     }
 
-    const usernameInputValue = this.usernameInput?.nativeElement.value
+    const usernameInputValue = this.usernameInput()?.nativeElement.value
     if (usernameInputValue && usernameInputValue !== this.form.get('username').value) {
       this.form.controls.username.setValue(usernameInputValue)
     }
 
     if (this.twoFactorCodeRequired) {
-      const otpInputValue = this.otpInput?.nativeElement.value
+      const otpInputValue = this.otpInput()?.nativeElement.value
       if (otpInputValue && otpInputValue !== this.form.get('otp').value) {
         this.form.controls.username.setValue(otpInputValue)
       }

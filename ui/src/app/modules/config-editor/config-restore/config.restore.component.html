@@ -12,12 +12,15 @@
     </button>
   </div>
   <div class="modal-body">
-    <div *ngIf="loading" class="text-center primary-text">
+    @if (loading) {
+    <div class="text-center primary-text">
       <i class="fa fa-fw fa-cog fa-spin" style="font-size: 75px"></i>
     </div>
-    <table class="table table-borderless table-hover table-sm" *ngIf="!loading && backupList && backupList.length">
+    } @if (!loading && backupList && backupList.length) {
+    <table class="table table-borderless table-hover table-sm">
       <tbody>
-        <tr *ngFor="let backup of backupList">
+        @for (backup of backupList; track backup) {
+        <tr>
           <td class="w-100">{{ backup.timestamp | date:'medium' }}</td>
           <td nowrap>
             <a class="card-link" (click)="restore(backup.id)">
@@ -25,11 +28,14 @@
             </a>
           </td>
         </tr>
+        }
       </tbody>
     </table>
-    <div *ngIf="!loading && (!backupList || !backupList.length)">
+    } @if (!loading && (!backupList || !backupList.length)) {
+    <div>
       <h3 class="text-center">{{ 'config.restore.no_backups' | translate }}</h3>
     </div>
+    }
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-left">
@@ -45,8 +51,8 @@
     </div>
     <div class="text-center"></div>
     <div class="text-right">
+      @if (!loading && backupList.length) {
       <button
-        *ngIf="!loading && backupList.length"
         type="button"
         class="btn btn-danger mr-auto"
         (click)="deleteAllBackups()"
@@ -54,6 +60,7 @@
       >
         {{ 'form.button_remove' | translate }}
       </button>
+      }
     </div>
   </div>
 </div>

@@ -4,19 +4,38 @@ import { MobileDetectService } from '@/app/core/mobile-detect.service'
 import { MonacoEditorService } from '@/app/core/monaco-editor.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { ConfigRestoreComponent } from '@/app/modules/config-editor/config-restore/config.restore.component'
-import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core'
+import { Component, inject, OnDestroy, OnInit, Renderer2 } from '@angular/core'
+import { FormsModule } from '@angular/forms'
 import { ActivatedRoute } from '@angular/router'
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
-import { TranslateService } from '@ngx-translate/core'
+import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import json5 from 'json5'
-import { NgxEditorModel } from 'ngx-monaco-editor-v2'
+import { DiffEditorComponent, EditorComponent, NgxEditorModel } from 'ngx-monaco-editor-v2'
 import { ToastrService } from 'ngx-toastr'
+
 import { firstValueFrom } from 'rxjs'
 
 @Component({
   templateUrl: './config-editor.component.html',
+  imports: [
+    NgbTooltip,
+    EditorComponent,
+    DiffEditorComponent,
+    FormsModule,
+    TranslatePipe,
+  ],
 })
 export class ConfigEditorComponent implements OnInit, OnDestroy {
+  private $api = inject(ApiService)
+  private $md = inject(MobileDetectService)
+  private $modal = inject(NgbModal)
+  private $monacoEditor = inject(MonacoEditorService)
+  private $route = inject(ActivatedRoute)
+  private $renderer = inject(Renderer2)
+  private $settings = inject(SettingsService)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
+
   public homebridgeConfig: string
   public originalConfig: string
   public saveInProgress: boolean
@@ -30,17 +49,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   private lastHeight: number
   private visualViewPortEventCallback: () => void
 
-  constructor(
-    private $api: ApiService,
-    private $md: MobileDetectService,
-    private $modal: NgbModal,
-    private $monacoEditor: MonacoEditorService,
-    private $route: ActivatedRoute,
-    private $renderer: Renderer2,
-    private $settings: SettingsService,
-    private $toastr: ToastrService,
-    private $translate: TranslateService,
-  ) {
+  constructor() {
     this.isMobile = this.$md.detect.mobile()
   }
 

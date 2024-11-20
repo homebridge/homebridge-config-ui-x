@@ -1,22 +1,21 @@
 import { ApiService } from '@/app/core/api.service'
-import { Component, Input } from '@angular/core'
+import { Component, inject, Input } from '@angular/core'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
-import { TranslateService } from '@ngx-translate/core'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
 @Component({
   templateUrl: './restart-child-bridges.component.html',
+  imports: [TranslatePipe],
 })
 export class RestartChildBridgesComponent {
-  @Input() bridges: { username: string, displayName: string }[] = []
+  $activeModal = inject(NgbActiveModal)
+  private $api = inject(ApiService)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
 
-  constructor(
-    public $activeModal: NgbActiveModal,
-    private $api: ApiService,
-    private $toastr: ToastrService,
-    private $translate: TranslateService,
-  ) {}
+  @Input() bridges: { username: string, displayName: string }[] = []
 
   public async onRestartChildBridgeClick() {
     try {

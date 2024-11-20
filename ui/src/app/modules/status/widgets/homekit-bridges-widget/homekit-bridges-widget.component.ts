@@ -1,15 +1,27 @@
 import { ApiService } from '@/app/core/api.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
-import { Component, Input, OnDestroy, OnInit } from '@angular/core'
-import { TranslateService } from '@ngx-translate/core'
+import { NgClass } from '@angular/common'
+import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
 @Component({
   templateUrl: './homekit-bridges-widget.component.html',
   styleUrls: ['./homekit-bridges-widget.component.scss'],
+  imports: [
+    NgClass,
+    NgbTooltip,
+    TranslatePipe,
+  ],
 })
 export class HomekitBridgesWidgetComponent implements OnInit, OnDestroy {
+  private $api = inject(ApiService)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
+  private $ws = inject(WsService)
+
   @Input() widget: any
 
   public homebridgeStatus = {} as any
@@ -17,13 +29,6 @@ export class HomekitBridgesWidgetComponent implements OnInit, OnDestroy {
 
   private ioMain: IoNamespace
   private ioChild: IoNamespace
-
-  constructor(
-    private $api: ApiService,
-    private $toastr: ToastrService,
-    private $translate: TranslateService,
-    private $ws: WsService,
-  ) {}
 
   async ngOnInit(): Promise<void> {
     this.ioMain = this.$ws.getExistingNamespace('status')

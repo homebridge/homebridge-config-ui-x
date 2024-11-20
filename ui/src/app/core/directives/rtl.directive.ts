@@ -1,16 +1,15 @@
 import { SettingsService } from '@/app/core/settings.service'
-import { Directive, ElementRef, Input, OnInit } from '@angular/core'
+import { Directive, ElementRef, inject, Input, OnInit } from '@angular/core'
 
 @Directive({
   selector: '[rtl]',
+  standalone: true,
 })
 export class RtlDirective implements OnInit {
-  @Input() rtl: string
+  private $settings = inject(SettingsService)
+  private el = inject(ElementRef)
 
-  constructor(
-    private $settings: SettingsService,
-    private el: ElementRef,
-  ) {}
+  @Input() rtl: string
 
   ngOnInit() {
     if (this.$settings.rtl) {

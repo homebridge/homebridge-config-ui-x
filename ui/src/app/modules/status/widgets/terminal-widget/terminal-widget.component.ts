@@ -1,22 +1,24 @@
 import { TerminalService } from '@/app/core/terminal.service'
-import {
-  Component,
-  ElementRef,
-  Input,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core'
+import { NgClass, NgStyle } from '@angular/common'
+import { Component, ElementRef, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
+import { TranslatePipe } from '@ngx-translate/core'
 import { Subject } from 'rxjs'
 import { ITerminalOptions } from 'xterm'
 
 @Component({
   templateUrl: './terminal-widget.component.html',
+  imports: [
+    NgClass,
+    NgStyle,
+    TranslatePipe,
+  ],
 })
 export class TerminalWidgetComponent implements OnInit, OnDestroy {
-  @ViewChild('widgetcontainer', { static: true }) widgetContainerElement: ElementRef
-  @ViewChild('terminaltitle', { static: true }) titleElement: ElementRef
-  @ViewChild('terminaloutput', { static: true }) termTarget: ElementRef
+  private $terminal = inject(TerminalService)
+
+  readonly widgetContainerElement = viewChild<ElementRef>('widgetcontainer')
+  readonly titleElement = viewChild<ElementRef>('terminaltitle')
+  readonly termTarget = viewChild<ElementRef>('terminaloutput')
 
   @Input() widget: any
   @Input() resizeEvent: Subject<any>
@@ -27,16 +29,12 @@ export class TerminalWidgetComponent implements OnInit, OnDestroy {
   private fontSize = 15
   private fontWeight: ITerminalOptions['fontWeight'] = '400'
 
-  constructor(
-    private $terminal: TerminalService,
-  ) {}
-
   ngOnInit() {
     this.fontSize = this.widget.fontSize || 15
     this.fontWeight = this.widget.fontWeight || 400
 
     setTimeout(() => {
-      this.$terminal.startTerminal(this.termTarget, {
+      this.$terminal.startTerminal(this.termTarget(), {
         cursorBlink: false,
         theme: {
           background: '#2b2b2b',
@@ -69,8 +67,8 @@ export class TerminalWidgetComponent implements OnInit, OnDestroy {
   }
 
   getTerminalHeight(): number {
-    const widgetContainerHeight = (this.widgetContainerElement.nativeElement as HTMLElement).offsetHeight
-    const titleHeight = (this.titleElement.nativeElement as HTMLElement).offsetHeight
+    const widgetContainerHeight = (this.widgetContainerElement().nativeElement as HTMLElement).offsetHeight
+    const titleHeight = (this.titleElement().nativeElement as HTMLElement).offsetHeight
     return widgetContainerHeight - titleHeight
   }
 

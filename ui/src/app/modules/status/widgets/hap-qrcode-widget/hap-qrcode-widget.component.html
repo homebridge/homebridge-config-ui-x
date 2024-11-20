@@ -2,9 +2,11 @@
   <div #qrcodecontainer class="drag-handler d-flex flex-column w-100 h-100">
     <div class="w-100" [ngStyle]="{'height.px': qrCodeHeight, 'width.px': qrCodeWidth}">
       <div class="text-center qr-code-container w-100 h-100 p-3">
-        <div class="w-100 h-100" *ngIf="setupUri">
+        @if (setupUri) {
+        <div class="w-100 h-100">
           <app-qrcode [data]="setupUri" class="mx-auto"></app-qrcode>
         </div>
+        }
       </div>
     </div>
     <div #pincode class="text-center w-100 mt-auto gridster-item-content">

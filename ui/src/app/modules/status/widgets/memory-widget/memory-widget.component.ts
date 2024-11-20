@@ -1,12 +1,7 @@
 import { IoNamespace, WsService } from '@/app/core/ws.service'
-import {
-  Component,
-  ElementRef,
-  Input,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core'
+import { DecimalPipe, NgClass } from '@angular/common'
+import { Component, ElementRef, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
+import { TranslatePipe } from '@ngx-translate/core'
 import { ChartConfiguration } from 'chart.js'
 import { BaseChartDirective } from 'ng2-charts'
 import { interval, Subscription } from 'rxjs'
@@ -14,12 +9,20 @@ import { interval, Subscription } from 'rxjs'
 @Component({
   templateUrl: './memory-widget.component.html',
   styleUrls: ['./memory-widget.component.scss'],
+  imports: [
+    NgClass,
+    BaseChartDirective,
+    DecimalPipe,
+    TranslatePipe,
+  ],
 })
 export class MemoryWidgetComponent implements OnInit, OnDestroy {
+  private $ws = inject(WsService)
+
   @Input() public widget: any
 
-  @ViewChild(BaseChartDirective, { static: true }) public chart: BaseChartDirective
-  @ViewChild('widgetbackground', { static: true }) private widgetBackground: ElementRef
+  readonly chart = viewChild(BaseChartDirective)
+  readonly widgetBackground = viewChild<ElementRef>('widgetbackground')
 
   public totalMemory: number
   public freeMemory: number
@@ -71,15 +74,11 @@ export class MemoryWidgetComponent implements OnInit, OnDestroy {
   private io: IoNamespace
   private intervalSubscription: Subscription
 
-  constructor(
-    private $ws: WsService,
-  ) {}
-
   ngOnInit() {
     this.io = this.$ws.getExistingNamespace('status')
 
     // lookup the chart color based on the current theme
-    const userColor = getComputedStyle(this.widgetBackground.nativeElement).backgroundColor
+    const userColor = getComputedStyle(this.widgetBackground().nativeElement).backgroundColor
     if (userColor) {
       this.lineChartOptions.elements.line.backgroundColor = userColor
       this.lineChartOptions.elements.line.borderColor = userColor
@@ -113,7 +112,7 @@ export class MemoryWidgetComponent implements OnInit, OnDestroy {
   getServerMemoryInfo() {
     this.io.request('get-server-memory-info').subscribe((data) => {
       this.updateData(data)
-      this.chart.update()
+      this.chart().update()
     })
   }
 

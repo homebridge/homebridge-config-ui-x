@@ -7,41 +7,24 @@
   tabindex="0"
 >
   <div class="d-flex flex-column h-100">
-    <div
-      *ngIf="service.values.ValveType === 0"
-      [inlineSVG]="'/assets/hap-icons/valve-generic.svg'"
-      [attr.aria-label]="'Valve'"
-      class="accessory-svg"
-    ></div>
-    <div
-      *ngIf="service.values.ValveType === 1"
-      [inlineSVG]="'/assets/hap-icons/valve-irrigation.svg'"
-      [attr.aria-label]="'Valve'"
-      class="accessory-svg"
-    ></div>
-    <div
-      *ngIf="service.values.ValveType === 2"
-      [inlineSVG]="'/assets/hap-icons/valve-generic.svg'"
-      [attr.aria-label]="'Valve'"
-      class="accessory-svg"
-    ></div>
-    <div
-      *ngIf="service.values.ValveType === 3"
-      [inlineSVG]="'/assets/hap-icons/valve-generic.svg'"
-      [attr.aria-label]="'Valve'"
-      class="accessory-svg"
-    ></div>
+    @if (service.values.ValveType === 0) {
+    <div [inlineSVG]="'/assets/hap-icons/valve-generic.svg'" [attr.aria-label]="'Valve'" class="accessory-svg"></div>
+    } @if (service.values.ValveType === 1) {
+    <div [inlineSVG]="'/assets/hap-icons/valve-irrigation.svg'" [attr.aria-label]="'Valve'" class="accessory-svg"></div>
+    } @if (service.values.ValveType === 2) {
+    <div [inlineSVG]="'/assets/hap-icons/valve-generic.svg'" [attr.aria-label]="'Valve'" class="accessory-svg"></div>
+    } @if (service.values.ValveType === 3) {
+    <div [inlineSVG]="'/assets/hap-icons/valve-generic.svg'" [attr.aria-label]="'Valve'" class="accessory-svg"></div>
+    }
     <div class="accessory-label mt-auto">
       {{ service.customName || service.values.ConfiguredName || service.serviceName }}
     </div>
-    <div class="accessory-label grey-text" *ngIf="service.values.Active && remainingDuration">
-      {{ remainingDuration }}
-    </div>
-    <div class="accessory-label grey-text" *ngIf="service.values.Active && !remainingDuration">
-      {{ 'accessories.control.running' | translate }}
-    </div>
-    <div class="accessory-label grey-text" *ngIf="!service.values.Active">
-      {{ 'accessories.control.off' | translate }}
-    </div>
+    @if (service.values.Active && remainingDuration) {
+    <div class="accessory-label grey-text">{{ remainingDuration }}</div>
+    } @if (service.values.Active && !remainingDuration) {
+    <div class="accessory-label grey-text">{{ 'accessories.control.running' | translate }}</div>
+    } @if (!service.values.Active) {
+    <div class="accessory-label grey-text">{{ 'accessories.control.off' | translate }}</div>
+    }
   </div>
 </div>

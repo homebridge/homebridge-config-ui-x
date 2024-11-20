@@ -1,18 +1,26 @@
 import { ApiService } from '@/app/core/api.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { HttpEventType, HttpResponse } from '@angular/common/http'
-import { Component, Input, OnDestroy, OnInit } from '@angular/core'
+import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
-import { TranslateService } from '@ngx-translate/core'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
 
 @Component({
   templateUrl: './restore.component.html',
+  imports: [TranslatePipe],
 })
 export class RestoreComponent implements OnInit, OnDestroy {
+  $activeModal = inject(NgbActiveModal)
+  private $api = inject(ApiService)
+  private $route = inject(Router)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
+  private $ws = inject(WsService)
+
   @Input() setupWizardRestore = false
   @Input() selectedBackup: { id: any, fileName: string } = null
 
@@ -30,15 +38,6 @@ export class RestoreComponent implements OnInit, OnDestroy {
   private fitAddon = new FitAddon()
 
   private io: IoNamespace
-
-  constructor(
-    public $activeModal: NgbActiveModal,
-    private $api: ApiService,
-    private $route: Router,
-    private $toastr: ToastrService,
-    private $translate: TranslateService,
-    private $ws: WsService,
-  ) {}
 
   async ngOnInit() {
     this.io = this.$ws.connectToNamespace('backup')

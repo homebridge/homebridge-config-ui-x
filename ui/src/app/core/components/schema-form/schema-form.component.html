@@ -1,6 +1,6 @@
 <ng-container>
+  @if (configSchema.schema) {
   <json-schema-form
-    *ngIf="configSchema.schema"
     [jsfPatch]="configSchema.fixArrays"
     [options]="jsonFormOptions"
     [schema]="configSchema.schema"
@@ -14,4 +14,5 @@
     class="ng-bs4-validate"
   >
   </json-schema-form>
+  }
 </ng-container>

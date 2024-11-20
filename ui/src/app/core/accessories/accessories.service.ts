@@ -2,7 +2,7 @@ import type { ServiceType } from '@homebridge/hap-client'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoryInfoComponent } from '@/app/core/accessories/accessory-info/accessory-info.component'
-import { Injectable } from '@angular/core'
+import { inject, Injectable } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
@@ -15,6 +15,12 @@ import { IoNamespace, WsService } from '../ws.service'
   providedIn: 'root',
 })
 export class AccessoriesService {
+  private $auth = inject(AuthService)
+  private $modal = inject(NgbModal)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
+  private $ws = inject(WsService)
+
   public layoutSaved = new Subject()
   public accessoryData = new Subject()
   public readyForControl = false
@@ -39,14 +45,6 @@ export class AccessoriesService {
     'CameraRTPStreamManagement',
     'ProtocolInformation',
   ]
-
-  constructor(
-    private $auth: AuthService,
-    private $modal: NgbModal,
-    private $toastr: ToastrService,
-    private $translate: TranslateService,
-    private $ws: WsService,
-  ) {}
 
   /**
    *

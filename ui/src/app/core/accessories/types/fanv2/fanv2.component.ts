@@ -1,20 +1,26 @@
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { Fanv2ManageComponent } from '@/app/core/accessories/types/fanv2/fanv2.manage.component'
-import { Component, Input, OnInit } from '@angular/core'
+import { NgClass } from '@angular/common'
+import { Component, inject, Input, OnInit } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { TranslatePipe } from '@ngx-translate/core'
+import { LongClickDirective } from '../../../directives/longclick.directive'
 
 @Component({
   selector: 'app-fanv2',
   templateUrl: './fanv2.component.html',
   styleUrls: ['./fanv2.component.scss'],
+  imports: [
+    LongClickDirective,
+    NgClass,
+    TranslatePipe,
+  ],
 })
 export class Fanv2Component implements OnInit {
+  private $modal = inject(NgbModal)
+
   @Input() public service: ServiceTypeX
   public rotationSpeedUnit = ''
-
-  constructor(
-    private $modal: NgbModal,
-  ) {}
 
   ngOnInit() {
     // Find the unit for the rotation speed

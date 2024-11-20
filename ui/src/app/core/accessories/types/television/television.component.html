@@ -10,11 +10,10 @@
     <div class="accessory-label mt-auto">
       {{ service.customName || service.values.ConfiguredName || service.serviceName }}
     </div>
-    <div class="accessory-label grey-text" *ngIf="!service.values.Active">
-      {{ 'accessories.control.off' | translate }}
-    </div>
-    <div class="accessory-label grey-text" *ngIf="service.values.Active">
-      {{ channelList[service.values.ActiveIdentifier] }}
-    </div>
+    @if (!service.values.Active) {
+    <div class="accessory-label grey-text">{{ 'accessories.control.off' | translate }}</div>
+    } @if (service.values.Active) {
+    <div class="accessory-label grey-text">{{ channelList[service.values.ActiveIdentifier] }}</div>
+    }
   </div>
 </div>

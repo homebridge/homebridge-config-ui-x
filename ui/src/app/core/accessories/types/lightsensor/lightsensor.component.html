@@ -2,11 +2,10 @@
   <div class="d-flex flex-column h-100">
     <div [inlineSVG]="'/assets/hap-icons/light.svg'" [attr.aria-label]="'Light Sensor'" class="accessory-svg"></div>
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
-    <div *ngIf="service.values.CurrentAmbientLightLevel < 1" class="accessory-label grey-text">
-      {{ service.values.CurrentAmbientLightLevel | number: '0.1-1' }} lux
-    </div>
-    <div *ngIf="service.values.CurrentAmbientLightLevel >= 1" class="accessory-label grey-text">
-      {{ service.values.CurrentAmbientLightLevel | number: '1.0-0' }} lux
-    </div>
+    @if (service.values.CurrentAmbientLightLevel < 1) {
+    <div class="accessory-label grey-text">{{ service.values.CurrentAmbientLightLevel | number: '0.1-1' }} lux</div>
+    } @if (service.values.CurrentAmbientLightLevel >= 1) {
+    <div class="accessory-label grey-text">{{ service.values.CurrentAmbientLightLevel | number: '1.0-0' }} lux</div>
+    }
   </div>
 </div>

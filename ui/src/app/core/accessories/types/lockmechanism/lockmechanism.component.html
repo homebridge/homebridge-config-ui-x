@@ -6,39 +6,26 @@
   tabindex="0"
 >
   <div class="d-flex flex-column h-100">
-    <div
-      *ngIf="service.values.LockCurrentState === 0"
-      [inlineSVG]="'/assets/hap-icons/lock-unlocked.svg'"
-      [attr.aria-label]="'Unlocked'"
-      class="accessory-svg"
-    ></div>
-    <div
-      *ngIf="service.values.LockCurrentState === 1"
-      [inlineSVG]="'/assets/hap-icons/lock-locked.svg'"
-      [attr.aria-label]="'Locked'"
-      class="accessory-svg"
-    ></div>
-    <div
-      *ngIf="service.values.LockCurrentState > 1"
-      [inlineSVG]="'/assets/hap-icons/unknown.svg'"
-      [attr.aria-label]="'Error'"
-      class="accessory-svg"
-    ></div>
+    @if (service.values.LockCurrentState === 0) {
+    <div [inlineSVG]="'/assets/hap-icons/lock-unlocked.svg'" [attr.aria-label]="'Unlocked'" class="accessory-svg"></div>
+    } @if (service.values.LockCurrentState === 1) {
+    <div [inlineSVG]="'/assets/hap-icons/lock-locked.svg'" [attr.aria-label]="'Locked'" class="accessory-svg"></div>
+    } @if (service.values.LockCurrentState > 1) {
+    <div [inlineSVG]="'/assets/hap-icons/unknown.svg'" [attr.aria-label]="'Error'" class="accessory-svg"></div>
+    }
 
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
 
+    @if (service.values.LockCurrentState < 2) {
     <div
       class="accessory-label grey-text"
-      *ngIf="service.values.LockCurrentState < 2"
       [innerText]="(service.values.LockCurrentState ? 'accessories.control.locked' : 'accessories.control.unlocked') | translate"
       [ngClass]="{'red-text': !service.values.LockCurrentState, 'grey-text': service.values.LockCurrentState}"
     ></div>
-
-    <div class="accessory-label red-text" *ngIf="service.values.LockCurrentState === 2">
-      {{ 'accessories.control.jammed' | translate }}
-    </div>
-    <div class="accessory-label red-text" *ngIf="service.values.LockCurrentState === 3">
-      {{ 'accessories.control.unknown' | translate }}
-    </div>
+    } @if (service.values.LockCurrentState === 2) {
+    <div class="accessory-label red-text">{{ 'accessories.control.jammed' | translate }}</div>
+    } @if (service.values.LockCurrentState === 3) {
+    <div class="accessory-label red-text">{{ 'accessories.control.unknown' | translate }}</div>
+    }
   </div>
 </div>

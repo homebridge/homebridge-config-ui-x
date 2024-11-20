@@ -3,17 +3,18 @@
     <h5 class="modal-title">
       {{ 'child_bridge.bridge_settings' | translate }}: {{ plugin.displayName || plugin.name }}
     </h5>
+    @if (!justInstalled) {
     <button
       type="button"
       class="close"
       data-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
       (click)="$activeModal.close('Dismiss')"
-      *ngIf="!justInstalled"
       [disabled]="saveInProgress"
     >
       <span aria-hidden="true">&times;</span>
     </button>
+    }
   </div>
   <div class="modal-body">
     <p>
@@ -28,16 +29,20 @@
         <i class="fas fa-fw fa-external-link-alt"></i>
       </a>
     </p>
-    <div *ngIf="configBlocks.length">
+    @if (configBlocks.length) {
+    <div>
       <p>{{ 'child_bridge.bridges_paired' | translate }}</p>
       <p>{{ 'child_bridge.select_type' | translate }}:</p>
-      <ul class="list-group list-group-box my-2" *ngIf="configBlocks.length">
-        <li class="list-group-item" *ngFor="let item of configBlocks; let i = index">
+      @if (configBlocks.length) {
+      <ul class="list-group list-group-box my-2">
+        @for (item of configBlocks; track item; let i = $index) {
+        <li class="list-group-item">
           <div class="d-flex justify-content-between align-items-center">
             <h5 class="primary-text mb-0">
               <strong>
-                {{ item.name || item.accessory || item.platform }}
-                <span *ngIf="enabledBlocks[i] && item._bridge?.name"> - {{ item._bridge.name }}</span>
+                {{ item.name || item.accessory || item.platform }} @if (enabledBlocks[i] && item._bridge?.name) {
+                <span> - {{ item._bridge.name }}</span>
+                }
               </strong>
             </h5>
             <input
@@ -49,14 +54,17 @@
             />
             <label [for]="'toggleExternalBridgeInput_' + i" class="rendux-label"></label>
           </div>
-          <div *ngIf="item._bridge?.username">
-            <div *ngIf="deviceInfo[item._bridge?.username] === false">
+          @if (item._bridge?.username) {
+          <div>
+            @if (deviceInfo[item._bridge?.username] === false) {
+            <div>
               <ngb-alert type="info" [dismissible]="false" class="mt-3">
                 {{ 'child_bridge.restart_homebridge' | translate }}
                 <br />{{ 'child_bridge.return_to_pair' | translate }}
               </ngb-alert>
             </div>
-            <div *ngIf="deviceInfo[item._bridge?.username]" class="mt-3">
+            } @if (deviceInfo[item._bridge?.username]) {
+            <div class="mt-3">
               <div class="w-100 d-flex flex-column text-center">
                 <app-qrcode
                   [data]="deviceInfo[item._bridge?.username]._setupCode"
@@ -74,13 +82,13 @@
                     }"
                   ></i>
                   {{ (deviceInfo[item._bridge?.username]._isPaired ? 'status.widget.qr_paired' :
-                  'status.widget.qr_unpaired') | translate }}
-                  <span *ngIf="!deviceInfo[item._bridge?.username]._isPaired">
-                    &middot; {{ 'status.code_scan' | translate }}
-                  </span>
+                  'status.widget.qr_unpaired') | translate }} @if (!deviceInfo[item._bridge?.username]._isPaired) {
+                  <span> &middot; {{ 'status.code_scan' | translate }} </span>
+                  }
                 </p>
               </div>
-              <div *ngIf="$settings.env.serviceMode">
+              @if ($settings.env.serviceMode) {
+              <div>
                 <div
                   role="button"
                   tabindex="0"
@@ -94,7 +102,8 @@
                     {{ 'child_bridge.config.header' | translate }}
                   </h5>
                 </div>
-                <div *ngIf="showConfigFields[i]" [id]="'configFields_' + i">
+                @if (showConfigFields[i]) {
+                <div [id]="'configFields_' + i">
                   <div class="mb-3 grey-text">{{ 'child_bridge.config.description' | translate }}</div>
                   <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
                     <span class="pr-0 pr-lg-3" style="flex: 1">{{ 'child_bridge.config.name' | translate }}</span>
@@ -126,10 +135,8 @@
                       />
                     </div>
                   </div>
-                  <div
-                    class="d-block d-lg-flex justify-content-between align-items-center mb-3"
-                    *ngIf="canShowBridgeDebug"
-                  >
+                  @if (canShowBridgeDebug) {
+                  <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
                     <span>{{ 'child_bridge.config.debug' | translate }} <code>-D</code></span>
                     <input
                       type="checkbox"
@@ -140,6 +147,7 @@
                     />
                     <label [for]="'homebridgeDebugMode_' + i" class="rendux-label ml-3" style="min-width: 50px"></label>
                   </div>
+                  }
                   <div class="d-block d-lg-flex justify-content-between align-items-center mb-3">
                     <span class="pr-0 pr-lg-3" style="flex: 1">
                       <span class="text-monospace">DEBUG</span><br />
@@ -169,16 +177,22 @@
                     </div>
                   </div>
                 </div>
+                }
               </div>
+              }
             </div>
+            }
           </div>
+          }
         </li>
+        }
       </ul>
+      }
     </div>
-    <ngb-alert *ngIf="!configBlocks.length && canConfigure" type="info" [dismissible]="false">
-      {{ 'child_bridge.must_configure_plugin' | translate }}
-    </ngb-alert>
-    <div *ngIf="!canConfigure" class="mb-2">
+    } @if (!configBlocks.length && canConfigure) {
+    <ngb-alert type="info" [dismissible]="false"> {{ 'child_bridge.must_configure_plugin' | translate }} </ngb-alert>
+    } @if (!canConfigure) {
+    <div class="mb-2">
       <ngb-alert type="info" [dismissible]="false">
         {{ 'plugins.settings.message_manual_config_required' | translate }} {{
         'plugins.settings.message_consult_documentation' | translate }}
@@ -189,49 +203,51 @@
         </button>
       </div>
     </div>
+    }
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-left">
+      @if (!justInstalled) {
       <button
         type="button"
         class="btn btn-elegant"
         data-dismiss="modal"
         (click)="$activeModal.close('Dismiss')"
-        *ngIf="!justInstalled"
         [disabled]="saveInProgress"
       >
         {{ 'form.button_close' | translate }}
       </button>
+      }
     </div>
     <div class="text-center">
-      <div *ngIf="justInstalled">
+      @if (justInstalled) {
+      <div>
         <button type="button" class="btn btn-primary" (click)="save()" [disabled]="saveInProgress">
-          {{ 'form.button_save' | translate }} <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
+          {{ 'form.button_save' | translate }} @if (saveInProgress) {
+          <i class="fas fa-fw fa-spinner fa-pulse"></i>
+          }
         </button>
       </div>
+      }
     </div>
     <div class="text-right">
-      <div *ngIf="!justInstalled">
-        <button
-          type="button"
-          class="btn btn-primary"
-          (click)="save()"
-          [disabled]="saveInProgress"
-          *ngIf="configBlocks.length"
-        >
-          <span *ngIf="!saveInProgress">{{ 'form.button_save' | translate }}</span>
-          <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
+      @if (!justInstalled) {
+      <div>
+        @if (configBlocks.length) {
+        <button type="button" class="btn btn-primary" (click)="save()" [disabled]="saveInProgress">
+          @if (!saveInProgress) {
+          <span>{{ 'form.button_save' | translate }}</span>
+          } @if (saveInProgress) {
+          <i class="fas fa-fw fa-spinner fa-pulse"></i>
+          }
         </button>
-        <button
-          type="button"
-          class="btn btn-primary"
-          data-dismiss="modal"
-          (click)="openPluginConfig()"
-          *ngIf="!configBlocks.length"
-        >
+        } @if (!configBlocks.length) {
+        <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="openPluginConfig()">
           {{ 'plugins.button_settings' | translate }}
         </button>
+        }
       </div>
+      }
     </div>
   </div>
 </div>

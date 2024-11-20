@@ -12,16 +12,19 @@
     </button>
   </div>
   <div class="modal-body w-100 text-center">
-    <i *ngIf="faIconClass" class="fas fa-fw {{ faIconClass }} mb-4" style="font-size: 75px"></i>
-    <div class="alert" role="alert" *ngIf="subtitle">
+    @if (faIconClass) {
+    <i class="fas fa-fw {{ faIconClass }} mb-4" style="font-size: 75px"></i>
+    } @if (subtitle) {
+    <div class="alert" role="alert">
       <h5 class="mb-0">{{ subtitle }}</h5>
     </div>
+    }
     <p class="w-100 text-center">{{ message }}</p>
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-left">
+      @if (ctaButtonLink) {
       <button
-        *ngIf="ctaButtonLink"
         type="button"
         class="btn btn-elegant"
         data-dismiss="modal"
@@ -30,10 +33,11 @@
       >
         {{ 'form.button_close' | translate }}
       </button>
+      }
     </div>
     <div class="text-center">
+      @if (!ctaButtonLink) {
       <button
-        *ngIf="!ctaButtonLink"
         type="button"
         class="btn btn-elegant"
         data-dismiss="modal"
@@ -42,17 +46,14 @@
       >
         {{ 'form.button_close' | translate }}
       </button>
+      }
     </div>
     <div class="text-right">
-      <a
-        *ngIf="ctaButtonLink"
-        class="btn btn-primary text-decoration-none"
-        target="_blank"
-        [href]="ctaButtonLink"
-        rel="noopener noreferrer"
-      >
+      @if (ctaButtonLink) {
+      <a class="btn btn-primary text-decoration-none" target="_blank" [href]="ctaButtonLink" rel="noopener noreferrer">
         {{ ctaButtonLabel }} <i class="fas fa-fw fa-external-link-alt"></i>
       </a>
+      }
     </div>
   </div>
 </div>

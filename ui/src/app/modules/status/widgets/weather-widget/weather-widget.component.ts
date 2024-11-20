@@ -1,15 +1,28 @@
+import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { environment } from '@/environments/environment'
+import { DecimalPipe, NgClass, TitleCasePipe } from '@angular/common'
 import { HttpClient, HttpParams } from '@angular/common/http'
-import { Component, Input, OnDestroy, OnInit } from '@angular/core'
-import { TranslateService } from '@ngx-translate/core'
+import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import dayjs from 'dayjs'
 import { interval, Subject, Subscription } from 'rxjs'
 
 @Component({
   templateUrl: './weather-widget.component.html',
+  imports: [
+    NgClass,
+    DecimalPipe,
+    TitleCasePipe,
+    TranslatePipe,
+    ConvertTempPipe,
+  ],
 })
 export class WeatherWidgetComponent implements OnInit, OnDestroy {
+  private $http = inject(HttpClient)
+  private $translate = inject(TranslateService)
+  private $ws = inject(WsService)
+
   @Input() widget: any
   @Input() configureEvent: Subject<any>
 
@@ -17,12 +30,6 @@ export class WeatherWidgetComponent implements OnInit, OnDestroy {
 
   private io: IoNamespace
   private intervalSubscription: Subscription
-
-  constructor(
-    private $http: HttpClient,
-    private $translate: TranslateService,
-    private $ws: WsService,
-  ) {}
 
   ngOnInit() {
     this.io = this.$ws.getExistingNamespace('status')

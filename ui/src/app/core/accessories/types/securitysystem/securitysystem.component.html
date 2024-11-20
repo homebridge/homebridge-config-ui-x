@@ -6,27 +6,32 @@
   tabindex="0"
 >
   <div class="d-flex flex-column h-100">
+    @if (service.values.SecuritySystemCurrentState !== 3) {
     <div
       [inlineSVG]="'/assets/hap-icons/securitysystem-active.svg'"
       [attr.aria-label]="'Armed'"
       class="accessory-svg"
-      *ngIf="service.values.SecuritySystemCurrentState !== 3"
     ></div>
+    } @if (service.values.SecuritySystemCurrentState === 3) {
     <div
       [inlineSVG]="'/assets/hap-icons/securitysystem-off.svg'"
       [attr.aria-label]="'Disarmed'"
       class="accessory-svg"
-      *ngIf="service.values.SecuritySystemCurrentState === 3"
     ></div>
+    }
 
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
 
-    <ng-container [ngSwitch]="service.values.SecuritySystemCurrentState">
-      <div class="accessory-label grey-text" *ngSwitchCase="0">{{ 'accessories.control.home' | translate }}</div>
-      <div class="accessory-label grey-text" *ngSwitchCase="1">{{ 'accessories.control.away' | translate }}</div>
-      <div class="accessory-label grey-text" *ngSwitchCase="2">{{ 'accessories.control.night' | translate }}</div>
-      <div class="accessory-label red-text" *ngSwitchCase="3">{{ 'accessories.control.off' | translate }}</div>
-      <div class="accessory-label red-text" *ngSwitchCase="4">{{ 'accessories.control.triggered' | translate }}</div>
-    </ng-container>
+    @switch (service.values.SecuritySystemCurrentState) { @case (0) {
+    <div class="accessory-label grey-text">{{ 'accessories.control.home' | translate }}</div>
+    } @case (1) {
+    <div class="accessory-label grey-text">{{ 'accessories.control.away' | translate }}</div>
+    } @case (2) {
+    <div class="accessory-label grey-text">{{ 'accessories.control.night' | translate }}</div>
+    } @case (3) {
+    <div class="accessory-label red-text">{{ 'accessories.control.off' | translate }}</div>
+    } @case (4) {
+    <div class="accessory-label red-text">{{ 'accessories.control.triggered' | translate }}</div>
+    } }
   </div>
 </div>

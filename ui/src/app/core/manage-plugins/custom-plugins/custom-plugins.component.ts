@@ -6,19 +6,36 @@ import { PluginSchema } from '@/app/core/manage-plugins/plugin-config/plugin-con
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { environment } from '@/environments/environment'
-import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core'
-import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap'
-import { TranslateService } from '@ngx-translate/core'
+import { NgClass } from '@angular/common'
+import { Component, ElementRef, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
+import { NgbActiveModal, NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom, Subject } from 'rxjs'
 import { debounceTime, skip } from 'rxjs/operators'
+import { SchemaFormComponent } from '../../components/schema-form/schema-form.component'
 
 @Component({
   templateUrl: './custom-plugins.component.html',
   styleUrls: ['./custom-plugins.component.scss'],
+  imports: [
+    SchemaFormComponent,
+    NgClass,
+    NgbTooltip,
+    TranslatePipe,
+  ],
 })
 export class CustomPluginsComponent implements OnInit, OnDestroy {
-  @ViewChild('custompluginui', { static: true }) customPluginUiElementTarget: ElementRef
+  $activeModal = inject(NgbActiveModal)
+  private $api = inject(ApiService)
+  private $modal = inject(NgbModal)
+  private $plugin = inject(ManagePluginsService)
+  private $settings = inject(SettingsService)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
+  private $ws = inject(WsService)
+
+  readonly customPluginUiElementTarget = viewChild<ElementRef>('custompluginui')
   @Input() plugin: any
   @Input() schema: PluginSchema
   @Input() pluginConfig: Record<string, any>[]
@@ -51,17 +68,6 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   private schemaFormRecentlyUpdated = false
   private schemaFormRecentlyRefreshed = false
   private schemaFormRefreshSubject = new Subject()
-
-  constructor(
-    public $activeModal: NgbActiveModal,
-    private $api: ApiService,
-    private $modal: NgbModal,
-    private $plugin: ManagePluginsService,
-    private $settings: SettingsService,
-    private $toastr: ToastrService,
-    private $translate: TranslateService,
-    private $ws: WsService,
-  ) {}
 
   ngOnInit(): void {
     this.io = this.$ws.connectToNamespace('plugins/settings-ui')
@@ -124,7 +130,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   }
 
   loadUi() {
-    this.iframe = this.customPluginUiElementTarget.nativeElement as HTMLIFrameElement
+    this.iframe = this.customPluginUiElementTarget().nativeElement as HTMLIFrameElement
     this.iframe.src = `${environment.api.base + this.basePath
     }/index.html?origin=${encodeURIComponent(location.origin)}&v=${encodeURIComponent(this.plugin.installedVersion)}`
   }

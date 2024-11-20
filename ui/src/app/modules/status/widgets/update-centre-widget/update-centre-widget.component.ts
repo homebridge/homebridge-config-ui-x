@@ -2,17 +2,31 @@ import { InformationComponent } from '@/app/core/components/information/informat
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
-import { Component, Input, OnInit } from '@angular/core'
+import { NgClass } from '@angular/common'
+import { Component, inject, Input, OnInit } from '@angular/core'
+import { RouterLink } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
-import { TranslateService } from '@ngx-translate/core'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
 @Component({
   templateUrl: './update-centre-widget.component.html',
   styleUrls: ['./update-centre-widget.component.scss'],
+  imports: [
+    NgClass,
+    RouterLink,
+    TranslatePipe,
+  ],
 })
 export class UpdateCentreWidgetComponent implements OnInit {
+  private $modal = inject(NgbModal)
+  $plugin = inject(ManagePluginsService)
+  private $settings = inject(SettingsService)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
+  private $ws = inject(WsService)
+
   @Input() widget: any
 
   public homebridgePkg = {} as any
@@ -24,15 +38,6 @@ export class UpdateCentreWidgetComponent implements OnInit {
   public serverInfo: any
 
   private io: IoNamespace
-
-  constructor(
-    private $modal: NgbModal,
-    public $plugin: ManagePluginsService,
-    private $settings: SettingsService,
-    private $toastr: ToastrService,
-    private $translate: TranslateService,
-    private $ws: WsService,
-  ) {}
 
   async ngOnInit() {
     this.io = this.$ws.getExistingNamespace('status')

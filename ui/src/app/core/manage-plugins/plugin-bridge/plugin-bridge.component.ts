@@ -3,18 +3,37 @@ import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebr
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
 import { PluginSchema } from '@/app/core/manage-plugins/plugin-config/plugin-config.component'
 import { SettingsService } from '@/app/core/settings.service'
-import { Component, Input, OnInit } from '@angular/core'
+import { NgClass } from '@angular/common'
+import { Component, inject, Input, OnInit } from '@angular/core'
+import { FormsModule } from '@angular/forms'
 import { Router } from '@angular/router'
-import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap'
-import { TranslateService } from '@ngx-translate/core'
+import { NgbActiveModal, NgbAlert, NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
+import { QrcodeComponent } from '../../components/qrcode/qrcode.component'
 
 @Component({
   templateUrl: './plugin-bridge.component.html',
   styleUrls: ['./plugin-bridge.component.scss'],
+  imports: [
+    FormsModule,
+    NgbAlert,
+    QrcodeComponent,
+    NgClass,
+    TranslatePipe,
+  ],
 })
 export class PluginBridgeComponent implements OnInit {
+  $activeModal = inject(NgbActiveModal)
+  private $api = inject(ApiService)
+  private $modal = inject(NgbModal)
+  private $plugins = inject(ManagePluginsService)
+  private $router = inject(Router)
+  $settings = inject(SettingsService)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
+
   @Input() plugin: any
   @Input() schema: PluginSchema
   @Input() justInstalled = false
@@ -27,17 +46,6 @@ export class PluginBridgeComponent implements OnInit {
   public showConfigFields: boolean[] = []
   public saveInProgress = false
   public canShowBridgeDebug = false
-
-  constructor(
-    public $activeModal: NgbActiveModal,
-    private $api: ApiService,
-    private $modal: NgbModal,
-    private $plugins: ManagePluginsService,
-    private $router: Router,
-    public $settings: SettingsService,
-    private $toastr: ToastrService,
-    private $translate: TranslateService,
-  ) {}
 
   ngOnInit(): void {
     this.loadPluginConfig()

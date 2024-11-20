@@ -33,7 +33,8 @@
       </label>
     </div>
 
-    <div *ngIf="targetRotationSpeed">
+    @if (targetRotationSpeed) {
+    <div>
       <h5 class="mb-0">{{ 'accessories.control.rotation_speed' | translate }}</h5>
       <p>{{ targetRotationSpeed.value }}%</p>
       <nouislider
@@ -45,5 +46,6 @@
       >
       </nouislider>
     </div>
+    }
   </div>
 </div>

@@ -1,4 +1,3 @@
-import { UsersComponent } from '@/app/modules/users/users.component'
 import { UsersResolver } from '@/app/modules/users/users.resolver'
 import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
@@ -6,7 +5,7 @@ import { RouterModule, Routes } from '@angular/router'
 const routes: Routes = [
   {
     path: '',
-    component: UsersComponent,
+    loadComponent: () => import('@/app/modules/users/users.component').then(m => m.UsersComponent),
     resolve: {
       homebridgeUsers: UsersResolver,
     },

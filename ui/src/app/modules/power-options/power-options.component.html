@@ -24,19 +24,23 @@
       {{ 'menu.hbrestart.confirm_ui' | translate }}
     </button>
   </p>
-  <p class="w-100 text-center my-5" *ngIf="$settings.env.canShutdownRestartHost">
+  @if ($settings.env.canShutdownRestartHost) {
+  <p class="w-100 text-center my-5">
     <button type="button" class="btn btn-primary p-3 my-0" style="width: 85%" (click)="restartServer()">
       {{ 'menu.linux.label_restart_server' | translate }}
     </button>
   </p>
-  <p class="w-100 text-center my-5" *ngIf="$settings.env.canShutdownRestartHost">
+  } @if ($settings.env.canShutdownRestartHost) {
+  <p class="w-100 text-center my-5">
     <button type="button" class="btn btn-primary p-3 my-0" style="width: 85%" (click)="shutdownServer()">
       {{ 'menu.linux.label_shutdown_server' | translate }}
     </button>
   </p>
-  <p class="w-100 text-center my-5" *ngIf="$settings.env.runningInDocker">
+  } @if ($settings.env.runningInDocker) {
+  <p class="w-100 text-center my-5">
     <button type="button" class="btn btn-primary p-3 my-0" style="width: 85%" (click)="dockerRestartContainer()">
       {{ 'menu.docker.restart_container' | translate }}
     </button>
   </p>
+  }
 </div>

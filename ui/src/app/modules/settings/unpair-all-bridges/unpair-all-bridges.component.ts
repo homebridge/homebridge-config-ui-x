@@ -1,23 +1,25 @@
 import { ApiService } from '@/app/core/api.service'
-import { Component } from '@angular/core'
+import { Component, inject } from '@angular/core'
 import { Router } from '@angular/router'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
-import { TranslateService } from '@ngx-translate/core'
+import { NgbActiveModal, NgbAlert } from '@ng-bootstrap/ng-bootstrap'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 
 @Component({
   templateUrl: './unpair-all-bridges.component.html',
+  imports: [
+    NgbAlert,
+    TranslatePipe,
+  ],
 })
 export class UnpairAllBridgesComponent {
-  public clicked: boolean
+  $activeModal = inject(NgbActiveModal)
+  private $api = inject(ApiService)
+  private $route = inject(Router)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
 
-  constructor(
-    public $activeModal: NgbActiveModal,
-    private $api: ApiService,
-    private $route: Router,
-    private $toastr: ToastrService,
-    private $translate: TranslateService,
-  ) {}
+  public clicked: boolean
 
   onResetHomebridgeAccessoryClick() {
     this.clicked = true

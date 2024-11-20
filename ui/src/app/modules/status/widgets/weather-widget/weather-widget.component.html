@@ -2,19 +2,15 @@
   <div class="drag-handler p-2" [ngClass]="{ 'widget-cursor': widget.draggable }">
     {{ currentWeather?.name }} {{ 'status.widget.weather.title_weather' | translate }}
   </div>
-  <div
-    class="d-flex flex-row flex-grow-1 align-items-center w-100 gridster-item-content text-center"
-    *ngIf="!this.widget.location || !this.widget.location.id"
-  >
+  @if (!this.widget.location || !this.widget.location.id) {
+  <div class="d-flex flex-row flex-grow-1 align-items-center w-100 gridster-item-content text-center">
     <div class="d-flex flex-column w-100 pb-2">
       <h1><i class="fas fa-fw fa-cloud-sun"></i></h1>
       <p class="grey-text">{{ 'status.widget.weather.label_config_required_help' | translate }}</p>
     </div>
   </div>
-  <div
-    class="d-flex flex-row flex-grow-1 align-items-center w-100 gridster-item-content p-2"
-    *ngIf="widget.location && widget.location.id && currentWeather"
-  >
+  } @if (widget.location && widget.location.id && currentWeather) {
+  <div class="d-flex flex-row flex-grow-1 align-items-center w-100 gridster-item-content p-2">
     <div class="d-flex flex-column w-100">
       <div class="weather-now d-flex flex-column align-items-center text-center">
         <h1>
@@ -25,4 +21,5 @@
       </div>
     </div>
   </div>
+  }
 </div>

@@ -6,7 +6,8 @@
     <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
       <p class="h4 text-center mb-4">Homebridge</p>
 
-      <div *ngIf="!twoFactorCodeRequired">
+      @if (!twoFactorCodeRequired) {
+      <div>
         <div class="md-form">
           <i class="fas fa-fw fa-user prefix grey-text"></i>
           <input
@@ -42,8 +43,8 @@
           <label for="form-pass">{{ 'login.label_password' | translate }}</label>
         </div>
       </div>
-
-      <div *ngIf="twoFactorCodeRequired">
+      } @if (twoFactorCodeRequired) {
+      <div>
         <p class="text-center">{{ 'users.setup_2fa_enter_code' | translate }}</p>
         <div class="md-form">
           <i class="fas fa-fw fa-key prefix grey-text"></i>
@@ -65,10 +66,14 @@
           <label for="form-ota">{{ 'login.label_2fa_code' | translate }}</label>
         </div>
       </div>
+      }
 
       <div class="text-center">
-        <p class="red-text" *ngIf="invalidCredentials"><small>{{ 'login.invalid_credentials' | translate }}</small></p>
-        <p class="red-text" *ngIf="invalid2faCode"><small>{{ 'login.message_invalid_2fa_code' | translate }}</small></p>
+        @if (invalidCredentials) {
+        <p class="red-text"><small>{{ 'login.invalid_credentials' | translate }}</small></p>
+        } @if (invalid2faCode) {
+        <p class="red-text"><small>{{ 'login.message_invalid_2fa_code' | translate }}</small></p>
+        }
         <button tabindex="3" class="btn btn-primary" type="submit" [disabled]="form.invalid">
           {{ 'login.button_login' | translate }}
         </button>

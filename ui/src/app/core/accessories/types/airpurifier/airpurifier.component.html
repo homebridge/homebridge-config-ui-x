@@ -13,13 +13,13 @@
       class="accessory-svg"
     ></div>
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
+    @if (!service.values.RotationSpeed || !service.values.Active) {
     <div
       class="accessory-label grey-text"
-      *ngIf="!service.values.RotationSpeed || !service.values.Active"
       [innerText]="(service.values.Active ? 'accessories.control.on' : 'accessories.control.off') | translate"
     ></div>
-    <div class="accessory-label grey-text" *ngIf="service.values.RotationSpeed && service.values.Active">
-      {{ service.values.RotationSpeed }}%
-    </div>
+    } @if (service.values.RotationSpeed && service.values.Active) {
+    <div class="accessory-label grey-text">{{ service.values.RotationSpeed }}%</div>
+    }
   </div>
 </div>

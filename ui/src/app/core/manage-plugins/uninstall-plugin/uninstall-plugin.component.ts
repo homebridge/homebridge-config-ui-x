@@ -1,16 +1,30 @@
 import { ApiService } from '@/app/core/api.service'
 import { ManagePluginComponent } from '@/app/core/manage-plugins/manage-plugin/manage-plugin.component'
 import { SettingsService } from '@/app/core/settings.service'
-import { Component, Input, OnInit } from '@angular/core'
-import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap'
-import { TranslateService } from '@ngx-translate/core'
+import { Component, inject, Input, OnInit } from '@angular/core'
+import { FormsModule } from '@angular/forms'
+import { NgbActiveModal, NgbAlert, NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
+
 import { firstValueFrom } from 'rxjs'
 
 @Component({
   templateUrl: './uninstall-plugin.component.html',
+  imports: [
+    FormsModule,
+    NgbAlert,
+    TranslatePipe,
+  ],
 })
 export class UninstallPluginComponent implements OnInit {
+  $activeModal = inject(NgbActiveModal)
+  private $api = inject(ApiService)
+  private $modal = inject(NgbModal)
+  $settings = inject(SettingsService)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
+
   @Input() plugin: any
   @Input() childBridges: any[]
   @Input() action: string
@@ -23,15 +37,6 @@ export class UninstallPluginComponent implements OnInit {
 
   public pluginType: 'platform' | 'accessory'
   public pluginAlias: string
-
-  constructor(
-    public $activeModal: NgbActiveModal,
-    private $api: ApiService,
-    private $modal: NgbModal,
-    public $settings: SettingsService,
-    private $toastr: ToastrService,
-    private $translate: TranslateService,
-  ) {}
 
   async ngOnInit() {
     try {

@@ -4,6 +4,7 @@
       <h3 class="primary-text m-0">{{ 'menu.config_json_editor' | translate }}</h3>
     </div>
     <div class="col-6 text-right">
+      @if (!originalConfig) {
       <button
         class="btn btn-elegant waves-effect my-0"
         (click)="onExportConfig()"
@@ -11,17 +12,16 @@
         placement="bottom"
         openDelay="150"
         triggers="hover"
-        *ngIf="!originalConfig"
         [attr.aria-label]="'form.button_download' | translate"
         [ngbTooltip]="'form.button_download' | translate"
       >
         <i class="fas fa-fw fa-download"></i>
       </button>
+      } @if (originalConfig) {
       <button
         class="btn btn-danger waves-effect my-0"
         (click)="onCancelRestore()"
         [disabled]="saveInProgress"
-        *ngIf="originalConfig"
         container="body"
         placement="bottom"
         openDelay="150"
@@ -31,6 +31,7 @@
       >
         <i class="fas fa-fw fa-times"></i>
       </button>
+      } @if (!originalConfig) {
       <button
         class="btn btn-elegant waves-effect my-0"
         (click)="onRestore()"
@@ -38,12 +39,12 @@
         placement="bottom"
         openDelay="150"
         triggers="hover"
-        *ngIf="!originalConfig"
         [attr.aria-label]="'form.button_restore' | translate"
         [ngbTooltip]="'form.button_restore' | translate"
       >
         <i class="fas fa-fw fa-history"></i>
       </button>
+      }
       <button
         class="btn btn-elegant waves-effect my-0 mr-0"
         (click)="onSave()"
@@ -55,14 +56,17 @@
         [ngbTooltip]="'form.button_save' | translate"
         [attr.aria-label]="'form.button_save' | translate"
       >
-        <i *ngIf="!saveInProgress" class="fas fa-fw fa-floppy-disk"></i>
-        <i *ngIf="saveInProgress" class="fas fa-fw fa-spinner fa-pulse"></i>
+        @if (!saveInProgress) {
+        <i class="fas fa-fw fa-floppy-disk"></i>
+        } @if (saveInProgress) {
+        <i class="fas fa-fw fa-spinner fa-pulse"></i>
+        }
       </button>
     </div>
   </div>
 
+  @if (!isMobile && !originalConfig) {
   <ngx-monaco-editor
-    *ngIf="!isMobile && !originalConfig"
     class="flex-grow-1 h-100 w-100 mt-3 mb-0"
     [options]="editorOptions"
     [model]="monacoEditorModel"
@@ -71,9 +75,8 @@
     (keydown.meta.s)="$event.preventDefault(); onSave()"
   >
   </ngx-monaco-editor>
-
+  } @if (!isMobile && originalConfig) {
   <ngx-monaco-diff-editor
-    *ngIf="!isMobile && originalConfig"
     class="flex-grow-1 h-100 w-100 mt-3 mb-0"
     [options]="editorOptions"
     [originalModel]="monacoEditorModel"
@@ -83,10 +86,9 @@
     (keydown.meta.s)="$event.preventDefault(); onSave()"
   >
   </ngx-monaco-diff-editor>
-
+  } @if (isMobile) {
   <textarea
     wrap="off"
-    *ngIf="isMobile"
     class="hb-plain-text-editor align-self-end h-100 w-100 my-3"
     autocomplete="off"
     autocorrect="off"
@@ -95,4 +97,5 @@
     [(ngModel)]="homebridgeConfig"
   >
   </textarea>
+  }
 </div>

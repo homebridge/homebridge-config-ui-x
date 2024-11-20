@@ -3,7 +3,8 @@
     <h3 class="primary-text m-0">{{ 'menu.label_status' | translate }}</h3>
   </div>
   <div class="col-6 text-right d-none d-sm-block">
-    <div class="btn-group" role="group" *ngIf="consoleStatus === 'up' && $auth.user.admin">
+    @if (consoleStatus === 'up' && $auth.user.admin) {
+    <div class="btn-group" role="group">
       <button
         type="button"
         class="btn btn-elegant status-button my-0"
@@ -19,7 +20,8 @@
         <i class="fas fa-fw fa-eye-low-vision"></i>
       </button>
     </div>
-    <div class="btn-group" role="group" *ngIf="consoleStatus === 'up' && $auth.user.admin">
+    } @if (consoleStatus === 'up' && $auth.user.admin) {
+    <div class="btn-group" role="group">
       <button
         type="button"
         class="btn btn-elegant status-button my-0"
@@ -49,35 +51,28 @@
         <i class="fas fa-fw fa-lock"></i>
       </button>
     </div>
+    }
   </div>
 </div>
 <div class="status-container d-flex flex-column mt-0">
-  <app-spinner *ngIf="consoleStatus === 'down'"></app-spinner>
+  @if (consoleStatus === 'down') {
+  <app-spinner></app-spinner>
+  }
   <div class="row flex-column flex-grow-1">
-    <gridster
-      [options]="options"
-      class="flex-grow-1 no-scrollbars py-0"
-      [hidden]="consoleStatus === 'down'"
-      *ngIf="dashboard.length"
-    >
-      <ng-container *ngFor="let item of dashboard">
-        <gridster-item
-          *ngIf="!(item.hideOnMobile && page.mobile)"
-          class="widget-item"
-          [item]="item"
-          [id]="item.component"
-        >
-          <div class="gridster-item-content">
-            <i
-              *ngIf="options.draggable.enabled"
-              class="fas fa-fw fa-cog widget-control-button primary-text"
-              (click)="manageWidget(item)"
-            ></i>
-          </div>
-          <app-widgets [widget]="item" class="d-flex h-100 w-100"></app-widgets>
-        </gridster-item>
-      </ng-container>
+    @if (dashboard.length) {
+    <gridster [options]="options" class="flex-grow-1 no-scrollbars py-0" [hidden]="consoleStatus === 'down'">
+      @for (item of dashboard; track item) { @if (!(item.hideOnMobile && page.mobile)) {
+      <gridster-item class="widget-item" [item]="item" [id]="item.component">
+        <div class="gridster-item-content">
+          @if (options.draggable.enabled) {
+          <i class="fas fa-fw fa-cog widget-control-button primary-text" (click)="manageWidget(item)"></i>
+          }
+        </div>
+        <app-widgets [widget]="item" class="d-flex h-100 w-100"></app-widgets>
+      </gridster-item>
+      } }
     </gridster>
+    }
   </div>
   <div class="row mb-auto">
     <div class="col-md-12 text-center px-4 pt-1 pt-lg-2 pb-3 pb-lg-2 grey-text">

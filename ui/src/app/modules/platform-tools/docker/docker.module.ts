@@ -1,4 +1,3 @@
-import { CoreModule } from '@/app/core/core.module'
 import { ContainerRestartComponent } from '@/app/modules/platform-tools/docker/container-restart/container-restart.component'
 import { DockerRoutingModule } from '@/app/modules/platform-tools/docker/docker-routing.module'
 import { StartupScriptComponent } from '@/app/modules/platform-tools/docker/startup-script/startup-script.component'
@@ -11,10 +10,6 @@ import { TranslateModule } from '@ngx-translate/core'
 import { MonacoEditorModule } from 'ngx-monaco-editor-v2'
 
 @NgModule({
-  declarations: [
-    StartupScriptComponent,
-    ContainerRestartComponent,
-  ],
   imports: [
     CommonModule,
     FormsModule,
@@ -22,8 +17,9 @@ import { MonacoEditorModule } from 'ngx-monaco-editor-v2'
     MonacoEditorModule,
     NgbModule,
     TranslateModule.forChild(),
-    CoreModule,
     DockerRoutingModule,
+    StartupScriptComponent,
+    ContainerRestartComponent,
   ],
   providers: [
     StartupScriptResolver,

@@ -1,26 +1,31 @@
 import { ApiService } from '@/app/core/api.service'
 import { RestartChildBridgesComponent } from '@/app/core/components/restart-child-bridges/restart-child-bridges.component'
-import { Component, OnDestroy, OnInit } from '@angular/core'
-import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap'
-import { TranslateService } from '@ngx-translate/core'
+import { NgClass, TitleCasePipe } from '@angular/common'
+import { Component, inject, OnDestroy, OnInit } from '@angular/core'
+import { NgbActiveModal, NgbAlert, NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
 @Component({
   templateUrl: './remove-bridge-accessories.component.html',
+  imports: [
+    NgbAlert,
+    NgClass,
+    TitleCasePipe,
+    TranslatePipe,
+  ],
 })
 export class RemoveBridgeAccessoriesComponent implements OnInit, OnDestroy {
+  $activeModal = inject(NgbActiveModal)
+  private $api = inject(ApiService)
+  private $modal = inject(NgbModal)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
+
   public pairings: any[] = []
   public deleting: null | string = null
   public deleted: string[] = []
-
-  constructor(
-    public $activeModal: NgbActiveModal,
-    private $api: ApiService,
-    private $modal: NgbModal,
-    private $toastr: ToastrService,
-    private $translate: TranslateService,
-  ) {}
 
   ngOnInit(): void {
     this.loadPairings()

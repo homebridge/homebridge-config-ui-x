@@ -2,38 +2,29 @@ import { ApiService } from '@/app/core/api.service'
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
 import { LogService } from '@/app/core/log.service'
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http'
-import {
-  Component,
-  ElementRef,
-  HostListener,
-  Input,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core'
+import { Component, ElementRef, HostListener, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap'
-import { TranslateService } from '@ngx-translate/core'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { saveAs } from 'file-saver'
 import { ToastrService } from 'ngx-toastr'
 import { Subject } from 'rxjs'
 
 @Component({
   templateUrl: './plugin-logs.component.html',
+  imports: [TranslatePipe],
 })
 export class PluginLogsComponent implements OnInit, OnDestroy {
+  $activeModal = inject(NgbActiveModal)
+  private $api = inject(ApiService)
+  private $log = inject(LogService)
+  private $modal = inject(NgbModal)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
+
   @Input() plugin: any
-  @ViewChild('pluginlogoutput', { static: true }) termTarget: ElementRef
+  readonly termTarget = viewChild<ElementRef>('pluginlogoutput')
   private resizeEvent = new Subject()
   private pluginAlias: string
-
-  constructor(
-    public $activeModal: NgbActiveModal,
-    private $api: ApiService,
-    private $log: LogService,
-    private $modal: NgbModal,
-    private $toastr: ToastrService,
-    private $translate: TranslateService,
-  ) {}
 
   @HostListener('window:resize', ['$event'])
   onWindowResize() {
@@ -49,7 +40,7 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
     this.$api.get(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`).subscribe({
       next: (result) => {
         this.pluginAlias = this.plugin.name === 'homebridge-config-ui-x' ? 'Homebridge UI' : (result[0]?.name || this.plugin.name)
-        this.$log.startTerminal(this.termTarget, {}, this.resizeEvent, this.pluginAlias)
+        this.$log.startTerminal(this.termTarget(), {}, this.resizeEvent, this.pluginAlias)
       },
       error: (error) => {
         console.error(error)

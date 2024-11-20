@@ -1,17 +1,30 @@
 import { ApiService } from '@/app/core/api.service'
 import { MobileDetectService } from '@/app/core/mobile-detect.service'
 import { SettingsService } from '@/app/core/settings.service'
-import { Component, OnDestroy, OnInit } from '@angular/core'
+import { Component, inject, OnDestroy, OnInit } from '@angular/core'
+import { FormsModule } from '@angular/forms'
 import { ActivatedRoute } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
-import { NgxEditorModel } from 'ngx-monaco-editor-v2'
+import { EditorComponent, NgxEditorModel } from 'ngx-monaco-editor-v2'
 import { ToastrService } from 'ngx-toastr'
+
 import { firstValueFrom } from 'rxjs'
 
 @Component({
   templateUrl: './startup-script.component.html',
+  imports: [
+    EditorComponent,
+    FormsModule,
+  ],
 })
 export class StartupScriptComponent implements OnInit, OnDestroy {
+  private $api = inject(ApiService)
+  private $md = inject(MobileDetectService)
+  private $route = inject(ActivatedRoute)
+  private $settings = inject(SettingsService)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
+
   public startupScript: string
   public saveInProgress: boolean
   public isMobile: any = false
@@ -25,14 +38,7 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
   private lastHeight: number
   private visualViewPortEventCallback: () => void
 
-  constructor(
-    private $api: ApiService,
-    private $md: MobileDetectService,
-    private $route: ActivatedRoute,
-    private $settings: SettingsService,
-    private $toastr: ToastrService,
-    private $translate: TranslateService,
-  ) {
+  constructor() {
     this.isMobile = this.$md.detect.mobile()
   }
 
