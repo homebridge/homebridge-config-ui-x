@@ -6,7 +6,7 @@
 .ng-bs4-validate {
   .form-group {
     input.ng-touched.ng-dirty.ng-invalid {
-      @extend .form-control, .is-invalid;
+      @extend .form-control, .is-invalid !optional;
     }
   }
 }

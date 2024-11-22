@@ -232,6 +232,8 @@
     }
 
     a {
+      color: $darkModePrimary;
+
       &.card-link {
         color: #9e9e9e;
 
@@ -241,8 +243,6 @@
           }
         }
       }
-
-      color: $darkModePrimary;
 
       @media (hover: hover) {
         &:hover {

@@ -82,7 +82,7 @@
     "@fastify/helmet": "11.1.1",
     "@fastify/multipart": "8.3.0",
     "@fastify/static": "7.0.4",
-    "@homebridge/hap-client": "2.0.4",
+    "@homebridge/hap-client": "2.0.5-beta.13",
     "@homebridge/node-pty-prebuilt-multiarch": "0.12.0-beta.5",
     "@nestjs/axios": "3.1.2",
     "@nestjs/common": "10.4.12",
@@ -142,7 +142,7 @@
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.6.3",
+    "typescript": "^5.7.2",
     "unplugin-swc": "^1.5.1",
     "vitest": "^2.1.6"
   },

@@ -63,7 +63,10 @@
             "stylePreprocessorOptions": {
               "includePaths": [
                 "./node_modules"
-              ]
+              ],
+              "sass": {
+                "silenceDeprecations": ["import"]
+              }
             },
             "extractLicenses": false,
             "sourceMap": true,
