@@ -44,6 +44,7 @@ Plugin developers:
 - add plugin config validation functionality
 - refactor status and child bridge widgets
 - update default dashboard layout
+- logo and `homebridge` text should link to status page
 
 ### Other Changes
 

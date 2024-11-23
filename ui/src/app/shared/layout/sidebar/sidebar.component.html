@@ -9,14 +9,16 @@
   [attr.aria-label]="'menu.sidebar.aria_menu' | translate"
 >
   <span class="mr-2 d-block d-lg-none" style="font-size: 0.9rem; color: #dddddd"></span>
-  <img
-    style="height: 35px; width: 35px"
-    ngSrc="../../../../assets/homebridge-logo.svg"
-    alt="HB Logo"
-    height="35"
-    width="35"
-  />
-  <div class="hb-logo-text-mobile">Homebridge</div>
+  <a [routerLink]="['/']" [attr.aria-label]="'menu.label_status' | translate">
+    <img
+      style="height: 35px; width: 35px"
+      ngSrc="../../../../assets/homebridge-logo.svg"
+      alt="HB Logo"
+      height="35"
+      width="35"
+    />
+    <div class="hb-logo-text-mobile">Homebridge</div>
+  </a>
   <div class="hamburger-icon" [ngClass]="{ 'hamburger-icon-cross': isExpanded }">
     <span></span>
     <span></span>
@@ -27,14 +29,16 @@
 
 <div class="sidebar" [ngClass]="{ 'expanded': isExpanded }" role="navigation" id="sidebar">
   <div class="header" (click)="toggleSidebar()" tabindex="0" role="button" (keydown)="handleKeydown($event)">
-    <img
-      style="height: 35px; width: 35px"
-      ngSrc="../../../../assets/homebridge-logo.svg"
-      alt="HB Logo"
-      height="35"
-      width="35"
-    />
-    <div class="hb-logo-text">Homebridge</div>
+    <a [routerLink]="['/']" [attr.aria-label]="'menu.label_status' | translate">
+      <img
+        style="height: 35px; width: 35px"
+        ngSrc="../../../../assets/homebridge-logo.svg"
+        alt="HB Logo"
+        height="35"
+        width="35"
+      />
+      <div class="hb-logo-text">Homebridge</div>
+    </a>
   </div>
   <div class="link-wrapper">
     <div class="link">
