@@ -54,6 +54,7 @@ Plugin developers:
 - update node pty beta `v0.12.0-beta`
 - update angular from `v18` to `v19`
 - update `@homebridge/plugin-ui-utils` to `v2.0.0`
+- improvements to GH actions and build processes (@NorthernMan54)
 
 ### Homebridge Dependencies
 

@@ -5,8 +5,30 @@ on:
     branches: [beta-*.*.*, beta]
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
 jobs:
+  build_and_test:
+    name: Build and run npm test
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-latest, macos-15, macos-14, macos-13, macos-12, windows-latest, windows-2022, windows-2019]
+
+    uses: homebridge/.github/.github/workflows/nodejs-build-and-test.yml@latest
+    with:
+      enable_coverage: false
+      # # Code Coverage can only be used in a single run, not in a parallel run - Error: Bad response: 422 {"message":"Can't add a job to a build that is already closed. Build 6224987022 is closed. See docs.coveralls.io/parallel-builds","error":true}
+      # # Coveralls only expects to create a report once per build
+      runs_on: ${{ matrix.os }}
+      install_cmd: npm ci && cd ui && npm ci
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+
   publish:
+    needs: [build_and_test]
     if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
     uses: homebridge/.github/.github/workflows/npm-publish.yml@latest
     with:
