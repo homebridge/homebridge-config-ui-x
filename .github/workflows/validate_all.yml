@@ -34,7 +34,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, ubuntu-24.04, ubuntu-22.04, ubuntu-20.04]
-        node-version: [18.x, 20.x, 22.x]
+        node-version: [18.x, 20.x, 22.x, 23.x]
 
     runs-on: ${{ matrix.os }}
 
