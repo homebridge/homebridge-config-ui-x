@@ -14,6 +14,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ### UI Changes
 
+- updates to the `fi.json` language file (#2253) (@l1500s)
 - update default dashboard layout
 
 ### Other Changes
