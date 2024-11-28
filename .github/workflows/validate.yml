@@ -1,4 +1,4 @@
-name: Platform Run Validation
+name: Validate release package across all supported platforms / Node.js versions
 
 on:
   push:
@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-2019]
+        os: [ubuntu-latest, ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-latest, macos-15, macos-14, macos-13, macos-12, windows-latest, windows-2022, windows-2019]
 
     uses: homebridge/.github/.github/workflows/nodejs-build-and-test.yml@latest
     with:
