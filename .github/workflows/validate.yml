@@ -8,6 +8,10 @@ on:
     types: [review_requested, ready_for_review]
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+  
 jobs:
   build_and_test:
     name: Build and run npm test
