@@ -163,6 +163,7 @@
   "menu.linux.label_restart_server": "Riavvia sistema",
   "menu.linux.label_shutdown_server": "Arresta sistema",
   "menu.linux.label_terminal": "Terminale",
+  "menu.reload": "Reload",
   "menu.restart.title": "Power Options",
   "menu.settings.title": "Settings",
   "menu.tooltip_logout": "Scollegati",

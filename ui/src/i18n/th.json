@@ -163,6 +163,7 @@
   "menu.linux.label_restart_server": "รีสตาร์ทเซิร์ฟเวอร์",
   "menu.linux.label_shutdown_server": "ปิดเซิร์ฟเวอร์",
   "menu.linux.label_terminal": "เทอร์มินอล",
+  "menu.reload": "Reload",
   "menu.restart.title": "ตัวเลือกด้านพลังงาน",
   "menu.settings.title": "การตั้งค่า",
   "menu.tooltip_logout": "ออกจากระบบ",

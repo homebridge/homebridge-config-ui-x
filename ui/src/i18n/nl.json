@@ -163,6 +163,7 @@
   "menu.linux.label_restart_server": "Herstart Server",
   "menu.linux.label_shutdown_server": "Server Stoppen",
   "menu.linux.label_terminal": "Terminal",
+  "menu.reload": "Reload",
   "menu.restart.title": "Power Opties",
   "menu.settings.title": "Instellingen",
   "menu.tooltip_logout": "Uitloggen",

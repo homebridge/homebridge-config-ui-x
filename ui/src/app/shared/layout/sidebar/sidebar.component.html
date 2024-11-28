@@ -195,7 +195,21 @@
       </div>
     </div>
 
-    @if ($settings.formAuth) {
+    @if (isPwa) {
+    <div class="link">
+      <div
+        class="link-row"
+        (click)="reloadPage()"
+        [attr.aria-label]="'menu.reload' | translate"
+        role="menuitem"
+        tabindex="0"
+        (keydown)="handleKeydown($event)"
+      >
+        <div class="icon"><i class="fa fa-fw fa-refresh"></i></div>
+        <div class="title">{{ 'menu.reload' | translate }}</div>
+      </div>
+    </div>
+    } @if ($settings.formAuth) {
     <div class="link">
       <div
         class="link-row"

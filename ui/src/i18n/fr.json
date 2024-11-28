@@ -163,6 +163,7 @@
   "menu.linux.label_restart_server": "Redémarrer le Serveur",
   "menu.linux.label_shutdown_server": "Éteindre le Serveur",
   "menu.linux.label_terminal": "Terminal",
+  "menu.reload": "Reload",
   "menu.restart.title": "Options d'alimentation",
   "menu.settings.title": "Paramètres",
   "menu.tooltip_logout": "Déconnexion",

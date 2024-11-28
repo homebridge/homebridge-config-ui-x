@@ -163,6 +163,7 @@
   "menu.linux.label_restart_server": "서버 재시작",
   "menu.linux.label_shutdown_server": "서버 종료",
   "menu.linux.label_terminal": "터미널",
+  "menu.reload": "Reload",
   "menu.restart.title": "전원 옵션",
   "menu.settings.title": "설정",
   "menu.tooltip_logout": "로그아웃",

@@ -163,6 +163,7 @@
   "menu.linux.label_restart_server": "Reiniciar Servidor",
   "menu.linux.label_shutdown_server": "Apagar Servidor",
   "menu.linux.label_terminal": "Terminal",
+  "menu.reload": "Reload",
   "menu.restart.title": "Reiniciar",
   "menu.settings.title": "Ajustos",
   "menu.tooltip_logout": "Tancar Sessió",

@@ -163,6 +163,7 @@
   "menu.linux.label_restart_server": "重启服务器",
   "menu.linux.label_shutdown_server": "关闭服务器",
   "menu.linux.label_terminal": "终端",
+  "menu.reload": "Reload",
   "menu.restart.title": "Power Options",
   "menu.settings.title": "Settings",
   "menu.tooltip_logout": "注销",

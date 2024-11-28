@@ -163,6 +163,7 @@
   "menu.linux.label_restart_server": "Uudellenkäynnistä järjestelmä",
   "menu.linux.label_shutdown_server": "Sulje järjestelmä",
   "menu.linux.label_terminal": "Pääte",
+  "menu.reload": "Reload",
   "menu.restart.title": "Käynnistys optiot",
   "menu.settings.title": "Asetukset",
   "menu.tooltip_logout": "Kirjaudu ulos",

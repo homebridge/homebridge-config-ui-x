@@ -1,5 +1,5 @@
-import { PowerOptionsComponent } from '@/app/modules/power-options/power-options.component'
 import { PowerOptionsRoutingModule } from '@/app/modules/power-options/power-options-routing.module'
+import { PowerOptionsComponent } from '@/app/modules/power-options/power-options.component'
 import { CommonModule } from '@angular/common'
 import { NgModule } from '@angular/core'
 import { ReactiveFormsModule } from '@angular/forms'

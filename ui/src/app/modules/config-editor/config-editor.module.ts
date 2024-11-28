@@ -1,6 +1,6 @@
+import { ConfigEditorRoutingModule } from '@/app/modules/config-editor/config-editor-routing.module'
 import { ConfigEditorComponent } from '@/app/modules/config-editor/config-editor.component'
 import { ConfigEditorResolver } from '@/app/modules/config-editor/config-editor.resolver'
-import { ConfigEditorRoutingModule } from '@/app/modules/config-editor/config-editor-routing.module'
 import { ConfigRestoreComponent } from '@/app/modules/config-editor/config-restore/config.restore.component'
 import { CommonModule } from '@angular/common'
 import { NgModule } from '@angular/core'

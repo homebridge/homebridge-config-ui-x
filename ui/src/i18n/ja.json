@@ -163,6 +163,7 @@
   "menu.linux.label_restart_server": "サーバーを再起動",
   "menu.linux.label_shutdown_server": "サーバーを終了",
   "menu.linux.label_terminal": "ターミナル",
+  "menu.reload": "Reload",
   "menu.restart.title": "電源オプション",
   "menu.settings.title": "設定",
   "menu.tooltip_logout": "ログアウト",

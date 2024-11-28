@@ -163,6 +163,7 @@
   "menu.linux.label_restart_server": "Перезапустить сервер",
   "menu.linux.label_shutdown_server": "Завершение работы сервера",
   "menu.linux.label_terminal": "Терминал",
+  "menu.reload": "Reload",
   "menu.restart.title": "Опции питания",
   "menu.settings.title": "Настройки",
   "menu.tooltip_logout": "Выход",

@@ -163,6 +163,7 @@
   "menu.linux.label_restart_server": "Рестартирај сервер",
   "menu.linux.label_shutdown_server": "Исклучи сервер",
   "menu.linux.label_terminal": "Терминал",
+  "menu.reload": "Reload",
   "menu.restart.title": "Power Options",
   "menu.settings.title": "Settings",
   "menu.tooltip_logout": "Одјави се",

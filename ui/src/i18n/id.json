@@ -163,6 +163,7 @@
   "menu.linux.label_restart_server": "Mengulang Kembali Server",
   "menu.linux.label_shutdown_server": "Mematikan Server",
   "menu.linux.label_terminal": "Terminal",
+  "menu.reload": "Reload",
   "menu.restart.title": "Power Options",
   "menu.settings.title": "Settings",
   "menu.tooltip_logout": "Keluar",

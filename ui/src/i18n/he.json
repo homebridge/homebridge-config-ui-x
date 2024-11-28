@@ -163,6 +163,7 @@
   "menu.linux.label_restart_server": "אתחל מחדש שרת",
   "menu.linux.label_shutdown_server": "כבה שרת",
   "menu.linux.label_terminal": "קונסולה",
+  "menu.reload": "Reload",
   "menu.restart.title": "Power Options",
   "menu.settings.title": "Settings",
   "menu.tooltip_logout": "התנתק",

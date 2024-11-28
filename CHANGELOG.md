@@ -47,6 +47,7 @@ Plugin developers:
 - refactor status and child bridge widgets
 - update default dashboard layout
 - logo and `homebridge` text should link to status page
+- add reload menu item when using as a PWA
 
 ### Other Changes
 

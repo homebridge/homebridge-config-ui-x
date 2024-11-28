@@ -163,6 +163,7 @@
   "menu.linux.label_restart_server": "Starta om servern",
   "menu.linux.label_shutdown_server": "Stäng av servern",
   "menu.linux.label_terminal": "Terminal",
+  "menu.reload": "Reload",
   "menu.restart.title": "Strömalternativ",
   "menu.settings.title": "Inställningar",
   "menu.tooltip_logout": "Logga ut",

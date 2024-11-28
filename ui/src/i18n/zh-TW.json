@@ -163,6 +163,7 @@
   "menu.linux.label_restart_server": "重新啟動 Homebridge",
   "menu.linux.label_shutdown_server": "關閉 Homebridge",
   "menu.linux.label_terminal": "終端機",
+  "menu.reload": "Reload",
   "menu.restart.title": "Power Options",
   "menu.settings.title": "Settings",
   "menu.tooltip_logout": "登出",
