@@ -1,15 +1,15 @@
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { TestingModule } from '@nestjs/testing'
 
-import { resolve } from 'node:path'
 import type { HomebridgePlugin } from '../../src/modules/plugins/types'
+import { resolve } from 'node:path'
 
+import process from 'node:process'
 import { HttpService } from '@nestjs/axios'
 import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import { copy, remove } from 'fs-extra'
-import process from 'node:process'
 
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -130,7 +130,6 @@ describe('PluginController (e2e)', () => {
     expect(res.json()[0]).toHaveProperty('private')
     expect(res.json()[0].private).toBe(false)
   })
-
 
   // {"error":"The 'text' parameter must be between 2 and 64 characters","code":"ERR_TEXT_LENGTH"}
 
