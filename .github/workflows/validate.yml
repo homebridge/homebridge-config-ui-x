@@ -11,7 +11,7 @@ on:
 concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: true
-  
+
 jobs:
   build_and_test:
     name: Build and run npm test
