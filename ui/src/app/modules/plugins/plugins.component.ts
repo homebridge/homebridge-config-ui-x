@@ -17,6 +17,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
   public loading = true
   public installedPlugins: any = []
   public childBridges = []
+  public showExitButton = false
   public form = new FormGroup({
     query: new FormControl('', [Validators.required]),
   })
@@ -73,7 +74,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
 
   async loadInstalledPlugins() {
     this.form.setValue({ query: '' })
-
+    this.showExitButton = false
     this.installedPlugins = []
     this.loading = true
 
@@ -155,6 +156,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
   search() {
     this.installedPlugins = []
     this.loading = true
+    this.showExitButton = true
 
     this.$api.get(`/plugins/search/${encodeURIComponent(this.form.value.query)}`).subscribe({
       next: (data) => {
@@ -172,7 +174,6 @@ export class PluginsComponent implements OnInit, OnDestroy {
   }
 
   onClearSearch() {
-    this.form.setValue({ query: '' })
     this.loadInstalledPlugins()
   }
 

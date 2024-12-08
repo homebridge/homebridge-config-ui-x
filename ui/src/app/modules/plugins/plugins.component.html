@@ -15,7 +15,7 @@
         [placeholder]="'plugins.placeholder_search_plugin' | translate"
         formControlName="query"
       />
-      <a class="hb-npm-search-clear" href="javascript:void(0)" (click)="onClearSearch()">
+      <a class="hb-npm-search-clear" href="javascript:void(0)" (click)="onClearSearch()" *ngIf="showExitButton">
         <i class="far fa-fw fa-times-circle"></i>
       </a>
     </form>
