@@ -47,6 +47,8 @@ export class PluginBridgeComponent implements OnInit {
   public saveInProgress = false
   public canShowBridgeDebug = false
 
+  public deleteBridgeIds: string[] = []
+
   ngOnInit(): void {
     this.loadPluginConfig()
     this.canShowBridgeDebug = this.$settings.env.homebridgeVersion.startsWith('2')
@@ -83,6 +85,10 @@ export class PluginBridgeComponent implements OnInit {
   async toggleExternalBridge(block: any, enable: boolean, index: number) {
     if (!enable) {
       delete block._bridge
+      // Remove unpaired child bridge from cache
+      this.bridgeCache.delete(index)
+      // Store unpaired child bridge id for deletion, so no bridges are orphaned
+      this.deleteBridgeIds.push(block._bridge.username);
       return
     }
 
@@ -129,6 +135,17 @@ export class PluginBridgeComponent implements OnInit {
 
     try {
       await firstValueFrom(this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.configBlocks))
+
+      // Delete unpaired bridges, so no bridges are orphaned
+      for (const childBridgeId of this.deleteBridgeIds) {
+        try {
+          await firstValueFrom(this.$api.delete(`/server/pairings/${childBridgeId}`))
+        } catch (error) {
+          console.error(error)
+        }
+      }
+      this.deleteBridgeIds = []
+
       this.$activeModal.close()
       this.$modal.open(RestartHomebridgeComponent, {
         size: 'lg',
