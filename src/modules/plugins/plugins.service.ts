@@ -247,17 +247,21 @@ export class PluginsService {
       await this.getInstalledPlugins()
     }
 
-    const q = `${(!query || !query.length) ? '' : `${query}+`}keywords:homebridge-plugin+not:deprecated&size=30`
+    if ((query.indexOf('homebridge-') === 0 || this.isScopedPlugin(query)) && !this.hiddenPlugins.includes(query.toLowerCase())) {
+      return await this.searchNpmRegistrySingle(query.toLowerCase())
+    }
+    // There seems to be a new 64-character limit on the text query (which allows for 15 characters of query)
+    const q = `${(!query || !query.length) ? '' : `${query.substring(0, 15)}+`}keywords:homebridge-plugin+not:deprecated&size=30`
     let searchResults: INpmSearchResults
 
     try {
-      searchResults = (await firstValueFrom(this.httpService.get(`https://api.npms.io/v2/search?q=${q}`))).data
+      searchResults = (await firstValueFrom(this.httpService.get(`https://registry.npmjs.org/-/v1/search?text=${q}`))).data
     } catch (e) {
       this.logger.error(`Failed to search the npm registry - "${e.message}" - see https://homebridge.io/w/JJSz6 for help.`)
       throw new InternalServerErrorException(`Failed to search the npm registry - "${e.message}" - see logs.`)
     }
 
-    const result: HomebridgePlugin[] = searchResults.results
+    const result: HomebridgePlugin[] = searchResults.objects
       .filter(x => x.package.name.indexOf('homebridge-') === 0 || this.isScopedPlugin(x.package.name))
       .filter(x => !this.hiddenPlugins.includes(x.package.name))
       .map((pkg) => {

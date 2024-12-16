@@ -116,8 +116,7 @@ export interface INpmSearchResultItem {
 }
 
 export interface INpmSearchResults {
-  total: number
-  results: INpmSearchResultItem[]
+  objects: INpmSearchResultItem[]
 }
 
 export interface IPackageJson {
