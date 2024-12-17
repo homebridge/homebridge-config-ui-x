@@ -113,6 +113,22 @@ describe('PluginController (e2e)', () => {
     expect(res.json()[0]).toHaveProperty('private')
   })
 
+  it('GET /plugins/search/:query (keyword) - #2290', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/plugins/search/alexa',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json().length).toBeGreaterThan(0)
+    expect(res.json().find(x => x.name === 'homebridge-alexa-smarthome')).toBeTruthy()
+    expect(res.json()[0]).toHaveProperty('lastUpdated')
+    expect(res.json()[0].private).toBe(false)
+  })
+
   it('GET /plugins/search/:query (exact plugin name)', async () => {
     const res = await app.inject({
       method: 'GET',
