@@ -1330,7 +1330,7 @@ export class HomebridgeServiceHelper {
   }
 
   /**
-   * Install / Remove a plugin using pnpm (supported platforms only)
+   * Install / Remove a plugin (supported platforms only)
    */
   private async npmPluginManagement(args: any[]) {
     if (!this.enableHbServicePluginManagement) {
@@ -1362,13 +1362,7 @@ export class HomebridgeServiceHelper {
       this.logger(`Path does not exist: ${cwd}.`, 'fail')
     }
 
-    let cmd: string
-
-    if (process.env.UIX_USE_PNPM === '1') {
-      cmd = `pnpm -C "${cwd}" ${action} ${target.name}`
-    } else {
-      cmd = `npm --prefix "${cwd}" ${action} ${target.name}`
-    }
+    let cmd: string = `npm --prefix "${cwd}" ${action} ${target.name}`
 
     if (action === 'add') {
       cmd += `@${target.version}`

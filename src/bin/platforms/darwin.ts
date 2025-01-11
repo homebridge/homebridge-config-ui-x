@@ -112,50 +112,33 @@ export class DarwinInstaller extends BasePlatform {
 
       const targetNodeVersion = execSync('node -v').toString('utf8').trim()
 
-      if (this.isPackage() && process.env.UIX_USE_PNPM === '1' && process.env.UIX_CUSTOM_PLUGIN_PATH) {
-        // PNPM+package mode
-        const cwd = dirname(process.env.UIX_CUSTOM_PLUGIN_PATH)
+      const npmGlobalPath = execSync('/bin/echo -n "$(npm -g prefix)/lib/node_modules"', {
+        env: Object.assign({
+          npm_config_loglevel: 'silent',
+          npm_update_notifier: 'false',
+        }, process.env),
+      }).toString('utf8')
 
-        if (!await pathExists(cwd)) {
-          this.hbService.logger(`Path does not exist: "${cwd}"`, 'fail')
-          process.exit(1)
+      execSync('npm rebuild --unsafe-perm', {
+        cwd: process.env.UIX_BASE_PATH,
+        stdio: 'inherit',
+      })
+      this.hbService.logger(`Rebuilt homebridge-config-ui-x for Node.js ${targetNodeVersion}.`, 'succeed')
+
+      if (all === true) {
+        // Rebuild all modules
+        try {
+          execSync('npm rebuild --unsafe-perm', {
+            cwd: npmGlobalPath,
+            stdio: 'inherit',
+          })
+          this.hbService.logger(`Rebuilt plugins in ${npmGlobalPath} for Node.js ${targetNodeVersion}.`, 'succeed')
+        } catch (e) {
+          this.hbService.logger('Could not rebuild all modules - check Homebridge logs.', 'warn')
         }
-
-        execSync(`pnpm -C "${cwd}" rebuild`, {
-          cwd,
-          stdio: 'inherit',
-        })
-        this.hbService.logger(`Rebuilt plugins in ${process.env.UIX_CUSTOM_PLUGIN_PATH} for Node.js ${targetNodeVersion}.`, 'succeed')
-      } else {
-        // Normal global npm setups
-        const npmGlobalPath = execSync('/bin/echo -n "$(npm -g prefix)/lib/node_modules"', {
-          env: Object.assign({
-            npm_config_loglevel: 'silent',
-            npm_update_notifier: 'false',
-          }, process.env),
-        }).toString('utf8')
-
-        execSync('npm rebuild --unsafe-perm', {
-          cwd: process.env.UIX_BASE_PATH,
-          stdio: 'inherit',
-        })
-        this.hbService.logger(`Rebuilt homebridge-config-ui-x for Node.js ${targetNodeVersion}.`, 'succeed')
-
-        if (all === true) {
-          // Rebuild all modules
-          try {
-            execSync('npm rebuild --unsafe-perm', {
-              cwd: npmGlobalPath,
-              stdio: 'inherit',
-            })
-            this.hbService.logger(`Rebuilt plugins in ${npmGlobalPath} for Node.js ${targetNodeVersion}.`, 'succeed')
-          } catch (e) {
-            this.hbService.logger('Could not rebuild all modules - check Homebridge logs.', 'warn')
-          }
-        }
-
-        await this.setNpmPermissions(npmGlobalPath)
       }
+
+      await this.setNpmPermissions(npmGlobalPath)
     } catch (e) {
       console.error(e.toString())
       this.hbService.logger('ERROR: Failed Operation', 'fail')

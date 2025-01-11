@@ -13,17 +13,10 @@ function tryRebuildNodePtyModule() {
   logger.warn('[node-pty] Trying to rebuild automatically...')
   logger.warn(`[node-pty] Path: ${modulePath}.`)
   try {
-    if (process.env.UIX_USE_PNPM === '1' && process.env.UIX_CUSTOM_PLUGIN_PATH) {
-      execSync('pnpm rebuild @homebridge/node-pty-prebuilt-multiarch', {
-        cwd: process.env.UIX_CUSTOM_PLUGIN_PATH,
-        stdio: 'ignore',
-      })
-    } else {
-      execSync('npm run install --unsafe-perm', {
-        cwd: modulePath,
-        stdio: 'ignore',
-      })
-    }
+    execSync('npm run install --unsafe-perm', {
+      cwd: modulePath,
+      stdio: 'ignore',
+    })
   } catch (e) {
     if (platform() !== 'win32') {
       execSync('sudo -E -n run install --unsafe-perm', {
