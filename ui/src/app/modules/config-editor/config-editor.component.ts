@@ -455,7 +455,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                     type: 'string',
                     description: 'The interface or IP address of the interface you want Homebridge to listen on. '
                       + 'This is useful if your server has multiple interfaces. '
-                      + '\n\nDepreciated as of Homebridge v1.3.0 - use bridge.bind instead.',
+                      + '\n\nDeprecated as of Homebridge v1.3.0 - use bridge.bind instead.',
                   },
                   legacyAdvertiser: {
                     type: 'boolean',

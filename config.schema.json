@@ -511,14 +511,14 @@
           },
           "tail": {
             "type": "string",
-            "description": "Depreciated.",
+            "description": "Deprecated.",
             "condition": {
               "functionBody": "return (model.log && (model.log.method==='custom' || model.log.method==='systemd' || model.log.method==='file'))"
             }
           },
           "systemd": {
             "type": "string",
-            "description": "Depreciated.",
+            "description": "Deprecated.",
             "condition": {
               "functionBody": "return (model.log && (model.log.method==='custom' || model.log.method==='systemd' || model.log.method==='file'))"
             }
