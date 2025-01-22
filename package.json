@@ -56,7 +56,7 @@
     "hb-service": "dist/bin/hb-service.js"
   },
   "engines": {
-    "node": "^18 || ^20 || ^22",
+    "node": "^20 || ^22",
     "homebridge": "^1.8.0 || ^2.0.0-beta.0"
   },
   "scripts": {
@@ -79,27 +79,27 @@
     "watch:ui": "npm run start --prefix ui"
   },
   "dependencies": {
-    "@fastify/helmet": "11.1.1",
-    "@fastify/multipart": "8.3.1",
-    "@fastify/static": "7.0.4",
+    "@fastify/helmet": "13.0.1",
+    "@fastify/multipart": "9.0.3",
+    "@fastify/static": "8.2.0",
     "@homebridge/hap-client": "2.2.0",
     "@homebridge/node-pty-prebuilt-multiarch": "0.12.0",
-    "@nestjs/axios": "3.1.3",
-    "@nestjs/common": "10.4.18",
-    "@nestjs/core": "10.4.18",
-    "@nestjs/jwt": "10.2.0",
-    "@nestjs/passport": "10.0.3",
-    "@nestjs/platform-fastify": "10.4.18",
-    "@nestjs/platform-socket.io": "10.4.18",
-    "@nestjs/swagger": "8.1.1",
-    "@nestjs/websockets": "10.4.18",
+    "@nestjs/axios": "4.0.0",
+    "@nestjs/common": "11.1.2",
+    "@nestjs/core": "11.1.2",
+    "@nestjs/jwt": "11.0.0",
+    "@nestjs/passport": "11.0.5",
+    "@nestjs/platform-fastify": "11.1.2",
+    "@nestjs/platform-socket.io": "11.1.2",
+    "@nestjs/swagger": "11.2.0",
+    "@nestjs/websockets": "11.1.2",
     "axios": "1.9.0",
     "bash-color": "0.0.4",
     "class-transformer": "0.5.1",
     "class-validator": "0.14.2",
-    "commander": "13.1.0",
+    "commander": "14.0.0",
     "dayjs": "1.11.13",
-    "fastify": "4.29.1",
+    "fastify": "5.3.3",
     "fs-extra": "11.3.0",
     "jsonwebtoken": "9.0.2",
     "lodash": "4.17.21",
@@ -121,7 +121,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.13.3",
-    "@nestjs/testing": "^10.4.18",
+    "@nestjs/testing": "^11.1.1",
     "@prettier/plugin-xml": "^3.4.1",
     "@types/fs-extra": "^11.0.4",
     "@types/lodash": "^4.17.17",
@@ -144,11 +144,6 @@
     "typescript": "^5.8.3",
     "unplugin-swc": "^1.5.4",
     "vitest": "^3.2.2"
-  },
-  "overrides": {
-    "@nestjs/platform-fastify": {
-      "fastify": "4.29.1"
-    }
   },
   "maintainers": [
     {

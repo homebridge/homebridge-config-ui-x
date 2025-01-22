@@ -4,7 +4,7 @@ import {
   Get,
   Param,
   Put,
-  Req,
+  Request,
   UseGuards,
 } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
@@ -35,7 +35,7 @@ export class AccessoriesController {
     summary: 'Get the accessory and room layout for the authenticating user.',
   })
   @Get('/layout')
-  getAccessoryLayout(@Req() req) {
+  getAccessoryLayout(@Request() req) {
     return this.accessoriesService.getAccessoryLayout(req.user.username)
   }
 
