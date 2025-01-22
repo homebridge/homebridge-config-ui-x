@@ -4,7 +4,7 @@ import {
   Get,
   Put,
   Query,
-  Req,
+  Request,
   UseGuards,
 } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
@@ -58,7 +58,7 @@ export class HbServiceController {
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Truncate/empty the log file.' })
   @Put('log/truncate')
-  truncateLogFile(@Req() req) {
+  truncateLogFile(@Request() req) {
     return this.hbServiceService.truncateLogFile(req.user.username)
   }
 }

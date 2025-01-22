@@ -1182,8 +1182,8 @@ export class HomebridgeServiceHelper {
     if (requestedVersion) {
       const wantedVersion = versionList.find(x => x.version.startsWith(`v${requestedVersion}`))
       if (wantedVersion) {
-        // Check the requested version is greater than v16.18.2
-        if (!gte(wantedVersion.version, '16.18.2')) {
+        // Check the requested version is greater than v20.18.0
+        if (!gte(wantedVersion.version, '20.18.0')) {
           this.logger('Refusing to install Node.js version lower than v16.18.2.', 'fail')
           return { update: false }
         }

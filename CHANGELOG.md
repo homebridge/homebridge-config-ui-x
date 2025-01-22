@@ -22,10 +22,11 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - retire use of `pnpm` and code references
 - bump the default node version from 20 to 22
 - make terminal enabled by default on new macOS hb-service installs
+- update `fastify` and `nestjs` dependencies
 
 ### Homebridge Dependencies
 
-- `@homebridge/hap-client` @ `v2.2.0`
+- `@homebridge/hap-client` @ `v3.0.0-beta`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.12.0`
 - `@homebridge/plugin-ui-utils` @ `v2.1.0`
 
