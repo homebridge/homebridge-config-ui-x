@@ -64,8 +64,6 @@ describe('ServerController (e2e)', () => {
   })
 
   beforeEach(async () => {
-    configService.serviceMode = false
-
     // Get auth token before each test
     authorization = `bearer ${(await app.inject({
       method: 'POST',
@@ -151,10 +149,7 @@ describe('ServerController (e2e)', () => {
     expect(await pathExists(accessoriesPath)).toBe(false)
   })
 
-  it('PUT /server/reset-cached-accessories (service mode enabled)', async () => {
-    // Enable service mode
-    configService.serviceMode = true
-
+  it('PUT /server/reset-cached-accessories', async () => {
     const res = await app.inject({
       method: 'PUT',
       path: '/server/reset-cached-accessories',
@@ -166,25 +161,7 @@ describe('ServerController (e2e)', () => {
     expect(res.statusCode).toBe(200)
   })
 
-  it('PUT /server/reset-cached-accessories (service mode disabled)', async () => {
-    // Enable service mode
-    configService.serviceMode = false
-
-    const res = await app.inject({
-      method: 'PUT',
-      path: '/server/reset-cached-accessories',
-      headers: {
-        authorization,
-      },
-    })
-
-    expect(res.statusCode).toBe(400)
-  })
-
   it('GET /server/cached-accessories', async () => {
-    // Enable service mode
-    configService.serviceMode = true
-
     const res = await app.inject({
       method: 'GET',
       path: '/server/cached-accessories',
@@ -198,9 +175,6 @@ describe('ServerController (e2e)', () => {
   })
 
   it('DELETE /server/cached-accessories/:uuid (valid uuid)', async () => {
-    // Enable service mode
-    configService.serviceMode = true
-
     // Sanity check to ensure one cached accessory is preset
     let cachedAccessories = await readJson(resolve(accessoriesPath, 'cachedAccessories'))
     expect(cachedAccessories).toHaveLength(1)
@@ -221,9 +195,6 @@ describe('ServerController (e2e)', () => {
   })
 
   it('DELETE /server/cached-accessories/:uuid (invalid uuid)', async () => {
-    // Enable service mode
-    configService.serviceMode = true
-
     // Sanity check to ensure one cached accessory is preset
     let cachedAccessories = await readJson(resolve(accessoriesPath, 'cachedAccessories'))
     expect(cachedAccessories).toHaveLength(1)
@@ -272,9 +243,6 @@ describe('ServerController (e2e)', () => {
   })
 
   it('DELETE /server/pairings/:deviceId', async () => {
-    // Enable service mode
-    configService.serviceMode = true
-
     const res = await app.inject({
       method: 'DELETE',
       path: '/server/pairings/67E41F0EA05D',

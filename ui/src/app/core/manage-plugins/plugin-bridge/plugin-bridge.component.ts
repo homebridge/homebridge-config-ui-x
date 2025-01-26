@@ -269,14 +269,12 @@ export class PluginBridgeComponent implements OnInit {
       await firstValueFrom(this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.configBlocks))
 
       // Delete unused bridges, so no bridges are orphaned
-      if (this.$settings.env.serviceMode) {
-        for (const bridge of this.deleteBridges) {
-          try {
-            await firstValueFrom(this.$api.delete(`/server/pairings/${bridge.id.replace(/:/g, '')}`))
-          } catch (error) {
-            console.error(error)
-            this.$toastr.error(this.$translate.instant('settings.reset_bridge.error'), this.$translate.instant('toast.title_error'))
-          }
+      for (const bridge of this.deleteBridges) {
+        try {
+          await firstValueFrom(this.$api.delete(`/server/pairings/${bridge.id.replace(/:/g, '')}`))
+        } catch (error) {
+          console.error(error)
+          this.$toastr.error(this.$translate.instant('settings.reset_bridge.error'), this.$translate.instant('toast.title_error'))
         }
       }
 

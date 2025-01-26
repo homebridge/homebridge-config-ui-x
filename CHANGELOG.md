@@ -24,6 +24,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - make terminal enabled by default on new macOS hb-service installs
 - update `fastify` and `nestjs` dependencies
 - remove `log.tail` and `log.systemd` ui settings
+- set service mode as default, remove standalone
 
 ### Homebridge Dependencies
 

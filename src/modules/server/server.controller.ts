@@ -37,7 +37,6 @@ export class ServerController {
   @Put('/restart/:deviceId')
   @ApiOperation({
     summary: 'Restart a child bridge instance.',
-    description: 'This method is only supported on setups running `hb-service`.',
   })
   restartChildBridge(@Param('deviceId') deviceId: string) {
     return this.childBridgesService.restartChildBridge(deviceId)
@@ -47,7 +46,6 @@ export class ServerController {
   @Put('/stop/:deviceId')
   @ApiOperation({
     summary: 'Stop a child bridge instance.',
-    description: 'This method is only supported on setups running `hb-service`.',
   })
   stopChildBridge(@Param('deviceId') deviceId: string) {
     return this.childBridgesService.stopChildBridge(deviceId)
@@ -57,7 +55,6 @@ export class ServerController {
   @Put('/start/:deviceId')
   @ApiOperation({
     summary: 'Start a child bridge instance.',
-    description: 'This method is only supported on setups running `hb-service`.',
   })
   startChildBridge(@Param('deviceId') deviceId: string) {
     return this.childBridgesService.startChildBridge(deviceId)
@@ -79,7 +76,6 @@ export class ServerController {
   @UseGuards(AdminGuard)
   @ApiOperation({
     summary: 'Remove Homebridge cached accessories.',
-    description: 'This method is only supported on setups running `hb-service`.',
   })
   @Put('/reset-cached-accessories')
   deleteAllCachedAccessories() {
@@ -96,7 +92,6 @@ export class ServerController {
   @UseGuards(AdminGuard)
   @ApiOperation({
     summary: 'Remove a single Homebridge cached accessory.',
-    description: 'This method is only supported on setups running `hb-service`.',
   })
   @ApiParam({ name: 'uuid' })
   @ApiQuery({ name: 'cacheFile' })
@@ -109,7 +104,6 @@ export class ServerController {
   @UseGuards(AdminGuard)
   @ApiOperation({
     summary: 'Remove multiple Homebridge cached accessories.',
-    description: 'This method is only supported on setups running `hb-service`.',
   })
   @ApiBody({ description: 'Array of accessories (uuid and cacheFile) to remove from the cache', type: 'json', isArray: true })
   @Delete('/cached-accessories')
@@ -135,7 +129,6 @@ export class ServerController {
   @UseGuards(AdminGuard)
   @ApiOperation({
     summary: 'Remove a single paired bridge.',
-    description: 'This method is only supported on setups running `hb-service`.',
   })
   @ApiParam({ name: 'deviceId' })
   @ApiQuery({ name: 'resetPairingInfo', type: Boolean })
@@ -149,7 +142,6 @@ export class ServerController {
   @UseGuards(AdminGuard)
   @ApiOperation({
     summary: 'Remove multiple paired bridges.',
-    description: 'This method is only supported on setups running `hb-service`.',
   })
   @ApiBody({ description: 'Array of paired bridges (id and resetPairingInfo) to remove from the cache', type: 'json', isArray: true })
   @Delete('/pairings')
@@ -161,7 +153,6 @@ export class ServerController {
   @UseGuards(AdminGuard)
   @ApiOperation({
     summary: 'Remove a paired bridge\'s cached accessories.',
-    description: 'This method is only supported on setups running `hb-service`.',
   })
   @ApiParam({ name: 'deviceId' })
   @Delete('/pairings/:deviceId/accessories')
@@ -173,7 +164,6 @@ export class ServerController {
   @UseGuards(AdminGuard)
   @ApiOperation({
     summary: 'Remove multiple paired bridges\'s cached accessories.',
-    description: 'This method is only supported on setups running `hb-service`.',
   })
   @ApiBody({ description: 'Array of bridges (id) for which to remove accessories.', type: 'json', isArray: true })
   @Delete('/pairings/accessories')

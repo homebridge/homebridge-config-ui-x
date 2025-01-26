@@ -176,7 +176,7 @@ describe('PluginController (e2e)', () => {
     expect(res.json().filter(x => x.name === 'homebridge-config-ui-rdp')).toHaveLength(0)
   })
 
-  it('GET /plugins/search/:query (blacklisted - search query', async () => {
+  it('GET /plugins/search/:query (blacklisted - search query)', async () => {
     const res = await app.inject({
       method: 'GET',
       path: `/plugins/search/${encodeURIComponent('ui')}`,
