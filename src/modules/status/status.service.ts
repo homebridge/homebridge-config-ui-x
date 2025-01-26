@@ -94,18 +94,16 @@ export class StatusService {
       this.logger.warn('Server metrics monitoring disabled.')
     }
 
-    if (this.configService.serviceMode) {
-      this.homebridgeIpcService.on('serverStatusUpdate', (data: HomebridgeStatusUpdate) => {
-        this.homebridgeStatus = data.status === HomebridgeStatus.OK ? HomebridgeStatus.UP : data.status
+    this.homebridgeIpcService.on('serverStatusUpdate', (data: HomebridgeStatusUpdate) => {
+      this.homebridgeStatus = data.status === HomebridgeStatus.OK ? HomebridgeStatus.UP : data.status
 
-        if (data?.setupUri) {
-          this.serverService.setupCode = data.setupUri
-          this.serverService.paired = data.paired
-        }
+      if (data?.setupUri) {
+        this.serverService.setupCode = data.setupUri
+        this.serverService.paired = data.paired
+      }
 
-        this.homebridgeStatusChange.next(this.homebridgeStatus)
-      })
-    }
+      this.homebridgeStatusChange.next(this.homebridgeStatus)
+    })
   }
 
   /**
@@ -298,21 +296,13 @@ export class StatusService {
    * @param client
    */
   public async watchStats(client: any) {
-    let homebridgeStatusChangeSub: Subscription
     let homebridgeStatusInterval: NodeJS.Timeout
 
     client.emit('homebridge-status', await this.getHomebridgeStats())
 
-    // IPC status events are only available when running in service mode
-    if (this.configService.serviceMode) {
-      homebridgeStatusChangeSub = this.homebridgeStatusChange.subscribe(async () => {
-        client.emit('homebridge-status', await this.getHomebridgeStats())
-      })
-    } else {
-      homebridgeStatusInterval = setInterval(async () => {
-        client.emit('homebridge-status', await this.getHomebridgeStats())
-      }, 10000)
-    }
+    const homebridgeStatusChangeSub: Subscription = this.homebridgeStatusChange.subscribe(async () => {
+      client.emit('homebridge-status', await this.getHomebridgeStats())
+    })
 
     // Cleanup on disconnect
     const onEnd = () => {
@@ -323,9 +313,7 @@ export class StatusService {
         clearInterval(homebridgeStatusInterval)
       }
 
-      if (homebridgeStatusChangeSub) {
-        homebridgeStatusChangeSub.unsubscribe()
-      }
+      homebridgeStatusChangeSub.unsubscribe()
     }
 
     client.on('end', onEnd.bind(this))
@@ -351,19 +339,6 @@ export class StatusService {
    * Check if homebridge is running on the local system
    */
   public async checkHomebridgeStatus() {
-    if (this.configService.serviceMode) {
-      return this.homebridgeStatus
-    }
-
-    try {
-      await firstValueFrom(this.httpService.get(`http://localhost:${this.configService.homebridgeConfig.bridge.port}`, {
-        validateStatus: () => true,
-      }))
-      this.homebridgeStatus = HomebridgeStatus.UP
-    } catch (e) {
-      this.homebridgeStatus = HomebridgeStatus.DOWN
-    }
-
     return this.homebridgeStatus
   }
 
@@ -440,7 +415,6 @@ export class StatusService {
       homebridgeRunningInDocker: this.configService.runningInDocker,
       homebridgeRunningInSynologyPackage: this.configService.runningInSynologyPackage,
       homebridgeRunningInPackageMode: this.configService.runningInPackageMode,
-      homebridgeServiceMode: this.configService.serviceMode,
       nodeVersion: process.version,
       os: await this.getOsInfo(),
       glibcVersion: this.getGlibcVersion(),

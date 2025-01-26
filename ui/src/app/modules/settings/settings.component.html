@@ -214,8 +214,7 @@
   }
 </div>
 
-<!-- STARTUP/ENV OPTIONS - SERVICE MODE/DOCKER USERS -->
-@if ($settings.env.serviceMode || $settings.env.runningInDocker) {
+<!-- STARTUP/ENV OPTIONS -->
 <form class="my-4" novalidate [formGroup]="serviceForm">
   <div
     role="button"
@@ -232,7 +231,6 @@
   </div>
   @if (showFields.startup) {
   <ul class="list-group list-group-box mb-4 mx-0" id="fieldsStartup">
-    @if ($settings.env.serviceMode) {
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.startup.debug' | translate }} <code>-D</code><br />
@@ -249,7 +247,6 @@
       />
       <label for="homebridgeDebugMode" class="rendux-label ms-3" style="min-width: 50px"></label>
     </li>
-    } @if ($settings.env.serviceMode) {
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.startup.insecure' | translate }} <code>-I</code><br />
@@ -264,7 +261,6 @@
       />
       <label for="homebridgeInsecureMode" class="rendux-label ms-3" style="min-width: 50px"></label>
     </li>
-    } @if ($settings.env.serviceMode) {
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.startup.keep_accessories' | translate }} <code>-K</code><br />
@@ -279,7 +275,6 @@
       />
       <label for="homebridgeKeepOrphans" class="rendux-label ms-3" style="min-width: 50px"></label>
     </li>
-    } @if ($settings.env.serviceMode) {
     <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         <span class="font-monospace">DEBUG</span><br />
@@ -297,7 +292,6 @@
         />
       </div>
     </li>
-    } @if ($settings.env.serviceMode) {
     <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         <span class="font-monospace">NODE_OPTIONS</span><br />
@@ -312,7 +306,7 @@
         />
       </div>
     </li>
-    } @if ($settings.env.runningInDocker) {
+    @if ($settings.env.runningInDocker) {
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span>
         {{ 'menu.docker.startup_script' | translate }}<br />
@@ -342,7 +336,6 @@
   </ul>
   }
 </form>
-}
 
 <!-- NETWORK SETTINGS - ALL USERS -->
 <form class="my-4" novalidate [formGroup]="uiSettingsForm">
@@ -467,8 +460,7 @@
   }
 </form>
 
-<!-- CACHE SETTINGS - SERVICE MODE USERS ONLY -->
-@if ($settings.env.serviceMode) {
+<!-- CACHE SETTINGS -->
 <div class="my-4">
   <div
     role="button"
@@ -532,7 +524,6 @@
   </ul>
   }
 </div>
-}
 
 <!-- RESET SETTINGS - ALL USERS -->
 <div class="my-4">
@@ -553,7 +544,6 @@
   <p class="small grey-text mb-2 mx-0">{{ 'reset.bridges.desc' | translate }}</p>
   } @if (showFields.reset) {
   <ul class="list-group list-group-box mt-2 mx-0" id="fieldsReset">
-    @if ($settings.env.serviceMode) {
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2">
         {{ 'reset.bridge_ind.title' | translate }}<br />
@@ -568,7 +558,6 @@
         <i class="fas fa-fw fa-arrow-right"></i>
       </button>
     </li>
-    }
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2">
         {{ 'reset.bridge_all.title' | translate | titlecase }}<br />

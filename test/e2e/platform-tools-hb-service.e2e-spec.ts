@@ -65,8 +65,6 @@ describe('PlatformToolsHbService (e2e)', () => {
     // Ensure restart required flag is cleared
     configService.hbServiceUiRestartRequired = false
 
-    // Enable service mode
-    configService.serviceMode = true
     configService.ui.log = {
       method: 'file',
       path: logFilePath,
