@@ -40,7 +40,7 @@ export class HbServiceController {
   @UseGuards(AdminGuard)
   @ApiOperation({
     summary: 'Request the UI does a full restart next time a restart for Homebridge is sent.',
-    description: 'When running under hb-service the UI will only restart if it detects it needs to.',
+    description: 'The UI will only restart if it detects it needs to.',
   })
   @Put('set-full-service-restart-flag')
   setFullServiceRestartFlag() {

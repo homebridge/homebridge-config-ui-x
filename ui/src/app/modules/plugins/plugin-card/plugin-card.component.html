@@ -315,11 +315,9 @@
                   }
                   <!-- // -->
                   <!-- child bridge reset -->
-                  @if ($settings.env.serviceMode) {
                   <button ngbDropdownItem (click)="$plugin.resetChildBridges(setChildBridges)">
                     <i class="fas fa-fw fa-broom"></i> {{ 'child_bridge.reset_accessories' | translate }}
                   </button>
-                  }
                   <!-- // -->
                   } @if (plugin.isConfigured && !plugin.hasChildBridges && !plugin.disabled &&
                   !plugin.recommendChildBridge) {

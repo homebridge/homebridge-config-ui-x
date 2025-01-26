@@ -11,7 +11,6 @@ import { debounceTime } from 'rxjs/operators'
 
 import { ApiService } from '@/app/core/api.service'
 import { SpinnerComponent } from '@/app/core/components/spinner/spinner.component'
-import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { AccessoryControlListsComponent } from '@/app/modules/settings/accessory-control-lists/accessory-control-lists.component'
 import { BackupComponent } from '@/app/modules/settings/backup/backup.component'
@@ -83,7 +82,6 @@ interface NetworkAdapterSelected {
 export class SettingsComponent implements OnInit {
   private $api = inject(ApiService)
   private $modal = inject(NgbModal)
-  private $plugin = inject(ManagePluginsService)
   private $router = inject(Router)
   $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
@@ -223,10 +221,7 @@ export class SettingsComponent implements OnInit {
     this.isHbV2 = this.$settings.env.homebridgeVersion.startsWith('2')
 
     await this.initNetworkingOptions()
-
-    if (this.$settings.env.serviceMode) {
-      await this.initServiceModeForm()
-    }
+    await this.initStartupSettings()
 
     this.hbNameFormControl.patchValue(this.$settings.env.homebridgeInstanceName)
     this.hbNameFormControl.valueChanges
@@ -353,31 +348,31 @@ export class SettingsComponent implements OnInit {
     this.loading = false
   }
 
-  async initServiceModeForm() {
+  async initStartupSettings() {
     try {
-      const serviceModeData = await firstValueFrom(this.$api.get('/platform-tools/hb-service/homebridge-startup-settings'))
+      const startupSettingsData = await firstValueFrom(this.$api.get('/platform-tools/hb-service/homebridge-startup-settings'))
 
-      this.hbDebugFormControl.patchValue(serviceModeData.HOMEBRIDGE_DEBUG)
+      this.hbDebugFormControl.patchValue(startupSettingsData.HOMEBRIDGE_DEBUG)
       this.hbDebugFormControl.valueChanges
         .pipe(debounceTime(750))
         .subscribe((value: boolean) => this.hbDebugSave(value))
 
-      this.hbInsecureFormControl.patchValue(serviceModeData.HOMEBRIDGE_INSECURE)
+      this.hbInsecureFormControl.patchValue(startupSettingsData.HOMEBRIDGE_INSECURE)
       this.hbInsecureFormControl.valueChanges
         .pipe(debounceTime(750))
         .subscribe((value: boolean) => this.hbInsecureSave(value))
 
-      this.hbKeepFormControl.patchValue(serviceModeData.HOMEBRIDGE_KEEP_ORPHANS)
+      this.hbKeepFormControl.patchValue(startupSettingsData.HOMEBRIDGE_KEEP_ORPHANS)
       this.hbKeepFormControl.valueChanges
         .pipe(debounceTime(750))
         .subscribe((value: boolean) => this.hbKeepSave(value))
 
-      this.hbEnvDebugFormControl.patchValue(serviceModeData.ENV_DEBUG)
+      this.hbEnvDebugFormControl.patchValue(startupSettingsData.ENV_DEBUG)
       this.hbEnvDebugFormControl.valueChanges
         .pipe(debounceTime(1500))
         .subscribe((value: string) => this.hbEnvDebugSave(value))
 
-      this.hbEnvNodeFormControl.patchValue(serviceModeData.ENV_NODE_OPTIONS)
+      this.hbEnvNodeFormControl.patchValue(startupSettingsData.ENV_NODE_OPTIONS)
       this.hbEnvNodeFormControl.valueChanges
         .pipe(debounceTime(1500))
         .subscribe((value: string) => this.hbEnvNodeSave(value))
@@ -1099,15 +1094,6 @@ export class SettingsComponent implements OnInit {
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.hbLinuxRestartIsSaving = false
     }
-  }
-
-  openUiSettings() {
-    this.$plugin.settings({
-      name: 'homebridge-config-ui-x',
-      displayName: 'Homebridge UI',
-      settingsSchema: true,
-      links: {},
-    })
   }
 
   openBackupModal() {

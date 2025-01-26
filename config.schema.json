@@ -176,12 +176,6 @@
           }
         ]
       },
-      "restart": {
-        "title": "Custom Restart Command",
-        "type": "string",
-        "description": "If no restart command is set the process will terminate with a non-zero exit code.",
-        "placeholder": "eg. sudo systemctl restart homebridge"
-      },
       "temp": {
         "title": "OS Temp File Path",
         "type": "string",
@@ -398,21 +392,11 @@
         "type": "string",
         "placeholder": "eg. /home/pi/mywallpaper.jpg"
       },
-      "sudo": {
-        "title": "Use Sudo",
-        "type": "boolean",
-        "description": "If you are running Homebridge as root, you may need to enable this option."
-      },
       "homebridgePackagePath": {
         "title": "Path To Homebridge Module",
         "type": "string",
         "description": "If you have multiple versions of Homebridge installed, you can specify the path to the version you want to use here.",
         "placeholder": "eg. /usr/local/lib/node_modules/homebridge"
-      },
-      "noFork": {
-        "title": "Do not run the UI server in a separate process/thread",
-        "type": "boolean",
-        "description": "If you are running Homebridge in a container, you may need to enable this option."
       },
       "host": {
         "title": "Host IP Address",
@@ -420,16 +404,6 @@
         "pattern": "^[^{}/ :\\\\]+(?::\\d+)?$",
         "description": "The host IP address to listen on. In most cases this will be '::' or '0.0.0.0'.",
         "placeholder": "eg. 0.0.0.0"
-      },
-      "debug": {
-        "title": "Enable Debug Logging",
-        "type": "boolean",
-        "description": "If enabled, the Homebridge UI will log debug level messages to the console."
-      },
-      "standalone": {
-        "title": "Tell Homebridge the plugin is operating in standalone mode",
-        "type": "boolean",
-        "description": "If you are running Homebridge in a container, you may need to enable this option."
       },
       "sessionTimeout": {
         "title": "Session Timeout (Seconds)",
@@ -447,79 +421,6 @@
         "title": "Log Settings",
         "description": "The log settings for the Homebridge UI.",
         "properties": {
-          "method": {
-            "title": "Log Method",
-            "type": "string",
-            "default": "",
-            "description": "The method used to read the Homebridge log file.",
-            "oneOf": [
-              {
-                "title": "Default",
-                "enum": [
-                  ""
-                ]
-              },
-              {
-                "title": "From File",
-                "enum": [
-                  "file"
-                ]
-              },
-              {
-                "title": "Systemd",
-                "enum": [
-                  "systemd"
-                ]
-              },
-              {
-                "title": "Custom Command",
-                "enum": [
-                  "custom"
-                ]
-              }
-            ]
-          },
-          "path": {
-            "title": "Log File Path",
-            "type": "string",
-            "description": "Enter the full file path to your log file.",
-            "placeholder": "/var/log/homebridge.log",
-            "condition": {
-              "functionBody": "return (model.log && model.log.method==='file')"
-            }
-          },
-          "service": {
-            "title": "Systemd Service",
-            "type": "string",
-            "description": "Enter the systemd service name. Defaults to 'homebridge'.",
-            "placeholder": "homebridge",
-            "condition": {
-              "functionBody": "return (model.log && model.log.method==='systemd')"
-            }
-          },
-          "command": {
-            "title": "Custom Command",
-            "description": "This command should stream the logs to stdout.",
-            "type": "string",
-            "placeholder": "journalctl -f -n 100 -u homebridge",
-            "condition": {
-              "functionBody": "return (model.log && model.log.method==='custom')"
-            }
-          },
-          "tail": {
-            "type": "string",
-            "description": "Deprecated.",
-            "condition": {
-              "functionBody": "return (model.log && (model.log.method==='custom' || model.log.method==='systemd' || model.log.method==='file'))"
-            }
-          },
-          "systemd": {
-            "type": "string",
-            "description": "Deprecated.",
-            "condition": {
-              "functionBody": "return (model.log && (model.log.method==='custom' || model.log.method==='systemd' || model.log.method==='file'))"
-            }
-          },
           "maxSize": {
             "type": "integer",
             "description": "The max log size (bytes). Set to -1 to disable log truncation.",
@@ -653,37 +554,5 @@
       }
     }
   },
-  "layout": [
-    {
-      "ref": "homebridge",
-      "type": "fieldset",
-      "title": "Homebridge Settings",
-      "items": [
-        "sudo",
-        "restart"
-      ]
-    },
-    {
-      "ref": "log",
-      "type": "fieldset",
-      "title": "Log Settings",
-      "items": [
-        "log.method",
-        "log.path",
-        "log.service",
-        "log.command",
-        "log.tail",
-        "log.systemd"
-      ]
-    },
-    {
-      "ref": "container",
-      "type": "fieldset",
-      "title": "Container Settings",
-      "items": [
-        "standalone",
-        "noFork"
-      ]
-    }
-  ]
+  "layout": []
 }
