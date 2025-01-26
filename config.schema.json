@@ -506,20 +506,6 @@
               "functionBody": "return (model.log && model.log.method==='custom')"
             }
           },
-          "tail": {
-            "type": "string",
-            "description": "Deprecated.",
-            "condition": {
-              "functionBody": "return (model.log && (model.log.method==='custom' || model.log.method==='systemd' || model.log.method==='file'))"
-            }
-          },
-          "systemd": {
-            "type": "string",
-            "description": "Deprecated.",
-            "condition": {
-              "functionBody": "return (model.log && (model.log.method==='custom' || model.log.method==='systemd' || model.log.method==='file'))"
-            }
-          },
           "maxSize": {
             "type": "integer",
             "description": "The max log size (bytes). Set to -1 to disable log truncation.",
@@ -647,9 +633,7 @@
         "log.method",
         "log.path",
         "log.service",
-        "log.command",
-        "log.tail",
-        "log.systemd"
+        "log.command"
       ]
     },
     {
