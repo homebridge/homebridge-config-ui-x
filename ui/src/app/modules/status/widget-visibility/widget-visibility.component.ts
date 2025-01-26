@@ -58,7 +58,7 @@ export class WidgetVisibilityComponent implements OnInit {
       {
         name: this.$translate.instant('child_bridge.bridges'),
         component: 'BridgesWidgetComponent',
-        hidden: !this.$settings.env.serviceMode,
+        hidden: false,
         cols: 5,
         rows: 9,
         mobileOrder: 35,

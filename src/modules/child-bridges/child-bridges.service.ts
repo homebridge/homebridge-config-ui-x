@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 
 import { ConfigService } from '../../core/config/config.service'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service'
@@ -18,10 +18,6 @@ export class ChildBridgesService {
    * Return an array of child bridges
    */
   public async getChildBridges() {
-    if (!this.configService.serviceMode) {
-      throw new BadRequestException('This command is only available in service mode.')
-    }
-
     try {
       return await this.homebridgeIpcService.requestResponse('childBridgeMetadataRequest', 'childBridgeMetadataResponse')
     } catch (e) {
@@ -63,11 +59,6 @@ export class ChildBridgesService {
    * @returns ok when done
    */
   public stopStartRestartChildBridge(event: 'startChildBridge' | 'stopChildBridge' | 'restartChildBridge', deviceId: string) {
-    if (!this.configService.serviceMode) {
-      this.logger.error('The restart child bridge command is only available in service mode.')
-      throw new BadRequestException('This command is only available in service mode.')
-    }
-
     if (deviceId.length === 12) {
       deviceId = deviceId.match(/.{1,2}/g).join(':')
     }
