@@ -75,7 +75,7 @@ export class UninstallPluginComponent implements OnInit {
     }
 
     // Remove the child bridges if exists and specified by the user
-    if (this.hasChildBridges && this.removeChildBridges && this.$settings.env.serviceMode) {
+    if (this.hasChildBridges && this.removeChildBridges) {
       try {
         await Promise.all(this.childBridges.map(childBridge => this.removeChildBridge(childBridge.username.replace(/:/g, ''))))
       } catch (error) {
