@@ -284,9 +284,6 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   }
 
   async getChildBridges(): Promise<void> {
-    if (!this.$settings.env.serviceMode) {
-      return
-    }
     const data: any[] = await firstValueFrom(this.$api.get('/status/homebridge/child-bridges'))
     data.forEach((bridge) => {
       if (this.pluginName === bridge.plugin) {

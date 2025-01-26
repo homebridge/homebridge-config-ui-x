@@ -81,16 +81,6 @@
           <th scope="row" class="text-nowrap">{{ 'status.widget.info.synology_package' | translate }}</th>
           <td class="text-nowrap grey-text">{{ 'status.widget.info.yes' | translate }}</td>
         </tr>
-        } @if (!serverInfo.homebridgeServiceMode) {
-        <tr>
-          <th scope="row" class="text-nowrap">{{ 'status.widget.info.service_mode' | translate }}</th>
-          <td class="text-nowrap grey-text">
-            <a class="system-info-link" href="javascript:void(0)" (click)="serviceModeModal()">
-              <i class="primary-text fas fa-fw fa-exclamation-circle"></i>
-            </a>
-            <span class="grey-text"> {{ 'status.widget.info.disabled' | translate }}</span>
-          </td>
-        </tr>
         }
       </tbody>
     </table>

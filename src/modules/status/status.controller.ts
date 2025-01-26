@@ -52,7 +52,6 @@ export class StatusController {
 
   @ApiOperation({
     summary: 'Return an array of the active child bridges and their status.',
-    description: 'This method is only available when running `hb-service`.',
   })
   @Get('/homebridge/child-bridges')
   async getChildBridges() {

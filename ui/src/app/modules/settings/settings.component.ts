@@ -150,9 +150,7 @@ export class SettingsComponent implements OnInit {
 
     this.initUiSettingsForm()
     this.initNetworkingOptions()
-    if (this.$settings.env.serviceMode) {
-      this.initServiceModeForm()
-    }
+    this.initStartupSettingsForm()
   }
 
   initUiSettingsForm() {
@@ -174,14 +172,14 @@ export class SettingsComponent implements OnInit {
     })
   }
 
-  initServiceModeForm() {
+  initStartupSettingsForm() {
     this.$api.get('/platform-tools/hb-service/homebridge-startup-settings').subscribe({
       next: (data) => {
         Object.keys(data).forEach((key) => {
           this.originalServiceForm[key] = data[key]
         })
         this.serviceForm.patchValue(data)
-        this.serviceForm.valueChanges.pipe(debounceTime(500)).subscribe(this.saveServiceModeSettings.bind(this))
+        this.serviceForm.valueChanges.pipe(debounceTime(500)).subscribe(this.saveStartupSettingsSettings.bind(this))
       },
       error: (error) => {
         console.error(error)
@@ -291,7 +289,7 @@ export class SettingsComponent implements OnInit {
     })
   }
 
-  saveServiceModeSettings(data = this.serviceForm.value) {
+  saveStartupSettingsSettings(data = this.serviceForm.value) {
     this.$api.put('/platform-tools/hb-service/homebridge-startup-settings', data).subscribe({
       next: () => {
         this.hasChangedService = JSON.stringify(data) !== JSON.stringify(this.originalServiceForm)
