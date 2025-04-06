@@ -131,7 +131,7 @@
   "config.restore.confirm": "Klicke auf Speichern, um zu bestätigen, dass dieses Backup wiederhergestellt werden soll.",
   "config.restore.copy_to_editor": "In den Editor kopieren",
   "config.restore.no_backups": "Keine Backups",
-  "config.restore.title_restore_homebridge_backup": "Wiederherstellen des Homebridge-Konfiguration-Backups",
+  "config.restore.title_restore_homebridge_backup": "Wiederherstellen der Homebridge-Konfigurationssicherung",
   "config.restore.toast_backups_deleted": "Alle Backups gelöscht",
   "config.title_backup_loaded": "Backup geladen",
   "form.button_back": "Zurück",
