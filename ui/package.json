@@ -12,15 +12,15 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
-    "@angular/animations": "19.2.6",
-    "@angular/common": "19.2.6",
-    "@angular/compiler": "19.2.6",
-    "@angular/core": "19.2.6",
-    "@angular/forms": "19.2.6",
-    "@angular/localize": "19.2.6",
-    "@angular/platform-browser": "19.2.6",
-    "@angular/platform-browser-dynamic": "19.2.6",
-    "@angular/router": "19.2.6",
+    "@angular/animations": "19.2.7",
+    "@angular/common": "19.2.7",
+    "@angular/compiler": "19.2.7",
+    "@angular/core": "19.2.7",
+    "@angular/forms": "19.2.7",
+    "@angular/localize": "19.2.7",
+    "@angular/platform-browser": "19.2.7",
+    "@angular/platform-browser-dynamic": "19.2.7",
+    "@angular/router": "19.2.7",
     "@auth0/angular-jwt": "5.2.0",
     "@homebridge/hap-client": "2.1.0",
     "@ng-bootstrap/ng-bootstrap": "18.0.0",
@@ -29,7 +29,7 @@
     "@ngx-translate/core": "16.0.4",
     "angular-gridster2": "19.0.0",
     "bootstrap": "5.3.5",
-    "chart.js": "4.4.8",
+    "chart.js": "4.4.9",
     "dayjs": "1.11.13",
     "emoji-js": "3.8.1",
     "file-saver": "2.0.5",
@@ -56,10 +56,10 @@
     "zone.js": "0.15.0"
   },
   "devDependencies": {
-    "@angular/build": "^19.2.7",
-    "@angular/cli": "^19.2.7",
-    "@angular/compiler-cli": "^19.2.6",
-    "@angular/language-service": "^19.2.6",
+    "@angular/build": "^19.2.8",
+    "@angular/cli": "^19.2.8",
+    "@angular/compiler-cli": "^19.2.7",
+    "@angular/language-service": "^19.2.7",
     "@fortawesome/fontawesome-free": "^6.7.2",
     "@homebridge/plugin-ui-utils": "^2.0.2",
     "@types/emoji-js": "^3.5.2",
@@ -74,11 +74,11 @@
     "typescript": "^5.8.3"
   },
   "overrides": {
-    "@angular/animations": "19.2.6",
+    "@angular/animations": "19.2.7",
     "@angular/build": {
       "vite": "^6.2.5"
     },
-    "@angular/common": "19.2.6",
-    "@angular/core": "19.2.6"
+    "@angular/common": "19.2.7",
+    "@angular/core": "19.2.7"
   }
 }

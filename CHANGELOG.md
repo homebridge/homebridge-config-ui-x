@@ -22,6 +22,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - improve icons in bridges widget
 - fix individual accessory deselect on remove modal
 - improve accessory icons for CO and CO2 sensors
+- make secondary blue colour in light mode more distinct
 
 ### Other Changes
 
