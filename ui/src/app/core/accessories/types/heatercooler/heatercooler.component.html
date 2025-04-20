@@ -22,10 +22,11 @@
     } @if (service.values.Active === 1 && service.getCharacteristic('CoolingThresholdTemperature') &&
     service.getCharacteristic('HeatingThresholdTemperature')) {
     <div class="accessory-label grey-text">
-      @switch (service.values.TargetHeaterCoolerState) { @case (1) { {{ service.values.HeatingThresholdTemperature | convertTemp |
-      number:'1.0-1' }}&deg;{{ service.values.TemperatureDisplayUnits }} } @case (2) { {{ service.values.CoolingThresholdTemperature |
-      convertTemp | number:'1.0-1' }}&deg;{{ service.values.TemperatureDisplayUnits }} } @case (0) { {{
-      service.values.HeatingThresholdTemperature | convertTemp | number:'1.0-1' }}&deg;{{ service.values.TemperatureDisplayUnits }}-{{
+      @switch (service.values.TargetHeaterCoolerState) { @case (1) { {{ service.values.HeatingThresholdTemperature |
+      convertTemp | number:'1.0-1' }}&deg;{{ service.values.TemperatureDisplayUnits }} } @case (2) { {{
+      service.values.CoolingThresholdTemperature | convertTemp | number:'1.0-1' }}&deg;{{
+      service.values.TemperatureDisplayUnits }} } @case (0) { {{ service.values.HeatingThresholdTemperature |
+      convertTemp | number:'1.0-1' }}&deg;{{ service.values.TemperatureDisplayUnits }}-{{
       service.values.CoolingThresholdTemperature | convertTemp | number:'1.0-1' }}&deg;{{ service.values.TemperatureDisplayUnits }} } }
     </div>
     } @if (service.values.Active === 1 && (!service.getCharacteristic('CoolingThresholdTemperature') ||
