@@ -36,6 +36,8 @@ export class HeaterCoolerManageComponent implements OnInit {
   public CoolingThresholdTemperature: CharacteristicType
   public HeatingThresholdTemperature: CharacteristicType
 
+  public TemperatureDisplayUnits: string
+
   public targetCoolingTemp: number
   public targetHeatingTemp: number
   public autoTemp: [number, number]
@@ -66,6 +68,14 @@ export class HeaterCoolerManageComponent implements OnInit {
 
   ngOnInit() {
     this.targetMode = this.service.values.Active ? this.service.values.TargetHeaterCoolerState : 'off'
+
+    if (this.service.getCharacteristic('TemperatureDisplayUnits').value as number === 0) {
+      this.TemperatureDisplayUnits = "C";
+    } else if (this.service.getCharacteristic('TemperatureDisplayUnits').value as number === 1) {
+      this.TemperatureDisplayUnits = "F";
+    } else {
+      this.TemperatureDisplayUnits = "";
+    }
 
     this.CoolingThresholdTemperature = this.service.getCharacteristic('CoolingThresholdTemperature')
     this.HeatingThresholdTemperature = this.service.getCharacteristic('HeatingThresholdTemperature')
