@@ -33,13 +33,23 @@
     </div>
 
     @if (targetBrightness) {
-    <h6>{{ 'accessories.control.brightness' | translate }}: {{ targetBrightness.value }}%</h6>
+    <h6 class="mt-5">{{ 'accessories.control.brightness' | translate }}: {{ targetBrightness.value }}%</h6>
     <nouislider
       [min]="targetBrightness.min"
       [max]="targetBrightness.max"
       [step]="targetBrightness.step"
       [(ngModel)]="targetBrightness.value"
       (ngModelChange)="onBrightnessStateChange()"
+    >
+    </nouislider>
+    } @if (targetColorTemperature) {
+    <h6 class="mt-5">{{ 'accessories.control.color_temperature' | translate }}: {{ targetColorTemperature.value }}K</h6>
+    <nouislider
+      [min]="targetColorTemperature.min"
+      [max]="targetColorTemperature.max"
+      [step]="targetColorTemperature.step"
+      [(ngModel)]="targetColorTemperature.value"
+      (ngModelChange)="onColorTemperatureStateChange()"
     >
     </nouislider>
     }

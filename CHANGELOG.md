@@ -10,6 +10,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - add architecture to system info widget
 - add checks on system for updating to ui v5
 - added screen for ui v5 readiness check
+- add color temperature to lightbulb screen (@justjam2013)
 
 ### Homebridge Dependencies
 
