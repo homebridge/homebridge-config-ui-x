@@ -25,8 +25,12 @@ export class LightbulbManageComponent implements OnInit {
 
   @Input() public service: ServiceTypeX
   public targetMode: any
+
   public targetBrightness: any
   public targetBrightnessChanged: Subject<string> = new Subject<string>()
+
+  public targetColorTemperature: any
+  public targetColorTemperatureChanged: Subject<string> = new Subject<string>()
 
   constructor() {
     this.targetBrightnessChanged
@@ -36,6 +40,7 @@ export class LightbulbManageComponent implements OnInit {
       )
       .subscribe(() => {
         this.service.getCharacteristic('Brightness').setValue(this.targetBrightness.value)
+        this.service.getCharacteristic('ColorTemperature').setValue(this.targetColorTemperature.value)
 
         // Turn bulb on or off when brightness is adjusted
         if (this.targetBrightness.value && !this.service.values.On) {
@@ -52,6 +57,7 @@ export class LightbulbManageComponent implements OnInit {
     this.targetMode = this.service.values.On
 
     this.loadTargetBrightness()
+    this.loadTargetColorTemperature()
   }
 
   loadTargetBrightness() {
@@ -63,6 +69,19 @@ export class LightbulbManageComponent implements OnInit {
         min: TargetBrightness.minValue,
         max: TargetBrightness.maxValue,
         step: TargetBrightness.minStep,
+      }
+    }
+  }
+
+  loadTargetColorTemperature() {
+    const TargetColorTemperature = this.service.getCharacteristic('ColorTemperature')
+
+    if (TargetColorTemperature) {
+      this.targetColorTemperature = {
+        value: TargetColorTemperature.value,
+        min: TargetColorTemperature.minValue,
+        max: TargetColorTemperature.maxValue,
+        step: TargetColorTemperature.minStep,
       }
     }
   }
@@ -79,5 +98,9 @@ export class LightbulbManageComponent implements OnInit {
 
   onBrightnessStateChange() {
     this.targetBrightnessChanged.next(this.targetBrightness.value)
+  }
+
+  onColorTemperatureStateChange() {
+    this.targetColorTemperatureChanged.next(this.targetColorTemperature.value)
   }
 }
