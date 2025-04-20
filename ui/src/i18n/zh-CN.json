@@ -459,6 +459,7 @@
   "status.widget.hide_on_mobile": "在紧凑模式下隐藏 (移动设备)",
   "status.widget.homebridge_logs": "Homebridge 日志",
   "status.widget.info": "系统信息",
+  "status.widget.info.arch": "Arch.",
   "status.widget.info.config_path": "Config 路径",
   "status.widget.info.disabled": "Disabled",
   "status.widget.info.docker": "Docker",

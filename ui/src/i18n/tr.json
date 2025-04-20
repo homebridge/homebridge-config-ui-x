@@ -459,6 +459,7 @@
   "status.widget.hide_on_mobile": "Küçük Gösterimde Gizle (Mobil Ekranlar)",
   "status.widget.homebridge_logs": "Homebridge Günlükleri",
   "status.widget.info": "Sistem Bilgisi",
+  "status.widget.info.arch": "Arch.",
   "status.widget.info.config_path": "Yapılandırma Konumu",
   "status.widget.info.disabled": "Disabled",
   "status.widget.info.docker": "Docker",

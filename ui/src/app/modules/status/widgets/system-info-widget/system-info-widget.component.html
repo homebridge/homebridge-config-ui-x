@@ -11,23 +11,21 @@
           <th scope="row" class="text-nowrap">{{ 'status.widget.info.os' | translate }}</th>
           @if (!serverInfo.homebridgeRunningInSynologyPackage) {
           <td class="grey-text">
-            @switch (serverInfo.os.platform) { @case ('darwin') {
-            <span> {{ serverInfo.os.codename }} </span>
-            } @case ('win32') {
-            <span> {{ serverInfo.os.distro }} </span>
-            } @default {
-            <span>
-              @if (nodejsInfo.showGlibcUnsupportedWarning) {
-              <a class="system-info-link" href="javascript:void(0)" (click)="glibcVersionModal()">
-                <i class="primary-text fas fa-fw fa-exclamation-circle"></i>
-              </a>
-              } {{ serverInfo.os.distro }} {{ serverInfo.os.codename | titlecase }} ({{ serverInfo.os.release }})
-            </span>
-            } }
+            @switch (serverInfo.os.platform) { @case ('darwin') { {{ serverInfo.os.distro }} {{ serverInfo.os.codename
+            }} ({{ serverInfo.os.release }}) } @case ('win32') { {{ serverInfo.os.distro }} } @default { @if
+            (nodejsInfo.showGlibcUnsupportedWarning) {
+            <a class="system-info-link" href="javascript:void(0)" (click)="glibcVersionModal()">
+              <i class="primary-text fas fa-fw fa-exclamation-circle"></i>
+            </a>
+            } {{ serverInfo.os.distro }} {{ serverInfo.os.codename | titlecase }} ({{ serverInfo.os.release }}) } }
           </td>
           } @if (serverInfo.homebridgeRunningInSynologyPackage) {
           <td class="grey-text">Synology DSM</td>
           }
+        </tr>
+        <tr>
+          <th scope="row" class="text-nowrap">{{ 'status.widget.info.arch' | translate }}</th>
+          <td class="grey-text">{{ serverInfo.os.arch }}</td>
         </tr>
         } @if (serverInfo.network.ip4) {
         <tr>

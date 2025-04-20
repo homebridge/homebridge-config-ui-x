@@ -459,6 +459,7 @@
   "status.widget.hide_on_mobile": "Skrýt v kompaktním zobrazení (mobilní displeje)",
   "status.widget.homebridge_logs": "Protokoly Homebridge",
   "status.widget.info": "Systémové informace",
+  "status.widget.info.arch": "Arch.",
   "status.widget.info.config_path": "Cesta ke konfiguraci",
   "status.widget.info.disabled": "Zakázáno",
   "status.widget.info.docker": "Docker",

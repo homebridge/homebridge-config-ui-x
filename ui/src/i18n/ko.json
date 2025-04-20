@@ -459,6 +459,7 @@
   "status.widget.hide_on_mobile": "컴팩트 뷰에서 숨기기(모바일 디스플레이)",
   "status.widget.homebridge_logs": "Homebridge 로그",
   "status.widget.info": "시스템 정보",
+  "status.widget.info.arch": "Arch.",
   "status.widget.info.config_path": "Config 경로",
   "status.widget.info.disabled": "Disabled",
   "status.widget.info.docker": "Docker",

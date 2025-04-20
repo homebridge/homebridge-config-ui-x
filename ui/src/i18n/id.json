@@ -459,6 +459,7 @@
   "status.widget.hide_on_mobile": "Sembunyikan dalam tampilan ringkas (tampilan seluler)",
   "status.widget.homebridge_logs": "Catatan Homebridge",
   "status.widget.info": "Informasi Sistem",
+  "status.widget.info.arch": "Arch.",
   "status.widget.info.config_path": "Path Konfigurasi",
   "status.widget.info.disabled": "Dinonaktifkan",
   "status.widget.info.docker": "Docker",

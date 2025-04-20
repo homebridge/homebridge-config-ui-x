@@ -459,6 +459,7 @@
   "status.widget.hide_on_mobile": "ซ่อนในมุมมองที่กะทัดรัด (จอแสดงผลมือถือ)",
   "status.widget.homebridge_logs": "Homebridge Logs",
   "status.widget.info": "ข้อมูลระบบ",
+  "status.widget.info.arch": "Arch.",
   "status.widget.info.config_path": "เส้นทางกำหนดค่า",
   "status.widget.info.disabled": "ปิดการใช้",
   "status.widget.info.docker": "Docker",

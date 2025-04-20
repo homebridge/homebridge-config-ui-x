@@ -459,6 +459,7 @@
   "status.widget.hide_on_mobile": "縮小表示(モバイル画面)では非表示",
   "status.widget.homebridge_logs": "Homebridgeログ",
   "status.widget.info": "システム情報",
+  "status.widget.info.arch": "Arch.",
   "status.widget.info.config_path": "コンフィグの場所",
   "status.widget.info.disabled": "無効",
   "status.widget.info.docker": "Docker",

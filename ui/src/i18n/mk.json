@@ -459,6 +459,7 @@
   "status.widget.hide_on_mobile": "Скриј во компактен мод (мобилни уреди)",
   "status.widget.homebridge_logs": "Логирачки фајлови за Homebridge",
   "status.widget.info": "Информации за системот",
+  "status.widget.info.arch": "Arch.",
   "status.widget.info.config_path": "Патека за конфигурацијата",
   "status.widget.info.disabled": "Disabled",
   "status.widget.info.docker": "Docker",

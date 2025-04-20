@@ -459,6 +459,7 @@
   "status.widget.hide_on_mobile": "Скрыть в мобильной версии",
   "status.widget.homebridge_logs": "Журналы Homebridge",
   "status.widget.info": "Информация о системе",
+  "status.widget.info.arch": "Arch.",
   "status.widget.info.config_path": "Путь к конфигурации",
   "status.widget.info.disabled": "Отключено",
   "status.widget.info.docker": "Docker",

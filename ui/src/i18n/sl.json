@@ -459,6 +459,7 @@
   "status.widget.hide_on_mobile": "Skrij v kompaktnem pogledu (mobilni zasloni)",
   "status.widget.homebridge_logs": "Dnevnik Homebridge-a",
   "status.widget.info": "Sistemske informacije",
+  "status.widget.info.arch": "Arch.",
   "status.widget.info.config_path": "Konfiguriraj pot",
   "status.widget.info.disabled": "Disabled",
   "status.widget.info.docker": "Docker",

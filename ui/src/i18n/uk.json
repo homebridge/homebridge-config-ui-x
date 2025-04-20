@@ -459,6 +459,7 @@
   "status.widget.hide_on_mobile": "Приховати в компактному вигляді (мобильні дисплеї)",
   "status.widget.homebridge_logs": "Журнал Homebridge",
   "status.widget.info": "Інформація про систему",
+  "status.widget.info.arch": "Arch.",
   "status.widget.info.config_path": "Файл конфігурації",
   "status.widget.info.disabled": "Вимкнено",
   "status.widget.info.docker": "Docker",

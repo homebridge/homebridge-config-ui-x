@@ -459,6 +459,7 @@
   "status.widget.hide_on_mobile": "הסתר במצב קומפקטי (במצב מובייל)",
   "status.widget.homebridge_logs": "לוגים הומברידג,",
   "status.widget.info": "מידע מערכת",
+  "status.widget.info.arch": "Arch.",
   "status.widget.info.config_path": "שביל קונפיגורציה",
   "status.widget.info.disabled": "Disabled",
   "status.widget.info.docker": "Docker",

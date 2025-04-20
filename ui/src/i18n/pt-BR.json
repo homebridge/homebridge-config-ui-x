@@ -459,6 +459,7 @@
   "status.widget.hide_on_mobile": "Esconder em modo mobile",
   "status.widget.homebridge_logs": "Logs do Homebridge",
   "status.widget.info": "Informações do Sistema",
+  "status.widget.info.arch": "Arch.",
   "status.widget.info.config_path": "Local das Configurações",
   "status.widget.info.disabled": "Disabled",
   "status.widget.info.docker": "Docker",

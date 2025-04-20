@@ -459,6 +459,7 @@
   "status.widget.hide_on_mobile": "Dölj i kompakt vy (mobilskärmar)",
   "status.widget.homebridge_logs": "Homebridge-logg",
   "status.widget.info": "Systeminformation",
+  "status.widget.info.arch": "Arch.",
   "status.widget.info.config_path": "Konfig sökväg",
   "status.widget.info.disabled": "Inaktiverad",
   "status.widget.info.docker": "Docker",
