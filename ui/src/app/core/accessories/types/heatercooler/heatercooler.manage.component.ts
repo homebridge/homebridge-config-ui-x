@@ -70,11 +70,11 @@ export class HeaterCoolerManageComponent implements OnInit {
     this.targetMode = this.service.values.Active ? this.service.values.TargetHeaterCoolerState : 'off'
 
     if (this.service.getCharacteristic('TemperatureDisplayUnits').value as number === 0) {
-      this.TemperatureDisplayUnits = "C";
+      this.TemperatureDisplayUnits = 'C'
     } else if (this.service.getCharacteristic('TemperatureDisplayUnits').value as number === 1) {
-      this.TemperatureDisplayUnits = "F";
+      this.TemperatureDisplayUnits = 'F'
     } else {
-      this.TemperatureDisplayUnits = "";
+      this.TemperatureDisplayUnits = ''
     }
 
     this.CoolingThresholdTemperature = this.service.getCharacteristic('CoolingThresholdTemperature')
