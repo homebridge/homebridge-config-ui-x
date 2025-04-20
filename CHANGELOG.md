@@ -8,6 +8,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - capitalise time zone in system info widget
 - add architecture to system info widget
+- add checks on system for updating to ui v5
 
 ## v4.73.0 (2025-04-19)
 

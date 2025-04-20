@@ -234,7 +234,7 @@ describe('PluginsGateway (e2e)', () => {
     expect(mockSpawn).not.toHaveBeenCalled()
 
     // Expect the method to let the client know the command succeeded
-    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Cannot uninstall homebridge-config-ui-x'))
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Cannot uninstall the Homebridge UI'))
   })
 
   it('ON /plugins/update', async () => {

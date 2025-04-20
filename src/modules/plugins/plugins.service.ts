@@ -437,21 +437,19 @@ export class PluginsService {
   }
 
   /**
-   * Manage a plugin, install, update or uninstall it
+   * Update the UI
    * @param action
    * @param pluginAction
    * @param client
    */
-  async managePlugin(action: 'install' | 'uninstall', pluginAction: PluginActionDto, client: EventEmitter) {
-    pluginAction.version = pluginAction.version || 'latest'
-
+  async manageUi(action: 'install' | 'uninstall', pluginAction: PluginActionDto, client: EventEmitter) {
     // Prevent uninstalling self
-    if (action === 'uninstall' && pluginAction.name === this.configService.name) {
-      throw new Error(`Cannot uninstall ${pluginAction.name} from ${this.configService.name}.`)
+    if (action === 'uninstall') {
+      throw new Error('Cannot uninstall the Homebridge UI.')
     }
 
     // Legacy support for offline docker updates
-    if (pluginAction.name === this.configService.name && this.configService.dockerOfflineUpdate && pluginAction.version === 'latest') {
+    if (this.configService.dockerOfflineUpdate && pluginAction.version === 'latest') {
       await this.updateSelfOffline(client)
       return true
     }
@@ -463,17 +461,31 @@ export class PluginsService {
 
     const userPlatform = platform()
 
-    // Disallow updates of homebridge ui on Raspberry Pi 1 / Zero to versions 5 and above
-    if (pluginAction.name === this.configService.name && userPlatform === 'linux') {
-      const uname = execSync('uname -m').toString().trim()
-      const majorVersion = +pluginAction.version.split('.')[0]
-      if (uname === 'armv6l' && majorVersion > 4) {
-        throw new Error('Versions 5 and above of the Homebridge UI are not compatible with your armv6l device.')
+    // Guard rails for v5 upgrade
+    if (+pluginAction.version.split('.')[0] > 4) {
+      // 1. Disallow if the node version is less than 20
+      if (!satisfies(process.version, '>=20')) {
+        throw new Error('Homebridge UI v5 requires Node.js v20 or above.')
+      }
+
+      // 2. Disallow if not running in service mode
+      if (!this.configService.serviceMode) {
+        throw new Error('Homebridge UI v5 requires using service mode.')
+      }
+
+      // 3. Disallow if using pnpm package manager
+      if (this.configService.usePnpm) {
+        throw new Error('Homebridge UI v5 is not compatible with the pnpm package manager.')
+      }
+
+      // 4. Disallow updates on linux armv6l (raspberry pi 1 / zero for example)
+      if (userPlatform === 'linux' && execSync('uname -m').toString().trim() === 'armv6l') {
+        throw new Error('Homebridge UI v5 is not compatible with your armv6l device.')
       }
     }
 
     // Set default install path
-    let installPath = (this.configService.customPluginPath)
+    let installPath = this.configService.customPluginPath
       ? this.configService.customPluginPath
       : this.installedPlugins.find(x => x.name === this.configService.name).installPath
 
@@ -488,25 +500,101 @@ export class PluginsService {
       installPath = existingPlugin.installPath
     }
 
-    // Homebridge-config-ui-x specific actions
-    if (action === 'install' && pluginAction.name === this.configService.name) {
-      const githubReleaseName = await this.isUiUpdateBundleAvailable(pluginAction)
-      if (githubReleaseName) {
-        try {
-          await this.doUiBundleUpdate(pluginAction, client, githubReleaseName)
-          return true
-        } catch (e) {
-          client.emit('stdout', yellow('\r\nBundled update failed. Trying regular update using npm.\r\n\r\n'))
-        }
+    const githubReleaseName = await this.isUiUpdateBundleAvailable(pluginAction)
+    if (githubReleaseName) {
+      try {
+        await this.doUiBundleUpdate(pluginAction, client, githubReleaseName)
+        return true
+      } catch (e) {
+        client.emit('stdout', yellow('\r\nBundled update failed. Trying regular update using npm.\r\n\r\n'))
       }
+    }
 
-      // Show a warning if updating homebridge-config-ui-x on Raspberry Pi 1 / Zero
-      if (cpus().length === 1 && arch() === 'arm') {
-        client.emit('stdout', yellow('***************************************************************\r\n'))
-        client.emit('stdout', yellow(`Please be patient while ${this.configService.name} updates.\r\n`))
-        client.emit('stdout', yellow('This process may take 5-15 minutes to complete on your device.\r\n'))
-        client.emit('stdout', yellow('***************************************************************\r\n\r\n'))
-      }
+    // Show a warning if updating homebridge-config-ui-x on Raspberry Pi 1 / Zero
+    if (cpus().length === 1 && arch() === 'arm') {
+      client.emit('stdout', yellow('***************************************************************\r\n'))
+      client.emit('stdout', yellow(`Please be patient while ${this.configService.name} updates.\r\n`))
+      client.emit('stdout', yellow('This process may take 5-15 minutes to complete on your device.\r\n'))
+      client.emit('stdout', yellow('***************************************************************\r\n\r\n'))
+    }
+
+    // Prepare flags for npm command
+    const installOptions: Array<string> = []
+    let npmPluginLabel = pluginAction.name
+
+    // Check to see if custom plugin path is using a package.json file
+    if (
+      installPath === this.configService.customPluginPath
+      && await pathExists(resolve(installPath, '../package.json'))
+    ) {
+      installOptions.push('--save')
+    }
+
+    // Install path is one level up
+    installPath = resolve(installPath, '../')
+
+    // Set global flag
+    if (!this.configService.customPluginPath || userPlatform === 'win32' || existingPlugin?.globalInstall === true) {
+      installOptions.push('-g')
+    }
+
+    if (!this.configService.usePnpm) {
+      // If installing, set --omit=dev to prevent installing devDependencies
+      installOptions.push('--omit=dev')
+    }
+    npmPluginLabel = `${pluginAction.name}@${pluginAction.version}`
+
+    // Clean up the npm cache before any install
+    await this.cleanNpmCache()
+
+    // Run the npm command
+    await this.runNpmCommand(
+      [...this.npm, action, ...installOptions, npmPluginLabel],
+      installPath,
+      client,
+      pluginAction.termCols,
+      pluginAction.termRows,
+    )
+
+    // Ensure the custom plugin dir was not deleted
+    await this.ensureCustomPluginDirExists()
+
+    return true
+  }
+
+  /**
+   * Manage a plugin, install, update or uninstall it
+   * @param action
+   * @param pluginAction
+   * @param client
+   */
+  async managePlugin(action: 'install' | 'uninstall', pluginAction: PluginActionDto, client: EventEmitter) {
+    pluginAction.version = pluginAction.version || 'latest'
+
+    // Use a different route for the ui
+    if (pluginAction.name === this.configService.name) {
+      return await this.manageUi(action, pluginAction, client)
+    }
+
+    // Convert 'latest' into a real version
+    if (action === 'install' && pluginAction.version === 'latest') {
+      pluginAction.version = await this.getNpmModuleLatestVersion(pluginAction.name)
+    }
+
+    // Set default install path
+    let installPath = this.configService.customPluginPath
+      ? this.configService.customPluginPath
+      : this.installedPlugins.find(x => x.name === this.configService.name).installPath
+
+    // Check if the plugin is already installed
+    await this.getInstalledPlugins()
+
+    // Check if the plugin is currently installed
+    const existingPlugin = this.installedPlugins.find(x => x.name === pluginAction.name)
+
+    // If the plugin is already installed, match the installation path
+    if (existingPlugin) {
+      installPath = existingPlugin.installPath
     }
 
     // If the plugin is verified, check to see if we can do a bundled update
@@ -536,7 +624,7 @@ export class PluginsService {
     installPath = resolve(installPath, '../')
 
     // Set global flag
-    if (!this.configService.customPluginPath || userPlatform === 'win32' || existingPlugin?.globalInstall === true) {
+    if (!this.configService.customPluginPath || platform() === 'win32' || existingPlugin?.globalInstall === true) {
       installOptions.push('-g')
     }
 
