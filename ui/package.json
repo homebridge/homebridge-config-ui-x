@@ -12,20 +12,20 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
-    "@angular/animations": "19.2.7",
-    "@angular/common": "19.2.7",
-    "@angular/compiler": "19.2.7",
-    "@angular/core": "19.2.7",
-    "@angular/forms": "19.2.7",
-    "@angular/localize": "19.2.7",
-    "@angular/platform-browser": "19.2.7",
-    "@angular/platform-browser-dynamic": "19.2.7",
-    "@angular/router": "19.2.7",
+    "@angular/animations": "19.2.9",
+    "@angular/common": "19.2.9",
+    "@angular/compiler": "19.2.9",
+    "@angular/core": "19.2.9",
+    "@angular/forms": "19.2.9",
+    "@angular/localize": "19.2.9",
+    "@angular/platform-browser": "19.2.9",
+    "@angular/platform-browser-dynamic": "19.2.9",
+    "@angular/router": "19.2.9",
     "@auth0/angular-jwt": "5.2.0",
     "@homebridge/hap-client": "2.1.0",
     "@ng-bootstrap/ng-bootstrap": "18.0.0",
-    "@ng-formworks/bootstrap5": "19.5.6",
-    "@ng-formworks/core": "19.5.6",
+    "@ng-formworks/bootstrap5": "19.5.8",
+    "@ng-formworks/core": "19.5.8",
     "@ngx-translate/core": "16.0.4",
     "angular-gridster2": "19.0.0",
     "bootstrap": "5.3.5",
@@ -56,16 +56,16 @@
     "zone.js": "0.15.0"
   },
   "devDependencies": {
-    "@angular/build": "^19.2.8",
-    "@angular/cli": "^19.2.8",
-    "@angular/compiler-cli": "^19.2.7",
-    "@angular/language-service": "^19.2.7",
+    "@angular/build": "^19.2.10",
+    "@angular/cli": "^19.2.10",
+    "@angular/compiler-cli": "^19.2.9",
+    "@angular/language-service": "^19.2.9",
     "@fortawesome/fontawesome-free": "^6.7.2",
     "@homebridge/plugin-ui-utils": "^2.0.2",
     "@types/emoji-js": "^3.5.2",
     "@types/file-saver": "^2.0.7",
     "@types/lodash-es": "^4.17.12",
-    "@types/node": "^22.14.1",
+    "@types/node": "^22.15.3",
     "@types/qrcode": "^1.5.5",
     "@types/semver": "^7.7.0",
     "he": "^1.2.0",
@@ -74,11 +74,11 @@
     "typescript": "^5.8.3"
   },
   "overrides": {
-    "@angular/animations": "19.2.7",
+    "@angular/animations": "19.2.9",
     "@angular/build": {
       "vite": "^6.2.5"
     },
-    "@angular/common": "19.2.7",
-    "@angular/core": "19.2.7"
+    "@angular/common": "19.2.9",
+    "@angular/core": "19.2.9"
   }
 }

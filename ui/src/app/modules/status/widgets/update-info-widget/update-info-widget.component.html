@@ -63,6 +63,19 @@
             class="card-link card-link-title"
             >Homebridge UI</a
           >
+          <a
+            href="javascript:void(0)"
+            class="ms-1"
+            (click)="readyForV5Modal()"
+            ngbTooltip="Homebridge UI v5 Readiness"
+            container="body"
+            openDelay="150"
+            triggers="hover"
+            placement="top"
+            aria-label="Homebridge UI v5 Readiness"
+          >
+            <i class="primary-text fas fa-fw fa-exclamation-circle"></i>
+          </a>
           } @if (!homebridgeUiPkg.installedVersion) {
           <span>Homebridge UI</span>
           }

@@ -9,6 +9,13 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - capitalise time zone in system info widget
 - add architecture to system info widget
 - add checks on system for updating to ui v5
+- added screen for ui v5 readiness check
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v2.1.0`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.11.14`
+- `@homebridge/plugin-ui-utils` @ `v2.0.2`
 
 ## v4.73.0 (2025-04-19)
 

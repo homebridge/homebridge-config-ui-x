@@ -23,6 +23,7 @@ import { HomebridgeLogsWidgetComponent } from '@/app/modules/status/widgets/home
 import { MemoryWidgetComponent } from '@/app/modules/status/widgets/memory-widget/memory-widget.component'
 import { NetworkWidgetComponent } from '@/app/modules/status/widgets/network-widget/network-widget.component'
 import { SystemInfoWidgetComponent } from '@/app/modules/status/widgets/system-info-widget/system-info-widget.component'
+import { UiV5ModalComponent } from '@/app/modules/status/widgets/system-info-widget/ui-v5-modal/ui-v5-modal.component'
 import { TerminalWidgetComponent } from '@/app/modules/status/widgets/terminal-widget/terminal-widget.component'
 import { UpdateInfoWidgetComponent } from '@/app/modules/status/widgets/update-info-widget/update-info-widget.component'
 import { UptimeWidgetComponent } from '@/app/modules/status/widgets/uptime-widget/uptime-widget.component'
@@ -60,6 +61,7 @@ import { WidgetsComponent } from '@/app/modules/status/widgets/widgets.component
     ClockWidgetComponent,
     BridgesWidgetComponent,
     CreditsComponent,
+    UiV5ModalComponent,
   ],
   providers: [
     provideCharts(withDefaultRegisterables()),

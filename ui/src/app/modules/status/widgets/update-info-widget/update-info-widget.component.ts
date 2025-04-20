@@ -1,7 +1,7 @@
 import { NgClass } from '@angular/common'
 import { Component, inject, Input, OnInit } from '@angular/core'
 import { RouterLink } from '@angular/router'
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
@@ -10,6 +10,7 @@ import { InformationComponent } from '@/app/core/components/information/informat
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
+import { UiV5ModalComponent } from '@/app/modules/status/widgets/system-info-widget/ui-v5-modal/ui-v5-modal.component'
 
 @Component({
   templateUrl: './update-info-widget.component.html',
@@ -19,6 +20,7 @@ import { IoNamespace, WsService } from '@/app/core/ws.service'
     NgClass,
     TranslatePipe,
     RouterLink,
+    NgbTooltip,
   ],
 })
 export class UpdateInfoWidgetComponent implements OnInit {
@@ -138,5 +140,13 @@ export class UpdateInfoWidgetComponent implements OnInit {
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info')
     ref.componentInstance.faIconClass = 'fab fa-fw fa-node-js primary-text'
     ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js'
+  }
+
+  readyForV5Modal() {
+    const ref = this.$modal.open(UiV5ModalComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    })
+    ref.componentInstance.readyForV5 = this.homebridgeUiPkg.readyForV5
   }
 }

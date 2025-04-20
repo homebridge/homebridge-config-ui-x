@@ -122,7 +122,7 @@ export class PluginsService {
       return config
     })
 
-    // Initial verified plugins load
+    // First load of verified plugins
     this.loadPluginList()
 
     // Update the verified plugins list every 12 hours
@@ -154,7 +154,7 @@ export class PluginsService {
       .filter(module => (module.name.indexOf('homebridge-') === 0) || this.isScopedPlugin(module.name))
       .filter(module => pathExistsSync(join(module.installPath, 'package.json')))
 
-    // Limit lookup concurrency to number of cpu cores
+    // Limit lookup concurrency to the number of cpu cores
     const limit = pLimit(cpus().length)
 
     await Promise.all(homebridgePlugins.map(async (pkg) => {
@@ -196,7 +196,7 @@ export class PluginsService {
   }
 
   /**
-   * Lookup a single plugin in the npm registry
+   * Look up a single plugin in the npm registry
    * @param pluginName
    */
   public async lookupPlugin(pluginName: string): Promise<HomebridgePlugin> {
@@ -267,7 +267,7 @@ export class PluginsService {
       return await this.searchNpmRegistrySingle(query)
     }
 
-    // There seems to be a new 64-character limit on the text query (which allows for 15 characters of query)
+    // There seems to be a new 64-character limit on the text query (which allows for 15 characters of a query)
     // Get the top 99 plugins now, later we filter down to the top 30
     const q = `${(!query || !query.length) ? '' : `${query.substring(0, 15)}+`}keywords:homebridge-plugin+not:deprecated&size=99`
     let searchResults: INpmSearchResults
@@ -478,13 +478,13 @@ export class PluginsService {
         throw new Error('Homebridge UI v5 is not compatible with the pnpm package manager.')
       }
 
-      // 4. Disallow updates on linux armv6l (raspberry pi 1 / zero for example)
+      // 4. Disallow updates on linux armv6l (raspberry pi 1 / zero, for example)
       if (userPlatform === 'linux' && execSync('uname -m').toString().trim() === 'armv6l') {
         throw new Error('Homebridge UI v5 is not compatible with your armv6l device.')
       }
     }
 
-    // Set default install path
+    // Set the default install path
     let installPath = this.configService.customPluginPath
       ? this.configService.customPluginPath
       : this.installedPlugins.find(x => x.name === this.configService.name).installPath
@@ -520,9 +520,8 @@ export class PluginsService {
 
     // Prepare flags for npm command
     const installOptions: Array<string> = []
-    let npmPluginLabel = pluginAction.name
 
-    // Check to see if custom plugin path is using a package.json file
+    // Check to see if the custom plugin path is using a package.json file
     if (
       installPath === this.configService.customPluginPath
       && await pathExists(resolve(installPath, '../package.json'))
@@ -542,9 +541,9 @@ export class PluginsService {
       // If installing, set --omit=dev to prevent installing devDependencies
       installOptions.push('--omit=dev')
     }
-    npmPluginLabel = `${pluginAction.name}@${pluginAction.version}`
+    const npmPluginLabel = `${pluginAction.name}@${pluginAction.version}`
 
-    // Clean up the npm cache before any install
+    // Clean up the npm cache before any installation
     await this.cleanNpmCache()
 
     // Run the npm command
@@ -581,7 +580,7 @@ export class PluginsService {
       pluginAction.version = await this.getNpmModuleLatestVersion(pluginAction.name)
     }
 
-    // Set default install path
+    // Set the default install path
     let installPath = this.configService.customPluginPath
       ? this.configService.customPluginPath
       : this.installedPlugins.find(x => x.name === this.configService.name).installPath
@@ -611,7 +610,7 @@ export class PluginsService {
     const installOptions: Array<string> = []
     let npmPluginLabel = pluginAction.name
 
-    // Check to see if custom plugin path is using a package.json file
+    // Check to see if the custom plugin path is using a package.json file
     if (
       installPath === this.configService.customPluginPath
       && !(action === 'uninstall' && this.configService.usePnpm)
@@ -636,7 +635,7 @@ export class PluginsService {
       npmPluginLabel = `${pluginAction.name}@${pluginAction.version}`
     }
 
-    // Clean up the npm cache before any install or uninstall
+    // Clean up the npm cache before any installation or uninstallation
     await this.cleanNpmCache()
 
     // Run the npm command
@@ -658,7 +657,7 @@ export class PluginsService {
    * Gets the Homebridge package details
    */
   public async getHomebridgePackage() {
-    // Try load from the "homebridgePackagePath" option first
+    // Try a load from the "homebridgePackagePath" option first
     if (this.configService.ui.homebridgePackagePath) {
       const pkgJsonPath = join(this.configService.ui.homebridgePackagePath, 'package.json')
       if (await pathExists(pkgJsonPath)) {
@@ -732,7 +731,7 @@ export class PluginsService {
       installOptions.push('--omit=dev')
     }
 
-    // Check to see if custom plugin path is using a package.json file
+    // Check to see if the custom plugin path is using a package.json file
     if (installPath === this.configService.customPluginPath && await pathExists(resolve(installPath, '../package.json'))) {
       installOptions.push('--save')
     }
@@ -758,9 +757,18 @@ export class PluginsService {
   /**
    * Gets the Homebridge UI package details
    */
-  public async getHomebridgeUiPackage(): Promise<HomebridgePlugin> {
+  public async getHomebridgeUiPackage(): Promise<HomebridgePlugin & { readyForV5: { node: boolean, pnpm: boolean, arch: boolean, service: boolean } }> {
     const plugins = await this.getInstalledPlugins()
-    return plugins.find((x: HomebridgePlugin) => x.name === this.configService.name)
+    const plugin = plugins.find((x: HomebridgePlugin) => x.name === this.configService.name)
+    return {
+      ...plugin,
+      readyForV5: {
+        node: satisfies(process.version, '>=20'),
+        pnpm: !this.configService.usePnpm,
+        arch: platform() !== 'linux' || execSync('uname -m').toString().trim() !== 'armv6l',
+        service: this.configService.serviceMode,
+      },
+    }
   }
 
   /**
@@ -782,7 +790,7 @@ export class PluginsService {
       const npm = await this.parsePackageJson(pkgJson, npmPkg.path) as HomebridgePlugin & { showUpdateWarning?: boolean }
 
       // Show the update warning if the installed version is below the minimum recommended
-      // (bwp91) I set this to 9.5.0 to match a minimum node version of 18.15.0
+      // I set this to 9.5.0 to match a minimum node version of 18.15.0 (bwp91)
       npm.showUpdateWarning = lt(npm.installedVersion, '9.5.0')
 
       this.npmPackage = npm
