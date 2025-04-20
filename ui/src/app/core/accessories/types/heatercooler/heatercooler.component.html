@@ -27,7 +27,8 @@
       service.values.CoolingThresholdTemperature | convertTemp | number:'1.0-1' }}&deg;{{
       service.values.TemperatureDisplayUnits }} } @case (0) { {{ service.values.HeatingThresholdTemperature |
       convertTemp | number:'1.0-1' }}&deg;{{ service.values.TemperatureDisplayUnits }}-{{
-      service.values.CoolingThresholdTemperature | convertTemp | number:'1.0-1' }}&deg;{{ service.values.TemperatureDisplayUnits }} } }
+      service.values.CoolingThresholdTemperature | convertTemp | number:'1.0-1' }}&deg;{{
+      service.values.TemperatureDisplayUnits }} } }
     </div>
     } @if (service.values.Active === 1 && (!service.getCharacteristic('CoolingThresholdTemperature') ||
     !service.getCharacteristic('HeatingThresholdTemperature'))) {
