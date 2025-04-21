@@ -71,8 +71,7 @@
     (targetMode) { @case (0) {
     <h6>
       {{ 'accessories.control.target' | translate }}: {{ autoTemp[0] | convertTemp | number:'1.0-1' }}&deg;{{
-      temperatureDisplayUnits }} - {{ autoTemp[1] | convertTemp | number:'1.0-1' }}&deg;{{
-      temperatureDisplayUnits }}
+      temperatureDisplayUnits }} - {{ autoTemp[1] | convertTemp | number:'1.0-1' }}&deg;{{ temperatureDisplayUnits }}
     </h6>
     <nouislider
       [min]="HeatingThresholdTemperature.minValue"
