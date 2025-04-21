@@ -45,10 +45,10 @@
     } @if (targetColorTemperature) {
     <h6>{{ 'accessories.control.color_temperature' | translate }}: {{ targetColorTemperature.value }}ºK</h6>
     <nouislider
-      [min]="(1000000 / targetColorTemperature.min | number:'1.0-0')"
-      [max]="(1000000 / targetColorTemperature.max | number:'1.0-0')"
+      [min]="(targetColorTemperature.min | number:'1.0-0')"
+      [max]="(targetColorTemperature.max | number:'1.0-0')"
       [step]="targetColorTemperature.step"
-      [(ngModel)]="(1000000 / targetColorTemperature.value | number:'1.0-0')"
+      [(ngModel)]="(targetColorTemperature.value | number:'1.0-0')"
       (ngModelChange)="onColorTemperatureStateChange()"
     >
     </nouislider>

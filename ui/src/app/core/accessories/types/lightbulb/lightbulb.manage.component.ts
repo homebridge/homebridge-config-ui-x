@@ -78,12 +78,16 @@ export class LightbulbManageComponent implements OnInit {
 
     if (TargetColorTemperature) {
       this.targetColorTemperature = {
-        value: TargetColorTemperature.value,
-        min: TargetColorTemperature.minValue,
-        max: TargetColorTemperature.maxValue,
+        value: this.miredsToKelvin(TargetColorTemperature.value),
+        min: this.miredsToKelvin(TargetColorTemperature.minValue),
+        max: this.miredsToKelvin(TargetColorTemperature.maxValue),
         step: TargetColorTemperature.minStep,
       }
     }
+  }
+
+  miredsToKelvin(kelvin: number) {
+    return 1000000 / kelvin;
   }
 
   setTargetMode(value: boolean) {
