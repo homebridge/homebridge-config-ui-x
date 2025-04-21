@@ -43,7 +43,7 @@
     >
     </nouislider>
     } @if (targetColorTemperature) {
-    <h6>{{ 'accessories.control.brightness' | translate }}: {{ targetColorTemperature.value }}ºK</h6>
+    <h6>{{ 'accessories.control.color_temperature' | translate }}: {{ targetColorTemperature.value }}ºK</h6>
     <nouislider
       [min]="(1000000 / targetColorTemperature.min | number:'1.0-0')"
       [max]="(1000000 / targetColorTemperature.max | number:'1.0-0')"
