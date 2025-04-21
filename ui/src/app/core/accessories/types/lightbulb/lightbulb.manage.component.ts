@@ -87,7 +87,7 @@ export class LightbulbManageComponent implements OnInit {
   }
 
   miredsToKelvin(kelvin: number) {
-    return 1000000 / kelvin;
+    return 1000000 / kelvin
   }
 
   setTargetMode(value: boolean) {
