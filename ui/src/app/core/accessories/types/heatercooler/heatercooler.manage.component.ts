@@ -1,6 +1,6 @@
 import type { CharacteristicType } from '@homebridge/hap-client'
 
-import { DecimalPipe, NgClass } from '@angular/common'
+import { DecimalPipe, NgClass, UpperCasePipe } from '@angular/common'
 import { Component, inject, Input, OnInit } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
@@ -11,6 +11,7 @@ import { debounceTime } from 'rxjs/operators'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
+import { SettingsService } from '@/app/core/settings.service'
 
 @Component({
   selector: 'app-heatercooler-manage',
@@ -24,10 +25,12 @@ import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
     DecimalPipe,
     TranslatePipe,
     ConvertTempPipe,
+    UpperCasePipe,
   ],
 })
 export class HeaterCoolerManageComponent implements OnInit {
   $activeModal = inject(NgbActiveModal)
+  $settings = inject(SettingsService)
 
   @Input() public service: ServiceTypeX
   public targetMode: number | 'off'

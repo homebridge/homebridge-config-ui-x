@@ -1,4 +1,4 @@
-import { DecimalPipe, NgClass } from '@angular/common'
+import { DecimalPipe, NgClass, UpperCasePipe } from '@angular/common'
 import { Component, inject, Input } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -7,6 +7,7 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { HeaterCoolerManageComponent } from '@/app/core/accessories/types/heatercooler/heatercooler.manage.component'
 import { LongClickDirective } from '@/app/core/directives/longclick.directive'
 import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
+import { SettingsService } from '@/app/core/settings.service'
 
 @Component({
   selector: 'app-heatercooler',
@@ -19,10 +20,12 @@ import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
     DecimalPipe,
     TranslatePipe,
     ConvertTempPipe,
+    UpperCasePipe,
   ],
 })
 export class HeaterCoolerComponent {
   private $modal = inject(NgbModal)
+  $settings = inject(SettingsService)
 
   @Input() public service: ServiceTypeX
   model = 1

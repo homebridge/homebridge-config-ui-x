@@ -9,7 +9,8 @@
   <div class="d-flex flex-column h-100">
     <div
       class="temperature-circle temperature-circle-collapse"
-      [innerText]="(service.values.CurrentTemperature | convertTemp | number:'1.0-1') + '°'"
+      [innerText]="(service.values.CurrentTemperature | convertTemp | number:'1.0-1') + '°' + ($settings.env.temperatureUnits
+      | uppercase)"
       [ngClass]="{
         'cooling': service.values.CurrentHeaterCoolerState === 3 && service.values.Active === 1,
         'heating': service.values.CurrentHeaterCoolerState === 2 && service.values.Active === 1,
@@ -23,9 +24,11 @@
     service.getCharacteristic('HeatingThresholdTemperature')) {
     <div class="accessory-label grey-text">
       @switch (service.values.TargetHeaterCoolerState) { @case (1) { {{ service.values.HeatingThresholdTemperature |
-      convertTemp | number:'1.0-1' }}&deg; } @case (2) { {{ service.values.CoolingThresholdTemperature | convertTemp |
-      number:'1.0-1' }}&deg; } @case (0) { {{ service.values.HeatingThresholdTemperature | convertTemp | number:'1.0-1'
-      }}&deg;-{{ service.values.CoolingThresholdTemperature | convertTemp | number:'1.0-1' }}&deg; } }
+      convertTemp | number:'1.0-1' }}&deg;{{ $settings.env.temperatureUnits | uppercase }} } @case (2) { {{
+      service.values.CoolingThresholdTemperature | convertTemp | number:'1.0-1' }}&deg;{{ $settings.env.temperatureUnits
+      | uppercase }} } @case (0) { {{ service.values.HeatingThresholdTemperature | convertTemp | number:'1.0-1'
+      }}&deg;{{ $settings.env.temperatureUnits | uppercase }} - {{ service.values.CoolingThresholdTemperature |
+      convertTemp | number:'1.0-1' }}&deg;{{ $settings.env.temperatureUnits | uppercase }} } }
     </div>
     } @if (service.values.Active === 1 && (!service.getCharacteristic('CoolingThresholdTemperature') ||
     !service.getCharacteristic('HeatingThresholdTemperature'))) {
