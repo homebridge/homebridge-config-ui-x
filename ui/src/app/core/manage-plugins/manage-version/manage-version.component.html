@@ -61,13 +61,13 @@
               }
             </select>
           </div>
-          @if (versionSelect !== plugin.installedVersion) {
-          <button class="btn btn-primary m-0 ms-3" [disabled]="!versionSelect" (click)="doInstall(versionSelect)">
-            <i class="fas fa-fw fa-arrow-alt-circle-down"></i>
-          </button>
-          } @if (versionSelect && versionSelect === plugin.installedVersion) {
-          <button class="btn btn-primary m-0 ms-3" disabled>
+          @if (versionSelect) {
+          <button class="btn btn-primary m-0 ms-3" [disabled]="versionSelect === plugin.installedVersion" (click)="doInstall(versionSelect)">
+            @if (versionSelect === plugin.installedVersion) {
             <i class="fas fa-fw fa-check-circle"></i>
+            } @else {
+            <i class="fas fa-fw fa-arrow-alt-circle-down"></i>
+            }
           </button>
           }
         </li>
