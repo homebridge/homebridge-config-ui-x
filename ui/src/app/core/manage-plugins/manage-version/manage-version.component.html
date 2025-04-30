@@ -14,7 +14,7 @@
     <div class="w-100 text-center primary-text">
       <i class="fa fa-fw fa-cog fa-spin" style="font-size: 75px"></i>
     </div>
-    } @if (!loading) {
+    } @else {
     <div class="w-100 text-center">
       @if (plugin.installedVersion) {
       <i class="fas fa-fw fa-code-compare primary-text mb-3" style="font-size: 75px"></i>
@@ -22,7 +22,7 @@
       <p class="mb-3">
         {{ 'plugins.status_installed' | translate }}: <span class="font-monospace">v{{ plugin.installedVersion }}</span>
       </p>
-      } @if (!plugin.installedVersion) {
+      } @else {
       <i class="far fa-fw fa-arrow-alt-circle-down primary-text mb-3" style="font-size: 75px"></i>
       <h6 class="mb-3">{{ 'plugins.manage.select_version' | translate }}</h6>
       }
@@ -38,7 +38,7 @@
           <button class="btn btn-primary m-0 ms-3" (click)="doInstall(version.version)">
             <i class="fas fa-fw fa-arrow-alt-circle-down"></i>
           </button>
-          } @if (plugin.installedVersion === version.version) {
+          } @else {
           <button class="btn btn-primary m-0 ms-3" disabled>
             <i class="fas fa-fw fa-check-circle"></i>
           </button>
