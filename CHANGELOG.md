@@ -14,6 +14,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - add temperature units to heatercooler (@justjam2013)
 - add valve control modal (@justjam2013)
 - update speaker control modal (@justjam2013)
+- update speaker tile status (@justjam2013)
 
 ### Homebridge Dependencies
 
