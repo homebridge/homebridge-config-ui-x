@@ -44,6 +44,7 @@
   "accessories.control.rotation_direction": "Направление вращения",
   "accessories.control.rotation_speed": "Скорость вращения",
   "accessories.control.running": "Работает",
+  "accessories.control.set_duration": "Set Duration",
   "accessories.control.speaker_volume": "Громкость",
   "accessories.control.stopped": "Остановлено",
   "accessories.control.target": "Целевая температура",
