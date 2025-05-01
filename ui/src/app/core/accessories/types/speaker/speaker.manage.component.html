@@ -11,7 +11,11 @@
   </div>
   <div class="modal-body text-center px-5">
     <h6>{{ 'menu.label_status' | translate }}</h6>
-    <div class="btn-group-vertical d-flex justify-content-center mb-0 p-0" role="group" aria-label="Speaker Mode Control">
+    <div
+      class="btn-group-vertical d-flex justify-content-center mb-0 p-0"
+      role="group"
+      aria-label="Speaker Mode Control"
+    >
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetMode(false); $event.target.blur()">
         <div class="float-start primary-text">
           <i class="fas fa-fw fa-xl" [ngClass]="{ 'fa-check-circle': !targetMode, 'fa-blank': targetMode }"></i>
@@ -40,10 +44,16 @@
     </nouislider>
     } @if (hasActive) {
     <h6 class="mt-4">{{ 'accessories.control.active' | translate }}</h6>
-    <div class="btn-group-vertical d-flex justify-content-center mb-4 p-0" role="group" aria-label="Speaker Active Control">
+    <div
+      class="btn-group-vertical d-flex justify-content-center mb-4 p-0"
+      role="group"
+      aria-label="Speaker Active Control"
+    >
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setActive(0); $event.target.blur()">
         <div class="float-start primary-text">
-          <i class="fas fa-fw fa-xl" [ngClass]="{ 'fa-check-circle': service.values.Active === 0, 'fa-blank': service.values.Active !== 0 }"
+          <i
+            class="fas fa-fw fa-xl"
+            [ngClass]="{ 'fa-check-circle': service.values.Active === 0, 'fa-blank': service.values.Active !== 0 }"
           ></i>
         </div>
         {{ 'accessories.control.inactive' | translate }}
@@ -51,7 +61,9 @@
       </button>
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setActive(1); $event.target.blur()">
         <div class="float-start primary-text">
-          <i class="fas fa-fw fa-xl" [ngClass]="{ 'fa-check-circle': service.values.Active === 1, 'fa-blank': service.values.Active !== 1 }"
+          <i 
+            class="fas fa-fw fa-xl"
+            [ngClass]="{ 'fa-check-circle': service.values.Active === 1, 'fa-blank': service.values.Active !== 1 }"
           ></i>
         </div>
         {{ 'accessories.control.active' | translate }}
