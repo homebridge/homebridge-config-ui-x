@@ -61,7 +61,7 @@
       </button>
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setActive(1); $event.target.blur()">
         <div class="float-start primary-text">
-          <i 
+          <i
             class="fas fa-fw fa-xl"
             [ngClass]="{ 'fa-check-circle': service.values.Active === 1, 'fa-blank': service.values.Active !== 1 }"
           ></i>
