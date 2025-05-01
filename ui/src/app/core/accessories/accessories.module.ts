@@ -50,6 +50,7 @@ import { ThermostatComponent } from '@/app/core/accessories/types/thermostat/the
 import { ThermostatManageComponent } from '@/app/core/accessories/types/thermostat/thermostat.manage.component'
 import { UnknownComponent } from '@/app/core/accessories/types/unknown/unknown.component'
 import { ValveComponent } from '@/app/core/accessories/types/valve/valve.component'
+import { ValveManageComponent } from '@/app/core/accessories/types/valve/valve.manage.component'
 import { WindowComponent } from '@/app/core/accessories/types/window/window.component'
 import { WindowManageComponent } from '@/app/core/accessories/types/window/window.manage.component'
 import { WindowCoveringComponent } from '@/app/core/accessories/types/windowcovering/windowcovering.component'
@@ -102,6 +103,7 @@ import { WindowcoveringManageComponent } from '@/app/core/accessories/types/wind
     LeaksensorComponent,
     SmokesensorComponent,
     ValveComponent,
+    ValveManageComponent,
     IrrigationSystemComponent,
     AirpurifierComponent,
     AirpurifierManageComponent,

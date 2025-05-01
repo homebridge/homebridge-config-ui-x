@@ -1,11 +1,13 @@
 import { NgClass } from '@angular/common'
-import { Component, Input, OnDestroy, OnInit } from '@angular/core'
+import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
 import { InlineSVGModule } from 'ng-inline-svg-2'
 import { interval, Subscription } from 'rxjs'
 import { filter } from 'rxjs/operators'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
+import { ValveManageComponent } from '@/app/core/accessories/types/valve/valve.manage.component'
 import { LongClickDirective } from '@/app/core/directives/longclick.directive'
 
 @Component({
@@ -21,6 +23,7 @@ import { LongClickDirective } from '@/app/core/directives/longclick.directive'
   ],
 })
 export class ValveComponent implements OnInit, OnDestroy {
+  private $modal = inject(NgbModal)
   @Input() public service: ServiceTypeX
 
   public secondsActive = 0
@@ -73,6 +76,13 @@ export class ValveComponent implements OnInit, OnDestroy {
 
   onClick() {
     this.service.getCharacteristic('Active').setValue(this.service.values.Active ? 0 : 1)
+  }
+
+  onLongClick() {
+    const ref = this.$modal.open(ValveManageComponent, {
+      size: 'md',
+    })
+    ref.componentInstance.service = this.service
   }
 
   ngOnDestroy() {
