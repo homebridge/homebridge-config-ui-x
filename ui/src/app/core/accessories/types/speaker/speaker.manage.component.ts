@@ -27,6 +27,7 @@ export class SpeakerManageComponent implements OnInit {
   public targetMode: any
   public targetVolume: any
   public targetVolumeChanged: Subject<string> = new Subject<string>()
+  public hasActive: any
 
   constructor() {
     this.targetVolumeChanged
@@ -43,6 +44,10 @@ export class SpeakerManageComponent implements OnInit {
     this.targetMode = this.service.values.Mute
 
     this.loadTargetVolume()
+
+    if (this.service.serviceCharacteristics.find(c => c.type === 'SetDirection')) {
+      this.hasActive = true
+    }
   }
 
   loadTargetVolume() {
@@ -61,6 +66,10 @@ export class SpeakerManageComponent implements OnInit {
   setTargetMode(value: boolean) {
     this.targetMode = value
     this.service.getCharacteristic('Mute').setValue(this.targetMode)
+  }
+
+  setActive(value: number) {
+    this.service.getCharacteristic('Active').setValue(value)
   }
 
   onVolumeStateChange() {
