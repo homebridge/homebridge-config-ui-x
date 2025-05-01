@@ -34,6 +34,9 @@ export class ValveManageComponent implements OnInit {
         debounceTime(300),
         distinctUntilChanged(),
       )
+      .subscribe(() => {
+        this.service.getCharacteristic('SetDuration').setValue(this.targetSetDuration.value)
+      })
   }
 
   ngOnInit() {
