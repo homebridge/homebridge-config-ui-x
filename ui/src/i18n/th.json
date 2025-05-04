@@ -28,6 +28,7 @@
   "accessories.control.home": "บ้าน",
   "accessories.control.humidifying": "กำลังเพิ่มความชื้น",
   "accessories.control.jammed": "ติดขัดอยู่",
+  "accessories.control.lock_security_timeout": "Lock Security Timeout",
   "accessories.control.locked": "ล็อกแล้ว",
   "accessories.control.mute": "ปิดเสียง",
   "accessories.control.night": "กลางคืน",

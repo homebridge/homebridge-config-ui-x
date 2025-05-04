@@ -28,6 +28,7 @@
   "accessories.control.home": "Ev",
   "accessories.control.humidifying": "Humidifying",
   "accessories.control.jammed": "Jammed",
+  "accessories.control.lock_security_timeout": "Lock Security Timeout",
   "accessories.control.locked": "Kilitli",
   "accessories.control.mute": "Sessiz",
   "accessories.control.night": "Gece",

@@ -28,6 +28,7 @@
   "accessories.control.home": "Dom",
   "accessories.control.humidifying": "Vlaženje",
   "accessories.control.jammed": "Zataknjeno",
+  "accessories.control.lock_security_timeout": "Lock Security Timeout",
   "accessories.control.locked": "Zaklenjeno",
   "accessories.control.mute": "Izklop zvoka",
   "accessories.control.night": "Noč",

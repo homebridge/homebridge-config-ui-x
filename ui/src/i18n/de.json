@@ -28,6 +28,7 @@
   "accessories.control.home": "Anwesend",
   "accessories.control.humidifying": "Befeuchten",
   "accessories.control.jammed": "Blockiert",
+  "accessories.control.lock_security_timeout": "Lock Security Timeout",
   "accessories.control.locked": "Abgeschlossen",
   "accessories.control.mute": "Stummschalten",
   "accessories.control.night": "Nacht",

@@ -28,6 +28,7 @@
   "accessories.control.home": "집",
   "accessories.control.humidifying": "가습 중",
   "accessories.control.jammed": "걸림",
+  "accessories.control.lock_security_timeout": "Lock Security Timeout",
   "accessories.control.locked": "잠김",
   "accessories.control.mute": "음소거",
   "accessories.control.night": "야간",

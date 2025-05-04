@@ -28,6 +28,7 @@
   "accessories.control.home": "Koti",
   "accessories.control.humidifying": "Kosteutus",
   "accessories.control.jammed": "Juuttunut",
+  "accessories.control.lock_security_timeout": "Lock Security Timeout",
   "accessories.control.locked": "Lukittu",
   "accessories.control.mute": "Vaimennus",
   "accessories.control.night": "Yö",

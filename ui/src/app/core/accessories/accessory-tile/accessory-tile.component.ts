@@ -20,6 +20,7 @@ import { LeaksensorComponent } from '@/app/core/accessories/types/leaksensor/lea
 import { LightbulbComponent } from '@/app/core/accessories/types/lightbulb/lightbulb.component'
 import { LightsensorComponent } from '@/app/core/accessories/types/lightsensor/lightsensor.component'
 import { LockmechanismComponent } from '@/app/core/accessories/types/lockmechanism/lockmechanism.component'
+import { LockmanagementComponent } from '@/app/core/accessories/types/lockmechanism/lockmanagement.component'
 import { MotionsensorComponent } from '@/app/core/accessories/types/motionsensor/motionsensor.component'
 import { OccupancysensorComponent } from '@/app/core/accessories/types/occupancysensor/occupancysensor.component'
 import { OutletComponent } from '@/app/core/accessories/types/outlet/outlet.component'
@@ -50,6 +51,7 @@ import { WindowCoveringComponent } from '@/app/core/accessories/types/windowcove
     LightbulbComponent,
     LightsensorComponent,
     LockmechanismComponent,
+    LockmanagementComponent,
     TemperaturesensorComponent,
     GaragedooropenerComponent,
     MotionsensorComponent,

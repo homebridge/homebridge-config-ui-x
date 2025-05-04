@@ -28,6 +28,7 @@
   "accessories.control.home": "家",
   "accessories.control.humidifying": "加湿中",
   "accessories.control.jammed": "卡住",
+  "accessories.control.lock_security_timeout": "Lock Security Timeout",
   "accessories.control.locked": "已锁定",
   "accessories.control.mute": "静音",
   "accessories.control.night": "夜晚模式",

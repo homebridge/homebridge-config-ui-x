@@ -1,0 +1,19 @@
+<div
+  class="accessory-box"
+  [ngClass]="{ 'switch-on': false }"
+  appLongclick
+  (shortclick)="onClick()"
+  tabindex="0"
+>
+  <div class="d-flex flex-column h-100">
+    <div [inlineSVG]="'/assets/hap-icons/unknown.svg'" [attr.aria-label]="'Error'" class="accessory-svg"></div>
+
+    <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
+
+    @if (service.values.LockManagementAutoSecurityTimeout !== undefined && service.values.LockManagementAutoSecurityTimeout === 0) {
+    <div class="accessory-label red-text">{{ service.values.LockManagementAutoSecurityTimeout }}s</div>
+    } @if (service.values.LockManagementAutoSecurityTimeout !== undefined && service.values.LockManagementAutoSecurityTimeout > 0) {
+    <div class="accessory-label grey-text">{{ service.values.LockManagementAutoSecurityTimeout }}s</div>
+    }
+  </div>
+</div>

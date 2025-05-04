@@ -28,6 +28,7 @@
   "accessories.control.home": "Home",
   "accessories.control.humidifying": "Humidifying",
   "accessories.control.jammed": "Jammed",
+  "accessories.control.lock_security_timeout": "Lock Security Timeout",
   "accessories.control.locked": "Locked",
   "accessories.control.mute": "Mute",
   "accessories.control.night": "Night",
