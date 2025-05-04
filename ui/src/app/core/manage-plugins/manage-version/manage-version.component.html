@@ -52,16 +52,17 @@
             <select class="custom-select w-100" style="font-size: 0.875rem" [(ngModel)]="versionSelect">
               @for (version of versions; track version) {
               <option [value]="version.version" [selected]="versionSelect == version.version">
-                v{{ version.version }}
-                @if (version.version == plugin.installedVersion) {
-                  ✓
-                }
+                v{{ version.version }} @if (version.version == plugin.installedVersion) { ✓ }
               </option>
               }
             </select>
           </div>
           @if (versionSelect) {
-          <button class="btn btn-primary m-0 ms-3" [disabled]="versionSelect === plugin.installedVersion" (click)="doInstall(versionSelect)">
+          <button
+            class="btn btn-primary m-0 ms-3"
+            [disabled]="versionSelect === plugin.installedVersion"
+            (click)="doInstall(versionSelect)"
+          >
             @if (versionSelect === plugin.installedVersion) {
             <i class="fas fa-fw fa-check-circle"></i>
             } @else {
