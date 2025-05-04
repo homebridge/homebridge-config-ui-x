@@ -30,8 +30,7 @@ export class SpeakerComponent {
     const active = this.service.getCharacteristic('Active')
     if (active !== undefined) {
       active.setValue(this.service.values.Active === 0 ? 1 : 0)
-    }
-    else {
+    } else {
       this.service.getCharacteristic('Mute').setValue(!this.service.values.Mute)
     }
   }
