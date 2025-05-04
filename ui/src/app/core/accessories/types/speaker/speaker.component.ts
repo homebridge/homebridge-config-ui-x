@@ -36,7 +36,7 @@ export class SpeakerComponent {
   }
 
   onLongClick() {
-    if ('Volume' in this.service.values) {
+    if ('Volume' in this.service.values || 'Active' in this.service.values) {
       const ref = this.$modal.open(SpeakerManageComponent, {
         size: 'md',
       })
