@@ -28,7 +28,7 @@ export class LockmanagementComponent {
 
   onClick() {
     if ('LockManagementAutoSecurityTimeout' in this.service.values) {
-      const ref = this.$modal.open(LockManagementManageComponent, {
+      const ref = this.$modal.open(LockmanagementManageComponent, {
         size: 'md',
       })
       ref.componentInstance.service = this.service

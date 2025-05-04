@@ -12,7 +12,10 @@
   <div class="modal-body text-center px-5">
     <h6>{{ 'menu.label_status' | translate }}</h6>
     @if (targetLockManagementAutoSecurityTimeout) {
-    <h6>{{ 'accessories.control.lock_security_timeout' | translate }}: {{ targetLockManagementAutoSecurityTimeout.value }}s</h6>
+    <h6>
+      {{ 'accessories.control.lock_security_timeout' | translate }}: {{ targetLockManagementAutoSecurityTimeout.value
+      }}s
+    </h6>
     <nouislider
       [min]="targetLockManagementAutoSecurityTimeout.min"
       [max]="targetLockManagementAutoSecurityTimeout.max"
