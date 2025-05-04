@@ -11,11 +11,11 @@
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
     @if (service.values.Active !== undefined && service.values.Active === 0) {
     <div class="accessory-label red-text" [innerText]="'accessories.control.inactive' | translate"></div>
-    } @if (service.values.Mute) {
+    } @else if (service.values.Mute) {
     <div class="accessory-label red-text" [innerText]="'accessories.control.mute' | translate"></div>
-    } @if (service.values.Volume !== undefined && !service.values.Mute) {
+    } @else if (service.values.Volume !== undefined) {
     <div class="accessory-label grey-text">{{ service.values.Volume }}%</div>
-    } @if (service.values.Volume === undefined && !service.values.Mute) {
+    } @else {
     <div class="accessory-label grey-text">{{ 'accessories.control.not_mute' | translate }}</div>
     }
   </div>

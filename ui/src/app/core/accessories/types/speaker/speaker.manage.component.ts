@@ -45,7 +45,7 @@ export class SpeakerManageComponent implements OnInit {
 
     this.loadTargetVolume()
 
-    if (this.service.serviceCharacteristics.find(c => c.type === 'SetDirection')) {
+    if (this.service.serviceCharacteristics.find(c => c.type === 'Active')) {
       this.hasActive = true
     }
   }
