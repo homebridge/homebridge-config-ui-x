@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common'
-import { Component, Input } from '@angular/core'
+import { Component, inject, Input } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
 import { InlineSVGModule } from 'ng-inline-svg-2'
