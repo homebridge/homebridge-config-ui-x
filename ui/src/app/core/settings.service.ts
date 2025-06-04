@@ -169,11 +169,9 @@ export class SettingsService {
         const iframeDoc = iframe.contentDocument
         if (iframeDoc) {
           const iframeBody = iframeDoc.body
-          const iframeHtml = iframeDoc.documentElement
 
           iframeBody.classList.remove(`config-ui-x-${this.theme}`)
           iframeBody.classList.remove(`config-ui-x-dark-mode-${this.theme}`)
-
           if (this.actualLightingMode === 'dark') {
 
             iframeBody.classList.add(`config-ui-x-dark-mode-${this.theme}`)
@@ -182,7 +180,6 @@ export class SettingsService {
               iframeBody.classList.add('dark-mode')
             }
           } else {
-
             iframeBody.classList.add(`config-ui-x-${this.theme}`)
 
             if (iframeBody.classList.contains('dark-mode')) {
@@ -193,7 +190,7 @@ export class SettingsService {
           // Notify iframe Angular app
           iframe.contentWindow.postMessage(
             { type: 'theme-update', isDark: this.actualLightingMode === 'dark', theme },
-            window.location.origin
+            window.location.origin,
           )
         }
       } catch (e) {
