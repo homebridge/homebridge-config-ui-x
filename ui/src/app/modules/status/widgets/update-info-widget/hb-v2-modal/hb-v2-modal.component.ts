@@ -7,7 +7,6 @@ import { firstValueFrom } from 'rxjs'
 
 import { ApiService } from '@/app/core/api.service'
 import { SettingsService } from '@/app/core/settings.service'
-import { IoNamespace, WsService } from '@/app/core/ws.service'
 
 @Component({
   templateUrl: './hb-v2-modal.component.html',
@@ -23,37 +22,18 @@ export class HbV2ModalComponent implements OnInit {
   $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
-  private $ws = inject(WsService)
 
   @Input() isUpdating: boolean = false
 
   public loading = true
   public installedPlugins: any = []
   public allPluginsSupported = true
-  public homebridgeUiPkg = {} as any
-  public nodeReady = false
-
-  private io: IoNamespace
 
   constructor() {}
 
   async ngOnInit() {
-    this.io = this.$ws.getExistingNamespace('status')
-    if (this.io.socket.connected) {
-      await this.checkHomebridgeUiVersion()
-    }
     await this.loadInstalledPlugins()
     this.loading = false
-  }
-
-  async checkHomebridgeUiVersion() {
-    try {
-      this.homebridgeUiPkg = await firstValueFrom(this.io.request('homebridge-ui-version-check'))
-      this.nodeReady = !this.homebridgeUiPkg.readyForV5.node
-    } catch (error) {
-      console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-    }
   }
 
   async loadInstalledPlugins() {

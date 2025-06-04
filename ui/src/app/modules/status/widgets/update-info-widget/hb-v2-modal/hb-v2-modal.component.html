@@ -34,7 +34,6 @@
     } }
     <ul class="list-group list-group-box mb-0">
       <li class="list-group-item d-flex justify-content-between align-items-center">
-        @if (nodeReady) {
         <div class="text-start flex-grow-1">
           Node.js Version<br />
           <span class="grey-text">Your version of Node.js is supported by Homebridge v2.</span>
@@ -42,23 +41,6 @@
         <div class="ms-3">
           <i class="fas fa-check-circle green-text fa-xl"></i>
         </div>
-        } @else {
-        <div class="text-start flex-grow-1">
-          Node.js Version<br />
-          <span class="grey-text">Your version of Node.js is not supported by Homebridge v2.</span><br />
-          <a
-            href="https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="small"
-          >
-            How To Update Node.js &rarr;
-          </a>
-        </div>
-        <div class="ms-3">
-          <i class="fas fa-exclamation-circle orange-text fa-xl"></i>
-        </div>
-        }
       </li>
       @for (plugin of installedPlugins; track plugin) {
       <li class="list-group-item d-flex justify-content-between align-items-center">

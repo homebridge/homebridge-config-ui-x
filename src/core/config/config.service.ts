@@ -51,7 +51,6 @@ export class ConfigService {
     || Boolean(process.env.HOMEBRIDGE_CONFIG_UI_TERMINAL === '1')
 
   // Plugin management
-  public usePnpm = (process.env.UIX_USE_PNPM === '1')
   public usePluginBundles = (process.env.UIX_USE_PLUGIN_BUNDLES === '1')
 
   // Recommend child bridges on platforms with > 2GB ram
@@ -234,7 +233,6 @@ export class ConfigService {
         runningInFreeBSD: this.runningInFreeBSD,
         runningOnRaspberryPi: this.runningOnRaspberryPi,
         temperatureUnits: this.ui.tempUnits || 'c',
-        usePnpm: this.usePnpm,
       },
       wallpaper: this.ui.wallpaper,
     }
