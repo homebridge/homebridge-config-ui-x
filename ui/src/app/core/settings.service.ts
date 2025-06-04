@@ -163,30 +163,30 @@ export class SettingsService {
     }
 
     // Update same-origin iframes
-    const iframes = window.document.querySelectorAll('iframe');
+    const iframes = window.document.querySelectorAll('iframe')
     iframes.forEach((iframe, index) => {
       try {
-        const iframeDoc = iframe.contentDocument;
+        const iframeDoc = iframe.contentDocument
         if (iframeDoc) {
-          const iframeBody = iframeDoc.body;
-          const iframeHtml = iframeDoc.documentElement;
+          const iframeBody = iframeDoc.body
+          const iframeHtml = iframeDoc.documentElement
 
-          iframeBody.classList.remove(`config-ui-x-${this.theme}`);
-          iframeBody.classList.remove(`config-ui-x-dark-mode-${this.theme}`);
+          iframeBody.classList.remove(`config-ui-x-${this.theme}`)
+          iframeBody.classList.remove(`config-ui-x-dark-mode-${this.theme}`)
 
           if (this.actualLightingMode === 'dark') {
 
-            iframeBody.classList.add(`config-ui-x-dark-mode-${this.theme}`);
+            iframeBody.classList.add(`config-ui-x-dark-mode-${this.theme}`)
 
             if (!iframeBody.classList.contains('dark-mode')) {
-              iframeBody.classList.add('dark-mode');
+              iframeBody.classList.add('dark-mode')
             }
           } else {
 
-            iframeBody.classList.add(`config-ui-x-${this.theme}`);
+            iframeBody.classList.add(`config-ui-x-${this.theme}`)
 
             if (iframeBody.classList.contains('dark-mode')) {
-              iframeBody.classList.remove('dark-mode');
+              iframeBody.classList.remove('dark-mode')
             }
           }
 
@@ -194,13 +194,14 @@ export class SettingsService {
           iframe.contentWindow.postMessage(
             { type: 'theme-update', isDark: this.actualLightingMode === 'dark', theme },
             window.location.origin
-          );
+          )
         }
       } catch (e) {
-        console.log(`Iframe ${index}: Access denied (cross-origin?)`, { error: e, src: iframe.src });
+        console.warn(`Iframe ${index}: Access denied (cross-origin?)`, { error: e, src: iframe.src })
       }
-    });
+    })
   }
+
   setMenuMode(value: 'default' | 'freeze') {
     this.menuMode = value
   }
