@@ -143,46 +143,36 @@ export class SettingsService {
 
     // Grab the body element
     const bodySelector = window.document.querySelector('body')
-    console.log('Main <body> update start:', { element: bodySelector, classes: bodySelector.classList.toString() });
 
     // Remove all existing theme classes
     bodySelector.classList.remove(`config-ui-x-${this.theme}`)
     bodySelector.classList.remove(`config-ui-x-dark-mode-${this.theme}`)
-    console.log('Main <body> removed classes:', `config-ui-x-${this.theme}`, `config-ui-x-dark-mode-${this.theme}`);
 
     // Set the new theme
     this.theme = theme
-    console.log('Theme set:', { theme, actualLightingMode: this.actualLightingMode });
     if (this.actualLightingMode === 'dark') {
       bodySelector.classList.add(`config-ui-x-dark-mode-${this.theme}`)
       if (!bodySelector.classList.contains('dark-mode')) {
         bodySelector.classList.add('dark-mode')
       }
-      console.log('Main <body> added classes:', `config-ui-x-dark-mode-${this.theme}`, 'dark-mode')
     } else {
       bodySelector.classList.add(`config-ui-x-${this.theme}`)
       if (bodySelector.classList.contains('dark-mode')) {
         bodySelector.classList.remove('dark-mode')
       }
-      console.log('Main <body> added class:', `config-ui-x-${this.theme}`, 'Removed: dark-mode');
     }
-
-    console.log('Main <body> update end:', { classes: bodySelector.classList.toString() })
 
     // Update same-origin iframes
     const iframes = window.document.querySelectorAll('iframe');
-    console.log(`Found ${iframes.length} iframe(s)`);
     iframes.forEach((iframe, index) => {
       try {
         const iframeDoc = iframe.contentDocument;
         if (iframeDoc) {
           const iframeBody = iframeDoc.body;
           const iframeHtml = iframeDoc.documentElement;
-          console.log(`Iframe ${index} update start:`, { element: iframeBody, classes: iframeBody.classList.toString(), src: iframe.src });
 
           iframeBody.classList.remove(`config-ui-x-${this.theme}`);
           iframeBody.classList.remove(`config-ui-x-dark-mode-${this.theme}`);
-          console.log(`Iframe ${index} removed classes:`, `config-ui-x-${this.theme}`, `config-ui-x-dark-mode-${this.theme}`);
 
           if (this.actualLightingMode === 'dark') {
 
@@ -191,7 +181,6 @@ export class SettingsService {
             if (!iframeBody.classList.contains('dark-mode')) {
               iframeBody.classList.add('dark-mode');
             }
-            console.log(`Iframe ${index} added classes:`, `config-ui-x-dark-mode-${this.theme}`, 'dark-mode');
           } else {
 
             iframeBody.classList.add(`config-ui-x-${this.theme}`);
@@ -199,19 +188,13 @@ export class SettingsService {
             if (iframeBody.classList.contains('dark-mode')) {
               iframeBody.classList.remove('dark-mode');
             }
-            console.log(`Iframe ${index} added class:`, `config-ui-x-${this.theme}`, 'Removed: dark-mode');
           }
-
-          console.log(`Iframe ${index} update end:`, { classes: iframeBody.classList.toString() });
 
           // Notify iframe Angular app
           iframe.contentWindow.postMessage(
             { type: 'theme-update', isDark: this.actualLightingMode === 'dark', theme },
             window.location.origin
           );
-          console.log(`Iframe ${index} sent postMessage:`, { type: 'theme-update', isDark: this.actualLightingMode === 'dark', theme });
-        } else {
-          console.log(`Iframe ${index}: No access to document`, { src: iframe.src });
         }
       } catch (e) {
         console.log(`Iframe ${index}: Access denied (cross-origin?)`, { error: e, src: iframe.src });
