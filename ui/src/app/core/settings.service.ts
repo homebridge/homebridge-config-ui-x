@@ -173,7 +173,6 @@ export class SettingsService {
           iframeBody.classList.remove(`config-ui-x-${this.theme}`)
           iframeBody.classList.remove(`config-ui-x-dark-mode-${this.theme}`)
           if (this.actualLightingMode === 'dark') {
-
             iframeBody.classList.add(`config-ui-x-dark-mode-${this.theme}`)
 
             if (!iframeBody.classList.contains('dark-mode')) {
