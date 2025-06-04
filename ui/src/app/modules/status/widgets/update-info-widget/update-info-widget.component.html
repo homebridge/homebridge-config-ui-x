@@ -24,7 +24,21 @@
             class="card-link card-link-title"
             >Homebridge</a
           >
-          } @if (!homebridgePkg.installedVersion) {
+          @if (!isRunningHbV2) {
+          <a
+            href="javascript:void(0)"
+            class="ms-1"
+            (click)="readyForV2Modal()"
+            ngbTooltip="Homebridge v2 Readiness"
+            container="body"
+            openDelay="150"
+            triggers="hover"
+            placement="top"
+            aria-label="Homebridge v2 Readiness"
+          >
+            <i class="primary-text fas fa-fw fa-exclamation-circle"></i>
+          </a>
+          } } @if (!homebridgePkg.installedVersion) {
           <span>Homebridge</span>
           }
           <br />
@@ -63,6 +77,7 @@
             class="card-link card-link-title"
             >Homebridge UI</a
           >
+          @if (!isRunningUiV5) {
           <a
             href="javascript:void(0)"
             class="ms-1"
@@ -76,7 +91,7 @@
           >
             <i class="primary-text fas fa-fw fa-exclamation-circle"></i>
           </a>
-          } @if (!homebridgeUiPkg.installedVersion) {
+          } } @if (!homebridgeUiPkg.installedVersion) {
           <span>Homebridge UI</span>
           }
           <br />

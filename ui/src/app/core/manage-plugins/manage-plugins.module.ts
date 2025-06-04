@@ -9,7 +9,6 @@ import { MonacoEditorModule } from 'ngx-monaco-editor-v2'
 import { CustomPluginsModule } from '@/app/core/manage-plugins/custom-plugins/custom-plugins.module'
 import { DisablePluginComponent } from '@/app/core/manage-plugins/disable-plugin/disable-plugin.component'
 import { DonateComponent } from '@/app/core/manage-plugins/donate/donate.component'
-import { HbUpdateConfirmComponent } from '@/app/core/manage-plugins/hb-update-confirm/hb-update-confirm.component'
 import { InterpolateMdPipe } from '@/app/core/manage-plugins/interpolate-md.pipe'
 import { ManagePluginComponent } from '@/app/core/manage-plugins/manage-plugin/manage-plugin.component'
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
@@ -22,6 +21,7 @@ import { PluginLogsComponent } from '@/app/core/manage-plugins/plugin-logs/plugi
 import { ResetAccessoriesComponent } from '@/app/core/manage-plugins/reset-accessories/reset-accessories.component'
 import { SwitchToScopedComponent } from '@/app/core/manage-plugins/switch-to-scoped/switch-to-scoped.component'
 import { UninstallPluginComponent } from '@/app/core/manage-plugins/uninstall-plugin/uninstall-plugin.component'
+import { HbV2ModalComponent } from '@/app/modules/status/widgets/update-info-widget/hb-v2-modal/hb-v2-modal.component'
 
 @NgModule({
   imports: [
@@ -46,7 +46,7 @@ import { UninstallPluginComponent } from '@/app/core/manage-plugins/uninstall-pl
     DonateComponent,
     ResetAccessoriesComponent,
     DisablePluginComponent,
-    HbUpdateConfirmComponent,
+    HbV2ModalComponent,
     SwitchToScopedComponent,
   ],
   providers: [

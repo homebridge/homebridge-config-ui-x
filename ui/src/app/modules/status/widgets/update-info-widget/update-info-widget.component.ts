@@ -10,7 +10,8 @@ import { InformationComponent } from '@/app/core/components/information/informat
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
-import { UiV5ModalComponent } from '@/app/modules/status/widgets/system-info-widget/ui-v5-modal/ui-v5-modal.component'
+import { HbV2ModalComponent } from '@/app/modules/status/widgets/update-info-widget/hb-v2-modal/hb-v2-modal.component'
+import { UiV5ModalComponent } from '@/app/modules/status/widgets/update-info-widget/ui-v5-modal/ui-v5-modal.component'
 
 @Component({
   templateUrl: './update-info-widget.component.html',
@@ -40,6 +41,9 @@ export class UpdateInfoWidgetComponent implements OnInit {
   public nodejsInfo = {} as any
   public nodejsStatusDone = false as boolean
   public serverInfo: any
+
+  public isRunningHbV2 = false
+  public isRunningUiV5 = false
 
   private io: IoNamespace
 
@@ -73,6 +77,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
       this.homebridgePkg = response
       this.homebridgePkg.displayName = 'Homebridge'
       this.$settings.env.homebridgeVersion = response.installedVersion
+      this.isRunningHbV2 = response.installedVersion.startsWith('2.')
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
@@ -95,6 +100,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
       const response = await firstValueFrom(this.io.request('homebridge-ui-version-check'))
       this.homebridgeUiPkg = response
       this.$settings.env.homebridgeUiVersion = response.installedVersion
+      this.isRunningUiV5 = response.installedVersion.startsWith('5.')
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
@@ -140,6 +146,14 @@ export class UpdateInfoWidgetComponent implements OnInit {
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info')
     ref.componentInstance.faIconClass = 'fab fa-fw fa-node-js primary-text'
     ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js'
+  }
+
+  readyForV2Modal() {
+    const ref = this.$modal.open(HbV2ModalComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    })
+    ref.componentInstance.isUpdating = false
   }
 
   readyForV5Modal() {

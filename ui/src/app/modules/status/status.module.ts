@@ -23,8 +23,9 @@ import { HomebridgeLogsWidgetComponent } from '@/app/modules/status/widgets/home
 import { MemoryWidgetComponent } from '@/app/modules/status/widgets/memory-widget/memory-widget.component'
 import { NetworkWidgetComponent } from '@/app/modules/status/widgets/network-widget/network-widget.component'
 import { SystemInfoWidgetComponent } from '@/app/modules/status/widgets/system-info-widget/system-info-widget.component'
-import { UiV5ModalComponent } from '@/app/modules/status/widgets/system-info-widget/ui-v5-modal/ui-v5-modal.component'
 import { TerminalWidgetComponent } from '@/app/modules/status/widgets/terminal-widget/terminal-widget.component'
+import { HbV2ModalComponent } from '@/app/modules/status/widgets/update-info-widget/hb-v2-modal/hb-v2-modal.component'
+import { UiV5ModalComponent } from '@/app/modules/status/widgets/update-info-widget/ui-v5-modal/ui-v5-modal.component'
 import { UpdateInfoWidgetComponent } from '@/app/modules/status/widgets/update-info-widget/update-info-widget.component'
 import { UptimeWidgetComponent } from '@/app/modules/status/widgets/uptime-widget/uptime-widget.component'
 import { WeatherWidgetComponent } from '@/app/modules/status/widgets/weather-widget/weather-widget.component'
@@ -61,6 +62,7 @@ import { WidgetsComponent } from '@/app/modules/status/widgets/widgets.component
     ClockWidgetComponent,
     BridgesWidgetComponent,
     CreditsComponent,
+    HbV2ModalComponent,
     UiV5ModalComponent,
   ],
   providers: [

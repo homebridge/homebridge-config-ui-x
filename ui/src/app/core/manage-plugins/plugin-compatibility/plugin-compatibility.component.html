@@ -18,16 +18,26 @@
         style="font-size: 75px"
       ></i>
     </div>
-    <ul class="mb-3">
+    <ul class="list-group list-group-box mb-3 text-start">
       @if (!isValidNode) {
-      <li>
-        {{ 'plugins.compat.node_too_low' | translate: { pluginName: plugin.displayName, minVersion: nodeMinVersion,
-        installedVersion: nodeInstalledVersion } }}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div class="me-3">
+          <i class="fas fa-exclamation-circle orange-text fa-xl"></i>
+        </div>
+        <div class="text-start flex-grow-1">
+          {{ 'plugins.compat.node_too_low' | translate: { pluginName: plugin.displayName, minVersion: nodeMinVersion,
+          installedVersion: nodeInstalledVersion } }}
+        </div>
       </li>
       } @if (!isValidHb) {
-      <li>
-        {{ 'plugins.compat.hb_too_low' | translate: { pluginName: plugin.name, minVersion: hbMinVersion,
-        installedVersion: hbInstalledVersion } }}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div class="me-3">
+          <i class="fas fa-exclamation-circle orange-text fa-xl"></i>
+        </div>
+        <div class="text-start flex-grow-1">
+          {{ 'plugins.compat.hb_too_low' | translate: { pluginName: plugin.displayName, minVersion: hbMinVersion,
+          installedVersion: hbInstalledVersion } }}
+        </div>
       </li>
       }
     </ul>
@@ -41,10 +51,15 @@
     <div class="text-center mb-3">
       <i class="fab fa-fw fa-node-js primary-text" style="font-size: 75px"></i>
     </div>
-    <ul class="mb-3">
-      <li>
-        {{ 'plugins.compat.hb_node_too_low' | translate: { minVersion: nodeMinVersion, installedVersion:
-        nodeInstalledVersion, latestVersion: plugin.latestVersion, packageName: 'Homebridge' } }}
+    <ul class="list-group list-group-box mb-3 text-start">
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div class="me-3">
+          <i class="fas fa-exclamation-circle orange-text fa-xl"></i>
+        </div>
+        <div class="text-start flex-grow-1">
+          {{ 'plugins.compat.hb_node_too_low' | translate: { minVersion: nodeMinVersion, installedVersion:
+          nodeInstalledVersion, latestVersion: plugin.latestVersion, packageName: 'Homebridge' } }}
+        </div>
       </li>
     </ul>
     <ngb-alert type="warning" [dismissible]="false" class="mb-0">
@@ -62,10 +77,15 @@
     <div class="text-center mb-3">
       <i class="fab fa-fw fa-node-js primary-text" style="font-size: 75px"></i>
     </div>
-    <ul class="mb-3">
-      <li>
-        {{ 'plugins.compat.hb_node_too_low' | translate: { minVersion: nodeMinVersion, installedVersion:
-        nodeInstalledVersion, latestVersion: plugin.latestVersion, packageName: 'Homebridge UI' } }}
+    <ul class="list-group list-group-box mb-3 text-start">
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div class="me-3">
+          <i class="fas fa-exclamation-circle orange-text fa-xl"></i>
+        </div>
+        <div class="text-start flex-grow-1">
+          {{ 'plugins.compat.hb_node_too_low' | translate: { minVersion: nodeMinVersion, installedVersion:
+          nodeInstalledVersion, latestVersion: plugin.latestVersion, packageName: 'Homebridge UI' } }}
+        </div>
       </li>
     </ul>
     <ngb-alert type="warning" [dismissible]="false" class="mb-0">

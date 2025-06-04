@@ -24,6 +24,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix form field error state font colour (make it red)
 - redesigned login page
 - improve wallpaper selection with new modal to upload a file
+- refactor HBv2 and UIv5 readiness modals
 
 ### Other Changes
 

@@ -13,10 +13,10 @@ import { FitAddon } from 'xterm-addon-fit'
 import { ApiService } from '@/app/core/api.service'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { PluginsMarkdownDirective } from '@/app/core/directives/plugins.markdown.directive'
-import { HbUpdateConfirmComponent } from '@/app/core/manage-plugins/hb-update-confirm/hb-update-confirm.component'
 import { PluginLogsComponent } from '@/app/core/manage-plugins/plugin-logs/plugin-logs.component'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
+import { HbV2ModalComponent } from '@/app/modules/status/widgets/update-info-widget/hb-v2-modal/hb-v2-modal.component'
 
 @Component({
   templateUrl: './manage-plugin.component.html',
@@ -223,10 +223,11 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       Number(this.installedVersion.split('.')[0]) < 2
       && ['2', 'alpha', 'beta'].includes(this.targetVersion.split('.')[0])
     ) {
-      const ref = this.$modal.open(HbUpdateConfirmComponent, {
+      const ref = this.$modal.open(HbV2ModalComponent, {
         size: 'lg',
         backdrop: 'static',
       })
+      ref.componentInstance.isUpdating = true
       res = await ref.result
     }
 

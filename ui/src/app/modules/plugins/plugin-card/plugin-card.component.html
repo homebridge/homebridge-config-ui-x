@@ -2,30 +2,6 @@
   <div class="d-flex flex-row justify-content-between">
     <div class="d-flex flex-column me-3 align-items-center justify-content-between">
       <img [src]="plugin.icon" (error)="handleIconError()" alt="Plugin Icon" class="plugin-icon-card mb-3" />
-      @if (plugin.installedVersion && hb2Status !== 'hide') {
-      <a
-        href="javascript:void(0)"
-        (click)="openHb2InfoModal()"
-        [ngbTooltip]="'Homebridge v2 Readiness'"
-        container="body"
-        openDelay="150"
-        triggers="hover"
-        [placement]="'right'"
-        aria-label="Homebridge v2 Readiness"
-      >
-        @if (hb2Status === 'supported') {
-        <i
-          class="fas fa-check-circle green-text fa-xl"
-          aria-label="The developer has specifically marked this plugin as compatible with Homebridge v2."
-        ></i>
-        } @if (hb2Status === 'unknown') {
-        <i
-          class="fas fa-question-circle orange-text fa-xl"
-          aria-label="The developer has not specifically marked this plugin as compatible with Homebridge v2, but it may still work."
-        ></i>
-        }
-      </a>
-      }
     </div>
     <div class="d-flex flex-column justify-content-between" style="min-width: calc(100% - 80px)">
       <div class="d-flex flex-row align-items-end">
