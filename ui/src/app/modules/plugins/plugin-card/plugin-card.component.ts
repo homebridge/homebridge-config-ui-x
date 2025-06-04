@@ -58,7 +58,7 @@ export class PluginCardComponent implements OnInit {
 
   private io: IoNamespace
 
-  constructor() {}
+  constructor() { }
 
   // eslint-disable-next-line accessor-pairs
   @Input() set childBridges(childBridges: any[]) {
@@ -79,7 +79,7 @@ export class PluginCardComponent implements OnInit {
 
     this.setChildBridges = childBridges
 
-    const homebridgeVersion = this.$settings.env.homebridgeVersion.split('.')[0]
+    const homebridgeVersion = this.$settings.env.homebridgeVersion?.split('.')[0]
     const hbEngines = this.plugin.engines?.homebridge?.split('||').map((x: string) => x.trim()) || []
     this.hb2Status = homebridgeVersion === '2' ? 'hide' : hbEngines.some((x: string) => (x.startsWith('^2') || x.startsWith('>=2'))) ? 'supported' : this.hb2Status
   }
