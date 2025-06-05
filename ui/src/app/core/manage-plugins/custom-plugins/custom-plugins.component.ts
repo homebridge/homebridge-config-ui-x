@@ -136,6 +136,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   loadUi() {
     this.iframe = this.customPluginUiElementTarget().nativeElement as HTMLIFrameElement
     this.iframe.src = `${environment.api.base + this.basePath
+      // eslint-disable-next-line style/indent   // My local eslint config does not like this
       }/index.html?origin=${encodeURIComponent(location.origin)}&v=${encodeURIComponent(this.plugin.installedVersion)}`
   }
 

@@ -151,9 +151,9 @@ export class PluginsSettingsUiService {
             }, false)
           </script>
         </head>
-        <body style="display:none;" class="pb-0 modal-content">
-          <div class="modal-body">
-            ${body}
+        <body style="display:none;" class="modal-content pb-0">
+            <div class="modal-body">
+              ${body}
           </div>
         </body>
       </html>
