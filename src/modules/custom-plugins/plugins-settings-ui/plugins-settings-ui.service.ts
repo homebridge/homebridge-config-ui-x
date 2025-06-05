@@ -26,7 +26,7 @@ export class PluginsSettingsUiService {
     private pluginsService: PluginsService,
     private configService: ConfigService,
     private httpService: HttpService,
-  ) {}
+  ) { }
 
   /**
    * Serve Custom HTML Assets for a plugin
@@ -151,8 +151,10 @@ export class PluginsSettingsUiService {
             }, false)
           </script>
         </head>
-        <body style="display:none;">
-          ${body}
+        <body style="display:none;" class="pb-0 modal-content">
+          <div class="modal-body">
+            ${body}
+          </div>
         </body>
       </html>
     `
@@ -213,7 +215,7 @@ export class PluginsSettingsUiService {
       setTimeout(() => {
         try {
           process.kill(childPid, 'SIGTERM')
-        } catch (e) {}
+        } catch (e) { }
       }, 5000)
 
       client.removeAllListeners('end')

@@ -71,7 +71,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   private schemaFormRecentlyRefreshed = false
   private schemaFormRefreshSubject = new Subject()
 
-  constructor() {}
+  constructor() { }
 
   ngOnInit(): void {
     this.io = this.$ws.connectToNamespace('plugins/settings-ui')
@@ -136,7 +136,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   loadUi() {
     this.iframe = this.customPluginUiElementTarget().nativeElement as HTMLIFrameElement
     this.iframe.src = `${environment.api.base + this.basePath
-    }/index.html?origin=${encodeURIComponent(location.origin)}&v=${encodeURIComponent(this.plugin.installedVersion)}`
+      }/index.html?origin=${encodeURIComponent(location.origin)}&v=${encodeURIComponent(this.plugin.installedVersion)}`
   }
 
   handleMessage = (e: MessageEvent) => {
@@ -288,7 +288,6 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
 
     // Set body class
     event.source.postMessage({ action: 'body-class', class: currentTheme }, event.origin)
-    event.source.postMessage({ action: 'body-class', class: 'modal-content' }, event.origin)
     if (darkMode) {
       event.source.postMessage({ action: 'body-class', class: 'dark-mode' }, event.origin)
     }
@@ -313,6 +312,17 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     const customStyles = `
       body {
         height: unset !important;
+      }
+      .modal-content {
+        background-color: inherit;
+
+        .dark-mode & {
+          background-color: inherit; // Reset to ensure no conflicts
+          @supports (background-color: inherit) {
+            // Attempt to match modal-body's background color
+            background-color: inherit(modal-body, #24242424); // Fallback to grey
+          }
+        }
       }
     `
     event.source.postMessage({ action: 'inline-style', style: customStyles }, event.origin)

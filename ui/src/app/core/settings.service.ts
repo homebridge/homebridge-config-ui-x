@@ -183,12 +183,6 @@ export class SettingsService {
               iframeBody.classList.remove('dark-mode')
             }
           }
-
-          // Notify iframe Angular app
-          iframe.contentWindow.postMessage(
-            { type: 'theme-update', isDark: this.actualLightingMode === 'dark', theme },
-            window.location.origin,
-          )
         }
       } catch (e) {
         console.warn(`Iframe ${index}: Access denied (cross-origin?)`, { error: e, src: iframe.src })
