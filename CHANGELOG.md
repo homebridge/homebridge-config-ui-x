@@ -30,6 +30,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - upgrade to angular `v20`
 - bump `plugin-ui-utils` for new theme method
+- add support for dark mode switching with custom plugin uis (@NorthernMan54)
 
 ### Homebridge Dependencies
 
