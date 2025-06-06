@@ -321,7 +321,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
           background-color: inherit; // Reset to ensure no conflicts
           @supports (background-color: inherit) {
             // Attempt to match modal-body's background color
-            background-color: inherit(modal-body, #24242424); // Fallback to grey
+            background-color: var(modal-body, #24242424); // Fallback to grey
           }
         }
       }
