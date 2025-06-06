@@ -314,6 +314,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     const customStyles = `
       body {
         height: unset !important;
+        padding: 5px !important;
       }
       .modal-content {
         background-color: inherit;
