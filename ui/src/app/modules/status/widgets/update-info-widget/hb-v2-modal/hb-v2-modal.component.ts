@@ -4,6 +4,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
+import { satisfies } from 'semver'
 
 import { ApiService } from '@/app/core/api.service'
 import { SettingsService } from '@/app/core/settings.service'
@@ -30,7 +31,6 @@ export class HbV2ModalComponent implements OnInit {
   public loading = true
   public installedPlugins: any = []
   public allPluginsSupported = true
-  public homebridgeUiPkg = {} as any
   public nodeReady = false
 
   private io: IoNamespace
@@ -48,8 +48,8 @@ export class HbV2ModalComponent implements OnInit {
 
   async checkHomebridgeUiVersion() {
     try {
-      this.homebridgeUiPkg = await firstValueFrom(this.io.request('homebridge-ui-version-check'))
-      this.nodeReady = this.homebridgeUiPkg.readyForV5.node
+      const { nodeVersion } = await firstValueFrom(this.io.request('get-homebridge-server-info'))
+      this.nodeReady = satisfies(nodeVersion, '>=20')
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
