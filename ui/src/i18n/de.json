@@ -266,6 +266,7 @@
   "plugins.manage.disable": "Deaktivieren",
   "plugins.manage.enable": "Aktivieren",
   "plugins.manage.github_support": "Sie können Ihre Unterstützung zeigen, indem Sie dieses Plugin mit einem {{ iconStar }} (oder dem Release ein {{ iconThumbsUp }}) auf GitHub geben!",
+  "plugins.manage.hb_restart": "Homebridge and the UI will automatically restart after any version change.",
   "plugins.manage.information": "Plugin Information",
   "plugins.manage.install": "Installieren",
   "plugins.manage.installed": "Installiert",

@@ -25,6 +25,10 @@
       } @else {
       <i class="far fa-fw fa-arrow-alt-circle-down primary-text mb-3" style="font-size: 75px"></i>
       <h6 class="mb-3">{{ 'plugins.manage.select_version' | translate }}</h6>
+      } @if (['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)) {
+      <ngb-alert type="warning" [dismissible]="false" class="mb-3">
+        <p class="w-100 text-center mb-0">{{ 'plugins.manage.hb_restart' | translate }}</p>
+      </ngb-alert>
       }
       <ul class="list-group list-group-box mb-0">
         @for (version of versionsWithTags; track version) {

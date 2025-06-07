@@ -266,6 +266,7 @@
   "plugins.manage.disable": "Отключить",
   "plugins.manage.enable": "Включить",
   "plugins.manage.github_support": "Вы можете поддержать проект, поставив {{ iconStar }} плагину (или {{ iconThumbsUp }} релизу) на GitHub!",
+  "plugins.manage.hb_restart": "Homebridge and the UI will automatically restart after any version change.",
   "plugins.manage.information": "Информация о плагине",
   "plugins.manage.install": "Установить",
   "plugins.manage.installed": "Установлен",
