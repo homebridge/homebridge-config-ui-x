@@ -16,6 +16,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - updates to the `fi.json` language file (#2253) (@l1500s)
 - update default dashboard layout
+- add support for dark mode switching with custom plugin uis (@NorthernMan54)
 
 ### Other Changes
 
