@@ -35,6 +35,7 @@ export class UninstallPluginComponent implements OnInit {
   public removeConfig = true
   public removeChildBridges = true
   public hasChildBridges = false
+  public isConfigured = false
 
   public pluginType: 'platform' | 'accessory'
   public pluginAlias: string
@@ -50,6 +51,11 @@ export class UninstallPluginComponent implements OnInit {
       const schema = await this.getAlias()
       this.pluginType = schema.pluginType
       this.pluginAlias = schema.pluginAlias
+
+      const existingConfig = await firstValueFrom(this.$api.get(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`))
+      if (existingConfig.length) {
+        this.isConfigured = true
+      }
     } finally {
       this.loading = false
     }
@@ -59,7 +65,7 @@ export class UninstallPluginComponent implements OnInit {
     this.uninstalling = true
 
     // Remove the plugin config if exists and specified by the user
-    if (this.removeConfig && this.pluginType && this.pluginAlias) {
+    if (this.removeConfig && this.isConfigured) {
       try {
         await this.removePluginConfig()
       } catch (error) {

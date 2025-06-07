@@ -20,7 +20,7 @@
       <i class="fas fa-fw fa-trash primary-text" style="font-size: 75px"></i>
     </div>
     <div class="text-center">
-      @if (pluginAlias && pluginType) {
+      @if (isConfigured) {
       <p class="d-inline-block text-start mb-1">
         <label class="hb-uix-switch d-block" for="remove-plugin-config">
           <input id="remove-plugin-config" type="checkbox" [(ngModel)]="removeConfig" />
@@ -44,7 +44,7 @@
       <li>{{ 'plugins.uninstall_warn_1' | translate }}</li>
       <li>{{ 'plugins.uninstall_warn_2' | translate }}</li>
     </ul>
-    } @if (!pluginAlias || !pluginType) {
+    } @if (isConfigured && (!pluginAlias || !pluginType)) {
     <ngb-alert type="info" [dismissible]="false" class="mb-3">
       {{ 'plugins.uninstall_remove_config_required' | translate }}
     </ngb-alert>
