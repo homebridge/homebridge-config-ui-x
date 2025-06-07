@@ -354,6 +354,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
 
     // Set body class
     event.source.postMessage({ action: 'body-class', class: currentTheme }, event.origin)
+    event.source.postMessage({ action: 'body-class', class: 'modal-content' }, event.origin)
     if (darkMode) {
       event.source.postMessage({ action: 'body-class', class: 'dark-mode' }, event.origin)
     }
@@ -378,9 +379,6 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     const customStyles = `
       body {
         height: unset !important;
-        background-color: ${darkMode ? '#242424' : '#FFFFFF'} !important;
-        color: ${darkMode ? '#FFFFFF' : '#000000'};
-        padding: 5px !important;
       }
     `
     event.source.postMessage({ action: 'inline-style', style: customStyles }, event.origin)

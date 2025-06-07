@@ -99,7 +99,7 @@ export class SettingsService {
 
       // Save the new property to the config file
       firstValueFrom(this.$api.put('/config-editor/ui', { key: 'theme', value: theme }))
-        .catch(error => console.error(error))
+        .catch(error => console.error('Error saving setTheme:', error))
     }
 
     // Grab the body element
@@ -122,6 +122,41 @@ export class SettingsService {
         bodySelector.classList.remove('dark-mode')
       }
     }
+
+    // Update same-origin iframes
+    const iframes = window.document.querySelectorAll('iframe')
+    iframes.forEach((iframe, index) => {
+      try {
+        const iframeDoc = iframe.contentDocument
+        if (iframeDoc) {
+          const iframeBody = iframeDoc.body
+
+          iframeBody.classList.remove(`config-ui-x-${this.theme}`)
+          iframeBody.classList.remove(`config-ui-x-dark-mode-${this.theme}`)
+          if (this.actualLightingMode === 'dark') {
+            iframeBody.classList.add(`config-ui-x-dark-mode-${this.theme}`)
+
+            if (!iframeBody.classList.contains('dark-mode')) {
+              iframeBody.classList.add('dark-mode')
+            }
+          } else {
+            iframeBody.classList.add(`config-ui-x-${this.theme}`)
+
+            if (iframeBody.classList.contains('dark-mode')) {
+              iframeBody.classList.remove('dark-mode')
+            }
+          }
+
+          // Notify iframe Angular app
+          iframe.contentWindow.postMessage(
+            { type: 'theme-update', isDark: this.actualLightingMode === 'dark', theme },
+            window.location.origin,
+          )
+        }
+      } catch (e) {
+        console.warn(`Iframe ${index}: Access denied (cross-origin?)`, { error: e, src: iframe.src })
+      }
+    })
   }
 
   public setMenuMode(value: 'default' | 'freeze') {
