@@ -24,9 +24,9 @@
       class="mb-3 text-center grey-text"
       [innerHTML]="'plugins.manage.github_support' | translate:{ iconStar, iconThumbsUp }"
     ></p>
-    @if (['homebridge', 'homebridge-config-ui-x'].includes(pluginName) || childBridges.length === 0) {
+    @if (childBridges.length === 0) {
     <p class="text-center mb-0">{{ 'plugins.settings.restart_required' | translate }}</p>
-    } @if (!['homebridge', 'homebridge-config-ui-x'].includes(pluginName) && childBridges.length > 0) {
+    } @if (childBridges.length > 0) {
     <p class="text-center mb-0">{{ 'restart.child_bridges' | translate }}</p>
     } } @if (changeLog) {
     <div class="alert p-3 pb-1 mt-3">
@@ -82,7 +82,11 @@ hb-service start</pre
       <span>v{{ installedVersion }} &rarr; </span>
       } @if (release.name) { {{ release.name }} } @if (!release.name) { v{{ latestVersion }} }
     </h5>
-    }
+    @if (['homebridge', 'homebridge-config-ui-x'].includes(pluginName)) {
+    <ngb-alert type="warning" [dismissible]="false" class="mb-3">
+      <p class="w-100 text-center mb-0">{{ 'plugins.manage.hb_restart' | translate }}</p>
+    </ngb-alert>
+    } }
     <div class="alert p-3 pb-1 mb-0">
       <markdown class="plugin-md" [data]="release.changelog"></markdown>
     </div>
@@ -124,7 +128,7 @@ hb-service start</pre
       <button
         type="button"
         class="btn btn-primary"
-        (click)="!['homebridge', 'homebridge-config-ui-x'].includes(pluginName) && childBridges.length > 0 ? onRestartChildBridgeClick() : onRestartHomebridgeClick()"
+        (click)="childBridges.length > 0 ? onRestartChildBridgeClick() : onRestartHomebridgeClick()"
       >
         {{ 'menu.tooltip_restart' | translate }}
       </button>

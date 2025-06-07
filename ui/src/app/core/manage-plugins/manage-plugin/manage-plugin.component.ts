@@ -1,7 +1,7 @@
 import { NgClass } from '@angular/common'
 import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
-import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { NgbActiveModal, NgbAlert, NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { saveAs } from 'file-saver'
 import { NgxMdModule } from 'ngx-md'
@@ -27,6 +27,7 @@ import { HbV2ModalComponent } from '@/app/modules/status/widgets/update-info-wid
     PluginsMarkdownDirective,
     TranslatePipe,
     NgClass,
+    NgbAlert,
   ],
 })
 
@@ -197,6 +198,20 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       termRows: this.term.rows,
     }).subscribe({
       next: async () => {
+        // Updating the UI needs a restart straight away
+        if (this.pluginName === 'homebridge-config-ui-x') {
+          this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}).subscribe({
+            next: () => {
+              window.location.href = '/restart'
+            },
+            error: (error) => {
+              console.error(error)
+              window.location.href = '/restart'
+            },
+          })
+          return
+        }
+
         try {
           await Promise.all([this.getChangeLog(), this.getChildBridges()])
         } catch (error) {
@@ -204,7 +219,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         }
         this.actionComplete = true
         this.justUpdatedPlugin = true
-        this.$router.navigate([this.pluginName === 'homebridge-config-ui-x' ? '/' : '/plugins'])
+        this.$router.navigate(['/plugins'])
       },
       error: (error) => {
         this.actionFailed = true
@@ -240,11 +255,15 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       }).subscribe({
         next: () => {
           this.$activeModal.close()
-          const ref = this.$modal.open(RestartHomebridgeComponent, {
-            size: 'lg',
-            backdrop: 'static',
+          this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}).subscribe({
+            next: () => {
+              this.$router.navigate(['/restart'])
+            },
+            error: (error) => {
+              console.error(error)
+              this.$router.navigate(['/restart'])
+            },
           })
-          ref.componentInstance.fullRestart = true
         },
         error: (error) => {
           this.actionFailed = true
@@ -291,20 +310,8 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   }
 
   public onRestartHomebridgeClick() {
-    if (this.pluginName === 'homebridge-config-ui-x') {
-      this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}).subscribe({
-        next: () => {
-          window.location.href = '/restart'
-        },
-        error: (error) => {
-          console.error(error)
-          window.location.href = '/restart'
-        },
-      })
-    } else {
-      this.$router.navigate(['/restart'])
-      this.$activeModal.close()
-    }
+    this.$router.navigate(['/restart'])
+    this.$activeModal.close()
   }
 
   public async onRestartChildBridgeClick() {

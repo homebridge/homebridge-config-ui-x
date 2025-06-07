@@ -1,6 +1,6 @@
 import { Component, inject, Input, OnInit } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
+import { NgbActiveModal, NgbAlert } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { rcompare } from 'semver'
@@ -21,6 +21,7 @@ interface VersionData {
   imports: [
     FormsModule,
     TranslatePipe,
+    NgbAlert,
   ],
 })
 export class ManageVersionComponent implements OnInit {
