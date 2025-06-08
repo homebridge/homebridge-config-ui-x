@@ -75,10 +75,8 @@ export class LoginComponent implements OnInit, AfterViewChecked {
     }
 
     if (this.$settings.env.customWallpaperHash) {
-      if (this.$settings.env.customWallpaperHash) {
-        const backgroundImageUrl = `${environment.api.base}/auth/wallpaper/${this.$settings.env.customWallpaperHash}`
-        this.backgroundStyle = `url('${backgroundImageUrl}') center/cover`
-      }
+      const backgroundImageUrl = `${environment.api.base}/auth/wallpaper/${this.$settings.env.customWallpaperHash}`
+      this.backgroundStyle = `url('${backgroundImageUrl}') center/cover`
     }
   }
 

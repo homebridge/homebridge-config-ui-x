@@ -69,7 +69,7 @@ export class SettingsService {
   public menuMode: 'default' | 'freeze'
   public wallpaper: string
   public serverTimeOffset = 0
-  private readonly defaultTheme = 'orange'
+  private readonly defaultTheme = 'deep-purple'
   public readonly themeList = [
     'orange',
     'red',
@@ -134,7 +134,7 @@ export class SettingsService {
   }
 
   setTheme(theme: string) {
-    // Default theme is orange
+    // Default theme is deep-purple
     if (!theme || !this.themeList.includes(theme)) {
       theme = this.defaultTheme
 

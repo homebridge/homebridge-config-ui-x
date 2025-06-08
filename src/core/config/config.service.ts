@@ -211,7 +211,7 @@ export class ConfigService {
       formAuth: Boolean(this.ui.auth !== 'none'),
       lightingMode: this.ui.lightingMode || 'auto',
       serverTimestamp: new Date().toISOString(),
-      theme: this.ui.theme || 'orange',
+      theme: this.ui.theme || 'deep-purple',
       menuMode: this.ui.menuMode || 'default',
     }
 
@@ -293,7 +293,7 @@ export class ConfigService {
     if (!this.ui.port && process.env.HOMEBRIDGE_CONFIG_UI_PORT) {
       this.ui.port = Number.parseInt(process.env.HOMEBRIDGE_CONFIG_UI_PORT, 10)
     }
-    this.ui.theme = this.ui.theme || process.env.HOMEBRIDGE_CONFIG_UI_THEME || 'orange'
+    this.ui.theme = this.ui.theme || process.env.HOMEBRIDGE_CONFIG_UI_THEME || 'deep-purple'
     this.ui.auth = this.ui.auth || process.env.HOMEBRIDGE_CONFIG_UI_AUTH as 'form' | 'none' || 'form'
     this.ui.wallpaper = this.ui.wallpaper || process.env.HOMEBRIDGE_CONFIG_UI_LOGIN_WALLPAPER || undefined
   }
