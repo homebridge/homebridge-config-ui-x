@@ -74,6 +74,11 @@
       color: $primary;
     }
 
+    .grey-text,
+    .grey-text a {
+      color: #666666 !important;
+    }
+
     .btn-primary,
     .btn-default {
       background-color: $primary !important;
