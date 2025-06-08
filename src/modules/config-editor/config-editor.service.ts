@@ -303,19 +303,40 @@ export class ConfigEditorService {
       throw new BadRequestException('Cannot update the platform property.')
     }
 
-    // 1. get the current config for homebridge-config-ui-x
+    // 1. Get the current config for homebridge-config-ui-x
     const config = await this.getConfigFile()
-
-    // 2. update the property
     const pluginConfig = config.platforms.find(x => x.platform === 'config')
-    // If value is empty, null or undefined, delete the property
-    if (value === '' || value === null || value === undefined) {
-      delete pluginConfig[property]
+
+    // 2. Calculate the property, split dots into nested properties
+    if (property.includes('.')) {
+      const properties = property.split('.')
+      let current = pluginConfig
+
+      // Traverse the nested properties
+      for (let i = 0; i < properties.length - 1; i++) {
+        if (!current[properties[i]]) {
+          current[properties[i]] = {}
+        }
+        current = current[properties[i]]
+      }
+
+      // 3. Update or delete the final property
+      const finalProperty = properties[properties.length - 1]
+      if (value === '' || value === null || value === undefined) {
+        delete current[finalProperty]
+      } else {
+        current[finalProperty] = value
+      }
     } else {
-      pluginConfig[property] = value
+      // 3. Update or delete the top-level property
+      if (value === '' || value === null || value === undefined) {
+        delete pluginConfig[property]
+      } else {
+        pluginConfig[property] = value
+      }
     }
 
-    // 3. save the config file
+    // 4. Save the config file
     await this.updateConfigFile(config)
   }
 

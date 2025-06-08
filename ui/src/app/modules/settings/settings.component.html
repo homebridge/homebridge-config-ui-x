@@ -1,6 +1,6 @@
 <h3 class="primary-text m-0">{{ 'menu.settings.title' | translate }}</h3>
 
-<!-- GENERAL SETTINGS - ALL USERS -->
+<!-- GENERAL SETTINGS -->
 <div class="my-4">
   <div
     role="button"
@@ -78,7 +78,7 @@
   }
 </div>
 
-<!-- DISPLAY SETTINGS - ALL USERS -->
+<!-- DISPLAY SETTINGS -->
 <div class="my-4">
   <div
     role="button"
@@ -214,7 +214,7 @@
   }
 </div>
 
-<!-- STARTUP/ENV OPTIONS - SERVICE MODE/DOCKER USERS -->
+<!-- STARTUP/ENV OPTIONS -->
 @if ($settings.env.serviceMode || $settings.env.runningInDocker) {
 <form class="my-4" novalidate [formGroup]="serviceForm">
   <div
@@ -249,7 +249,6 @@
       />
       <label for="homebridgeDebugMode" class="rendux-label ms-3" style="min-width: 50px"></label>
     </li>
-    } @if ($settings.env.serviceMode) {
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.startup.insecure' | translate }} <code>-I</code><br />
@@ -264,7 +263,6 @@
       />
       <label for="homebridgeInsecureMode" class="rendux-label ms-3" style="min-width: 50px"></label>
     </li>
-    } @if ($settings.env.serviceMode) {
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.startup.keep_accessories' | translate }} <code>-K</code><br />
@@ -279,7 +277,6 @@
       />
       <label for="homebridgeKeepOrphans" class="rendux-label ms-3" style="min-width: 50px"></label>
     </li>
-    } @if ($settings.env.serviceMode) {
     <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         <span class="font-monospace">DEBUG</span><br />
@@ -297,7 +294,6 @@
         />
       </div>
     </li>
-    } @if ($settings.env.serviceMode) {
     <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         <span class="font-monospace">NODE_OPTIONS</span><br />
@@ -327,6 +323,42 @@
         <i class="fas fa-fw fa-arrow-right"></i>
       </a>
     </li>
+    }
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.startup.log_max' | translate }}<br />
+        <small class="grey-text pe-2">{{ 'settings.startup.log_max_desc' | translate }}</small>
+      </span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
+        <input
+          class="form-control custom-input resp-input"
+          type="number"
+          min="-1"
+          placeholder="1000000"
+          [formControl]="uiLogMaxSizeFormControl"
+          [attr.aria-label]="'settings.startup.log_max' | translate"
+          [ngClass]="{ 'is-invalid': isInvalidUiLogMaxSize }"
+        />
+      </div>
+    </li>
+    @if (uiLogMaxSizeFormControl.value > 0) {
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.startup.log_truncate' | translate }}<br />
+        <small class="grey-text pe-2">{{ 'settings.startup.log_truncate_desc' | translate }}</small>
+      </span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
+        <input
+          class="form-control custom-input resp-input"
+          type="number"
+          min="0"
+          placeholder="200000"
+          [formControl]="uiLogTruncateSizeFormControl"
+          [attr.aria-label]="'settings.startup.log_truncate' | translate"
+          [ngClass]="{ 'is-invalid': isInvalidUiLogTruncateSize }"
+        />
+      </div>
+    </li>
     } @if (hasChangedService) {
     <li class="list-group-item d-flex flex-column align-items-center">
       <small class="grey-text my-2">{{ 'settings.changes.saved' | translate }}</small>
@@ -344,7 +376,7 @@
 </form>
 }
 
-<!-- NETWORK SETTINGS - ALL USERS -->
+<!-- NETWORK SETTINGS -->
 <form class="my-4" novalidate [formGroup]="uiSettingsForm">
   <div
     role="button"
@@ -467,7 +499,142 @@
   }
 </form>
 
-<!-- CACHE SETTINGS - SERVICE MODE USERS ONLY -->
+<!-- SECURITY SETTINGS -->
+<form class="my-4" novalidate>
+  <div
+    role="button"
+    tabindex="0"
+    [attr.aria-expanded]="showFields.security ? 'true' : 'false'"
+    [attr.aria-controls]="'fieldsSecurity'"
+    (click)="toggleSection('security')"
+    class="mt-3 hover-pointer"
+  >
+    <h5 class="primary-text">
+      <i class="fa fa-fw" [ngClass]="showFields.security ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+      {{ 'settings.network.title_security' | translate }}
+    </h5>
+  </div>
+  @if (showFields.security) {
+  <ul class="list-group list-group-box mt-2 mx-0" id="fieldsSecurity">
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.security.auth' | translate }}<br />
+        <small class="grey-text pe-2"> {{ 'settings.security.auth_desc' | translate }} </small>
+      </span>
+      <input
+        type="checkbox"
+        class="rendux-input"
+        id="uiAuthForm"
+        [formControl]="uiAuthFormControl"
+        [attr.aria-label]="'settings.security.auth' | translate"
+      />
+      <label for="uiAuthForm" class="rendux-label ms-3" style="min-width: 50px"></label>
+    </li>
+    @if (uiAuthFormControl.value) {
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.startup.session' | translate }}<br />
+        <small class="grey-text pe-2">{{ 'settings.startup.session_desc' | translate }}</small>
+      </span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
+        <input
+          class="form-control custom-input resp-input"
+          type="number"
+          min="600"
+          max="86400000"
+          placeholder="28800"
+          [formControl]="uiSessionTimeoutFormControl"
+          [attr.aria-label]="('settings.startup.session' | translate)"
+          [ngClass]="{ 'is-invalid': isInvalidUiSessionTimeout }"
+        />
+      </div>
+    </li>
+    }
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.security.https' | translate }}<br />
+        <small class="grey-text pe-2">{{ 'settings.security.https_desc' | translate }}</small>
+      </span>
+      <input
+        type="checkbox"
+        class="rendux-input"
+        id="uiEnableHttps"
+        [(ngModel)]="dummyEnableHttps"
+        [ngModelOptions]="{ standalone: true }"
+        (change)="onToggleHttps()"
+        [attr.aria-label]="'settings.security.https' | translate"
+      />
+      <label for="uiEnableHttps" class="rendux-label ms-3" style="min-width: 50px"></label>
+    </li>
+    @if (dummyEnableHttps) {
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>{{ 'settings.security.key' | translate }}</span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
+        <input
+          class="form-control custom-input resp-input"
+          type="text"
+          placeholder="/Users/.../certs/server.key"
+          [formControl]="uiSslKeyFormControl"
+          [attr.aria-label]="('settings.security.key' | translate)"
+        />
+      </div>
+    </li>
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>{{ 'settings.security.cert' | translate }}</span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
+        <input
+          class="form-control custom-input resp-input"
+          type="text"
+          placeholder="/Users/.../certs/server.crt"
+          [formControl]="uiSslCertFormControl"
+          [attr.aria-label]="('settings.security.cert' | translate)"
+        />
+      </div>
+    </li>
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>{{ 'settings.security.pfx' | translate }}</span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
+        <input
+          class="form-control custom-input resp-input"
+          type="text"
+          placeholder="/Users/.../certs/server.pfx"
+          [formControl]="uiSslPfxFormControl"
+          [attr.aria-label]="('settings.security.pfx' | translate)"
+        />
+      </div>
+    </li>
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>{{ 'settings.security.pass' | translate }}</span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto">
+        <input
+          class="form-control custom-input resp-input"
+          [type]="showPfxPassphrase ? 'text' : 'password'"
+          placeholder="mypassphrase"
+          [formControl]="uiSslPassphraseFormControl"
+          [attr.aria-label]="('settings.security.pass' | translate)"
+          (focus)="showPfxPassphrase = true"
+          (blur)="showPfxPassphrase = false"
+        />
+      </div>
+    </li>
+    } @if (originalSslKey !== uiSslKeyFormControl.value || originalSslCert !== uiSslCertFormControl.value ||
+    originalSslPfx !== uiSslPfxFormControl.value || originalSslPassphrase !== uiSslPassphraseFormControl.value) {
+    <li class="list-group-item d-flex flex-column align-items-center">
+      <small class="grey-text my-2">{{ 'settings.changes.saved' | translate }}</small>
+      <button
+        class="btn btn-primary waves-effect my-2"
+        routerLink="/restart"
+        [attr.aria-label]="'menu.tooltip_restart' | translate"
+      >
+        {{ 'menu.tooltip_restart' | translate }}
+      </button>
+    </li>
+    }
+  </ul>
+  }
+</form>
+
+<!-- CACHE SETTINGS -->
 @if ($settings.env.serviceMode) {
 <div class="my-4">
   <div
@@ -534,7 +701,7 @@
 </div>
 }
 
-<!-- RESET SETTINGS - ALL USERS -->
+<!-- RESET SETTINGS -->
 <div class="my-4">
   <div
     role="button"

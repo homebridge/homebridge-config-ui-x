@@ -37,11 +37,22 @@ interface EnvInterface {
   usePnpm: boolean
   scheduledBackupDisable: boolean
   scheduledBackupPath: string
+  log?: {
+    maxSize?: number
+    truncateSize?: number
+  }
+  ssl?: {
+    key?: string
+    cert?: string
+    pfx?: string
+    passphrase?: string
+  }
 }
 
 interface AppSettingsInterface {
   env: EnvInterface
   formAuth: boolean
+  sessionTimeout: number
   theme: string
   lightingMode: 'auto' | 'light' | 'dark'
   menuMode: 'default' | 'freeze'
@@ -60,6 +71,7 @@ export class SettingsService {
 
   public env: EnvInterface = {} as EnvInterface
   public formAuth = true
+  public sessionTimeout = 28800
   public uiVersion: string
   public theme: string
   public lightingMode: 'auto' | 'light' | 'dark'
@@ -101,6 +113,7 @@ export class SettingsService {
   async getAppSettings() {
     const data = await firstValueFrom(this.$api.get('/auth/settings')) as AppSettingsInterface
     this.formAuth = data.formAuth
+    this.sessionTimeout = data.sessionTimeout
     this.env = data.env
     this.lightingMode = data.lightingMode
     this.wallpaper = data.wallpaper
@@ -188,8 +201,25 @@ export class SettingsService {
     this.env.lang = lang
   }
 
+  setItem(key: string, value: any) {
+    this[key] = value
+  }
+
   setEnvItem(key: string, value: any) {
-    this.env[key] = value
+    // If the key contains a dot, we assume it's a nested property
+    if (key.includes('.')) {
+      const keys = key.split('.')
+      let current = this.env
+      for (let i = 0; i < keys.length - 1; i++) {
+        if (!current[keys[i]]) {
+          current[keys[i]] = {}
+        }
+        current = current[keys[i]]
+      }
+      current[keys[keys.length - 1]] = value
+    } else {
+      this.env[key] = value
+    }
   }
 
   /**

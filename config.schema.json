@@ -26,7 +26,7 @@
         "title": "Homebridge UI Authentication",
         "type": "string",
         "default": "form",
-        "description": "The type of authentication to use for the Homebridge UI.",
+        "description": "Whether to enable authentication for the Homebridge UI with a username and password.",
         "oneOf": [
           {
             "title": "Require Authentication",
@@ -437,7 +437,7 @@
         "placeholder": 28800,
         "minimum": 600,
         "maximum": 86400000,
-        "description": "The number of seconds before a user session will timeout. Defaults to 8 hours.",
+        "description": "The number of seconds before a user will be logged out of the UI. Defaults to 8 hours.",
         "condition": {
           "functionBody": "return model.auth === 'form'"
         }
@@ -638,19 +638,6 @@
   },
   "layout": [
     {
-      "ref": "login",
-      "type": "fieldset",
-      "expandable": true,
-      "title": "Login Settings",
-      "items": [
-        "auth",
-        {
-          "key": "sessionTimeout",
-          "type": "number"
-        }
-      ]
-    },
-    {
       "ref": "log",
       "type": "fieldset",
       "expandable": true,
@@ -663,16 +650,6 @@
         "log.command",
         "log.tail",
         "log.systemd"
-      ]
-    },
-    {
-      "ref": "logRetention",
-      "type": "fieldset",
-      "expandable": true,
-      "title": "Log Retention Settings",
-      "items": [
-        "log.maxSize",
-        "log.truncateSize"
       ]
     },
     {
@@ -702,18 +679,6 @@
       "items": [
         "proxyHost",
         "host"
-      ]
-    },
-    {
-      "ref": "ssl",
-      "type": "fieldset",
-      "expandable": true,
-      "title": "SSL Settings",
-      "items": [
-        "ssl.key",
-        "ssl.cert",
-        "ssl.pfx",
-        "ssl.passphrase"
       ]
     },
     {

@@ -60,6 +60,7 @@ export class WallpaperComponent {
       formData.append('wallpaper', this.selectedFile, this.selectedFile.name)
       this.$api.post('/server/wallpaper', formData).subscribe({
         next: () => {
+          this.$settings.setItem('wallpaper', `ui-wallpaper.${this.selectedFile.name.split('.').pop()}`)
           this.$activeModal.close()
           this.$toastr.success(this.$translate.instant('settings.display.wallpaper_success'), this.$translate.instant('toast.title_success'))
         },

@@ -57,6 +57,12 @@ export class SettingsComponent implements OnInit {
   public originalHbPort = 0
   public originalHbName = ''
 
+  public originalSslKey = ''
+  public originalSslCert = ''
+  public originalSslPfx = ''
+  public originalSslPassphrase = ''
+  public showPfxPassphrase = false
+
   public hasChangedService = false
   public hasChangedUiSettings = false
   public hasChangedMdns = false
@@ -67,6 +73,9 @@ export class SettingsComponent implements OnInit {
   public isInvalidHbPort = false
   public isInvalidHbName = false
   public isInvalidHbUiPort = false
+  public isInvalidUiSessionTimeout = false
+  public isInvalidUiLogMaxSize = false
+  public isInvalidUiLogTruncateSize = false
 
   public serviceForm = new FormGroup({
     HOMEBRIDGE_DEBUG: new FormControl(false),
@@ -87,12 +96,23 @@ export class SettingsComponent implements OnInit {
   public bridgeNetworkAdapters: string[] = []
   public hbPortFormControl = new FormControl(0)
   public hbNameFormControl = new FormControl('')
+  public uiAuthFormControl = new UntypedFormControl(true)
+  public uiSessionTimeoutFormControl = new FormControl(28800)
+  public uiLogMaxSizeFormControl = new FormControl()
+  public uiLogTruncateSizeFormControl = new FormControl()
+  public dummyEnableHttps = false
+  public uiSslKeyFormControl = new FormControl('')
+  public uiSslCertFormControl = new FormControl('')
+  public uiSslPfxFormControl = new FormControl('')
+  public uiSslPassphraseFormControl = new FormControl('')
+
   public isHbV2 = false
   public showFields = {
     general: true,
     display: true,
     startup: true,
     network: true,
+    security: true,
     reset: true,
     cache: true,
   }
@@ -106,6 +126,27 @@ export class SettingsComponent implements OnInit {
     this.hbNameFormControl.patchValue(this.$settings.env.homebridgeInstanceName)
     this.hbNameFormControl.valueChanges.subscribe((name: string) => this.setHomebridgeName(name))
     this.originalHbName = this.$settings.env.homebridgeInstanceName
+    this.uiAuthFormControl.patchValue(this.$settings.formAuth)
+    this.uiAuthFormControl.valueChanges.subscribe((auth: boolean) => this.saveUiSettingChange('auth', auth))
+    this.uiSessionTimeoutFormControl.patchValue(this.$settings.sessionTimeout)
+    this.uiSessionTimeoutFormControl.valueChanges.subscribe((value: number) => this.saveUiSettingChange('sessionTimeout', value))
+    this.uiLogMaxSizeFormControl.patchValue(this.$settings.env.log?.maxSize)
+    this.uiLogMaxSizeFormControl.valueChanges.subscribe((value: number) => this.saveUiSettingChange('log.maxSize', value))
+    this.uiLogTruncateSizeFormControl.patchValue(this.$settings.env.log?.truncateSize)
+    this.uiLogTruncateSizeFormControl.valueChanges.subscribe((value: number) => this.saveUiSettingChange('log.truncateSize', value))
+    this.originalSslKey = this.$settings.env.ssl?.key || ''
+    this.originalSslCert = this.$settings.env.ssl?.cert || ''
+    this.originalSslPfx = this.$settings.env.ssl?.pfx || ''
+    this.originalSslPassphrase = this.$settings.env.ssl?.passphrase || ''
+    this.uiSslKeyFormControl.patchValue(this.$settings.env.ssl?.key || '')
+    this.uiSslKeyFormControl.valueChanges.subscribe((value: string) => this.saveUiSettingChange('ssl.key', value))
+    this.uiSslCertFormControl.patchValue(this.$settings.env.ssl?.cert || '')
+    this.uiSslCertFormControl.valueChanges.subscribe((value: string) => this.saveUiSettingChange('ssl.cert', value))
+    this.uiSslPfxFormControl.patchValue(this.$settings.env.ssl?.pfx || '')
+    this.uiSslPfxFormControl.valueChanges.subscribe((value: string) => this.saveUiSettingChange('ssl.pfx', value))
+    this.uiSslPassphraseFormControl.patchValue(this.$settings.env.ssl?.passphrase || '')
+    this.uiSslPassphraseFormControl.valueChanges.subscribe((value: string) => this.saveUiSettingChange('ssl.passphrase', value))
+    this.dummyEnableHttps = !!this.uiSslKeyFormControl.value || !!this.uiSslCertFormControl.value || !!this.uiSslPfxFormControl.value || !!this.uiSslPassphraseFormControl.value
 
     this.initUiSettingsForm()
     this.initNetworkingOptions()
@@ -175,6 +216,47 @@ export class SettingsComponent implements OnInit {
         }
         this.$settings.setEnvItem('port', value)
         this.isInvalidHbUiPort = false
+        break
+      case 'auth':
+        this.$settings.setItem('formAuth', value)
+        value = value ? 'form' : 'none'
+        break
+      case 'sessionTimeout':
+        if (value && (typeof value !== 'number' || value < 600 || value > 86400000 || Number.isInteger(value) === false)) {
+          this.isInvalidUiSessionTimeout = true
+          return
+        }
+        this.$settings.setItem('sessionTimeout', value)
+        this.isInvalidUiSessionTimeout = false
+        break
+      case 'log.maxSize':
+        if (value && (typeof value !== 'number' || value < -1 || Number.isInteger(value) === false)) {
+          this.isInvalidUiLogMaxSize = true
+          return
+        }
+        this.$settings.setEnvItem('log.maxSize', value)
+        this.isInvalidUiLogMaxSize = false
+
+        if (!value || value === -1) {
+          // If the value is -1, we set the log.maxSize to undefined
+          // This will remove the setting from the config file
+          this.saveUiSettingChange('log.truncateSize', null)
+          this.isInvalidUiLogMaxSize = false
+        }
+        break
+      case 'log.truncateSize':
+        if (value && (typeof value !== 'number' || value < 0 || Number.isInteger(value) === false)) {
+          this.isInvalidUiLogTruncateSize = true
+          return
+        }
+        this.$settings.setEnvItem('log.truncateSize', value)
+        this.isInvalidUiLogTruncateSize = false
+        break
+      case 'ssl.key': // openssl req -new -newkey rsa:2048 -nodes -keyout ssl.key -out ssl.csr
+      case 'ssl.cert': // openssl x509 -req -days 365 -in ssl.csr -signkey ssl.key -out ssl.cert
+      case 'ssl.pfx': // openssl pkcs12 -export -out ssl.pfx -inkey ssl.key -in ssl.cert
+      case 'ssl.passphrase':
+        this.$settings.setEnvItem(key, value)
         break
     }
 
@@ -393,5 +475,15 @@ export class SettingsComponent implements OnInit {
 
   toggleSection(section: string) {
     this.showFields[section] = !this.showFields[section]
+  }
+
+  onToggleHttps(): void {
+    console.error(this.dummyEnableHttps)
+    if (!this.dummyEnableHttps) {
+      this.uiSslKeyFormControl.setValue('')
+      this.uiSslCertFormControl.setValue('')
+      this.uiSslPfxFormControl.setValue('')
+      this.uiSslPassphraseFormControl.setValue('')
+    }
   }
 }

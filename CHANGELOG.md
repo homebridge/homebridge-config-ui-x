@@ -17,6 +17,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### UI Changes
 
 - auto restart after version change of hb or ui
+- more items from ui advanced settings to main settings page
 
 ### Homebridge Dependencies
 
