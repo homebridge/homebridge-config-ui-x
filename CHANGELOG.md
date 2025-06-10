@@ -26,11 +26,12 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - update `fastify` and `nestjs` dependencies
 - remove `log.tail` and `log.systemd` ui settings
 - set service mode as default, remove standalone
+- Inital support for NodeJS 24 in preperation for LTS in Fall of 2025
 
 ### Homebridge Dependencies
 
 - `@homebridge/hap-client` @ `v3.0.0-beta`
-- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.12.0`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.0`
 - `@homebridge/plugin-ui-utils` @ `v2.1.0`
 
 ## v4.77.0 (Unreleased)
