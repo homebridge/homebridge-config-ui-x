@@ -6,6 +6,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
+import { ApiService } from '@/app/core/api.service'
 import { InformationComponent } from '@/app/core/components/information/information.component'
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
 import { SettingsService } from '@/app/core/settings.service'
@@ -25,6 +26,7 @@ import { UiV5ModalComponent } from '@/app/modules/status/widgets/update-info-wid
   ],
 })
 export class UpdateInfoWidgetComponent implements OnInit {
+  private $api = inject(ApiService)
   private $modal = inject(NgbModal)
   $plugin = inject(ManagePluginsService)
   $settings = inject(SettingsService)
@@ -44,6 +46,9 @@ export class UpdateInfoWidgetComponent implements OnInit {
 
   public isRunningHbV2 = false
   public isRunningUiV5 = false
+
+  public isHbV2Ready = false
+  public isUiV5Ready = false
 
   private io: IoNamespace
 
@@ -68,6 +73,20 @@ export class UpdateInfoWidgetComponent implements OnInit {
         this.getOutOfDatePlugins(),
         this.getNodeInfo(),
       ])
+    }
+
+    this.isHbV2Ready = this.homebridgeUiPkg.readyForV5.node
+
+    if (!this.isRunningHbV2) {
+      const installedPlugins = await firstValueFrom(this.$api.get('/plugins'))
+      const allHb2Ready = installedPlugins
+        .filter((x: any) => x.name !== 'homebridge-config-ui-x')
+        .every((x: any) => {
+          const hbEngines = x.engines?.homebridge?.split('||').map((s: string) => s.trim()) || []
+          return hbEngines.some((v: string) => v.startsWith('^2') || v.startsWith('>=2'))
+        })
+
+      this.isHbV2Ready = this.isHbV2Ready && allHb2Ready
     }
   }
 
@@ -101,6 +120,10 @@ export class UpdateInfoWidgetComponent implements OnInit {
       this.homebridgeUiPkg = response
       this.$settings.env.homebridgeUiVersion = response.installedVersion
       this.isRunningUiV5 = response.installedVersion.startsWith('5.')
+      this.isUiV5Ready = this.homebridgeUiPkg.readyForV5.node
+        && this.homebridgeUiPkg.readyForV5.service
+        && this.homebridgeUiPkg.readyForV5.pnpm
+        && this.homebridgeUiPkg.readyForV5.arch
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))

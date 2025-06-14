@@ -36,7 +36,10 @@
             placement="top"
             aria-label="Homebridge v2 Readiness"
           >
-            <i class="primary-text fas fa-fw fa-exclamation-circle"></i>
+            <i
+              class="fas fa-fw fa-info-circle"
+              [ngClass]="{ 'green-text': isHbV2Ready, 'orange-text': !isHbV2Ready }"
+            ></i>
           </a>
           } } @if (!homebridgePkg.installedVersion) {
           <span>Homebridge</span>
@@ -89,7 +92,10 @@
             placement="top"
             aria-label="Homebridge UI v5 Readiness"
           >
-            <i class="primary-text fas fa-fw fa-exclamation-circle"></i>
+            <i
+              class="fas fa-fw fa-info-circle"
+              [ngClass]="{ 'green-text': isUiV5Ready, 'orange-text': !isUiV5Ready }"
+            ></i>
           </a>
           } } @if (!homebridgeUiPkg.installedVersion) {
           <span>Homebridge UI</span>
