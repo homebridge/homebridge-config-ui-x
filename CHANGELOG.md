@@ -19,6 +19,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - auto restart after version change of hb or ui
 - redesigned setup wizard page
 - style HBv2/UIv5 icons on status page based on readiness
+- security system modal only show valid modes
 
 ### Homebridge Dependencies
 

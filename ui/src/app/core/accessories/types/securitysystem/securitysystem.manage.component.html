@@ -15,6 +15,7 @@
       role="group"
       aria-label="Security System Mode Control"
     >
+      @if (targetModeValidValues.includes(3)) {
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetMode(3); $event.target.blur()">
         <div class="float-start primary-text">
           <i
@@ -25,6 +26,7 @@
         {{ 'accessories.control.off' | translate }}
         <div class="float-end"><i class="fas fa-fw fa-xl fa-blank"></i></div>
       </button>
+      } @if (targetModeValidValues.includes(0)) {
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetMode(0); $event.target.blur()">
         <div class="float-start primary-text">
           <i
@@ -35,6 +37,7 @@
         {{ 'accessories.control.home' | translate }}
         <div class="float-end"><i class="fas fa-fw fa-xl fa-blank"></i></div>
       </button>
+      } @if (targetModeValidValues.includes(1)) {
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetMode(1); $event.target.blur()">
         <div class="float-start primary-text">
           <i
@@ -45,6 +48,7 @@
         {{ 'accessories.control.away' | translate }}
         <div class="float-end"><i class="fas fa-fw fa-xl fa-blank"></i></div>
       </button>
+      } @if (targetModeValidValues.includes(2)) {
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetMode(2); $event.target.blur()">
         <div class="float-start primary-text">
           <i
@@ -55,6 +59,7 @@
         {{ 'accessories.control.night' | translate }}
         <div class="float-end"><i class="fas fa-fw fa-xl fa-blank"></i></div>
       </button>
+      }
     </div>
   </div>
   <div class="modal-footer"></div>

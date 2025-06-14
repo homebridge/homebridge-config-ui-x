@@ -17,11 +17,13 @@ export class SecuritysystemManageComponent implements OnInit {
 
   @Input() public service: ServiceTypeX
   public targetMode: any
+  public targetModeValidValues: number[] = []
 
   constructor() {}
 
   ngOnInit() {
     this.targetMode = this.service.values.SecuritySystemTargetState
+    this.targetModeValidValues = this.service.getCharacteristic('SecuritySystemTargetState').validValues as number[]
   }
 
   setTargetMode(value: number) {
