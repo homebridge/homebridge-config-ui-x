@@ -266,6 +266,8 @@
   "plugins.manage.enable": "เปิดการใช้งาน",
   "plugins.manage.github_support": "คุณสามารถแสดงการสนับสนุนของคุณโดยมอบ {{ iconStar }} ให้กับปลั๊กอินนี้ (หรือเผยแพร่ {{ iconThumbsUp }}) บน GitHub!",
   "plugins.manage.hb_restart": "Homebridge and the UI will automatically restart after any version change.",
+  "plugins.manage.hide_updates": "Disable Update Notifications",
+  "plugins.manage.hide_updates_desc": "If you don't want to see update notifications for this plugin, you can turn them off here.",
   "plugins.manage.information": "ข้อมูลปลั๊กอิน",
   "plugins.manage.install": "ติดตั้ง",
   "plugins.manage.installed": "ติดตั้งแล้ว",

@@ -76,6 +76,27 @@
           }
         </li>
       </ul>
+
+      @if (plugin.installedVersion && !['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)) {
+      <ul class="list-group list-group-box mt-3 mb-0">
+        <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
+          <div class="text-start">
+            {{ 'plugins.manage.hide_updates' | translate }}<br />
+            <span class="grey-text small">{{ 'plugins.manage.hide_updates_desc' | translate }}</span>
+          </div>
+          <div class="text-end grey-text d-flex align-items-center">
+            <input
+              type="checkbox"
+              class="rendux-input"
+              [formControl]="hideUpdatesFormControl"
+              id="hidePluginUpdates"
+              [attr.aria-label]="'plugins.manage.hide_updates' | translate"
+            />
+            <label for="hidePluginUpdates" class="rendux-label ms-3"></label>
+          </div>
+        </li>
+      </ul>
+      }
     </div>
     }
   </div>

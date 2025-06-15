@@ -359,6 +359,27 @@ export class ConfigEditorService {
   }
 
   /**
+   * Set the plugin hide update list (this request is not partial)
+   */
+  public async setPluginsHideUpdatesFor(value: string[]) {
+    // 1. Get the current config for the Homebridge UI
+    const config = await this.getConfigFile()
+    const pluginConfig = config.platforms.find(x => x.platform === 'config')
+
+    // 2. Ensure the plugins object exists and set the hideUpdatesFor property
+    if (!pluginConfig.plugins) {
+      pluginConfig.plugins = {}
+    }
+    pluginConfig.plugins.hideUpdatesFor = (value || [])
+      .filter(x => typeof x === 'string' && x.trim() !== '' && /^(?:@[\w-]+(?:\.[\w-]+)*\/)?homebridge-[\w-]+$/i.test(x.trim()))
+      .map(x => x.trim().toLowerCase())
+
+    // 3. Clean and save the UI config block
+    config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = this.cleanUpUiConfig(pluginConfig)
+    await this.updateConfigFile(config)
+  }
+
+  /**
    * Mark a plugin as disabled
    */
   public async disablePlugin(pluginName: string) {

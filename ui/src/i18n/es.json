@@ -266,6 +266,8 @@
   "plugins.manage.enable": "Habilitar",
   "plugins.manage.github_support": "Puedes mostrar tu apoyo dando a este plugin una {{ iconStar }} (o a la versión una {{ iconThumbsUp }}) en GitHub!",
   "plugins.manage.hb_restart": "Homebridge and the UI will automatically restart after any version change.",
+  "plugins.manage.hide_updates": "Disable Update Notifications",
+  "plugins.manage.hide_updates_desc": "If you don't want to see update notifications for this plugin, you can turn them off here.",
   "plugins.manage.information": "Información del Plugin",
   "plugins.manage.install": "Instalar",
   "plugins.manage.installed": "Instalado",

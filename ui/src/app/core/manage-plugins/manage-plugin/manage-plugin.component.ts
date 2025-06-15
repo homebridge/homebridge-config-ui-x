@@ -145,7 +145,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       next: () => {
         this.$activeModal.close()
         this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess)
-        window.location.href = `/plugins?installed=${this.pluginName}`
+        window.location.href = `/plugins?action=just-installed&plugin=${this.pluginName}`
       },
       error: (error) => {
         this.actionFailed = true

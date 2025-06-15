@@ -633,6 +633,23 @@
         "title": "Disable Server Metrics Monitoring",
         "type": "boolean",
         "description": "When enabled, the Homebridge UI will not collect or report CPU or memory stats."
+      },
+      "plugins": {
+        "title": "Plugins",
+        "type": "object",
+        "description": "Settings surrounding plugins used by the Homebridge UI.",
+        "properties": {
+          "hideUpdatesFor": {
+            "type": "array",
+            "title": "Hide Plugin Updates For",
+            "description": "A list of plugin names for which frontend update notifications will be hidden.",
+            "items": {
+              "type": "string",
+              "title": "Plugin Name",
+              "pattern": "^(?:[A-Fa-f0-9]{2}:){5}[A-Fa-f0-9]{2}$"
+            }
+          }
+        }
       }
     }
   },

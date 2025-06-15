@@ -103,6 +103,15 @@ export class ConfigEditorController {
   }
 
   @UseGuards(AdminGuard)
+  @Put('/ui/plugins/hide-updates-for')
+  @ApiOperation({ summary: 'Update the plugins hide updates for.' })
+  @ApiBody({ description: 'Array of plugin names to hide updates for in the UI.', type: 'json', isArray: true })
+  @Put()
+  setPluginsHideUpdatesFor(@Body() { body }) {
+    return this.configEditorService.setPluginsHideUpdatesFor(body)
+  }
+
+  @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'List the available Homebridge `config.json` backups.' })
   @Get('/backups')
   listConfigBackups() {

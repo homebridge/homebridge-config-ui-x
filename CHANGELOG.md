@@ -22,6 +22,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - security system modal only show valid modes
 - refactor settings page with immediate saving
 - add support for `uiSchema` within plugin configurations
+- add option to hide update notifications for specific plugins
 
 ### Homebridge Dependencies
 

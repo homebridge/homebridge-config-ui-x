@@ -266,6 +266,8 @@
   "plugins.manage.enable": "Aktifkan",
   "plugins.manage.github_support": "Anda dapat menunjukkan dukungan Anda dengan memberikan plugin ini {{ iconStar }} (atau rilis A {{ iconThumbsUp }}) di github!",
   "plugins.manage.hb_restart": "Homebridge and the UI will automatically restart after any version change.",
+  "plugins.manage.hide_updates": "Disable Update Notifications",
+  "plugins.manage.hide_updates_desc": "If you don't want to see update notifications for this plugin, you can turn them off here.",
   "plugins.manage.information": "Informasi Plugin",
   "plugins.manage.install": "Pasang",
   "plugins.manage.installed": "Terpasang",

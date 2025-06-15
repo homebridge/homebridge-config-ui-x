@@ -52,6 +52,9 @@ interface EnvInterface {
     debug?: boolean
     instanceBlacklist?: string[]
   }
+  plugins?: {
+    hideUpdatesFor?: string[]
+  }
   linux?: {
     shutdown?: string
     restart?: string

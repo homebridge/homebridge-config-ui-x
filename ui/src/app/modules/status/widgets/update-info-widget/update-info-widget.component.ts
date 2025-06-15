@@ -133,7 +133,8 @@ export class UpdateInfoWidgetComponent implements OnInit {
   async getOutOfDatePlugins() {
     try {
       const outOfDatePlugins = await firstValueFrom(this.io.request('get-out-of-date-plugins'))
-      this.homebridgePluginStatus = outOfDatePlugins.filter((x: any) => x.name !== 'homebridge-config-ui-x')
+      this.homebridgePluginStatus = outOfDatePlugins
+        .filter((x: any) => x.name !== 'homebridge-config-ui-x' && !this.$settings.env.plugins?.hideUpdatesFor?.includes(x.name))
       this.homebridgePluginStatusDone = true
     } catch (error) {
       console.error(error)

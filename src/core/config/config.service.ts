@@ -107,6 +107,9 @@ export class ConfigService {
       debug?: boolean
       instanceBlacklist?: string[]
     }
+    plugins?: {
+      hideUpdatesFor?: string[]
+    }
     temp?: string
     tempUnits?: string
     wallpaper?: string
@@ -252,6 +255,9 @@ export class ConfigService {
         accessoryControl: {
           debug: this.ui.accessoryControl?.debug,
           instanceBlacklist: this.ui.accessoryControl?.instanceBlacklist || [],
+        },
+        plugins: {
+          hideUpdatesFor: this.ui.plugins?.hideUpdatesFor || [],
         },
         linux: {
           shutdown: this.ui.linux?.shutdown,

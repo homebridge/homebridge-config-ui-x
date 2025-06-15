@@ -60,24 +60,41 @@ export class PluginsComponent implements OnInit, OnDestroy {
       this.io.socket.emit('monitor-child-bridge-status')
 
       // Load list of installed plugins
-      this.loadInstalledPlugins().then(() => {
-        // Get query parameters
-        const justInstalled = this.$router.parseUrl(this.$router.url).queryParams.installed
-        if (justInstalled) {
-          const plugin = this.installedPlugins.find(x => x.name === justInstalled)
-          if (plugin) {
-            if (plugin.isConfigured) {
-              this.$modal.open(RestartHomebridgeComponent, {
-                size: 'lg',
-                backdrop: 'static',
-              })
-            } else {
-              this.$plugin.settings(plugin)
+      await this.loadInstalledPlugins()
+
+      // Get any query parameters
+      const { action: queryAction, plugin: queryPlugin } = this.$router.parseUrl(this.$router.url).queryParams
+      if (queryAction) {
+        const plugin = this.installedPlugins.find(x => x.name === queryPlugin)
+        switch (queryAction) {
+          case 'just-installed': {
+            if (plugin) {
+              if (plugin.isConfigured) {
+                this.$modal.open(RestartHomebridgeComponent, {
+                  size: 'lg',
+                  backdrop: 'static',
+                })
+              } else {
+                this.$plugin.settings(plugin)
+              }
             }
+            break
           }
-          this.$router.navigate(['/plugins'])
+          case 'open-manage-version': {
+            if (plugin) {
+              this.$plugin.installAlternateVersion(plugin)
+            }
+            break
+          }
         }
-      })
+
+        // Clear the query parameters so that we don't keep showing the same action
+        this.$router.navigate([], {
+          queryParams: {},
+          replaceUrl: true,
+          queryParamsHandling: '',
+        })
+      }
     })
 
     this.io.socket.on('child-bridge-status-update', (data) => {
@@ -177,6 +194,10 @@ export class PluginsComponent implements OnInit, OnDestroy {
 
           const pluginChildBridges = this.getPluginChildBridges(plugin)
           plugin.hasChildBridgesUnpaired = pluginChildBridges.some(x => !x.paired)
+
+          if (this.$settings.env.plugins?.hideUpdatesFor?.includes(plugin.name)) {
+            plugin.updateAvailable = false
+          }
         } catch (err) {
           // May not be technically correct, but if we can't load the config, assume it is configured
           plugin.isConfigured = true
