@@ -121,7 +121,7 @@ export class ConfigEditorController {
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Return the Homebridge `config.json` file for the given backup ID.' })
   @ApiParam({ name: 'backupId', type: 'number' })
-  @Get('/backups/:backupId(\\d+)')
+  @Get('/backups/:backupId')
   getBackup(@Param('backupId', ParseIntPipe) backupId) {
     return this.configEditorService.getConfigBackup(backupId)
   }
