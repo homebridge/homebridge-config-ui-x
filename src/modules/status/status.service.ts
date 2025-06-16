@@ -446,6 +446,7 @@ export class StatusService {
       // Get the newest v18 and v20 in the list
       const latest18 = versionList.filter((x: { version: string }) => x.version.startsWith('v18'))[0]
       const latest22 = versionList.filter((x: { version: string }) => x.version.startsWith('v22'))[0]
+      const latest24 = versionList.filter((x: { version: string }) => x.version.startsWith('v24'))[0]
 
       let updateAvailable = false
       let latestVersion = process.version
@@ -458,6 +459,7 @@ export class StatusService {
        *      18            2.28
        *      20            2.31
        *      22            2.31 (assumption - the code below assumes this)
+       *      24            ????
        */
 
       // Behaviour depends on the installed version of node
@@ -509,6 +511,15 @@ export class StatusService {
           if (gt(latest22.version, process.version)) {
             updateAvailable = true
             latestVersion = latest22.version
+          }
+          break
+        }
+        case 'v24': {
+          // Currently using v24
+          // Check if there is a new minor/patch version available
+          if (gt(latest24.version, process.version)) {
+            updateAvailable = true
+            latestVersion = latest24.version
           }
           break
         }
