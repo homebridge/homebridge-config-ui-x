@@ -1,0 +1,117 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title">{{ 'settings.security.ui_control' | translate }}</h5>
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="modal"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="$activeModal.dismiss('Dismiss')"
+      [disabled]="clicked"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="text-center mb-3"><i class="fas fa-fw fa-list-check primary-text" style="font-size: 75px"></i></div>
+    <ul class="mb-3">
+      <li>{{ 'settings.security.ui_control_desc' | translate }}</li>
+      <li>{{ 'settings.security.ui_control_desc_2' | translate }}</li>
+    </ul>
+
+    <ul class="list-group list-group-box mt-3 mb-0">
+      <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
+        <div class="text-start">
+          {{ mainPairing.name }}<br />
+          <small class="grey-text">
+            <i
+              class="fas fa-fw fa-link"
+              [ngbTooltip]="(mainPairing._isPaired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate"
+              container="body"
+              openDelay="150"
+              triggers="hover"
+              placement="left"
+              [ngClass]="{
+                'green-text': mainPairing._isPaired,
+                'grey-text': !mainPairing._isPaired
+              }"
+            ></i>
+            &middot; <span class="font-monospace">{{ mainPairing._username }}</span> &middot; Homebridge
+          </small>
+        </div>
+        <div class="text-end grey-text d-flex align-items-center">
+          <input
+            type="checkbox"
+            class="rendux-input"
+            id="controlMainBridge"
+            [checked]="!isInList(mainPairing._username)"
+            [disabled]="clicked"
+            (click)="toggleList(mainPairing._username)"
+            [attr.aria-label]="'plugins.manage.hide_updates' | translate"
+          />
+          <label for="controlMainBridge" class="rendux-label ms-3"></label>
+        </div>
+      </li>
+      @for (item of pairings; track item) {
+      <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
+        <div class="text-start">
+          {{ item.name }}
+          <br />
+          <small class="grey-text">
+            <i
+              class="fas fa-fw fa-link"
+              [ngbTooltip]="(item._isPaired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate"
+              container="body"
+              openDelay="150"
+              triggers="hover"
+              placement="left"
+              [ngClass]="{
+                'green-text': item._isPaired,
+                'grey-text': !item._isPaired
+              }"
+            ></i>
+            &middot; <span class="font-monospace">{{ item._username }}</span> &middot; {{ item._category | titlecase }}
+          </small>
+        </div>
+        <div class="text-end grey-text d-flex align-items-center">
+          <input
+            type="checkbox"
+            class="rendux-input"
+            [id]="'hidePluginUpdates_' + item._username"
+            [checked]="!isInList(item._username)"
+            [disabled]="clicked"
+            (click)="toggleList(item._username)"
+            [attr.aria-label]="('form.button_allow' | translate) + ' ' + item.name"
+          />
+          <label [for]="'hidePluginUpdates_' + item._username" class="rendux-label ms-3"></label>
+        </div>
+      </li>
+      }
+    </ul>
+  </div>
+  <div class="modal-footer justify-content-between">
+    <div class="text-start">
+      <button
+        type="button"
+        class="btn btn-elegant"
+        data-bs-dismiss="modal"
+        (click)="$activeModal.dismiss('Dismiss')"
+        [disabled]="clicked"
+      >
+        {{ 'form.button_close' | translate }}
+      </button>
+    </div>
+    <div class="text-center"></div>
+    <div class="text-end">
+      <button
+        type="button"
+        class="btn btn-primary"
+        data-bs-dismiss="modal"
+        [disabled]="!blacklistHasUpdated || clicked"
+        (click)="updateBlacklist()"
+      >
+        @if (!clicked) { {{ 'form.button_save' | translate }} } @if (clicked) {
+        <i class="fas fa-fw fa-spinner fa-pulse"></i>
+        }
+      </button>
+    </div>
+  </div>
+</div>

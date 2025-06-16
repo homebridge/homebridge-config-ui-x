@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateModule } from '@ngx-translate/core'
 
+import { AccessoryControlListsComponent } from '@/app/modules/settings/accessory-control-lists/accessory-control-lists.component'
 import { BackupComponent } from '@/app/modules/settings/backup/backup.component'
 import { RestoreComponent } from '@/app/modules/settings/backup/restore/restore.component'
 import { RemoveAllAccessoriesComponent } from '@/app/modules/settings/remove-all-accessories/remove-all-accessories.component'
@@ -25,6 +26,7 @@ import { WallpaperComponent } from '@/app/modules/settings/wallpaper/wallpaper.c
     NgbModule,
     SettingsRoutingModule,
     SettingsComponent,
+    AccessoryControlListsComponent,
     ResetAllBridgesComponent,
     ResetIndividualBridgesComponent,
     RemoveAllAccessoriesComponent,

@@ -951,13 +951,7 @@ export class PluginsService {
 
       // Filter some options from the UI config when using service mode
       if (this.configService.serviceMode) {
-        configSchema.layout = configSchema.layout.filter((x: any) => {
-          return x.ref !== 'log'
-        })
-
-        configSchema.layout = configSchema.layout.filter((x: any) => {
-          return !(x === 'sudo' || x.key === 'restart')
-        })
+        configSchema.layout = configSchema.layout.filter((section: any) => section.ref !== 'log' && section.ref !== 'homebridge')
       }
     }
 

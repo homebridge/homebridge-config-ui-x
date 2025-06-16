@@ -8,11 +8,10 @@
   </div>
   <div class="text-center">
     <h4 class="primary-text mb-4">{{ 'restart.title_restart' | translate }}</h4>
-    @if (!error) {
-    <p class="grey-text">{{ 'restart.please_wait_while_server_restarts' | translate }}</p>
-    } @if (error) {
+    @if (error) {
     <div class="alert alert-error my-4">{{ error }}</div>
-    } @if (!this.error) {
+    } @else {
+    <p class="grey-text">{{ 'restart.please_wait_while_server_restarts' | translate }}</p>
     <div class="justify-content-center my-4">
       <div class="restart-progress-box primary-text">
         <span>

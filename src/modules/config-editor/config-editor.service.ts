@@ -290,12 +290,11 @@ export class ConfigEditorService {
 
     // Save the config file
     await this.updateConfigFile(config)
-
     return pluginConfig
   }
 
   /**
-   * Set a specific property for the homebridge-config-ui-x plugin
+   * Set a specific property for the Homebridge UI
    */
   public async setPropertyForUi(property: string, value: any) {
     // Cannot update the platform property
@@ -303,19 +302,59 @@ export class ConfigEditorService {
       throw new BadRequestException('Cannot update the platform property.')
     }
 
-    // 1. get the current config for homebridge-config-ui-x
+    // 1. Get the current config for the Homebridge UI
     const config = await this.getConfigFile()
-
-    // 2. update the property
     const pluginConfig = config.platforms.find(x => x.platform === 'config')
-    // If value is empty, null or undefined, delete the property
-    if (value === '' || value === null || value === undefined) {
-      delete pluginConfig[property]
+
+    // 2. Calculate the property, split dots into nested properties
+    const forbiddenKeys = ['__proto__', 'constructor', 'prototype']
+    if (property.includes('.')) {
+      const properties = property.split('.')
+      let current = pluginConfig
+
+      for (let i = 0; i < properties.length - 1; i++) {
+        if (!forbiddenKeys.includes(properties[i])) {
+          if (!current[properties[i]]) {
+            current[properties[i]] = {}
+          }
+          current = current[properties[i]]
+        }
+      }
+
+      const finalProperty = properties[properties.length - 1]
+      if (!forbiddenKeys.includes(finalProperty)) {
+        // 3. Update the final property
+        current[finalProperty] = value
+      }
     } else {
-      pluginConfig[property] = value
+      if (!forbiddenKeys.includes(property)) {
+        pluginConfig[property] = value
+      }
     }
 
-    // 3. save the config file
+    // 4. Clean and save the UI config block
+    config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = this.cleanUpUiConfig(pluginConfig)
+    await this.updateConfigFile(config)
+  }
+
+  /**
+   * Set the accessory control blacklist (this request is not partial)
+   */
+  public async setAccessoryControlInstanceBlacklist(value: string[]) {
+    // 1. Get the current config for the Homebridge UI
+    const config = await this.getConfigFile()
+    const pluginConfig = config.platforms.find(x => x.platform === 'config')
+
+    // 2. Ensure the accessoryControl block exists and set the instanceBlacklist
+    if (!pluginConfig.accessoryControl) {
+      pluginConfig.accessoryControl = {}
+    }
+    pluginConfig.accessoryControl.instanceBlacklist = (value || [])
+      .filter(x => typeof x === 'string' && x.trim() !== '' && /^(?:[A-F0-9]{2}:){5}[A-F0-9]{2}$/i.test(x.trim()))
+      .map(x => x.trim().toUpperCase())
+
+    // 3. Clean and save the UI config block
+    config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = this.cleanUpUiConfig(pluginConfig)
     await this.updateConfigFile(config)
   }
 
@@ -336,7 +375,6 @@ export class ConfigEditorService {
     config.disabledPlugins.push(pluginName)
 
     await this.updateConfigFile(config)
-
     return config.disabledPlugins
   }
 
@@ -409,9 +447,9 @@ export class ConfigEditorService {
     const backups = await this.listConfigBackups()
 
     // Delete each backup file
-    backups.forEach(async (backupFile) => {
+    for (const backupFile of backups) {
       await unlink(resolve(this.configService.configBackupPath, backupFile.file))
-    })
+    }
   }
 
   /**
@@ -504,5 +542,47 @@ export class ConfigEditorService {
       }
     }
     return username
+  }
+
+  /**
+   * Removes empty objects and arrays from the provided object
+   * Warning: This will modify the object in place, so use with caution.
+   * @param {Record<string, any>} obj
+   * @return {void}
+   * @private
+   */
+  private removeEmpty(obj: Record<string, any>): void {
+    Object.keys(obj).forEach((key) => {
+      const value = obj[key]
+      if (value === '' || value === null || value === undefined || value === false || (Array.isArray(value) && value.length === 0)) {
+        // Checking for 'false' is okay for the UI as all defaults are false
+        delete obj[key]
+      } else if (typeof value === 'object') {
+        this.removeEmpty(value)
+        if (Object.keys(value).length === 0) {
+          delete obj[key]
+        }
+      }
+    })
+  }
+
+  /**
+   * Cleans up the UI config object
+   * - Removes empty objects and arrays
+   * - Ensures the name key is first and platform key is last
+   * @param {Record<string, any>} uiConfig
+   * @return {Record<string, any>}
+   * @private
+   */
+  private cleanUpUiConfig(uiConfig: Record<string, any>): Record<string, any> {
+    // Name key first, platform key last
+    const { name, platform, ...rest } = uiConfig
+    const cleanedUiConfig = {
+      name,
+      ...rest,
+      platform,
+    }
+    this.removeEmpty(cleanedUiConfig)
+    return cleanedUiConfig
   }
 }

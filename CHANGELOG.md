@@ -20,6 +20,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - redesigned setup wizard page
 - style HBv2/UIv5 icons on status page based on readiness
 - security system modal only show valid modes
+- refactor settings page with immediate saving
 
 ### Homebridge Dependencies
 

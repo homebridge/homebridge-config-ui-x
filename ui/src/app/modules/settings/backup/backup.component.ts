@@ -1,6 +1,7 @@
 import { DatePipe, NgClass } from '@angular/common'
 import { Component, inject, OnInit } from '@angular/core'
 import { FormControl, ReactiveFormsModule } from '@angular/forms'
+import { Router } from '@angular/router'
 import { NgbActiveModal, NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { saveAs } from 'file-saver'
@@ -27,15 +28,17 @@ export class BackupComponent implements OnInit {
   $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
   private $modal = inject(NgbModal)
+  private $router = inject(Router)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
+
+  private restartToastIsShown = false
 
   public clicked = false
   public scheduledBackups = []
   public backupTime: string
   public deleting = null
-
   public currentSettingEnabled = false
   public currentSettingPath = ''
   public enabledFormControl = new FormControl(false)
@@ -54,14 +57,14 @@ export class BackupComponent implements OnInit {
     this.pathFormControl.patchValue(this.currentSettingPath)
 
     this.enabledFormControl.valueChanges
-      .pipe(debounceTime(400))
+      .pipe(debounceTime(750))
       .subscribe(async (value) => {
         this.currentSettingEnabled = value
         await this.saveUiSettingChange('scheduledBackupDisable', !this.currentSettingEnabled)
       })
 
     this.pathFormControl.valueChanges
-      .pipe(debounceTime(400))
+      .pipe(debounceTime(1500))
       .subscribe(async (value) => {
         this.currentSettingPath = value
         await this.saveUiSettingChange('scheduledBackupPath', this.currentSettingPath)
@@ -71,6 +74,7 @@ export class BackupComponent implements OnInit {
   async saveUiSettingChange(key: string, value: any) {
     try {
       await firstValueFrom(this.$api.put('/config-editor/ui', { key, value }))
+      this.showRestartToast()
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
@@ -166,6 +170,30 @@ export class BackupComponent implements OnInit {
         this.$toastr.error(this.$translate.instant('backup.backup_download_failed'), this.$translate.instant('toast.title_error'))
       },
     })
+  }
+
+  showRestartToast() {
+    if (!this.restartToastIsShown) {
+      this.restartToastIsShown = true
+      const ref = this.$toastr.info(
+        this.$translate.instant('settings.changes.saved'),
+        this.$translate.instant('menu.hbrestart.title'),
+        {
+          timeOut: 0,
+          closeButton: false,
+          tapToDismiss: true,
+          disableTimeOut: true,
+          positionClass: 'toast-bottom-right',
+          enableHtml: true,
+        },
+      )
+
+      if (ref && ref.onTap) {
+        ref.onTap.subscribe(() => {
+          this.$router.navigate(['/restart'])
+        })
+      }
+    }
   }
 
   protected readonly Date = Date

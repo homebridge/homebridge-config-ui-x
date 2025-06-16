@@ -26,7 +26,7 @@
         "title": "Homebridge UI Authentication",
         "type": "string",
         "default": "form",
-        "description": "The type of authentication to use for the Homebridge UI.",
+        "description": "Whether to enable authentication for the Homebridge UI with a username and password.",
         "oneOf": [
           {
             "title": "Require Authentication",
@@ -437,7 +437,7 @@
         "placeholder": 28800,
         "minimum": 600,
         "maximum": 86400000,
-        "description": "The number of seconds before a user session will timeout. Defaults to 8 hours.",
+        "description": "The number of seconds before a user will be logged out of the UI. Defaults to 8 hours.",
         "condition": {
           "functionBody": "return model.auth === 'form'"
         }
@@ -638,25 +638,11 @@
   },
   "layout": [
     {
-      "ref": "login",
-      "type": "fieldset",
-      "expandable": true,
-      "title": "Login Settings",
-      "items": [
-        "auth",
-        {
-          "key": "sessionTimeout",
-          "type": "number"
-        }
-      ]
-    },
-    {
       "ref": "log",
       "type": "fieldset",
       "expandable": true,
       "title": "Log Settings",
       "items": [
-        "debug",
         "log.method",
         "log.path",
         "log.service",
@@ -666,95 +652,23 @@
       ]
     },
     {
-      "ref": "logRetention",
-      "type": "fieldset",
-      "expandable": true,
-      "title": "Log Retention Settings",
-      "items": [
-        "log.maxSize",
-        "log.truncateSize"
-      ]
-    },
-    {
-      "ref": "accessoryControl",
-      "type": "fieldset",
-      "expandable": true,
-      "title": "Accessory Control",
-      "items": [
-        "accessoryControl.debug",
-        {
-          "key": "accessoryControl.instanceBlacklist",
-          "type": "array",
-          "items": {
-            "key": "accessoryControl.instanceBlacklist[]",
-            "type": "string",
-            "pattern": "^([A-Fa-f0-9]{2}:){5}[A-Fa-f0-9]{2}$",
-            "title": "Instance Username"
-          }
-        }
-      ]
-    },
-    {
-      "ref": "hostname",
-      "type": "fieldset",
-      "expandable": true,
-      "title": "Hostname Settings",
-      "items": [
-        "proxyHost",
-        "host"
-      ]
-    },
-    {
-      "ref": "ssl",
-      "type": "fieldset",
-      "expandable": true,
-      "title": "SSL Settings",
-      "items": [
-        "ssl.key",
-        "ssl.cert",
-        "ssl.pfx",
-        "ssl.passphrase"
-      ]
-    },
-    {
       "ref": "homebridge",
       "type": "fieldset",
       "expandable": true,
       "title": "Homebridge Settings",
       "items": [
         "sudo",
-        "restart",
-        "homebridgePackagePath"
+        "restart"
       ]
     },
     {
-      "ref": "operatingSystem",
+      "ref": "container",
       "type": "fieldset",
       "expandable": true,
-      "title": "Operating System Specific Settings",
+      "title": "Container Settings",
       "items": [
-        "disableServerMetricsMonitoring",
-        {
-          "ref": "linux",
-          "type": "fieldset",
-          "expandable": true,
-          "title": "Linux Settings",
-          "items": [
-            "linux.shutdown",
-            "linux.restart",
-            "temp"
-          ]
-        },
-        {
-          "ref": "container",
-          "type": "fieldset",
-          "expandable": true,
-          "title": "Container Settings",
-          "items": [
-            "standalone",
-            "noFork"
-          ]
-        }
+        "standalone",
+        "noFork"
       ]
     }
   ]

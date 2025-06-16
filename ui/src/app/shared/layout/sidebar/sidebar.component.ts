@@ -43,7 +43,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   constructor() {
     const router = this.router
-
     this.isMobile = window.innerWidth < 768
     let resizeTimeout: any
     window.addEventListener('resize', () => {

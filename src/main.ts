@@ -105,6 +105,7 @@ async function bootstrap(): Promise<NestFastifyApplication> {
   // Setup cors
   app.enableCors({
     origin: ['http://localhost:8080', 'http://localhost:4200'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   })
 
   // Validation pipes

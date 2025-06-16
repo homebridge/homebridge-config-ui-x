@@ -38,7 +38,7 @@
               }"
             ></i>
             {{ (item._isPaired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate }} &middot;
-            <span class="font-monospace">{{item._username }}</span> &middot; {{ item._main ? 'Homebridge' :
+            <span class="font-monospace">{{ item._username }}</span> &middot; {{ item._main ? 'Homebridge' :
             (item._category | titlecase) }}
           </small>
         </span>
@@ -81,7 +81,7 @@
               }"
             ></i>
             {{ (item._isPaired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate }} &middot;
-            <span class="font-monospace">{{item._username }}</span>
+            <span class="font-monospace">{{ item._username }}</span>
           </small>
         </span>
         <button
@@ -123,7 +123,7 @@
               }"
             ></i>
             {{ (item._isPaired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate }} &middot;
-            <span class="font-monospace">{{item._username }}</span>
+            <span class="font-monospace">{{ item._username }}</span>
           </small>
         </span>
         <button

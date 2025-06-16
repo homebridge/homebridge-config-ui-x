@@ -15,20 +15,22 @@
       <li>{{ 'settings.network.message_network_interface' | translate }}</li>
     </ul>
     <ul class="list-group list-group-box">
-      <li class="list-group-item d-flex flex-row justify-content-between">
-        <strong>{{ 'settings.network.label_interface_name' | translate }}</strong>
-        <strong>{{ 'settings.network.label_ip_address' | translate }}</strong>
-      </li>
-      @for (adapter of availableNetworkAdapters; track adapter) {
-      <li class="list-group-item d-flex flex-row flex-wrap justify-content-between">
+      @for (adapter of adaptersAvailable; track adapter) {
+      <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
+        <div>
+          <span class="font-monospace">{{ adapter.ip4 || adapter.ip6 }}</span><br />
+          <span class="font-monospace grey-text">{{ adapter.iface }}</span>
+        </div>
         <span>
-          <label class="hb-uix-switch d-inline pe-3" [for]="'adapter' + adapter.iface">
-            <input [id]="'adapter' + adapter.iface" type="checkbox" [(ngModel)]="adapter.selected" />
-            <span>{{ adapter.iface }}</span>
-            <span class="hb-uix-slider hb-uix-round"></span>
-          </label>
+          <input
+            type="checkbox"
+            class="rendux-input"
+            [id]="'adapter' + adapter.iface"
+            [(ngModel)]="adapter.selected"
+            (ngModelChange)="onAdapterSelectionChange()"
+          />
+          <label [for]="'adapter' + adapter.iface" class="rendux-label ms-3"></label>
         </span>
-        <span class="font-monospace">{{ adapter.ip4 || adapter.ip6 }}</span>
       </li>
       }
     </ul>
@@ -48,7 +50,7 @@
     </div>
     <div class="text-center"></div>
     <div class="text-end">
-      <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="submit()">
+      <button type="button" class="btn btn-primary" data-bs-dismiss="modal" [disabled]="isUnchanged" (click)="submit()">
         {{ 'form.button_save' | translate }}
       </button>
     </div>

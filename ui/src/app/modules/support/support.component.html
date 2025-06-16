@@ -12,7 +12,10 @@
     class="mt-3 hover-pointer"
   >
     <h5 class="primary-text">
-      <i class="fa fa-fw" [ngClass]="showFields.general ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+      <i
+        class="fa fa-fw"
+        [ngClass]="{ 'fa-chevron-down': showFields.general, 'fa-chevron-right' : !showFields.general }"
+      ></i>
       {{ 'support.links.title' | translate }}
     </h5>
   </div>
@@ -95,7 +98,7 @@
     class="mt-3 hover-pointer"
   >
     <h5 class="primary-text">
-      <i class="fa fa-fw" [ngClass]="showFields.dev ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+      <i class="fa fa-fw" [ngClass]="{ 'fa-chevron-down': showFields.dev, 'fa-chevron-right' : !showFields.dev }"></i>
       {{ 'support.dev.title' | translate }}
     </h5>
   </div>

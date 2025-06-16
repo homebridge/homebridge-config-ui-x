@@ -33,7 +33,7 @@ export class RemoveIndividualAccessoriesComponent implements OnInit {
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
 
-  private pairings: any[] = []
+  public pairings: any[] = []
 
   @Input() selectedBridge: string = ''
   public clicked: boolean = false

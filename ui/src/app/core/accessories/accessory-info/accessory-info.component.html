@@ -37,6 +37,7 @@
           <label for="hide-accessory" class="rendux-label ms-3"></label>
         </div>
       </li>
+      @if (!service.hidden) {
       <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
         <span class="text-start">{{ 'accessories.show_on_dashboard' | translate }}</span>
         <div class="text-end grey-text d-flex align-items-center">
@@ -50,6 +51,7 @@
           <label for="show-on-dashboard" class="rendux-label ms-3"></label>
         </div>
       </li>
+      }
     </ul>
     <ul class="list-group list-group-box mb-3">
       <li class="list-group-item">

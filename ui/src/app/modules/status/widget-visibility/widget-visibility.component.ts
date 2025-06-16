@@ -1,4 +1,5 @@
 import { Component, inject, Input, OnInit } from '@angular/core'
+import { FormsModule } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 
@@ -9,6 +10,7 @@ import { SettingsService } from '@/app/core/settings.service'
   standalone: true,
   imports: [
     TranslatePipe,
+    FormsModule,
   ],
 })
 export class WidgetVisibilityComponent implements OnInit {
@@ -141,7 +143,7 @@ export class WidgetVisibilityComponent implements OnInit {
       .sort((a, b) => a.name.localeCompare(b.name))
       .map(x => ({
         ...x,
-        shown: !this.dashboard.some((i: any) => i.component === x.component),
+        shown: this.dashboard.some((i: any) => i.component === x.component),
       }))
   }
 

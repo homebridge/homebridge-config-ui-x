@@ -15,24 +15,17 @@
       @for (widget of availableWidgets; track widget) {
       <li class="list-group-item d-flex justify-content-between align-items-center">
         <span style="word-break: break-all">{{ widget.name }}</span>
-        <div class="btn-group m-0 ms-3" role="group">
-          <button
-            class="btn btn-primary m-0"
+        <span>
+          <input
+            type="checkbox"
+            class="rendux-input"
+            [checked]="widget.shown"
+            [id]="'widget' + widget.name"
             (click)="selectWidget(widget)"
-            [disabled]="!widget.shown"
             [attr.aria-label]="('form.button_show' | translate) + ' ' + widget.name"
-          >
-            <i class="fas fa-fw fa-eye"></i>
-          </button>
-          <button
-            class="btn btn-primary m-0"
-            (click)="selectWidget(widget)"
-            [disabled]="widget.shown"
-            [attr.aria-label]="('form.button_hide' | translate) + ' ' + widget.name"
-          >
-            <i class="fas fa-fw fa-eye-slash"></i>
-          </button>
-        </div>
+          />
+          <label [for]="'widget' + widget.name" class="rendux-label ms-3"></label>
+        </span>
       </li>
       }
     </ul>
