@@ -25,11 +25,12 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - make terminal enabled by default on new macOS hb-service installs
 - set service mode as default, remove standalone
 - Initial support for NodeJS 24 in preparation for LTS in Fall of 2025 (#2451) (@NorthernMan54)
+- update `fastify` and `nestjs` dependencies
 
 ### Homebridge Dependencies
 
-- `@homebridge/hap-client` @ `v2.2.0`
-- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.11.14`
+- `@homebridge/hap-client` @ `v3.0.0`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
 - `@homebridge/plugin-ui-utils` @ `v2.1.0`
 
 ## v4.78.1 (2025-07-03)

@@ -24,7 +24,6 @@ jobs:
       # # Coveralls only expects to create a report once per build
       runs_on: ${{ matrix.os }}
       install_cmd: npm ci && cd ui && npm ci
-      node_versions: '["20", "22"]'
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
 
