@@ -24,6 +24,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - bump the default node version from 20 to 22
 - make terminal enabled by default on new macOS hb-service installs
 - set service mode as default, remove standalone
+- Initial support for NodeJS 24 in preparation for LTS in Fall of 2025 (#2451) (@NorthernMan54)
 
 ### Homebridge Dependencies
 
