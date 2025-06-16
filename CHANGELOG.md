@@ -2,17 +2,22 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## v4.77.0 (Unreleased)
+## v4.77.0 (2025-06-29)
 
 ### ⚠️ Upcoming Deprecations:
 
-- A new version of Homebridge UI (v5) will be released around mid-June 2025. This will be compatible with both Homebridge v1 and v2 (in beta).
+- A new version of Homebridge UI (v5) will be released in July 2025. This will be compatible with both Homebridge v1 and v2 (in beta).
 - Initially, there will be no significant differences between Homebridge UI v4 and v5. The major version increment primarily reflects the removal of support for outdated technologies and hardware. UI v5 will:
   - Be compatible with Homebridge `v1` and `v2`
   - Drop support for Node.js `v18` and earlier, so please update to `v20` or `v22` - [more info on updating](https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js)
   - Drop support for Raspberry Pi devices running on the `armv6` architecture (like the Pi 1 and Pi Zero) - please update your hardware
   - Drop support for instances using `pnpm` as the package manager - consider updating your Homebridge instance to use npm instead - [more info on updating](https://github.com/homebridge/homebridge-apt-pkg/blob/latest/README.md#using-apt)
 - Note that these are not requirements for UI `v4.77.0`
+
+### ⚠️ Default Theme Change:
+
+- The default theme for Homebridge UI has been changed from `orange` to `deep-purple`.
+  - If you want to change the theme back to `orange`, you can do so in the settings page.
 
 ### UI Changes
 
@@ -33,7 +38,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ### Homebridge Dependencies
 
-- `@homebridge/hap-client` @ `v2.2.0`
+- `@homebridge/hap-client` @ `v3.1.0`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.11.14`
 - `@homebridge/plugin-ui-utils` @ `v2.1.0`
 

@@ -35,6 +35,7 @@
             ],
             "allowedCommonJsDependencies": [
               "@/app/modules/status/status.component",
+              "@homebridge/hap-client/dist/hap-types",
               "ajv",
               "ajv-keywords",
               "dayjs",

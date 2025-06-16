@@ -37,6 +37,7 @@ jobs:
     with:
       enable_coverage: true
       install_cmd: npm ci && cd ui && npm ci
+      node_versions: '["20", "22"]'
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
 

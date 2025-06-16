@@ -23,6 +23,7 @@ jobs:
     uses: homebridge/.github/.github/workflows/nodejs-build-and-test.yml@latest
     with:
       enable_coverage: false
+      node_versions: '["20", "22"]'
       # # Code Coverage can only be used in a single run, not in a parallel run - Error: Bad response: 422 {"message":"Can't add a job to a build that is already closed. Build 6224987022 is closed. See docs.coveralls.io/parallel-builds","error":true}
       # # Coveralls only expects to create a report once per build
       runs_on: ${{ matrix.os }}
