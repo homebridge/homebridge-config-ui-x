@@ -1,7 +1,7 @@
 import { NgClass } from '@angular/common'
 import { Component, inject, Input, OnInit } from '@angular/core'
 import { RouterLink } from '@angular/router'
-import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
@@ -12,7 +12,6 @@ import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.s
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { HbV2ModalComponent } from '@/app/modules/status/widgets/update-info-widget/hb-v2-modal/hb-v2-modal.component'
-import { UiV5ModalComponent } from '@/app/modules/status/widgets/update-info-widget/ui-v5-modal/ui-v5-modal.component'
 
 @Component({
   templateUrl: './update-info-widget.component.html',
@@ -22,7 +21,6 @@ import { UiV5ModalComponent } from '@/app/modules/status/widgets/update-info-wid
     NgClass,
     TranslatePipe,
     RouterLink,
-    NgbTooltip,
   ],
 })
 export class UpdateInfoWidgetComponent implements OnInit {
@@ -45,7 +43,6 @@ export class UpdateInfoWidgetComponent implements OnInit {
   public serverInfo: any
 
   public isRunningHbV2 = false
-  public isRunningUiV5 = false
 
   public isHbV2Ready = false
   public isUiV5Ready = false
@@ -119,11 +116,6 @@ export class UpdateInfoWidgetComponent implements OnInit {
       const response = await firstValueFrom(this.io.request('homebridge-ui-version-check'))
       this.homebridgeUiPkg = response
       this.$settings.env.homebridgeUiVersion = response.installedVersion
-      this.isRunningUiV5 = response.installedVersion.startsWith('5.')
-      this.isUiV5Ready = this.homebridgeUiPkg.readyForV5.node
-        && this.homebridgeUiPkg.readyForV5.service
-        && this.homebridgeUiPkg.readyForV5.pnpm
-        && this.homebridgeUiPkg.readyForV5.arch
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
@@ -178,13 +170,5 @@ export class UpdateInfoWidgetComponent implements OnInit {
       backdrop: 'static',
     })
     ref.componentInstance.isUpdating = false
-  }
-
-  readyForV5Modal() {
-    const ref = this.$modal.open(UiV5ModalComponent, {
-      size: 'lg',
-      backdrop: 'static',
-    })
-    ref.componentInstance.readyForV5 = this.homebridgeUiPkg.readyForV5
   }
 }
