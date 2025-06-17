@@ -257,7 +257,14 @@ export class PluginsService {
       await this.getInstalledPlugins()
     }
 
-    query = query.trim().toLowerCase()
+    const queryTerms: string[] = query
+      .split(/\s+/)                           // split into words
+      .filter(term => term.length > 0)        // remove empty strings
+      .filter(term => term !== 'homebridge')  // remove noisy term
+      .filter(term => term !== 'plugin')      // remove noisy term
+
+    // Did we strip too much?
+    query = (queryTerms.length > 0) ? queryTerms.join(' ').toLowerCase() : 'homebridge'
 
     if ((query.startsWith('homebridge-') || this.isScopedPlugin(query)) && !this.hiddenPlugins.includes(query)) {
       // Change the query to the scoped version if it exists, and the 'old' version is not installed
@@ -328,30 +335,58 @@ export class PluginsService {
       .filter(term => term.length > 0) // remove empty strings
 
     // Separate lists for exact matches and partial matches
-    const exactMatchPlugins: HomebridgePlugin[] = []
-    const partialMatchPlugins: HomebridgePlugin[] = []
+    let exactNameMatchPlugins: HomebridgePlugin[] = []
+    let exactKeywordMatchPlugins: HomebridgePlugin[] = []
+    let partialKeywordMatchPlugins: HomebridgePlugin[] = []
 
     // Filter matching plugins
     result.forEach((plugin) => {
+      const pluginName = plugin.name.toLowerCase()
+
+      // Name contains all search terms
+      const isExactNameMatch =
+        searchTerms.every(term => pluginName.includes(term))
+      if (isExactNameMatch) {
+        exactNameMatchPlugins.push(plugin)
+      }
+
+      // Keywords contain all search terms
       const pluginKeywords = plugin.keywords.map(keyword => keyword.toLowerCase())
-      const isExactMatch = pluginKeywords.includes(searchTerm)
-      if (isExactMatch) {
-        exactMatchPlugins.push(plugin)
+      const isExactKeywordMatch =
+        searchTerms.every(term => pluginKeywords.includes(term))
+      if (isExactKeywordMatch) {
+        exactKeywordMatchPlugins.push(plugin)
         return
       }
 
-      const pluginName = plugin.name.toLowerCase()
+      // Name, keywords or description contain all some search terms
       const pluginDescription = plugin.description.toLowerCase()
-      const isPartialMatch = searchTerms.some(term => pluginName.includes(term))
-        || searchTerms.some(term => pluginKeywords.some(keyword => keyword.includes(term)))
-        || searchTerms.some(term => pluginDescription.includes(term))
+      const isPartialKeywordMatch =
+        searchTerms.some(term => pluginName.includes(term)) ||
+        searchTerms.some(term => pluginKeywords.some(keyword => keyword.includes(term))) ||
+        searchTerms.some(term => pluginDescription.includes(term))
 
-      if (isPartialMatch) {
-        partialMatchPlugins.push(plugin)
+      if (isPartialKeywordMatch) {
+        partialKeywordMatchPlugins.push(plugin)
       }
     })
 
-    return orderBy([...exactMatchPlugins, ...partialMatchPlugins], ['verifiedPlusPlugin', 'verifiedPlugin'], ['desc', 'desc'])
+    // Order each group by: Homebridge scoped, verified Plus, verified
+    exactNameMatchPlugins = orderBy(exactNameMatchPlugins,
+      ['isHbScoped', 'verifiedPlusPlugin', 'verifiedPlugin'],
+      ['desc', 'desc', 'desc']
+    )
+    exactKeywordMatchPlugins = orderBy(exactKeywordMatchPlugins,
+      ['isHbScoped', 'verifiedPlusPlugin', 'verifiedPlugin'],
+      ['desc', 'desc', 'desc']
+    )
+    partialKeywordMatchPlugins = orderBy(partialKeywordMatchPlugins,
+      ['isHbScoped', 'verifiedPlusPlugin', 'verifiedPlugin'],
+      ['desc', 'desc', 'desc']
+    )
+
+    // Assemble set in order of match
+    return [...exactNameMatchPlugins, ...exactKeywordMatchPlugins, ...partialKeywordMatchPlugins]
       .slice(0, 30)
       .map(plugin => this.fixDisplayName(plugin))
   }
@@ -901,7 +936,7 @@ export class PluginsService {
     await new Promise(res => setTimeout(res, 800))
 
     client.emit('stdout', yellow('If you have not started the Docker container with ')
-    + red('--restart=always') + yellow(' you may\n\rneed to manually start the container again.\n\r\n\r'))
+      + red('--restart=always') + yellow(' you may\n\rneed to manually start the container again.\n\r\n\r'))
     await new Promise(res => setTimeout(res, 800))
 
     client.emit('stdout', yellow('This process may take several minutes. Please be patient.\n\r'))
