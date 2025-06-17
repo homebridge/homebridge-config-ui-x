@@ -23,6 +23,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - refactor settings page with immediate saving
 - add support for `uiSchema` within plugin configurations
 - add option to hide update notifications for specific plugins
+- improve plugin search and result ordering (@justjam2013)
 
 ### Homebridge Dependencies
 

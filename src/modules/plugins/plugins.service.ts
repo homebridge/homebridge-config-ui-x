@@ -248,6 +248,41 @@ export class PluginsService {
     }
   }
 
+  private normalizeQuery(query: string): string[] {
+    return query
+      .toLowerCase()
+      .split(/\s+/)
+      .map(term => term.trim())
+      .filter(term => term && term !== 'homebridge' && term !== 'plugin')
+  }
+
+  private getPluginKeywords(plugin: any): string[] {
+    return Array.isArray(plugin.keywords)
+      ? plugin.keywords.map(k => k.toLowerCase())
+      : []
+  }
+
+  private matchesPlugin(plugin: HomebridgePlugin, searchTerms: string[]): 'exactName' | 'exactKeyword' | 'partial' | null {
+    const pluginName = plugin.name.toLowerCase()
+    const pluginKeywords = this.getPluginKeywords(plugin)
+    const pluginDescription = (plugin.description || '').toLowerCase()
+
+    if (searchTerms.every(term => pluginName.includes(term))) {
+      return 'exactName'
+    }
+    if (searchTerms.every(term => pluginKeywords.includes(term))) {
+      return 'exactKeyword'
+    }
+    if (
+      searchTerms.some(term => pluginName.includes(term))
+      || searchTerms.some(term => pluginKeywords.some(k => k.includes(term)))
+      || searchTerms.some(term => pluginDescription.includes(term))
+    ) {
+      return 'partial'
+    }
+    return null
+  }
+
   /**
    * Search the npm registry for homebridge plugins
    * @param query
@@ -257,21 +292,26 @@ export class PluginsService {
       await this.getInstalledPlugins()
     }
 
-    query = query.trim().toLowerCase()
+    const searchTerms = this.normalizeQuery(query)
+    const normalizedQuery = searchTerms.length > 0 ? searchTerms.join(' ') : 'homebridge'
 
-    if ((query.startsWith('homebridge-') || this.isScopedPlugin(query)) && !this.hiddenPlugins.includes(query)) {
-      // Change the query to the scoped version if it exists, and the 'old' version is not installed
-      if (!this.installedPlugins.find(x => x.name === query) && Object.keys(this.newScopePlugins).includes(query)) {
-        query = `@homebridge-plugins/${query}`
+    if (
+      (normalizedQuery.startsWith('homebridge-') || this.isScopedPlugin(normalizedQuery))
+      && !this.hiddenPlugins.includes(normalizedQuery)
+    ) {
+      if (
+        !this.installedPlugins.find(x => x.name === normalizedQuery)
+        && Object.keys(this.newScopePlugins).includes(normalizedQuery)
+      ) {
+        return await this.searchNpmRegistrySingle(`@homebridge-plugins/${normalizedQuery}`)
       }
-      return await this.searchNpmRegistrySingle(query)
+      return await this.searchNpmRegistrySingle(normalizedQuery)
     }
 
     // There seems to be a new 64-character limit on the text query (which allows for 15 characters of a query)
     // Get the top 99 plugins now, later we filter down to the top 30
-    const q = `${(!query || !query.length) ? '' : `${query.substring(0, 15)}+`}keywords:homebridge-plugin+not:deprecated&size=99`
+    const q = `${normalizedQuery.substring(0, 15)}+keywords:homebridge-plugin+not:deprecated&size=99`
     let searchResults: INpmSearchResults
-
     try {
       searchResults = (await firstValueFrom(this.httpService.get(`https://registry.npmjs.org/-/v1/search?text=${q}`))).data
     } catch (e) {
@@ -279,79 +319,64 @@ export class PluginsService {
       throw new InternalServerErrorException(`Failed to search the npm registry as ${e.message}, see logs.`)
     }
 
-    const result: HomebridgePlugin[] = searchResults.objects
-      .filter(x => x.package.name.indexOf('homebridge-') === 0 || this.isScopedPlugin(x.package.name))
+    const plugins: HomebridgePlugin[] = searchResults.objects
+      .filter(x => x.package.name.startsWith('homebridge-') || this.isScopedPlugin(x.package.name))
       .filter(x => !this.hiddenPlugins.includes(x.package.name))
       .map((pkg) => {
-        let plugin: HomebridgePlugin = {
-          name: pkg.package.name,
-          displayName: this.pluginNames[pkg.package.name],
-          private: false,
-        }
+        const isInstalled = this.installedPlugins.find(x => x.name === pkg.package.name)
 
         // See if the plugin is already installed
-        const isInstalled = this.installedPlugins.find(x => x.name === plugin.name)
         if (isInstalled) {
-          plugin = isInstalled
-          plugin.lastUpdated = pkg.package.date
-          plugin.keywords = pkg.package.keywords
-          return plugin
+          return {
+            ...isInstalled,
+            lastUpdated: pkg.package.date,
+            keywords: pkg.package.keywords || [],
+          }
         }
 
         // It's not installed; finish building the response
-        plugin.publicPackage = true
-        plugin.installedVersion = null
-        plugin.latestVersion = pkg.package.version
-        plugin.lastUpdated = pkg.package.date
-        plugin.description = (pkg.package.description)
-          ? pkg.package.description.replace(/\(?(?:https?|ftp):\/\/[\n\S]+/g, '').trim()
-          : pkg.package.name
-        plugin.keywords = pkg.package.keywords
-        plugin.links = pkg.package.links
-        plugin.author = this.pluginAuthors[pkg.package.name] || ((pkg.package.publisher) ? pkg.package.publisher.username : null)
-        plugin.verifiedPlugin = this.verifiedPlugins.includes(pkg.package.name)
-        plugin.verifiedPlusPlugin = this.verifiedPlusPlugins.includes(pkg.package.name)
-        plugin.icon = this.pluginIcons[pkg.package.name]
-          ? `${this.pluginListUrl}${this.pluginIcons[pkg.package.name]}`
-          : null
-        plugin.isHbScoped = pkg.package.name.startsWith('@homebridge-plugins/')
-        plugin.newHbScope = this.newScopePlugins[pkg.package.name]
-        plugin.isHbMaintained = this.maintainedPlugins.includes(pkg.package.name)
-        return plugin
+        return {
+          name: pkg.package.name,
+          displayName: this.pluginNames[pkg.package.name],
+          private: false,
+          publicPackage: true,
+          installedVersion: null,
+          latestVersion: pkg.package.version,
+          lastUpdated: pkg.package.date,
+          description: (pkg.package.description || pkg.package.name).replace(/\(?(?:https?|ftp):\/\/[\n\S]+/g, '').trim(),
+          keywords: pkg.package.keywords || [],
+          links: pkg.package.links,
+          author: this.pluginAuthors[pkg.package.name] || (pkg.package.publisher ? pkg.package.publisher.username : null),
+          verifiedPlugin: this.verifiedPlugins.includes(pkg.package.name),
+          verifiedPlusPlugin: this.verifiedPlusPlugins.includes(pkg.package.name),
+          icon: this.pluginIcons[pkg.package.name] ? `${this.pluginListUrl}${this.pluginIcons[pkg.package.name]}` : null,
+          isHbScoped: pkg.package.name.startsWith('@homebridge-plugins/'),
+          newHbScope: this.newScopePlugins[pkg.package.name],
+          isHbMaintained: this.maintainedPlugins.includes(pkg.package.name),
+        }
       })
 
-    const searchTerm: string = query
-      .replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, '') // remove punctuation
+    const matchGroups = {
+      exactName: [] as HomebridgePlugin[],
+      exactKeyword: [] as HomebridgePlugin[],
+      partial: [] as HomebridgePlugin[],
+    }
 
-    const searchTerms: string[] = searchTerm
-      .split(/\s+/) // split into words
-      .filter(term => term.length > 0) // remove empty strings
-
-    // Separate lists for exact matches and partial matches
-    const exactMatchPlugins: HomebridgePlugin[] = []
-    const partialMatchPlugins: HomebridgePlugin[] = []
-
-    // Filter matching plugins
-    result.forEach((plugin) => {
-      const pluginKeywords = plugin.keywords.map(keyword => keyword.toLowerCase())
-      const isExactMatch = pluginKeywords.includes(searchTerm)
-      if (isExactMatch) {
-        exactMatchPlugins.push(plugin)
-        return
+    for (const plugin of plugins) {
+      const matchType = this.matchesPlugin(plugin, searchTerms)
+      if (matchType) {
+        matchGroups[matchType].push(plugin)
       }
+    }
 
-      const pluginName = plugin.name.toLowerCase()
-      const pluginDescription = plugin.description.toLowerCase()
-      const isPartialMatch = searchTerms.some(term => pluginName.includes(term))
-        || searchTerms.some(term => pluginKeywords.some(keyword => keyword.includes(term)))
-        || searchTerms.some(term => pluginDescription.includes(term))
+    const orderPlugins = (arr: HomebridgePlugin[]) =>
+      orderBy(arr, ['isHbScoped', 'verifiedPlusPlugin', 'verifiedPlugin', 'lastUpdated'], ['desc', 'desc', 'desc'])
 
-      if (isPartialMatch) {
-        partialMatchPlugins.push(plugin)
-      }
-    })
-
-    return orderBy([...exactMatchPlugins, ...partialMatchPlugins], ['verifiedPlusPlugin', 'verifiedPlugin'], ['desc', 'desc'])
+    return [
+      ...orderPlugins(matchGroups.exactName),
+      ...orderPlugins(matchGroups.exactKeyword),
+      ...orderPlugins(matchGroups.partial),
+    ]
       .slice(0, 30)
       .map(plugin => this.fixDisplayName(plugin))
   }
