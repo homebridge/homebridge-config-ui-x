@@ -1,4 +1,4 @@
-/* eslint no-multi-spaces: ["error", { ignoreEOLComments: true }]*/
+/* eslint-disable no-multi-spaces */
 /* eslint-disable operator-linebreak */
 /* eslint-disable consistent-list-newline */
 
