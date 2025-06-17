@@ -1,6 +1,5 @@
 /* eslint-disable no-multi-spaces */
 /* eslint-disable operator-linebreak */
-/* eslint-disable consistent-list-newline */
 
 /* global NodeJS */
 import type { EventEmitter } from 'node:events'
