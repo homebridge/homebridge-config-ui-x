@@ -343,14 +343,15 @@ export class PluginsService {
     result.forEach((plugin) => {
       const pluginName = plugin.name.toLowerCase()
 
-      // Name contains all search terms
+      // Name contains all the search terms
       const isExactNameMatch =
         searchTerms.every(term => pluginName.includes(term))
       if (isExactNameMatch) {
         exactNameMatchPlugins.push(plugin)
+        return
       }
 
-      // Keywords contain all search terms
+      // Keywords contain all the search terms
       const pluginKeywords = plugin.keywords.map(keyword => keyword.toLowerCase())
       const isExactKeywordMatch =
         searchTerms.every(term => pluginKeywords.includes(term))
@@ -359,7 +360,7 @@ export class PluginsService {
         return
       }
 
-      // Name, keywords or description contain all some search terms
+      // Name, keywords or description contain some of the search terms
       const pluginDescription = plugin.description.toLowerCase()
       const isPartialKeywordMatch =
         searchTerms.some(term => pluginName.includes(term)) ||
