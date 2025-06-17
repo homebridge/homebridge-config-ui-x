@@ -943,7 +943,7 @@ export class PluginsService {
     await new Promise(res => setTimeout(res, 800))
 
     client.emit('stdout', yellow('If you have not started the Docker container with ')
-        + red('--restart=always') + yellow(' you may\n\rneed to manually start the container again.\n\r\n\r'))
+    + red('--restart=always') + yellow(' you may\n\rneed to manually start the container again.\n\r\n\r'))
     await new Promise(res => setTimeout(res, 800))
 
     client.emit('stdout', yellow('This process may take several minutes. Please be patient.\n\r'))
