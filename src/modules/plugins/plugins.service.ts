@@ -1,3 +1,7 @@
+/* eslint no-multi-spaces: ["error", { ignoreEOLComments: true }]*/
+/* eslint-disable operator-linebreak */
+/* eslint-disable consistent-list-newline */
+
 /* global NodeJS */
 import type { EventEmitter } from 'node:events'
 
@@ -373,17 +377,20 @@ export class PluginsService {
     })
 
     // Order each group by: Homebridge scoped, verified Plus, verified
-    exactNameMatchPlugins = orderBy(exactNameMatchPlugins,
+    exactNameMatchPlugins = orderBy(
+      exactNameMatchPlugins,
       ['isHbScoped', 'verifiedPlusPlugin', 'verifiedPlugin'],
-      ['desc', 'desc', 'desc']
+      ['desc', 'desc', 'desc'],
     )
-    exactKeywordMatchPlugins = orderBy(exactKeywordMatchPlugins,
+    exactKeywordMatchPlugins = orderBy(
+      exactKeywordMatchPlugins,
       ['isHbScoped', 'verifiedPlusPlugin', 'verifiedPlugin'],
-      ['desc', 'desc', 'desc']
+      ['desc', 'desc', 'desc'],
     )
-    partialKeywordMatchPlugins = orderBy(partialKeywordMatchPlugins,
+    partialKeywordMatchPlugins = orderBy(
+      partialKeywordMatchPlugins,
       ['isHbScoped', 'verifiedPlusPlugin', 'verifiedPlugin'],
-      ['desc', 'desc', 'desc']
+      ['desc', 'desc', 'desc'],
     )
 
     // Assemble set in order of match
