@@ -248,10 +248,10 @@ export class PluginsService {
     }
   }
 
-  private normalizeQuery(query: string): string[] {
+  private extractTerms(query: string, separator: RegExp): string[] {
     return query
       .toLowerCase()
-      .split(/\s+/)
+      .split(separator)
       .map(term => term.trim())
       .filter(term => term && term !== 'homebridge' && term !== 'plugin')
   }
@@ -267,9 +267,13 @@ export class PluginsService {
     const pluginKeywords = this.getPluginKeywords(plugin)
     const pluginDescription = (plugin.description || '').toLowerCase()
 
-    if (searchTerms.every(term => pluginName.includes(term))) {
+    const nameTerms = this.extractTerms(pluginName, /-/) // Separator: '-' character
+
+    // The search terms contain all of the parts of the name
+    if (nameTerms.every(term => searchTerms.includes(term))) {
       return 'exactName'
     }
+    // The keywords contain all of the search terms
     if (searchTerms.every(term => pluginKeywords.includes(term))) {
       return 'exactKeyword'
     }
@@ -292,7 +296,7 @@ export class PluginsService {
       await this.getInstalledPlugins()
     }
 
-    const searchTerms = this.normalizeQuery(query)
+    const searchTerms = this.extractTerms(query, /\s+/) // Separator: whitespace (spaces, tabs and new lines) characters
     const normalizedQuery = searchTerms.length > 0 ? searchTerms.join(' ') : 'homebridge'
 
     if (
