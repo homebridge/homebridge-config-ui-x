@@ -269,12 +269,13 @@ export class PluginsService {
 
     const nameTerms = this.extractTerms(pluginName, /-/) // Separator: '-' character
 
-    // The search terms match all of the parts of the name
-    if (JSON.stringify(nameTerms.sort()) === JSON.stringify(searchTerms.sort())) {
+    // The search terms contain all of the parts of the name
+    if (nameTerms.every(term => searchTerms.includes(term))) {
       return 'exactName'
     }
-    // The keywords contain all of the search terms
-    if (searchTerms.every(term => pluginKeywords.includes(term))) {
+    // The keywords or name contain all of the search terms
+    if (searchTerms.every(term => pluginKeywords.includes(term))
+      || searchTerms.every(term => nameTerms.includes(term))) {
       return 'exactKeyword'
     }
     if (
