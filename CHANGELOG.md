@@ -26,7 +26,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - set service mode as default, remove standalone
 - Initial support for NodeJS 24 in preparation for LTS in Fall of 2025 (#2451) (@NorthernMan54)
 - update `fastify` and `nestjs` dependencies
-- Removed redundant Google Smart Home components
+- Removed redundant Google Smart Home components #2464
 
 ### Homebridge Dependencies
 
