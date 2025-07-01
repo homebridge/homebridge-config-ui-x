@@ -646,7 +646,7 @@
             "items": {
               "type": "string",
               "title": "Plugin Name",
-              "pattern": "^(?:[A-Fa-f0-9]{2}:){5}[A-Fa-f0-9]{2}$"
+              "pattern": "^(?:@[\\w-]+(?:\\.[\\w-]+)*/)?homebridge-[\\w-]+$"
             }
           }
         }
@@ -655,9 +655,17 @@
   },
   "layout": [
     {
+      "ref": "homebridge",
+      "type": "fieldset",
+      "title": "Homebridge Settings",
+      "items": [
+        "sudo",
+        "restart"
+      ]
+    },
+    {
       "ref": "log",
       "type": "fieldset",
-      "expandable": true,
       "title": "Log Settings",
       "items": [
         "log.method",
@@ -669,19 +677,8 @@
       ]
     },
     {
-      "ref": "homebridge",
-      "type": "fieldset",
-      "expandable": true,
-      "title": "Homebridge Settings",
-      "items": [
-        "sudo",
-        "restart"
-      ]
-    },
-    {
       "ref": "container",
       "type": "fieldset",
-      "expandable": true,
       "title": "Container Settings",
       "items": [
         "standalone",
