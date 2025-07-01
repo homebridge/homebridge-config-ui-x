@@ -50,6 +50,7 @@ export class Fanv2Component implements OnInit {
   onLongClick() {
     const ref = this.$modal.open(Fanv2ManageComponent, {
       size: 'md',
+      backdrop: 'static',
     })
     ref.componentInstance.service = this.service
   }

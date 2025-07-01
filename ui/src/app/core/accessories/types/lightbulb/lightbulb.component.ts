@@ -68,6 +68,7 @@ export class LightbulbComponent {
     if ('Brightness' in this.service.values || 'Hue' in this.service.values || 'ColorTemperature' in this.service.values) {
       const ref = this.$modal.open(LightbulbManageComponent, {
         size: 'md',
+        backdrop: 'static',
       })
       ref.componentInstance.service = this.service
 

@@ -39,6 +39,7 @@ export class AirpurifierComponent {
   onLongClick() {
     const ref = this.$modal.open(AirpurifierManageComponent, {
       size: 'md',
+      backdrop: 'static',
     })
     ref.componentInstance.service = this.service
   }

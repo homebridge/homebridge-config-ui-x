@@ -33,6 +33,7 @@ export class LockmechanismComponent {
   onLongClick() {
     const ref = this.$modal.open(LockmechanismManageComponent, {
       size: 'md',
+      backdrop: 'static',
     })
     ref.componentInstance.service = this.service
   }

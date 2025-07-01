@@ -44,6 +44,7 @@ export class TelevisionComponent implements OnInit {
     if ('Active' in this.service.values || Object.keys(this.channelList).length) {
       const ref = this.$modal.open(TelevisionManageComponent, {
         size: 'md',
+        backdrop: 'static',
       })
       ref.componentInstance.service = this.service
       ref.componentInstance.inputList = this.channelList

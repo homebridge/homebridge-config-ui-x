@@ -46,6 +46,7 @@ export class HeaterCoolerComponent {
   onLongClick() {
     const ref = this.$modal.open(HeaterCoolerManageComponent, {
       size: 'md',
+      backdrop: 'static',
     })
     ref.componentInstance.service = this.service
   }

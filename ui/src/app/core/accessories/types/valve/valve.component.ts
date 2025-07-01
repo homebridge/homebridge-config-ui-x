@@ -81,6 +81,7 @@ export class ValveComponent implements OnInit, OnDestroy {
   onLongClick() {
     const ref = this.$modal.open(ValveManageComponent, {
       size: 'md',
+      backdrop: 'static',
     })
     ref.componentInstance.service = this.service
   }
