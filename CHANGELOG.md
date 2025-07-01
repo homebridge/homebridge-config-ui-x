@@ -17,6 +17,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Other Changes
 
 - remove bridge id from control blacklist when removing a bridge
+- fix regex for blacklist in config schema file
 
 ### Homebridge Dependencies
 
