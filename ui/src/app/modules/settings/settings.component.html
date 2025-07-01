@@ -1,3 +1,7 @@
+@if (loading) {
+<app-spinner />
+}
+
 <h3 class="primary-text m-0">{{ 'menu.settings.title' | translate }}</h3>
 
 <!-- GENERAL SETTINGS -->
@@ -226,718 +230,725 @@
 
 <!-- STARTUP/ENV OPTIONS -->
 @if ($settings.env.serviceMode || $settings.env.runningInDocker) {
-<div
-  role="button"
-  tabindex="0"
-  [attr.aria-expanded]="showFields.startup ? 'true' : 'false'"
-  [attr.aria-controls]="'fieldsStartup'"
-  (click)="toggleSection('startup')"
-  class="mt-3 hover-pointer"
->
-  <h5 class="primary-text">
-    <i
-      class="fa fa-fw"
-      [ngClass]="{ 'fa-chevron-down': showFields.startup, 'fa-chevron-right': !showFields.startup }"
-    ></i>
-    {{ 'settings.title_startup_options' | translate }}
-  </h5>
+<div class="my-4">
+  <div
+    role="button"
+    tabindex="0"
+    [attr.aria-expanded]="showFields.startup ? 'true' : 'false'"
+    [attr.aria-controls]="'fieldsStartup'"
+    (click)="toggleSection('startup')"
+    class="mt-3 hover-pointer"
+  >
+    <h5 class="primary-text">
+      <i
+        class="fa fa-fw"
+        [ngClass]="{ 'fa-chevron-down': showFields.startup, 'fa-chevron-right': !showFields.startup }"
+      ></i>
+      {{ 'settings.title_startup_options' | translate }}
+    </h5>
+  </div>
+  @if (showFields.startup) {
+  <ul class="list-group list-group-box mb-4 mx-0" id="fieldsStartup">
+    @if ($settings.env.serviceMode) {
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.startup.debug' | translate }} <code>-D</code><br />
+        <small class="grey-text pe-2">
+          {{ (isHbV2 ? 'settings.startup.debug_desc_v2' : 'settings.startup.debug_desc_v1') | translate }}
+        </small>
+      </span>
+      <div class="d-flex align-items-center">
+        <div class="order-1 order-md-2">
+          <input
+            type="checkbox"
+            class="rendux-input"
+            id="homebridgeDebugMode"
+            [formControl]="hbDebugFormControl"
+            [attr.aria-label]="'settings.startup.debug' | translate"
+          />
+          <label for="homebridgeDebugMode" class="rendux-label ms-3" style="min-width: 50px"></label>
+        </div>
+        @if (hbDebugIsSaving) {
+        <i
+          @fadeInOut
+          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+        ></i>
+        }
+      </div>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.startup.insecure' | translate }} <code>-I</code><br />
+        <small class="grey-text pe-2">{{ 'settings.startup.insecure_desc' | translate }}</small>
+      </span>
+      <div class="d-flex align-items-center">
+        <div class="order-1 order-md-2">
+          <input
+            type="checkbox"
+            class="rendux-input"
+            id="homebridgeInsecureMode"
+            [formControl]="hbInsecureFormControl"
+            [attr.aria-label]="'settings.startup.insecure' | translate"
+          />
+          <label for="homebridgeInsecureMode" class="rendux-label ms-3" style="min-width: 50px"></label>
+        </div>
+        @if (hbInsecureIsSaving) {
+        <i
+          @fadeInOut
+          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+        ></i>
+        }
+      </div>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.startup.keep_accessories' | translate }} <code>-K</code><br />
+        <small class="grey-text pe-2">{{ 'settings.startup.keep_accessories_desc' | translate }}</small>
+      </span>
+      <div class="d-flex align-items-center">
+        <div class="order-1 order-md-2">
+          <input
+            type="checkbox"
+            class="rendux-input"
+            id="homebridgeKeepOrphans"
+            [formControl]="hbKeepFormControl"
+            [attr.aria-label]="'settings.startup.keep_accessories' | translate"
+          />
+          <label for="homebridgeKeepOrphans" class="rendux-label ms-3" style="min-width: 50px"></label>
+        </div>
+        @if (hbKeepIsSaving) {
+        <i
+          @fadeInOut
+          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+        ></i>
+        }
+      </div>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.startup.metrics' | translate }}<br />
+        <small class="grey-text pe-2">{{ 'settings.startup.metrics_desc' | translate }}</small>
+      </span>
+      <div class="d-flex align-items-center">
+        <div class="order-1 order-md-2">
+          <input
+            type="checkbox"
+            class="rendux-input"
+            id="homebridgeMetrics"
+            [formControl]="uiMetricsFormControl"
+            [attr.aria-label]="'settings.startup.metrics' | translate"
+          />
+          <label for="homebridgeMetrics" class="rendux-label ms-3" style="min-width: 50px"></label>
+        </div>
+        @if (uiMetricsIsSaving) {
+        <i
+          @fadeInOut
+          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+        ></i>
+        }
+      </div>
+    </li>
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.network.hb_package' | translate }}<br />
+        <small class="grey-text pe-2">{{ 'settings.network.hb_package_desc' | translate }}</small>
+      </span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+        <input
+          class="form-control custom-input resp-input order-1 order-md-2"
+          type="text"
+          placeholder="/usr/local/lib/node_modules/homebridge"
+          [formControl]="hbPackageFormControl"
+          [attr.aria-label]="('settings.network.hb_package' | translate)"
+        />
+        @if (hbPackageIsSaving) {
+        <i
+          @fadeInOut
+          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+        ></i>
+        }
+      </div>
+    </li>
+    @if ($settings.env.platform === 'linux') {
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.linux.shutdown' | translate }}<br />
+        <small class="grey-text pe-2">{{ 'settings.linux.shutdown_desc' | translate }}</small>
+      </span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+        <input
+          class="form-control custom-input resp-input order-1 order-md-2"
+          type="text"
+          placeholder="shutdown"
+          [formControl]="hbLinuxShutdownFormControl"
+          [attr.aria-label]="('settings.linux.shutdown' | translate)"
+        />
+        @if (hbLinuxShutdownIsSaving) {
+        <i
+          @fadeInOut
+          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+        ></i>
+        }
+      </div>
+    </li>
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.linux.restart' | translate }}<br />
+        <small class="grey-text pe-2">{{ 'settings.linux.restart_desc' | translate }}</small>
+      </span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+        <input
+          class="form-control custom-input resp-input order-1 order-md-2"
+          type="text"
+          placeholder="reboot"
+          [formControl]="hbLinuxRestartFormControl"
+          [attr.aria-label]="('settings.linux.restart' | translate)"
+        />
+        @if (hbLinuxRestartIsSaving) {
+        <i
+          @fadeInOut
+          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+        ></i>
+        }
+      </div>
+    </li>
+    @if ($settings.env.runningOnRaspberryPi) {
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.linux.temp' | translate }}<br />
+        <small class="grey-text pe-2">{{ 'settings.linux.temp_desc' | translate }}</small>
+      </span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+        <input
+          class="form-control custom-input resp-input order-1 order-md-2"
+          type="text"
+          placeholder="/sys/class/thermal/thermal_zone0/temp"
+          [formControl]="uiTempFileFormControl"
+          [attr.aria-label]="('settings.linux.temp' | translate)"
+        />
+        @if (uiTempFileIsSaving) {
+        <i
+          @fadeInOut
+          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+        ></i>
+        }
+      </div>
+    </li>
+    } }
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        <span class="font-monospace">DEBUG</span><br />
+        <small
+          class="grey-text pe-2"
+          [innerHTML]="'settings.service.debug_tooltip' | translate: { link: linkDebug }"
+        ></small>
+      </span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+        <input
+          class="form-control custom-input resp-input order-1 order-md-2"
+          [formControl]="hbEnvDebugFormControl"
+          type="text"
+          placeholder="HAP-NodeJS:Advertiser,HAP-NodeJS:Service"
+        />
+        @if (hbEnvDebugIsSaving) {
+        <i
+          @fadeInOut
+          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+        ></i>
+        }
+      </div>
+    </li>
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        <span class="font-monospace">NODE_OPTIONS</span><br />
+        <small class="grey-text pe-2">{{ 'settings.service.node_tooltip' | translate }}</small>
+      </span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+        <input
+          class="form-control custom-input resp-input order-1 order-md-2"
+          [formControl]="hbEnvNodeFormControl"
+          type="text"
+          placeholder="--max-old-space-size=512 --max-http-header-size=8192"
+        />
+        @if (hbEnvNodeIsSaving) {
+        <i
+          @fadeInOut
+          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+        ></i>
+        }
+      </div>
+    </li>
+    } @if ($settings.env.runningInDocker) {
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span>
+        {{ 'menu.docker.startup_script' | translate }}<br />
+        <small class="grey-text pe-2">{{ 'platform.docker.script_help' | translate }}</small>
+      </span>
+      <a
+        class="btn btn-primary waves-effect m-0 ms-3"
+        style="min-width: 50px"
+        routerLink="/platform-tools/docker/startup-script"
+        [attr.aria-label]="'menu.docker.startup_script' | translate"
+      >
+        <i class="fas fa-fw fa-arrow-right"></i>
+      </a>
+    </li>
+    }
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.startup.log_max' | translate }}<br />
+        <small class="grey-text pe-2">{{ 'settings.startup.log_max_desc' | translate }}</small>
+      </span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+        <input
+          class="form-control custom-input resp-input order-1 order-md-2"
+          type="number"
+          min="-1"
+          placeholder="1000000"
+          [formControl]="hbLogSizeFormControl"
+          [attr.aria-label]="'settings.startup.log_max' | translate"
+          [ngClass]="{ 'is-invalid': hbLogSizeIsInvalid }"
+        />
+        @if (hbLogSizeIsSaving) {
+        <i
+          @fadeInOut
+          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+        ></i>
+        }
+      </div>
+    </li>
+    @if (hbLogSizeFormControl.value > 0) {
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.startup.log_truncate' | translate }}<br />
+        <small class="grey-text pe-2">{{ 'settings.startup.log_truncate_desc' | translate }}</small>
+      </span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+        <input
+          class="form-control custom-input resp-input order-1 order-md-2"
+          type="number"
+          min="0"
+          placeholder="200000"
+          [formControl]="hbLogTruncateFormControl"
+          [attr.aria-label]="'settings.startup.log_truncate' | translate"
+          [ngClass]="{ 'is-invalid': hbLogTruncateIsInvalid }"
+        />
+        @if (hbLogTruncateIsSaving) {
+        <i
+          @fadeInOut
+          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+        ></i>
+        }
+      </div>
+    </li>
+    }
+  </ul>
+  }
 </div>
-@if (showFields.startup) {
-<ul class="list-group list-group-box mb-4 mx-0" id="fieldsStartup">
-  @if ($settings.env.serviceMode) {
-  <li class="list-group-item d-flex justify-content-between align-items-center">
-    <span>
-      {{ 'settings.startup.debug' | translate }} <code>-D</code><br />
-      <small class="grey-text pe-2">
-        {{ (isHbV2 ? 'settings.startup.debug_desc_v2' : 'settings.startup.debug_desc_v1') | translate }}
-      </small>
-    </span>
-    <div class="d-flex align-items-center">
-      <div class="order-1 order-md-2">
-        <input
-          type="checkbox"
-          class="rendux-input"
-          id="homebridgeDebugMode"
-          [formControl]="hbDebugFormControl"
-          [attr.aria-label]="'settings.startup.debug' | translate"
-        />
-        <label for="homebridgeDebugMode" class="rendux-label ms-3" style="min-width: 50px"></label>
-      </div>
-      @if (hbDebugIsSaving) {
-      <i
-        @fadeInOut
-        class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-      ></i>
-      }
-    </div>
-  </li>
-  <li class="list-group-item d-flex justify-content-between align-items-center">
-    <span>
-      {{ 'settings.startup.insecure' | translate }} <code>-I</code><br />
-      <small class="grey-text pe-2">{{ 'settings.startup.insecure_desc' | translate }}</small>
-    </span>
-    <div class="d-flex align-items-center">
-      <div class="order-1 order-md-2">
-        <input
-          type="checkbox"
-          class="rendux-input"
-          id="homebridgeInsecureMode"
-          [formControl]="hbInsecureFormControl"
-          [attr.aria-label]="'settings.startup.insecure' | translate"
-        />
-        <label for="homebridgeInsecureMode" class="rendux-label ms-3" style="min-width: 50px"></label>
-      </div>
-      @if (hbInsecureIsSaving) {
-      <i
-        @fadeInOut
-        class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-      ></i>
-      }
-    </div>
-  </li>
-  <li class="list-group-item d-flex justify-content-between align-items-center">
-    <span>
-      {{ 'settings.startup.keep_accessories' | translate }} <code>-K</code><br />
-      <small class="grey-text pe-2">{{ 'settings.startup.keep_accessories_desc' | translate }}</small>
-    </span>
-    <div class="d-flex align-items-center">
-      <div class="order-1 order-md-2">
-        <input
-          type="checkbox"
-          class="rendux-input"
-          id="homebridgeKeepOrphans"
-          [formControl]="hbKeepFormControl"
-          [attr.aria-label]="'settings.startup.keep_accessories' | translate"
-        />
-        <label for="homebridgeKeepOrphans" class="rendux-label ms-3" style="min-width: 50px"></label>
-      </div>
-      @if (hbKeepIsSaving) {
-      <i
-        @fadeInOut
-        class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-      ></i>
-      }
-    </div>
-  </li>
-  <li class="list-group-item d-flex justify-content-between align-items-center">
-    <span>
-      {{ 'settings.startup.metrics' | translate }}<br />
-      <small class="grey-text pe-2">{{ 'settings.startup.metrics_desc' | translate }}</small>
-    </span>
-    <div class="d-flex align-items-center">
-      <div class="order-1 order-md-2">
-        <input
-          type="checkbox"
-          class="rendux-input"
-          id="homebridgeMetrics"
-          [formControl]="uiMetricsFormControl"
-          [attr.aria-label]="'settings.startup.metrics' | translate"
-        />
-        <label for="homebridgeMetrics" class="rendux-label ms-3" style="min-width: 50px"></label>
-      </div>
-      @if (uiMetricsIsSaving) {
-      <i
-        @fadeInOut
-        class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-      ></i>
-      }
-    </div>
-  </li>
-  <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-    <span>
-      {{ 'settings.network.hb_package' | translate }}<br />
-      <small class="grey-text pe-2">{{ 'settings.network.hb_package_desc' | translate }}</small>
-    </span>
-    <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-      <input
-        class="form-control custom-input resp-input order-1 order-md-2"
-        type="text"
-        placeholder="/usr/local/lib/node_modules/homebridge"
-        [formControl]="hbPackageFormControl"
-        [attr.aria-label]="('settings.network.hb_package' | translate)"
-      />
-      @if (hbPackageIsSaving) {
-      <i
-        @fadeInOut
-        class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-      ></i>
-      }
-    </div>
-  </li>
-  @if ($settings.env.platform === 'linux') {
-  <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-    <span>
-      {{ 'settings.linux.shutdown' | translate }}<br />
-      <small class="grey-text pe-2">{{ 'settings.linux.shutdown_desc' | translate }}</small>
-    </span>
-    <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-      <input
-        class="form-control custom-input resp-input order-1 order-md-2"
-        type="text"
-        placeholder="shutdown"
-        [formControl]="hbLinuxShutdownFormControl"
-        [attr.aria-label]="('settings.linux.shutdown' | translate)"
-      />
-      @if (hbLinuxShutdownIsSaving) {
-      <i
-        @fadeInOut
-        class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-      ></i>
-      }
-    </div>
-  </li>
-  <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-    <span>
-      {{ 'settings.linux.restart' | translate }}<br />
-      <small class="grey-text pe-2">{{ 'settings.linux.restart_desc' | translate }}</small>
-    </span>
-    <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-      <input
-        class="form-control custom-input resp-input order-1 order-md-2"
-        type="text"
-        placeholder="reboot"
-        [formControl]="hbLinuxRestartFormControl"
-        [attr.aria-label]="('settings.linux.restart' | translate)"
-      />
-      @if (hbLinuxRestartIsSaving) {
-      <i
-        @fadeInOut
-        class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-      ></i>
-      }
-    </div>
-  </li>
-  @if ($settings.env.runningOnRaspberryPi) {
-  <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-    <span>
-      {{ 'settings.linux.temp' | translate }}<br />
-      <small class="grey-text pe-2">{{ 'settings.linux.temp_desc' | translate }}</small>
-    </span>
-    <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-      <input
-        class="form-control custom-input resp-input order-1 order-md-2"
-        type="text"
-        placeholder="/sys/class/thermal/thermal_zone0/temp"
-        [formControl]="uiTempFileFormControl"
-        [attr.aria-label]="('settings.linux.temp' | translate)"
-      />
-      @if (uiTempFileIsSaving) {
-      <i
-        @fadeInOut
-        class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-      ></i>
-      }
-    </div>
-  </li>
-  } }
-  <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-    <span>
-      <span class="font-monospace">DEBUG</span><br />
-      <small
-        class="grey-text pe-2"
-        [innerHTML]="'settings.service.debug_tooltip' | translate: { link: linkDebug }"
-      ></small>
-    </span>
-    <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-      <input
-        class="form-control custom-input resp-input order-1 order-md-2"
-        [formControl]="hbEnvDebugFormControl"
-        type="text"
-        placeholder="HAP-NodeJS:Advertiser,HAP-NodeJS:Service"
-      />
-      @if (hbEnvDebugIsSaving) {
-      <i
-        @fadeInOut
-        class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-      ></i>
-      }
-    </div>
-  </li>
-  <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-    <span>
-      <span class="font-monospace">NODE_OPTIONS</span><br />
-      <small class="grey-text pe-2">{{ 'settings.service.node_tooltip' | translate }}</small>
-    </span>
-    <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-      <input
-        class="form-control custom-input resp-input order-1 order-md-2"
-        [formControl]="hbEnvNodeFormControl"
-        type="text"
-        placeholder="--max-old-space-size=512 --max-http-header-size=8192"
-      />
-      @if (hbEnvNodeIsSaving) {
-      <i
-        @fadeInOut
-        class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-      ></i>
-      }
-    </div>
-  </li>
-  } @if ($settings.env.runningInDocker) {
-  <li class="list-group-item d-flex justify-content-between align-items-center">
-    <span>
-      {{ 'menu.docker.startup_script' | translate }}<br />
-      <small class="grey-text pe-2">{{ 'platform.docker.script_help' | translate }}</small>
-    </span>
-    <a
-      class="btn btn-primary waves-effect m-0 ms-3"
-      style="min-width: 50px"
-      routerLink="/platform-tools/docker/startup-script"
-      [attr.aria-label]="'menu.docker.startup_script' | translate"
-    >
-      <i class="fas fa-fw fa-arrow-right"></i>
-    </a>
-  </li>
-  }
-  <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-    <span>
-      {{ 'settings.startup.log_max' | translate }}<br />
-      <small class="grey-text pe-2">{{ 'settings.startup.log_max_desc' | translate }}</small>
-    </span>
-    <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-      <input
-        class="form-control custom-input resp-input order-1 order-md-2"
-        type="number"
-        min="-1"
-        placeholder="1000000"
-        [formControl]="hbLogSizeFormControl"
-        [attr.aria-label]="'settings.startup.log_max' | translate"
-        [ngClass]="{ 'is-invalid': hbLogSizeIsInvalid }"
-      />
-      @if (hbLogSizeIsSaving) {
-      <i
-        @fadeInOut
-        class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-      ></i>
-      }
-    </div>
-  </li>
-  @if (hbLogSizeFormControl.value > 0) {
-  <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-    <span>
-      {{ 'settings.startup.log_truncate' | translate }}<br />
-      <small class="grey-text pe-2">{{ 'settings.startup.log_truncate_desc' | translate }}</small>
-    </span>
-    <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-      <input
-        class="form-control custom-input resp-input order-1 order-md-2"
-        type="number"
-        min="0"
-        placeholder="200000"
-        [formControl]="hbLogTruncateFormControl"
-        [attr.aria-label]="'settings.startup.log_truncate' | translate"
-        [ngClass]="{ 'is-invalid': hbLogTruncateIsInvalid }"
-      />
-      @if (hbLogTruncateIsSaving) {
-      <i
-        @fadeInOut
-        class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-      ></i>
-      }
-    </div>
-  </li>
-  }
-</ul>
-} }
+}
 
 <!-- NETWORK SETTINGS -->
-<div
-  role="button"
-  tabindex="0"
-  [attr.aria-expanded]="showFields.network ? 'true' : 'false'"
-  [attr.aria-controls]="'fieldsNetwork'"
-  (click)="toggleSection('network')"
-  class="mt-3 hover-pointer"
->
-  <h5 class="primary-text">
-    <i
-      class="fa fa-fw"
-      [ngClass]="{ 'fa-chevron-down': showFields.network, 'fa-chevron-right': !showFields.network }"
-    ></i>
-    {{ 'settings.network.title_network' | translate }}
-  </h5>
-</div>
-@if (showFields.network) {
-<ul class="list-group list-group-box mt-2 mx-0" id="fieldsNetwork">
-  <li class="list-group-item d-flex justify-content-between align-items-center">
-    <span class="pe-2">
-      {{ 'settings.network.title_network_interfaces' | translate }}<br />
-      <div class="small grey-text pe-2">{{ 'settings.network.message_network_interface' | translate }}</div>
-      @for (adapter of adaptersSelected; track adapter) {
-      <span
-        class="badge badge-primary me-1"
-        [ngClass]="{ 'badge-danger': adapter.missing, 'badge-info': !adapter.missing }"
-      >
-        @if (adapter.missing) {
-        <i class="fas fa-fw fa-exclamation-triangle"></i>
-        } {{ adapter.iface }}:
-        <span class="fw-normal"
-          >{{ adapter.missing ? ('settings.mdns_advertiser_not_connected' | translate) : adapter.ip4 || adapter.ip6
-          }}</span
+<div class="my-4">
+  <div
+    role="button"
+    tabindex="0"
+    [attr.aria-expanded]="showFields.network ? 'true' : 'false'"
+    [attr.aria-controls]="'fieldsNetwork'"
+    (click)="toggleSection('network')"
+    class="mt-3 hover-pointer"
+  >
+    <h5 class="primary-text">
+      <i
+        class="fa fa-fw"
+        [ngClass]="{ 'fa-chevron-down': showFields.network, 'fa-chevron-right': !showFields.network }"
+      ></i>
+      {{ 'settings.network.title_network' | translate }}
+    </h5>
+  </div>
+  @if (showFields.network) {
+  <ul class="list-group list-group-box mt-2 mx-0" id="fieldsNetwork">
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span class="pe-2">
+        {{ 'settings.network.title_network_interfaces' | translate }}<br />
+        <div class="small grey-text pe-2">{{ 'settings.network.message_network_interface' | translate }}</div>
+        @for (adapter of adaptersSelected; track adapter) {
+        <span
+          class="badge badge-primary me-1"
+          [ngClass]="{ 'badge-danger': adapter.missing, 'badge-info': !adapter.missing }"
         >
+          @if (adapter.missing) {
+          <i class="fas fa-fw fa-exclamation-triangle"></i>
+          } {{ adapter.iface }}:
+          <span class="fw-normal"
+            >{{ adapter.missing ? ('settings.mdns_advertiser_not_connected' | translate) : adapter.ip4 || adapter.ip6
+            }}</span
+          >
+        </span>
+        }
       </span>
-      }
-    </span>
-    <button
-      class="btn btn-primary waves-effect m-0 ms-3"
-      style="min-width: 50px"
-      (click)="selectNetworkInterfaces()"
-      [disabled]="!adaptersAvailable.length"
-      [attr.aria-label]="'settings.network.title_network_interfaces' | translate"
-    >
-      <i class="fas fa-fw fa-arrow-right"></i>
-    </button>
-  </li>
-  <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-    <span>
-      {{ 'settings.mdns_advertiser' | translate }}<br />
-      <small class="grey-text pe-2">{{ 'settings.mdns_advertiser_help' | translate }}</small>
-    </span>
-    <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-      <select
-        class="custom-select resp-select order-1 order-md-2"
-        [formControl]="hbMDnsFormControl"
-        [attr.aria-label]="'settings.mdns_advertiser' | translate"
+      <button
+        class="btn btn-primary waves-effect m-0 ms-3"
+        style="min-width: 50px"
+        (click)="selectNetworkInterfaces()"
+        [disabled]="!adaptersAvailable.length"
+        [attr.aria-label]="'settings.network.title_network_interfaces' | translate"
       >
-        @if (showAvahiMdnsOption) {
-        <option value="avahi">Avahi ({{ 'settings.mdns_advertiser_rec' | translate }})</option>
+        <i class="fas fa-fw fa-arrow-right"></i>
+      </button>
+    </li>
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.mdns_advertiser' | translate }}<br />
+        <small class="grey-text pe-2">{{ 'settings.mdns_advertiser_help' | translate }}</small>
+      </span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+        <select
+          class="custom-select resp-select order-1 order-md-2"
+          [formControl]="hbMDnsFormControl"
+          [attr.aria-label]="'settings.mdns_advertiser' | translate"
+        >
+          @if (showAvahiMdnsOption) {
+          <option value="avahi">Avahi ({{ 'settings.mdns_advertiser_rec' | translate }})</option>
+          }
+          <!-- ciao is recommended if avahi is not available -->
+          <option value="ciao">
+            Ciao {{ showAvahiMdnsOption ? '' : '(' + ('settings.mdns_advertiser_rec' | translate) + ')' }}
+          </option>
+          <option value="bonjour-hap">Bonjour HAP</option>
+          @if (showResolvedMdnsOption) {
+          <option value="resolved">systemd-resolved ({{ 'settings.mdns_advertiser_exp' | translate }})</option>
+          }
+        </select>
+        @if (hbMDnsIsSaving) {
+        <i
+          @fadeInOut
+          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+        ></i>
         }
-        <!-- ciao is recommended if avahi is not available -->
-        <option value="ciao">
-          Ciao {{ showAvahiMdnsOption ? '' : '(' + ('settings.mdns_advertiser_rec' | translate) + ')' }}
-        </option>
-        <option value="bonjour-hap">Bonjour HAP</option>
-        @if (showResolvedMdnsOption) {
-        <option value="resolved">systemd-resolved ({{ 'settings.mdns_advertiser_exp' | translate }})</option>
+      </div>
+    </li>
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.network.port_hb' | translate }}<br />
+        <small class="grey-text pe-2">{{ 'settings.network.port_hb_desc' | translate }}</small>
+      </span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+        <input
+          class="form-control custom-input resp-input order-1 order-md-2"
+          type="number"
+          min="1025"
+          max="65533"
+          [formControl]="hbPortFormControl"
+          [attr.aria-label]="('settings.network.port_hb' | translate)"
+          [ngClass]="{ 'is-invalid': hbPortIsInvalid }"
+        />
+        @if (hbPortIsSaving) {
+        <i
+          @fadeInOut
+          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+        ></i>
         }
-      </select>
-      @if (hbMDnsIsSaving) {
-      <i
-        @fadeInOut
-        class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-      ></i>
-      }
-    </div>
-  </li>
-  <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-    <span>
-      {{ 'settings.network.port_hb' | translate }}<br />
-      <small class="grey-text pe-2">{{ 'settings.network.port_hb_desc' | translate }}</small>
-    </span>
-    <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-      <input
-        class="form-control custom-input resp-input order-1 order-md-2"
-        type="number"
-        min="1025"
-        max="65533"
-        [formControl]="hbPortFormControl"
-        [attr.aria-label]="('settings.network.port_hb' | translate)"
-        [ngClass]="{ 'is-invalid': hbPortIsInvalid }"
-      />
-      @if (hbPortIsSaving) {
-      <i
-        @fadeInOut
-        class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-      ></i>
-      }
-    </div>
-  </li>
-  <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-    <span>
-      {{ 'settings.network.port_ui' | translate }}<br />
-      <small class="grey-text pe-2">{{ 'settings.network.port_ui_desc' | translate }}</small>
-    </span>
-    <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-      <input
-        class="form-control custom-input resp-input order-1 order-md-2"
-        type="number"
-        min="1025"
-        max="65533"
-        placeholder="8581"
-        [formControl]="uiPortFormControl"
-        [attr.aria-label]="('settings.network.port_ui' | translate)"
-        [ngClass]="{ 'is-invalid': uiPortIsInvalid }"
-      />
-      @if (uiPortIsSaving) {
-      <i
-        @fadeInOut
-        class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-      ></i>
-      }
-    </div>
-  </li>
-  <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-    <span>
-      {{ 'settings.network.port_start' | translate }}<br />
-      <small class="grey-text pe-2">{{ 'settings.network.port_start_desc' | translate }}</small>
-    </span>
-    <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-      <input
-        class="form-control custom-input resp-input order-1 order-md-2"
-        type="number"
-        min="1025"
-        max="65533"
-        [formControl]="hbStartPortFormControl"
-        [attr.aria-label]="('settings.network.port_start' | translate)"
-        [ngClass]="{ 'is-invalid': hbStartPortIsInvalid }"
-      />
-      @if (hbStartPortIsSaving) {
-      <i
-        @fadeInOut
-        class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-      ></i>
-      }
-    </div>
-  </li>
-  <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-    <span>
-      {{ 'settings.network.port_end' | translate }}<br />
-      <small class="grey-text pe-2">{{ 'settings.network.port_end_desc' | translate }}</small>
-    </span>
-    <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-      <input
-        class="form-control custom-input resp-input order-1 order-md-2"
-        type="number"
-        min="1025"
-        max="65533"
-        [formControl]="hbEndPortFormControl"
-        [attr.aria-label]="('settings.network.port_end' | translate)"
-        [ngClass]="{ 'is-invalid': hbEndPortIsInvalid }"
-      />
-      @if (hbEndPortIsSaving) {
-      <i
-        @fadeInOut
-        class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-      ></i>
-      }
-    </div>
-  </li>
-  <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-    <span>
-      {{ 'settings.network.host' | translate }}<br />
-      <small class="grey-text pe-2" [innerHtml]="'settings.network.host_desc' | translate"></small>
-    </span>
-    <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-      <input
-        class="form-control custom-input resp-input order-1 order-md-2"
-        type="text"
-        pattern="^[^{}/ :\\]+(?::\d+)?$"
-        [formControl]="uiHostFormControl"
-        placeholder="0.0.0.0"
-        [attr.aria-label]="('settings.network.host' | translate)"
-      />
-      @if (uiHostIsSaving) {
-      <i
-        @fadeInOut
-        class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-      ></i>
-      }
-    </div>
-  </li>
-  <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-    <span>
-      {{ 'settings.network.proxy' | translate }}<br />
-      <small class="grey-text pe-2">{{ 'settings.network.proxy_desc' | translate }}</small>
-    </span>
-    <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-      <input
-        class="form-control custom-input resp-input order-1 order-md-2"
-        type="text"
-        pattern="^[^{}/ :\\]+(?::\d+)?$"
-        placeholder="example.com:8443"
-        [formControl]="uiProxyHostFormControl"
-        [attr.aria-label]="('settings.network.proxy' | translate)"
-      />
-      @if (uiProxyHostIsSaving) {
-      <i
-        @fadeInOut
-        class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-      ></i>
-      }
-    </div>
-  </li>
-</ul>
-}
+      </div>
+    </li>
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.network.port_ui' | translate }}<br />
+        <small class="grey-text pe-2">{{ 'settings.network.port_ui_desc' | translate }}</small>
+      </span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+        <input
+          class="form-control custom-input resp-input order-1 order-md-2"
+          type="number"
+          min="1025"
+          max="65533"
+          placeholder="8581"
+          [formControl]="uiPortFormControl"
+          [attr.aria-label]="('settings.network.port_ui' | translate)"
+          [ngClass]="{ 'is-invalid': uiPortIsInvalid }"
+        />
+        @if (uiPortIsSaving) {
+        <i
+          @fadeInOut
+          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+        ></i>
+        }
+      </div>
+    </li>
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.network.port_start' | translate }}<br />
+        <small class="grey-text pe-2">{{ 'settings.network.port_start_desc' | translate }}</small>
+      </span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+        <input
+          class="form-control custom-input resp-input order-1 order-md-2"
+          type="number"
+          min="1025"
+          max="65533"
+          [formControl]="hbStartPortFormControl"
+          [attr.aria-label]="('settings.network.port_start' | translate)"
+          [ngClass]="{ 'is-invalid': hbStartPortIsInvalid }"
+        />
+        @if (hbStartPortIsSaving) {
+        <i
+          @fadeInOut
+          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+        ></i>
+        }
+      </div>
+    </li>
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.network.port_end' | translate }}<br />
+        <small class="grey-text pe-2">{{ 'settings.network.port_end_desc' | translate }}</small>
+      </span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+        <input
+          class="form-control custom-input resp-input order-1 order-md-2"
+          type="number"
+          min="1025"
+          max="65533"
+          [formControl]="hbEndPortFormControl"
+          [attr.aria-label]="('settings.network.port_end' | translate)"
+          [ngClass]="{ 'is-invalid': hbEndPortIsInvalid }"
+        />
+        @if (hbEndPortIsSaving) {
+        <i
+          @fadeInOut
+          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+        ></i>
+        }
+      </div>
+    </li>
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.network.host' | translate }}<br />
+        <small class="grey-text pe-2" [innerHtml]="'settings.network.host_desc' | translate"></small>
+      </span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+        <input
+          class="form-control custom-input resp-input order-1 order-md-2"
+          type="text"
+          pattern="^[^{}/ :\\]+(?::\d+)?$"
+          [formControl]="uiHostFormControl"
+          placeholder="0.0.0.0"
+          [attr.aria-label]="('settings.network.host' | translate)"
+        />
+        @if (uiHostIsSaving) {
+        <i
+          @fadeInOut
+          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+        ></i>
+        }
+      </div>
+    </li>
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.network.proxy' | translate }}<br />
+        <small class="grey-text pe-2">{{ 'settings.network.proxy_desc' | translate }}</small>
+      </span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+        <input
+          class="form-control custom-input resp-input order-1 order-md-2"
+          type="text"
+          pattern="^[^{}/ :\\]+(?::\d+)?$"
+          placeholder="example.com:8443"
+          [formControl]="uiProxyHostFormControl"
+          [attr.aria-label]="('settings.network.proxy' | translate)"
+        />
+        @if (uiProxyHostIsSaving) {
+        <i
+          @fadeInOut
+          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+        ></i>
+        }
+      </div>
+    </li>
+  </ul>
+  }
+</div>
 
 <!-- SECURITY SETTINGS -->
-<div
-  role="button"
-  tabindex="0"
-  [attr.aria-expanded]="showFields.security ? 'true' : 'false'"
-  [attr.aria-controls]="'fieldsSecurity'"
-  (click)="toggleSection('security')"
-  class="mt-3 hover-pointer"
->
-  <h5 class="primary-text">
-    <i
-      class="fa fa-fw"
-      [ngClass]="{ 'fa-chevron-down': showFields.security, 'fa-chevron-right': !showFields.security }"
-    ></i>
-    {{ 'settings.network.title_security' | translate }}
-  </h5>
-</div>
-@if (showFields.security) {
-<ul class="list-group list-group-box mt-2 mx-0" id="fieldsSecurity">
-  <li class="list-group-item d-flex justify-content-between align-items-center">
-    <span>
-      {{ 'settings.security.auth' | translate }}<br />
-      <small class="grey-text pe-2"> {{ 'settings.security.auth_desc' | translate }} </small>
-    </span>
-    <div class="d-flex align-items-center">
-      <div class="order-1 order-md-2">
-        <input
-          type="checkbox"
-          class="rendux-input"
-          id="uiAuthForm"
-          [formControl]="uiAuthFormControl"
-          [attr.aria-label]="'settings.security.auth' | translate"
-        />
-        <label for="uiAuthForm" class="rendux-label ms-3" style="min-width: 50px"></label>
+<div class="my-4">
+  <div
+    role="button"
+    tabindex="0"
+    [attr.aria-expanded]="showFields.security ? 'true' : 'false'"
+    [attr.aria-controls]="'fieldsSecurity'"
+    (click)="toggleSection('security')"
+    class="mt-3 hover-pointer"
+  >
+    <h5 class="primary-text">
+      <i
+        class="fa fa-fw"
+        [ngClass]="{ 'fa-chevron-down': showFields.security, 'fa-chevron-right': !showFields.security }"
+      ></i>
+      {{ 'settings.network.title_security' | translate }}
+    </h5>
+  </div>
+  @if (showFields.security) {
+  <ul class="list-group list-group-box mt-2 mx-0" id="fieldsSecurity">
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.security.auth' | translate }}<br />
+        <small class="grey-text pe-2"> {{ 'settings.security.auth_desc' | translate }} </small>
+      </span>
+      <div class="d-flex align-items-center">
+        <div class="order-1 order-md-2">
+          <input
+            type="checkbox"
+            class="rendux-input"
+            id="uiAuthForm"
+            [formControl]="uiAuthFormControl"
+            [attr.aria-label]="'settings.security.auth' | translate"
+          />
+          <label for="uiAuthForm" class="rendux-label ms-3" style="min-width: 50px"></label>
+        </div>
+        @if (uiAuthIsSaving) {
+        <i
+          @fadeInOut
+          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+        ></i>
+        }
       </div>
-      @if (uiAuthIsSaving) {
-      <i
-        @fadeInOut
-        class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-      ></i>
-      }
-    </div>
-  </li>
-  @if (uiAuthFormControl.value) {
-  <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-    <span>
-      {{ 'settings.startup.session' | translate }}<br />
-      <small class="grey-text pe-2">{{ 'settings.startup.session_desc' | translate }}</small>
-    </span>
-    <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-      <input
-        class="form-control custom-input resp-input order-1 order-md-2"
-        type="number"
-        min="600"
-        max="86400000"
-        placeholder="28800"
-        [formControl]="uiSessionTimeoutFormControl"
-        [attr.aria-label]="('settings.startup.session' | translate)"
-        [ngClass]="{ 'is-invalid': uiSessionTimeoutIsInvalid }"
-      />
-      @if (uiSessionTimeoutIsSaving) {
-      <i
-        @fadeInOut
-        class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-      ></i>
-      }
-    </div>
-  </li>
-  }
-  <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-    <span>
-      {{ 'settings.security.https' | translate }}<br />
-      <small class="grey-text pe-2">{{ 'settings.security.https_desc' | translate }}</small>
-    </span>
-    <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-      <select
-        class="custom-select resp-select order-1 order-md-2"
-        [formControl]="uiSslTypeFormControl"
-        [attr.aria-label]="'settings.security.https' | translate"
+    </li>
+    @if (uiAuthFormControl.value) {
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.startup.session' | translate }}<br />
+        <small class="grey-text pe-2">{{ 'settings.startup.session_desc' | translate }}</small>
+      </span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+        <input
+          class="form-control custom-input resp-input order-1 order-md-2"
+          type="number"
+          min="600"
+          max="86400000"
+          placeholder="28800"
+          [formControl]="uiSessionTimeoutFormControl"
+          [attr.aria-label]="('settings.startup.session' | translate)"
+          [ngClass]="{ 'is-invalid': uiSessionTimeoutIsInvalid }"
+        />
+        @if (uiSessionTimeoutIsSaving) {
+        <i
+          @fadeInOut
+          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+        ></i>
+        }
+      </div>
+    </li>
+    }
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.security.https' | translate }}<br />
+        <small class="grey-text pe-2">{{ 'settings.security.https_desc' | translate }}</small>
+      </span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+        <select
+          class="custom-select resp-select order-1 order-md-2"
+          [formControl]="uiSslTypeFormControl"
+          [attr.aria-label]="'settings.security.https' | translate"
+        >
+          <option value="off">{{ 'accessories.control.off' | translate }}</option>
+          <option value="keycert">{{ 'settings.security.https_keycert' | translate }}</option>
+          <option value="pfx">{{ 'settings.security.https_pfx' | translate }}</option>
+        </select>
+      </div>
+    </li>
+    @if (this.uiSslTypeFormControl.value === 'keycert') {
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>{{ 'settings.security.key' | translate }}</span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+        <input
+          class="form-control custom-input resp-input order-1 order-md-2"
+          type="text"
+          placeholder="/Users/.../certs/server.key"
+          [formControl]="uiSslKeyFormControl"
+          [attr.aria-label]="('settings.security.key' | translate)"
+        />
+        @if (uiSslKeyIsSaving) {
+        <i
+          @fadeInOut
+          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+        ></i>
+        }
+      </div>
+    </li>
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>{{ 'settings.security.cert' | translate }}</span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+        <input
+          class="form-control custom-input resp-input order-1 order-md-2"
+          type="text"
+          placeholder="/Users/.../certs/server.crt"
+          [formControl]="uiSslCertFormControl"
+          [attr.aria-label]="('settings.security.cert' | translate)"
+        />
+        @if (uiSslCertIsSaving) {
+        <i
+          @fadeInOut
+          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+        ></i>
+        }
+      </div>
+    </li>
+    } @if (this.uiSslTypeFormControl.value === 'pfx') {
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>{{ 'settings.security.pfx' | translate }}</span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+        <input
+          class="form-control custom-input resp-input order-1 order-md-2"
+          type="text"
+          placeholder="/Users/.../certs/server.pfx"
+          [formControl]="uiSslPfxFormControl"
+          [attr.aria-label]="('settings.security.pfx' | translate)"
+        />
+        @if (uiSslPfxIsSaving) {
+        <i
+          @fadeInOut
+          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+        ></i>
+        }
+      </div>
+    </li>
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>{{ 'settings.security.pass' | translate }}</span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+        <input
+          class="form-control custom-input resp-input order-1 order-md-2"
+          [type]="showPfxPassphrase ? 'text' : 'password'"
+          placeholder="mypassphrase"
+          [formControl]="uiSslPassphraseFormControl"
+          [attr.aria-label]="('settings.security.pass' | translate)"
+          (focus)="showPfxPassphrase = true"
+          (blur)="showPfxPassphrase = false"
+        />
+        @if (uiSslPassphraseIsSaving) {
+        <i
+          @fadeInOut
+          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+        ></i>
+        }
+      </div>
+    </li>
+    }
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span class="pe-2">
+        {{ 'settings.security.ui_control' | translate }}<br />
+        <small class="grey-text pe-2">{{ 'settings.security.ui_control_desc' | translate }}</small>
+      </span>
+      <button
+        class="btn btn-primary waves-effect m-0 ms-3"
+        style="min-width: 50px"
+        (click)="accessoryUiControl()"
+        [attr.aria-label]="'settings.security.ui_control' | translate"
       >
-        <option value="off">{{ 'accessories.control.off' | translate }}</option>
-        <option value="keycert">{{ 'settings.security.https_keycert' | translate }}</option>
-        <option value="pfx">{{ 'settings.security.https_pfx' | translate }}</option>
-      </select>
-    </div>
-  </li>
-  @if (this.uiSslTypeFormControl.value === 'keycert') {
-  <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-    <span>{{ 'settings.security.key' | translate }}</span>
-    <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-      <input
-        class="form-control custom-input resp-input order-1 order-md-2"
-        type="text"
-        placeholder="/Users/.../certs/server.key"
-        [formControl]="uiSslKeyFormControl"
-        [attr.aria-label]="('settings.security.key' | translate)"
-      />
-      @if (uiSslKeyIsSaving) {
-      <i
-        @fadeInOut
-        class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-      ></i>
-      }
-    </div>
-  </li>
-  <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-    <span>{{ 'settings.security.cert' | translate }}</span>
-    <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-      <input
-        class="form-control custom-input resp-input order-1 order-md-2"
-        type="text"
-        placeholder="/Users/.../certs/server.crt"
-        [formControl]="uiSslCertFormControl"
-        [attr.aria-label]="('settings.security.cert' | translate)"
-      />
-      @if (uiSslCertIsSaving) {
-      <i
-        @fadeInOut
-        class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-      ></i>
-      }
-    </div>
-  </li>
-  } @if (this.uiSslTypeFormControl.value === 'pfx') {
-  <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-    <span>{{ 'settings.security.pfx' | translate }}</span>
-    <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-      <input
-        class="form-control custom-input resp-input order-1 order-md-2"
-        type="text"
-        placeholder="/Users/.../certs/server.pfx"
-        [formControl]="uiSslPfxFormControl"
-        [attr.aria-label]="('settings.security.pfx' | translate)"
-      />
-      @if (uiSslPfxIsSaving) {
-      <i
-        @fadeInOut
-        class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-      ></i>
-      }
-    </div>
-  </li>
-  <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-    <span>{{ 'settings.security.pass' | translate }}</span>
-    <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-      <input
-        class="form-control custom-input resp-input order-1 order-md-2"
-        [type]="showPfxPassphrase ? 'text' : 'password'"
-        placeholder="mypassphrase"
-        [formControl]="uiSslPassphraseFormControl"
-        [attr.aria-label]="('settings.security.pass' | translate)"
-        (focus)="showPfxPassphrase = true"
-        (blur)="showPfxPassphrase = false"
-      />
-      @if (uiSslPassphraseIsSaving) {
-      <i
-        @fadeInOut
-        class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-      ></i>
-      }
-    </div>
-  </li>
+        <i class="fas fa-fw fa-arrow-right"></i>
+      </button>
+    </li>
+  </ul>
   }
-  <li class="list-group-item d-flex justify-content-between align-items-center">
-    <span class="pe-2">
-      {{ 'settings.security.ui_control' | translate }}<br />
-      <small class="grey-text pe-2">{{ 'settings.security.ui_control_desc' | translate }}</small>
-    </span>
-    <button
-      class="btn btn-primary waves-effect m-0 ms-3"
-      style="min-width: 50px"
-      (click)="accessoryUiControl()"
-      [attr.aria-label]="'settings.security.ui_control' | translate"
-    >
-      <i class="fas fa-fw fa-arrow-right"></i>
-    </button>
-  </li>
-</ul>
-}
+</div>
 
 <!-- CACHE SETTINGS -->
 @if ($settings.env.serviceMode) {

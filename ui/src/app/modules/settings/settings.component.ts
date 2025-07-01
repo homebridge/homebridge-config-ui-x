@@ -10,6 +10,7 @@ import { firstValueFrom } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
 
 import { ApiService } from '@/app/core/api.service'
+import { SpinnerComponent } from '@/app/core/components/spinner/spinner.component'
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { AccessoryControlListsComponent } from '@/app/modules/settings/accessory-control-lists/accessory-control-lists.component'
@@ -65,6 +66,7 @@ interface NetworkAdapterSelected {
     ReactiveFormsModule,
     TitleCasePipe,
     TranslatePipe,
+    SpinnerComponent,
   ],
   animations: [
     trigger('fadeInOut', [
@@ -99,6 +101,7 @@ export class SettingsComponent implements OnInit {
     cache: true,
   }
 
+  public loading = true
   public isHbV2 = false
   public showAvahiMdnsOption = false
   public showResolvedMdnsOption = false
@@ -346,6 +349,8 @@ export class SettingsComponent implements OnInit {
     this.hbLinuxRestartFormControl.valueChanges
       .pipe(debounceTime(1500))
       .subscribe((value: string) => this.hbLinuxRestartSave(value))
+
+    this.loading = false
   }
 
   async initServiceModeForm() {
