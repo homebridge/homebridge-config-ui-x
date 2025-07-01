@@ -18,6 +18,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - fix accessory control modals closing on clicking outside the modal
 - small tweaks to various accessory status tiles
+- revert display of triggered state in security control modal
 
 ### Other Changes
 
