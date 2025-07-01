@@ -1,7 +1,10 @@
 <div class="accessory-box">
   <div class="d-flex flex-column h-100">
     <div class="humidity-drop humidity-drop-collapse">
-      <div class="humidity-drop-text" [innerText]="(service.values.CurrentRelativeHumidity) + '%'"></div>
+      <div
+        class="humidity-drop-text"
+        [innerText]="(typeof service.values.CurrentRelativeHumidity === 'number' ? service.values.CurrentRelativeHumidity : '?') + '%'"
+      ></div>
     </div>
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
   </div>

@@ -2,7 +2,7 @@
   <div class="d-flex flex-column h-100">
     <div
       class="temperature-circle temperature-circle-collapse"
-      [innerText]="(service.values.CurrentTemperature | convertTemp | number:'1.0-1') + '°'"
+      [innerText]="((typeof service.values.CurrentTemperature === 'number' ? (service.values.CurrentTemperature | convertTemp | number:'1.0-1') : '?')) + '°' + ($settings.env.temperatureUnits | uppercase)"
     ></div>
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
   </div>
