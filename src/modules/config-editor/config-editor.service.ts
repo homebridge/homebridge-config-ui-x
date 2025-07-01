@@ -352,6 +352,7 @@ export class ConfigEditorService {
     pluginConfig.accessoryControl.instanceBlacklist = (value || [])
       .filter(x => typeof x === 'string' && x.trim() !== '' && /^(?:[A-F0-9]{2}:){5}[A-F0-9]{2}$/i.test(x.trim()))
       .map(x => x.trim().toUpperCase())
+      .sort((a, b) => a.localeCompare(b))
 
     // 3. Clean and save the UI config block
     config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = this.cleanUpUiConfig(pluginConfig)
