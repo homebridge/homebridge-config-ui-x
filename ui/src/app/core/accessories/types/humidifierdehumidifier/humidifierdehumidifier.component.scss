@@ -3,7 +3,7 @@
   display: inline-block;
   width: 50px;
   height: 50px;
-  line-height: 42px;
+  line-height: 45px;
   border-radius: 5% 55% 70% 55%;
   font-size: 14px;
   text-align: center;
@@ -18,30 +18,30 @@
   @media (max-width: 575px) {
     width: 31px;
     height: 31px;
-    line-height: 28px;
+    line-height: 29px;
     font-size: 10px;
     margin-bottom: 7px;
     margin-top: 5px;
 
     .humidity-drop-text {
-      margin-left: -2px;
+      margin-left: 0;
     }
   }
 }
 
 .humidity-drop-text {
   transform: rotate(-45deg);
-  margin-left: -5px;
+  margin-left: -4px;
 }
 
 .humidity-drop-big {
   width: 80px;
   height: 80px;
-  line-height: 70px;
+  line-height: 76px;
   font-size: 22px;
 
   .humidity-drop-text {
-    margin-left: -8px;
+    margin-left: -3px;
   }
 }
 

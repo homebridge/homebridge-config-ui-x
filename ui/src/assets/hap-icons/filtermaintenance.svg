@@ -8,19 +8,19 @@
   xmlns:xlink="http://www.w3.org/1999/xlink"
   preserveAspectRatio="xMidYMid meet"
 >
-  <g transform="scale(1, 0.5)">
+  <g transform="scale(1, 0.75) translate(0, -40)">
     <g id="airpurifier">
       <polygon
         id="Path"
-        fill="#C7C5CB"
+        fill="#808080"
         points="17.2333685 76.7914641 70.0374945 76.7914641 73.9430133 79.2866885 76.8250853 84.9649087 87.1832833 114.139252 87.1832833 140.017181 85.5385126 142.175202 83.1303576 143.984565 5.21741581 143.984565 2.85966936 142.750318 1.09613307 140.017181 1.09613307 114.139252 10.9193128 84.9649087 14.372682 79.2866885"
       />
-      <rect id="Rectangle" fill="#454545" x="46" y="84" width="17" height="5" />
-      <rect id="Rectangle" fill="#454545" x="46" y="94" width="20" height="5" />
-      <rect id="Rectangle" fill="#454545" x="46" y="103" width="22" height="5" />
-      <rect id="Rectangle" fill="#454545" x="20" y="103" width="22" height="5" />
-      <rect id="Rectangle" fill="#454545" x="22" y="94" width="20" height="5" />
-      <rect id="Rectangle" fill="#454545" x="25" y="84" width="17" height="5" />
+      <rect class="rectangle" fill="#e0e0e0" x="46" y="84" width="17" height="5" />
+      <rect class="rectangle" fill="#e0e0e0" x="46" y="94" width="20" height="5" />
+      <rect class="rectangle" fill="#e0e0e0" x="46" y="103" width="22" height="5" />
+      <rect class="rectangle" fill="#e0e0e0" x="20" y="103" width="22" height="5" />
+      <rect class="rectangle" fill="#e0e0e0" x="22" y="94" width="20" height="5" />
+      <rect class="rectangle" fill="#e0e0e0" x="25" y="84" width="17" height="5" />
     </g>
   </g>
 </svg>
