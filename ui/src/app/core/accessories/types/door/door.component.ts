@@ -38,6 +38,7 @@ export class DoorComponent {
   onLongClick() {
     const ref = this.$modal.open(DoorManageComponent, {
       size: 'md',
+      backdrop: 'static',
     })
     ref.componentInstance.service = this.service
   }

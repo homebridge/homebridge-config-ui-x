@@ -29,6 +29,7 @@ export class SecuritysystemComponent {
   onClick() {
     const ref = this.$modal.open(SecuritysystemManageComponent, {
       size: 'md',
+      backdrop: 'static',
     })
     ref.componentInstance.service = this.service
   }

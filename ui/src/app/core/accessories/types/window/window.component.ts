@@ -38,6 +38,7 @@ export class WindowComponent {
   onLongClick() {
     const ref = this.$modal.open(WindowManageComponent, {
       size: 'md',
+      backdrop: 'static',
     })
     ref.componentInstance.service = this.service
   }

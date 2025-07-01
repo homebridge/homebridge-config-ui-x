@@ -40,6 +40,7 @@ export class HumidifierDehumidifierComponent {
   onLongClick() {
     const ref = this.$modal.open(HumidifierDehumidifierManageComponent, {
       size: 'md',
+      backdrop: 'static',
     })
     ref.componentInstance.service = this.service
   }

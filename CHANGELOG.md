@@ -14,6 +14,10 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
   - Drop support for instances using `pnpm` as the package manager - consider updating your Homebridge instance to use npm instead - [more info on updating](https://github.com/homebridge/homebridge-apt-pkg/blob/latest/README.md#using-apt)
 - Note that these are not requirements for UI `v4.78.0`
 
+### UI Changes
+
+- fix accessory control modals closing on clicking outside the modal
+
 ### Other Changes
 
 - remove bridge id from control blacklist when removing a bridge

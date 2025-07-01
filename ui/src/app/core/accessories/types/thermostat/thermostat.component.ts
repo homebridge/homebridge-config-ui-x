@@ -35,6 +35,7 @@ export class ThermostatComponent {
   onClick() {
     const ref = this.$modal.open(ThermostatManageComponent, {
       size: 'md',
+      backdrop: 'static',
     })
     ref.componentInstance.service = this.service
   }

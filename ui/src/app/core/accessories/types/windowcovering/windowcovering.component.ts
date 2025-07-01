@@ -38,6 +38,7 @@ export class WindowCoveringComponent {
   onLongClick() {
     const ref = this.$modal.open(WindowcoveringManageComponent, {
       size: 'md',
+      backdrop: 'static',
     })
     ref.componentInstance.service = this.service
   }
