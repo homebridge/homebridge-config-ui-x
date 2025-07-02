@@ -31,7 +31,7 @@ export class ManagePluginsService {
 
   constructor() {}
 
-  installPlugin(plugin: any, targetVersion = 'latest') {
+  installPlugin(plugin: any, targetVersion: string) {
     const ref = this.$modal.open(ManagePluginComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -52,7 +52,7 @@ export class ManagePluginsService {
     ref.componentInstance.childBridges = childBridges
   }
 
-  async checkAndUpdatePlugin(plugin: any, targetVersion = 'latest') {
+  async checkAndUpdatePlugin(plugin: any, targetVersion: string) {
     if (!await this.checkHbAndNodeVersion(plugin, 'update')) {
       return
     }
@@ -74,7 +74,7 @@ export class ManagePluginsService {
     ref.componentInstance.isDisabled = plugin.disabled
   }
 
-  async upgradeHomebridge(homebridgePkg: any, targetVersion = 'latest') {
+  async upgradeHomebridge(homebridgePkg: any, targetVersion: string) {
     if (!await this.checkHbAndNodeVersion(homebridgePkg, 'update')) {
       return
     }

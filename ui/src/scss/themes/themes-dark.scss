@@ -421,6 +421,16 @@
       }
     }
 
+    .plugin-modal-body {
+      .tab-content {
+        background: #2b2b2b;
+        margin-top: 0 !important;
+      }
+      .nav-tabs .nav-link.active {
+        background-color: #2b2b2b;
+      }
+    }
+
     .ng-bs5-validate {
       .nav-tabs {
         border-color: #242424;

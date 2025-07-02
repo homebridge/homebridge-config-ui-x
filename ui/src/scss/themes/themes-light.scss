@@ -231,6 +231,20 @@
       border-bottom-left-radius: 0.25rem;
       border-bottom-right-radius: 0.25rem;
     }
+
+    .plugin-modal-body {
+      .tab-content {
+        background: #efefef;
+        margin-top: 0 !important;
+      }
+      .nav-tabs .nav-link.active {
+        background-color: #efefef;
+      }
+    }
+
+    .release-tab {
+      color: #333333 !important;
+    }
   }
 }
 
