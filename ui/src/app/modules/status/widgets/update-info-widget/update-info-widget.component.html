@@ -52,7 +52,7 @@
           (homebridgePkg.updateAvailable) { &middot;
           <a
             href="javascript:void(0)"
-            (click)="$plugin.upgradeHomebridge(homebridgePkg, homebridgePkg.updateTag || 'latest')"
+            (click)="$plugin.upgradeHomebridge(homebridgePkg, homebridgePkg.latestVersion)"
             class="primary-text small"
           >
             {{ 'plugins.button_update' | translate }}
@@ -108,7 +108,7 @@
           @if (homebridgeUiPkg.updateAvailable) { &middot;
           <a
             href="javascript:void(0)"
-            (click)="$plugin.upgradeHomebridge(homebridgeUiPkg, homebridgeUiPkg.updateTag || 'latest')"
+            (click)="$plugin.upgradeHomebridge(homebridgeUiPkg, homebridgeUiPkg.latestVersion)"
             class="primary-text small"
           >
             {{ 'plugins.button_update' | translate }}

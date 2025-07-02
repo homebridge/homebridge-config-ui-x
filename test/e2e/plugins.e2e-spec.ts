@@ -10,7 +10,9 @@ import { HttpService } from '@nestjs/axios'
 import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
+import { AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import { copy, remove } from 'fs-extra'
+import { of } from 'rxjs'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module'
@@ -277,6 +279,25 @@ describe('PluginController (e2e)', () => {
   })
 
   it('GET /plugins/changelog/:plugin-name', async () => {
+    // Mock NPM registry response to return a valid latest version
+    const data = {
+      '_id': 'homebridge-mock-plugin',
+      'name': 'homebridge-mock-plugin',
+      'dist-tags': {
+        latest: '1.0.0',
+      },
+    }
+
+    const response: AxiosResponse<any> = {
+      data,
+      headers: {},
+      config: { url: 'https://registry.npmjs.org/homebridge-mock-plugin' } as InternalAxiosRequestConfig,
+      status: 200,
+      statusText: 'OK',
+    }
+
+    vi.spyOn(httpService, 'get').mockImplementationOnce(() => of(response) as any)
+
     const res = await app.inject({
       method: 'GET',
       path: '/plugins/changelog/homebridge-mock-plugin',
@@ -285,8 +306,10 @@ describe('PluginController (e2e)', () => {
       },
     })
 
+    const json = res.json()
     expect(res.statusCode).toBe(200)
-    expect(res.json()).toHaveProperty('changelog')
+    expect(json).toHaveProperty('changelog')
+    expect(json.latestVersion).toBe('1.0.0')
   })
 
   it('GET /plugins/changelog/:plugin-name (changelog missing)', async () => {

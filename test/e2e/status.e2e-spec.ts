@@ -165,7 +165,7 @@ describe('StatusController (e2e)', () => {
     }
 
     vi.spyOn(httpService, 'get')
-      .mockImplementationOnce(() => throwError(response))
+      .mockImplementationOnce(() => throwError(() => response))
 
     const res = await app.inject({
       method: 'GET',

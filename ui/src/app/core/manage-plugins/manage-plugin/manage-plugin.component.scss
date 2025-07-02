@@ -1,12 +1,30 @@
 .plugin-modal-body {
-  max-height: 60vh;
-  overflow-y: auto;
-  overflow-x: hidden;
+  .release-notes {
+    box-shadow: none;
+    max-height: 39vh;
+    overflow: auto;
+    border: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+
+  .release-tab {
+    font-size: 1rem;
+    color: lightgrey;
+  }
+
+  .tab-content {
+    border-radius: 0 0 20px 20px;
+  }
+}
+
+::ng-deep .nav-tabs {
+  --bs-nav-tabs-border-width: 0;
 }
 
 ::ng-deep .plugin-md {
   text-align: left;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   word-wrap: break-word;
 
   img {
@@ -14,27 +32,27 @@
   }
 
   h1 {
-    font-size: 1.4rem;
-    font-weight: 300;
-  }
-
-  h2 {
     font-size: 1.3rem;
     font-weight: 300;
   }
 
-  h3 {
+  h2 {
     font-size: 1.2rem;
     font-weight: 300;
   }
 
-  h4 {
+  h3 {
     font-size: 1.1rem;
     font-weight: 300;
   }
 
-  h5 {
+  h4 {
     font-size: 1rem;
+    font-weight: 300;
+  }
+
+  h5 {
+    font-size: 0.9rem;
     font-weight: 300;
   }
 

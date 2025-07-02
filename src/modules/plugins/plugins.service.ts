@@ -1060,6 +1060,34 @@ export class PluginsService {
    * @param pluginName
    */
   public async getPluginChangeLog(pluginName: string) {
+    let latestVersion: string | null = null
+    try {
+      const pkg: INpmRegistryModule = (await firstValueFrom((
+        this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(pluginName).replace(/%40/g, '@')}`)),
+      )).data
+
+      latestVersion = pkg['dist-tags'] ? pkg['dist-tags'].latest : null
+    } catch (e) {
+      throw new NotFoundException()
+    }
+
+    if (pluginName === 'homebridge') {
+      // Different flow for homebridge itself
+      try {
+        const data = await firstValueFrom(this.httpService.get('https://raw.githubusercontent.com/homebridge/homebridge/refs/heads/latest/CHANGELOG.md'))
+
+        return {
+          changelog: data.data,
+          latestVersion,
+        }
+      } catch {
+        return {
+          changelog: null,
+          latestVersion,
+        }
+      }
+    }
+
     await this.getInstalledPlugins()
     const plugin = this.installedPlugins.find(x => x.name === pluginName)
     if (!plugin) {
@@ -1068,12 +1096,9 @@ export class PluginsService {
 
     const changeLog = resolve(plugin.installPath, plugin.name, 'CHANGELOG.md')
 
-    if (await pathExists(changeLog)) {
-      return {
-        changelog: await readFile(changeLog, 'utf8'),
-      }
-    } else {
-      throw new NotFoundException()
+    return {
+      changelog: (await pathExists(changeLog)) ? await readFile(changeLog, 'utf8') : null,
+      latestVersion,
     }
   }
 
@@ -1105,36 +1130,6 @@ export class PluginsService {
         throw new NotFoundException()
       }
       match = bugsMatch
-    }
-
-    // Special case for beta npm tags for homebridge, homebridge ui and all plugins
-    const version = parse(plugin.latestVersion)
-    const tag = version.prerelease[0]?.toString()
-
-    if (tag) {
-      let branch: string | undefined
-
-      if (['homebridge-config-ui-x', 'homebridge'].includes(plugin.name)) {
-        // If loading a homebridge/ui beta returned pre-defined help text
-        // Query the list of branches for the repo, if the request doesn't work it doesn't matter too much
-        try {
-          // Find the first branch that starts with "beta"
-          branch = (await firstValueFrom(this.httpService.get(`https://api.github.com/repos/homebridge/${plugin.name}/branches`)))
-            .data
-            .find((b: any) => b.name.startsWith(`${tag}-`))
-            ?.name
-        } catch (e) {
-          this.logger.error(`Failed to get list of branches from GitHub as ${e.message}.`)
-        }
-      }
-
-      return {
-        name: `v${plugin.latestVersion}`,
-        changelog: `Thank you for helping improve ${plugin.displayName || `\`${plugin.name}\``} by testing a beta version.\n\n`
-          + 'You can use the Homebridge UI at any time to revert back to the stable version.\n\n'
-          + `Please remember this **${tag}** version is a pre-release, and report any issues to the GitHub repository page:\n`
-          + `- https://github.com/${repoMatch[1]}/${repoMatch[2]}/issues${branch ? `\n\nSee the commit history for recent changes:\n- https://github.com/${repoMatch[1]}/${repoMatch[2]}/commits/${branch}` : ''}`,
-      }
     }
 
     try {

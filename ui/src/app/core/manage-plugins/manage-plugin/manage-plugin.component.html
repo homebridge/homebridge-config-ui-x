@@ -9,16 +9,14 @@
       (click)="$activeModal.dismiss('Dismiss')"
     ></button>
   </div>
-  <div [hidden]="!onlineUpdateOk || actionComplete || showReleaseNotes" id="plugin-log-output" class="modal-body"></div>
+  <div [hidden]="!onlineUpdateOk || actionComplete || releaseNotesShow" id="plugin-log-output" class="modal-body"></div>
   @if (actionComplete) {
   <div class="modal-body plugin-modal-body">
     @if (justUpdatedPlugin) {
     <div class="mb-3 text-center">
       <i class="far fa-fw fa-check-circle primary-text" style="font-size: 75px"></i>
     </div>
-    <h5 class="text-center mb-3">
-      {{ 'plugins.manage.thanks_for_updating' | translate:{ pluginName: pluginDisplayName, targetVersion } }}
-    </h5>
+    <h5 class="text-center mb-3">{{ this.pastTenseVerb }}: {{ pluginDisplayName }} ({{ targetVersionPretty }})</h5>
     @if (!isDisabled) {
     <p
       class="mb-3 text-center grey-text"
@@ -28,11 +26,7 @@
     <p class="text-center mb-0">{{ 'plugins.settings.restart_required' | translate }}</p>
     } @if (childBridges.length > 0) {
     <p class="text-center mb-0">{{ 'restart.child_bridges' | translate }}</p>
-    } } @if (changeLog) {
-    <div class="alert p-3 pb-1 mt-3">
-      <markdown class="plugin-md" [data]="changeLog"></markdown>
-    </div>
-    } }
+    } } }
   </div>
   } @if (!onlineUpdateOk) {
   <div class="modal-body">
@@ -55,14 +49,14 @@
       }
     </ul>
     @if ($settings.env.serviceMode) {
-    <pre class="p-2 mb-0" style="background-color: #efefef">
+    <pre class="p-2 mb-0">
 hb-service stop
 npm install -g {{ pluginName }}&#64;{{targetVersion}}
 hb-service start</pre
     >
     }
   </div>
-  } @if (showReleaseNotes && !actionComplete && onlineUpdateOk) {
+  } @if (releaseNotesShow && !actionComplete && onlineUpdateOk) {
   <div class="modal-body plugin-modal-body">
     <div class="mb-3 text-center">
       <i
@@ -76,22 +70,68 @@ hb-service start</pre
         style="font-size: 75px"
       ></i>
     </div>
-    @if (release.name || latestVersion) {
-    <h5 class="mb-3 text-center">
+    @if (latestVersion) {
+    <h5 class="mb-4 text-center">
       @if (installedVersion) {
       <span>v{{ installedVersion }} &rarr; </span>
-      } @if (release.name) { {{ release.name }} } @if (!release.name) { v{{ latestVersion }} }
+      } {{ targetVersionPretty }}
     </h5>
+    }
+    <ul ngbNav #nav="ngbNav" [(activeId)]="releaseNotesTab" class="nav-tabs px-0">
+      <li [ngbNavItem]="1" class="w-50 m-0">
+        <button ngbNavLink class="w-100 release-tab">{{ 'plugins.manage.notes' | translate }}</button>
+        <ng-template ngbNavContent>
+          <div class="alert release-notes p-3 pb-1 my-0">
+            @if (action === 'Update' && !versionNotesLoaded) {
+            <div class="w-100 text-center primary-text mt-3 mb-4">
+              <i class="fa fa-fw fa-cog fa-spin" style="font-size: 75px"></i>
+            </div>
+            } @else { @if (versionNotes) {
+            <markdown class="plugin-md" [data]="versionNotes"></markdown>
+            } @else { @if (versionNotesShow) {
+            <div class="w-100 text-center grey-text mt-3 mb-4">{{ 'plugins.manage.notes_none' | translate }}</div>
+            } @else { @if (targetVersion.includes('beta') || targetVersion.includes('alpha') ||
+            targetVersion.includes('next')) {
+            <div class="w-100 text-center grey-text mt-3 mb-4">
+              {{ 'plugins.manage.notes_beta_1' | translate: { pluginName: pluginDisplayName } }}<br />
+              {{ 'plugins.manage.notes_beta_2' | translate }}<br />
+              {{ 'plugins.manage.notes_beta_3' | translate }}<br />
+            </div>
+            } @else {
+            <div class="w-100 text-center grey-text mt-3 mb-4">{{ 'plugins.manage.notes_latest' | translate }}</div>
+            } } } }
+          </div>
+        </ng-template>
+      </li>
+      <li [ngbNavItem]="2" class="w-50 m-0">
+        <button ngbNavLink class="w-100 release-tab">{{ 'plugins.manage.changelog' | translate }}</button>
+        <ng-template ngbNavContent>
+          <div class="alert release-notes p-3 pb-1 my-0" style="border-top-left-radius: 0; border-top-right-radius: 0">
+            @if (action === 'Update' && !fullChangelogLoaded) {
+            <div class="w-100 text-center primary-text mt-3 mb-4">
+              <i class="fa fa-fw fa-cog fa-spin" style="font-size: 75px"></i>
+            </div>
+            } @else { @if (fullChangelog) {
+            <markdown class="plugin-md" [data]="fullChangelog"></markdown>
+            } @else {
+            <div
+              class="w-100 text-center grey-text mt-3 mb-4"
+              [innerHTML]="'plugins.manage.changelog_none' | translate"
+            ></div>
+            } }
+          </div>
+        </ng-template>
+      </li>
+    </ul>
+    <div [ngbNavOutlet]="nav" class="mt-2"></div>
+
     @if (['homebridge', 'homebridge-config-ui-x'].includes(pluginName)) {
-    <ngb-alert type="warning" [dismissible]="false" class="mb-3">
-      <p class="w-100 text-center mb-0">{{ 'plugins.manage.hb_restart' | translate }}</p>
-    </ngb-alert>
-    } }
-    <div class="alert p-3 pb-1 mb-0">
-      <markdown class="plugin-md" [data]="release.changelog"></markdown>
+    <div class="mt-4 mb-0">
+      <p class="w-100 text-center mb-0 small grey-text">{{ 'plugins.manage.hb_restart' | translate }}</p>
     </div>
+    }
   </div>
-  } @if (!onlineUpdateOk || actionComplete || showReleaseNotes || actionFailed) {
+  } @if (!onlineUpdateOk || actionComplete || releaseNotesShow || actionFailed) {
   <div class="modal-footer justify-content-between">
     <div class="text-start">
       @if ((!justUpdatedPlugin && onlineUpdateOk) || (justUpdatedPlugin && (!isDisabled || actionFailed))) {
@@ -120,10 +160,8 @@ hb-service start</pre
       }
     </div>
     <div class="text-end">
-      @if (onlineUpdateOk && showReleaseNotes) {
-      <button type="button" class="btn btn-primary" (click)="update()">
-        {{ 'plugins.button_update' | translate }}
-      </button>
+      @if (onlineUpdateOk && releaseNotesShow) {
+      <button type="button" class="btn btn-primary" (click)="update()">{{ 'form.label_continue' | translate }}</button>
       } @if (justUpdatedPlugin && !isDisabled) {
       <button
         type="button"

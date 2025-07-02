@@ -20,6 +20,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - small tweaks to various accessory status tiles
 - revert display of triggered state in security control modal
 - show spinner on settings page until all settings are loaded
+- show both version notes and full changelog beforehand on plugin update
 
 ### Other Changes
 
