@@ -306,34 +306,23 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
     this.releaseNotesShow = true
 
     try {
-      const reqChangelog = await firstValueFrom(this.$api.get(`/plugins/changelog/${encodeURIComponent(this.pluginName)}`))
+      const reqChangelog = await firstValueFrom(this.$api.get(`/plugins/release/${encodeURIComponent(this.pluginName)}`))
       this.fullChangelog = reqChangelog.changelog
       if (reqChangelog.latestVersion) {
         this.latestVersion = reqChangelog.latestVersion
       }
-    } catch (error) {
-      console.error('Error loading changelog:', error)
-      this.fullChangelog = ''
-    }
 
-    if (this.targetVersion === 'latest' || this.targetVersion === this.latestVersion) {
-      this.versionNotesShow = true
-    } else {
-      this.versionNotesShow = false
-      this.versionNotesLoaded = true
-    }
-
-    // Handle version notes result (only if `this.versionNotesShow` is true)
-    if (this.versionNotesShow) {
-      try {
-        const reqReleaseNotes = await firstValueFrom(this.$api.get(`/plugins/release/${encodeURIComponent(this.pluginName)}`))
-        if (this.latestVersion.replace(/[^0-9.]/g, '').includes(reqReleaseNotes.name.replace(/[^0-9.]/g, ''))) {
-          this.versionNotes = reqReleaseNotes.changelog
+      if (this.targetVersion === 'latest' || this.targetVersion === this.latestVersion) {
+        this.versionNotesShow = true
+        if (reqChangelog.notes) {
+          this.versionNotes = reqChangelog.notes
         }
-      } catch (error) {
-        console.error('Error loading release notes:', error)
-        this.versionNotes = ''
+      } else {
+        this.versionNotesShow = false
+        this.versionNotesLoaded = true
       }
+    } catch (error) {
+      console.error('Error loading release notes:', error)
     }
 
     this.fullChangelogLoaded = true

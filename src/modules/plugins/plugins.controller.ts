@@ -66,7 +66,7 @@ export class PluginsController {
   }
 
   @UseGuards(AdminGuard)
-  @ApiOperation({ summary: 'Get the latest GitHub release notes for a plugin.' })
+  @ApiOperation({ summary: 'Get the latest GitHub release notes and latest changelog for a plugin.' })
   @ApiParam({ name: 'pluginName', type: 'string' })
   @Get('release/:pluginName')
   getPluginRelease(@Param('pluginName') pluginName) {

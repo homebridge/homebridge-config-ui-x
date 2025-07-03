@@ -172,6 +172,7 @@ export interface PluginListNewScopeItem {
 }
 
 export interface PluginListItem {
+  c?: string // changelog path
   h?: 1 // hidden
   i?: string // icon
   m?: 1 // maintained

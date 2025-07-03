@@ -28,7 +28,7 @@
     "@ng-formworks/core": "19.5.8",
     "@ngx-translate/core": "16.0.4",
     "ajv-keywords": "5.1.0",
-    "angular-gridster2": "20.0.0",
+    "angular-gridster2": "20.1.0",
     "bootstrap": "5.3.7",
     "chart.js": "4.5.0",
     "dayjs": "1.11.13",

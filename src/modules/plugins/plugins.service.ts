@@ -79,6 +79,7 @@ export class PluginsService {
   private pluginIcons: { [key: string]: string } = {}
   private pluginAuthors: { [key: string]: string } = {}
   private pluginNames: { [key: string]: string } = {}
+  private pluginChangelogs: { [key: string]: string } = {}
   private newScopePlugins: { [key: string]: PluginListNewScopeItem } = {}
   private verifiedPlugins: string[] = []
   private verifiedPlusPlugins: string[] = []
@@ -1060,6 +1061,28 @@ export class PluginsService {
    * @param pluginName
    */
   public async getPluginChangeLog(pluginName: string) {
+    await this.getInstalledPlugins()
+    const plugin = this.installedPlugins.find(x => x.name === pluginName)
+    if (!plugin) {
+      throw new NotFoundException()
+    }
+
+    const changeLog = resolve(plugin.installPath, plugin.name, 'CHANGELOG.md')
+
+    if (await pathExists(changeLog)) {
+      return {
+        changelog: await readFile(changeLog, 'utf8'),
+      }
+    } else {
+      throw new NotFoundException()
+    }
+  }
+
+  /**
+   * Get the latest release notes from GitHub for a plugin
+   * @param pluginName
+   */
+  public async getPluginRelease(pluginName: string) {
     let latestVersion: string | null = null
     try {
       const pkg: INpmRegistryModule = (await firstValueFrom((
@@ -1071,75 +1094,79 @@ export class PluginsService {
       throw new NotFoundException()
     }
 
-    if (pluginName === 'homebridge') {
-      // Different flow for homebridge itself
-      try {
-        const data = await firstValueFrom(this.httpService.get('https://raw.githubusercontent.com/homebridge/homebridge/refs/heads/latest/CHANGELOG.md'))
-
-        return {
-          changelog: data.data,
-          latestVersion,
+    switch (pluginName) {
+      case 'homebridge':
+      case 'homebridge-config-ui-x': {
+        try {
+          const release = await firstValueFrom(this.httpService.get(`https://api.github.com/repos/homebridge/${pluginName}/releases/latest`))
+          const changelog = await firstValueFrom(this.httpService.get(`https://raw.githubusercontent.com/homebridge/${pluginName}/refs/tags/${release.data.tag_name}/CHANGELOG.md`))
+          return {
+            name: release.data.name,
+            notes: release.data.body,
+            changelog: changelog.data,
+            latestVersion,
+          }
+        } catch {
+          return {
+            name: null,
+            notes: null,
+            changelog: null,
+            latestVersion,
+          }
         }
-      } catch {
-        return {
-          changelog: null,
-          latestVersion,
+      }
+      default: {
+        await this.getInstalledPlugins()
+        const plugin = this.installedPlugins.find(x => x.name === pluginName)
+        if (!plugin) {
+          throw new NotFoundException()
+        }
+
+        // Plugin must have a homepage to work out Git Repo
+        // Some plugins have a custom homepage, so often we can also use the bugs link too
+        if (!plugin.links.homepage && !plugin.links.bugs) {
+          throw new NotFoundException()
+        }
+
+        // Make sure the repo is GitHub
+        const repoMatch = plugin.links.homepage?.match(/https:\/\/github.com\/([^/]+)\/([^/#]+)/)
+        const bugsMatch = plugin.links.bugs?.match(/https:\/\/github.com\/([^/]+)\/([^/#]+)/)
+        let match: RegExpMatchArray | null = repoMatch
+        if (!repoMatch) {
+          if (!bugsMatch) {
+            throw new NotFoundException()
+          }
+          match = bugsMatch
+        }
+
+        try {
+          const release = await firstValueFrom(this.httpService.get(`https://api.github.com/repos/${match[1]}/${match[2]}/releases/latest`))
+          const latestTag = release.data.tag_name
+
+          // The plugin may have a custom changelog path from this.pluginChangelogs[pkg.package.name]
+          const changelogPath = this.pluginChangelogs[pluginName] || ''
+          let changelogData = null
+
+          try {
+            const changelog = await firstValueFrom(this.httpService.get(`https://raw.githubusercontent.com/${match[1]}/${match[2]}/refs/tags/${latestTag}/${changelogPath}CHANGELOG.md`))
+            changelogData = changelog.data
+          } catch {
+            try {
+              const changelog = (await firstValueFrom(this.httpService.get(`https://raw.githubusercontent.com/${match[1]}/${match[2]}/refs/tags/${latestTag}/${changelogPath}changelog.md`))).data
+              changelogData = changelog.data
+            } catch {}
+          }
+
+          return {
+            name: release.data.name || null,
+            notes: release.data.body || null,
+            changelog: changelogData,
+            latestVersion,
+          }
+        } catch (e) {
+          throw new NotFoundException()
         }
       }
-    }
-
-    await this.getInstalledPlugins()
-    const plugin = this.installedPlugins.find(x => x.name === pluginName)
-    if (!plugin) {
-      throw new NotFoundException()
-    }
-
-    const changeLog = resolve(plugin.installPath, plugin.name, 'CHANGELOG.md')
-
-    return {
-      changelog: (await pathExists(changeLog)) ? await readFile(changeLog, 'utf8') : null,
-      latestVersion,
-    }
-  }
-
-  /**
-   * Get the latest release notes from GitHub for a plugin
-   * @param pluginName
-   */
-  public async getPluginRelease(pluginName: string) {
-    if (!this.installedPlugins) {
-      await this.getInstalledPlugins()
-    }
-    const plugin = pluginName === 'homebridge' ? await this.getHomebridgePackage() : this.installedPlugins.find(x => x.name === pluginName)
-    if (!plugin) {
-      throw new NotFoundException()
-    }
-
-    // Plugin must have a homepage to work out Git Repo
-    // Some plugins have a custom homepage, so often we can also use the bugs link too
-    if (!plugin.links.homepage && !plugin.links.bugs) {
-      throw new NotFoundException()
-    }
-
-    // Make sure the repo is GitHub
-    const repoMatch = plugin.links.homepage?.match(/https:\/\/github.com\/([^/]+)\/([^/#]+)/)
-    const bugsMatch = plugin.links.bugs?.match(/https:\/\/github.com\/([^/]+)\/([^/#]+)/)
-    let match: RegExpMatchArray | null = repoMatch
-    if (!repoMatch) {
-      if (!bugsMatch) {
-        throw new NotFoundException()
-      }
-      match = bugsMatch
-    }
-
-    try {
-      const release = (await firstValueFrom(this.httpService.get(`https://api.github.com/repos/${match[1]}/${match[2]}/releases/latest`))).data
-      return {
-        name: release.name,
-        changelog: release.body,
-      }
-    } catch (e) {
-      throw new NotFoundException()
     }
   }
 
@@ -1742,6 +1769,7 @@ export class PluginsService {
       this.maintainedPlugins = []
       this.pluginAuthors = {}
       this.pluginNames = {}
+      this.pluginChangelogs = {}
       this.newScopePlugins = {}
 
       Object.keys(pluginListData).forEach((key) => {
@@ -1769,6 +1797,9 @@ export class PluginsService {
         }
         if (plugin.p) {
           this.verifiedPlusPlugins.push(key)
+        }
+        if (plugin.c) {
+          this.pluginChangelogs[key] = plugin.c
         }
       })
     } catch (e) {
