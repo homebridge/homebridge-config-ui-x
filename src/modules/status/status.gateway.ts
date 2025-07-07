@@ -18,7 +18,7 @@ export class StatusGateway {
   constructor(
     private statusService: StatusService,
     private pluginsService: PluginsService,
-  ) {}
+  ) { }
 
   @SubscribeMessage('get-dashboard-layout')
   async getDashboardLayout() {
@@ -60,6 +60,15 @@ export class StatusGateway {
   async npmVersionCheck() {
     try {
       return await this.pluginsService.getNpmPackage()
+    } catch (e) {
+      return new WsException(e.message)
+    }
+  }
+
+  @SubscribeMessage('docker-version-check')
+  async dockerVersionCheck() {
+    try {
+      return await this.statusService.getDockerDetails()
     } catch (e) {
       return new WsException(e.message)
     }

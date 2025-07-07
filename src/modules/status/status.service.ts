@@ -46,6 +46,32 @@ export interface HomebridgeStatusUpdate {
   pin?: string
 }
 
+interface DockerRelease {
+  tag_name: string;
+  published_at: string;
+  prerelease: boolean;
+  body: string;
+}
+
+interface DockerReleaseInfo {
+  version: string;
+  publishedAt: string;
+  isPrerelease: boolean;
+  isTest: boolean;
+  testTag: 'beta' | 'test' | null;
+  isLatestStable: boolean;
+}
+
+interface DockerDetails {
+  currentVersion: string | undefined;
+  latestVersion: string | null;
+  latestReleaseBody: string;
+  updateAvailable: boolean;
+  showNodeUnsupportedWarning: boolean;
+  showGlibcUnsupportedWarning: boolean;
+  installPath: string;
+}
+
 const execAsync = promisify(exec)
 
 @Injectable()
@@ -59,6 +85,9 @@ export class StatusService {
   private memoryUsageHistory: number[] = []
 
   private memoryInfo: Systeminformation.MemData
+
+  // Docker package cache
+  private dockerPackage: DockerDetails
 
   private rpiGetThrottledMapping = {
     0: 'Under-voltage detected',
@@ -538,6 +567,7 @@ export class StatusService {
         installPath: dirname(process.execPath),
       }
       this.statusCache.set('nodeJsVersion', versionInformation, 86400)
+      console.log('Node.js version information:', versionInformation);
       return versionInformation
     } catch (e) {
       this.logger.log(`Failed to check for Node.js version updates (check your internet connection) as ${e.message}.`)
@@ -581,5 +611,156 @@ export class StatusService {
     }
 
     return output
+  }
+
+
+
+  /**
+   * Fetches Docker package details, including version information, release body, and system details.
+   * Accounts for version tag formats: YYYY-MM-DD (stable), beta-YYYY-MM-DD or test-YYYY-MM-DD (test).
+   * If currentVersion is beta/test, latestVersion is the latest beta/test version; otherwise, it's the latest stable.
+   * @returns A promise resolving to the Docker details object.
+   */
+  public async getDockerDetails() {
+    const currentVersion = process.env.DOCKER_HOMEBRIDGE_VERSION;
+    let latestVersion: string | null = null;
+    let latestReleaseBody = '';
+    let updateAvailable = false;
+
+    try {
+      console.log('Fetching Docker package details...');
+      const { releases, rawReleases } = await this.getRecentReleases();
+      console.log('Docker releases fetched:', releases);
+
+      // Determine the type of currentVersion and select the appropriate latest version
+      if (currentVersion) {
+        const lowerCurrentVersion = currentVersion.toLowerCase();
+        let targetReleases: DockerReleaseInfo[] = [];
+
+        if (lowerCurrentVersion.startsWith('beta-')) {
+          // Current version is beta; select latest beta version
+          targetReleases = releases
+            .filter((release) => release.testTag === 'beta' && /^beta-\d{4}-\d{2}-\d{2}$/i.test(release.version))
+            .sort((a, b) => b.version.localeCompare(a.version)); // Sort by date descending
+          latestVersion = targetReleases[0]?.version || null;
+        } else if (lowerCurrentVersion.startsWith('test-')) {
+          // Current version is test; select latest test version
+          targetReleases = releases
+            .filter((release) => release.testTag === 'test' && /^test-\d{4}-\d{2}-\d{2}$/i.test(release.version))
+            .sort((a, b) => b.version.localeCompare(a.version)); // Sort by date descending
+          latestVersion = targetReleases[0]?.version || null;
+        } else {
+          // Current version is stable or invalid; select latest stable version
+          const stableRelease = releases.find((release) => release.isLatestStable);
+          latestVersion = stableRelease?.version || null;
+        }
+
+        if (currentVersion && latestVersion) {
+          // Compare versions as dates if they match the expected format
+          const dateRegex = /\d{4}-\d{2}-\d{2}$/;
+          if (dateRegex.test(currentVersion) && dateRegex.test(latestVersion)) {
+            const currentDate = new Date(currentVersion.match(dateRegex)![0]);
+            const latestDate = new Date(latestVersion.match(dateRegex)![0]);
+            updateAvailable = latestDate > currentDate;
+          } else {
+            // Fallback to string comparison
+            updateAvailable = currentVersion !== latestVersion;
+          }
+        }
+      } else {
+        // No currentVersion; default to latest stable
+        const stableRelease = releases.find((release) => release.isLatestStable);
+        latestVersion = stableRelease?.version || null;
+      }
+
+      // Fetch the release body for the latestVersion
+      if (latestVersion) {
+        const rawRelease = rawReleases.find((r) => r.tag_name === latestVersion);
+        latestReleaseBody = rawRelease?.body || '';
+      }
+    } catch (error) {
+      console.error('Failed to fetch Docker details:', error instanceof Error ? error.message : error);
+    }
+
+    console.log('Docker details:', {
+      currentVersion,
+      latestVersion,
+      latestReleaseBody,
+      updateAvailable,
+    });
+
+    return {
+      currentVersion,
+      latestVersion,
+      latestReleaseBody,
+      updateAvailable,
+      // Placeholder logic for warnings (customize based on specific requirements)
+      showNodeUnsupportedWarning: false, // Example: process.version < 'vX.Y.Z'
+      showGlibcUnsupportedWarning: false, // Example: Check glibc version
+      installPath: dirname(process.execPath),
+    };
+  }
+
+  private readonly DOCKER_GITHUB_API_URL = 'https://api.github.com/repos/homebridge/docker-homebridge/releases';
+
+  /**
+ * Fetches the most recent releases (up to 100) of the homebridge/docker-homebridge package from GitHub,
+ * tagging test versions (tags starting with 'beta-' or 'test-') and the latest stable version (YYYY-MM-DD format).
+ * Includes a testTag field for test versions.
+ * @returns A promise resolving to an object with processed releases and raw release data, or empty arrays if an error occurs.
+ */
+  public async getRecentReleases(): Promise<{ releases: DockerReleaseInfo[]; rawReleases: DockerRelease[] }> {
+    try {
+      // Fetch the first page of up to 100 releases
+      const response = await fetch(`${this.DOCKER_GITHUB_API_URL}?per_page=100`, {
+        headers: {
+          'Accept': 'application/vnd.github.v3+json',
+          // Optional: Add GitHub token for higher rate limits
+          // 'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`,
+        },
+      });
+
+      if (!response.ok) {
+        console.error(`GitHub API error: ${response.status} ${response.statusText}`);
+        return { releases: [], rawReleases: [] };
+      }
+
+      const data: DockerRelease[] = await response.json();
+
+      if (!Array.isArray(data)) {
+        console.error('Invalid response from GitHub API: Expected an array');
+        return { releases: [], rawReleases: [] };
+      }
+
+      // Find the latest stable release by sorting YYYY-MM-DD tags
+      const stableReleases = data
+        .filter((release) => /^\d{4}-\d{2}-\d{2}$/.test(release.tag_name)) // Stable: YYYY-MM-DD
+        .sort((a, b) => b.tag_name.localeCompare(a.tag_name)); // Sort descending (most recent first)
+      const latestStableTag = stableReleases[0]?.tag_name || null;
+
+      const releases = data.map((release) => {
+        const tagName = release.tag_name.toLowerCase();
+        let testTag: 'beta' | 'test' | null = null;
+        if (tagName.startsWith('beta-')) {
+          testTag = 'beta';
+        } else if (tagName.startsWith('test-')) {
+          testTag = 'test';
+        }
+
+        return {
+          version: release.tag_name,
+          publishedAt: release.published_at,
+          isPrerelease: release.prerelease,
+          isTest: testTag !== null,
+          testTag,
+          isLatestStable: release.tag_name === latestStableTag,
+        };
+      });
+
+      return { releases, rawReleases: data };
+    } catch (error) {
+      console.error('Failed to fetch docker-homebridge releases:', error instanceof Error ? error.message : error);
+      return { releases: [], rawReleases: [] };
+    }
   }
 }
