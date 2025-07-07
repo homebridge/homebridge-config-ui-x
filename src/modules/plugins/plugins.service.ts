@@ -495,29 +495,6 @@ export class PluginsService {
 
     const userPlatform = platform()
 
-    // Guard rails for v5 upgrade
-    if (+pluginAction.version.split('.')[0] > 4) {
-      // 1. Disallow if the node version is less than 20
-      if (!satisfies(process.version, '>=20')) {
-        throw new Error('Homebridge UI v5 requires Node.js v20 or above.')
-      }
-
-      // 2. Disallow if not running in service mode
-      if (!this.configService.serviceMode) {
-        throw new Error('Homebridge UI v5 requires using service mode.')
-      }
-
-      // 3. Disallow if using pnpm package manager
-      if (this.configService.usePnpm) {
-        throw new Error('Homebridge UI v5 is not compatible with the pnpm package manager.')
-      }
-
-      // 4. Disallow updates on linux armv6l (raspberry pi 1 / zero, for example)
-      if (userPlatform === 'linux' && execSync('uname -m').toString().trim() === 'armv6l') {
-        throw new Error('Homebridge UI v5 is not compatible with your armv6l device.')
-      }
-    }
-
     // Set the default install path
     let installPath = this.configService.customPluginPath
       ? this.configService.customPluginPath
@@ -556,10 +533,7 @@ export class PluginsService {
     const installOptions: Array<string> = []
 
     // Check to see if the custom plugin path is using a package.json file
-    if (
-      installPath === this.configService.customPluginPath
-      && await pathExists(resolve(installPath, '../package.json'))
-    ) {
+    if (installPath === this.configService.customPluginPath && await pathExists(resolve(installPath, '../package.json'))) {
       installOptions.push('--save')
     }
 
@@ -571,10 +545,8 @@ export class PluginsService {
       installOptions.push('-g')
     }
 
-    if (!this.configService.usePnpm) {
-      // If installing, set --omit=dev to prevent installing devDependencies
-      installOptions.push('--omit=dev')
-    }
+    // If installing, set --omit=dev to prevent installing devDependencies
+    installOptions.push('--omit=dev')
     const npmPluginLabel = `${pluginAction.name}@${pluginAction.version}`
 
     // Clean up the npm cache before any installation
@@ -645,11 +617,7 @@ export class PluginsService {
     let npmPluginLabel = pluginAction.name
 
     // Check to see if the custom plugin path is using a package.json file
-    if (
-      installPath === this.configService.customPluginPath
-      && !(action === 'uninstall' && this.configService.usePnpm)
-      && await pathExists(resolve(installPath, '../package.json'))
-    ) {
+    if (installPath === this.configService.customPluginPath && await pathExists(resolve(installPath, '../package.json'))) {
       installOptions.push('--save')
     }
 
@@ -662,10 +630,8 @@ export class PluginsService {
     }
 
     if (action === 'install') {
-      if (!this.configService.usePnpm) {
-        // If installing, set --omit=dev to prevent installing devDependencies
-        installOptions.push('--omit=dev')
-      }
+      // If installing, set --omit=dev to prevent installing devDependencies
+      installOptions.push('--omit=dev')
       npmPluginLabel = `${pluginAction.name}@${pluginAction.version}`
     }
 
@@ -761,9 +727,7 @@ export class PluginsService {
 
     // Prepare flags for npm command
     const installOptions: Array<string> = []
-    if (!this.configService.usePnpm) {
-      installOptions.push('--omit=dev')
-    }
+    installOptions.push('--omit=dev')
 
     // Check to see if the custom plugin path is using a package.json file
     if (installPath === this.configService.customPluginPath && await pathExists(resolve(installPath, '../package.json'))) {
@@ -791,18 +755,9 @@ export class PluginsService {
   /**
    * Gets the Homebridge UI package details
    */
-  public async getHomebridgeUiPackage(): Promise<HomebridgePlugin & { readyForV5: { node: boolean, pnpm: boolean, arch: boolean, service: boolean } }> {
+  public async getHomebridgeUiPackage(): Promise<HomebridgePlugin> {
     const plugins = await this.getInstalledPlugins()
-    const plugin = plugins.find((x: HomebridgePlugin) => x.name === this.configService.name)
-    return {
-      ...plugin,
-      readyForV5: {
-        node: satisfies(process.version, '>=20'),
-        pnpm: !this.configService.usePnpm,
-        arch: platform() !== 'linux' || execSync('uname -m').toString().trim() !== 'armv6l',
-        service: this.configService.serviceMode,
-      },
-    }
+    return plugins.find((x: HomebridgePlugin) => x.name === this.configService.name)
   }
 
   /**
@@ -985,9 +940,7 @@ export class PluginsService {
       configSchema.schema.properties.port.default = this.configService.ui.port
 
       // Filter some options from the UI config when using service mode
-      if (this.configService.serviceMode) {
-        configSchema.layout = configSchema.layout.filter((section: any) => section.ref !== 'log' && section.ref !== 'homebridge')
-      }
+      configSchema.layout = configSchema.layout.filter((section: any) => section.ref !== 'log' && section.ref !== 'homebridge')
     }
 
     // Modify homebridge-alexa to set the default pin
@@ -1397,8 +1350,8 @@ export class PluginsService {
         this.logger.error('npm install -g npm')
       }
     }
-    // Linux and macOS don't require the full path to npm / pnpm
-    return this.configService.usePnpm ? ['pnpm'] : ['npm']
+    // Linux and macOS don't require the full path to npm
+    return ['npm']
   }
 
   /**
@@ -1632,13 +1585,8 @@ export class PluginsService {
       npm_config_update_notifier: 'false',
       npm_config_prefer_online: 'true',
       npm_config_foreground_scripts: 'true',
+      npm_config_loglevel: 'error',
     })
-
-    if (!this.configService.usePnpm) {
-      Object.assign(env, {
-        npm_config_loglevel: 'error',
-      })
-    }
 
     // Set global prefix for unix based systems
     if (command.includes('-g') && basename(cwd) === 'lib') {

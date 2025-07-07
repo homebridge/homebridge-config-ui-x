@@ -25,7 +25,6 @@ export interface EnvInterface {
   customWallpaperHash: string
   setupWizardComplete: boolean
   recommendChildBridges: boolean
-  usePnpm: boolean
   scheduledBackupDisable: boolean
   scheduledBackupPath: string
   log?: {
