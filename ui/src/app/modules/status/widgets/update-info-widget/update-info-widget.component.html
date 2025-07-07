@@ -75,24 +75,7 @@
             class="card-link card-link-title"
             >Homebridge UI</a
           >
-          @if (!isRunningUiV5) {
-          <a
-            href="javascript:void(0)"
-            class="ms-1"
-            (click)="readyForV5Modal()"
-            ngbTooltip="Homebridge UI v5 Readiness"
-            container="body"
-            openDelay="150"
-            triggers="hover"
-            placement="top"
-            aria-label="Homebridge UI v5 Readiness"
-          >
-            <i
-              class="fas fa-fw fa-info-circle"
-              [ngClass]="{ 'green-text': isUiV5Ready, 'orange-text': !isUiV5Ready }"
-            ></i>
-          </a>
-          } } @if (!homebridgeUiPkg.installedVersion) {
+          } @if (!homebridgeUiPkg.installedVersion) {
           <span>Homebridge UI</span>
           }
           <br />
