@@ -20,9 +20,6 @@ interface DockerDetails {
   latestVersion: string | null;
   latestReleaseBody: string;
   updateAvailable: boolean;
-  showNodeUnsupportedWarning: boolean;
-  showGlibcUnsupportedWarning: boolean;
-  installPath: string;
 }
 
 @Component({
@@ -58,9 +55,6 @@ export class UpdateInfoWidgetComponent implements OnInit {
     latestVersion: null,
     latestReleaseBody: '',
     updateAvailable: false,
-    showNodeUnsupportedWarning: false,
-    showGlibcUnsupportedWarning: false,
-    installPath: '',
   };
   public dockerStatusDone = false as boolean;
   public serverInfo: any;
@@ -78,21 +72,23 @@ export class UpdateInfoWidgetComponent implements OnInit {
     this.io = this.$ws.getExistingNamespace('status');
 
     this.io.connected.subscribe(async () => {
+      // Run getNodeInfo first to ensure serverInfo is populated
+      await this.getNodeInfo();
       await Promise.all([
         this.checkHomebridgeVersion(),
         this.checkHomebridgeUiVersion(),
         this.getOutOfDatePlugins(),
-        this.getNodeInfo(),
         this.getDockerInfo(),
       ]);
     });
 
     if (this.io.socket.connected) {
+      // Run getNodeInfo first to ensure serverInfo is populated
+      await this.getNodeInfo();
       await Promise.all([
         this.checkHomebridgeVersion(),
         this.checkHomebridgeUiVersion(),
         this.getOutOfDatePlugins(),
-        this.getNodeInfo(),
         this.getDockerInfo(),
       ]);
     }
@@ -138,12 +134,17 @@ export class UpdateInfoWidgetComponent implements OnInit {
   }
 
   async getDockerInfo() {
-    try {
-      this.dockerInfo = await firstValueFrom(this.io.request('docker-version-check'));
+    if (!this.serverInfo?.homebridgeRunningInDocker) {
       this.dockerStatusDone = true;
-    } catch (error) {
-      console.error(error);
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'));
+      return;
+    } else {
+      try {
+        this.dockerInfo = await firstValueFrom(this.io.request('docker-version-check'));
+        this.dockerStatusDone = true;
+      } catch (error) {
+        console.error(error);
+        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'));
+      }
     }
   }
 
@@ -178,10 +179,10 @@ export class UpdateInfoWidgetComponent implements OnInit {
 
     ref.componentInstance.title = this.$translate.instant('status.widget.info.node_update_title');
     ref.componentInstance.message = this.$translate.instant('status.widget.info.node_update_message');
-    if (this.serverInfo.homebridgeRunningInSynologyPackage || this.serverInfo.homebridgeRunningInDocker) {
+    if (this.serverInfo?.homebridgeRunningInSynologyPackage || this.serverInfo?.homebridgeRunningInDocker) {
       ref.componentInstance.message2 = this.$translate.instant('status.widget.info.node_update_message_2');
     }
-    ref.componentInstance.subtitle = `${this.serverInfo.nodeVersion} → ${this.nodejsInfo.latestVersion}`;
+    ref.componentInstance.subtitle = `${this.serverInfo?.nodeVersion} → ${this.nodejsInfo.latestVersion}`;
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info');
     ref.componentInstance.faIconClass = 'fab fa-fw fa-node-js primary-text';
     ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js';

@@ -13,16 +13,3 @@
     color: #ffffff !important;
   }
 }
-
-/* Existing styles (if any) preserved */
-:host {
-  display: block;
-}
-
-/* Center the table horizontally */
-table {
-  margin-left: auto;
-  margin-right: auto;
-  width: auto;
-  /* Adjusts to content width, override if fixed width is needed */
-}

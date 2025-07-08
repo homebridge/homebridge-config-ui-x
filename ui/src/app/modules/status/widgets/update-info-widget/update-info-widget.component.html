@@ -5,7 +5,7 @@
   <div
     class="d-flex flex-wrap w-100 mt-1 justify-content-start gridster-item-content overflow-auto no-scrollbars align-items-center">
 
-    @if(serverInfo.homebridgeRunningInDocker) {
+    @if(nodejsStatusDone && serverInfo.homebridgeRunningInDocker) {
     <div class="hb-status-item d-flex flex-row mb-1" style="min-width: max(25%, 225px)">
       <div class="d-flex ps-3 py-1">
         <div class="mb-0 d-flex align-items-center">

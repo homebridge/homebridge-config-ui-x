@@ -67,9 +67,6 @@ interface DockerDetails {
   latestVersion: string | null;
   latestReleaseBody: string;
   updateAvailable: boolean;
-  showNodeUnsupportedWarning: boolean;
-  showGlibcUnsupportedWarning: boolean;
-  installPath: string;
 }
 
 const execAsync = promisify(exec)
@@ -567,7 +564,6 @@ export class StatusService {
         installPath: dirname(process.execPath),
       }
       this.statusCache.set('nodeJsVersion', versionInformation, 86400)
-      console.log('Node.js version information:', versionInformation);
       return versionInformation
     } catch (e) {
       this.logger.log(`Failed to check for Node.js version updates (check your internet connection) as ${e.message}.`)
