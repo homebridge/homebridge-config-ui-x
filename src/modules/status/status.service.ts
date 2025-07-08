@@ -624,9 +624,7 @@ export class StatusService {
     let updateAvailable = false;
 
     try {
-      console.log('Fetching Docker package details...');
       const { releases, rawReleases } = await this.getRecentReleases();
-      console.log('Docker releases fetched:', releases);
 
       // Determine the type of currentVersion and select the appropriate latest version
       if (currentVersion) {
@@ -677,13 +675,6 @@ export class StatusService {
     } catch (error) {
       console.error('Failed to fetch Docker details:', error instanceof Error ? error.message : error);
     }
-
-    console.log('Docker details:', {
-      currentVersion,
-      latestVersion,
-      latestReleaseBody,
-      updateAvailable,
-    });
 
     return {
       currentVersion,
