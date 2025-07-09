@@ -536,8 +536,6 @@
   "status.widget.info.arch": "โค้ง",
   "status.widget.info.config_path": "เส้นทางกำหนดค่า",
   "status.widget.info.docker": "Docker",
-  "status.widget.info.docker_update_message": "Updating the Docker requires manually pulling the latest image and restarting the container. This is not done automatically by Homebridge.  Please see the documentation for your Docker image for instructions on how to update.",
-  "status.widget.info.docker_update_title": "Docker Update",
   "status.widget.info.glibc_message": "ข้อความนี้ระบุว่าระบบปฏิบัติการของคุณไม่รองรับ Node.js เวอร์ชันใหม่กว่า เพื่อแก้ไขปัญหานี้และสามารถติดตั้ง Node.js เวอร์ชันอัปเดตได้ในอนาคต คุณจะต้องอัปเดตระบบปฏิบัติการเป็นเวอร์ชันล่าสุด",
   "status.widget.info.glibc_title": "อัพเดตระบบปฏิบัติการ",
   "status.widget.info.hostname": "ชื่อโฮสต์",

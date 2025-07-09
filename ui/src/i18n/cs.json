@@ -536,8 +536,6 @@
   "status.widget.info.arch": "Arch.",
   "status.widget.info.config_path": "Cesta ke konfiguraci",
   "status.widget.info.docker": "Docker",
-  "status.widget.info.docker_update_message": "Updating the Docker requires manually pulling the latest image and restarting the container. This is not done automatically by Homebridge.  Please see the documentation for your Docker image for instructions on how to update.",
-  "status.widget.info.docker_update_title": "Docker Update",
   "status.widget.info.glibc_message": "Tento systém nepodporuje novější verze Node.js. Pro jejich instalaci a používání v budoucnu budete muset aktualizovat svůj operační systém na novější verzi.",
   "status.widget.info.glibc_title": "OS Update",
   "status.widget.info.hostname": "Název hostitele",

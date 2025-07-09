@@ -536,8 +536,6 @@
   "status.widget.info.arch": "Арх.",
   "status.widget.info.config_path": "Файл конфігурації",
   "status.widget.info.docker": "Docker",
-  "status.widget.info.docker_update_message": "Updating the Docker requires manually pulling the latest image and restarting the container. This is not done automatically by Homebridge.  Please see the documentation for your Docker image for instructions on how to update.",
-  "status.widget.info.docker_update_title": "Docker Update",
   "status.widget.info.glibc_message": "Це повідомлення означає, що Ваша операційна система не підтримує нові версії Node.js. Щоб вирішити цю проблему та мати можливість інсталювати оновлені версії Node.js у майбутньому, Вам потрібно оновити операційну систему до новішої версії.",
   "status.widget.info.glibc_title": "OS Оновлена",
   "status.widget.info.hostname": "Назва хосту",
