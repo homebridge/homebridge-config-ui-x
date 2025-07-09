@@ -536,6 +536,8 @@
   "status.widget.info.arch": "Arch.",
   "status.widget.info.config_path": "Ścieżka konfiguracji",
   "status.widget.info.docker": "Docker",
+  "status.widget.info.docker_update_message": "Updating the Docker requires manually pulling the latest image and restarting the container. This is not done automatically by Homebridge.  Please see the documentation for your Docker image for instructions on how to update.",
+  "status.widget.info.docker_update_title": "Docker Update",
   "status.widget.info.glibc_message": "Ten komunikat wskazuje, że twój system operacyjny nie obsługuje nowszych wersji Node.js. Aby rozwiązać ten problem i móc zainstalować zaktualizowane wersje Node.js w przyszłości, trzeba zaktualizować system do nowszej wersji.",
   "status.widget.info.glibc_title": "Aktualizacja OS",
   "status.widget.info.hostname": "Nazwa hosta",

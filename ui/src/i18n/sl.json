@@ -536,6 +536,8 @@
   "status.widget.info.arch": "Arch.",
   "status.widget.info.config_path": "Konfiguriraj pot",
   "status.widget.info.docker": "Docker",
+  "status.widget.info.docker_update_message": "Updating the Docker requires manually pulling the latest image and restarting the container. This is not done automatically by Homebridge.  Please see the documentation for your Docker image for instructions on how to update.",
+  "status.widget.info.docker_update_title": "Docker Update",
   "status.widget.info.glibc_message": "This message indicates that your operating system does not support newer versions of Node.js. To resolve this and be able to install updated versions of Node.js in the future, you will need to update your operating system to a more recent version.",
   "status.widget.info.glibc_title": "OS Update",
   "status.widget.info.hostname": "Ime gostitelja",
