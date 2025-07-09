@@ -16,7 +16,6 @@ export interface EnvInterface {
   runningOnRaspberryPi: boolean
   canShutdownRestartHost: boolean
   dockerOfflineUpdate: boolean
-  serviceMode: boolean
   lang: string | null
   temperatureUnits: 'c' | 'f'
   temp?: string

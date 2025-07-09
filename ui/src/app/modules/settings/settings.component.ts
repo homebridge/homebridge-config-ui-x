@@ -80,7 +80,6 @@ export class SettingsComponent implements OnInit {
   public showPfxPassphrase = false
   public runningInDocker = this.$settings.env.runningInDocker
   public runningOnRaspberryPi = this.$settings.env.runningOnRaspberryPi
-  public serviceMode = this.$settings.env.serviceMode
   public platform = this.$settings.env.platform
 
   public hbNameIsInvalid = false
@@ -195,10 +194,7 @@ export class SettingsComponent implements OnInit {
     this.isHbV2 = this.$settings.env.homebridgeVersion.startsWith('2')
 
     await this.initNetworkingOptions()
-
-    if (this.serviceMode) {
-      await this.initServiceModeForm()
-    }
+    await this.initStartupSettings()
 
     this.hbNameFormControl.patchValue(this.$settings.env.homebridgeInstanceName)
     this.hbNameFormControl.valueChanges
@@ -325,15 +321,6 @@ export class SettingsComponent implements OnInit {
     this.loading = false
   }
 
-  public openUiSettings() {
-    this.$plugin.settings({
-      name: 'homebridge-config-ui-x',
-      displayName: 'Homebridge UI',
-      settingsSchema: true,
-      links: {},
-    })
-  }
-
   public openBackupModal() {
     this.$modal.open(BackupComponent, {
       size: 'lg',
@@ -428,31 +415,31 @@ export class SettingsComponent implements OnInit {
     this.showFields[section] = !this.showFields[section]
   }
 
-  private async initServiceModeForm() {
+  private async initStartupSettings() {
     try {
-      const serviceModeData = await firstValueFrom(this.$api.get('/platform-tools/hb-service/homebridge-startup-settings'))
+      const startupSettingsData = await firstValueFrom(this.$api.get('/platform-tools/hb-service/homebridge-startup-settings'))
 
-      this.hbDebugFormControl.patchValue(serviceModeData.HOMEBRIDGE_DEBUG)
+      this.hbDebugFormControl.patchValue(startupSettingsData.HOMEBRIDGE_DEBUG)
       this.hbDebugFormControl.valueChanges
         .pipe(debounceTime(750))
         .subscribe((value: boolean) => this.hbDebugSave(value))
 
-      this.hbInsecureFormControl.patchValue(serviceModeData.HOMEBRIDGE_INSECURE)
+      this.hbInsecureFormControl.patchValue(startupSettingsData.HOMEBRIDGE_INSECURE)
       this.hbInsecureFormControl.valueChanges
         .pipe(debounceTime(750))
         .subscribe((value: boolean) => this.hbInsecureSave(value))
 
-      this.hbKeepFormControl.patchValue(serviceModeData.HOMEBRIDGE_KEEP_ORPHANS)
+      this.hbKeepFormControl.patchValue(startupSettingsData.HOMEBRIDGE_KEEP_ORPHANS)
       this.hbKeepFormControl.valueChanges
         .pipe(debounceTime(750))
         .subscribe((value: boolean) => this.hbKeepSave(value))
 
-      this.hbEnvDebugFormControl.patchValue(serviceModeData.ENV_DEBUG)
+      this.hbEnvDebugFormControl.patchValue(startupSettingsData.ENV_DEBUG)
       this.hbEnvDebugFormControl.valueChanges
         .pipe(debounceTime(1500))
         .subscribe((value: string) => this.hbEnvDebugSave(value))
 
-      this.hbEnvNodeFormControl.patchValue(serviceModeData.ENV_NODE_OPTIONS)
+      this.hbEnvNodeFormControl.patchValue(startupSettingsData.ENV_NODE_OPTIONS)
       this.hbEnvNodeFormControl.valueChanges
         .pipe(debounceTime(1500))
         .subscribe((value: string) => this.hbEnvNodeSave(value))

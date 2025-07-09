@@ -27,7 +27,7 @@
           {{ 'plugins.uninstall_remove_plugin_config' | translate }}
           <span class="hb-uix-slider hb-uix-round"></span>
         </label>
-        @if (serviceMode && hasChildBridges) {
+        @if (hasChildBridges) {
         <label class="hb-uix-switch d-block" for="remove-plugin-child-bridges">
           <input id="remove-plugin-child-bridges" type="checkbox" [(ngModel)]="removeChildBridges" />
           @if (childBridges.length === 1) { {{ 'plugins.uninstall_remove_child_bridge' | translate }} } @if

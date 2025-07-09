@@ -55,7 +55,6 @@ export class PluginCardComponent implements OnInit {
   public isMobile: string
   public setChildBridges = []
   public hb2Status = 'unknown' // 'hide' | 'supported' | 'unknown'
-  public serviceMode = this.$settings.env.serviceMode
 
   // eslint-disable-next-line accessor-pairs
   @Input() set childBridges(childBridges: any[]) {

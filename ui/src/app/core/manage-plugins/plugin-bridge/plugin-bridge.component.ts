@@ -41,7 +41,6 @@ export class PluginBridgeComponent implements OnInit {
   @Input() schema: PluginSchema
   @Input() justInstalled = false
 
-  public serviceMode = this.$settings.env.serviceMode
   public loading = true
   public canConfigure = true
   public configBlocks: any[] = []
@@ -254,14 +253,12 @@ export class PluginBridgeComponent implements OnInit {
       await firstValueFrom(this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.configBlocks))
 
       // Delete unused bridges, so no bridges are orphaned
-      if (this.$settings.env.serviceMode) {
-        for (const bridge of this.deleteBridges) {
-          try {
-            await firstValueFrom(this.$api.delete(`/server/pairings/${bridge.id.replace(/:/g, '')}`))
-          } catch (error) {
-            console.error(error)
-            this.$toastr.error(this.$translate.instant('settings.reset_bridge.error'), this.$translate.instant('toast.title_error'))
-          }
+      for (const bridge of this.deleteBridges) {
+        try {
+          await firstValueFrom(this.$api.delete(`/server/pairings/${bridge.id.replace(/:/g, '')}`))
+        } catch (error) {
+          console.error(error)
+          this.$toastr.error(this.$translate.instant('settings.reset_bridge.error'), this.$translate.instant('toast.title_error'))
         }
       }
 

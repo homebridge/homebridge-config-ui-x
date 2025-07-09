@@ -43,17 +43,6 @@
       </div>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pe-2">{{ 'menu.label_settings_advanced' | translate }}</span>
-      <button
-        class="btn btn-primary waves-effect m-0 ms-3"
-        style="min-width: 50px"
-        (click)="openUiSettings()"
-        [attr.aria-label]="'menu.label_settings_advanced' | translate"
-      >
-        <i class="fas fa-fw fa-arrow-right"></i>
-      </button>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2"> {{ 'backup.title_backup' | translate }} </span>
       <button
         class="btn btn-primary waves-effect m-0 ms-3"
@@ -229,7 +218,7 @@
 </div>
 
 <!-- STARTUP/ENV OPTIONS -->
-@if (serviceMode || runningInDocker) {
+@if (runningInDocker) {
 <div class="my-4">
   <div
     role="button"
@@ -249,7 +238,6 @@
   </div>
   @if (showFields.startup) {
   <ul class="list-group list-group-box mb-4 mx-0" id="fieldsStartup">
-    @if (serviceMode) {
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.startup.debug' | translate }} <code>-D</code><br />
@@ -478,7 +466,7 @@
         }
       </div>
     </li>
-    } @if (runningInDocker) {
+    @if (runningInDocker) {
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span>
         {{ 'menu.docker.startup_script' | translate }}<br />
@@ -951,7 +939,6 @@
 </div>
 
 <!-- CACHE SETTINGS -->
-@if (serviceMode) {
 <div class="my-4">
   <div
     role="button"
@@ -1042,7 +1029,6 @@
   </ul>
   }
 </div>
-}
 
 <!-- RESET SETTINGS -->
 <div class="my-4">
@@ -1066,7 +1052,6 @@
   <p class="small grey-text mb-2 mx-0">{{ 'reset.bridges.desc' | translate }}</p>
   } @if (showFields.reset) {
   <ul class="list-group list-group-box mt-2 mx-0" id="fieldsReset">
-    @if (serviceMode) {
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2">
         {{ 'reset.bridge_ind.title' | translate }}<br />
@@ -1081,7 +1066,6 @@
         <i class="fas fa-fw fa-arrow-right"></i>
       </button>
     </li>
-    }
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2">
         {{ 'reset.bridge_all.title' | translate | titlecase }}<br />

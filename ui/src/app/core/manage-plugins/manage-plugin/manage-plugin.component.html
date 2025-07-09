@@ -44,17 +44,13 @@
     </div>
     <ul class="mb-3">
       <li>{{ 'plugins.manage.online_updates' | translate }}</li>
-      @if (serviceMode) {
       <li>{{ 'plugins.manage.manual_update_command' | translate }}</li>
-      }
     </ul>
-    @if (serviceMode) {
     <pre class="p-2 mb-0">
 hb-service stop
 npm install -g {{ pluginName }}&#64;{{targetVersion}}
 hb-service start</pre
     >
-    }
   </div>
   } @if (releaseNotesShow && !actionComplete && onlineUpdateOk) {
   <div class="modal-body plugin-modal-body">

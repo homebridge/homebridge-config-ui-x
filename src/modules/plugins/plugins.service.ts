@@ -938,9 +938,6 @@ export class PluginsService {
     // Modify this plugins schema to set the default port number
     if (pluginName === this.configService.name) {
       configSchema.schema.properties.port.default = this.configService.ui.port
-
-      // Filter some options from the UI config when using service mode
-      configSchema.layout = configSchema.layout.filter((section: any) => section.ref !== 'log' && section.ref !== 'homebridge')
     }
 
     // Modify homebridge-alexa to set the default pin
