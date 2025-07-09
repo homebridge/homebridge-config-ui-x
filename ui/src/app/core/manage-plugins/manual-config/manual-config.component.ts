@@ -149,14 +149,14 @@ export class ManualConfigComponent implements OnInit {
 
       // Possible child bridge setup recommendation if the plugin is not Homebridge UI
       // If it is the first time configuring the plugin, then offer to set up a child bridge straight away
-      if (this.isFirstSave && this.$settings.env.recommendChildBridges && this.$settings.env.serviceMode && newConfig[0]?.platform) {
+      if (this.isFirstSave && this.$settings.env.recommendChildBridges && newConfig[0]?.platform) {
         // Close the modal and open the child bridge setup modal
         this.$activeModal.close()
         this.$plugin.bridgeSettings(this.plugin, true)
         return
       }
 
-      if (!['homebridge', 'homebridge-config-ui-x'].includes(this.plugin.name) && this.$settings.env.serviceMode) {
+      if (!['homebridge', 'homebridge-config-ui-x'].includes(this.plugin.name)) {
         await this.getChildBridges()
         if (this.childBridges.length > 0) {
           this.$activeModal.close()

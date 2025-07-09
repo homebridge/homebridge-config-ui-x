@@ -300,7 +300,6 @@ export class PluginsComponent implements OnInit, OnDestroy {
 
           plugin.recommendChildBridge = plugin.isConfiguredDynamicPlatform
             && this.$settings.env.recommendChildBridges
-            && this.$settings.env.serviceMode
             && !['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)
 
           plugin.hasChildBridges = plugin.isConfigured && configBlocks.some(x => x._bridge && x._bridge.username)

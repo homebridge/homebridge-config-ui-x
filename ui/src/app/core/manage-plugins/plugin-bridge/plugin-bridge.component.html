@@ -156,7 +156,6 @@
           {{ configBlocks[selectedBlock]._bridge.port }}
         </div>
       </li>
-      @if (serviceMode) {
       <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
         <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'child_bridge.config.name' | translate }}</label>
         <div class="text-start text-md-end w-100 w-md-50">
@@ -239,7 +238,7 @@
           />
         </div>
       </li>
-      } } }
+      } }
     </ul>
     @if (configBlocks[selectedBlock]._bridge?.username && deviceInfo[configBlocks[selectedBlock]._bridge?.username] ===
     false) {
@@ -247,7 +246,7 @@
       {{ 'child_bridge.restart_homebridge' | translate }}
       <br />{{ 'child_bridge.return_to_pair' | translate }}
     </ngb-alert>
-    } } @if (deleteBridges.length && serviceMode) {
+    } } @if (deleteBridges.length) {
     <ngb-alert type="error" [dismissible]="false" class="mt-3 mb-0">
       <p>
         {{ 'child_bridge.confirm_delete_1' | translate }} @if (deletingPairedBridge) { {{

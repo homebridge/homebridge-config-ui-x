@@ -22,26 +22,17 @@
       <li>{{ 'plugins.manage.scoped.process' | translate }}</li>
       } @if (!onlineUpdateOk) {
       <li [innerHTML]="'plugins.manage.scoped.windows' | translate"></li>
-      @if (serviceMode) {
       <li>{{ 'plugins.manage.manual_update_command' | translate }}</li>
-      } }
+      }
     </ul>
-    @if (!onlineUpdateOk) { @if (serviceMode) {
+    @if (!onlineUpdateOk) {
     <pre class="mt-3 mb-0">
 hb-service stop
 npm install -g {{ plugin.newHbScope.to }}&#64;{{ plugin.newHbScope.switch }}
 npm uninstall -g {{ plugin.newHbScope.from }}
 hb-service start</pre
     >
-    } @if (!serviceMode) {
-    <ul class="mt-3 mb-0">
-      <li>{{ 'plugins.manage.install' | translate }} <span class="font-monospace">{{ plugin.newHbScope.to }}</span></li>
-      <li>
-        {{ 'plugins.manage.uninstall' | translate }} <span class="font-monospace">{{ plugin.newHbScope.from }}</span>
-      </li>
-      <li>{{ 'menu.hbrestart.title' | translate }}</li>
-    </ul>
-    } } @if (onlineUpdateOk) {
+    } @if (onlineUpdateOk) {
     <div class="text-center">
       <ul class="d-inline-block text-start mt-3 mb-3" style="list-style-type: none">
         <li>

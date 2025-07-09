@@ -50,18 +50,6 @@ export class SystemInfoWidgetComponent implements OnInit {
     ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/homebridge-config-ui-x/wiki/Troubleshooting/#error---update-node---your-version-of-linux-does-not-meet-the-glibc-version'
   }
 
-  public serviceModeModal() {
-    const ref = this.$modal.open(InformationComponent, {
-      size: 'lg',
-      backdrop: 'static',
-    })
-    ref.componentInstance.title = this.$translate.instant('status.widget.info.servicemode_title')
-    ref.componentInstance.message = this.$translate.instant('status.widget.info.servicemode_message')
-    ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info')
-    ref.componentInstance.faIconClass = 'fas fa-fw fa-circle-exclamation primary-text'
-    ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/homebridge-config-ui-x/wiki/How-To-Swap-From-Standalone-Mode-to-Service-Mode'
-  }
-
   private getSystemInfo() {
     this.io.request('get-homebridge-server-info').subscribe((data) => {
       this.serverInfo = data

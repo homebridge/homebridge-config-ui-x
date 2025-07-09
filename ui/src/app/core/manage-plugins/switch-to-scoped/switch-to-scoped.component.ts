@@ -37,7 +37,6 @@ export class SwitchToScopedComponent implements OnInit, OnDestroy {
 
   @Input() plugin: any
 
-  public serviceMode = this.$settings.env.serviceMode
   public installing = false
   public installed = false
   public uninstalling = false

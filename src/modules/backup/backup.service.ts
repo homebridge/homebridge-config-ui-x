@@ -3,7 +3,6 @@ import type { FastifyReply } from 'fastify'
 
 import type { HomebridgePlugin } from '../plugins/types'
 
-import { exec, execSync } from 'node:child_process'
 import { EventEmitter } from 'node:events'
 import { platform, tmpdir } from 'node:os'
 import { basename, join, resolve } from 'node:path'
@@ -579,13 +578,6 @@ export class BackupService {
 
     if (uiConfigBlock) {
       uiConfigBlock.port = this.configService.ui.port
-
-      // Delete unnecessary config in service mode / docker
-      if (this.configService.serviceMode || this.configService.runningInDocker) {
-        delete uiConfigBlock.restart
-        delete uiConfigBlock.sudo
-        delete uiConfigBlock.log
-      }
     } else {
       restoredConfig.platforms.push({
         name: 'Config',
@@ -777,85 +769,13 @@ export class BackupService {
    */
   postBackupRestoreRestart() {
     setTimeout(() => {
-      // If running in service mode
-      if (this.configService.serviceMode) {
-        // Kill homebridge
-        this.homebridgeIpcService.killHomebridge()
+      // Kill homebridge
+      this.homebridgeIpcService.killHomebridge()
 
-        // Kill self
-        setTimeout(() => {
-          process.kill(process.pid, 'SIGKILL')
-        }, 500)
-
-        return
-      }
-
-      // If running in docker
-      if (this.configService.runningInDocker) {
-        try {
-          return execSync('killall -9 homebridge; kill -9 $(pidof homebridge-config-ui-x);')
-        } catch (e) {
-          this.logger.error(`Failed to restart Homebridge as ${e.message}.`)
-          this.logger.error(e)
-        }
-      }
-
-      // If running as a fork, kill the parent homebridge process
-      if (process.connected) {
-        process.kill(process.ppid, 'SIGKILL')
+      // Kill self
+      setTimeout(() => {
         process.kill(process.pid, 'SIGKILL')
-      }
-
-      // If running with noFork
-      if (this.configService.ui.noFork) {
-        return process.kill(process.pid, 'SIGKILL')
-      }
-
-      // If running in standalone mode, need to find the pid of homebridge and kill it
-      if (platform() === 'linux' && this.configService.ui.standalone) {
-        try {
-          // Try to get pid by port
-          const getPidByPort = (port: number): number => {
-            try {
-              return Number.parseInt(execSync(
-                `fuser ${port}/tcp 2>/dev/null`,
-              ).toString('utf8').trim(), 10)
-            } catch (e) {
-              return null
-            }
-          }
-
-          // Try to get pid by name
-          const getPidByName = (): number => {
-            try {
-              return Number.parseInt(execSync('pidof homebridge').toString('utf8').trim(), 10)
-            } catch (e) {
-              return null
-            }
-          }
-
-          const homebridgePid = getPidByPort(this.configService.homebridgeConfig.bridge.port) || getPidByName()
-
-          if (homebridgePid) {
-            process.kill(homebridgePid, 'SIGKILL')
-            return process.kill(process.pid, 'SIGKILL')
-          }
-        } catch (e) {
-          // Just proceed to the users restart command
-        }
-      }
-
-      // Try the users restart command
-      if (this.configService.ui.restart) {
-        return exec(this.configService.ui.restart, (err) => {
-          if (err) {
-            this.logger.log('Restart command exited with an error, failed to restart Homebridge.')
-          }
-        })
-      }
-
-      // If all else fails just kill the current process
-      return process.kill(process.pid, 'SIGKILL')
+      }, 500)
     }, 500)
 
     return { status: 0 }

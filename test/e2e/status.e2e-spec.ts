@@ -8,17 +8,19 @@ import { HttpService } from '@nestjs/axios'
 import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
-import { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
+import { AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import { copy } from 'fs-extra'
-import { of, throwError } from 'rxjs'
+import { of } from 'rxjs'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module'
+import { HomebridgeIpcService } from '../../src/core/homebridge-ipc/homebridge-ipc.service'
 import { StatusModule } from '../../src/modules/status/status.module'
 
 describe('StatusController (e2e)', () => {
   let app: NestFastifyApplication
   let httpService: HttpService
+  let ipcService: HomebridgeIpcService
 
   let authFilePath: string
   let secretsFilePath: string
@@ -55,6 +57,8 @@ describe('StatusController (e2e)', () => {
 
     await app.init()
     await app.getHttpAdapter().getInstance().ready()
+
+    ipcService = app.get(HomebridgeIpcService)
   })
 
   beforeEach(async () => {
@@ -128,16 +132,23 @@ describe('StatusController (e2e)', () => {
     expect(res.json()).toHaveProperty('processUptime')
   })
 
-  it('GET /status/homebridge (homebridge up)', async () => {
-    const response: AxiosResponse<any> = {
-      data: {},
-      headers: {},
-      config: { url: 'http://localhost:51826' } as InternalAxiosRequestConfig,
-      status: 404,
-      statusText: 'Not Found',
-    }
+  it('GET /status/homebridge (homebridge down)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/status/homebridge',
+      headers: {
+        authorization,
+      },
+    })
 
-    vi.spyOn(httpService, 'get').mockImplementationOnce(() => of(response) as any)
+    // Default status is down
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual({ status: 'down' })
+  })
+
+  it('GET /status/homebridge (homebridge up)', async () => {
+    // Set homebridge status to up
+    ipcService.emit('serverStatusUpdate', { status: 'up' })
 
     const res = await app.inject({
       method: 'GET',
@@ -149,34 +160,6 @@ describe('StatusController (e2e)', () => {
 
     expect(res.statusCode).toBe(200)
     expect(res.json()).toEqual({ status: 'up' })
-  })
-
-  it('GET /status/homebridge (homebridge down)', async () => {
-    const response: AxiosError<any> = {
-      name: 'Connection Error',
-      message: 'Connection Error',
-      toJSON: () => {
-        return {}
-      },
-      isAxiosError: true,
-      code: null,
-      response: null,
-      config: { url: 'http://localhost:51826' } as InternalAxiosRequestConfig,
-    }
-
-    vi.spyOn(httpService, 'get')
-      .mockImplementationOnce(() => throwError(() => response))
-
-    const res = await app.inject({
-      method: 'GET',
-      path: '/status/homebridge',
-      headers: {
-        authorization,
-      },
-    })
-
-    expect(res.statusCode).toBe(200)
-    expect(res.json()).toEqual({ status: 'down' })
   })
 
   it('GET /status/server-information', async () => {
