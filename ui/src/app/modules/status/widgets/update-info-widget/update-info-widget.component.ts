@@ -22,6 +22,7 @@ interface DockerDetails {
 }
 
 @Component({
+  selector: 'app-update-info-widget',
   templateUrl: './update-info-widget.component.html',
   styleUrls: ['./update-info-widget.component.scss'],
   standalone: true,
@@ -60,9 +61,9 @@ export class UpdateInfoWidgetComponent implements OnInit {
   public serverInfo: any
 
   public isRunningHbV2 = false
-
   public isHbV2Ready = false
   public isUiV5Ready = false
+  public dockerExpanded = false
 
   private io: IoNamespace
 
@@ -72,7 +73,6 @@ export class UpdateInfoWidgetComponent implements OnInit {
     this.io = this.$ws.getExistingNamespace('status')
 
     this.io.connected.subscribe(async () => {
-      // Run getNodeInfo first to ensure serverInfo is populated
       await this.getNodeInfo()
       await Promise.all([
         this.checkHomebridgeVersion(),
@@ -83,7 +83,6 @@ export class UpdateInfoWidgetComponent implements OnInit {
     })
 
     if (this.io.socket.connected) {
-      // Run getNodeInfo first to ensure serverInfo is populated
       await this.getNodeInfo()
       await Promise.all([
         this.checkHomebridgeVersion(),
@@ -93,7 +92,6 @@ export class UpdateInfoWidgetComponent implements OnInit {
       ])
     }
 
-    // The user on UI v5 will already have a compatible Node.js version
     this.isHbV2Ready = true
 
     if (!this.isRunningHbV2) {
@@ -107,6 +105,10 @@ export class UpdateInfoWidgetComponent implements OnInit {
 
       this.isHbV2Ready = this.isHbV2Ready && allHb2Ready
     }
+  }
+
+  toggleDockerExpand() {
+    this.dockerExpanded = !this.dockerExpanded
   }
 
   async checkHomebridgeVersion() {
