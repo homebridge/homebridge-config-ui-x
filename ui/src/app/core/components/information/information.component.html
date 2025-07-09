@@ -1,13 +1,8 @@
 <div class="modal-content">
   <div class="modal-header">
     <h5 class="modal-title">{{ title }}</h5>
-    <button
-      type="button"
-      class="btn-close"
-      data-bs-dismiss="modal"
-      [attr.aria-label]="'form.button_close' | translate"
-      (click)="$activeModal.dismiss('Dismiss')"
-    ></button>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
+      (click)="$activeModal.dismiss('Dismiss')"></button>
   </div>
   <div class="modal-body text-center">
     @if (faIconClass) {
@@ -19,30 +14,23 @@
     @if (message2) {
     <p class="mb-0 mt-3" [innerHTML]="message2"></p>
     }
+    @if (markdownMessage2) {
+    <markdown class="plugin-md" [data]="markdownMessage2"></markdown>
+    }
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-start">
       @if (ctaButtonLink) {
-      <button
-        type="button"
-        class="btn btn-elegant"
-        data-bs-dismiss="modal"
-        (click)="$activeModal.dismiss('Dismiss')"
-        [attr.aria-label]="'form.button_close' | translate"
-      >
+      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="$activeModal.dismiss('Dismiss')"
+        [attr.aria-label]="'form.button_close' | translate">
         {{ 'form.button_close' | translate }}
       </button>
       }
     </div>
     <div class="text-center">
       @if (!ctaButtonLink) {
-      <button
-        type="button"
-        class="btn btn-elegant"
-        data-bs-dismiss="modal"
-        (click)="$activeModal.dismiss('Dismiss')"
-        [attr.aria-label]="'form.button_close' | translate"
-      >
+      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="$activeModal.dismiss('Dismiss')"
+        [attr.aria-label]="'form.button_close' | translate">
         {{ 'form.button_close' | translate }}
       </button>
       }
