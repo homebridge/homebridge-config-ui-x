@@ -1,0 +1,100 @@
+:host {
+  ::ng-deep .plugin-md {
+    display: block !important;
+    /* Ensure markdown container is a block element */
+    background-color: #f6f8fa !important;
+    /* Grey background matching GitHub table header */
+    border-radius: 6px !important;
+    /* Rounded corners */
+    padding: 16px !important;
+    /* Padding inside the grey box */
+    margin: 16px auto !important;
+    /* Center the box */
+    width: 100% !important;
+    /* Full width to match content */
+    max-width: 632px !important;
+    /* Match table max-width (600px) + padding (16px * 2) */
+
+    table {
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto !important;
+      /* Center table within the grey box */
+      border-collapse: collapse;
+      border: 1px solid #d0d7de !important;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif !important;
+      font-size: 14px !important;
+      color: #24292e !important;
+      /* Dark text color */
+    }
+
+    th,
+    td {
+      padding: 6px 13px !important;
+      border: 1px solid #d0d7de !important;
+      text-align: left;
+      color: #24292e !important;
+      /* Dark text color */
+    }
+
+    th {
+      background-color: #f6f8fa !important;
+      font-weight: 600 !important;
+      text-align: center !important;
+    }
+
+    td[align='center'] {
+      text-align: center !important;
+    }
+
+    tr {
+      color: #24292e !important;
+      /* Dark text color */
+    }
+
+    tr:nth-child(odd) {
+      background-color: #ffffff !important;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f6f8fa !important;
+    }
+
+    tr:hover {
+      background-color: #f0f2f5 !important;
+    }
+  }
+
+  /* Dark mode support for the greyed box */
+  body.dark-mode .plugin-md {
+    background-color: #2b2b2b !important;
+    /* Darker grey for dark mode */
+    color: #ffffff !important;
+    /* White text for dark mode */
+
+    table,
+    tr,
+    th,
+    td {
+      color: #ffffff !important;
+      /* White text for dark mode */
+    }
+
+    th {
+      background-color: #3c3c3c !important;
+      /* Slightly darker header in dark mode */
+    }
+
+    tr:nth-child(odd) {
+      background-color: #323232 !important;
+    }
+
+    tr:nth-child(even) {
+      background-color: #2b2b2b !important;
+    }
+
+    tr:hover {
+      background-color: #454545 !important;
+    }
+  }
+}

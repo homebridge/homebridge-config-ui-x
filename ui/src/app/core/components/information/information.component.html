@@ -18,6 +18,8 @@
     <p class="mb-0" [innerHTML]="message"></p>
     @if (message2) {
     <p class="mb-0 mt-3" [innerHTML]="message2"></p>
+    } @if (markdownMessage2) {
+    <markdown class="plugin-md" [data]="markdownMessage2"></markdown>
     }
   </div>
   <div class="modal-footer justify-content-between">
