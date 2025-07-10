@@ -83,9 +83,6 @@ export class StatusService {
 
   private memoryInfo: Systeminformation.MemData
 
-  // Docker package cache
-  private dockerPackage: DockerDetails
-
   private rpiGetThrottledMapping = {
     0: 'Under-voltage detected',
     1: 'Arm frequency capped',
@@ -625,7 +622,7 @@ export class StatusService {
    * If currentVersion is beta/test, latestVersion is the latest beta/test version; otherwise, it's the latest stable.
    * @returns A promise resolving to the Docker details object.
    */
-  public async getDockerDetails() {
+  public async getDockerDetails(): Promise<DockerDetails> {
     const currentVersion = process.env.DOCKER_HOMEBRIDGE_VERSION
     let latestVersion: string | null = null
     let latestReleaseBody = ''
@@ -689,10 +686,6 @@ export class StatusService {
       latestVersion,
       latestReleaseBody,
       updateAvailable,
-      // Placeholder logic for warnings (customize based on specific requirements)
-      showNodeUnsupportedWarning: false, // Example: process.version < 'vX.Y.Z'
-      showGlibcUnsupportedWarning: false, // Example: Check glibc version
-      installPath: dirname(process.execPath),
     }
   }
 
