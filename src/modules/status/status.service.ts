@@ -62,13 +62,6 @@ interface DockerReleaseInfo {
   isLatestStable: boolean
 }
 
-interface DockerDetails {
-  currentVersion: string | undefined
-  latestVersion: string | null
-  latestReleaseBody: string
-  updateAvailable: boolean
-}
-
 const execAsync = promisify(exec)
 
 @Injectable()
