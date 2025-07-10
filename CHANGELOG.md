@@ -14,6 +14,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ### UI Changes
 
+- Display Docker Version Details in the Update Information Box (#2488)
 - updates to the `fi.json` language file (#2253) (@l1500s)
 - update default dashboard layout
 - add support for dark mode switching with custom plugin uis (@NorthernMan54)
