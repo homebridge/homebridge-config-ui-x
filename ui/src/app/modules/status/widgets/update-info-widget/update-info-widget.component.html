@@ -3,11 +3,15 @@
     {{ 'status.services.updates' | translate }}
   </div>
   <div
-    class="d-flex flex-wrap w-100 mt-1 justify-content-start gridster-item-content overflow-auto no-scrollbars align-items-center">
+    class="d-flex flex-wrap w-100 mt-1 justify-content-start gridster-item-content overflow-auto no-scrollbars align-items-center"
+  >
     @if (serverInfo && serverInfo.homebridgeRunningInDocker) {
     <div class="hb-status-item d-flex flex-column mb-1" style="min-width: max(25%, 200px)">
-      <div class="d-flex ps-3 py-1 align-items-center cursor-pointer" (click)="toggleDockerExpand()"
-        style="cursor: pointer">
+      <div
+        class="d-flex ps-3 py-1 align-items-center cursor-pointer"
+        (click)="toggleDockerExpand()"
+        style="cursor: pointer"
+      >
         <div class="mb-0 d-flex align-items-center">
           @if (!dockerStatusDone) {
           <i class="fas fa-fw fa-lg fa-cog fa-spin primary-text"></i>
@@ -48,13 +52,28 @@
             </div>
             <div class="align-self-center px-3">
               @if (homebridgePkg.installedVersion) {
-              <a href="javascript:void(0)" (click)="installAlternateVersion(homebridgePkg)"
-                class="card-link card-link-title">Homebridge</a>
+              <a
+                href="javascript:void(0)"
+                (click)="installAlternateVersion(homebridgePkg)"
+                class="card-link card-link-title"
+                >Homebridge</a
+              >
               @if (!isRunningHbV2) {
-              <a href="javascript:void(0)" class="ms-1" (click)="readyForV2Modal()" ngbTooltip="Homebridge v2 Readiness"
-                container="body" openDelay="150" triggers="hover" placement="top" aria-label="Homebridge v2 Readiness">
-                <i class="fas fa-fw fa-info-circle"
-                  [ngClass]="{ 'green-text': isHbV2Ready, 'orange-text': !isHbV2Ready }"></i>
+              <a
+                href="javascript:void(0)"
+                class="ms-1"
+                (click)="readyForV2Modal()"
+                ngbTooltip="Homebridge v2 Readiness"
+                container="body"
+                openDelay="150"
+                triggers="hover"
+                placement="top"
+                aria-label="Homebridge v2 Readiness"
+              >
+                <i
+                  class="fas fa-fw fa-info-circle"
+                  [ngClass]="{ 'green-text': isHbV2Ready, 'orange-text': !isHbV2Ready }"
+                ></i>
               </a>
               } } @if (!homebridgePkg.installedVersion) {
               <span>Homebridge</span>
@@ -85,8 +104,12 @@
             </div>
             <div class="align-self-center px-3">
               @if (homebridgeUiPkg.installedVersion) {
-              <a href="javascript:void(0)" (click)="installAlternateVersion(homebridgeUiPkg)"
-                class="card-link card-link-title">Homebridge UI</a>
+              <a
+                href="javascript:void(0)"
+                (click)="installAlternateVersion(homebridgeUiPkg)"
+                class="card-link card-link-title"
+                >Homebridge UI</a
+              >
               } @if (!homebridgeUiPkg.installedVersion) {
               <span>Homebridge UI</span>
               }
@@ -146,13 +169,28 @@
         </div>
         <div class="align-self-center px-3">
           @if (homebridgePkg.installedVersion) {
-          <a href="javascript:void(0)" (click)="installAlternateVersion(homebridgePkg)"
-            class="card-link card-link-title">Homebridge</a>
+          <a
+            href="javascript:void(0)"
+            (click)="installAlternateVersion(homebridgePkg)"
+            class="card-link card-link-title"
+            >Homebridge</a
+          >
           @if (!isRunningHbV2) {
-          <a href="javascript:void(0)" class="ms-1" (click)="readyForV2Modal()" ngbTooltip="Homebridge v2 Readiness"
-            container="body" openDelay="150" triggers="hover" placement="top" aria-label="Homebridge v2 Readiness">
-            <i class="fas fa-fw fa-info-circle"
-              [ngClass]="{ 'green-text': isHbV2Ready, 'orange-text': !isHbV2Ready }"></i>
+          <a
+            href="javascript:void(0)"
+            class="ms-1"
+            (click)="readyForV2Modal()"
+            ngbTooltip="Homebridge v2 Readiness"
+            container="body"
+            openDelay="150"
+            triggers="hover"
+            placement="top"
+            aria-label="Homebridge v2 Readiness"
+          >
+            <i
+              class="fas fa-fw fa-info-circle"
+              [ngClass]="{ 'green-text': isHbV2Ready, 'orange-text': !isHbV2Ready }"
+            ></i>
           </a>
           } } @if (!homebridgePkg.installedVersion) {
           <span>Homebridge</span>
@@ -182,8 +220,12 @@
         </div>
         <div class="align-self-center px-3">
           @if (homebridgeUiPkg.installedVersion) {
-          <a href="javascript:void(0)" (click)="installAlternateVersion(homebridgeUiPkg)"
-            class="card-link card-link-title">Homebridge UI</a>
+          <a
+            href="javascript:void(0)"
+            (click)="installAlternateVersion(homebridgeUiPkg)"
+            class="card-link card-link-title"
+            >Homebridge UI</a
+          >
           } @if (!homebridgeUiPkg.installedVersion) {
           <span>Homebridge UI</span>
           }
@@ -249,9 +291,10 @@
           @if (!nodejsStatusDone) {
           <span class="grey-text small">{{ 'status.homebridge.checking' | translate }}</span>
           } @if (nodejsStatusDone) {
-          <span class="grey-text small">{{ serverInfo.nodeVersion }}@if (widget.showNpmVersion && nodejsInfo.npmVersion)
-            { &middot; {{
-            nodejsInfo.npmVersion }} }</span>
+          <span class="grey-text small"
+            >{{ serverInfo.nodeVersion }}@if (widget.showNpmVersion && nodejsInfo.npmVersion) { &middot; {{
+            nodejsInfo.npmVersion }} }</span
+          >
           @if (!widget.hideNodeInfo) { @if (nodejsInfo.updateAvailable) { &middot;
           <a href="javascript:void(0)" (click)="nodeUpdateModal()" class="primary-text small">
             {{'plugins.button_update' | translate }}
