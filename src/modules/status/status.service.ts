@@ -622,7 +622,7 @@ export class StatusService {
    * If currentVersion is beta/test, latestVersion is the latest beta/test version; otherwise, it's the latest stable.
    * @returns A promise resolving to the Docker details object.
    */
-  public async getDockerDetails(): Promise<DockerDetails> {
+  public async getDockerDetails() {
     const currentVersion = process.env.DOCKER_HOMEBRIDGE_VERSION
     let latestVersion: string | null = null
     let latestReleaseBody = ''
