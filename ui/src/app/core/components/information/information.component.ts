@@ -30,6 +30,4 @@ export class InformationComponent {
   public dismissModal() {
     this.$activeModal.dismiss('Dismiss')
   }
-
-  constructor() { }
 }

@@ -199,9 +199,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
   }
 
   private async getDockerInfo() {
-    if (!this.serverInfo?.homebridgeRunningInDocker) {
-      this.dockerStatusDone = true
-    } else {
+    if (this.serverInfo?.homebridgeRunningInDocker) {
       try {
         this.dockerInfo = await firstValueFrom(this.io.request('docker-version-check'))
         this.dockerStatusDone = true
@@ -209,6 +207,8 @@ export class UpdateInfoWidgetComponent implements OnInit {
         console.error(error)
         this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       }
+    } else {
+      this.dockerStatusDone = true
     }
   }
 
@@ -227,7 +227,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
     ref.componentInstance.markdownMessage2 = this.dockerInfo.latestReleaseBody
     ref.componentInstance.subtitle = (this.dockerInfo.currentVersion && this.dockerInfo.latestVersion)
       ? `${this.dockerInfo.currentVersion} → ${this.dockerInfo.latestVersion}`
-      : 'Unknown'
+      : this.$translate.instant('status.widget.unknown')
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info')
     ref.componentInstance.faIconClass = 'fab fa-fw fa-docker primary-text'
     ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/docker-homebridge/wiki/How-To-Update-Docker-Homebridge'
