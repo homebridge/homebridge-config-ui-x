@@ -65,6 +65,15 @@ export class StatusGateway {
     }
   }
 
+  @SubscribeMessage('docker-version-check')
+  async dockerVersionCheck() {
+    try {
+      return await this.statusService.getDockerDetails()
+    } catch (e) {
+      return new WsException(e.message)
+    }
+  }
+
   @SubscribeMessage('nodejs-version-check')
   async nodeJsVersionCheck() {
     try {

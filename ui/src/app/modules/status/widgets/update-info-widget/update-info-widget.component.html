@@ -5,6 +5,168 @@
   <div
     class="d-flex flex-wrap w-100 mt-1 justify-content-start gridster-item-content overflow-auto no-scrollbars align-items-center"
   >
+    @if (serverInfo && serverInfo.homebridgeRunningInDocker) {
+    <div class="hb-status-item d-flex flex-column mb-1" style="min-width: max(25%, 200px)">
+      <div
+        class="d-flex ps-3 py-1 align-items-center cursor-pointer"
+        (click)="toggleDockerExpand()"
+        style="cursor: pointer"
+      >
+        <div class="mb-0 d-flex align-items-center">
+          @if (!dockerStatusDone) {
+          <i class="fas fa-fw fa-lg fa-cog fa-spin primary-text"></i>
+          } @if (dockerStatusDone) { @if (dockerInfo.updateAvailable) {
+          <i class="fas fa-fw fa-lg fa-arrow-alt-circle-up orange-text"></i>
+          } @if (!dockerInfo.updateAvailable) {
+          <i class="fas fa-fw fa-lg fa-check-circle green-text"></i>
+          } }
+        </div>
+        <div class="align-self-center px-3">
+          Docker-Homebridge
+          <i class="fas fa-chevron-down ms-2" [ngClass]="{ 'fa-rotate-180': dockerExpanded }"></i>
+          <br />
+          @if (!dockerStatusDone) {
+          <span class="grey-text small">{{ 'status.homebridge.checking' | translate }}</span>
+          } @if (dockerStatusDone) {
+          <span class="grey-text small">{{ dockerInfo.currentVersion }}</span>
+
+          @if (dockerInfo.updateAvailable) { &middot;
+          <a href="javascript:void(0)" (click)="dockerUpdateModal()" class="primary-text small">
+            {{'plugins.button_update' | translate }}
+          </a>
+          } }
+        </div>
+      </div>
+      @if (dockerExpanded) {
+      <div class="ps-5 pe-3 d-flex flex-wrap">
+        <div class="hb-status-item d-flex flex-row py-1" style="min-width: 200px; flex: 1 0 auto">
+          <div class="d-flex ps-3 py-1">
+            <div class="mb-0 d-flex align-items-center">
+              @if (!homebridgePkg.installedVersion) {
+              <i class="fas fa-fw fa-lg fa-cog fa-spin primary-text"></i>
+              } @if (homebridgePkg.installedVersion && !homebridgePkg.updateAvailable) {
+              <i class="fas fa-fw fa-lg fa-check-circle green-text"></i>
+              } @if (homebridgePkg.installedVersion && homebridgePkg.updateAvailable) {
+              <i class="fas fa-fw fa-lg fa-arrow-alt-circle-up orange-text"></i>
+              }
+            </div>
+            <div class="align-self-center px-3">
+              @if (homebridgePkg.installedVersion) {
+              <a
+                href="javascript:void(0)"
+                (click)="installAlternateVersion(homebridgePkg)"
+                class="card-link card-link-title"
+                >Homebridge</a
+              >
+              @if (!isRunningHbV2) {
+              <a
+                href="javascript:void(0)"
+                class="ms-1"
+                (click)="readyForV2Modal()"
+                ngbTooltip="Homebridge v2 Readiness"
+                container="body"
+                openDelay="150"
+                triggers="hover"
+                placement="top"
+                aria-label="Homebridge v2 Readiness"
+              >
+                <i
+                  class="fas fa-fw fa-info-circle"
+                  [ngClass]="{ 'green-text': isHbV2Ready, 'orange-text': !isHbV2Ready }"
+                ></i>
+              </a>
+              } } @if (!homebridgePkg.installedVersion) {
+              <span>Homebridge</span>
+              }
+              <br />
+              @if (!homebridgePkg.installedVersion) {
+              <span class="grey-text small">{{ 'status.homebridge.checking' | translate }}</span>
+              } @if (homebridgePkg.installedVersion) {
+              <span class="grey-text small">v{{ homebridgeVersion }}</span> @if (homebridgePkg.updateAvailable) {
+              &middot;
+              <a href="javascript:void(0)" (click)="updatePackage(homebridgePkg)" class="primary-text small">
+                {{ 'plugins.button_update' | translate }}
+              </a>
+              } }
+            </div>
+          </div>
+        </div>
+        <div class="hb-status-item d-flex flex-row py-1" style="min-width: 200px; flex: 1 0 auto">
+          <div class="d-flex ps-3 py-1">
+            <div class="mb-0 d-flex align-items-center">
+              @if (!homebridgeUiPkg.installedVersion) {
+              <i class="fas fa-fw fa-lg fa-cog fa-spin primary-text"></i>
+              } @if (homebridgeUiPkg.installedVersion && !homebridgeUiPkg.updateAvailable) {
+              <i class="fas fa-fw fa-lg fa-check-circle green-text"></i>
+              } @if (homebridgeUiPkg.installedVersion && homebridgeUiPkg.updateAvailable) {
+              <i class="fas fa-fw fa-lg fa-arrow-alt-circle-up orange-text"></i>
+              }
+            </div>
+            <div class="align-self-center px-3">
+              @if (homebridgeUiPkg.installedVersion) {
+              <a
+                href="javascript:void(0)"
+                (click)="installAlternateVersion(homebridgeUiPkg)"
+                class="card-link card-link-title"
+                >Homebridge UI</a
+              >
+              } @if (!homebridgeUiPkg.installedVersion) {
+              <span>Homebridge UI</span>
+              }
+              <br />
+              @if (!homebridgeUiPkg.installedVersion) {
+              <span class="grey-text small">{{ 'status.homebridge.checking' | translate }}</span>
+              } @if (homebridgeUiPkg.installedVersion) {
+              <span class="grey-text small">v{{ packageVersion }}</span>
+              @if (homebridgeUiPkg.updateAvailable) { &middot;
+              <a href="javascript:void(0)" (click)="updatePackage(homebridgeUiPkg)" class="primary-text small">
+                {{ 'plugins.button_update' | translate }}
+              </a>
+              } }
+            </div>
+          </div>
+        </div>
+        <div class="hb-status-item d-flex flex-row py-1" style="min-width: 200px; flex: 1 0 auto">
+          <div class="d-flex ps-3 py-1">
+            <div class="mb-0 d-flex align-items-center">
+              @if (!nodejsStatusDone) {
+              <i class="fas fa-fw fa-lg fa-cog fa-spin primary-text"></i>
+              } @if (nodejsStatusDone) { @if (widget.hideNodeInfo) {
+              <i class="fas fa-fw fa-lg fa-circle green-text"></i>
+              } @if (!widget.hideNodeInfo) { @if (nodejsInfo.updateAvailable) {
+              <i class="fas fa-fw fa-lg fa-arrow-alt-circle-up orange-text"></i>
+              } @if (nodejsInfo.showNodeUnsupportedWarning && !nodejsInfo.updateAvailable) {
+              <i class="fas fa-fw fa-lg fa-exclamation-circle orange-text"></i>
+              } @if (!nodejsInfo.updateAvailable && !nodejsInfo.showNodeUnsupportedWarning) {
+              <i class="fas fa-fw fa-lg fa-check-circle green-text"></i>
+              } } }
+            </div>
+            <div class="align-self-center px-3">
+              Node.js@if (widget.showNpmVersion && nodejsInfo.npmVersion) { &middot; npm }
+              <br />
+              @if (!nodejsStatusDone) {
+              <span class="grey-text small">{{ 'status.homebridge.checking' | translate }}</span>
+              } @if (nodejsStatusDone) {
+              <span class="grey-text small"
+                >{{ serverInfo.nodeVersion }}@if (widget.showNpmVersion && nodejsInfo.npmVersion) { &middot; {{
+                nodejsInfo.npmVersion }} }</span
+              >
+              @if (!widget.hideNodeInfo) { @if (nodejsInfo.updateAvailable) { &middot;
+              <a href="javascript:void(0)" (click)="nodeUpdateModal()" class="primary-text small">
+                {{'plugins.button_update' | translate }}
+              </a>
+              } @if (nodejsInfo.showNodeUnsupportedWarning && !nodejsInfo.updateAvailable) { &middot;
+              <a href="javascript:void(0)" (click)="nodeUnsupportedModal()" class="primary-text small">
+                {{ 'status.widget.info.node_unsupp' | translate }}
+              </a>
+              } } }
+            </div>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+    } @if (serverInfo && !serverInfo.homebridgeRunningInDocker) {
     <div class="hb-status-item d-flex flex-row mb-1" style="min-width: max(25%, 225px)">
       <div class="d-flex ps-3 py-1">
         <div class="mb-0 d-flex align-items-center">
@@ -91,6 +253,7 @@
         </div>
       </div>
     </div>
+    }
     <div class="hb-status-item d-flex flex-row mb-1" style="min-width: max(25%, 225px)">
       <div class="d-flex ps-3 py-1">
         <div class="mb-0 d-flex align-items-center">
@@ -117,6 +280,7 @@
         </div>
       </div>
     </div>
+    @if (serverInfo && !serverInfo.homebridgeRunningInDocker) {
     <div class="hb-status-item d-flex flex-row mb-1" style="min-width: max(25%, 225px)">
       <div class="d-flex ps-3 py-1">
         <div class="mb-0 d-flex align-items-center">
@@ -154,5 +318,6 @@
         </div>
       </div>
     </div>
+    }
   </div>
 </div>

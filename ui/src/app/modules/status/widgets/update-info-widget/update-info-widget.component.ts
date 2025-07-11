@@ -13,6 +13,13 @@ import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { HbV2ModalComponent } from '@/app/modules/status/widgets/update-info-widget/hb-v2-modal/hb-v2-modal.component'
 
+interface DockerDetails {
+  currentVersion: string | undefined
+  latestVersion: string | null
+  latestReleaseBody: string
+  updateAvailable: boolean
+}
+
 @Component({
   templateUrl: './update-info-widget.component.html',
   styleUrls: ['./update-info-widget.component.scss'],
@@ -48,24 +55,36 @@ export class UpdateInfoWidgetComponent implements OnInit {
   public packageVersion = this.$settings.env.packageVersion
   public homebridgeVersion = this.$settings.env.homebridgeVersion
 
+  public dockerInfo: DockerDetails = {
+    currentVersion: undefined,
+    latestVersion: null,
+    latestReleaseBody: '',
+    updateAvailable: false,
+  }
+
+  public dockerStatusDone = false as boolean
+  public dockerExpanded = false
+
   public async ngOnInit() {
     this.io = this.$ws.getExistingNamespace('status')
 
     this.io.connected.subscribe(async () => {
+      await this.getNodeInfo()
       await Promise.all([
         this.checkHomebridgeVersion(),
         this.checkHomebridgeUiVersion(),
         this.getOutOfDatePlugins(),
-        this.getNodeInfo(),
+        this.getDockerInfo(),
       ])
     })
 
     if (this.io.socket.connected) {
+      await this.getNodeInfo()
       await Promise.all([
         this.checkHomebridgeVersion(),
         this.checkHomebridgeUiVersion(),
         this.getOutOfDatePlugins(),
-        this.getNodeInfo(),
+        this.getDockerInfo(),
       ])
     }
 
@@ -177,5 +196,40 @@ export class UpdateInfoWidgetComponent implements OnInit {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
     }
+  }
+
+  private async getDockerInfo() {
+    if (this.serverInfo?.homebridgeRunningInDocker) {
+      try {
+        this.dockerInfo = await firstValueFrom(this.io.request('docker-version-check'))
+        this.dockerStatusDone = true
+      } catch (error) {
+        console.error(error)
+        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      }
+    } else {
+      this.dockerStatusDone = true
+    }
+  }
+
+  public toggleDockerExpand() {
+    this.dockerExpanded = !this.dockerExpanded
+  }
+
+  public dockerUpdateModal() {
+    const ref = this.$modal.open(InformationComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    })
+
+    ref.componentInstance.title = this.$translate.instant('status.widget.info.docker_update_title')
+    ref.componentInstance.message = this.$translate.instant('status.widget.info.docker_update_message')
+    ref.componentInstance.markdownMessage2 = this.dockerInfo.latestReleaseBody
+    ref.componentInstance.subtitle = (this.dockerInfo.currentVersion && this.dockerInfo.latestVersion)
+      ? `${this.dockerInfo.currentVersion} → ${this.dockerInfo.latestVersion}`
+      : this.$translate.instant('accessories.control.unknown')
+    ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info')
+    ref.componentInstance.faIconClass = 'fab fa-fw fa-docker primary-text'
+    ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/docker-homebridge/wiki/How-To-Update-Docker-Homebridge'
   }
 }

@@ -17,8 +17,13 @@ export class DockerService {
    * Returns the docker startup.sh script
    */
   async getStartupScript() {
-    const script = await readFile(this.configService.startupScript, 'utf-8')
-    return { script }
+    try {
+      const script = await readFile(this.configService.startupScript, 'utf-8')
+      return { script }
+    } catch (error) {
+      this.logger.error('Error reading startup script:', error)
+      throw new Error('Could not read the startup script.')
+    }
   }
 
   /**

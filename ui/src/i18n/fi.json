@@ -558,6 +558,8 @@
   "status.widget.info.arch": "Arch.",
   "status.widget.info.config_path": "asetusten Polku",
   "status.widget.info.docker": "Docker",
+  "status.widget.info.docker_update_message": "Updating the Docker container requires manually pulling the latest image and restarting the container. Homebridge does not perform this automatically. Refer to your Docker image's documentation for update instructions.",
+  "status.widget.info.docker_update_title": "Docker Container Update",
   "status.widget.info.glibc_message": "Nykyinen käyttöjärjestelmäsi versio ei tue Node.js:n uudempia versioita. Jotta voit ratkaista tämän ja pystyä asentamaan päivitetyt versiot Node.js:stä tulevaisuudessa, sinun on päivitettävä käyttöjärjestelmäsi uudempaan versioon.",
   "status.widget.info.glibc_title": "Käyttöjärjestelmän Päivitys",
   "status.widget.info.hostname": "Isäntänimi",
